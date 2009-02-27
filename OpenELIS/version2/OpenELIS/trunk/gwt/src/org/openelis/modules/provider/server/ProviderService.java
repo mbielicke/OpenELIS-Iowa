@@ -712,13 +712,16 @@ public class ProviderService implements AppScreenFormServiceInt<ProviderRPC, Int
     
     private ArrayList<ProviderAddressDO> getProviderAddressListFromRPC(DataModel<Integer> addressTable, Integer providerId){
         ArrayList<ProviderAddressDO> provAddDOList = new ArrayList<ProviderAddressDO>();
-          
+        IntegerField provAddId = null;  
+        IntegerField addId = null;
            for(int iter = 0; iter < addressTable.size(); iter++){            
             ProviderAddressDO provAddDO = new ProviderAddressDO();
             DataSet<Integer> row = addressTable.get(iter);
             
-            IntegerField provAddId = (IntegerField)((DataMap)row.getData()).get("provAddId");
-            IntegerField addId = (IntegerField)((DataMap)row.getData()).get("addId");
+            if(row.getData()!=null) {
+             provAddId = (IntegerField)((DataMap)row.getData()).get("provAddId");
+             addId = (IntegerField)((DataMap)row.getData()).get("addId");
+            }
             
             if(provAddId != null){
              provAddDO.setId(provAddId.getValue());
@@ -757,8 +760,6 @@ public class ProviderService implements AppScreenFormServiceInt<ProviderRPC, Int
                ProviderAddressDO provAddDO = new ProviderAddressDO();
                DataSet<Integer> row = addressTable.getDeletions().get(iter);
                
-               IntegerField provAddId = null;
-               IntegerField addId = null;
                if(row.getData()!=null){
                 provAddId = (IntegerField)((DataMap)row.getData()).get("provAddId");
                 addId = (IntegerField)((DataMap)row.getData()).get("addId");
@@ -782,25 +783,7 @@ public class ProviderService implements AppScreenFormServiceInt<ProviderRPC, Int
                 if(addId != null){              
                  provAddDO.getAddressDO().setId(addId.getValue());             
                 }             
-               //}
-               
-               provAddDO.getAddressDO().setMultipleUnit(((String)((StringField)row.get(2)).getValue()));
-               provAddDO.getAddressDO().setStreetAddress(((String)((StringField)row.get(3)).getValue()));
-               provAddDO.getAddressDO().setCity(((String)((StringField)row.get(4)).getValue()));
-               
-               if(!("").equals(row.get(5).getValue())){
-                provAddDO.getAddressDO().setState((String)row.get(5).getValue());
-               }
-               if(!("").equals(row.get(6).getValue())){
-                provAddDO.getAddressDO().setCountry((String)row.get(6).getValue());
-               }
-                           
-               provAddDO.getAddressDO().setZipCode(((String)((StringField)row.get(7)).getValue()));
-               provAddDO.getAddressDO().setWorkPhone(((String)((StringField)row.get(8)).getValue()));
-               provAddDO.getAddressDO().setHomePhone(((String)((StringField)row.get(9)).getValue()));
-               provAddDO.getAddressDO().setCellPhone(((String)((StringField)row.get(10)).getValue()));
-               provAddDO.getAddressDO().setFaxPhone(((String)((StringField)row.get(11)).getValue()));
-               provAddDO.getAddressDO().setEmail(((String)((StringField)row.get(12)).getValue()));
+               //}               
                
                provAddDOList.add(provAddDO);   
               }

@@ -1459,18 +1459,20 @@ public class TestBean implements TestRemote {
          idList = new ArrayList<Integer>();            
          for(int iter = 0; iter < size; iter++) {
           secDO = sectionDOList.get(iter); 
-          flagId = secDO.getFlagId();          
-          sectId = secDO.getSectionId();
+          if(!secDO.getDelete()) {
+           flagId = secDO.getFlagId();          
+           sectId = secDO.getSectionId();
           
-          if(idIsBlank(sectId, blankId)) {
+           if(idIsBlank(sectId, blankId)) {
             exceptionList.add(new TableFieldErrorException("fieldRequiredException", iter,
              TestSectionMetaMap.getTableName()+":"+TestMeta.getTestSection().getSectionId()));  
-          }else if(idList.contains(sectId)){
+           }else if(idList.contains(sectId)){
               exceptionList.add(new TableFieldErrorException("fieldUniqueOnlyException", iter,
                TestSectionMetaMap.getTableName()+":"+TestMeta.getTestSection().getSectionId())); 
-          }else {
-              idList.add(sectId);
-          }
+           }else {
+             idList.add(sectId);
+           }
+          
           
           if(idIsBlank(flagId, blankId)) {
               numBlank++;
@@ -1481,7 +1483,7 @@ public class TestBean implements TestRemote {
           }else if(matchId.equals(flagId)) {
               numMatch++;              
           }
-          
+         } 
         }
                 
         if(numBlank == size) {
@@ -1493,7 +1495,7 @@ public class TestBean implements TestRemote {
              for(int iter = 0; iter < size; iter++) {
                  secDO = sectionDOList.get(iter);  
                  flagId = secDO.getFlagId();
-                 if(!idIsBlank(flagId,blankId)) {
+                 if(!secDO.getDelete() && !idIsBlank(flagId,blankId)) {
                   exceptionList.add(new TableFieldErrorException("allSectBlankIfDefException", iter,
                    TestSectionMetaMap.getTableName()+":"+TestMeta.getTestSection().getFlagId()));
                  } 
@@ -1502,35 +1504,39 @@ public class TestBean implements TestRemote {
              for(int iter = 0; iter < size; iter++) {
                  secDO = sectionDOList.get(iter);  
                  flagId = secDO.getFlagId();
-                 if(!idIsBlank(flagId,blankId) && !defId.equals(flagId)) {
+                 if(!secDO.getDelete() && !idIsBlank(flagId,blankId) && !defId.equals(flagId)) {
                   exceptionList.add(new TableFieldErrorException("allSectBlankIfDefException", iter,
                    TestSectionMetaMap.getTableName()+":"+TestMeta.getTestSection().getFlagId()));
                  } 
              }
          } else if(numMatch > 0 && numMatch != size) {
              for(int iter = 0; iter < size; iter++) {
-                 secDO = sectionDOList.get(iter);  
-                 flagId = secDO.getFlagId();
+               secDO = sectionDOList.get(iter);  
+               flagId = secDO.getFlagId();
+               if(!secDO.getDelete()) { 
                  if(!idIsBlank(flagId, blankId) && !matchId.equals(flagId)) {
                   exceptionList.add(new TableFieldErrorException("allSectMatchFlagException", iter,
                    TestSectionMetaMap.getTableName()+":"+TestMeta.getTestSection().getFlagId()));
                  }else if(idIsBlank(flagId, blankId)) {
                     exceptionList.add(new TableFieldErrorException("allSectMatchFlagException", iter,
                      TestSectionMetaMap.getTableName()+":"+TestMeta.getTestSection().getFlagId())); 
-                 }                
+                }                
              }
+            }    
          } else if(numAsk > 0 && numAsk != size) {
              for(int iter = 0; iter < size; iter++) {
-                 secDO = sectionDOList.get(iter);  
-                 flagId = secDO.getFlagId();
+               secDO = sectionDOList.get(iter);  
+               flagId = secDO.getFlagId();
+               if(!secDO.getDelete()) {
                  if(!idIsBlank(flagId, blankId) && !askId.equals(flagId)) {
                   exceptionList.add(new TableFieldErrorException("allSectAskFlagException", iter,
                    TestSectionMetaMap.getTableName()+":"+TestMeta.getTestSection().getFlagId()));
                  }else if(idIsBlank(flagId, blankId)) {
                     exceptionList.add(new TableFieldErrorException("allSectAskFlagException", iter,
                      TestSectionMetaMap.getTableName()+":"+TestMeta.getTestSection().getFlagId())); 
-                 }                
+                }                
              }
+            }     
          } 
        }                                     
                                                                            

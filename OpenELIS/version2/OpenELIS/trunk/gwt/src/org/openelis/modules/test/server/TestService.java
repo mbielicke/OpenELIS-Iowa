@@ -805,6 +805,7 @@ public class TestService implements AppScreenFormServiceInt<TestRPC,Integer>,
              
              if(!form.duplicate) {
               id = new IntegerField(resultDO.getId());
+              data.put("id", id); 
              } else {
                 id = new IntegerField(resultDO.getId() * -2);   
                 data.put("id", id);             
@@ -916,8 +917,7 @@ public class TestService implements AppScreenFormServiceInt<TestRPC,Integer>,
                 id = new IntegerField(resultDO.getId() * -2);   
                 data.put("id", id); 
             } 
-            
-                
+                            
             data.put("resGrp", rg);
             
             if(resultDO.getUnitOfMeasureId() != null) {
@@ -1700,7 +1700,7 @@ public class TestService implements AppScreenFormServiceInt<TestRPC,Integer>,
             resultDO.setTypeId((Integer)((DropDownField)row.get(1)).getSelectedKey());
             
             if(valueObj.getValue().equals(valObj.getValue())) {
-             resultDO.setValue((String)((StringField)row.get(2)).getValue());
+             resultDO.setValue(((StringField)row.get(2)).getValue());
              resultDO.setDictEntry(null);
             } 
             else {
