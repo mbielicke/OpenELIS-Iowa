@@ -90,7 +90,7 @@ import org.openelis.modules.dictionaryentrypicker.client.DictionaryEntryPickerSc
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -148,7 +148,7 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm, Integer> i
 
     private int prevSelTabIndex = -1, tempAnaId = -1, tempResId = -1;
 
-    private static String panelString = "<VerticalPanel/>";
+    private static String panelString = "<VerticalPanel/>";   
 
     public TestScreen() {
         super("org.openelis.modules.test.server.TestService");
@@ -558,8 +558,9 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm, Integer> i
         fillTestAnalyteDropDown();
         fillResultGroupDropdown();
         fillResultModelCollection();
-
+                
         prevSelTabIndex = -1;
+        
         super.abort();
     }
 
@@ -1060,11 +1061,12 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm, Integer> i
                                                                                                  .get(currRow);
                                                         DataMap data = (DataMap)set.getData();
                                                         if (data == null) {
+                                                            Window.alert("data is null");
                                                             data = new DataMap();
                                                             set.setData(data);
                                                         }
 
-                                                        if (data.get("id") == null) {
+                                                        if (data.get("id") == null) {                                                           
                                                             Integer tempResId = getNextTempResId();
                                                             data.put("id",
                                                                      new IntegerField(tempResId));
@@ -2005,11 +2007,12 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm, Integer> i
      * time
      */
     private void fillMaps() {
+        TestGeneralPurposeRPC imrpc = null;
         if (key == null) {
             return;
         }
         
-        TestGeneralPurposeRPC imrpc = new TestGeneralPurposeRPC();
+        imrpc = new TestGeneralPurposeRPC();
         imrpc.key = key;
         
         imrpc.map = new DataMap();
@@ -2164,23 +2167,22 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm, Integer> i
     }
 
     private void onGroupAnalytesButtonClicked() {
-        int[] selectedRowIndexes = analyteTreeController.model.getSelectedRowIndexes();
+        List<Integer> selectedRowIndexes = (List<Integer>)analyteTreeController.model.getSelectedRowList().clone();
         TreeDataItem item = null;
         TreeDataItem newItem = null;
         TreeDataItem delItem = null;
-
-        if (selectedRowIndexes.length < 2) {
+        
+        if (selectedRowIndexes.size() < 2) {
             Window.alert(consts.get("atleastTwoAnalytes"));
             return;
         }
         
         item = analyteTreeController.model.getData().createTreeItem("top");
         item.get(0).setValue(consts.get("analyteGroup"));
+        
 
-        Arrays.sort(selectedRowIndexes);
-
-        for (int iter = 0; iter < selectedRowIndexes.length; iter++) {
-            int index = selectedRowIndexes[iter];
+        for (int iter = 0; iter < selectedRowIndexes.size(); iter++) {
+            int index = selectedRowIndexes.get(iter);                       
             delItem = analyteTreeController.model.getRow(index);
             if ("top".equals(delItem.leafType)) {
                 Window.alert(consts.get("cantGroupGroups"));
@@ -2190,33 +2192,32 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm, Integer> i
                 Window.alert(consts.get("analyteAlreadyGrouped"));
                 return;
             }
-            if (iter > 0 && index != ((Integer)selectedRowIndexes[iter - 1] + 1)) {
-                Window.alert(consts.get("analyteNotAdjcnt"));
-                return;
-            }
-
+            //if (iter > 0 && index != (selectedRowIndexes.get(iter-1)+1)) {
+              // Window.alert(consts.get("analyteNotAdjcnt"));
+              //return;
+           // }
+            
             newItem = (TreeDataItem)delItem.clone();
             newItem.setData(null);
             item.addItem(newItem);
             item.open = true;
-        }
-
-        for (int iter = selectedRowIndexes.length; iter > 0; iter--) {
-            int index = selectedRowIndexes[iter - 1];
-            analyteTreeController.model.deleteRow(index);
-        }
-
+        }       
+        
+        analyteTreeController.model.deleteRows(selectedRowIndexes);                                                                                                           
+                
         if (analyteTreeController.model.getData().size() > 0) {
-            if (selectedRowIndexes[0] < analyteTreeController.model.getData()
-                                                                   .size()) {
-                analyteTreeController.model.addRow(selectedRowIndexes[0], item);
-            } else {
+            Window.alert("before adding new node ");
+            if (selectedRowIndexes.get(0) < analyteTreeController.model.getData()
+                                                                   .size()) {                
+                analyteTreeController.model.addRow(selectedRowIndexes.get(0), item);                  
+            } else {               
                 analyteTreeController.model.addRow(item);
             }
-        } else {
+        } else {           
             analyteTreeController.model.addRow(item);
-        }
-
+        }            
+        
+        
         analyteTreeController.model.refresh();
     }
 
@@ -2286,41 +2287,10 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm, Integer> i
         analyteTreeController.model.refresh();
     }
     
-    private void onDuplicateRecordClick() {
-       /*TestRPC returnRPC = new TestRPC();
-       returnRPC.form = new TestForm();
-       
-       returnRPC.form.details.sectionTable.getValue().
-          setDefaultSet(rpc.form.details.sectionTable.getValue().getDefaultSet());
-       
-       returnRPC.form.sampleType.sampleTypeTable.getValue().
-          setDefaultSet(rpc.form.sampleType.sampleTypeTable.getValue().getDefaultSet());
-       
-       returnRPC.form.prepAndReflex.testPrepTable.getValue().
-          setDefaultSet(rpc.form.prepAndReflex.testPrepTable.getValue().getDefaultSet());
-       
-       returnRPC.form.prepAndReflex.testReflexTable.getValue().
-          setDefaultSet(rpc.form.prepAndReflex.testPrepTable.getValue().getDefaultSet());
-       
-       returnRPC.form.prepAndReflex.testReflexTable.getValue().
-          setDefaultSet(rpc.form.prepAndReflex.testPrepTable.getValue().getDefaultSet());
-       
-       returnRPC.form.testAnalyte.testResultsTable.getValue().
-          setDefaultSet(rpc.form.testAnalyte.testResultsTable.getValue().getDefaultSet());
-       
-       //returnRPC.form.testAnalyte.analyteTree.getValue().leaves = rpc.form.testAnalyte.analyteTree.getValue().leaves;
-       returnRPC.form.testAnalyte.analyteTree.setValue(rpc.form.testAnalyte.analyteTree.getValue());
-       returnRPC.form.testAnalyte.analyteTree.getValue().leaves = rpc.form.testAnalyte.analyteTree.getValue().leaves;
-       
-       returnRPC.form.worksheet.worksheetTable.getValue().
-          setDefaultSet(rpc.form.worksheet.worksheetTable.getValue().getDefaultSet());       
-       
-       returnRPC.key = rpc.key;
-       */
-        
+    private void onDuplicateRecordClick() {        
        rpc.numGroups = group;
        rpc.resultTableModel = defaultModel;
-       screenService.call("getDuplicateRPC",rpc,fetchForDuplicateCallBack);       
+       screenService.call("getDuplicateRPC",rpc,fetchForDuplicateCallBack);
     }       
 
     /**
@@ -2535,14 +2505,13 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm, Integer> i
 
     private void setErrorToReflexFields(String error, Integer id, int col) {
         DataSet<Field> rset = null;
-        DataSet<Field> vset = null;
         DropDownField field = null;
         for (int i = 0; i < reflexTestWidget.model.getData().size(); i++) {
             rset = (DataSet)reflexTestWidget.model.getData().get(i);
             field = (DropDownField)rset.get(col);
-            vset = (DataSet)field.getValue();
+            //vset = (DataSet)((ArrayList)field.getValue()).get(0);
 
-            if (id.equals(((IntegerObject)vset.getKey()).getValue()))
+            if (id.equals(field.getSelectedKey()))
                 if (!field.getErrors().contains(error)) {
                     reflexTestWidget.model.setCellError(i, col, error);
                 }

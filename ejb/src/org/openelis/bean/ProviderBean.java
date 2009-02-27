@@ -287,7 +287,7 @@ public class ProviderBean implements ProviderRemote {
         return getProvider(providerId);
     }
 
-   private List validateProvider(ProviderDO providerDO,List<Exception> exceptionList){
+   private List validateProvider(ProviderDO providerDO,List<Exception> exceptionList){            
        if("".equals(providerDO.getLastName())){           
            exceptionList.add(new FieldErrorException("fieldRequiredException",ProvMeta.getLastName()));
           }
@@ -302,19 +302,20 @@ public class ProviderBean implements ProviderRemote {
        String city = provAddDO.getAddressDO().getCity();
        String state = provAddDO.getAddressDO().getState();
        String zipcode = provAddDO.getAddressDO().getZipCode();      
-       if(location == null || "".equals(location)){            
+       if(!provAddDO.getDelete()) {
+        if(location == null || "".equals(location)){            
            exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex, ProvMeta.getProviderAddress().getLocation()));
          }
-       if(state == null || "".equals(state)){            
+        if(state == null || "".equals(state)){            
            exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex, ProvMeta.getProviderAddress().getAddress().getState()));
          }
-       if(city == null || "".equals(city)){            
+        if(city == null || "".equals(city)){            
            exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex,ProvMeta.getProviderAddress().getAddress().getCity()));
          }
-       if(zipcode == null || "".equals(zipcode)){            
+        if(zipcode == null || "".equals(zipcode)){            
            exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex,ProvMeta.getProviderAddress().getAddress().getZipCode()));
          }
-       
+        }
        return  exceptionList;
       }
 
