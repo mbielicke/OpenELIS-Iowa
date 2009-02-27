@@ -55,6 +55,7 @@ import org.openelis.gwt.services.AppScreenFormServiceInt;
 import org.openelis.gwt.services.AutoCompleteServiceInt;
 import org.openelis.metamap.OrganizationMetaMap;
 import org.openelis.modules.organization.client.Contact;
+import org.openelis.modules.organization.client.ContactRow;
 import org.openelis.modules.organization.client.ContactsForm;
 import org.openelis.modules.organization.client.ContactsRPC;
 import org.openelis.modules.organization.client.NotesForm;
@@ -438,12 +439,27 @@ public class OrganizationService implements AppScreenFormServiceInt<Organization
     		for(int iter = 0;iter < contactsList.size();iter++) {
     			OrganizationContactDO contactRow = (OrganizationContactDO)contactsList.get(iter);
     
-               DataSet<Contact> row = contactsModel.createNewSet();
+               //DataSet<Contact> row = contactsModel.createNewSet();
+               ContactRow row = new ContactRow();
                Contact key = new Contact();
                key.orgId = contactRow.getId();
                key.addId = contactRow.getAddressDO().getId();
                row.setKey(key);
                
+               row.contactType.setValue(new DataSet<Integer>(contactRow.getContactType()));
+               row.name.setValue(contactRow.getName());
+               row.multipleUnit.setValue(contactRow.getAddressDO().getMultipleUnit());
+               row.streetAddress.setValue(contactRow.getAddressDO().getStreetAddress());
+               row.city.setValue(contactRow.getAddressDO().getCity());          
+               row.state.setValue(new DataSet<String>(contactRow.getAddressDO().getState()));
+               row.zipCode.setValue(contactRow.getAddressDO().getZipCode());
+               row.country.setValue(new DataSet<String>(contactRow.getAddressDO().getCountry()));
+               row.workPhone.setValue(contactRow.getAddressDO().getWorkPhone());
+               row.homePhone.setValue(contactRow.getAddressDO().getHomePhone());
+               row.cellPhone.setValue(contactRow.getAddressDO().getCellPhone());
+               row.faxPhone.setValue(contactRow.getAddressDO().getFaxPhone());
+               row.email.setValue(contactRow.getAddressDO().getEmail());
+               /*
                ((DropDownField<Integer>)row.get(0)).setValue(new DataSet<Integer>(contactRow.getContactType()));
                row.get(1).setValue(contactRow.getName());
                row.get(2).setValue(contactRow.getAddressDO().getMultipleUnit());
@@ -456,7 +472,8 @@ public class OrganizationService implements AppScreenFormServiceInt<Organization
                row.get(9).setValue(contactRow.getAddressDO().getHomePhone());
                row.get(10).setValue(contactRow.getAddressDO().getCellPhone());
                row.get(11).setValue(contactRow.getAddressDO().getFaxPhone());
-               row.get(12).setValue(contactRow.getAddressDO().getEmail());	                
+               row.get(12).setValue(contactRow.getAddressDO().getEmail());
+               */	                
                
                contactsModel.add(row);
            } 
@@ -628,10 +645,26 @@ public class OrganizationService implements AppScreenFormServiceInt<Organization
         
 		for(int i=0; i<contactsTable.size(); i++){
 			OrganizationContactDO contactDO = new OrganizationContactDO();
-			DataSet<Contact> row = contactsTable.get(i);
+			//DataSet<Contact> row = contactsTable.get(i);
+            ContactRow row = (ContactRow)contactsTable.get(i);
 			if(row.getKey() != null)
 				contactDO.setId(row.getKey().orgId);
 			contactDO.setOrganization(orgId);
+            contactDO.setName(row.name.getValue());
+            contactDO.getAddressDO().setId(row.getKey().addId);
+            contactDO.setContactType((Integer)row.contactType.getSelectedKey());
+            contactDO.getAddressDO().setMultipleUnit(row.multipleUnit.getValue());
+            contactDO.getAddressDO().setStreetAddress(row.streetAddress.getValue());
+            contactDO.getAddressDO().setCity(row.city.getValue());
+            contactDO.getAddressDO().setState((String)row.state.getSelectedKey());
+            contactDO.getAddressDO().setZipCode(row.zipCode.getValue());
+            contactDO.getAddressDO().setCountry((String)row.country.getSelectedKey());
+            contactDO.getAddressDO().setWorkPhone(row.workPhone.getValue());
+            contactDO.getAddressDO().setHomePhone(row.homePhone.getValue());
+            contactDO.getAddressDO().setCellPhone(row.cellPhone.getValue());
+            contactDO.getAddressDO().setFaxPhone(row.faxPhone.getValue());
+            contactDO.getAddressDO().setEmail(row.email.getValue());
+            /*
 			contactDO.setName((String)((StringField)row.get(1)).getValue());
 			contactDO.getAddressDO().setId(row.getKey().addId);
 		    contactDO.setContactType((Integer)((DropDownField)row.get(0)).getSelectedKey());
@@ -646,7 +679,7 @@ public class OrganizationService implements AppScreenFormServiceInt<Organization
 			contactDO.getAddressDO().setCellPhone((String)((StringField)row.get(10)).getValue());
 			contactDO.getAddressDO().setFaxPhone((String)((StringField)row.get(11)).getValue());
 			contactDO.getAddressDO().setEmail((String)((StringField)row.get(12)).getValue());
-			
+			*/
 			organizationContacts.add(contactDO);	
 		}
         
