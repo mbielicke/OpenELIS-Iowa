@@ -1426,7 +1426,7 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm, Integer> i
                     lset = (DataSet)resGroupAnalyteIdMap.get(selText);
                     obj = new IntegerObject(anaId);
                     if (lset != null) {
-                        if (!lset.contains(obj)) {
+                        if (!lset.list.contains(obj)) {
                             lset.add(obj);
                         }
                     } else {
@@ -1640,7 +1640,7 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm, Integer> i
                 // one that's selected and one that still belongs to the current
                 // data model.
                 // Otherwise the previously selected set is set as the value
-                if (field.getSelectedKey() != null && model.contains(prevSet))
+                if (field.getSelectedKey() != null && model.list.contains(prevSet))
                     field.setValue(prevSet);
                 else
                     field.setValue(blankSet);
@@ -1971,8 +1971,7 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm, Integer> i
         
         tdmrpc = new TestGeneralPurposeRPC();
         tdmrpc.key = key;
-        
-        //NumberObject testId = new NumberObject(key);
+       
         screenService.call("getUnitDropdownModel",tdmrpc,
                                 new AsyncCallback<TestGeneralPurposeRPC>() {
                                     public void onSuccess(TestGeneralPurposeRPC result) {
@@ -2167,59 +2166,55 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm, Integer> i
     }
 
     private void onGroupAnalytesButtonClicked() {
-        List<Integer> selectedRowIndexes = (List<Integer>)analyteTreeController.model.getSelectedRowList().clone();
-        TreeDataItem item = null;
-        TreeDataItem newItem = null;
-        TreeDataItem delItem = null;
         
-        if (selectedRowIndexes.size() < 2) {
+        ArrayList<TreeDataItem> items = analyteTreeController.model.getSelections();
+        if (items.size() < 2) {
             Window.alert(consts.get("atleastTwoAnalytes"));
             return;
         }
         
-        item = analyteTreeController.model.getData().createTreeItem("top");
-        item.get(0).setValue(consts.get("analyteGroup"));
+        ArrayList<Integer> selectedRowIndexes = (ArrayList<Integer>)analyteTreeController.model.getSelectedRowList().clone();
+        Collections.sort(selectedRowIndexes);
         
-
+        TreeDataItem groupItem = analyteTreeController.model.createTreeItem("top");
+        groupItem.get(0).setValue(consts.get("analyteGroup"));
+        
         for (int iter = 0; iter < selectedRowIndexes.size(); iter++) {
-            int index = selectedRowIndexes.get(iter);                       
-            delItem = analyteTreeController.model.getRow(index);
-            if ("top".equals(delItem.leafType)) {
+            int index = selectedRowIndexes.get(iter);                                       
+            if (iter > 0 && index != (selectedRowIndexes.get(iter-1)+1)) {
+               Window.alert(consts.get("analyteNotAdjcnt"));
+              return;
+           }            
+        }
+        for(TreeDataItem item : items) {
+            if ("top".equals(item.leafType)) {
                 Window.alert(consts.get("cantGroupGroups"));
                 return;
             }
-            if (delItem.parent != null) {
+            if (item.parent != null) {
                 Window.alert(consts.get("analyteAlreadyGrouped"));
                 return;
             }
-            //if (iter > 0 && index != (selectedRowIndexes.get(iter-1)+1)) {
-              // Window.alert(consts.get("analyteNotAdjcnt"));
-              //return;
-           // }
-            
-            newItem = (TreeDataItem)delItem.clone();
-            newItem.setData(null);
-            item.addItem(newItem);
-            item.open = true;
-        }       
+            groupItem.addItem((TreeDataItem)item.clone());
+        }
         
-        analyteTreeController.model.deleteRows(selectedRowIndexes);                                                                                                           
-                
-        if (analyteTreeController.model.getData().size() > 0) {
-            Window.alert("before adding new node ");
+        analyteTreeController.model.deleteRows(analyteTreeController.model.getSelectedRowList());
+        analyteTreeController.model.addRow(0,groupItem);
+        
+        if (analyteTreeController.model.getData().size() > 0) {            
             if (selectedRowIndexes.get(0) < analyteTreeController.model.getData()
                                                                    .size()) {                
-                analyteTreeController.model.addRow(selectedRowIndexes.get(0), item);                  
+                analyteTreeController.model.addRow(selectedRowIndexes.get(0), groupItem);                  
             } else {               
-                analyteTreeController.model.addRow(item);
+                analyteTreeController.model.addRow(groupItem);
             }
         } else {           
-            analyteTreeController.model.addRow(item);
-        }            
-        
+            analyteTreeController.model.addRow(groupItem);
+        }
         
         analyteTreeController.model.refresh();
     }
+    
 
     private void onUngroupAnalytesButtonClicked() {
         TreeDataItem item;
