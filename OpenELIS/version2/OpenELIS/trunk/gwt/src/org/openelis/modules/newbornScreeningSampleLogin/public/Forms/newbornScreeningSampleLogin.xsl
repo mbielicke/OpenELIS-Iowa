@@ -164,30 +164,32 @@ UIRF Software License are applicable instead of those above.
 							<widget colspan="3">
 								<textbox key="mothlast" tab="??,??" width="175px"/>
 							</widget>
-							<text style="Prompt">Unique Id:</text>
-							<textbox key="unid" width="75px"/>
+							<text style="Prompt">Maiden:</text>
+							<textbox key="momMaiden" width="110px"/>
 						</row>
 						<row>
 							<text style="Prompt">First:</text>
 							<widget colspan="3">
 								<textbox key="mothfirsdt" tab="??,??" width="175px"/>
 							</widget>
-							<text style="Prompt">Birth:</text>
-							<calendar begin="0" end="2" key="mombirth" tab="??,??" width="75px"/>
+							<text style="Prompt">Unique Id:</text>
+							<textbox key="unid" width="75px"/>
 						</row>
 						<row>
 							<text style="Prompt">Address:</text>
 							<widget colspan="3">
 								<textbox key="address" width="186px"/>
 							</widget>
-							<text style="Prompt">Phone:</text>
-							<textbox key="motherPhone" width="80px"/>
+							<text style="Prompt">Birth:</text>
+							<calendar begin="0" end="2" key="mombirth" tab="??,??" width="75px"/>
 						</row>
 						<row>
 							<text style="Prompt">Mult Unit:</text>
 							<widget colspan="3">
 								<textbox key="mult" width="186px"/>
 							</widget>
+							<text style="Prompt">Phone:</text>
+							<textbox key="motherPhone" width="80px"/>
 						</row>
 						<row>
 							<text style="Prompt">City:</text>
