@@ -113,6 +113,18 @@ public class InventoryItemScreen extends OpenELISScreenForm<InventoryItemRPC, In
         getScreen(new InventoryItemRPC());
 	}
     
+	public void performCommand(Enum action, Object obj) {
+        if(obj instanceof AppButton){
+           String baction = ((AppButton)obj).action;
+           if(baction.startsWith("query:")){
+               getInventories(baction.substring(6, baction.length()), ((AppButton)obj));      
+           }else
+               super.performCommand(action, obj);
+        }else{
+            super.performCommand(action, obj);
+        }
+    }
+    
 	public void onClick(Widget sender) {
 		if(sender instanceof MenuItem){
         	if("duplicateRecord".equals(((String)((MenuItem)sender).objClass))){
@@ -364,6 +376,16 @@ public class InventoryItemScreen extends OpenELISScreenForm<InventoryItemRPC, In
        });     
     }
     	
+    private void getInventories(String query, Widget sender) {
+        if (state == FormInt.State.DISPLAY || state == FormInt.State.DEFAULT) {
+
+            Form letterRPC = (Form) this.forms.get("queryByLetter");
+            letterRPC.setFieldValue(InvItemMeta.getName(), query);
+
+            commitQuery(letterRPC);
+        }
+    }
+    
 	private void onStandardNoteButtonClick(){
    	 	PopupPanel standardNotePopupPanel = new PopupPanel(false,true);
 		ScreenWindow pickerWindow = new ScreenWindow(standardNotePopupPanel, "Choose Standard Note", "standardNotePicker", "Loading...");

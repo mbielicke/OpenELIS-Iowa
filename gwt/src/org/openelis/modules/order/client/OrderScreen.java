@@ -524,9 +524,9 @@ public class OrderScreen extends OpenELISScreenForm<OrderRPC, OrderForm, Integer
                     //StringField locationLabel = new StringField();
                     //NumberField locationId = new NumberField(NumberObject.Type.INTEGER);
                     //NumberField qtyOnHand = new NumberField(NumberObject.Type.INTEGER);
-                    storeLabel.setValue((String)((StringObject)selectedRow.get(1)).getValue());
+                    //storeLabel.setValue((String)((StringObject)selectedRow.get(1)).getValue());
 
-                    tableRow.set(2, storeLabel);
+                    tableRow.get(2).setValue((String)((StringObject)selectedRow.get(1)).getValue());
                     
                     /*if(tableRow.size() == 4){
                         locationLabel.setValue((String)((StringObject)selectedRow.get(2)).getValue());

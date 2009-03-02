@@ -242,32 +242,15 @@ public class StandardNotePickerScreen extends OpenELISScreenForm<StandardNotePic
     //
     //start tree model listener methods
     //
-    public void cellUpdated(SourcesTreeModelEvents sender, int row, int cell) {
-        // TODO Auto-generated method stub
-        
-    }
+    public void cellUpdated(SourcesTreeModelEvents sender, int row, int cell) {}
 
-    public void dataChanged(SourcesTreeModelEvents sender) {
-        // TODO Auto-generated method stub
-        
-    }
+    public void dataChanged(SourcesTreeModelEvents sender) {}
 
-    public void rowAdded(SourcesTreeModelEvents sender, int rows) {
-        // TODO Auto-generated method stub
-        
-    }
+    public void rowAdded(SourcesTreeModelEvents sender, int rows) {}
 
-    public void rowClosed(SourcesTreeModelEvents sender,
-                          int row,
-                          TreeDataItem item) {
-        // TODO Auto-generated method stub
-        
-    }
+    public void rowClosed(SourcesTreeModelEvents sender, int row, TreeDataItem item) {}
 
-    public void rowDeleted(SourcesTreeModelEvents sender, int row) {
-        // TODO Auto-generated method stub
-        
-    }
+    public void rowDeleted(SourcesTreeModelEvents sender, int row) {}
 
     public void rowOpened(SourcesTreeModelEvents sender, int row, final TreeDataItem item) {
         
@@ -280,20 +263,11 @@ public class StandardNotePickerScreen extends OpenELISScreenForm<StandardNotePic
                 
     }
 
-    public void rowUnselected(SourcesTreeModelEvents sender, int row) {
-        // TODO Auto-generated method stub
-        
-    }
+    public void rowUnselected(SourcesTreeModelEvents sender, int row) {}
 
-    public void rowUpdated(SourcesTreeModelEvents sender, int row) {
-        // TODO Auto-generated method stub
-        
-    }
+    public void rowUpdated(SourcesTreeModelEvents sender, int row) {}
 
-    public void unload(SourcesTreeModelEvents sender) {
-        // TODO Auto-generated method stub
-        
-    }
+    public void unload(SourcesTreeModelEvents sender) {}
     //
     //end tree model listener methods
     //
@@ -318,9 +292,9 @@ public class StandardNotePickerScreen extends OpenELISScreenForm<StandardNotePic
         
         screenService.call("getTreeModelSecondLevel", snprpc, new AsyncCallback<StandardNotePickerRPC>(){
             public void onSuccess(StandardNotePickerRPC result){
-                for(TreeDataItem child : result.treeModel) {
-                    item.addItem(child);
-                }
+                for(int i=0; i<result.treeModel.size(); i++)
+                    item.addItem(result.treeModel.get(i));
+
                 item.loaded = true;
                 
                 model.toggle(row);
