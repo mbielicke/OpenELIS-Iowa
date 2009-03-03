@@ -79,6 +79,7 @@ import org.openelis.gwt.screen.ScreenMultipleLookUp;
 import org.openelis.gwt.screen.ScreenPagedTree;
 import org.openelis.gwt.screen.ScreenQueryTable;
 import org.openelis.gwt.screen.ScreenRadio;
+import org.openelis.gwt.screen.ScreenResultsTable;
 import org.openelis.gwt.screen.ScreenRichTextArea;
 import org.openelis.gwt.screen.ScreenScrollableTabBar;
 import org.openelis.gwt.screen.ScreenStack;
@@ -778,6 +779,17 @@ public class OpenELIS implements EntryPoint, EventListener {
                                 }
                            
       });
+      ClassFactory.addClassFactory(new String[] {ScreenResultsTable.class.getName(),ScreenResultsTable.TAG_NAME}, 
+                                   new ClassFactory.Factory() {
+                                       public Object newInstance(Object[] args) {
+                                           if(args == null)
+                                               return new ScreenResultsTable();
+                                           else if(args[0] instanceof Node)
+                                               return new ScreenResultsTable((Node)args[0],(ScreenBase)args[1]);
+                                           return null;
+                                       }
+                                  
+             });
       ClassFactory.addClassFactory(new String[] {ScreenLookUp.class.getName(),ScreenLookUp.TAG_NAME},
                             new ClassFactory.Factory() {
                                   public Object newInstance(Object[] args) {
