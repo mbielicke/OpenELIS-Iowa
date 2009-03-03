@@ -135,7 +135,8 @@ UIRF Software License are applicable instead of those above.
 		<!--end button panel-->
 			<VerticalPanel style="WhiteContentPanel" spacing="0" padding="0">
 					<widget valign="top">
-						<table width="auto" key="receiptsTable" manager="this" maxRows="10" title="" showError="false" showScroll="ALWAYS">
+					<resultsTable colwidths="2" showNavPanel="false" key="receiptsTable" maxRows="18" tablewidth="auto" headers="{resource:getString($constants,'name')}" width="100%">
+						<table width="auto" manager="this" maxRows="10" title="" showError="false" showScroll="ALWAYS">
 							<headers><xsl:value-of select='resource:getString($constants,"ordNum")'/>,<xsl:value-of select='resource:getString($constants,"dateRec")'/>,<xsl:value-of select='resource:getString($constants,"upc")'/>,
 							<xsl:value-of select='resource:getString($constants,"inventoryItem")'/>,<xsl:value-of select='resource:getString($constants,"vendor")'/>,<xsl:value-of select='resource:getString($constants,"numRec")'/>,
 							<xsl:value-of select='resource:getString($constants,"numReq")'/>,<xsl:value-of select='resource:getString($constants,"cost")'/>,<xsl:value-of select='resource:getString($constants,"extQC")'/>,
@@ -160,14 +161,14 @@ UIRF Software License are applicable instead of those above.
 								<textbox case="mixed"/>
 							</editors>
 							<fields>
-								<number key="{orderMeta:getId($order)}" type="integer" required="false"/>
+								<integer key="{orderMeta:getId($order)}" required="false"/>
 								<date key="{inventoryReceiptMeta:getReceivedDate($receipt)}" begin="0" end="2" required="true">current</date>
 								<string key="{inventoryReceiptMeta:getUpc($receipt)}" required="false"/>
 								<dropdown key="{inventoryItemMeta:getName($invItem)}" required="true"/>
 								<dropdown key="{organizationMeta:getName($org)}" required="true"/>
-								<number key="{inventoryReceiptMeta:getQuantityReceived($receipt)}" type="integer" required="false"/>
-								<number key="{orderItemMeta:getQuantity($orderItem)}" type="integer" required="false"/>
-								<number key="{inventoryReceiptMeta:getUnitCost($receipt)}" type="double" required="false"/>
+								<integer key="{inventoryReceiptMeta:getQuantityReceived($receipt)}" required="false"/>
+								<integer key="{orderItemMeta:getQuantity($orderItem)}" required="false"/>
+								<double key="{inventoryReceiptMeta:getUnitCost($receipt)}" required="false"/>
 								<string key="{inventoryReceiptMeta:getQcReference($receipt)}" required="false"/>
 								<string key="{inventoryReceiptMeta:getExternalReference($receipt)}" required="false"/>
 							</fields>
@@ -202,6 +203,7 @@ UIRF Software License are applicable instead of those above.
 								</fields>
 							</queryTable>
 							</query>
+							</resultsTable>
 						</widget>
 						<widget style="WhiteContentPanel" halign="center">									
 							<appButton action="removeRow" onclick="this" style="Button" key="removeReceiptButton">
@@ -296,24 +298,26 @@ UIRF Software License are applicable instead of those above.
 		</VerticalPanel>
 	</display>
 	<rpc key="display">
-		<dropdown key="{inventoryLocationMeta:getStorageLocationId($loc)}" required="false"/>
-		<string key="{inventoryLocationMeta:getLotNumber($loc)}" required="false"/>
-		<date key="{inventoryLocationMeta:getExpirationDate($loc)}" begin="0" end="2" required="false"/>
-		<check key="addToExisting" required="false"/>
-	
-    	<table key="receiptsTable"/>
+		<table key="receiptsTable"/>
     	<string key="type" reset="false">receipt</string>
     	
-    	<!--disabled values -->
-    	<string key="{inventoryItemMeta:getDescription($invItem)}" required="false"/>
-    	<string key="{inventoryItemMeta:getStoreId($invItem)}" required="false"/>
-    	<string key="{inventoryItemMeta:getDispensedUnitsId($invItem)}" required="false"/>
+    	<rpc key="itemInformation">
     	<string key="{addressMeta:getMultipleUnit($address)}" required="false"/>
     	<string key="{addressMeta:getStreetAddress($address)}" required="false"/>
     	<string key="{addressMeta:getCity($address)}" required="false"/>
     	<string key="{addressMeta:getState($address)}" required="false"/>
     	<string key="{addressMeta:getZipCode($address)}" required="false"/>
-    	<number key="{orderItemMeta:getQuantity($orderItem)}" type="integer" required="false"/>
+    	
+    	<string key="{inventoryItemMeta:getDescription($invItem)}" required="false"/>
+    	<string key="{inventoryItemMeta:getStoreId($invItem)}" required="false"/>
+    	<string key="{inventoryItemMeta:getDispensedUnitsId($invItem)}" required="false"/>
+    	
+    	<check key="addToExisting" required="false"/>
+    	<dropdown key="{inventoryLocationMeta:getStorageLocationId($loc)}" required="false"/>
+		<string key="{inventoryLocationMeta:getLotNumber($loc)}" required="false"/>
+		<date key="{inventoryLocationMeta:getExpirationDate($loc)}" begin="0" end="2" required="false"/>
+    	</rpc>
+    	
 	</rpc>
 	<rpc key="query">
 		<string key="type" reset="false">receipt</string>
