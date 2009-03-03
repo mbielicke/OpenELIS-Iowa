@@ -80,12 +80,29 @@ UIRF Software License are applicable instead of those above.
 				<HorizontalPanel padding="0" spacing="0">
 					<!--left table goes here -->
 					<CollapsePanel key="collapsePanel" height="440px" style="LeftSidePanel">
+					    <!--
 						<azTable colwidths="175" height="425px" key="azTable" maxRows="18" tablewidth="auto" headers="{resource:getString($constants,'name')}" width="100%">
 							<buttonPanel key="atozButtons">
 								<xsl:call-template name="aToZLeftPanelButtons"/>
 
 							</buttonPanel>
 						</azTable>
+					    -->
+					    <resultsTable height="425px" width="100%" key="azTable">
+					       <buttonPanel key="atozButtons">
+								<xsl:call-template name="aToZLeftPanelButtons"/>
+						   </buttonPanel>
+						   <table maxRows="18" width="auto">
+						     <headers><xsl:value-of select="resource:getString($constants,'name')"/></headers>
+						     <widths>175</widths>
+						     <editors>
+						       <label/>
+						     </editors>
+						     <fields>
+						       <string/>
+						     </fields>
+						   </table>
+					   </resultsTable>
 					</CollapsePanel>
 					<VerticalPanel spacing="0" padding="0">
 						<!--button panel code-->
@@ -218,7 +235,7 @@ UIRF Software License are applicable instead of those above.
 													<textbox case="mixed"/>
 												</editors>
 
-												<fields>
+												<fields class="ContactRow">
 													<dropdown key="{contact:getContactTypeId($cont)}" required="true"/>
 													<string key="{contact:getName($cont)}" required="true"/>
 													<string key="{addr:getMultipleUnit($contAddr)}"/>

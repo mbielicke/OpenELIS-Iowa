@@ -440,7 +440,7 @@ public class OrganizationService implements AppScreenFormServiceInt<Organization
     			OrganizationContactDO contactRow = (OrganizationContactDO)contactsList.get(iter);
     
                //DataSet<Contact> row = contactsModel.createNewSet();
-               ContactRow row = new ContactRow();
+               ContactRow row = (ContactRow)contactsModel.createNewSet();
                Contact key = new Contact();
                key.orgId = contactRow.getId();
                key.addId = contactRow.getAddressDO().getId();

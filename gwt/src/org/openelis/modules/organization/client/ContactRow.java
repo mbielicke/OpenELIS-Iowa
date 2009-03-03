@@ -38,6 +38,24 @@ public class ContactRow extends DataSet<Contact> {
         add(email = new StringField());
     }
     
+    public ContactRow(ContactRow orig){
+        add(contactType = (DropDownField<Integer>)orig.contactType.clone());
+        add(name = (StringField)orig.name.clone());
+        add(multipleUnit = (StringField)orig.multipleUnit.clone());
+        add(streetAddress = (StringField)orig.streetAddress.clone());
+        add(city = (StringField)orig.city.clone());
+        add(state = (DropDownField<String>)orig.state.clone());
+        add(zipCode = (StringField)orig.zipCode.clone());
+        add(country = (DropDownField<String>)orig.country.clone());
+        add(workPhone = (StringField)orig.workPhone.clone());
+        add(homePhone = (StringField)orig.homePhone.clone());
+        add(cellPhone = (StringField)orig.cellPhone.clone());
+        add(faxPhone = (StringField)orig.faxPhone.clone());
+        add(email = (StringField)orig.email.clone());
+    }
     
+    public Object clone() {
+        return new ContactRow(this);
+    }
 
 }

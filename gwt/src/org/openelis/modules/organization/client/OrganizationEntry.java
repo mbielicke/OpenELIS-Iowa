@@ -42,6 +42,14 @@ public class OrganizationEntry implements AppModule {
                                    }
                                 }
         );
+        
+        ClassFactory.addClassFactory(new String[] {"ContactRow"},
+                               new ClassFactory.Factory() {
+                                   public Object newInstance(Object[] args) {
+                                       return new ContactRow();
+                                   }
+                                }
+        );
     }
 
     public String getModuleName() {

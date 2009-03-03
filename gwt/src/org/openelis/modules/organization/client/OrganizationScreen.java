@@ -40,6 +40,7 @@ import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.CollapsePanel;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.FormInt;
+import org.openelis.gwt.widget.ResultsTable;
 import org.openelis.gwt.widget.table.QueryTable;
 import org.openelis.gwt.widget.table.TableDropdown;
 import org.openelis.gwt.widget.table.TableWidget;
@@ -148,12 +149,12 @@ public class OrganizationScreen extends OpenELISScreenForm<OrganizationRPC,Organ
 
     public void afterDraw(boolean success) {
 
-        AToZTable atozTable;
+        ResultsTable atozTable;
         //
         // we are interested in in getting button actions in two places,
         // modelwidget and us.
         //
-        atozTable = (AToZTable)getWidget("azTable");
+        atozTable = (ResultsTable)getWidget("azTable");
         ButtonPanel bpanel = (ButtonPanel)getWidget("buttons");
         atozButtons = (ButtonPanel)getWidget("atozButtons");
         
