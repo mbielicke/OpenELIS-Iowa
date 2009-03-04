@@ -193,6 +193,7 @@ public class InventoryItemScreen extends OpenELISScreenForm<InventoryItemRPC, In
         commitUpdateChain.add(afterCommitUpdate);
         
         updateChain.add(0,checkModels);
+        updateChain.add(afterUpdate);
         fetchChain.add(0,checkModels);
         abortChain.add(0,checkModels);
         deleteChain.add(0,checkModels);
@@ -219,6 +220,7 @@ public class InventoryItemScreen extends OpenELISScreenForm<InventoryItemRPC, In
          public void onSuccess(Object result) {
             nameTextbox.setFocus(true);
 			idTextBox.enable(false);
+            componentsTable.model.enableAutoAdd(true);
          }
          
          public void onFailure(Throwable caught){
@@ -240,7 +242,7 @@ public class InventoryItemScreen extends OpenELISScreenForm<InventoryItemRPC, In
 	}
 	
 	public void update() {
-        componentsTable.model.enableAutoAdd(true);
+      
 		super.update();
 	}
 	
