@@ -209,8 +209,8 @@ public class DictionaryEntryPickerScreen extends OpenELISScreenForm<DictionaryEn
     
     public void onChange(Widget sender){
         if(sender == categoryDrop){
-           IntegerObject numObj = (IntegerObject)categoryDrop.getSelections().get(0).getKey();
-           categoryId = numObj.getValue();
+           Integer numObj = (Integer)categoryDrop.getSelections().get(0).getKey();
+           categoryId = numObj;
         }
     }  
     

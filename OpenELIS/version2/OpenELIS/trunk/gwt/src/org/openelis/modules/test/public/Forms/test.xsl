@@ -627,7 +627,7 @@ UIRF Software License are applicable instead of those above.
 													<check/>													
 												</editors>
 												<fields>
-													<dropdown key="{testPrep:getPrepTestId($tp)}" required="true"/>													
+													<dropdown type = "integer" key="{testPrep:getPrepTestId($tp)}" required="true"/>													
 													<check key="{testPrep:getIsOptional($tp)}"/>													
 												</fields>
 												<sorts>false,false</sorts>
@@ -882,10 +882,10 @@ UIRF Software License are applicable instead of those above.
 			</rpc>
 			<rpc key = "worksheet">
 			 <integer key="{testWrksht:getId($tws)}" required="false" type="integer"/>
-			 <dropdown key="{testWrksht:getFormatId($tws)}" required="true" type="integer"/>
+			 <dropdown key="{testWrksht:getFormatId($tws)}" required="false" type="integer"/>
 			 <dropdown key="{testWrksht:getScriptletId($tws)}" required="false" type="integer"/>
-			 <integer key="{testWrksht:getBatchCapacity($tws)}" required="true" type="integer"/>
-			 <integer key="{testWrksht:getTotalCapacity($tws)}" required="true" type="integer"/>
+			 <integer key="{testWrksht:getBatchCapacity($tws)}" required="false" type="integer"/>
+			 <integer key="{testWrksht:getTotalCapacity($tws)}" required="false" type="integer"/>
 		 	 <table key="worksheetTable"/>
 			</rpc>
 			<rpc key = "testAnalyte">
@@ -896,7 +896,7 @@ UIRF Software License are applicable instead of those above.
 		  <rpc key="query">
 			 <queryInteger key="{meta:getId($test)}"  type="integer"/>
 			 <queryString key="{meta:getName($test)}" />
-			 <dropdown key="{meta:getMethodId($test)}"  type="integer"/>
+			 <queryString key="{meta:getMethodId($test)}"/>
 			 <queryString key="{meta:getDescription($test)}"/>
 				<queryString key="{meta:getReportingDescription($test)}" />
 				<queryInteger key="{meta:getTimeTaMax($test)}" type="integer"/>
@@ -916,38 +916,38 @@ UIRF Software License are applicable instead of those above.
 				<dropdown key="{meta:getReportingMethodId($test)}" type="integer"/>
 				<queryInteger key="{meta:getReportingSequence($test)}" type="integer"/>
 				<dropdown key="{meta:getSortingMethodId($test)}" type="integer"/>
-				<dropdown key="{testTOS:getTypeOfSampleId($tos)}" type="integer"/>					
-				<dropdown key="{testTOS:getUnitOfMeasureId($tos)}" type="integer"/> 
-				<dropdown key="{testPrep:getPrepTestId($tp)}"  type="integer"/>	
-				<dropdown key="{testRef:getAddTestId($tref)}"  type="integer"/>
-				<dropdown key="{testRef:getTestAnalyteId($tref)}" type="integer"/>
-				<dropdown key="{testRef:getTestResultId($tref)}"  type="integer"/>
-				<dropdown key="{testRef:getFlagsId($tref)}"  type="integer"/>			
+				<dropdown key="{testTOS:getTypeOfSampleId($tos)}" />					
+				<dropdown key="{testTOS:getUnitOfMeasureId($tos)}" /> 
+				<dropdown key="{testPrep:getPrepTestId($tp)}" />	
+				<dropdown key="{testRef:getAddTestId($tref)}" />
+				<dropdown key="{testRef:getTestAnalyteId($tref)}"/>
+				<dropdown key="{testRef:getTestResultId($tref)}"/>
+				<dropdown key="{testRef:getFlagsId($tref)}"/>			
 				<queryCheck key="{testPrep:getIsOptional($tp)}" />	
 				<dropdown key="{testWrksht:getFormatId($tws)}"  type="integer"/>
 				<dropdown key="{testWrksht:getScriptletId($tws)}"  type="integer"/>
 				<queryInteger key="{testWrksht:getBatchCapacity($tws)}" type="integer"/>
 				<queryInteger key="{testWrksht:getTotalCapacity($tws)}" type="integer"/>				
 				<queryInteger key="{testWrkshtItm:getPosition($twsi)}" type="integer"/>
-				<dropdown key="{testWrkshtItm:getTypeId($twsi)}"  type="integer"/>				
+				<dropdown key="{testWrkshtItm:getTypeId($twsi)}"/>				
 				<queryString key="{testWrkshtItm:getQcName($twsi)}"/>	
-				<dropdown key="{testSection:getSectionId($ts)}" type="integer" />
-				<dropdown key="{testSection:getFlagId($ts)}" type="integer" />
-				<dropdown key="{testResult:getUnitOfMeasureId($tr)}" type="integer"/>
-				<dropdown key="{testResult:getTypeId($tr)}" type="integer"/>																										
+				<dropdown key="{testSection:getSectionId($ts)}" />
+				<dropdown key="{testSection:getFlagId($ts)}"  />
+				<dropdown key="{testResult:getUnitOfMeasureId($tr)}"/>
+				<dropdown key="{testResult:getTypeId($tr)}" />																										
 				<queryString key="{testResult:getValue($tr)}" required="false"/>		
 				<queryInteger key="{testResult:getSignificantDigits($tr)}"  type="integer" required="false"/>	
-				<dropdown key="{testResult:getFlagsId($tr)}" type="integer" required="false"/>	
-				<dropdown key="{testResult:getRoundingMethodId($tr)}" type="integer" required="false"/>	
+				<dropdown key="{testResult:getFlagsId($tr)}"  required="false"/>	
+				<dropdown key="{testResult:getRoundingMethodId($tr)}" required="false"/>	
 				<queryString key="{testResult:getQuantLimit($tr)}"  required="false"/>	
 				<queryString key="{testResult:getContLevel($tr)}"  required="false"/>
 				<queryString key="{testResult:getHazardLevel($tr)}" required="false"/>
-				<model key = "worksheetTable"/>
-				<model key = "sampleTypeTable"/>
-				<model key = "testReflexTable"/>
-				<model key = "testPrepTable"/>	
-				<model key = "sectionTable"/>
-				<model key = "testResultsTable"/>				
+				<table key = "worksheetTable"/>
+				<table key = "sampleTypeTable"/>
+				<table key = "testReflexTable"/>
+				<table key = "testPrepTable"/>	
+				<table key = "sectionTable"/>
+				<!-- <table key = "testResultsTable"/> -->				
 			</rpc>
 			<rpc key="queryByLetter">
 			 <queryString key="{meta:getName($test)}"/>				

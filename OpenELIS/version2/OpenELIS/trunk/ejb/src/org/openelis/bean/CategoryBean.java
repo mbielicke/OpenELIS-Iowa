@@ -502,7 +502,8 @@ public class CategoryBean implements CategoryRemote {
                 catIdQuery.setParameter("systemName", dictDO.getSystemName());
                 Integer catId = null;
                 try {
-                    catId = (Integer)catIdQuery.getResultList().get(0);
+                    if(catIdQuery.getResultList().size() > 0)
+                      catId = (Integer)catIdQuery.getResultList().get(0);
                 } catch (NoResultException ex) {
                     ex.printStackTrace();
                 } catch (Exception ex) {

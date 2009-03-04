@@ -350,14 +350,14 @@ public class TestBean implements TestRemote {
                         }
                         
                         if(analyteDO.getDelete() && analyteDO.getId() != null && !laterProcAnaList.contains(analyteDO)){
-                            query = manager.createNamedQuery("TestReflex.TestReflexesByTestAndTestAnalyte") ;
+                         /* query = manager.createNamedQuery("TestReflex.TestReflexesByTestAndTestAnalyte") ;
                             query.setParameter("testId", test.getId());
                             query.setParameter("testAnalyteId", analyte.getId());
                             List<TestReflex> refList = (List<TestReflex>)query.getResultList();
                             
                             for(int i = 0; i < refList.size(); i++) {
                                  manager.remove(refList.get(i));
-                            }
+                            } */
                             
                             manager.remove(analyte);                                 
                         }else if(!analyteDO.getDelete() && !laterProcAnaList.contains(analyteDO)){
@@ -423,15 +423,15 @@ public class TestBean implements TestRemote {
                             laterProcResList.add(resultDO);
                         }
                         
-                        if(resultDO.getDelete() && resultDO.getId() != null && !laterProcResList.contains(resultDO)){
-                           query = manager.createNamedQuery("TestReflex.TestReflexesByTestAndTestResult") ;
+                       if(resultDO.getDelete() && resultDO.getId() != null && !laterProcResList.contains(resultDO)){
+                        /* query = manager.createNamedQuery("TestReflex.TestReflexesByTestAndTestResult") ;
                            query.setParameter("testId", test.getId());
                            query.setParameter("testResultId", result.getId());
                            List<TestReflex> reflexList = (List<TestReflex>)query.getResultList();
                            
                            for(int i = 0; i < reflexList.size(); i++) {
                                 manager.remove(reflexList.get(i));
-                           }                           
+                           } */                           
                            manager.remove(result);   
                            
                         } else { 
@@ -1041,7 +1041,7 @@ public class TestBean implements TestRemote {
     private void validateTypeOfSample(List<Exception> exceptionList,List<TestTypeOfSampleDO> typeOfSampleDOList){        
             for(int i = 0; i < typeOfSampleDOList.size(); i++){
                 TestTypeOfSampleDO typeDO = typeOfSampleDOList.get(i);
-                if(typeDO.getTypeOfSampleId()==null){
+                if(!typeDO.getDelete() && typeDO.getTypeOfSampleId()==null){
                     exceptionList.add(new TableFieldErrorException("fieldRequiredException", i,
                          TestTypeOfSampleMetaMap.getTableName()+":"+TestMeta.getTestTypeOfSample().getTypeOfSampleId()));
                 }            
@@ -1053,7 +1053,8 @@ public class TestBean implements TestRemote {
             Integer blankId = new Integer(-1);
             int numReq = 0; 
             for(int i = 0; i < testPrepDOList.size(); i++) {
-                TestPrepDO prepDO = testPrepDOList.get(i);
+              TestPrepDO prepDO = testPrepDOList.get(i);
+              if(!prepDO.getDelete()) {
                 if(idIsBlank(prepDO.getPrepTestId(), blankId)) {
                     exceptionList.add(new TableFieldErrorException("fieldRequiredException", i,
                           TestPrepMetaMap.getTableName()+":"+TestMeta.getTestPrep().getPrepTestId()));
@@ -1073,13 +1074,14 @@ public class TestBean implements TestRemote {
                   numReq++;
                 } 
             }    
-                
+          }       
     }
     
     private void validateTestReflex(List<Exception> exceptionList,List<TestReflexDO> testReflexDOList){
         List<List<Integer>> idsList = new ArrayList<List<Integer>>();
         for(int i = 0; i < testReflexDOList.size(); i++){
-            TestReflexDO refDO = testReflexDOList.get(i);
+          TestReflexDO refDO = testReflexDOList.get(i);
+          if(!refDO.getDelete()) {
             boolean checkForDuplicate = false;
             List<Integer> ids = new ArrayList<Integer>();
             if(refDO.getAddTestId()==null) {
@@ -1116,7 +1118,7 @@ public class TestBean implements TestRemote {
                       TestReflexMetaMap.getTableName()+":"+TestMeta.getTestReflex().getAddTestId())); 
                  }
             }
-            
+         }  
         }       
       }
     
@@ -1179,6 +1181,7 @@ public class TestBean implements TestRemote {
             
         for(int i = 0; i < itemDOList.size(); i++) {
             itemDO = itemDOList.get(i);
+            if(!itemDO.getDelete()) { 
             position = itemDO.getPosition();
             checkPosition = true;
              
@@ -1234,6 +1237,7 @@ public class TestBean implements TestRemote {
               }  
             } 
          }
+        }       
     }
     
     private void validateTestAnalytes(List<Exception> exceptionList,List<TestAnalyteDO> analyteDOList){
