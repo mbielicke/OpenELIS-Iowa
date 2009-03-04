@@ -1625,8 +1625,7 @@ public class TestService implements AppScreenFormServiceInt<TestRPC,Integer>,
                for(int ctr = 0; ctr < itemList.size(); ctr++){
                 TreeDataItem chItem = itemList.get(ctr);   
                 TestAnalyteDO anaDO = getTestAnalyteDO(chItem,null, testId,0,true);
-                analyteDOList.add(anaDO);
-                                
+                analyteDOList.add(anaDO);                               
              }
             }
             else{              

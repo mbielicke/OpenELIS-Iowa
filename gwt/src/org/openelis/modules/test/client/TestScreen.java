@@ -255,21 +255,18 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm, Integer> i
                                0,
                                TestMeta.getTestTypeOfSample()
                                        .getTypeOfSampleId());
-        loadTableDropdownModel(q, 0, TestMeta.getTestTypeOfSample()
-                                             .getTypeOfSampleId());
+        loadTableDropdownModel(q, 0, TestMeta.getTestTypeOfSample().getTypeOfSampleId());
         loadTableDropdownModel(sampleTypeWidget,
                                1,
                                TestMeta.getTestTypeOfSample()
                                        .getUnitOfMeasureId());
-        loadTableDropdownModel(q, 1, TestMeta.getTestTypeOfSample()
-                                             .getUnitOfMeasureId());
+        loadTableDropdownModel(q, 1, TestMeta.getTestTypeOfSample().getUnitOfMeasureId());
         sampleTypeWidget.addTableWidgetListener(this);
 
         s = (ScreenTableWidget)widgets.get("testPrepTable");
         prepTestWidget = (TableWidget)s.getWidget();
         q = (QueryTable)s.getQueryWidget().getWidget();
-        loadTableDropdownModel(prepTestWidget, 0, TestMeta.getTestPrep()
-                                                          .getPrepTestId());
+        loadTableDropdownModel(prepTestWidget, 0, TestMeta.getTestPrep().getPrepTestId());
         loadTableDropdownModel(q, 0, TestMeta.getTestPrep().getPrepTestId());
 
         s = (ScreenTableWidget)widgets.get("testReflexTable");
@@ -290,8 +287,7 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm, Integer> i
         q = (QueryTable)s.getQueryWidget().getWidget();
         loadTableDropdownModel(wsItemWidget, 1, TestMeta.getTestWorksheetItem()
                                                         .getTypeId());
-        loadTableDropdownModel(q, 1, TestMeta.getTestWorksheetItem()
-                                             .getTypeId());
+        loadTableDropdownModel(q, 1, TestMeta.getTestWorksheetItem().getTypeId());
 
         s = (ScreenTableWidget)widgets.get("sectionTable");
         sectionWidget = (TableWidget)s.getWidget();
@@ -311,14 +307,13 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm, Integer> i
 
         loadTableDropdownModel(resultWidget, 1, TestMeta.getTestResult()
                                                         .getTypeId());
-        loadTableDropdownModel(q, 1, TestMeta.getTestResult().getTypeId());
+        //loadTableDropdownModel(q, 1, TestMeta.getTestResult().getTypeId());
         loadTableDropdownModel(resultWidget, 6, TestMeta.getTestResult()
                                                         .getFlagsId());
-        loadTableDropdownModel(q, 6, TestMeta.getTestResult().getFlagsId());
+        //loadTableDropdownModel(q, 6, TestMeta.getTestResult().getFlagsId());
         loadTableDropdownModel(resultWidget, 8, TestMeta.getTestResult()
                                                         .getRoundingMethodId());
-        loadTableDropdownModel(q, 8, TestMeta.getTestResult()
-                                             .getRoundingMethodId());
+        //loadTableDropdownModel(q, 8, TestMeta.getTestResult().getRoundingMethodId());
 
         //
         // set dropdown models for column 1 and 3
@@ -1060,8 +1055,7 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm, Integer> i
                                                         DataSet set = (DataSet)resultWidget.model.getData()
                                                                                                  .get(currRow);
                                                         DataMap data = (DataMap)set.getData();
-                                                        if (data == null) {
-                                                            Window.alert("data is null");
+                                                        if (data == null) {                                                            
                                                             data = new DataMap();
                                                             set.setData(data);
                                                         }
@@ -1473,13 +1467,14 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm, Integer> i
             row = (DataSet<Field>)resultWidget.model.createRow();
             id = idList.get(iter);
             entry = deList.get(iter);
-            row.get(0).setValue(set);
-            row.get(1).setValue(entry);
+            row.get(1).setValue(set);
+            row.get(2).setValue(entry);
             data = new DataMap();
             row.setData(data);
             data.put("id", new IntegerField(getNextTempResId()));
-            data.put("value", new IntegerObject(id));
+            data.put("value", new IntegerObject(id));            
             resultWidget.model.addRow(row);
+            checkAndAddNewResultValue(entry, row);
         }
         resultWidget.model.refresh();
     }
@@ -1555,7 +1550,7 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm, Integer> i
                 drag.parent.setData(deletions);
             }
             ((TreeDataModel)drag.parent.getData()).add(drag);
-            widget.model.unlink(drag);
+            //widget.model.unlink(drag);
         }
 
         //
@@ -1566,7 +1561,7 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm, Integer> i
         //
         if (dropTarget.parent != null) {
             if (drag.parent == null) {
-                widget.model.unlink(drag);
+                //widget.model.unlink(drag);
                 //widget.model.getData().delete(drag);
             }
             chindex = dropTarget.childIndex;
@@ -1579,7 +1574,7 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm, Integer> i
             //
         } else {
             if (drag.parent == null) {
-                widget.model.unlink(drag);
+                //widget.model.unlink(drag);
                 //widget.model.getData().delete(drag);
             }
 
@@ -2067,7 +2062,7 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm, Integer> i
         if (row > -1) {
             if (id != null && id != -1) {
                 numRes = (IntegerObject)unitIdNumResMap.get(id.toString());
-                if (numRes.getValue() > 0 && !(getNumRowsHavingUnit(id) >= 1)) {
+                if (numRes != null && numRes.getValue() > 0 && !(getNumRowsHavingUnit(id) >= 1)) {
                     Window.alert(consts.get("cantChangeUnit"));
                     ufield.setValue(new DataSet<Integer>(id));
                     sampleTypeWidget.model.refresh();
@@ -2166,13 +2161,12 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm, Integer> i
     }
 
     private void onGroupAnalytesButtonClicked() {
-        
+        TreeDataItem cloneItem = null;
         ArrayList<TreeDataItem> items = analyteTreeController.model.getSelections();
         if (items.size() < 2) {
             Window.alert(consts.get("atleastTwoAnalytes"));
             return;
-        }
-        
+        }        
         ArrayList<Integer> selectedRowIndexes = (ArrayList<Integer>)analyteTreeController.model.getSelectedRowList().clone();
         Collections.sort(selectedRowIndexes);
         
@@ -2195,11 +2189,13 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm, Integer> i
                 Window.alert(consts.get("analyteAlreadyGrouped"));
                 return;
             }
-            groupItem.addItem((TreeDataItem)item.clone());
+            cloneItem = (TreeDataItem)item.clone();
+            cloneItem.setData(item.getData());
+            item.setData(null);
+            groupItem.addItem(cloneItem);
         }
         
         analyteTreeController.model.deleteRows(analyteTreeController.model.getSelectedRowList());
-        analyteTreeController.model.addRow(0,groupItem);
         
         if (analyteTreeController.model.getData().size() > 0) {            
             if (selectedRowIndexes.get(0) < analyteTreeController.model.getData()
@@ -2222,7 +2218,7 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm, Integer> i
 
         List<TreeDataItem> chItems;
         int index;
-        ArrayList<Integer> selRows = analyteTreeController.model.selectedRows;
+        ArrayList<Integer> selRows = (ArrayList<Integer>)analyteTreeController.model.getSelectedRowList().clone();
 
         if (selRows.size() > 0) {
             for (int iter = 0; iter < selRows.size(); iter++) {
@@ -2234,11 +2230,12 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm, Integer> i
                     for (int i = 0; i < chItems.size(); i++) {
                         newItem = (TreeDataItem)chItems.get(i).clone();
                         newItem.parent = null;
-                        newItem.setData(null);
-                        analyteTreeController.model.addRow(index, newItem);
+                        newItem.setData(chItems.get(i).getData());
+                        chItems.get(i).setData(null);
+                        analyteTreeController.model.addRow(index+i, newItem);
                     }
 
-                   // analyteTreeController.model.getData().delete(item);
+                    analyteTreeController.model.deleteRow(index);
                 }
             }
             analyteTreeController.model.refresh();
@@ -2266,7 +2263,7 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm, Integer> i
             } else {
                 analyteTreeController.model.deleteRow(index);
             }
-            analyteTreeController.model.unlink(item);
+            //analyteTreeController.model.unlink(item);
         }
 
         if (item.getData() != null) {
@@ -2466,12 +2463,6 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm, Integer> i
     private DataModel getDropdownModelForRsltGrp(int rsltGrp) {
         DataModel rmodel = null;
         DataModel ddmodel = new DataModel();
-
-        if (resultPanel.getTabBar().getSelectedTab() != rsltGrp - 1)
-            rmodel = (DataModel<DataSet>)resultModelCollection.get(rsltGrp - 1);
-        else
-            rmodel = resultWidget.model.getData();
-
         DataSet<Field> rset = null;
         DataSet ddset = null;
 
@@ -2480,6 +2471,13 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm, Integer> i
         IntegerField field = null;
 
         DataSet<Integer> blankset = new DataSet<Integer>(-1,new StringObject(""));
+
+        if (resultPanel.getTabBar().getSelectedTab() != rsltGrp - 1)
+            rmodel = (DataModel<DataSet>)resultModelCollection.get(rsltGrp - 1);
+        else
+            rmodel = resultWidget.model.getData();
+
+
         ddmodel.add(blankset);
 
         for (int i = 0; i < rmodel.size(); i++) {
