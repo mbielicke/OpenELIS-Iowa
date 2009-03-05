@@ -1,28 +1,4 @@
-/** Exhibit A - UIRF Open-source Based Public Software License.
-* 
-* The contents of this file are subject to the UIRF Open-source Based
-* Public Software License(the "License"); you may not use this file except
-* in compliance with the License. You may obtain a copy of the License at
-* openelis.uhl.uiowa.edu
-* 
-* Software distributed under the License is distributed on an "AS IS"
-* basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
-* License for the specific language governing rights and limitations
-* under the License.
-* 
-* The Original Code is OpenELIS code.
-* 
-* The Initial Developer of the Original Code is The University of Iowa.
-* Portions created by The University of Iowa are Copyright 2006-2008. All
-* Rights Reserved.
-* 
-* Contributor(s): ______________________________________.
-* 
-* Alternatively, the contents of this file marked
-* "Separately-Licensed" may be used under the terms of a UIRF Software
-* license ("UIRF Software License"), in which case the provisions of a
-* UIRF Software License are applicable instead of those above. 
-*/
+
 package org.openelis.entity;
 
 /**
@@ -40,14 +16,10 @@ import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
-
-@NamedQueries({@NamedQuery(name = "AuxField.AuxFieldByAnalyteId", query = "select a.id from AuxField a where a.analyteId = :id")})
 
 @Entity
 @Table(name="aux_field")
@@ -65,8 +37,17 @@ public class AuxField implements Auditable, Cloneable {
   @Column(name="analyte_id")
   private Integer analyteId;             
 
+  @Column(name="description")
+  private String description;             
+
   @Column(name="reference_table_id")
   private Integer referenceTableId;             
+
+  @Column(name="method_id")
+  private Integer methodId;             
+
+  @Column(name="unit_of_measure_id")
+  private Integer unitOfMeasureId;             
 
   @Column(name="is_required")
   private String isRequired;             
@@ -112,6 +93,15 @@ public class AuxField implements Auditable, Cloneable {
       this.analyteId = analyteId;
   }
 
+  public String getDescription() {
+    return description;
+  }
+  public void setDescription(String description) {
+    if((description == null && this.description != null) || 
+       (description != null && !description.equals(this.description)))
+      this.description = description;
+  }
+
   public Integer getReferenceTableId() {
     return referenceTableId;
   }
@@ -119,6 +109,24 @@ public class AuxField implements Auditable, Cloneable {
     if((referenceTableId == null && this.referenceTableId != null) || 
        (referenceTableId != null && !referenceTableId.equals(this.referenceTableId)))
       this.referenceTableId = referenceTableId;
+  }
+
+  public Integer getMethodId() {
+    return methodId;
+  }
+  public void setMethodId(Integer methodId) {
+    if((methodId == null && this.methodId != null) || 
+       (methodId != null && !methodId.equals(this.methodId)))
+      this.methodId = methodId;
+  }
+
+  public Integer getUnitOfMeasureId() {
+    return unitOfMeasureId;
+  }
+  public void setUnitOfMeasureId(Integer unitOfMeasureId) {
+    if((unitOfMeasureId == null && this.unitOfMeasureId != null) || 
+       (unitOfMeasureId != null && !unitOfMeasureId.equals(this.unitOfMeasureId)))
+      this.unitOfMeasureId = unitOfMeasureId;
   }
 
   public String getIsRequired() {
@@ -171,11 +179,17 @@ public class AuxField implements Auditable, Cloneable {
       
       AuditUtil.getChangeXML(id,original.id,doc,"id");
 
-      AuditUtil.getChangeXML(sortOrder,original.sortOrder,doc,"sort_order_id");
+      AuditUtil.getChangeXML(sortOrder,original.sortOrder,doc,"sort_order");
 
       AuditUtil.getChangeXML(analyteId,original.analyteId,doc,"analyte_id");
 
+      AuditUtil.getChangeXML(description,original.description,doc,"description");
+
       AuditUtil.getChangeXML(referenceTableId,original.referenceTableId,doc,"reference_table_id");
+
+      AuditUtil.getChangeXML(methodId,original.methodId,doc,"method_id");
+
+      AuditUtil.getChangeXML(unitOfMeasureId,original.unitOfMeasureId,doc,"unit_of_measure_id");
 
       AuditUtil.getChangeXML(isRequired,original.isRequired,doc,"is_required");
 
