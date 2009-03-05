@@ -1,36 +1,14 @@
-/** Exhibit A - UIRF Open-source Based Public Software License.
-* 
-* The contents of this file are subject to the UIRF Open-source Based
-* Public Software License(the "License"); you may not use this file except
-* in compliance with the License. You may obtain a copy of the License at
-* openelis.uhl.uiowa.edu
-* 
-* Software distributed under the License is distributed on an "AS IS"
-* basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
-* License for the specific language governing rights and limitations
-* under the License.
-* 
-* The Original Code is OpenELIS code.
-* 
-* The Initial Developer of the Original Code is The University of Iowa.
-* Portions created by The University of Iowa are Copyright 2006-2008. All
-* Rights Reserved.
-* 
-* Contributor(s): ______________________________________.
-* 
-* Alternatively, the contents of this file marked
-* "Separately-Licensed" may be used under the terms of a UIRF Software
-* license ("UIRF Software License"), in which case the provisions of a
-* UIRF Software License are applicable instead of those above. 
-*/
+
 package org.openelis.meta;
 
 /**
   * AuxField META Data
   */
 
-import java.util.HashSet;
+
 import org.openelis.gwt.common.Meta;
+
+import java.util.HashSet;
 
 public class AuxFieldMeta implements Meta {
   	private String path = "";
@@ -40,14 +18,17 @@ public class AuxFieldMeta implements Meta {
               ID					="id",
               SORT_ORDER					="sortOrder",
               ANALYTE_ID					="analyteId",
+              DESCRIPTION					="description",
               REFERENCE_TABLE_ID					="referenceTableId",
+              METHOD_ID					="methodId",
+              UNIT_OF_MEASURE_ID					="unitOfMeasureId",
               IS_REQUIRED					="isRequired",
               IS_ACTIVE					="isActive",
               IS_REPORTABLE					="isReportable",
               SCRIPTLET_ID					="scriptletId";
 
   	private static final String[] columnNames = {
-  	  ID,SORT_ORDER,ANALYTE_ID,REFERENCE_TABLE_ID,IS_REQUIRED,IS_ACTIVE,IS_REPORTABLE,SCRIPTLET_ID};
+  	  ID,SORT_ORDER,ANALYTE_ID,DESCRIPTION,REFERENCE_TABLE_ID,METHOD_ID,UNIT_OF_MEASURE_ID,IS_REQUIRED,IS_ACTIVE,IS_REPORTABLE,SCRIPTLET_ID};
   	  
 	private HashSet<String> columnHashList;
     
@@ -92,8 +73,20 @@ public class AuxFieldMeta implements Meta {
         return path + ANALYTE_ID;
     } 
 
+    public String getDescription() {
+        return path + DESCRIPTION;
+    } 
+
     public String getReferenceTableId() {
         return path + REFERENCE_TABLE_ID;
+    } 
+
+    public String getMethodId() {
+        return path + METHOD_ID;
+    } 
+
+    public String getUnitOfMeasureId() {
+        return path + UNIT_OF_MEASURE_ID;
     } 
 
     public String getIsRequired() {
