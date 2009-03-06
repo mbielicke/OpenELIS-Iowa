@@ -52,9 +52,7 @@ import org.openelis.utils.Auditable;
 
 @NamedQueries({@NamedQuery(name = "TestWorksheet.TestWorksheetByTestId",query = "from TestWorksheet tw where tw.testId = :testId"),
                @NamedQuery(name = "TestWorksheet.TestWorksheetDOByTestId",query = "select distinct new org.openelis.domain.TestWorksheetDO(tw.id,tw.testId,tw.batchCapacity," +
-                "tw.totalCapacity, tw.formatId, tw.scriptletId) from TestWorksheet tw where tw.testId = :testId"),
-               @NamedQuery(name = "TestWorksheet.TestWorksheetItemsByTestId",query = "select distinct new org.openelis.domain.TestWorksheetItemDO(twi.id,twi.testWorksheetId," +
-                "twi.position, twi.typeId,twi.qcName) from TestWorksheet tw left join tw.testWorksheetItem twi where tw.testId = :testId order by twi.position")})
+                "tw.totalCapacity, tw.formatId, tw.scriptletId) from TestWorksheet tw where tw.testId = :testId")})
 
 
 @Entity

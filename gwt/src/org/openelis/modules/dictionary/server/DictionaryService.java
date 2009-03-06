@@ -185,15 +185,14 @@ public class DictionaryService implements AppScreenFormServiceInt<DictionaryRPC,
             //we need to get the keys and look them up in the resource bundle for internationalization
             setRpcErrors(exceptionList,rpc.form);   
             return rpc;
-        } 
-        
+        }         
         
        try{
            remote.updateCategory(categoryDO, dictDOList);          
        }catch(Exception ex){
            if(ex instanceof EntityLockedException)
-               throw new RPCException(ex.getMessage());
-           
+               throw new RPCException(ex.getMessage());           
+           ex.printStackTrace();
            exceptionList = new ArrayList<Exception>();
            exceptionList.add(ex);
            

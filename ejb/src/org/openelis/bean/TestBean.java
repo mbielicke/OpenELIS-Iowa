@@ -54,6 +54,7 @@ import org.openelis.domain.TestReflexDO;
 import org.openelis.domain.TestResultDO;
 import org.openelis.domain.TestSectionDO;
 import org.openelis.domain.TestTypeOfSampleDO;
+import org.openelis.domain.TestWorksheetAnalyteDO;
 import org.openelis.domain.TestWorksheetDO;
 import org.openelis.domain.TestWorksheetItemDO;
 import org.openelis.entity.Test;
@@ -64,6 +65,7 @@ import org.openelis.entity.TestResult;
 import org.openelis.entity.TestSection;
 import org.openelis.entity.TestTypeOfSample;
 import org.openelis.entity.TestWorksheet;
+import org.openelis.entity.TestWorksheetAnalyte;
 import org.openelis.entity.TestWorksheetItem;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
@@ -143,6 +145,7 @@ public class TestBean implements TestRemote {
                               List<TestReflexDO> testReflexDOList,
                               TestWorksheetDO worksheetDO,
                               List<TestWorksheetItemDO> itemDOList,
+                              List<TestWorksheetAnalyteDO> twsaDOList,
                               List<TestAnalyteDO> analyteDOList,
                               List<TestSectionDO> sectionDOList,
                               List<TestResultDO> resultDOList) throws Exception {
@@ -259,7 +262,7 @@ public class TestBean implements TestRemote {
                               }
                               if(typeOfSampleDO.getDelete() && typeOfSampleDO.getId() != null){                           
                                   manager.remove(typeOfSample);                                                     
-                              }else{                                
+                              }else{                                     
                                 typeOfSample.setTestId(test.getId());
                                 typeOfSample.setTypeOfSampleId(typeOfSampleDO.getTypeOfSampleId());
                                 typeOfSample.setUnitOfMeasureId(typeOfSampleDO.getUnitOfMeasureId());
@@ -315,7 +318,8 @@ public class TestBean implements TestRemote {
                         }
                         if(itemDO.getDelete() && itemDO.getId() != null){                           
                             manager.remove(testWorksheetItem);                                                     
-                        }else{                                
+                        }else {                                
+                           if(!itemDO.getDelete()) { 
                             testWorksheetItem.setPosition(itemDO.getPosition());
                             testWorksheetItem.setQcName(itemDO.getQcName());
                             testWorksheetItem.setTestWorksheetId(testWorksheet.getId());
@@ -325,7 +329,42 @@ public class TestBean implements TestRemote {
                             manager.persist(testWorksheetItem);
                         }
                      }
+                    }    
                    }
+                    
+                }
+                
+                if(twsaDOList != null) {
+                    exceptionList = new ArrayList<Exception>();
+                    validateTestWorksheetAnalytes(exceptionList, twsaDOList);
+                    
+                    if(exceptionList.size() > 0){
+                        throw (RPCException)exceptionList.get(0);
+                    }
+                    
+                    for(TestWorksheetAnalyteDO twsaDO : twsaDOList){  
+                      TestWorksheetAnalyte twsa = null;  
+                      if(twsaDO.getId() == null){
+                         twsa = new TestWorksheetAnalyte();
+                      } else {
+                         twsa = manager.find(TestWorksheetAnalyte.class,twsaDO.getId()); 
+                      } 
+                      
+                      if(twsaDO.getDelete() && twsaDO.getId() != null){                           
+                          manager.remove(twsa);                                                     
+                      }else { 
+                         if(!twsaDO.getDelete()) { 
+                          twsa.setFlagId(twsaDO.getFlagId());                          
+                          twsa.setTestId(test.getId());
+                          twsa.setAnalyteId(twsaDO.getAnalyteId());
+                          twsa.setRepeat(twsaDO.getRepeat());
+                          
+                          if(twsa.getId() == null){
+                              manager.persist(twsa);
+                          }
+                       }
+                      }
+                    }
                     
                 }
                 
@@ -550,6 +589,12 @@ public class TestBean implements TestRemote {
     }
            
 
+    private void validateTestWorksheetAnalytes(List<Exception> exceptionList,
+                                               List<TestWorksheetAnalyteDO> twsaDOList) {
+        // TODO Auto-generated method stub
+        
+    }
+
     public TestDetailsDO getTestDetails(Integer testId) {
         Query query = manager.createNamedQuery("Test.TestDetails");
         query.setParameter("id", testId);
@@ -679,10 +724,29 @@ public class TestBean implements TestRemote {
         return worksheetDO;         
     }
 
-    public List<TestWorksheetItemDO> getTestWorksheetItems(Integer testId) {
-        Query query = manager.createNamedQuery("TestWorksheet.TestWorksheetItemsByTestId");
-        query.setParameter("testId", testId);
+    public List<TestWorksheetItemDO> getTestWorksheetItems(Integer worksheetId) {
+        Query query = manager.createNamedQuery("TestWorksheetItem.TestWorksheetItemsByTestWSId");
+        query.setParameter("testWorksheetId", worksheetId);
         List<TestWorksheetItemDO> list = query.getResultList();
+        return list;
+    }   
+    
+    public List<TestWorksheetAnalyteDO> getTestWorksheetAnalytes(Integer testId) {
+        Query query = manager.createNamedQuery("TestWorksheetAnalyte.TestWorksheetAnalyteDOByTestId");
+        query.setParameter("testId", testId);
+        List<TestWorksheetAnalyteDO> list = query.getResultList();
+        return list;
+    }
+    
+    public List<IdNameDO> getTestAnalytesNotAddedToWorksheet(Integer testId) {
+        Query query = manager.createNamedQuery("TestAnalyte.TestAnalytesNotAddedToWorksheet");
+        query.setParameter("testId", testId);
+        List<IdNameDO> list = null;
+        try {
+         list = query.getResultList();
+        }catch (Exception ex) {
+            ex.printStackTrace();
+        } 
         return list;
     }
     
@@ -898,6 +962,7 @@ public class TestBean implements TestRemote {
                                List<TestReflexDO> testReflexDOList,
                                TestWorksheetDO worksheetDO,
                                List<TestWorksheetItemDO> itemDOList,
+                               List<TestWorksheetAnalyteDO> twsaDOList,
                                List<TestAnalyteDO> analyteDOList,
                                List<TestSectionDO> sectionDOList,
                                List<TestResultDO> resultDOList) {
@@ -929,6 +994,7 @@ public class TestBean implements TestRemote {
                                   List<TestReflexDO> testReflexDOList,
                                   TestWorksheetDO worksheetDO,
                                   List<TestWorksheetItemDO> itemDOList,
+                                  List<TestWorksheetAnalyteDO> twsaDOList,
                                   List<TestAnalyteDO> analyteDOList,
                                   List<TestSectionDO> sectionDOList,
                                   List<TestResultDO> resultDOList) {
@@ -1157,10 +1223,8 @@ public class TestBean implements TestRemote {
                 exceptionList.add(new FieldErrorException("totalCapacityMultipleException",
                  "worksheet:" + TestMeta.getTestWorksheet().getTotalCapacity()));
             }
-        }
-        
-        
-    }
+        }                
+    }    
     
     private void validateTestWorksheetItems(List<Exception> exceptionList,
                                            List<TestWorksheetItemDO> itemDOList,
@@ -1343,8 +1407,7 @@ public class TestBean implements TestRemote {
                        unitNumMaxMap.put(-1, cnMax);  
                    } else {
                        unitNumMaxMap.put(unit, cnMax);
-                   }
-                                     
+                   }                                     
                    
                  } catch (NumberFormatException ex) {
                      exceptionList.add(new TableFieldErrorException("illegalNumericFormatException", i,

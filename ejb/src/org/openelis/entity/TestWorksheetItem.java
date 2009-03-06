@@ -38,10 +38,14 @@ import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
+
+@NamedQuery(name = "TestWorksheetItem.TestWorksheetItemsByTestWSId",query = "select distinct new org.openelis.domain.TestWorksheetItemDO(twi.id,twi.testWorksheetId," +
+                   "twi.position, twi.typeId,twi.qcName) from TestWorksheetItem twi where twi.testWorksheetId = :testWorksheetId order by twi.position")
 
 @Entity
 @Table(name="test_worksheet_item")
