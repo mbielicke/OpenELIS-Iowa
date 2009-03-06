@@ -121,9 +121,7 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm, Integer> i
 
     private TableWidget reflexTestWidget, prepTestWidget,
                     wsItemWidget, sampleTypeWidget, sectionWidget,
-                    resultWidget;
-
-    private TableField reflexTableField;
+                    resultWidget,wsAnalyteWidget;
 
     private DataMap resultDropdownModelMap, resGroupAnalyteIdMap,
                     unitIdNumResMap;
@@ -308,13 +306,15 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm, Integer> i
         loadTableDropdownModel(resultWidget, 1, TestMeta.getTestResult()
                                                         .getTypeId());
         //loadTableDropdownModel(q, 1, TestMeta.getTestResult().getTypeId());
-        loadTableDropdownModel(resultWidget, 6, TestMeta.getTestResult()
-                                                        .getFlagsId());
-        //loadTableDropdownModel(q, 6, TestMeta.getTestResult().getFlagsId());
+        //loadTableDropdownModel(resultWidget, 6, TestMeta.getTestResult().getFlagsId());
+        loadTableDropdownModel(q, 6, TestMeta.getTestResult().getFlagsId());
         loadTableDropdownModel(resultWidget, 8, TestMeta.getTestResult()
                                                         .getRoundingMethodId());
         //loadTableDropdownModel(q, 8, TestMeta.getTestResult().getRoundingMethodId());
 
+        s = (ScreenTableWidget)widgets.get("worksheetAnalyteTable");
+        wsAnalyteWidget = (TableWidget)s.getWidget(); 
+            
         //
         // set dropdown models for column 1 and 3
         //               
@@ -348,18 +348,14 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm, Integer> i
         analyteTree.enable(true);
 
         //
-        // Below, each TableField or TreeField from the rpc is set the DataModel
-        // of the TableWidget or TreeWidget
-        // that it represents. This is done in order to make sure that the
-        // defaultSet
-        // variable in default model of the field is iniliazed and is not null,
-        // so that when the first time fetch is done for that field,on the
-        // server side
-        // when a new DataSet is to created from the model in the field for
-        // creating a
-        // new row in the table on the screen, there isn't a
-        // NullPointerException,
-        // as creating a new dataset from the model involves the use of
+        // Below, each TreeField or TableField from the rpc 
+        // is assigned the data model of the TreeWidget or TableWidget that it represents. 
+        // This is done in order to make sure that the  defaultSet
+        // variable in the default data model of the field is initialiazed and is not null.
+        // So that when the first time data is fetched for that field and on the
+        // server side a new DataSet is created from the model in the field to
+        // represent a new row in the table on the screen, a NullPointerException is not thrown.
+        // As, creating a new dataset from the model involves the use of the
         // defaultSet for that model.
         //
         ((Form)rpc.form.getField("sampleType")).setFieldValue("sampleTypeTable",
@@ -367,15 +363,19 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm, Integer> i
 
         ((Form)rpc.form.getField("worksheet")).setFieldValue("worksheetTable",
                                                              wsItemWidget.model.getData());
+        
+        ((Form)rpc.form.getField("worksheet")).setFieldValue("worksheetAnalyteTable",
+                                                             wsAnalyteWidget.model.getData());
 
         ((Form)rpc.form.getField("prepAndReflex")).setFieldValue("testPrepTable",
                                                                  prepTestWidget.model.getData());
 
-        reflexTableField = (TableField)((Form)rpc.form.getField("prepAndReflex")).getField("testReflexTable");
-        reflexTableField.setValue(reflexTestWidget.model.getData());
+        ((Form)rpc.form.getField("prepAndReflex")).setFieldValue("testReflexTable",
+                                                                 reflexTestWidget.model.getData());        
 
         ((Form)rpc.form.getField("details")).setFieldValue("sectionTable",
                                                            sectionWidget.model.getData());
+        
 
         analyteRPC = (TestAnalyteForm)(rpc.form.getField("testAnalyte"));
 
@@ -586,11 +586,8 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm, Integer> i
 
     protected AsyncCallback<TestRPC> commitUpdateCallback = new AsyncCallback<TestRPC>() {
         public void onSuccess(TestRPC result) {
-            // CollectionField cf = null;
             if (rpc.form.status == Form.Status.invalid) {
                 analyteRPC = (TestAnalyteForm)(rpc.form.getField("testAnalyte"));
-                // cf =
-                // (CollectionField)(analyteRPC.getField("resultModelCollection"));
 
                 if (analyteRPC.resultModelCollection != null)
                     resultModelCollection = analyteRPC.resultModelCollection;
@@ -1400,6 +1397,8 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm, Integer> i
                 testAnalyteDropdownModel.add(ddset);
                 ((TableDropdown)reflexTestWidget.columns.get(1)
                                                         .getColumnWidget()).setModel(testAnalyteDropdownModel);
+                
+                addWorksheetAnalyte((Integer)field.getSelectedKey(),selText);
             }
 
         } else if (col == 1) {
@@ -2243,16 +2242,17 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm, Integer> i
     }
 
     private void onDeleteTreeItemButtonClicked() {
-        int[] selectedRowIndexes = analyteTreeController.model.getSelectedRowIndexes();
+        List<Integer> selectedRowIndexes = (ArrayList<Integer>)analyteTreeController.model.getSelectedRowList().clone();
         int index = 0;
         TreeDataItem item = null;
         TreeDataItem parent = null;
         TreeDataModel model;
-        IntegerObject field = null;
+        IntegerObject idField = null;
+        Integer anaId = null;
 
-        for (int iter = 0; iter < selectedRowIndexes.length; iter++) {
-            index = selectedRowIndexes[iter];
-            item = analyteTreeController.model.getRow(index);
+        for (int iter = 0; iter < selectedRowIndexes.size(); iter++) {
+            index = selectedRowIndexes.get(iter);
+            item = (TreeDataItem)analyteTreeController.model.getRow(index).clone();
             if (item.parent != null) {
                 parent = item.parent;
                 if (parent.getData() == null) {
@@ -2260,22 +2260,23 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm, Integer> i
                     parent.setData(model);
                 }
                 ((TreeDataModel)parent.getData()).add(item);
+                analyteTreeController.model.deleteRow(index);
             } else {
                 analyteTreeController.model.deleteRow(index);
             }
-            //analyteTreeController.model.unlink(item);
-        }
-
+        
         if (item.getData() != null) {
-            field = (IntegerObject)((DataMap)item.getData()).get("id");
-            if (field != null)
+            idField = (IntegerObject)((DataMap)item.getData()).get("id");
+            if (idField != null)
                 setErrorToReflexFields(consts.get("analyteDeleted"),
-                                       field.getValue(),
-                                       1);
-            testAnalyteDropdownModel.getByKey(field).enabled = false;
+                                       idField.getValue(),1);
+            testAnalyteDropdownModel.getByKey(idField).enabled = false;
             ((TableDropdown)reflexTestWidget.columns.get(1).getColumnWidget()).setModel(testAnalyteDropdownModel);
+           
+            anaId = (Integer)((DropDownField)item.get(0)).getSelectedKey();
+            deleteWorksheetAnalytes(anaId);
         }
-
+      }  
         analyteTreeController.model.refresh();
     }
     
@@ -2718,4 +2719,29 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm, Integer> i
        return true;
     }
 
+    private void deleteWorksheetAnalytes(Integer analyteId) {
+        DataModel model = wsAnalyteWidget.model.getData();
+        DataSet set = null;
+        DataMap data = null;
+        IntegerField anaId = null;
+        for(int iter = 0; iter < model.size(); iter++) {
+           set = (DataSet)model.get(iter);
+           data = (DataMap)set.getData();
+           if(data != null) 
+              anaId = (IntegerField)data.get("analyteId"); 
+           if(anaId != null && analyteId.equals(anaId.getValue()))
+              model.delete(iter); 
+        }        
+        wsAnalyteWidget.model.refresh();        
+    } 
+    
+    private void addWorksheetAnalyte(Integer analyteId,String analyteName) {
+        DataModel model = wsAnalyteWidget.model.getData();
+        DataSet set = model.createNewSet();
+        DataMap data = new DataMap();
+        data.put("analyteId", new IntegerField(analyteId));
+        set.get(0).setValue(analyteName);    
+        model.add(set);        
+        wsAnalyteWidget.model.refresh();        
+    }
 }

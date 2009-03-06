@@ -34,6 +34,7 @@ UIRF Software License are applicable instead of those above.
                 xmlns:testRef="xalan://org.openelis.metamap.TestReflexMetaMap" 
                 xmlns:testWrksht="xalan://org.openelis.metamap.TestWorksheetMetaMap"  
                 xmlns:testWrkshtItm="xalan://org.openelis.metamap.TestWorksheetItemMetaMap"
+                xmlns:testWrkshtAna="xalan://org.openelis.metamap.TestWorksheetAnalyteMetaMap"
                 xmlns:testAnalyte="xalan://org.openelis.metamap.TestAnalyteMetaMap" 
                 xmlns:testSection="xalan://org.openelis.metamap.TestSectionMetaMap"
                 xmlns:testResult="xalan://org.openelis.metamap.TestResultMetaMap"                       
@@ -64,6 +65,9 @@ UIRF Software License are applicable instead of those above.
 	<xalan:component prefix="testWrkshtItm">
 		<xalan:script lang="javaclass" src="xalan://org.openelis.metamap.TestWorksheetItemMetaMap"/>
 	</xalan:component>
+	<xalan:component prefix="testWrkshtAna">
+		<xalan:script lang="javaclass" src="xalan://org.openelis.metamap.TestWorksheetAnalyteMetaMap"/>
+	</xalan:component>
 	<xalan:component prefix="testAnalyte">
 		<xalan:script lang="javaclass" src="xalan://org.openelis.metamap.TestAnalyteMetaMap"/>
 	</xalan:component>
@@ -81,6 +85,7 @@ UIRF Software License are applicable instead of those above.
 	   <xsl:variable name="tref" select="meta:getTestReflex($test)"/>
 	   <xsl:variable name="tws" select="meta:getTestWorksheet($test)"/> 
 	   <xsl:variable name="twsi" select="meta:getTestWorksheetItem($test)"/>
+	   <xsl:variable name="twsa" select="meta:getTestWorksheetAnalyte($test)"/>
 	   <xsl:variable name="tana" select="meta:getTestAnalyte($test)"/>
 	   <xsl:variable name="ts" select="meta:getTestSection($test)"/>
 	   <xsl:variable name="tr" select="meta:getTestResult($test)"/>
@@ -771,19 +776,20 @@ UIRF Software License are applicable instead of those above.
 								</row>															    
 							  </TablePanel>
 							 </VerticalPanel>
-							<VerticalPanel>
-							 <HorizontalPanel>
-							  <widget valign="top">
-							   <table key="worksheetTable" manager="this" maxRows="16" showError="false" showScroll="ALWAYS" title="" width="auto" tab="removeWSItemButton, {testWrksht:getScriptletId($tws)}">
+							 <VerticalPanel style="subform"> 								
+							  <text style="FormTitle"><xsl:value-of select='resource:getString($constants,"qcItems")'/></text>
+							  <HorizontalPanel>							 
+							   <widget valign="top">
+							    <table key="worksheetTable" manager="this" maxRows="6" showError="false" showScroll="ALWAYS" title="" width="auto" tab="removeWSItemButton, {testWrksht:getScriptletId($tws)}">
 												<headers>
 												    <xsl:value-of select="resource:getString($constants,'position')"/>,
 													<xsl:value-of select="resource:getString($constants,'type')"/>,													
 													<xsl:value-of select="resource:getString($constants,'qcName')"/>																																						
 												</headers>
-												<widths>74,157,347</widths>
+												<widths>74,147,347</widths>
 												<editors>
 													<textbox/>
-													<dropdown case="mixed" width="150px"/>
+													<dropdown case="mixed" width="140px"/>
 													<textbox/>																						
 												</editors>
 												<fields>
@@ -796,16 +802,16 @@ UIRF Software License are applicable instead of those above.
 												<colAligns>left,left,left</colAligns>
 								</table>
 								<query>
-								 <queryTable maxRows="16" showError="false" showScroll="ALWAYS" title="" width="auto">
+								 <queryTable maxRows="6" showError="false" showScroll="ALWAYS" title="" width="auto">
 												<headers>
 												    <xsl:value-of select="resource:getString($constants,'position')"/>,
 													<xsl:value-of select="resource:getString($constants,'type')"/>,													
 													<xsl:value-of select="resource:getString($constants,'qcName')"/>																																							
 												</headers>
-												<widths>74,157,347</widths>
+												<widths>74,147,347</widths>
 												<editors>
 													<textbox/>
-													<dropdown multiSelect="true" case="mixed" width="150px"/>
+													<dropdown multiSelect="true" case="mixed" width="140px"/>
 													<textbox/>													
 												</editors>
 												<fields>
@@ -814,17 +820,16 @@ UIRF Software License are applicable instead of those above.
 												<sorts>false,false,false</sorts>
 												<filters>false,false,false</filters>
 												<colAligns>left,left,left</colAligns>
-								</queryTable>
-								</query>								
-						      </widget>	
-						     <HorizontalPanel width = "10px"/>
-                            </HorizontalPanel> 
-
-						                <TablePanel width = "565px" spacing="0" padding="0" style="TableFooter">
-                                         <row>
-                                          <widget  align="center" >
-									       <appButton action="removeRow" onclick="this" style="Button" key="removeWSItemButton" tab="removeWSItemButton, worksheetTable">
-									        <HorizontalPanel>
+								  </queryTable>
+								 </query>								
+						       </widget>							     
+						     <!-- <HorizontalPanel width = "10px"/> -->
+                            </HorizontalPanel>                                                       
+						           <TablePanel width = "565px" spacing="0" padding="0" style="TableFooter">
+                                      <row>
+                                        <widget  align="center" >
+									     <appButton action="removeRow" onclick="this" style="Button" key="removeWSItemButton" tab="worksheetTable, worksheetAnalyteTable">
+									       <HorizontalPanel>
               						         <AbsolutePanel style="RemoveRowButtonImage"/>
 						                      <widget>
                 						       <text><xsl:value-of select='resource:getString($constants,"removeRow")'/></text>
@@ -833,13 +838,45 @@ UIRF Software License are applicable instead of those above.
 						                 </appButton>
 						                </widget>	
 						              </row>  									 
-						           </TablePanel>
-						        <VerticalPanel height = "6px"/>
+						           </TablePanel>						        
 							  </VerticalPanel>
-						     </VerticalPanel>
-							</tab>
-						  </TabPanel>							  								 					    			 	
-						</VerticalPanel>
+							  <VerticalPanel height = "3px"/>
+							  <VerticalPanel style="subform"> 								
+							  <text style="FormTitle"><xsl:value-of select='resource:getString($constants,"analytesWS")'/></text>
+							  <HorizontalPanel>							 
+							   <widget valign="top">
+							    <table key="worksheetAnalyteTable" manager="this" maxRows="6" showError="false" showScroll="ALWAYS" title="" width="auto" tab="removeWSItemButton, {testWrksht:getScriptletId($tws)}">
+												<headers>
+												    <xsl:value-of select="resource:getString($constants,'analyte')"/>,
+													<xsl:value-of select="resource:getString($constants,'availableWS')"/>,													
+													<xsl:value-of select="resource:getString($constants,'repeat')"/>,	
+													<xsl:value-of select="resource:getString($constants,'flag')"/>																																					
+												</headers>
+												<widths>275,156,65,72</widths>
+												<editors>
+													<label/>
+													<check/>
+													<textbox/>
+													<dropdown case="mixed" width="177px"/>																					
+												</editors>
+												<fields>
+												    <string key="analyteName"/>
+												    <check key="available"/>
+												    <integer key="{testWrkshtAna:getRepeat($twsa)}" required="false"/>												    
+													<dropdown key="{testWrkshtAna:getFlagId($twsa)}" type="integer"/>																																																				
+												</fields>
+												<sorts>false,false,false,false</sorts>
+												<filters>false,false,false,false</filters>
+												<colAligns>left,left,left,left</colAligns>
+								</table>												
+						       </widget>							     
+						     <!-- <HorizontalPanel width = "10px"/> -->
+                            </HorizontalPanel> 						        
+						   </VerticalPanel>
+						  </VerticalPanel>
+						 </tab>
+					   </TabPanel>							  								 					    			 	
+					 </VerticalPanel>
 						<HorizontalPanel width = "10px"/>
 					  </HorizontalPanel>			
 					</VerticalPanel>					
@@ -887,6 +924,7 @@ UIRF Software License are applicable instead of those above.
 			 <integer key="{testWrksht:getBatchCapacity($tws)}" required="false" type="integer"/>
 			 <integer key="{testWrksht:getTotalCapacity($tws)}" required="false" type="integer"/>
 		 	 <table key="worksheetTable"/>
+		 	 <table key="worksheetAnalyteTable"/>
 			</rpc>
 			<rpc key = "testAnalyte">
 			 <tree key = "analyteTree"/>
@@ -933,7 +971,7 @@ UIRF Software License are applicable instead of those above.
 				<queryString key="{testWrkshtItm:getQcName($twsi)}"/>	
 				<dropdown key="{testSection:getSectionId($ts)}" />
 				<dropdown key="{testSection:getFlagId($ts)}"  />
-				<dropdown key="{testResult:getUnitOfMeasureId($tr)}"/>
+				<!--<dropdown key="{testResult:getUnitOfMeasureId($tr)}"/>
 				<dropdown key="{testResult:getTypeId($tr)}" />																										
 				<queryString key="{testResult:getValue($tr)}" required="false"/>		
 				<queryInteger key="{testResult:getSignificantDigits($tr)}"  type="integer" required="false"/>	
@@ -941,7 +979,7 @@ UIRF Software License are applicable instead of those above.
 				<dropdown key="{testResult:getRoundingMethodId($tr)}" required="false"/>	
 				<queryString key="{testResult:getQuantLimit($tr)}"  required="false"/>	
 				<queryString key="{testResult:getContLevel($tr)}"  required="false"/>
-				<queryString key="{testResult:getHazardLevel($tr)}" required="false"/>
+				<queryString key="{testResult:getHazardLevel($tr)}" required="false"/> -->
 				<table key = "worksheetTable"/>
 				<table key = "sampleTypeTable"/>
 				<table key = "testReflexTable"/>
