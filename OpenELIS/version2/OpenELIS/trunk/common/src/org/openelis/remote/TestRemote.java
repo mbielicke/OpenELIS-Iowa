@@ -39,6 +39,7 @@ import org.openelis.domain.TestReflexDO;
 import org.openelis.domain.TestResultDO;
 import org.openelis.domain.TestSectionDO;
 import org.openelis.domain.TestTypeOfSampleDO;
+import org.openelis.domain.TestWorksheetAnalyteDO;
 import org.openelis.domain.TestWorksheetDO;
 import org.openelis.domain.TestWorksheetItemDO;
 
@@ -65,6 +66,10 @@ public interface TestRemote {
     
     public List<TestWorksheetItemDO> getTestWorksheetItems(Integer testId);
     
+    public List<TestWorksheetAnalyteDO> getTestWorksheetAnalytes(Integer testId);
+    
+    public List<IdNameDO> getTestAnalytesNotAddedToWorksheet(Integer testId);
+    
     public List<TestAnalyteDO> getTestAnalytes(Integer testId);
     
     public List<TestSectionDO> getTestSections(Integer testId);
@@ -78,6 +83,7 @@ public interface TestRemote {
                               List<TestReflexDO> testReflexDOList,
                               TestWorksheetDO worksheetDO,
                               List<TestWorksheetItemDO> itemDOList,
+                              List<TestWorksheetAnalyteDO> twsaDOList,
                               List<TestAnalyteDO> analyteDOList,
                               List<TestSectionDO> sectionDOList,
                               List<TestResultDO> resultDOList) throws Exception;
@@ -91,6 +97,7 @@ public interface TestRemote {
                                   List<TestReflexDO> testReflexDOList,
                                   TestWorksheetDO worksheetDO,
                                   List<TestWorksheetItemDO> itemDOList,
+                                  List<TestWorksheetAnalyteDO> twsaDOList,
                                   List<TestAnalyteDO> analyteDOList,
                                   List<TestSectionDO> sectionDOList,
                                   List<TestResultDO> resultDOList);
@@ -102,6 +109,7 @@ public interface TestRemote {
                                List<TestReflexDO> testReflexDOList,
                                TestWorksheetDO worksheetDO,
                                List<TestWorksheetItemDO> itemDOList,
+                               List<TestWorksheetAnalyteDO> twsaDOList,
                                List<TestAnalyteDO> analyteDOList,
                                List<TestSectionDO> sectionDOList,
                                List<TestResultDO> resultDOList);
