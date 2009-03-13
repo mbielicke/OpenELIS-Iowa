@@ -42,6 +42,7 @@ import com.google.gwt.xml.client.XMLParser;
 import org.openelis.gwt.common.DatetimeRPC;
 import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.data.AbstractField;
+import org.openelis.gwt.common.data.CheckField;
 import org.openelis.gwt.common.data.DataMap;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataObject;
@@ -53,10 +54,11 @@ import org.openelis.gwt.common.data.FieldType;
 import org.openelis.gwt.common.data.IntegerField;
 import org.openelis.gwt.common.data.IntegerObject;
 import org.openelis.gwt.common.data.KeyListManager;
+import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.StringObject;
-import org.openelis.gwt.common.data.TableField;
 import org.openelis.gwt.common.data.TreeDataItem;
 import org.openelis.gwt.common.data.TreeDataModel;
+import org.openelis.gwt.common.data.TreeField;
 import org.openelis.gwt.screen.CommandChain;
 import org.openelis.gwt.screen.ScreenMenuPanel;
 import org.openelis.gwt.screen.ScreenTableWidget;
@@ -312,8 +314,13 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm, Integer> i
                                                         .getRoundingMethodId());
         //loadTableDropdownModel(q, 8, TestMeta.getTestResult().getRoundingMethodId());
 
-        s = (ScreenTableWidget)widgets.get("worksheetAnalyteTable");
+        s = (ScreenTableWidget)widgets.get("worksheetAnalyteTable");        
         wsAnalyteWidget = (TableWidget)s.getWidget(); 
+        
+        loadTableDropdownModel(wsAnalyteWidget, 3, TestMeta.getTestWorksheetAnalyte().getFlagId());
+        loadTableDropdownModel(q, 3, TestMeta.getTestWorksheetAnalyte().getFlagId());
+        
+        wsAnalyteWidget.addTableWidgetListener(this);
             
         //
         // set dropdown models for column 1 and 3
@@ -329,10 +336,7 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm, Integer> i
 
         resultGroupDropdownModel = new DataModel();
         resultGroupDropdownModel.setDefaultSet(new DataSet());
-        setTableDropdownModel(analyteTreeController,
-                              4,
-                              "analyte",
-                              resultGroupDropdownModel);
+        setTableDropdownModel(analyteTreeController,4,"analyte",resultGroupDropdownModel);
 
         analyteTreeController.model.manager = this;
         analyteTreeController.enabled(false);
@@ -358,26 +362,19 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm, Integer> i
         // As, creating a new dataset from the model involves the use of the
         // defaultSet for that model.
         //
-        ((Form)rpc.form.getField("sampleType")).setFieldValue("sampleTypeTable",
-                                                              sampleTypeWidget.model.getData());
+        rpc.form.sampleType.sampleTypeTable.setValue(sampleTypeWidget.model.getData());
 
-        ((Form)rpc.form.getField("worksheet")).setFieldValue("worksheetTable",
-                                                             wsItemWidget.model.getData());
+        rpc.form.worksheet.worksheetTable.setValue(wsItemWidget.model.getData());
         
-        ((Form)rpc.form.getField("worksheet")).setFieldValue("worksheetAnalyteTable",
-                                                             wsAnalyteWidget.model.getData());
+        rpc.form.worksheet.worksheetAnalyteTable.setValue(wsAnalyteWidget.model.getData());
 
-        ((Form)rpc.form.getField("prepAndReflex")).setFieldValue("testPrepTable",
-                                                                 prepTestWidget.model.getData());
+        rpc.form.prepAndReflex.testPrepTable.setValue(prepTestWidget.model.getData());
 
-        ((Form)rpc.form.getField("prepAndReflex")).setFieldValue("testReflexTable",
-                                                                 reflexTestWidget.model.getData());        
+        rpc.form.prepAndReflex.testReflexTable.setValue(reflexTestWidget.model.getData());        
 
-        ((Form)rpc.form.getField("details")).setFieldValue("sectionTable",
-                                                           sectionWidget.model.getData());
-        
+        rpc.form.details.sectionTable.setValue(sectionWidget.model.getData());        
 
-        analyteRPC = (TestAnalyteForm)(rpc.form.getField("testAnalyte"));
+        analyteRPC = rpc.form.testAnalyte;
 
         resultModelCollection = new ArrayList<DataModel<DataSet>>();
 
@@ -385,7 +382,7 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm, Integer> i
         // the submit method puts the TreeDataModel from the TreeWidget in the
         // tree field from the rpc
         //
-        analyteTree.submit(analyteRPC.getField("analyteTree"));
+        analyteTree.submit(analyteRPC.analyteTree);
 
         analyteRPC.setFieldValue("testResultsTable",
                                  resultWidget.model.getData());        
@@ -573,12 +570,15 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm, Integer> i
             testId.enable(false);
             testName.setFocus(true);
             dupItem.enable(false);
+            
             fillTestAnalyteDropDown();
             fillMaps();
             fillResultGroupDropdown();
             fillResultModelCollection();
-            fillPrepTestsReflexTests();
             fillUnitDropdownModel();
+            
+            fillPrepTestsReflexTests();
+            fillWorksheetLayout();
 
             prevSelTabIndex = -1;
         }
@@ -624,16 +624,12 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm, Integer> i
         if (!(state == State.QUERY)) {
             if (prevSelTabIndex == -1 && resultModelCollection.size() > 0) {
                 //         
-                // if a user doesn't select any tab from resultPanel then any
-                // new
-                // rows added to the model for the first tab won't get added to
-                // the
-                // model stored at index zero in resultModelCollection
-                // because the code in onBeforeTabSelected() wont get a chance
-                // to execute;
+                // if a user doesn't select any tab from resultPanel then any new
+                // rows added to the model for the first tab won't get added to the
+                // model stored at index zero in resultModelCollection because the
+                // code in onBeforeTabSelected() wont get a chance to execute;
                 // this line makes sure that on committing a test's data,even if
-                // no tab was selected from resultPanel, the latest model for
-                // the
+                // no tab was selected from resultPanel, the latest model for the
                 // first tab makes its way in resultModelCollection
                 //            
                 resultModelCollection.set(0, resultWidget.model.getData());
@@ -677,8 +673,7 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm, Integer> i
             if (resultModelCollection.size() > tabIndex) {
                 if (prevSelTabIndex > -1 && prevSelTabIndex != tabIndex) {
                     resultWidget.finishEditing();
-                    model = (DataModel)resultWidget.model.getData()
-                                                                  .clone();
+                    model = (DataModel)resultWidget.model.getData().clone();
                     list = resultWidget.model.getData().getDeletions();
 
                     for (int i = 0; i < list.size(); i++) {
@@ -729,9 +724,6 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm, Integer> i
     }
 
     public boolean validate() {
-        if(!dataInWorksheetForm()) {
-            rpc.form.worksheet.clearErrors();
-        }
         return !treeItemsHaveErrors();
     }
 
@@ -895,22 +887,17 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm, Integer> i
 
         } else if (sender == resultWidget && row < resultWidget.model.getData()
                                                                      .size()) {
-            final String value = (String)((DataObject)resultWidget.model.getRow(row)
+            final String value = ((StringField)resultWidget.model.getRow(row)
                                                                         .get(2)).getValue();
 
             if (resultWidget.model.getData().size() > 0 && row < resultWidget.model.getData()
                                                                                    .size()) {
-                DataSet set = (DataSet)resultWidget.model.getData().get(row);
+                DataSet set = resultWidget.model.getData().get(row);
                 DataMap data = (DataMap)set.getData();
                 Integer rg = null;
                 if (data == null) {
                     data = new DataMap();
                     set.setData(data);
-                }
-
-                if (data.get("resGrp") == null) {
-                    rg = resultPanel.getTabBar().getSelectedTab();
-                    data.put("resGrp", new IntegerField(rg + 1));
                 }
             }
             if (col == 2 && !"".equals(value.trim())) {
@@ -965,14 +952,11 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm, Integer> i
 
                                                                                         if (data.get("id") == null) {
                                                                                             Integer tempResId = getNextTempResId();
-                                                                                            data.put("id",
-                                                                                                     new IntegerField(tempResId));
+                                                                                            data.put("id",new IntegerField(tempResId));
                                                                                         }
-
-                                                                                        data.put("value",new IntegerObject(result1.key));
-
-                                                                                        checkAndAddNewResultValue(value,
-                                                                                                                  set);
+                                                                                        resultWidget.model.setCell(currRow,2,result1.stringValue);
+                                                                                                                                                                                                                                                                                                                                            
+                                                                                        checkAndAddNewResultValue(value,set);
                                                                                     }
                                                                                 }
 
@@ -985,13 +969,9 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm, Integer> i
 
                                                 } else if ("test_res_type_numeric".equals(result.stringValue)) {
                                                     //
-                                                    // Get the string that was
-                                                    // entered if the type
-                                                    // chosen was "Numeric" and
-                                                    // try to
-                                                    // break it up at the "," if
-                                                    // it follows the pattern
-                                                    // number,number
+                                                    // Get the string that was entered if the type
+                                                    // chosen was "Numeric" and try to break it up at
+                                                    // the "," if it follows the pattern number,number
                                                     //
                                                     String[] strList = value.split(",");
                                                     boolean convert = false;
@@ -1000,17 +980,10 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm, Integer> i
                                                             String token = strList[iter];
                                                             try {
                                                                 // 
-                                                                // Convert each
-                                                                // number
-                                                                // obtained from
-                                                                // the string
-                                                                // and store
-                                                                // its value
-                                                                // converted to
-                                                                // double if its
-                                                                // a valid
-                                                                // number, into
-                                                                // an array
+                                                                // Convert each number obtained from
+                                                                // the string and store its value
+                                                                // converted to double if its a valid
+                                                                // number, into an array
                                                                 //
                                                                 Double doubleVal = Double.valueOf(token);
                                                                 darray[iter] = doubleVal.doubleValue();
@@ -1023,14 +996,10 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm, Integer> i
 
                                                     if (convert) {
                                                         //
-                                                        // If its a valid string
-                                                        // store the converted
-                                                        // string back into the
-                                                        // column
-                                                        // otherwise add an
-                                                        // error to the cell and
-                                                        // store empty string
-                                                        // into the cell
+                                                        // If its a valid string store the converted
+                                                        // string back into the column otherwise add
+                                                        // an error to the cell and store empty 
+                                                        // string into the cell
                                                         //  
                                                         if (darray[0].toString()
                                                                      .indexOf(".") == -1) {
@@ -1046,9 +1015,7 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm, Integer> i
                                                         } else {
                                                             finalValue += darray[1].toString();
                                                         }
-                                                        resultWidget.model.setCell(currRow,
-                                                                                   2,
-                                                                                   finalValue);
+                                                        resultWidget.model.setCell(currRow,2,finalValue);                                                        
                                                         DataSet set = (DataSet)resultWidget.model.getData()
                                                                                                  .get(currRow);
                                                         DataMap data = (DataMap)set.getData();
@@ -1063,27 +1030,18 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm, Integer> i
                                                                      new IntegerField(tempResId));
                                                         }
 
-                                                        data.put("value",
-                                                                 new IntegerObject(-999));
-
-                                                        checkAndAddNewResultValue(finalValue,
-                                                                                  set);
+                                                        checkAndAddNewResultValue(finalValue,set);
 
                                                     } else {
-                                                        resultWidget.model.setCellError(currRow,
-                                                                                        2,
+                                                        resultWidget.model.setCellError(currRow,2,
                                                                                         consts.get("illegalNumericFormatException"));
                                                     }
 
                                                 } else if ("test_res_type_titer".equals(result.stringValue)) {
                                                     //
-                                                    // Get the string that was
-                                                    // entered if the type
-                                                    // chosen was "Titer" and
-                                                    // try to
-                                                    // break it up at the ":" if
-                                                    // it follows the pattern
-                                                    // "number:number"
+                                                    // Get the string that was entered if the type
+                                                    // chosen was "Titer" and try to break it up at 
+                                                    // the ":" if it follows the pattern "number:number"
                                                     //
                                                     String[] strList = value.split(":");
                                                     boolean convert = false;
@@ -1092,17 +1050,10 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm, Integer> i
                                                             String token = strList[iter];
                                                             try {
                                                                 //
-                                                                // Convert each
-                                                                // number
-                                                                // obtained from
-                                                                // the string
-                                                                // and store
-                                                                // its value
-                                                                // converted to
-                                                                // double if
-                                                                // it's a valid
-                                                                // number, into
-                                                                // an array
+                                                                // Convert each number obtained from
+                                                                // the string and store its value
+                                                                // converted to double if it's a valid
+                                                                // number, into an array
                                                                 //
                                                                 Double doubleVal = Double.valueOf(token);
                                                                 darray[iter] = doubleVal.doubleValue();
@@ -1114,13 +1065,9 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm, Integer> i
                                                     }
                                                     if (convert) {
                                                         //
-                                                        // If it's a valid
-                                                        // string store the
-                                                        // converted string back
-                                                        // into the column
-                                                        // otherwise add an
-                                                        // error to the cell and
-                                                        // store empty string
+                                                        // If it's a valid string store the converted 
+                                                        // string back into the column otherwise add an
+                                                        // error to the cell and store empty string
                                                         // into the cell
                                                         //
                                                         if (darray[0].toString()
@@ -1137,9 +1084,7 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm, Integer> i
                                                         } else {
                                                             finalValue += darray[1].toString();
                                                         }
-                                                        resultWidget.model.setCell(currRow,
-                                                                                   2,
-                                                                                   finalValue);
+                                                        resultWidget.model.setCell(currRow,2,finalValue);                                                        
                                                         DataSet set = (DataSet)resultWidget.model.getData()
                                                                                                  .get(currRow);
                                                         DataMap data = (DataMap)set.getData();
@@ -1154,11 +1099,7 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm, Integer> i
                                                                      new IntegerField(tempResId));
                                                         }
 
-                                                        data.put("value",
-                                                                 new IntegerObject(-999));
-
-                                                        checkAndAddNewResultValue(finalValue,
-                                                                                  set);
+                                                        checkAndAddNewResultValue(finalValue,set);
 
                                                     } else {
                                                         resultWidget.model.setCellError(currRow,
@@ -1316,16 +1257,46 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm, Integer> i
                     addSetToUnitDropdown(ufield);
                 }
             }
-        }
-
+        } else if(sender == wsAnalyteWidget && col == 1){
+            final DataSet trow =  wsAnalyteWidget.model.getRow(row);
+            CheckField chf =  (CheckField)trow.get(1);           
+            IntegerField rfield = (IntegerField)trow.get(2);
+            TestGeneralPurposeRPC tgrpc = null;
+            
+            if(analyteTreeController.model.getData() == null ||
+                            analyteTreeController.model.getData().size() == 0) {
+                tgrpc = new TestGeneralPurposeRPC();
+                tgrpc.key = rpc.key;
+                tgrpc.form = rpc.form.testAnalyte;               
+                screenService.call("getAnalyteTreeModel", tgrpc, new AsyncCallback<TestGeneralPurposeRPC>(){                     
+                   public void onSuccess(TestGeneralPurposeRPC result) {
+                     TreeField tfield = ((TestAnalyteForm)result.form).analyteTree;
+                     analyteTreeController.model.setModel(tfield.getValue());
+                     setAnalytesAvailable(trow);       
+                     wsAnalyteWidget.model.refresh();
+                   }
+                    
+                   public void onFailure(Throwable caught) {
+                       Window.alert(caught.getMessage());
+                       window.setStatus("", "");
+                   }
+                    
+                });
+            } else {
+                setAnalytesAvailable(trow);              
+            }                                    
+            
+            setRepeatValue(trow);
+            wsAnalyteWidget.model.refresh();
+         }        
     }
 
     public void startEditing(SourcesTableWidgetEvents sender, int row, int col) {
-
+         
     }
 
     public void stopEditing(SourcesTableWidgetEvents sender, int row, int col) {
-
+        
     }
 
     public void finishedEditing(SourcesTreeWidgetEvents sender, int row, int col) {
@@ -1345,7 +1316,8 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm, Integer> i
 
         DataMap data = null;
 
-        IntegerObject obj = null;
+        IntegerObject idObj = null;     
+        IntegerObject anaIdObj = null;
 
         boolean createNewSet = false;
 
@@ -1365,18 +1337,21 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm, Integer> i
                 if (data.get("id") == null) {
                     createNewSet = true;
                 } else {
-                    obj = (IntegerObject)data.get("id");
-                    ddset = testAnalyteDropdownModel.getByKey(obj);
+                    idObj = (IntegerObject)data.get("id");
+                    anaIdObj = (IntegerObject)data.get("analyteId");
+                    ddset = testAnalyteDropdownModel.getByKey(idObj);
                     if(ddset != null) {
                      prevVal = (String)ddset.get(0).getValue();
                      if (!prevVal.trim().equals(selText.trim())) {
                         setErrorToReflexFields(consts.get("analyteNameChanged"),
-                                               obj.getValue(),
+                                               idObj.getValue(),
                                                1);
                         ddset.get(0).setValue(selText);
                         ((TableDropdown)reflexTestWidget.columns.get(1)
                                                                 .getColumnWidget()).setModel(testAnalyteDropdownModel);
-                    }
+                        updateWorksheetAnalyte(anaIdObj.getValue(),(Integer)field.getSelectedKey(),selText);
+                        data.put("analyteId", new IntegerObject((Integer)field.getSelectedKey()));
+                     }                     
                   }   
                 }
             } else {
@@ -1417,14 +1392,14 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm, Integer> i
                 if (data.get("id") != null) {
                     anaId = ((IntegerObject)data.get("id")).getValue();
                     lset = (DataSet)resGroupAnalyteIdMap.get(selText);
-                    obj = new IntegerObject(anaId);
+                    idObj = new IntegerObject(anaId);
                     if (lset != null) {
-                        if (!lset.list.contains(obj)) {
-                            lset.add(obj);
+                        if (!lset.list.contains(idObj)) {
+                            lset.add(idObj);
                         }
                     } else {
                         lset = new DataSet();
-                        lset.add(obj);
+                        lset.add(idObj);
                         resGroupAnalyteIdMap.put(selText, lset);
                     }
 
@@ -1470,8 +1445,7 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm, Integer> i
             row.get(2).setValue(entry);
             data = new DataMap();
             row.setData(data);
-            data.put("id", new IntegerField(getNextTempResId()));
-            data.put("value", new IntegerObject(id));            
+            data.put("id", new IntegerField(getNextTempResId()));                       
             resultWidget.model.addRow(row);
             checkAndAddNewResultValue(entry, row);
         }
@@ -1844,7 +1818,7 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm, Integer> i
         if (key == null)
             return;
 
-        resultPanel.clear();
+        // resultPanel.clear();
         // resultPanel.clearTabs();
         resultModelCollection = new ArrayList<DataModel>();
         
@@ -1855,15 +1829,22 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm, Integer> i
                                 new AsyncCallback<TestGeneralPurposeRPC>() {
                                     public void onSuccess(TestGeneralPurposeRPC result) {
                                         TestGeneralPurposeRPC trgrpc = null;
+                                        int difference;
                                         group = result.integerValue;                                                             
-                                        if (group > 0) {
-                                            trgrpc = new TestGeneralPurposeRPC();
-                                            for (int iter = 1; iter < group + 1; iter++) {                                                
-                                                resultPanel.add(getDummyPanel(),
-                                                                new Integer(iter).toString());
-                                                // resultPanel.addTab(new
-                                                // Integer(iter).toString());                                                                                               
-                                             } 
+                                        if (group > 0) {                                           
+                                            trgrpc = new TestGeneralPurposeRPC();                                            
+                                              difference = group - resultPanel.getTabBar().getTabCount();
+                                              while (difference != 0) {
+                                                  if(difference > 0) {
+                                                      resultPanel.add(getDummyPanel(),
+                                                         new Integer(resultPanel.getTabBar().getTabCount()+1).toString());
+                                                      difference--;
+                                                  }else {
+                                                      resultPanel.remove(resultPanel.getTabBar().getTabCount()-1);
+                                                      difference++;
+                                                  }
+                                              }
+                                                                                        
                                                 trgrpc.key = key;                                                
                                                 trgrpc.model = (DataModel<Integer>)defaultModel.clone();
                                                 trgrpc.integerValue = group;
@@ -1891,6 +1872,8 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm, Integer> i
                                                            .getTabCount() > 0) {
                                                 resultPanel.selectTab(0);
                                             }
+                                        } else {
+                                            resultPanel.clear();
                                         }
                                     }
 
@@ -2098,13 +2081,19 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm, Integer> i
     }
 
     private void onTestResultRowButtonClicked() {
-        int selIndex = resultWidget.model.getData().getSelectedIndex();
+        DataModel model = resultWidget.model.getData();
+        int selIndex = model.getSelectedIndex();
         DataSet set = null;
+        DataSet nextSet = null;
         IntegerField field = null;
+        DataMap data = null;
+        DataMap nextData = null;
+        
 
         if (selIndex > -1) {
-            if (resultWidget.model.getData().size() > 1) {
-                set = resultWidget.model.getRow(selIndex);
+            if (model.size() > 1) {
+                set = resultWidget.model.getRow(selIndex);  
+                data = (DataMap)set.getData();
                 if (set.getData() != null) {
                     field = (IntegerField)((DataMap)set.getData()).get("id");
                     if (field != null) {
@@ -2113,9 +2102,11 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm, Integer> i
                                                field.getValue(),
                                                2);
                     }
-                }
-                resultWidget.model.deleteRow(selIndex);
-
+                }                  
+               
+               finishedEditing(resultWidget, selIndex, 2);  
+               resultWidget.model.deleteRow(selIndex);               
+               finishedEditing(resultWidget, selIndex, 2);     
             } else {
                 Window.alert(consts.get("atleastOneResInResGrp"));
             }
@@ -2369,10 +2360,7 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm, Integer> i
         screenService.call("getInitialModel",tfnrpc,
                                 new AsyncCallback<TestGeneralPurposeRPC>() {
                                     public void onSuccess(TestGeneralPurposeRPC result) {
-                                        setTableDropdownModel(w,
-                                                              col,
-                                                              leaf,
-                                                              result.model);
+                                        setTableDropdownModel(w,col,leaf,result.model);
                                     }
 
                                     public void onFailure(Throwable caught) {
@@ -2478,14 +2466,13 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm, Integer> i
         else
             rmodel = resultWidget.model.getData();
 
-
         ddmodel.add(blankset);
 
         for (int i = 0; i < rmodel.size(); i++) {
             rset = (DataSet)rmodel.get(i);
             data = (DataMap)rset.getData();
             field = (IntegerField)data.get("id");
-            ddset = new DataSet<Integer>(field.getValue(),new StringObject((String)rset.get(1).getValue()));
+            ddset = new DataSet<Integer>(field.getValue(),new StringObject((String)rset.get(2).getValue()));
             ddmodel.add(ddset);
         }
         return ddmodel;
@@ -2502,8 +2489,7 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm, Integer> i
         DropDownField field = null;
         for (int i = 0; i < reflexTestWidget.model.getData().size(); i++) {
             rset = (DataSet)reflexTestWidget.model.getData().get(i);
-            field = (DropDownField)rset.get(col);
-            //vset = (DataSet)((ArrayList)field.getValue()).get(0);
+            field = (DropDownField)rset.get(col);            
 
             if (id.equals(field.getSelectedKey()))
                 if (!field.getErrors().contains(error)) {
@@ -2643,8 +2629,7 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm, Integer> i
           set.setKey(id * (-2));
           if(id < tempAnaId)
               tempAnaId = id;
-          } 
-         //Window.alert(String.valueOf(tempAnaId));                 
+          }                
        }
     }
     
@@ -2684,12 +2669,8 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm, Integer> i
            tempResId = rkey;                  
          }
          keyList.add(entryKey);
-         
-         
-         
-         
-         map.put(akey.toString(), model);
-         
+                                   
+         map.put(akey.toString(), model);         
         } 
        }
        
@@ -2736,12 +2717,97 @@ public class TestScreen extends OpenELISScreenForm<TestRPC, TestForm, Integer> i
     } 
     
     private void addWorksheetAnalyte(Integer analyteId,String analyteName) {
+      if(!analytePresent(analyteId)) {
         DataModel model = wsAnalyteWidget.model.getData();
         DataSet set = model.createNewSet();
         DataMap data = new DataMap();
         data.put("analyteId", new IntegerField(analyteId));
+        set.setData(data);
         set.get(0).setValue(analyteName);    
         model.add(set);        
-        wsAnalyteWidget.model.refresh();        
+        wsAnalyteWidget.model.refresh();
+       } 
+    }
+    
+    private boolean analytePresent(Integer analyteId) {
+       DataSet row = null;
+       DataMap data = null;
+       IntegerField anaField = null;
+       for(int i = 0; i < wsAnalyteWidget.model.getData().size(); i++) {
+          row = wsAnalyteWidget.model.getData().get(i);
+          data = (DataMap)row.getData();
+          anaField = (IntegerField)data.get("analyteId");
+          if(analyteId.equals(anaField.getValue())) {
+              return true;
+          }
+       }
+       return false;
+    }
+    
+    private void updateWorksheetAnalyte(Integer oldId,Integer newId,String analyteName) {
+      deleteWorksheetAnalytes(oldId);
+      addWorksheetAnalyte(newId,analyteName);
+    }
+    
+    private void setAnalytesAvailable(DataSet trow) {       
+        StringField strf =  (StringField)trow.get(0);
+        String anaName = strf.getValue().trim();
+        String selText = null;
+        TreeDataItem item = null;
+        DropDownField anaField = null;
+        CheckField chf =  (CheckField)trow.get(1);
+        
+        for(int i = 0; i < analyteTreeController.model.getData().size(); i++) {
+            item = analyteTreeController.model.getData().get(i);
+            if("top".equals(item.leafType)) {
+                for(TreeDataItem citem:item.getItems()) {
+                  anaField = (DropDownField)citem.get(0);
+                  selText = ((String)anaField.getTextValue()).trim();
+                  if(anaName.equals(selText)){
+                    setAnalyteAvailable(item.getItems(),chf.isChecked());  
+                    break;                                  
+                  } 
+                }
+            }
+        }  
+    }
+    
+    private void setAnalyteAvailable(List<TreeDataItem> items,boolean available) {       
+       String tanaName = null;
+       String ianaName = null;
+       TreeDataItem item = null;
+       DataSet row = null;
+       
+      for(int i=0;  i < items.size(); i++) {
+        item = items.get(i);  
+        ianaName = ((String)((DropDownField)item.get(0)).getTextValue()).trim();
+        for(int j = 0; j < wsAnalyteWidget.model.getData().size(); j++) {
+          row = wsAnalyteWidget.model.getData().get(j);
+          tanaName = ((String)((StringField)row.get(0)).getValue()).trim();          
+         
+           if(tanaName.equals(ianaName)) {
+              if(available) {
+               ((CheckField)row.get(1)).setValue("Y");
+               window.setStatus(consts.get("additionalAnalytesAdded"), ""); 
+              } 
+              else {
+               ((CheckField)row.get(1)).setValue(null);
+               window.setStatus(consts.get("otherAnalytesRemoved"), ""); 
+              } 
+            setRepeatValue(row);
+           }
+        }
+       }
+    }
+    
+    private void setRepeatValue(DataSet row) {
+        CheckField chf = (CheckField)row.get(1);
+        IntegerField rfield = (IntegerField) row.get(2);
+        
+        if(chf.isChecked() && (rfield.getValue() == null || rfield.getValue() == 0)) 
+            rfield.setValue(new Integer(1));
+        /*else if(!chf.isChecked() && rfield.getValue() != null && rfield.getValue() != 0)                 
+            rfield.setValue(null);
+        */ 
     }
 }

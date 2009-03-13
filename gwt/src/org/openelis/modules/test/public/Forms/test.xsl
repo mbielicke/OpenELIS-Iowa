@@ -688,9 +688,9 @@ UIRF Software License are applicable instead of those above.
 												<widths>150,181,140,104</widths>
 												<editors>
 													<dropdown case="mixed" width="300px"/>
-													<dropdown case="mixed" width="120px" onchange = "this"/>
-													<dropdown case="mixed" width="120px"/>
-													<dropdown case="mixed" width="99px"/>													
+													<dropdown case="mixed" width="181px" onchange = "this"/>
+													<dropdown case="mixed" width="140px"/>
+													<dropdown case="mixed" width="104px"/>													
 												</editors>
 												<fields>
 												    <dropdown key="{testRef:getAddTestId($tref)}" required="true"/>
@@ -713,9 +713,9 @@ UIRF Software License are applicable instead of those above.
 												<widths>150,181,140,104</widths>
 												<editors>
 													<dropdown case="mixed" multiSelect="true" width="300px"/>
+													<dropdown case="mixed" multiSelect="true" width="181px"/>
 													<dropdown case="mixed" multiSelect="true" width="150px"/>
-													<dropdown case="mixed" multiSelect="true" width="140px"/>
-													<dropdown case="mixed" multiSelect="true" width="99px"/>													
+													<dropdown case="mixed" multiSelect="true" width="104px"/>													
 												</editors>
 												<fields>
 												    <xsl:value-of select='testRef:getAddTestId($tref)'/>,<xsl:value-of select='testRef:getTestAnalyteId($tref)'/>,<xsl:value-of select='testRef:getTestResultId($tref)'/>,<xsl:value-of select='testRef:getFlagsId($tref)'/>																									
