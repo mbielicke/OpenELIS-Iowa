@@ -46,6 +46,7 @@ public class WorksheetForm extends Form {
     public IntegerField batchCapacity;
     public IntegerField totalCapacity;
     public TableField<Integer> worksheetTable;
+    public TableField<Integer> worksheetAnalyteTable;
     public Boolean duplicate;
     
     public WorksheetForm() {
@@ -55,6 +56,7 @@ public class WorksheetForm extends Form {
         fields.put(meta.getTestWorksheet().getBatchCapacity(), batchCapacity = new IntegerField());
         fields.put(meta.getTestWorksheet().getTotalCapacity(), totalCapacity = new IntegerField());
         fields.put("worksheetTable", worksheetTable = new TableField<Integer>());
+        fields.put("worksheetAnalyteTable", worksheetAnalyteTable = new TableField<Integer>());       
     }
     
     public WorksheetForm(Node node) {
