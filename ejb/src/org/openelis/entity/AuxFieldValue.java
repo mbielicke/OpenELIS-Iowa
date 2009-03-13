@@ -31,10 +31,8 @@ package org.openelis.entity;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.openelis.util.Datetime;
 import org.openelis.util.XMLUtil;
 
-import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -81,6 +79,7 @@ public class AuxFieldValue implements Auditable, Cloneable {
   public Integer getAuxFieldId() {
     return auxFieldId;
   }
+  
   public void setAuxFieldId(Integer auxFieldId) {
     if((auxFieldId == null && this.auxFieldId != null) || 
        (auxFieldId != null && !auxFieldId.equals(this.auxFieldId)))
