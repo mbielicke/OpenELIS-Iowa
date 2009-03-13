@@ -40,7 +40,6 @@ import org.openelis.metamap.MethodMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
 public class MethodScreen extends OpenELISScreenForm<MethodRPC,MethodForm,Integer> implements ChangeListener{
-    private static boolean loaded = false;
     
     private ButtonPanel atozButtons;
     
@@ -68,8 +67,7 @@ public class MethodScreen extends OpenELISScreenForm<MethodRPC,MethodForm,Intege
         }
     }
     
-    public void afterDraw(boolean success) {
-        loaded = true;
+    public void afterDraw(boolean success) {        
         
         AToZTable atozTable;
 

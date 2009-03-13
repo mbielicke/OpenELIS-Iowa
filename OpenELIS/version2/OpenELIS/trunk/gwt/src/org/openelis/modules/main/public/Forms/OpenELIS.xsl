@@ -467,10 +467,10 @@ sampleManagementDescription = Description...
 				      </xsl:call-template>
 				    </xsl:if>
 				    <xsl:call-template name="menuItem">
-				      <xsl:with-param name="key"></xsl:with-param>
+				      <xsl:with-param name="key">AuxiliaryPrompt</xsl:with-param>
 				      <xsl:with-param name="label">auxiliaryPrompt</xsl:with-param>
-				      <xsl:with-param name="enabled">false</xsl:with-param>
-				      <xsl:with-param name="class"></xsl:with-param>
+				      <xsl:with-param name="enabled">true</xsl:with-param>
+				      <xsl:with-param name="class">AuxiliaryScreen</xsl:with-param>
 				      <xsl:with-param name="args"></xsl:with-param>
 				    </xsl:call-template>
 					<html>&lt;hr/&gt;</html>
