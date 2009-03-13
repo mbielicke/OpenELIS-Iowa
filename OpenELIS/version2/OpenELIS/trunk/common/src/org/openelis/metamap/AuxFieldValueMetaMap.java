@@ -27,38 +27,28 @@
 package org.openelis.metamap;
 
 import org.openelis.gwt.common.MetaMap;
-import org.openelis.meta.AuxFieldMeta;
+import org.openelis.meta.AuxFieldValueMeta;
 
-public class AuxFieldMetaMap extends AuxFieldMeta implements MetaMap {
+public class AuxFieldValueMetaMap extends AuxFieldValueMeta implements MetaMap {
 
-    private AuxFieldValueMetaMap AUX_FIELD_VALUE = new AuxFieldValueMetaMap("auxFieldValue.");
-    
-    public AuxFieldMetaMap() {
-        super("af.");
+    public AuxFieldValueMetaMap() {
+      super();
     }
     
-    public AuxFieldMetaMap(String path){
-        super(path);               
-    }
-    
-    public String buildFrom(String name) {        
-     String from = "AuxField af";
-     if(name.indexOf("auxFieldValue.") > -1)
-         from += ", IN (af.auxFieldValue) auxFieldValue ";
-     return from;
-    }
-    
-    public static AuxFieldMetaMap getInstance(){
-        return new AuxFieldMetaMap();
-    }
-    
-    public AuxFieldValueMetaMap getAuxFieldValue(){
-       return AUX_FIELD_VALUE;
+    public AuxFieldValueMetaMap(String path) {
+        super(path);
     }
     
     public boolean hasColumn(String name){        
-        if(name.startsWith("auxFieldValue."))
-            return AUX_FIELD_VALUE.hasColumn(name);
         return super.hasColumn(name);
     }
+    
+    public static String getTableName(){
+        return "AuxFieldValue";
+    }
+    
+    public String buildFrom(String where) {        
+        return "AuxFieldValue ";
+    }
+
 }

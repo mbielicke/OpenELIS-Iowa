@@ -79,6 +79,7 @@ import org.openelis.metamap.TestReflexMetaMap;
 import org.openelis.metamap.TestResultMetaMap;
 import org.openelis.metamap.TestSectionMetaMap;
 import org.openelis.metamap.TestTypeOfSampleMetaMap;
+import org.openelis.metamap.TestWorksheetAnalyteMetaMap;
 import org.openelis.metamap.TestWorksheetItemMetaMap;
 import org.openelis.remote.TestRemote;
 import org.openelis.security.local.SystemUserUtilLocal;
@@ -272,10 +273,8 @@ public class TestBean implements TestRemote {
                               }
                             } 
                          }
- 
                      }
-                  }                                     
-                
+                  }                                                     
                 
                 if(worksheetDO!=null){
                     exceptionList = new ArrayList<Exception>();
@@ -586,14 +585,7 @@ public class TestBean implements TestRemote {
             ex.printStackTrace();
             throw ex;
         }
-    }
-           
-
-    private void validateTestWorksheetAnalytes(List<Exception> exceptionList,
-                                               List<TestWorksheetAnalyteDO> twsaDOList) {
-        // TODO Auto-generated method stub
-        
-    }
+    }          
 
     public TestDetailsDO getTestDetails(Integer testId) {
         Query query = manager.createNamedQuery("Test.TestDetails");
@@ -978,6 +970,8 @@ public class TestBean implements TestRemote {
          validateTestWorksheet(exceptionList,worksheetDO);
      if(itemDOList!=null && itemDOList.size() >0 )
          validateTestWorksheetItems(exceptionList,itemDOList,worksheetDO);
+     if(twsaDOList!=null) 
+         validateTestWorksheetAnalytes(exceptionList, twsaDOList);
      if(analyteDOList!=null)
          validateTestAnalytes(exceptionList,analyteDOList);
      if(sectionDOList!=null)
@@ -1010,6 +1004,8 @@ public class TestBean implements TestRemote {
             validateTestWorksheet(exceptionList,worksheetDO);
         if(itemDOList!=null && itemDOList.size() >0)
             validateTestWorksheetItems(exceptionList,itemDOList,worksheetDO);
+        if(twsaDOList!=null) 
+            validateTestWorksheetAnalytes(exceptionList, twsaDOList);
         if(analyteDOList!=null)
             validateTestAnalytes(exceptionList,analyteDOList);
         if(sectionDOList!=null)
@@ -1302,6 +1298,27 @@ public class TestBean implements TestRemote {
             } 
          }
         }       
+    }
+    
+    private void validateTestWorksheetAnalytes(List<Exception> exceptionList,
+                                               List<TestWorksheetAnalyteDO> twsaDOList) {
+      TestWorksheetAnalyteDO twsaDO = null;
+        
+      for(int i = 0; i < twsaDOList.size();i++) {
+         twsaDO =  twsaDOList.get(i);  
+         if(!twsaDO.getDelete()) {
+          if(twsaDO.getRepeat() != null) {            
+            if(twsaDO.getRepeat() < 1) {
+                exceptionList.add(new TableFieldErrorException("repeatNullForAnalyteException", i,
+                   TestWorksheetAnalyteMetaMap.getTableName()+":"+TestMeta.getTestWorksheetAnalyte().getRepeat())); 
+            } 
+          }else {
+             exceptionList.add(new TableFieldErrorException("repeatNullForAnalyteException", i,
+                 TestWorksheetAnalyteMetaMap.getTableName()+":"+TestMeta.getTestWorksheetAnalyte().getRepeat()));
+          }
+        }
+      }  
+        
     }
     
     private void validateTestAnalytes(List<Exception> exceptionList,List<TestAnalyteDO> analyteDOList){
