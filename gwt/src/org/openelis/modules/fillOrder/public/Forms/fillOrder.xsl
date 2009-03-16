@@ -102,14 +102,16 @@ UIRF Software License are applicable instead of those above.
 		<!--end button panel-->
 		<VerticalPanel style="WhiteContentPanel" spacing="0" padding="0">
 			<widget valign="top">
-						<table width="auto" key="fillItemsTable" manager="this" maxRows="10" title="" showError="false" showScroll="ALWAYS">
+			
+				<resultsTable colwidths="2" showNavPanel="false" key="fillItemsTable" maxRows="10" tablewidth="auto" headers="{resource:getString($constants,'name')}" width="100%">
+						<table width="auto" manager="this" maxRows="10" title="" showError="false" showScroll="ALWAYS">
 							<headers> ,<xsl:value-of select='resource:getString($constants,"ordNum")'/>,<xsl:value-of select='resource:getString($constants,"status")'/>,
 							<xsl:value-of select='resource:getString($constants,"orderDate")'/>,<xsl:value-of select='resource:getString($constants,"shipFrom")'/>,
 							Ship To/Requested By,<xsl:value-of select='resource:getString($constants,"description")'/>,
 							<xsl:value-of select='resource:getString($constants,"neededNumDays")'/>,<xsl:value-of select='resource:getString($constants,"numDaysLeft")'/>,Internal</headers>
 							<widths>20,45,95,65,125,160,155,60,60,50</widths>										
 							<editors>
-								<check/>
+								<check onclick="this"/>
 								<textbox case="mixed"/>
 								<dropdown case="mixed" width="70px"/>
 								<calendar begin="0" end="2"/>							
@@ -122,14 +124,14 @@ UIRF Software License are applicable instead of those above.
 							</editors>
 							<fields>
 								<check key="process" type="integer" required="false"/>
-								<number key="{meta:getId($order)}" type="integer" required="true"/>
+								<integer key="{meta:getId($order)}" required="true"/>
 								<dropdown key="{meta:getStatusId($order)}" required="false"/>
 								<date key="{meta:getOrderedDate($order)}" begin="0" end="2" required="false"/>
 								<dropdown key="{meta:getShipFromId($order)}" required="false"/>
 								<dropdown key="{orgMeta:getName($org)}" required="false"/>
 								<string key="{meta:getDescription($order)}" required="false"/>
-								<number key="{meta:getNeededInDays($order)}" type="integer" required="false"/>
-								<number key="daysLeft" type="integer" required="false"/>
+								<integer key="{meta:getNeededInDays($order)}" required="false"/>
+								<integer key="daysLeft" required="false"/>
 								<check required="false"/>
 							</fields>
 							<sorts>false,false,true,false,true,true,true,false,false,false</sorts>
@@ -162,6 +164,7 @@ UIRF Software License are applicable instead of those above.
 								</fields>
 							</queryTable>
 							</query>
+						</resultsTable>
 						</widget>
 			<HorizontalPanel>
 			<VerticalPanel style="subform">
@@ -224,8 +227,8 @@ UIRF Software License are applicable instead of those above.
 										</autoComplete>
                                     </editors>
                                     <fields>
-                                     	<number type="integer" required="true"/>
-                                     	<number type="integer" required="true"/>
+                                     	<integer required="true"/>
+                                     	<integer required="true"/>
                                      	<dropdown required="true"/>
                                     </fields>
                                   </leaf>
@@ -244,12 +247,12 @@ UIRF Software License are applicable instead of those above.
         	                           <label/>
                                    </editors>
                                    <fields>
-										<number type="integer" required="true"/>
-										<number type="integer" required="true"/>
+										<integer required="true"/>
+										<integer required="true"/>
 									    <dropdown required="true"/>
 										<dropdown required="false"/>
 										<string required="false"/>
-										<number type="integer" required="false"/>
+										<integer required="false"/>
                                    </fields>
                                   </leaf> 
                                  </leaves> 
@@ -300,17 +303,19 @@ UIRF Software License are applicable instead of those above.
 	</display>
 	<rpc key="display">
 		<table key="fillItemsTable"/>
-		<table key="orderItemsTable"/>
-		<string key="{meta:getRequestedBy($order)}" required="false"/>
-		<dropdown key="{meta:getCostCenterId($order)}" required="false"/>
-  		<string key="{addrMeta:getMultipleUnit($address)}" required="false"/>
-		<string key="{addrMeta:getStreetAddress($address)}" required="false"/>
-		<string key="{addrMeta:getCity($address)}" required="false"/>
-		<string key="{addrMeta:getState($address)}" required="false"/>
-		<string key="{addrMeta:getZipCode($address)}" required="false"/>
-		<tree key="orderItemsTree"/>
-		<string key="orderShippingNotes" required="false"/>
 		
+		<rpc key="itemInformation">
+			<table key="orderItemsTable"/>
+			<string key="{meta:getRequestedBy($order)}" required="false"/>
+			<dropdown key="{meta:getCostCenterId($order)}" required="false"/>
+	  		<string key="{addrMeta:getMultipleUnit($address)}" required="false"/>
+			<string key="{addrMeta:getStreetAddress($address)}" required="false"/>
+			<string key="{addrMeta:getCity($address)}" required="false"/>
+			<string key="{addrMeta:getState($address)}" required="false"/>
+			<string key="{addrMeta:getZipCode($address)}" required="false"/>
+			<tree key="orderItemsTree"/>
+			<string key="orderShippingNotes" required="false"/>
+		</rpc>
 	</rpc>
 	
 	<rpc key="query">

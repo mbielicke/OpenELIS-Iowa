@@ -45,6 +45,7 @@ import org.openelis.gwt.widget.FormInt;
 import org.openelis.gwt.widget.table.TableManager;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.metamap.ShippingMetaMap;
+import org.openelis.modules.fillOrder.client.FillOrderScreen;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
 import com.google.gwt.user.client.Window;
@@ -58,7 +59,7 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class ShippingScreen extends OpenELISScreenForm<ShippingRPC, ShippingForm, Integer> implements ClickListener, TableManager, ChangeListener, TabListener{
 
-    public enum Action {Drawn}
+    private FillOrderScreen fillOrderScreen;
     private Integer shipFromId, shipToId;
     private String shipToText, multUnitText, streetAddressText, cityText, stateText, zipCodeText;
     private AppButton removeRowButton;
@@ -66,8 +67,9 @@ public class ShippingScreen extends OpenELISScreenForm<ShippingRPC, ShippingForm
     private AutoComplete shippedToDropdown;
     private TableWidget itemsTable, trackingNumbersTable;
     private Dropdown status, shippedFrom, shippedMethod;
-    private DataModel itemsShippedModel, checkedOrderIds;
+    private DataModel itemsShippedModel;
     private ShippingDataService data;
+    private boolean closeOnCommitAbort = false;
     
     private ShippingMetaMap ShippingMeta = new ShippingMetaMap();
     private CommandListener listener;
@@ -104,6 +106,11 @@ public class ShippingScreen extends OpenELISScreenForm<ShippingRPC, ShippingForm
     
     public void setShippingData(ShippingDataService data){
         this.data = data;
+        setCloseOnCommitAbort(true);
+    }
+    
+    private void setCloseOnCommitAbort(boolean close){
+        closeOnCommitAbort = close;
     }
     
     public void loadShippingScreenFromData(){
@@ -116,11 +123,11 @@ public class ShippingScreen extends OpenELISScreenForm<ShippingRPC, ShippingForm
         this.stateText = data.getStateText();
         this.zipCodeText = data.getZipCodeText();
         this.itemsShippedModel = data.getItemsShippedModel();
-        
-        //this is used to lock and unlock the records
-        this.checkedOrderIds = data.getCheckedOrderIds();
+        this.fillOrderScreen = data.getFillOrderScreen();
+
     }
     
+    /*
     public void clearShippingData(){
         this.shipFromId = null;
         this.shipToId = null;
@@ -131,10 +138,8 @@ public class ShippingScreen extends OpenELISScreenForm<ShippingRPC, ShippingForm
         this.stateText = null;
         this.zipCodeText = null;
         this.itemsShippedModel = null;
-        
-        //this is used to lock and unlock the records
-        this.checkedOrderIds = null;
     }
+    */
     
     public void onClick(Widget sender) {
         if (sender == removeRowButton)
@@ -216,6 +221,7 @@ public class ShippingScreen extends OpenELISScreenForm<ShippingRPC, ShippingForm
         deleteChain.add(0,checkModels);
         commitUpdateChain.add(0,checkModels);
         commitAddChain.add(0,checkModels);
+        commitAddChain.add(afterCommit);
         
         super.afterDraw(success);
         
@@ -225,6 +231,17 @@ public class ShippingScreen extends OpenELISScreenForm<ShippingRPC, ShippingForm
         if(data != null)
             add();
     }
+    
+    protected AsyncCallback afterCommit = new AsyncCallback() {
+        public void onFailure(Throwable caught) {   
+        }
+        public void onSuccess(Object result) {
+            fillOrderScreen.onShippingScreenCommit();
+            
+            if(closeOnCommitAbort)
+                window.close();
+        }
+    };
     
     public void add() {
        super.add();
@@ -267,6 +284,8 @@ public class ShippingScreen extends OpenELISScreenForm<ShippingRPC, ShippingForm
        ((ScreenDropDownWidget)widgets.get(ShippingMeta.getStatusId())).setFocus(true);
     }
     
+    
+    
     public void initScreen(){
         //add();
         
@@ -307,7 +326,7 @@ public class ShippingScreen extends OpenELISScreenForm<ShippingRPC, ShippingForm
     }
     
     public void commit() {
-        if(state == FormInt.State.ADD){
+        /*if(state == FormInt.State.ADD){
                 ShippingRPC srpc = new ShippingRPC();
                 srpc.key = rpc.key;
                 srpc.form = rpc.form;
@@ -326,18 +345,21 @@ public class ShippingScreen extends OpenELISScreenForm<ShippingRPC, ShippingForm
                     }
                 });
         }
-
+*/
         trackingNumbersTable.model.enableAutoAdd(false);
         super.commit();
     }
-    
+  
+    /*
     protected void superCommit(){
         super.commit();
         clearShippingData();
     }
+    */
     
     public void abort() {
-        if(state == FormInt.State.ADD && checkedOrderIds != null){
+        /*
+         if(state == FormInt.State.ADD && checkedOrderIds != null && checkedOrderIds.size() > 0){
             //we need to unlock the order records
         	ShippingRPC srpc = new ShippingRPC();
             srpc.key = rpc.key;
@@ -348,7 +370,10 @@ public class ShippingScreen extends OpenELISScreenForm<ShippingRPC, ShippingForm
                 public void onSuccess(ShippingRPC result){
                     trackingNumbersTable.model.enableAutoAdd(false);
                     superAbort();    
+                    fillOrderScreen.onShippingScreenAbort();
                     
+                    if(closeOnCommitAbort)
+                        window.close();
                 }
                 
                 public void onFailure(Throwable caught){
@@ -356,15 +381,23 @@ public class ShippingScreen extends OpenELISScreenForm<ShippingRPC, ShippingForm
                 }
             });
         }else{
+        */
             trackingNumbersTable.model.enableAutoAdd(false);
             super.abort();
-        }
+            
+            fillOrderScreen.onShippingScreenAbort();
+            
+            if(closeOnCommitAbort)
+                window.close();
+//        }
     }
     
+    /*
     protected void superAbort(){
         super.abort();
         clearShippingData();
     }
+    */
     
     //
     //start table manager methods
@@ -392,24 +425,16 @@ public class ShippingScreen extends OpenELISScreenForm<ShippingRPC, ShippingForm
     }
     
     public boolean canDrag(TableWidget widget, DataSet item, int row) {
-        // TODO Auto-generated method stub
         return false;
     }
 
     public boolean canDrop(TableWidget widget, Widget dragWidget, DataSet dropTarget, int targetRow) {
-        // TODO Auto-generated method stub
         return false;
     }
 
-    public void drop(TableWidget widget, Widget dragWidget, DataSet dropTarget, int targetRow) {
-        // TODO Auto-generated method stub
-        
-    } 
+    public void drop(TableWidget widget, Widget dragWidget, DataSet dropTarget, int targetRow) {} 
     
-    public void drop(TableWidget widget, Widget dragWidget) {
-        // TODO Auto-generated method stub
-        
-    }
+    public void drop(TableWidget widget, Widget dragWidget) {}
     //
     //end table manager methods
     //

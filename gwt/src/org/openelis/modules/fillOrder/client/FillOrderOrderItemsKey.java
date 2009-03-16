@@ -45,6 +45,13 @@ public class FillOrderOrderItemsKey implements FieldType {
     }
     
     public Object clone() {
-        return null;
+        FillOrderOrderItemsKey clone = new FillOrderOrderItemsKey();
+        clone.referenceTableId = referenceTableId;
+        clone.referenceId = referenceId;
+        clone.tableRowId = tableRowId;
+        clone.locId = locId;
+        clone.transId = transId;
+        
+        return clone;
     }
 }
