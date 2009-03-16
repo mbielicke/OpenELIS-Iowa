@@ -30,6 +30,7 @@ import java.util.List;
 
 import javax.ejb.Remote;
 
+import org.openelis.domain.FillOrderDO;
 import org.openelis.gwt.common.data.DataModel;
 
 @Remote
@@ -47,6 +48,8 @@ public interface FillOrderRemote {
      
      public List getOrderAndUnlock(Integer orderId) throws Exception;
      
+     public void unlockOrder(Integer orderId) throws Exception;
+     
      //method to query order items
      public List getOrderItems(Integer orderId);
      
@@ -57,6 +60,8 @@ public interface FillOrderRemote {
      public Integer getSystemUserId();
      
      public Integer getOrderItemReferenceTableId();
+     
+     public FillOrderDO getOrderItemInfoAndOrderNote(Integer orderId);
           
      //method to validate the fields before the backend updates it in the database
      public List validateForProcess(List orders);
