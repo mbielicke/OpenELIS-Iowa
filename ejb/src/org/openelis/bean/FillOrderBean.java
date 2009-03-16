@@ -43,6 +43,7 @@ import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.FillOrderDO;
+import org.openelis.domain.NoteDO;
 import org.openelis.entity.InventoryLocation;
 import org.openelis.entity.InventoryXUse;
 import org.openelis.entity.Order;
@@ -108,17 +109,17 @@ public class FillOrderBean implements FillOrderRemote {
                      OrderMap.ORDER_ORGANIZATION_META.getId()+", " +
                      OrderMap.ORDER_ORGANIZATION_META.getName()+", " +
                      OrderMap.getDescription()+", " +
-                     OrderMap.getNeededInDays()+", "+
+                     OrderMap.getNeededInDays()+") ");
                      //"("+OrderMap.getNeededInDays()+"-(" +
                             //"current_date()-date("+OrderMap.getOrderedDate()+"), "+
-                     OrderMap.getRequestedBy()+", "+
-                     OrderMap.getCostCenterId()+" ,"+
-                     OrderMap.getIsExternal()+" ,"+
-                     OrderMap.ORDER_ORGANIZATION_META.ADDRESS.getMultipleUnit()+", "+
-                     OrderMap.ORDER_ORGANIZATION_META.ADDRESS.getStreetAddress()+", "+
-                     OrderMap.ORDER_ORGANIZATION_META.ADDRESS.getCity()+", "+
-                     OrderMap.ORDER_ORGANIZATION_META.ADDRESS.getState()+", "+
-                     OrderMap.ORDER_ORGANIZATION_META.ADDRESS.getZipCode()+") ");
+                    // OrderMap.getRequestedBy()+", "+
+                    //OrderMap.getCostCenterId()+" ,"+
+                    //OrderMap.getIsExternal()+" ,"+
+                    //OrderMap.ORDER_ORGANIZATION_META.ADDRESS.getMultipleUnit()+", "+
+                    //OrderMap.ORDER_ORGANIZATION_META.ADDRESS.getStreetAddress()+", "+
+                    //OrderMap.ORDER_ORGANIZATION_META.ADDRESS.getCity()+", "+
+                    //OrderMap.ORDER_ORGANIZATION_META.ADDRESS.getState()+", "+
+                    //OrderMap.ORDER_ORGANIZATION_META.ADDRESS.getZipCode()+") ");
 
         //this method is going to throw an exception if a column doesnt match
         qb.addWhere(fields); 
@@ -188,10 +189,8 @@ public class FillOrderBean implements FillOrderRemote {
     }
     
     public List getOrderAndUnlock(Integer orderId) throws Exception{
-        Query query = manager.createNamedQuery("getTableId");
-        query.setParameter("name", "order");
-        lockBean.giveUpLock((Integer)query.getSingleResult(), orderId);
-
+        unlockOrder(orderId);    
+        
         HashMap map = new HashMap();
         QueryNumberField orderField = new QueryNumberField();
         orderField.setType("integer");
@@ -200,6 +199,13 @@ public class FillOrderBean implements FillOrderRemote {
         map.put(OrderMap.getId(), orderField);
         
        return query(map,0,1);
+    }
+    
+    public void unlockOrder(Integer orderId) throws Exception{
+        Query query = manager.createNamedQuery("getTableId");
+        query.setParameter("name", "order");
+        lockBean.giveUpLock((Integer)query.getSingleResult(), orderId);
+
     }
 
     public void updateInternalOrders(List orders) throws Exception {
@@ -275,5 +281,34 @@ public class FillOrderBean implements FillOrderRemote {
         query.setParameter("name", "order_item");
         
         return (Integer)query.getSingleResult();
+    }
+
+    public FillOrderDO getOrderItemInfoAndOrderNote(Integer orderId) {
+        Query query = manager.createNamedQuery("getTableId");
+        query.setParameter("name", "order_shipping_note");
+        Integer orderShipNoteReferenceId = (Integer)query.getSingleResult();
+        
+        query = manager.createNamedQuery("Note.Notes");
+        query.setParameter("referenceTable",orderShipNoteReferenceId);
+        query.setParameter("id", orderId);
+        
+        List noteResults = query.getResultList();
+        String orderNote = null;
+        if(noteResults.size() > 0)
+            orderNote = ((NoteDO)noteResults.get(0)).getText();
+        
+        query = manager.createNamedQuery("Order.FillOrderSubInfo");
+        query.setParameter("id", orderId);
+        
+        List results = query.getResultList();
+        
+        if(results.size() > 0){
+            FillOrderDO fillOrderDO = (FillOrderDO)results.get(0);
+            fillOrderDO.setOrderNote(orderNote);
+            return fillOrderDO;
+            
+        }else 
+            return null;
+
     }
 }
