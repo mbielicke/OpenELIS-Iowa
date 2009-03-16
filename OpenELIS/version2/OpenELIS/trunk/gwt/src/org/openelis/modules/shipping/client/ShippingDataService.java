@@ -1,6 +1,7 @@
 package org.openelis.modules.shipping.client;
 
 import org.openelis.gwt.common.data.DataModel;
+import org.openelis.modules.fillOrder.client.FillOrderScreen;
 
 public class ShippingDataService {
     Integer shipFromId;
@@ -11,15 +12,18 @@ public class ShippingDataService {
     String cityText;
     String stateText;
     String zipCodeText;
+    FillOrderScreen fillOrderScreen;
     DataModel itemsShippedModel = new DataModel();
-    DataModel checkedOrderIds = new DataModel();
+    //DataModel checkedOrderIds = new DataModel();
     
+    /*
     public DataModel getCheckedOrderIds() {
         return checkedOrderIds;
     }
     public void setCheckedOrderIds(DataModel checkedOrderIds) {
         this.checkedOrderIds = checkedOrderIds;
     }
+    */
     public DataModel getItemsShippedModel() {
         return itemsShippedModel;
     }
@@ -73,5 +77,11 @@ public class ShippingDataService {
     }
     public void setZipCodeText(String zipCodeText) {
         this.zipCodeText = zipCodeText;
+    }
+    public FillOrderScreen getFillOrderScreen() {
+        return fillOrderScreen;
+    }
+    public void setFillOrderScreen(FillOrderScreen fillOrderScreen) {
+        this.fillOrderScreen = fillOrderScreen;
     }
 }
