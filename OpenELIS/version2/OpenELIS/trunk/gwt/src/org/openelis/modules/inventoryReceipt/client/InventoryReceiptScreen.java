@@ -194,7 +194,6 @@ public class InventoryReceiptScreen extends OpenELISScreenForm<InventoryReceiptR
         receiptsTable.model.enableAutoAdd(false);
         receiptsTable.table.addTableWidgetListener(this);
         receiptsTable.model.addTableModelListener(this);
-        receiptsTable.model.setManager(this); //TODO this is here for now..take out when not needed
         
         //atozTable = (AToZTable)getWidget("azTable");
         ButtonPanel bpanel = (ButtonPanel)getWidget("buttons");
