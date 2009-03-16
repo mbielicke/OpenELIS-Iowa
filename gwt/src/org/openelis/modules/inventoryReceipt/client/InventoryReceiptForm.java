@@ -34,13 +34,13 @@ import com.google.gwt.xml.client.Node;
 public class InventoryReceiptForm extends Form{
     private static final long serialVersionUID = 1L;
 
-    public TableField<Integer> receiptsTable;
+    public TableField<InvReceiptItemInfoRPC> receiptsTable;
     public InvReceiptItemInfoForm itemInformation;
     public StringField type;
     
     public InventoryReceiptForm() {
         fields.put("type", new StringField());
-       fields.put("receiptsTable", receiptsTable = new TableField<Integer>());
+       fields.put("receiptsTable", receiptsTable = new TableField<InvReceiptItemInfoRPC>());
        fields.put("itemInformation", itemInformation = new InvReceiptItemInfoForm());
    }
    
