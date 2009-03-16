@@ -48,7 +48,8 @@ public class FillOrderDO implements Serializable{
     protected Integer daysLeft;
     protected String requestedBy;
     protected Integer costCenterId;
-    protected String isExternal;
+    protected String orderNote;
+    //protected String isExternal;
 
     protected Integer inventoryLocationId;
     protected Integer orderItemId;
@@ -61,6 +62,31 @@ public class FillOrderDO implements Serializable{
         
     }
     
+    public FillOrderDO(Integer orderId, Integer statusId, Date orderedDate, Integer shipFromId, Integer shipToId, 
+                       String shipTo, String description, Integer numberOfDays) {
+        setOrderId(orderId);
+        setStatusId(statusId);
+        setOrderedDate(orderedDate);
+        setShipFromId(shipFromId);
+        setShipToId(shipToId);
+        setShipTo(shipTo);
+        setDescription(description);
+        setNumberOfDays(numberOfDays);
+    }
+    
+    public FillOrderDO(String requestedBy, Integer costCenterId, String multUnit, String streetAddress, String city, 
+                       String state, String zipCode) {
+        setRequestedBy(requestedBy);
+        setCostCenterId(costCenterId);
+        addressDO.setMultipleUnit(multUnit);
+        addressDO.setStreetAddress(streetAddress);
+        addressDO.setCity(city);
+        addressDO.setState(state);
+        addressDO.setZipCode(zipCode);
+        
+    }
+
+    /*
     public FillOrderDO(Integer orderId, Integer statusId, Date orderedDate, Integer shipFromId,
                        Integer shipToId, String shipTo, String description, Integer numberOfDays, String requestedBy,
                        Integer costCenterId, String isExternal, String multUnit, String streetAddress, String city,
@@ -75,7 +101,7 @@ public class FillOrderDO implements Serializable{
         setNumberOfDays(numberOfDays);
         setRequestedBy(requestedBy);
         setCostCenterId(costCenterId);
-        setIsExternal(isExternal);
+
         
         //address values
         addressDO.setMultipleUnit(multUnit);
@@ -83,7 +109,7 @@ public class FillOrderDO implements Serializable{
         addressDO.setCity(city);
         addressDO.setState(state);
         addressDO.setZipCode(zipCode);
-    }
+    }*/
     
     public Integer getDaysLeft() {
         return daysLeft;
@@ -173,21 +199,6 @@ public class FillOrderDO implements Serializable{
         this.shipToId = shipToId;
     }
 
-    public String getIsExternal() {
-        return isExternal;
-    }
-
-    public void setIsExternal(String isExternal) {
-        this.isExternal = DataBaseUtil.trim(isExternal);
-    }
-    public Integer getInventoryLocationId() {
-        return inventoryLocationId;
-    }
-
-    public void setInventoryLocationId(Integer inventoryLocationId) {
-        this.inventoryLocationId = inventoryLocationId;
-    }
-
     public Integer getOrderItemId() {
         return orderItemId;
     }
@@ -204,11 +215,27 @@ public class FillOrderDO implements Serializable{
         this.quantity = quantity;
     }
 
+    public String getOrderNote() {
+        return DataBaseUtil.trim(orderNote);
+    }
+
+    public void setOrderNote(String orderNote) {
+        this.orderNote = orderNote;
+    }
+
     public Integer getInventoryXUseId() {
         return inventoryXUseId;
     }
 
     public void setInventoryXUseId(Integer inventoryXUseId) {
         this.inventoryXUseId = inventoryXUseId;
+    }
+
+    public Integer getInventoryLocationId() {
+        return inventoryLocationId;
+    }
+
+    public void setInventoryLocationId(Integer inventoryLocationId) {
+        this.inventoryLocationId = inventoryLocationId;
     }
 }
