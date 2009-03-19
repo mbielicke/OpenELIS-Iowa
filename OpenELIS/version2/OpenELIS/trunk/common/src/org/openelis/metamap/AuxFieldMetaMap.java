@@ -34,7 +34,7 @@ public class AuxFieldMetaMap extends AuxFieldMeta implements MetaMap {
     private AuxFieldValueMetaMap AUX_FIELD_VALUE = new AuxFieldValueMetaMap("auxFieldValue.");
     
     public AuxFieldMetaMap() {
-        super("af.");
+        super("auxField.");
     }
     
     public AuxFieldMetaMap(String path){
@@ -42,9 +42,9 @@ public class AuxFieldMetaMap extends AuxFieldMeta implements MetaMap {
     }
     
     public String buildFrom(String name) {        
-     String from = "AuxField af";
+     String from = "AuxField auxField";
      if(name.indexOf("auxFieldValue.") > -1)
-         from += ", IN (af.auxFieldValue) auxFieldValue ";
+         from += ", IN (auxField.auxFieldValue) auxFieldValue ";
      return from;
     }
     

@@ -9,11 +9,11 @@ public class AuxFieldDO implements Serializable {
      */
     private static final long serialVersionUID = 1L;
     
-    protected Integer id;             
+    protected Integer id;  
+    protected Integer auxFieldGroupId; 
     protected Integer sortOrder;             
     protected Integer analyteId;             
-    protected String description;             
-    protected Integer referenceTableId;             
+    protected String description;                         
     protected Integer methodId;             
     protected Integer unitOfMeasureId;             
     protected String isRequired;             
@@ -28,7 +28,7 @@ public class AuxFieldDO implements Serializable {
     
     public AuxFieldDO( Integer id, Integer sortOrder,
                        Integer analyteId,String description,
-                       Integer referenceTableId,Integer methodId,
+                       Integer auxFieldGroupId,Integer methodId,
                        Integer unitOfMeasureId,String isRequired,
                        String isActive,String isReportable,
                        Integer scriptletId) {        
@@ -36,7 +36,7 @@ public class AuxFieldDO implements Serializable {
         this.sortOrder = sortOrder;
         this.analyteId = analyteId;
         this.description = description;
-        this.referenceTableId = referenceTableId;
+        this.auxFieldGroupId = auxFieldGroupId; 
         this.methodId = methodId;
         this.unitOfMeasureId = unitOfMeasureId;
         this.isRequired = isRequired;
@@ -68,12 +68,6 @@ public class AuxFieldDO implements Serializable {
     }
     public void setDescription(String description) {
         this.description = description;
-    }
-    public Integer getReferenceTableId() {
-        return referenceTableId;
-    }
-    public void setReferenceTableId(Integer referenceTableId) {
-        this.referenceTableId = referenceTableId;
     }
     public Integer getMethodId() {
         return methodId;
@@ -118,6 +112,14 @@ public class AuxFieldDO implements Serializable {
 
     public void setDelete(boolean delete) {
         this.delete = delete;
+    }
+
+    public Integer getAuxFieldGroupId() {
+        return auxFieldGroupId;
+    }
+
+    public void setAuxFieldGroupId(Integer auxFieldGroupId) {
+        this.auxFieldGroupId = auxFieldGroupId;
     } 
 
 }

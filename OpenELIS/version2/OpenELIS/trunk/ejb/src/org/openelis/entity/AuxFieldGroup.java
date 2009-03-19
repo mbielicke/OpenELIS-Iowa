@@ -10,17 +10,28 @@ import org.w3c.dom.Element;
 import org.openelis.util.Datetime;
 import org.openelis.util.XMLUtil;
 
+import java.util.Collection;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
+@NamedQueries({ @NamedQuery(name = "AuxFieldGroup.AuxFieldGroupByName", query = "from AuxFieldGroup afg where afg.name = :name order by afg.name"),
+    @NamedQuery(name = "AuxFieldGroup.AuxFieldGroupDO", query = "select distinct new org.openelis.domain.AuxFieldGroupDO(afg.id,afg.name,afg.description,"+                            
+                        " afg.isActive,afg.activeBegin,afg.activeEnd) " +
+                        " from AuxFieldGroup afg where afg.id = :id ")})            
+            
 @Entity
 @Table(name="aux_field_group")
 @EntityListeners({AuditUtil.class})
@@ -46,6 +57,9 @@ public class AuxFieldGroup implements Auditable, Cloneable {
   @Column(name="active_end")
   private Date activeEnd;             
 
+  @OneToMany(fetch = FetchType.LAZY)
+  @JoinColumn(name = "aux_field_group_id",insertable = false, updatable = false)
+  private Collection<AuxField> auxField;
 
   @Transient
   private AuxFieldGroup original;
@@ -93,8 +107,8 @@ public class AuxFieldGroup implements Auditable, Cloneable {
     return new Datetime(Datetime.YEAR ,Datetime. DAY,activeBegin);
   }
   public void setActiveBegin (Datetime active_begin){
-    if((activeBegin == null && this.activeBegin != null) || 
-       (activeBegin != null && !activeBegin.equals(this.activeBegin)))
+    if((active_begin == null && this.activeBegin != null) || 
+       (active_begin != null && !active_begin.equals(this.activeBegin)))
       this.activeBegin = active_begin.getDate();
   }
 
@@ -104,8 +118,8 @@ public class AuxFieldGroup implements Auditable, Cloneable {
     return new Datetime(Datetime.YEAR ,Datetime. DAY,activeEnd);
   }
   public void setActiveEnd (Datetime active_end){
-    if((activeEnd == null && this.activeEnd != null) || 
-       (activeEnd != null && !activeEnd.equals(this.activeEnd)))
+    if((active_end == null && this.activeEnd != null) || 
+       (active_end != null && !active_end.equals(this.activeEnd)))
       this.activeEnd = active_end.getDate();
   }
 
@@ -144,5 +158,11 @@ public class AuxFieldGroup implements Auditable, Cloneable {
   public String getTableName() {
     return "aux_field_group";
   }
+public Collection<AuxField> getAuxField() {
+    return auxField;
+}
+public void setAuxField(Collection<AuxField> auxField) {
+    this.auxField = auxField;
+}
   
 }   
