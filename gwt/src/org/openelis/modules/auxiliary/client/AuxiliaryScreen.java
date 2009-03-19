@@ -25,26 +25,31 @@
 */
 package org.openelis.modules.auxiliary.client;
 
+import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.KeyListManager;
-import org.openelis.gwt.common.data.TreeDataItem;
 import org.openelis.gwt.screen.CommandChain;
 import org.openelis.gwt.widget.AToZTable;
+import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.ButtonPanel;
+import org.openelis.gwt.widget.FormInt;
 import org.openelis.gwt.widget.table.TableManager;
 import org.openelis.gwt.widget.table.TableWidget;
-import org.openelis.gwt.widget.tree.TreeManager;
-import org.openelis.gwt.widget.tree.TreeWidget;
+import org.openelis.metamap.AuxFieldGroupMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
+import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Widget;
 
 public class AuxiliaryScreen extends OpenELISScreenForm<AuxiliaryRPC, AuxiliaryForm, Integer> implements TableManager,
-                                                                                                         TreeManager,ClickListener {
+                                                                                                         ClickListener,
+                                                                                                         ChangeListener{
     private ButtonPanel atozButtons;
     
     private KeyListManager keyList = new KeyListManager();
+    
+    private AuxFieldGroupMetaMap AuxFGMeta = new AuxFieldGroupMetaMap();
     
     public AuxiliaryScreen() {
         super("org.openelis.modules.auxiliary.server.AuxiliaryService");
@@ -57,7 +62,7 @@ public class AuxiliaryScreen extends OpenELISScreenForm<AuxiliaryRPC, AuxiliaryF
 
         //
         // we are interested in getting button actions in two places,
-        // modelwidget and us.
+        // modelwidget and the screen.
         //
         atozTable = (AToZTable)getWidget("azTable");
         ButtonPanel bpanel = (ButtonPanel)getWidget("buttons");
@@ -74,7 +79,15 @@ public class AuxiliaryScreen extends OpenELISScreenForm<AuxiliaryRPC, AuxiliaryF
     }
     
     public void performCommand(Enum action, Object obj) {
+        if (obj instanceof AppButton) {
+            String baction = ((AppButton)obj).action;
+            if (baction.startsWith("query:")) {
+                getAuxFieldGroups(baction.substring(6));
+            }else
+                super.performCommand(action, obj);
+        } else{
             super.performCommand(action, obj);
+        }
     }
     
     public boolean canAdd(TableWidget widget, DataSet set, int row) {
@@ -102,72 +115,17 @@ public class AuxiliaryScreen extends OpenELISScreenForm<AuxiliaryRPC, AuxiliaryF
         return false;
     }
 
-    public boolean canAdd(TreeWidget widget, TreeDataItem set, int row) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    public boolean canClose(TreeWidget widget, TreeDataItem set, int row) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    public boolean canDelete(TreeWidget widget, TreeDataItem set, int row) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    public boolean canDrag(TreeWidget widget, TreeDataItem item, int row) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    public boolean canDrop(TreeWidget widget,
-                           Widget dragWidget,
-                           TreeDataItem dropTarget,
-                           int targetRow) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    public boolean canDrop(TreeWidget widget,
-                           Widget dragWidget,
-                           Widget dropWidget) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    public boolean canEdit(TreeWidget widget, TreeDataItem set, int row, int col) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    public boolean canOpen(TreeWidget widget, TreeDataItem addRow, int row) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    public boolean canSelect(TreeWidget widget, TreeDataItem set, int row) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    public void drop(TreeWidget widget,
-                     Widget dragWidget,
-                     TreeDataItem dropTarget,
-                     int targetRow) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    public void drop(TreeWidget widget, Widget dragWidget) {
-        // TODO Auto-generated method stub
-        
-    }
-
     public void onClick(Widget sender) {
         // TODO Auto-generated method stub
         
+    }
+    
+    public void getAuxFieldGroups(String query) {
+        if (state == FormInt.State.DISPLAY || state == FormInt.State.DEFAULT) {
+            Form form = (Form)forms.get("queryByLetter");
+            form.setFieldValue(AuxFGMeta.getName(), query);
+            commitQuery(form);
+        }
     }
 
 }

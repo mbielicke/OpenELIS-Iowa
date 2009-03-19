@@ -29,6 +29,7 @@ UIRF Software License are applicable instead of those above.
                 xmlns:resource="xalan://org.openelis.util.UTFResource"                
                 xmlns:locale="xalan://java.util.Locale"
                 xmlns:meta="xalan://org.openelis.metamap.TestMetaMap"
+                xmlns:method="xalan://org.openelis.meta.MethodMeta"
                 xmlns:testPrep="xalan://org.openelis.metamap.TestPrepMetaMap"
                 xmlns:testTOS="xalan://org.openelis.metamap.TestTypeOfSampleMetaMap"
                 xmlns:testRef="xalan://org.openelis.metamap.TestReflexMetaMap" 
@@ -49,6 +50,9 @@ UIRF Software License are applicable instead of those above.
 	</xalan:component>
 	<xalan:component prefix="meta">
 		<xalan:script lang="javaclass" src="xalan://org.openelis.metamap.TestMetaMap"/>
+	</xalan:component>
+	<xalan:component prefix="method">
+		<xalan:script lang="javaclass" src="xalan://org.openelis.meta.MethodMeta"/>
 	</xalan:component>
 	<xalan:component prefix="testPrep">
 		<xalan:script lang="javaclass" src="xalan://org.openelis.metamap.TestPrepMetaMap"/>
@@ -80,6 +84,7 @@ UIRF Software License are applicable instead of those above.
 	
 	<xsl:template match="doc">	
 	   <xsl:variable name="test" select="meta:new()"/>
+	   <xsl:variable name="mt" select="meta:getMethod($test)"/>
 	   <xsl:variable name="tp" select="meta:getTestPrep($test)"/>
 	   <xsl:variable name="tos" select="meta:getTestTypeOfSample($test)"/>	 
 	   <xsl:variable name="tref" select="meta:getTestReflex($test)"/>
@@ -163,14 +168,14 @@ UIRF Software License are applicable instead of those above.
 							<TablePanel style="Form">
 								<row>
 									<text style="Prompt"><xsl:value-of select="resource:getString($constants,'id')"/>:</text>
-									<textbox  key="{meta:getId($test)}" tab="{meta:getName($test)},{meta:getMethodId($test)}" width="50px"/>
+									<textbox  key="{meta:getId($test)}" tab="{meta:getName($test)},{method:getName($mt)}" width="50px"/>
 								</row> 	
 								<row>
 									<text style="Prompt"><xsl:value-of select="resource:getString($constants,'name')"/>:</text>
-									<textbox case="lower" key="{meta:getName($test)}" tab="{meta:getMethodId($test)},{meta:getId($test)}" max="20" width="145px"/>																	
+									<textbox case="lower" key="{meta:getName($test)}" tab="{method:getName($mt)},{meta:getId($test)}" max="20" width="145px"/>																	
 								    <text style="Prompt"><xsl:value-of select="resource:getString($constants,'method')"/>:</text>
 								    <widget>
-								      <autoComplete case="mixed" cat="method" key="{meta:getMethodId($test)}" serviceUrl="OpenELISServlet?service=org.openelis.modules.test.server.TestService" tab="{meta:getId($test)}, {meta:getName($test)}" width="145px">
+								      <autoComplete case="mixed" cat="method" key="{method:getName($mt)}" serviceUrl="OpenELISServlet?service=org.openelis.modules.test.server.TestService" tab="{meta:getId($test)}, {meta:getName($test)}" width="145px">
 								       <widths>145</widths>
 									  </autoComplete>
 								      <query>
@@ -885,7 +890,7 @@ UIRF Software License are applicable instead of those above.
 			<rpc key="display">
 			 <integer key="{meta:getId($test)}" required="false" type="integer"/>
 			 <string key="{meta:getName($test)}" max = "20" required="true" />
-			 <dropdown key="{meta:getMethodId($test)}" required="true" type="integer"/>
+			 <dropdown key="{method:getName($mt)}" required="true" type="integer"/>
 			 <string key="testTabPanel" reset="false">detailsTab</string>
 			 <rpc key = "details">
 				<string key="{meta:getDescription($test)}" max="60" required="true"/>
@@ -932,27 +937,27 @@ UIRF Software License are applicable instead of those above.
 			</rpc> 
 		  </rpc>
 		  <rpc key="query">
-			 <queryInteger key="{meta:getId($test)}"  type="integer"/>
+			 <queryNumber key="{meta:getId($test)}"  type="integer"/>
 			 <queryString key="{meta:getName($test)}" />
-			 <queryString key="{meta:getMethodId($test)}"/>
+			 <queryString key="{method:getName($mt)}"/>
 			 <queryString key="{meta:getDescription($test)}"/>
 				<queryString key="{meta:getReportingDescription($test)}" />
-				<queryInteger key="{meta:getTimeTaMax($test)}" type="integer"/>
-				<queryInteger key="{meta:getTimeTaAverage($test)}" type="integer"/>
-				<queryInteger key="{meta:getTimeTaWarning($test)}" type="integer"/>
-				<queryInteger key="{meta:getTimeTransit($test)}" type="integer"/>	
+				<queryNumber key="{meta:getTimeTaMax($test)}" type="integer"/>
+				<queryNumber key="{meta:getTimeTaAverage($test)}" type="integer"/>
+				<queryNumber key="{meta:getTimeTaWarning($test)}" type="integer"/>
+				<queryNumber key="{meta:getTimeTransit($test)}" type="integer"/>	
 				<queryCheck key="{meta:getIsActive($test)}" />
 				<queryCheck key="{meta:getIsReportable($test)}" />				
-				<queryInteger key="{meta:getTimeHolding($test)}" type="integer"/> 			
+				<queryNumber key="{meta:getTimeHolding($test)}" type="integer"/> 			
 				<dropdown key="{meta:getLabelId($test)}"  type="integer"/>				
-				<queryInteger key="{meta:getLabelQty($test)}" type="integer"/>
+				<queryNumber key="{meta:getLabelQty($test)}" type="integer"/>
 				<dropdown key="{meta:getTestTrailerId($test)}" type="integer"/>
 				<dropdown key="{meta:getTestFormatId($test)}"  type="integer"/>				
 				<dropdown key="{meta:getRevisionMethodId($test)}" type="integer"/>	
 				<dropdown key="{meta:getScriptletId($test)}" type="integer"/>
 				<dropdown key="{meta:getLabelId($test)}"  type="integer"/>
 				<dropdown key="{meta:getReportingMethodId($test)}" type="integer"/>
-				<queryInteger key="{meta:getReportingSequence($test)}" type="integer"/>
+				<queryNumber key="{meta:getReportingSequence($test)}" type="integer"/>
 				<dropdown key="{meta:getSortingMethodId($test)}" type="integer"/>
 				<dropdown key="{testTOS:getTypeOfSampleId($tos)}" />					
 				<dropdown key="{testTOS:getUnitOfMeasureId($tos)}" /> 
@@ -964,9 +969,9 @@ UIRF Software License are applicable instead of those above.
 				<queryCheck key="{testPrep:getIsOptional($tp)}" />	
 				<dropdown key="{testWrksht:getFormatId($tws)}"  type="integer"/>
 				<dropdown key="{testWrksht:getScriptletId($tws)}"  type="integer"/>
-				<queryInteger key="{testWrksht:getBatchCapacity($tws)}" type="integer"/>
-				<queryInteger key="{testWrksht:getTotalCapacity($tws)}" type="integer"/>				
-				<queryInteger key="{testWrkshtItm:getPosition($twsi)}" type="integer"/>
+				<queryNumber key="{testWrksht:getBatchCapacity($tws)}" type="integer"/>
+				<queryNumber key="{testWrksht:getTotalCapacity($tws)}" type="integer"/>				
+				<queryNumber key="{testWrkshtItm:getPosition($twsi)}" type="integer"/>
 				<dropdown key="{testWrkshtItm:getTypeId($twsi)}"/>				
 				<queryString key="{testWrkshtItm:getQcName($twsi)}"/>	
 				<dropdown key="{testSection:getSectionId($ts)}" />
