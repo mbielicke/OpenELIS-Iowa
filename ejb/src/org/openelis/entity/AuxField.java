@@ -43,11 +43,18 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
+
+
+@NamedQuery(name = "AuxField.AuxFieldDOList", query = "select distinct new org.openelis.domain.AuxFieldDO(af.id, af.sortOrder,"+
+                       " af.analyteId,af.description,af.auxFieldGroupId,af.methodId,af.unitOfMeasureId,af.isRequired,"+
+                       " af.isActive,af.isReportable,af.scriptletId) " +
+                       " from AuxField af where af.auxFieldGroupId = :auxFieldGroupId order by af.sortOrder ")
 
 @Entity
 @Table(name="aux_field")
@@ -57,7 +64,10 @@ public class AuxField implements Auditable, Cloneable {
   @Id
   @GeneratedValue
   @Column(name="id")
-  private Integer id;             
+  private Integer id;       
+  
+  @Column(name="aux_field_group_id")
+  private Integer auxFieldGroupId;  
 
   @Column(name="sort_order")
   private Integer sortOrder;             
@@ -66,10 +76,7 @@ public class AuxField implements Auditable, Cloneable {
   private Integer analyteId;             
 
   @Column(name="description")
-  private String description;             
-
-  @Column(name="reference_table_id")
-  private Integer referenceTableId;             
+  private String description;                         
 
   @Column(name="method_id")
   private Integer methodId;             
@@ -133,14 +140,6 @@ public class AuxField implements Auditable, Cloneable {
       this.description = description;
   }
 
-  public Integer getReferenceTableId() {
-    return referenceTableId;
-  }
-  public void setReferenceTableId(Integer referenceTableId) {
-    if((referenceTableId == null && this.referenceTableId != null) || 
-       (referenceTableId != null && !referenceTableId.equals(this.referenceTableId)))
-      this.referenceTableId = referenceTableId;
-  }
 
   public Integer getMethodId() {
     return methodId;
@@ -209,14 +208,14 @@ public class AuxField implements Auditable, Cloneable {
       Element root = doc.getDocumentElement();
       
       AuditUtil.getChangeXML(id,original.id,doc,"id");
+      
+      AuditUtil.getChangeXML(auxFieldGroupId,original.auxFieldGroupId,doc,"aux_field_group_id");
 
       AuditUtil.getChangeXML(sortOrder,original.sortOrder,doc,"sort_order");
 
       AuditUtil.getChangeXML(analyteId,original.analyteId,doc,"analyte_id");
 
       AuditUtil.getChangeXML(description,original.description,doc,"description");
-
-      AuditUtil.getChangeXML(referenceTableId,original.referenceTableId,doc,"reference_table_id");
 
       AuditUtil.getChangeXML(methodId,original.methodId,doc,"method_id");
 
@@ -246,6 +245,14 @@ public Collection<AuxFieldValue> getAuxFieldValue() {
 }
 public void setAuxFieldValue(Collection<AuxFieldValue> auxFieldValue) {
     this.auxFieldValue = auxFieldValue;
+}
+public Integer getAuxFieldGroupId() {
+    return auxFieldGroupId;
+}
+public void setAuxFieldGroupId(Integer auxFieldGroupId) {
+    if((auxFieldGroupId == null && this.auxFieldGroupId != null) || 
+      (auxFieldGroupId != null && !auxFieldGroupId.equals(this.auxFieldGroupId)))
+      this.auxFieldGroupId = auxFieldGroupId;
 }
   
 }   

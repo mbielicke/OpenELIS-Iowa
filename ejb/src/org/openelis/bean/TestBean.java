@@ -590,7 +590,7 @@ public class TestBean implements TestRemote {
     public TestDetailsDO getTestDetails(Integer testId) {
         Query query = manager.createNamedQuery("Test.TestDetails");
         query.setParameter("id", testId);
-        TestDetailsDO testDetailsDO = (TestDetailsDO)query.getSingleResult();
+        TestDetailsDO testDetailsDO = (TestDetailsDO)query.getSingleResult(); 
         return testDetailsDO;
     }    
     
@@ -629,6 +629,8 @@ public class TestBean implements TestRemote {
               val = (String)query.getSingleResult();
               idnDO.setName(val);
           }catch(NumberFormatException ex) {
+              ex.printStackTrace();
+          }catch(Exception ex) {
               ex.printStackTrace();
           }
         }
@@ -767,8 +769,8 @@ public class TestBean implements TestRemote {
         Query query = manager.createNamedQuery("TestResult.TestResultDOList");        
         query.setParameter("testId", testId);
         query.setParameter("resultGroup", resultGroup);
-        
-        list = query.getResultList();
+        try {
+         list = query.getResultList();
         
         for (Iterator iter = list.iterator(); iter.hasNext();) {
             resDO = (TestResultDO)iter.next();
@@ -787,6 +789,9 @@ public class TestBean implements TestRemote {
             }
             
         }
+       } catch(Exception ex) {
+           ex.printStackTrace();
+       }
         return list;
     }
 

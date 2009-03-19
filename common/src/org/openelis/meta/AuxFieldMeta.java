@@ -16,10 +16,10 @@ public class AuxFieldMeta implements Meta {
 	
 	private static final String
               ID					="id",
+              AUX_FIELD_GROUP_ID    = "auxFieldGroupId",
               SORT_ORDER					="sortOrder",
               ANALYTE_ID					="analyteId",
               DESCRIPTION					="description",
-              REFERENCE_TABLE_ID					="referenceTableId",
               METHOD_ID					="methodId",
               UNIT_OF_MEASURE_ID					="unitOfMeasureId",
               IS_REQUIRED					="isRequired",
@@ -28,7 +28,7 @@ public class AuxFieldMeta implements Meta {
               SCRIPTLET_ID					="scriptletId";
 
   	private static final String[] columnNames = {
-  	  ID,SORT_ORDER,ANALYTE_ID,DESCRIPTION,REFERENCE_TABLE_ID,METHOD_ID,UNIT_OF_MEASURE_ID,IS_REQUIRED,IS_ACTIVE,IS_REPORTABLE,SCRIPTLET_ID};
+  	  ID,AUX_FIELD_GROUP_ID,SORT_ORDER,ANALYTE_ID,DESCRIPTION,METHOD_ID,UNIT_OF_MEASURE_ID,IS_REQUIRED,IS_ACTIVE,IS_REPORTABLE,SCRIPTLET_ID};
   	  
 	private HashSet<String> columnHashList;
     
@@ -64,6 +64,10 @@ public class AuxFieldMeta implements Meta {
     public String getId() {
         return path + ID;
     } 
+    
+    public String getAuxFieldGroupId() {
+        return path + AUX_FIELD_GROUP_ID;
+    }
 
     public String getSortOrder() {
         return path + SORT_ORDER;
@@ -75,10 +79,6 @@ public class AuxFieldMeta implements Meta {
 
     public String getDescription() {
         return path + DESCRIPTION;
-    } 
-
-    public String getReferenceTableId() {
-        return path + REFERENCE_TABLE_ID;
     } 
 
     public String getMethodId() {
