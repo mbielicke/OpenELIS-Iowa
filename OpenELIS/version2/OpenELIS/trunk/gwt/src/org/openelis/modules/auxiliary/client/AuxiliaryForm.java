@@ -27,8 +27,12 @@
 package org.openelis.modules.auxiliary.client;
 
 import org.openelis.gwt.common.Form;
+import org.openelis.gwt.common.data.CheckField;
+import org.openelis.gwt.common.data.DateField;
+import org.openelis.gwt.common.data.IntegerField;
+import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.TableField;
-import org.openelis.gwt.common.data.TreeField;
+import org.openelis.metamap.AuxFieldGroupMetaMap;
 
 import com.google.gwt.xml.client.Node;
 
@@ -39,11 +43,22 @@ public class AuxiliaryForm extends Form {
      */
     private static final long serialVersionUID = 1L;
     
-    public TableField<Integer> auxFieldValueTable;
-    public TreeField auxiliaryTree;
+    public IntegerField id;
+    public CheckField isActive;
+    public StringField description,name; 
+    public DateField activeBegin,activeEnd;    
+    public TableField<Integer> auxFieldValueTable, auxiliaryTable;
+    
     
     public AuxiliaryForm() {
-     fields.put("auxiliaryTree", auxiliaryTree = new TreeField());   
+     AuxFieldGroupMetaMap meta = new AuxFieldGroupMetaMap();   
+     fields.put(meta.getId(),id = new IntegerField());
+     fields.put(meta.getActiveBegin(),activeBegin = new DateField());
+     fields.put(meta.getActiveEnd(),activeEnd = new DateField());
+     fields.put(meta.getDescription(),description = new StringField());
+     fields.put(meta.getName(),name = new StringField());
+     fields.put(meta.getIsActive(),isActive = new CheckField());
+     fields.put("auxiliaryTree", auxiliaryTable = new TableField<Integer>());   
      fields.put("auxFieldValueTable", auxFieldValueTable = new TableField<Integer>());
     }
 

@@ -53,7 +53,6 @@ import org.openelis.gwt.common.data.DataMap;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.DropDownField;
-import org.openelis.gwt.common.data.Field;
 import org.openelis.gwt.common.data.FieldType;
 import org.openelis.gwt.common.data.IntegerField;
 import org.openelis.gwt.common.data.IntegerObject;
@@ -1306,8 +1305,8 @@ public class TestService implements AppScreenFormServiceInt<TestRPC,Integer>,
         form.name.setValue(testDO.getName());        
 
         model.add(new DataSet<Integer>(testDO.getMethodId(),new StringObject(testDO.getMethodName())));
-        form.methodId.setModel(model);
-        form.methodId.setValue(model.get(0));       
+        form.method.setModel(model);
+        form.method.setValue(model.get(0));       
     }
 
     private void fillTestDetails(TestDetailsDO testDetailsDO, DetailsForm form) {
@@ -1875,7 +1874,7 @@ public class TestService implements AppScreenFormServiceInt<TestRPC,Integer>,
         TestIdNameMethodIdDO testDO = new TestIdNameMethodIdDO();
         testDO.setId(form.id.getValue());
         testDO.setName(((String)form.name.getValue()));        
-        testDO.setMethodId((Integer)(form.methodId.getSelectedKey()));
+        testDO.setMethodId((Integer)(form.method.getSelectedKey()));
         return testDO;
     }
 

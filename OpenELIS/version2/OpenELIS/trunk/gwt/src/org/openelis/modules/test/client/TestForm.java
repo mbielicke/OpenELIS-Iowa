@@ -67,7 +67,7 @@ public class TestForm extends Form {
     
     public IntegerField id; 
     public StringField name;
-    public DropDownField methodId;
+    public DropDownField<Integer> method;
     public String testTabPanel = "detailsTab";
     public DetailsForm details;
     public PrepAndReflexForm prepAndReflex;
@@ -79,7 +79,7 @@ public class TestForm extends Form {
         TestMetaMap meta = new TestMetaMap();
         fields.put(meta.getId(), id = new IntegerField());
         fields.put(meta.getName(), name = new StringField());
-        fields.put(meta.getMethodId(), methodId = new DropDownField());
+        fields.put(meta.getMethod().getName(), method = new DropDownField<Integer>());
         fields.put("details",details = new DetailsForm());
         fields.put("prepAndReflex", prepAndReflex = new PrepAndReflexForm());
         fields.put("sampleType", sampleType = new SampleTypeForm());
