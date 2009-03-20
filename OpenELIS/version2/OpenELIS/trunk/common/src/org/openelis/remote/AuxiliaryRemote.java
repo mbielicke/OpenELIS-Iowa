@@ -35,6 +35,7 @@ import javax.persistence.Query;
 import org.openelis.domain.AuxFieldDO;
 import org.openelis.domain.AuxFieldGroupDO;
 import org.openelis.domain.AuxFieldValueDO;
+import org.openelis.domain.IdNameDO;
 
 @Remote
 public interface AuxiliaryRemote {
@@ -63,4 +64,8 @@ public interface AuxiliaryRemote {
   public List<Exception> validateForUpdate(AuxFieldGroupDO auxFieldGroupDO,
                                  List<AuxFieldDO> auxFields,
                                  List<AuxFieldValueDO> auxFieldValues);
+
+  public List getMatchingEntries(String name,int maxResults,String cat);
+
+  public List<IdNameDO> getScriptletDropDownValues();
 }

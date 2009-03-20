@@ -47,7 +47,7 @@ public class AuxiliaryForm extends Form {
     public CheckField isActive;
     public StringField description,name; 
     public DateField activeBegin,activeEnd;    
-    public TableField<Integer> auxFieldValueTable, auxiliaryTable;
+    public TableField<Integer> auxFieldValueTable, auxFieldTable;
     
     
     public AuxiliaryForm() {
@@ -58,7 +58,7 @@ public class AuxiliaryForm extends Form {
      fields.put(meta.getDescription(),description = new StringField());
      fields.put(meta.getName(),name = new StringField());
      fields.put(meta.getIsActive(),isActive = new CheckField());
-     fields.put("auxiliaryTree", auxiliaryTable = new TableField<Integer>());   
+     fields.put("auxFieldTable", auxFieldTable = new TableField<Integer>());   
      fields.put("auxFieldValueTable", auxFieldValueTable = new TableField<Integer>());
     }
 

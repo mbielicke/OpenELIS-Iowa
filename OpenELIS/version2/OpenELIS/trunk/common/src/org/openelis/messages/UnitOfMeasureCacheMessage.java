@@ -23,18 +23,20 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
+
 package org.openelis.messages;
 
 import org.openelis.persistence.Message;
 
-public class StateCacheMessage implements Message {
+public class UnitOfMeasureCacheMessage implements Message {
 
-    public String handler = "org.openelis.server.handlers.StateCacheHandler";
+    private static final long serialVersionUID = 1L;
+
+    private String handler = "org.openelis.server.handlers.UnitOfMeasureCacheHandler";
     public enum Action {ADDED,UPDATED,DELETED}
     public Action action;
     
     public String getHandler() {
-        // TODO Auto-generated method stub
         return handler;
     }
 
