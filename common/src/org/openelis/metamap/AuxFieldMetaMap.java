@@ -61,4 +61,8 @@ public class AuxFieldMetaMap extends AuxFieldMeta implements MetaMap {
             return AUX_FIELD_VALUE.hasColumn(name);
         return super.hasColumn(name);
     }
+    
+    public static String getTableName() {
+        return "AuxField";        
+    }
 }

@@ -27,6 +27,7 @@
 package org.openelis.modules.auxiliary.client;
 
 import org.openelis.gwt.common.RPC;
+import org.openelis.gwt.common.data.DataModel;
 
 public class AuxiliaryRPC extends RPC<AuxiliaryForm, Integer> {
 
@@ -34,5 +35,12 @@ public class AuxiliaryRPC extends RPC<AuxiliaryForm, Integer> {
      * 
      */
     private static final long serialVersionUID = 1L;
+    
+    /**
+     * Initializing DataModels for widgets on the screen
+     */
+    public DataModel<Integer> units;
+    public DataModel<Integer> scriptlets;
+    public DataModel<Integer> auxFieldValueTypes;
 
 }

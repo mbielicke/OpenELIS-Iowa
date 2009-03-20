@@ -146,7 +146,7 @@ UIRF Software License are applicable instead of those above.
 					          </TablePanel>			
 							 <HorizontalPanel> 							 
 							  <widget>
-                                <table key="auxiliaryTable" title="" targets = "auxiliaryTable" manager = "this" drop = "default" drag = "default" width="600px" showError="false" showScroll="ALWAYS" maxRows="10">                                
+                                <table key="auxFieldTable" title="" targets = "auxFieldTable" manager = "this" drop = "default" drag = "default" width="600px" showError="false" showScroll="ALWAYS" maxRows="10">                                
                                  <headers>                                 
                                   <xsl:value-of select="resource:getString($constants,'analyte')"/>,
                                   <xsl:value-of select="resource:getString($constants,'method')"/>,
@@ -159,11 +159,13 @@ UIRF Software License are applicable instead of those above.
                                  </headers>
                                  <widths>250,70,50,60,70,60,200,150</widths>                                 
                                    <editors>
-                                    <autoComplete cat="auxiliaryField" serviceUrl="OpenELISServlet?service=org.openelis.modules.auxiliary.server.AuxiliaryService" case="mixed" width="300px">												
+                                    <autoComplete cat="analyte" serviceUrl="OpenELISServlet?service=org.openelis.modules.auxiliary.server.AuxiliaryService" case="mixed" width="300px">												
 										 <widths>300</widths>
 									</autoComplete>
-									<dropdown case="mixed" width = "165px" type = "integer"/>
-                                    <dropdown case="mixed" width = "165px" type = "integer"/>
+									<autoComplete cat="method" serviceUrl="OpenELISServlet?service=org.openelis.modules.auxiliary.server.AuxiliaryService" case="mixed" width="300px">												
+										 <widths>100</widths>
+									</autoComplete>
+                                    <dropdown case="mixed" width = "80px" type = "integer"/>
 									<check/>
                                     <check/> 
                                     <check/>									                                   
@@ -204,7 +206,7 @@ UIRF Software License are applicable instead of those above.
 												</headers>
 												<widths>100,493</widths>
 												<editors>
-												    <dropdown case="mixed" width="45px"/>													
+												    <dropdown case="mixed" width="100px"/>													
 													<textbox/>																																			
 												</editors>
 												<fields>											    
@@ -254,7 +256,7 @@ UIRF Software License are applicable instead of those above.
 			 <date key="{meta:getActiveBegin($auxfg)}" begin="0" end="2" required = "true"/>	
 			 <date key="{meta:getActiveEnd($auxfg)}" begin="0" end="2" required = "true"/>	
 			 <check key = "{meta:getIsActive($auxfg)}" required = "true"/>	 
-	         <table key = "auxiliaryTable"/>
+	         <table key = "auxFieldTable"/>
 			 <table key = "auxFieldValueTable"/>					 										
 		    </rpc>
 		    <rpc key="query">			

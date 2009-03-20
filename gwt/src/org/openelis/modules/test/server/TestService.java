@@ -353,7 +353,7 @@ public class TestService implements AppScreenFormServiceInt<TestRPC,Integer>,
     public TestRPC abort(TestRPC rpc) throws RPCException {
         TestRemote remote = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
 
-        TestIdNameMethodIdDO testDO = remote.getTestIdNameMethod(rpc.key);
+        TestIdNameMethodIdDO testDO = remote.getTestIdNameMethodAndUnlock(rpc.key,SessionManager.getSession().getId());
         setFieldsInRPC(rpc.form, testDO,false);
         
         rpc.form.details.duplicate = false;   
