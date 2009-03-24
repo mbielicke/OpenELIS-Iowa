@@ -805,11 +805,11 @@ public class TestBean implements TestRemote {
                      +TestMeta.getMethod().getName() + ") ");               
         
         qb.addWhere(fields);
-
+        System.out.println("fields#######################################  "+ fields);
         qb.setOrderBy(TestMeta.getName()+", "+TestMeta.getMethod().getName());
 
         sb.append(qb.getEJBQL());                
-
+        System.out.println("sb#######################################  "+ sb); 
         Query query = manager.createQuery(sb.toString());
 
         if (first > -1 && max > -1)
