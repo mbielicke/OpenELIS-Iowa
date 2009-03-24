@@ -115,7 +115,7 @@ public class TestResultMeta implements Meta {
     } 
     
     public String getRoundingMethodId() {
-        return path + SIGNIFICANT_DIGITS;
+        return path + ROUNDING_METHOD_ID;
     }
 
     public String getQuantLimit() {
