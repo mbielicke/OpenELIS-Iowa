@@ -33,11 +33,7 @@ import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
 import org.openelis.gwt.common.Form;
-import org.openelis.gwt.common.data.DataMap;
 import org.openelis.gwt.common.data.DataSet;
-import org.openelis.gwt.common.data.Field;
-import org.openelis.gwt.common.data.IntegerField;
-import org.openelis.gwt.common.data.IntegerObject;
 import org.openelis.gwt.screen.CommandChain;
 import org.openelis.gwt.screen.ScreenTableWidget;
 import org.openelis.gwt.widget.AppButton;
@@ -46,15 +42,12 @@ import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.table.TableManager;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.modules.main.client.OpenELISScreenForm;
-import org.openelis.modules.test.client.TestScreen;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class DictionaryEntryPickerScreen extends OpenELISScreenForm<DictionaryEntryPickerRPC,DictionaryEntryPickerForm,Integer> implements TableManager, 
                                                                                                                                  ClickListener,
                                                                                                                                  ChangeListener{
-    private TestScreen testScreen;    
     
     private TextBox findTextBox = null;
     
@@ -66,15 +59,16 @@ public class DictionaryEntryPickerScreen extends OpenELISScreenForm<DictionaryEn
     
     private ButtonPanel atozButtons = null;
     
-    private Integer categoryId, dictId;
+    private Integer categoryId;      
     
     private AppButton prevPressed = null;
     
-    public DictionaryEntryPickerScreen(TestScreen testScreen) {        
+    public ArrayList<DataSet<Object>> selectedRows = null; 
+    
+    public DictionaryEntryPickerScreen() {        
         super("org.openelis.modules.dictionaryentrypicker.server.DictionaryEntryPickerService");
         forms.put("display", new DictionaryEntryPickerForm());
-        getScreen(new DictionaryEntryPickerRPC());
-        this.testScreen = testScreen;
+        getScreen(new DictionaryEntryPickerRPC());        
     }
     
     public void performCommand(Enum action, Object obj) {        
@@ -117,32 +111,16 @@ public class DictionaryEntryPickerScreen extends OpenELISScreenForm<DictionaryEn
         
         findButton = (AppButton)getWidget("findButton"); 
         
-        super.afterDraw(sucess);              
-        
-        dedrpc = new DictionaryEntryPickerDataRPC();
-        dedrpc.stringValue = "test_res_type_dictionary";
-        
-        screenService.call("getEntryId",dedrpc,
-                new AsyncCallback<DictionaryEntryPickerDataRPC>() {
-                   public void onSuccess(DictionaryEntryPickerDataRPC result) {                                                                                                                           
-                      dictId = result.key;
-                    }
-                   public void onFailure(Throwable caught) {
-                     Window.alert(caught.getMessage());
-                     window.setStatus("","");
-                    }
-       });
+        super.afterDraw(sucess);                                  
     }
     
     public void commit() {
-        List<Integer> idList = new ArrayList<Integer>();
-        List<String> strlist = getSelectedEntries(idList);
-        DataSet set = new DataSet(new IntegerObject(dictId));
-        window.close();
-        testScreen.addResultRows(strlist,set,idList);        
+        selectedRows = dictionaryController.model.getSelections();        
+        window.close();        
     }
 
     public void abort() {
+        selectedRows = null;
         window.close();
     }
     
@@ -242,26 +220,7 @@ public class DictionaryEntryPickerScreen extends OpenELISScreenForm<DictionaryEn
         });
         
     }
-    
-    private List<String> getSelectedEntries(List<Integer> idList){
-        List<String> entries = new ArrayList<String>();
-        DataSet<Object> set = null;
-        String entry = null;
-        Integer id = null;
-        DataMap data = null;
-        for(int iter = 0; iter < dictionaryController.model.getSelections().size();iter++){
-            set = dictionaryController.model.getSelections().get(iter);
-            data = (DataMap)set.getData();
-            id = ((IntegerField)data.get("id")).getValue();
-            entry = (String)((Field)set.get(0)).getValue();            
-            
-            if(!idList.contains(id)) {
-             idList.add(id);
-             entries.add(entry);
-            } 
-        }
-       return entries; 
-    }
+        
         
     private void loadCategoryDropdown() {
         DictionaryEntryPickerDataRPC dedrpc = new DictionaryEntryPickerDataRPC();        

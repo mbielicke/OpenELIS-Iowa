@@ -143,20 +143,6 @@ public class DictionaryEntryPickerService implements AppScreenFormServiceInt<Dic
         return rpc;
     }
     
-    public DictionaryEntryPickerDataRPC getEntryId(DictionaryEntryPickerDataRPC rpc){
-        CategoryRemote remote =  (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
-        Integer entryId = null;
-        
-        try{
-            entryId = remote.getEntryIdForSystemName(rpc.stringValue);
-            rpc.key = entryId;
-          }catch(Exception ex) {
-              ex.printStackTrace();              
-          }
-           
-          return rpc;
-    }
-    
     public DictionaryEntryPickerDataRPC getInitialModel(DictionaryEntryPickerDataRPC rpc){
        DataModel<Integer> model = new DataModel<Integer>();
        CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
