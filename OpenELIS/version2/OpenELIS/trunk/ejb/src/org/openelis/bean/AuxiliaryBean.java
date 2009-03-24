@@ -1,3 +1,30 @@
+/** Exhibit A - UIRF Open-source Based Public Software License.
+* 
+* The contents of this file are subject to the UIRF Open-source Based
+* Public Software License(the "License"); you may not use this file except
+* in compliance with the License. You may obtain a copy of the License at
+* openelis.uhl.uiowa.edu
+* 
+* Software distributed under the License is distributed on an "AS IS"
+* basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+* License for the specific language governing rights and limitations
+* under the License.
+* 
+* The Original Code is OpenELIS code.
+* 
+* The Initial Developer of the Original Code is The University of Iowa.
+* Portions created by The University of Iowa are Copyright 2006-2008. All
+* Rights Reserved.
+* 
+* Contributor(s): ______________________________________.
+* 
+* Alternatively, the contents of this file marked
+* "Separately-Licensed" may be used under the terms of a UIRF Software
+* license ("UIRF Software License"), in which case the provisions of a
+* UIRF Software License are applicable instead of those above. 
+*/
+
+
 package org.openelis.bean;
 
 import java.util.ArrayList;
@@ -19,14 +46,17 @@ import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.AuxFieldDO;
 import org.openelis.domain.AuxFieldGroupDO;
 import org.openelis.domain.AuxFieldValueDO;
+import org.openelis.domain.IdNameDO;
+import org.openelis.entity.AuxField;
 import org.openelis.entity.AuxFieldGroup;
-import org.openelis.entity.Test;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.RPCException;
+import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.local.LockLocal;
 import org.openelis.metamap.AuxFieldGroupMetaMap;
+import org.openelis.metamap.AuxFieldMetaMap;
 import org.openelis.remote.AuxiliaryRemote;
 import org.openelis.security.local.SystemUserUtilLocal;
 import org.openelis.util.QueryBuilder;
@@ -64,8 +94,10 @@ public class AuxiliaryBean implements AuxiliaryRemote {
     }
 
     public List<AuxFieldDO> getAuxFields(Integer auxFieldGroupId) {
-        // TODO Auto-generated method stub
-        return null;
+        Query query = manager.createNamedQuery("AuxField.AuxFieldDOList");
+        query.setParameter("auxFieldGroupId", auxFieldGroupId);
+        List<AuxFieldDO> auxfields = query.getResultList();
+        return auxfields;
     }
 
     public AuxFieldGroupDO getAuxFieldGroup(Integer auxFieldGroupId) {
@@ -99,6 +131,7 @@ public class AuxiliaryBean implements AuxiliaryRemote {
         Query query = manager.createNamedQuery("getTableId");
         query.setParameter("name", "aux_field_group");
         Integer afgReferenceId = (Integer)query.getSingleResult();
+        AuxFieldGroup auxFieldGroup = null;
 
         if (auxFieldGroupDO.getId() != null) {
             // we need to call lock one more time to make sure their lock
@@ -106,8 +139,7 @@ public class AuxiliaryBean implements AuxiliaryRemote {
             lockBean.getLock(afgReferenceId, auxFieldGroupDO.getId());
         }
 
-        manager.setFlushMode(FlushModeType.COMMIT);
-        AuxFieldGroup auxFieldGroup =null;
+        manager.setFlushMode(FlushModeType.COMMIT);        
         
         if(auxFieldGroupDO.getId() == null) {
           auxFieldGroup = new AuxFieldGroup();  
@@ -130,6 +162,39 @@ public class AuxiliaryBean implements AuxiliaryRemote {
         if (auxFieldGroup.getId() == null) {
             manager.persist(auxFieldGroup);
         }
+        
+        if(auxFields!=null) {
+         for(int i = 0 ; i < auxFields.size(); i++) {
+             AuxFieldDO afDO = auxFields.get(i);
+             AuxField af =null;
+             if(afDO.getId() == null) {
+                 af = new AuxField();
+             } else {
+                 af = manager.find(AuxField.class, afDO.getId());
+             }
+             
+             if(afDO.getDelete() && afDO.getId() !=null) {
+                 manager.remove(af);
+             } else { 
+                if(!afDO.getDelete()) {  
+                 af.setAnalyteId(afDO.getAnalyteId());
+                 af.setAuxFieldGroupId(afDO.getAuxFieldGroupId());
+                 af.setDescription(afDO.getDescription());
+                 af.setIsActive(afDO.getIsActive());
+                 af.setIsReportable(afDO.getIsReportable());
+                 af.setIsRequired(afDO.getIsRequired());
+                 af.setMethodId(afDO.getMethodId());
+                 af.setScriptletId(afDO.getScriptletId());
+                 af.setSortOrder(afDO.getSortOrder());
+                 af.setUnitOfMeasureId(afDO.getUnitOfMeasureId());
+           
+              if(af.getId() == null){
+                 manager.persist(af);
+             }
+            } 
+         }     
+        }
+      } 
         lockBean.giveUpLock(afgReferenceId, auxFieldGroup.getId());
         return auxFieldGroup.getId();
     } catch (Exception ex) {
@@ -212,18 +277,53 @@ public class AuxiliaryBean implements AuxiliaryRemote {
         }
         
     }
+    
+    private void validateAuxField(List<Exception> exceptionList,List<AuxFieldDO> auxFields) {
+        for(int i = 0; i < auxFields.size(); i++){
+            AuxFieldDO afDO = auxFields.get(i);
+            if(!afDO.getDelete() && afDO.getAnalyteId()==null){
+                exceptionList.add(new TableFieldErrorException("fieldRequiredException", i,
+                    AuxFieldMetaMap.getTableName()+":"+AuxFieldGroupMeta.getAuxField().getAnalyteId()));
+            }            
+        }
+    }
+    
+    public List getMatchingEntries(String name, int maxResults,String cat) {
+        Query query = null;
+        List entryList = null;
+        if("analyte".equals(cat)) {
+         query = manager.createNamedQuery("Analyte.AutoCompleteByName");              
+        }else if("method".equals(cat)) {
+          query = manager.createNamedQuery("Method.AutoCompleteByName"); 
+          query.setParameter("isActive", "Y");
+        }
+         query.setParameter("name", name);       
+         query.setMaxResults(maxResults);            
+        try{ 
+            entryList = (List)query.getResultList();
+        }catch(Exception ex){
+            ex.printStackTrace();
+           
+        }     
+        return entryList;
+    }
 
     public List<Exception> validateForAdd(AuxFieldGroupDO auxFieldGroupDO,
                                           List<AuxFieldDO> auxFields,
                                           List<AuxFieldValueDO> auxFieldValues) {
-        // TODO Auto-generated method stub
-        return null;
+        List<Exception> exceptionList = new ArrayList<Exception>();
+        validateAuxFieldGroup(exceptionList, auxFieldGroupDO);
+        if(auxFields!=null)
+            validateAuxField(exceptionList, auxFields);        
+        return exceptionList;
     }
 
     public List<Exception> validateForUpdate(AuxFieldGroupDO auxFieldGroupDO,
                                              List<AuxFieldDO> auxFields,
                                              List<AuxFieldValueDO> auxFieldValues) {
-        return null;
+        List<Exception> exceptionList = new ArrayList<Exception>();
+        validateAuxFieldGroup(exceptionList, auxFieldGroupDO);
+        return exceptionList;
     }
 
     public List query(HashMap fields, int first, int max) throws Exception { 
@@ -233,13 +333,14 @@ public class AuxiliaryBean implements AuxiliaryRemote {
 
         qb.setSelect("distinct new org.openelis.domain.IdNameDO("
                      +AuxFieldGroupMeta.getId()+", "+AuxFieldGroupMeta.getName()+") ");               
-        
+                
         qb.addWhere(fields);
 
+        System.out.println("fields#######################################  "+ fields);
         qb.setOrderBy(AuxFieldGroupMeta.getName());
 
         sb.append(qb.getEJBQL());                
-
+        System.out.println("sb#######################################  "+ sb); 
         Query query = manager.createQuery(sb.toString());
 
         if (first > -1 && max > -1)
@@ -255,4 +356,11 @@ public class AuxiliaryBean implements AuxiliaryRemote {
         else
             return returnList;
     }
+
+    public List<IdNameDO> getScriptletDropDownValues() {
+        Query query = manager.createNamedQuery("Scriptlet.Scriptlet");
+        List<IdNameDO> scriptletList = query.getResultList();
+        return scriptletList;
+    }
+
 }

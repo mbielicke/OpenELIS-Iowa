@@ -273,6 +273,13 @@ public class CategoryBean implements CategoryRemote {
 
         return query.getResultList();
     }
+    
+    public List getDropdownAbbreviations(Integer categoryId) {
+        Query query = manager.createNamedQuery("Dictionary.DropdownAbbreviations");
+        query.setParameter("id", categoryId);
+
+        return query.getResultList();
+    }
 
     public List getMatchingEntries(String entry, int maxResults) {
         Query query = manager.createNamedQuery("Dictionary.autoCompleteByEntry");
@@ -542,5 +549,6 @@ public class CategoryBean implements CategoryRemote {
         entry = (String)query.getSingleResult();
         return entry;
     }
+
 
 }
