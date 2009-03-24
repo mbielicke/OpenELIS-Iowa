@@ -45,6 +45,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
@@ -52,9 +53,9 @@ import org.openelis.utils.Auditable;
 
 
 @NamedQuery(name = "AuxField.AuxFieldDOList", query = "select distinct new org.openelis.domain.AuxFieldDO(af.id, af.sortOrder,"+
-                       " af.analyteId,af.description,af.auxFieldGroupId,af.methodId,af.unitOfMeasureId,af.isRequired,"+
+                       " af.analyteId,a.name,af.description,af.auxFieldGroupId,af.methodId,m.name,af.unitOfMeasureId,af.isRequired,"+
                        " af.isActive,af.isReportable,af.scriptletId) " +
-                       " from AuxField af where af.auxFieldGroupId = :auxFieldGroupId order by af.sortOrder ")
+                       " from AuxField af left join af.analyte a left join af.method m where af.auxFieldGroupId = :auxFieldGroupId order by af.sortOrder ")
 
 @Entity
 @Table(name="aux_field")
@@ -99,6 +100,15 @@ public class AuxField implements Auditable, Cloneable {
   @OneToMany(fetch = FetchType.LAZY)
   @JoinColumn(name = "aux_field_id",insertable = false, updatable = false)
   private Collection<AuxFieldValue> auxFieldValue;
+  
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "analyte_id",insertable = false, updatable = false)
+  private Analyte analyte;
+  
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "method_id",insertable = false, updatable = false)
+  private Method method;
+  
 
   @Transient
   private AuxField original;
@@ -193,6 +203,19 @@ public class AuxField implements Auditable, Cloneable {
     if((scriptletId == null && this.scriptletId != null) || 
        (scriptletId != null && !scriptletId.equals(this.scriptletId)))
       this.scriptletId = scriptletId;
+  }
+  
+  public Analyte getAnalyte() {
+      return analyte;
+  }
+  public void setAnalyte(Analyte analyte) {
+      this.analyte = analyte;
+  }
+  public void setMethod(Method method) {
+      this.method = method;
+  }
+  public Method getMethod() {
+      return method;
   }
 
   
