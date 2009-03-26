@@ -74,7 +74,7 @@ import org.openelis.utils.Auditable;
     @NamedQuery(name = "Order.descriptionAutoLookup", query = "select distinct new org.openelis.domain.IdNameDO(o.description) from Order o where o.description like :desc"),
     @NamedQuery(name = "Order.FillOrderSubInfo", query = "select new org.openelis.domain.FillOrderDO(o.requestedBy, o.costCenterId, add.multipleUnit, " +
     		" add.streetAddress, add.city, add.state, add.zipCode) from Order o LEFT JOIN o.organization orgz LEFT JOIN orgz.address add" + 
-    		" where o.id=:id ")})
+    		" where o.id = :id ")})
             
 @Entity
 @Table(name="order")

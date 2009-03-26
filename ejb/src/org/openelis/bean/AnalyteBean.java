@@ -170,11 +170,9 @@ public class AnalyteBean implements AnalyteRemote{
 
     @RolesAllowed("analyte-update")
 	public Integer updateAnalyte(AnalyteDO analyteDO) throws Exception{
-        if(analyteDO.getId() != null)
-            validateForUpdate(analyteDO);
-        else
-            validateForAdd(analyteDO);
         
+        validateAnalyte(analyteDO);
+
         Query query = manager.createNamedQuery("getTableId");
         query.setParameter("name", "analyte");
         Integer analyteReferenceId = (Integer)query.getSingleResult();
@@ -205,10 +203,6 @@ public class AnalyteBean implements AnalyteRemote{
 		return analyte.getId();
 	}
     
-	public void validateForAdd(AnalyteDO analyteDO) throws Exception{
-		validateAnalyte(analyteDO);
-	}
-
 	public void validateForDelete(Integer analyteId) throws Exception{
         ValidationErrorsList list = new ValidationErrorsList();
 
@@ -274,10 +268,6 @@ public class AnalyteBean implements AnalyteRemote{
             throw list;
 	}
 
-	public void validateForUpdate(AnalyteDO analyteDO) throws Exception{
-		validateAnalyte(analyteDO);
-	}
-	
 	private void validateAnalyte(AnalyteDO analyteDO) throws Exception{
         ValidationErrorsList list = new ValidationErrorsList();
 		//name required	

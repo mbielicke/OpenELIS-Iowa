@@ -69,7 +69,13 @@ public class ShippingItem implements Auditable, Cloneable {
   private Integer referenceTableId;             
 
   @Column(name="reference_id")
-  private Integer referenceId;           
+  private Integer referenceId;          
+  
+  @Column(name="quantity")
+  private Integer quantity;
+  
+  @Column(name="description")
+  private String description;   
   
   @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "reference_id", insertable = false, updatable = false)
@@ -115,6 +121,23 @@ public class ShippingItem implements Auditable, Cloneable {
       this.referenceId = referenceId;
   }
 
+  public Integer getQuantity() {
+      return quantity;
+    }
+  public void setQuantity(Integer quantity) {
+      if((quantity == null && this.quantity != null) || 
+         (quantity != null && !quantity.equals(this.quantity)))
+        this.quantity = quantity;
+  }
+  
+  public String getDescription() {
+      return description;
+    }
+    public void setDescription(String description) {
+      if((description == null && this.description != null) || 
+         (description != null && !description.equals(this.description)))
+        this.description = description;
+    }
   
   public void setClone() {
     try {
@@ -134,6 +157,10 @@ public class ShippingItem implements Auditable, Cloneable {
       AuditUtil.getChangeXML(referenceTableId,original.referenceTableId,doc,"reference_table_id");
 
       AuditUtil.getChangeXML(referenceId,original.referenceId,doc,"reference_id");
+      
+      AuditUtil.getChangeXML(quantity,original.quantity,doc,"quantity");
+      
+      AuditUtil.getChangeXML(description,original.description,doc,"description");
 
       if(root.hasChildNodes())
         return XMLUtil.toString(doc);

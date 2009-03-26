@@ -26,6 +26,7 @@
 package org.openelis.bean;
 
 import org.jboss.annotation.security.SecurityDomain;
+import org.openelis.domain.AnalyteDO;
 import org.openelis.domain.NoteDO;
 import org.openelis.domain.ShippingAddAutoFillDO;
 import org.openelis.domain.ShippingDO;
@@ -39,7 +40,11 @@ import org.openelis.entity.OrderItem;
 import org.openelis.entity.Shipping;
 import org.openelis.entity.ShippingItem;
 import org.openelis.entity.ShippingTracking;
+import org.openelis.gwt.common.FieldErrorException;
+import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
+import org.openelis.gwt.common.TableFieldErrorException;
+import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.local.LockLocal;
 import org.openelis.metamap.ShippingMetaMap;
@@ -149,6 +154,8 @@ public class ShippingBean implements ShippingRemote{
 
     @RolesAllowed("shipping-update")
     public Integer updateShipment(ShippingDO shippingDO, List<ShippingItemDO> shippingItems, List<ShippingTrackingDO> trackingNumbers, DataModel unlockList, NoteDO shippingNote) throws Exception {
+        validateShipping(shippingDO, shippingItems);
+        
         //shipping reference table id
         Query query = manager.createNamedQuery("getTableId");
         query.setParameter("name", "shipping");
@@ -167,13 +174,6 @@ public class ShippingBean implements ShippingRemote{
         else
             shipping = manager.find(Shipping.class, shippingDO.getId());
 
-        //validate the organization record and its address
-        //List exceptionList = new ArrayList();
-        //validateOrganizationAndAddress(organizationDO, exceptionList);
-        //if(exceptionList.size() > 0){
-        //    throw (RPCException)exceptionList.get(0);
-        //}
-        
         //update shipping record
          shipping.setCost(shippingDO.getCost());
          shipping.setNumberOfPackages(shippingDO.getNumberOfPackages());
@@ -249,55 +249,17 @@ public class ShippingBean implements ShippingRemote{
                 shippingItem.setReferenceId(itemDO.getReferenceId());
                 shippingItem.setReferenceTableId(itemDO.getReferenceTableId());
                 shippingItem.setShippingId(shipping.getId());
+                shippingItem.setQuantity(itemDO.getQuantity());
+                shippingItem.setDescription(itemDO.getDescription());
                     
                 if (shippingItem.getId() == null) {
                     manager.persist(shippingItem);
-                }
-                
-                //insert inventory_x_use record
-                InventoryXUse trans = null;
-                if (itemDO.getTransId() == null)
-                    trans = new InventoryXUse();
-                else
-                    trans = manager.find(InventoryXUse.class, itemDO.getTransId());
-                
-                trans.setInventoryLocationId(itemDO.getInventoryLocationId());
-                trans.setOrderItemId(itemDO.getReferenceId());
-                trans.setQuantity(itemDO.getQuantity());
-                
-                if(trans.getId() == null)
-                    manager.persist(trans);
-                
-                //update the qty_on_hand field in the inventory location
-                InventoryLocation loc =  manager.find(InventoryLocation.class, itemDO.getInventoryLocationId());
-                loc.setQuantityOnhand(loc.getQuantityOnhand() - itemDO.getQuantity());
-                
-                //update order items
-                OrderItem orderItem = manager.find(OrderItem.class, itemDO.getReferenceId());
-                //orderItem.setQuantity(itemDO.getQuantity());
-                
-                //add to the list of order ids
-                if(!listOfOrderIds.contains(orderItem.getOrderId()))
-                    listOfOrderIds.add(orderItem.getOrderId());
-            }
-
-            //only set the orders to processed on ADD
-            if(shippingDO.getId() == null){
-                //get the order status id for processed
-                query = manager.createNamedQuery("Dictionary.IdBySystemName");
-                query.setParameter("systemName","order_status_processed");
-                Integer processedStatusValue = (Integer)query.getResultList().get(0);
-
-                //set all the orders involved to processed
-                for(int i=0; i<listOfOrderIds.size(); i++){
-                    Order order = manager.find(Order.class, listOfOrderIds.get(i));
-                    order.setStatusId(processedStatusValue);
                 }
             }
         }
         
        //unlock the order records
-       unlockOrderRecords(unlockList);
+//       unlockOrderRecords(unlockList);
        
         return shipping.getId();
     }
@@ -425,5 +387,45 @@ public class ShippingBean implements ShippingRemote{
             if(orderId != null)
                 lockBean.giveUpLock(orderTableId, orderId);
         }
+    }
+    
+    private void validateShipping(ShippingDO shippingDO, List shippingItems) throws Exception{
+        ValidationErrorsList list = new ValidationErrorsList();
+        //status required
+        if(shippingDO.getStatusId() == null){
+            list.add(new FieldErrorException("fieldRequiredException",ShippingMeta.getStatusId()));
+        }
+        
+        //num packages required
+        if(shippingDO.getNumberOfPackages() == null){
+            list.add(new FieldErrorException("fieldRequiredException",ShippingMeta.getNumberOfPackages()));
+        }
+        
+        //shipped from required
+        if(shippingDO.getShippedFromId() == null){
+            list.add(new FieldErrorException("fieldRequiredException",ShippingMeta.getShippedFromId()));
+        }
+        
+        //shipped to required
+        if(shippingDO.getShippedToId() == null){
+            list.add(new FieldErrorException("fieldRequiredException",ShippingMeta.getShippedToId()));
+        }
+        
+        //cost not below 0
+        if(shippingDO.getCost() != null && shippingDO.getCost().doubleValue() <= 0){
+            list.add(new FieldErrorException("invalidCostException",ShippingMeta.getCost()));
+        }
+        
+        //num of packages not below 1
+        if(shippingDO.getNumberOfPackages() != null && shippingDO.getNumberOfPackages().intValue() <= 0){
+            list.add(new FieldErrorException("invalidNumPackagesException",ShippingMeta.getNumberOfPackages()));
+        }
+        
+        //at least 1 item required
+        if(shippingItems.size() == 0)
+            list.add(new FormErrorException("noShippingItemsException"));
+        
+        if(list.size() > 0)
+            throw list;
     }
 }

@@ -47,13 +47,10 @@ import org.openelis.domain.NoteDO;
 import org.openelis.entity.InventoryLocation;
 import org.openelis.entity.InventoryXUse;
 import org.openelis.entity.Order;
-import org.openelis.entity.ShippingItem;
+import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.data.Data;
+import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.DataModel;
-import org.openelis.gwt.common.data.DataSet;
-import org.openelis.gwt.common.data.NumberField;
-import org.openelis.gwt.common.data.QueryNumberField;
 import org.openelis.local.LockLocal;
 import org.openelis.metamap.OrderMetaMap;
 import org.openelis.persistence.CachingManager;
@@ -110,16 +107,6 @@ public class FillOrderBean implements FillOrderRemote {
                      OrderMap.ORDER_ORGANIZATION_META.getName()+", " +
                      OrderMap.getDescription()+", " +
                      OrderMap.getNeededInDays()+") ");
-                     //"("+OrderMap.getNeededInDays()+"-(" +
-                            //"current_date()-date("+OrderMap.getOrderedDate()+"), "+
-                    // OrderMap.getRequestedBy()+", "+
-                    //OrderMap.getCostCenterId()+" ,"+
-                    //OrderMap.getIsExternal()+" ,"+
-                    //OrderMap.ORDER_ORGANIZATION_META.ADDRESS.getMultipleUnit()+", "+
-                    //OrderMap.ORDER_ORGANIZATION_META.ADDRESS.getStreetAddress()+", "+
-                    //OrderMap.ORDER_ORGANIZATION_META.ADDRESS.getCity()+", "+
-                    //OrderMap.ORDER_ORGANIZATION_META.ADDRESS.getState()+", "+
-                    //OrderMap.ORDER_ORGANIZATION_META.ADDRESS.getZipCode()+") ");
 
         //this method is going to throw an exception if a column doesnt match
         qb.addWhere(fields); 
@@ -147,29 +134,12 @@ public class FillOrderBean implements FillOrderRemote {
         else
          return returnList;
     }
-
-    public List queryAndUnlock(HashMap fields, DataModel model, int first, int max) throws Exception {
-        //try and unlock the necessary records
-        unlockRecords(model);
-        
-        List queryResultList = query(fields, first, max);
-                
-        return queryResultList;
-    }
     
     public List getOrderItems(Integer orderId) {
         Query query = manager.createNamedQuery("OrderItem.OrderItemsByOrderId");
         query.setParameter("id", orderId);
         
         return query.getResultList();
-    }
-
-    public List validateForProcess(List orders) {
-        List exceptionList = new ArrayList();
-        //all ship froms need to match
-        
-        //all ship tos need to match
-        return null;
     }
     
     @RolesAllowed("fillorder-update")
@@ -178,75 +148,78 @@ public class FillOrderBean implements FillOrderRemote {
         query.setParameter("name", "order");
         lockBean.getLock((Integer)query.getSingleResult(), orderId);
 
-        HashMap map = new HashMap();
-        QueryNumberField orderField = new QueryNumberField();
-        orderField.setType("integer");
-        orderField.setValue(orderId.toString());
-        orderField.setKey(OrderMap.getId());
-        map.put(OrderMap.getId(), orderField);
+        List<Integer> orderIds = new ArrayList<Integer>();
+        orderIds.add(orderId);
         
-       return query(map,0,1);
+        return getOrdersById(orderIds);
     }
     
-    public List getOrderAndUnlock(Integer orderId) throws Exception{
-        unlockOrder(orderId);    
+    public List getOrdersById(List orderIds){
+        System.out.println("order ids size["+orderIds.size()+"]");
+        String queryString ="SELECT distinct new org.openelis.domain.FillOrderDO(ordr.id, ordr.statusId, ordr.orderedDate, ordr.shipFromId, organization.id, " +
+                            " organization.name, ordr.description, ordr.neededInDays) FROM Order ordr, IN (ordr.orderItem) order_item LEFT JOIN ordr.organization organization LEFT JOIN " +
+                            " organization.address organizationAddress WHERE order_item.orderId = ordr.id  and ordr.isExternal='N'  and ordr.id in ";
         
-        HashMap map = new HashMap();
-        QueryNumberField orderField = new QueryNumberField();
-        orderField.setType("integer");
-        orderField.setValue(orderId.toString());
-        orderField.setKey(OrderMap.getId());
-        map.put(OrderMap.getId(), orderField);
+        queryString += buildIdParamFromList(orderIds);
+        queryString += " ORDER BY organization.name DESC, ordr.id ";
+        Query query = manager.createQuery(queryString);
         
-       return query(map,0,1);
+        return query.getResultList();
     }
     
-    public void unlockOrder(Integer orderId) throws Exception{
+    private String buildIdParamFromList(List orderIds){
+        String param = " (";
+        for(int i=0; i<orderIds.size(); i++){
+            param+=orderIds.get(i);
+            
+            if(i<(orderIds.size()-1))
+                param+=", ";
+        }
+        
+        param += ") ";
+        
+        return param;
+    }
+    
+    public void unlockOrders(List orderIds) throws Exception {
         Query query = manager.createNamedQuery("getTableId");
         query.setParameter("name", "order");
-        lockBean.giveUpLock((Integer)query.getSingleResult(), orderId);
-
-    }
-
-    public void updateInternalOrders(List orders) throws Exception {
-        ArrayList<Integer> orderIds = new ArrayList<Integer>();
         
-        Query query = manager.createNamedQuery("Dictionary.IdBySystemName");
+        for(int i=0; i<orderIds.size(); i++)
+            lockBean.giveUpLock((Integer)query.getSingleResult(), (Integer)orderIds.get(i));
+    }
+    
+    public void setOrderToProcessed(List orders) throws Exception{
+        validateOrders(orders);
+        
+        ArrayList<Integer> orderIds = new ArrayList<Integer>();
+        //shipping reference table id
+        Query query = manager.createNamedQuery("getTableId");
+        query = manager.createNamedQuery("Dictionary.IdBySystemName");
         query.setParameter("systemName","order_status_processed");
         Integer processedStatusValue = (Integer)query.getResultList().get(0);
-        
+
         manager.setFlushMode(FlushModeType.COMMIT);
         
         for(int i=0; i<orders.size(); i++){
-            FillOrderDO orderDO = (FillOrderDO)orders.get(i);
+            FillOrderDO fillOrderDO = (FillOrderDO)orders.get(i);
+            //insert inventory_x_use record
+            InventoryXUse trans = new InventoryXUse();
             
-            //insert new inventory_x_user record for each item
-            InventoryXUse trans = null;
-            if (orderDO.getInventoryXUseId() == null)
-                trans = new InventoryXUse();
-            else
-                trans = manager.find(InventoryXUse.class, orderDO.getInventoryXUseId());
-            System.out.println("transid: ["+orderDO.getInventoryXUseId()+"]");
+            trans.setInventoryLocationId(fillOrderDO.getInventoryLocationId());
+            trans.setOrderItemId(fillOrderDO.getOrderItemId());
+            trans.setQuantity(fillOrderDO.getQuantity());
             
-            trans.setInventoryLocationId(orderDO.getInventoryLocationId());
-            trans.setOrderItemId(orderDO.getOrderItemId());
-            trans.setQuantity(orderDO.getQuantity());
-            
-            if (trans.getId() == null) {
+            if(trans.getId() == null)
                 manager.persist(trans);
-            }
-            
-            System.out.println("locId: ["+orderDO.getInventoryLocationId()+"]");
-            //update quantity on hand in Inventory_location for each item
-            InventoryLocation loc = manager.find(InventoryLocation.class, orderDO.getInventoryLocationId());
-            System.out.println("loc:["+loc+"]");
-            System.out.println("new qty:["+(loc.getQuantityOnhand() - orderDO.getQuantity())+"]");
-            
-            loc.setQuantityOnhand(loc.getQuantityOnhand() - orderDO.getQuantity());
-            
+        
+            //update the qty_on_hand field in the inventory location
+            InventoryLocation loc =  manager.find(InventoryLocation.class, fillOrderDO.getInventoryLocationId());
+            loc.setQuantityOnhand(loc.getQuantityOnhand() - fillOrderDO.getQuantity());
+
             //put the order id in the array list if necessary
-            if(!orderIds.contains(orderDO.getOrderId()))
-                orderIds.add(orderDO.getOrderId());
+            if(!orderIds.contains(fillOrderDO.getOrderId()))
+                orderIds.add(fillOrderDO.getOrderId());
         }
         
         for(int j=0; j<orderIds.size(); j++){
@@ -255,7 +228,6 @@ public class FillOrderBean implements FillOrderRemote {
             
             order.setStatusId(processedStatusValue);
         }
-
     }
     
     private void unlockRecords(DataModel<Integer> orders) throws Exception{
@@ -311,4 +283,39 @@ public class FillOrderBean implements FillOrderRemote {
             return null;
 
     }
+    
+    public void validateOrders(List orders) throws Exception{
+        ValidationErrorsList list = new ValidationErrorsList();
+        boolean addedLocException = false;
+        boolean addedQtyException = false;
+        boolean addedValidQtyException = false;
+
+        if(orders.size() == 0){}
+            //throw error
+            
+        for(int i=0; i<orders.size(); i++){
+            FillOrderDO fillOrderDO = (FillOrderDO)orders.get(i);
+            //inv loc required
+            if(fillOrderDO.getInventoryLocationId() == null && !addedLocException){
+                list.add(new FormErrorException("missingLocException"));    
+                addedLocException = true;
+            }
+            
+            //quantity required
+            if(fillOrderDO.getQuantity() == null && !addedQtyException){
+                list.add(new FormErrorException("missingQuantityException"));
+                addedQtyException = true;
+            }
+            
+            //valid quantity
+            if(fillOrderDO.getQuantity() != null && fillOrderDO.getQuantity().intValue() < 0 && !addedValidQtyException){
+                list.add(new FormErrorException("invalidQuantityException"));
+                addedValidQtyException = true;
+            }
+        }
+        
+        if(list.size() > 0)
+            throw list;
+    }
+    
 }
