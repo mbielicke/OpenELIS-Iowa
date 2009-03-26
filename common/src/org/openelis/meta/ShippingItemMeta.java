@@ -41,10 +41,12 @@ public class ShippingItemMeta implements Meta {
               ID					="id",
               SHIPPING_ID					="shippingId",
               REFERENCE_TABLE_ID					="referenceTableId",
-              REFERENCE_ID					="referenceId";
+              REFERENCE_ID					="referenceId",
+              QUANTITY      ="quantity",
+              DESCRIPTION   ="description";
 
   	private static final String[] columnNames = {
-  	  ID,SHIPPING_ID,REFERENCE_TABLE_ID,REFERENCE_ID};
+  	  ID,SHIPPING_ID,REFERENCE_TABLE_ID,REFERENCE_ID,QUANTITY,DESCRIPTION};
   	  
 	private HashSet<String> columnHashList;
     
@@ -92,6 +94,12 @@ public class ShippingItemMeta implements Meta {
     public String getReferenceId() {
         return path + REFERENCE_ID;
     } 
-
-  
+    
+    public String getQuantity() {
+        return path + QUANTITY;
+    } 
+    
+    public String getDescription() {
+        return path + DESCRIPTION;
+    }   
 }   
