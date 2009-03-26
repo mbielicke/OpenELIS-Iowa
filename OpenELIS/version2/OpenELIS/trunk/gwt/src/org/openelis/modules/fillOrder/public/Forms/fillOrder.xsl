@@ -248,9 +248,9 @@ UIRF Software License are applicable instead of those above.
                                    </editors>
                                    <fields>
 										<integer required="true"/>
-										<integer required="true"/>
-									    <dropdown required="true"/>
-										<dropdown required="false"/>
+										<integer required="false"/>
+									    <dropdown required="false"/>
+										<dropdown required="true"/>
 										<string required="false"/>
 										<integer required="false"/>
                                    </fields>

@@ -45,10 +45,12 @@ import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.QueryException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.TableFieldErrorException;
+import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.FieldType;
+import org.openelis.gwt.common.data.IntegerObject;
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.common.data.TableField;
 import org.openelis.gwt.server.ServiceUtils;
@@ -56,7 +58,9 @@ import org.openelis.gwt.services.AppScreenFormServiceInt;
 import org.openelis.gwt.services.AutoCompleteServiceInt;
 import org.openelis.metamap.ShippingMetaMap;
 import org.openelis.modules.fillOrder.client.FillOrderOrderItemsKey;
+import org.openelis.modules.organization.client.OrganizationForm;
 import org.openelis.modules.shipping.client.ShippingForm;
+import org.openelis.modules.shipping.client.ShippingItemsData;
 import org.openelis.modules.shipping.client.ShippingItemsForm;
 import org.openelis.modules.shipping.client.ShippingItemsRPC;
 import org.openelis.modules.shipping.client.ShippingNotesForm;
@@ -176,14 +180,6 @@ public class ShippingService implements AppScreenFormServiceInt<ShippingRPC, Int
 		shippingNote.setSubject("");
 		shippingNote.setText((String)rpc.form.shippingNotesForm.text.getValue());
 		shippingNote.setIsExternal("Y");
-        
-        // validate the fields on the backend
-		List exceptionList = remote.validateForAdd(shippingDO, shippingItems, trackingNumbers);
-
-		if (exceptionList.size() > 0) {
-			// TODO setRpcErrors(exceptionList, shippingItemsTable, rpcSend);
-			return rpc;
-		}
 
 		DataModel model = (DataModel) rpc.form.getFieldValue("unlockModel");
 
@@ -192,12 +188,11 @@ public class ShippingService implements AppScreenFormServiceInt<ShippingRPC, Int
 		try {
 			shippingId = (Integer) remote.updateShipment(shippingDO, shippingItems, trackingNumbers, model, shippingNote);
 		} catch (Exception e) {
-			exceptionList = new ArrayList();
-			exceptionList.add(e);
-
-			// TODO setRpcErrors(exceptionList, shippingItemsTable, rpcSend);
-
-			return rpc;
+		    if(e instanceof ValidationErrorsList){
+                setRpcErrors(((ValidationErrorsList)e).getErrorList(), rpc.form);
+                return rpc;
+            }else
+                throw new RPCException(e.getMessage());
 		}
 
 		// lookup the changes from the database and build the rpc
@@ -602,18 +597,17 @@ public class ShippingService implements AppScreenFormServiceInt<ShippingRPC, Int
 
 			Integer itemId = row.getKey();
 
-			FillOrderOrderItemsKey hiddenData = (FillOrderOrderItemsKey) row.getData();
-			Integer referenceId = hiddenData.referenceId;
-			Integer referenceTableId = hiddenData.referenceTableId;
-			Integer invLocId = hiddenData.locId;
-			Integer transId = hiddenData.transId;
+			ShippingItemsData rowData = (ShippingItemsData) row.getData();
+			//Integer referenceId = hiddenData.referenceId;
+			//Integer referenceTableId = hiddenData.referenceTableId;
+			//Integer invLocId = locIdObj.getValue();
+			//Integer transId = hiddenData.transId;
 
 			itemDO.setId(itemId);
-			itemDO.setReferenceId(referenceId);
-			itemDO.setReferenceTableId(referenceTableId);
-			itemDO.setInventoryLocationId(invLocId);
-			itemDO.setTransId(transId);
-			itemDO.setQuantity((Integer) row.get(0).getValue());
+			itemDO.setReferenceId(rowData.referenceId);
+			itemDO.setReferenceTableId(rowData.referenceTableId);
+			itemDO.setQuantity((Integer)row.get(0).getValue());
+			itemDO.setDescription((String)row.get(1).getValue());
 			itemDO.setShippingId(shippingId);
 
 			shippingItems.add(itemDO);
@@ -653,22 +647,10 @@ public class ShippingService implements AppScreenFormServiceInt<ShippingRPC, Int
 		return tackingNums;
 	}
 
-	private void setRpcErrors(List exceptionList, TableField table, Form form) {
+	private void setRpcErrors(List exceptionList, Form form) {
 		for (int i = 0; i < exceptionList.size(); i++) {
 			// if the error is inside the table
-			if (exceptionList.get(i) instanceof TableFieldErrorException) {
-				int rowindex = ((TableFieldErrorException) exceptionList.get(i))
-						.getRowIndex();
-				table.getField(
-						rowindex,
-						((TableFieldErrorException) exceptionList.get(i))
-								.getFieldName()).addError(
-						openElisConstants
-								.getString(((FieldErrorException) exceptionList
-										.get(i)).getMessage()));
-
-				// if the error is on the field
-			} else if (exceptionList.get(i) instanceof FieldErrorException)
+		    if (exceptionList.get(i) instanceof FieldErrorException)
 				form.getField(
 						((FieldErrorException) exceptionList.get(i))
 								.getFieldName()).addError(
@@ -801,4 +783,24 @@ public class ShippingService implements AppScreenFormServiceInt<ShippingRPC, Int
 		public Integer referenceTableId;
 		public Integer referenceId;
 	}
+	
+	   private void setRpcErrors(List exceptionList, TableField itemsTable, ShippingForm form){
+	        for (int i=0; i<exceptionList.size();i++) {
+	            //if the error is inside the org contacts table
+	            if(exceptionList.get(i) instanceof TableFieldErrorException){
+	                int rowindex = ((TableFieldErrorException)exceptionList.get(i)).getRowIndex();
+	                itemsTable.getField(rowindex,((TableFieldErrorException)exceptionList.get(i)).getFieldName())
+	                    .addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
+
+	            //if the error is on the field
+	            }else if(exceptionList.get(i) instanceof FieldErrorException)
+	                form.getField(((FieldErrorException)exceptionList.get(i)).getFieldName()).addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
+	            
+	            //if the error is on the entire form
+	            else if(exceptionList.get(i) instanceof FormErrorException)
+	                form.addError(openElisConstants.getString(((FormErrorException)exceptionList.get(i)).getMessage()));
+	            }        
+	        
+	        form.status = Form.Status.invalid;
+	    }
 }
