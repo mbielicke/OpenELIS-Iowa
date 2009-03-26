@@ -89,8 +89,10 @@ public class AuxiliaryBean implements AuxiliaryRemote {
     }
 
     public List<AuxFieldValueDO> getAuxFieldValues(Integer auxFieldId) {
-        // TODO Auto-generated method stub
-        return null;
+        Query query = manager.createNamedQuery("AuxFieldValue.AuxFieldValueDOList");
+        query.setParameter("auxFieldId", auxFieldId);
+        List<AuxFieldValueDO> auxfieldValues = query.getResultList();
+        return auxfieldValues;
     }
 
     public List<AuxFieldDO> getAuxFields(Integer auxFieldGroupId) {
@@ -335,12 +337,10 @@ public class AuxiliaryBean implements AuxiliaryRemote {
                      +AuxFieldGroupMeta.getId()+", "+AuxFieldGroupMeta.getName()+") ");               
                 
         qb.addWhere(fields);
-
-        System.out.println("fields#######################################  "+ fields);
+        
         qb.setOrderBy(AuxFieldGroupMeta.getName());
 
         sb.append(qb.getEJBQL());                
-        System.out.println("sb#######################################  "+ sb); 
         Query query = manager.createQuery(sb.toString());
 
         if (first > -1 && max > -1)

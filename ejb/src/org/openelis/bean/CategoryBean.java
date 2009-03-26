@@ -37,11 +37,13 @@ import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.data.QueryStringField;
 import org.openelis.local.JMSMessageProducerLocal;
 import org.openelis.local.LockLocal;
+import org.openelis.messages.AuxFieldValueTypeCacheMessage;
 import org.openelis.messages.ContactTypeCacheMessage;
 import org.openelis.messages.CountryCacheMessage;
 import org.openelis.messages.ProviderTypeCacheMessage;
 import org.openelis.messages.QaEventTypeCacheMessage;
 import org.openelis.messages.StateCacheMessage;
+import org.openelis.messages.UnitOfMeasureCacheMessage;
 import org.openelis.metamap.CategoryMetaMap;
 import org.openelis.remote.CategoryRemote;
 import org.openelis.util.QueryBuilder;
@@ -118,13 +120,6 @@ public class CategoryBean implements CategoryRemote {
         StringBuffer sb = new StringBuffer();
         QueryBuilder qb = new QueryBuilder();
 
-        // CategoryMeta categoryMeta = CategoryMeta.getInstance();
-        // DictionaryMeta dictionaryMeta = DictionaryMeta.getInstance();
-        // DictionaryRelatedEntryMeta dicRelatedEntryMeta =
-        // DictionaryRelatedEntryMeta.getInstance();
-
-        // qb.addMeta(new Meta[]{categoryMeta, dictionaryMeta,
-        // dicRelatedEntryMeta});
         qb.setMeta(CatMeta);
 
         qb.setSelect("distinct new org.openelis.domain.IdNameDO(" + CatMeta.getId()
@@ -132,14 +127,9 @@ public class CategoryBean implements CategoryRemote {
                      + CatMeta.getName()
                      + ") ");
 
-        // qb.addTable(categoryMeta);
-
         qb.addWhere(fields);
 
         qb.setOrderBy(CatMeta.getName());
-
-        // if(qb.hasTable(dicRelatedEntryMeta.getTable()))
-        // qb.addTable(dictionaryMeta);
 
         sb.append(qb.getEJBQL());
         
@@ -251,6 +241,14 @@ public class CategoryBean implements CategoryRemote {
         }else if(("qaevent_type").equals(categoryDO.getSystemName())){
             QaEventTypeCacheMessage msg = new QaEventTypeCacheMessage();
             msg.action = QaEventTypeCacheMessage.Action.UPDATED;
+            jmsProducer.writeMessage(msg);
+        }else if(("unit_of_measure").equals(categoryDO.getSystemName())){
+            UnitOfMeasureCacheMessage msg = new UnitOfMeasureCacheMessage();
+            msg.action = UnitOfMeasureCacheMessage.Action.UPDATED;
+            jmsProducer.writeMessage(msg);
+        }else if(("aux_field_value_type").equals(categoryDO.getSystemName())){
+            AuxFieldValueTypeCacheMessage msg = new AuxFieldValueTypeCacheMessage();
+            msg.action = AuxFieldValueTypeCacheMessage.Action.UPDATED;
             jmsProducer.writeMessage(msg);
         }
         
@@ -487,10 +485,6 @@ public class CategoryBean implements CategoryRemote {
         List<Exception> exceptionList = new ArrayList<Exception>();
 
         validateCategory(categoryDO, exceptionList);
-        //ArrayList<String> systemNames = new ArrayList<String>();
-
-        //ArrayList<String> entries = new ArrayList<String>();
-
         validateDictionary(dictDOList, exceptionList, categoryDO.getId());
 
         return exceptionList;
@@ -501,10 +495,6 @@ public class CategoryBean implements CategoryRemote {
         List<Exception> exceptionList = new ArrayList<Exception>();
 
         validateCategory(categoryDO, exceptionList);
-        //ArrayList<String> systemNames = new ArrayList<String>();
-
-       // ArrayList<String> entries = new ArrayList<String>();
-
         validateDictionary(dictDOList, exceptionList, categoryDO.getId());
 
         return exceptionList;

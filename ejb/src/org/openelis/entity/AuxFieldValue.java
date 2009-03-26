@@ -38,10 +38,15 @@ import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
+
+@NamedQueries({@NamedQuery(name = "AuxFieldValue.AuxFieldValueDOList", query = "select distinct new org.openelis.domain.AuxFieldValueDO(afv.id,afv.auxFieldId,"+
+                          " afv.typeId,afv.value) " +" from AuxFieldValue afv where afv.auxFieldId = :auxFieldId order by afv.value")})
 
 @Entity
 @Table(name="aux_field_value")
