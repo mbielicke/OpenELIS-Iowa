@@ -46,7 +46,7 @@ public class ShippingDO implements Serializable{
     protected Integer shippedMethodId;
     protected Datetime shippedDate;
     protected Integer numberOfPackages;
-    protected double cost;
+    protected Double cost;
     
     public AddressDO addressDO = new AddressDO();
     
@@ -57,7 +57,7 @@ public class ShippingDO implements Serializable{
     //without address info
     public ShippingDO(Integer id, Integer statusId, Integer shippedFromId, Integer shippedToId, String shippedTo,
                       Integer processedById, Date processedDate, Integer shippedMethodId,
-                      Date shippedDate, Integer numberOfPackages, double cost){
+                      Date shippedDate, Integer numberOfPackages, Double cost){
         setId(id);
         setStatusId(statusId);
         setShippedFromId(shippedFromId);
@@ -74,7 +74,7 @@ public class ShippingDO implements Serializable{
     //with address info
     public ShippingDO(Integer id, Integer statusId, Integer shippedFromId, Integer shippedToId, String shippedTo,
                       Integer processedById, Date processedDate, Integer shippedMethodId,
-                      Date shippedDate, Integer numberOfPackages, double cost,
+                      Date shippedDate, Integer numberOfPackages, Double cost,
                       String multUnit, String streetAddress, String city, String state, String zipCode){
         setId(id);
         setStatusId(statusId);
@@ -96,11 +96,11 @@ public class ShippingDO implements Serializable{
         addressDO.setZipCode(zipCode);
     }
 
-    public double getCost() {
+    public Double getCost() {
         return cost;
     }
 
-    public void setCost(double cost) {
+    public void setCost(Double cost) {
         this.cost = cost;
     }
 

@@ -31,30 +31,23 @@ import java.util.List;
 import javax.ejb.Remote;
 
 import org.openelis.domain.FillOrderDO;
-import org.openelis.gwt.common.data.DataModel;
 
 @Remote
 public interface FillOrderRemote {
-    //commit a change to inventory receipt, or insert a new inventory receipt
-    //public void updateInventoryReceipt(List inventoryReceipts) throws Exception;
     
     //method to query for orders
      public List query(HashMap fields, int first, int max) throws Exception;
      
-     //method to query for orders..and also unlock the necessary records
-     public List queryAndUnlock(HashMap fields, DataModel model, int first, int max) throws Exception;
+     public void setOrderToProcessed(List orders) throws Exception;
      
      public List getOrderAndLock(Integer orderId) throws Exception;
      
-     public List getOrderAndUnlock(Integer orderId) throws Exception;
+     public List getOrdersById(List orderIds);
      
-     public void unlockOrder(Integer orderId) throws Exception;
+     public void unlockOrders(List orderIds) throws Exception;
      
      //method to query order items
      public List getOrderItems(Integer orderId);
-     
-     //method to update internal orders
-     public void updateInternalOrders(List orders) throws Exception;
      
      //a way for the servlet to get the system user id
      public Integer getSystemUserId();
@@ -64,5 +57,5 @@ public interface FillOrderRemote {
      public FillOrderDO getOrderItemInfoAndOrderNote(Integer orderId);
           
      //method to validate the fields before the backend updates it in the database
-     public List validateForProcess(List orders);
+     public void validateOrders(List orders) throws Exception;
 }

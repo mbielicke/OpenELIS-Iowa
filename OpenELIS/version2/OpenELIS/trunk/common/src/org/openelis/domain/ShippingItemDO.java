@@ -39,6 +39,7 @@ public class ShippingItemDO implements Serializable{
     protected Integer referenceId;
     protected String itemDescription;
     protected Integer quantity;
+    protected String description;
     protected Integer inventoryLocationId;
     protected Integer transId;
     
@@ -119,5 +120,13 @@ public class ShippingItemDO implements Serializable{
 
     public void setTransId(Integer transId) {
         this.transId = transId;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = DataBaseUtil.trim(description);
     }
 }
