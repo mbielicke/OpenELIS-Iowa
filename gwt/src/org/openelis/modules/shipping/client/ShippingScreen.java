@@ -59,7 +59,8 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class ShippingScreen extends OpenELISScreenForm<ShippingRPC, ShippingForm, Integer> implements ClickListener, TableManager, ChangeListener, TabListener{
 
-    private FillOrderScreen fillOrderScreen;
+    public enum Action {Commited, Aborted}
+    private CommandListener target;
     private Integer shipFromId, shipToId;
     private String shipToText, multUnitText, streetAddressText, cityText, stateText, zipCodeText;
     private AppButton removeRowButton;
@@ -109,6 +110,10 @@ public class ShippingScreen extends OpenELISScreenForm<ShippingRPC, ShippingForm
         setCloseOnCommitAbort(true);
     }
     
+    public void setTarget(CommandListener target){
+        this.target = target;
+    }
+    
     private void setCloseOnCommitAbort(boolean close){
         closeOnCommitAbort = close;
     }
@@ -123,7 +128,6 @@ public class ShippingScreen extends OpenELISScreenForm<ShippingRPC, ShippingForm
         this.stateText = data.getStateText();
         this.zipCodeText = data.getZipCodeText();
         this.itemsShippedModel = data.getItemsShippedModel();
-        this.fillOrderScreen = data.getFillOrderScreen();
 
     }
     
@@ -236,7 +240,8 @@ public class ShippingScreen extends OpenELISScreenForm<ShippingRPC, ShippingForm
         public void onFailure(Throwable caught) {   
         }
         public void onSuccess(Object result) {
-            fillOrderScreen.onShippingScreenCommit();
+            trackingNumbersTable.model.enableAutoAdd(false);
+            target.performCommand(Action.Commited, this);
             
             if(closeOnCommitAbort)
                 window.close();
@@ -307,9 +312,7 @@ public class ShippingScreen extends OpenELISScreenForm<ShippingRPC, ShippingForm
         rpc.form.state.setValue(stateText);
         rpc.form.zipcode.setValue(zipCodeText);
         loadItemsShippedTableFromModel(itemsShippedModel);
-        //loadItemsShippedTableFromTreeModel(itemsShippedModel);
-
-      //  loadScreen(rpc);
+        rpc.form.numberOfPackages.setValue(new Integer(1));
         data = null;
     }
     
@@ -325,79 +328,15 @@ public class ShippingScreen extends OpenELISScreenForm<ShippingRPC, ShippingForm
         trackingNumbersTable.model.enableAutoAdd(true);
     }
     
-    public void commit() {
-        /*if(state == FormInt.State.ADD){
-                ShippingRPC srpc = new ShippingRPC();
-                srpc.key = rpc.key;
-                srpc.form = rpc.form;
-                srpc.checkedOrderIds = checkedOrderIds;
-                
-                screenService.call("unlockOrderRecords", srpc, new AsyncCallback<ShippingRPC>(){
-                    public void onSuccess(ShippingRPC result){
-                        trackingNumbersTable.model.enableAutoAdd(false);
-                        checkedOrderIds.clear();
-                        superCommit();
-                        
-                    }
-                    
-                    public void onFailure(Throwable caught){
-                        Window.alert(caught.getMessage());
-                    }
-                });
-        }
-*/
-        trackingNumbersTable.model.enableAutoAdd(false);
-        super.commit();
-    }
-  
-    /*
-    protected void superCommit(){
-        super.commit();
-        clearShippingData();
-    }
-    */
-    
     public void abort() {
-        /*
-         if(state == FormInt.State.ADD && checkedOrderIds != null && checkedOrderIds.size() > 0){
-            //we need to unlock the order records
-        	ShippingRPC srpc = new ShippingRPC();
-            srpc.key = rpc.key;
-            srpc.form = rpc.form;
-            srpc.checkedOrderIds = checkedOrderIds;
-            
-            screenService.call("unlockOrderRecords", srpc, new AsyncCallback<ShippingRPC>(){
-                public void onSuccess(ShippingRPC result){
-                    trackingNumbersTable.model.enableAutoAdd(false);
-                    superAbort();    
-                    fillOrderScreen.onShippingScreenAbort();
-                    
-                    if(closeOnCommitAbort)
-                        window.close();
-                }
-                
-                public void onFailure(Throwable caught){
-                    Window.alert(caught.getMessage());
-                }
-            });
-        }else{
-        */
-            trackingNumbersTable.model.enableAutoAdd(false);
-            super.abort();
-            
-            fillOrderScreen.onShippingScreenAbort();
-            
-            if(closeOnCommitAbort)
-                window.close();
-//        }
-    }
-    
-    /*
-    protected void superAbort(){
+        trackingNumbersTable.model.enableAutoAdd(false);
         super.abort();
-        clearShippingData();
+        
+        target.performCommand(Action.Aborted, this);
+        
+        if(closeOnCommitAbort)
+            window.close();
     }
-    */
     
     //
     //start table manager methods
@@ -444,12 +383,12 @@ public class ShippingScreen extends OpenELISScreenForm<ShippingRPC, ShippingForm
         for(int i=0; i<model.size(); i++){
             DataSet<Integer> set = model.get(i);
             
-            DataSet<Object> tableRow = (DataSet<Object>)itemsTable.model.createRow();
+            DataSet tableRow = (DataSet)itemsTable.model.createRow();
             
             tableRow.get(0).setValue(set.get(0).getValue());
             tableRow.get(1).setValue(((DropDownField)set.get(1)).getTextValue());
             
-            tableRow.setData((FieldType)((IntegerObject)set.getData()).clone());
+            tableRow.setData(set.getData());
             
             itemsTable.model.addRow(tableRow);
         }
@@ -457,38 +396,7 @@ public class ShippingScreen extends OpenELISScreenForm<ShippingRPC, ShippingForm
         if(model.size() > 0)
             itemsTable.model.refresh();
     }
-    
-    /*private void loadItemsShippedTableFromTreeModel(TreeDataModel model){
-        for(int i=0; i<model.size(); i++){
-            DataSet tableRow;
-            TreeDataItem row = model.get(i);
-            
-            if(row.getItems().size() > 0){
-                for(int j=0; j<row.getItems().size(); j++){
-                    tableRow = itemsTable.model.createRow();
-                    TreeDataItem childRow = row.getItems().get(j);
-                    
-                    tableRow.get(0).setValue(childRow.get(0).getValue());
-                    tableRow.get(1).setValue(childRow.get(1).getValue());
-                    
-                    tableRow.setData((DataMap)childRow.getData().clone());
-                    
-                    itemsTable.model.addRow(tableRow);
-                }
-            }else{
-                tableRow = itemsTable.model.createRow();
-                tableRow.get(0).setValue(row.get(0).getValue());
-                tableRow.get(1).setValue(row.get(1).getValue());
-                
-                tableRow.setData((DataMap)row.getData().clone());
-                
-                itemsTable.model.addRow(tableRow);
-            }
-        }
-        if(model.size() > 0)
-            itemsTable.model.refresh();
-    }*/
-    
+ 
     private void onRemoveRowButtonClick() {
         int selectedRow = trackingNumbersTable.model.getSelectedIndex();
         

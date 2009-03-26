@@ -33,7 +33,6 @@ public class FillOrderOrderItemsKey implements FieldType {
 
     public Integer referenceTableId;
     public Integer referenceId;
-    public Integer tableRowId;
     public Integer locId;
     public Integer transId;
     
@@ -48,7 +47,6 @@ public class FillOrderOrderItemsKey implements FieldType {
         FillOrderOrderItemsKey clone = new FillOrderOrderItemsKey();
         clone.referenceTableId = referenceTableId;
         clone.referenceId = referenceId;
-        clone.tableRowId = tableRowId;
         clone.locId = locId;
         clone.transId = transId;
         

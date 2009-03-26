@@ -43,4 +43,21 @@ public class FillOrderItemInfoForm extends Form{
        this();
        createFields(node);
    }
+   
+   public Object clone() {
+       FillOrderItemInfoForm clone  = new FillOrderItemInfoForm();
+       clone.requestedBy = (StringField)requestedBy.clone();
+       clone.costCenterId = (DropDownField<Integer>)costCenterId.clone();
+       clone.orderShippingNotes = (StringField)orderShippingNotes.clone();
+       clone.multUnit = (StringField)multUnit.clone();
+       clone.streetAddress = (StringField)streetAddress.clone();
+       clone.city = (StringField)city.clone();
+       clone.state = (StringField)state.clone();
+       clone.zipCode = (StringField)zipCode.clone();
+       clone.displayOrderItemsTree = (TreeField)displayOrderItemsTree.clone();
+       clone.originalOrderItemsTree = (TreeField)originalOrderItemsTree.clone();
+       clone.changed = changed;
+       
+       return clone;
+   }
 }
