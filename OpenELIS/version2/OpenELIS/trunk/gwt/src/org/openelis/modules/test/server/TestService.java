@@ -796,10 +796,21 @@ public class TestService implements AppScreenFormServiceInt<TestRPC,Integer>,
         return rpc;
     }
     
-    public TestGeneralPurposeRPC getEntryId(TestGeneralPurposeRPC rpc){
+    public TestGeneralPurposeRPC getEntryIdForEntryText(TestGeneralPurposeRPC rpc){
         CategoryRemote remote =  (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
         try{
             rpc.key = remote.getEntryIdForEntry(rpc.stringValue);
+          }catch(Exception ex) {
+              ex.printStackTrace();              
+          }
+           
+          return rpc;
+    }
+    
+    public TestGeneralPurposeRPC getEntryIdForSystemName(TestGeneralPurposeRPC rpc){
+        CategoryRemote remote =  (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
+        try{
+            rpc.key = remote.getEntryIdForSystemName(rpc.stringValue);
           }catch(Exception ex) {
               ex.printStackTrace();              
           }
@@ -1776,13 +1787,12 @@ public class TestService implements AppScreenFormServiceInt<TestRPC,Integer>,
             if(dictId.equals(resultDO.getTypeId())) {
               try {
                   entryId = catRemote.getEntryIdForEntry((String)((StringField)row.get(2)).getValue());
-               }catch (Exception ex) {
+                  resultDO.setValue(entryId.toString());
+                  resultDO.setDictEntry((String)((StringField)row.get(2)).getValue());   
+              }catch (Exception ex) {
                       ex.printStackTrace();
-               }
-                resultDO.setValue(entryId.toString());
-                resultDO.setDictEntry((String)((StringField)row.get(2)).getValue());
-             } 
-             else {
+               }                
+             } else {
                 resultDO.setValue(((StringField)row.get(2)).getValue());
                 resultDO.setDictEntry(null);                 
              }           

@@ -173,7 +173,7 @@ UIRF Software License are applicable instead of those above.
                                     <dropdown case="mixed" required = "true" width = "80px" type = "integer"/>   
                                    </editors>
                                    <fields>
-                                    <dropdown key="{auxField:getAnalyteId($auxf)}"/>
+                                    <dropdown key="{auxField:getAnalyteId($auxf)}" required = "true"/>
                                     <dropdown key="{auxField:getMethodId($auxf)}"/>
                                     <dropdown key="{auxField:getUnitOfMeasureId($auxf)}"/>
                                     <check key = "{auxField:getIsActive($auxf)}"/>
@@ -190,7 +190,7 @@ UIRF Software License are applicable instead of those above.
                               <HorizontalPanel width = "10px"/>
                              </HorizontalPanel>                              						 							
 								<widget halign="center">
-											<appButton action="removeIdentifierRow" key="deleteButton" onclick="this" style="Button">
+											<appButton action="removeIdentifierRow" key="removeAuxFieldRowButton" onclick="this" style="Button">
 												<HorizontalPanel>
 													<AbsolutePanel style="RemoveRowButtonImage"/>
 													<text><xsl:value-of select="resource:getString($constants,'removeRow')"/></text>
@@ -262,7 +262,7 @@ UIRF Software License are applicable instead of those above.
 		    <rpc key="query">			
 			</rpc>
 			<rpc key="queryByLetter">	
-			 <string key="{meta:getName($auxfg)}"/>		 	
+			 <queryString key="{meta:getName($auxfg)}"/>		 	
 			</rpc>
 		</screen>
   </xsl:template>

@@ -44,12 +44,13 @@ import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.data.AbstractField;
-import org.openelis.gwt.common.data.DataMap;
 import org.openelis.gwt.common.data.DataModel;
 import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.FieldType;
 import org.openelis.gwt.common.data.IntegerField;
+import org.openelis.gwt.common.data.IntegerObject;
+import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.common.data.TableField;
 import org.openelis.gwt.server.ServiceUtils;
@@ -59,6 +60,7 @@ import org.openelis.metamap.AuxFieldGroupMetaMap;
 import org.openelis.metamap.AuxFieldMetaMap;
 import org.openelis.metamap.AuxFieldValueMetaMap;
 import org.openelis.modules.auxiliary.client.AuxiliaryForm;
+import org.openelis.modules.auxiliary.client.AuxiliaryGeneralPurposeRPC;
 import org.openelis.modules.auxiliary.client.AuxiliaryRPC;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.AuxiliaryRemote;
@@ -141,7 +143,7 @@ public class AuxiliaryService implements
         AuxFieldGroupDO axfgDO = getAuxFieldGroupDOFromRPC(rpc.form);
         Integer axfgId;
         List<AuxFieldDO> axfDOList = getAuxFieldDOListFromRPC(null, rpc.form);
-        List<AuxFieldValueDO> axfvDOList = null;
+        List<AuxFieldValueDO> axfvDOList = getAuxFieldValueDOListFromRPC(null, rpc.form);
         List exceptionList = remote.validateForAdd(axfgDO,axfDOList,axfvDOList);
         if (exceptionList.size() > 0) {
             setRpcErrors(exceptionList, rpc.form);    
@@ -173,7 +175,7 @@ public class AuxiliaryService implements
         AuxFieldGroupDO axfgDO = getAuxFieldGroupDOFromRPC(rpc.form);
         IntegerField axfgId = rpc.form.id;
         List<AuxFieldDO> axfDOList = getAuxFieldDOListFromRPC(axfgId.getValue(), rpc.form);
-        List<AuxFieldValueDO> axfvDOList = null;
+        List<AuxFieldValueDO> axfvDOList = getAuxFieldValueDOListFromRPC(axfgId.getValue(), rpc.form);
         
         List exceptionList = remote.validateForUpdate(axfgDO,axfDOList,axfvDOList);
         if (exceptionList.size() > 0) {
@@ -218,7 +220,7 @@ public class AuxiliaryService implements
         AuxFieldGroupDO axfgDO = remote.getAuxFieldGroup(rpc.key);
         List<AuxFieldDO> auxfields = remote.getAuxFields(rpc.key);
         setFieldsInRPC(rpc.form, axfgDO);        
-        
+        fillAuxFieldTable(rpc.key, rpc.form);
         return rpc;
     }
 
@@ -232,12 +234,13 @@ public class AuxiliaryService implements
             throw new RPCException(e.getMessage());
         }
         setFieldsInRPC(rpc.form, axfgDO);
+        fillAuxFieldTable(rpc.key, rpc.form);
         return rpc;
     }
 
     public String getXML() throws RPCException {
         return ServiceUtils.getXML(Constants.APP_ROOT + "/Forms/auxiliary.xsl");
-    }
+    }       
     
     public AuxiliaryRPC getScreen(AuxiliaryRPC rpc) throws RPCException {
         try {
@@ -310,7 +313,23 @@ public class AuxiliaryService implements
         }       
         
         return dataModel;
-    }   
+    }  
+    
+    public AuxiliaryGeneralPurposeRPC getAuxFieldValueModel(AuxiliaryGeneralPurposeRPC rpc) {
+      AuxiliaryRemote remote = (AuxiliaryRemote)EJBFactory.lookup("openelis/AuxiliaryBean/remote");
+      List<AuxFieldValueDO> valueDOList = remote.getAuxFieldValues(rpc.key);
+      DataSet<Integer> set = null;
+      
+      for(AuxFieldValueDO valueDO: valueDOList) {
+       set = rpc.auxFieldValueModel.createNewSet();       
+       set.setKey(valueDO.getId());      
+       set.get(0).setValue(new DataSet<Integer>(valueDO.getTypeId()));
+       set.get(1).setValue(valueDO.getValue());
+       rpc.auxFieldValueModel.add(set);
+      }
+      
+      return rpc;
+    }
     
     private AuxFieldGroupDO getAuxFieldGroupDOFromRPC(AuxiliaryForm form){
         AuxFieldGroupDO auxFieldGroupDO = new AuxFieldGroupDO();
@@ -332,8 +351,7 @@ public class AuxiliaryService implements
     }
        
     
-    private void setFieldsInRPC(AuxiliaryForm form,
-                                AuxFieldGroupDO axfgDO) {
+    private void setFieldsInRPC(AuxiliaryForm form,AuxFieldGroupDO axfgDO) {
         form.id.setValue(axfgDO.getId());
         form.activeBegin.setValue(DatetimeRPC.getInstance(Datetime.YEAR,Datetime.DAY,
                                                           axfgDO.getActiveBegin()
@@ -352,17 +370,13 @@ public class AuxiliaryService implements
          DataSet<Integer> row = null;
          List<AuxFieldDO> afDOList = new ArrayList<AuxFieldDO>();
          AuxFieldDO afDO = null;
-         IntegerField id = null;
          
          for(int i= 0; i < model.size(); i++) {
               row = model.get(i);
-              afDO = new AuxFieldDO();
-              if(row.getData()!=null){ 
-                  id = (IntegerField)((DataMap)row.getData()).get("id");
-                  if(id != null)
-                      afDO.setId(id.getValue()); 
-              }
-              
+              afDO = new AuxFieldDO();             
+              if(row.getKey() != null)
+                 afDO.setId(row.getKey()); 
+                            
               afDO.setDelete(false);
               
               afDO.setUnitOfMeasureId((Integer)((DropDownField)row.get(2)).getSelectedKey());
@@ -381,32 +395,106 @@ public class AuxiliaryService implements
          for(int i= 0; i < model.getDeletions().size(); i++) {
              row = model.getDeletions().get(i);
              afDO = new AuxFieldDO();
-             if(row.getData()!=null){ 
-                 id = (IntegerField)((DataMap)row.getData()).get("id");
-                 if(id != null)
-                     afDO.setId(id.getValue()); 
-             }
+             if(row.getKey() != null)
+                 afDO.setId(row.getKey());
              
              afDO.setDelete(true); 
              afDOList.add(afDO);
-
-        }                 
+        }     
+         model.getDeletions().clear();
          return afDOList;
          
      }
     
+    private List<AuxFieldValueDO> getAuxFieldValueDOListFromRPC(Integer key, AuxiliaryForm form) {
+       DataModel<Integer> model = null;
+       Iterator<Integer> iter = null;
+       List<AuxFieldValueDO> valueDOList = null;
+       DataSet<Integer> row = null;       
+       IntegerObject id = null;
+       AuxFieldValueDO valueDO = null;
+       Integer auxFieldId = null;
+       DropDownField<Integer> type = null; 
+       DataModel<Integer> fieldModel = form.auxFieldValueTable.getValue();       
+       valueDOList = new ArrayList<AuxFieldValueDO>();
+        for(int i = 0 ; i < fieldModel.size(); i++) {
+         auxFieldId = iter.next();   
+         model = (DataModel)fieldModel.get(i).getData();
+         for(int j = 0 ; j <  model.size(); j++) {
+           valueDO = new AuxFieldValueDO();  
+           row = model.get(j);
+          
+           if(row.getKey() != null) {            
+            valueDO.setId(row.getKey());     
+           }
+            valueDO.setAuxFieldId(auxFieldId);
+            valueDO.setDelete(false);
+            
+            type = (DropDownField<Integer>)row.get(0);            
+            valueDO.setTypeId((Integer)type.getSelectedKey());
+               
+            valueDO.setValue(((StringField)row.get(1)).getValue());
+            valueDOList.add(valueDO);
+         }
+         
+         for(int j = 0 ; j <  model.getDeletions().size(); j++) {
+             valueDO = new AuxFieldValueDO();  
+             row = model.getDeletions().get(i);
+             if(row.getKey() != null) {            
+                valueDO.setId(row.getKey());    
+             }              
+              valueDO.setDelete(true);       
+              valueDOList.add(valueDO);
+           }
+          model.getDeletions().clear();
+        }        
+
+         return valueDOList;
+    }
+    
     private void fillAuxFieldTable(Integer key,AuxiliaryForm form) {
-        DataSet<Integer> row = null;
-        DataMap data = null;
-        IntegerField id = null;
+        DataSet<Integer> row = null;       
+        IntegerObject id = null;
         AuxFieldDO afDO = null;
+        DataSet<Integer> analyteSet = null;
+        DataModel<Integer> analyteModel = null;
+        DataSet<Integer> methodSet = null;
+        DataModel<Integer> methodModel = null;
         AuxiliaryRemote remote = (AuxiliaryRemote)EJBFactory.lookup("openelis/AuxiliaryBean/remote");
         DataModel<Integer> model = form.auxFieldTable.getValue();
         List<AuxFieldDO> afDOList = remote.getAuxFields(key); 
         model.clear();
         
         for(int i = 0; i < afDOList.size(); i++) {
+            row = model.createNewSet();
+            afDO = afDOList.get(i);                        
+            row.setKey(afDO.getId());
+                        
+            analyteSet = new DataSet<Integer>(afDO.getAnalyteId(),new StringObject(afDO.getAnalyteName()));       
+            analyteModel = new DataModel<Integer>();
+            analyteModel.add(analyteSet);            
+            ((DropDownField)row.get(0)).setModel(analyteModel);
+            row.get(0).setValue(analyteSet);
             
+            if(afDO.getMethodId()!=null) {
+             methodSet = new DataSet<Integer>(afDO.getMethodId(),new StringObject(afDO.getMethodName()));       
+             methodModel = new DataModel<Integer>();
+             methodModel.add(methodSet);            
+             ((DropDownField)row.get(1)).setModel(methodModel);
+             row.get(1).setValue(methodSet);
+            }
+            
+            if(afDO.getUnitOfMeasureId()!=null)
+             row.get(2).setValue(new DataSet<Integer>(afDO.getUnitOfMeasureId()));
+            
+            row.get(3).setValue(afDO.getIsActive());
+            row.get(4).setValue(afDO.getIsRequired());
+            row.get(5).setValue(afDO.getIsReportable());
+            row.get(6).setValue(afDO.getDescription());
+            
+            if(afDO.getScriptletId()!=null)
+            row.get(7).setValue(new DataSet<Integer>(afDO.getScriptletId()));
+            model.add(row);
         }
         
     }

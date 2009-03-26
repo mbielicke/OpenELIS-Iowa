@@ -532,10 +532,10 @@ UIRF Software License are applicable instead of those above.
 													<xsl:value-of select="resource:getString($constants,'significantDigits')"/>,													
 													<xsl:value-of select="resource:getString($constants,'roundingMethod')"/>																																																																												
 												</headers>
-												<widths>50,55,200,75,62,62,120,70,100</widths>
+												<widths>50,55,200,80,70,65,120,70,100</widths>
 												<editors>
-												    <dropdown case="mixed" width="45px"/>													
-													<dropdown case="mixed" width="50px"/>
+												    <dropdown case="mixed" width="75px"/>													
+													<dropdown case="mixed" width="75px"/>
 													<textbox/>
 													<textbox/>
 													<textbox/>
@@ -572,7 +572,7 @@ UIRF Software License are applicable instead of those above.
 													<xsl:value-of select="resource:getString($constants,'significantDigits')"/>,													
 													<xsl:value-of select="resource:getString($constants,'roundingMethod')"/>																																																			
 												</headers>
-												<widths>50,55,200,75,62,62,120,70,100</widths>
+												<widths>50,55,200,80,70,65,120,70,100</widths>
 												<editors>		
 												    <dropdown multiSelect="true" case="mixed" width="75px"/>  										
 													<dropdown multiSelect="true" case="mixed" width="75px"/>
@@ -692,7 +692,7 @@ UIRF Software License are applicable instead of those above.
 												</headers>
 												<widths>150,181,140,104</widths>
 												<editors>
-													<dropdown case="mixed" width="300px"/>
+													<dropdown case="mixed" width="160px"/>
 													<dropdown case="mixed" width="181px" onchange = "this"/>
 													<dropdown case="mixed" width="140px"/>
 													<dropdown case="mixed" width="104px"/>													
@@ -717,7 +717,7 @@ UIRF Software License are applicable instead of those above.
 												</headers>
 												<widths>150,181,140,104</widths>
 												<editors>
-													<dropdown case="mixed" multiSelect="true" width="300px"/>
+													<dropdown case="mixed" multiSelect="true" width="160px"/>
 													<dropdown case="mixed" multiSelect="true" width="181px"/>
 													<dropdown case="mixed" multiSelect="true" width="150px"/>
 													<dropdown case="mixed" multiSelect="true" width="104px"/>													
@@ -862,7 +862,7 @@ UIRF Software License are applicable instead of those above.
 													<label/>
 													<check/>
 													<textbox/>
-													<dropdown case="mixed" width="177px"/>																					
+													<dropdown case="mixed" width="100px"/>																					
 												</editors>
 												<fields>
 												    <string key="analyteName"/>
