@@ -26,26 +26,36 @@
 package org.openelis.modules.test.client;
 
 import org.openelis.gwt.common.Form;
+import org.openelis.gwt.common.data.AbstractField;
+import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.common.data.TableField;
 
 import com.google.gwt.xml.client.Node;
 
-public class SampleTypeForm extends Form {
+public class SampleTypeForm extends Form<Integer> {
 
-    /**
-     * 
-     */
-    private static final long serialVersionUID = -4379514134954333709L;
+    private static final long serialVersionUID = 1L;
     
-    public TableField sampleTypeTable;
+    public TableField<TableDataRow<Integer>> sampleTypeTable;
     public Boolean duplicate;
     
     public SampleTypeForm() {
-      fields.put("sampleTypeTable",sampleTypeTable = new TableField());
+        sampleTypeTable = new TableField<TableDataRow<Integer>>("sampleTypeTable");
     }
 
     public SampleTypeForm(Node node){
         this();
         createFields(node);
+    }
+    
+    public SampleTypeForm(String key) {
+        this();
+        this.key = key;
+    }
+    
+    public AbstractField[] getFields() {
+        return new AbstractField[] {
+                                    sampleTypeTable
+        };
     }
 }

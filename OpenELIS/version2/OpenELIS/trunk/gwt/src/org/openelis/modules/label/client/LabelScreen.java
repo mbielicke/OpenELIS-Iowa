@@ -29,21 +29,22 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Widget;
 
-import org.openelis.gwt.common.Form;
-import org.openelis.gwt.common.data.DataModel;
+import org.openelis.gwt.common.Query;
+import org.openelis.gwt.common.data.TableDataModel;
 import org.openelis.gwt.common.data.KeyListManager;
+import org.openelis.gwt.common.data.QueryStringField;
+import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.screen.CommandChain;
 import org.openelis.gwt.screen.ScreenInputWidget;
-import org.openelis.gwt.widget.AToZTable;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.CollapsePanel;
 import org.openelis.gwt.widget.Dropdown;
-import org.openelis.gwt.widget.FormInt;
+import org.openelis.gwt.widget.ResultsTable;
 import org.openelis.metamap.LabelMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
-public class LabelScreen extends OpenELISScreenForm<LabelRPC,LabelForm,Integer> implements ClickListener {
+public class LabelScreen extends OpenELISScreenForm<LabelForm,Query<TableDataRow<Integer>>> implements ClickListener {
     
     private Dropdown displayPType = null;
     private Dropdown displayScript = null;
@@ -52,8 +53,8 @@ public class LabelScreen extends OpenELISScreenForm<LabelRPC,LabelForm,Integer> 
     
     private LabelMetaMap Meta = new LabelMetaMap(); 
     
-    AsyncCallback<LabelRPC> checkModels = new AsyncCallback<LabelRPC>() {
-        public void onSuccess(LabelRPC rpc) {
+    AsyncCallback<LabelForm> checkModels = new AsyncCallback<LabelForm>() {
+        public void onSuccess(LabelForm rpc) {
             if(rpc.printerType != null) {
                 setPrinterTypesModel(rpc.printerType);
             }
@@ -66,8 +67,8 @@ public class LabelScreen extends OpenELISScreenForm<LabelRPC,LabelForm,Integer> 
     
     public LabelScreen() {
         super("org.openelis.modules.label.server.LabelService");
-        forms.put("display", new LabelForm());
-        getScreen(new LabelRPC());
+        query = new Query<TableDataRow<Integer>>();
+        getScreen(new LabelForm());
     }
 
     public void performCommand(Enum action, Object obj) {
@@ -89,7 +90,7 @@ public class LabelScreen extends OpenELISScreenForm<LabelRPC,LabelForm,Integer> 
     }
 
     public void afterDraw(boolean success) {
-        AToZTable atozTable = (AToZTable) getWidget("azTable");
+        ResultsTable atozTable = (ResultsTable) getWidget("azTable");
         ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
         ButtonPanel bpanel = (ButtonPanel)getWidget("buttons");
         
@@ -109,12 +110,12 @@ public class LabelScreen extends OpenELISScreenForm<LabelRPC,LabelForm,Integer> 
         displayScript = (Dropdown)getWidget(Meta.getScriptletId());
         
         //load dropdowns
-        setPrinterTypesModel(rpc.printerType);
-        setScriptletModel(rpc.scriptlet);
+        setPrinterTypesModel(form.printerType);
+        setScriptletModel(form.scriptlet);
                   
        
-        rpc.printerType = null;
-        rpc.scriptlet = null;
+        form.printerType = null;
+        form.scriptlet = null;
         
         updateChain.add(0,checkModels);
         fetchChain.add(0,checkModels);
@@ -128,22 +129,19 @@ public class LabelScreen extends OpenELISScreenForm<LabelRPC,LabelForm,Integer> 
     private void getLabels(String query) {
       // we only want to allow them to select a letter if they are in display
       // mode..
-      if (state == FormInt.State.DISPLAY || state == FormInt.State.DEFAULT) {
-    
-          Form letterRPC = (Form) this.forms.get("queryByLetter");
-         
-          letterRPC.setFieldValue(Meta.getName(), query);
-           
-          commitQuery(letterRPC);
+      if (state == State.DISPLAY || state == State.DEFAULT) {
+          QueryStringField qField = new QueryStringField(Meta.getName());
+          qField.setValue(query);
+          commitQuery(qField);
                    
       }
     }  
     
-    private void setPrinterTypesModel(DataModel<Integer> typesModel) {
+    private void setPrinterTypesModel(TableDataModel<TableDataRow<Integer>> typesModel) {
         displayPType.setModel(typesModel);
     }
     
-    private void setScriptletModel(DataModel<Integer> model) {
+    private void setScriptletModel(TableDataModel<TableDataRow<Integer>> model) {
         displayScript.setModel(model);
     }
     

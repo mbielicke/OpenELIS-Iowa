@@ -32,23 +32,19 @@ import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
-import org.openelis.gwt.common.DefaultRPC;
-import org.openelis.gwt.common.Form;
-import org.openelis.gwt.common.RPC;
-import org.openelis.gwt.common.data.Data;
-import org.openelis.gwt.common.data.DataModel;
+import org.openelis.gwt.common.Query;
 import org.openelis.gwt.common.data.DataObject;
-import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.KeyListManager;
+import org.openelis.gwt.common.data.QueryStringField;
 import org.openelis.gwt.common.data.StringField;
-import org.openelis.gwt.common.data.StringObject;
+import org.openelis.gwt.common.data.TableDataModel;
+import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.screen.CommandChain;
 import org.openelis.gwt.screen.ScreenTableWidget;
-import org.openelis.gwt.widget.AToZTable;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.CollapsePanel;
-import org.openelis.gwt.widget.FormInt;
+import org.openelis.gwt.widget.ResultsTable;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableManager;
 import org.openelis.gwt.widget.table.TableModel;
@@ -56,7 +52,7 @@ import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.metamap.PanelMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
-public class PanelScreen extends OpenELISScreenForm<PanelRPC,PanelForm,Integer> implements
+public class PanelScreen extends OpenELISScreenForm<PanelForm,Query<TableDataRow<Integer>>> implements
                                                    ClickListener,
                                                    ChangeListener,
                                                    TableManager {       
@@ -92,8 +88,8 @@ public class PanelScreen extends OpenELISScreenForm<PanelRPC,PanelForm,Integer> 
     
     public PanelScreen() {
         super("org.openelis.modules.panel.server.PanelService");
-        forms.put("display", new PanelForm());
-        getScreen(new PanelRPC());
+        query = new Query<TableDataRow<Integer>>();
+        getScreen(new PanelForm());
         
     }
     
@@ -112,7 +108,7 @@ public class PanelScreen extends OpenELISScreenForm<PanelRPC,PanelForm,Integer> 
     
     public void afterDraw(boolean success) {
         ButtonPanel bpanel = (ButtonPanel) getWidget("buttons");        
-        AToZTable atozTable = (AToZTable) getWidget("azTable");    
+        ResultsTable atozTable = (ResultsTable) getWidget("azTable");    
         ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");        
         
         CommandChain chain = new CommandChain();
@@ -142,15 +138,15 @@ public class PanelScreen extends OpenELISScreenForm<PanelRPC,PanelForm,Integer> 
         
         allTestTable =  ((TableWidget)getWidget("allTestsTable"));
         
-        setAllTestsDataModel(rpc.allTests);
-        rpc.allTests = null;
+        setAllTestsDataModel(form.allTests);
+        form.allTests = null;
         allTestsTableModel = (TableModel)allTestTable.model;
         allTestsTableModel.enableMultiSelect(true);
         
         panelName = (TextBox)getWidget(PanelMeta.getName());
         updateChain.add(afterUpdate);  
                 
-        rpc.form.addedTestTable.setValue(addTestModel.getData());
+        form.addedTestTable.setValue(addTestModel.getData());
         super.afterDraw(success);              
   }
     
@@ -168,37 +164,37 @@ public class PanelScreen extends OpenELISScreenForm<PanelRPC,PanelForm,Integer> 
         panelName.setFocus(true);
     } 
     
-    protected AsyncCallback afterUpdate = new AsyncCallback() {
+    protected AsyncCallback<PanelForm> afterUpdate = new AsyncCallback<PanelForm>() {
         public void onFailure(Throwable caught) {   
         }
-        public void onSuccess(Object result) {            
+        public void onSuccess(PanelForm result) {            
             panelName.setFocus(true);       
             allTestTable.enabled(true);
         }
     };           
     
                       
-    public boolean canAdd(TableWidget widget,DataSet set, int row) {
+    public boolean canAdd(TableWidget widget,TableDataRow set, int row) {
         // TODO Auto-generated method stub
         return false;
     }
 
-    public boolean canAutoAdd(TableWidget widget,DataSet addRow) {        
+    public boolean canAutoAdd(TableWidget widget,TableDataRow addRow) {        
        return false;
     }
 
-    public boolean canDelete(TableWidget widget,DataSet set, int row) {
+    public boolean canDelete(TableWidget widget,TableDataRow set, int row) {
         // TODO Auto-generated method stub
         return false;
     }
 
-    public boolean canEdit(TableWidget widget,DataSet set, int row, int col) {        
+    public boolean canEdit(TableWidget widget,TableDataRow set, int row, int col) {        
         if(state == State.QUERY)
             return true;
        return false;
     }
 
-    public boolean canSelect(TableWidget widget,DataSet set, int row) {        
+    public boolean canSelect(TableWidget widget,TableDataRow set, int row) {        
        if(state == State.UPDATE || state == State.ADD||
                        state == State.QUERY)
         return true;
@@ -207,17 +203,17 @@ public class PanelScreen extends OpenELISScreenForm<PanelRPC,PanelForm,Integer> 
     }
     
     private void getPanels(String query) {
-        if (state == FormInt.State.DISPLAY || state == FormInt.State.DEFAULT) {            
-            Form form = (Form)this.forms.get("queryByLetter");
-            form.setFieldValue(PanelMeta.getName(), query);
-            commitQuery(form);
+        if (state == State.DISPLAY || state == State.DEFAULT) { 
+            QueryStringField qField = new QueryStringField(PanelMeta.getName());
+            qField.setValue(query);
+            commitQuery(qField);
         }
     }
     
     private boolean testAdded(String testName,String methodName){    
          for(int iter = 0; iter <  addTestModel.numRows(); iter++){
-             String tname = (String)((DataObject)addTestModel.getRow(iter).get(0)).getValue();
-             String mname = (String)((DataObject)addTestModel.getRow(iter).get(1)).getValue();
+             String tname = (String)((DataObject)addTestModel.getRow(iter).getCells().get(0)).getValue();
+             String mname = (String)((DataObject)addTestModel.getRow(iter).getCells().get(1)).getValue();
              if(tname.equals(testName.trim())&& mname.equals(methodName)){                 
                 return true;
              }
@@ -233,8 +229,8 @@ public class PanelScreen extends OpenELISScreenForm<PanelRPC,PanelForm,Integer> 
     private void onMoveUpButtonClick(){
         int selIndex = addTestModel.getData().getSelectedIndex();
         if(selIndex > 0){         
-         DataSet moveUpRow = addTestModel.getRow(selIndex);
-         DataSet movedownRow = addTestModel.getRow(selIndex-1);
+         TableDataRow moveUpRow = addTestModel.getRow(selIndex);
+         TableDataRow movedownRow = addTestModel.getRow(selIndex-1);
          addTestModel.setRow(selIndex, movedownRow);
          addTestModel.setRow(selIndex-1, moveUpRow);
          addTestModel.selectRow(selIndex-1);
@@ -245,8 +241,8 @@ public class PanelScreen extends OpenELISScreenForm<PanelRPC,PanelForm,Integer> 
       private void onMoveDownButtonClick(){
           int selIndex = addTestModel.getData().getSelectedIndex();
           if(selIndex < addTestModel.getData().size()-1){         
-           DataSet moveUpRow = addTestModel.getRow(selIndex+1);
-           DataSet movedownRow = addTestModel.getRow(selIndex);
+           TableDataRow moveUpRow = addTestModel.getRow(selIndex+1);
+           TableDataRow movedownRow = addTestModel.getRow(selIndex);
            addTestModel.setRow(selIndex+1, movedownRow);
            addTestModel.setRow(selIndex, moveUpRow);
            addTestModel.selectRow(selIndex+1);
@@ -257,29 +253,29 @@ public class PanelScreen extends OpenELISScreenForm<PanelRPC,PanelForm,Integer> 
        private void addTestButtonClick(){
               int selIndex = allTestsTableModel.getData().getSelectedIndex();
               if(selIndex > -1){         
-                  DataSet<String> atRow =  (DataSet<String>)allTestsTableModel.getData().get(selIndex);
-                  String display = atRow.getKey();                  
-                  DataSet row = (DataSet)addedTestsController.model.createRow();            
+                  TableDataRow<String> atRow =  (TableDataRow<String>)allTestsTableModel.getData().get(selIndex);
+                  String display = atRow.key;                  
+                  TableDataRow row = addedTestsController.model.createRow();            
                   String[] namesArray= display.split(",");                     
                   if(testAdded(namesArray[0],namesArray[1])){
                     boolean ok = Window.confirm("This test has already been added to the panel." +
                           " Add it anyway?");
                     if(ok){    
-                        ((StringField)row.get(0)).setValue(namesArray[0]);
-                        ((StringField)row.get(1)).setValue(namesArray[1]);    
+                        ((StringField)row.getCells().get(0)).setValue(namesArray[0]);
+                        ((StringField)row.getCells().get(1)).setValue(namesArray[1]);    
                         addTestModel.addRow(row);
                         addTestModel.refresh();
                     }
                   }else{                
-                      ((StringField)row.get(0)).setValue(namesArray[0]);
-                      ((StringField)row.get(1)).setValue(namesArray[1]);              
+                      ((StringField)row.getCells().get(0)).setValue(namesArray[0]);
+                      ((StringField)row.getCells().get(1)).setValue(namesArray[1]);              
                       addTestModel.addRow(row);
                       addTestModel.refresh();
                   }
           }            
        }
        
-       private void setAllTestsDataModel(DataModel model) {
+       private void setAllTestsDataModel(TableDataModel<TableDataRow<String>> model) {
            allTestTable.model.setModel(model);
            allTestTable.model.refresh();
            allTestTable.enabled(false);             

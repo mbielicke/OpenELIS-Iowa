@@ -26,6 +26,7 @@
 package org.openelis.modules.analyte.client;
 
 import org.openelis.gwt.common.Form;
+import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.CheckField;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.IntegerField;
@@ -34,7 +35,7 @@ import org.openelis.metamap.AnalyteMetaMap;
 
 import com.google.gwt.xml.client.Node;
 
-public class AnalyteForm extends Form{
+public class AnalyteForm extends Form<Integer>{
     private static final long serialVersionUID = 1L;
 
   	public IntegerField id;
@@ -45,15 +46,26 @@ public class AnalyteForm extends Form{
   	
     public AnalyteForm() {
        AnalyteMetaMap meta = new AnalyteMetaMap();
-       fields.put(meta.getId(), id = new IntegerField());
-       fields.put(meta.getName(),name = new StringField());
-       fields.put(meta.PARENT_ANALYTE.getName(), parentName = new DropDownField<Integer>());
-       fields.put(meta.getExternalId(), externalId = new StringField());
-       fields.put(meta.getIsActive(), isActive = new CheckField());
+       id = new IntegerField(meta.getId());
+       name = new StringField(meta.getName());
+       parentName = new DropDownField<Integer>(meta.PARENT_ANALYTE.getName());
+       externalId = new StringField(meta.getExternalId());
+       isActive = new CheckField(meta.getIsActive());
    }
    
    public AnalyteForm(Node node) {
        this();
        createFields(node);
    }
+   
+   public AbstractField[] getFields() {
+       return new AbstractField[] {
+                                   id,
+                                   name,
+                                   parentName,
+                                   externalId,
+                                   isActive
+       };
+   }
+   
 }

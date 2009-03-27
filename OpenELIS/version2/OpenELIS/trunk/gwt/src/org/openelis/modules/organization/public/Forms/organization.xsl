@@ -235,7 +235,7 @@ UIRF Software License are applicable instead of those above.
 													<textbox case="mixed"/>
 												</editors>
 
-												<fields class="ContactRow">
+												<fields>
 													<dropdown key="{contact:getContactTypeId($cont)}" required="true"/>
 													<string key="{contact:getName($cont)}" required="true"/>
 													<string key="{addr:getMultipleUnit($contAddr)}"/>
@@ -256,6 +256,7 @@ UIRF Software License are applicable instead of those above.
 
 												<colAligns>left,left,left,left,left,left,left,left,left,left,left,left,left</colAligns>
 											</table>
+											<!--
 											<query>
 												<queryTable maxRows="9" showError="false" title="" width="574px" showScroll="ALWAYS">
 													<headers>
@@ -287,6 +288,7 @@ UIRF Software License are applicable instead of those above.
 													
 												</queryTable>
 											</query>
+											-->
 										</widget>
 										<widget halign="center" style="WhiteContentPanel">
 											<appButton action="removeRow" key="removeContactButton" onclick="this" style="Button">
@@ -322,6 +324,7 @@ UIRF Software License are applicable instead of those above.
 												<colAligns>left,left</colAligns>
 
 											</table>
+											<!--
 											<query>
 												<queryTable maxRows="9" showError="false" title="" width="592px">
 													<headers>
@@ -357,6 +360,7 @@ UIRF Software License are applicable instead of those above.
 
 												</queryTable>
 											</query>
+											-->
 										</widget>
 										<widget halign="center" style="WhiteContentPanel">
 											<appButton action="removeIdentifierRow" key="removeIdentifierButton" onclick="this" style="Button">
@@ -438,6 +442,7 @@ UIRF Software License are applicable instead of those above.
 				</rpc>
 				<string key="orgTabPanel" reset="false">contactsTab</string>
 			</rpc>
+			<!--
 			<rpc key="query">
 				<queryNumber key="{meta:getId($org)}" type="integer"/>
 				<queryString key="{meta:getName($org)}"/>
@@ -472,7 +477,7 @@ UIRF Software License are applicable instead of those above.
 			<rpc key="queryByLetter">
 				<queryString key="{meta:getName($org)}"/>
 			</rpc>
-
+            -->
 		</screen>
   </xsl:template>
 </xsl:stylesheet>

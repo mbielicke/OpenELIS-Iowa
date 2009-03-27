@@ -25,35 +25,49 @@
 */
 package org.openelis.modules.test.client;
 
-import java.util.ArrayList;
+import com.google.gwt.xml.client.Node;
 
 import org.openelis.gwt.common.Form;
-import org.openelis.gwt.common.data.DataModel;
+import org.openelis.gwt.common.data.AbstractField;
+import org.openelis.gwt.common.data.TableDataModel;
+import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.common.data.TableField;
 import org.openelis.gwt.common.data.TreeField;
 
-import com.google.gwt.xml.client.Node;
+import java.util.ArrayList;
 
-public class TestAnalyteForm extends Form {
+public class TestAnalyteForm extends Form<Integer> {
 
-    /**
-     * 
-     */
-    private static final long serialVersionUID = -5480320235097945045L;
+    private static final long serialVersionUID = -1L;
 
     public TreeField analyteTree;
-    public TableField<Integer> testResultsTable;
-    public ArrayList<DataModel<Integer>> resultModelCollection;
+    public TableField<TableDataRow<Integer>> testResultsTable;
+    public ArrayList<TableDataModel<TableDataRow<Integer>>> resultModelCollection;
     public Boolean duplicate;
     
+    public TableDataModel<TableDataRow<Integer>> model;
+    public Integer integerValue;
+    
     public TestAnalyteForm() {
-        fields.put("analyteTree", analyteTree = new TreeField());
-        fields.put("testResultsTable", testResultsTable = new TableField<Integer>());        
+        analyteTree = new TreeField("analyteTree");
+        testResultsTable = new TableField<TableDataRow<Integer>>("testResultsTable");
     }
     
     public TestAnalyteForm(Node node) {
         this();
         createFields(node);
+    }
+    
+    public TestAnalyteForm(String key) {
+        this();
+        this.key = key;
+    }
+    
+    public AbstractField[] getFields() {
+        return new AbstractField[] {
+                                    analyteTree,
+                                    testResultsTable
+        };
     }
     
 }

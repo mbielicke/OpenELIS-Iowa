@@ -163,6 +163,7 @@ UIRF Software License are applicable instead of those above.
 							<filters>false,false,false,false,false,false</filters>
 							<colAligns>left,left,left,left,left,left</colAligns>
 						</table>
+						<!--
 						<query>
 							<queryTable width="auto" title="" maxRows="14" showError="false" showScroll="ALWAYS">
 								<headers><xsl:value-of select='resource:getString($constants,"locationNum")'/>,<xsl:value-of select='resource:getString($constants,"inventoryItem")'/>,
@@ -182,6 +183,7 @@ UIRF Software License are applicable instead of those above.
 								<xsl:value-of select='transAdjustmentLocationMeta:getQuantity($transAdjustmentLocation)'/></fields>
 							</queryTable>
 							</query>
+							-->
 						</widget>
 						<widget style="WhiteContentPanel" halign="center">									
 							<appButton action="removeRow" onclick="this" style="Button" key="removeRowButton">
@@ -205,6 +207,7 @@ UIRF Software License are applicable instead of those above.
       
       <integer key="systemUserId" required="false"/>
 	</rpc>
+	<!--
 	<rpc key="query">
   	  <queryNumber key="{meta:getId($adj)}" type="integer"/>
       <queryString key="{meta:getDescription($adj)}"/>
@@ -220,6 +223,7 @@ UIRF Software License are applicable instead of those above.
       <queryNumber key="{transAdjustmentLocationMeta:getPhysicalCount($transAdjustmentLocation)}" type="integer"/>
       <queryNumber key="{transAdjustmentLocationMeta:getQuantity($transAdjustmentLocation)}" type="integer"/>
 	</rpc>
+	-->
 </screen>
   </xsl:template>
 </xsl:stylesheet>

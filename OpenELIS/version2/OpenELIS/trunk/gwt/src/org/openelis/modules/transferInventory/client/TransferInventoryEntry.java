@@ -25,16 +25,14 @@
 */
 package org.openelis.modules.transferInventory.client;
 
-import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.screen.AppModule;
 import org.openelis.gwt.screen.ClassFactory;
 import org.openelis.modules.main.client.openelis.OpenELIS;
-import org.openelis.modules.testTrailer.client.TestTrailerScreen;
 
 public class TransferInventoryEntry implements AppModule {
     
     public void onModuleLoad() {
-        OpenELIS.modules.addItem(new StringObject(getModuleName()));
+        OpenELIS.modules.add(getModuleName());
         ClassFactory.addClassFactory(new String[] {"TransferInventoryScreen"}, 
                                new ClassFactory.Factory() {
                                    public Object newInstance(Object[] args) {

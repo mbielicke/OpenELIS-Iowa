@@ -32,20 +32,21 @@ import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Widget;
 
 import org.openelis.gwt.common.Form;
+import org.openelis.gwt.common.Query;
 import org.openelis.gwt.common.data.DataMap;
-import org.openelis.gwt.common.data.DataModel;
+import org.openelis.gwt.common.data.TableDataModel;
 import org.openelis.gwt.common.data.DataObject;
-import org.openelis.gwt.common.data.DataSet;
+import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.common.data.IntegerField;
 import org.openelis.gwt.common.data.KeyListManager;
+import org.openelis.gwt.common.data.QueryStringField;
 import org.openelis.gwt.screen.CommandChain;
 import org.openelis.gwt.screen.ScreenInputWidget;
-import org.openelis.gwt.widget.AToZTable;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.CollapsePanel;
 import org.openelis.gwt.widget.Dropdown;
-import org.openelis.gwt.widget.FormInt;
+import org.openelis.gwt.widget.ResultsTable;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableManager;
 import org.openelis.gwt.widget.table.TableWidget;
@@ -54,7 +55,7 @@ import org.openelis.gwt.widget.table.event.TableWidgetListener;
 import org.openelis.metamap.CategoryMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
-public class DictionaryScreen extends OpenELISScreenForm<DictionaryRPC,DictionaryForm,Integer> implements ClickListener,
+public class DictionaryScreen extends OpenELISScreenForm<DictionaryForm,Query<TableDataRow<Integer>>> implements ClickListener,
                                                                     TableManager,
                                                                     TableWidgetListener{
 
@@ -65,17 +66,17 @@ public class DictionaryScreen extends OpenELISScreenForm<DictionaryRPC,Dictionar
 
     private Dropdown displaySection = null;
     
-    private static DataModel<Integer> sectionDropDown = null;
+    private static TableDataModel<TableDataRow<Integer>> sectionDropDown = null;
         
     private CategoryMetaMap CatMap = new CategoryMetaMap();
     public DictionaryScreen() {
         super("org.openelis.modules.dictionary.server.DictionaryService");
-        forms.put("display",new DictionaryForm());        
-        getScreen(new DictionaryRPC());        
+        query = new Query<TableDataRow<Integer>>();
+        getScreen(new DictionaryForm());        
     }
     
     public void afterDraw(boolean success) {       
-        AToZTable atozTable = (AToZTable) getWidget("azTable");
+        ResultsTable atozTable = (ResultsTable) getWidget("azTable");
         ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
         ButtonPanel bpanel = (ButtonPanel)getWidget("buttons");
         
@@ -98,14 +99,14 @@ public class DictionaryScreen extends OpenELISScreenForm<DictionaryRPC,Dictionar
                 
         displaySection = (Dropdown)getWidget(CatMap.getSectionId());       
                      
-        setSectionsModel(rpc.sections);
-        rpc.sections = null;
+        setSectionsModel(form.sections);
+        form.sections = null;
         
         // override the callbacks
         updateChain.add(afterUpdate);
         super.afterDraw(success);        
         
-        rpc.form.dictEntTable.setValue(dictEntryController.model.getData());
+        form.dictEntTable.setValue(dictEntryController.model.getData());
     }
     
     public void performCommand(Enum action, Object obj) {        
@@ -157,12 +158,10 @@ public class DictionaryScreen extends OpenELISScreenForm<DictionaryRPC,Dictionar
     }
 
     private void getCategories(String query) {
-        if (state == FormInt.State.DISPLAY || state == FormInt.State.DEFAULT) {
-
-            Form letterRPC = (Form)this.forms.get("queryByLetter");
-            letterRPC.setFieldValue(CatMap.getName(), query);
-            
-            commitQuery(letterRPC);            
+        if (state == State.DISPLAY || state == State.DEFAULT) {
+            QueryStringField qField = new QueryStringField(CatMap.getName());
+            qField.setValue(qField);
+            commitQuery(qField);
         }
     }
     
@@ -174,58 +173,38 @@ public class DictionaryScreen extends OpenELISScreenForm<DictionaryRPC,Dictionar
     }     
             
 
-    public boolean canAdd(TableWidget widget,DataSet set, int row) {
+    public boolean canAdd(TableWidget widget,TableDataRow set, int row) {
         // TODO Auto-generated method stub
         return false;
     }
 
 
-    public boolean canAutoAdd(TableWidget widget,DataSet row) {        
-        return ((DataObject)row.get(0)).getValue() != null;
+    public boolean canAutoAdd(TableWidget widget,TableDataRow row) {        
+        return ((DataObject)row.cells[0]).getValue() != null;
     }
 
 
-    public boolean canDelete(TableWidget widget,DataSet set, int row) {
+    public boolean canDelete(TableWidget widget,TableDataRow set, int row) {
         // TODO Auto-generated method stub
         return false;
     }
 
 
-    public boolean canEdit(TableWidget widget, DataSet set, int row, int col) {        
+    public boolean canEdit(TableWidget widget, TableDataRow set, int row, int col) {        
         if(state == State.UPDATE || state == State.ADD|| state == State.QUERY)
             return true;       
            return false;
        }
 
-    public boolean canSelect(TableWidget widget, DataSet set, int row) {
+    public boolean canSelect(TableWidget widget, TableDataRow set, int row) {
         if(state == State.UPDATE || state == State.ADD|| state == State.QUERY)
             return true;       
            return false;
        }
-
-    public boolean canDrag(TableWidget widget, DataSet item, int row) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    public boolean canDrop(TableWidget widget, Widget dragWidget, DataSet dropTarget, int targetRow) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    public void drop(TableWidget widget, Widget dragWidget, DataSet dropTarget, int targetRow) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    public void drop(TableWidget widget, Widget dragWidget) {
-        // TODO Auto-generated method stub
-        
-    }
 
     public void finishedEditing(SourcesTableWidgetEvents sender, int row, int col) {
       if(col == 3)  {
-        final DataSet set = (DataSet)dictEntryController.model.getData().get(row) ;
+        final TableDataRow<Integer> set = dictEntryController.model.getRow(row) ;
         final int currRow = row;
         DataMap data =  (DataMap)set.getData();
         DictionaryEntryTextRPC detrpc = null;
@@ -234,7 +213,7 @@ public class DictionaryScreen extends OpenELISScreenForm<DictionaryRPC,Dictionar
             id = ((IntegerField)data.get("id")).getValue();
             if(id != null) {
                 detrpc = new DictionaryEntryTextRPC();
-                detrpc.key = id;                
+                detrpc.id = id;                
                 screenService.call("getNumResultsAffected",detrpc,
                                         new AsyncCallback<DictionaryEntryTextRPC>() {
                                           public void onSuccess(DictionaryEntryTextRPC result) {
@@ -270,7 +249,7 @@ public class DictionaryScreen extends OpenELISScreenForm<DictionaryRPC,Dictionar
         
     }
     
-    private void setSectionsModel(DataModel<Integer> model) {
+    private void setSectionsModel(TableDataModel model) {
         displaySection.setModel(model);   
     }
     

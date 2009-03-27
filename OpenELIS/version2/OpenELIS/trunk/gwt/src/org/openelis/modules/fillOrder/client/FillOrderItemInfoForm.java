@@ -1,14 +1,17 @@
 package org.openelis.modules.fillOrder.client;
 
+import com.google.gwt.xml.client.Node;
+
 import org.openelis.gwt.common.Form;
+import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.StringField;
+import org.openelis.gwt.common.data.TableDataModel;
+import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.common.data.TreeField;
 import org.openelis.metamap.FillOrderMetaMap;
 
-import com.google.gwt.xml.client.Node;
-
-public class FillOrderItemInfoForm extends Form{
+public class FillOrderItemInfoForm extends Form<Integer> {
     private static final long serialVersionUID = 1L;
 
     public StringField requestedBy;
@@ -25,18 +28,20 @@ public class FillOrderItemInfoForm extends Form{
     public TreeField originalOrderItemsTree;
     public boolean changed = false;
     
+    public TableDataModel<TableDataRow<Integer>> tableData;
+    
     public FillOrderItemInfoForm() {
        FillOrderMetaMap meta = new FillOrderMetaMap();
-       fields.put(meta.getRequestedBy(), requestedBy = new StringField());
-       fields.put(meta.getCostCenterId(), costCenterId = new DropDownField<Integer>());
-       fields.put("orderItemsTree", displayOrderItemsTree = new TreeField());
-       fields.put("orderShippingNotes", orderShippingNotes = new StringField());
-       fields.put(meta.ORDER_ORGANIZATION_META.ADDRESS.getMultipleUnit(), multUnit = new StringField());
-       fields.put(meta.ORDER_ORGANIZATION_META.ADDRESS.getStreetAddress(), streetAddress = new StringField());
-       fields.put(meta.ORDER_ORGANIZATION_META.ADDRESS.getCity(), city = new StringField());
-       fields.put(meta.ORDER_ORGANIZATION_META.ADDRESS.getState(), state = new StringField());
-       fields.put(meta.ORDER_ORGANIZATION_META.ADDRESS.getZipCode(), zipCode = new StringField());
-       originalOrderItemsTree = new TreeField();
+       requestedBy = new StringField(meta.getRequestedBy());
+       costCenterId = new DropDownField<Integer>(meta.getCostCenterId());
+       displayOrderItemsTree = new TreeField("orderItemsTree");
+       orderShippingNotes = new StringField("orderShippingNotes");
+       multUnit = new StringField(meta.ORDER_ORGANIZATION_META.ADDRESS.getMultipleUnit());
+       streetAddress = new StringField(meta.ORDER_ORGANIZATION_META.ADDRESS.getStreetAddress());
+       city = new StringField(meta.ORDER_ORGANIZATION_META.ADDRESS.getCity());
+       state = new StringField(meta.ORDER_ORGANIZATION_META.ADDRESS.getState());
+       zipCode = new StringField(meta.ORDER_ORGANIZATION_META.ADDRESS.getZipCode());
+       originalOrderItemsTree = new TreeField("originalTree");
    }
    
    public FillOrderItemInfoForm(Node node) {
@@ -44,20 +49,23 @@ public class FillOrderItemInfoForm extends Form{
        createFields(node);
    }
    
-   public Object clone() {
-       FillOrderItemInfoForm clone  = new FillOrderItemInfoForm();
-       clone.requestedBy = (StringField)requestedBy.clone();
-       clone.costCenterId = (DropDownField<Integer>)costCenterId.clone();
-       clone.orderShippingNotes = (StringField)orderShippingNotes.clone();
-       clone.multUnit = (StringField)multUnit.clone();
-       clone.streetAddress = (StringField)streetAddress.clone();
-       clone.city = (StringField)city.clone();
-       clone.state = (StringField)state.clone();
-       clone.zipCode = (StringField)zipCode.clone();
-       clone.displayOrderItemsTree = (TreeField)displayOrderItemsTree.clone();
-       clone.originalOrderItemsTree = (TreeField)originalOrderItemsTree.clone();
-       clone.changed = changed;
-       
-       return clone;
+   public FillOrderItemInfoForm(String key) {
+       this();
+       this.key = key;
+   }
+   
+   public AbstractField[] getFields() {
+       return new AbstractField[] {
+                                   requestedBy,
+                                   costCenterId,
+                                   displayOrderItemsTree,
+                                   orderShippingNotes,
+                                   multUnit,
+                                   streetAddress,
+                                   city,
+                                   state,
+                                   zipCode,
+                                   originalOrderItemsTree
+       };
    }
 }

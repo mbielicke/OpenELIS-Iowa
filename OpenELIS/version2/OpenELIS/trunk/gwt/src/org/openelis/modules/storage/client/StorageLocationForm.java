@@ -26,16 +26,18 @@
 package org.openelis.modules.storage.client;
 
 import org.openelis.gwt.common.Form;
+import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.CheckField;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.IntegerField;
 import org.openelis.gwt.common.data.StringField;
+import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.common.data.TableField;
 import org.openelis.metamap.StorageLocationMetaMap;
 
 import com.google.gwt.xml.client.Node;
 
-public class StorageLocationForm extends Form{
+public class StorageLocationForm extends Form<Integer>{
     private static final long serialVersionUID = 1L;
 
     public IntegerField id;
@@ -43,21 +45,31 @@ public class StorageLocationForm extends Form{
     public DropDownField<Integer> storageUnit;
     public StringField location;
     public CheckField isAvailable;
-    public TableField<Integer> childStorageLocsTable;
+    public TableField<TableDataRow<Integer>> childStorageLocsTable;
    
     public StorageLocationForm() {
        StorageLocationMetaMap meta = new StorageLocationMetaMap();
-       fields.put(meta.getId(), id = new IntegerField());
-       fields.put(meta.getName(), name = new StringField());
-       fields.put(meta.STORAGE_UNIT_META.getDescription(), storageUnit = new DropDownField<Integer>());
-       fields.put(meta.getLocation(), location = new StringField());
-       fields.put(meta.getIsAvailable(), isAvailable = new CheckField());
-       fields.put("childStorageLocsTable", childStorageLocsTable = new TableField<Integer>());
-       
+       id = new IntegerField(meta.getId());
+       name = new StringField(meta.getName());
+       storageUnit = new DropDownField<Integer>(meta.STORAGE_UNIT_META.getDescription());
+       location = new StringField(meta.getLocation());
+       isAvailable = new CheckField(meta.getIsAvailable());
+       childStorageLocsTable = new TableField<TableDataRow<Integer>>("childStorageLocsTable");
    }
    
    public StorageLocationForm(Node node) {
        this();
        createFields(node);
+   }
+   
+   public AbstractField[] getFields() {
+       return new AbstractField[] {
+                                   id,
+                                   name,
+                                   storageUnit,
+                                   location,
+                                   isAvailable,
+                                   childStorageLocsTable
+       };
    }
 }

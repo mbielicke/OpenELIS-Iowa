@@ -30,10 +30,10 @@ import com.google.gwt.user.client.ui.SourcesTabEvents;
 import com.google.gwt.user.client.ui.TabListener;
 import com.google.gwt.user.client.ui.Widget;
 
-import org.openelis.gwt.common.DefaultRPC;
-import org.openelis.gwt.common.Form;
+import org.openelis.gwt.common.Query;
 import org.openelis.gwt.common.data.KeyListManager;
-import org.openelis.gwt.common.data.NumberObject;
+import org.openelis.gwt.common.data.TableDataModel;
+import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.common.data.TreeDataItem;
 import org.openelis.gwt.screen.CommandChain;
 import org.openelis.gwt.widget.ButtonPanel;
@@ -41,13 +41,15 @@ import org.openelis.gwt.widget.tree.TreeManager;
 import org.openelis.gwt.widget.tree.TreeWidget;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
-public class NewbornScreeningSampleLoginScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer> implements ClickListener, TabListener, TreeManager{
+public class NewbornScreeningSampleLoginScreen extends OpenELISScreenForm<NewbornScreeningSampleLoginForm,Query<TableDataRow<Integer>>> implements ClickListener, TabListener, TreeManager{
 
     private TreeWidget itemsTestsTree;
     private KeyListManager keyList = new KeyListManager();
     
     public NewbornScreeningSampleLoginScreen() {
-        super("org.openelis.modules.newbornScreeningSampleLogin.server.NewbornScreeningSampleLoginService", false, new DefaultRPC());
+        super("org.openelis.modules.newbornScreeningSampleLogin.server.NewbornScreeningSampleLoginService");
+        query = new Query<TableDataRow<Integer>>();
+        getScreen(new NewbornScreeningSampleLoginForm());
     }
 
     public void onClick(Widget sender) {
@@ -66,22 +68,22 @@ public class NewbornScreeningSampleLoginScreen extends OpenELISScreenForm<Defaul
         
         //build the tree
         TreeDataItem row1 = itemsTestsTree.model.createTreeItem("top");
-        row1.get(0).setValue("0 - Blood Spot");
-        row1.get(1).setValue("Heal");
+        row1.cells[0].setValue("0 - Blood Spot");
+        row1.cells[1].setValue("Heal");
         TreeDataItem row2 = itemsTestsTree.model.createTreeItem("top");
-        row2.get(0).setValue("Hemoglobinopathies - Logged In");
+        row2.cells[0].setValue("Hemoglobinopathies - Logged In");
         TreeDataItem row3 = itemsTestsTree.model.createTreeItem("top");
-        row3.get(0).setValue("Biotinidase Deficiency - Logged In");
+        row3.cells[0].setValue("Biotinidase Deficiency - Logged In");
         TreeDataItem row4 = itemsTestsTree.model.createTreeItem("top");
-        row4.get(0).setValue("Congenital Adrenal Hyperplasia - Logged In");
+        row4.cells[0].setValue("Congenital Adrenal Hyperplasia - Logged In");
         TreeDataItem row5 = itemsTestsTree.model.createTreeItem("top");
-        row5.get(0).setValue("TMS Disorders- Logged In");
+        row5.cells[0].setValue("TMS Disorders- Logged In");
         TreeDataItem row6 = itemsTestsTree.model.createTreeItem("top");
-        row6.get(0).setValue("Galactosemia - Logged In");
+        row6.cells[0].setValue("Galactosemia - Logged In");
         TreeDataItem row7 = itemsTestsTree.model.createTreeItem("top");
-        row7.get(0).setValue("Hypothyroidism - Logged In");
+        row7.cells[0].setValue("Hypothyroidism - Logged In");
         TreeDataItem row8 = itemsTestsTree.model.createTreeItem("top");
-        row8.get(0).setValue("Cystic Fibrosis - Logged In");
+        row8.cells[0].setValue("Cystic Fibrosis - Logged In");
         
         row1.addItem(row2);
         row1.addItem(row3);
@@ -115,18 +117,6 @@ public class NewbornScreeningSampleLoginScreen extends OpenELISScreenForm<Defaul
         return false;
     }
 
-    public boolean canDrag(TreeWidget widget, TreeDataItem item, int row) {
-        return false;
-    }
-
-    public boolean canDrop(TreeWidget widget, Widget dragWidget, TreeDataItem dropTarget, int targetRow) {
-        return false;
-    }
-
-    public boolean canDrop(TreeWidget widget, Widget dragWidget, Widget dropWidget) {
-        return false;
-    }
-
     public boolean canEdit(TreeWidget widget, TreeDataItem set, int row, int col) {
         return true;
     }
@@ -139,7 +129,4 @@ public class NewbornScreeningSampleLoginScreen extends OpenELISScreenForm<Defaul
         return false;
     }
 
-    public void drop(TreeWidget widget, Widget dragWidget, TreeDataItem dropTarget, int targetRow) {}
-
-    public void drop(TreeWidget widget, Widget dragWidget) {}
 }

@@ -25,51 +25,53 @@
 */
 package org.openelis.modules.sampleManagement.server;
 
-import org.openelis.gwt.common.DefaultRPC;
-import org.openelis.gwt.common.Form;
-import org.openelis.gwt.common.RPC;
+import org.openelis.gwt.common.Query;
 import org.openelis.gwt.common.RPCException;
-import org.openelis.gwt.common.data.DataModel;
+import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.FieldType;
+import org.openelis.gwt.common.data.TableDataModel;
+import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
+import org.openelis.modules.sampleManagement.client.SampleManagementForm;
 import org.openelis.server.constants.Constants;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
-public class SampleManagementService implements AppScreenFormServiceInt<DefaultRPC, Integer>{
+public class SampleManagementService implements AppScreenFormServiceInt<SampleManagementForm, Query<TableDataRow<Integer>>>{
 
-    public DefaultRPC abort(DefaultRPC rpc) throws RPCException {
+    public SampleManagementForm abort(SampleManagementForm rpc) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public DefaultRPC commitAdd(DefaultRPC rpc) throws RPCException {
+    public SampleManagementForm commitAdd(SampleManagementForm rpc) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public DefaultRPC commitDelete(DefaultRPC rpc) throws RPCException {
+    public SampleManagementForm commitDelete(SampleManagementForm rpc) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public DataModel<Integer> commitQuery(Form form, DataModel<Integer> data) throws RPCException {
+    public Query<TableDataRow<Integer>> commitQuery(Query<TableDataRow<Integer>> query) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public DefaultRPC commitUpdate(DefaultRPC rpc) throws RPCException {
+    public SampleManagementForm commitUpdate(SampleManagementForm rpc) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public DefaultRPC fetch(DefaultRPC rpc) throws RPCException {
+    public SampleManagementForm fetch(SampleManagementForm rpc) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public DefaultRPC fetchForUpdate(DefaultRPC rpc) throws RPCException {
+    public SampleManagementForm fetchForUpdate(SampleManagementForm rpc) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
@@ -88,7 +90,7 @@ public class SampleManagementService implements AppScreenFormServiceInt<DefaultR
         return null;
     }
     
-    public DefaultRPC getScreen(DefaultRPC rpc){
+    public SampleManagementForm getScreen(SampleManagementForm rpc){
         return rpc;
     }
 }

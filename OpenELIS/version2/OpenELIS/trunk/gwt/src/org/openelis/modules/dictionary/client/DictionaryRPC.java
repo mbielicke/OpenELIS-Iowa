@@ -26,16 +26,16 @@
 
 package org.openelis.modules.dictionary.client;
 
-import org.openelis.gwt.common.RPC;
-import org.openelis.gwt.common.data.DataModel;
+import org.openelis.gwt.common.data.TableDataModel;
+import org.openelis.gwt.common.data.TableDataRow;
 
-public class DictionaryRPC extends RPC<DictionaryForm, Integer> {
+public class DictionaryRPC {//extends RPC<DictionaryForm, Integer> {
 
     /**
      * 
      */
     private static final long serialVersionUID = 1L;
 
-    public DataModel<Integer> sections;
+    public TableDataModel<TableDataRow<Integer>> sections;
 
 }

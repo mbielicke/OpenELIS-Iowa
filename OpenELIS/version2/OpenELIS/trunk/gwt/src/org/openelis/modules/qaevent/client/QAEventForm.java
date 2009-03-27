@@ -26,16 +26,19 @@
 
 package org.openelis.modules.qaevent.client;
 
+import com.google.gwt.xml.client.Node;
+
 import org.openelis.gwt.common.Form;
+import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.CheckField;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.IntegerField;
 import org.openelis.gwt.common.data.StringField;
+import org.openelis.gwt.common.data.TableDataModel;
+import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.metamap.QaEventMetaMap;
 
-import com.google.gwt.xml.client.Node;
-
-public class QAEventForm extends Form {
+public class QAEventForm extends Form<Integer> {
 
     /**
      * 
@@ -49,22 +52,39 @@ public class QAEventForm extends Form {
     public CheckField isBillable;
     public StringField reportingText;
     public DropDownField<Integer> testId;
-    public DropDownField<Integer> typeId;    
+    public DropDownField<Integer> typeId; 
+    
+    public TableDataModel<TableDataRow<Integer>> qaeventTypes;
+    public TableDataModel<TableDataRow<Integer>> tests;
+
     
     public QAEventForm() {
         QaEventMetaMap meta = new QaEventMetaMap();
-        fields.put(meta.getId(), id = new IntegerField());
-        fields.put(meta.getName(), name = new StringField());
-        fields.put(meta.getReportingSequence(), reportingSequence = new IntegerField());
-        fields.put(meta.getDescription(), description =  new StringField());
-        fields.put(meta.getIsBillable(), isBillable = new CheckField());
-        fields.put(meta.getReportingText(), reportingText = new StringField());
-        fields.put(meta.getTestId(), testId = new DropDownField<Integer>());
-        fields.put(meta.getTypeId(), typeId = new DropDownField<Integer>());              
+        id = new IntegerField(meta.getId());
+        name = new StringField(meta.getName());
+        reportingSequence = new IntegerField(meta.getReportingSequence());
+        description =  new StringField(meta.getDescription());
+        isBillable = new CheckField(meta.getIsBillable());
+        reportingText = new StringField(meta.getReportingText());
+        testId = new DropDownField<Integer>(meta.getTestId());
+        typeId = new DropDownField<Integer>(meta.getTypeId());
     }
     
     public QAEventForm(Node node) {
         this();
         createFields(node);
+    }
+    
+    public AbstractField[] getFields() {
+        return new AbstractField[] {
+                                    id,
+                                    name,
+                                    reportingSequence,
+                                    description,
+                                    isBillable,
+                                    reportingText,
+                                    testId,
+                                    typeId
+        };
     }
 }

@@ -55,11 +55,28 @@ UIRF Software License are applicable instead of those above.
 		<HorizontalPanel spacing="0" padding="0">
 			<!--left table goes here -->
 			<CollapsePanel key="collapsePanel" height="310px" style="LeftSidePanel">
+			<!--
 				<azTable width="100%" key="azTable" maxRows="13" headers='{resource:getString($constants,"name")}' tablewidth="auto" colwidths="175">
     				 <buttonPanel key="atozButtons">
 	         		<xsl:call-template name="aToZLeftPanelButtons"/>
 	         		</buttonPanel>
 				</azTable>
+				-->
+				   <resultsTable width="100%" key="azTable">
+					       <buttonPanel key="atozButtons">
+								<xsl:call-template name="aToZLeftPanelButtons"/>
+						   </buttonPanel>
+						   <table maxRows="13" width="auto">
+						     <headers><xsl:value-of select="resource:getString($constants,'name')"/></headers>
+						     <widths>175</widths>
+						     <editors>
+						       <label/>
+						     </editors>
+						     <fields>
+						       <string/>
+						     </fields>
+						   </table>
+					   </resultsTable>
 				</CollapsePanel>
 			<VerticalPanel spacing="0" padding="0">
 			<!--button panel code-->
@@ -143,6 +160,7 @@ UIRF Software License are applicable instead of those above.
   	<dropdown key="{standardNoteMeta:getTypeId($meta)}" required="true"/>
   	<string key="{standardNoteMeta:getText($meta)}" required="true"/>
 	</rpc>
+	<!--
 	<rpc key="query">
  	<queryNumber key="{standardNoteMeta:getId($meta)}" type="integer" required="false"/>
  	<queryString key="{standardNoteMeta:getName($meta)}" type="string" required="false"/>
@@ -153,6 +171,7 @@ UIRF Software License are applicable instead of those above.
 	<rpc key="queryByLetter">
 		<queryString key="{standardNoteMeta:getName($meta)}"/>
 	</rpc>
+	-->
 </screen>
   </xsl:template>
 </xsl:stylesheet>

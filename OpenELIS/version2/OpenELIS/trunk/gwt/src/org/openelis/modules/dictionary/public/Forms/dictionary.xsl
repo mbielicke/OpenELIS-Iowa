@@ -67,11 +67,28 @@ UIRF Software License are applicable instead of those above.
 		<HorizontalPanel style="WhiteContentPanel" spacing="0" padding="0">
 			<!--left table goes here -->
 			 		<CollapsePanel key="collapsePanel" height="450px" style="LeftSidePanel">
+			 		<!--
 						<azTable colwidths ="175"  key="azTable" maxRows="19" tablewidth="auto" headers="{resource:getString($constants,'catName')}" width="100%">
 							<buttonPanel key="atozButtons">
 								<xsl:call-template name="aToZLeftPanelButtons"/>
 							</buttonPanel>
 						</azTable>
+					-->
+					<resultsTable key="azTable" height="425px" width="100%">
+				   	 <buttonPanel key="atozButtons">
+	    			   <xsl:call-template name="aToZLeftPanelButtons"/>		
+		    		 </buttonPanel>
+		    		 <table maxRows="19" width="auto">
+		    		   <headers><xsl:value-of select="resource:getString($constants,'catName')"/></headers>
+		    		   <widths>175</widths>
+		    		   <editors>
+		    		     <label/>
+		    		   </editors>
+		    		   <fields>
+		    		     <string/>
+		    		   </fields>
+		    		 </table>
+				</resultsTable>
 					</CollapsePanel>
 	<VerticalPanel spacing="0" padding="0">
 				<!--button panel code-->
@@ -170,6 +187,7 @@ UIRF Software License are applicable instead of those above.
 								<filters>false,false,false,false,false</filters>
 								<colAligns>left,left,left,left,left</colAligns>
 							</table>
+							<!--
 						  <query>
 						   	<queryTable width = "auto" maxRows = "13"  title="" showError="false" showScroll="ALWAYS">
 								<headers><xsl:value-of select='resource:getString($constants,"active")'/>,<xsl:value-of select='resource:getString($constants,"systemName")'/>,
@@ -193,6 +211,7 @@ UIRF Software License are applicable instead of those above.
 								<colAligns>left,left,left,left,left</colAligns>
 							</queryTable>
 						  </query>						  
+						  -->
 						</widget>			
 											                
 		                <TablePanel width = "500px" spacing="0" padding="0" style="TableFooter">
@@ -219,6 +238,7 @@ UIRF Software License are applicable instead of those above.
      <table key="dictEntTable"/>	 
      <dropdown key="{meta:getSectionId($cat)}" required="false"/>    
 	</rpc>
+	<!--
 	<rpc key = "query">	 		    	
 	 <queryString key="{meta:getSystemName($cat)}"/>
 	 <queryString key="{meta:getName($cat)}"/>
@@ -234,6 +254,7 @@ UIRF Software License are applicable instead of those above.
 	<rpc key="queryByLetter">
       <queryString key="{meta:getName($cat)}"/>
     </rpc>
+    -->
 </screen>
 </xsl:template>
 </xsl:stylesheet> 

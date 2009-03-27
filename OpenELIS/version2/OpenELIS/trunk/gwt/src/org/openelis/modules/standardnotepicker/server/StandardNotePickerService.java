@@ -25,89 +25,76 @@
 */
 package org.openelis.modules.standardnotepicker.server;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-
 import org.openelis.domain.StandardNoteDO;
-import org.openelis.gwt.common.Form;
+import org.openelis.gwt.common.Query;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.data.AbstractField;
-import org.openelis.gwt.common.data.DataModel;
-import org.openelis.gwt.common.data.FieldType;
-import org.openelis.gwt.common.data.QueryNumberField;
+import org.openelis.gwt.common.data.QueryIntegerField;
 import org.openelis.gwt.common.data.QueryStringField;
 import org.openelis.gwt.common.data.StringObject;
+import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.common.data.TreeDataItem;
 import org.openelis.gwt.common.data.TreeDataModel;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
 import org.openelis.metamap.StandardNoteMetaMap;
-import org.openelis.modules.standardnotepicker.client.StandardNotePickerRPC;
+import org.openelis.modules.standardnotepicker.client.StandardNotePickerForm;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.StandardNoteRemote;
 import org.openelis.server.constants.Constants;
 
-public class StandardNotePickerService implements AppScreenFormServiceInt<StandardNotePickerRPC,Integer> {
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+
+public class StandardNotePickerService implements AppScreenFormServiceInt<StandardNotePickerForm,Query<TableDataRow<Integer>>> {
 
 	private static final long serialVersionUID = 1L;
 
     private static final StandardNoteMetaMap StandardNoteMeta = new StandardNoteMetaMap();
     
-	public DataModel<Integer> commitQuery(Form form, DataModel<Integer> model) throws RPCException {
+	public Query<TableDataRow<Integer>> commitQuery(Query<TableDataRow<Integer>> query) throws RPCException {
     	return null;
     }
 
-    public StandardNotePickerRPC commitAdd(StandardNotePickerRPC rpc) throws RPCException {
+    public StandardNotePickerForm commitAdd(StandardNotePickerForm rpc) throws RPCException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	public StandardNotePickerRPC commitUpdate(StandardNotePickerRPC rpc) throws RPCException {
+	public StandardNotePickerForm commitUpdate(StandardNotePickerForm rpc) throws RPCException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	public StandardNotePickerRPC commitDelete(StandardNotePickerRPC rpc) throws RPCException {
+	public StandardNotePickerForm commitDelete(StandardNotePickerForm rpc) throws RPCException {
     	// TODO Auto-generated method stub
     	return null;
     }
 
-    public StandardNotePickerRPC abort(StandardNotePickerRPC rpc) throws RPCException {
+    public StandardNotePickerForm abort(StandardNotePickerForm rpc) throws RPCException {
     	// TODO Auto-generated method stub
     	return null;
     }
 
-    public StandardNotePickerRPC fetch(StandardNotePickerRPC rpc) throws RPCException {
+    public StandardNotePickerForm fetch(StandardNotePickerForm rpc) throws RPCException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	public StandardNotePickerRPC fetchForUpdate(StandardNotePickerRPC rpc) throws RPCException {
+	public StandardNotePickerForm fetchForUpdate(StandardNotePickerForm rpc) throws RPCException {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
-	public String getXML() throws RPCException {
-		return null;
-	}
     
-    public HashMap<String, FieldType> getXMLData() throws RPCException {
-        return null;
-    }
-	
-	public HashMap<String, FieldType> getXMLData(HashMap<String, FieldType> args) throws RPCException {
-    	return null;
-    }
-    
-    public StandardNotePickerRPC getScreen(StandardNotePickerRPC rpc) throws RPCException {
+    public StandardNotePickerForm getScreen(StandardNotePickerForm rpc) throws RPCException {
         rpc.xml = ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/standardNotePicker.xsl");
 
         return rpc;
     }
 
-    public StandardNotePickerRPC getTreeModel(StandardNotePickerRPC rpc) throws RPCException{
+    public StandardNotePickerForm getTreeModel(StandardNotePickerForm rpc) throws RPCException{
 		StandardNoteRemote remote = (StandardNoteRemote)EJBFactory.lookup("openelis/StandardNoteBean/remote");
 		TreeDataModel returnTree = new TreeDataModel();
 		//TreeModel treeModel = new TreeModel();
@@ -139,11 +126,11 @@ public class StandardNotePickerService implements AppScreenFormServiceInt<Standa
 			//standard note category name
 			String nameParam = (String)result[1];
 			
-			TreeDataItem treeModelItem = new TreeDataItem();
+			TreeDataItem treeModelItem = new TreeDataItem(1);
 			treeModelItem.leafType = "top";
 			treeModelItem.lazy = true;
-			treeModelItem.setKey(idParam);
-			treeModelItem.add(new StringObject(nameParam));
+			treeModelItem.key = idParam;
+			treeModelItem.cells[0] = (new StringObject(nameParam));
 			
 			returnTree.add(treeModelItem);
 			
@@ -153,13 +140,12 @@ public class StandardNotePickerService implements AppScreenFormServiceInt<Standa
 	    return rpc;
 	}
 
-    public StandardNotePickerRPC getTreeModelSecondLevel(StandardNotePickerRPC rpc) throws RPCException{
+    public StandardNotePickerForm getTreeModelSecondLevel(StandardNotePickerForm rpc) throws RPCException{
 		StandardNoteRemote remote = (StandardNoteRemote)EJBFactory.lookup("openelis/StandardNoteBean/remote");
 		
-		QueryNumberField typeField = new QueryNumberField();
+		QueryIntegerField typeField = new QueryIntegerField();
 		QueryStringField nameField = new QueryStringField();
 		QueryStringField descField = new QueryStringField();
-		typeField.setType("integer");
 		typeField.setValue(String.valueOf(rpc.id));
 		nameField.setValue(rpc.queryString);
 		descField.setValue(rpc.queryString);
@@ -181,11 +167,11 @@ public class StandardNotePickerService implements AppScreenFormServiceInt<Standa
 	            while(itr.hasNext()){
 	                StandardNoteDO standardNoteDO = (StandardNoteDO) itr.next();
 	                
-	                TreeDataItem treeModelItem = new TreeDataItem();
+	                TreeDataItem treeModelItem = new TreeDataItem(1);
 	                treeModelItem.leafType = "leaf";
-	                treeModelItem.setKey(rpc.id);
+	                treeModelItem.key = (rpc.id);
 	                treeModelItem.setData(new StringObject(standardNoteDO.getText()));
-	                treeModelItem.add(new StringObject(standardNoteDO.getName()+" : "+standardNoteDO.getDescription()));
+	                treeModelItem.cells[0] = (new StringObject(standardNoteDO.getName()+" : "+standardNoteDO.getDescription()));
 	                
 	                
 	                treeModel.add(treeModelItem);

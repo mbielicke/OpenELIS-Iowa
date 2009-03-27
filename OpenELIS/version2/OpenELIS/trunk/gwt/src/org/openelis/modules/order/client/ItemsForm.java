@@ -26,21 +26,36 @@
 package org.openelis.modules.order.client;
 
 import org.openelis.gwt.common.Form;
+import org.openelis.gwt.common.data.AbstractField;
+import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.common.data.TableField;
 
 import com.google.gwt.xml.client.Node;
 
-public class ItemsForm extends Form{
+public class ItemsForm extends Form<Integer>{
     private static final long serialVersionUID = 1L;
     
-    public TableField<Integer> itemsTable;
+    public TableField<TableDataRow<Integer>> itemsTable;
+    
+    public boolean forDuplicate;
     
     public ItemsForm() {
-        fields.put("itemsTable",itemsTable = new TableField<Integer>());
+        itemsTable = new TableField<TableDataRow<Integer>>("itemsTable");
     }
     
     public ItemsForm(Node node){
         this();
         createFields(node);
+    }
+    
+    public ItemsForm(String key) {
+        this();
+        this.key = key;
+    }
+    
+    public AbstractField[] getFields() {
+        return new AbstractField[] {
+                                    itemsTable
+        };
     }
 }

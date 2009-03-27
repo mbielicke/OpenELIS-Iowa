@@ -26,9 +26,9 @@
 package org.openelis.server.handlers;
 
 import org.openelis.domain.IdNameDO;
-import org.openelis.gwt.common.data.DataModel;
-import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.StringObject;
+import org.openelis.gwt.common.data.TableDataModel;
+import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.messages.StateCacheMessage;
 import org.openelis.persistence.CachingManager;
 import org.openelis.persistence.EJBFactory;
@@ -48,8 +48,8 @@ public class StatesCacheHandler implements MessageHandler<StateCacheMessage> {
         
     }
     
-    public static DataModel<String> getStates() {
-        DataModel<String> model = (DataModel<String>)CachingManager.getElement("InitialData", "stateDropdown");
+    public static TableDataModel<TableDataRow<String>> getStates() {
+        TableDataModel<TableDataRow<String>> model = (TableDataModel<TableDataRow<String>>)CachingManager.getElement("InitialData", "stateDropdown");
         if(model == null) {
             CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");        
             Integer id = remote.getCategoryId("state");
@@ -57,11 +57,11 @@ public class StatesCacheHandler implements MessageHandler<StateCacheMessage> {
             ArrayList<IdNameDO> entries = (ArrayList<IdNameDO>)remote.getDropdownValues(id);
         
             //  we need to build the model to return
-            model = new DataModel<String>();
+            model = new TableDataModel<TableDataRow<String>>();
         
-            model.add(new DataSet<String>("",new StringObject(" ")));
+            model.add(new TableDataRow<String>("",new StringObject(" ")));
             for(IdNameDO resultDO :  entries){
-                model.add(new DataSet<String>(resultDO.getName(),new StringObject(resultDO.getName())));
+                model.add(new TableDataRow<String>(resultDO.getName(),new StringObject(resultDO.getName())));
             }   
             CachingManager.putElement("InitialData", "stateDropdown", model);
             version++;

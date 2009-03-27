@@ -25,21 +25,23 @@
 */
 package org.openelis.modules.analyte.client;
 
-import org.openelis.gwt.common.Form;
+import com.google.gwt.user.client.ui.TextBox;
+
+import org.openelis.gwt.common.Query;
 import org.openelis.gwt.common.data.KeyListManager;
+import org.openelis.gwt.common.data.QueryStringField;
+import org.openelis.gwt.common.data.TableDataRow;
+import org.openelis.gwt.screen.AppScreenForm;
 import org.openelis.gwt.screen.CommandChain;
 import org.openelis.gwt.screen.ScreenInputWidget;
-import org.openelis.gwt.widget.AToZTable;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.CollapsePanel;
-import org.openelis.gwt.widget.FormInt;
+import org.openelis.gwt.widget.ResultsTable;
 import org.openelis.metamap.AnalyteMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
-import com.google.gwt.user.client.ui.TextBox;
-
-public class AnalyteScreen extends OpenELISScreenForm<AnalyteRPC,AnalyteForm,Integer> {
+public class AnalyteScreen extends OpenELISScreenForm<AnalyteForm,Query<TableDataRow<Integer>> > {
 	
 	private TextBox nameTextBox;
     private KeyListManager keyList = new KeyListManager();
@@ -47,9 +49,8 @@ public class AnalyteScreen extends OpenELISScreenForm<AnalyteRPC,AnalyteForm,Int
 
 	public AnalyteScreen() {                
         super("org.openelis.modules.analyte.server.AnalyteService");
-        
-        forms.put("display",new AnalyteForm());
-        getScreen(new AnalyteRPC());
+        query = new Query<TableDataRow<Integer>>();
+        getScreen(new AnalyteForm());
     }
      
     public void performCommand(Enum action, Object obj) {
@@ -67,7 +68,7 @@ public class AnalyteScreen extends OpenELISScreenForm<AnalyteRPC,AnalyteForm,Int
 	public void afterDraw(boolean success) {
         ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
         ButtonPanel bpanel = (ButtonPanel) getWidget("buttons");
-        AToZTable atozTable = (AToZTable)getWidget("azTable");
+        ResultsTable atozTable = (ResultsTable)getWidget("azTable");
         
         CommandChain chain = new CommandChain();
         chain.addCommand(this);
@@ -86,13 +87,10 @@ public class AnalyteScreen extends OpenELISScreenForm<AnalyteRPC,AnalyteForm,Int
 	}
 	
 	private void getAnalytes(String query) {
-		if (state == FormInt.State.DISPLAY || state == FormInt.State.DEFAULT) {
-
-			Form letterRPC = (Form) this.forms.get("queryByLetter");
-
-			letterRPC.setFieldValue(Meta.getName(), query);
-
-			commitQuery(letterRPC);
+		if (state == State.DISPLAY || state == State.DEFAULT) {
+		    QueryStringField qField = new QueryStringField(Meta.getName());
+            qField.setValue(query);
+            commitQuery(qField);
 		}
 	}
 }

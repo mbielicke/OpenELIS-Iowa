@@ -25,8 +25,13 @@
 */
 package org.openelis.modules.testTrailer.client;
 
-import org.openelis.gwt.common.Form;
+import com.google.gwt.user.client.ui.TextBox;
+
+import org.openelis.gwt.common.Query;
 import org.openelis.gwt.common.data.KeyListManager;
+import org.openelis.gwt.common.data.QueryStringField;
+import org.openelis.gwt.common.data.TableDataModel;
+import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.screen.CommandChain;
 import org.openelis.gwt.screen.ScreenInputWidget;
 import org.openelis.gwt.screen.ScreenTextArea;
@@ -34,13 +39,10 @@ import org.openelis.gwt.widget.AToZTable;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.CollapsePanel;
-import org.openelis.gwt.widget.FormInt;
 import org.openelis.metamap.TestTrailerMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
-import com.google.gwt.user.client.ui.TextBox;
-
-public class TestTrailerScreen extends OpenELISScreenForm<TestTrailerRPC,TestTrailerForm,Integer> {
+public class TestTrailerScreen extends OpenELISScreenForm<TestTrailerForm,Query<TableDataRow<Integer>>> {
 	
 	private TextBox nameTextBox;
 	private ScreenTextArea textArea;
@@ -50,10 +52,8 @@ public class TestTrailerScreen extends OpenELISScreenForm<TestTrailerRPC,TestTra
     
 	public TestTrailerScreen() {                
         super("org.openelis.modules.testTrailer.server.TestTrailerService");
-        
-        forms.put("display",new TestTrailerForm());
-        
-        getScreen(new TestTrailerRPC());
+        query = new Query<TableDataRow<Integer>>();
+        getScreen(new TestTrailerForm());
     }
 	
 	 public void performCommand(Enum action, Object obj) {
@@ -97,13 +97,10 @@ public class TestTrailerScreen extends OpenELISScreenForm<TestTrailerRPC,TestTra
     }
 	
 	private void getTestTrailers(String query) {
-		if (state == FormInt.State.DISPLAY || state == FormInt.State.DEFAULT) {
-
-			Form letter = (Form)forms.get("queryByLetter");
-			
-			letter.setFieldValue(TestTrailerMeta.getName(), query);
-
-			commitQuery(letter);
+		if (state == State.DISPLAY || state == State.DEFAULT) {
+		    QueryStringField qField = new QueryStringField(TestTrailerMeta.getName());
+            qField.setValue(query);
+			commitQuery(qField);
 		}
 	}
 }

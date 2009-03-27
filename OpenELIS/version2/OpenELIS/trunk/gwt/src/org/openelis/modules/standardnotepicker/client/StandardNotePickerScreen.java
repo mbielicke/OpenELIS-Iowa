@@ -25,8 +25,17 @@
 */
 package org.openelis.modules.standardnotepicker.client;
 
-import org.openelis.gwt.common.Form;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.TextArea;
+import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.Widget;
+
+import org.openelis.gwt.common.Query;
 import org.openelis.gwt.common.data.StringObject;
+import org.openelis.gwt.common.data.TableDataModel;
+import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.common.data.TreeDataItem;
 import org.openelis.gwt.screen.ScreenVertical;
 import org.openelis.gwt.widget.AppButton;
@@ -40,14 +49,7 @@ import org.openelis.gwt.widget.tree.event.TreeModelListener;
 import org.openelis.metamap.StandardNoteMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.TextArea;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.Widget;
-
-public class StandardNotePickerScreen extends OpenELISScreenForm<StandardNotePickerRPC,StandardNotePickerForm,Integer> implements TreeManager, TreeServiceCallInt, TreeModelListener, ClickListener{
+public class StandardNotePickerScreen extends OpenELISScreenForm<StandardNotePickerForm,Query<TableDataRow<Integer>>> implements TreeManager, TreeServiceCallInt, TreeModelListener, ClickListener{
 
 	public TextArea noteTextArea;
 	private TextBox findTextBox;
@@ -59,22 +61,20 @@ public class StandardNotePickerScreen extends OpenELISScreenForm<StandardNotePic
 
 		this.noteTextArea = noteTextArea;		
         name="Standard Note Selection";
-        
-        forms.put("display",new StandardNotePickerForm());
-        
-        getScreen(new StandardNotePickerRPC());
+        query = new Query<TableDataRow<Integer>>();
+        getScreen(new StandardNotePickerForm());
 	}
 		
 	public void onClick(Widget sender) {
 		String action = ((AppButton)sender).action;
 		if(action.equals("find")){
-		    StandardNotePickerRPC snprpc = new StandardNotePickerRPC();
-	        snprpc.key = rpc.key;
-	        snprpc.form = rpc.form;
-	        snprpc.queryString = findTextBox.getText()+(findTextBox.getText().endsWith("*") ? "" : "*");
+		    //StandardNotePickerRPC snprpc = new StandardNotePickerRPC();
+	        //snprpc.key = form.key;
+	        //snprpc.form = form.form;
+	        form.queryString = findTextBox.getText()+(findTextBox.getText().endsWith("*") ? "" : "*");
 	        
-	        screenService.call("getTreeModel" , snprpc, new AsyncCallback<StandardNotePickerRPC>(){
-	            public void onSuccess(StandardNotePickerRPC result){
+	        screenService.call("getTreeModel" , form, new AsyncCallback<StandardNotePickerForm>(){
+	            public void onSuccess(StandardNotePickerForm result){
 	                tree.model.load(result.treeModel);
 	            }
 	            
@@ -98,18 +98,18 @@ public class StandardNotePickerScreen extends OpenELISScreenForm<StandardNotePic
         //vp.clear();
        // vp.remove(tree);
         
-        window.setStatus("","spinnerIcon");
+        window.setBusy();
        // prepare the argument list for the getObject function
-        StandardNotePickerRPC snprpc = new StandardNotePickerRPC();
-        snprpc.key = rpc.key;
-        snprpc.form = rpc.form;
-        snprpc.queryString = "*";
+        //StandardNotePickerRPC snprpc = new StandardNotePickerRPC();
+        //snprpc.key = form.key;
+        //snprpc.form = form.form;
+        form.queryString = "*";
         
-        screenService.call("getTreeModel" , snprpc, new AsyncCallback<StandardNotePickerRPC>(){
-            public void onSuccess(StandardNotePickerRPC result){
+        screenService.call("getTreeModel" , form, new AsyncCallback<StandardNotePickerForm>(){
+            public void onSuccess(StandardNotePickerForm result){
                 tree.model.load(result.treeModel);
             	
-                window.setStatus("","");
+                window.clearStatus();
             }
             
             public void onFailure(Throwable caught){
@@ -275,31 +275,30 @@ public class StandardNotePickerScreen extends OpenELISScreenForm<StandardNotePic
     //method to help lazy load the tree
     public void getChildNodes(final TreeModel model, final int row) {
         final TreeDataItem item = model.getRow(row);
-        Integer id = item.getKey();
+        Integer id = item.key;
         item.getItems().clear();
         
         //final ScreenPagedTree tree = (ScreenPagedTree)widgets.get("noteTree");
 
-        window.setStatus("","spinnerIcon");
+        window.setBusy();
         
-        Form queryRPC = (Form)forms.get("queryByNameDescription");
+        //Form queryRPC = (Form)forms.get("queryByNameDescription");
         
-        StandardNotePickerRPC snprpc = new StandardNotePickerRPC();
-        snprpc.key = rpc.key;
-        snprpc.form = rpc.form;
-        snprpc.id = id;
-        snprpc.queryString = findTextBox.getText()+(findTextBox.getText().endsWith("*") ? "" : "*");
+        //StandardNotePickerRPC snprpc = new StandardNotePickerRPC();
+        //snprpc.key = form.key;
+        //snprpc.form = form.form;
+        form.id = id;
+        form.queryString = findTextBox.getText()+(findTextBox.getText().endsWith("*") ? "" : "*");
         
-        screenService.call("getTreeModelSecondLevel", snprpc, new AsyncCallback<StandardNotePickerRPC>(){
-            public void onSuccess(StandardNotePickerRPC result){
+        screenService.call("getTreeModelSecondLevel", form, new AsyncCallback<StandardNotePickerForm>(){
+            public void onSuccess(StandardNotePickerForm result){
                 for(int i=0; i<result.treeModel.size(); i++)
                     item.addItem(result.treeModel.get(i));
-
                 item.loaded = true;
                 
                 model.toggle(row);
                 
-                window.setStatus("","");
+                window.clearStatus();
             }
             
             public void onFailure(Throwable caught){

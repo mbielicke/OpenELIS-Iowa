@@ -41,11 +41,12 @@ import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
+import org.openelis.gwt.common.Query;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.data.AbstractField;
-import org.openelis.gwt.common.data.DataModel;
-import org.openelis.gwt.common.data.DataSet;
+import org.openelis.gwt.common.data.TableDataModel;
+import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.FieldType;
 import org.openelis.gwt.common.data.IntegerField;
@@ -61,28 +62,28 @@ import org.openelis.metamap.AuxFieldMetaMap;
 import org.openelis.metamap.AuxFieldValueMetaMap;
 import org.openelis.modules.auxiliary.client.AuxiliaryForm;
 import org.openelis.modules.auxiliary.client.AuxiliaryGeneralPurposeRPC;
-import org.openelis.modules.auxiliary.client.AuxiliaryRPC;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.AuxiliaryRemote;
 import org.openelis.server.constants.Constants;
 import org.openelis.server.handlers.AuxFieldValueTypeCacheHandler;
 import org.openelis.server.handlers.UnitOfMeasureCacheHandler;
 import org.openelis.util.Datetime;
+import org.openelis.util.FormUtil;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
 
 public class AuxiliaryService implements
-                             AppScreenFormServiceInt<AuxiliaryRPC, Integer> , AutoCompleteServiceInt{
+                             AppScreenFormServiceInt<AuxiliaryForm, Query<TableDataRow<Integer>>> , AutoCompleteServiceInt{
     
     private static final int leftTableRowsPerPage = 21;
     private UTFResource openElisConstants = UTFResource.getBundle((String)SessionManager.getSession()
                                                                                         .getAttribute("locale"));
     private static final AuxFieldGroupMetaMap AuxFieldGroupMeta = new AuxFieldGroupMetaMap();
     
-    public DataModel<Integer> commitQuery(Form form, DataModel<Integer> model) throws RPCException {
+    public Query<TableDataRow<Integer>> commitQuery(Query<TableDataRow<Integer>> query) throws RPCException {
         List auxfgNames;
         // if the rpc is null then we need to get the page
-        if (form == null) {
+        /*if (form == null) {
 
             form = (Form)SessionManager.getSession()
                                                  .getAttribute("AuxiliaryQuery");
@@ -104,15 +105,11 @@ public class AuxiliaryService implements
                     throw new RPCException(e.getMessage());
                 }
             }
-        } else {
+        } else {*/
             AuxiliaryRemote remote = (AuxiliaryRemote)EJBFactory.lookup("openelis/AuxiliaryBean/remote");
 
-            HashMap<String, AbstractField> fields = form.getFieldMap();
-            fields.remove("auxiliaryTable");
-            fields.remove("auxFieldValueTable");
-
             try {
-                auxfgNames = remote.query(fields, 0, leftTableRowsPerPage);
+                auxfgNames = remote.query(query.fields, query.page*leftTableRowsPerPage, leftTableRowsPerPage);
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -120,33 +117,33 @@ public class AuxiliaryService implements
             }
 
             // need to save the rpc used to the encache
-            SessionManager.getSession().setAttribute("AuxiliaryQuery", form);
-        }
+            //SessionManager.getSession().setAttribute("AuxiliaryQuery", form);
+        //}
 
         // fill the model with the query results
         int i = 0;
-        if(model == null)
-            model = new DataModel<Integer>();
+        if(query.results == null)
+            query.results = new TableDataModel<TableDataRow<Integer>>();
         else 
-            model.clear();
+            query.results.clear();
         while (i < auxfgNames.size() && i < leftTableRowsPerPage) {
             IdNameDO resultDO = (IdNameDO)auxfgNames.get(i);
-            model.add(new DataSet<Integer>(resultDO.getId(),new StringObject(resultDO.getName())));
+            query.results.add(new TableDataRow<Integer>(resultDO.getId(),new StringObject(resultDO.getName())));
             i++;
         }
 
-        return model;
+        return query;
     }
     
-    public AuxiliaryRPC commitAdd(AuxiliaryRPC rpc) throws RPCException {
+    public AuxiliaryForm commitAdd(AuxiliaryForm rpc) throws RPCException {
         AuxiliaryRemote remote = (AuxiliaryRemote)EJBFactory.lookup("openelis/AuxiliaryBean/remote");
-        AuxFieldGroupDO axfgDO = getAuxFieldGroupDOFromRPC(rpc.form);
+        AuxFieldGroupDO axfgDO = getAuxFieldGroupDOFromRPC(rpc);
         Integer axfgId;
-        List<AuxFieldDO> axfDOList = getAuxFieldDOListFromRPC(null, rpc.form);
-        List<AuxFieldValueDO> axfvDOList = getAuxFieldValueDOListFromRPC(null, rpc.form);
+        List<AuxFieldDO> axfDOList = getAuxFieldDOListFromRPC(null, rpc);
+        List<AuxFieldValueDO> axfvDOList = getAuxFieldValueDOListFromRPC(null, rpc);
         List exceptionList = remote.validateForAdd(axfgDO,axfDOList,axfvDOList);
         if (exceptionList.size() > 0) {
-            setRpcErrors(exceptionList, rpc.form);    
+            setRpcErrors(exceptionList, rpc);    
             return rpc;
         }
     
@@ -160,26 +157,26 @@ public class AuxiliaryService implements
             exceptionList = new ArrayList<Exception>();
             exceptionList.add(e);
     
-            setRpcErrors(exceptionList, rpc.form);
+            setRpcErrors(exceptionList, rpc);
     
             return rpc;
         }
     
         axfgDO.setId(axfgId);
-        setFieldsInRPC(rpc.form, axfgDO);
+        setFieldsInRPC(rpc, axfgDO);
         return rpc;
     }
     
-    public AuxiliaryRPC commitUpdate(AuxiliaryRPC rpc) throws RPCException {
+    public AuxiliaryForm commitUpdate(AuxiliaryForm rpc) throws RPCException {
         AuxiliaryRemote remote = (AuxiliaryRemote)EJBFactory.lookup("openelis/AuxiliaryBean/remote");
-        AuxFieldGroupDO axfgDO = getAuxFieldGroupDOFromRPC(rpc.form);
-        IntegerField axfgId = rpc.form.id;
-        List<AuxFieldDO> axfDOList = getAuxFieldDOListFromRPC(axfgId.getValue(), rpc.form);
-        List<AuxFieldValueDO> axfvDOList = getAuxFieldValueDOListFromRPC(axfgId.getValue(), rpc.form);
+        AuxFieldGroupDO axfgDO = getAuxFieldGroupDOFromRPC(rpc);
+        IntegerField axfgId = rpc.id;
+        List<AuxFieldDO> axfDOList = getAuxFieldDOListFromRPC(axfgId.getValue(), rpc);
+        List<AuxFieldValueDO> axfvDOList = getAuxFieldValueDOListFromRPC(axfgId.getValue(), rpc);
         
         List exceptionList = remote.validateForUpdate(axfgDO,axfDOList,axfvDOList);
         if (exceptionList.size() > 0) {
-            setRpcErrors(exceptionList, rpc.form);    
+            setRpcErrors(exceptionList, rpc);    
             return rpc;
         }
     
@@ -193,48 +190,48 @@ public class AuxiliaryService implements
             exceptionList = new ArrayList<Exception>();
             exceptionList.add(e);
     
-            setRpcErrors(exceptionList, rpc.form);
+            setRpcErrors(exceptionList, rpc);
     
             return rpc;
         }
            
-        setFieldsInRPC(rpc.form, axfgDO);
+        setFieldsInRPC(rpc, axfgDO);
         return rpc;
     }
     
-    public AuxiliaryRPC commitDelete(AuxiliaryRPC rpc) throws RPCException {
+    public AuxiliaryForm commitDelete(AuxiliaryForm rpc) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
     
-    public AuxiliaryRPC abort(AuxiliaryRPC rpc) throws RPCException {
+    public AuxiliaryForm abort(AuxiliaryForm rpc) throws RPCException {
         AuxiliaryRemote remote = (AuxiliaryRemote)EJBFactory.lookup("openelis/AuxiliaryBean/remote");
-        AuxFieldGroupDO axfgDO = remote.getAuxFieldGroupAndUnlock(rpc.key,SessionManager.getSession().getId());
-        setFieldsInRPC(rpc.form, axfgDO);
+        AuxFieldGroupDO axfgDO = remote.getAuxFieldGroupAndUnlock(rpc.entityKey,SessionManager.getSession().getId());
+        setFieldsInRPC(rpc, axfgDO);
         return rpc;
     }
        
 
-    public AuxiliaryRPC fetch(AuxiliaryRPC rpc) throws RPCException {
+    public AuxiliaryForm fetch(AuxiliaryForm rpc) throws RPCException {
         AuxiliaryRemote remote = (AuxiliaryRemote)EJBFactory.lookup("openelis/AuxiliaryBean/remote");
-        AuxFieldGroupDO axfgDO = remote.getAuxFieldGroup(rpc.key);
-        List<AuxFieldDO> auxfields = remote.getAuxFields(rpc.key);
-        setFieldsInRPC(rpc.form, axfgDO);        
-        fillAuxFieldTable(rpc.key, rpc.form);
+        AuxFieldGroupDO axfgDO = remote.getAuxFieldGroup(rpc.entityKey);
+        List<AuxFieldDO> auxfields = remote.getAuxFields(rpc.entityKey);
+        setFieldsInRPC(rpc, axfgDO);        
+        fillAuxFieldTable(rpc.entityKey, rpc);
         return rpc;
     }
 
-    public AuxiliaryRPC fetchForUpdate(AuxiliaryRPC rpc) throws RPCException {
+    public AuxiliaryForm fetchForUpdate(AuxiliaryForm rpc) throws RPCException {
         AuxiliaryRemote remote = (AuxiliaryRemote)EJBFactory.lookup("openelis/AuxiliaryBean/remote");
         AuxFieldGroupDO axfgDO = new AuxFieldGroupDO(); 
         try{
-            axfgDO = remote.getAuxFieldGroupAndLock(rpc.key, SessionManager.getSession().getId());
+            axfgDO = remote.getAuxFieldGroupAndLock(rpc.entityKey, SessionManager.getSession().getId());
         }   catch (Exception e) {
             e.printStackTrace();
             throw new RPCException(e.getMessage());
         }
-        setFieldsInRPC(rpc.form, axfgDO);
-        fillAuxFieldTable(rpc.key, rpc.form);
+        setFieldsInRPC(rpc, axfgDO);
+        fillAuxFieldTable(rpc.entityKey, rpc);
         return rpc;
     }
 
@@ -242,7 +239,7 @@ public class AuxiliaryService implements
         return ServiceUtils.getXML(Constants.APP_ROOT + "/Forms/auxiliary.xsl");
     }       
     
-    public AuxiliaryRPC getScreen(AuxiliaryRPC rpc) throws RPCException {
+    public AuxiliaryForm getScreen(AuxiliaryForm rpc) throws RPCException {
         try {
          AuxiliaryRemote remote = (AuxiliaryRemote)EJBFactory.lookup("openelis/AuxiliaryBean/remote");
          List<IdNameDO> scriptletList = remote.getScriptletDropDownValues();   
@@ -261,7 +258,7 @@ public class AuxiliaryService implements
         return rpc;
     }
     
-    public void checkModels(AuxiliaryRPC rpc) {
+    public void checkModels(AuxiliaryForm rpc) {
         
         AuxiliaryRemote remote = (AuxiliaryRemote)EJBFactory.lookup("openelis/AuxiliaryBean/remote");
         List<IdNameDO> scriptletList = remote.getScriptletDropDownValues();
@@ -297,18 +294,18 @@ public class AuxiliaryService implements
         return null;
     }
 
-    public DataModel getMatches(String cat,DataModel model,String match,
+    public TableDataModel getMatches(String cat,TableDataModel model,String match,
                                 HashMap<String, FieldType> params) throws RPCException {
         AuxiliaryRemote remote = (AuxiliaryRemote)EJBFactory.lookup("openelis/AuxiliaryBean/remote");
         List entries = remote.getMatchingEntries(match.trim()+"%", 10,cat);
-        DataModel<Integer> dataModel = new DataModel<Integer>();
+        TableDataModel<TableDataRow<Integer>> dataModel = new TableDataModel<TableDataRow<Integer>>();
         for (Iterator iter = entries.iterator(); iter.hasNext();) {
             
             IdNameDO element = (IdNameDO)iter.next();
             Integer entryId = element.getId();                   
             String entryText = element.getName();
             
-            DataSet<Integer> data = new DataSet<Integer>(entryId,new StringObject(entryText));                                      
+            TableDataRow<Integer> data = new TableDataRow<Integer>(entryId,new StringObject(entryText));                                      
             dataModel.add(data);
         }       
         
@@ -318,13 +315,13 @@ public class AuxiliaryService implements
     public AuxiliaryGeneralPurposeRPC getAuxFieldValueModel(AuxiliaryGeneralPurposeRPC rpc) {
       AuxiliaryRemote remote = (AuxiliaryRemote)EJBFactory.lookup("openelis/AuxiliaryBean/remote");
       List<AuxFieldValueDO> valueDOList = remote.getAuxFieldValues(rpc.key);
-      DataSet<Integer> set = null;
+      TableDataRow<Integer> set = null;
       
       for(AuxFieldValueDO valueDO: valueDOList) {
        set = rpc.auxFieldValueModel.createNewSet();       
-       set.setKey(valueDO.getId());      
-       set.get(0).setValue(new DataSet<Integer>(valueDO.getTypeId()));
-       set.get(1).setValue(valueDO.getValue());
+       set.key = (valueDO.getId());      
+       set.cells[0].setValue(new TableDataRow<Integer>(valueDO.getTypeId()));
+       set.cells[1].setValue(valueDO.getValue());
        rpc.auxFieldValueModel.add(set);
       }
       
@@ -366,37 +363,37 @@ public class AuxiliaryService implements
     }
     
      private List<AuxFieldDO> getAuxFieldDOListFromRPC(Integer key,AuxiliaryForm form) {
-         DataModel<Integer> model = form.auxFieldTable.getValue();
-         DataSet<Integer> row = null;
+         TableDataModel<TableDataRow<Integer>> model = form.auxFieldTable.getValue();
+         TableDataRow<Integer> row = null;
          List<AuxFieldDO> afDOList = new ArrayList<AuxFieldDO>();
          AuxFieldDO afDO = null;
          
          for(int i= 0; i < model.size(); i++) {
               row = model.get(i);
               afDO = new AuxFieldDO();             
-              if(row.getKey() != null)
-                 afDO.setId(row.getKey()); 
+              if(row.key != null)
+                 afDO.setId(row.key); 
                             
               afDO.setDelete(false);
               
-              afDO.setUnitOfMeasureId((Integer)((DropDownField)row.get(2)).getSelectedKey());
-              afDO.setAnalyteId((Integer)((DropDownField)row.get(0)).getSelectedKey());
+              afDO.setUnitOfMeasureId((Integer)((DropDownField)row.cells[2]).getSelectedKey());
+              afDO.setAnalyteId((Integer)((DropDownField)row.cells[0]).getSelectedKey());
               afDO.setAuxFieldGroupId(key);
-              afDO.setDescription((String)row.get(6).getValue());
-              afDO.setIsActive((String)row.get(3).getValue());
-              afDO.setIsReportable((String)row.get(5).getValue());
-              afDO.setIsRequired((String)row.get(4).getValue());
-              afDO.setMethodId((Integer)((DropDownField)row.get(1)).getSelectedKey());
-              afDO.setScriptletId((Integer)((DropDownField)row.get(7)).getSelectedKey());
+              afDO.setDescription((String)row.cells[6].getValue());
+              afDO.setIsActive((String)row.cells[3].getValue());
+              afDO.setIsReportable((String)row.cells[5].getValue());
+              afDO.setIsRequired((String)row.cells[4].getValue());
+              afDO.setMethodId((Integer)((DropDownField)row.cells[1]).getSelectedKey());
+              afDO.setScriptletId((Integer)((DropDownField)row.cells[7]).getSelectedKey());
               afDO.setSortOrder(i);
               afDOList.add(afDO);
          }
          
          for(int i= 0; i < model.getDeletions().size(); i++) {
-             row = model.getDeletions().get(i);
+             row = (TableDataRow<Integer>)model.getDeletions().get(i);
              afDO = new AuxFieldDO();
-             if(row.getKey() != null)
-                 afDO.setId(row.getKey());
+             if(row.key != null)
+                 afDO.setId(row.key);
              
              afDO.setDelete(true); 
              afDOList.add(afDO);
@@ -407,41 +404,41 @@ public class AuxiliaryService implements
      }
     
     private List<AuxFieldValueDO> getAuxFieldValueDOListFromRPC(Integer key, AuxiliaryForm form) {
-       DataModel<Integer> model = null;
+       TableDataModel<TableDataRow<Integer>> model = null;
        Iterator<Integer> iter = null;
        List<AuxFieldValueDO> valueDOList = null;
-       DataSet<Integer> row = null;       
+       TableDataRow<Integer> row = null;       
        IntegerObject id = null;
        AuxFieldValueDO valueDO = null;
        Integer auxFieldId = null;
        DropDownField<Integer> type = null; 
-       DataModel<Integer> fieldModel = form.auxFieldValueTable.getValue();       
+       TableDataModel<TableDataRow<Integer>> fieldModel = form.auxFieldValueTable.getValue();       
        valueDOList = new ArrayList<AuxFieldValueDO>();
         for(int i = 0 ; i < fieldModel.size(); i++) {
          auxFieldId = iter.next();   
-         model = (DataModel)fieldModel.get(i).getData();
+         model = (TableDataModel)fieldModel.get(i).getData();
          for(int j = 0 ; j <  model.size(); j++) {
            valueDO = new AuxFieldValueDO();  
            row = model.get(j);
           
-           if(row.getKey() != null) {            
-            valueDO.setId(row.getKey());     
+           if(row.key != null) {            
+            valueDO.setId(row.key);     
            }
             valueDO.setAuxFieldId(auxFieldId);
             valueDO.setDelete(false);
             
-            type = (DropDownField<Integer>)row.get(0);            
+            type = (DropDownField<Integer>)row.cells[0];            
             valueDO.setTypeId((Integer)type.getSelectedKey());
                
-            valueDO.setValue(((StringField)row.get(1)).getValue());
+            valueDO.setValue(((StringField)row.cells[0]).getValue());
             valueDOList.add(valueDO);
          }
          
          for(int j = 0 ; j <  model.getDeletions().size(); j++) {
              valueDO = new AuxFieldValueDO();  
-             row = model.getDeletions().get(i);
-             if(row.getKey() != null) {            
-                valueDO.setId(row.getKey());    
+             row = (TableDataRow<Integer>)model.getDeletions().get(i);
+             if(row.key != null) {            
+                valueDO.setId(row.key);    
              }              
               valueDO.setDelete(true);       
               valueDOList.add(valueDO);
@@ -453,60 +450,60 @@ public class AuxiliaryService implements
     }
     
     private void fillAuxFieldTable(Integer key,AuxiliaryForm form) {
-        DataSet<Integer> row = null;       
+        TableDataRow<Integer> row = null;       
         IntegerObject id = null;
         AuxFieldDO afDO = null;
-        DataSet<Integer> analyteSet = null;
-        DataModel<Integer> analyteModel = null;
-        DataSet<Integer> methodSet = null;
-        DataModel<Integer> methodModel = null;
+        TableDataRow<Integer> analyteSet = null;
+        TableDataModel<TableDataRow<Integer>> analyteModel = null;
+        TableDataRow<Integer> methodSet = null;
+        TableDataModel<TableDataRow<Integer>> methodModel = null;
         AuxiliaryRemote remote = (AuxiliaryRemote)EJBFactory.lookup("openelis/AuxiliaryBean/remote");
-        DataModel<Integer> model = form.auxFieldTable.getValue();
+        TableDataModel<TableDataRow<Integer>> model = form.auxFieldTable.getValue();
         List<AuxFieldDO> afDOList = remote.getAuxFields(key); 
         model.clear();
         
         for(int i = 0; i < afDOList.size(); i++) {
             row = model.createNewSet();
             afDO = afDOList.get(i);                        
-            row.setKey(afDO.getId());
+            row.key = (afDO.getId());
                         
-            analyteSet = new DataSet<Integer>(afDO.getAnalyteId(),new StringObject(afDO.getAnalyteName()));       
-            analyteModel = new DataModel<Integer>();
+            analyteSet = new TableDataRow<Integer>(afDO.getAnalyteId(),new StringObject(afDO.getAnalyteName()));       
+            analyteModel = new TableDataModel<TableDataRow<Integer>>();
             analyteModel.add(analyteSet);            
-            ((DropDownField)row.get(0)).setModel(analyteModel);
-            row.get(0).setValue(analyteSet);
+            ((DropDownField)row.cells[0]).setModel(analyteModel);
+            row.cells[0].setValue(analyteSet);
             
             if(afDO.getMethodId()!=null) {
-             methodSet = new DataSet<Integer>(afDO.getMethodId(),new StringObject(afDO.getMethodName()));       
-             methodModel = new DataModel<Integer>();
+             methodSet = new TableDataRow<Integer>(afDO.getMethodId(),new StringObject(afDO.getMethodName()));       
+             methodModel = new TableDataModel<TableDataRow<Integer>>();
              methodModel.add(methodSet);            
-             ((DropDownField)row.get(1)).setModel(methodModel);
-             row.get(1).setValue(methodSet);
+             ((DropDownField)row.cells[1]).setModel(methodModel);
+             row.cells[1].setValue(methodSet);
             }
             
             if(afDO.getUnitOfMeasureId()!=null)
-             row.get(2).setValue(new DataSet<Integer>(afDO.getUnitOfMeasureId()));
+             row.cells[2].setValue(new TableDataRow<Integer>(afDO.getUnitOfMeasureId()));
             
-            row.get(3).setValue(afDO.getIsActive());
-            row.get(4).setValue(afDO.getIsRequired());
-            row.get(5).setValue(afDO.getIsReportable());
-            row.get(6).setValue(afDO.getDescription());
+            row.cells[3].setValue(afDO.getIsActive());
+            row.cells[4].setValue(afDO.getIsRequired());
+            row.cells[5].setValue(afDO.getIsReportable());
+            row.cells[6].setValue(afDO.getDescription());
             
             if(afDO.getScriptletId()!=null)
-            row.get(7).setValue(new DataSet<Integer>(afDO.getScriptletId()));
+            row.cells[7].setValue(new TableDataRow<Integer>(afDO.getScriptletId()));
             model.add(row);
         }
         
     }
     
-    private DataModel<Integer> loadDropDown(List<IdNameDO> list) {
-        DataSet<Integer> blankset = new DataSet<Integer>(-1,new StringObject(""));
-        DataModel<Integer> model = new DataModel<Integer>();
+    private TableDataModel<TableDataRow<Integer>> loadDropDown(List<IdNameDO> list) {
+        TableDataRow<Integer> blankset = new TableDataRow<Integer>(-1,new StringObject(""));
+        TableDataModel<TableDataRow<Integer>> model = new TableDataModel<TableDataRow<Integer>>();
         model.add(blankset);
 
         for (Iterator iter = list.iterator(); iter.hasNext();) {
             IdNameDO methodDO = (IdNameDO)iter.next();
-            DataSet<Integer> set = new DataSet<Integer>(methodDO.getId(),new StringObject(methodDO.getName()));
+            TableDataRow<Integer> set = new TableDataRow<Integer>(methodDO.getId(),new StringObject(methodDO.getName()));
             model.add(set);
         }
         return model;
@@ -515,7 +512,9 @@ public class AuxiliaryService implements
     private void setRpcErrors(List exceptionList, AuxiliaryForm form) {
         TableField auxFieldTable = form.auxFieldTable;
         TableField auxFieldValueTable = form.auxFieldValueTable;        
-
+        HashMap<String,AbstractField> map = null;
+        if(exceptionList.size() > 0)
+            map = FormUtil.createFieldMap(form);
         // we need to get the keys and look them up in the resource bundle for
         // internationalization
         for (int i = 0; i < exceptionList.size(); i++) {
@@ -540,7 +539,7 @@ public class AuxiliaryService implements
                     .addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
                 } 
             } else if (exceptionList.get(i) instanceof FieldErrorException) {
-                form.getField(((FieldErrorException)exceptionList.get(i)).getFieldName())
+                map.get(((FieldErrorException)exceptionList.get(i)).getFieldName())
                 .addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));   
             }
             // if the error is on the entire form

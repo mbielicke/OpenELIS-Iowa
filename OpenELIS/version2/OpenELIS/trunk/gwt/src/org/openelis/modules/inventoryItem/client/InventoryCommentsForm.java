@@ -26,12 +26,13 @@
 package org.openelis.modules.inventoryItem.client;
 
 import org.openelis.gwt.common.Form;
+import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.StringField;
 import org.openelis.metamap.InventoryItemMetaMap;
 
 import com.google.gwt.xml.client.Node;
 
-public class InventoryCommentsForm  extends Form{
+public class InventoryCommentsForm  extends Form<Integer> {
     private static final long serialVersionUID = 1L;
     
     public StringField subject;
@@ -40,13 +41,26 @@ public class InventoryCommentsForm  extends Form{
     
     public InventoryCommentsForm() {
         InventoryItemMetaMap meta = new InventoryItemMetaMap();
-        fields.put(meta.ITEM_NOTE.getSubject(), subject = new StringField());
-        fields.put(meta.ITEM_NOTE.getText(), text = new StringField());
-        fields.put("notesPanel", notesPanel = new StringField());
+        subject = new StringField(meta.ITEM_NOTE.getSubject());
+        text = new StringField(meta.ITEM_NOTE.getText());
+        notesPanel = new StringField("notesPanel");
     }
     
     public InventoryCommentsForm(Node node){
         this();
         createFields(node);
+    }
+    
+    public InventoryCommentsForm(String key) {
+        this();
+        this.key = key;
+    }
+    
+    public AbstractField[] getFields() {
+        return new AbstractField[] {
+                                    subject,
+                                    text,
+                                    notesPanel
+        };
     }
 }

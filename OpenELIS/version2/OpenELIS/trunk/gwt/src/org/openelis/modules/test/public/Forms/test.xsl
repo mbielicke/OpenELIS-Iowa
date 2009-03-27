@@ -106,11 +106,28 @@ UIRF Software License are applicable instead of those above.
 				<HorizontalPanel padding="0" spacing="0" style="WhiteContentPanel">
 					<!--left table goes here -->
 					<CollapsePanel key="collapsePanel" height="530px">
+					  <!--
 						<azTable colwidths="175"  key="azTable" maxRows="27" tablewidth="auto" headers="{resource:getString($constants,'nameMethod')}" width="100%">
 							<buttonPanel key="atozButtons">
 								<xsl:call-template name="aToZLeftPanelButtons"/>
 							</buttonPanel>
 						</azTable>
+					-->
+						 <resultsTable width="100%" key="azTable">
+					       <buttonPanel key="atozButtons">
+								<xsl:call-template name="aToZLeftPanelButtons"/>
+						   </buttonPanel>
+						   <table maxRows="27" width="auto">
+						     <headers><xsl:value-of select="resource:getString($constants,'nameMethod')"/></headers>
+						     <widths>175</widths>
+						     <editors>
+						       <label/>
+						     </editors>
+						     <fields>
+						       <string/>
+						     </fields>
+						   </table>
+					   </resultsTable>
 					</CollapsePanel>					
 					<VerticalPanel spacing="0">
 						<!--button panel code-->
@@ -286,6 +303,7 @@ UIRF Software License are applicable instead of those above.
 												<filters>false,false</filters>
 												<colAligns>left,left</colAligns>
 											</table>
+											<!--
 											<query>
 							 			  <queryTable maxRows="3" showError="false" showScroll="ALWAYS" title="" width="auto" tab="removeTestSectionButton,{meta:getIsReportable($test)}">											
 												<headers>
@@ -304,7 +322,8 @@ UIRF Software License are applicable instead of those above.
 												<filters>false,false</filters>
 												<colAligns>left,left</colAligns>
 										 </queryTable>
-							 			</query>										
+							 			</query>	
+							 			-->									
 							 		  </widget>
 							 			
 							 		
@@ -377,6 +396,7 @@ UIRF Software License are applicable instead of those above.
 												<filters>false,false</filters>
 												<colAligns>left,left</colAligns>
 											</table>
+											<!--
 											<query>
 												<queryTable maxRows="20" showError="false" title="" showScroll="ALWAYS" width="auto">
 													<headers>
@@ -395,6 +415,7 @@ UIRF Software License are applicable instead of those above.
 												    <colAligns>left,left</colAligns>
 												</queryTable>
 											</query>
+											-->
 							 			 </widget>	
 							 			<HorizontalPanel width = "10px"/>
                                        </HorizontalPanel> 
@@ -559,6 +580,7 @@ UIRF Software License are applicable instead of those above.
 												<filters>false,false,false,false,false,false,false,false,false</filters>
 												<colAligns>left,left,left,left,left,left,left,left,left</colAligns>
 								 </table>
+								 <!--
 								 <query>
 								  <queryTable maxRows="7" showError="false" showScroll="ALWAYS" title="" width="585px">
 												<headers>			
@@ -592,6 +614,7 @@ UIRF Software License are applicable instead of those above.
 												<colAligns>left,left,left,left,left,left,left,left,left</colAligns>
 								 </queryTable>
 								</query> 
+								-->
 							  </widget>
 							 <HorizontalPanel width = "10px"/>                             
 							</HorizontalPanel>     
@@ -644,6 +667,7 @@ UIRF Software License are applicable instead of those above.
 												<filters>false,false</filters>
 												<colAligns>left,left</colAligns>
 											</table>
+											<!--
 											 <query>
 												<queryTable maxRows="9" showError="false" title="" showScroll="ALWAYS" width="auto">
 													<headers>
@@ -663,6 +687,7 @@ UIRF Software License are applicable instead of those above.
 												    <colAligns>left,left</colAligns>
 												</queryTable>
 											</query>
+											-->
 							 			 </widget>
 							 			<HorizontalPanel width = "10px"/>
                                        </HorizontalPanel> 
@@ -707,6 +732,7 @@ UIRF Software License are applicable instead of those above.
 												<filters>false,false,false,false</filters>
 												<colAligns>left,left,left,left</colAligns>
 								</table>
+								<!--
 								<query>
 								 <queryTable maxRows="8" showError="false" showScroll="ALWAYS" title="" width="auto">
 												<headers>
@@ -730,6 +756,7 @@ UIRF Software License are applicable instead of those above.
 												<colAligns>left,left,left,left</colAligns>
 								 </queryTable>
 								</query>
+								-->
 						      </widget>
 						     <HorizontalPanel width = "10px"/>
                             </HorizontalPanel> 
@@ -806,6 +833,7 @@ UIRF Software License are applicable instead of those above.
 												<filters>false,false,false</filters>
 												<colAligns>left,left,left</colAligns>
 								</table>
+								<!--
 								<query>
 								 <queryTable maxRows="6" showError="false" showScroll="ALWAYS" title="" width="auto">
 												<headers>
@@ -826,7 +854,8 @@ UIRF Software License are applicable instead of those above.
 												<filters>false,false,false</filters>
 												<colAligns>left,left,left</colAligns>
 								  </queryTable>
-								 </query>								
+								 </query>	
+								 -->							
 						       </widget>							     
 						     <!-- <HorizontalPanel width = "10px"/> -->
                             </HorizontalPanel>                                                       
@@ -936,6 +965,7 @@ UIRF Software License are applicable instead of those above.
 			 <table key = "testResultsTable"/>						 
 			</rpc> 
 		  </rpc>
+		  <!--
 		  <rpc key="query">
 			 <queryNumber key="{meta:getId($test)}"  type="integer"/>
 			 <queryString key="{meta:getName($test)}" />
@@ -976,7 +1006,7 @@ UIRF Software License are applicable instead of those above.
 				<queryString key="{testWrkshtItm:getQcName($twsi)}"/>	
 				<dropdown key="{testSection:getSectionId($ts)}" />
 				<dropdown key="{testSection:getFlagId($ts)}"  />
-				<!--<dropdown key="{testResult:getUnitOfMeasureId($tr)}"/>
+				<dropdown key="{testResult:getUnitOfMeasureId($tr)}"/>
 				<dropdown key="{testResult:getTypeId($tr)}" />																										
 				<queryString key="{testResult:getValue($tr)}" required="false"/>		
 				<queryInteger key="{testResult:getSignificantDigits($tr)}"  type="integer" required="false"/>	
@@ -984,17 +1014,18 @@ UIRF Software License are applicable instead of those above.
 				<dropdown key="{testResult:getRoundingMethodId($tr)}" required="false"/>	
 				<queryString key="{testResult:getQuantLimit($tr)}"  required="false"/>	
 				<queryString key="{testResult:getContLevel($tr)}"  required="false"/>
-				<queryString key="{testResult:getHazardLevel($tr)}" required="false"/> -->
+				<queryString key="{testResult:getHazardLevel($tr)}" required="false"/> 
 				<table key = "worksheetTable"/>
 				<table key = "sampleTypeTable"/>
 				<table key = "testReflexTable"/>
 				<table key = "testPrepTable"/>	
 				<table key = "sectionTable"/>
-				<!-- <table key = "testResultsTable"/> -->				
+
 			</rpc>
 			<rpc key="queryByLetter">
 			 <queryString key="{meta:getName($test)}"/>				
 			</rpc>
+			-->
 		</screen>
   </xsl:template>
 </xsl:stylesheet>

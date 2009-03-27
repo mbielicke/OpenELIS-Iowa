@@ -25,15 +25,18 @@
 */
 package org.openelis.modules.standardnote.client;
 
+import com.google.gwt.xml.client.Node;
+
 import org.openelis.gwt.common.Form;
+import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.IntegerField;
 import org.openelis.gwt.common.data.StringField;
+import org.openelis.gwt.common.data.TableDataModel;
+import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.metamap.StandardNoteMetaMap;
 
-import com.google.gwt.xml.client.Node;
-
-public class StandardNoteForm extends Form{
+public class StandardNoteForm extends Form<Integer>{
     private static final long serialVersionUID = 1L;
 
     public IntegerField id;
@@ -42,18 +45,29 @@ public class StandardNoteForm extends Form{
     public DropDownField<Integer> typeId;
     public StringField text;
     
+    public TableDataModel<TableDataRow<Integer>> noteTypes;
+    
     public StandardNoteForm() {
        StandardNoteMetaMap meta = new StandardNoteMetaMap();
-       fields.put(meta.getId(), id = new IntegerField());
-       fields.put(meta.getName(),name = new StringField());
-       fields.put(meta.getDescription(), description = new StringField());
-       fields.put(meta.getTypeId(), typeId = new DropDownField<Integer>());
-       fields.put(meta.getText(), text = new StringField());
-       
+       id = new IntegerField(meta.getId());
+       name = new StringField(meta.getName());
+       description = new StringField(meta.getDescription());
+       typeId = new DropDownField<Integer>(meta.getTypeId());
+       text = new StringField(meta.getText());
    }
    
    public StandardNoteForm(Node node) {
        this();
        createFields(node);
+   }
+   
+   public AbstractField[] getFields() {
+       return new AbstractField[] {
+                                   id,
+                                   name,
+                                   description,
+                                   typeId,
+                                   text
+       };
    }
 }

@@ -50,24 +50,24 @@ package org.openelis.modules.test.client;
 * UIRF Software License are applicable instead of those above. 
 */
 
+import com.google.gwt.xml.client.Node;
+
 import org.openelis.gwt.common.Form;
+import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.IntegerField;
 import org.openelis.gwt.common.data.StringField;
+import org.openelis.gwt.common.data.TableDataModel;
+import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.metamap.TestMetaMap;
 
-import com.google.gwt.xml.client.Node;
+public class TestForm extends Form<Integer> {
 
-public class TestForm extends Form {
-
-    /**
-     * 
-     */
     private static final long serialVersionUID = 1L;
     
     public IntegerField id; 
     public StringField name;
-    public DropDownField<Integer> method;
+    public DropDownField<Integer> methodId;
     public String testTabPanel = "detailsTab";
     public DetailsForm details;
     public PrepAndReflexForm prepAndReflex;
@@ -75,21 +75,37 @@ public class TestForm extends Form {
     public TestAnalyteForm testAnalyte;
     public WorksheetForm worksheet;
     
+    public TableDataModel<TableDataRow<Integer>> resultTableModel;
+    public Integer numGroups;
+    
     public TestForm() {
         TestMetaMap meta = new TestMetaMap();
-        fields.put(meta.getId(), id = new IntegerField());
-        fields.put(meta.getName(), name = new StringField());
-        fields.put(meta.getMethod().getName(), method = new DropDownField<Integer>());
-        fields.put("details",details = new DetailsForm());
-        fields.put("prepAndReflex", prepAndReflex = new PrepAndReflexForm());
-        fields.put("sampleType", sampleType = new SampleTypeForm());
-        fields.put("testAnalyte", testAnalyte = new TestAnalyteForm());
-        fields.put("worksheet", worksheet = new WorksheetForm());        
+        id = new IntegerField(meta.getId());
+        name = new StringField(meta.getName());
+        methodId = new DropDownField<Integer>(meta.getMethodId());
+        details = new DetailsForm("details");
+        prepAndReflex = new PrepAndReflexForm("prepAndReflex");
+        sampleType = new SampleTypeForm("sampleType");
+        testAnalyte = new TestAnalyteForm("testAnalyte");
+        worksheet = new WorksheetForm("worksheet");
     }
     
     public TestForm(Node node) {
         this();
         createFields(node);
+    }
+    
+    public AbstractField[] getFields() {
+        return new AbstractField[] {
+                                    id,
+                                    name,
+                                    methodId,
+                                    details,
+                                    prepAndReflex,
+                                    sampleType,
+                                    testAnalyte,
+                                    worksheet
+        };
     }
 
 }

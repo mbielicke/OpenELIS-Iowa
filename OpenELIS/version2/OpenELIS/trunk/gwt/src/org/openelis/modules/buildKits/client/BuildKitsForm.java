@@ -25,18 +25,21 @@
  */
  package org.openelis.modules.buildKits.client;
 
+import com.google.gwt.xml.client.Node;
+
 import org.openelis.gwt.common.Form;
+import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.CheckField;
 import org.openelis.gwt.common.data.DateField;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.IntegerField;
 import org.openelis.gwt.common.data.StringField;
+import org.openelis.gwt.common.data.TableDataModel;
+import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.common.data.TableField;
 import org.openelis.metamap.InventoryItemMetaMap;
 
-import com.google.gwt.xml.client.Node;
-
-public class BuildKitsForm extends Form{
+public class BuildKitsForm extends Form<Integer>{
     private static final long serialVersionUID = 1L;
 
     public CheckField addToExisiting;
@@ -45,21 +48,36 @@ public class BuildKitsForm extends Form{
     public DropDownField<Integer> storageLocation;
     public StringField lotNumber;
     public DateField expirationDate;
-    public TableField<Integer> subItemsTable;
+    public TableField<TableDataRow<Integer>> subItemsTable;
+    
+    public Integer kitId;
+    public TableDataModel<TableDataRow<Integer>> subItemsModel;
     
     public BuildKitsForm() {
        InventoryItemMetaMap meta = new InventoryItemMetaMap();
-       fields.put("addToExisting", addToExisiting = new CheckField());
-       fields.put(meta.getName(),inventoryItem = new DropDownField<Integer>());
-       fields.put("numRequested", numRequested = new IntegerField());
-       fields.put(meta.INVENTORY_LOCATION.INVENTORY_LOCATION_STORAGE_LOCATION.getLocation(), storageLocation = new DropDownField<Integer>());
-       fields.put(meta.INVENTORY_LOCATION.getLotNumber(), lotNumber = new StringField());
-       fields.put(meta.INVENTORY_LOCATION.getExpirationDate(), expirationDate = new DateField());
-       fields.put("subItemsTable", subItemsTable = new TableField<Integer>());
+       addToExisiting = new CheckField("addToExisting");
+       inventoryItem = new DropDownField<Integer>(meta.getName());
+       numRequested = new IntegerField("numRequested");
+       storageLocation = new DropDownField<Integer>(meta.INVENTORY_LOCATION.INVENTORY_LOCATION_STORAGE_LOCATION.getLocation());
+       lotNumber = new StringField(meta.INVENTORY_LOCATION.getLotNumber());
+       expirationDate = new DateField(meta.INVENTORY_LOCATION.getExpirationDate());
+       subItemsTable = new TableField<TableDataRow<Integer>>("subItemsTable");
    }
    
    public BuildKitsForm(Node node) {
        this();
        createFields(node);
+   }
+   
+   public AbstractField[] getFields() {
+       return new AbstractField[] {
+                                   addToExisiting,
+                                   inventoryItem,
+                                   numRequested,
+                                   storageLocation,
+                                   lotNumber,
+                                   expirationDate,
+                                   subItemsTable
+       };
    }
 }

@@ -25,17 +25,17 @@
 */
 package org.openelis.modules.auxiliary.client;
 
-import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.RPC;
-import org.openelis.gwt.common.data.DataModel;
+import org.openelis.gwt.common.data.TableDataModel;
+import org.openelis.gwt.common.data.TableDataRow;
 
-public class AuxiliaryGeneralPurposeRPC extends RPC<Form, Integer> {
+public class AuxiliaryGeneralPurposeRPC implements RPC {
 
     /**
      * 
      */
     private static final long serialVersionUID = 1L;
-    
-    public DataModel<Integer> auxFieldValueModel; 
+    public Integer key;
+    public TableDataModel<TableDataRow<Integer>> auxFieldValueModel; 
 
 }

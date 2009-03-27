@@ -27,11 +27,12 @@
 package org.openelis.modules.dictionaryentrypicker.client;
 
 import org.openelis.gwt.common.Form;
+import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.DropDownField;
 
 import com.google.gwt.xml.client.Node;
 
-public class DictionaryEntryPickerForm extends Form {
+public class DictionaryEntryPickerForm extends Form<Integer> {
 
     /**
      * 
@@ -41,12 +42,18 @@ public class DictionaryEntryPickerForm extends Form {
     public DropDownField<Integer> category;
     
     public DictionaryEntryPickerForm(){
-        fields.put("category", category = new DropDownField<Integer>());
+        category = new DropDownField<Integer>("category");
     }
     
     public DictionaryEntryPickerForm(Node node) {
         this();
         createFields(node);
+    }
+    
+    public AbstractField[] getFields() {
+        return new AbstractField[] {
+                                    category
+        };
     }
 
 }

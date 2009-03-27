@@ -25,29 +25,6 @@
 */
 package org.openelis.modules.organization.client;
 
-import org.openelis.gwt.common.Form;
-import org.openelis.gwt.common.data.DataModel;
-import org.openelis.gwt.common.data.KeyListManager;
-import org.openelis.gwt.screen.CommandChain;
-import org.openelis.gwt.screen.ScreenTableWidget;
-import org.openelis.gwt.screen.ScreenTextArea;
-import org.openelis.gwt.screen.ScreenTextBox;
-import org.openelis.gwt.screen.ScreenVertical;
-import org.openelis.gwt.screen.ScreenWindow;
-import org.openelis.gwt.widget.AToZTable;
-import org.openelis.gwt.widget.AppButton;
-import org.openelis.gwt.widget.ButtonPanel;
-import org.openelis.gwt.widget.CollapsePanel;
-import org.openelis.gwt.widget.Dropdown;
-import org.openelis.gwt.widget.FormInt;
-import org.openelis.gwt.widget.ResultsTable;
-import org.openelis.gwt.widget.table.QueryTable;
-import org.openelis.gwt.widget.table.TableDropdown;
-import org.openelis.gwt.widget.table.TableWidget;
-import org.openelis.metamap.OrganizationMetaMap;
-import org.openelis.modules.main.client.OpenELISScreenForm;
-import org.openelis.modules.standardnotepicker.client.StandardNotePickerScreen;
-
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -58,7 +35,32 @@ import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
-public class OrganizationScreen extends OpenELISScreenForm<OrganizationRPC,OrganizationForm,Integer> implements
+import org.openelis.gwt.common.Query;
+import org.openelis.gwt.common.data.AbstractField;
+import org.openelis.gwt.common.data.KeyListManager;
+import org.openelis.gwt.common.data.QueryStringField;
+import org.openelis.gwt.common.data.TableDataModel;
+import org.openelis.gwt.common.data.TableDataRow;
+import org.openelis.gwt.screen.CommandChain;
+import org.openelis.gwt.screen.ScreenTextArea;
+import org.openelis.gwt.screen.ScreenTextBox;
+import org.openelis.gwt.screen.ScreenVertical;
+import org.openelis.gwt.screen.ScreenWindow;
+import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.ButtonPanel;
+import org.openelis.gwt.widget.CollapsePanel;
+import org.openelis.gwt.widget.Dropdown;
+import org.openelis.gwt.widget.ResultsTable;
+import org.openelis.gwt.widget.table.QueryTable;
+import org.openelis.gwt.widget.table.TableDropdown;
+import org.openelis.gwt.widget.table.TableWidget;
+import org.openelis.metamap.OrganizationMetaMap;
+import org.openelis.modules.main.client.OpenELISScreenForm;
+import org.openelis.modules.standardnotepicker.client.StandardNotePickerScreen;
+
+import java.util.ArrayList;
+
+public class OrganizationScreen extends OpenELISScreenForm<OrganizationForm,Query<TableDataRow<Integer>>> implements
                                                           ClickListener,
                                                           TabListener {
 
@@ -82,8 +84,8 @@ public class OrganizationScreen extends OpenELISScreenForm<OrganizationRPC,Organ
      * if model is returned set it to the widgets and make sure to null the rpc field 
      * so it is not sent back with future RPC calls
      */
-    AsyncCallback<OrganizationRPC> checkModels = new AsyncCallback<OrganizationRPC>() {
-        public void onSuccess(OrganizationRPC rpc) {
+    AsyncCallback<OrganizationForm> checkModels = new AsyncCallback<OrganizationForm>() {
+        public void onSuccess(OrganizationForm rpc) {
             if(rpc.contactTypes != null) {
                 setContactTypesModel(rpc.contactTypes);
                 rpc.contactTypes = null;
@@ -124,8 +126,8 @@ public class OrganizationScreen extends OpenELISScreenForm<OrganizationRPC,Organ
          * This is required mostly for backwards compatibility until all screens can be upgraded. Then we may 
          * have the option of setting this some other way.
          */
-        forms.put("display",new OrganizationForm());
-        getScreen(new OrganizationRPC());
+        query = new Query<TableDataRow<Integer>>();
+        getScreen(new OrganizationForm());
     }
 
     public void performCommand(Enum action, Object obj) {
@@ -179,23 +181,23 @@ public class OrganizationScreen extends OpenELISScreenForm<OrganizationRPC,Organ
         noteText = (ScreenTextArea)widgets.get(OrgMeta.getNote().getText());
         orgId = (ScreenTextBox)widgets.get(OrgMeta.getId());
    
-        queryContactsTable = (QueryTable)((ScreenTableWidget)widgets.get("contactsTable")).getQueryWidget().getWidget();
+        //queryContactsTable = (QueryTable)((ScreenTableWidget)widgets.get("contactsTable")).getQueryWidget().getWidget();
    
         /*
          * Setting of the models has been split to three methods so that they can be individually updated when needed.
          * 
          * Models are now pulled directly from RPC rather than initData.
          */
-        setContactTypesModel(rpc.contactTypes);
-        setCountriesModel(rpc.countries);
-        setStatesModel(rpc.states);
+        setContactTypesModel(form.contactTypes);
+        setCountriesModel(form.countries);
+        setStatesModel(form.states);
         
         /*
          * Null out the rpc models so they are not sent with future rpc calls
          */
-        rpc.contactTypes = null;
-        rpc.countries = null;
-        rpc.states = null;
+        form.contactTypes = null;
+        form.countries = null;
+        form.states = null;
 
         //override the callbacks
         updateChain.add(afterUpdate);
@@ -215,24 +217,24 @@ public class OrganizationScreen extends OpenELISScreenForm<OrganizationRPC,Organ
         
         
         super.afterDraw(success);
-        rpc.form.contacts.contacts.setValue((DataModel<Contact>)contactsTable.model.getData());
+        form.contacts.contacts.setValue(contactsTable.model.getData());
     }
     
-    public void setContactTypesModel(DataModel<Integer> typesModel) {
+    public void setContactTypesModel(TableDataModel<TableDataRow<Integer>> typesModel) {
         ((TableDropdown)contactsTable.columns.get(0).getColumnWidget()).setModel(typesModel);
-        ((TableDropdown)queryContactsTable.columns.get(0).getColumnWidget()).setModel(typesModel);
+        //((TableDropdown)queryContactsTable.columns.get(0).getColumnWidget()).setModel(typesModel);
     }
     
-    public void setCountriesModel(DataModel<String> countriesModel) {
+    public void setCountriesModel(TableDataModel<TableDataRow<String>> countriesModel) {
         countries.setModel(countriesModel);
         ((TableDropdown)contactsTable.columns.get(7).getColumnWidget()).setModel(countriesModel);
-        ((TableDropdown)queryContactsTable.columns.get(7).getColumnWidget()).setModel(countriesModel);
+        //((TableDropdown)queryContactsTable.columns.get(7).getColumnWidget()).setModel(countriesModel);
     }
     
-    public void setStatesModel(DataModel<String> statesModel) {
+    public void setStatesModel(TableDataModel<TableDataRow<String>> statesModel) {
         states.setModel(statesModel);
         ((TableDropdown)contactsTable.columns.get(5).getColumnWidget()).setModel(statesModel);
-        ((TableDropdown)queryContactsTable.columns.get(5).getColumnWidget()).setModel(statesModel);
+        //((TableDropdown)queryContactsTable.columns.get(5).getColumnWidget()).setModel(statesModel);
     }
     
     public void query() {
@@ -259,14 +261,13 @@ public class OrganizationScreen extends OpenELISScreenForm<OrganizationRPC,Organ
         orgName.setFocus(true);
     }
     
-    protected AsyncCallback afterUpdate = new AsyncCallback() {
+    protected AsyncCallback<OrganizationForm> afterUpdate = new AsyncCallback<OrganizationForm>() {
         public void onFailure(Throwable caught) {   
         }
-        public void onSuccess(Object result) {
+        public void onSuccess(OrganizationForm result) {
             contactsTable.model.enableAutoAdd(true);
             orgId.enable(false);
             orgName.setFocus(true);
-            
         }
     };
 
@@ -278,10 +279,10 @@ public class OrganizationScreen extends OpenELISScreenForm<OrganizationRPC,Organ
      * Overriden to allow lazy loading Contact and Note tabs
      */
     public boolean onBeforeTabSelected(SourcesTabEvents sender, int index) {
-        if(state != FormInt.State.QUERY){
-            if (index == 0 && !((Form)form.getField("contacts")).load) {
+        if(state != State.QUERY){
+            if (index == 0 && !((OrganizationForm)form).contacts.load) {
                 fillContactsModel();
-            } else if (index == 2 && !((Form)form.getField("notes")).load) {
+            } else if (index == 2 && !((OrganizationForm)form).notes.load) {
                 fillNotesModel();
             }
         }
@@ -289,10 +290,10 @@ public class OrganizationScreen extends OpenELISScreenForm<OrganizationRPC,Organ
     }
 
     private void getOrganizations(String query) {
-        if (state == FormInt.State.DISPLAY || state == FormInt.State.DEFAULT) {
-            Form queryByLetter = forms.get("queryByLetter");
-            queryByLetter.setFieldValue(OrgMeta.getName(), query);
-            commitQuery(queryByLetter);
+        if (state == State.DISPLAY || state == State.DEFAULT) {
+            QueryStringField qField = new QueryStringField(OrgMeta.getName());
+            qField.setValue(query);
+            commitQuery(qField);
         }
     }
 
@@ -300,22 +301,17 @@ public class OrganizationScreen extends OpenELISScreenForm<OrganizationRPC,Organ
      * Get all notes for organization (key)
      */
     private void fillNotesModel(){  
-        if(key == null)
+        if(form.entityKey == null)
             return;
         
         window.setStatus("","spinnerIcon");
-        NotesRPC nrpc = new NotesRPC();
-        nrpc.key = key;
-        nrpc.form = rpc.form.notes;
-        screenService.call("loadNotes", nrpc, new AsyncCallback<NotesRPC>(){
-            public void onSuccess(NotesRPC result){    
-                // get the datamodel, load it in the notes panel and set the value in the rpc
-                load(result.form);
-                /*
-                 * This call has been modified to use the specific sub rpc in the form.  To ensure everything 
-                 * stays in sync it needs to be assigned back into the hash and to its member field in the form
-                 */
-                rpc.form.fields.put("notes",rpc.form.notes = result.form);
+        //NotesRPC nrpc = new NotesRPC();
+        //nrpc.key = key;
+        form.notes.entityKey = form.entityKey;
+        screenService.call("loadNotes", form.notes, new AsyncCallback<NotesForm>(){
+            public void onSuccess(NotesForm result){    
+                form.notes = result;
+                load(form.notes);
                 window.setStatus("","");
             }
                    
@@ -327,21 +323,17 @@ public class OrganizationScreen extends OpenELISScreenForm<OrganizationRPC,Organ
     }
 
     private void fillContactsModel() {
-        if(key == null)
+        if(form.entityKey == null)
             return;
         
         window.setStatus("","spinnerIcon");
-        ContactsRPC crpc = new ContactsRPC();
-        crpc.key = key;
-        crpc.form = rpc.form.contacts;
-        screenService.call("loadContacts", crpc, new AsyncCallback<ContactsRPC>() {
-            public void onSuccess(ContactsRPC result) {
-                load(result.form);
-                /*
-                 * This call has been modified to use the specific sub rpc in the form.  To ensure everything 
-                 * stays in sync it needs to be assigned back into the hash and to its member field in the form
-                 */
-                rpc.form.fields.put("contacts", rpc.form.contacts = result.form);
+        //ContactsRPC crpc = new ContactsRPC();
+        //crpc.key = key;
+        form.contacts.entityKey = form.entityKey;
+        screenService.call("loadContacts", form.contacts, new AsyncCallback<ContactsForm>() {
+            public void onSuccess(ContactsForm result) {
+                form.contacts = result;
+                load(form.contacts);
                 window.setStatus("","");
 
             }

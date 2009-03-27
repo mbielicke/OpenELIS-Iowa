@@ -28,19 +28,21 @@ package org.openelis.modules.sampleManagement.client;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Widget;
 
-import org.openelis.gwt.common.DefaultRPC;
-import org.openelis.gwt.common.Form;
+import org.openelis.gwt.common.Query;
 import org.openelis.gwt.common.data.KeyListManager;
+import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.screen.CommandChain;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
-public class SampleManagementScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer> implements ClickListener{
+public class SampleManagementScreen extends OpenELISScreenForm<SampleManagementForm,Query<TableDataRow<Integer>>> implements ClickListener{
 
     private KeyListManager keyList = new KeyListManager();
     
     public SampleManagementScreen() {
-        super("org.openelis.modules.sampleManagement.server.SampleManagementService", false, new DefaultRPC());
+        super("org.openelis.modules.sampleManagement.server.SampleManagementService");
+        query = new Query<TableDataRow<Integer>>();
+        getScreen(new SampleManagementForm());
     }
 
     public void onClick(Widget sender) {

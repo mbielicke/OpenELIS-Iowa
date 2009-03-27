@@ -30,21 +30,22 @@ import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
-import org.openelis.gwt.common.Form;
-import org.openelis.gwt.common.data.DataModel;
+import org.openelis.gwt.common.Query;
 import org.openelis.gwt.common.data.KeyListManager;
+import org.openelis.gwt.common.data.QueryStringField;
+import org.openelis.gwt.common.data.TableDataModel;
+import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.screen.CommandChain;
 import org.openelis.gwt.screen.ScreenTextArea;
-import org.openelis.gwt.widget.AToZTable;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.CollapsePanel;
 import org.openelis.gwt.widget.Dropdown;
-import org.openelis.gwt.widget.FormInt;
+import org.openelis.gwt.widget.ResultsTable;
 import org.openelis.metamap.QaEventMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
- public class QAEventScreen extends OpenELISScreenForm<QAEventRPC,QAEventForm,Integer> implements ClickListener{
+ public class QAEventScreen extends OpenELISScreenForm<QAEventForm,Query<TableDataRow<Integer>>> implements ClickListener{
    
      private TextBox tname = null;
      private Dropdown displayType = null;
@@ -54,8 +55,8 @@ import org.openelis.modules.main.client.OpenELISScreenForm;
      
      private QaEventMetaMap QAEMeta = new QaEventMetaMap();  
      
-     AsyncCallback<QAEventRPC> checkModels = new AsyncCallback<QAEventRPC>() {
-         public void onSuccess(QAEventRPC rpc) {
+     AsyncCallback<QAEventForm> checkModels = new AsyncCallback<QAEventForm>() {
+         public void onSuccess(QAEventForm rpc) {
              if(rpc.tests != null) {
                  setTests(rpc.tests);
                  rpc.tests = null;
@@ -73,8 +74,8 @@ import org.openelis.modules.main.client.OpenELISScreenForm;
      
      public QAEventScreen(){
          super("org.openelis.modules.qaevent.server.QAEventService"); 
-         forms.put("display",new QAEventForm());        
-         getScreen(new QAEventRPC());
+         query = new Query<TableDataRow<Integer>>();
+         getScreen(new QAEventForm());
      }
      
      public void performCommand(Enum action, Object obj) {
@@ -95,7 +96,7 @@ import org.openelis.modules.main.client.OpenELISScreenForm;
         }
 
         public void afterDraw(boolean success) {             
-             AToZTable atozTable = (AToZTable) getWidget("azTable");
+             ResultsTable atozTable = (ResultsTable) getWidget("azTable");
              ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
              ButtonPanel bpanel = (ButtonPanel)getWidget("buttons");
              
@@ -120,11 +121,11 @@ import org.openelis.modules.main.client.OpenELISScreenForm;
            // ((Dropdown)displayType.getWidget()).setModel(qaEventTypeDropDown);
            // ((Dropdown)displayTest.getWidget()).setModel(testDropDown);
               
-            setQAEventTypes(rpc.qaeventTypes);             
-            setTests(rpc.tests);
+            setQAEventTypes(form.qaeventTypes);             
+            setTests(form.tests);
            
-            rpc.qaeventTypes = null;
-            rpc.tests = null;
+            form.qaeventTypes = null;
+            form.tests = null;
             
             updateChain.add(0,checkModels);
             fetchChain.add(0,checkModels);
@@ -168,20 +169,18 @@ import org.openelis.modules.main.client.OpenELISScreenForm;
          }
          
          private void getQAEvents(String query) {
-             if (state == FormInt.State.DISPLAY || state == FormInt.State.DEFAULT) {
-
-                 Form letter = (Form)forms.get("queryByLetter");
-                 letter.setFieldValue(QAEMeta.getName(), query);
-                  
-                 commitQuery(letter);
+             if (state == State.DISPLAY || state == State.DEFAULT) {
+                 QueryStringField qField = new QueryStringField(QAEMeta.getName());
+                 qField.setValue(query);
+                 commitQuery(qField);
              }
          }
          
-         private void setQAEventTypes(DataModel<Integer> model) {
+         private void setQAEventTypes(TableDataModel<TableDataRow<Integer>> model) {
              displayType.setModel(model);
          }
          
-         private void setTests(DataModel<Integer> model) {
+         private void setTests(TableDataModel<TableDataRow<Integer>> model) {
              displayTest.setModel(model);
          }
          

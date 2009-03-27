@@ -248,6 +248,7 @@ UIRF Software License are applicable instead of those above.
 								<filters>false,false,false</filters>
 								<colAligns>left,left,left</colAligns>
 							</table>
+							<!--
 							<query>
 								<queryTable width="auto" maxRows="9" title="" showError="false" showScroll="ALWAYS">
 									<headers><xsl:value-of select='resource:getString($constants,"quantity")'/>,<xsl:value-of select='resource:getString($constants,"inventoryItem")'/>,
@@ -265,6 +266,7 @@ UIRF Software License are applicable instead of those above.
 									</fields>							
 								</queryTable>
 							</query>
+							-->
 						</widget>
 						</row>
 						<row>
@@ -504,6 +506,7 @@ UIRF Software License are applicable instead of those above.
       <!-- values not on this screen -->
       <string key="{orderMeta:getExternalOrderNumber($order)}" required="false"/>    
 	</rpc>
+	<!--
 	<rpc key="query">  
 	  <queryNumber key="{orderMeta:getId($order)}" type="integer" required="false"/>
       <queryNumber key="{orderMeta:getNeededInDays($order)}" type="integer" required="false"/>
@@ -525,6 +528,7 @@ UIRF Software License are applicable instead of those above.
       <queryString key="label1" required="false"/>
       
 	</rpc>
+	-->
 </screen>
   </xsl:template>
 </xsl:stylesheet>

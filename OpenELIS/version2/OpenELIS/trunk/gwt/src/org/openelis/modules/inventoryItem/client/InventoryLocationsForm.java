@@ -26,21 +26,36 @@
 package org.openelis.modules.inventoryItem.client;
 
 import org.openelis.gwt.common.Form;
+import org.openelis.gwt.common.data.AbstractField;
+import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.common.data.TableField;
 
 import com.google.gwt.xml.client.Node;
 
-public class InventoryLocationsForm  extends Form{
+public class InventoryLocationsForm  extends Form<Integer> {
     private static final long serialVersionUID = 1L;
 
-    public TableField<Integer> locQuantitiesTable;
+    public TableField<TableDataRow<Integer>> locQuantitiesTable;
+    
+    public String isSerialized;
     
     public InventoryLocationsForm() {
-        fields.put("locQuantitiesTable",locQuantitiesTable = new TableField<Integer>());
+        locQuantitiesTable = new TableField<TableDataRow<Integer>>("locQuantitiesTable");
     }
     
     public InventoryLocationsForm(Node node){
         this();
         createFields(node);
+    }
+    
+    public InventoryLocationsForm(String key) {
+        this();
+        this.key = key;
+    }
+    
+    public AbstractField[] getFields() {
+        return new AbstractField[] {
+                                    locQuantitiesTable
+        };
     }
 }

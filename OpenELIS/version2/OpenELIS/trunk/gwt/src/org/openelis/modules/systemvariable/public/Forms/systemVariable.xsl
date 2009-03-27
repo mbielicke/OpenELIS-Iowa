@@ -55,11 +55,28 @@ UIRF Software License are applicable instead of those above.
 
  <HorizontalPanel spacing= "0" padding= "0">  
   					<CollapsePanel key="collapsePanel" height="225px" style="LeftSidePanel">
+  					<!--
 						<azTable colwidths ="175" key="azTable" maxRows="9" tablewidth="auto" headers="{resource:getString($constants,'name')}" width="100%">
 							<buttonPanel key="atozButtons">
 								<xsl:call-template name="aToZLeftPanelButtons"/>
 							</buttonPanel>
 						</azTable>
+				     -->
+						 <resultsTable width="100%" key="azTable">
+					       <buttonPanel key="atozButtons">
+								<xsl:call-template name="aToZLeftPanelButtons"/>
+						   </buttonPanel>
+						   <table maxRows="9" width="auto">
+						     <headers><xsl:value-of select="resource:getString($constants,'name')"/></headers>
+						     <widths>175</widths>
+						     <editors>
+						       <label/>
+						     </editors>
+						     <fields>
+						       <string/>
+						     </fields>
+						   </table>
+					   </resultsTable>
 					</CollapsePanel>  
   <VerticalPanel spacing="0" padding="0">
    <!--button panel code-->
@@ -134,7 +151,7 @@ UIRF Software License are applicable instead of those above.
  <string key="{meta:getName($sv)}" required="true"/>
  <string key="{meta:getValue($sv)}" required="true"/>
 </rpc>
-					   
+<!--					   
 <rpc key= "query">     
  <queryString key="{meta:getName($sv)}" />
  <queryString key="{meta:getValue($sv)}"  /> 	
@@ -143,7 +160,7 @@ UIRF Software License are applicable instead of those above.
 <rpc key= "queryByLetter">     
  <queryString key="{meta:getName($sv)}"/>
 </rpc>
- 
+-->
 </screen>
 </xsl:template>
 </xsl:stylesheet> 

@@ -235,9 +235,7 @@ UIRF Software License are applicable instead of those above.
 	<rpc key="display">
 
 	</rpc>
-	<rpc key="query">
 
-    </rpc>
 </screen>
   </xsl:template>
 </xsl:stylesheet>

@@ -26,15 +26,18 @@
 
 package org.openelis.modules.panel.client;
 
+import com.google.gwt.xml.client.Node;
+
 import org.openelis.gwt.common.Form;
+import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.IntegerField;
 import org.openelis.gwt.common.data.StringField;
+import org.openelis.gwt.common.data.TableDataModel;
+import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.common.data.TableField;
 import org.openelis.metamap.PanelMetaMap;
 
-import com.google.gwt.xml.client.Node;
-
-public class PanelForm extends Form {
+public class PanelForm extends Form<Integer> {
 
     /**
      * 
@@ -44,19 +47,30 @@ public class PanelForm extends Form {
     public IntegerField id;
     public StringField name;
     public StringField description;
-    public TableField<Integer> addedTestTable;
+    public TableField<TableDataRow<Integer>> addedTestTable;
+    
+    public TableDataModel<TableDataRow<String>> allTests; 
     
     public PanelForm() {
       PanelMetaMap meta = new PanelMetaMap();
-      fields.put(meta.getId(), id = new IntegerField());
-      fields.put(meta.getName(), name = new StringField());
-      fields.put(meta.getDescription(), description = new StringField());
-      fields.put("addedTestTable", addedTestTable = new TableField<Integer>());
+      id = new IntegerField(meta.getId());
+      name = new StringField(meta.getName());
+      description = new StringField(meta.getDescription());
+      addedTestTable = new TableField<TableDataRow<Integer>>("addedTestTable");
     }
     
     public PanelForm(Node node) {
         this();
         createFields(node);
+    }
+    
+    public AbstractField[] getFields() {
+        return new AbstractField[] {
+                                    id,
+                                    name,
+                                    description,
+                                    addedTestTable
+        };
     }
 
 }

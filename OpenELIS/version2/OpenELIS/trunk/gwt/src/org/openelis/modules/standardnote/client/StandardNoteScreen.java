@@ -25,25 +25,26 @@
 */
 package org.openelis.modules.standardnote.client;
 
-import org.openelis.gwt.common.Form;
-import org.openelis.gwt.common.data.DataModel;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.TextBox;
+
+import org.openelis.gwt.common.Query;
 import org.openelis.gwt.common.data.KeyListManager;
+import org.openelis.gwt.common.data.QueryStringField;
+import org.openelis.gwt.common.data.TableDataModel;
+import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.screen.CommandChain;
 import org.openelis.gwt.screen.ScreenInputWidget;
 import org.openelis.gwt.screen.ScreenTextArea;
-import org.openelis.gwt.widget.AToZTable;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.CollapsePanel;
 import org.openelis.gwt.widget.Dropdown;
-import org.openelis.gwt.widget.FormInt;
+import org.openelis.gwt.widget.ResultsTable;
 import org.openelis.metamap.StandardNoteMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.TextBox;
-
-public class StandardNoteScreen extends OpenELISScreenForm<StandardNoteRPC,StandardNoteForm,Integer> {
+public class StandardNoteScreen extends OpenELISScreenForm<StandardNoteForm,Query<TableDataRow<Integer>>> {
 
 	private ScreenTextArea textArea;
 	private TextBox nameTextbox;
@@ -52,8 +53,8 @@ public class StandardNoteScreen extends OpenELISScreenForm<StandardNoteRPC,Stand
 	
     private StandardNoteMetaMap StandardNoteMeta = new StandardNoteMetaMap();
 
-    AsyncCallback<StandardNoteRPC> checkModels = new AsyncCallback<StandardNoteRPC>() {
-        public void onSuccess(StandardNoteRPC rpc) {
+    AsyncCallback<StandardNoteForm> checkModels = new AsyncCallback<StandardNoteForm>() {
+        public void onSuccess(StandardNoteForm rpc) {
             if(rpc.noteTypes != null) {
             	setNoteTypesModel(rpc.noteTypes);
                 rpc.noteTypes = null;
@@ -67,10 +68,8 @@ public class StandardNoteScreen extends OpenELISScreenForm<StandardNoteRPC,Stand
     
 	public StandardNoteScreen() {                
         super("org.openelis.modules.standardnote.server.StandardNoteService");
-       
-        forms.put("display",new StandardNoteForm());
-       
-        getScreen(new StandardNoteRPC());
+        query = new Query<TableDataRow<Integer>>();
+        getScreen(new StandardNoteForm());
     }
 
     public void performCommand(Enum action, Object obj) {
@@ -86,7 +85,7 @@ public class StandardNoteScreen extends OpenELISScreenForm<StandardNoteRPC,Stand
     }
 
     public void afterDraw(boolean success) {
-        AToZTable atozTable = (AToZTable)getWidget("azTable");
+        ResultsTable atozTable = (ResultsTable)getWidget("azTable");
         ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
         ButtonPanel bpanel = (ButtonPanel) getWidget("buttons");
         
@@ -105,12 +104,12 @@ public class StandardNoteScreen extends OpenELISScreenForm<StandardNoteRPC,Stand
         
         startWidget = (ScreenInputWidget)widgets.get(StandardNoteMeta.getName());
         
-        setNoteTypesModel(rpc.noteTypes);
+        setNoteTypesModel(form.noteTypes);
         
         /*
          * Null out the rpc models so they are not sent with future rpc calls
          */
-        rpc.noteTypes = null;
+        form.noteTypes = null;
         
        updateChain.add(0,checkModels);
        fetchChain.add(0,checkModels);
@@ -132,17 +131,14 @@ public class StandardNoteScreen extends OpenELISScreenForm<StandardNoteRPC,Stand
     }
 
 	private void getStandardNotes(String query) {
-    	if (state == FormInt.State.DISPLAY || state == FormInt.State.DEFAULT) {
-    
-    		Form letter = (Form)forms.get("queryByLetter");
-    		
-    		letter.setFieldValue(StandardNoteMeta.getName(), query);
-    
-    		commitQuery(letter);
+    	if (state == State.DISPLAY || state == State.DEFAULT) {
+    	    QueryStringField qField = new QueryStringField(StandardNoteMeta.getName());
+            qField.setValue(query);
+    		commitQuery(qField);
     	}
     }
 	
-	public void setNoteTypesModel(DataModel<Integer> noteTypesModel) {
+	public void setNoteTypesModel(TableDataModel<TableDataRow<Integer>> noteTypesModel) {
 		noteType.setModel(noteTypesModel);
     }
 }

@@ -28,22 +28,24 @@ package org.openelis.modules.transferInventory.client;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Widget;
 
-import org.openelis.gwt.common.DefaultRPC;
-import org.openelis.gwt.common.Form;
-import org.openelis.gwt.common.data.DataModel;
+import org.openelis.gwt.common.Query;
 import org.openelis.gwt.common.data.KeyListManager;
+import org.openelis.gwt.common.data.TableDataModel;
+import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.screen.CommandChain;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.AutoCompleteCallInt;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
-public class TransferInventoryScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer> implements ClickListener, AutoCompleteCallInt {
+public class TransferInventoryScreen extends OpenELISScreenForm<TransferInventoryForm,Query<TableDataRow<Integer>>> implements ClickListener, AutoCompleteCallInt {
 
     private KeyListManager keyList = new KeyListManager();
     
     public TransferInventoryScreen() {
-        super("org.openelis.modules.transferInventory.server.TransferInventoryService", false, new DefaultRPC());
+        super("org.openelis.modules.transferInventory.server.TransferInventoryService");
+        query = new Query<TableDataRow<Integer>>();
+        getScreen(new TransferInventoryForm());
     }
     
     public void onClick(Widget sender) {
@@ -60,7 +62,7 @@ public class TransferInventoryScreen extends OpenELISScreenForm<DefaultRPC,Form,
         super.afterDraw(success);
     }
 
-    public void callForMatches(AutoComplete widget, DataModel model, String text) {
+    public void callForMatches(AutoComplete widget, TableDataModel model, String text) {
         // TODO Auto-generated method stub
         
     }

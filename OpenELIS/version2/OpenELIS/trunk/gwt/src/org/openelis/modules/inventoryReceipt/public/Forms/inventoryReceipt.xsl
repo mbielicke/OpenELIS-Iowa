@@ -176,6 +176,7 @@ UIRF Software License are applicable instead of those above.
 							<filters>false,false,false,false,false,false,false,false,false,false</filters>
 							<colAligns>left,left,left,left,left,left,left,right,left,left</colAligns>
 						</table>
+						<!--
 						<query>
 							<queryTable width="auto" title="" maxRows="10" showError="false" showScroll="ALWAYS">
 								<headers><xsl:value-of select='resource:getString($constants,"ordNum")'/>,<xsl:value-of select='resource:getString($constants,"dateRec")'/>,<xsl:value-of select='resource:getString($constants,"upc")'/>,
@@ -203,6 +204,7 @@ UIRF Software License are applicable instead of those above.
 								</fields>
 							</queryTable>
 							</query>
+							-->
 							</resultsTable>
 						</widget>
 						<widget style="WhiteContentPanel" halign="center">									
@@ -319,6 +321,7 @@ UIRF Software License are applicable instead of those above.
     	</rpc>
     	
 	</rpc>
+	<!--
 	<rpc key="query">
 		<string key="type" reset="false">receipt</string>
     	<table key="receiptsTable"/>
@@ -334,6 +337,7 @@ UIRF Software License are applicable instead of those above.
 		<queryString key="{inventoryReceiptMeta:getExternalReference($receipt)}" required="false"/>
       
     </rpc>
+    -->
 </screen>
   </xsl:template>
 </xsl:stylesheet>

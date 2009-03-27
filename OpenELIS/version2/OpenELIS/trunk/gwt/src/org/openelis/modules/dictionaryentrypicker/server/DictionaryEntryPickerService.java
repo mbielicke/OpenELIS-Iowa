@@ -26,11 +26,12 @@
 package org.openelis.modules.dictionaryentrypicker.server;
 
 import org.openelis.domain.IdNameDO;
-import org.openelis.gwt.common.Form;
+import org.openelis.gwt.common.Query;
 import org.openelis.gwt.common.RPCException;
+import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.DataMap;
-import org.openelis.gwt.common.data.DataModel;
-import org.openelis.gwt.common.data.DataSet;
+import org.openelis.gwt.common.data.TableDataModel;
+import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.common.data.Field;
 import org.openelis.gwt.common.data.FieldType;
 import org.openelis.gwt.common.data.IntegerField;
@@ -39,81 +40,65 @@ import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
 import org.openelis.modules.dictionaryentrypicker.client.DictionaryEntryPickerDataRPC;
-import org.openelis.modules.dictionaryentrypicker.client.DictionaryEntryPickerRPC;
+import org.openelis.modules.dictionaryentrypicker.client.DictionaryEntryPickerForm;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.CategoryRemote;
 import org.openelis.server.constants.Constants;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-public class DictionaryEntryPickerService implements AppScreenFormServiceInt<DictionaryEntryPickerRPC, Integer> {
+public class DictionaryEntryPickerService implements AppScreenFormServiceInt<DictionaryEntryPickerForm, Query<TableDataRow<Integer>>> {
     private UTFResource openElisConstants = UTFResource.getBundle((String)SessionManager.getSession()
                                                                   .getAttribute("locale"));
 
-    public DictionaryEntryPickerRPC abort(DictionaryEntryPickerRPC rpc) throws RPCException {
+    public DictionaryEntryPickerForm abort(DictionaryEntryPickerForm rpc) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public DictionaryEntryPickerRPC commitAdd(DictionaryEntryPickerRPC rpc) throws RPCException {
+    public DictionaryEntryPickerForm commitAdd(DictionaryEntryPickerForm rpc) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public DictionaryEntryPickerRPC commitDelete(DictionaryEntryPickerRPC rpc) throws RPCException {
+    public DictionaryEntryPickerForm commitDelete(DictionaryEntryPickerForm rpc) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public DataModel<Integer> commitQuery(Form form, DataModel<Integer> model) throws RPCException {
+    public Query<TableDataRow<Integer>> commitQuery(Query<TableDataRow<Integer>> query) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public DictionaryEntryPickerRPC commitUpdate(DictionaryEntryPickerRPC rpc) throws RPCException {
+    public DictionaryEntryPickerForm commitUpdate(DictionaryEntryPickerForm rpc) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public DictionaryEntryPickerRPC fetch(DictionaryEntryPickerRPC rpc) throws RPCException {
+    public DictionaryEntryPickerForm fetch(DictionaryEntryPickerForm rpc) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public DictionaryEntryPickerRPC fetchForUpdate(DictionaryEntryPickerRPC rpc) throws RPCException {
+    public DictionaryEntryPickerForm fetchForUpdate(DictionaryEntryPickerForm rpc) throws RPCException {
         // TODO Auto-generated method stub
-        return null;
-    }
-
-    public String getXML() throws RPCException {
-        return ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/dictionaryEntryPicker.xsl");
-    }
-
-    public HashMap<String, FieldType> getXMLData() throws RPCException {
-        StringObject xml = new StringObject();
-        xml.setValue(ServiceUtils.getXML(Constants.APP_ROOT + "/Forms/dictionaryEntryPicker.xsl"));
-        
-        HashMap<String, FieldType> map = new HashMap<String, FieldType>();
-        map.put("xml", xml);
-        return map;
-    }
-
-    public HashMap<String, FieldType> getXMLData(HashMap<String, FieldType> args) throws RPCException {
         return null;
     }
     
-    public DictionaryEntryPickerRPC getScreen(DictionaryEntryPickerRPC rpc) throws RPCException{
+    public DictionaryEntryPickerForm getScreen(DictionaryEntryPickerForm rpc) throws RPCException{
         rpc.xml = ServiceUtils.getXML(Constants.APP_ROOT + "/Forms/dictionaryEntryPicker.xsl");
         return rpc;
     }
     
     public DictionaryEntryPickerDataRPC getDictionaryEntries(DictionaryEntryPickerDataRPC rpc){
         CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
-        Integer catValue = rpc.key;
+        Integer catValue = rpc.id;
         if(catValue == -1){
            catValue = null; 
         }
@@ -130,38 +115,35 @@ public class DictionaryEntryPickerService implements AppScreenFormServiceInt<Dic
         rpc.model.clear();
          for(int iter = 0; iter < dictDOList.size(); iter++){
              IdNameDO dictDO = dictDOList.get(iter);             
-             DataSet row = rpc.model.createNewSet();
+             TableDataRow row = rpc.model.createNewSet();
              IntegerField id = new IntegerField(dictDO.getId());
              
              DataMap data = new DataMap();             
              data.put("id", id);             
              row.setData(data);
              
-             ((Field)row.get(0)).setValue(dictDO.getName());
+             ((Field)row.cells[0]).setValue(dictDO.getName());
              rpc.model.add(row);
          }
         return rpc;
     }
     
+
+    
     public DictionaryEntryPickerDataRPC getInitialModel(DictionaryEntryPickerDataRPC rpc){
-       DataModel<Integer> model = new DataModel<Integer>();
+       TableDataModel<TableDataRow<Integer>> model = new TableDataModel<TableDataRow<Integer>>();
        CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
        List<IdNameDO> list = remote.getCategoryList();
        IdNameDO methodDO = null;
        StringObject textObject = null;           
-       DataSet<Integer> set = null;
-       DataSet<Integer> blankset = new DataSet<Integer>();  
-       blankset.add(new StringObject(openElisConstants.getString("allCategories")));
-       blankset.setKey(-1);
+       TableDataRow<Integer> set = null;
+       TableDataRow<Integer> blankset = new TableDataRow<Integer>(-1,new StringObject(openElisConstants.getString("allCategories")));  
             
        model.add(blankset);
 
        for (Iterator iter = list.iterator(); iter.hasNext();) {
            methodDO = (IdNameDO)iter.next();
-           set = new DataSet<Integer>();
-           textObject = new StringObject(methodDO.getName());
-           set.add(textObject);
-           set.setKey(methodDO.getId());
+           set = new TableDataRow<Integer>(methodDO.getId(),new StringObject(methodDO.getName()));
            model.add(set);
        }
        rpc.model = model;

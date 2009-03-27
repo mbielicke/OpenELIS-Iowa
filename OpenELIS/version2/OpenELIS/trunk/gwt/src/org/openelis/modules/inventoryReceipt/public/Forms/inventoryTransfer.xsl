@@ -168,6 +168,7 @@ UIRF Software License are applicable instead of those above.
 							<filters>false,false,false,false,false,false,false</filters>
 							<colAligns>left,left,left,left,left,left,left</colAligns>
 						</table>
+						<!--
 						<query>
 							<queryTable width="auto" title="" maxRows="10" showError="false" showScroll="ALWAYS">
 								<headers>From Item,From Loc,On Hand,To Item,Ext,To Loc,Qty</headers>
@@ -184,12 +185,13 @@ UIRF Software License are applicable instead of those above.
 								<fields>
 									<xsl:value-of select='orderMeta:getId($order)'/>,<xsl:value-of select='inventoryReceiptMeta:getReceivedDate($receipt)'/>,label1,<xsl:value-of select='inventoryReceiptMeta:getUpc($receipt)'/>,
 									<xsl:value-of select='inventoryItemMeta:getName($invItem)'/>,<xsl:value-of select='organizationMeta:getName($org)'/>,<xsl:value-of select='inventoryReceiptMeta:getQuantityReceived($receipt)'/>
-									<!--,
+									
 									<xsl:value-of select='orderItemMeta:getQuantity($orderItem)'/>,
 									<xsl:value-of select='inventoryReceiptMeta:getUnitCost($receipt)'/>,<xsl:value-of select='inventoryReceiptMeta:getQcReference($receipt)'/>,<xsl:value-of select='inventoryReceiptMeta:getExternalReference($receipt)'/>										-->
-								</fields>
+							<!--	</fields>
 							</queryTable>
 							</query>
+							-->
 						</widget>
 						<widget style="WhiteContentPanel" halign="center">									
 							<appButton action="removeRow" onclick="this" style="Button" key="removeReceiptButton">
@@ -290,6 +292,7 @@ UIRF Software License are applicable instead of those above.
     	<string key="{addressMeta:getZipCode($address)}" required="false"/>
     	<number key="{orderItemMeta:getQuantity($orderItem)}" type="integer" required="false"/>
 	</rpc>
+	<!--
 	<rpc key="query">
 		<string key="type" reset="false">transfer</string>
     	<table key="receiptsTable"/>
@@ -306,6 +309,7 @@ UIRF Software License are applicable instead of those above.
 		<queryString key="label1"/>
       
     </rpc>
+    -->
 </screen>
   </xsl:template>
 </xsl:stylesheet>

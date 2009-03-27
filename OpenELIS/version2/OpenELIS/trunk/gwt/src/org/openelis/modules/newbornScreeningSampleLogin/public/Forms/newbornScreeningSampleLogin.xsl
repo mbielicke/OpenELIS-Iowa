@@ -354,7 +354,6 @@ UIRF Software License are applicable instead of those above.
 				</VerticalPanel>
 			</display>
 			<rpc key="display"/>
-			<rpc key="query"/>
 		</screen>
 	</xsl:template>
 </xsl:stylesheet>

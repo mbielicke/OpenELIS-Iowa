@@ -64,11 +64,28 @@ UIRF Software License are applicable instead of those above.
 					<!--left table goes here -->
 					<CollapsePanel key="collapsePanel" height="225px" style="LeftSidePanel">
 					  <VerticalPanel>	
+					   <!--
 						<azTable colwidths="175"  key="azTable" maxRows="10" tablewidth="auto" headers="{resource:getString($constants,'panel')}" width="100%">
 							<buttonPanel key="atozButtons">
 								<xsl:call-template name="aToZLeftPanelButtons"/>
 							</buttonPanel>
 						</azTable>
+						-->
+						  <resultsTable width="100%" key="azTable">
+					       <buttonPanel key="atozButtons">
+								<xsl:call-template name="aToZLeftPanelButtons"/>
+						   </buttonPanel>
+						   <table maxRows="10" width="auto">
+						     <headers><xsl:value-of select="resource:getString($constants,'panel')"/></headers>
+						     <widths>175</widths>
+						     <editors>
+						       <label/>
+						     </editors>
+						     <fields>
+						       <string/>
+						     </fields>
+						   </table>
+					   </resultsTable>
 						<VerticalPanel height = "80px"/>
 					  </VerticalPanel>	
 					</CollapsePanel>					
@@ -157,6 +174,7 @@ UIRF Software License are applicable instead of those above.
 												<filters>false,false</filters>
 												<colAligns>left,left</colAligns>
 							    </table>
+							    <!--
 							    <query>
 								 <queryTable maxRows="8" showError="false" showScroll="ALWAYS" title="" width="auto">
 												<headers>
@@ -176,6 +194,7 @@ UIRF Software License are applicable instead of those above.
 												<colAligns>left,left</colAligns>
 								 </queryTable>
 								</query>
+								-->
 							   </widget>
 							 
                              </VerticalPanel>
@@ -249,6 +268,7 @@ UIRF Software License are applicable instead of those above.
 			 <string key="{meta:getDescription($panel)}" max="60" required="false"/>		 			 					
 		     <table key = "addedTestTable"/>
 		   </rpc>
+		   <!--
 		   <rpc key="query">			 
 			 <queryString key="{meta:getName($panel)}"/>			 
 			 <queryString key="{meta:getDescription($panel)}"/>	
@@ -259,6 +279,7 @@ UIRF Software License are applicable instead of those above.
 			<rpc key="queryByLetter">
 			 <queryString key="{meta:getName($panel)}"/>				
 			</rpc>
+			-->
 		</screen>
   </xsl:template>
 </xsl:stylesheet>

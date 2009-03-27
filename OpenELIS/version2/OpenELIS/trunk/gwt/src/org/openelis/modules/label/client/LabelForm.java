@@ -26,15 +26,18 @@
 
 package org.openelis.modules.label.client;
 
+import com.google.gwt.xml.client.Node;
+
 import org.openelis.gwt.common.Form;
+import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.IntegerField;
 import org.openelis.gwt.common.data.StringField;
+import org.openelis.gwt.common.data.TableDataModel;
+import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.metamap.LabelMetaMap;
 
-import com.google.gwt.xml.client.Node;
-
-public class LabelForm extends Form {
+public class LabelForm extends Form<Integer> {
 
     /**
      * 
@@ -46,21 +49,33 @@ public class LabelForm extends Form {
     public StringField description;
     public DropDownField<Integer> printerTypeId;
     public DropDownField<Integer> scriptletId;
+    
+    public TableDataModel<TableDataRow<Integer>> printerType;
+    public TableDataModel<TableDataRow<Integer>> scriptlet;      
+ 
 
     public LabelForm() {
         LabelMetaMap meta = new LabelMetaMap();
-        fields.put(meta.getId(), id = new IntegerField());
-        fields.put(meta.getName(), name = new StringField());
-        fields.put(meta.getDescription(), description = new StringField());
-        fields.put(meta.getPrinterTypeId(),
-                   printerTypeId = new DropDownField<Integer>());
-        fields.put(meta.getScriptletId(),
-                   scriptletId = new DropDownField<Integer>());
+        id = new IntegerField(meta.getId());
+        name = new StringField(meta.getName());
+        description = new StringField(meta.getDescription());
+        printerTypeId = new DropDownField<Integer>(meta.getPrinterTypeId());
+        scriptletId = new DropDownField<Integer>(meta.getScriptletId());
     }
 
     public LabelForm(Node node) {
         this();
         createFields(node);
+    }
+    
+    public AbstractField[] getFields() {
+        return new AbstractField[] {
+                                    id,
+                                    name,
+                                    description,
+                                    printerTypeId,
+                                    scriptletId
+        };
     }
 
 }

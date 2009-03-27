@@ -26,17 +26,19 @@
 package org.openelis.modules.test.client;
 
 import org.openelis.gwt.common.Form;
+import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.CheckField;
 import org.openelis.gwt.common.data.DateField;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.IntegerField;
 import org.openelis.gwt.common.data.StringField;
+import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.common.data.TableField;
 import org.openelis.metamap.TestMetaMap;
 
 import com.google.gwt.xml.client.Node;
 
-public class DetailsForm extends Form {
+public class DetailsForm extends Form<Integer> {
 
     /**
      * 
@@ -54,45 +56,76 @@ public class DetailsForm extends Form {
     public DateField activeBegin;
     public DateField activeEnd;
     public IntegerField timeHolding;
-    public DropDownField labelId;
+    public DropDownField<Integer> labelId;
     public IntegerField labelQty;
-    public DropDownField testTrailerId;
-    public DropDownField testFormatId;
-    public DropDownField scriptletId;
-    public DropDownField revisionMethodId;
-    public DropDownField reportingMethodId;
+    public DropDownField<Integer> testTrailerId;
+    public DropDownField<Integer> testFormatId;
+    public DropDownField<Integer> scriptletId;
+    public DropDownField<Integer> revisionMethodId;
+    public DropDownField<Integer> reportingMethodId;
     public IntegerField reportingSequence;
-    public DropDownField sortingMethodId;
-    public TableField sectionTable;
+    public DropDownField<Integer> sortingMethodId;
+    public TableField<TableDataRow<Integer>> sectionTable;
     public Boolean duplicate;
     
     public DetailsForm() {
        TestMetaMap meta = new TestMetaMap();
-       fields.put(meta.getDescription(), description = new StringField());
-       fields.put(meta.getReportingDescription(), reportingDescription = new StringField());
-       fields.put(meta.getTimeTaMax(), timeTaMax = new IntegerField());
-       fields.put(meta.getTimeTaAverage(), timeTaAverage = new IntegerField());
-       fields.put(meta.getTimeTaWarning(), timeTaWarning = new IntegerField());
-       fields.put(meta.getTimeTransit(), timeTransit = new IntegerField());
-       fields.put(meta.getIsActive(), isActive = new CheckField());
-       fields.put(meta.getIsReportable(), isReportable = new CheckField());
-       fields.put(meta.getActiveBegin(), activeBegin = new DateField());
-       fields.put(meta.getActiveEnd(), activeEnd = new DateField());
-       fields.put(meta.getTimeHolding(), timeHolding = new IntegerField());
-       fields.put(meta.getLabelId(), labelId = new DropDownField());
-       fields.put(meta.getLabelQty(), labelQty = new IntegerField());
-       fields.put(meta.getTestTrailerId(), testTrailerId = new DropDownField());
-       fields.put(meta.getTestFormatId(), testFormatId = new DropDownField());
-       fields.put(meta.getScriptletId(), scriptletId = new DropDownField());
-       fields.put(meta.getRevisionMethodId(), revisionMethodId = new DropDownField());
-       fields.put(meta.getReportingMethodId(), reportingMethodId = new DropDownField());
-       fields.put(meta.getReportingSequence(), reportingSequence = new IntegerField());
-       fields.put(meta.getSortingMethodId(), sortingMethodId = new DropDownField());
-       fields.put("sectionTable",sectionTable = new TableField());       
+       description = new StringField(meta.getDescription());
+       reportingDescription = new StringField(meta.getReportingDescription());
+       timeTaMax = new IntegerField(meta.getTimeTaMax());
+       timeTaAverage = new IntegerField(meta.getTimeTaAverage());
+       timeTaWarning = new IntegerField(meta.getTimeTaWarning());
+       timeTransit = new IntegerField(meta.getTimeTransit());
+       isActive = new CheckField(meta.getIsActive());
+       isReportable = new CheckField(meta.getIsReportable());
+       activeBegin = new DateField(meta.getActiveBegin());
+       activeEnd = new DateField(meta.getActiveEnd());
+       timeHolding = new IntegerField(meta.getTimeHolding());
+       labelId = new DropDownField<Integer>(meta.getLabelId());
+       labelQty = new IntegerField(meta.getLabelQty());
+       testTrailerId = new DropDownField<Integer>(meta.getTestTrailerId());
+       testFormatId = new DropDownField<Integer>(meta.getTestFormatId());
+       scriptletId = new DropDownField<Integer>(meta.getScriptletId());
+       revisionMethodId = new DropDownField<Integer>(meta.getRevisionMethodId());
+       reportingMethodId = new DropDownField<Integer>(meta.getReportingMethodId());
+       reportingSequence = new IntegerField(meta.getReportingSequence());
+       sortingMethodId = new DropDownField<Integer>(meta.getSortingMethodId());
+       sectionTable = new TableField<TableDataRow<Integer>>("sectionTable");
     }
     
     public DetailsForm(Node node) {
         this();
         createFields(node);
+    }
+    
+    public DetailsForm(String key) {
+        this();
+        this.key = key;
+    }
+    
+    public AbstractField[] getFields() {
+        return new AbstractField[] {
+                                      description,
+                                      reportingDescription,
+                                      timeTaMax,
+                                      timeTaAverage,
+                                      timeTaWarning,
+                                      timeTransit,
+                                      isActive,
+                                      isReportable,
+                                      activeBegin,
+                                      activeEnd,
+                                      timeHolding,
+                                      labelId,
+                                      labelQty,
+                                      testTrailerId,
+                                      testFormatId,
+                                      scriptletId,
+                                      revisionMethodId,
+                                      reportingMethodId,
+                                      reportingSequence,
+                                      sortingMethodId,
+                                      sectionTable
+        };
     }
 }

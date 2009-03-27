@@ -26,23 +26,38 @@
 package org.openelis.modules.shipping.client;
 
 import org.openelis.gwt.common.Form;
+import org.openelis.gwt.common.data.AbstractField;
+import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.common.data.TableField;
 
 import com.google.gwt.xml.client.Node;
 
-public class ShippingItemsForm extends Form{
+public class ShippingItemsForm extends Form<Integer>{
     private static final long serialVersionUID = 1L;
 	
-    public TableField<Integer> itemsTable;
-    public TableField<Integer> trackingNumbersTable;
+    public TableField<TableDataRow<Integer>> itemsTable;
+    public TableField<TableDataRow<Integer>> trackingNumbersTable;
    
     public ShippingItemsForm() {
-       fields.put("itemsTable", itemsTable = new TableField<Integer>());
-       fields.put("trackingNumbersTable", trackingNumbersTable = new TableField<Integer>());
+       itemsTable = new TableField<TableDataRow<Integer>>("itemsTable");
+       trackingNumbersTable = new TableField<TableDataRow<Integer>>("trackingNumbersTable");
+
    }
    
    public ShippingItemsForm(Node node) {
        this();
        createFields(node);
+   }
+   
+   public ShippingItemsForm(String key) {
+       this();
+       this.key = key;
+   }
+   
+   public AbstractField[] getFields() {
+       return new AbstractField[] {
+                                   itemsTable,
+                                   trackingNumbersTable
+       };
    }
 }

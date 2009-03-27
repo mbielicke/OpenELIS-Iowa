@@ -54,11 +54,28 @@ UIRF Software License are applicable instead of those above.
 <display>
  <HorizontalPanel spacing= "0" padding= "0">  
   					<CollapsePanel key="collapsePanel" height="235px" style="LeftSidePanel">
+  					   <!--
 						<azTable colwidths ="175" height="225px" key="azTable" maxRows="9" tablewidth="auto" title="" width="100%" headers = "{resource:getString($constants,'name')}">
 							<buttonPanel key="atozButtons">
 								<xsl:call-template name="aToZLeftPanelButtons"/>
 							</buttonPanel>
 						</azTable>
+						-->
+					   <resultsTable height="225px" width="100%" key="azTable">
+					       <buttonPanel key="atozButtons">
+								<xsl:call-template name="aToZLeftPanelButtons"/>
+						   </buttonPanel>
+						   <table maxRows="9" width="auto">
+						     <headers><xsl:value-of select="resource:getString($constants,'name')"/></headers>
+						     <widths>175</widths>
+						     <editors>
+						       <label/>
+						     </editors>
+						     <fields>
+						       <string/>
+						     </fields>
+						   </table>
+					   </resultsTable>
 					</CollapsePanel>  
   <VerticalPanel padding="0" spacing="0">
    <!--button panel code-->
@@ -144,7 +161,7 @@ UIRF Software License are applicable instead of those above.
  <dropdown key="{labelMeta:getPrinterTypeId($lbl)}" type="integer" required = "true"/>
  <dropdown key="{labelMeta:getScriptletId($lbl)}" type="integer" required = "true"/>
 </rpc>
-					   
+<!--					   
 <rpc key= "query">     
  <queryString key="{labelMeta:getName($lbl)}"/>
  <queryString key="{labelMeta:getDescription($lbl)}"  /> 	
@@ -155,7 +172,7 @@ UIRF Software License are applicable instead of those above.
 <rpc key= "queryByLetter">     
  <queryString key="{labelMeta:getName($lbl)}"/>
 </rpc>
- 
+ -->
 </screen>
 </xsl:template>
 </xsl:stylesheet> 

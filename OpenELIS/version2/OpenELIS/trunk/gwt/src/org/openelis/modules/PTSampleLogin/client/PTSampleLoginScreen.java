@@ -25,50 +25,62 @@
 */
 package org.openelis.modules.PTSampleLogin.client;
 
-import org.openelis.gwt.common.DefaultRPC;
-import org.openelis.gwt.common.Form;
-import org.openelis.gwt.common.RPC;
-import org.openelis.gwt.common.data.Data;
-import org.openelis.gwt.common.data.DataModel;
-import org.openelis.gwt.common.data.KeyListManager;
-import org.openelis.gwt.common.data.NumberObject;
-import org.openelis.gwt.common.data.TreeDataItem;
-import org.openelis.gwt.screen.CommandChain;
-import org.openelis.gwt.screen.ScreenTableWidget;
-import org.openelis.gwt.widget.ButtonPanel;
-import org.openelis.gwt.widget.Dropdown;
-import org.openelis.gwt.widget.table.QueryTable;
-import org.openelis.gwt.widget.table.TableDropdown;
-import org.openelis.gwt.widget.table.TableWidget;
-import org.openelis.gwt.widget.tree.TreeManager;
-import org.openelis.gwt.widget.tree.TreeWidget;
-import org.openelis.modules.main.client.OpenELISScreenForm;
-
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.SourcesTabEvents;
 import com.google.gwt.user.client.ui.TabListener;
 import com.google.gwt.user.client.ui.Widget;
 
-public class PTSampleLoginScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer> implements ClickListener, TabListener, TreeManager{
+import org.openelis.gwt.common.Query;
+import org.openelis.gwt.common.data.KeyListManager;
+import org.openelis.gwt.common.data.TableDataModel;
+import org.openelis.gwt.common.data.TableDataRow;
+import org.openelis.gwt.common.data.TreeDataItem;
+import org.openelis.gwt.screen.CommandChain;
+import org.openelis.gwt.widget.ButtonPanel;
+import org.openelis.gwt.widget.Dropdown;
+import org.openelis.gwt.widget.tree.TreeManager;
+import org.openelis.gwt.widget.tree.TreeWidget;
+import org.openelis.modules.main.client.OpenELISScreenForm;
 
-    private static boolean loaded = false;
-    private static DataModel statusDropdown, ptProviderDropdown,
-    ptDepartmentDropdown;
-    
+public class PTSampleLoginScreen extends OpenELISScreenForm<PTSampleLoginForm,Query<TableDataRow<Integer>>> implements ClickListener, TabListener, TreeManager{
+
     private TreeWidget itemsTestsTree;
     private KeyListManager keyList = new KeyListManager();
     
     public PTSampleLoginScreen() {
-        super("org.openelis.modules.PTSampleLogin.server.PTSampleLoginService", !loaded, new DefaultRPC());
+        super("org.openelis.modules.PTSampleLogin.server.PTSampleLoginService");
+        query = new Query<TableDataRow<Integer>>();
+        getScreen(new PTSampleLoginForm());
     }
+    
+    AsyncCallback<PTSampleLoginForm> checkModels = new AsyncCallback<PTSampleLoginForm>() {
+        public void onSuccess(PTSampleLoginForm form) {
+            if(form.sampleStatus != null){
+                setStatusModel(form.sampleStatus);
+                form.sampleStatus = null;
+            }
+            if(form.ptDepartmentNames != null){
+                setDepartmentModel(form.ptDepartmentNames);
+                form.ptDepartmentNames = null;
+            }
+            if(form.ptProviderNames != null) {
+                setProviderModel(form.ptProviderNames);
+                form.ptProviderNames = null;
+            }
+        }
+        
+        public void onFailure(Throwable caught) {
+            Window.alert(caught.getMessage());
+        }
+    };
 
     public void onClick(Widget sender) {
     
     }
     
     public void afterDraw(boolean sucess) {
-        loaded = true;
-        Dropdown drop;
         ButtonPanel bpanel = (ButtonPanel)getWidget("buttons");
         
         CommandChain formChain = new CommandChain();
@@ -80,34 +92,37 @@ public class PTSampleLoginScreen extends OpenELISScreenForm<DefaultRPC,Form,Inte
         
         //build the tree
         TreeDataItem row1 = itemsTestsTree.model.createTreeItem("top");
-        row1.get(0).setValue("0 - Serum");
-        row1.get(1).setValue("Left Arm");
+        row1.cells[0].setValue("0 - Serum");
+        row1.cells[1].setValue("Left Arm");
         TreeDataItem row2 = itemsTestsTree.model.createTreeItem("top");
-        row2.get(0).setValue("Hiv - Logged In");
+        row2.cells[0].setValue("Hiv - Logged In");
         row1.addItem(row2);
         //TODO itemsTestsTree.model.addRow(row1);
         
         //TODO itemsTestsTree.model.refresh();
         
-        if (statusDropdown == null) {
-            statusDropdown = (DataModel)initData.get("sampleStaus");
-            ptProviderDropdown = (DataModel)initData.get("providerNames");
-            ptDepartmentDropdown = (DataModel)initData.get("departmentNames");
-        }
 
         //status dropdown
-        drop = (Dropdown)getWidget("status");
-        drop.setModel(statusDropdown);
-
-        //pt provider dropdown
-        drop = (Dropdown)getWidget("ptProvider");
-        drop.setModel(ptProviderDropdown);
-        
-        //pt department dropdown
-        drop = (Dropdown)getWidget("ptDepartment");
-        drop.setModel(ptDepartmentDropdown);
+        setStatusModel(form.sampleStatus);
+        setProviderModel(form.ptProviderNames);
+        setDepartmentModel(form.ptDepartmentNames);
+        form.sampleStatus = null;
+        form.ptDepartmentNames = null;
+        form.ptProviderNames = null;
         
         super.afterDraw(sucess);
+    }
+    
+    public void setStatusModel(TableDataModel<TableDataRow<String>> model) {
+        ((Dropdown)getWidget("status")).setModel(model);
+    }
+
+    public void setProviderModel(TableDataModel<TableDataRow<String>> model) {
+        ((Dropdown)getWidget("ptProvider")).setModel(model);
+    }
+    
+    public void setDepartmentModel(TableDataModel<TableDataRow<String>> model) {
+        ((Dropdown)getWidget("ptDepartment")).setModel(model);
     }
 
     public boolean onBeforeTabSelected(SourcesTabEvents sender, int tabIndex) {
@@ -129,14 +144,6 @@ public class PTSampleLoginScreen extends OpenELISScreenForm<DefaultRPC,Form,Inte
         return false;
     }
 
-    public boolean canDrag(TreeWidget widget, TreeDataItem item, int row) {
-        return false;
-    }
-
-    public boolean canDrop(TreeWidget widget, Widget dragWidget, TreeDataItem dropTarget, int targetRow) {
-        return false;
-    }
-
     public boolean canEdit(TreeWidget widget, TreeDataItem set, int row, int col) {
         return false;
     }
@@ -149,12 +156,4 @@ public class PTSampleLoginScreen extends OpenELISScreenForm<DefaultRPC,Form,Inte
         return false;
     }
 
-    public void drop(TreeWidget widget, Widget dragWidget, TreeDataItem dropTarget, int targetRow) {}
-
-    public void drop(TreeWidget widget, Widget dragWidget) {}
-
-    public boolean canDrop(TreeWidget widget, Widget dragWidget, Widget dropWidget) {
-        // TODO Auto-generated method stub
-        return false;
-    }
 }
