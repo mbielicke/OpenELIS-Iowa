@@ -25,8 +25,27 @@
 */
 package org.openelis.bean;
 
+import org.jboss.annotation.security.SecurityDomain;
+import org.openelis.domain.FillOrderDO;
+import org.openelis.domain.NoteDO;
+import org.openelis.entity.InventoryLocation;
+import org.openelis.entity.InventoryXUse;
+import org.openelis.entity.Order;
+import org.openelis.gwt.common.FormErrorException;
+import org.openelis.gwt.common.LastPageException;
+import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.gwt.common.data.AbstractField;
+import org.openelis.gwt.common.data.TableDataModel;
+import org.openelis.gwt.common.data.TableDataRow;
+import org.openelis.local.LockLocal;
+import org.openelis.metamap.OrderMetaMap;
+import org.openelis.persistence.CachingManager;
+import org.openelis.remote.FillOrderRemote;
+import org.openelis.security.domain.SystemUserDO;
+import org.openelis.util.QueryBuilder;
+import org.openelis.utils.GetPage;
+
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -40,24 +59,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-
-import org.jboss.annotation.security.SecurityDomain;
-import org.openelis.domain.FillOrderDO;
-import org.openelis.domain.NoteDO;
-import org.openelis.entity.InventoryLocation;
-import org.openelis.entity.InventoryXUse;
-import org.openelis.entity.Order;
-import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.data.DataModel;
-import org.openelis.local.LockLocal;
-import org.openelis.metamap.OrderMetaMap;
-import org.openelis.persistence.CachingManager;
-import org.openelis.remote.FillOrderRemote;
-import org.openelis.security.domain.SystemUserDO;
-import org.openelis.util.QueryBuilder;
-import org.openelis.utils.GetPage;
 
 @Stateless
 @EJBs({
@@ -92,7 +93,7 @@ public class FillOrderBean implements FillOrderRemote {
         }
     }
 
-    public List query(HashMap fields, int first, int max) throws Exception {
+    public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception {
         StringBuffer sb = new StringBuffer();
         QueryBuilder qb = new QueryBuilder();
 
@@ -230,7 +231,7 @@ public class FillOrderBean implements FillOrderRemote {
         }
     }
     
-    private void unlockRecords(DataModel<Integer> orders) throws Exception{
+    private void unlockRecords(TableDataModel<TableDataRow<Integer>> orders) throws Exception{
         if(orders.size() == 0)
             return;
         
@@ -241,7 +242,7 @@ public class FillOrderBean implements FillOrderRemote {
         orderTableId = (Integer)query.getSingleResult();
         
         for(int i=0; i<orders.size(); i++){
-            Integer orderId = orders.get(i).getKey();
+            Integer orderId = orders.get(i).key;
         
             if(orderId != null)
                 lockBean.giveUpLock(orderTableId, orderId);

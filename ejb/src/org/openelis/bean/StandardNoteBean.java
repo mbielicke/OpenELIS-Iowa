@@ -31,14 +31,12 @@ import org.openelis.entity.StandardNote;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.RPCException;
-import org.openelis.gwt.common.data.QueryNumberField;
+import org.openelis.gwt.common.data.AbstractField;
+import org.openelis.gwt.common.data.QueryIntegerField;
 import org.openelis.gwt.common.data.QueryStringField;
 import org.openelis.local.LockLocal;
 import org.openelis.metamap.StandardNoteMetaMap;
-import org.openelis.persistence.CachingManager;
 import org.openelis.remote.StandardNoteRemote;
-import org.openelis.security.domain.SystemUserDO;
-import org.openelis.security.local.SystemUserUtilLocal;
 import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
 
@@ -136,7 +134,7 @@ public class StandardNoteBean implements StandardNoteRemote{
 		return getStandardNote(standardNoteId);
 	}
 
-	public List query(HashMap fields, int first, int max) throws Exception {
+	public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception {
 		StringBuffer sb = new StringBuffer();
 		QueryBuilder qb = new QueryBuilder();
 		
@@ -225,7 +223,7 @@ public class StandardNoteBean implements StandardNoteRemote{
         
         query.setParameter("name", ((QueryStringField)fields.get(StandardNoteMap.getName())).getParameter().get(0));
         query.setParameter("desc", ((QueryStringField)fields.get(StandardNoteMap.getDescription())).getParameter().get(0));
-        query.setParameter("type", new Integer(((String)((QueryNumberField)fields.get(StandardNoteMap.getTypeId())).getValue()).trim()));
+        query.setParameter("type", new Integer(((String)((QueryIntegerField)fields.get(StandardNoteMap.getTypeId())).getValue()).trim()));
         
         List returnList = query.getResultList();
         

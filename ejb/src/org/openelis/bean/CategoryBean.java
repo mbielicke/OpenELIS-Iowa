@@ -34,6 +34,7 @@ import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.TableFieldErrorException;
+import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.QueryStringField;
 import org.openelis.local.JMSMessageProducerLocal;
 import org.openelis.local.LockLocal;
@@ -50,7 +51,6 @@ import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
@@ -116,7 +116,7 @@ public class CategoryBean implements CategoryRemote {
         return idNameDOList;
     }
 
-    public List query(HashMap fields, int first, int max) throws Exception {
+    public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception {
         StringBuffer sb = new StringBuffer();
         QueryBuilder qb = new QueryBuilder();
 

@@ -25,8 +25,30 @@
 */
 package org.openelis.bean;
 
+import org.jboss.annotation.security.SecurityDomain;
+import org.openelis.domain.NoteDO;
+import org.openelis.domain.OrganizationAddressDO;
+import org.openelis.domain.OrganizationContactDO;
+import org.openelis.entity.Note;
+import org.openelis.entity.Organization;
+import org.openelis.entity.OrganizationContact;
+import org.openelis.gwt.common.FieldErrorException;
+import org.openelis.gwt.common.LastPageException;
+import org.openelis.gwt.common.RPCException;
+import org.openelis.gwt.common.TableFieldErrorException;
+import org.openelis.gwt.common.SecurityModule.ModuleFlags;
+import org.openelis.gwt.common.data.AbstractField;
+import org.openelis.local.AddressLocal;
+import org.openelis.local.LockLocal;
+import org.openelis.metamap.OrganizationMetaMap;
+import org.openelis.persistence.CachingManager;
+import org.openelis.remote.OrganizationRemote;
+import org.openelis.util.Datetime;
+import org.openelis.util.QueryBuilder;
+import org.openelis.utils.GetPage;
+import org.openelis.utils.SecurityInterceptor;
+
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -40,28 +62,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-
-import org.jboss.annotation.security.SecurityDomain;
-import org.openelis.domain.NoteDO;
-import org.openelis.domain.OrganizationAddressDO;
-import org.openelis.domain.OrganizationContactDO;
-import org.openelis.entity.Note;
-import org.openelis.entity.Organization;
-import org.openelis.entity.OrganizationContact;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.RPCException;
-import org.openelis.gwt.common.TableFieldErrorException;
-import org.openelis.gwt.common.SecurityModule.ModuleFlags;
-import org.openelis.local.AddressLocal;
-import org.openelis.local.LockLocal;
-import org.openelis.metamap.OrganizationMetaMap;
-import org.openelis.persistence.CachingManager;
-import org.openelis.remote.OrganizationRemote;
-import org.openelis.util.Datetime;
-import org.openelis.util.QueryBuilder;
-import org.openelis.utils.GetPage;
-import org.openelis.utils.SecurityInterceptor;
 
 @Stateless
 @EJBs({
@@ -251,7 +251,7 @@ public class OrganizationBean implements OrganizationRemote {
         return orgNotes;
 	}
 
-	public List query(HashMap fields, int first, int max) throws Exception{
+	public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception{
         StringBuffer sb = new StringBuffer();
         QueryBuilder qb = new QueryBuilder();
 

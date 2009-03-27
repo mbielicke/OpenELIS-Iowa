@@ -25,24 +25,6 @@
 */
 package org.openelis.bean;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
-import javax.annotation.security.RolesAllowed;
-import javax.ejb.EJB;
-import javax.ejb.EJBs;
-import javax.ejb.SessionContext;
-import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.FlushModeType;
-import javax.persistence.NoResultException;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
-
 import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.IdLastNameFirstNameDO;
 import org.openelis.domain.IdNameDO;
@@ -72,6 +54,7 @@ import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.TableFieldErrorException;
+import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.local.LockLocal;
 import org.openelis.metamap.TestMetaMap;
 import org.openelis.metamap.TestPrepMetaMap;
@@ -85,6 +68,24 @@ import org.openelis.remote.TestRemote;
 import org.openelis.security.local.SystemUserUtilLocal;
 import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
+import javax.annotation.security.RolesAllowed;
+import javax.ejb.EJB;
+import javax.ejb.EJBs;
+import javax.ejb.SessionContext;
+import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.FlushModeType;
+import javax.persistence.NoResultException;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 
 @Stateless
 @EJBs( {@EJB(name = "ejb/SystemUser", beanInterface = SystemUserUtilLocal.class),
@@ -795,7 +796,7 @@ public class TestBean implements TestRemote {
         return list;
     }
 
-    public List query(HashMap fields, int first, int max) throws Exception {
+    public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception {
         StringBuffer sb = new StringBuffer();
         QueryBuilder qb = new QueryBuilder();
         qb.setMeta(TestMeta);
