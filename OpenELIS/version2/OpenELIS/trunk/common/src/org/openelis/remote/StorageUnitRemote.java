@@ -25,12 +25,13 @@
 */
 package org.openelis.remote;
 
-import java.util.HashMap;
+import org.openelis.domain.StorageUnitDO;
+import org.openelis.gwt.common.data.AbstractField;
+
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.ejb.Remote;
-
-import org.openelis.domain.StorageUnitDO;
 
 @Remote
 public interface StorageUnitRemote {
@@ -47,7 +48,7 @@ public interface StorageUnitRemote {
 	public StorageUnitDO getStorageUnitAndUnlock(Integer StorageUnitId, String session);
 	
 	 //method to query for storage units
-	 public List query(HashMap fields, int first, int max) throws Exception;
+	 public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception;
 	 
 //	auto complete lookup
 	 public List autoCompleteLookupByDescription(String desc, int maxResults);

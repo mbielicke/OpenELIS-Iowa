@@ -25,12 +25,13 @@
 */
 package org.openelis.remote;
 
-import java.util.HashMap;
+import org.openelis.domain.LabelDO;
+import org.openelis.gwt.common.data.AbstractField;
+
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.ejb.Remote;
-
-import org.openelis.domain.LabelDO;
 
 @Remote
 public interface LabelRemote {
@@ -45,7 +46,7 @@ public interface LabelRemote {
     public Integer updateLabel(LabelDO sysVarDO)throws Exception;
     
     //  method to query for Label
-    public List query(HashMap fields, int first, int max) throws Exception;
+    public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception;
     
     public List<Object[]> getScriptlets();
     

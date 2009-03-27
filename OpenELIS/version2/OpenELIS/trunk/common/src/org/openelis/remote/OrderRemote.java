@@ -25,15 +25,16 @@
 */
 package org.openelis.remote;
 
-import java.util.HashMap;
-import java.util.List;
-
-import javax.ejb.Remote;
-
 import org.openelis.domain.BillToReportToDO;
 import org.openelis.domain.NoteDO;
 import org.openelis.domain.OrderAddAutoFillDO;
 import org.openelis.domain.OrderDO;
+import org.openelis.gwt.common.data.AbstractField;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.ejb.Remote;
 
 @Remote
 public interface OrderRemote {
@@ -71,7 +72,7 @@ public interface OrderRemote {
     public BillToReportToDO getBillToReportTo(Integer orderId);
     
     //method to query for orders
-     public List query(HashMap fields, int first, int max, String orderType) throws Exception;
+     public List query(ArrayList<AbstractField> fields, int first, int max, String orderType) throws Exception;
      
      public OrderAddAutoFillDO getAddAutoFillValues() throws Exception;
      

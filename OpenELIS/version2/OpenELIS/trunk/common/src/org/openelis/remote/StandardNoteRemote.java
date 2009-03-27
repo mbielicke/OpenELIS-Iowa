@@ -25,12 +25,14 @@
 */
 package org.openelis.remote;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 import javax.ejb.Remote;
 
 import org.openelis.domain.StandardNoteDO;
+import org.openelis.gwt.common.data.AbstractField;
 
 @Remote
 public interface StandardNoteRemote {
@@ -50,7 +52,7 @@ public interface StandardNoteRemote {
     public List getStandardNoteByType(HashMap fields) throws Exception;
 	
 	 //method to query for standard notes
-	 public List query(HashMap fields, int first, int max) throws Exception;
+	 public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception;
      
      //method to query for standard notes
      public List queryForType(HashMap fields) throws Exception;

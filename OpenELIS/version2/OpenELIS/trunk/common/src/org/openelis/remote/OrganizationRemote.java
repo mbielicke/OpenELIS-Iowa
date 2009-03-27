@@ -24,14 +24,15 @@
 * UIRF Software License are applicable instead of those above. 
 */
 package org.openelis.remote;
-import java.util.HashMap;
-import java.util.List;
-
-import javax.ejb.Remote;
-
 import org.openelis.domain.NoteDO;
 import org.openelis.domain.OrganizationAddressDO;
 import org.openelis.domain.OrganizationContactDO;
+import org.openelis.gwt.common.data.AbstractField;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.ejb.Remote;
 
 @Remote
 public interface OrganizationRemote {
@@ -54,7 +55,7 @@ public interface OrganizationRemote {
 	public List getOrganizationContacts(Integer organizationId);
 	
 	//method to query for organizations
-	 public List query(HashMap fields, int first, int max) throws Exception;
+	 public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception;
 	 
 	 //auto complete lookup
 	 public List autoCompleteLookupByName(String orgName, int maxResults);

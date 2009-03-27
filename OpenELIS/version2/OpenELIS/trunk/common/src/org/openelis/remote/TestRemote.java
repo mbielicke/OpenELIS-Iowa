@@ -25,11 +25,6 @@
 */
 package org.openelis.remote;
 
-import java.util.HashMap;
-import java.util.List;
-
-import javax.ejb.Remote;
-
 import org.openelis.domain.IdNameDO;
 import org.openelis.domain.TestAnalyteDO;
 import org.openelis.domain.TestDetailsDO;
@@ -42,6 +37,13 @@ import org.openelis.domain.TestTypeOfSampleDO;
 import org.openelis.domain.TestWorksheetAnalyteDO;
 import org.openelis.domain.TestWorksheetDO;
 import org.openelis.domain.TestWorksheetItemDO;
+import org.openelis.gwt.common.data.AbstractField;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+import javax.ejb.Remote;
 
 @Remote
 public interface TestRemote {
@@ -88,7 +90,7 @@ public interface TestRemote {
                               List<TestSectionDO> sectionDOList,
                               List<TestResultDO> resultDOList) throws Exception;
     
-    public List query(HashMap fields, int first, int max) throws Exception;
+    public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception;
 
     public List validateForUpdate(TestIdNameMethodIdDO testIdNameMethod,
                                   TestDetailsDO testDetails,

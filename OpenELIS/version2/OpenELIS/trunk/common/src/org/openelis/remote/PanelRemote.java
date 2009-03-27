@@ -25,13 +25,14 @@
 */
 package org.openelis.remote;
 
-import java.util.HashMap;
+import org.openelis.domain.PanelDO;
+import org.openelis.domain.PanelItemDO;
+import org.openelis.gwt.common.data.AbstractField;
+
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.ejb.Remote;
-
-import org.openelis.domain.PanelDO;
-import org.openelis.domain.PanelItemDO;
 
 @Remote
 public interface PanelRemote {
@@ -46,7 +47,7 @@ public interface PanelRemote {
     
     public Integer updatePanel(PanelDO panelDO, List<PanelItemDO> panelItemDOList)throws Exception;
     
-    public List query(HashMap fields, int first, int max) throws Exception;
+    public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception;
     
     public void deletePanel(Integer panelId)throws Exception;
     

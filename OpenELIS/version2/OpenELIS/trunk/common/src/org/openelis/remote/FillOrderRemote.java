@@ -25,18 +25,19 @@
 */
 package org.openelis.remote;
 
-import java.util.HashMap;
+import org.openelis.domain.FillOrderDO;
+import org.openelis.gwt.common.data.AbstractField;
+
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.ejb.Remote;
-
-import org.openelis.domain.FillOrderDO;
 
 @Remote
 public interface FillOrderRemote {
     
     //method to query for orders
-     public List query(HashMap fields, int first, int max) throws Exception;
+     public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception;
      
      public void setOrderToProcessed(List orders) throws Exception;
      

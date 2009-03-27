@@ -25,12 +25,14 @@
 */
 package org.openelis.remote;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 import javax.ejb.Remote;
 
 import org.openelis.domain.QaEventDO;
+import org.openelis.gwt.common.data.AbstractField;
 
 @Remote
 public interface QaEventRemote {
@@ -46,7 +48,7 @@ public interface QaEventRemote {
     public Integer updateQaEvent(QaEventDO qaEventDO)throws Exception;
     
     //  method to query for QaEvent
-    public List query(HashMap fields, int first, int max) throws Exception;
+    public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception;
         
     //method to get all the tests for a given QaEvent
     public List<Object[]> getTestNames();
