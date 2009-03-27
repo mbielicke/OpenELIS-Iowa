@@ -25,13 +25,14 @@
 */
 package org.openelis.remote;
 
-import java.util.HashMap;
+import org.openelis.domain.InventoryItemDO;
+import org.openelis.domain.NoteDO;
+import org.openelis.gwt.common.data.AbstractField;
+
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.ejb.Remote;
-
-import org.openelis.domain.InventoryItemDO;
-import org.openelis.domain.NoteDO;
 
 @Remote
 public interface InventoryItemRemote {
@@ -60,7 +61,7 @@ public interface InventoryItemRemote {
     public String getInventoryDescription(Integer inventoryItemId);
 	
 	//method to query for inventories
-	 public List query(HashMap fields, int first, int max) throws Exception;
+	 public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception;
 	 
 	 //auto complete  component lookup
 	 public List inventoryComponentAutoCompleteLookupByName(String itemName, Integer storeId, String currentName, int maxResults);

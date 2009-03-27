@@ -25,6 +25,7 @@
 */
 package org.openelis.remote;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -32,6 +33,7 @@ import javax.ejb.Remote;
 
 import org.openelis.domain.CategoryDO;
 import org.openelis.domain.DictionaryDO;
+import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.QueryStringField;
 
 @Remote
@@ -50,7 +52,7 @@ public interface CategoryRemote {
     public Integer updateCategory(CategoryDO categoryDO, List dictEntries)throws Exception;
     
     //  method to query for category
-    public List query(HashMap fields, int first, int max) throws Exception;
+    public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception;
     
      //  method to return just dictionary entries
     public List getDictionaryEntries(Integer categoryId);

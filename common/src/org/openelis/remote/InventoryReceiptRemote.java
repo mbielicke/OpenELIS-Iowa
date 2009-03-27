@@ -25,12 +25,13 @@
 */
 package org.openelis.remote;
 
-import java.util.HashMap;
+import org.openelis.domain.InventoryReceiptDO;
+import org.openelis.gwt.common.data.AbstractField;
+
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.ejb.Remote;
-
-import org.openelis.domain.InventoryReceiptDO;
 
 @Remote
 public interface InventoryReceiptRemote {
@@ -47,13 +48,13 @@ public interface InventoryReceiptRemote {
     public void updateInventoryTransfer(List inventorytransfers) throws Exception;
     
     //method to query for inventory receipts
-     public List query(HashMap fields, int first, int max, boolean receipt) throws Exception;
+     public List query(ArrayList<AbstractField> fields, int first, int max, boolean receipt) throws Exception;
      
      //method to query for inventory receipts..and also lock the necessary records
-     public List queryAndLock(HashMap fields, int first, int max, boolean receipt) throws Exception;
+     public List queryAndLock(ArrayList<AbstractField> fields, int first, int max, boolean receipt) throws Exception;
      
      //method to query for inventory receipts..and also unlock the necessary records
-     public List queryAndUnlock(HashMap fields, int first, int max, boolean receipt) throws Exception;
+     public List queryAndUnlock(ArrayList<AbstractField> fields, int first, int max, boolean receipt) throws Exception;
      
      //auto complete lookup
      public List autoCompleteLocationLookupByName(String name, int maxResults);

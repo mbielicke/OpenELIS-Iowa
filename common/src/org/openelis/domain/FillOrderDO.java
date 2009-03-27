@@ -25,13 +25,11 @@
 */
 package org.openelis.domain;
 
-import java.io.Serializable;
-import java.util.Date;
-
-import org.openelis.gwt.common.data.DropDownField;
-import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.util.DataBaseUtil;
 import org.openelis.util.Datetime;
+
+import java.io.Serializable;
+import java.util.Date;
 
 public class FillOrderDO implements Serializable{
 

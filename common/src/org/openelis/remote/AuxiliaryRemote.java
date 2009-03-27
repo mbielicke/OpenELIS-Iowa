@@ -26,16 +26,16 @@
 
 package org.openelis.remote;
 
-import java.util.HashMap;
-import java.util.List;
-
-import javax.ejb.Remote;
-import javax.persistence.Query;
-
 import org.openelis.domain.AuxFieldDO;
 import org.openelis.domain.AuxFieldGroupDO;
 import org.openelis.domain.AuxFieldValueDO;
 import org.openelis.domain.IdNameDO;
+import org.openelis.gwt.common.data.AbstractField;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.ejb.Remote;
 
 @Remote
 public interface AuxiliaryRemote {
@@ -46,7 +46,7 @@ public interface AuxiliaryRemote {
   
   public List<AuxFieldValueDO> getAuxFieldValues(Integer auxFieldId);
   
-  public List query(HashMap fields, int first, int max) throws Exception;
+  public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception;
  
   public Integer updateAuxiliary(AuxFieldGroupDO auxFieldGroupDO,
                                  List<AuxFieldDO> auxFields,

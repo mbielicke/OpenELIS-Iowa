@@ -25,12 +25,13 @@
 */
 package org.openelis.remote;
 
-import java.util.HashMap;
+import org.openelis.domain.AnalyteDO;
+import org.openelis.gwt.common.data.AbstractField;
+
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.ejb.Remote;
-
-import org.openelis.domain.AnalyteDO;
 
 @Remote
 public interface AnalyteRemote {
@@ -47,7 +48,7 @@ public interface AnalyteRemote {
 	public AnalyteDO getAnalyteAndUnlock(Integer analyteId, String session);
 	
 	 //method to query for analytes
-	 public List query(HashMap fields, int first, int max) throws Exception;
+	 public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception;
 	 
 	 //auto complete lookup
 	 public List autoCompleteLookupByName(String name, int maxResults);

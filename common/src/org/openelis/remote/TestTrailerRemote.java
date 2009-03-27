@@ -25,12 +25,13 @@
 */
 package org.openelis.remote;
 
-import java.util.HashMap;
+import org.openelis.domain.TestTrailerDO;
+import org.openelis.gwt.common.data.AbstractField;
+
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.ejb.Remote;
-
-import org.openelis.domain.TestTrailerDO;
 
 @Remote
 public interface TestTrailerRemote {
@@ -47,7 +48,7 @@ public interface TestTrailerRemote {
 	public TestTrailerDO getTestTrailerAndUnlock(Integer testTrailerId, String session);
 	
 	 //method to query for test trailers
-	 public List query(HashMap fields, int first, int max) throws Exception;
+	 public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception;
 	 
 	 public void deleteTestTrailer(Integer testTrailerId) throws Exception;
 	 

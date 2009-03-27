@@ -25,12 +25,13 @@
 */
 package org.openelis.remote;
 
-import java.util.HashMap;
+import org.openelis.domain.SystemVariableDO;
+import org.openelis.gwt.common.data.AbstractField;
+
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.ejb.Remote;
-
-import org.openelis.domain.SystemVariableDO;
 
 @Remote
 public interface SystemVariableRemote {
@@ -46,7 +47,7 @@ public interface SystemVariableRemote {
     public Integer updateSystemVariable(SystemVariableDO sysVarDO)throws Exception;
     
     //  method to query for SystemVariable
-    public List query(HashMap fields, int first, int max) throws Exception;
+    public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception;
     
     
     public void deleteSystemVariable(Integer sysVarId) throws Exception;

@@ -25,13 +25,14 @@
 */
 package org.openelis.remote;
 
-import java.util.HashMap;
+import org.openelis.domain.InventoryAdjustmentAddAutoFillDO;
+import org.openelis.domain.InventoryAdjustmentDO;
+import org.openelis.gwt.common.data.AbstractField;
+
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.ejb.Remote;
-
-import org.openelis.domain.InventoryAdjustmentAddAutoFillDO;
-import org.openelis.domain.InventoryAdjustmentDO;
 
 @Remote
 public interface InventoryAdjustmentRemote {
@@ -57,7 +58,7 @@ public interface InventoryAdjustmentRemote {
     public List getInventoryitemData(Integer inventoryLocationId, Integer storeId);
     
     //method to query for adjustments
-     public List query(HashMap fields, int first, int max) throws Exception;
+     public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception;
      
      //a way for the servlet to get the system user id
      public Integer getSystemUserId();

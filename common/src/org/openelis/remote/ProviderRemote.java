@@ -25,14 +25,15 @@
 */
 package org.openelis.remote;
 
-import java.util.HashMap;
-import java.util.List;
-
-import javax.ejb.Remote;
-
 import org.openelis.domain.NoteDO;
 import org.openelis.domain.ProviderAddressDO;
 import org.openelis.domain.ProviderDO;
+import org.openelis.gwt.common.data.AbstractField;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.ejb.Remote;
 
 @Remote
 public interface ProviderRemote {
@@ -54,7 +55,7 @@ public interface ProviderRemote {
     public List getProviderAddresses(Integer providerId);
     
      //method to query for provider
-     public List query(HashMap fields, int first, int max) throws Exception;
+     public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception;
      
      //method to validate the fields before the backend updates it in the database
      public List validateForUpdate(ProviderDO providerDO, List<ProviderAddressDO> addresses);
