@@ -27,6 +27,7 @@
 package org.openelis.domain;
 
 import java.io.Serializable;
+import java.util.List;
 
 public class AuxFieldDO implements Serializable {
 
@@ -49,6 +50,7 @@ public class AuxFieldDO implements Serializable {
     protected String isReportable;             
     protected Integer scriptletId;
     private boolean delete = false;
+    private List<AuxFieldValueDO> auxFieldValues;
     
     public AuxFieldDO() {
         
@@ -166,6 +168,14 @@ public class AuxFieldDO implements Serializable {
 
     public void setMethodName(String methodName) {
         this.methodName = methodName;
+    }
+
+    public List<AuxFieldValueDO> getAuxFieldValues() {
+        return auxFieldValues;
+    }
+
+    public void setAuxFieldValues(List<AuxFieldValueDO> auxFieldValues) {
+        this.auxFieldValues = auxFieldValues;
     } 
 
 }

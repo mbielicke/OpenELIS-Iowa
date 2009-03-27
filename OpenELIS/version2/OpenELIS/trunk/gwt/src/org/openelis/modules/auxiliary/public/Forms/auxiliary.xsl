@@ -71,7 +71,7 @@ UIRF Software License are applicable instead of those above.
 	    			   <xsl:call-template name="aToZLeftPanelButtons"/>		
 		    		 </buttonPanel>
 		    		 <table maxRows="20" width="auto">
-		    		   <headers><xsl:value-of select="resource:getString($constants,'name')"/></headers>
+		    		   <headers><xsl:value-of select="resource:getString($constants,'groupName')"/></headers>
 		    		   <widths>175</widths>
 		    		   <editors>
 		    		     <label/>
@@ -134,7 +134,7 @@ UIRF Software License are applicable instead of those above.
 							<VerticalPanel>
 							<TablePanel style="Form">
 								<row>
-								  <text style="Prompt"><xsl:value-of select="resource:getString($constants,'name')"/>:</text>
+								  <text style="Prompt"><xsl:value-of select="resource:getString($constants,'groupName')"/>:</text>
 								  <widget colspan = "5">
 							       <textbox  key="{meta:getName($auxfg)}"  width="145px"/>
 							      </widget> 

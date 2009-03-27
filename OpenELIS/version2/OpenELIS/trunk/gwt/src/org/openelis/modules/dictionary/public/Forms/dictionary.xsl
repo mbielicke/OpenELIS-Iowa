@@ -187,31 +187,6 @@ UIRF Software License are applicable instead of those above.
 								<filters>false,false,false,false,false</filters>
 								<colAligns>left,left,left,left,left</colAligns>
 							</table>
-							<!--
-						  <query>
-						   	<queryTable width = "auto" maxRows = "13"  title="" showError="false" showScroll="ALWAYS">
-								<headers><xsl:value-of select='resource:getString($constants,"active")'/>,<xsl:value-of select='resource:getString($constants,"systemName")'/>,
-								         <xsl:value-of select='resource:getString($constants,"abbr")'/>, <xsl:value-of select='resource:getString($constants,"entry")'/>,
-								         <xsl:value-of select='resource:getString($constants,"relEntry")'/></headers>
-								<widths>45,105,85,120,130</widths>
-								<editors>									
-								    <check threeState="true"/>											
-									<textbox/>									
-									<textbox/>									
-									<textbox/>										
-									<textbox case = "mixed"/>									
-								</editors>
-								<fields>																		
-									<xsl:value-of select='dictionary:getIsActive($dictNew)'/>,<xsl:value-of select='dictionary:getSystemName($dictNew)'/>,
-		                            <xsl:value-of select='dictionary:getLocalAbbrev($dictNew)'/>,<xsl:value-of select='dictionary:getEntry($dictNew)'/>,		                            
-									<xsl:value-of select='relentry:getEntry($rel)'/>									
-								</fields>
-								<sorts>true,true,true,true,true</sorts>
-								<filters>false,false,false,false,false</filters>
-								<colAligns>left,left,left,left,left</colAligns>
-							</queryTable>
-						  </query>						  
-						  -->
 						</widget>			
 											                
 		                <TablePanel width = "500px" spacing="0" padding="0" style="TableFooter">
@@ -238,23 +213,6 @@ UIRF Software License are applicable instead of those above.
      <table key="dictEntTable"/>	 
      <dropdown key="{meta:getSectionId($cat)}" required="false"/>    
 	</rpc>
-	<!--
-	<rpc key = "query">	 		    	
-	 <queryString key="{meta:getSystemName($cat)}"/>
-	 <queryString key="{meta:getName($cat)}"/>
-	 <queryString key="{meta:getDescription($cat)}"/>
-	 <dropdown key="{meta:getSectionId($cat)}" required="false"/> 
-	 <queryCheck key="{dictionary:getIsActive($dictNew)}" required="false"/>
-	  <queryString key="{dictionary:getSystemName($dictNew)}" required="false"/>
-	  <queryString key="{dictionary:getLocalAbbrev($dictNew)}" required="false"/>
-	  <queryString key="{dictionary:getEntry($dictNew)}" required="false"/>
-	  <dropdown key="{relentry:getEntry($rel)}" required="false"/>
-	  <model key="dictEntTable"/>
-	</rpc>
-	<rpc key="queryByLetter">
-      <queryString key="{meta:getName($cat)}"/>
-    </rpc>
-    -->
 </screen>
 </xsl:template>
 </xsl:stylesheet> 

@@ -26,9 +26,7 @@
 package org.openelis.modules.auxiliary.client;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
-import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.Query;
 import org.openelis.gwt.common.data.DataMap;
 import org.openelis.gwt.common.data.QueryStringField;
@@ -39,10 +37,10 @@ import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.screen.CommandChain;
 import org.openelis.gwt.screen.ScreenTableWidget;
 import org.openelis.gwt.screen.ScreenWindow;
-import org.openelis.gwt.widget.AToZTable;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.CollapsePanel;
+import org.openelis.gwt.widget.ResultsTable;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDropdown;
 import org.openelis.gwt.widget.table.TableManager;
@@ -113,13 +111,13 @@ public class AuxiliaryScreen extends OpenELISScreenForm<AuxiliaryForm, Query<Tab
     }
 
     public void afterDraw(boolean success) {
-        AToZTable atozTable;
+        ResultsTable atozTable;
 
         //
         // we are interested in getting button actions in two places,
         // modelwidget and the screen.
         //
-        atozTable = (AToZTable)getWidget("azTable");
+        atozTable = (ResultsTable)getWidget("azTable");
         ButtonPanel bpanel = (ButtonPanel)getWidget("buttons");
         atozButtons = (ButtonPanel)getWidget("atozButtons");  
         
