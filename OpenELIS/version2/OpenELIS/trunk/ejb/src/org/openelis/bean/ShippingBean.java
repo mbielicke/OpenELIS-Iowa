@@ -43,9 +43,10 @@ import org.openelis.entity.ShippingTracking;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
+import org.openelis.gwt.common.data.AbstractField;
+import org.openelis.gwt.common.data.TableDataModel;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.data.DataModel;
 import org.openelis.local.LockLocal;
 import org.openelis.metamap.ShippingMetaMap;
 import org.openelis.persistence.JBossCachingManager;
@@ -58,7 +59,6 @@ import org.openelis.utils.GetPage;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -121,7 +121,7 @@ public class ShippingBean implements ShippingRemote{
         return autoFillDO;
     }
 
-    public List query(HashMap fields, int first, int max) throws Exception {
+    public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception {
         StringBuffer sb = new StringBuffer();
         QueryBuilder qb = new QueryBuilder();
 
@@ -153,9 +153,8 @@ public class ShippingBean implements ShippingRemote{
     }
 
     @RolesAllowed("shipping-update")
-    public Integer updateShipment(ShippingDO shippingDO, List<ShippingItemDO> shippingItems, List<ShippingTrackingDO> trackingNumbers, DataModel unlockList, NoteDO shippingNote) throws Exception {
+ public Integer updateShipment(ShippingDO shippingDO, List<ShippingItemDO> shippingItems, List<ShippingTrackingDO> trackingNumbers, TableDataModel unlockList, NoteDO shippingNote) throws Exception {
         validateShipping(shippingDO, shippingItems);
-        
         //shipping reference table id
         Query query = manager.createNamedQuery("getTableId");
         query.setParameter("name", "shipping");
@@ -284,7 +283,7 @@ public class ShippingBean implements ShippingRemote{
         return getShipment(shippingId);
     }
 
-    public ShippingDO getShipmentAndUnlock(Integer shippingId, DataModel unlockList) {
+    public ShippingDO getShipmentAndUnlock(Integer shippingId, TableDataModel unlockList) {
         //unlock the entity
         Query unlockQuery = manager.createNamedQuery("getTableId");
         unlockQuery.setParameter("name", "shipping");
@@ -293,7 +292,7 @@ public class ShippingBean implements ShippingRemote{
         return getShipment(shippingId);
     }
     
-    public void unlockOrders(DataModel unlockList){
+    public void unlockOrders(TableDataModel unlockList){
         //unlock the order records
         unlockOrderRecords(unlockList);
     }
@@ -371,7 +370,7 @@ public class ShippingBean implements ShippingRemote{
         return exceptionList;
     }
     
-    private void unlockOrderRecords(DataModel<Integer> orders) {
+    private void unlockOrderRecords(TableDataModel orders) {
         if(orders == null || orders.size() == 0)
             return;
         
@@ -382,7 +381,7 @@ public class ShippingBean implements ShippingRemote{
         orderTableId = (Integer)query.getSingleResult();
         
         for(int i=0; i<orders.size(); i++){
-            Integer orderId = orders.get(i).getKey();
+            Integer orderId = (Integer)orders.get(i).key;
         
             if(orderId != null)
                 lockBean.giveUpLock(orderTableId, orderId);

@@ -25,8 +25,30 @@
 */
 package org.openelis.bean;
 
+import org.jboss.annotation.security.SecurityDomain;
+import org.openelis.domain.BuildKitDO;
+import org.openelis.domain.InventoryReceiptDO;
+import org.openelis.entity.InventoryLocation;
+import org.openelis.entity.InventoryReceipt;
+import org.openelis.entity.InventoryReceiptOrderItem;
+import org.openelis.entity.InventoryXPut;
+import org.openelis.entity.InventoryXUse;
+import org.openelis.entity.Order;
+import org.openelis.entity.OrderItem;
+import org.openelis.gwt.common.LastPageException;
+import org.openelis.gwt.common.TableFieldErrorException;
+import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.gwt.common.data.AbstractField;
+import org.openelis.local.LockLocal;
+import org.openelis.metamap.InventoryReceiptMetaMap;
+import org.openelis.persistence.CachingManager;
+import org.openelis.remote.InventoryReceiptRemote;
+import org.openelis.security.domain.SystemUserDO;
+import org.openelis.util.Datetime;
+import org.openelis.util.QueryBuilder;
+import org.openelis.utils.GetPage;
+
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -40,29 +62,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-
-import org.jboss.annotation.security.SecurityDomain;
-import org.openelis.domain.BuildKitComponentDO;
-import org.openelis.domain.BuildKitDO;
-import org.openelis.domain.InventoryReceiptDO;
-import org.openelis.entity.InventoryLocation;
-import org.openelis.entity.InventoryReceipt;
-import org.openelis.entity.InventoryReceiptOrderItem;
-import org.openelis.entity.InventoryXPut;
-import org.openelis.entity.InventoryXUse;
-import org.openelis.entity.Order;
-import org.openelis.entity.OrderItem;
-import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.TableFieldErrorException;
-import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.LockLocal;
-import org.openelis.metamap.InventoryReceiptMetaMap;
-import org.openelis.persistence.CachingManager;
-import org.openelis.remote.InventoryReceiptRemote;
-import org.openelis.security.domain.SystemUserDO;
-import org.openelis.util.Datetime;
-import org.openelis.util.QueryBuilder;
-import org.openelis.utils.GetPage;
 
 @Stateless
 @EJBs({
@@ -116,7 +115,7 @@ public class InventoryReceiptBean implements InventoryReceiptRemote{
     }
 
     @RolesAllowed("receipt-update")
-    public List queryAndLock(HashMap fields, int first, int max, boolean receipt) throws Exception {
+    public List queryAndLock(ArrayList<AbstractField> fields, int first, int max, boolean receipt) throws Exception {
         
         List queryResultList = query(fields, first, max, receipt);
         
@@ -126,7 +125,7 @@ public class InventoryReceiptBean implements InventoryReceiptRemote{
         return queryResultList;
     }
     
-    public List queryAndUnlock(HashMap fields, int first, int max, boolean receipt) throws Exception {
+    public List queryAndUnlock(ArrayList<AbstractField> fields, int first, int max, boolean receipt) throws Exception {
         List queryResultList = query(fields, first, max, receipt);
         
         //try and unlock the necessary records
@@ -135,7 +134,7 @@ public class InventoryReceiptBean implements InventoryReceiptRemote{
         return queryResultList;
     }
     
-    public List query(HashMap fields, int first, int max, boolean receipt) throws Exception {
+    public List query(ArrayList<AbstractField> fields, int first, int max, boolean receipt) throws Exception {
         StringBuffer sb = new StringBuffer();
         QueryBuilder qb = new QueryBuilder();
 

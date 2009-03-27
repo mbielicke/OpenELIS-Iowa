@@ -54,6 +54,7 @@ import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.TableFieldErrorException;
+import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.local.LockLocal;
 import org.openelis.metamap.AuxFieldGroupMetaMap;
 import org.openelis.metamap.AuxFieldMetaMap;
@@ -328,7 +329,7 @@ public class AuxiliaryBean implements AuxiliaryRemote {
         return exceptionList;
     }
 
-    public List query(HashMap fields, int first, int max) throws Exception { 
+    public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception { 
         StringBuffer sb = new StringBuffer();
         QueryBuilder qb = new QueryBuilder();
         qb.setMeta(AuxFieldGroupMeta);

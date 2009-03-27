@@ -25,7 +25,21 @@
 */
 package org.openelis.bean;
 
-import java.util.HashMap;
+import org.jboss.annotation.security.SecurityDomain;
+import org.openelis.domain.AnalyteDO;
+import org.openelis.entity.Analyte;
+import org.openelis.gwt.common.FieldErrorException;
+import org.openelis.gwt.common.FormErrorException;
+import org.openelis.gwt.common.LastPageException;
+import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.gwt.common.data.AbstractField;
+import org.openelis.local.LockLocal;
+import org.openelis.metamap.AnalyteMetaMap;
+import org.openelis.remote.AnalyteRemote;
+import org.openelis.util.QueryBuilder;
+import org.openelis.utils.GetPage;
+
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -39,19 +53,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-
-import org.jboss.annotation.security.SecurityDomain;
-import org.openelis.domain.AnalyteDO;
-import org.openelis.entity.Analyte;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.LockLocal;
-import org.openelis.metamap.AnalyteMetaMap;
-import org.openelis.remote.AnalyteRemote;
-import org.openelis.util.QueryBuilder;
-import org.openelis.utils.GetPage;
 
 @Stateless
 @EJBs({
@@ -137,7 +138,7 @@ public class AnalyteBean implements AnalyteRemote{
 	}
 
 
-	public List query(HashMap fields, int first, int max) throws Exception {
+	public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception {
 		StringBuffer sb = new StringBuffer();
 		QueryBuilder qb = new QueryBuilder();
 		

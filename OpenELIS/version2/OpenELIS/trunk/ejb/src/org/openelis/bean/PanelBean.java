@@ -25,8 +25,22 @@
 */
 package org.openelis.bean;
 
+import org.jboss.annotation.security.SecurityDomain;
+import org.openelis.domain.PanelDO;
+import org.openelis.domain.PanelItemDO;
+import org.openelis.entity.Panel;
+import org.openelis.entity.PanelItem;
+import org.openelis.gwt.common.FieldErrorException;
+import org.openelis.gwt.common.LastPageException;
+import org.openelis.gwt.common.RPCException;
+import org.openelis.gwt.common.data.AbstractField;
+import org.openelis.local.LockLocal;
+import org.openelis.metamap.PanelMetaMap;
+import org.openelis.remote.PanelRemote;
+import org.openelis.util.QueryBuilder;
+import org.openelis.utils.GetPage;
+
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -40,20 +54,6 @@ import javax.persistence.FlushModeType;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-
-import org.jboss.annotation.security.SecurityDomain;
-import org.openelis.domain.PanelDO;
-import org.openelis.domain.PanelItemDO;
-import org.openelis.entity.Panel;
-import org.openelis.entity.PanelItem;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.RPCException;
-import org.openelis.local.LockLocal;
-import org.openelis.metamap.PanelMetaMap;
-import org.openelis.remote.PanelRemote;
-import org.openelis.util.QueryBuilder;
-import org.openelis.utils.GetPage;
 
 @Stateless
 @EJBs({
@@ -115,7 +115,7 @@ public class PanelBean implements PanelRemote {
         return testMethodList;
     }
 
-    public List query(HashMap fields, int first, int max) throws Exception {
+    public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception {
         StringBuffer sb = new StringBuffer();
         QueryBuilder qb = new QueryBuilder();
         qb.setMeta(PanelMeta);
