@@ -25,18 +25,18 @@
 */
 package org.openelis.modules.inventoryReceipt.client;
 
+import com.google.gwt.xml.client.Node;
+
 import org.openelis.gwt.common.Form;
+import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.CheckField;
 import org.openelis.gwt.common.data.DateField;
 import org.openelis.gwt.common.data.DropDownField;
-import org.openelis.gwt.common.data.IntegerField;
 import org.openelis.gwt.common.data.StringField;
 import org.openelis.metamap.InventoryReceiptMetaMap;
 
-import com.google.gwt.xml.client.Node;
 
-
-public class InvReceiptItemInfoForm extends Form{
+public class InvReceiptItemInfoForm extends Form<Integer> {
     private static final long serialVersionUID = 1L;
 
     public DropDownField<Integer> storageLocationId;
@@ -53,24 +53,58 @@ public class InvReceiptItemInfoForm extends Form{
     public StringField state;
     public StringField zipCode;
     
+    public boolean disableOrderId = false;
+    public boolean disableInvItem = false;
+    public boolean disableUpc = false;
+    public boolean disableOrg = false;
+    
+    public Integer receiptId;
+    public Integer orderItemId;
+    
+    public String itemIsBulk;
+    public String itemIsLotMaintained;
+    public String itemIsSerialMaintained;
+    
     public InvReceiptItemInfoForm() {
        InventoryReceiptMetaMap meta = new InventoryReceiptMetaMap();
-       fields.put(meta.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getStorageLocationId(), storageLocationId = new DropDownField<Integer>());
-       fields.put(meta.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getLotNumber(), lotNumber = new StringField());
-       fields.put(meta.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getExpirationDate(), expirationDate = new DateField());
-       fields.put("addToExisiting", addToExisting = new CheckField());
-       fields.put(meta.INVENTORY_ITEM_META.getDescription(), description = new StringField());
-       fields.put(meta.INVENTORY_ITEM_META.getStoreId(), storeId = new StringField());
-       fields.put(meta.INVENTORY_ITEM_META.getDispensedUnitsId(), dispensedUnits = new StringField());
-       fields.put(meta.ORGANIZATION_META.ADDRESS.getMultipleUnit(), multUnit = new StringField());
-       fields.put(meta.ORGANIZATION_META.ADDRESS.getStreetAddress(), streetAddress = new StringField());
-       fields.put(meta.ORGANIZATION_META.ADDRESS.getCity(), city = new StringField());
-       fields.put(meta.ORGANIZATION_META.ADDRESS.getState(), state = new StringField());
-       fields.put(meta.ORGANIZATION_META.ADDRESS.getZipCode(), zipCode = new StringField());
+       storageLocationId = new DropDownField<Integer>(meta.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getStorageLocationId());
+       lotNumber = new StringField(meta.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getLotNumber());
+       expirationDate = new DateField(meta.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getExpirationDate());
+       addToExisting = new CheckField("addToExisiting");
+       description = new StringField(meta.INVENTORY_ITEM_META.getDescription());
+       storeId = new StringField(meta.INVENTORY_ITEM_META.getStoreId());
+       dispensedUnits = new StringField(meta.INVENTORY_ITEM_META.getDispensedUnitsId());
+       multUnit = new StringField(meta.ORGANIZATION_META.ADDRESS.getMultipleUnit());
+       streetAddress = new StringField(meta.ORGANIZATION_META.ADDRESS.getStreetAddress());
+       city = new StringField(meta.ORGANIZATION_META.ADDRESS.getCity());
+       state = new StringField(meta.ORGANIZATION_META.ADDRESS.getState());
+       zipCode = new StringField(meta.ORGANIZATION_META.ADDRESS.getZipCode());
    }
    
    public InvReceiptItemInfoForm(Node node) {
        this();
        createFields(node);
+   }
+   
+   public InvReceiptItemInfoForm(String key) {
+       this();
+       this.key = key;
+   }
+   
+   public AbstractField[] getFields() {
+       return new AbstractField[] {
+                                   storageLocationId,
+                                   lotNumber,
+                                   expirationDate,
+                                   addToExisting,
+                                   description,
+                                   storeId,
+                                   dispensedUnits,
+                                   multUnit,
+                                   streetAddress,
+                                   city,
+                                   state,
+                                   zipCode
+       };
    }
 }

@@ -26,113 +26,90 @@
 package org.openelis.modules.PTSampleLogin.server;
 
 import org.openelis.domain.IdNameDO;
-import org.openelis.gwt.common.DefaultRPC;
-import org.openelis.gwt.common.Form;
-import org.openelis.gwt.common.RPC;
+import org.openelis.gwt.common.Query;
 import org.openelis.gwt.common.RPCException;
-import org.openelis.gwt.common.data.BooleanObject;
-import org.openelis.gwt.common.data.Data;
-import org.openelis.gwt.common.data.DataModel;
-import org.openelis.gwt.common.data.DataSet;
-import org.openelis.gwt.common.data.Field;
-import org.openelis.gwt.common.data.FieldType;
-import org.openelis.gwt.common.data.NumberObject;
 import org.openelis.gwt.common.data.StringObject;
+import org.openelis.gwt.common.data.TableDataModel;
+import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
+import org.openelis.modules.PTSampleLogin.client.PTSampleLoginForm;
 import org.openelis.persistence.CachingManager;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.CategoryRemote;
 import org.openelis.server.constants.Constants;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
-public class PTSampleLoginService implements AppScreenFormServiceInt<DefaultRPC, Integer>{
+public class PTSampleLoginService implements AppScreenFormServiceInt<PTSampleLoginForm, Query<TableDataRow<Integer>>>{
 
-    public DefaultRPC abort(DefaultRPC rpc) throws RPCException {
+    public PTSampleLoginForm abort(PTSampleLoginForm rpc) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public DefaultRPC commitAdd(DefaultRPC rpc) throws RPCException {
+    public PTSampleLoginForm commitAdd(PTSampleLoginForm rpc) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public DefaultRPC commitDelete(DefaultRPC rpc) throws RPCException {
+    public PTSampleLoginForm commitDelete(PTSampleLoginForm rpc) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public DataModel<Integer> commitQuery(Form form, DataModel<Integer> data) throws RPCException {
+    public Query<TableDataRow<Integer>> commitQuery(Query<TableDataRow<Integer>> data) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public DefaultRPC commitUpdate(DefaultRPC rpc) throws RPCException {
+    public PTSampleLoginForm commitUpdate(PTSampleLoginForm rpc) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public DefaultRPC fetch(DefaultRPC rpc) throws RPCException {
+    public PTSampleLoginForm fetch(PTSampleLoginForm rpc) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public DefaultRPC fetchForUpdate(DefaultRPC rpc) throws RPCException {
+    public PTSampleLoginForm fetchForUpdate(PTSampleLoginForm rpc) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
-
-    public String getXML() throws RPCException {
-        return ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/PTSampleLogin.xsl");
-    }
-
-    public HashMap<String, FieldType> getXMLData() throws RPCException {
-        StringObject xml = new StringObject();
-        xml.setValue(ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/PTSampleLogin.xsl"));
+    
+    public PTSampleLoginForm getScreen(PTSampleLoginForm rpc){
+        try {
+            rpc.xml = ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/PTSampleLogin.xsl");
+        }catch(Exception e) {
+            e.printStackTrace();
+        }
         
-        DataModel sampleStatusDropdownField = (DataModel)CachingManager.getElement("InitialData", "sampleStatusDropdown");
-        DataModel ptProviderNamesDropdownField = (DataModel)CachingManager.getElement("InitialData", "ptProviderNamesDropdown");
-        DataModel ptDepartmentNamesDropdownField = (DataModel)CachingManager.getElement("InitialData", "ptDepartmentNamesDropdown");
+        rpc.sampleStatus = (TableDataModel<TableDataRow<String>>)CachingManager.getElement("InitialData", "sampleStatusDropdown");
+        rpc.ptProviderNames = (TableDataModel<TableDataRow<String>>)CachingManager.getElement("InitialData", "ptProviderNamesDropdown");
+        rpc.ptDepartmentNames = (TableDataModel<TableDataRow<String>>)CachingManager.getElement("InitialData", "ptDepartmentNamesDropdown");
         
         //sample status dropdown
-        if(sampleStatusDropdownField == null){
-            sampleStatusDropdownField = getInitialModel("statuses");
-            CachingManager.putElement("InitialData", "sampleStatusDropdown", sampleStatusDropdownField);
+        if(rpc.sampleStatus == null){
+            rpc.sampleStatus = getInitialModel("statuses");
+            CachingManager.putElement("InitialData", "sampleStatusDropdown", rpc.sampleStatus);
         }
         //pt provider names dropdown
-        if(ptProviderNamesDropdownField == null){
-            ptProviderNamesDropdownField = getInitialModel("ptProviders");
-            CachingManager.putElement("InitialData", "ptProviderNamesDropdown", ptProviderNamesDropdownField);
+        if(rpc.ptProviderNames == null){
+            rpc.ptProviderNames = getInitialModel("ptProviders");
+            CachingManager.putElement("InitialData", "ptProviderNamesDropdown", rpc.ptProviderNames);
             }
         //pt department names dropdown
-        if(ptDepartmentNamesDropdownField == null){
-            ptDepartmentNamesDropdownField = getInitialModel("ptDepartments");
-            CachingManager.putElement("InitialData", "ptDepartmentNamesDropdown", ptDepartmentNamesDropdownField);
+        if(rpc.ptDepartmentNames == null){
+            rpc.ptDepartmentNames= getInitialModel("ptDepartments");
+            CachingManager.putElement("InitialData", "ptDepartmentNamesDropdown", rpc.ptDepartmentNames);
         }
         
-        HashMap<String,FieldType> map = new HashMap<String,FieldType>();
-        map.put("xml", xml);
-        map.put("sampleStaus", sampleStatusDropdownField);
-        map.put("providerNames", ptProviderNamesDropdownField);
-        map.put("departmentNames", ptDepartmentNamesDropdownField);
-        
-        return map;
-    }
-
-    public HashMap<String, FieldType> getXMLData(HashMap<String, FieldType> args) throws RPCException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public DefaultRPC getScreen(DefaultRPC rpc){
         return rpc;
     }
     
-    public DataModel getInitialModel(String cat){
+    public TableDataModel<TableDataRow<String>> getInitialModel(String cat){
         Integer id = null;
         CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
         
@@ -143,58 +120,18 @@ public class PTSampleLoginService implements AppScreenFormServiceInt<DefaultRPC,
         else if(cat.equals("ptDepartments"))
             id = remote.getCategoryId("pt_department_names");
         
-        List entries = new ArrayList();
+        List<IdNameDO> entries = new ArrayList();
         if(id != null)
             entries = remote.getDropdownValues(id);
         
         //we need to build the model to return
-        DataModel returnModel = new DataModel();
+        TableDataModel<TableDataRow<String>> returnModel = new TableDataModel<TableDataRow<String>>();
         
         if(entries.size() > 0){ 
-            //create a blank entry to begin the list
-            DataSet blankset = new DataSet();
-            
-            StringObject blankStringId = new StringObject("");
-            NumberObject blankNumberId = new NumberObject(0);
-            BooleanObject blankSelected = new BooleanObject();
-            
-            blankset.add(blankStringId);
-            
-            
-            if(cat.equals("contactType"))
-                blankset.setKey(blankNumberId);
-            else
-                blankset.setKey(blankStringId);         
-            
-            returnModel.add(blankset);
+            returnModel.add(new TableDataRow<String>("",new StringObject("")));
         }
-        int i=0;
-        while(i < entries.size()){
-            DataSet set = new DataSet();
-            IdNameDO resultDO = (IdNameDO) entries.get(i);
-            //id
-            Integer dropdownId = resultDO.getId();
-            //entry
-            String dropdownText = resultDO.getName();
-            
-            StringObject textObject = new StringObject();
-            StringObject stringId = new StringObject();
-            NumberObject numberId = new NumberObject(NumberObject.Type.INTEGER);
-        
-            textObject.setValue(dropdownText);
-            set.add(textObject);
-            
-            if(cat.equals("contactType")){
-                numberId.setValue(dropdownId);
-                set.setKey(numberId);
-            }else{
-                stringId.setValue(dropdownText);
-                set.setKey(stringId);           
-            }
-            
-            returnModel.add(set);
-            
-            i++;
+        for(IdNameDO resultDO : entries){
+            returnModel.add(new TableDataRow<String>(resultDO.getName(),new StringObject(resultDO.getName())));
         }       
         
         return returnModel;

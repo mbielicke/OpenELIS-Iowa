@@ -25,16 +25,19 @@
 */
 package org.openelis.modules.storageunit.client;
 
+import com.google.gwt.xml.client.Node;
+
 import org.openelis.gwt.common.Form;
+import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.CheckField;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.IntegerField;
 import org.openelis.gwt.common.data.StringField;
+import org.openelis.gwt.common.data.TableDataModel;
+import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.metamap.StorageUnitMetaMap;
 
-import com.google.gwt.xml.client.Node;
-
-public class StorageUnitForm extends Form{
+public class StorageUnitForm extends Form<Integer>{
     private static final long serialVersionUID = 1L;
 
     public IntegerField id;
@@ -42,17 +45,27 @@ public class StorageUnitForm extends Form{
     public StringField description;
     public CheckField isSingular;
     
+    public TableDataModel<TableDataRow<String>> categories;
+    
     public StorageUnitForm() {
        StorageUnitMetaMap meta = new StorageUnitMetaMap();
-       fields.put(meta.getId(), id = new IntegerField());
-       fields.put(meta.getCategory(), category = new DropDownField<String>());
-       fields.put(meta.getDescription(), description = new StringField());
-       fields.put(meta.getIsSingular(), isSingular = new CheckField());
-       
+       id = new IntegerField(meta.getId());
+       category = new DropDownField<String>(meta.getCategory());
+       description = new StringField(meta.getDescription());
+       isSingular = new CheckField(meta.getIsSingular());
    }
    
    public StorageUnitForm(Node node) {
        this();
        createFields(node);
+   }
+   
+   public AbstractField[] getFields() {
+       return new AbstractField[] {
+                                   id,
+                                   category,
+                                   description,
+                                   isSingular
+       };
    }
 }

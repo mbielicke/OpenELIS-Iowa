@@ -26,21 +26,33 @@
 package org.openelis.modules.standardnotepicker.client;
 
 import org.openelis.gwt.common.Form;
+import org.openelis.gwt.common.data.AbstractField;
+import org.openelis.gwt.common.data.TreeDataModel;
 import org.openelis.gwt.common.data.TreeField;
 
 import com.google.gwt.xml.client.Node;
 
-public class StandardNotePickerForm extends Form{
+public class StandardNotePickerForm extends Form<Integer>{
     private static final long serialVersionUID = 1L;
 
     public TreeField noteTree;
     
+    public TreeDataModel treeModel;
+    public Integer id;
+    public String queryString;
+    
     public StandardNotePickerForm() {
-       fields.put("noteTree", noteTree = new TreeField());
+       noteTree = new TreeField("noteTree");
    }
    
    public StandardNotePickerForm(Node node) {
        this();
        createFields(node);
+   }
+   
+   public AbstractField[] getFields() {
+       return new AbstractField[] {
+                                   noteTree
+       };
    }
 }

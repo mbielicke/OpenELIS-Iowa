@@ -65,11 +65,32 @@ UIRF Software License are applicable instead of those above.
 <display>
 		 <HorizontalPanel spacing= "0" padding= "0">  
  					<CollapsePanel key="collapsePanel" style="LeftSidePanel">
+ 					  <!--
 						<azTable colwidths ="100,65,65" height="425px" key="azTable" maxRows="19" tablewidth="auto" title="" width="100%" headers = "{resource:getString($constants,'name')},{resource:getString($constants,'test')},{resource:getString($constants,'method')}">
 							<buttonPanel key="atozButtons">
 								<xsl:call-template name="aToZLeftPanelButtons"/>
 							</buttonPanel>
 						</azTable>
+						-->
+						<resultsTable height="425" width="100%" key="azTable">
+					       <buttonPanel key="atozButtons">
+								<xsl:call-template name="aToZLeftPanelButtons"/>
+						   </buttonPanel>
+						   <table maxRows="19" width="auto">
+						     <headers><xsl:value-of select="resource:getString($constants,'name')"/>,<xsl:value-of select="resource:getString($constants,'test')"/>,<xsl:value-of select="resource:getString($constants,'method')"/></headers>
+						     <widths>100,65,65</widths>
+						     <editors>
+						       <label/>
+						       <label/>
+						       <label/>
+						     </editors>
+						     <fields>
+						       <string/>
+						       <string/>
+						       <string/>
+						     </fields>
+						   </table>
+					   </resultsTable>
 					</CollapsePanel>
   		<VerticalPanel padding="0" spacing="0">
    <!--button panel code-->
@@ -171,7 +192,7 @@ UIRF Software License are applicable instead of those above.
  <dropdown key="{meta:getTestId($qae)}" type="integer" required = "false" />
  <dropdown key="{meta:getTypeId($qae)}" type="integer" required = "true"/>
 </rpc>
-					   
+<!--					   
 <rpc key= "query">     
  <queryString key="{meta:getName($qae)}" />
  <queryInteger key="{meta:getReportingSequence($qae)}" type="integer" />
@@ -185,7 +206,7 @@ UIRF Software License are applicable instead of those above.
 <rpc key= "queryByLetter">     
  <queryString key="{meta:getName($qae)}"/>
 </rpc>
- 
+ -->
 </screen>
 </xsl:template>
 </xsl:stylesheet> 

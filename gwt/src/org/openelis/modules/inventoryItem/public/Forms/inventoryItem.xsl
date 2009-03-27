@@ -87,11 +87,30 @@ UIRF Software License are applicable instead of those above.
 		<HorizontalPanel spacing="0" padding="0">
 			<!--left table goes here -->
 			<CollapsePanel key="collapsePanel" style="LeftSidePanel">
+			    <!--
 				<azTable colwidths="110,105" height="250px" key="azTable" maxRows="22" tablewidth="auto" headers = "{resource:getString($constants,'name')},{resource:getString($constants,'store')}" width="100%" >
     				 <buttonPanel key="atozButtons">
 	    			   <xsl:call-template name="aToZLeftPanelButtons"/>		
 		    		 </buttonPanel>
 				</azTable>
+				-->
+				 <resultsTable key="azTable" height="250px" width="100%">
+				   	 <buttonPanel key="atozButtons">
+	    			   <xsl:call-template name="aToZLeftPanelButtons"/>		
+		    		 </buttonPanel>
+		    		 <table maxRows="22" width="auto">
+		    		   <headers><xsl:value-of select="resource:getString($constants,'name')"/>,<xsl:value-of select="resource:getString($constants,'store')"/></headers>
+		    		   <widths>110,105</widths>
+		    		   <editors>
+		    		     <label/>
+		    		     <label/>
+		    		   </editors>
+		    		   <fields>
+		    		     <string/>
+		    		     <string/>
+		    		   </fields>
+		    		 </table>
+				</resultsTable>
 			</CollapsePanel>
 			<VerticalPanel spacing="0" padding="0">
 		<!--button panel code-->
@@ -276,6 +295,7 @@ UIRF Software License are applicable instead of those above.
 										<filters>false,false,false</filters>
 										<colAligns>left,left,left</colAligns>
 									</table>
+									<!--
 									<query>
 									<queryTable width="auto" title="" maxRows="9" showError="false" showScroll="ALWAYS">
 										<headers><xsl:value-of select='resource:getString($constants,"component")'/>,<xsl:value-of select='resource:getString($constants,"description")'/>,
@@ -291,6 +311,7 @@ UIRF Software License are applicable instead of those above.
 										</fields>										
 									</queryTable>
 									</query>
+									-->
 								</widget>
 								</row>
 								<row>
@@ -333,6 +354,7 @@ UIRF Software License are applicable instead of those above.
 										<filters>false,false,false,false,false</filters>
 										<colAligns>left,left,left,left,left</colAligns>
 									</table>
+									<!--
 									<query>
 									<queryTable width="auto" title="" maxRows="10" showError="false" showScroll="ALWAYS">
 										<headers><xsl:value-of select='resource:getString($constants,"location")'/>,<xsl:value-of select='resource:getString($constants,"lotNum")'/>,
@@ -353,6 +375,7 @@ UIRF Software License are applicable instead of those above.
 										</fields>							
 									</queryTable>
 									</query>
+									-->
 								</widget>
 								</row>
 							</TablePanel>
@@ -493,6 +516,7 @@ UIRF Software License are applicable instead of those above.
 
       <string key="itemTabPanel" reset="false">componentsTab</string>
 	</rpc>
+	<!--
 	<rpc key="query">
       <queryNumber key="{meta:getId($invItem)}" type="integer" required="false"/>
       <queryString key="{meta:getName($invItem)}" max="20" required="false"/>
@@ -513,7 +537,6 @@ UIRF Software License are applicable instead of those above.
       <queryCheck key="{meta:getIsLabor($invItem)}" required="false"/>
       <queryCheck key="{meta:getIsNoInventory($invItem)}" required="false"/>
 
-      <!--Additional info tab-->
       <queryNumber key="{meta:getAverageLeadTime($invItem)}" type="integer" required="false"/>
       <queryNumber key="{meta:getAverageCost($invItem)}" type="double" required="false"/>
       <queryNumber key="{meta:getAverageDailyUse($invItem)}" type="integer" required="false"/>
@@ -522,17 +545,16 @@ UIRF Software License are applicable instead of those above.
       <dropdown key="{invItemMeta:getName($parentInvItem)}" required="false"/>
       <queryNumber key="{meta:getParentRatio($invItem)}" type="integer" required="false"/>
       
-      <!--comments tab-->
       <queryString key="{noteMeta:getSubject($note)}" max="60" required="false"/>
       
       <table key="componentsTable"/>
-      <!--component table values-->
+
       <queryString key="{invItemMeta:getName($compInvItem)}" required="false"/>
 	  <queryString key="{invItemMeta:getDescription($compInvItem)}" required="false"/>
 	  <queryNumber key="{componentMeta:getQuantity($component)}" type="double" required="false"/>   
 
       <table key="locQuantitiesTable"/>	  
-	  <!--location table values-->
+
 	  <queryString key="{storageLocationMeta:getLocation($locStorageLoc)}" required="false"/>
 	  <queryString key="{locationMeta:getLotNumber($location)}" required="false"/>
 	  <queryNumber key="{locationMeta:getId($location)}" type="integer" required="false"/>
@@ -542,6 +564,7 @@ UIRF Software License are applicable instead of those above.
 	<rpc key="queryByLetter">
 		<queryString key="{meta:getName($invItem)}"/>
 	</rpc>
+	-->
 </screen>
   </xsl:template>
 </xsl:stylesheet>

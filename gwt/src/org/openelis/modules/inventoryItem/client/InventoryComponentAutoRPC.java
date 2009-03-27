@@ -25,11 +25,11 @@
 */
 package org.openelis.modules.inventoryItem.client;
 
-import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.RPC;
-import org.openelis.gwt.common.data.DataModel;
+import org.openelis.gwt.common.data.TableDataModel;
+import org.openelis.gwt.common.data.TableDataRow;
 
-public class InventoryComponentAutoRPC extends RPC<Form,Integer>{
+public class InventoryComponentAutoRPC implements RPC {
     private static final long serialVersionUID = 1L;
     
     public String cat;
@@ -37,5 +37,5 @@ public class InventoryComponentAutoRPC extends RPC<Form,Integer>{
     public Integer storeId;
     public String name;
     
-    public DataModel autoMatches;
+    public TableDataModel<TableDataRow<Integer>> autoMatches;
 }

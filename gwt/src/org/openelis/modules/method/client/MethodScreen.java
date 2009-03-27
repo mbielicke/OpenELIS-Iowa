@@ -28,18 +28,20 @@ package org.openelis.modules.method.client;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.TextBox;
-import org.openelis.gwt.common.Form;
+
+import org.openelis.gwt.common.Query;
 import org.openelis.gwt.common.data.KeyListManager;
+import org.openelis.gwt.common.data.QueryStringField;
+import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.screen.CommandChain;
-import org.openelis.gwt.widget.AToZTable;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.CollapsePanel;
-import org.openelis.gwt.widget.FormInt;
+import org.openelis.gwt.widget.ResultsTable;
 import org.openelis.metamap.MethodMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
-public class MethodScreen extends OpenELISScreenForm<MethodRPC,MethodForm,Integer> implements ChangeListener{
+public class MethodScreen extends OpenELISScreenForm<MethodForm,Query<TableDataRow<Integer>>> implements ChangeListener{
     
     private ButtonPanel atozButtons;
     
@@ -51,8 +53,8 @@ public class MethodScreen extends OpenELISScreenForm<MethodRPC,MethodForm,Intege
     
     public MethodScreen() {
         super("org.openelis.modules.method.server.MethodService");
-        forms.put("display", new MethodForm());
-        getScreen(new MethodRPC());
+        query = new Query<TableDataRow<Integer>>();
+        getScreen(new MethodForm());
     }
     
     public void performCommand(Enum action, Object obj) {
@@ -69,13 +71,13 @@ public class MethodScreen extends OpenELISScreenForm<MethodRPC,MethodForm,Intege
     
     public void afterDraw(boolean success) {        
         
-        AToZTable atozTable;
+        ResultsTable atozTable;
 
         //
         // we are interested in getting button actions in two places,
         // modelwidget and us.
         //
-        atozTable = (AToZTable)getWidget("azTable");
+        atozTable = (ResultsTable)getWidget("azTable");
         ButtonPanel bpanel = (ButtonPanel)getWidget("buttons");
         atozButtons = (ButtonPanel)getWidget("atozButtons");
         
@@ -119,10 +121,10 @@ public class MethodScreen extends OpenELISScreenForm<MethodRPC,MethodForm,Intege
         }
     };
     private void getMethods(String query){
-       if (state == FormInt.State.DISPLAY || state == FormInt.State.DEFAULT) {            
-            Form form = (Form)forms.get("queryByLetter");
-            form.setFieldValue(MethodMeta.getName(), query);
-            commitQuery(form);
+       if (state == State.DISPLAY || state == State.DEFAULT) {    
+            QueryStringField qField = new QueryStringField(MethodMeta.getName());
+            qField.setValue(query);
+            commitQuery(qField);
         }
     }   
 

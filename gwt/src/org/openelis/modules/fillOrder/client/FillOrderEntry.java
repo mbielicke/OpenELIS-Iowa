@@ -25,14 +25,13 @@
 */
 package org.openelis.modules.fillOrder.client;
 
-import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.screen.AppModule;
 import org.openelis.gwt.screen.ClassFactory;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 
 public class FillOrderEntry implements AppModule{
     public void onModuleLoad() {
-        OpenELIS.modules.addItem(new StringObject(getModuleName()));
+        OpenELIS.modules.add(getModuleName());
         ClassFactory.addClassFactory(new String[] {"FillOrderScreen"}, 
                                new ClassFactory.Factory() {
                                    public Object newInstance(Object[] args) {

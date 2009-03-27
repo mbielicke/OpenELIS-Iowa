@@ -25,10 +25,6 @@
  */
 package org.openelis.modules.shipping.server;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
 import org.openelis.domain.IdNameDO;
 import org.openelis.domain.NoteDO;
 import org.openelis.domain.OrganizationAutoDO;
@@ -42,16 +38,17 @@ import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
+import org.openelis.gwt.common.Query;
 import org.openelis.gwt.common.QueryException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.AbstractField;
-import org.openelis.gwt.common.data.DataModel;
-import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.FieldType;
 import org.openelis.gwt.common.data.IntegerObject;
 import org.openelis.gwt.common.data.StringObject;
+import org.openelis.gwt.common.data.TableDataModel;
+import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.common.data.TableField;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
@@ -62,26 +59,26 @@ import org.openelis.modules.organization.client.OrganizationForm;
 import org.openelis.modules.shipping.client.ShippingForm;
 import org.openelis.modules.shipping.client.ShippingItemsData;
 import org.openelis.modules.shipping.client.ShippingItemsForm;
-import org.openelis.modules.shipping.client.ShippingItemsRPC;
 import org.openelis.modules.shipping.client.ShippingNotesForm;
-import org.openelis.modules.shipping.client.ShippingNotesRPC;
-import org.openelis.modules.shipping.client.ShippingRPC;
 import org.openelis.modules.shipping.client.ShippingShipToKey;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.CategoryRemote;
-import org.openelis.remote.OrderRemote;
 import org.openelis.remote.OrganizationRemote;
 import org.openelis.remote.ShippingRemote;
 import org.openelis.server.constants.Constants;
-import org.openelis.server.handlers.OrderStatusCacheHandler;
 import org.openelis.server.handlers.ShipFromCacheHandler;
 import org.openelis.server.handlers.ShippedMethodCacheHandler;
 import org.openelis.server.handlers.ShippingStatusCacheHandler;
 import org.openelis.util.Datetime;
+import org.openelis.util.FormUtil;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
 
-public class ShippingService implements AppScreenFormServiceInt<ShippingRPC, Integer>, AutoCompleteServiceInt {
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+public class ShippingService implements AppScreenFormServiceInt<ShippingForm, Query<TableDataRow<Integer>>>, AutoCompleteServiceInt {
 
 	private UTFResource openElisConstants = UTFResource.getBundle((String) SessionManager.getSession().getAttribute("locale"));
 
@@ -89,26 +86,23 @@ public class ShippingService implements AppScreenFormServiceInt<ShippingRPC, Int
 
 	private static final int leftTableRowsPerPage = 20;
 
-	public DataModel<Integer> commitQuery(Form form, DataModel<Integer> model)
+	public Query<TableDataRow<Integer>> commitQuery(Query<TableDataRow<Integer>> query)
 			throws RPCException {
 		List shippingIds;
+/*
+		if (qList == null) {
 
-		if (form == null) {
-
-			form = (Form) SessionManager.getSession().getAttribute(
+			qList = (ArrayList<AbstractField>) SessionManager.getSession().getAttribute(
 					"ShippingQuery");
 
-			if (form == null)
+			if (qList == null)
 				throw new QueryException(openElisConstants
 						.getString("queryExpiredException"));
-
-			HashMap<String, AbstractField> fields = form.getFieldMap();
-			fields.remove("trackingNumbersTable");
 
 			ShippingRemote remote = (ShippingRemote) EJBFactory
 					.lookup("openelis/ShippingBean/remote");
 			try {
-				shippingIds = remote.query(fields,
+				shippingIds = remote.query(qList,
 						(model.getPage() * leftTableRowsPerPage),
 						leftTableRowsPerPage + 1);
 			} catch (Exception e) {
@@ -119,44 +113,41 @@ public class ShippingService implements AppScreenFormServiceInt<ShippingRPC, Int
 					throw new RPCException(e.getMessage());
 				}
 			}
-		} else {
+		} else {*/
 			ShippingRemote remote = (ShippingRemote) EJBFactory
 					.lookup("openelis/ShippingBean/remote");
-			HashMap<String, AbstractField> fields = form.getFieldMap();
-			fields.remove("itemsTable");
-			fields.remove("trackingNumbersTable");
 
 			try {
-				shippingIds = remote.query(fields, 0, leftTableRowsPerPage);
+				shippingIds = remote.query(query.fields, query.page*leftTableRowsPerPage, leftTableRowsPerPage);
 
 			} catch (Exception e) {
 				throw new RPCException(e.getMessage());
 			}
 
 			// need to save the rpc used to the encache
-			SessionManager.getSession().setAttribute("ShippingQuery", form);
-		}
+			//SessionManager.getSession().setAttribute("ShippingQuery", qList);
+		//}
 
 		// fill the model with the query results
 		int i = 0;
-		if (model == null)
-			model = new DataModel<Integer>();
+		if (query.results == null)
+			query.results = new TableDataModel<TableDataRow<Integer>>();
 		else
-			model.clear();
+			query.results.clear();
 		while (i < shippingIds.size() && i < leftTableRowsPerPage) {
 			IdNameDO resultDO = (IdNameDO) shippingIds.get(i);
 
-			DataSet<Integer> row = new DataSet<Integer>();
+			TableDataRow<Integer> row = new TableDataRow<Integer>();
 
-			row.setKey(resultDO.getId());
-			model.add(row);
+			row.key = resultDO.getId();
+			query.results.add(row);
 			i++;
 		}
 
-		return model;
+		return query;
 	}
 
-	public ShippingRPC commitAdd(ShippingRPC rpc) throws RPCException {
+	public ShippingForm commitAdd(ShippingForm rpc) throws RPCException {
 		// remote interface to call the shipping bean
 		ShippingRemote remote = (ShippingRemote) EJBFactory
 				.lookup("openelis/ShippingBean/remote");
@@ -166,22 +157,23 @@ public class ShippingService implements AppScreenFormServiceInt<ShippingRPC, Int
 		List shippingItems = new ArrayList();
 
 		// build the shippingDO from the form
-		shippingDO = getShippingDOFromRPC(rpc.form);
+		shippingDO = getShippingDOFromRPC(rpc);
 
 		// tracking numbers info
-		DataModel<Integer> trackingNumsTable = (DataModel<Integer>) rpc.form.shippingItemsForm.trackingNumbersTable.getValue();
+		TableDataModel<TableDataRow<Integer>> trackingNumsTable = (TableDataModel<TableDataRow<Integer>>) rpc.shippingItemsForm.trackingNumbersTable.getValue();
 		trackingNumbers = getTrackingNumberListFromRPC(trackingNumsTable, shippingDO.getId());
 
 		// shipping items info
-		DataModel<Integer> shippingItemsTable = (DataModel<Integer>) rpc.form.shippingItemsForm.itemsTable.getValue();
+		TableDataModel<TableDataRow<Integer>> shippingItemsTable = (TableDataModel<TableDataRow<Integer>>) rpc.shippingItemsForm.itemsTable.getValue();
 		shippingItems = getShippingItemsListFromRPC(shippingItemsTable, shippingDO.getId());
 
 		//set the shipping notes
 		shippingNote.setSubject("");
-		shippingNote.setText((String)rpc.form.shippingNotesForm.text.getValue());
+		shippingNote.setText((String)rpc.shippingNotesForm.text.getValue());
 		shippingNote.setIsExternal("Y");
 
-		DataModel model = (DataModel) rpc.form.getFieldValue("unlockModel");
+
+		TableDataModel<TableDataRow<Integer>> model = rpc.unlockModel;
 
 		// send the changes to the database
 		Integer shippingId;
@@ -189,7 +181,7 @@ public class ShippingService implements AppScreenFormServiceInt<ShippingRPC, Int
 			shippingId = (Integer) remote.updateShipment(shippingDO, shippingItems, trackingNumbers, model, shippingNote);
 		} catch (Exception e) {
 		    if(e instanceof ValidationErrorsList){
-                setRpcErrors(((ValidationErrorsList)e).getErrorList(), rpc.form);
+                setRpcErrors(((ValidationErrorsList)e).getErrorList(), rpc);
                 return rpc;
             }else
                 throw new RPCException(e.getMessage());
@@ -199,21 +191,21 @@ public class ShippingService implements AppScreenFormServiceInt<ShippingRPC, Int
 		shippingDO.setId(shippingId);
 
 		// set the fields in the RPC
-		setFieldsInRPC(rpc.form, shippingDO);
+		setFieldsInRPC(rpc, shippingDO);
 		
-		String tab = rpc.form.shippingTabPanel;
+		String tab = rpc.shippingTabPanel;
         if(tab.equals("itemsTab")){
-        	loadShippingItemsForm(rpc.key, rpc.form.shippingItemsForm);
+        	loadShippingItemsForm(rpc.entityKey, rpc.shippingItemsForm);
         }
        
         if(tab.equals("orderNotesTab")){
-        	loadOrderShippingNotesForm(rpc.key, rpc.form.shippingNotesForm);
+        	loadOrderShippingNotesForm(rpc.entityKey, rpc.shippingNotesForm);
         }
 
 		return rpc;
 	}
 
-	public ShippingRPC commitUpdate(ShippingRPC rpc) throws RPCException {
+	public ShippingForm commitUpdate(ShippingForm rpc) throws RPCException {
 		// remote interface to call the shipping bean
 		ShippingRemote remote = (ShippingRemote) EJBFactory
 				.lookup("openelis/ShippingBean/remote");
@@ -223,19 +215,19 @@ public class ShippingService implements AppScreenFormServiceInt<ShippingRPC, Int
 		List shippingItems = new ArrayList();
 
 		// build the shippingDO from the form
-		shippingDO = getShippingDOFromRPC(rpc.form);
+		shippingDO = getShippingDOFromRPC(rpc);
 
 		// tracking numbers info
-		DataModel trackingNumsTable = (DataModel) rpc.form.shippingItemsForm.trackingNumbersTable.getValue();
+		TableDataModel<TableDataRow<Integer>> trackingNumsTable = (TableDataModel<TableDataRow<Integer>>) rpc.shippingItemsForm.trackingNumbersTable.getValue();
 		trackingNumbers = getTrackingNumberListFromRPC(trackingNumsTable, shippingDO.getId());
 
 		// shipping items info
-		DataModel shippingItemsTable = (DataModel) rpc.form.shippingItemsForm.itemsTable.getValue();
+		TableDataModel<TableDataRow<Integer>> shippingItemsTable = (TableDataModel<TableDataRow<Integer>>) rpc.shippingItemsForm.itemsTable.getValue();
 		shippingItems = getShippingItemsListFromRPC(shippingItemsTable, shippingDO.getId());
 
 		//set the shipping notes
         shippingNote.setSubject("");
-        shippingNote.setText((String)rpc.form.shippingNotesForm.text.getValue());
+        shippingNote.setText((String)rpc.shippingNotesForm.text.getValue());
         shippingNote.setIsExternal("Y");
         
 		// validate the fields on the backend
@@ -264,45 +256,45 @@ public class ShippingService implements AppScreenFormServiceInt<ShippingRPC, Int
 		}
 
 		// set the fields in the RPC
-		setFieldsInRPC(rpc.form, shippingDO);
+		setFieldsInRPC(rpc, shippingDO);
 		
-		String tab = rpc.form.shippingTabPanel;
+		String tab = rpc.shippingTabPanel;
         if(tab.equals("itemsTab")){
-        	loadShippingItemsForm(rpc.key, rpc.form.shippingItemsForm);
+        	loadShippingItemsForm(rpc.entityKey, rpc.shippingItemsForm);
         }
        
         if(tab.equals("orderNotesTab")){
-        	loadOrderShippingNotesForm(rpc.key, rpc.form.shippingNotesForm);
+        	loadOrderShippingNotesForm(rpc.entityKey, rpc.shippingNotesForm);
         }
 
 		return rpc;
 	}
 
-	public ShippingRPC commitDelete(ShippingRPC rpc) throws RPCException {
+	public ShippingForm commitDelete(ShippingForm rpc) throws RPCException {
 		return null;
 	}
 
-	public ShippingRPC abort(ShippingRPC rpc) throws RPCException {
+	public ShippingForm abort(ShippingForm rpc) throws RPCException {
 		// remote interface to call the shipping bean
 		ShippingRemote remote = (ShippingRemote) EJBFactory
 				.lookup("openelis/ShippingBean/remote");
-		DataModel model = (DataModel) rpc.unlockModel;
+		TableDataModel<TableDataRow<Integer>> model = (TableDataModel<TableDataRow<Integer>>) rpc.unlockModel;
 
-		ShippingDO shippingDO = remote.getShipmentAndUnlock(rpc.key, model);
+		ShippingDO shippingDO = remote.getShipmentAndUnlock(rpc.entityKey, model);
 
 		// set the fields in the RPC
-		setFieldsInRPC(rpc.form, shippingDO);
+		setFieldsInRPC(rpc, shippingDO);
 
-		if (rpc.form.shippingItemsForm.load) 
-			loadShippingItemsForm(rpc.key, rpc.form.shippingItemsForm);
+		if (rpc.shippingItemsForm.load) 
+			loadShippingItemsForm(rpc.entityKey, rpc.shippingItemsForm);
 		
-		if (rpc.form.shippingNotesForm.load) 
-			loadOrderShippingNotesForm(rpc.key, rpc.form.shippingNotesForm);
+		if (rpc.shippingNotesForm.load) 
+			loadOrderShippingNotesForm(rpc.entityKey, rpc.shippingNotesForm);
 		
 		return rpc;
 	}
 
-	public ShippingRPC fetch(ShippingRPC rpc) throws RPCException {
+	public ShippingForm fetch(ShippingForm rpc) throws RPCException {
 		/*
          * Call checkModels to make screen has most recent versions of dropdowns
          */
@@ -313,24 +305,24 @@ public class ShippingService implements AppScreenFormServiceInt<ShippingRPC, Int
 				.lookup("openelis/ShippingBean/remote");
 
 		// get the shipping record
-		ShippingDO shippingDO = remote.getShipment(rpc.key);
+		ShippingDO shippingDO = remote.getShipment(rpc.entityKey);
 
 		// set the fields in the RPC
-		setFieldsInRPC(rpc.form, shippingDO);
+		setFieldsInRPC(rpc, shippingDO);
 
-		String tab = rpc.form.shippingTabPanel;
+		String tab = rpc.shippingTabPanel;
         if(tab.equals("itemsTab")){
-        	loadShippingItemsForm(rpc.key, rpc.form.shippingItemsForm);
+        	loadShippingItemsForm(rpc.entityKey, rpc.shippingItemsForm);
         }
        
         if(tab.equals("orderNotesTab")){
-        	loadOrderShippingNotesForm(rpc.key, rpc.form.shippingNotesForm);
+        	loadOrderShippingNotesForm(rpc.entityKey, rpc.shippingNotesForm);
         }
 
 		return rpc;
 	}
 
-	public ShippingRPC fetchForUpdate(ShippingRPC rpc) throws RPCException {
+	public ShippingForm fetchForUpdate(ShippingForm rpc) throws RPCException {
 		/*
          * Call checkModels to make screen has most recent versions of dropdowns
          */
@@ -342,46 +334,34 @@ public class ShippingService implements AppScreenFormServiceInt<ShippingRPC, Int
 
 		ShippingDO shippingDO = new ShippingDO();
 		try {
-			shippingDO = remote.getShipmentAndLock(rpc.key);
+			shippingDO = remote.getShipmentAndLock(rpc.entityKey);
 		} catch (Exception e) {
 			throw new RPCException(e.getMessage());
 		}
 
 		// set the fields in the RPC
-		setFieldsInRPC(rpc.form, shippingDO);
+		setFieldsInRPC(rpc, shippingDO);
 
-		String tab = rpc.form.shippingTabPanel;
+		String tab = rpc.shippingTabPanel;
         if(tab.equals("itemsTab")){
-        	loadShippingItemsForm(rpc.key, rpc.form.shippingItemsForm);
+        	loadShippingItemsForm(rpc.entityKey, rpc.shippingItemsForm);
         }
        
         if(tab.equals("orderNotesTab")){
-        	loadOrderShippingNotesForm(rpc.key, rpc.form.shippingNotesForm);
+        	loadOrderShippingNotesForm(rpc.entityKey, rpc.shippingNotesForm);
         }
 
 		return rpc;
 	}
 
-	public String getXML() throws RPCException {
-		return null;
-	}
-
-	public HashMap<String, FieldType> getXMLData() throws RPCException {
-		return null;
-	}
-
-	public HashMap<String, FieldType> getXMLData(HashMap<String, FieldType> args) throws RPCException {
-		return null;
-	}
-
-	public ShippingRPC getScreen(ShippingRPC rpc) throws RPCException{
+	public ShippingForm getScreen(ShippingForm rpc) throws RPCException{
         rpc.xml = ServiceUtils.getXML(Constants.APP_ROOT + "/Forms/shipping.xsl");
 
         /*
          * Load initial  models to RPC and store cache verison of models into Session for 
          * comparisons for later fetches
          */
-        rpc.status = ShippingStatusCacheHandler.getShippingStatuses();
+        rpc.shippedStatus = ShippingStatusCacheHandler.getShippingStatuses();
         SessionManager.getSession().setAttribute("shippingStatusVersion",ShippingStatusCacheHandler.version);
         rpc.shippedFrom = ShipFromCacheHandler.getShipFroms();
         SessionManager.getSession().setAttribute("shipFromVersion",ShipFromCacheHandler.version);
@@ -391,7 +371,7 @@ public class ShippingService implements AppScreenFormServiceInt<ShippingRPC, Int
         return rpc;
 	}
 	
-	public void checkModels(ShippingRPC rpc) {
+	public void checkModels(ShippingForm rpc) {
         /*
          * Retrieve current version of models from session.
          */
@@ -402,7 +382,7 @@ public class ShippingService implements AppScreenFormServiceInt<ShippingRPC, Int
          * Compare stored version to current cache versions and update if necessary. 
          */
         if(statuses != ShippingStatusCacheHandler.version){
-            rpc.status = ShippingStatusCacheHandler.getShippingStatuses();
+            rpc.shippedStatus = ShippingStatusCacheHandler.getShippingStatuses();
             SessionManager.getSession().setAttribute("shippingStatusVersion",ShippingStatusCacheHandler.version);
         }
         if(shippedFroms != ShipFromCacheHandler.version){
@@ -415,8 +395,8 @@ public class ShippingService implements AppScreenFormServiceInt<ShippingRPC, Int
         }
     }
 
-	public ShippingItemsRPC loadShippingItems(ShippingItemsRPC rpc) throws RPCException {
-		loadShippingItemsForm(rpc.key, rpc.form);
+	public ShippingItemsForm loadShippingItems(ShippingItemsForm rpc) throws RPCException {
+		loadShippingItemsForm(rpc.entityKey, rpc);
 		return rpc;
 	}
 	
@@ -426,8 +406,8 @@ public class ShippingService implements AppScreenFormServiceInt<ShippingRPC, Int
 		form.load = true;
 	}
 
-	public ShippingNotesRPC loadOrderShippingNotes(ShippingNotesRPC rpc) throws RPCException {
-		loadOrderShippingNotesForm(rpc.key, rpc.form);
+	public ShippingNotesForm loadOrderShippingNotes(ShippingNotesForm rpc) throws RPCException {
+		loadOrderShippingNotesForm(rpc.entityKey, rpc);
 		return rpc;	
 }
 	
@@ -436,13 +416,12 @@ public class ShippingService implements AppScreenFormServiceInt<ShippingRPC, Int
 		form.load = true;
 	}
 
-	public void getShippingItemsModel(Integer key, TableField<Integer> shippingItemsTable)
+	public void getShippingItemsModel(Integer key, TableField<TableDataRow<Integer>> shippingItemsTable)
 			throws RPCException {
 		ShippingRemote remote = (ShippingRemote) EJBFactory
 				.lookup("openelis/ShippingBean/remote");
 		List shippingItemsList = remote.getShippingItems(key);
-		DataModel shippingItemsModel = (DataModel) shippingItemsTable
-				.getValue();
+		TableDataModel<TableDataRow<Integer>> shippingItemsModel = shippingItemsTable.getValue();
 
 		shippingItemsModel.clear();
 
@@ -450,29 +429,29 @@ public class ShippingService implements AppScreenFormServiceInt<ShippingRPC, Int
 			ShippingItemDO itemDO = (ShippingItemDO) shippingItemsList
 					.get(iter);
 
-			DataSet<Integer> row = shippingItemsModel.createNewSet();
+			TableDataRow<Integer> row = shippingItemsModel.createNewSet();
 			FillOrderOrderItemsKey hiddenData = new FillOrderOrderItemsKey();
 			hiddenData.referenceTableId = itemDO.getReferenceTableId();
 			hiddenData.referenceId = itemDO.getReferenceId();
 			hiddenData.locId = itemDO.getInventoryLocationId();
 			hiddenData.transId = itemDO.getTransId();
 
-			row.setKey(itemDO.getId());
+			row.key = itemDO.getId();
 			row.setData(hiddenData);
 
-			row.get(0).setValue(itemDO.getQuantity());
-			row.get(1).setValue(itemDO.getItemDescription());
+			row.getCells().get(0).setValue(itemDO.getQuantity());
+			row.getCells().get(1).setValue(itemDO.getItemDescription());
 
 			shippingItemsModel.add(row);
 		}
 	}
 
-	public void getTrackingNumbersModel(Integer key, TableField<Integer> trackingTable)
+	public void getTrackingNumbersModel(Integer key, TableField<TableDataRow<Integer>> trackingTable)
 			throws RPCException {
 		ShippingRemote remote = (ShippingRemote) EJBFactory
 				.lookup("openelis/ShippingBean/remote");
 		List trackingNumbersList = remote.getTrackingNumbers(key);
-		DataModel trackingNumbersModel = (DataModel) trackingTable.getValue();
+		TableDataModel<TableDataRow<Integer>> trackingNumbersModel = trackingTable.getValue();
 
 		trackingNumbersModel.clear();
 
@@ -480,10 +459,10 @@ public class ShippingService implements AppScreenFormServiceInt<ShippingRPC, Int
 			ShippingTrackingDO trackingDO = (ShippingTrackingDO) trackingNumbersList
 					.get(iter);
 
-			DataSet<Integer> row = trackingNumbersModel.createNewSet();
+			TableDataRow<Integer> row = trackingNumbersModel.createNewSet();
 
-			row.setKey(trackingDO.getId());
-			row.get(0).setValue(trackingDO.getTrackingNumber());
+			row.key = trackingDO.getId();
+			row.getCells().get(0).setValue(trackingDO.getTrackingNumber());
 
 			trackingNumbersModel.add(row);
 		}
@@ -500,7 +479,7 @@ public class ShippingService implements AppScreenFormServiceInt<ShippingRPC, Int
 		return null;
 	}
 
-	public ShippingRPC unlockOrderRecords(ShippingRPC rpc) {
+	public ShippingForm unlockOrderRecords(ShippingForm rpc) {
 		ShippingRemote remote = (ShippingRemote) EJBFactory.lookup("openelis/ShippingBean/remote");
 
 		remote.unlockOrders(rpc.checkedOrderIds);
@@ -508,7 +487,7 @@ public class ShippingService implements AppScreenFormServiceInt<ShippingRPC, Int
 		return rpc;
 	}
 
-	public DataModel getInitialModel(String cat) {
+	public TableDataModel<TableDataRow<Integer>> getInitialModel(String cat) {
 		Integer id = null;
 		CategoryRemote remote = (CategoryRemote) EJBFactory
 				.lookup("openelis/CategoryBean/remote");
@@ -520,39 +499,36 @@ public class ShippingService implements AppScreenFormServiceInt<ShippingRPC, Int
 		else if (cat.equals("shippingMethod"))
 			id = remote.getCategoryId("shippingMethod");
 
-		List entries = new ArrayList();
+		List<IdNameDO> entries = new ArrayList();
 		if (id != null)
 			entries = remote.getDropdownValues(id);
 
 		// we need to build the model to return
-		DataModel<Integer> returnModel = new DataModel<Integer>();
+		TableDataModel<TableDataRow<Integer>> returnModel = new TableDataModel<TableDataRow<Integer>>();
 
 		if (entries.size() > 0) {
 			// create a blank entry to begin the list
-			returnModel.add(new DataSet<Integer>(0, new StringObject("")));
+			returnModel.add(new TableDataRow<Integer>(0, new StringObject("")));
 		}
 
-		int i = 0;
-		while (i < entries.size()) {
-			IdNameDO resultDO = (IdNameDO) entries.get(i);
-			returnModel.add(new DataSet<Integer>(resultDO.getId(),
+		for(IdNameDO resultDO : entries) {
+			returnModel.add(new TableDataRow<Integer>(resultDO.getId(),
 					new StringObject(resultDO.getName())));
-			i++;
 		}
 
 		return returnModel;
 	}
 
-	public ShippingRPC getAddAutoFillValues(ShippingRPC rpc) throws Exception {
+	public ShippingForm getAddAutoFillValues(ShippingForm rpc) throws Exception {
 		ShippingRemote remote = (ShippingRemote) EJBFactory.lookup("openelis/ShippingBean/remote");
 		ShippingAddAutoFillDO autoDO;
 
 		autoDO = remote.getAddAutoFillValues();
 		
-		rpc.form.statusId.setValue(new DataSet<Integer>(autoDO.getStatus()));
-		rpc.form.processedDate.setValue(DatetimeRPC.getInstance(Datetime.YEAR, Datetime.DAY, autoDO.getProcessedDate().getDate()));
-		rpc.form.processedBy.setValue(autoDO.getProcessedBy());
-		rpc.form.systemUserId = autoDO.getSystemUserId();
+		rpc.statusId.setValue(new TableDataRow<Integer>(autoDO.getStatus()));
+		rpc.processedDate.setValue(DatetimeRPC.getInstance(Datetime.YEAR, Datetime.DAY, autoDO.getProcessedDate().getDate()));
+		rpc.processedBy.setValue(autoDO.getProcessedBy());
+		rpc.systemUserId = autoDO.getSystemUserId();
 
 		return rpc;
 	}
@@ -587,15 +563,15 @@ public class ShippingService implements AppScreenFormServiceInt<ShippingRPC, Int
 		return shippingDO;
 	}
 
-	private List getShippingItemsListFromRPC(DataModel<Integer> itemsTable,
+	private List getShippingItemsListFromRPC(TableDataModel<TableDataRow<Integer>> itemsTable,
 			Integer shippingId) {
 		List shippingItems = new ArrayList();
 
 		for (int i = 0; i < itemsTable.size(); i++) {
 			ShippingItemDO itemDO = new ShippingItemDO();
-			DataSet<Integer> row = itemsTable.get(i);
+			TableDataRow<Integer> row = itemsTable.get(i);
 
-			Integer itemId = row.getKey();
+			Integer itemId = row.key;
 
 			ShippingItemsData rowData = (ShippingItemsData) row.getData();
 			//Integer referenceId = hiddenData.referenceId;
@@ -606,8 +582,8 @@ public class ShippingService implements AppScreenFormServiceInt<ShippingRPC, Int
 			itemDO.setId(itemId);
 			itemDO.setReferenceId(rowData.referenceId);
 			itemDO.setReferenceTableId(rowData.referenceTableId);
-			itemDO.setQuantity((Integer)row.get(0).getValue());
-			itemDO.setDescription((String)row.get(1).getValue());
+			itemDO.setQuantity((Integer)row.cells[0].getValue());
+			itemDO.setDescription((String)row.cells[1].getValue());
 			itemDO.setShippingId(shippingId);
 
 			shippingItems.add(itemDO);
@@ -616,42 +592,47 @@ public class ShippingService implements AppScreenFormServiceInt<ShippingRPC, Int
 		return shippingItems;
 	}
 
-	private List getTrackingNumberListFromRPC(DataModel<Integer> trackingNumsTable, Integer shippingId) {
-		List tackingNums = new ArrayList();
-		List<DataSet<Integer>> deletedRows = trackingNumsTable.getDeletions();
+	private List getTrackingNumberListFromRPC(TableDataModel<TableDataRow<Integer>> trackingNumsTable, Integer shippingId) {
+		List trackingNums = new ArrayList();
+		List<TableDataRow<Integer>> deletedRows = trackingNumsTable.getDeletions();
 
 		for (int i = 0; i < trackingNumsTable.size(); i++) {
 			ShippingTrackingDO trackingDO = new ShippingTrackingDO();
-			DataSet<Integer> row = trackingNumsTable.get(i);
+			TableDataRow<Integer> row = trackingNumsTable.get(i);
 
-			Integer itemId = row.getKey();
+			Integer itemId = row.key;
 
 			if (itemId != null)
 				trackingDO.setId(itemId);
 
 			trackingDO.setShippingId(shippingId);
-			trackingDO.setTrackingNumber((String) row.get(0).getValue());
+			trackingDO.setTrackingNumber((String) row.getCells().get(0).getValue());
 
-			tackingNums.add(trackingDO);
+			trackingNums.add(trackingDO);
 		}
 
 		for (int j = 0; j < deletedRows.size(); j++) {
-			DataSet<Integer> deletedRow = deletedRows.get(j);
-			if (deletedRow.getKey() != null) {
+			TableDataRow<Integer> deletedRow = deletedRows.get(j);
+			if (deletedRow.key != null) {
 				ShippingTrackingDO trackingDO = new ShippingTrackingDO();
 				trackingDO.setDelete(true);
-				trackingDO.setId(deletedRow.getKey());
+				trackingDO.setId(deletedRow.key);
 			}
 		}
 
-		return tackingNums;
+		return trackingNums;
 	}
 
-	private void setRpcErrors(List exceptionList, Form form) {
+	private void setRpcErrors(List exceptionList, Form<? extends Object> form) {
+        HashMap<String,AbstractField> map = null;
+        if(exceptionList.size() > 0)
+            map = FormUtil.createFieldMap(form);
 		for (int i = 0; i < exceptionList.size(); i++) {
 			// if the error is inside the table
-		    if (exceptionList.get(i) instanceof FieldErrorException)
-				form.getField(
+			
+				// if the error is on the field
+			if (exceptionList.get(i) instanceof FieldErrorException)
+				map.get(
 						((FieldErrorException) exceptionList.get(i))
 								.getFieldName()).addError(
 						openElisConstants
@@ -673,8 +654,8 @@ public class ShippingService implements AppScreenFormServiceInt<ShippingRPC, Int
 		if (shippingDO.getShippedToId() == null)
 			form.organization.clear();
 		else {
-			DataModel<Integer> model = new DataModel<Integer>();
-			model.add(new DataSet<Integer>(shippingDO.getShippedToId(),
+			TableDataModel<TableDataRow<Integer>> model = new TableDataModel<TableDataRow<Integer>>();
+			model.add(new TableDataRow<Integer>(shippingDO.getShippedToId(),
 					new StringObject(shippingDO.getShippedTo())));
 			form.organization.setModel(model);
 			form.organization.setValue(model.get(0));
@@ -699,25 +680,25 @@ public class ShippingService implements AppScreenFormServiceInt<ShippingRPC, Int
 				&& shippingDO.getShippedDate().getDate() != null)
 			form.shippedDate.setValue(DatetimeRPC.getInstance(Datetime.YEAR, Datetime.DAY, shippingDO.getShippedDate().getDate()));
 		if (shippingDO.getShippedFromId() != null)
-			form.shippedFromId.setValue(new DataSet<Integer>(shippingDO.getShippedFromId()));
+			form.shippedFromId.setValue(new TableDataRow<Integer>(shippingDO.getShippedFromId()));
 		if (shippingDO.getShippedMethodId() != null)
-			form.shippedMethodId.setValue(new DataSet<Integer>(shippingDO.getShippedMethodId()));
+			form.shippedMethodId.setValue(new TableDataRow<Integer>(shippingDO.getShippedMethodId()));
 		if (shippingDO.getStatusId() != null)
-			form.statusId.setValue(new DataSet<Integer>(shippingDO.getStatusId()));
+			form.statusId.setValue(new TableDataRow<Integer>(shippingDO.getStatusId()));
 	}
 
-	public DataModel getMatches(String cat, DataModel model, String match,
-			HashMap params) throws RPCException {
+	public TableDataModel getMatches(String cat, TableDataModel model, String match,
+			HashMap<String,FieldType> params) throws RPCException {
 		if ("shippedTo".equals(cat))
 			return getShippedToMatches(match);
 
 		return null;
 	}
 
-	private DataModel<Integer> getShippedToMatches(String match) {
+	private TableDataModel<TableDataRow<Integer>> getShippedToMatches(String match) {
 		OrganizationRemote remote = (OrganizationRemote) EJBFactory
 				.lookup("openelis/OrganizationBean/remote");
-		DataModel<Integer> dataModel = new DataModel<Integer>();
+		TableDataModel<TableDataRow<Integer>> dataModel = new TableDataModel<TableDataRow<Integer>>();
 		List autoCompleteList;
 
 		try {
@@ -750,22 +731,14 @@ public class ShippingService implements AppScreenFormServiceInt<ShippingRPC, Int
 			// org zipcode
 			String zipCode = resultDO.getZipCode();
 
-			DataSet<Integer> data = new DataSet<Integer>();
-			// hidden id
-			data.setKey(orgId);
-			// columns
-			StringObject nameObject = new StringObject();
-			nameObject.setValue(name);
-			data.add(nameObject);
-			StringObject addressObject = new StringObject();
-			addressObject.setValue(address);
-			data.add(addressObject);
-			StringObject cityObject = new StringObject();
-			cityObject.setValue(city);
-			data.add(cityObject);
-			StringObject stateObject = new StringObject();
-			stateObject.setValue(state);
-			data.add(stateObject);
+			TableDataRow<Integer> data = new TableDataRow<Integer>(orgId,
+                                                                   new FieldType[] {
+                                                                                    new StringObject(name),
+                                                                                    new StringObject(address),
+                                                                                    new StringObject(city),
+                                                                                    new StringObject(state)
+                                                                   }
+                                         );
 
 			ShippingShipToKey hiddenData = new ShippingShipToKey();
 			hiddenData.aptSuite = aptSuite;
@@ -785,6 +758,10 @@ public class ShippingService implements AppScreenFormServiceInt<ShippingRPC, Int
 	}
 	
 	   private void setRpcErrors(List exceptionList, TableField itemsTable, ShippingForm form){
+           HashMap<String,AbstractField> map = null;
+           if(exceptionList.size() > 0) {
+               map = FormUtil.createFieldMap(form);
+           }
 	        for (int i=0; i<exceptionList.size();i++) {
 	            //if the error is inside the org contacts table
 	            if(exceptionList.get(i) instanceof TableFieldErrorException){
@@ -794,7 +771,7 @@ public class ShippingService implements AppScreenFormServiceInt<ShippingRPC, Int
 
 	            //if the error is on the field
 	            }else if(exceptionList.get(i) instanceof FieldErrorException)
-	                form.getField(((FieldErrorException)exceptionList.get(i)).getFieldName()).addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
+	                map.get(((FieldErrorException)exceptionList.get(i)).getFieldName()).addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
 	            
 	            //if the error is on the entire form
 	            else if(exceptionList.get(i) instanceof FormErrorException)

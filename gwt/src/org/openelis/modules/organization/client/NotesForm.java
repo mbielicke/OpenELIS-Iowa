@@ -3,6 +3,7 @@ package org.openelis.modules.organization.client;
 import com.google.gwt.xml.client.Node;
 
 import org.openelis.gwt.common.Form;
+import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.StringField;
 import org.openelis.metamap.OrganizationMetaMap;
 
@@ -14,7 +15,7 @@ import org.openelis.metamap.OrganizationMetaMap;
  * @author tschmidt
  *
  */
-public class NotesForm extends Form {
+public class NotesForm extends Form<Integer> {
     
 
     private static final long serialVersionUID = 1L;
@@ -24,14 +25,27 @@ public class NotesForm extends Form {
       
       public NotesForm() {
           OrganizationMetaMap meta = new OrganizationMetaMap();
-          fields.put(meta.NOTE.getSubject(), subject = new StringField());
-          fields.put(meta.NOTE.getText(),text = new StringField());
-          fields.put("notesPanel",notesPanel = new StringField());
+          subject = new StringField(meta.NOTE.getSubject());
+          text = new StringField(meta.NOTE.getText());
+          notesPanel = new StringField("notesPanel");
       }
       
       public NotesForm(Node node){
           this();
           createFields(node);
+      }
+      
+      public NotesForm(String key) {
+          this();
+          this.key = key;
+      }
+      
+      public AbstractField[] getFields() {
+          return new AbstractField[] {
+                                      subject,
+                                      text,
+                                      notesPanel
+          };
       }
 
 }

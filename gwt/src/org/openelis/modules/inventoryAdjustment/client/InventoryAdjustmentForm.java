@@ -25,17 +25,20 @@
 */
 package org.openelis.modules.inventoryAdjustment.client;
 
+import com.google.gwt.xml.client.Node;
+
 import org.openelis.gwt.common.Form;
+import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.DateField;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.IntegerField;
 import org.openelis.gwt.common.data.StringField;
+import org.openelis.gwt.common.data.TableDataModel;
+import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.common.data.TableField;
 import org.openelis.metamap.InventoryAdjustmentMetaMap;
 
-import com.google.gwt.xml.client.Node;
-
-public class InventoryAdjustmentForm extends Form{
+public class InventoryAdjustmentForm extends Form<Integer>{
     private static final long serialVersionUID = 1L;
 
     public IntegerField id;
@@ -43,21 +46,40 @@ public class InventoryAdjustmentForm extends Form{
     public DateField adjustmentDate;
     public StringField systemUser;
     public DropDownField<Integer> storeId;
-    public TableField<Integer> adjustmentsTable;
+    public TableField<TableDataRow<Integer>> adjustmentsTable;
     public Integer systemUserId;
+    
+    public TableDataModel<TableDataRow<Integer>> stores;
+    
+    public Integer storeIdKey;
+    public Integer locId;
+    public TableDataModel<TableDataRow<Integer>> invItemModel;
+    public String storageLocation;
+    public Integer qtyOnHand;
     
     public InventoryAdjustmentForm() {
        InventoryAdjustmentMetaMap meta = new InventoryAdjustmentMetaMap();
-       fields.put(meta.getId(), id = new IntegerField());
-       fields.put(meta.getDescription(), description = new StringField());
-       fields.put(meta.getAdjustmentDate(), adjustmentDate = new DateField());
-       fields.put(meta.getSystemUserId(), systemUser = new StringField());
-       fields.put(meta.TRANS_ADJUSTMENT_LOCATION_META.INVENTORY_LOCATION_META.INVENTORY_ITEM_META.getStoreId(), storeId = new DropDownField<Integer>());
-       fields.put("adjustmentsTable", adjustmentsTable = new TableField<Integer>());
+       id = new IntegerField(meta.getId());
+       description = new StringField(meta.getDescription());
+       adjustmentDate = new DateField(meta.getAdjustmentDate());
+       systemUser = new StringField(meta.getSystemUserId());
+       storeId = new DropDownField<Integer>(meta.TRANS_ADJUSTMENT_LOCATION_META.INVENTORY_LOCATION_META.INVENTORY_ITEM_META.getStoreId());
+       adjustmentsTable = new TableField<TableDataRow<Integer>>("adjustmentsTable");
    }
    
    public InventoryAdjustmentForm(Node node) {
        this();
        createFields(node);
+   }
+   
+   public AbstractField[] getFields() {
+       return new AbstractField[] {
+                                   id,
+                                   description,
+                                   adjustmentDate,
+                                   systemUser,
+                                   storeId,
+                                   adjustmentsTable
+       };
    }
 }

@@ -28,26 +28,28 @@ package org.openelis.modules.systemvariable.client;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Widget;
 
-import org.openelis.gwt.common.Form;
+import org.openelis.gwt.common.Query;
 import org.openelis.gwt.common.data.KeyListManager;
+import org.openelis.gwt.common.data.QueryStringField;
+import org.openelis.gwt.common.data.TableDataModel;
+import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.screen.CommandChain;
 import org.openelis.gwt.screen.ScreenInputWidget;
-import org.openelis.gwt.widget.AToZTable;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.CollapsePanel;
-import org.openelis.gwt.widget.FormInt;
+import org.openelis.gwt.widget.ResultsTable;
 import org.openelis.metamap.SystemVariableMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
-public class SystemVariableScreen extends OpenELISScreenForm<SystemVariableRPC,SystemVariableForm,Integer> implements ClickListener {
+public class SystemVariableScreen extends OpenELISScreenForm<SystemVariableForm,Query<TableDataRow<Integer>>> implements ClickListener {
     
     private KeyListManager keyList = new KeyListManager();
     
     public SystemVariableScreen() {
         super("org.openelis.modules.systemvariable.server.SystemVariableService");
-        forms.put("display", new SystemVariableForm());
-        getScreen(new SystemVariableRPC());        
+        query = new Query<TableDataRow<Integer>>();
+        getScreen(new SystemVariableForm());        
     }
     
     private SystemVariableMetaMap Meta = new SystemVariableMetaMap();
@@ -70,7 +72,7 @@ public class SystemVariableScreen extends OpenELISScreenForm<SystemVariableRPC,S
     }
 
     public void afterDraw(boolean success) {
-        AToZTable atozTable = (AToZTable) getWidget("azTable");
+        ResultsTable atozTable = (ResultsTable) getWidget("azTable");
         ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
         ButtonPanel bpanel = (ButtonPanel)getWidget("buttons");
         
@@ -89,10 +91,10 @@ public class SystemVariableScreen extends OpenELISScreenForm<SystemVariableRPC,S
     }  
     
     private void getSystemVariables(String query) {
-        if (state == FormInt.State.DISPLAY || state == FormInt.State.DEFAULT) {
-            Form letter = (Form)forms.get("queryByLetter");
-            letter.setFieldValue(Meta.getName(), query);
-            commitQuery(letter);
+        if (state == State.DISPLAY || state == State.DEFAULT) {
+            QueryStringField qField = new QueryStringField(Meta.getName());
+            qField.setValue("query");
+            commitQuery(qField);
         }
     }
         

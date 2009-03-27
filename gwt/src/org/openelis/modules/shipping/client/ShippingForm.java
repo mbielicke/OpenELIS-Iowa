@@ -25,17 +25,20 @@
 */
 package org.openelis.modules.shipping.client;
 
+import com.google.gwt.xml.client.Node;
+
 import org.openelis.gwt.common.Form;
+import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.DateField;
 import org.openelis.gwt.common.data.DoubleField;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.IntegerField;
 import org.openelis.gwt.common.data.StringField;
+import org.openelis.gwt.common.data.TableDataModel;
+import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.metamap.ShippingMetaMap;
 
-import com.google.gwt.xml.client.Node;
-
-public class ShippingForm extends Form{
+public class ShippingForm extends Form<Integer>{
     private static final long serialVersionUID = 1L;
 
     public IntegerField id;
@@ -53,9 +56,18 @@ public class ShippingForm extends Form{
     public StringField city;
     public StringField state;
     public StringField zipcode;
+    public TableDataModel<TableDataRow<Integer>> unlockModel;
     
     public String shippingTabPanel = "itemsTab";
     public Integer systemUserId;
+    
+    public TableDataModel<TableDataRow<Integer>> shippedStatus;
+    public TableDataModel<TableDataRow<Integer>> shippedFrom;
+    public TableDataModel<TableDataRow<Integer>> shippedMethod;
+    
+    //public Integer systemUserId;
+    //public DataModel unlockModel;
+    public TableDataModel<TableDataRow<Integer>> checkedOrderIds;
     
     //sub forms
     public ShippingItemsForm shippingItemsForm;
@@ -64,28 +76,49 @@ public class ShippingForm extends Form{
     
     public ShippingForm() {
        ShippingMetaMap meta = new ShippingMetaMap();
-       fields.put(meta.getId(), id = new IntegerField());
-       fields.put(meta.getStatusId(),statusId = new DropDownField<Integer>());
-       fields.put(meta.getNumberOfPackages(), numberOfPackages = new IntegerField());
-       fields.put(meta.getCost(), cost = new DoubleField());
-       fields.put(meta.getShippedFromId(), shippedFromId = new DropDownField<Integer>());
-       fields.put(meta.ORGANIZATION_META.getName(), organization = new DropDownField<Integer>());
-       fields.put(meta.getProcessedDate(), processedDate = new DateField());
-       fields.put(meta.getProcessedById(), processedBy = new StringField());
-       fields.put(meta.getShippedDate(), shippedDate = new DateField());
-       fields.put(meta.getShippedMethodId(), shippedMethodId = new DropDownField<Integer>());
-       fields.put(meta.ORGANIZATION_META.ADDRESS.getMultipleUnit(), multipleUnit = new StringField());
-       fields.put(meta.ORGANIZATION_META.ADDRESS.getStreetAddress(), streetAddress = new StringField());
-       fields.put(meta.ORGANIZATION_META.ADDRESS.getCity(), city = new StringField());
-       fields.put(meta.ORGANIZATION_META.ADDRESS.getState(), state = new StringField());
-       fields.put(meta.ORGANIZATION_META.ADDRESS.getZipCode(), zipcode = new StringField());
-
-       fields.put("shippingItems", shippingItemsForm = new ShippingItemsForm());
-       fields.put("orderShippingNotes", shippingNotesForm = new ShippingNotesForm());
+       id = new IntegerField(meta.getId());
+       statusId = new DropDownField<Integer>(meta.getStatusId());
+       numberOfPackages = new IntegerField(meta.getNumberOfPackages());
+       cost = new DoubleField(meta.getCost());
+       shippedFromId = new DropDownField<Integer>(meta.getShippedFromId());
+       organization = new DropDownField<Integer>(meta.ORGANIZATION_META.getName());
+       processedDate = new DateField(meta.getProcessedDate());
+       processedBy = new StringField(meta.getProcessedById());
+       shippedDate = new DateField(meta.getShippedDate());
+       shippedMethodId = new DropDownField<Integer>(meta.getShippedMethodId());
+       multipleUnit = new StringField(meta.ORGANIZATION_META.ADDRESS.getMultipleUnit());
+       streetAddress = new StringField(meta.ORGANIZATION_META.ADDRESS.getStreetAddress());
+       city = new StringField(meta.ORGANIZATION_META.ADDRESS.getCity());
+       state = new StringField(meta.ORGANIZATION_META.ADDRESS.getState());
+       zipcode = new StringField(meta.ORGANIZATION_META.ADDRESS.getZipCode());
+       shippingItemsForm = new ShippingItemsForm("shippingItems");
+       shippingNotesForm = new ShippingNotesForm("orderShippingNotes");
    }
    
    public ShippingForm(Node node) {
        this();
        createFields(node);
+   }
+   
+   public AbstractField[] getFields() {
+       return new AbstractField[] {
+                                     id,
+                                     statusId,
+                                     numberOfPackages,
+                                     cost,
+                                     shippedFromId,
+                                     organization,
+                                     processedDate,
+                                     processedBy,
+                                     shippedDate,
+                                     shippedMethodId,
+                                     multipleUnit,
+                                     streetAddress,
+                                     city,
+                                     state,
+                                     zipcode,
+                                     shippingItemsForm,
+                                     shippingNotesForm
+       };
    }
 }

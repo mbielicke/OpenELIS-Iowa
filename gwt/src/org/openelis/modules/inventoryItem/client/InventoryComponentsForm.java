@@ -26,21 +26,36 @@
 package org.openelis.modules.inventoryItem.client;
 
 import org.openelis.gwt.common.Form;
+import org.openelis.gwt.common.data.AbstractField;
+import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.common.data.TableField;
 
 import com.google.gwt.xml.client.Node;
 
-public class InventoryComponentsForm  extends Form{
+public class InventoryComponentsForm  extends Form<Integer>{
     private static final long serialVersionUID = 1L;
 
-    public TableField<Integer> componentsTable;
+    public TableField<TableDataRow<Integer>> componentsTable;
+    
+    public boolean forDuplicate;
     
     public InventoryComponentsForm() {
-        fields.put("componentsTable",componentsTable = new TableField<Integer>());
+        componentsTable = new TableField<TableDataRow<Integer>>("componentsTable");
     }
     
     public InventoryComponentsForm(Node node){
         this();
         createFields(node);
+    }
+    
+    public InventoryComponentsForm(String key) {
+        this();
+        this.key = key;
+    }
+    
+    public AbstractField[] getFields() {
+        return new AbstractField[] {
+                                    componentsTable
+        };
     }
 }

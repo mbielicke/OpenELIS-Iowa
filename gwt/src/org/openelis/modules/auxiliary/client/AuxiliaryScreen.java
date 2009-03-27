@@ -29,10 +29,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.openelis.gwt.common.Form;
+import org.openelis.gwt.common.Query;
 import org.openelis.gwt.common.data.DataMap;
-import org.openelis.gwt.common.data.DataModel;
+import org.openelis.gwt.common.data.QueryStringField;
+import org.openelis.gwt.common.data.TableDataModel;
 import org.openelis.gwt.common.data.DataObject;
-import org.openelis.gwt.common.data.DataSet;
+import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.screen.CommandChain;
 import org.openelis.gwt.screen.ScreenTableWidget;
@@ -41,9 +43,7 @@ import org.openelis.gwt.widget.AToZTable;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.CollapsePanel;
-import org.openelis.gwt.widget.FormInt;
 import org.openelis.gwt.widget.AppButton.ButtonState;
-import org.openelis.gwt.widget.FormInt.State;
 import org.openelis.gwt.widget.table.TableDropdown;
 import org.openelis.gwt.widget.table.TableManager;
 import org.openelis.gwt.widget.table.TableWidget;
@@ -64,7 +64,7 @@ import com.google.gwt.user.client.ui.PopupListener;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-public class AuxiliaryScreen extends OpenELISScreenForm<AuxiliaryRPC, AuxiliaryForm, Integer> implements TableManager,
+public class AuxiliaryScreen extends OpenELISScreenForm<AuxiliaryForm, Query<TableDataRow<Integer>>> implements TableManager,
                                                                                                          ClickListener,
                                                                                                          ChangeListener,
                                                                                                          TableWidgetListener,
@@ -80,17 +80,17 @@ public class AuxiliaryScreen extends OpenELISScreenForm<AuxiliaryRPC, AuxiliaryF
     
     private AppButton removeAuxFieldRowButton,dictionaryLookUpButton;    
     
-    private ArrayList<DataSet<Object>> selectedRows = null; 
+    private ArrayList<TableDataRow<Integer>> selectedRows = null; 
     
-    private DataModel<Integer> defaultModel;
+    private TableDataModel<TableDataRow<Integer>> defaultModel;
     
     private int tempAnaId = -1;    
         
     private ScreenWindow pickerWindow = null; 
     
-    AsyncCallback<AuxiliaryRPC> checkModels = new AsyncCallback<AuxiliaryRPC>() {
+    AsyncCallback<AuxiliaryForm> checkModels = new AsyncCallback<AuxiliaryForm>() {
      
-      public void onSuccess(AuxiliaryRPC rpc) {
+      public void onSuccess(AuxiliaryForm rpc) {
             if(rpc.units != null) {
                 setUnitsOfMeasureModel(rpc.units);
                 rpc.units = null;
@@ -108,8 +108,8 @@ public class AuxiliaryScreen extends OpenELISScreenForm<AuxiliaryRPC, AuxiliaryF
     
     public AuxiliaryScreen() {
         super("org.openelis.modules.auxiliary.server.AuxiliaryService");
-        forms.put("display", new AuxiliaryForm());
-        getScreen(new AuxiliaryRPC());
+        query = new Query<TableDataRow<Integer>>();
+        getScreen(new AuxiliaryForm());
     }
 
     public void afterDraw(boolean success) {
@@ -143,9 +143,9 @@ public class AuxiliaryScreen extends OpenELISScreenForm<AuxiliaryRPC, AuxiliaryF
         removeAuxFieldRowButton = (AppButton)getWidget("removeAuxFieldRowButton");
         dictionaryLookUpButton = (AppButton)getWidget("dictionaryLookUpButton");
          
-        setUnitsOfMeasureModel(rpc.units);
-        setAuxFieldValueTypesModel(rpc.auxFieldValueTypes);
-        setScriptletsModel(rpc.scriptlets);                
+        setUnitsOfMeasureModel(form.units);
+        setAuxFieldValueTypesModel(form.auxFieldValueTypes);
+        setScriptletsModel(form.scriptlets);                
         
         updateChain.add(afterUpdate);
         
@@ -159,10 +159,10 @@ public class AuxiliaryScreen extends OpenELISScreenForm<AuxiliaryRPC, AuxiliaryF
         
         super.afterDraw(success);               
         
-        rpc.form.auxFieldTable.setValue(auxFieldTableWidget.model.getData());
-        rpc.form.auxFieldValueTable.setValue(auxFieldValueTableWidget.model.getData());
+        form.auxFieldTable.setValue(auxFieldTableWidget.model.getData());
+        form.auxFieldValueTable.setValue(auxFieldValueTableWidget.model.getData());
         
-        defaultModel = (DataModel<Integer>)auxFieldValueTableWidget.model.getData().clone();
+        defaultModel = (TableDataModel<TableDataRow<Integer>>)auxFieldValueTableWidget.model.getData().clone();
     }
     
     public void performCommand(Enum action, Object obj) {
@@ -211,29 +211,29 @@ public class AuxiliaryScreen extends OpenELISScreenForm<AuxiliaryRPC, AuxiliaryF
         super.submitForm();
     }       
     
-    public boolean canAdd(TableWidget widget, DataSet set, int row) {
+    public boolean canAdd(TableWidget widget, TableDataRow set, int row) {
         // TODO Auto-generated method stub
         return true;
     }
 
-    public boolean canAutoAdd(TableWidget widget, DataSet set) {
-       return ((DataObject)set.get(0)).getValue() != null && !((DataObject)set.get(0)).getValue()
+    public boolean canAutoAdd(TableWidget widget, TableDataRow set) {
+       return ((DataObject)set.cells[0]).getValue() != null && !((DataObject)set.cells[0]).getValue()
         .equals(-1);
     }
 
-    public boolean canDelete(TableWidget widget, DataSet set, int row) {
+    public boolean canDelete(TableWidget widget, TableDataRow set, int row) {
         // TODO Auto-generated method stub
         return false;
     }
 
-    public boolean canEdit(TableWidget widget, DataSet set, int row, int col) {
+    public boolean canEdit(TableWidget widget, TableDataRow set, int row, int col) {
         if (state == State.UPDATE || state == State.ADD || state == State.QUERY)
             return true;
         
         return false;
     }
 
-    public boolean canSelect(TableWidget widget, DataSet set, int row) {
+    public boolean canSelect(TableWidget widget, TableDataRow set, int row) {
         if (state == State.UPDATE || state == State.ADD || state == State.QUERY)
             return true;
         return false;          
@@ -248,10 +248,10 @@ public class AuxiliaryScreen extends OpenELISScreenForm<AuxiliaryRPC, AuxiliaryF
     }   
 
     public void getAuxFieldGroups(String query) {
-        if (state == FormInt.State.DISPLAY || state == FormInt.State.DEFAULT) {
-            Form form = (Form)forms.get("queryByLetter");
-            form.setFieldValue(AuxFGMeta.getName(), query);
-            commitQuery(form);
+        if (state == State.DISPLAY || state == State.DEFAULT) {
+            QueryStringField qField = new QueryStringField(AuxFGMeta.getName());
+            qField.setValue(query);
+            commitQuery(qField);
         }
     }
     
@@ -312,15 +312,15 @@ public class AuxiliaryScreen extends OpenELISScreenForm<AuxiliaryRPC, AuxiliaryF
     }
     
     
-    private void setAuxFieldValueTypesModel(DataModel<Integer> auxFieldValueTypes) {
+    private void setAuxFieldValueTypesModel(TableDataModel<TableDataRow<Integer>> auxFieldValueTypes) {
         ((TableDropdown)auxFieldValueTableWidget.columns.get(0).getColumnWidget()).setModel(auxFieldValueTypes);
     }
 
-    private void setUnitsOfMeasureModel(DataModel<Integer> units) {
+    private void setUnitsOfMeasureModel(TableDataModel<TableDataRow<Integer>> units) {
         ((TableDropdown)auxFieldTableWidget.columns.get(2).getColumnWidget()).setModel(units);
     }
     
-    private void setScriptletsModel(DataModel<Integer> scriptlets) {
+    private void setScriptletsModel(TableDataModel<TableDataRow<Integer>> scriptlets) {
         ((TableDropdown)auxFieldTableWidget.columns.get(7).getColumnWidget()).setModel(scriptlets);
     }
     
@@ -365,12 +365,12 @@ public class AuxiliaryScreen extends OpenELISScreenForm<AuxiliaryRPC, AuxiliaryF
     
     private void setModelInFieldValueTable(int row) {       
        AuxiliaryGeneralPurposeRPC agrpc = null;      
-       final DataSet<Integer> set = auxFieldTableWidget.model.getRow(row);
-       DataModel<Integer> model = (DataModel<Integer>)set.getData();
-       if(set.getKey() != null && model == null) {            
+       final TableDataRow<Integer> set = auxFieldTableWidget.model.getRow(row);
+       TableDataModel<TableDataRow<Integer>> model = (TableDataModel<TableDataRow<Integer>>)set.getData();
+       if(set.key != null && model == null) {            
             agrpc = new AuxiliaryGeneralPurposeRPC();
-            agrpc.auxFieldValueModel = (DataModel<Integer>)defaultModel.clone();
-            agrpc.key = set.getKey();
+            agrpc.auxFieldValueModel = (TableDataModel<TableDataRow<Integer>>)defaultModel.clone();
+            agrpc.key = set.key;
             screenService.call("getAuxFieldValueModel", agrpc, new SyncCallback(){
                 public void onSuccess(Object result) {                      
                     set.setData(((AuxiliaryGeneralPurposeRPC)result).auxFieldValueModel);                      
@@ -382,7 +382,7 @@ public class AuxiliaryScreen extends OpenELISScreenForm<AuxiliaryRPC, AuxiliaryF
                    
                });                       
         }       
-       auxFieldValueTableWidget.model.load((DataModel)set.getData());       
+       auxFieldValueTableWidget.model.load((TableDataModel)set.getData());       
     }            
                  
   }      

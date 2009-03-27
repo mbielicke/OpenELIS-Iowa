@@ -25,50 +25,53 @@
 */
 package org.openelis.modules.newbornScreeningSampleLogin.server;
 
-import org.openelis.gwt.common.DefaultRPC;
-import org.openelis.gwt.common.Form;
+import org.openelis.gwt.common.Query;
 import org.openelis.gwt.common.RPCException;
-import org.openelis.gwt.common.data.DataModel;
+import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.FieldType;
+import org.openelis.gwt.common.data.TableDataModel;
+import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
+import org.openelis.modules.newbornScreeningSampleLogin.client.NewbornScreeningSampleLoginForm;
 import org.openelis.server.constants.Constants;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
-public class NewbornScreeningSampleLoginService implements AppScreenFormServiceInt<DefaultRPC, Integer>{
+public class NewbornScreeningSampleLoginService implements AppScreenFormServiceInt<NewbornScreeningSampleLoginForm, Query<TableDataRow<Integer>>>{
 
-    public DefaultRPC abort(DefaultRPC rpc) throws RPCException {
+    public NewbornScreeningSampleLoginForm abort(NewbornScreeningSampleLoginForm rpc) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public DefaultRPC commitAdd(DefaultRPC rpc) throws RPCException {
+    public NewbornScreeningSampleLoginForm commitAdd(NewbornScreeningSampleLoginForm rpc) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public DefaultRPC commitDelete(DefaultRPC rpc) throws RPCException {
+    public NewbornScreeningSampleLoginForm commitDelete(NewbornScreeningSampleLoginForm rpc) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public DataModel<Integer> commitQuery(Form form, DataModel<Integer> data) throws RPCException {
+    public Query<TableDataRow<Integer>> commitQuery(Query<TableDataRow<Integer>> data) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public DefaultRPC commitUpdate(DefaultRPC rpc) throws RPCException {
+    public NewbornScreeningSampleLoginForm commitUpdate(NewbornScreeningSampleLoginForm rpc) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public DefaultRPC fetch(DefaultRPC rpc) throws RPCException {
+    public NewbornScreeningSampleLoginForm fetch(NewbornScreeningSampleLoginForm rpc) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public DefaultRPC fetchForUpdate(DefaultRPC rpc) throws RPCException {
+    public NewbornScreeningSampleLoginForm fetchForUpdate(NewbornScreeningSampleLoginForm rpc) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
@@ -87,7 +90,7 @@ public class NewbornScreeningSampleLoginService implements AppScreenFormServiceI
         return null;
     }
     
-    public DefaultRPC getScreen(DefaultRPC rpc){
+    public NewbornScreeningSampleLoginForm getScreen(NewbornScreeningSampleLoginForm rpc){
         return rpc;
     }
 }

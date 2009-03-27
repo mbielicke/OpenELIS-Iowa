@@ -25,29 +25,6 @@
 */
 package org.openelis.modules.shipping.client;
 
-import org.openelis.gwt.common.Form;
-import org.openelis.gwt.common.data.DataModel;
-import org.openelis.gwt.common.data.DataObject;
-import org.openelis.gwt.common.data.DataSet;
-import org.openelis.gwt.common.data.DropDownField;
-import org.openelis.gwt.common.data.FieldType;
-import org.openelis.gwt.common.data.IntegerObject;
-import org.openelis.gwt.common.data.KeyListManager;
-import org.openelis.gwt.common.data.StringObject;
-import org.openelis.gwt.event.CommandListener;
-import org.openelis.gwt.screen.CommandChain;
-import org.openelis.gwt.screen.ScreenDropDownWidget;
-import org.openelis.gwt.widget.AppButton;
-import org.openelis.gwt.widget.AutoComplete;
-import org.openelis.gwt.widget.ButtonPanel;
-import org.openelis.gwt.widget.Dropdown;
-import org.openelis.gwt.widget.FormInt;
-import org.openelis.gwt.widget.table.TableManager;
-import org.openelis.gwt.widget.table.TableWidget;
-import org.openelis.metamap.ShippingMetaMap;
-import org.openelis.modules.fillOrder.client.FillOrderScreen;
-import org.openelis.modules.main.client.OpenELISScreenForm;
-
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.ChangeListener;
@@ -57,7 +34,29 @@ import com.google.gwt.user.client.ui.TabListener;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
-public class ShippingScreen extends OpenELISScreenForm<ShippingRPC, ShippingForm, Integer> implements ClickListener, TableManager, ChangeListener, TabListener{
+import org.openelis.gwt.common.Query;
+import org.openelis.gwt.common.data.DataObject;
+import org.openelis.gwt.common.data.DropDownField;
+import org.openelis.gwt.common.data.FieldType;
+import org.openelis.gwt.common.data.IntegerObject;
+import org.openelis.gwt.common.data.KeyListManager;
+import org.openelis.gwt.common.data.StringObject;
+import org.openelis.gwt.common.data.TableDataModel;
+import org.openelis.gwt.common.data.TableDataRow;
+import org.openelis.gwt.event.CommandListener;
+import org.openelis.gwt.screen.CommandChain;
+import org.openelis.gwt.screen.ScreenDropDownWidget;
+import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.AutoComplete;
+import org.openelis.gwt.widget.ButtonPanel;
+import org.openelis.gwt.widget.Dropdown;
+import org.openelis.gwt.widget.table.TableManager;
+import org.openelis.gwt.widget.table.TableWidget;
+import org.openelis.metamap.ShippingMetaMap;
+import org.openelis.modules.fillOrder.client.FillOrderScreen;
+import org.openelis.modules.main.client.OpenELISScreenForm;
+
+public class ShippingScreen extends OpenELISScreenForm<ShippingForm, Query<TableDataRow<Integer>>> implements ClickListener, TableManager, ChangeListener, TabListener{
 
     public enum Action {Commited, Aborted}
     private CommandListener target;
@@ -68,7 +67,7 @@ public class ShippingScreen extends OpenELISScreenForm<ShippingRPC, ShippingForm
     private AutoComplete shippedToDropdown;
     private TableWidget itemsTable, trackingNumbersTable;
     private Dropdown status, shippedFrom, shippedMethod;
-    private DataModel itemsShippedModel;
+    private TableDataModel<TableDataRow<Integer>> itemsShippedModel, checkedOrderIds;
     private ShippingDataService data;
     private boolean closeOnCommitAbort = false;
     
@@ -76,11 +75,11 @@ public class ShippingScreen extends OpenELISScreenForm<ShippingRPC, ShippingForm
     private CommandListener listener;
     private KeyListManager keyList = new KeyListManager();
     
-    AsyncCallback<ShippingRPC> checkModels = new AsyncCallback<ShippingRPC>() {
-        public void onSuccess(ShippingRPC rpc) {
-            if(rpc.status != null) {
-                setStatusIdModel(rpc.status);
-                rpc.status = null;
+    AsyncCallback<ShippingForm> checkModels = new AsyncCallback<ShippingForm>() {
+        public void onSuccess(ShippingForm rpc) {
+            if(rpc.shippedStatus != null) {
+                setStatusIdModel(rpc.shippedStatus);
+                rpc.shippedStatus = null;
             }
             if(rpc.shippedFrom != null) {
                 setShippedFromModel(rpc.shippedFrom);
@@ -99,10 +98,8 @@ public class ShippingScreen extends OpenELISScreenForm<ShippingRPC, ShippingForm
     
     public ShippingScreen() {                
         super("org.openelis.modules.shipping.server.ShippingService");
-        
-        forms.put("display",new ShippingForm());
-        
-        getScreen(new ShippingRPC());
+        query = new Query<TableDataRow<Integer>>();
+        getScreen(new ShippingForm());
     }
     
     public void setShippingData(ShippingDataService data){
@@ -155,14 +152,14 @@ public class ShippingScreen extends OpenELISScreenForm<ShippingRPC, ShippingForm
         
         if(sender == shippedToDropdown){
             if(shippedToDropdown.getSelections().size() > 0){
-                DataSet selectedRow = (DataSet)shippedToDropdown.getSelections().get(0);
+                TableDataRow selectedRow = shippedToDropdown.getSelections().get(0);
                 
                 //load address
-                shippedToAddress.setText((String)((StringObject)selectedRow.get(1)).getValue());
+                shippedToAddress.setText((String)((StringObject)selectedRow.getCells().get(1)).getValue());
                 //load city
-                shippedToCity.setText((String)((StringObject)selectedRow.get(2)).getValue());
+                shippedToCity.setText((String)((StringObject)selectedRow.getCells().get(2)).getValue());
                 //load state
-                shippedToState.setText((String)((StringObject)selectedRow.get(3)).getValue());
+                shippedToState.setText((String)((StringObject)selectedRow.getCells().get(3)).getValue());
                 
                 ShippingShipToKey hiddenData = (ShippingShipToKey)selectedRow.getData();
                 //load apt/suite
@@ -208,16 +205,16 @@ public class ShippingScreen extends OpenELISScreenForm<ShippingRPC, ShippingForm
         shippedFrom = (Dropdown)getWidget(ShippingMeta.getShippedFromId());
         shippedMethod = (Dropdown)getWidget(ShippingMeta.getShippedMethodId());
         
-        setStatusIdModel(rpc.status);
-        setShippedFromModel(rpc.shippedFrom);
-        setShippedMethodModel(rpc.shippedMethod);
+        setStatusIdModel(form.shippedStatus);
+        setShippedFromModel(form.shippedFrom);
+        setShippedMethodModel(form.shippedMethod);
         
         /*
          * Null out the rpc models so they are not sent with future rpc calls
          */
-        rpc.status = null;
-        rpc.shippedFrom = null;
-        rpc.shippedMethod = null;
+        form.shippedStatus = null;
+        form.shippedFrom = null;
+        form.shippedMethod = null;
         
         updateChain.add(0,checkModels);
         fetchChain.add(0,checkModels);
@@ -229,8 +226,8 @@ public class ShippingScreen extends OpenELISScreenForm<ShippingRPC, ShippingForm
         
         super.afterDraw(success);
         
-        rpc.form.shippingItemsForm.itemsTable.setValue(itemsTable.model.getData());
-        rpc.form.shippingItemsForm.trackingNumbersTable.setValue(trackingNumbersTable.model.getData());
+        form.shippingItemsForm.itemsTable.setValue(itemsTable.model.getData());
+        form.shippingItemsForm.trackingNumbersTable.setValue(trackingNumbersTable.model.getData());
         
         if(data != null)
             add();
@@ -251,22 +248,22 @@ public class ShippingScreen extends OpenELISScreenForm<ShippingRPC, ShippingForm
     public void add() {
        super.add();
        
-       window.setStatus("","spinnerIcon");
+       window.setBusy();
        
        FieldType[] args = new FieldType[0]; 
          
-       ShippingRPC srpc = new ShippingRPC();
-       srpc.key = rpc.key;
-       srpc.form = rpc.form;
+       //ShippingRPC srpc = new ShippingRPC();
+       //srpc.key = form.key;
+       //srpc.form = form.form;
        
        
-       screenService.call("getAddAutoFillValues", srpc, new AsyncCallback<ShippingRPC>(){
-           public void onSuccess(ShippingRPC result){    
+       screenService.call("getAddAutoFillValues", form, new AsyncCallback<ShippingForm>(){
+           public void onSuccess(ShippingForm result){    
                //set the values in the rpc
-               rpc.form.statusId.setValue(result.form.statusId.getValue());
-               rpc.form.processedDate.setValue(result.form.processedDate.getValue());
-               rpc.form.processedBy.setValue(result.form.processedBy.getValue());
-               rpc.form.systemUserId = result.form.systemUserId;
+               form.statusId.setValue(result.statusId.getValue());
+               form.processedDate.setValue(result.processedDate.getValue());
+               form.processedBy.setValue(result.processedBy.getValue());
+               form.systemUserId = result.systemUserId;
                //rpc.form.setFieldValue(ShippingMeta.getProcessedDate(), (DatetimeRPC)((DateField)set.get(1)).getValue());
                //rpc.form.setFieldValue(ShippingMeta.getProcessedById(), (String)((StringField)set.get(2)).getValue());
                //rpc.form.setFieldValue("systemUserId", ((NumberField)set.get(3)).getValue());
@@ -274,11 +271,11 @@ public class ShippingScreen extends OpenELISScreenForm<ShippingRPC, ShippingForm
                if(data != null)
                    initScreen();
                
-               loadScreen(rpc.form);
+               loadScreen();
                
                trackingNumbersTable.model.enableAutoAdd(true);
                
-               window.setStatus("","");
+               window.clearStatus();
            }
            
            public void onFailure(Throwable caught){
@@ -297,22 +294,22 @@ public class ShippingScreen extends OpenELISScreenForm<ShippingRPC, ShippingForm
         loadShippingScreenFromData();
         
         //set the values after the screen is in add mode
-        rpc.form.shippedFromId.setValue(new DataSet<Integer>(shipFromId));
+        form.shippedFromId.setValue(new TableDataRow<Integer>(shipFromId));
         
         if(shipToId != null){
-            DataModel<Integer> shipToModel = new DataModel<Integer>();
-            shipToModel.add(new DataSet<Integer>(shipToId,new StringObject(shipToText)));
-            rpc.form.organization.setModel(shipToModel);
-            rpc.form.organization.setValue(shipToModel.get(0));
+            TableDataModel<TableDataRow<Integer>> shipToModel = new TableDataModel<TableDataRow<Integer>>();
+            shipToModel.add(new TableDataRow<Integer>(shipToId,new StringObject(shipToText)));
+            form.organization.setModel(shipToModel);
+            form.organization.setValue(shipToModel.get(0));
         }
         
-        rpc.form.multipleUnit.setValue(multUnitText);
-        rpc.form.streetAddress.setValue(streetAddressText);
-        rpc.form.city.setValue(cityText);
-        rpc.form.state.setValue(stateText);
-        rpc.form.zipcode.setValue(zipCodeText);
+        form.multipleUnit.setValue(multUnitText);
+        form.streetAddress.setValue(streetAddressText);
+        form.city.setValue(cityText);
+        form.state.setValue(stateText);
+        form.zipcode.setValue(zipCodeText);
         loadItemsShippedTableFromModel(itemsShippedModel);
-        rpc.form.numberOfPackages.setValue(new Integer(1));
+        form.numberOfPackages.setValue(new Integer(1));
         data = null;
     }
     
@@ -328,6 +325,7 @@ public class ShippingScreen extends OpenELISScreenForm<ShippingRPC, ShippingForm
         trackingNumbersTable.model.enableAutoAdd(true);
     }
     
+    
     public void abort() {
         trackingNumbersTable.model.enableAutoAdd(false);
         super.abort();
@@ -338,55 +336,45 @@ public class ShippingScreen extends OpenELISScreenForm<ShippingRPC, ShippingForm
             window.close();
     }
     
+    
     //
     //start table manager methods
     //
-    public boolean canAdd(TableWidget widget, DataSet set, int row) {
+    public boolean canAdd(TableWidget widget, TableDataRow set, int row) {
         return false;
     }
 
-    public boolean canAutoAdd(TableWidget widget, DataSet addRow) {
-        return ((DataObject)addRow.get(0)).getValue() != null && !((DataObject)addRow.get(0)).getValue().equals(0);
+    public boolean canAutoAdd(TableWidget widget, TableDataRow addRow) {
+        return ((DataObject)addRow.getCells().get(0)).getValue() != null && !((DataObject)addRow.getCells().get(0)).getValue().equals(0);
     }
 
-    public boolean canDelete(TableWidget widget, DataSet set, int row) {
+    public boolean canDelete(TableWidget widget, TableDataRow set, int row) {
         return false;
     }
 
-    public boolean canEdit(TableWidget widget, DataSet set, int row, int col) {
+    public boolean canEdit(TableWidget widget, TableDataRow set, int row, int col) {
         return true;
     }
 
-    public boolean canSelect(TableWidget widget, DataSet set, int row) {
-        if(state == FormInt.State.ADD || state == FormInt.State.UPDATE)           
+    public boolean canSelect(TableWidget widget, TableDataRow set, int row) {
+        if(state == State.ADD || state == State.UPDATE)           
             return true;
         return false;
     }
     
-    public boolean canDrag(TableWidget widget, DataSet item, int row) {
-        return false;
-    }
-
-    public boolean canDrop(TableWidget widget, Widget dragWidget, DataSet dropTarget, int targetRow) {
-        return false;
-    }
-
-    public void drop(TableWidget widget, Widget dragWidget, DataSet dropTarget, int targetRow) {} 
-    
-    public void drop(TableWidget widget, Widget dragWidget) {}
     //
     //end table manager methods
     //
     
-    private void loadItemsShippedTableFromModel(DataModel<Integer> model){
+    private void loadItemsShippedTableFromModel(TableDataModel<TableDataRow<Integer>> model){
         itemsTable.model.clear();
         for(int i=0; i<model.size(); i++){
-            DataSet<Integer> set = model.get(i);
+            TableDataRow<Integer> set = model.get(i);
             
-            DataSet tableRow = (DataSet)itemsTable.model.createRow();
+            TableDataRow<Integer> tableRow = itemsTable.model.createRow();
             
-            tableRow.get(0).setValue(set.get(0).getValue());
-            tableRow.get(1).setValue(((DropDownField)set.get(1)).getTextValue());
+            tableRow.getCells().get(0).setValue(set.getCells().get(0).getValue());
+            tableRow.getCells().get(1).setValue(((DropDownField)set.getCells().get(1)).getTextValue());
             
             tableRow.setData(set.getData());
             
@@ -406,11 +394,11 @@ public class ShippingScreen extends OpenELISScreenForm<ShippingRPC, ShippingForm
     }
 
     public boolean onBeforeTabSelected(SourcesTabEvents sender, int tabIndex) {
-        if(state != FormInt.State.QUERY){
-            if (tabIndex == 0 && !((Form)rpc.form.getField("shippingItems")).load)
+        if(state != State.QUERY){
+            if (tabIndex == 0 && !form.shippingItemsForm.load)
                 fillShippingItems();
                 
-            else if (tabIndex == 1 && !((Form)rpc.form.getField("orderShippingNotes")).load) 
+            else if (tabIndex == 1 && !form.shippingNotesForm.load) 
                 fillOrderShippingNotes();
               
         }
@@ -420,65 +408,65 @@ public class ShippingScreen extends OpenELISScreenForm<ShippingRPC, ShippingForm
     public void onTabSelected(SourcesTabEvents sender, int tabIndex) { }
     
     private void fillShippingItems() {
-        if(key == null)
+        if(form.entityKey == null)
             return;
         
-        window.setStatus("","spinnerIcon");
+        window.setBusy();
         
-        ShippingItemsRPC sirpc = new ShippingItemsRPC();
-        sirpc.key = rpc.key;
-        sirpc.form = rpc.form.shippingItemsForm;
+        //ShippingItemsForm sirpc = new ShippingItemsRPC();
+        form.shippingItemsForm.entityKey = form.entityKey;
+        //sirpc.form =form.form.shippingItemsForm;
 
-        screenService.call("loadShippingItems", sirpc, new AsyncCallback<ShippingItemsRPC>() {
-            public void onSuccess(ShippingItemsRPC result) {
-                load(result.form);
-                rpc.form.fields.put("shippingItems", rpc.form.shippingItemsForm = result.form);
+        screenService.call("loadShippingItems", form.shippingItemsForm, new AsyncCallback<ShippingItemsForm>() {
+            public void onSuccess(ShippingItemsForm result) {
+                form.shippingItemsForm = result;
+                load(form.shippingItemsForm);
 
-                window.setStatus("","");
+                window.clearStatus();
             }
 
             public void onFailure(Throwable caught) {
                 Window.alert(caught.getMessage());
-                window.setStatus("","");
+                window.clearStatus();
             }
         });
     }
     
     private void fillOrderShippingNotes() {
-        if(key == null)
+        if(form.entityKey == null)
             return;
         
-        window.setStatus("","spinnerIcon");
+        window.setBusy();
 
         // prepare the argument list for the getObject function
-        ShippingNotesRPC snrpc = new ShippingNotesRPC();
-        snrpc.key = rpc.key;
-        snrpc.form = rpc.form.shippingNotesForm;
+        //ShippingNotesRPC snrpc = new ShippingNotesRPC();
+        form.shippingNotesForm.entityKey = form.entityKey;
+        //snrpc.form = form.form.shippingNotesForm;
         
-        screenService.call("loadOrderShippingNotes", snrpc, new AsyncCallback<ShippingNotesRPC>() {
-            public void onSuccess(ShippingNotesRPC result) {
-                load(result.form);
-                rpc.form.fields.put("orderShippingNotes", rpc.form.shippingNotesForm = result.form);
+        screenService.call("loadOrderShippingNotes", form.shippingNotesForm, new AsyncCallback<ShippingNotesForm>() {
+            public void onSuccess(ShippingNotesForm result) {
+                form.shippingNotesForm = result;
+                load(form.shippingNotesForm);
                 
-                window.setStatus("","");
+                window.setBusy();
             }
 
             public void onFailure(Throwable caught) {
                 Window.alert(caught.getMessage());
-                window.setStatus("","");
+                window.clearStatus();
             }
         });
     }
 
-    public void setStatusIdModel(DataModel<Integer> statusIdsModel) {
+    public void setStatusIdModel(TableDataModel<TableDataRow<Integer>> statusIdsModel) {
         status.setModel(statusIdsModel);
     }
     
-    public void setShippedFromModel(DataModel<Integer> shippedFromsModel) {
+    public void setShippedFromModel(TableDataModel<TableDataRow<Integer>> shippedFromsModel) {
         shippedFrom.setModel(shippedFromsModel);
     }
     
-    public void setShippedMethodModel(DataModel<Integer> shippedMethodsModel) {
+    public void setShippedMethodModel(TableDataModel<TableDataRow<Integer>> shippedMethodsModel) {
         shippedMethod.setModel(shippedMethodsModel);
     }
 }

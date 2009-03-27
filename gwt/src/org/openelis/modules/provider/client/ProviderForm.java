@@ -27,14 +27,17 @@
 package org.openelis.modules.provider.client;
 
 import org.openelis.gwt.common.Form;
+import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.IntegerField;
 import org.openelis.gwt.common.data.StringField;
+import org.openelis.gwt.common.data.TableDataModel;
+import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.metamap.ProviderMetaMap;
 
 import com.google.gwt.xml.client.Node;
 
-public class ProviderForm extends Form {
+public class ProviderForm extends Form<Integer> {
 
     /**
      * 
@@ -51,21 +54,38 @@ public class ProviderForm extends Form {
     public AddressesForm addresses;
     public String provTabPanel = "addressesTab";
     
+    public TableDataModel<TableDataRow<String>> countries;
+    public TableDataModel<TableDataRow<String>> states;
+    public TableDataModel<TableDataRow<Integer>> providerTypes;
+    
     public ProviderForm() {
       ProviderMetaMap meta = new ProviderMetaMap();
-      fields.put(meta.getId(), id = new IntegerField());
-      fields.put(meta.getLastName(), lastName = new StringField());
-      fields.put(meta.getFirstName(), firstName = new StringField());
-      fields.put(meta.getNpi(),npi = new StringField());
-      fields.put(meta.getMiddleName(), middleName = new StringField());
-      fields.put(meta.getTypeId(), typeId = new DropDownField<Integer>());
-      fields.put("addresses", addresses = new AddressesForm());     
-      fields.put("notes", notes = new NotesForm());
+      id = new IntegerField(meta.getId());
+      lastName = new StringField(meta.getLastName());
+      firstName = new StringField(meta.getFirstName());
+      npi = new StringField(meta.getNpi());
+      middleName = new StringField(meta.getMiddleName());
+      typeId = new DropDownField<Integer>(meta.getTypeId());
+      addresses = new AddressesForm("addresses");     
+      notes = new NotesForm("notes");
     }
     
     public ProviderForm(Node node) {
         this();
         createFields(node);
+    }
+    
+    public AbstractField[] getFields() {
+        return new AbstractField[] {
+                                   id,
+                                   lastName,
+                                   firstName,
+                                   npi,
+                                   middleName,
+                                   typeId,
+                                   addresses,
+                                   notes
+        };
     }
     
     

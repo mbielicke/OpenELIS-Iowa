@@ -115,9 +115,11 @@ UIRF Software License are applicable instead of those above.
 	<rpc key="display">	
 	 <dropdown key="category" required="false" type="integer"/>    
 	</rpc>
+	<!--
 	<rpc key="queryByName"> 
 	  <queryString key="findTextBox" type="string" required="false"/>
 	</rpc>
+	-->
 </screen>
   </xsl:template>
 </xsl:stylesheet>					

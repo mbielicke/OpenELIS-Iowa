@@ -26,23 +26,35 @@
 package org.openelis.modules.shipping.client;
 
 import org.openelis.gwt.common.Form;
+import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.StringField;
 import org.openelis.metamap.ShippingMetaMap;
 
 import com.google.gwt.xml.client.Node;
 
-public class ShippingNotesForm extends Form{
+public class ShippingNotesForm extends Form<Integer>{
     private static final long serialVersionUID = 1L;
 	   	
     public StringField text;
     
     public ShippingNotesForm() {
        ShippingMetaMap meta = new ShippingMetaMap();
-       fields.put(meta.ORDER_SHIPPING_NOTE_META.getText(), text = new StringField());
+       text = new StringField(meta.ORDER_SHIPPING_NOTE_META.getText());
    }
    
    public ShippingNotesForm(Node node) {
        this();
        createFields(node);
+   }
+   
+   public ShippingNotesForm(String key) {
+       this();
+       this.key = key;
+   }
+   
+   public AbstractField[] getFields() {
+       return new AbstractField[] {
+                                   text
+       };
    }
 }

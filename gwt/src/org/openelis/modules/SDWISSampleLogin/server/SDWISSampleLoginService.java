@@ -26,117 +26,95 @@
 package org.openelis.modules.SDWISSampleLogin.server;
 
 import org.openelis.domain.IdNameDO;
-import org.openelis.gwt.common.DefaultRPC;
-import org.openelis.gwt.common.Form;
-import org.openelis.gwt.common.RPC;
+import org.openelis.gwt.common.Query;
 import org.openelis.gwt.common.RPCException;
-import org.openelis.gwt.common.data.DataModel;
-import org.openelis.gwt.common.data.DataSet;
-import org.openelis.gwt.common.data.Field;
-import org.openelis.gwt.common.data.FieldType;
 import org.openelis.gwt.common.data.StringObject;
+import org.openelis.gwt.common.data.TableDataModel;
+import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
+import org.openelis.modules.SDWISSampleLogin.client.SDWISSampleLoginForm;
 import org.openelis.persistence.CachingManager;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.CategoryRemote;
 import org.openelis.server.constants.Constants;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
-public class SDWISSampleLoginService implements AppScreenFormServiceInt<DefaultRPC, Integer>{
+public class SDWISSampleLoginService implements AppScreenFormServiceInt<SDWISSampleLoginForm, Query<TableDataRow<Integer>>>{
 
-    public DefaultRPC abort(DefaultRPC rpc) throws RPCException {
+    public SDWISSampleLoginForm abort(SDWISSampleLoginForm rpc) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public DefaultRPC commitAdd(DefaultRPC rpc) throws RPCException {
+    public SDWISSampleLoginForm commitAdd(SDWISSampleLoginForm rpc) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public DefaultRPC commitDelete(DefaultRPC rpc) throws RPCException {
+    public SDWISSampleLoginForm commitDelete(SDWISSampleLoginForm rpc) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public DataModel<Integer> commitQuery(Form form, DataModel<Integer> data) throws RPCException {
+    public Query<TableDataRow<Integer>> commitQuery(Query<TableDataRow<Integer>> data) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public DefaultRPC commitUpdate(DefaultRPC rpc) throws RPCException {
+    public SDWISSampleLoginForm commitUpdate(SDWISSampleLoginForm rpc) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public DefaultRPC fetch(DefaultRPC rpc) throws RPCException {
+    public SDWISSampleLoginForm fetch(SDWISSampleLoginForm rpc) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public DefaultRPC fetchForUpdate(DefaultRPC rpc) throws RPCException {
+    public SDWISSampleLoginForm fetchForUpdate(SDWISSampleLoginForm rpc) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public String getXML() throws RPCException {
-        return ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/SDWISSampleLogin.xsl");
-    }
-
-    public HashMap<String, FieldType> getXMLData() throws RPCException {
-        StringObject xml = new StringObject();
-        xml.setValue(ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/SDWISSampleLogin.xsl"));
-        
-        DataModel sampleStatusDropdownField = (DataModel)CachingManager.getElement("InitialData", "sampleStatusDropdown");
-        DataModel sdwisSampleTypeDropdownField = (DataModel)CachingManager.getElement("InitialData", "sdwisSampleTypeDropdown");
-        DataModel sdwisSampleCategoryDropdownField = (DataModel)CachingManager.getElement("InitialData", "sdwisSampleCategoryDropdown");
-        DataModel sdwisLeadSampleTypeDropdownField = (DataModel)CachingManager.getElement("InitialData", "sdwisLeadSampleTypeDropdown");
+    
+    public SDWISSampleLoginForm getScreen(SDWISSampleLoginForm rpc) {
+        try {
+            rpc.xml = ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/SDWISSampleLogin.xsl");
+        }catch(Exception e) {
+            e.printStackTrace();
+        }
+        rpc.sampleStatus = (TableDataModel<TableDataRow<String>>)CachingManager.getElement("InitialData", "sampleStatusDropdown");
+        rpc.sampleTypes = (TableDataModel<TableDataRow<String>>)CachingManager.getElement("InitialData", "sdwisSampleTypeDropdown");
+        rpc.sampleCats = (TableDataModel<TableDataRow<String>>)CachingManager.getElement("InitialData", "sdwisSampleCategoryDropdown");
+        rpc.leadSampleTypes = (TableDataModel<TableDataRow<String>>)CachingManager.getElement("InitialData", "sdwisLeadSampleTypeDropdown");
                 
         //sample status dropdown
-        if(sampleStatusDropdownField == null){
-            sampleStatusDropdownField = getInitialModel("statuses");
-            CachingManager.putElement("InitialData", "sampleStatusDropdown", sampleStatusDropdownField);
+        if(rpc.sampleStatus == null){
+            rpc.sampleStatus = getInitialModel("statuses");
+            CachingManager.putElement("InitialData", "sampleStatusDropdown", rpc.sampleStatus);
         }
         //sdwis sample type dropdown
-        if(sdwisSampleTypeDropdownField == null){
-            sdwisSampleTypeDropdownField = getInitialModel("sampleType");
-            CachingManager.putElement("InitialData", "sdwisSampleTypeDropdown", sdwisSampleTypeDropdownField);
+        if(rpc.sampleTypes == null){
+            rpc.sampleTypes = getInitialModel("sampleType");
+            CachingManager.putElement("InitialData", "sdwisSampleTypeDropdown", rpc.sampleTypes);
         }
         //sdwis sample category dropdown
-        if(sdwisSampleCategoryDropdownField == null){
-            sdwisSampleCategoryDropdownField = getInitialModel("category");
-            CachingManager.putElement("InitialData", "sdwisSampleCategoryDropdown", sdwisSampleCategoryDropdownField);
+        if(rpc.sampleCats == null){
+            rpc.sampleCats = getInitialModel("category");
+            CachingManager.putElement("InitialData", "sdwisSampleCategoryDropdown", rpc.sampleCats);
             }
         //sdwis lead sample type dropdown
-        if(sdwisLeadSampleTypeDropdownField == null){
-            sdwisLeadSampleTypeDropdownField = getInitialModel("leadSampleType");
-            CachingManager.putElement("InitialData", "sdwisLeadSampleTypeDropdown", sdwisLeadSampleTypeDropdownField);
+        if(rpc.leadSampleTypes == null){
+            rpc.leadSampleTypes = getInitialModel("leadSampleType");
+            CachingManager.putElement("InitialData", "sdwisLeadSampleTypeDropdown", rpc.leadSampleTypes);
         }
-        
-        HashMap<String,FieldType> map = new HashMap<String,FieldType>();
-        map.put("xml", xml);
-        map.put("sampleStatus", sampleStatusDropdownField);
-        map.put("sampleTypes", sdwisSampleTypeDropdownField);
-        map.put("sampleCats", sdwisSampleCategoryDropdownField);
-        map.put("leadSampleTypes", sdwisLeadSampleTypeDropdownField);
-        
-        return map;
-    }
-
-    public HashMap<String, FieldType> getXMLData(HashMap<String, FieldType> args) throws RPCException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-    
-    public DefaultRPC getScreen(DefaultRPC rpc) {
         return rpc;
     }
     
-    public DataModel<String> getInitialModel(String cat){
+    public TableDataModel<TableDataRow<String>> getInitialModel(String cat){
         Integer id = null;
         CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
         
@@ -149,24 +127,21 @@ public class SDWISSampleLoginService implements AppScreenFormServiceInt<DefaultR
         else if(cat.equals("leadSampleType"))
             id = remote.getCategoryId("sdwis_lead_sample_type");
         
-        List entries = new ArrayList();
+        List<IdNameDO> entries = new ArrayList();
         if(id != null)
             entries = remote.getDropdownValues(id);
         
         //we need to build the model to return
-        DataModel<String> returnModel = new DataModel<String>();
+        TableDataModel<TableDataRow<String>> returnModel = new TableDataModel<TableDataRow<String>>();
         
         if(entries.size() > 0){          
             
-            returnModel.add(new DataSet<String>(" ",new StringObject(" ")));
+            returnModel.add(new TableDataRow<String>(" ",new StringObject(" ")));
         }
-        int i=0;
-        while(i < entries.size()){
-            IdNameDO resultDO = (IdNameDO) entries.get(i);
-            //entry
-            returnModel.add(new DataSet<String>(resultDO.getName(),new StringObject(resultDO.getName())));
+
+        for(IdNameDO resultDO : entries) {
+            returnModel.add(new TableDataRow<String>(resultDO.getName(),new StringObject(resultDO.getName())));
             
-            i++;
         }       
         
         return returnModel;

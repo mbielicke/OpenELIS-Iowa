@@ -32,25 +32,24 @@ import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
+import org.openelis.gwt.common.Query;
 import org.openelis.gwt.common.QueryException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.data.AbstractField;
-import org.openelis.gwt.common.data.Data;
-import org.openelis.gwt.common.data.DataModel;
-import org.openelis.gwt.common.data.DataSet;
-import org.openelis.gwt.common.data.FieldType;
+import org.openelis.gwt.common.data.TableDataModel;
+import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
 import org.openelis.metamap.LabelMetaMap;
 import org.openelis.modules.label.client.LabelForm;
-import org.openelis.modules.label.client.LabelRPC;
 import org.openelis.persistence.CachingManager;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.CategoryRemote;
 import org.openelis.remote.LabelRemote;
 import org.openelis.server.constants.Constants;
 import org.openelis.server.handlers.PrinterTypeCacheHandler;
+import org.openelis.util.FormUtil;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
 
@@ -59,7 +58,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-public class LabelService implements AppScreenFormServiceInt<LabelRPC,Integer> {   
+public class LabelService implements AppScreenFormServiceInt<LabelForm,Query<TableDataRow<Integer>>> {   
     
     private static final long serialVersionUID = 1L;
     private static final int leftTableRowsPerPage = 9; 
@@ -67,19 +66,19 @@ public class LabelService implements AppScreenFormServiceInt<LabelRPC,Integer> {
     private UTFResource openElisConstants= UTFResource.getBundle((String)SessionManager.getSession().getAttribute("locale"));
     private static final LabelMetaMap Meta = new LabelMetaMap();  
     
-    public DataModel<Integer> commitQuery(Form form, DataModel<Integer> model) throws RPCException {
+    public Query<TableDataRow<Integer>> commitQuery(Query<TableDataRow<Integer>> query) throws RPCException {
         List labels = new ArrayList();
-        if(form == null){           
+        /*if(qList == null){           
             
-            form = (Form)SessionManager.getSession().getAttribute("LabelQuery");
+            qList = (ArrayList<AbstractField>)SessionManager.getSession().getAttribute("LabelQuery");
     
-            if(form == null)
+            if(qList == null)
                 throw new QueryException(openElisConstants.getString("queryExpiredException"));
                  
              try{
                  
                  LabelRemote remote = (LabelRemote)EJBFactory.lookup("openelis/LabelBean/remote"); 
-                 labels = remote.query(form.getFieldMap(), (model.getPage()*leftTableRowsPerPage), leftTableRowsPerPage+1);
+                 labels = remote.query(qList, (model.getPage()*leftTableRowsPerPage), leftTableRowsPerPage+1);
                  
              }catch(Exception e){
                 if(e instanceof LastPageException){
@@ -89,13 +88,13 @@ public class LabelService implements AppScreenFormServiceInt<LabelRPC,Integer> {
                 }
              }
             
-         } else{
+         } else{*/
              LabelRemote remote = (LabelRemote)EJBFactory.lookup("openelis/LabelBean/remote"); 
              
-             HashMap<String,AbstractField> fields = form.getFieldMap();             
+             //HashMap<String,AbstractField> fields = qList.getFieldMap();             
               
              try{
-                     labels = remote.query(fields,0,leftTableRowsPerPage);
+                     labels = remote.query(query.fields,query.page*leftTableRowsPerPage,leftTableRowsPerPage);
     
              }catch(Exception e){
                  e.printStackTrace();
@@ -103,14 +102,14 @@ public class LabelService implements AppScreenFormServiceInt<LabelRPC,Integer> {
              }
     
 //           need to save the rpc used to the encache
-            SessionManager.getSession().setAttribute("LabelQuery", form); 
-        }
+           // SessionManager.getSession().setAttribute("LabelQuery", qList); 
+        //}
         
         int i=0;
-        if(model == null)
-            model = new DataModel<Integer>();
+        if(query.results == null)
+            query.results = new TableDataModel<TableDataRow<Integer>>();
         else
-            model.clear();
+            query.results.clear();
    
         while(i < labels.size() && i < leftTableRowsPerPage) {
             IdNameDO resultDO = (IdNameDO)labels.get(i);
@@ -119,22 +118,22 @@ public class LabelService implements AppScreenFormServiceInt<LabelRPC,Integer> {
             //qaEvent name
             String nameResult = resultDO.getName();             
       
-            model.add(new DataSet<Integer>(idResult,new StringObject(nameResult)));
+            query.results.add(new TableDataRow<Integer>(idResult,new StringObject(nameResult)));
             i++;
          }         
                
         
-        return model;
+        return query;
     }
 
-    public LabelRPC commitAdd(LabelRPC rpc) throws RPCException {
+    public LabelForm commitAdd(LabelForm rpc) throws RPCException {
         LabelRemote remote = (LabelRemote)EJBFactory.lookup("openelis/LabelBean/remote"); 
-        LabelDO labelDO = getLabelDOFromRPC(rpc.form);
+        LabelDO labelDO = getLabelDOFromRPC(rpc);
         Integer labelId = null;
         List<Exception> exceptionList = remote.validateForAdd(labelDO);
         if(exceptionList.size() > 0){
             //we need to get the keys and look them up in the resource bundle for internationalization
-            setRpcErrors(exceptionList, rpc.form);   
+            setRpcErrors(exceptionList, rpc);   
             return rpc;
         } 
                          
@@ -144,25 +143,25 @@ public class LabelService implements AppScreenFormServiceInt<LabelRPC,Integer> {
             exceptionList = new ArrayList<Exception>();
             exceptionList.add(e);
             
-            setRpcErrors(exceptionList, rpc.form);
+            setRpcErrors(exceptionList, rpc);
             
             return rpc;
         }
         
         labelDO.setId(labelId);
         
-         setFieldsInRPC(rpc.form, labelDO);
+         setFieldsInRPC(rpc, labelDO);
         return rpc;
     }
 
-    public LabelRPC commitUpdate(LabelRPC rpc) throws RPCException {
+    public LabelForm commitUpdate(LabelForm rpc) throws RPCException {
         LabelRemote remote = (LabelRemote)EJBFactory.lookup("openelis/LabelBean/remote"); 
-        LabelDO labelDO = getLabelDOFromRPC(rpc.form);
+        LabelDO labelDO = getLabelDOFromRPC(rpc);
         
         List<Exception> exceptionList = remote.validateForUpdate(labelDO);
         if(exceptionList.size() > 0){
             //we need to get the keys and look them up in the resource bundle for internationalization
-            setRpcErrors(exceptionList, rpc.form);              
+            setRpcErrors(exceptionList, rpc);              
             return rpc;
         } 
                          
@@ -175,40 +174,40 @@ public class LabelService implements AppScreenFormServiceInt<LabelRPC,Integer> {
             exceptionList = new ArrayList<Exception>();
             exceptionList.add(e);
             
-            setRpcErrors(exceptionList, rpc.form);
+            setRpcErrors(exceptionList, rpc);
             
             return rpc;
         }
         
-         setFieldsInRPC(rpc.form, labelDO);
+         setFieldsInRPC(rpc, labelDO);
         return rpc;
     }
 
-    public LabelRPC commitDelete(LabelRPC rpc) throws RPCException {
+    public LabelForm commitDelete(LabelForm rpc) throws RPCException {
         LabelRemote remote = (LabelRemote)EJBFactory.lookup("openelis/LabelBean/remote"); 
-        List<Exception> exceptionList = remote.validateForDelete(rpc.key);
+        List<Exception> exceptionList = remote.validateForDelete(rpc.entityKey);
         if(exceptionList.size() > 0){
             //we need to get the keys and look them up in the resource bundle for internationalization
-            setRpcErrors(exceptionList, rpc.form);              
+            setRpcErrors(exceptionList, rpc);              
             return rpc;
         }
         try{
-            remote.deleteLabel(rpc.key);
+            remote.deleteLabel(rpc.entityKey);
         }catch(Exception e){
             exceptionList = new ArrayList<Exception>();
             exceptionList.add(e);
             
-            setRpcErrors(exceptionList, rpc.form);
+            setRpcErrors(exceptionList, rpc);
             
             return rpc;
         }
-        setFieldsInRPC(rpc.form, new LabelDO());
+        setFieldsInRPC(rpc, new LabelDO());
         return rpc;
     }
 
-    public LabelRPC abort(LabelRPC rpc) throws RPCException {
+    public LabelForm abort(LabelForm rpc) throws RPCException {
         LabelRemote remote = (LabelRemote)EJBFactory.lookup("openelis/LabelBean/remote"); 
-        Integer labelId = rpc.key;
+        Integer labelId = rpc.entityKey;
         LabelDO labelDO =null;
         try{
             labelDO  = remote.getLabelAndUnlock(labelId, SessionManager.getSession().getId());
@@ -216,25 +215,25 @@ public class LabelService implements AppScreenFormServiceInt<LabelRPC,Integer> {
                throw new RPCException(ex.getMessage());
            }  
            
-         setFieldsInRPC(rpc.form, labelDO);   
+         setFieldsInRPC(rpc, labelDO);   
          return rpc;
     }
 
-    public LabelRPC fetch(LabelRPC rpc) throws RPCException {
+    public LabelForm fetch(LabelForm rpc) throws RPCException {
         LabelRemote remote = (LabelRemote)EJBFactory.lookup("openelis/LabelBean/remote"); 
-        Integer labelId = rpc.key;
+        Integer labelId = rpc.entityKey;
 
         LabelDO labelDO = remote.getLabel(labelId);
         
         //set the fields in the RPC
-        setFieldsInRPC(rpc.form, labelDO);
+        setFieldsInRPC(rpc, labelDO);
                   
         return rpc;
     }
 
-    public LabelRPC fetchForUpdate(LabelRPC rpc) throws RPCException {
+    public LabelForm fetchForUpdate(LabelForm rpc) throws RPCException {
         LabelRemote remote = (LabelRemote)EJBFactory.lookup("openelis/LabelBean/remote"); 
-        Integer labelId = rpc.key;
+        Integer labelId = rpc.entityKey;
         LabelDO labelDO =null;
         try{
             labelDO  = remote.getLabelAndLock(labelId, SessionManager.getSession().getId());
@@ -242,44 +241,14 @@ public class LabelService implements AppScreenFormServiceInt<LabelRPC,Integer> {
                throw new RPCException(ex.getMessage());
            }  
            
-         setFieldsInRPC(rpc.form, labelDO);   
+         setFieldsInRPC(rpc, labelDO);   
          return rpc;
     }
 
-    public String getXML() throws RPCException {
-        return ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/label.xsl"); 
-    }
-
-    public HashMap<String, FieldType> getXMLData() throws RPCException {
-        StringObject xml = new StringObject();
-        xml.setValue(ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/label.xsl"));    
-        
-        DataModel printertypeDropDownField = (DataModel)CachingManager.getElement("InitialData", "printertypeDropDown");
-        DataModel scriptletDropDownField = (DataModel)CachingManager.getElement("InitialData", "scriptletDropDown");
-        
-        if(printertypeDropDownField ==null)
-            printertypeDropDownField = getInitialModel("printerType");
-        
-        if(scriptletDropDownField ==null)
-            scriptletDropDownField = getInitialModel("scriptlet");
-        
-        HashMap<String,FieldType> map = new HashMap<String,FieldType>();
-        map.put("xml", xml);
-        map.put("printer",printertypeDropDownField);
-        map.put("scriptlet", scriptletDropDownField);
-        
-        return map;
-    }
-    
-    public HashMap<String, FieldType> getXMLData(HashMap<String, FieldType> args) throws RPCException {
-    	// TODO Auto-generated method stub
-    	return null;
-    }
-
-    public LabelRPC getScreen(LabelRPC rpc) throws RPCException{
+    public LabelForm getScreen(LabelForm rpc) throws RPCException{
      rpc.xml  = ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/label.xsl");    
         
-     DataModel scriptletDropDownField = (DataModel)CachingManager.getElement("InitialData", "scriptletDropDown");
+     TableDataModel<TableDataRow<Integer>> scriptletDropDownField = (TableDataModel<TableDataRow<Integer>>)CachingManager.getElement("InitialData", "scriptletDropDown");
         
      rpc.printerType = PrinterTypeCacheHandler.getPrinterTypes();
      SessionManager.getSession().setAttribute("printerTypesVersion",PrinterTypeCacheHandler.version);
@@ -290,7 +259,7 @@ public class LabelService implements AppScreenFormServiceInt<LabelRPC,Integer> {
      return rpc;
     }
     
-    public void checkModels(LabelRPC rpc) {
+    public void checkModels(LabelForm rpc) {
         int printerTypes = (Integer)SessionManager.getSession().getAttribute("printerTypesVersion");
         
         if(printerTypes != PrinterTypeCacheHandler.version) {
@@ -299,25 +268,21 @@ public class LabelService implements AppScreenFormServiceInt<LabelRPC,Integer> {
         } 
     }
     
-    public DataModel getInitialModel(String cat) {
+    public TableDataModel<TableDataRow<Integer>> getInitialModel(String cat) {
         CategoryRemote catRemote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
         List entries = new ArrayList(); 
-        Integer id = null;
                 
-        DataModel<Integer> model = new DataModel<Integer>();
+        TableDataModel<TableDataRow<Integer>> model = new TableDataModel<TableDataRow<Integer>>();
                
         LabelRemote labelRemote = (LabelRemote)EJBFactory.lookup("openelis/LabelBean/remote"); 
         entries = labelRemote.getScriptlets();
                                             
-        DataSet<Integer> blankset = new DataSet<Integer>();           
-        model.add(new DataSet<Integer>(0,new StringObject(" ")));
+        model.add(new TableDataRow<Integer>(0,new StringObject(" ")));
                 
         for (Iterator iter = entries.iterator(); iter.hasNext();) {
             IdNameDO resultDO = (IdNameDO)iter.next();
-
-            DataSet<Integer> set = new DataSet<Integer>();
             
-            model.add(new DataSet<Integer>(resultDO.getId(),new StringObject(resultDO.getName())));            
+            model.add(new TableDataRow<Integer>(resultDO.getId(),new StringObject(resultDO.getName())));            
          }
            
         return model;
@@ -328,8 +293,8 @@ public class LabelService implements AppScreenFormServiceInt<LabelRPC,Integer> {
         form.id.setValue(qaeDO.getId());
         form.name.setValue(qaeDO.getName());
         form.description.setValue(qaeDO.getDescription());
-        form.printerTypeId.setValue(new DataSet<Integer>(qaeDO.getPrinterType()));     
-        form.scriptletId.setValue(new DataSet<Integer>(qaeDO.getScriptlet()));        
+        form.printerTypeId.setValue(new TableDataRow<Integer>(qaeDO.getPrinterType()));     
+        form.scriptletId.setValue(new TableDataRow<Integer>(qaeDO.getScriptlet()));        
     }
     
     private LabelDO getLabelDOFromRPC(LabelForm form){
@@ -345,16 +310,19 @@ public class LabelService implements AppScreenFormServiceInt<LabelRPC,Integer> {
        return labelDO;
     }
 
-	private void setRpcErrors(List exceptionList, Form form){
-            //we need to get the keys and look them up in the resource bundle for internationalization
-            for (int i=0; i<exceptionList.size();i++) {
-                //if the error is inside the org contacts table
-                 if(exceptionList.get(i) instanceof FieldErrorException)
-                    form.getField(((FieldErrorException)exceptionList.get(i)).getFieldName()).addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
-                //if the error is on the entire form
-                else if(exceptionList.get(i) instanceof FormErrorException)
-                    form.addError(openElisConstants.getString(((FormErrorException)exceptionList.get(i)).getMessage()));
-            }   
-            form.status = Form.Status.invalid;
-        }
+	private void setRpcErrors(List exceptionList, LabelForm form){
+	    HashMap<String,AbstractField> map = null;
+        if(exceptionList.size() > 0)
+            map = FormUtil.createFieldMap(form);
+	    //we need to get the keys and look them up in the resource bundle for internationalization
+	    for (int i=0; i<exceptionList.size();i++) {
+	        //if the error is inside the org contacts table
+	        if(exceptionList.get(i) instanceof FieldErrorException)
+	            map.get(((FieldErrorException)exceptionList.get(i)).getFieldName()).addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
+	        //if the error is on the entire form
+	        else if(exceptionList.get(i) instanceof FormErrorException)
+	            form.addError(openElisConstants.getString(((FormErrorException)exceptionList.get(i)).getMessage()));
+	    }   
+	    form.status = Form.Status.invalid;
+	}
 }

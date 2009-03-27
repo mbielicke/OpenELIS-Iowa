@@ -28,13 +28,11 @@ package org.openelis.modules.main.client.service;
 import com.google.gwt.http.client.Request;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
+import org.openelis.gwt.common.Query;
 import org.openelis.gwt.common.RPC;
-import org.openelis.gwt.common.data.FieldType;
 import org.openelis.gwt.services.AppScreenFormServiceIntAsync;
 
-public interface OpenELISServiceIntAsync<ScreenRPC extends RPC,Key> extends AppScreenFormServiceIntAsync<ScreenRPC,Key> {
-    
-    @Deprecated public void getObject(String method, FieldType[] args, AsyncCallback<? extends FieldType> callback);
+public interface OpenELISServiceIntAsync<ScreenRPC extends RPC,QueryRPC extends RPC> extends AppScreenFormServiceIntAsync<ScreenRPC,QueryRPC> {
     
     public Request call(String method, RPC rpc, AsyncCallback<? extends RPC> callback);
     

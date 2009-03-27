@@ -25,11 +25,11 @@
  */
  package org.openelis.modules.buildKits.client;
 
-import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.RPC;
-import org.openelis.gwt.common.data.DataModel;
+import org.openelis.gwt.common.data.TableDataModel;
+import org.openelis.gwt.common.data.TableDataRow;
 
-public class SubLocationAutoRPC extends RPC<Form,Integer>{
+public class SubLocationAutoRPC implements RPC{
 
     private static final long serialVersionUID = 1L;
     
@@ -38,6 +38,6 @@ public class SubLocationAutoRPC extends RPC<Form,Integer>{
     public String addToExisting;
     public Integer id;
     
-    public DataModel matchesModel;
+    public TableDataModel<TableDataRow<Integer>> matchesModel;
 
 }

@@ -26,29 +26,43 @@
 package org.openelis.modules.test.client;
 
 import org.openelis.gwt.common.Form;
+import org.openelis.gwt.common.data.AbstractField;
+import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.common.data.TableField;
 
 import com.google.gwt.xml.client.Node;
 
-public class PrepAndReflexForm extends Form {
+public class PrepAndReflexForm extends Form<Integer> {
 
     /**
      * 
      */
-    private static final long serialVersionUID = -3032313687560960088L;
+    private static final long serialVersionUID = 1L;
     
-    public TableField<Integer> testPrepTable;
-    public TableField<Integer> testReflexTable;
+    public TableField<TableDataRow<Integer>> testPrepTable;
+    public TableField<TableDataRow<Integer>> testReflexTable;
     public Boolean duplicate;
 
     public PrepAndReflexForm() {
-       fields.put("testPrepTable", testPrepTable = new TableField<Integer>());
-       fields.put("testReflexTable", testReflexTable = new TableField<Integer>());
+       testPrepTable = new TableField<TableDataRow<Integer>>("testPrepTable");
+       testReflexTable = new TableField<TableDataRow<Integer>>("testReflexTable");
     }
 
     public PrepAndReflexForm(Node node) {
         this();
         createFields(node);
+    }
+    
+    public PrepAndReflexForm(String key) {
+        this();
+        this.key = key;
+    }
+    
+    public AbstractField[] getFields() {
+        return new AbstractField[] {
+                                    testPrepTable,
+                                    testReflexTable
+        };
     }
 
 }

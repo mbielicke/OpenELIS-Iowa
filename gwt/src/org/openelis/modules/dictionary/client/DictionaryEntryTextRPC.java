@@ -26,17 +26,18 @@
 
 package org.openelis.modules.dictionary.client;
 
-import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.RPC;
 
-public class DictionaryEntryTextRPC extends RPC<Form, Integer> {
+public class DictionaryEntryTextRPC implements RPC {
 
     /**
      * 
      */
     private static final long serialVersionUID = 1L;
     
+    public Integer id;
     public Integer count;
     public String entryText;  
+    
 
 }

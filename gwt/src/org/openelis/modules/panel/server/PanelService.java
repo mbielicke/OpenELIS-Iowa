@@ -34,27 +34,26 @@ import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.LastPageException;
+import org.openelis.gwt.common.Query;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.data.AbstractField;
-import org.openelis.gwt.common.data.Data;
 import org.openelis.gwt.common.data.DataMap;
-import org.openelis.gwt.common.data.DataModel;
-import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.Field;
 import org.openelis.gwt.common.data.FieldType;
 import org.openelis.gwt.common.data.IntegerField;
 import org.openelis.gwt.common.data.StringObject;
+import org.openelis.gwt.common.data.TableDataModel;
+import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.common.data.TableField;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
 import org.openelis.metamap.PanelMetaMap;
 import org.openelis.modules.panel.client.PanelForm;
-import org.openelis.modules.panel.client.PanelRPC;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.PanelRemote;
 import org.openelis.server.constants.Constants;
+import org.openelis.util.FormUtil;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
 
@@ -62,30 +61,30 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class PanelService implements AppScreenFormServiceInt<PanelRPC, Integer> {
+public class PanelService implements AppScreenFormServiceInt<PanelForm, Query<TableDataRow<Integer>>> {
 
     private static final int leftTableRowsPerPage = 10;
     private UTFResource openElisConstants = UTFResource.getBundle((String)SessionManager.getSession()
                                                                                         .getAttribute("locale"));
     private static final PanelMetaMap PanelMeta = new PanelMetaMap();
     
-    public PanelRPC abort(PanelRPC rpc) throws RPCException {
+    public PanelForm abort(PanelForm rpc) throws RPCException {
         PanelRemote remote = (PanelRemote)EJBFactory.lookup("openelis/PanelBean/remote");
-        PanelDO panelDO = remote.getPanel(rpc.key);
-        setFieldsInRPC(rpc.form, panelDO);
-        List<PanelItemDO> itemDOList = remote.getPanelItems(rpc.key);
-        fillPanelItems(itemDOList, rpc.form);
+        PanelDO panelDO = remote.getPanel(rpc.entityKey);
+        setFieldsInRPC(rpc, panelDO);
+        List<PanelItemDO> itemDOList = remote.getPanelItems(rpc.entityKey);
+        fillPanelItems(itemDOList, rpc);
         return rpc;
     }
 
-    public PanelRPC commitAdd(PanelRPC rpc) throws RPCException {
+    public PanelForm commitAdd(PanelForm rpc) throws RPCException {
         PanelRemote remote = (PanelRemote)EJBFactory.lookup("openelis/PanelBean/remote");
-        PanelDO panelDO = getPanelDOFromRPC(rpc.form);
-        List<PanelItemDO>itemDOList = getPanelItemsFromRPC(rpc.form);
+        PanelDO panelDO = getPanelDOFromRPC(rpc);
+        List<PanelItemDO>itemDOList = getPanelItemsFromRPC(rpc);
         
         List exceptionList = remote.validateForAdd(panelDO,itemDOList);
         if (exceptionList.size() > 0) {
-            setRpcErrors(exceptionList, rpc.form);
+            setRpcErrors(exceptionList, rpc);
     
            return rpc;
         }
@@ -100,43 +99,43 @@ public class PanelService implements AppScreenFormServiceInt<PanelRPC, Integer> 
             exceptionList = new ArrayList();
             exceptionList.add(e);
     
-            setRpcErrors(exceptionList, rpc.form);
+            setRpcErrors(exceptionList, rpc);
     
             return rpc;
         }
     
         panelDO.setId(panelId);
-        setFieldsInRPC(rpc.form, panelDO);
+        setFieldsInRPC(rpc, panelDO);
         return rpc;
     }
 
-    public PanelRPC commitDelete(PanelRPC rpc) throws RPCException {
+    public PanelForm commitDelete(PanelForm rpc) throws RPCException {
         PanelRemote remote = (PanelRemote)EJBFactory.lookup("openelis/PanelBean/remote");
         try{
-            remote.deletePanel(rpc.key);
+            remote.deletePanel(rpc.entityKey);
         }catch(Exception e){
             e.printStackTrace();
             throw new RPCException(e.getMessage());
         }
-        setFieldsInRPC(rpc.form, new PanelDO());
+        setFieldsInRPC(rpc, new PanelDO());
         return rpc;
     }
 
-    public DataModel<Integer> commitQuery(Form form, DataModel<Integer> model) throws RPCException {
+    public Query<TableDataRow<Integer>> commitQuery(Query<TableDataRow<Integer>> query) throws RPCException {
         List panelNames;
         // if the rpc is null then we need to get the page
-        if (form == null) {
+        /*if (qList == null) {
 
-            form = (Form)SessionManager.getSession()
+            qList = (ArrayList<AbstractField>)SessionManager.getSession()
                                                  .getAttribute("PanelQuery");
 
-            if (form == null)
+            if (qList == null)
                 throw new RPCException(openElisConstants.getString("queryExpiredException"));
 
             PanelRemote remote = (PanelRemote)EJBFactory.lookup("openelis/PanelBean/remote");
 
             try {
-                panelNames = remote.query(form.getFieldMap(),
+                panelNames = remote.query(qList,
                                          (model.getPage() * leftTableRowsPerPage),
                                          leftTableRowsPerPage + 1);
             } catch (Exception e) {
@@ -147,14 +146,14 @@ public class PanelService implements AppScreenFormServiceInt<PanelRPC, Integer> 
                     throw new RPCException(e.getMessage());
                 }
             }
-        } else {
+        } else {*/
             PanelRemote remote = (PanelRemote)EJBFactory.lookup("openelis/PanelBean/remote");
 
-            HashMap<String, AbstractField> fields = form.getFieldMap();
+            //HashMap<String, AbstractField> fields = qList.getFieldMap();
             // fields.remove("contactsTable");
 
             try {
-                panelNames = remote.query(fields, 0, leftTableRowsPerPage);
+                panelNames = remote.query(query.fields, query.page*leftTableRowsPerPage, leftTableRowsPerPage);
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -162,32 +161,32 @@ public class PanelService implements AppScreenFormServiceInt<PanelRPC, Integer> 
             }
 
             // need to save the rpc used to the encache
-            SessionManager.getSession().setAttribute("PanelQuery", form);
-        }
+           // SessionManager.getSession().setAttribute("PanelQuery", qList);
+        //}
 
         // fill the model with the query results
         int i = 0;
-        if(model == null)
-            model = new DataModel<Integer>();
+        if(query.results == null)
+            query.results = new TableDataModel<TableDataRow<Integer>>();
         else 
-            model.clear();
+            query.results.clear();
         while (i < panelNames.size() && i < leftTableRowsPerPage) {
             IdNameDO resultDO = (IdNameDO)panelNames.get(i);
-            model.add(new DataSet<Integer>(resultDO.getId(),new StringObject(resultDO.getName())));
+            query.results.add(new TableDataRow<Integer>(resultDO.getId(),new StringObject(resultDO.getName())));
             i++;
         }
 
-        return model;
+        return query;
     }
 
-    public PanelRPC commitUpdate(PanelRPC rpc) throws RPCException {
+    public PanelForm commitUpdate(PanelForm rpc) throws RPCException {
         PanelRemote remote = (PanelRemote)EJBFactory.lookup("openelis/PanelBean/remote");
-        PanelDO panelDO = getPanelDOFromRPC(rpc.form);
-        List<PanelItemDO>itemDOList = getPanelItemsFromRPC(rpc.form);
+        PanelDO panelDO = getPanelDOFromRPC(rpc);
+        List<PanelItemDO>itemDOList = getPanelItemsFromRPC(rpc);
         
         List exceptionList = remote.validateForUpdate(panelDO,itemDOList);
         if (exceptionList.size() > 0) {
-           setRpcErrors(exceptionList, rpc.form);
+           setRpcErrors(exceptionList, rpc);
     
             return rpc;
         }
@@ -201,97 +200,80 @@ public class PanelService implements AppScreenFormServiceInt<PanelRPC, Integer> 
             exceptionList = new ArrayList();
             exceptionList.add(e);
     
-            setRpcErrors(exceptionList, rpc.form);
+            setRpcErrors(exceptionList, rpc);
     
             return rpc;
         }
 
-        setFieldsInRPC(rpc.form, panelDO);
+        setFieldsInRPC(rpc, panelDO);
         return rpc;
     }
 
-    public PanelRPC fetch(PanelRPC rpc) throws RPCException {
+    public PanelForm fetch(PanelForm rpc) throws RPCException {
         PanelRemote remote = (PanelRemote)EJBFactory.lookup("openelis/PanelBean/remote");
-        PanelDO panelDO = remote.getPanel(rpc.key);
-        setFieldsInRPC(rpc.form, panelDO);
-        List<PanelItemDO> itemDOList = remote.getPanelItems(rpc.key);
-        fillPanelItems(itemDOList, rpc.form);
+        PanelDO panelDO = remote.getPanel(rpc.entityKey);
+        setFieldsInRPC(rpc, panelDO);
+        List<PanelItemDO> itemDOList = remote.getPanelItems(rpc.entityKey);
+        fillPanelItems(itemDOList, rpc);
         return rpc;
     }
 
-    public PanelRPC fetchForUpdate(PanelRPC rpc) throws RPCException {
+    public PanelForm fetchForUpdate(PanelForm rpc) throws RPCException {
         PanelRemote remote = (PanelRemote)EJBFactory.lookup("openelis/PanelBean/remote");
         PanelDO panelDO = new PanelDO();
         try{ 
-         panelDO = remote.getPanelAndLock(rpc.key,
+         panelDO = remote.getPanelAndLock(rpc.entityKey,
                                           SessionManager.getSession().getId());
          
         }catch(Exception ex){
             ex.printStackTrace();
             throw new RPCException(ex.getMessage());
         } 
-        setFieldsInRPC(rpc.form, panelDO);
-        List<PanelItemDO> itemDOList = remote.getPanelItems(rpc.key);
-        fillPanelItems(itemDOList, rpc.form);
+        setFieldsInRPC(rpc, panelDO);
+        List<PanelItemDO> itemDOList = remote.getPanelItems(rpc.entityKey);
+        fillPanelItems(itemDOList, rpc);
         return rpc;
     }
-
-    public String getXML() throws RPCException {
-        return ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/panel.xsl");
-    }
-
-    public HashMap<String, FieldType> getXMLData() throws RPCException {
-        StringObject xml = new StringObject();
-        xml.setValue(ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/panel.xsl"));                        
-        HashMap<String, FieldType> map = new HashMap<String, FieldType>();               
-        map.put("xml", xml);
-        map.put("allTests", getTestMethodNames());
-        return map;
-    }
-
-    public HashMap<String, FieldType> getXMLData(HashMap<String, FieldType> args) throws RPCException {
-        // TODO Auto-generated method stub
-        return null;
-    }
     
-    public PanelRPC getScreen(PanelRPC rpc) throws RPCException{        
+    public PanelForm getScreen(PanelForm rpc) throws RPCException{        
         rpc.xml = ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/panel.xsl");                               
         rpc.allTests = getTestMethodNames();
         return rpc;
     }
     
-    public DataModel<String> getTestMethodNames(){
+    public TableDataModel<TableDataRow<String>> getTestMethodNames(){
        PanelRemote remote = (PanelRemote)EJBFactory.lookup("openelis/PanelBean/remote");
-       DataModel<String> model = new DataModel<String>();
+       TableDataModel<TableDataRow<String>> model = new TableDataModel<TableDataRow<String>>();
        List<TestMethodSectionNamesDO> list = remote.getTestMethodNames();
        for(int iter = 0; iter < list.size(); iter++){
            TestMethodSectionNamesDO tmsDO = list.get(iter);
-           DataSet<String> set = new DataSet<String>();
-           set.add(new StringObject(tmsDO.getTestName()));                              
-           set.add(new StringObject(tmsDO.getMethodName()));                     
-           set.add(new StringObject(tmsDO.getSectionName()));
-           set.setKey((tmsDO.getTestName().trim()+","+tmsDO.getMethodName().trim()
-                                       +","+tmsDO.getSectionName()));
-           model.add(set);
+           model.add(new TableDataRow<String>(tmsDO.getTestName().trim()+","+tmsDO.getMethodName().trim()+","+tmsDO.getSectionName(),
+                                              new FieldType[] {
+                                                               new StringObject(tmsDO.getTestName()),                              
+                                                               new StringObject(tmsDO.getMethodName()),                     
+                                                               new StringObject(tmsDO.getSectionName())
+                                              }
+                     )
+           );
        }
        return model;
     }
     
-    public DataModel<String> getInitialModel(String cat){
+    public TableDataModel<TableDataRow<String>> getInitialModel(String cat){
         PanelRemote remote = (PanelRemote)EJBFactory.lookup("openelis/PanelBean/remote");
-        DataModel<String> model = new DataModel<String>();
-        model.add(new DataSet<String>("",new StringObject("")));
+        TableDataModel<TableDataRow<String>> model = new TableDataModel<TableDataRow<String>>();
+        model.add(new TableDataRow<String>("",new StringObject("")));
         
         List<QaEventTestDropdownDO> list = remote.getTestMethodNames();
         if(cat.equals("test")){
          for(int iter = 0; iter < list.size(); iter++){
             QaEventTestDropdownDO qaeDO = list.get(iter);
-            model.add(new DataSet<String>(qaeDO.getTest(),new StringObject(qaeDO.getTest())));
+            model.add(new TableDataRow<String>(qaeDO.getTest(),new StringObject(qaeDO.getTest())));
        }
       }else if(cat.equals("method")) {
           for(int iter = 0; iter < list.size(); iter++){
               QaEventTestDropdownDO qaeDO = list.get(iter);
-              model.add(new DataSet<String>(qaeDO.getMethod(),new StringObject(qaeDO.getMethod())));
+              model.add(new TableDataRow<String>(qaeDO.getMethod(),new StringObject(qaeDO.getMethod())));
          }
       }
        return model; 
@@ -300,21 +282,21 @@ public class PanelService implements AppScreenFormServiceInt<PanelRPC, Integer> 
     
     
     
-    private void fillPanelItems(List<PanelItemDO> list, Form form){
-        DataModel model = (DataModel)form.getField("addedTestTable").getValue();
+    private void fillPanelItems(List<PanelItemDO> list, PanelForm form){
+        TableDataModel<TableDataRow<Integer>> model = form.addedTestTable.getValue();
         model.clear();
         
         if(list.size() >0){
            for(int iter = 0 ; iter < list.size(); iter++){
                PanelItemDO itemDO = list.get(iter);
-               DataSet row = model.createNewSet();
+               TableDataRow<Integer> row = model.createNewSet();
                
                IntegerField id = new IntegerField(itemDO.getId());
                DataMap data = new DataMap();                    
                data.put("id", id);
                row.setData(data);
-               ((Field)row.get(0)).setValue(itemDO.getTestName().trim());
-               ((Field)row.get(1)).setValue(itemDO.getMethodName().trim());
+               ((Field)row.getCells().get(0)).setValue(itemDO.getTestName().trim());
+               ((Field)row.getCells().get(1)).setValue(itemDO.getMethodName().trim());
                model.add(row);
            }  
           }
@@ -335,12 +317,12 @@ public class PanelService implements AppScreenFormServiceInt<PanelRPC, Integer> 
     }
     
     private List<PanelItemDO> getPanelItemsFromRPC(PanelForm form){
-      DataModel<Integer> model = (DataModel<Integer>)form.getField("addedTestTable").getValue();
+      TableDataModel<TableDataRow<Integer>> model = form.addedTestTable.getValue();
       List<PanelItemDO> itemDOList = new ArrayList<PanelItemDO>();
-      Integer panelId = (Integer)form.getFieldValue(PanelMeta.getId());
+      Integer panelId = form.id.getValue();
       
       for (int i = 0; i < model.size(); i++) {
-          DataSet<Integer> row = model.get(i);
+          TableDataRow<Integer> row = model.get(i);
           PanelItemDO itemDO = new PanelItemDO();         
           itemDO.setDelete(new Boolean(false));   
           if(row.getData()!=null){
@@ -352,13 +334,13 @@ public class PanelService implements AppScreenFormServiceInt<PanelRPC, Integer> 
            }
           } 
           itemDO.setPanelId(panelId);
-          itemDO.setTestName((String)row.get(0).getValue());
-          itemDO.setMethodName((String)row.get(1).getValue());
+          itemDO.setTestName((String)row.getCells().get(0).getValue());
+          itemDO.setMethodName((String)row.getCells().get(1).getValue());
           itemDO.setSortOrder(new Integer(i));          
           itemDOList.add(itemDO);
       }
       for (int i = 0; i < model.getDeletions().size(); i++) {
-          DataSet<Data> row = (DataSet)model.getDeletions().get(i);
+          TableDataRow<Integer> row = (TableDataRow<Integer>)model.getDeletions().get(i);
           PanelItemDO itemDO = new PanelItemDO();
           if(row.getData()!=null){
               IntegerField id = (IntegerField)((DataMap)row.getData()).get("id");
@@ -370,8 +352,8 @@ public class PanelService implements AppScreenFormServiceInt<PanelRPC, Integer> 
              }
           itemDO.setDelete(new Boolean(true));
           itemDO.setPanelId(panelId);
-          itemDO.setTestName((String)row.get(0).getValue());
-          itemDO.setMethodName((String)row.get(1).getValue());
+          itemDO.setTestName((String)row.cells[0].getValue());
+          itemDO.setMethodName((String)row.cells[1].getValue());
           itemDO.setSortOrder(new Integer(i));          
           itemDOList.add(itemDO);
      }
@@ -380,8 +362,11 @@ public class PanelService implements AppScreenFormServiceInt<PanelRPC, Integer> 
       return itemDOList;
     }
     
-    private void setRpcErrors(List exceptionList,  Form form){
-       TableField addedTestModel = (TableField)form.getField("addedTestTable");
+    private void setRpcErrors(List exceptionList,  PanelForm form){
+       TableField addedTestModel = form.addedTestTable;
+       HashMap<String,AbstractField> map = null;
+       if(exceptionList.size() > 0)
+           map = FormUtil.createFieldMap(form);
         //we need to get the keys and look them up in the resource bundle for internationalization
         for (int i=0; i<exceptionList.size();i++) {
             //if the error is inside the entries table
@@ -392,7 +377,7 @@ public class PanelService implements AppScreenFormServiceInt<PanelRPC, Integer> 
                  .addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
             //if the error is on the field
             }else if(exceptionList.get(i) instanceof FieldErrorException)
-                form.getField(((FieldErrorException)exceptionList.get(i)).getFieldName()).addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
+                map.get(((FieldErrorException)exceptionList.get(i)).getFieldName()).addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
             //if the error is on the entire form
             else if(exceptionList.get(i) instanceof FormErrorException)
                 form.addError(openElisConstants.getString(((FormErrorException)exceptionList.get(i)).getMessage()));

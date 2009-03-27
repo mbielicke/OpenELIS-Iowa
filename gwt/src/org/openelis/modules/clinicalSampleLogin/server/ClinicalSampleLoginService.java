@@ -25,51 +25,53 @@
 */
 package org.openelis.modules.clinicalSampleLogin.server;
 
-import org.openelis.gwt.common.Form;
-import org.openelis.gwt.common.DefaultRPC;
+import org.openelis.gwt.common.Query;
 import org.openelis.gwt.common.RPCException;
-import org.openelis.gwt.common.data.DataModel;
-import org.openelis.gwt.common.data.DataObject;
+import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.FieldType;
+import org.openelis.gwt.common.data.TableDataModel;
+import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
+import org.openelis.modules.clinicalSampleLogin.client.ClinicalSampleLoginForm;
 import org.openelis.server.constants.Constants;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
-public class ClinicalSampleLoginService implements AppScreenFormServiceInt<DefaultRPC,Integer>{
+public class ClinicalSampleLoginService implements AppScreenFormServiceInt<ClinicalSampleLoginForm,Query<TableDataRow<Integer>>>{
 
-    public DefaultRPC abort(DefaultRPC rpc) throws RPCException {
+    public ClinicalSampleLoginForm abort(ClinicalSampleLoginForm rpc) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public DefaultRPC commitAdd(DefaultRPC rpc) throws RPCException {
+    public ClinicalSampleLoginForm commitAdd(ClinicalSampleLoginForm rpc) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public DefaultRPC commitDelete(DefaultRPC rpc) throws RPCException {
+    public ClinicalSampleLoginForm commitDelete(ClinicalSampleLoginForm rpc) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public DataModel<Integer> commitQuery(Form form, DataModel<Integer> data) throws RPCException {
+    public Query<TableDataRow<Integer>> commitQuery(Query<TableDataRow<Integer>> data) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public DefaultRPC commitUpdate(DefaultRPC rpc) throws RPCException {
+    public ClinicalSampleLoginForm commitUpdate(ClinicalSampleLoginForm rpc) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public DefaultRPC fetch(DefaultRPC rpc) throws RPCException {
+    public ClinicalSampleLoginForm fetch(ClinicalSampleLoginForm rpc) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public DefaultRPC fetchForUpdate(DefaultRPC rpc) throws RPCException {
+    public ClinicalSampleLoginForm fetchForUpdate(ClinicalSampleLoginForm rpc) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
@@ -88,7 +90,7 @@ public class ClinicalSampleLoginService implements AppScreenFormServiceInt<Defau
         return null;
     }
     
-    public DefaultRPC getScreen(DefaultRPC rpc) {
+    public ClinicalSampleLoginForm getScreen(ClinicalSampleLoginForm rpc) {
         return rpc;
     }
 }

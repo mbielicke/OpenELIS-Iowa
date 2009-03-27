@@ -25,13 +25,14 @@
 */
 package org.openelis.modules.SDWISSampleLogin.client;
 
-import org.openelis.gwt.common.DefaultRPC;
-import org.openelis.gwt.common.Form;
-import org.openelis.gwt.common.RPC;
-import org.openelis.gwt.common.data.Data;
-import org.openelis.gwt.common.data.DataModel;
+import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.SourcesTabEvents;
+import com.google.gwt.user.client.ui.TabListener;
+import com.google.gwt.user.client.ui.Widget;
+
+import org.openelis.gwt.common.Query;
 import org.openelis.gwt.common.data.KeyListManager;
-import org.openelis.gwt.common.data.NumberObject;
+import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.common.data.TreeDataItem;
 import org.openelis.gwt.screen.CommandChain;
 import org.openelis.gwt.widget.ButtonPanel;
@@ -40,30 +41,23 @@ import org.openelis.gwt.widget.tree.TreeManager;
 import org.openelis.gwt.widget.tree.TreeWidget;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.SourcesTabEvents;
-import com.google.gwt.user.client.ui.TabListener;
-import com.google.gwt.user.client.ui.Widget;
-
-public class SDWISSampleLoginScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer> implements ClickListener, TabListener, TreeManager{
-    
-    private static boolean loaded = false;
-    private static DataModel sampleStatusDropdown, sampleTypeDropdown,
-                    sampleCategoryDropdown, leadSampleTypeDropdown;
+public class SDWISSampleLoginScreen extends OpenELISScreenForm<SDWISSampleLoginForm,Query<TableDataRow<Integer>>> implements ClickListener, TabListener, TreeManager{
     
     private TreeWidget itemsTestsTree;
     private KeyListManager keyList = new KeyListManager();
     
     public SDWISSampleLoginScreen() {
-        super("org.openelis.modules.SDWISSampleLogin.server.SDWISSampleLoginService", !loaded,new DefaultRPC());
+        super("org.openelis.modules.SDWISSampleLogin.server.SDWISSampleLoginService");
+        query = new Query<TableDataRow<Integer>>();
+        getScreen(new SDWISSampleLoginForm());
     }
+
 
     public void onClick(Widget sender) {
     
     }
     
     public void afterDraw(boolean sucess) {
-        loaded = true;
         Dropdown drop;
         ButtonPanel bpanel = (ButtonPanel)getWidget("buttons");
         
@@ -76,44 +70,42 @@ public class SDWISSampleLoginScreen extends OpenELISScreenForm<DefaultRPC,Form,I
         
         //build the tree
         TreeDataItem row1 = itemsTestsTree.model.createTreeItem("top");
-        row1.get(0).setValue("0 - Bottle #26");
-        row1.get(1).setValue("Water");
+        row1.cells[0].setValue("0 - Bottle #26");
+        row1.cells[1].setValue("Water");
         TreeDataItem row2 = itemsTestsTree.model.createTreeItem("top");
-        row2.get(0).setValue("SDWA Pb - Logged In");
+        row2.cells[0].setValue("SDWA Pb - Logged In");
         row1.addItem(row2);
         TreeDataItem row3 = itemsTestsTree.model.createTreeItem("top");
-        row3.get(0).setValue("1 - Bottle #74");
-        row3.get(1).setValue("Water");
+        row3.cells[0].setValue("1 - Bottle #74");
+        row3.cells[1].setValue("Water");
         TreeDataItem row4 = itemsTestsTree.model.createTreeItem("top");
-        row4.get(0).setValue("SDWA TOC - Logged In");
+        row4.cells[0].setValue("SDWA TOC - Logged In");
         row3.addItem(row4);
         itemsTestsTree.model.addRow(row1);
         itemsTestsTree.model.addRow(row3);
         
         itemsTestsTree.model.refresh();
-        
-        if (sampleStatusDropdown == null) {
-            sampleStatusDropdown = (DataModel)initData.get("sampleStatus");
-            sampleTypeDropdown = (DataModel)initData.get("sampleTypes");
-            sampleCategoryDropdown = (DataModel)initData.get("sampleCats");
-            leadSampleTypeDropdown = (DataModel)initData.get("leadSampleTypes");
-        }
 
         //sample status dropdown
         drop = (Dropdown)getWidget("status");
-        drop.setModel(sampleStatusDropdown);
+        drop.setModel(form.sampleStatus);
         
         //sample category dropdown
         drop = (Dropdown)getWidget("sampleCategory");
-        drop.setModel(sampleCategoryDropdown);
+        drop.setModel(form.sampleCats);
         
         //sample type dropdown
         drop = (Dropdown)getWidget("sampleType");
-        drop.setModel(sampleTypeDropdown);
+        drop.setModel(form.sampleTypes);
         
         //lead sample type dropdown
         drop = (Dropdown)getWidget("leadSampleType");
-        drop.setModel(leadSampleTypeDropdown);
+        drop.setModel(form.leadSampleTypes);
+        
+        form.sampleCats = null;
+        form.sampleStatus = null;
+        form.leadSampleTypes = null;
+        form.sampleTypes = null;
 
         super.afterDraw(sucess);
     }
@@ -137,14 +129,6 @@ public class SDWISSampleLoginScreen extends OpenELISScreenForm<DefaultRPC,Form,I
         return false;
     }
 
-    public boolean canDrag(TreeWidget widget, TreeDataItem item, int row) {
-        return false;
-    }
-
-    public boolean canDrop(TreeWidget widget, Widget dragWidget, TreeDataItem dropTarget, int targetRow) {
-        return false;
-    }
-
     public boolean canEdit(TreeWidget widget, TreeDataItem set, int row, int col) {
         return false;
     }
@@ -157,12 +141,4 @@ public class SDWISSampleLoginScreen extends OpenELISScreenForm<DefaultRPC,Form,I
         return false;
     }
 
-    public void drop(TreeWidget widget, Widget dragWidget, TreeDataItem dropTarget, int targetRow) {}
-
-    public void drop(TreeWidget widget, Widget dragWidget) {}
-
-    public boolean canDrop(TreeWidget widget, Widget dragWidget, Widget dropWidget) {
-        // TODO Auto-generated method stub
-        return false;
-    }
 }

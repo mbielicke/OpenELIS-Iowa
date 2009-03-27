@@ -25,15 +25,18 @@
 */
 package org.openelis.modules.order.client;
 
+import com.google.gwt.xml.client.Node;
+
 import org.openelis.gwt.common.Form;
+import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.IntegerField;
 import org.openelis.gwt.common.data.StringField;
+import org.openelis.gwt.common.data.TableDataModel;
+import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.metamap.OrderMetaMap;
 
-import com.google.gwt.xml.client.Node;
-
-public class OrderForm extends Form{
+public class OrderForm extends Form<Integer> {
     private static final long serialVersionUID = 1L;
 
     public IntegerField id;
@@ -45,7 +48,7 @@ public class OrderForm extends Form{
     public DropDownField<Integer> shipFromId;
     public DropDownField<String> description;
     
-    public DropDownField<OrderOrgKey> organization;
+    public DropDownField<Integer> organization;
     public StringField externalOrderNumber;
     public StringField multipleUnit;
     public StringField streetAddress;
@@ -54,6 +57,7 @@ public class OrderForm extends Form{
     public StringField zipCode;
     
     public String orderTabPanel = "itemsTab";
+    public String type;
     
     //sub forms
     public OrderShippingNoteForm shippingNotes;
@@ -61,35 +65,66 @@ public class OrderForm extends Form{
     public ItemsForm items;
     public ReceiptForm receipts;
     public ReportToBillToForm reportToBillTo;
-   
+    
+    public TableDataModel<TableDataRow<Integer>> status;
+    public TableDataModel<TableDataRow<Integer>> costCenters;
+    public TableDataModel<TableDataRow<Integer>> shipFrom;
+    
+    public String orderType;
+    public Integer originalStatus;
+
+    
     public OrderForm() {
        OrderMetaMap meta = new OrderMetaMap();
-       fields.put(meta.getId(), id = new IntegerField());
-       fields.put(meta.getNeededInDays(),neededInDays = new IntegerField());
-       fields.put(meta.getStatusId(), statusId = new DropDownField<Integer>());
-       fields.put(meta.getOrderedDate(), orderedDate = new StringField());
-       fields.put(meta.getRequestedBy(), requestedBy = new StringField());
-       fields.put(meta.getCostCenterId(), costCenterId = new DropDownField<Integer>());
-       fields.put(meta.getExternalOrderNumber(), externalOrderNumber = new StringField());
-       fields.put(meta.getShipFromId(), shipFromId = new DropDownField<Integer>());
-       fields.put(meta.getDescription(), description = new DropDownField<String>());
-       
-       fields.put(meta.ORDER_ORGANIZATION_META.getName(), organization = new DropDownField<OrderOrgKey>());
-       fields.put(meta.ORDER_ORGANIZATION_META.ADDRESS.getMultipleUnit(), multipleUnit = new StringField());
-       fields.put(meta.ORDER_ORGANIZATION_META.ADDRESS.getStreetAddress(), streetAddress = new StringField());
-       fields.put(meta.ORDER_ORGANIZATION_META.ADDRESS.getCity(), city = new StringField());
-       fields.put(meta.ORDER_ORGANIZATION_META.ADDRESS.getState(), state = new StringField());
-       fields.put(meta.ORDER_ORGANIZATION_META.ADDRESS.getZipCode(), zipCode = new StringField());
-       
-       fields.put("shippingNote", shippingNotes = new OrderShippingNoteForm());
-       fields.put("custNote", customerNotes = new OrderNoteForm());
-       fields.put("items", items = new ItemsForm());
-       fields.put("receipts", receipts = new ReceiptForm());
-       fields.put("reportToBillTo", reportToBillTo = new ReportToBillToForm());
+       id = new IntegerField(meta.getId());
+       neededInDays = new IntegerField(meta.getNeededInDays());
+       statusId = new DropDownField<Integer>(meta.getStatusId());
+       orderedDate = new StringField(meta.getOrderedDate());
+       requestedBy = new StringField(meta.getRequestedBy());
+       costCenterId = new DropDownField<Integer>(meta.getCostCenterId());
+       externalOrderNumber = new StringField(meta.getExternalOrderNumber());
+       shipFromId = new DropDownField<Integer>(meta.getShipFromId());
+       description = new DropDownField<String>(meta.getDescription());
+       organization = new DropDownField<Integer>(meta.ORDER_ORGANIZATION_META.getName());
+       multipleUnit = new StringField(meta.ORDER_ORGANIZATION_META.ADDRESS.getMultipleUnit());
+       streetAddress = new StringField(meta.ORDER_ORGANIZATION_META.ADDRESS.getStreetAddress());
+       city = new StringField(meta.ORDER_ORGANIZATION_META.ADDRESS.getCity());
+       state = new StringField(meta.ORDER_ORGANIZATION_META.ADDRESS.getState());
+       zipCode = new StringField(meta.ORDER_ORGANIZATION_META.ADDRESS.getZipCode());
+       shippingNotes = new OrderShippingNoteForm("shippingNote");
+       customerNotes = new OrderNoteForm("custNote");
+       items = new ItemsForm("items");
+       receipts = new ReceiptForm("receipts");
+       reportToBillTo = new ReportToBillToForm("reportToBillTo");
    }
    
    public OrderForm(Node node) {
        this();
        createFields(node);
+   }
+   
+   public AbstractField[] getFields() {
+       return new AbstractField[] {
+                                     id,
+                                     neededInDays,
+                                     statusId,
+                                     orderedDate,
+                                     requestedBy,
+                                     costCenterId,
+                                     externalOrderNumber,
+                                     shipFromId,
+                                     description,
+                                     organization,
+                                     multipleUnit,
+                                     streetAddress,
+                                     city,
+                                     state,
+                                     zipCode,
+                                     shippingNotes,
+                                     customerNotes,
+                                     items,
+                                     receipts,
+                                     reportToBillTo
+       };
    }
 }

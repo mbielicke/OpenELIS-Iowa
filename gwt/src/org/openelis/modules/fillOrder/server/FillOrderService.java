@@ -38,13 +38,14 @@ import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
+import org.openelis.gwt.common.Query;
 import org.openelis.gwt.common.QueryException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.CheckField;
-import org.openelis.gwt.common.data.DataModel;
-import org.openelis.gwt.common.data.DataSet;
+import org.openelis.gwt.common.data.TableDataModel;
+import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.common.data.DateField;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.FieldType;
@@ -60,10 +61,9 @@ import org.openelis.gwt.services.AutoCompleteServiceInt;
 import org.openelis.metamap.FillOrderMetaMap;
 import org.openelis.modules.fillOrder.client.FillOrderForm;
 import org.openelis.modules.fillOrder.client.FillOrderItemInfoForm;
-import org.openelis.modules.fillOrder.client.FillOrderItemInfoRPC;
 import org.openelis.modules.fillOrder.client.FillOrderLocationAutoRPC;
 import org.openelis.modules.fillOrder.client.FillOrderOrderItemsKey;
-import org.openelis.modules.fillOrder.client.FillOrderRPC;
+import org.openelis.modules.fillOrder.client.FillOrderForm;
 import org.openelis.persistence.CachingManager;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.CategoryRemote;
@@ -74,6 +74,7 @@ import org.openelis.server.handlers.CostCentersCacheHandler;
 import org.openelis.server.handlers.OrderStatusCacheHandler;
 import org.openelis.server.handlers.ShipFromCacheHandler;
 import org.openelis.util.Datetime;
+import org.openelis.util.FormUtil;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
 import org.openelis.util.XMLUtil;
@@ -81,7 +82,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-public class FillOrderService implements AppScreenFormServiceInt<FillOrderRPC, Integer>, AutoCompleteServiceInt{
+public class FillOrderService implements AppScreenFormServiceInt<FillOrderForm, Query<TableDataRow<Integer>>>, AutoCompleteServiceInt{
 
     private static Node subRpcNode;
     
@@ -90,10 +91,10 @@ public class FillOrderService implements AppScreenFormServiceInt<FillOrderRPC, I
     
     private static final int leftTableRowsPerPage = 250;
     
-    public DataModel<Integer> commitQuery(Form form, DataModel<Integer> model) throws RPCException {
+    public Query<TableDataRow<Integer>> commitQuery(Query<TableDataRow<Integer>> query) throws RPCException {
         List orders;
         //if the rpc is null then we need to get the page
-        if(form == null){
+       /* if(form == null){
 
             form = (Form)SessionManager.getSession().getAttribute("FillOrderQuery");
     
@@ -110,58 +111,53 @@ public class FillOrderService implements AppScreenFormServiceInt<FillOrderRPC, I
                     throw new RPCException(e.getMessage()); 
                 }           
             }    
-        }else{
+        }else{*/
             FillOrderRemote remote = (FillOrderRemote)EJBFactory.lookup("openelis/FillOrderBean/remote");
-        
-            HashMap<String,AbstractField> fields = form.getFieldMap();
-            fields.remove("fillItemsTable");
-            fields.remove("process");
-            fields.remove("daysLeft");
             
-            if(isQueryEmpty(form))
+            if(query.fields.isEmpty())
                 throw new QueryException(openElisConstants.getString("emptyQueryException"));
            
             try{    
-                orders = remote.query(fields,0,leftTableRowsPerPage);
+                orders = remote.query(query.fields,query.page*leftTableRowsPerPage,leftTableRowsPerPage);
     
             }catch(Exception e){
                 throw new RPCException(e.getMessage());
             }    
         
             //need to save the rpc used to the encache
-            SessionManager.getSession().setAttribute("FillOrderQuery", form);
-        }
+            //SessionManager.getSession().setAttribute("FillOrderQuery", form);
+        //}
         
-        if(model == null)
-            model = new DataModel<Integer>();
+        if(query.results == null)
+            query.results = new TableDataModel<TableDataRow<Integer>>();
         
         //fill the model with the query results
-        fillModelFromQuery(model, orders);        
+        fillModelFromQuery(query.results, orders);        
         
-        return model;
+        return query;
     }
 
-    public FillOrderRPC commitAdd(FillOrderRPC rpc) throws RPCException {
+    public FillOrderForm commitAdd(FillOrderForm rpc) throws RPCException {
         return null;
     }
 
-    public FillOrderRPC commitUpdate(FillOrderRPC rpc) throws RPCException {
+    public FillOrderForm commitUpdate(FillOrderForm rpc) throws RPCException {
         return null;
     }
 
-    public FillOrderRPC commitDelete(FillOrderRPC rpc) throws RPCException {
+    public FillOrderForm commitDelete(FillOrderForm rpc) throws RPCException {
         return null;
     }
 
-    public FillOrderRPC abort(FillOrderRPC rpc) throws RPCException {
+    public FillOrderForm abort(FillOrderForm rpc) throws RPCException {
         return null;
     }
 
-    public FillOrderRPC fetch(FillOrderRPC rpc) throws RPCException {
+    public FillOrderForm fetch(FillOrderForm rpc) throws RPCException {
         return null;
     }
 
-    public FillOrderRPC fetchForUpdate(FillOrderRPC rpcReturn) throws RPCException {
+    public FillOrderForm fetchForUpdate(FillOrderForm rpcReturn) throws RPCException {
         return null;
     }
 
@@ -173,7 +169,7 @@ public class FillOrderService implements AppScreenFormServiceInt<FillOrderRPC, I
         return null;
     }
     
-    public FillOrderRPC getScreen(FillOrderRPC rpc) throws RPCException {
+    public FillOrderForm getScreen(FillOrderForm rpc) throws RPCException {
         rpc.xml = ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/fillOrder.xsl");
 
         /*
@@ -214,7 +210,7 @@ public class FillOrderService implements AppScreenFormServiceInt<FillOrderRPC, I
         return rpc;
     }
     
-    public void checkModels(FillOrderRPC rpc) {
+    public void checkModels(FillOrderForm rpc) {
         /*
          * Retrieve current version of models from session.
          */
@@ -249,9 +245,9 @@ public class FillOrderService implements AppScreenFormServiceInt<FillOrderRPC, I
 
                 FillOrderDO orderDO = new FillOrderDO();
                 orderDO.setOrderItemId(rowHiddenMap.referenceId);
-                orderDO.setOrderId((Integer)childItem.get(1).getValue());
-                orderDO.setInventoryLocationId((Integer)((DropDownField)childItem.get(3)).getSelectedKey());
-                orderDO.setQuantity((Integer)childItem.get(0).getValue());
+                orderDO.setOrderId((Integer)childItem.cells[1].getValue());
+                orderDO.setInventoryLocationId((Integer)((DropDownField)childItem.cells[3]).getSelectedKey());
+                orderDO.setQuantity((Integer)childItem.cells[0].getValue());
                 
                 orderList.add(orderDO);
             }
@@ -264,15 +260,15 @@ public class FillOrderService implements AppScreenFormServiceInt<FillOrderRPC, I
         return null;
     }
     
-    public FillOrderItemInfoRPC setOrderToProcessed(FillOrderItemInfoRPC rpc) throws RPCException {
-        List orders = getListOfOrdersFromTree(rpc.form.originalOrderItemsTree.getValue());
+    public FillOrderItemInfoForm setOrderToProcessed(FillOrderItemInfoForm rpc) throws RPCException {
+        List orders = getListOfOrdersFromTree(rpc.originalOrderItemsTree.getValue());
        
         FillOrderRemote remote = (FillOrderRemote)EJBFactory.lookup("openelis/FillOrderBean/remote");
         try {
             remote.setOrderToProcessed(orders);
         } catch (Exception e) {
             if(e instanceof ValidationErrorsList){
-                setRpcErrors(((ValidationErrorsList)e).getErrorList(), rpc.form);
+                setRpcErrors(((ValidationErrorsList)e).getErrorList(), rpc);
                 return rpc;
             }else
                 throw new RPCException(e.getMessage());
@@ -284,23 +280,23 @@ public class FillOrderService implements AppScreenFormServiceInt<FillOrderRPC, I
         return rpc;
     }
     
-    private List getOrderIds(DataModel<Integer> model){
+    private List getOrderIds(TableDataModel<TableDataRow<Integer>> model){
         List returnList = new ArrayList();
         for(int i=0; i<model.size(); i++)
-            returnList.add(model.get(i).get(1).getValue());
+            returnList.add(model.get(i).cells[1].getValue());
         
         return returnList;
     }
     
-    public FillOrderItemInfoRPC validateOrders(FillOrderItemInfoRPC rpc) throws RPCException { 
-        List orders = getListOfOrdersFromTree(rpc.form.originalOrderItemsTree.getValue());
+    public FillOrderItemInfoForm validateOrders(FillOrderItemInfoForm rpc) throws RPCException { 
+        List orders = getListOfOrdersFromTree(rpc.originalOrderItemsTree.getValue());
         
         FillOrderRemote remote = (FillOrderRemote)EJBFactory.lookup("openelis/FillOrderBean/remote");
         try {
             remote.validateOrders(orders);
         } catch (Exception e) {
             if(e instanceof ValidationErrorsList){
-                setRpcErrors(((ValidationErrorsList)e).getErrorList(), rpc.form);
+                setRpcErrors(((ValidationErrorsList)e).getErrorList(), rpc);
                 return rpc;
             }else
                 throw new RPCException(e.getMessage());
@@ -316,12 +312,12 @@ public class FillOrderService implements AppScreenFormServiceInt<FillOrderRPC, I
         return rpc;
     }
     
-    public DataModel getMatches(String cat, DataModel model, String match, HashMap<String, FieldType> params) throws RPCException {
+    public TableDataModel getMatches(String cat, TableDataModel model, String match, HashMap<String, FieldType> params) throws RPCException {
         return null;
     }
     
-    private DataModel getLocationMatches(String match, Integer invItemId) throws RPCException{
-        DataModel<Integer> dataModel = new DataModel<Integer>();
+    private TableDataModel getLocationMatches(String match, Integer invItemId) throws RPCException{
+        TableDataModel<TableDataRow<Integer>> dataModel = new TableDataModel<TableDataRow<Integer>>();
         List autoCompleteList = new ArrayList();
 
         if(invItemId != null){
@@ -334,7 +330,7 @@ public class FillOrderService implements AppScreenFormServiceInt<FillOrderRPC, I
             StorageLocationAutoDO resultDO = (StorageLocationAutoDO) autoCompleteList.get(i);
  
             //add the dataset to the datamodel
-            dataModel.add(new DataSet<Integer>(resultDO.getLocationId(),new FieldType[] {new StringObject(resultDO.getLocation()), new StringObject(resultDO.getLotNum()), new IntegerObject(resultDO.getQtyOnHand())}));                            
+            dataModel.add(new TableDataRow<Integer>(resultDO.getLocationId(),new FieldType[] {new StringObject(resultDO.getLocation()), new StringObject(resultDO.getLotNum()), new IntegerObject(resultDO.getQtyOnHand())}));                            
 
         }       
         
@@ -344,27 +340,14 @@ public class FillOrderService implements AppScreenFormServiceInt<FillOrderRPC, I
     public static int daysBetween(Date startDate, Date endDate) {
         return (int)((endDate.getTime() - startDate.getTime()) / (24 * 60 * 60 * 1000));  
     }  
+
     
-    private boolean isQueryEmpty(Form form){
-   
-        return ("".equals(form.getFieldValue(FillOrderMeta.getId())) &&
-                    form.getFieldValue(FillOrderMeta.getStatusId()) == null &&
-                    form.getFieldValue(FillOrderMeta.getOrderedDate()) == null && 
-                    form.getFieldValue(FillOrderMeta.getShipFromId()) == null &&
-                    form.getFieldValue(FillOrderMeta.getOrganizationId()) == null && 
-                    form.getFieldValue(FillOrderMeta.getDescription()) == null && 
-                    form.getFieldValue(FillOrderMeta.getNeededInDays()) == null && 
-                    //DAYS LEFT"".equals(rpc.getFieldValue(FillOrderMeta.InventoryReceiptMeta.getQcReference())) && 
-                    "".equals(form.getFieldValue(FillOrderMeta.getRequestedBy())) && 
-                    form.getFieldValue(FillOrderMeta.getCostCenterId()) == null);
-    }
-    
-    private void fillModelFromQuery(DataModel<Integer> model, List orders){
+    private void fillModelFromQuery(TableDataModel<TableDataRow<Integer>> model, List orders){
         model.paged = false;
 
         int i=0;
         if(model == null)
-            model = new DataModel<Integer>();
+            model = new TableDataModel<TableDataRow<Integer>>();
         else
             model.clear();
         
@@ -377,31 +360,31 @@ public class FillOrderService implements AppScreenFormServiceInt<FillOrderRPC, I
         while(i < orders.size() && i < leftTableRowsPerPage) {
             FillOrderDO resultDO = (FillOrderDO)orders.get(i);
  
-            DataSet<Integer> set = new DataSet<Integer>();
+            TableDataRow<Integer> set = new TableDataRow<Integer>(10);
             
             //empty check
-            set.add(new CheckField());
+            set.cells[0] = (new CheckField());
             //order id
-            set.add(new IntegerField(resultDO.getOrderId()));
+            set.cells[1] =(new IntegerField(resultDO.getOrderId()));
             //status
-            set.add(new DropDownField<Integer>(new DataSet<Integer>(resultDO.getStatusId())));
+            set.cells[2] = (new DropDownField<Integer>(new TableDataRow<Integer>(resultDO.getStatusId())));
             //orderedDate
-            set.add(new DateField(Datetime.YEAR, Datetime.DAY, resultDO.getOrderedDate().getDate()));
+            set.cells[3] = (new DateField(Datetime.YEAR, Datetime.DAY, resultDO.getOrderedDate().getDate()));
             //shipFrom
-            set.add(new DropDownField<Integer>(new DataSet<Integer>(resultDO.getShipFromId())));
+            set.cells[4] = (new DropDownField<Integer>(new TableDataRow<Integer>(resultDO.getShipFromId())));
             //shipTo
             DropDownField<Integer> shipToDrop = new DropDownField<Integer>();
             if(resultDO.getShipToId() != null){
-                DataModel<Integer> shipToModel = new DataModel<Integer>();
-                shipToModel.add(new DataSet<Integer>(resultDO.getShipToId(),new StringObject(resultDO.getShipTo())));
+                TableDataModel<TableDataRow<Integer>> shipToModel = new TableDataModel<TableDataRow<Integer>>();
+                shipToModel.add(new TableDataRow<Integer>(resultDO.getShipToId(),new StringObject(resultDO.getShipTo())));
                 shipToDrop.setModel(shipToModel);
                 shipToDrop.setValue(shipToModel.get(0));
             }
-            set.add(shipToDrop);
+            set.cells[5] = (shipToDrop);
             //description
-            set.add(new StringField(resultDO.getDescription()));
+            set.cells[6] = (new StringField(resultDO.getDescription()));
             //#days
-            set.add(new IntegerField(resultDO.getNumberOfDays()));
+            set.cells[7] = (new IntegerField(resultDO.getNumberOfDays()));
             //days left
             Calendar earlyDate = Calendar.getInstance();
             earlyDate.setTime(resultDO.getOrderedDate().getDate());
@@ -410,12 +393,12 @@ public class FillOrderService implements AppScreenFormServiceInt<FillOrderRPC, I
             earlyDate.set(Calendar.SECOND, 0);
             earlyDate.set(Calendar.MILLISECOND, 0);
             int days = daysBetween(earlyDate.getTime(), laterDate.getTime());
-            set.add(new IntegerField(resultDO.getNumberOfDays() - days));
+            set.cells[8] = (new IntegerField(resultDO.getNumberOfDays() - days));
             //internal
             CheckField isInternal = new CheckField();
             if(resultDO.getShipToId() == null)
                 isInternal.setValue("Y");                
-            set.add(isInternal);
+            set.cells[9] = (isInternal);
          
             model.add(set);
             
@@ -423,49 +406,49 @@ public class FillOrderService implements AppScreenFormServiceInt<FillOrderRPC, I
         } 
     }
     
-    public FillOrderItemInfoRPC getOrderItemsOrderNotes(FillOrderItemInfoRPC rpc) {
-        DataModel<Integer> model = new DataModel<Integer>();
+    public FillOrderItemInfoForm getOrderItemsOrderNotes(FillOrderItemInfoForm rpc) {
+        TableDataModel<TableDataRow<Integer>> model = new TableDataModel<TableDataRow<Integer>>();
         Integer orderItemReferenceTableId = getOrderItemRefTable();
         
         //get and set the order note and item information
         FillOrderRemote remote = (FillOrderRemote)EJBFactory.lookup("openelis/FillOrderBean/remote");
-        FillOrderDO fillOrderDO = remote.getOrderItemInfoAndOrderNote(rpc.key);
+        FillOrderDO fillOrderDO = remote.getOrderItemInfoAndOrderNote(rpc.entityKey);
         if(fillOrderDO != null)
-            rpc.form.orderShippingNotes.setValue(fillOrderDO.getOrderNote());
+            rpc.orderShippingNotes.setValue(fillOrderDO.getOrderNote());
         else
-            rpc.form.orderShippingNotes.setValue(null);
+            rpc.orderShippingNotes.setValue(null);
         
-        rpc.form.requestedBy.setValue(fillOrderDO.getRequestedBy());
-        rpc.form.costCenterId.setValue(new DataSet<Integer>(fillOrderDO.getCostCenterId()));
-        rpc.form.multUnit.setValue(fillOrderDO.addressDO.getMultipleUnit());
-        rpc.form.streetAddress.setValue(fillOrderDO.addressDO.getStreetAddress());
-        rpc.form.city.setValue(fillOrderDO.addressDO.getCity());
-        rpc.form.state.setValue(fillOrderDO.addressDO.getState());
-        rpc.form.zipCode.setValue(fillOrderDO.addressDO.getZipCode());
+        rpc.requestedBy.setValue(fillOrderDO.getRequestedBy());
+        rpc.costCenterId.setValue(new TableDataRow<Integer>(fillOrderDO.getCostCenterId()));
+        rpc.multUnit.setValue(fillOrderDO.addressDO.getMultipleUnit());
+        rpc.streetAddress.setValue(fillOrderDO.addressDO.getStreetAddress());
+        rpc.city.setValue(fillOrderDO.addressDO.getCity());
+        rpc.state.setValue(fillOrderDO.addressDO.getState());
+        rpc.zipCode.setValue(fillOrderDO.addressDO.getZipCode());
         
         //get and set the order items tree
-        List orderItems = remote.getOrderItems(rpc.key);
-        TreeDataModel treeModel = rpc.form.originalOrderItemsTree.getValue();
+        List orderItems = remote.getOrderItems(rpc.entityKey);
+        TreeDataModel treeModel = rpc.originalOrderItemsTree.getValue();
         treeModel.clear();
         for(int i=0; i<orderItems.size(); i++){
             ///
             OrderItemDO itemDO = (OrderItemDO)orderItems.get(i);
             TreeDataItem row = treeModel.createTreeItem("top");
             
-            row.get(0).setValue(itemDO.getQuantity());
-            row.get(1).setValue(rpc.key);
+            row.cells[0].setValue(itemDO.getQuantity());
+            row.cells[1].setValue(rpc.key);
             
             if(itemDO.getInventoryItemId() != null){
-                DataModel<Integer> invItemModel = new DataModel<Integer>();
-                invItemModel.add(new DataSet<Integer>(itemDO.getInventoryItemId(),new StringObject(itemDO.getInventoryItem())));
-                ((DropDownField<Integer>)row.get(2)).setModel(invItemModel);
-                ((DropDownField<Integer>)row.get(2)).setValue(invItemModel.get(0));
+                TableDataModel<TableDataRow<Integer>> invItemModel = new TableDataModel<TableDataRow<Integer>>();
+                invItemModel.add(new TableDataRow<Integer>(itemDO.getInventoryItemId(),new StringObject(itemDO.getInventoryItem())));
+                ((DropDownField<Integer>)row.cells[2]).setModel(invItemModel);
+                ((DropDownField<Integer>)row.cells[2]).setValue(invItemModel.get(0));
             }
             
             /*
             if(itemDO.getLocationId() != null){
-                DataModel<Integer> locModel = new DataModel<Integer>();
-                locModel.add(new DataSet<Integer>(itemDO.getLocationId(),new StringObject(itemDO.getLocation())));
+                TableDataModel<TableDataRow<Integer>> locModel = new TableDataModel<TableDataRow<Integer>>();
+                locModel.add(new TableDataRow<Integer>(itemDO.getLocationId(),new StringObject(itemDO.getLocation())));
                 ((DropDownField<Integer>)row.get(3)).setModel(locModel);
                 ((DropDownField<Integer>)row.get(3)).setValue(locModel.get(0));
             }
@@ -484,13 +467,13 @@ public class FillOrderService implements AppScreenFormServiceInt<FillOrderRPC, I
         return rpc;
     }
     
-    public FillOrderItemInfoRPC fetchOrderItemAndLock(FillOrderItemInfoRPC rpc)throws RPCException{
-        rpc.tableData = new DataModel<Integer>();
+    public FillOrderItemInfoForm fetchOrderItemAndLock(FillOrderItemInfoForm rpc)throws RPCException{
+        rpc.tableData = new TableDataModel<TableDataRow<Integer>>();
         FillOrderRemote remote = (FillOrderRemote)EJBFactory.lookup("openelis/FillOrderBean/remote");
         List order=null;
         
         try{
-            order = remote.getOrderAndLock(rpc.key);
+            order = remote.getOrderAndLock(rpc.entityKey);
 
         }catch(Exception e){
             throw new RPCException(e.getMessage());
@@ -503,7 +486,7 @@ public class FillOrderService implements AppScreenFormServiceInt<FillOrderRPC, I
         return rpc;
     }
     
-    public FillOrderItemInfoRPC unlockOrders(FillOrderItemInfoRPC rpc) throws RPCException{
+    public FillOrderItemInfoForm unlockOrders(FillOrderItemInfoForm rpc) throws RPCException{
         FillOrderRemote remote = (FillOrderRemote)EJBFactory.lookup("openelis/FillOrderBean/remote");
         try{
             remote.unlockOrders(getOrderIds(rpc.tableData));
@@ -527,10 +510,13 @@ public class FillOrderService implements AppScreenFormServiceInt<FillOrderRPC, I
     }
     
     private void setRpcErrors(List exceptionList, FillOrderItemInfoForm form) {
+        HashMap<String,AbstractField> map = null;
+        if(exceptionList.size() > 0) 
+            map = FormUtil.createFieldMap(form);
         for (int i = 0; i < exceptionList.size(); i++) {
             // if the error is inside the table
             if (exceptionList.get(i) instanceof FieldErrorException)
-                form.getField(
+                map.get(
                         ((FieldErrorException) exceptionList.get(i))
                                 .getFieldName()).addError(
                         openElisConstants

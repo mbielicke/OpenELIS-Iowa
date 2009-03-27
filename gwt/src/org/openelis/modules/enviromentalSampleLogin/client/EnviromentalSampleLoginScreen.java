@@ -30,11 +30,10 @@ import com.google.gwt.user.client.ui.SourcesTabEvents;
 import com.google.gwt.user.client.ui.TabListener;
 import com.google.gwt.user.client.ui.Widget;
 
-import org.openelis.gwt.common.DefaultRPC;
-import org.openelis.gwt.common.Form;
+import org.openelis.gwt.common.Query;
 import org.openelis.gwt.common.data.Field;
 import org.openelis.gwt.common.data.KeyListManager;
-import org.openelis.gwt.common.data.NumberObject;
+import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.common.data.TreeDataItem;
 import org.openelis.gwt.screen.CommandChain;
 import org.openelis.gwt.widget.ButtonPanel;
@@ -42,13 +41,15 @@ import org.openelis.gwt.widget.tree.TreeManager;
 import org.openelis.gwt.widget.tree.TreeWidget;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
-public class EnviromentalSampleLoginScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer> implements ClickListener, TabListener, TreeManager{
+public class EnviromentalSampleLoginScreen extends OpenELISScreenForm<EnvironmentalSampleLoginForm,Query<TableDataRow<Integer>>> implements ClickListener, TabListener, TreeManager{
 
     private TreeWidget itemsTestsTree;
     private KeyListManager keyList = new KeyListManager();
     
     public EnviromentalSampleLoginScreen() {
-        super("org.openelis.modules.enviromentalSampleLogin.server.EnviromentalSampleLoginService", false, new DefaultRPC());
+        super("org.openelis.modules.enviromentalSampleLogin.server.EnviromentalSampleLoginService");
+        query = new Query<TableDataRow<Integer>>();
+        getScreen(new EnvironmentalSampleLoginForm());
     }
 
     public void onClick(Widget sender) {
@@ -67,21 +68,21 @@ public class EnviromentalSampleLoginScreen extends OpenELISScreenForm<DefaultRPC
         
         //build the tree
         TreeDataItem row1 = itemsTestsTree.model.createTreeItem("top");
-        ((Field)row1.get(0)).setValue("0 - #69 Bottle");
-        ((Field)row1.get(1)).setValue("Water");
+        ((Field)row1.cells[0]).setValue("0 - #69 Bottle");
+        ((Field)row1.cells[1]).setValue("Water");
         TreeDataItem row2 = itemsTestsTree.model.createTreeItem("top");
-        ((Field)row2.get(0)).setValue("Lead Analysis - Logged In");
+        ((Field)row2.cells[0]).setValue("Lead Analysis - Logged In");
         TreeDataItem row3 = itemsTestsTree.model.createTreeItem("top");
-        ((Field)row3.get(0)).setValue("Metals - Logged In");
+        ((Field)row3.cells[0]).setValue("Metals - Logged In");
         row1.addItem(row2);
         row1.addItem(row3);
         itemsTestsTree.model.addRow(row1);
         
         TreeDataItem row4 = itemsTestsTree.model.createTreeItem("top");
-        ((Field)row4.get(0)).setValue("1 - #18 Bottle");
-        ((Field)row4.get(1)).setValue("Water");
+        ((Field)row4.cells[0]).setValue("1 - #18 Bottle");
+        ((Field)row4.cells[1]).setValue("Water");
         TreeDataItem row5 = itemsTestsTree.model.createTreeItem("top");
-        ((Field)row5.get(0)).setValue("Ortho Phosphate - Logged In");
+        ((Field)row5.cells[1]).setValue("Ortho Phosphate - Logged In");
         row4.addItem(row5);
         itemsTestsTree.model.addRow(row4);
         

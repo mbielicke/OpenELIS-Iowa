@@ -55,11 +55,28 @@ UIRF Software License are applicable instead of those above.
 		<HorizontalPanel spacing="0" padding="0">
 			<!--left table goes here -->
 			<CollapsePanel key="collapsePanel" height="235px" style="LeftSidePanel">
+			  <!--
 			    <azTable width="100%" key="azTable" maxRows="10" headers="{resource:getString($constants,'description')}" tablewidth="auto" colwidths="175">
 					 <buttonPanel key="atozButtons">
 	    			   <xsl:call-template name="aToZLeftPanelButtons"/>		
 		    		 </buttonPanel>
 				</azTable>
+				-->
+				   <resultsTable  width="100%" key="azTable">
+					       <buttonPanel key="atozButtons">
+								<xsl:call-template name="aToZLeftPanelButtons"/>
+						   </buttonPanel>
+						   <table maxRows="10" width="auto">
+						     <headers><xsl:value-of select="resource:getString($constants,'description')"/></headers>
+						     <widths>175</widths>
+						     <editors>
+						       <label/>
+						     </editors>
+						     <fields>
+						       <string/>
+						     </fields>
+						   </table>
+					   </resultsTable>
 				</CollapsePanel>
 			<VerticalPanel spacing="0" padding="0">
 			<!--button panel code-->
@@ -139,6 +156,7 @@ UIRF Software License are applicable instead of those above.
   	<string key="{storageUnitMeta:getDescription($meta)}" max="60" required="true"/>
   	<check key="{storageUnitMeta:getIsSingular($meta)}" required="false"/>
 	</rpc>
+	<!--
 	<rpc key="query">
  	<queryNumber key="{storageUnitMeta:getId($meta)}" type="integer" required="false"/>
  	<dropdown key="{storageUnitMeta:getCategory($meta)}" required="false"/>
@@ -149,6 +167,7 @@ UIRF Software License are applicable instead of those above.
 	<rpc key="queryByLetter">
 		<queryString key="{storageUnitMeta:getDescription($meta)}"/>
 	</rpc>
+	-->
 </screen>
   </xsl:template>
 </xsl:stylesheet>

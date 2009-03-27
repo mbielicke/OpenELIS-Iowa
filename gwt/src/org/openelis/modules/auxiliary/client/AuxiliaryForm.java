@@ -27,16 +27,19 @@
 package org.openelis.modules.auxiliary.client;
 
 import org.openelis.gwt.common.Form;
+import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.CheckField;
 import org.openelis.gwt.common.data.DateField;
 import org.openelis.gwt.common.data.IntegerField;
 import org.openelis.gwt.common.data.StringField;
+import org.openelis.gwt.common.data.TableDataModel;
+import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.common.data.TableField;
 import org.openelis.metamap.AuxFieldGroupMetaMap;
 
 import com.google.gwt.xml.client.Node;
 
-public class AuxiliaryForm extends Form {
+public class AuxiliaryForm extends Form<Integer> {
 
     /**
      * 
@@ -47,23 +50,41 @@ public class AuxiliaryForm extends Form {
     public CheckField isActive;
     public StringField description,name; 
     public DateField activeBegin,activeEnd;    
-    public TableField<Integer> auxFieldValueTable, auxFieldTable;
+    public TableField<TableDataRow<Integer>> auxFieldValueTable, auxFieldTable;
+    
+    public TableDataModel<TableDataRow<Integer>> units;
+    public TableDataModel<TableDataRow<Integer>> scriptlets;
+    public TableDataModel<TableDataRow<Integer>> auxFieldValueTypes;
+
     
     
     public AuxiliaryForm() {
      AuxFieldGroupMetaMap meta = new AuxFieldGroupMetaMap();   
-     fields.put(meta.getId(),id = new IntegerField());
-     fields.put(meta.getActiveBegin(),activeBegin = new DateField());
-     fields.put(meta.getActiveEnd(),activeEnd = new DateField());
-     fields.put(meta.getDescription(),description = new StringField());
-     fields.put(meta.getName(),name = new StringField());
-     fields.put(meta.getIsActive(),isActive = new CheckField());
-     fields.put("auxFieldTable", auxFieldTable = new TableField<Integer>());   
-     fields.put("auxFieldValueTable", auxFieldValueTable = new TableField<Integer>());
+     id = new IntegerField(meta.getId());
+     activeBegin = new DateField(meta.getActiveBegin());
+     activeEnd = new DateField(meta.getActiveEnd());
+     description = new StringField(meta.getDescription());
+     name = new StringField(meta.getName());
+     isActive = new CheckField(meta.getIsActive());
+     auxFieldTable = new TableField<TableDataRow<Integer>>("auxFieldTable");   
+     auxFieldValueTable = new TableField<TableDataRow<Integer>>("auxFieldValueTable");
     }
 
     public AuxiliaryForm(Node node) {
         this();
         createFields(node);
+    }
+
+    public AbstractField[] getFields() {
+        return new AbstractField[] {
+                                    id,
+                                    activeBegin,
+                                    activeEnd,
+                                    description,
+                                    name,
+                                    isActive,
+                                    auxFieldTable,
+                                    auxFieldValueTable
+        };
     }
 }

@@ -3,6 +3,8 @@ package org.openelis.modules.organization.client;
 import com.google.gwt.xml.client.Node;
 
 import org.openelis.gwt.common.Form;
+import org.openelis.gwt.common.data.AbstractField;
+import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.common.data.TableField;
 
 /**
@@ -13,20 +15,30 @@ import org.openelis.gwt.common.data.TableField;
  * @author tschmidt
  *
  */
-public class ContactsForm extends Form {
+public class ContactsForm extends Form<Integer> {
     
     private static final long serialVersionUID = 1L;
     
-    public TableField<Contact> contacts;
+    public TableField<TableDataRow<Contact>> contacts;
     
     public ContactsForm() {
-        fields.put("contactsTable",contacts = new TableField<Contact>());
+        contacts = new TableField<TableDataRow<Contact>>("contactsTable");
+    }
+    
+    public ContactsForm(String key) {
+        this();
+        this.key = key;
     }
     
     public ContactsForm(Node node){
         this();
         createFields(node);
-    }
+    } 
     
+    public AbstractField[] getFields() {
+        return new AbstractField[] {
+                                    contacts
+        };
+    }
 
 }

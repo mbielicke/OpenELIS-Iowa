@@ -26,17 +26,20 @@
 
 package org.openelis.modules.dictionary.client;
 
+import com.google.gwt.xml.client.Node;
+
 import org.openelis.gwt.common.Form;
+import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.IntegerField;
 import org.openelis.gwt.common.data.StringField;
+import org.openelis.gwt.common.data.TableDataModel;
+import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.common.data.TableField;
 import org.openelis.metamap.CategoryMetaMap;
 
-import com.google.gwt.xml.client.Node;
 
-
-public class DictionaryForm extends Form {
+public class DictionaryForm extends Form<Integer> {
 
     /**
      * 
@@ -46,20 +49,35 @@ public class DictionaryForm extends Form {
     public IntegerField id;
     public StringField systemName;
     public StringField name;
-    public TableField<Integer> dictEntTable;
-    public DropDownField sectionId;
+    public TableField<TableDataRow<Integer>> dictEntTable;
+    public DropDownField<Integer> sectionId;
+    public StringField description;
+    
+    public TableDataModel<TableDataRow<Integer>> sections;
     
     public DictionaryForm() {
         CategoryMetaMap meta = new CategoryMetaMap();
-        fields.put(meta.getId(), id = new IntegerField());
-        fields.put(meta.getSystemName(), systemName = new StringField());
-        fields.put(meta.getName(), name = new StringField());
-        fields.put("dictEntTable", dictEntTable = new TableField<Integer>());
-        fields.put(meta.getSectionId(), sectionId = new DropDownField());        
+        id = new IntegerField("subItemsTable");
+        systemName = new StringField(meta.getSystemName());
+        name = new StringField(meta.getName());
+        dictEntTable = new TableField<TableDataRow<Integer>>("dictEntTable");
+        sectionId = new DropDownField<Integer>(meta.getSectionId());
+        description = new StringField(meta.getDescription());
     }
     
     public DictionaryForm(Node node) {
         this();
         createFields(node);
+    }
+    
+    public AbstractField[] getFields() {
+        return new AbstractField[] {
+                                    id,
+                                    systemName,
+                                    name,
+                                    dictEntTable,
+                                    sectionId,
+                                    description
+        };
     }
 }

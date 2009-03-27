@@ -22,10 +22,11 @@ import org.openelis.gwt.common.DataSorter;
 import org.openelis.gwt.common.DataSorterInt;
 import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.FormErrorException;
+import org.openelis.gwt.common.Query;
 import org.openelis.gwt.common.data.CheckField;
-import org.openelis.gwt.common.data.DataModel;
+import org.openelis.gwt.common.data.TableDataModel;
 import org.openelis.gwt.common.data.DataObject;
-import org.openelis.gwt.common.data.DataSet;
+import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.Field;
 import org.openelis.gwt.common.data.IntegerField;
@@ -44,7 +45,7 @@ import org.openelis.gwt.widget.AutoCompleteCallInt;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.CheckBox;
 import org.openelis.gwt.widget.Dropdown;
-import org.openelis.gwt.widget.FormInt;
+import org.openelis.gwt.widget.ModelUtil;
 import org.openelis.gwt.widget.ResultsTable;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.QueryTable;
@@ -77,7 +78,7 @@ import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-public class FillOrderScreen extends OpenELISScreenForm<FillOrderRPC, FillOrderForm, Integer> implements
+public class FillOrderScreen extends OpenELISScreenForm<FillOrderForm, Query<TableDataRow<Integer>>> implements
                                                                                              ClickListener,
                                                                                              AutoCompleteCallInt,
                                                                                              TableManager,
@@ -98,7 +99,7 @@ public class FillOrderScreen extends OpenELISScreenForm<FillOrderRPC, FillOrderF
 
     private TreeDataModel       combinedTree, emptyTreeModel;
     private List<Integer>                combinedTreeIds;
-    private DataModel<Integer>  lockedIndexes = new DataModel();
+    private TableDataModel<TableDataRow<Integer>>  lockedIndexes = new TableDataModel<TableDataRow<Integer>>();
     private Integer             lastShippedTo   = null;
     private Integer             lastShippedFrom = null;
     private Object              lastTreeValue;
@@ -108,19 +109,19 @@ public class FillOrderScreen extends OpenELISScreenForm<FillOrderRPC, FillOrderF
 
     private KeyListManager      keyList         = new KeyListManager();
 
-    AsyncCallback<FillOrderRPC> checkModels     = new AsyncCallback<FillOrderRPC>() {
-                                                    public void onSuccess(FillOrderRPC rpc) {
-                                                        if (rpc.statuses != null) {
-                                                            setStatusIdModel(rpc.statuses);
-                                                            rpc.statuses = null;
+    AsyncCallback<FillOrderForm> checkModels     = new AsyncCallback<FillOrderForm>() {
+                                                    public void onSuccess(FillOrderForm form) {
+                                                        if (form.statuses != null) {
+                                                            setStatusIdModel(form.statuses);
+                                                            form.statuses = null;
                                                         }
-                                                        if (rpc.costCenters != null) {
-                                                            setCostCentersModel(rpc.costCenters);
-                                                            rpc.costCenters = null;
+                                                        if (form.costCenters != null) {
+                                                            setCostCentersModel(form.costCenters);
+                                                            form.costCenters = null;
                                                         }
-                                                        if (rpc.shipFroms != null) {
-                                                            setShipFromModel(rpc.shipFroms);
-                                                            rpc.shipFroms = null;
+                                                        if (form.shipFroms != null) {
+                                                            setShipFromModel(form.shipFroms);
+                                                            form.shipFroms = null;
                                                         }
                                                     }
 
@@ -131,9 +132,8 @@ public class FillOrderScreen extends OpenELISScreenForm<FillOrderRPC, FillOrderF
 
     public FillOrderScreen() {
         super("org.openelis.modules.fillOrder.server.FillOrderService");
-
-        forms.put("display", new FillOrderForm());
-        getScreen(new FillOrderRPC());
+        query = new Query<TableDataRow<Integer>>();
+        getScreen(new FillOrderForm());
     }
 
     public void performCommand(Enum action, Object obj) {
@@ -190,18 +190,18 @@ public class FillOrderScreen extends OpenELISScreenForm<FillOrderRPC, FillOrderF
 
         costCenter = (Dropdown)getWidget(OrderMeta.getCostCenterId());
 
-        setCostCentersModel(rpc.costCenters);
-        setStatusIdModel(rpc.statuses);
-        setShipFromModel(rpc.shipFroms);
+        setCostCentersModel(form.costCenters);
+        setStatusIdModel(form.statuses);
+        setShipFromModel(form.shipFroms);
         
-        orderPendingValue = rpc.orderPendingValue;
+        orderPendingValue = form.orderPendingValue;
 
         /*
-         * Null out the rpc models so they are not sent with future rpc calls
+         * Null out the form models so they are not sent with future form calls
          */
-        rpc.costCenters = null;
-        rpc.statuses = null;
-        rpc.shipFroms = null;
+        form.costCenters = null;
+        form.statuses = null;
+        form.shipFroms = null;
 
         combinedTree = (TreeDataModel)orderItemsTree.model.getData().clone();
         combinedTreeIds = new ArrayList<Integer>();
@@ -216,15 +216,15 @@ public class FillOrderScreen extends OpenELISScreenForm<FillOrderRPC, FillOrderF
         super.afterDraw(success);
 
         emptyTreeModel = orderItemsTree.model.getData();
-        rpc.form.setFieldValue("fillItemsTable", fillItemsTable.model.getData());
-        rpc.form.setFieldValue("orderItemsTree", emptyTreeModel);
+        form.fillItemsTable.setValue(fillItemsTable.model.getData());
+        form.itemInformation.originalOrderItemsTree.setValue(emptyTreeModel);
         
 
     }
 
     public void add() {
         // super.add();
-        key = null;
+        form.entityKey = null;
         enable(true);
         changeState(State.ADD);
         window.setStatus(consts.get("enterInformationPressCommit"), "");
@@ -239,7 +239,7 @@ public class FillOrderScreen extends OpenELISScreenForm<FillOrderRPC, FillOrderF
         removeRowButton.changeState(ButtonState.DISABLED);
         addLocationButton.changeState(ButtonState.DISABLED);
 
-        fillItemsQueryTable.setCellValue(OrderMeta.getStatusId(), 2, new DataSet<Integer>(orderPendingValue));
+        fillItemsQueryTable.setCellValue(OrderMeta.getStatusId(), 2, new TableDataRow<Integer>(orderPendingValue));
         fillItemsQueryTable.select(0, 1);
 
         orderItemsTree.model.clear();
@@ -251,7 +251,7 @@ public class FillOrderScreen extends OpenELISScreenForm<FillOrderRPC, FillOrderF
         if (state == State.ADD) {
             //FIXME change this to select first checked row if not already checked
             if(lockedIndexes.size() > 0 && (fillItemsTable.model.getSelectedIndex() == -1 || !isRowChecked(fillItemsTable.model.getSelectedIndex())))
-                fillItemsTable.model.selectRow(((Integer)lockedIndexes.get(0).getKey()).intValue());
+                fillItemsTable.model.selectRow(((Integer)lockedIndexes.get(0).key).intValue());
                 
             clearErrors();
             submitForm();
@@ -281,7 +281,7 @@ public class FillOrderScreen extends OpenELISScreenForm<FillOrderRPC, FillOrderF
             //clear the tree so we dont have to piecemeal clear it
             combinedTree.clear();
             
-            unlockRows((DataModel<Integer>)lockedIndexes.clone(), true);
+            unlockRows((TableDataModel<TableDataRow<Integer>>)lockedIndexes.clone(), true);
             
             //reassert the subform so it shows the current selected row
             //TODO this isnt loading the tree correctly because unlock rows hasnt come back yet
@@ -293,7 +293,7 @@ public class FillOrderScreen extends OpenELISScreenForm<FillOrderRPC, FillOrderF
     //        lastShippedTo = new Integer(-1);
 
             /*
-            DataModel<Integer> unlockModel = new DataModel<Integer>();
+            TableDataModel<TableDataRow<Integer>> unlockModel = new TableDataModel<TableDataRow<Integer>>();
             for(int i=0; i<fillItemsTable.model.numRows(); i++){
                 if(isRowChecked(i)){
                     fillItemsTable.model.setCell(i, 0, CheckBox.UNCHECKED);
@@ -306,15 +306,15 @@ public class FillOrderScreen extends OpenELISScreenForm<FillOrderRPC, FillOrderF
             
             /*nlockRow(final int row, true);
             // prepare the argument list for the getObject function
-            FillOrderItemInfoRPC foirpc = new FillOrderItemInfoRPC();
-            foirpc.key = rpc.key;
-            foirpc.form = rpc.form.itemInformation;
+            FillOrderItemInfoForm foirpc = new FillOrderItemInfoForm();
+            foirpc.key = form.key;
+            foirpc.form = form.itemInformation;
             foirpc.tableData = keyList.getList();
 
             screenService.call("commitQueryAndUnlock",
                                foirpc,
-                               new AsyncCallback<FillOrderItemInfoRPC>() {
-                                   public void onSuccess(FillOrderItemInfoRPC result) {
+                               new AsyncCallback<FillOrderItemInfoForm>() {
+                                   public void onSuccess(FillOrderItemInfoForm result) {
                                        fillItemsTable.model.load(result.tableData);
 
                                        window.setStatus("", "");
@@ -333,19 +333,19 @@ public class FillOrderScreen extends OpenELISScreenForm<FillOrderRPC, FillOrderF
     }
     
     public void setOrdersToProcessedCommit(){
-        DataModel<Integer> lockedSets = getLockedSetsFromLockedList(lockedIndexes);
+        TableDataModel<TableDataRow<Integer>> lockedSets = getLockedSetsFromLockedList(lockedIndexes);
         //set the order to processed
-        FillOrderItemInfoRPC foiirpc = new FillOrderItemInfoRPC();
-        foiirpc.form = rpc.form.itemInformation;
-        foiirpc.form.originalOrderItemsTree.setValue(combinedTree);
+        //FillOrderItemInfoForm foiirpc = new FillOrderItemInfoForm();
+        //foiirpc.orm = form.itemInformation;
+        form.itemInformation.originalOrderItemsTree.setValue(combinedTree);
         
-        foiirpc.tableData = lockedSets;
+        form.itemInformation.tableData = lockedSets;
 
-        screenService.call("setOrderToProcessed", foiirpc, new AsyncCallback<FillOrderItemInfoRPC>() {
-            public void onSuccess(FillOrderItemInfoRPC result) {
+        screenService.call("setOrderToProcessed", form.itemInformation, new AsyncCallback<FillOrderItemInfoForm>() {
+            public void onSuccess(FillOrderItemInfoForm result) {
                 //set the rows that were selected because we refetched the data
                 for(int i=0; i<lockedIndexes.size(); i++){
-                    int row = lockedIndexes.get(i).getKey();
+                    int row = lockedIndexes.get(i).key;
                     result.tableData.get(i).setData((FillOrderItemInfoForm)fillItemsTable.model.getRow(row).getData());
                     fillItemsTable.model.setRow(row, result.tableData.get(i));
                     fillItemsTable.model.setCell(row, 0, CheckBox.UNCHECKED);
@@ -357,14 +357,14 @@ public class FillOrderScreen extends OpenELISScreenForm<FillOrderRPC, FillOrderF
             }
         });
         
-        unlockRows((DataModel<Integer>)lockedIndexes.clone(), true);
+        unlockRows((TableDataModel<TableDataRow<Integer>>)lockedIndexes.clone(), true);
     }
     
     public void onShippingScreenAbort(){
         //clear the tree so we dont have to piecemeal clear it
         combinedTree.clear();
         
-        unlockRows((DataModel<Integer>)lockedIndexes.clone(), true);
+        unlockRows((TableDataModel<TableDataRow<Integer>>)lockedIndexes.clone(), true);
         
         //reassert the subform so it shows the current selected row
         loadSubForm(fillItemsTable.model.getSelectedIndex());
@@ -375,42 +375,42 @@ public class FillOrderScreen extends OpenELISScreenForm<FillOrderRPC, FillOrderF
     //
     // start table manager methods
     //
-    public boolean canAdd(TableWidget widget, DataSet set, int row) {
+    public boolean canAdd(TableWidget widget, TableDataRow set, int row) {
         return false;
     }
 
-    public boolean canAutoAdd(TableWidget widget, DataSet addRow) {
+    public boolean canAutoAdd(TableWidget widget, TableDataRow addRow) {
         return false;
     }
 
-    public boolean canDelete(TableWidget widget, DataSet set, int row) {
+    public boolean canDelete(TableWidget widget, TableDataRow set, int row) {
         return false;
     }
 
-    public boolean canEdit(TableWidget widget, DataSet set, int row, int col) {
-        return state == FormInt.State.ADD && col == 0;
+    public boolean canEdit(TableWidget widget, TableDataRow set, int row, int col) {
+        return state == State.ADD && col == 0;
 
     }
 
-    public boolean canSelect(TableWidget widget, DataSet set, int row) {
-        return state == FormInt.State.ADD || state == FormInt.State.DISPLAY;
+    public boolean canSelect(TableWidget widget, TableDataRow set, int row) {
+        return state == State.ADD || state == State.DISPLAY;
 
     }
 
-    public boolean canDrag(TableWidget widget, DataSet item, int row) {
+    public boolean canDrag(TableWidget widget, TableDataRow item, int row) {
         return false;
     }
 
     public boolean canDrop(TableWidget widget,
                            Widget dragWidget,
-                           DataSet dropTarget,
+                           TableDataRow dropTarget,
                            int targetRow) {
         return false;
     }
 
     public void drop(TableWidget widget,
                      Widget dragWidget,
-                     DataSet dropTarget,
+                     TableDataRow dropTarget,
                      int targetRow) {
     }
 
@@ -428,14 +428,14 @@ public class FillOrderScreen extends OpenELISScreenForm<FillOrderRPC, FillOrderF
             return;
         }
 
-        FillOrderItemInfoRPC foiirpc = new FillOrderItemInfoRPC();
-        foiirpc.form = rpc.form.itemInformation;
-        foiirpc.form.originalOrderItemsTree.setValue(combinedTree);
+        //FillOrderItemInfoForm foiirpc = new FillOrderItemInfoForm();
+        //foiirpc.form = form.itemInformation;
+        form.itemInformation.originalOrderItemsTree.setValue(combinedTree);
         
-        screenService.call("validateOrders", foiirpc, new SyncCallback() {
+        screenService.call("validateOrders", form.itemInformation, new SyncCallback() {
             public void onSuccess(Object obj) {
-                FillOrderItemInfoRPC result = (FillOrderItemInfoRPC)obj;
-                FillOrderItemInfoForm rForm = result.form;
+                FillOrderItemInfoForm result = (FillOrderItemInfoForm)obj;
+                FillOrderItemInfoForm rForm = result;
                 if(rForm.status.equals(Form.Status.invalid)){
                     if(rForm.getErrors().size() > 0){
                         if(rForm.getErrors().size() > 1){
@@ -448,9 +448,9 @@ public class FillOrderScreen extends OpenELISScreenForm<FillOrderRPC, FillOrderF
                 }
 
                 //get the first row that is checked
-                DataSet<Integer> row = fillItemsTable.model.getRow(lockedIndexes.get(0).getKey());
+                TableDataRow<Integer> row = fillItemsTable.model.getRow(lockedIndexes.get(0).key);
 
-                if (((CheckField)row.get(9)).isChecked())
+                if (((CheckField)row.cells[9]).isChecked())
                     setOrdersToProcessedCommit();   
                 else    
                     createShippingScreen(row);
@@ -462,7 +462,7 @@ public class FillOrderScreen extends OpenELISScreenForm<FillOrderRPC, FillOrderF
         });
     }
     
-    private void createShippingScreen(DataSet<Integer> row){
+    private void createShippingScreen(TableDataRow<Integer> row){
         if (lockedIndexes.size() == 0 || row == null)
             return;
         
@@ -473,9 +473,9 @@ public class FillOrderScreen extends OpenELISScreenForm<FillOrderRPC, FillOrderF
         ShippingScreen shippingScreen = new ShippingScreen();
 
         ShippingDataService data = new ShippingDataService();
-        data.setShipFromId((Integer)((DropDownField<Integer>)row.get(4)).getSelectedKey());
-        data.setShipToId((Integer)((DropDownField<Integer>)row.get(5)).getSelectedKey());
-        data.setShipToText((String)((DropDownField<Integer>)row.get(5)).getTextValue());
+        data.setShipFromId((Integer)((DropDownField<Integer>)row.cells[4]).getSelectedKey());
+        data.setShipToId((Integer)((DropDownField<Integer>)row.cells[5]).getSelectedKey());
+        data.setShipToText((String)((DropDownField<Integer>)row.cells[5]).getTextValue());
         data.setMultUnitText(tableRowSubRPC.multUnit.getValue());
         data.setStreetAddressText(tableRowSubRPC.streetAddress.getValue());
         data.setCityText(tableRowSubRPC.city.getValue());
@@ -496,7 +496,7 @@ public class FillOrderScreen extends OpenELISScreenForm<FillOrderRPC, FillOrderF
 
     private void rebuildOrderItemsTree(int row) {
         boolean isChecked, alreadyCombined;
-        DataSet<Integer> tableRow = fillItemsTable.model.getRow(row);
+        TableDataRow<Integer> tableRow = fillItemsTable.model.getRow(row);
         
         FillOrderItemInfoForm subRpc = (FillOrderItemInfoForm)tableRow.getData();
         
@@ -508,7 +508,7 @@ public class FillOrderScreen extends OpenELISScreenForm<FillOrderRPC, FillOrderF
         alreadyCombined = combinedTreeIds.contains(getOrderId(row));
         
         if (isChecked && !alreadyCombined) {
-            // take the treefield in the form and move it to the original param in the rpc for safe keeping if the original is null
+            // take the treefield in the form and move it to the original param in the form for safe keeping if the original is null
             for (int i = 0; i < orgTreeModel.size(); i++) {
                 TreeDataItem set = (TreeDataItem)orgTreeModel.get(i);
 
@@ -517,14 +517,14 @@ public class FillOrderScreen extends OpenELISScreenForm<FillOrderRPC, FillOrderF
                 // TreeDataItem locRow = orderItemsTree.model.createTreeItem("orderItem");
                 set.addItem(childRow);
                 //parentItemRow.addItem(set);
-                childRow.get(0).setValue(set.get(0).getValue());
-                childRow.get(1).setValue(set.get(1).getValue());
+                childRow.cells[0].setValue(set.cells[0].getValue());
+                childRow.cells[1].setValue(set.cells[1].getValue());
                 childRow.setData(set.getData());
-                set.setData(new IntegerObject((Integer)set.get(0).getValue()));
+                set.setData(new IntegerObject((Integer)set.cells[0].getValue()));
 
-                if (set.get(2).getValue() != null) {
-                    ((DropDownField)childRow.get(2)).setModel(((DropDownField)set.get(2)).getModel());
-                    ((DropDownField)childRow.get(2)).setValue(((DropDownField)set.get(2)).getValue());
+                if (set.cells[2].getValue() != null) {
+                    ((DropDownField)childRow.cells[2]).setModel(((DropDownField)set.cells[2]).getModel());
+                    ((DropDownField)childRow.cells[2]).setValue(((DropDownField)set.cells[2]).getValue());
                 }
 
                 combinedTree.add(set);
@@ -536,7 +536,7 @@ public class FillOrderScreen extends OpenELISScreenForm<FillOrderRPC, FillOrderF
             int k = 0;
             while (k < combinedTree.size()) {
 
-                if (((Integer)combinedTree.get(k).get(1).getValue()).equals(tableRow.get(1).getValue())) { // we need to remove this row and children
+                if (((Integer)combinedTree.get(k).cells[1].getValue()).equals(tableRow.cells[1].getValue())) { // we need to remove this row and children
                     combinedTree.delete(k);
                     k--;
                 }
@@ -547,8 +547,8 @@ public class FillOrderScreen extends OpenELISScreenForm<FillOrderRPC, FillOrderF
         
         if(combinedTreeIds.contains(getOrderId(row)) && 
                (lastShippedFrom == null || lastShippedTo == null)){
-            lastShippedFrom = (Integer)((DropDownField)tableRow.get(4)).getSelectedKey();
-            lastShippedTo = (Integer)((DropDownField)tableRow.get(5)).getSelectedKey();
+            lastShippedFrom = (Integer)((DropDownField)tableRow.cells[4]).getSelectedKey();
+            lastShippedTo = (Integer)((DropDownField)tableRow.cells[5]).getSelectedKey();
             
         }else if (lockedIndexes.size() == 0) {
             lastShippedFrom = null;
@@ -623,7 +623,7 @@ public class FillOrderScreen extends OpenELISScreenForm<FillOrderRPC, FillOrderF
     //
     
     public void lockAndReloadRow(final int row){
-        if(lockedIndexes.getByKey(row) != null)
+        if(ModelUtil.getRowByKey(lockedIndexes,row) != null)
             return;
         
         // ship from and ship to need to be the same since we are sending a 
@@ -640,15 +640,15 @@ public class FillOrderScreen extends OpenELISScreenForm<FillOrderRPC, FillOrderF
         
         // fetch the row and lock it
         Integer orderId = (Integer)fillItemsTable.model.getCell(row, 1);
-        FillOrderItemInfoRPC foiirpc = new FillOrderItemInfoRPC();
-        foiirpc.key = orderId;
+        FillOrderItemInfoForm foiirpc = new FillOrderItemInfoForm();
+        foiirpc.entityKey = orderId;
         
         screenService.call("fetchOrderItemAndLock", foiirpc, new SyncCallback() {
                public void onSuccess(Object obj) {
-                   FillOrderItemInfoRPC result = (FillOrderItemInfoRPC)obj;
+                   FillOrderItemInfoForm result = (FillOrderItemInfoForm)obj;
 
                    // load the data in the table
-                   //DataSet<Integer> newTableRow = result.tableData.get(0);
+                   //TableDataRow<Integer> newTableRow = result.tableData.get(0);
                    //newTableRow.get(0).setValue("Y");
                    //Window.alert("["+row+"]");
                    result.tableData.get(0).setData((FillOrderItemInfoForm)fillItemsTable.model.getRow(row).getData());
@@ -657,8 +657,8 @@ public class FillOrderScreen extends OpenELISScreenForm<FillOrderRPC, FillOrderF
                    //fillItemsTable.model.setRow(row, result.tableData.get(0));
                    
                    //add the order id to the checked order ids model
-                   DataSet<Integer> set = new DataSet<Integer>();
-                   set.setKey(row);
+                   TableDataRow<Integer> set = new TableDataRow<Integer>();
+                   set.key = (row);
                    lockedIndexes.add(set);
                    
                    Integer shippedFrom = (Integer)((DropDownField)fillItemsTable.model.getObject(row, 4)).getSelectedKey();
@@ -687,23 +687,23 @@ public class FillOrderScreen extends OpenELISScreenForm<FillOrderRPC, FillOrderF
     }
     
     public void unlockRow(final int row, final boolean forced){
-        if(lockedIndexes.getByKey(row) == null)
+        if(ModelUtil.getRowByKey(lockedIndexes,row) == null)
             return;
         
-        DataModel<Integer> unlockModel = new DataModel<Integer>();
-        unlockModel.add(new DataSet<Integer>(row));
+        TableDataModel<TableDataRow<Integer>> unlockModel = new TableDataModel<TableDataRow<Integer>>();
+        unlockModel.add(new TableDataRow<Integer>(row));
         
         unlockRows(unlockModel, forced);
     }
     
-    public void unlockRows(final DataModel<Integer> lockedRowIndexes, final boolean forced){
+    public void unlockRows(final TableDataModel<TableDataRow<Integer>> lockedRowIndexes, final boolean forced){
         if(lockedRowIndexes.size() == 0)
             return;
         
         boolean unlock;
-        DataModel<Integer> lockedSets = getLockedSetsFromLockedList(lockedRowIndexes);
+        TableDataModel<TableDataRow<Integer>> lockedSets = getLockedSetsFromLockedList(lockedRowIndexes);
         //unlock the record
-        FillOrderItemInfoRPC foiirpc = new FillOrderItemInfoRPC();
+        FillOrderItemInfoForm foiirpc = new FillOrderItemInfoForm();
         foiirpc.tableData = lockedSets;
 
         FillOrderItemInfoForm tableRowSubRPC = (FillOrderItemInfoForm)lockedSets.get(0).getData();
@@ -713,16 +713,16 @@ public class FillOrderScreen extends OpenELISScreenForm<FillOrderRPC, FillOrderF
             unlock = Window.confirm(consts.get("fillOrderItemsChangedConfirm"));
         
         if(unlock){
-            screenService.call("unlockOrders", foiirpc, new AsyncCallback<FillOrderItemInfoRPC>() {
-                public void onSuccess(FillOrderItemInfoRPC result) {
+            screenService.call("unlockOrders", foiirpc, new AsyncCallback<FillOrderItemInfoForm>() {
+                public void onSuccess(FillOrderItemInfoForm result) {
                     for(int i=0; i<lockedRowIndexes.size(); i++){
                         //uncheck the row
-                        fillItemsTable.model.setCell(lockedRowIndexes.get(i).getKey(), 0, CheckBox.UNCHECKED);
+                        fillItemsTable.model.setCell(lockedRowIndexes.get(i).key, 0, CheckBox.UNCHECKED);
                         
-                        lockedIndexes.delete(lockedIndexes.getByKey(lockedRowIndexes.get(i).getKey()));
+                        lockedIndexes.delete(ModelUtil.getRowByKey(lockedIndexes,lockedRowIndexes.get(i).key));
                         
                         //rebuild tree for selected row
-                        rebuildOrderItemsTree(lockedRowIndexes.get(i).getKey());
+                        rebuildOrderItemsTree(lockedRowIndexes.get(i).key);
                     }
                     
                     //load sub form for selected table row
@@ -743,7 +743,7 @@ public class FillOrderScreen extends OpenELISScreenForm<FillOrderRPC, FillOrderF
     }
     
     public void fetchSubForm(final int row, boolean refresh){
-        DataSet<FillOrderItemInfoRPC> tableRow = null;
+        TableDataRow<FillOrderItemInfoForm> tableRow = null;
         
         if(row >= 0){
             tableRow = fillItemsTable.model.getRow(row);
@@ -752,15 +752,15 @@ public class FillOrderScreen extends OpenELISScreenForm<FillOrderRPC, FillOrderF
             
             if(foii == null || refresh){
                 //fetch the data
-                FillOrderItemInfoRPC foirpc = new FillOrderItemInfoRPC();
-                foirpc.key = getOrderId(row);
-                foirpc.form = new FillOrderItemInfoForm(rpc.form.itemInformation.node);
-                foirpc.form.originalOrderItemsTree.setValue(emptyTreeModel.clone());
+                FillOrderItemInfoForm foirpc = new FillOrderItemInfoForm();
+                foirpc.entityKey = getOrderId(row);
+                foirpc = new FillOrderItemInfoForm(form.itemInformation.node);
+                foirpc.originalOrderItemsTree.setValue(emptyTreeModel.clone());
                 
                 
-                screenService.call("getOrderItemsOrderNotes", foirpc, new AsyncCallback<FillOrderItemInfoRPC>() {
-                   public void onSuccess(FillOrderItemInfoRPC result) {
-                       fillItemsTable.model.getRow(row).setData(result.form);
+                screenService.call("getOrderItemsOrderNotes", foirpc, new AsyncCallback<FillOrderItemInfoForm>() {
+                   public void onSuccess(FillOrderItemInfoForm result) {
+                       fillItemsTable.model.getRow(row).setData(result);
 
                        //rebuild the tree
                        rebuildOrderItemsTree(row);
@@ -832,7 +832,7 @@ public class FillOrderScreen extends OpenELISScreenForm<FillOrderRPC, FillOrderF
     }
 
     public boolean canSelect(TreeWidget widget, TreeDataItem set, int row) {
-        if (state == FormInt.State.ADD)
+        if (state == State.ADD)
             return true;
         return false;
     }
@@ -864,7 +864,7 @@ public class FillOrderScreen extends OpenELISScreenForm<FillOrderRPC, FillOrderF
                     for (int i = 0; i < item.parent.getItems().size(); i++) {
                         newTotalQuantity += (Integer)item.parent.getItems()
                                                                 .get(i)
-                                                                .get(0)
+                                                                .cells[0]
                                                                 .getValue();
                     }
 
@@ -876,16 +876,16 @@ public class FillOrderScreen extends OpenELISScreenForm<FillOrderRPC, FillOrderF
 
             } else if (col == 3) {
                 TreeDataItem item = orderItemsTree.model.getRow(row);
-                ArrayList selections = (ArrayList)((DropDownField)item.get(3)).getValue();
+                ArrayList selections = (ArrayList)((DropDownField)item.cells[3]).getValue();
 
-                DataSet<Field> set = null;
+                TableDataRow<Field> set = null;
                 if (selections.size() > 0)
-                    set = (DataSet<Field>)selections.get(0);
+                    set = (TableDataRow<Field>)selections.get(0);
 
                 if (set != null && set.size() > 1) {
                     // set the lot num and quantity on hand
-                    orderItemsTree.model.setCell(row, 4, (String)((DataObject)set.get(1)).getValue());
-                    orderItemsTree.model.setCell(row, 5, (Integer)((DataObject)set.get(2)).getValue());
+                    orderItemsTree.model.setCell(row, 4, (String)((DataObject)set.cells[1]).getValue());
+                    orderItemsTree.model.setCell(row, 5, (Integer)((DataObject)set.cells[2]).getValue());
                 }else{
                     orderItemsTree.model.setCell(row, 4, null);
                     orderItemsTree.model.setCell(row, 5, null);
@@ -920,7 +920,7 @@ public class FillOrderScreen extends OpenELISScreenForm<FillOrderRPC, FillOrderF
     //
     // auto complete method
     //
-    public void callForMatches(final AutoComplete widget, DataModel model, String text) {
+    public void callForMatches(final AutoComplete widget, TableDataModel model, String text) {
         Integer currentTreeRow = orderItemsTree.model.getSelectedIndex();
         FillOrderLocationAutoRPC folarpc = new FillOrderLocationAutoRPC();
         folarpc.cat = widget.cat;
@@ -944,18 +944,18 @@ public class FillOrderScreen extends OpenELISScreenForm<FillOrderRPC, FillOrderF
                            });
     }
 
-    private DataModel createDataModelFromTree(TreeDataModel treeModel) {
-        DataModel model = new DataModel();
+    private TableDataModel createDataModelFromTree(TreeDataModel treeModel) {
+        TableDataModel model = new TableDataModel();
         for (int i = 0; i < treeModel.size(); i++) {
             TreeDataItem row = treeModel.get(i);
 
             if (row.getItems().size() > 0) {
                 for (int j = 0; j < row.getItems().size(); j++) {
-                    DataSet<Field> tableRow = new DataSet<Field>();
+                    TableDataRow<Field> tableRow = new TableDataRow<Field>(2);
                     TreeDataItem childRow = row.getItems().get(j);
-                    if (!((Integer)childRow.get(0).getValue()).equals(new Integer(0))) {
-                        tableRow.add(childRow.get(0));
-                        tableRow.add(childRow.get(2));
+                    if (!((Integer)childRow.cells[0].getValue()).equals(new Integer(0))) {
+                        tableRow.cells[0] = (childRow.cells[0]);
+                        tableRow.cells[1] = (childRow.cells[2]);
 
                         FillOrderOrderItemsKey key = (FillOrderOrderItemsKey)childRow.getData();
                         ShippingItemsData rowData = new ShippingItemsData();
@@ -967,10 +967,10 @@ public class FillOrderScreen extends OpenELISScreenForm<FillOrderRPC, FillOrderF
                     }
                 }
             } else {
-                if (!((Integer)row.get(0).getValue()).equals(new Integer(0))) {
-                    DataSet tableRow = new DataSet();
-                    tableRow.add(row.get(0));
-                    tableRow.add(row.get(2));
+                if (!((Integer)row.cells[0].getValue()).equals(new Integer(0))) {
+                    TableDataRow tableRow = new TableDataRow(2);
+                    tableRow.cells[0] = (row.cells[0]);
+                    tableRow.cells[1] = (row.cells[2]);
 
                     FillOrderOrderItemsKey key = (FillOrderOrderItemsKey)row.getData();
                     ShippingItemsData rowData = new ShippingItemsData();
@@ -1008,9 +1008,9 @@ public class FillOrderScreen extends OpenELISScreenForm<FillOrderRPC, FillOrderF
 
         TreeDataItem item = orderItemsTree.model.createTreeItem("orderItem");
         // item.get(0).setValue(selectedRow.get(0).getValue());
-        item.get(1).setValue(selectedRow.get(1).getValue());
-        ((DropDownField)item.get(2)).setModel(((DropDownField)selectedRow.get(2)).getModel());
-        item.get(2).setValue(selectedRow.get(2).getValue());
+        item.cells[1].setValue(selectedRow.cells[1].getValue());
+        ((DropDownField)item.cells[2]).setModel(((DropDownField)selectedRow.cells[2]).getModel());
+        item.cells[2].setValue(selectedRow.cells[2].getValue());
 
         FillOrderOrderItemsKey treeRowHiddenData = (FillOrderOrderItemsKey)((FillOrderOrderItemsKey)selectedRow.getData()).clone();
         item.setData(treeRowHiddenData);
@@ -1090,26 +1090,26 @@ public class FillOrderScreen extends OpenELISScreenForm<FillOrderRPC, FillOrderF
             TreeDataItem row = combinedTree.get(i);
             if (row.getData() != null) {
                 Integer totalQty = ((IntegerObject)row.getData()).getValue();
-                Integer currentQty = (Integer)row.get(0).getValue();
-                if (currentQty > 0 && totalQty.compareTo((Integer)row.get(0).getValue()) < 0) {
+                Integer currentQty = (Integer)row.cells[0].getValue();
+                if (currentQty > 0 && totalQty.compareTo((Integer)row.cells[0].getValue()) < 0) {
                     valid = false;
-                    ((IntegerField)row.get(0)).addError(consts.get("fillOrderQtyException"));
+                    ((IntegerField)row.cells[0]).addError(consts.get("fillOrderQtyException"));
                 }
             }
             
             //iterate through the children to make sure we will have enough qty on hand
             for(int j=0; j<row.getItems().size(); j++){
                 TreeDataItem childRow = row.getItem(j);
-                int qtyOnHand = ((Integer)childRow.get(5).getValue()).intValue();
-                int qtyRequested = ((Integer)childRow.get(0).getValue()).intValue();
+                int qtyOnHand = ((Integer)childRow.cells[5].getValue()).intValue();
+                int qtyRequested = ((Integer)childRow.cells[5].getValue()).intValue();
                 if((qtyOnHand - qtyRequested < 0)){
                     valid = false;
-                    ((IntegerField)childRow.get(0)).addError(consts.get("notEnoughQuantityOnHand"));
+                    ((IntegerField)childRow.cells[5]).addError(consts.get("notEnoughQuantityOnHand"));
                 }
                 
                 if(qtyRequested < 0){
                     valid = false;
-                    ((IntegerField)childRow.get(0)).addError(consts.get("invalidQuantityException"));
+                    ((IntegerField)childRow.cells[5]).addError(consts.get("invalidQuantityException"));
                 }
             }
         }
@@ -1120,16 +1120,16 @@ public class FillOrderScreen extends OpenELISScreenForm<FillOrderRPC, FillOrderF
         return valid;
     }
 
-    public void setStatusIdModel(DataModel<Integer> statusIdsModel) {
+    public void setStatusIdModel(TableDataModel<TableDataRow<Integer>> statusIdsModel) {
         ((TableDropdown)fillItemsTable.table.columns.get(2).getColumnWidget()).setModel(statusIdsModel);
         ((TableDropdown)fillItemsQueryTable.columns.get(2).getColumnWidget()).setModel(statusIdsModel);
     }
 
-    public void setCostCentersModel(DataModel<Integer> costCentersModel) {
+    public void setCostCentersModel(TableDataModel<TableDataRow<Integer>> costCentersModel) {
         costCenter.setModel(costCentersModel);
     }
 
-    public void setShipFromModel(DataModel<Integer> shipFromsModel) {
+    public void setShipFromModel(TableDataModel<TableDataRow<Integer>> shipFromsModel) {
         ((TableDropdown)fillItemsTable.table.columns.get(4).getColumnWidget()).setModel(shipFromsModel);
         ((TableDropdown)fillItemsQueryTable.columns.get(4).getColumnWidget()).setModel(shipFromsModel);
     }
@@ -1147,15 +1147,15 @@ public class FillOrderScreen extends OpenELISScreenForm<FillOrderRPC, FillOrderF
         return (Integer)fillItemsTable.table.model.getCell(row, 1);
     }
     
-    public DataModel<Integer> getLockedSetsFromLockedList(DataModel<Integer> lockedList){
-        DataModel<Integer> returnModel = new DataModel<Integer>();
+    public TableDataModel<TableDataRow<Integer>> getLockedSetsFromLockedList(TableDataModel<TableDataRow<Integer>> lockedList){
+        TableDataModel<TableDataRow<Integer>> returnModel = new TableDataModel<TableDataRow<Integer>>();
         for(int i=0; i<lockedList.size(); i++)
-            returnModel.add(fillItemsTable.model.getRow(lockedList.get(i).getKey()));
+            returnModel.add(fillItemsTable.model.getRow(lockedList.get(i).key));
         
         return returnModel;
     }
 
-    public void sort(DataModel<?> data, int col, SortDirection direction) {
+    public void sort(TableDataModel data, int col, SortDirection direction) {
         if(state != State.ADD)
             sorter.sort(data, col, direction);
         else

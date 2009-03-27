@@ -1,6 +1,7 @@
 package org.openelis.modules.shipping.client;
 
-import org.openelis.gwt.common.data.DataModel;
+import org.openelis.gwt.common.data.TableDataModel;
+import org.openelis.gwt.common.data.TableDataRow;
 
 public class ShippingDataService {
     Integer shipFromId;
@@ -11,12 +12,12 @@ public class ShippingDataService {
     String cityText;
     String stateText;
     String zipCodeText;
-    DataModel itemsShippedModel = new DataModel();
-
-    public DataModel getItemsShippedModel() {
+    TableDataModel<TableDataRow<Integer>> itemsShippedModel = new TableDataModel<TableDataRow<Integer>>();
+    
+    public TableDataModel<TableDataRow<Integer>> getItemsShippedModel() {
         return itemsShippedModel;
     }
-    public void setItemsShippedModel(DataModel itemsShippedModel) {
+    public void setItemsShippedModel(TableDataModel<TableDataRow<Integer>> itemsShippedModel) {
         this.itemsShippedModel = itemsShippedModel;
     }
     public String getCityText() {

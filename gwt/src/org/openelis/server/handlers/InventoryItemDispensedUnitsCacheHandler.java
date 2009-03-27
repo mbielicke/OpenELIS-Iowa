@@ -25,17 +25,17 @@
 */
 package org.openelis.server.handlers;
 
-import java.util.ArrayList;
-
 import org.openelis.domain.IdNameDO;
-import org.openelis.gwt.common.data.DataModel;
-import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.StringObject;
+import org.openelis.gwt.common.data.TableDataModel;
+import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.messages.InventoryItemDispensedUnitCacheMessage;
 import org.openelis.persistence.CachingManager;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.persistence.MessageHandler;
 import org.openelis.remote.CategoryRemote;
+
+import java.util.ArrayList;
 
 public class InventoryItemDispensedUnitsCacheHandler implements MessageHandler<InventoryItemDispensedUnitCacheMessage> {
     
@@ -48,8 +48,8 @@ public class InventoryItemDispensedUnitsCacheHandler implements MessageHandler<I
         
     }
     
-    public static DataModel<Integer> getDispensedUnits() {
-        DataModel<Integer> model = (DataModel<Integer>)CachingManager.getElement("InitialData", "inventoryItemUnitsDropdown");
+    public static TableDataModel<TableDataRow<Integer>> getDispensedUnits() {
+        TableDataModel<TableDataRow<Integer>> model = (TableDataModel<TableDataRow<Integer>>)CachingManager.getElement("InitialData", "inventoryItemUnitsDropdown");
         if(model == null) {
             CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");        
             Integer id = remote.getCategoryId("inventory_item_units");
@@ -57,11 +57,11 @@ public class InventoryItemDispensedUnitsCacheHandler implements MessageHandler<I
             ArrayList<IdNameDO> entries = (ArrayList<IdNameDO>)remote.getDropdownValues(id);
         
             //  we need to build the model to return
-            model = new DataModel<Integer>();
+            model = new TableDataModel<TableDataRow<Integer>>();
         
-            model.add(new DataSet<Integer>(0,new StringObject("")));
+            model.add(new TableDataRow<Integer>(0,new StringObject("")));
             for(IdNameDO resultDO :  entries){
-                model.add(new DataSet<Integer>(resultDO.getId(),new StringObject(resultDO.getName())));
+                model.add(new TableDataRow<Integer>(resultDO.getId(),new StringObject(resultDO.getName())));
             }   
             CachingManager.putElement("InitialData", "inventoryItemUnitsDropdown", model);
             version++;

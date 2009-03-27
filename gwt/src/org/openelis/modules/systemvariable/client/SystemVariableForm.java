@@ -27,17 +27,15 @@
 package org.openelis.modules.systemvariable.client;
 
 import org.openelis.gwt.common.Form;
+import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.IntegerField;
 import org.openelis.gwt.common.data.StringField;
 import org.openelis.metamap.SystemVariableMetaMap;
 
 import com.google.gwt.xml.client.Node;
 
-public class SystemVariableForm extends Form {
+public class SystemVariableForm extends Form<Integer> {
 
-    /**
-     * 
-     */
     private static final long serialVersionUID = 1L;
     
     public IntegerField id;
@@ -46,14 +44,22 @@ public class SystemVariableForm extends Form {
     
     public SystemVariableForm() {
         SystemVariableMetaMap meta = new SystemVariableMetaMap();
-        fields.put(meta.getId(), id = new IntegerField());
-        fields.put(meta.getName(), name = new StringField());
-        fields.put(meta.getValue(), value = new StringField());
+        id = new IntegerField(meta.getId());
+        name = new StringField(meta.getName());
+        value = new StringField(meta.getValue());
     }
     
     public SystemVariableForm(Node node) {
         this();
         createFields(node);
+    }
+    
+    public AbstractField[] getFields() {
+        return new AbstractField[] {
+                                    id,
+                                    name,
+                                    value
+        };
     }
 
 }

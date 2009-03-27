@@ -26,14 +26,16 @@
 package org.openelis.modules.test.client;
 
 import org.openelis.gwt.common.Form;
+import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.IntegerField;
+import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.common.data.TableField;
 import org.openelis.metamap.TestMetaMap;
 
 import com.google.gwt.xml.client.Node;
 
-public class WorksheetForm extends Form {
+public class WorksheetForm extends Form<Integer> {
 
     /**
      * 
@@ -45,22 +47,38 @@ public class WorksheetForm extends Form {
     public DropDownField<Integer> scriptletId;
     public IntegerField batchCapacity;
     public IntegerField totalCapacity;
-    public TableField<Integer> worksheetTable;
-    public TableField<Integer> worksheetAnalyteTable;
+    public TableField<TableDataRow<Integer>> worksheetTable;
+    public TableField<TableDataRow<Integer>> worksheetAnalyteTable;
     public Boolean duplicate;
     
     public WorksheetForm() {
         TestMetaMap meta = new TestMetaMap();
-        fields.put(meta.getTestWorksheet().getFormatId(), formatId = new DropDownField<Integer>());
-        fields.put(meta.getTestWorksheet().getScriptletId(), scriptletId = new DropDownField<Integer>());
-        fields.put(meta.getTestWorksheet().getBatchCapacity(), batchCapacity = new IntegerField());
-        fields.put(meta.getTestWorksheet().getTotalCapacity(), totalCapacity = new IntegerField());
-        fields.put("worksheetTable", worksheetTable = new TableField<Integer>());
-        fields.put("worksheetAnalyteTable", worksheetAnalyteTable = new TableField<Integer>());       
+        formatId = new DropDownField<Integer>(meta.getTestWorksheet().getFormatId());
+        scriptletId = new DropDownField<Integer>(meta.getTestWorksheet().getScriptletId());
+        batchCapacity = new IntegerField(meta.getTestWorksheet().getBatchCapacity());
+        totalCapacity = new IntegerField(meta.getTestWorksheet().getTotalCapacity());
+        worksheetTable = new TableField<TableDataRow<Integer>>("worksheetTable");
+        worksheetAnalyteTable = new TableField<TableDataRow<Integer>>("worksheetAnalyteTable");
     }
     
     public WorksheetForm(Node node) {
         this();
         createFields(node);
+    }
+    
+    public WorksheetForm(String key) {
+        this();
+        this.key = key;
+    }
+    
+    public AbstractField[] getFields() {
+        return new AbstractField[] {
+                                    formatId,
+                                    scriptletId,
+                                    batchCapacity,
+                                    totalCapacity,
+                                    worksheetTable,
+                                    worksheetAnalyteTable
+        };
     }
 }

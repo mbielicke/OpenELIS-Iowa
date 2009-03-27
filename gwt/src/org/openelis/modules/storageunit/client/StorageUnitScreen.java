@@ -25,31 +25,32 @@
 */
 package org.openelis.modules.storageunit.client;
 
-import org.openelis.gwt.common.Form;
-import org.openelis.gwt.common.data.DataModel;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+
+import org.openelis.gwt.common.Query;
 import org.openelis.gwt.common.data.KeyListManager;
+import org.openelis.gwt.common.data.QueryStringField;
+import org.openelis.gwt.common.data.TableDataModel;
+import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.screen.CommandChain;
 import org.openelis.gwt.screen.ScreenInputWidget;
-import org.openelis.gwt.widget.AToZTable;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.CollapsePanel;
 import org.openelis.gwt.widget.Dropdown;
-import org.openelis.gwt.widget.FormInt;
+import org.openelis.gwt.widget.ResultsTable;
 import org.openelis.metamap.StorageUnitMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
-import com.google.gwt.user.client.rpc.AsyncCallback;
-
-public class StorageUnitScreen extends OpenELISScreenForm<StorageUnitRPC,StorageUnitForm,Integer> {
+public class StorageUnitScreen extends OpenELISScreenForm<StorageUnitForm,Query<TableDataRow<Integer>>> {
 
     private static Dropdown category;
     private KeyListManager keyList = new KeyListManager();
 	
     private StorageUnitMetaMap StorageUnitMeta = new StorageUnitMetaMap();
     
-    AsyncCallback<StorageUnitRPC> checkModels = new AsyncCallback<StorageUnitRPC>() {
-        public void onSuccess(StorageUnitRPC rpc) {
+    AsyncCallback<StorageUnitForm> checkModels = new AsyncCallback<StorageUnitForm>() {
+        public void onSuccess(StorageUnitForm rpc) {
             if(rpc.categories != null) {
                 setCategoriesModel(rpc.categories);
                 rpc.categories = null;
@@ -63,10 +64,8 @@ public class StorageUnitScreen extends OpenELISScreenForm<StorageUnitRPC,Storage
     
 	public StorageUnitScreen() {                
 	    super("org.openelis.modules.storageunit.server.StorageUnitService");
-	      
-	    forms.put("display",new StorageUnitForm());
-	       
-	    getScreen(new StorageUnitRPC());
+        query = new Query<TableDataRow<Integer>>();
+	    getScreen(new StorageUnitForm());
 	}
 	
 	 public void performCommand(Enum action, Object obj) {
@@ -82,7 +81,7 @@ public class StorageUnitScreen extends OpenELISScreenForm<StorageUnitRPC,Storage
 	    }
 	
 	public void afterDraw(boolean success) {
-		AToZTable atozTable = (AToZTable)getWidget("azTable");
+		ResultsTable atozTable = (ResultsTable)getWidget("azTable");
         ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
         ButtonPanel bpanel = (ButtonPanel) getWidget("buttons");
         
@@ -98,12 +97,12 @@ public class StorageUnitScreen extends OpenELISScreenForm<StorageUnitRPC,Storage
         category = (Dropdown)getWidget(StorageUnitMeta.getCategory());
         startWidget = (ScreenInputWidget)widgets.get(StorageUnitMeta.getCategory());
 
-        setCategoriesModel(rpc.categories);
+        setCategoriesModel(form.categories);
         
         /*
          * Null out the rpc models so they are not sent with future rpc calls
          */
-        rpc.categories = null;
+        form.categories = null;
         
         updateChain.add(0,checkModels);
         fetchChain.add(0,checkModels);
@@ -116,17 +115,14 @@ public class StorageUnitScreen extends OpenELISScreenForm<StorageUnitRPC,Storage
 	}
 	
 	private void getStorageUnits(String query) {
-		if (state == FormInt.State.DISPLAY || state == FormInt.State.DEFAULT) {
-
-			Form letter = (Form)forms.get("queryByLetter");
-			
-			letter.setFieldValue(StorageUnitMeta.getDescription(), query);
-
-			commitQuery(letter);
+		if (state == State.DISPLAY || state == State.DEFAULT) {
+		    QueryStringField qField = new QueryStringField(StorageUnitMeta.getDescription());
+            qField.setValue(query);
+			commitQuery(qField);
 		}
 	}
 	
-	public void setCategoriesModel(DataModel<String> categoriesModel) {
+	public void setCategoriesModel(TableDataModel<TableDataRow<String>> categoriesModel) {
         category.setModel(categoriesModel);
     }
 }

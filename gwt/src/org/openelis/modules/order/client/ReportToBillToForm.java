@@ -26,13 +26,14 @@
 package org.openelis.modules.order.client;
 
 import org.openelis.gwt.common.Form;
+import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.StringField;
 import org.openelis.metamap.OrderMetaMap;
 
 import com.google.gwt.xml.client.Node;
 
-public class ReportToBillToForm extends Form{
+public class ReportToBillToForm extends Form<Integer>{
     private static final long serialVersionUID = 1L;
     
     public DropDownField<Integer> reportTo;
@@ -54,26 +55,45 @@ public class ReportToBillToForm extends Form{
     
     public ReportToBillToForm() {
         OrderMetaMap meta = new OrderMetaMap();
-        
-        fields.put(meta.ORDER_REPORT_TO_META.getName(), reportTo = new DropDownField<Integer>());
-        fields.put(meta.ORDER_BILL_TO_META.getName(), billTo = new DropDownField<Integer>());
-        
-        fields.put(meta.ORDER_REPORT_TO_META.ADDRESS.getMultipleUnit(), reportToMultUnit = new StringField());
-        fields.put(meta.ORDER_REPORT_TO_META.ADDRESS.getStreetAddress(), reportToStreetAddress = new StringField());
-        fields.put(meta.ORDER_REPORT_TO_META.ADDRESS.getCity(), reportToCity = new StringField());
-        fields.put(meta.ORDER_REPORT_TO_META.ADDRESS.getState(), reportToState = new StringField());
-        fields.put(meta.ORDER_REPORT_TO_META.ADDRESS.getZipCode(), reportToZipCode = new StringField());
-        
-        fields.put(meta.ORDER_BILL_TO_META.ADDRESS.getMultipleUnit(), billToMultUnit = new StringField());
-        fields.put(meta.ORDER_BILL_TO_META.ADDRESS.getStreetAddress(), billToStreetAddress = new StringField());
-        fields.put(meta.ORDER_BILL_TO_META.ADDRESS.getCity(), billToCity = new StringField());
-        fields.put(meta.ORDER_BILL_TO_META.ADDRESS.getState(), billToState = new StringField());
-        fields.put(meta.ORDER_BILL_TO_META.ADDRESS.getZipCode(), billToZipCode = new StringField());
+        reportTo = new DropDownField<Integer>(meta.ORDER_REPORT_TO_META.getName());
+        billTo = new DropDownField<Integer>(meta.ORDER_BILL_TO_META.getName());
+        reportToMultUnit = new StringField(meta.ORDER_REPORT_TO_META.ADDRESS.getMultipleUnit());
+        reportToStreetAddress = new StringField(meta.ORDER_REPORT_TO_META.ADDRESS.getStreetAddress());
+        reportToCity = new StringField(meta.ORDER_REPORT_TO_META.ADDRESS.getCity());
+        reportToState = new StringField(meta.ORDER_REPORT_TO_META.ADDRESS.getState());
+        reportToZipCode = new StringField(meta.ORDER_REPORT_TO_META.ADDRESS.getZipCode());
+        billToMultUnit = new StringField(meta.ORDER_BILL_TO_META.ADDRESS.getMultipleUnit());
+        billToStreetAddress = new StringField(meta.ORDER_BILL_TO_META.ADDRESS.getStreetAddress());
+        billToCity = new StringField(meta.ORDER_BILL_TO_META.ADDRESS.getCity());
+        billToState = new StringField(meta.ORDER_BILL_TO_META.ADDRESS.getState());
+        billToZipCode = new StringField(meta.ORDER_BILL_TO_META.ADDRESS.getZipCode());
     }
     
     public ReportToBillToForm(Node node){
         this();
         createFields(node);
+    }
+    
+    public ReportToBillToForm(String key) {
+        this();
+        this.key = key;
+    }
+    
+    public AbstractField[] getFields() {
+        return new AbstractField[] {
+                                    reportTo,
+                                    billTo,
+                                    reportToMultUnit,
+                                    reportToStreetAddress,
+                                    reportToCity,
+                                    reportToState,
+                                    reportToZipCode,
+                                    billToMultUnit,
+                                    billToStreetAddress,
+                                    billToCity,
+                                    billToState,
+                                    billToZipCode
+        };
     }
     
 }

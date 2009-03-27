@@ -28,7 +28,7 @@ package org.openelis.modules.method.client;
 
 import org.openelis.gwt.common.RPC;
 
-public class MethodRPC extends RPC<MethodForm, Integer> {
+public class MethodRPC {//extends RPC<MethodForm, Integer> {
 
     /**
      * 

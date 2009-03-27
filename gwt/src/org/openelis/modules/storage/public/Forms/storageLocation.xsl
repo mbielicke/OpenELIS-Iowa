@@ -63,11 +63,28 @@ UIRF Software License are applicable instead of those above.
 		<HorizontalPanel spacing="0" padding="0">
 			<!--left table goes here -->
 			<CollapsePanel key="collapsePanel" height="440px" style="LeftSidePanel">
+			<!--
 				<azTable width="100%" key="azTable" maxRows="19" headers="{resource:getString($constants,'name')}" tablewidth="auto" colwidths="175">
 			         <buttonPanel key="atozButtons">
 	    			   <xsl:call-template name="aToZLeftPanelButtons"/>		
 		    		 </buttonPanel>
 				</azTable>
+				-->
+				 <resultsTable width="100%" key="azTable">
+					       <buttonPanel key="atozButtons">
+								<xsl:call-template name="aToZLeftPanelButtons"/>
+						   </buttonPanel>
+						   <table maxRows="19" width="auto">
+						     <headers><xsl:value-of select="resource:getString($constants,'name')"/></headers>
+						     <widths>175</widths>
+						     <editors>
+						       <label/>
+						     </editors>
+						     <fields>
+						       <string/>
+						     </fields>
+						   </table>
+					   </resultsTable>
 				</CollapsePanel>
 			<VerticalPanel spacing="0" padding="0">
 				<!--button panel code-->
@@ -172,6 +189,7 @@ UIRF Software License are applicable instead of those above.
 										<filters>false,false ,false</filters>
 										<colAligns>left,left,left</colAligns>
 									</table>
+									<!--
 									<query>
 									<queryTable width="auto" maxRows="11" title="" showError="false" showScroll="ALWAYS">
 										<headers><xsl:value-of select='resource:getString($constants,"storageUnit")'/>,<xsl:value-of select='resource:getString($constants,"location")'/>,
@@ -189,6 +207,7 @@ UIRF Software License are applicable instead of those above.
 										</fields>
 									</queryTable>
 									</query>             
+									-->
                            </widget>
 		                <widget halign = "center">
                             <appButton action="removeRow" onclick="this" key = "removeEntryButton">
@@ -211,7 +230,7 @@ UIRF Software License are applicable instead of those above.
     <check key="{storageLocationMeta:getIsAvailable($storageLoc)}" required="false"/>
     <table key="childStorageLocsTable"/>
 	</rpc>
-	
+	<!--
 	<rpc key="query">
 	<queryNumber key="{storageLocationMeta:getId($storageLoc)}" type="integer" required="false"/>
     <queryString key="{storageLocationMeta:getName($storageLoc)}" required="false"/>
@@ -220,7 +239,7 @@ UIRF Software License are applicable instead of those above.
     <queryCheck key="{storageLocationMeta:getIsAvailable($storageLoc)}" required="false"/>
     <table key="childStorageLocsTable"/>
     
-	<!-- table values -->
+
 	<queryString key="{storageUnitMeta:getDescription($storageLocChildUnit)}" required="false"/>
 	<queryString key="{storageLocationMeta:getLocation($storageLocChild)}" required="false"/>
 	<queryCheck key="{storageLocationMeta:getIsAvailable($storageLocChild)}" required="false"/>
@@ -228,6 +247,7 @@ UIRF Software License are applicable instead of those above.
 	<rpc key="queryByLetter">
 		<queryString key="{storageLocationMeta:getName($storageLoc)}"/>
 	</rpc>
+	-->
 </screen>
   </xsl:template>
 </xsl:stylesheet>

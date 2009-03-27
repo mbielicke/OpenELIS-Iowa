@@ -27,6 +27,7 @@ package org.openelis.modules.main.client.openelis;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.WindowCloseListener;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -35,9 +36,6 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 import org.openelis.gwt.common.RPC;
-import org.openelis.gwt.common.data.CollectionField;
-import org.openelis.gwt.common.data.ConstantMap;
-import org.openelis.gwt.screen.AppConstants;
 import org.openelis.gwt.screen.AppScreen;
 import org.openelis.gwt.screen.ClassFactory;
 import org.openelis.gwt.screen.ScreenMenuPanel;
@@ -48,32 +46,30 @@ import org.openelis.modules.favorites.client.FavoritesScreen;
 import org.openelis.modules.main.client.service.OpenELISServiceInt;
 import org.openelis.modules.main.client.service.OpenELISServiceIntAsync;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 
-public class OpenELIS extends AppScreen<RPC> implements ClickListener{
-	
-	public static OpenELISServiceIntAsync screenService = (OpenELISServiceIntAsync)GWT.create(OpenELISServiceInt.class);
+public class OpenELIS extends AppScreen<OpenELISForm> implements ClickListener {
+    
+    public static OpenELISServiceIntAsync<OpenELISForm, RPC> screenService = (OpenELISServiceIntAsync)GWT.create(OpenELISServiceInt.class);
     public static ServiceDefTarget target = (ServiceDefTarget)screenService;
     
-    public static CollectionField modules = new CollectionField();
+    public static ArrayList<String> modules = new ArrayList<String>();
     public static WindowBrowser browser;
     private FavoritesScreen fv;
     
 	public OpenELIS() {	    
-        super();
-        String base = GWT.getModuleBaseURL();
-        base += "OpenELISServlet?service=org.openelis.modules.main.server.OpenELISService";
-        target.setServiceEntryPoint(base);
+        super();              
+        target.setServiceEntryPoint(target.getServiceEntryPoint()+"?service=org.openelis.modules.main.server.OpenELISService");
         service = screenService;
-        HashMap map = new HashMap();
-        map.put("modules",modules);
-        getXMLData(map, new RPC());
+        OpenELISForm form = new OpenELISForm();
+        form.modules = modules;
+        getScreen(form);
     }
 
    public void afterDraw(boolean Success) {
         	browser = (WindowBrowser)getWidget("browser");
         	browser.setBrowserHeight();
-            ((AppConstants)ClassFactory.forName("AppConstants")).addMapp((ConstantMap)initData.get("AppConstants"));
+            AppScreen.consts = form.appConstants;
     }
 
     public void onClick(Widget item) {

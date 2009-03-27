@@ -27,6 +27,7 @@
 package org.openelis.modules.method.client;
 
 import org.openelis.gwt.common.Form;
+import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.CheckField;
 import org.openelis.gwt.common.data.DateField;
 import org.openelis.gwt.common.data.IntegerField;
@@ -35,11 +36,8 @@ import org.openelis.metamap.MethodMetaMap;
 
 import com.google.gwt.xml.client.Node;
 
-public class MethodForm extends Form {
+public class MethodForm extends Form<Integer> {
 
-    /**
-     * 
-     */
     private static final long serialVersionUID = 1L;
     
     public IntegerField id;
@@ -52,18 +50,30 @@ public class MethodForm extends Form {
     
     public MethodForm() {
         MethodMetaMap meta = new MethodMetaMap();
-        fields.put(meta.getId(), id = new IntegerField());
-        fields.put(meta.getName(), name = new StringField());
-        fields.put(meta.getDescription(), description = new StringField());
-        fields.put(meta.getReportingDescription(), reportingDescription = new StringField());
-        fields.put(meta.getIsActive(), isActive = new CheckField());
-        fields.put(meta.getActiveBegin(), activeBegin = new DateField());
-        fields.put(meta.getActiveEnd(), activeEnd = new DateField());   
+        id = new IntegerField(meta.getId());
+        name = new StringField(meta.getName());
+        description = new StringField(meta.getDescription());
+        reportingDescription = new StringField(meta.getReportingDescription());
+        isActive = new CheckField(meta.getIsActive());
+        activeBegin = new DateField(meta.getActiveBegin());
+        activeEnd = new DateField(meta.getActiveEnd());
      }
     
     public MethodForm(Node node) {
         this();
         createFields(node);
+    }
+    
+    public AbstractField[] getFields() {
+        return new AbstractField[] {
+                                    id,
+                                    name,
+                                    description,
+                                    reportingDescription,
+                                    isActive,
+                                    activeBegin,
+                                    activeEnd
+        };
     }
     
 

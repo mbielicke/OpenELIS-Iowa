@@ -25,27 +25,48 @@
 */
 package org.openelis.modules.inventoryReceipt.client;
 
-import org.openelis.gwt.common.Form;
-import org.openelis.gwt.common.data.StringField;
-import org.openelis.gwt.common.data.TableField;
-
 import com.google.gwt.xml.client.Node;
 
-public class InventoryReceiptForm extends Form{
+import org.openelis.gwt.common.Form;
+import org.openelis.gwt.common.data.AbstractField;
+import org.openelis.gwt.common.data.StringField;
+import org.openelis.gwt.common.data.TableDataModel;
+import org.openelis.gwt.common.data.TableDataRow;
+import org.openelis.gwt.common.data.TableField;
+
+public class InventoryReceiptForm extends Form<Integer> {
     private static final long serialVersionUID = 1L;
 
-    public TableField<InvReceiptItemInfoRPC> receiptsTable;
+    public TableField<TableDataRow<InvReceiptItemInfoForm>> receiptsTable;
     public InvReceiptItemInfoForm itemInformation;
     public StringField type;
     
+    public String screenType;
+    public Integer orderId;
+    public String upcValue;
+    
+    //used for getting receipts back
+    public TableDataModel<TableDataRow<InvReceiptItemInfoForm>> tableRows;
+    
+    //used for getting inv item info back
+    public TableDataModel<TableDataRow<Integer>> invItemsByUPC;
+    
     public InventoryReceiptForm() {
-        fields.put("type", new StringField());
-       fields.put("receiptsTable", receiptsTable = new TableField<InvReceiptItemInfoRPC>());
-       fields.put("itemInformation", itemInformation = new InvReceiptItemInfoForm());
+        type = new StringField("type");
+        receiptsTable = new TableField<TableDataRow<InvReceiptItemInfoForm>>("receiptsTable");
+        itemInformation = new InvReceiptItemInfoForm("itemInformation");
    }
    
    public InventoryReceiptForm(Node node) {
        this();
        createFields(node);
+   }
+   
+   public AbstractField[] getFields() {
+       return new AbstractField[] {
+                                   type,
+                                   receiptsTable,
+                                   itemInformation
+       };
    }
 }

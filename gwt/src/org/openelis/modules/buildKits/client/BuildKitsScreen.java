@@ -25,18 +25,26 @@
 */
 package org.openelis.modules.buildKits.client;
 
-import java.util.ArrayList;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.ChangeListener;
+import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.Widget;
 
 import org.openelis.gwt.common.FormErrorException;
+import org.openelis.gwt.common.Query;
 import org.openelis.gwt.common.data.AbstractField;
-import org.openelis.gwt.common.data.DataModel;
-import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.DoubleField;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.IntegerField;
 import org.openelis.gwt.common.data.IntegerObject;
 import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.common.data.StringObject;
+import org.openelis.gwt.common.data.TableDataModel;
+import org.openelis.gwt.common.data.TableDataRow;
+import org.openelis.gwt.screen.AppScreenForm;
 import org.openelis.gwt.screen.CommandChain;
 import org.openelis.gwt.screen.ScreenCheck;
 import org.openelis.gwt.screen.ScreenInputWidget;
@@ -46,7 +54,6 @@ import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.AutoCompleteCallInt;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.CheckBox;
-import org.openelis.gwt.widget.FormInt;
 import org.openelis.gwt.widget.table.TableManager;
 import org.openelis.gwt.widget.table.TableModel;
 import org.openelis.gwt.widget.table.TableWidget;
@@ -56,15 +63,9 @@ import org.openelis.metamap.InventoryItemMetaMap;
 import org.openelis.modules.inventoryReceipt.client.InventoryReceiptScreen;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.ChangeListener;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.PopupPanel;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.Widget;
+import java.util.ArrayList;
 
-public class BuildKitsScreen extends OpenELISScreenForm<BuildKitsRPC,BuildKitsForm,Integer> implements ClickListener, AutoCompleteCallInt, ChangeListener, TableManager, TableWidgetListener{
+public class BuildKitsScreen extends OpenELISScreenForm<BuildKitsForm,Query<TableDataRow<Integer>>> implements ClickListener, AutoCompleteCallInt, ChangeListener, TableManager, TableWidgetListener{
 
     private KeyListManager keyList = new KeyListManager();
     
@@ -80,11 +81,8 @@ public class BuildKitsScreen extends OpenELISScreenForm<BuildKitsRPC,BuildKitsFo
     
     public BuildKitsScreen() {                
         super("org.openelis.modules.buildKits.server.BuildKitsService");
-        
-        forms.put("display", new BuildKitsForm());
-        getScreen(new BuildKitsRPC());
-        
-       // getXMLData(hash, new DefaultRPC());
+        query = new Query<TableDataRow<Integer>>();
+        getScreen(new BuildKitsForm());
     }
     
     public void onClick(Widget sender) {
@@ -94,32 +92,32 @@ public class BuildKitsScreen extends OpenELISScreenForm<BuildKitsRPC,BuildKitsFo
     
     public void onChange(Widget sender) {
         super.onChange(sender);
-        if(sender == kitDropdown && kitDropdown.getSelections().size() > 0 && !kitDropdown.getSelections().get(0).getKey().equals(currentKitDropdownValue)){
-            currentKitDropdownValue = (Integer)kitDropdown.getSelections().get(0).getKey();
+        if(sender == kitDropdown && kitDropdown.getSelections().size() > 0 && !kitDropdown.getSelections().get(0).key.equals(currentKitDropdownValue)){
+            currentKitDropdownValue = (Integer)kitDropdown.getSelections().get(0).key;
 
             // prepare the arguments
-            BuildKitsRPC bkrpc = new BuildKitsRPC();
-            bkrpc.key = rpc.key;
-            bkrpc.kitId = currentKitDropdownValue;
-            bkrpc.form = rpc.form;
+            //BuildKitsForm bkrpc = new BuildKitsForm();
+            //bkrpc.screenKey = form.screenKey;
+            form.kitId = currentKitDropdownValue;
+            //bkrpc = form;
             
-            screenService.call("getComponentsFromId", bkrpc, new AsyncCallback<BuildKitsRPC>() {
-                public void onSuccess(BuildKitsRPC result) {
+            screenService.call("getComponentsFromId", form, new AsyncCallback<BuildKitsForm>() {
+                public void onSuccess(BuildKitsForm result) {
                    subItemsTable.model.clear();
 
                    for(int i=0; i<result.subItemsModel.size(); i++){
-                       DataSet<Integer> set = result.subItemsModel.get(i);
-                       DataSet<Integer> tableRow = (DataSet<Integer>)subItemsTable.model.createRow();
+                       TableDataRow<Integer> set = result.subItemsModel.get(i);
+                       TableDataRow<Integer> tableRow = subItemsTable.model.createRow();
                        //id
                        //name
                        //qty
-                       tableRow.setKey(set.getKey());
-                       tableRow.get(0).setValue(set.get(0).getValue());
-                       tableRow.get(3).setValue(set.get(1).getValue());
+                       tableRow.key = form.entityKey;
+                       tableRow.cells[0].setValue(set.cells[0].getValue());
+                       tableRow.cells[3].setValue(set.cells[1].getValue());
                        
                        if(numRequestedText.getText() != null && !"".equals(numRequestedText.getText())){
-                           Integer unit = new Integer((int)((Double)((DoubleField)tableRow.get(3)).getValue()).doubleValue());
-                           tableRow.get(4).setValue(unit * Integer.valueOf(numRequestedText.getText()));
+                           Integer unit = new Integer((int)((Double)((DoubleField)tableRow.cells[3]).getValue()).doubleValue());
+                           tableRow.cells[4].setValue(unit * Integer.valueOf(numRequestedText.getText()));
                        }
                        
                        subItemsTable.model.addRow(tableRow);
@@ -199,7 +197,7 @@ public class BuildKitsScreen extends OpenELISScreenForm<BuildKitsRPC,BuildKitsFo
         
         super.afterDraw(success);
         
-        rpc.form.setFieldValue("subItemsTable", subItemsTable.model.getData());
+        form.subItemsTable.setValue(subItemsTable.model.getData());
     }
     
     public void commit() {
@@ -233,19 +231,19 @@ public class BuildKitsScreen extends OpenELISScreenForm<BuildKitsRPC,BuildKitsFo
 
     //
     // start table manager methods
-    public boolean canAdd(TableWidget widget, DataSet set, int row) {
+    public boolean canAdd(TableWidget widget, TableDataRow set, int row) {
         return false;
     }
 
-    public boolean canAutoAdd(TableWidget widget, DataSet addRow) {
+    public boolean canAutoAdd(TableWidget widget, TableDataRow addRow) {
         return false;
     }
 
-    public boolean canDelete(TableWidget widget, DataSet set, int row) {
+    public boolean canDelete(TableWidget widget, TableDataRow set, int row) {
         return false;
     }
 
-    public boolean canEdit(TableWidget widget, DataSet set, int row, int col) {
+    public boolean canEdit(TableWidget widget, TableDataRow set, int row, int col) {
         currentTableRow = row;
         if(col == 4)
             return false;
@@ -253,23 +251,12 @@ public class BuildKitsScreen extends OpenELISScreenForm<BuildKitsRPC,BuildKitsFo
         return true;
     }
 
-    public boolean canSelect(TableWidget widget, DataSet set, int row) {
-        if(state == FormInt.State.ADD)           
+    public boolean canSelect(TableWidget widget, TableDataRow set, int row) {
+        if(state == State.ADD)           
             return true;
         return false;
     }
     
-    public boolean canDrag(TableWidget widget, DataSet item, int row) {
-        return false;
-    }
-
-    public boolean canDrop(TableWidget widget, Widget dragWidget, DataSet dropTarget, int targetRow) {
-        return false;
-    }
-
-    public void drop(TableWidget widget, Widget dragWidget, DataSet dropTarget, int targetRow) {}
-    
-    public void drop(TableWidget widget, Widget dragWidget) {}
     //
     //end table manager methods
     //
@@ -282,11 +269,11 @@ public class BuildKitsScreen extends OpenELISScreenForm<BuildKitsRPC,BuildKitsFo
         if(col == 1 && row < subItemsTable.model.numRows()){
             locationField = (DropDownField)subItemsTable.model.getObject(row, col);
             if(locationField.getValue() != null){
-                DataSet<Object> tableRow = subItemsTable.model.getRow(row);
-                DataSet<Object> selectedRow = ((ArrayList<DataSet<Object>>)((DropDownField)tableRow.get(1)).getValue()).get(0);
+                TableDataRow<Integer> tableRow = subItemsTable.model.getRow(row);
+                TableDataRow<Integer> selectedRow = ((ArrayList<TableDataRow<Integer>>)((DropDownField<Integer>)tableRow.getCells().get(1)).getValue()).get(0);
                 
-                subItemsTable.model.setCell(row, 2, ((StringObject)selectedRow.get(1)).getValue());
-                subItemsTable.model.setCell(row, 5, ((IntegerObject)selectedRow.get(2)).getValue());
+                subItemsTable.model.setCell(row, 2, ((StringObject)selectedRow.getCells().get(1)).getValue());
+                subItemsTable.model.setCell(row, 5, ((IntegerObject)selectedRow.getCells().get(2)).getValue());
                 
                 if(subItemsTable.model.getCell(row, 4) != null && ((Integer)subItemsTable.model.getCell(row, 5)).compareTo((Integer)subItemsTable.model.getCell(row, 4)) < 0){
                     subItemsTable.model.clearCellError(row, 4);
@@ -307,7 +294,7 @@ public class BuildKitsScreen extends OpenELISScreenForm<BuildKitsRPC,BuildKitsFo
     //
     //auto complete method
     //
-    public void callForMatches(final AutoComplete widget, DataModel model, String text) {
+    public void callForMatches(final AutoComplete widget, TableDataModel model, String text) {
     	SubLocationAutoRPC autoRPC = new SubLocationAutoRPC();
     	autoRPC.cat = widget.cat;
     	autoRPC.match = text;
@@ -315,7 +302,7 @@ public class BuildKitsScreen extends OpenELISScreenForm<BuildKitsRPC,BuildKitsFo
         if(widget == kitLocationDropdown){
             autoRPC.addToExisting = ((CheckBox)addToExisiting.getWidget()).getState();    
         }else{
-            autoRPC.id = (Integer) subItemsTable.model.getRow(currentTableRow).getKey();
+            autoRPC.id = (Integer) subItemsTable.model.getRow(currentTableRow).key;
         }
         
         screenService.call("getMatchesObj", autoRPC, new AsyncCallback<SubLocationAutoRPC>() {
@@ -351,7 +338,7 @@ public class BuildKitsScreen extends OpenELISScreenForm<BuildKitsRPC,BuildKitsFo
                 }
                     
                 if(setError)
-                    rpc.form.setFieldError("numRequested", "Transfer in more components or lower the number requested. Not enough quantity on hand.");
+                    form.numRequested.addError("Transfer in more components or lower the number requested. Not enough quantity on hand.");
             }catch(Exception e){
                 //do nothing
             }

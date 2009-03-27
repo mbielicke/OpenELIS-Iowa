@@ -31,11 +31,11 @@ import com.google.gwt.user.client.ui.SourcesTabEvents;
 import com.google.gwt.user.client.ui.TabListener;
 import com.google.gwt.user.client.ui.Widget;
 
-import org.openelis.gwt.common.DefaultRPC;
-import org.openelis.gwt.common.Form;
+import org.openelis.gwt.common.Query;
 import org.openelis.gwt.common.data.Field;
 import org.openelis.gwt.common.data.KeyListManager;
-import org.openelis.gwt.common.data.NumberObject;
+import org.openelis.gwt.common.data.TableDataModel;
+import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.common.data.TreeDataItem;
 import org.openelis.gwt.screen.CommandChain;
 import org.openelis.gwt.widget.ButtonPanel;
@@ -43,14 +43,16 @@ import org.openelis.gwt.widget.tree.TreeManager;
 import org.openelis.gwt.widget.tree.TreeWidget;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
-public class ClinicalSampleLoginScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer> implements ClickListener, TabListener, TreeManager{
+public class ClinicalSampleLoginScreen extends OpenELISScreenForm<ClinicalSampleLoginForm,Query<TableDataRow<Integer>>> implements ClickListener, TabListener, TreeManager{
 
     private TreeWidget itemsTestsTree;
     public enum LookupType {ID_1,ID_2,ID_3,ID_4,ID_5};
     private KeyListManager keyList = new KeyListManager();
     
     public ClinicalSampleLoginScreen() {
-        super("org.openelis.modules.clinicalSampleLogin.server.ClinicalSampleLoginService", false, new DefaultRPC());
+        super("org.openelis.modules.clinicalSampleLogin.server.ClinicalSampleLoginService");
+        query = new Query<TableDataRow<Integer>>();
+        getScreen(new ClinicalSampleLoginForm());
     }
 
     public void onClick(Widget sender) {
@@ -91,10 +93,10 @@ public class ClinicalSampleLoginScreen extends OpenELISScreenForm<DefaultRPC,For
         
         //build the tree
         TreeDataItem row1 = itemsTestsTree.model.createTreeItem("top");
-        ((Field)row1.get(0)).setValue("0 - Serum");
-        ((Field)row1.get(1)).setValue("Left Arm");
+        ((Field)row1.cells[0]).setValue("0 - Serum");
+        ((Field)row1.cells[1]).setValue("Left Arm");
         TreeDataItem row2 = itemsTestsTree.model.createTreeItem("top");
-        ((Field)row2.get(0)).setValue("Hiv - Logged In");
+        ((Field)row2.cells[0]).setValue("Hiv - Logged In");
         row1.addItem(row2);
         itemsTestsTree.model.addRow(row1);
         
@@ -122,14 +124,6 @@ public class ClinicalSampleLoginScreen extends OpenELISScreenForm<DefaultRPC,For
         return false;
     }
 
-    public boolean canDrag(TreeWidget widget, TreeDataItem item, int row) {
-        return false;
-    }
-
-    public boolean canDrop(TreeWidget widget, Widget dragWidget, TreeDataItem dropTarget, int targetRow) {
-        return false;
-    }
-
     public boolean canEdit(TreeWidget widget, TreeDataItem set, int row, int col) {
         return false;
     }
@@ -139,15 +133,6 @@ public class ClinicalSampleLoginScreen extends OpenELISScreenForm<DefaultRPC,For
     }
 
     public boolean canSelect(TreeWidget widget, TreeDataItem set, int row) {
-        return false;
-    }
-
-    public void drop(TreeWidget widget, Widget dragWidget, TreeDataItem dropTarget, int targetRow) {}
-
-    public void drop(TreeWidget widget, Widget dragWidget) {}
-
-   public boolean canDrop(TreeWidget widget, Widget dragWidget, Widget dropWidget) {
-        // TODO Auto-generated method stub
         return false;
     }
 }

@@ -124,12 +124,14 @@
 			<rpc key="display">
 				<tree key="noteTree" />
 			</rpc>
+			<!--
 			<rpc key="queryByNameDescription">
 				<queryString key="{standardNoteMeta:getName($meta)}"
 					type="string" required="false" />
 				<queryString key="{standardNoteMeta:getDescription($meta)}"
 					required="false" />
 			</rpc>
+			-->
 		</screen>
 	</xsl:template>
 </xsl:stylesheet>

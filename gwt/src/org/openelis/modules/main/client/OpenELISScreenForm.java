@@ -29,30 +29,17 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
 
 import org.openelis.gwt.common.Form;
+import org.openelis.gwt.common.Query;
 import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.screen.AppScreenForm;
 import org.openelis.modules.main.client.service.OpenELISServiceInt;
 import org.openelis.modules.main.client.service.OpenELISServiceIntAsync;
 
-public class OpenELISScreenForm<ScreenRPC extends RPC<Display,Key>,Display extends Form,Key> extends AppScreenForm<ScreenRPC,Display,Key> {
+public class OpenELISScreenForm<ScreenRPC extends Form,QueryRPC extends RPC> extends AppScreenForm<ScreenRPC,QueryRPC> {
     
-    public OpenELISServiceIntAsync<ScreenRPC,Key> screenService = (OpenELISServiceIntAsync<ScreenRPC,Key>)GWT.create(OpenELISServiceInt.class);
+    public OpenELISServiceIntAsync<ScreenRPC,QueryRPC> screenService = (OpenELISServiceIntAsync<ScreenRPC,QueryRPC>)GWT.create(OpenELISServiceInt.class);
     public ServiceDefTarget target = (ServiceDefTarget)screenService;
     
-         
-    public OpenELISScreenForm(String serviceClass, boolean withData,ScreenRPC rpc){
-        super();          
-        target.setServiceEntryPoint(target.getServiceEntryPoint()+"?service="+serviceClass);
-        service = screenService;
-        formService = screenService;
-     
-        if(withData)
-            getXMLData(rpc);
-        else{
-            getXML(rpc);
-        }
-        
-    }
     
     public OpenELISScreenForm(String serviceClass){
         super();              

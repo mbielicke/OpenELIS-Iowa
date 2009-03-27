@@ -138,6 +138,7 @@ UIRF Software License are applicable instead of those above.
 							<filters>false,false,false,false,false,false,false,false,false,false</filters>
 							<colAligns>left,left,left,left,left,left,left,left,left,left</colAligns>
 						</table>
+						<!--
 						<query>
 							<queryTable width="auto" title="" maxRows="10" showError="false" showScroll="ALWAYS">
 							<headers> ,<xsl:value-of select='resource:getString($constants,"ordNum")'/>,<xsl:value-of select='resource:getString($constants,"status")'/>,
@@ -164,6 +165,7 @@ UIRF Software License are applicable instead of those above.
 								</fields>
 							</queryTable>
 							</query>
+							-->
 						</resultsTable>
 						</widget>
 			<HorizontalPanel>
@@ -317,7 +319,7 @@ UIRF Software License are applicable instead of those above.
 			<string key="orderShippingNotes" required="false"/>
 		</rpc>
 	</rpc>
-	
+	<!--
 	<rpc key="query">
     	<table key="fillItemsTable"/>
     	<queryString key="process" required="false"/>
@@ -334,6 +336,7 @@ UIRF Software License are applicable instead of those above.
 	 	<queryString key="{meta:getRequestedBy($order)}" required="false"/>
 		<dropdown key="{meta:getCostCenterId($order)}" required="false"/>	
     </rpc>
+    -->
 </screen>
   </xsl:template>
 </xsl:stylesheet>

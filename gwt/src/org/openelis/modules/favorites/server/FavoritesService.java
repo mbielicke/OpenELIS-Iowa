@@ -27,6 +27,7 @@ package org.openelis.modules.favorites.server;
 
 import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.Preferences;
+import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.modules.favorites.client.FavoritesServiceInt;
 import org.openelis.server.PreferencesManager;
@@ -118,11 +119,10 @@ public class FavoritesService implements FavoritesServiceInt {
 
     public String saveFavorites(Form rpc) {
         // TODO Auto-generated method stub
-        Iterator rpcIt = rpc.getFieldMap().keySet().iterator();
         StringBuffer favorites = new StringBuffer();
-        while(rpcIt.hasNext()){
-            String key = (String)rpcIt.next();
-            if("Y".equals(rpc.getFieldValue(key))){
+        for(AbstractField field : rpc.getFields()){
+            String key = field.key;
+            if("Y".equals(field.getValue())){
                 if(favorites.length() != 0){
                     favorites.append(",");
                 }

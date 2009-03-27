@@ -35,25 +35,24 @@ import com.google.gwt.user.client.ui.TabListener;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
-import org.openelis.gwt.common.DefaultRPC;
-import org.openelis.gwt.common.Form;
-import org.openelis.gwt.common.data.DataModel;
+
+import org.openelis.gwt.common.Query;
 import org.openelis.gwt.common.data.DataObject;
-import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.KeyListManager;
+import org.openelis.gwt.common.data.QueryStringField;
+import org.openelis.gwt.common.data.TableDataModel;
+import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.screen.CommandChain;
 import org.openelis.gwt.screen.ScreenTableWidget;
 import org.openelis.gwt.screen.ScreenTextArea;
 import org.openelis.gwt.screen.ScreenTextBox;
 import org.openelis.gwt.screen.ScreenVertical;
 import org.openelis.gwt.screen.ScreenWindow;
-import org.openelis.gwt.widget.AToZTable;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.CollapsePanel;
 import org.openelis.gwt.widget.Dropdown;
-import org.openelis.gwt.widget.FormInt;
-import org.openelis.gwt.widget.table.QueryTable;
+import org.openelis.gwt.widget.ResultsTable;
 import org.openelis.gwt.widget.table.TableDropdown;
 import org.openelis.gwt.widget.table.TableManager;
 import org.openelis.gwt.widget.table.TableWidget;
@@ -61,7 +60,7 @@ import org.openelis.metamap.ProviderMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 import org.openelis.modules.standardnotepicker.client.StandardNotePickerScreen;
 
-public class ProviderScreen extends OpenELISScreenForm<ProviderRPC,ProviderForm,Integer> implements ClickListener, 
+public class ProviderScreen extends OpenELISScreenForm<ProviderForm,Query<TableDataRow<Integer>>> implements ClickListener, 
                                                                   TabListener,
                                                                   TableManager{
          
@@ -71,7 +70,7 @@ public class ProviderScreen extends OpenELISScreenForm<ProviderRPC,ProviderForm,
     private TextBox lastName = null;
     private ScreenTextArea noteArea = null;
     private TableWidget provAddController = null;  
-    private QueryTable queryContactTable = null;
+   // private QueryTable queryContactTable = null;
     private Dropdown displayType = null;
     private KeyListManager keyList = new KeyListManager();       
     
@@ -84,8 +83,8 @@ public class ProviderScreen extends OpenELISScreenForm<ProviderRPC,ProviderForm,
      * if model is returned set it to the widgets and make sure to null the rpc field 
      * so it is not sent back with future RPC calls
      */
-    AsyncCallback<ProviderRPC> checkModels = new AsyncCallback<ProviderRPC>() {
-        public void onSuccess(ProviderRPC rpc) {
+    AsyncCallback<ProviderForm> checkModels = new AsyncCallback<ProviderForm>() {
+        public void onSuccess(ProviderForm rpc) {
             if(rpc.providerTypes != null) {
                 setProviderTypesModel(rpc.providerTypes);
                 rpc.providerTypes = null;
@@ -107,8 +106,8 @@ public class ProviderScreen extends OpenELISScreenForm<ProviderRPC,ProviderForm,
     
     public ProviderScreen(){
         super("org.openelis.modules.provider.server.ProviderService");      
-        forms.put("display",new ProviderForm());        
-        getScreen(new ProviderRPC());        
+        query = new Query<TableDataRow<Integer>>();
+        getScreen(new ProviderForm());        
     }
     
     public void performCommand(Enum action, Object obj) {
@@ -136,7 +135,7 @@ public class ProviderScreen extends OpenELISScreenForm<ProviderRPC,ProviderForm,
     }
 
     public void afterDraw(boolean success) {
-        AToZTable atozTable = (AToZTable) getWidget("azTable");
+        ResultsTable atozTable = (ResultsTable) getWidget("azTable");
         ButtonPanel bpanel = (ButtonPanel) getWidget("buttons");
         ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
         
@@ -168,23 +167,23 @@ public class ProviderScreen extends OpenELISScreenForm<ProviderRPC,ProviderForm,
         //load dropdowns                                                                         
         ScreenTableWidget displayAddressTable = (ScreenTableWidget)widgets.get("providerAddressTable");
         provAddController = (TableWidget)displayAddressTable.getWidget();
-        queryContactTable = (QueryTable)displayAddressTable.getQueryWidget().getWidget();
+        //queryContactTable = (QueryTable)displayAddressTable.getQueryWidget().getWidget();
        
         /*
          * Setting of the models has been split to three methods so that they can be individually updated when needed.
          * 
          * Models are now pulled directly from RPC rather than initData.
          */
-        setProviderTypesModel(rpc.providerTypes);
-        setCountriesModel(rpc.countries);
-        setStatesModel(rpc.states);
+        setProviderTypesModel(form.providerTypes);
+        setCountriesModel(form.countries);
+        setStatesModel(form.states);
         
         /*
          * Null out the rpc models so they are not sent with future rpc calls
          */
-        rpc.providerTypes = null;
-        rpc.countries = null;
-        rpc.states = null;                      
+        form.providerTypes = null;
+        form.countries = null;
+        form.states = null;                      
   
        updateChain.add(afterUpdate);
        
@@ -202,7 +201,7 @@ public class ProviderScreen extends OpenELISScreenForm<ProviderRPC,ProviderForm,
        
        super.afterDraw(success);
        
-       rpc.form.addresses.providerAddressTable.setValue(provAddController.model.getData());
+       form.addresses.providerAddressTable.setValue(provAddController.model.getData());
     }
     
        
@@ -248,10 +247,10 @@ public class ProviderScreen extends OpenELISScreenForm<ProviderRPC,ProviderForm,
     }    
     
     public boolean onBeforeTabSelected(SourcesTabEvents sender, int index) {
-        if(state != FormInt.State.QUERY){
-            if (index == 0 && !rpc.form.addresses.load) {
+        if(state != State.QUERY){
+            if (index == 0 && !form.addresses.load) {
                 fillAddressModel();
-            } else if (index == 1 && !rpc.form.notes.load) {
+            } else if (index == 1 && !form.notes.load) {
                 fillNotesModel();
             }
         }
@@ -263,95 +262,87 @@ public class ProviderScreen extends OpenELISScreenForm<ProviderRPC,ProviderForm,
     	
     }
     
-    public boolean canAdd(TableWidget widget,DataSet set, int row) {
+    public boolean canAdd(TableWidget widget,TableDataRow set, int row) {
         // TODO Auto-generated method stub
         return false;
     }
 
 
 
-    public boolean canAutoAdd(TableWidget widget,DataSet row) {        
-        return ((DataObject)row.get(0)).getValue() != null && !((DataObject)row.get(0)).getValue().equals("");
+    public boolean canAutoAdd(TableWidget widget,TableDataRow row) {        
+        return ((DataObject)row.getCells().get(0)).getValue() != null && !((DataObject)row.getCells().get(0)).getValue().equals("");
     }
 
 
 
-    public boolean canDelete(TableWidget widget,DataSet set, int row) {
+    public boolean canDelete(TableWidget widget,TableDataRow set, int row) {
         // TODO Auto-generated method stub
         return false;
     }
 
 
 
-    public boolean canEdit(TableWidget widget,DataSet set, int row, int col) {
+    public boolean canEdit(TableWidget widget,TableDataRow set, int row, int col) {
         return true;
     }
 
 
 
-    public boolean canSelect(TableWidget widget,DataSet set, int row) {
-        if(state == FormInt.State.ADD || state == FormInt.State.UPDATE || state == FormInt.State.QUERY){      
+    public boolean canSelect(TableWidget widget,TableDataRow set, int row) {
+        if(state == State.ADD || state == State.UPDATE || state == State.QUERY){      
             return true;
         } 
         return false;
     }
     
     private void getProviders(String query) {
-        if (state == FormInt.State.DISPLAY || state == FormInt.State.DEFAULT) {
-            Form letter = (Form) forms.get("queryByLetter");
-            
-            letter.setFieldValue(ProvMeta.getLastName(), query);            
-            commitQuery(letter); 
+        if (state == State.DISPLAY || state == State.DEFAULT) {
+            QueryStringField qField = new QueryStringField(ProvMeta.getLastName());
+            qField.setValue(query);
+            commitQuery(qField); 
        }
     }
     
    private void fillNotesModel() {  
-       DefaultRPC drpc = null;
-       if(key == null)
+       if(form.entityKey == null)
            return;
        
-       window.setStatus("","spinnerIcon");
+       window.setBusy();
        
-       drpc = new DefaultRPC();
-       drpc.key = key;
-       drpc.form = rpc.form.notes;
-       
-       screenService.call("loadNotes", drpc, new AsyncCallback<DefaultRPC>(){
-           public void onSuccess(DefaultRPC result){    
-               // get the datamodel, load it in the notes panel and set the value in the rpc
-               load(result.form);
-               rpc.form.setField("notes",rpc.form.notes = (NotesForm)result.form);
-               window.setStatus("","");
+       form.notes.entityKey = form.entityKey;
+              
+       screenService.call("loadNotes", form.notes, new AsyncCallback<NotesForm>(){
+           public void onSuccess(NotesForm result){    
+               form.notes = result;
+               load(form.notes);
+               window.clearStatus();
            }
                   
            public void onFailure(Throwable caught){
                Window.alert(caught.getMessage());
-               window.setStatus("","");
+               window.clearStatus();
            }
        });       
    }
    
    private void fillAddressModel() {
-       DefaultRPC drpc = null;
        
-       if(key == null)
+       if(form.entityKey == null)
            return;
        
-       window.setStatus("","spinnerIcon");
+       window.setBusy();
        
-       drpc = new DefaultRPC();
-       drpc.key = key;
-       drpc.form = rpc.form.addresses;
+       form.addresses.entityKey = form.entityKey;
        
-       screenService.call("loadAddresses", drpc, new AsyncCallback<DefaultRPC>() {
-           public void onSuccess(DefaultRPC result) {              
-               load(result.form);
-               rpc.form.setField("addresses",rpc.form.addresses = (AddressesForm)result.form);
-               window.setStatus("","");
+       screenService.call("loadAddresses", form.addresses, new AsyncCallback<AddressesForm>() {
+           public void onSuccess(AddressesForm result) { 
+               form.addresses = result;
+               load(form.addresses);
+               window.clearStatus();
            }
            public void onFailure(Throwable caught) {
                Window.alert(caught.getMessage());
-               window.setStatus("","");
+               window.clearStatus();
            }
        });
       } 
@@ -374,37 +365,17 @@ public class ProviderScreen extends OpenELISScreenForm<ProviderRPC,ProviderForm,
         provAddController.model.deleteRow(provAddController.model.getData().getSelectedIndex());          
     }
 
-    public boolean canDrag(TableWidget widget, DataSet item, int row) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    public boolean canDrop(TableWidget widget, Widget dragWidget, DataSet dropTarget, int targetRow) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    public void drop(TableWidget widget, Widget dragWidget, DataSet dropTarget, int targetRow) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    public void drop(TableWidget widget, Widget dragWidget) {
-        // TODO Auto-generated method stub
-        
-    }
-    
-    private void setProviderTypesModel(DataModel<Integer> typesModel) {
+    private void setProviderTypesModel(TableDataModel<TableDataRow<Integer>> typesModel) {
         displayType.setModel(typesModel);
     }
     
-    private void setCountriesModel(DataModel<String> countriesModel) {
+    private void setCountriesModel(TableDataModel<TableDataRow<String>> countriesModel) {
         ((TableDropdown)provAddController.columns.get(6).getColumnWidget()).setModel(countriesModel);
-        ((TableDropdown)queryContactTable.columns.get(6).getColumnWidget()).setModel(countriesModel);
+        //((TableDropdown)queryContactTable.columns.get(6).getColumnWidget()).setModel(countriesModel);
     }
     
-    private void setStatesModel(DataModel<String> statesModel) {
+    private void setStatesModel(TableDataModel<TableDataRow<String>> statesModel) {
         ((TableDropdown)provAddController.columns.get(5).getColumnWidget()).setModel(statesModel);
-        ((TableDropdown)queryContactTable.columns.get(5).getColumnWidget()).setModel(statesModel);
+        //((TableDropdown)queryContactTable.columns.get(5).getColumnWidget()).setModel(statesModel);
     }
 }

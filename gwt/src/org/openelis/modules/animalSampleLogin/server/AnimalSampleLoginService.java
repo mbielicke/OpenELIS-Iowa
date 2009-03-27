@@ -25,56 +25,58 @@
 */
 package org.openelis.modules.animalSampleLogin.server;
 
-import org.openelis.gwt.common.DefaultRPC;
-import org.openelis.gwt.common.Form;
-import org.openelis.gwt.common.RPC;
+import org.openelis.gwt.common.Query;
 import org.openelis.gwt.common.RPCException;
-import org.openelis.gwt.common.data.DataModel;
+import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.FieldType;
+import org.openelis.gwt.common.data.TableDataModel;
+import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
+import org.openelis.modules.animalSampleLogin.client.AnimalSampleLoginForm;
 import org.openelis.server.constants.Constants;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
-public class AnimalSampleLoginService implements AppScreenFormServiceInt<DefaultRPC, Integer>{
+public class AnimalSampleLoginService implements AppScreenFormServiceInt<AnimalSampleLoginForm, Query<TableDataRow<Integer>>>{
 
-    public DefaultRPC abort(DefaultRPC rpc) throws RPCException {
+    public AnimalSampleLoginForm abort(AnimalSampleLoginForm rpc) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public DefaultRPC commitAdd(DefaultRPC rpc) throws RPCException {
+    public AnimalSampleLoginForm commitAdd(AnimalSampleLoginForm rpc) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public DefaultRPC commitDelete(DefaultRPC rpc) throws RPCException {
+    public AnimalSampleLoginForm commitDelete(AnimalSampleLoginForm rpc) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public DataModel<Integer> commitQuery(Form rpc, DataModel<Integer> data) throws RPCException {
+    public Query<TableDataRow<Integer>> commitQuery(Query<TableDataRow<Integer>> data) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public DefaultRPC commitUpdate(DefaultRPC rpc) throws RPCException {
+    public AnimalSampleLoginForm commitUpdate(AnimalSampleLoginForm rpc) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public DefaultRPC fetch(DefaultRPC rpc) throws RPCException {
+    public AnimalSampleLoginForm fetch(AnimalSampleLoginForm rpc) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public DefaultRPC fetchForUpdate(DefaultRPC rpc) throws RPCException {
+    public AnimalSampleLoginForm fetchForUpdate(AnimalSampleLoginForm rpc) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
     
-    public DefaultRPC getScreen(DefaultRPC rpc){
+    public AnimalSampleLoginForm getScreen(AnimalSampleLoginForm rpc){
         return rpc;
     }
 

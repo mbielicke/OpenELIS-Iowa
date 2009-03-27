@@ -30,10 +30,9 @@ import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.Preferences;
 import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.RPCException;
-import org.openelis.gwt.common.data.DataModel;
-import org.openelis.gwt.common.data.DataObject;
-import org.openelis.gwt.common.data.Field;
 import org.openelis.gwt.common.data.FieldType;
+import org.openelis.gwt.common.data.TableDataModel;
+import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.server.AppServlet;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
 import org.openelis.gwt.services.AppScreenServiceInt;
@@ -48,7 +47,7 @@ import java.util.HashMap;
 
 import javax.servlet.http.HttpSession;
 
-public class ScreenControllerServlet extends AppServlet implements OpenELISServiceInt<RPC,Object>, AutoCompleteServiceInt, FavoritesServiceInt {
+public class ScreenControllerServlet extends AppServlet implements OpenELISServiceInt<RPC,RPC>, AutoCompleteServiceInt, FavoritesServiceInt {
 
     private static final long serialVersionUID = 1L; 
 
@@ -64,8 +63,8 @@ public class ScreenControllerServlet extends AppServlet implements OpenELISServi
         return getService().commitDelete(rpc);
     }
 
-    public DataModel<Object> commitQuery(Form form,  DataModel<Object> model) throws RPCException {
-        return getService().commitQuery(form, model);
+    public RPC commitQuery(RPC query) throws RPCException {
+        return getService().commitQuery(query);
     }
 
     public RPC commitUpdate(RPC rpc) throws RPCException {
@@ -79,17 +78,9 @@ public class ScreenControllerServlet extends AppServlet implements OpenELISServi
     public RPC fetchForUpdate(RPC rpc) throws RPCException {
         return getService().fetchForUpdate(rpc);
     }
-
-    public String getXML() throws RPCException {
-        return ((AppScreenFormServiceInt)getService()).getXML();
-    }
     
     public RPC getScreen(RPC rpc) throws RPCException {
         return ((AppScreenServiceInt<RPC>)getService()).getScreen(rpc);
-    }
-
-    public HashMap<String, FieldType> getXMLData() throws RPCException {
-       return getService().getXMLData();
     }
     
     public <T extends FieldType> T getObject(String method, FieldType[] args) throws RPCException {
@@ -115,9 +106,9 @@ public class ScreenControllerServlet extends AppServlet implements OpenELISServi
         }
     }
     
-    private AppScreenFormServiceInt<RPC,Object> getService() throws RPCException {
+    private AppScreenFormServiceInt<RPC,RPC> getService() throws RPCException {
         try {
-            return (AppScreenFormServiceInt<RPC,Object>)Class.forName(getThreadLocalRequest().getParameter("service")).newInstance();
+            return (AppScreenFormServiceInt<RPC,RPC>)Class.forName(getThreadLocalRequest().getParameter("service")).newInstance();
         }catch(Exception e){
             if(e instanceof FormErrorException)
                 throw new FormErrorException(e.getMessage());
@@ -148,7 +139,7 @@ public class ScreenControllerServlet extends AppServlet implements OpenELISServi
         return getThreadLocalRequest().getLocale().getLanguage();
     }
 
-	public DataModel getMatches(String cat, DataModel model, String match, HashMap params) throws RPCException{
+	public TableDataModel<TableDataRow<Object>> getMatches(String cat, TableDataModel model, String match, HashMap<String,FieldType> params) throws RPCException{
 		return ((AutoCompleteServiceInt)getService()).getMatches(cat,model,match,params);
 	}
 
@@ -165,10 +156,6 @@ public class ScreenControllerServlet extends AppServlet implements OpenELISServi
         // TODO Auto-generated method stub
         return new FavoritesService().saveFavorites(form);
     }
-
-	public HashMap<String, FieldType> getXMLData(HashMap<String, FieldType> args) throws RPCException {
-		return getService().getXMLData(args);
-	}
 
     public <T extends RPC> T call(String method, T rpc) throws Exception {
         AppScreenFormServiceInt service = (AppScreenFormServiceInt) getService();

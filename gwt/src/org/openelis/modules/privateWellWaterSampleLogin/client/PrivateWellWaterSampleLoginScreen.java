@@ -30,11 +30,9 @@ import com.google.gwt.user.client.ui.SourcesTabEvents;
 import com.google.gwt.user.client.ui.TabListener;
 import com.google.gwt.user.client.ui.Widget;
 
-import org.openelis.gwt.common.DefaultRPC;
-import org.openelis.gwt.common.Form;
-import org.openelis.gwt.common.RPC;
+import org.openelis.gwt.common.Query;
 import org.openelis.gwt.common.data.KeyListManager;
-import org.openelis.gwt.common.data.NumberObject;
+import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.common.data.TreeDataItem;
 import org.openelis.gwt.screen.CommandChain;
 import org.openelis.gwt.widget.ButtonPanel;
@@ -42,13 +40,15 @@ import org.openelis.gwt.widget.tree.TreeManager;
 import org.openelis.gwt.widget.tree.TreeWidget;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
-public class PrivateWellWaterSampleLoginScreen extends OpenELISScreenForm<DefaultRPC,Form,Integer> implements ClickListener, TabListener, TreeManager{
-
+public class PrivateWellWaterSampleLoginScreen extends OpenELISScreenForm<PrivateWellWaterSampleLoginForm,Query<TableDataRow<Integer>>> implements ClickListener, TabListener, TreeManager{
+    
     private TreeWidget itemsTestsTree;
     private KeyListManager keyList = new KeyListManager();
     
     public PrivateWellWaterSampleLoginScreen() {
-        super("org.openelis.modules.privateWellWaterSampleLogin.server.PrivateWellWaterSampleLoginService", false, new DefaultRPC());
+        super("org.openelis.modules.privateWellWaterSampleLogin.server.PrivateWellWaterSampleLoginService");
+        query = new Query<TableDataRow<Integer>>();
+        getScreen(new PrivateWellWaterSampleLoginForm());
     }
 
     public void onClick(Widget sender) {
@@ -67,12 +67,12 @@ public class PrivateWellWaterSampleLoginScreen extends OpenELISScreenForm<Defaul
         
         //build the tree
         TreeDataItem row1 = itemsTestsTree.model.createTreeItem("top");
-        row1.get(0).setValue("0 - Private Kit");
-        row1.get(1).setValue("Well");
+        row1.cells[0].setValue("0 - Private Kit");
+        row1.cells[1].setValue("Well");
         TreeDataItem row2 = itemsTestsTree.model.createTreeItem("top");
-        row2.get(0).setValue("Total Coliform - Logged In");
+        row2.cells[0].setValue("Total Coliform - Logged In");
         TreeDataItem row3 = itemsTestsTree.model.createTreeItem("top");
-        row3.get(0).setValue("Nitrate - Logged In");
+        row3.cells[0].setValue("Nitrate - Logged In");
         row1.addItem(row2);
         row1.addItem(row3);
         itemsTestsTree.model.addRow(row1);
@@ -101,14 +101,6 @@ public class PrivateWellWaterSampleLoginScreen extends OpenELISScreenForm<Defaul
         return false;
     }
 
-    public boolean canDrag(TreeWidget widget, TreeDataItem item, int row) {
-        return false;
-    }
-
-    public boolean canDrop(TreeWidget widget, Widget dragWidget, TreeDataItem dropTarget, int targetRow) {
-        return false;
-    }
-
     public boolean canEdit(TreeWidget widget, TreeDataItem set, int row, int col) {
         return false;
     }
@@ -121,12 +113,4 @@ public class PrivateWellWaterSampleLoginScreen extends OpenELISScreenForm<Defaul
         return false;
     }
 
-    public void drop(TreeWidget widget, Widget dragWidget, TreeDataItem dropTarget, int targetRow) {}
-
-    public void drop(TreeWidget widget, Widget dragWidget) {}
-
-    public boolean canDrop(TreeWidget widget, Widget dragWidget, Widget dropWidget) {
-        // TODO Auto-generated method stub
-        return false;
-    }
 }

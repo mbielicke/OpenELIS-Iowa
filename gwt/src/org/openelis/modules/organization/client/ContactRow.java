@@ -1,10 +1,14 @@
 package org.openelis.modules.organization.client;
 
-import org.openelis.gwt.common.data.DataSet;
 import org.openelis.gwt.common.data.DropDownField;
+import org.openelis.gwt.common.data.FieldType;
 import org.openelis.gwt.common.data.StringField;
+import org.openelis.gwt.common.data.TableDataRow;
 
-public class ContactRow extends DataSet<Contact> {
+import java.util.Arrays;
+import java.util.List;
+
+public class ContactRow extends TableDataRow<Contact> {
 
     private static final long serialVersionUID = 1L;
     
@@ -22,40 +26,63 @@ public class ContactRow extends DataSet<Contact> {
     public StringField faxPhone;
     public StringField email;
     
+    
     public ContactRow() {
-        add(contactType = new DropDownField<Integer>());
-        add(name = new StringField());
-        add(multipleUnit = new StringField());
-        add(streetAddress = new StringField());
-        add(city = new StringField());
-        add(state = new DropDownField<String>());
-        add(zipCode = new StringField());
-        add(country = new DropDownField<String>());
-        add(workPhone = new StringField());
-        add(homePhone = new StringField());
-        add(cellPhone = new StringField());
-        add(faxPhone = new StringField());
-        add(email = new StringField());
+        contactType = new DropDownField<Integer>();
+        name = new StringField();
+        multipleUnit = new StringField();
+        streetAddress = new StringField();
+        city = new StringField();
+        state = new DropDownField<String>();
+        zipCode = new StringField();
+        country = new DropDownField<String>();
+        workPhone = new StringField();
+        homePhone = new StringField();
+        cellPhone = new StringField();
+        faxPhone = new StringField();
+        email = new StringField();
     }
     
     public ContactRow(ContactRow orig){
-        add(contactType = (DropDownField<Integer>)orig.contactType.clone());
-        add(name = (StringField)orig.name.clone());
-        add(multipleUnit = (StringField)orig.multipleUnit.clone());
-        add(streetAddress = (StringField)orig.streetAddress.clone());
-        add(city = (StringField)orig.city.clone());
-        add(state = (DropDownField<String>)orig.state.clone());
-        add(zipCode = (StringField)orig.zipCode.clone());
-        add(country = (DropDownField<String>)orig.country.clone());
-        add(workPhone = (StringField)orig.workPhone.clone());
-        add(homePhone = (StringField)orig.homePhone.clone());
-        add(cellPhone = (StringField)orig.cellPhone.clone());
-        add(faxPhone = (StringField)orig.faxPhone.clone());
-        add(email = (StringField)orig.email.clone());
+        contactType = (DropDownField<Integer>)orig.contactType.clone();
+        name = (StringField)orig.name.clone();
+        multipleUnit = (StringField)orig.multipleUnit.clone();
+        streetAddress = (StringField)orig.streetAddress.clone();
+        city = (StringField)orig.city.clone();
+        state = (DropDownField<String>)orig.state.clone();
+        zipCode = (StringField)orig.zipCode.clone();
+        country = (DropDownField<String>)orig.country.clone();
+        workPhone = (StringField)orig.workPhone.clone();
+        homePhone = (StringField)orig.homePhone.clone();
+        cellPhone = (StringField)orig.cellPhone.clone();
+        faxPhone = (StringField)orig.faxPhone.clone();
+        email = (StringField)orig.email.clone();
     }
     
     public Object clone() {
         return new ContactRow(this);
     }
+    
+    public List<FieldType> getCells() {
+        return Arrays.asList(new FieldType[] {
+                                              contactType,
+                                              name,
+                                              multipleUnit,
+                                              streetAddress,
+                                              city,
+                                              state,
+                                              zipCode,
+                                              country,
+                                              workPhone,
+                                              homePhone,
+                                              cellPhone,
+                                              faxPhone,
+                                              email
+            
+                             }
+            
+        );
+    }
+    
 
 }

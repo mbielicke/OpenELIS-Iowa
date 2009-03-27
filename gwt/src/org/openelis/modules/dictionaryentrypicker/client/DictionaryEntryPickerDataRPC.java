@@ -26,18 +26,19 @@
 
 package org.openelis.modules.dictionaryentrypicker.client;
 
-import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.RPC;
-import org.openelis.gwt.common.data.DataModel;
+import org.openelis.gwt.common.data.TableDataModel;
+import org.openelis.gwt.common.data.TableDataRow;
 
-public class DictionaryEntryPickerDataRPC extends RPC<Form, Integer> {
+public class DictionaryEntryPickerDataRPC implements RPC {
 
     /**
      * 
      */
     private static final long serialVersionUID = 1L;
     
-    public DataModel model;
+    public Integer id;
+    public TableDataModel<TableDataRow<Integer>> model;
     public String stringValue;
     
 

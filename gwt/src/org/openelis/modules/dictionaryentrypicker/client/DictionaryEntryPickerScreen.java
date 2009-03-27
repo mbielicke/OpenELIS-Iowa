@@ -32,8 +32,12 @@ import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
-import org.openelis.gwt.common.Form;
-import org.openelis.gwt.common.data.DataSet;
+import org.openelis.gwt.common.Query;
+import org.openelis.gwt.common.data.DataMap;
+import org.openelis.gwt.common.data.Field;
+import org.openelis.gwt.common.data.IntegerField;
+import org.openelis.gwt.common.data.StringObject;
+import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.screen.CommandChain;
 import org.openelis.gwt.screen.ScreenTableWidget;
 import org.openelis.gwt.widget.AppButton;
@@ -45,7 +49,7 @@ import org.openelis.modules.main.client.OpenELISScreenForm;
 
 import java.util.ArrayList;
 
-public class DictionaryEntryPickerScreen extends OpenELISScreenForm<DictionaryEntryPickerRPC,DictionaryEntryPickerForm,Integer> implements TableManager, 
+public class DictionaryEntryPickerScreen extends OpenELISScreenForm<DictionaryEntryPickerForm,Query<TableDataRow<Integer>>> implements TableManager, 
                                                                                                                                  ClickListener,
                                                                                                                                  ChangeListener{
     
@@ -63,12 +67,12 @@ public class DictionaryEntryPickerScreen extends OpenELISScreenForm<DictionaryEn
     
     private AppButton prevPressed = null;
     
-    public ArrayList<DataSet<Object>> selectedRows = null; 
+    public ArrayList<TableDataRow<Integer>> selectedRows = null; 
     
     public DictionaryEntryPickerScreen() {        
         super("org.openelis.modules.dictionaryentrypicker.server.DictionaryEntryPickerService");
-        forms.put("display", new DictionaryEntryPickerForm());
-        getScreen(new DictionaryEntryPickerRPC());        
+        query = new Query<TableDataRow<Integer>>();
+        getScreen(new DictionaryEntryPickerForm());
     }
     
     public void performCommand(Enum action, Object obj) {        
@@ -111,12 +115,13 @@ public class DictionaryEntryPickerScreen extends OpenELISScreenForm<DictionaryEn
         
         findButton = (AppButton)getWidget("findButton"); 
         
-        super.afterDraw(sucess);                                  
+        super.afterDraw(sucess);              
+
     }
     
     public void commit() {
-        selectedRows = dictionaryController.model.getSelections();        
-        window.close();        
+        selectedRows = dictionaryController.model.getSelections();
+        window.close();  
     }
 
     public void abort() {
@@ -124,70 +129,41 @@ public class DictionaryEntryPickerScreen extends OpenELISScreenForm<DictionaryEn
         window.close();
     }
     
-    public boolean canAdd(TableWidget widget, DataSet set, int row) {
+    public boolean canAdd(TableWidget widget, TableDataRow set, int row) {
         // TODO Auto-generated method stub
         return false;
     }
 
-    public boolean canAutoAdd(TableWidget widget, DataSet addRow) {
+    public boolean canAutoAdd(TableWidget widget, TableDataRow addRow) {
         // TODO Auto-generated method stub
         return false;
     }
 
-    public boolean canDelete(TableWidget widget, DataSet set, int row) {
+    public boolean canDelete(TableWidget widget, TableDataRow set, int row) {
         // TODO Auto-generated method stub
         return false;
     }
 
-    public boolean canDrag(TableWidget widget, DataSet item, int row) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-    
-    public boolean canDrop(TableWidget widget,
-                           Widget dragWidget,
-                           DataSet dropTarget,
-                           int targetRow) {
+    public boolean canEdit(TableWidget widget, TableDataRow set, int row, int col) {
         // TODO Auto-generated method stub
         return false;
     }
 
-    public boolean canEdit(TableWidget widget, DataSet set, int row, int col) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    public boolean canSelect(TableWidget widget, DataSet set, int row) {        
+    public boolean canSelect(TableWidget widget, TableDataRow set, int row) {        
         return true;
-    }
-
-    public void drop(TableWidget widget,
-                     Widget dragWidget,
-                     DataSet dropTarget,
-                     int targetRow) {
-        // TODO Auto-generated method stub
-
-    }
-
-    public void drop(TableWidget widget, Widget dragWidget) {
-        // TODO Auto-generated method stub
-
     }
 
     public void onClick(Widget sender) {
         String queryString = null;
-        Form queryRPC = null;
         if(sender == findButton){                     
           queryString = findTextBox.getText()+(findTextBox.getText().endsWith("*") ? "" : "*");
-          queryRPC = (Form) forms.get("queryByName");
-          queryRPC.setFieldValue("findTextBox", queryString);      
           loadDictionaryModel(queryString);
         }
     }
     
     public void onChange(Widget sender){
         if(sender == categoryDrop){
-           Integer numObj = (Integer)categoryDrop.getSelections().get(0).getKey();
+           Integer numObj = (Integer)categoryDrop.getSelections().get(0).key;
            categoryId = numObj;
         }
     }  
@@ -201,7 +177,7 @@ public class DictionaryEntryPickerScreen extends OpenELISScreenForm<DictionaryEn
         window.setStatus("", "spinnerIcon");   
         dedrpc = new DictionaryEntryPickerDataRPC();
         
-        dedrpc.key = categoryId;
+        dedrpc.id = categoryId;
         dedrpc.model = dictionaryController.model.getData();
         dedrpc.stringValue = pattern;
         
@@ -220,6 +196,8 @@ public class DictionaryEntryPickerScreen extends OpenELISScreenForm<DictionaryEn
         });
         
     }
+    
+ 
         
         
     private void loadCategoryDropdown() {

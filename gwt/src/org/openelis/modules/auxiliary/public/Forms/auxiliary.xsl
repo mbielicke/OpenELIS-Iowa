@@ -66,11 +66,21 @@ UIRF Software License are applicable instead of those above.
 				<HorizontalPanel padding="0" spacing="0" style="WhiteContentPanel">
 					<!--left table goes here -->
 					<CollapsePanel key="collapsePanel" height="480px">
-						<azTable colwidths="175"  key="azTable" maxRows="20" tablewidth="auto" headers="{resource:getString($constants,'groupName')}" width="100%">
-							<buttonPanel key="atozButtons">
-								<xsl:call-template name="aToZLeftPanelButtons"/>
-							</buttonPanel>
-						</azTable>
+					<resultsTable key="azTable" height="480px" width="100%">
+				   	 <buttonPanel key="atozButtons">
+	    			   <xsl:call-template name="aToZLeftPanelButtons"/>		
+		    		 </buttonPanel>
+		    		 <table maxRows="20" width="auto">
+		    		   <headers><xsl:value-of select="resource:getString($constants,'name')"/></headers>
+		    		   <widths>175</widths>
+		    		   <editors>
+		    		     <label/>
+		    		   </editors>
+		    		   <fields>
+		    		     <string/>
+		    		   </fields>
+		    		 </table>
+				  </resultsTable>
 					</CollapsePanel>					
 					<VerticalPanel spacing="0">
 						<!--button panel code-->
@@ -259,11 +269,6 @@ UIRF Software License are applicable instead of those above.
 	         <table key = "auxFieldTable"/>
 			 <table key = "auxFieldValueTable"/>					 										
 		    </rpc>
-		    <rpc key="query">			
-			</rpc>
-			<rpc key="queryByLetter">	
-			 <queryString key="{meta:getName($auxfg)}"/>		 	
-			</rpc>
 		</screen>
   </xsl:template>
 </xsl:stylesheet>

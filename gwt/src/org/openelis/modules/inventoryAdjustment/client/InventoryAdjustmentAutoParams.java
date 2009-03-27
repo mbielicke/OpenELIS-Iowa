@@ -25,20 +25,19 @@
 */
 package org.openelis.modules.inventoryAdjustment.client;
 
-import org.openelis.gwt.common.Form;
 import org.openelis.gwt.widget.AutoCompleteParamsInt;
 import org.openelis.metamap.InventoryAdjustmentMetaMap;
 
 import java.util.HashMap;
 
-public class InventoryAdjustmentAutoParams implements AutoCompleteParamsInt{
+public class InventoryAdjustmentAutoParams implements AutoCompleteParamsInt<InventoryAdjustmentForm>{
 
     InventoryAdjustmentMetaMap InventoryAdjustmentMeta = new InventoryAdjustmentMetaMap();
 
-    public HashMap getParams(Form form) {
+    public HashMap getParams(InventoryAdjustmentForm form) {
         HashMap params = new HashMap();
         params.put("storeId", 
-                   form.getField(InventoryAdjustmentMeta.TRANS_ADJUSTMENT_LOCATION_META.INVENTORY_LOCATION_META.INVENTORY_ITEM_META.getStoreId()));
+                   form.storeId);
         
         return params;
     }

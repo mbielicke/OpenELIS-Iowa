@@ -26,13 +26,14 @@
 package org.openelis.modules.testTrailer.client;
 
 import org.openelis.gwt.common.Form;
+import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.IntegerField;
 import org.openelis.gwt.common.data.StringField;
 import org.openelis.metamap.TestTrailerMetaMap;
 
 import com.google.gwt.xml.client.Node;
 
-public class TestTrailerForm extends Form{
+public class TestTrailerForm extends Form<Integer>{
     private static final long serialVersionUID = 1L;
 
     public IntegerField id;
@@ -42,14 +43,23 @@ public class TestTrailerForm extends Form{
     
     public TestTrailerForm() {
        TestTrailerMetaMap meta = new TestTrailerMetaMap();
-       fields.put(meta.getId(), id = new IntegerField());
-       fields.put(meta.getName(), name = new StringField());
-       fields.put(meta.getDescription(), description = new StringField());
-       fields.put(meta.getText(), text = new StringField());
+       id = new IntegerField(meta.getId());
+       name = new StringField(meta.getName());
+       description = new StringField(meta.getDescription());
+       text = new StringField(meta.getText());
    }
    
    public TestTrailerForm(Node node) {
        this();
        createFields(node);
+   }
+   
+   public AbstractField[] getFields() {
+       return new AbstractField[] {
+                                   id,
+                                   name,
+                                   description,
+                                   text
+       };
    }
 }

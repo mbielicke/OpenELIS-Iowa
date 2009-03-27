@@ -233,6 +233,7 @@ UIRF Software License are applicable instead of those above.
 							<filters>false</filters>
 							<colAligns>left</colAligns>
 						</table>
+						<!--
 						<query>
 							<queryTable maxRows="6" showError="false" title="" width="auto" showScroll="ALWAYS">
 								<headers><xsl:value-of select="resource:getString($constants,'trackingNums')"/></headers>
@@ -245,6 +246,7 @@ UIRF Software License are applicable instead of those above.
 								</fields>
 							</queryTable>
 						</query>
+						-->
 						</widget>
 						<widget halign="center" style="WhiteContentPanel">
 							<appButton action="removeRow" key="removeRowButton" onclick="this" style="Button">
@@ -306,6 +308,7 @@ UIRF Software License are applicable instead of those above.
  		<string key="shippingTabPanel" reset="false">itemsTab</string>  
  		<model key="unlockModel"/>
 	</rpc>
+	<!--
 	<rpc key="query">
 		<dropdown key="{meta:getStatusId($shipping)}"/>
 		<queryNumber key="{meta:getNumberOfPackages($shipping)}" type="integer"/>
@@ -319,6 +322,7 @@ UIRF Software License are applicable instead of those above.
 	    <table key="trackingNumbersTable"/>
 	    <queryString key="{trackingMeta:getTrackingNumber($tracking)}" required="false"/>
 	</rpc>
+	-->
 </screen>
   </xsl:template>
 </xsl:stylesheet>

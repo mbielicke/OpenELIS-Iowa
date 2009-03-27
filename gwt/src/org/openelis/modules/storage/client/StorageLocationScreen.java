@@ -25,24 +25,25 @@
 */
 package org.openelis.modules.storage.client;
 
-import org.openelis.gwt.common.Form;
-import org.openelis.gwt.common.data.KeyListManager;
-import org.openelis.gwt.screen.CommandChain;
-import org.openelis.gwt.screen.ScreenInputWidget;
-import org.openelis.gwt.widget.AToZTable;
-import org.openelis.gwt.widget.AppButton;
-import org.openelis.gwt.widget.ButtonPanel;
-import org.openelis.gwt.widget.CollapsePanel;
-import org.openelis.gwt.widget.FormInt;
-import org.openelis.gwt.widget.table.TableWidget;
-import org.openelis.metamap.StorageLocationMetaMap;
-import org.openelis.modules.main.client.OpenELISScreenForm;
-
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
-public class StorageLocationScreen extends OpenELISScreenForm<StorageLocationRPC,StorageLocationForm,Integer> implements ClickListener {
+import org.openelis.gwt.common.Query;
+import org.openelis.gwt.common.data.KeyListManager;
+import org.openelis.gwt.common.data.QueryStringField;
+import org.openelis.gwt.common.data.TableDataRow;
+import org.openelis.gwt.screen.CommandChain;
+import org.openelis.gwt.screen.ScreenInputWidget;
+import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.ButtonPanel;
+import org.openelis.gwt.widget.CollapsePanel;
+import org.openelis.gwt.widget.ResultsTable;
+import org.openelis.gwt.widget.table.TableWidget;
+import org.openelis.metamap.StorageLocationMetaMap;
+import org.openelis.modules.main.client.OpenELISScreenForm;
+
+public class StorageLocationScreen extends OpenELISScreenForm<StorageLocationForm,Query<TableDataRow<Integer>>> implements ClickListener {
 	
 	private TextBox nameTextbox;
 	private TableWidget childTable;
@@ -54,10 +55,8 @@ public class StorageLocationScreen extends OpenELISScreenForm<StorageLocationRPC
     
     public StorageLocationScreen() {                
         super("org.openelis.modules.storage.server.StorageLocationService");
-      
-        forms.put("display",new StorageLocationForm());
-        
-        getScreen(new StorageLocationRPC());
+        query = new Query<TableDataRow<Integer>>();
+        getScreen(new StorageLocationForm());
     }
     
 	public void performCommand(Enum action, Object obj) {
@@ -81,7 +80,7 @@ public class StorageLocationScreen extends OpenELISScreenForm<StorageLocationRPC
 	}
 	
 	public void afterDraw(boolean success) {
-        AToZTable atozTable = (AToZTable)getWidget("azTable");
+        ResultsTable atozTable = (ResultsTable)getWidget("azTable");
         ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
         ButtonPanel bpanel = (ButtonPanel) getWidget("buttons");
         
@@ -103,7 +102,7 @@ public class StorageLocationScreen extends OpenELISScreenForm<StorageLocationRPC
 
 		super.afterDraw(success);
         
-        form.setFieldValue("childStorageLocsTable", childTable.model.getData());
+        form.childStorageLocsTable.setValue(childTable.model.getData());
 	}
 	
 	public void query() {
@@ -139,13 +138,10 @@ public class StorageLocationScreen extends OpenELISScreenForm<StorageLocationRPC
     }
 
     private void getStorageLocs(String query) {
-    	if (state == FormInt.State.DISPLAY || state == FormInt.State.DEFAULT) {
-    
-    		Form letter = (Form)forms.get("queryByLetter");
-    		
-    		letter.setFieldValue(StorageLocationMeta.getName(), query);
-    
-    		commitQuery(letter);
+    	if (state == State.DISPLAY || state == State.DEFAULT) {
+    	    QueryStringField qField = new QueryStringField(StorageLocationMeta.getName());
+            qField.setValue(query);
+    		commitQuery(qField);
     	}
     }
 }

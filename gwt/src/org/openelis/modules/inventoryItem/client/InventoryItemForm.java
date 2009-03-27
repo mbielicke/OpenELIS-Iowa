@@ -25,17 +25,20 @@
 */
 package org.openelis.modules.inventoryItem.client;
 
+import com.google.gwt.xml.client.Node;
+
 import org.openelis.gwt.common.Form;
+import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.CheckField;
 import org.openelis.gwt.common.data.DoubleField;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.IntegerField;
 import org.openelis.gwt.common.data.StringField;
+import org.openelis.gwt.common.data.TableDataModel;
+import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.metamap.InventoryItemMetaMap;
 
-import com.google.gwt.xml.client.Node;
-
-public class InventoryItemForm extends Form{
+public class InventoryItemForm extends Form<Integer> {
     private static final long serialVersionUID = 1L;
 
     public IntegerField id;
@@ -69,40 +72,78 @@ public class InventoryItemForm extends Form{
     
     public String itemTabPanel = "componentsTab";
     
+    public TableDataModel<TableDataRow<Integer>> stores;
+    public TableDataModel<TableDataRow<Integer>> categories;
+    public TableDataModel<TableDataRow<Integer>> dispensedUnits;
+    
+    public Integer componentId;
+    public String descText;
+    
     public InventoryItemForm() {
        InventoryItemMetaMap meta = new InventoryItemMetaMap();
-       fields.put(meta.getId(), id = new IntegerField());
-       fields.put(meta.getName(), name = new StringField());
-       fields.put(meta.getDescription(), description = new StringField());
-       fields.put(meta.getStoreId(), storeId = new DropDownField<Integer>());
-       fields.put(meta.getCategoryId(), categoryId = new DropDownField<Integer>());
-       fields.put(meta.getQuantityMinLevel(), quantityMinLevel = new IntegerField());
-       fields.put(meta.getQuantityMaxLevel(), quantityMaxLevel = new IntegerField());
-       fields.put(meta.getQuantityToReorder(), quantityToReorder = new IntegerField());
-       fields.put(meta.getDispensedUnitsId(), dispensedUnitsId = new DropDownField<Integer>());
-       fields.put(meta.getIsActive(), isActive = new CheckField());
-       fields.put(meta.getIsReorderAuto(), isReorderAuto = new CheckField());
-       fields.put(meta.getIsLotMaintained(), isLotMaintained = new CheckField());
-       fields.put(meta.getIsSerialMaintained(), isSerialMaintained = new CheckField());
-       fields.put(meta.getIsBulk(), isBulk = new CheckField());
-       fields.put(meta.getIsNotForSale(), isNotForSale = new CheckField());
-       fields.put(meta.getIsSubAssembly(), isSubAssembly = new CheckField());
-       fields.put(meta.getIsLabor(), isLabor = new CheckField());
-       fields.put(meta.getIsNoInventory(), isNoInventory = new CheckField());
-       fields.put(meta.getProductUri(), productUri = new StringField());
-       fields.put(meta.getAverageLeadTime(), averageLeadTime = new IntegerField());
-       fields.put(meta.getAverageCost(), averageCost = new DoubleField());
-       fields.put(meta.getAverageDailyUse(), averageDailyUse = new IntegerField());
-       fields.put(meta.PARENT_INVENTORY_ITEM.getName(), parentInventoryItem = new DropDownField<Integer>());
-       fields.put(meta.getParentRatio(), parentRatio = new IntegerField());
-       
-       fields.put("components", components = new InventoryComponentsForm());
-       fields.put("locations", locations = new InventoryLocationsForm());
-       fields.put("comments", comments = new InventoryCommentsForm());
+       id = new IntegerField(meta.getId());
+       name = new StringField(meta.getName());
+       description = new StringField(meta.getDescription());
+       storeId = new DropDownField<Integer>(meta.getStoreId());
+       categoryId = new DropDownField<Integer>(meta.getCategoryId());
+       quantityMinLevel = new IntegerField(meta.getQuantityMinLevel());
+       quantityMaxLevel = new IntegerField(meta.getQuantityMaxLevel());
+       quantityToReorder = new IntegerField(meta.getQuantityToReorder());
+       dispensedUnitsId = new DropDownField<Integer>(meta.getDispensedUnitsId());
+       isActive = new CheckField(meta.getIsActive());
+       isReorderAuto = new CheckField(meta.getIsReorderAuto());
+       isLotMaintained = new CheckField(meta.getIsLotMaintained());
+       isSerialMaintained = new CheckField(meta.getIsSerialMaintained());
+       isBulk = new CheckField(meta.getIsBulk());
+       isNotForSale = new CheckField(meta.getIsNotForSale());
+       isSubAssembly = new CheckField(meta.getIsSubAssembly());
+       isLabor = new CheckField(meta.getIsLabor());
+       isNoInventory = new CheckField(meta.getIsNoInventory());
+       productUri = new StringField(meta.getProductUri());
+       averageLeadTime = new IntegerField(meta.getAverageLeadTime());
+       averageCost = new DoubleField(meta.getAverageCost());
+       averageDailyUse = new IntegerField(meta.getAverageDailyUse());
+       parentInventoryItem = new DropDownField<Integer>(meta.PARENT_INVENTORY_ITEM.getName());
+       parentRatio = new IntegerField(meta.getParentRatio());
+       components = new InventoryComponentsForm("components");
+       locations = new InventoryLocationsForm("locations");
+       comments = new InventoryCommentsForm("comments");
    }
    
    public InventoryItemForm(Node node) {
        this();
        createFields(node);
+   }
+   
+   public AbstractField[] getFields() {
+       return new AbstractField[] {
+                                     id,
+                                     name,
+                                     description,
+                                     storeId,
+                                     categoryId,
+                                     quantityMinLevel,
+                                     quantityMaxLevel,
+                                     quantityToReorder,
+                                     dispensedUnitsId,
+                                     isActive,
+                                     isReorderAuto,
+                                     isLotMaintained,
+                                     isSerialMaintained,
+                                     isBulk,
+                                     isNotForSale,
+                                     isSubAssembly,
+                                     isLabor,
+                                     isNoInventory,
+                                     productUri,
+                                     averageLeadTime,
+                                     averageCost,
+                                     averageDailyUse,
+                                     parentInventoryItem,
+                                     parentRatio,
+                                     components,
+                                     locations,
+                                     comments
+       };
    }
 }
