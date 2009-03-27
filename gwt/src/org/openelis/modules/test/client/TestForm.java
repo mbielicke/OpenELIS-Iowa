@@ -82,7 +82,7 @@ public class TestForm extends Form<Integer> {
         TestMetaMap meta = new TestMetaMap();
         id = new IntegerField(meta.getId());
         name = new StringField(meta.getName());
-        methodId = new DropDownField<Integer>(meta.getMethodId());
+        methodId = new DropDownField<Integer>(meta.getMethod().getName());
         details = new DetailsForm("details");
         prepAndReflex = new PrepAndReflexForm("prepAndReflex");
         sampleType = new SampleTypeForm("sampleType");

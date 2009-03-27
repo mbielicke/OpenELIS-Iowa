@@ -303,27 +303,7 @@ UIRF Software License are applicable instead of those above.
 												<filters>false,false</filters>
 												<colAligns>left,left</colAligns>
 											</table>
-											<!--
-											<query>
-							 			  <queryTable maxRows="3" showError="false" showScroll="ALWAYS" title="" width="auto" tab="removeTestSectionButton,{meta:getIsReportable($test)}">											
-												<headers>
-													<xsl:value-of select="resource:getString($constants,'name')"/>,													
-													<xsl:value-of select="resource:getString($constants,'options')"/>
-												</headers>
-												<widths>119,119</widths>
-												<editors>
-													<dropdown case="mixed" width="85px" multiSelect = "true"/>
-													<dropdown case="mixed" width="110px" multiSelect = "true"/>													
-												</editors>
-												<fields>
-													<xsl:value-of select='testSection:getSectionId($ts)'/>,<xsl:value-of select='testSection:getFlagId($ts)'/>													
-												</fields>
-												<sorts>false,false</sorts>
-												<filters>false,false</filters>
-												<colAligns>left,left</colAligns>
-										 </queryTable>
-							 			</query>	
-							 			-->									
+						
 							 		  </widget>
 							 			
 							 		
@@ -396,26 +376,6 @@ UIRF Software License are applicable instead of those above.
 												<filters>false,false</filters>
 												<colAligns>left,left</colAligns>
 											</table>
-											<!--
-											<query>
-												<queryTable maxRows="20" showError="false" title="" showScroll="ALWAYS" width="auto">
-													<headers>
-														<xsl:value-of select="resource:getString($constants,'sampleType')"/>,<xsl:value-of select="resource:getString($constants,'unitOfMeasure')"/>
-													</headers>													
-													<widths>290,291</widths>
-													<editors>													
-														<dropdown case="mixed" multiSelect="true" width="285px"/>
-														<dropdown case="mixed" multiSelect="true" width="286px"/>
-													</editors>
-													<fields>
-														<xsl:value-of select='testTOS:getTypeOfSampleId($tos)'/>,<xsl:value-of select='testTOS:getUnitOfMeasureId($tos)'/>
-													</fields>
-													<sorts>false,false</sorts>
-												    <filters>false,false</filters>
-												    <colAligns>left,left</colAligns>
-												</queryTable>
-											</query>
-											-->
 							 			 </widget>	
 							 			<HorizontalPanel width = "10px"/>
                                        </HorizontalPanel> 
@@ -580,41 +540,6 @@ UIRF Software License are applicable instead of those above.
 												<filters>false,false,false,false,false,false,false,false,false</filters>
 												<colAligns>left,left,left,left,left,left,left,left,left</colAligns>
 								 </table>
-								 <!--
-								 <query>
-								  <queryTable maxRows="7" showError="false" showScroll="ALWAYS" title="" width="585px">
-												<headers>			
-												    <xsl:value-of select="resource:getString($constants,'unit')"/>, 										    
-													<xsl:value-of select="resource:getString($constants,'type')"/>,													
-													<xsl:value-of select="resource:getString($constants,'value')"/>,
-													<xsl:value-of select="resource:getString($constants,'quantLimit')"/>,
-													<xsl:value-of select="resource:getString($constants,'contLevel')"/>,
-													<xsl:value-of select="resource:getString($constants,'hazardLavel')"/>,
-													<xsl:value-of select="resource:getString($constants,'flags')"/>,
-													<xsl:value-of select="resource:getString($constants,'significantDigits')"/>,													
-													<xsl:value-of select="resource:getString($constants,'roundingMethod')"/>																																																			
-												</headers>
-												<widths>50,55,200,80,70,65,120,70,100</widths>
-												<editors>		
-												    <dropdown multiSelect="true" case="mixed" width="75px"/>  										
-													<dropdown multiSelect="true" case="mixed" width="75px"/>
-													<textbox/>
-													<textbox/>
-													<textbox/>
-													<textbox/>
-													<dropdown multiSelect="true" case="mixed" width="115px"/>
-													<textbox/>													
-													<dropdown multiSelect="true" case="mixed" width="95px"/>																																			
-												</editors>
-												<fields>												    
-												    <xsl:value-of select="testResult:getUnitOfMeasureId($tr)"/>,<xsl:value-of select="testResult:getTypeId($tr)"/>,<xsl:value-of select="testResult:getValue($tr)"/>,<xsl:value-of select="testResult:getQuantLimit($tr)" />,<xsl:value-of select="testResult:getContLevel($tr)" />,<xsl:value-of select="testResult:getHazardLevel($tr)"/>,<xsl:value-of select="testResult:getFlagsId($tr)"/>,<xsl:value-of select="testResult:getSignificantDigits($tr)"/>,<xsl:value-of select="testResult:getRoundingMethodId($tr)"/>
-												</fields>
-												<sorts>false,false,false,false,false,false,false,false,false</sorts>
-												<filters>false,false,false,false,false,false,false,false,false</filters>
-												<colAligns>left,left,left,left,left,left,left,left,left</colAligns>
-								 </queryTable>
-								</query> 
-								-->
 							  </widget>
 							 <HorizontalPanel width = "10px"/>                             
 							</HorizontalPanel>     
@@ -667,27 +592,6 @@ UIRF Software License are applicable instead of those above.
 												<filters>false,false</filters>
 												<colAligns>left,left</colAligns>
 											</table>
-											<!--
-											 <query>
-												<queryTable maxRows="9" showError="false" title="" showScroll="ALWAYS" width="auto">
-													<headers>
-														<xsl:value-of select="resource:getString($constants,'prepTestMethod')"/>,
-														<xsl:value-of select="resource:getString($constants,'optional')"/>													
-													</headers>
-													<widths>489,92</widths>
-													<editors>													
-														<dropdown case="mixed" multiSelect="true" width="470px"/>														
-														<check threeState = "true"/>														
-													</editors>
-													<fields>
-														<xsl:value-of select='testPrep:getPrepTestId($tp)'/>,<xsl:value-of select='testPrep:getIsOptional($tp)'/>																												
-													</fields>
-													<sorts>false,false</sorts>
-												    <filters>false,false</filters>
-												    <colAligns>left,left</colAligns>
-												</queryTable>
-											</query>
-											-->
 							 			 </widget>
 							 			<HorizontalPanel width = "10px"/>
                                        </HorizontalPanel> 
@@ -732,31 +636,6 @@ UIRF Software License are applicable instead of those above.
 												<filters>false,false,false,false</filters>
 												<colAligns>left,left,left,left</colAligns>
 								</table>
-								<!--
-								<query>
-								 <queryTable maxRows="8" showError="false" showScroll="ALWAYS" title="" width="auto">
-												<headers>
-												    <xsl:value-of select="resource:getString($constants,'reflexiveTest')"/>,
-													<xsl:value-of select="resource:getString($constants,'testAnalyte')"/>,													
-													<xsl:value-of select="resource:getString($constants,'result')"/>,
-													<xsl:value-of select="resource:getString($constants,'flags')"/>																										
-												</headers>
-												<widths>150,181,140,104</widths>
-												<editors>
-													<dropdown case="mixed" multiSelect="true" width="160px"/>
-													<dropdown case="mixed" multiSelect="true" width="181px"/>
-													<dropdown case="mixed" multiSelect="true" width="150px"/>
-													<dropdown case="mixed" multiSelect="true" width="104px"/>													
-												</editors>
-												<fields>
-												    <xsl:value-of select='testRef:getAddTestId($tref)'/>,<xsl:value-of select='testRef:getTestAnalyteId($tref)'/>,<xsl:value-of select='testRef:getTestResultId($tref)'/>,<xsl:value-of select='testRef:getFlagsId($tref)'/>																									
-												</fields>
-												<sorts>false,false,false,false</sorts>
-												<filters>false,false,false,false</filters>
-												<colAligns>left,left,left,left</colAligns>
-								 </queryTable>
-								</query>
-								-->
 						      </widget>
 						     <HorizontalPanel width = "10px"/>
                             </HorizontalPanel> 
@@ -832,30 +711,7 @@ UIRF Software License are applicable instead of those above.
 												<sorts>false,false,false</sorts>
 												<filters>false,false,false</filters>
 												<colAligns>left,left,left</colAligns>
-								</table>
-								<!--
-								<query>
-								 <queryTable maxRows="6" showError="false" showScroll="ALWAYS" title="" width="auto">
-												<headers>
-												    <xsl:value-of select="resource:getString($constants,'position')"/>,
-													<xsl:value-of select="resource:getString($constants,'type')"/>,													
-													<xsl:value-of select="resource:getString($constants,'qcName')"/>																																							
-												</headers>
-												<widths>74,147,347</widths>
-												<editors>
-													<textbox/>
-													<dropdown multiSelect="true" case="mixed" width="140px"/>
-													<textbox/>													
-												</editors>
-												<fields>
-												    <xsl:value-of select='testWrkshtItm:getPosition($twsi)'/>,<xsl:value-of select='testWrkshtItm:getTypeId($twsi)'/>,<xsl:value-of select='testWrkshtItm:getQcName($twsi)'/>																																						
-												</fields>
-												<sorts>false,false,false</sorts>
-												<filters>false,false,false</filters>
-												<colAligns>left,left,left</colAligns>
-								  </queryTable>
-								 </query>	
-								 -->							
+								</table>						
 						       </widget>							     
 						     <!-- <HorizontalPanel width = "10px"/> -->
                             </HorizontalPanel>                                                       

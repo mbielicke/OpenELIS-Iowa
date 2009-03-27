@@ -57,7 +57,7 @@ public class DictionaryForm extends Form<Integer> {
     
     public DictionaryForm() {
         CategoryMetaMap meta = new CategoryMetaMap();
-        id = new IntegerField("subItemsTable");
+        id = new IntegerField(meta.getId());
         systemName = new StringField(meta.getSystemName());
         name = new StringField(meta.getName());
         dictEntTable = new TableField<TableDataRow<Integer>>("dictEntTable");

@@ -93,7 +93,7 @@ public class SystemVariableScreen extends OpenELISScreenForm<SystemVariableForm,
     private void getSystemVariables(String query) {
         if (state == State.DISPLAY || state == State.DEFAULT) {
             QueryStringField qField = new QueryStringField(Meta.getName());
-            qField.setValue("query");
+            qField.setValue(query);
             commitQuery(qField);
         }
     }

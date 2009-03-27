@@ -44,7 +44,6 @@ import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.Query;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.TableFieldErrorException;
@@ -52,7 +51,6 @@ import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.CheckField;
 import org.openelis.gwt.common.data.DataMap;
 import org.openelis.gwt.common.data.DropDownField;
-import org.openelis.gwt.common.data.FieldType;
 import org.openelis.gwt.common.data.IntegerField;
 import org.openelis.gwt.common.data.IntegerObject;
 import org.openelis.gwt.common.data.StringField;
@@ -106,31 +104,6 @@ public class TestService implements AppScreenFormServiceInt<TestForm,Query<Table
 
     public Query<TableDataRow<Integer>> commitQuery(Query<TableDataRow<Integer>> query) throws RPCException {
         List testNames;
-        // if the rpc is null then we need to get the page
-        /*
-        if (qList == null) {
-
-            qList = (ArrayList<AbstractField>)SessionManager.getSession()
-                                                 .getAttribute("TestQuery");
-
-            if (qList == null)
-                throw new RPCException(openElisConstants.getString("queryExpiredException"));
-
-            TestRemote remote = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
-
-            try {
-                testNames = remote.query(qList,
-                                         (model.getPage() * leftTableRowsPerPage),
-                                         leftTableRowsPerPage + 1);
-            } catch (Exception e) {
-                if (e instanceof LastPageException) {
-                    throw new LastPageException(openElisConstants.getString("lastPageException"));
-                } else {
-                    e.printStackTrace();
-                    throw new RPCException(e.getMessage());
-                }
-            }
-        } else { */
             TestRemote remote = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
             try {
                 testNames = remote.query(query.fields, query.page*leftTableRowsPerPage, leftTableRowsPerPage);
@@ -139,11 +112,7 @@ public class TestService implements AppScreenFormServiceInt<TestForm,Query<Table
                 e.printStackTrace();
                 throw new RPCException(e.getMessage());
             }
-
-            // need to save the rpc used to the encache
-            //SessionManager.getSession().setAttribute("TestQuery", qList);
-        //}
-
+            
         // fill the model with the query results
         int i = 0;
         if(query.results == null)
@@ -422,8 +391,7 @@ public class TestService implements AppScreenFormServiceInt<TestForm,Query<Table
         List<TestSectionDO> tsDOList = remote.getTestSections(key);
         fillTestDetails(testDetailsDO, form);        
         fillTestSections(tsDOList,form);
-        form.load = true;
-        return;
+        form.load = true;        
     }
     
     public DetailsForm loadTestDetails(DetailsForm rpc) {
@@ -435,8 +403,7 @@ public class TestService implements AppScreenFormServiceInt<TestForm,Query<Table
         TestRemote remote = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
         List<TestTypeOfSampleDO> list = remote.getTestTypeOfSamples(key);
         fillSampleTypes(list, form);
-        form.load = true;
-        return;
+        form.load = true;        
     }
     
     public SampleTypeForm loadSampleTypes(SampleTypeForm rpc) {
@@ -450,8 +417,7 @@ public class TestService implements AppScreenFormServiceInt<TestForm,Query<Table
         List<TestReflexDO>  reflexList = remote.getTestReflexes(key);    
         fillPrepTests(prepList, form);        
         fillTestReflexes(reflexList,form,key);
-        form.load = true;
-        return;
+        form.load = true;        
     }
     
     public PrepAndReflexForm loadPrepTestsReflexTests(PrepAndReflexForm rpc) {
@@ -483,8 +449,7 @@ public class TestService implements AppScreenFormServiceInt<TestForm,Query<Table
         List<TestAnalyteDO> taList = remote.getTestAnalytes(key);
         fillAnalyteTree(taList, form);
         fillTestResults(key,form);
-        form.load = true;
-        return;               
+        form.load = true;                   
     }        
     
     public TestAnalyteForm loadTestAnalyte(TestAnalyteForm rpc) {
