@@ -93,7 +93,7 @@ public class FillOrderScreen extends OpenELISScreenForm<FillOrderForm, Query<Tab
     private Dropdown            costCenter;
     private TreeWidget          orderItemsTree;
     private ResultsTable        fillItemsTable;
-  //  private QueryTable          fillItemsQueryTable;
+    //private QueryTable          fillItemsQueryTable;
     private AppButton           removeRowButton, addLocationButton;
     private DataSorter sorter;
 
@@ -167,7 +167,7 @@ public class FillOrderScreen extends OpenELISScreenForm<FillOrderForm, Query<Tab
     public void afterDraw(boolean success) {
         ScreenResultsTable sw = (ScreenResultsTable)widgets.get("fillItemsTable");
         fillItemsTable = (ResultsTable)sw.getWidget();
-      //  fillItemsQueryTable = (QueryTable)((ScreenQueryTable)sw.getQueryWidget()).getWidget();
+        //fillItemsQueryTable = (QueryTable)((ScreenQueryTable)sw.getQueryWidget()).getWidget();
         fillItemsTable.table.addTableWidgetListener(this);
         fillItemsTable.model.addTableModelListener(this);
         sorter = new DataSorter();
@@ -239,8 +239,8 @@ public class FillOrderScreen extends OpenELISScreenForm<FillOrderForm, Query<Tab
         removeRowButton.changeState(ButtonState.DISABLED);
         addLocationButton.changeState(ButtonState.DISABLED);
 
-     //   fillItemsQueryTable.setCellValue(OrderMeta.getStatusId(), 2, new TableDataRow<Integer>(orderPendingValue));
-     //   fillItemsQueryTable.select(0, 1);
+        fillItemsTable.table.model.setCell(0, 2, new TableDataRow<Integer>(orderPendingValue));
+        fillItemsTable.table.select(0, 1);
 
         orderItemsTree.model.clear();
         lockedIndexes.clear();
@@ -388,12 +388,12 @@ public class FillOrderScreen extends OpenELISScreenForm<FillOrderForm, Query<Tab
     }
 
     public boolean canEdit(TableWidget widget, TableDataRow set, int row, int col) {
-        return state == State.ADD && col == 0;
+        return state == State.QUERY || (state == State.ADD && col == 0);
 
     }
 
     public boolean canSelect(TableWidget widget, TableDataRow set, int row) {
-        return state == State.ADD || state == State.DISPLAY;
+        return state == State.QUERY || state == State.ADD || state == State.DISPLAY;
 
     }
 
