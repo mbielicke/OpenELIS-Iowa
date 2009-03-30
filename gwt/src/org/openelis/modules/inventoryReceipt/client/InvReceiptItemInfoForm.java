@@ -70,7 +70,7 @@ public class InvReceiptItemInfoForm extends Form<Integer> {
        storageLocationId = new DropDownField<Integer>(meta.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getStorageLocationId());
        lotNumber = new StringField(meta.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getLotNumber());
        expirationDate = new DateField(meta.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getExpirationDate());
-       addToExisting = new CheckField("addToExisiting");
+       addToExisting = new CheckField("addToExisting");
        description = new StringField(meta.INVENTORY_ITEM_META.getDescription());
        storeId = new StringField(meta.INVENTORY_ITEM_META.getStoreId());
        dispensedUnits = new StringField(meta.INVENTORY_ITEM_META.getDispensedUnitsId());

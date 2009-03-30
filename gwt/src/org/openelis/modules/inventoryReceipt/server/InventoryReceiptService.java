@@ -388,7 +388,6 @@ public class InventoryReceiptService implements AppScreenFormServiceInt<Inventor
     
     private TableDataModel<TableDataRow<Integer>> getInventoryItemMatches(String match, boolean loc, Integer inventoryItemId) throws RPCException{
         InventoryItemRemote remote = (InventoryItemRemote)EJBFactory.lookup("openelis/InventoryItemBean/remote");
-        Integer parentId = null;
         if(inventoryItemId == null)
                 throw new FormErrorException(openElisConstants.getString("inventoryTransferFromItemException"));
 
@@ -400,7 +399,7 @@ public class InventoryReceiptService implements AppScreenFormServiceInt<Inventor
         if(loc)
             autoCompleteList = remote.inventoryItemStoreLocAutoCompleteLookupByName(parsedMatch+"%", 10, false, true);    
         else if(inventoryItemId.compareTo(new Integer(-1)) > 0)
-            autoCompleteList = remote.inventoryItemStoreChildAutoCompleteLookupByName(parsedMatch+"%", parentId, 10);
+            autoCompleteList = remote.inventoryItemStoreChildAutoCompleteLookupByName(parsedMatch+"%", inventoryItemId, 10);
         else
             autoCompleteList = remote.inventoryItemStoreAutoCompleteLookupByName(parsedMatch+"%", 10, true, true); //this one
         
@@ -712,9 +711,7 @@ public class InventoryReceiptService implements AppScreenFormServiceInt<Inventor
                 
                 //setup the subform
                 InvReceiptItemInfoForm keyRPC = new InvReceiptItemInfoForm();
-                InvReceiptItemInfoForm keyForm = new InvReceiptItemInfoForm();
-                FormUtil.setForm(keyForm, subRpcNode);
-                keyRPC = keyForm;
+                FormUtil.setForm(keyRPC, subRpcNode);
                 keyRPC.disableInvItem = true;
                 keyRPC.disableOrderId = true;
                 keyRPC.disableOrg = true;
@@ -793,6 +790,43 @@ public class InventoryReceiptService implements AppScreenFormServiceInt<Inventor
                 
                 //Qty
                 set.cells[6] = (new IntegerField(resultDO.getQuantityReceived()));
+                
+              //setup the subform
+                InvReceiptItemInfoForm keyRPC = new InvReceiptItemInfoForm();
+                FormUtil.setForm(keyRPC, subRpcNode);
+                //keyRPC.disableInvItem = true;
+                //keyRPC.disableOrderId = true;
+                //keyRPC.disableOrg = true;
+                //keyRPC.disableUpc = true;
+                //keyRPC.receiptId = resultDO.getId();
+                //keyRPC.orderItemId = resultDO.getOrderItemId();
+                
+                //keyRPC.form.multUnit.setValue(resultDO.getOrgAddress().getMultipleUnit());
+                //keyRPC.form.streetAddress.setValue(resultDO.getOrgAddress().getStreetAddress());
+                //keyRPC.form.city.setValue(resultDO.getOrgAddress().getCity());
+                //keyRPC.form.state.setValue(resultDO.getOrgAddress().getState());
+                //keyRPC.form.zipCode.setValue(resultDO.getOrgAddress().getZipCode());
+                
+                keyRPC.description.setValue(resultDO.getItemDesc());
+                keyRPC.dispensedUnits.setValue(resultDO.getItemDispensedUnits());
+                keyRPC.storeId.setValue(resultDO.getItemStore());
+                
+                //keyRPC.form.addToExisting.setValue(resultDO.getIsBulk());
+                keyRPC.lotNumber.setValue(resultDO.getLotNumber());
+                
+                if(resultDO.getExpDate() != null && resultDO.getExpDate().getDate() != null)
+                    keyRPC.expirationDate.setValue(DatetimeRPC.getInstance(Datetime.YEAR, Datetime.DAY, resultDO.getExpDate().getDate()));
+                
+                /*
+                if(resultDO.getStorageLocationId() != null){
+                    DataModel<Integer> locModel = new DataModel<Integer>();
+                    locModel.add(new DataSet<Integer>(resultDO.getStorageLocationId(),new StringObject(resultDO.getStorageLocation())));
+                    keyRPC.form.storageLocationId.setModel(locModel);
+                    keyRPC.form.storageLocationId.setValue(locModel.get(0));
+                }
+                */
+                
+                set.key = keyRPC;
                 
               //TODO need to add the key/data which would be the ids and the subform below
                 model.add(set);

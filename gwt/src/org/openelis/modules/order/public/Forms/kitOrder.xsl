@@ -453,7 +453,6 @@ UIRF Software License are applicable instead of those above.
 			</VerticalPanel>
 	</display>
 	<rpc key="display">
-  	  <!-- values on the screen -->
   	  <integer key="{orderMeta:getId($order)}" required="false"/>
       <integer key="{orderMeta:getNeededInDays($order)}" required="true"/>
       <dropdown key="{orderMeta:getStatusId($order)}" type="integer" required="true"/> 
@@ -503,7 +502,6 @@ UIRF Software License are applicable instead of those above.
       <string key="{addr:getState($orgAddress)}" required="false"/>
       <string key="{addr:getZipCode($orgAddress)}" required="false"/>
       
-      <!-- values not on this screen -->
       <string key="{orderMeta:getExternalOrderNumber($order)}" required="false"/>    
 	</rpc>
 	<!--

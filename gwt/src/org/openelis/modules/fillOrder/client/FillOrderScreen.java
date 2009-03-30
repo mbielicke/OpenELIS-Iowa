@@ -93,7 +93,7 @@ public class FillOrderScreen extends OpenELISScreenForm<FillOrderForm, Query<Tab
     private Dropdown            costCenter;
     private TreeWidget          orderItemsTree;
     private ResultsTable        fillItemsTable;
-    private QueryTable          fillItemsQueryTable;
+  //  private QueryTable          fillItemsQueryTable;
     private AppButton           removeRowButton, addLocationButton;
     private DataSorter sorter;
 
@@ -167,7 +167,7 @@ public class FillOrderScreen extends OpenELISScreenForm<FillOrderForm, Query<Tab
     public void afterDraw(boolean success) {
         ScreenResultsTable sw = (ScreenResultsTable)widgets.get("fillItemsTable");
         fillItemsTable = (ResultsTable)sw.getWidget();
-        fillItemsQueryTable = (QueryTable)((ScreenQueryTable)sw.getQueryWidget()).getWidget();
+      //  fillItemsQueryTable = (QueryTable)((ScreenQueryTable)sw.getQueryWidget()).getWidget();
         fillItemsTable.table.addTableWidgetListener(this);
         fillItemsTable.model.addTableModelListener(this);
         sorter = new DataSorter();
@@ -239,8 +239,8 @@ public class FillOrderScreen extends OpenELISScreenForm<FillOrderForm, Query<Tab
         removeRowButton.changeState(ButtonState.DISABLED);
         addLocationButton.changeState(ButtonState.DISABLED);
 
-        fillItemsQueryTable.setCellValue(OrderMeta.getStatusId(), 2, new TableDataRow<Integer>(orderPendingValue));
-        fillItemsQueryTable.select(0, 1);
+     //   fillItemsQueryTable.setCellValue(OrderMeta.getStatusId(), 2, new TableDataRow<Integer>(orderPendingValue));
+     //   fillItemsQueryTable.select(0, 1);
 
         orderItemsTree.model.clear();
         lockedIndexes.clear();
@@ -1122,7 +1122,7 @@ public class FillOrderScreen extends OpenELISScreenForm<FillOrderForm, Query<Tab
 
     public void setStatusIdModel(TableDataModel<TableDataRow<Integer>> statusIdsModel) {
         ((TableDropdown)fillItemsTable.table.columns.get(2).getColumnWidget()).setModel(statusIdsModel);
-        ((TableDropdown)fillItemsQueryTable.columns.get(2).getColumnWidget()).setModel(statusIdsModel);
+      //  ((TableDropdown)fillItemsQueryTable.columns.get(2).getColumnWidget()).setModel(statusIdsModel);
     }
 
     public void setCostCentersModel(TableDataModel<TableDataRow<Integer>> costCentersModel) {
@@ -1131,7 +1131,7 @@ public class FillOrderScreen extends OpenELISScreenForm<FillOrderForm, Query<Tab
 
     public void setShipFromModel(TableDataModel<TableDataRow<Integer>> shipFromsModel) {
         ((TableDropdown)fillItemsTable.table.columns.get(4).getColumnWidget()).setModel(shipFromsModel);
-        ((TableDropdown)fillItemsQueryTable.columns.get(4).getColumnWidget()).setModel(shipFromsModel);
+      //  ((TableDropdown)fillItemsQueryTable.columns.get(4).getColumnWidget()).setModel(shipFromsModel);
     }
     
     public boolean ifDifferent(Object arg1, Object arg2){

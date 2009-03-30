@@ -103,7 +103,7 @@ UIRF Software License are applicable instead of those above.
 		<VerticalPanel style="WhiteContentPanel" spacing="0" padding="0">
 			<widget valign="top">
 			
-				<resultsTable colwidths="2" showNavPanel="false" key="fillItemsTable" maxRows="10" tablewidth="auto" headers="{resource:getString($constants,'name')}" width="100%">
+				<resultsTable query="true" colwidths="2" showNavPanel="false" key="fillItemsTable" maxRows="10" tablewidth="auto" headers="{resource:getString($constants,'name')}" width="100%">
 						<table width="auto" manager="this" maxRows="10" title="" showError="false" showScroll="ALWAYS">
 							<headers> ,<xsl:value-of select='resource:getString($constants,"ordNum")'/>,<xsl:value-of select='resource:getString($constants,"status")'/>,
 							<xsl:value-of select='resource:getString($constants,"orderDate")'/>,<xsl:value-of select='resource:getString($constants,"shipFrom")'/>,
