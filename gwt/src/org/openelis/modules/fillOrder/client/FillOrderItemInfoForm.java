@@ -41,7 +41,7 @@ public class FillOrderItemInfoForm extends Form<Integer> {
        city = new StringField(meta.ORDER_ORGANIZATION_META.ADDRESS.getCity());
        state = new StringField(meta.ORDER_ORGANIZATION_META.ADDRESS.getState());
        zipCode = new StringField(meta.ORDER_ORGANIZATION_META.ADDRESS.getZipCode());
-//       originalOrderItemsTree = new TreeField("originalTree");
+       originalOrderItemsTree = new TreeField("originalTree");
    }
    
    public FillOrderItemInfoForm(Node node) {
