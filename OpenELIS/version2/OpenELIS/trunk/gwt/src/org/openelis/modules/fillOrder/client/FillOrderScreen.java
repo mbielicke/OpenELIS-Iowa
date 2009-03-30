@@ -245,6 +245,7 @@ public class FillOrderScreen extends OpenELISScreenForm<FillOrderForm, Query<Tab
         orderItemsTree.model.clear();
         lockedIndexes.clear();
         combinedTree.clear();
+        
     }
 
     public void commit() {
@@ -575,8 +576,8 @@ public class FillOrderScreen extends OpenELISScreenForm<FillOrderForm, Query<Tab
     public void rowSelected(SourcesTableModelEvents sender, final int row) {
         //removeRowButton.changeState(ButtonState.DISABLED);
         //addLocationButton.changeState(ButtonState.DISABLED);
-        
-        fetchSubForm(row, false);
+        if(state != State.QUERY)
+            fetchSubForm(row, false);
        
     }
 
@@ -752,9 +753,8 @@ public class FillOrderScreen extends OpenELISScreenForm<FillOrderForm, Query<Tab
             
             if(foii == null || refresh){
                 //fetch the data
-                FillOrderItemInfoForm foirpc = new FillOrderItemInfoForm();
+                FillOrderItemInfoForm foirpc = new FillOrderItemInfoForm(form.itemInformation.node);
                 foirpc.entityKey = getOrderId(row);
-                foirpc = new FillOrderItemInfoForm(form.itemInformation.node);
                 foirpc.originalOrderItemsTree.setValue(emptyTreeModel.clone());
                 
                 
