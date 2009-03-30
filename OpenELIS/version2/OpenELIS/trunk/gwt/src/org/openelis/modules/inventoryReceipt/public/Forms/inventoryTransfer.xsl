@@ -134,7 +134,8 @@ UIRF Software License are applicable instead of those above.
 		<!--end button panel-->
 			<VerticalPanel style="WhiteContentPanel" spacing="0" padding="0">
 					<widget valign="top">
-						<table width="auto" key="receiptsTable" manager="this" maxRows="10" title="" showError="false" showScroll="ALWAYS">
+					<resultsTable query="true" colwidths="2" showNavPanel="false" key="receiptsTable" maxRows="18" tablewidth="auto" headers="{resource:getString($constants,'name')}" width="100%">
+						<table width="auto" manager="this" maxRows="10" title="" showError="false" showScroll="ALWAYS">
 							<headers>From Item,From Loc,On Hand,To Item,Ext,To Loc,Qty</headers>
 							<widths>140,160,65,140,40,160,50</widths>										
 							<editors>
@@ -158,11 +159,11 @@ UIRF Software License are applicable instead of those above.
 							<fields>
 								<dropdown key="{inventoryItemMeta:getName($invItem)}" required="true"/>
 								<string key="fromLoc"/>
-								<number type="integer" key="qtyOnHand"/>
+								<integer key="qtyOnHand"/>
 								<dropdown key="{inventoryItemMeta:getName($invItem)}" required="true"/>
 								<check key="addToExisting"/>
 								<dropdown required="true"/>
-								<number key="{inventoryReceiptMeta:getQuantityReceived($receipt)}" type="integer" required="false"/>
+								<integer key="{inventoryReceiptMeta:getQuantityReceived($receipt)}" required="false"/>
 							</fields>
 							<sorts>false,false,false,false,false,false,false</sorts>
 							<filters>false,false,false,false,false,false,false</filters>
@@ -191,7 +192,9 @@ UIRF Software License are applicable instead of those above.
 							<!--	</fields>
 							</queryTable>
 							</query>
-							-->
+			-->
+							</resultsTable>
+
 						</widget>
 						<widget style="WhiteContentPanel" halign="center">									
 							<appButton action="removeRow" onclick="this" style="Button" key="removeReceiptButton">
@@ -273,24 +276,25 @@ UIRF Software License are applicable instead of those above.
 				</VerticalPanel>
 	</display>
 	<rpc key="display">
-		<dropdown key="{inventoryLocationMeta:getStorageLocationId($loc)}" required="false"/>
-		<string key="{inventoryLocationMeta:getLotNumber($loc)}" required="false"/>
-		<date key="{inventoryLocationMeta:getExpirationDate($loc)}" begin="0" end="2" required="false"/>
-		<check key="addToExisting" required="false"/>
-	
-    	<table key="receiptsTable"/>
+	<table key="receiptsTable"/>
     	<string key="type" reset="false">transfer</string>
     	
-    	<!--disabled values -->
-    	<string key="{inventoryItemMeta:getDescription($invItem)}" required="false"/>
-    	<string key="{inventoryItemMeta:getStoreId($invItem)}" required="false"/>
-    	<string key="{inventoryItemMeta:getDispensedUnitsId($invItem)}" required="false"/>
+    	<rpc key="itemInformation">
     	<string key="{addressMeta:getMultipleUnit($address)}" required="false"/>
     	<string key="{addressMeta:getStreetAddress($address)}" required="false"/>
     	<string key="{addressMeta:getCity($address)}" required="false"/>
     	<string key="{addressMeta:getState($address)}" required="false"/>
     	<string key="{addressMeta:getZipCode($address)}" required="false"/>
-    	<number key="{orderItemMeta:getQuantity($orderItem)}" type="integer" required="false"/>
+    	
+    	<string key="{inventoryItemMeta:getDescription($invItem)}" required="false"/>
+    	<string key="{inventoryItemMeta:getStoreId($invItem)}" required="false"/>
+    	<string key="{inventoryItemMeta:getDispensedUnitsId($invItem)}" required="false"/>
+    	
+    	<check key="addToExisting" required="false"/>
+    	<dropdown key="{inventoryLocationMeta:getStorageLocationId($loc)}" required="false"/>
+		<string key="{inventoryLocationMeta:getLotNumber($loc)}" required="false"/>
+		<date key="{inventoryLocationMeta:getExpirationDate($loc)}" begin="0" end="2" required="false"/>
+    	</rpc>
 	</rpc>
 	<!--
 	<rpc key="query">

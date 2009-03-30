@@ -291,24 +291,56 @@ UIRF Software License are applicable instead of those above.
 		</VerticalPanel>
 	</display>
 	<rpc key="display">
-	  <!-- values on the screen -->
-  	  <integer key="{orderMeta:getId($order)}" required="false"/>
+	 <integer key="{orderMeta:getId($order)}" required="false"/>
       <integer key="{orderMeta:getNeededInDays($order)}" required="true"/>
-      <dropdown key="{orderMeta:getStatusId($order)}" type="integer" required="true"/>  
+      <dropdown key="{orderMeta:getStatusId($order)}" type="integer" required="true"/> 
       <string key="{orderMeta:getOrderedDate($order)}" required="true"/>
       <string key="{orderMeta:getRequestedBy($order)}" required="true"/>
       <dropdown key="{orderMeta:getCostCenterId($order)}" type="integer" required="false"/>
+      <dropdown key="{orgMeta:getName($organization)}" required="true"/>
+      <dropdown key="{orderMeta:getShipFromId($order)}" required="false"/>
+      <dropdown key="{orderMeta:getDescription($order)}" required="false"/>
       
       <string key="orderTabPanel" reset="false">itemsTab</string>
       <rpc key="shippingNote">
     	  <string key="{noteMeta:getText($shippingNote)}" required="false"/>
+      </rpc>
+      <rpc key="custNote">
+          <string key="{noteMeta:getText($custNote)}" required="false"/>
       </rpc>
       <rpc key="items">
 	      <table key="itemsTable"/>
       </rpc>
       <rpc key="receipts">
 	  	  <table key="receiptsTable"/>
-		</rpc>
+	  </rpc>
+      <rpc key="reportToBillTo">
+		  <dropdown key="{orgMeta:getName($reportTo)}" required="false"/>
+	      <dropdown key="{orgMeta:getName($billTo)}" required="false"/>
+      
+	      <!--report to address-->
+	      <string key="{addr:getMultipleUnit($reportToAddress)}" required="false"/>
+	      <string key="{addr:getStreetAddress($reportToAddress)}" required="false"/>
+	      <string key="{addr:getCity($reportToAddress)}" required="false"/>
+	      <string key="{addr:getState($reportToAddress)}" required="false"/>
+	      <string key="{addr:getZipCode($reportToAddress)}" required="false"/>
+	      
+	      <!--bill to address -->
+	      <string key="{addr:getMultipleUnit($billToAddress)}" required="false"/>
+	      <string key="{addr:getStreetAddress($billToAddress)}" required="false"/>
+	      <string key="{addr:getCity($billToAddress)}" required="false"/>
+	      <string key="{addr:getState($billToAddress)}" required="false"/>
+	      <string key="{addr:getZipCode($billToAddress)}" required="false"/>
+      </rpc>
+	  
+      <!-- organization address-->
+      <string key="{addr:getMultipleUnit($orgAddress)}" required="false"/>
+      <string key="{addr:getStreetAddress($orgAddress)}" required="false"/>
+      <string key="{addr:getCity($orgAddress)}" required="false"/>
+      <string key="{addr:getState($orgAddress)}" required="false"/>
+      <string key="{addr:getZipCode($orgAddress)}" required="false"/>
+      
+      <string key="{orderMeta:getExternalOrderNumber($order)}" required="false"/>
 	</rpc>
 	<!--
 	<rpc key="query">

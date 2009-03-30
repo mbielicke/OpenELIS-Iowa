@@ -319,7 +319,6 @@ UIRF Software License are applicable instead of those above.
 		<string key="{inventoryLocationMeta:getLotNumber($loc)}" required="false"/>
 		<date key="{inventoryLocationMeta:getExpirationDate($loc)}" begin="0" end="2" required="false"/>
     	</rpc>
-    	
 	</rpc>
 	<!--
 	<rpc key="query">
