@@ -818,14 +818,16 @@ public class InventoryItemService implements AppScreenFormServiceInt<InventoryIt
             components.add(componentDO);    
         }
         
-        for(int j=0; j<deletedRows.size(); j++){
-            TableDataRow<Integer> deletedRow = deletedRows.get(j);
-            if(deletedRow.key != null){
-                InventoryComponentDO componentDO = new InventoryComponentDO();
-                componentDO.setDelete(true);
-                componentDO.setId(deletedRow.key);
-                                
-                components.add(componentDO);
+        if(deletedRows != null){
+            for(int j=0; j<deletedRows.size(); j++){
+                TableDataRow<Integer> deletedRow = deletedRows.get(j);
+                if(deletedRow.key != null){
+                    InventoryComponentDO componentDO = new InventoryComponentDO();
+                    componentDO.setDelete(true);
+                    componentDO.setId(deletedRow.key);
+                                    
+                    components.add(componentDO);
+                }
             }
         }
         

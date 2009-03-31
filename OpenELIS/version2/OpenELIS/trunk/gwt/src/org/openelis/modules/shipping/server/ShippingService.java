@@ -25,6 +25,10 @@
  */
 package org.openelis.modules.shipping.server;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 import org.openelis.domain.IdNameDO;
 import org.openelis.domain.NoteDO;
 import org.openelis.domain.OrganizationAutoDO;
@@ -37,15 +41,12 @@ import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.Query;
-import org.openelis.gwt.common.QueryException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.FieldType;
-import org.openelis.gwt.common.data.IntegerObject;
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.common.data.TableDataModel;
 import org.openelis.gwt.common.data.TableDataRow;
@@ -55,7 +56,6 @@ import org.openelis.gwt.services.AppScreenFormServiceInt;
 import org.openelis.gwt.services.AutoCompleteServiceInt;
 import org.openelis.metamap.ShippingMetaMap;
 import org.openelis.modules.fillOrder.client.FillOrderOrderItemsKey;
-import org.openelis.modules.organization.client.OrganizationForm;
 import org.openelis.modules.shipping.client.ShippingForm;
 import org.openelis.modules.shipping.client.ShippingItemsData;
 import org.openelis.modules.shipping.client.ShippingItemsForm;
@@ -73,10 +73,6 @@ import org.openelis.util.Datetime;
 import org.openelis.util.FormUtil;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 
 public class ShippingService implements AppScreenFormServiceInt<ShippingForm, Query<TableDataRow<Integer>>>, AutoCompleteServiceInt {
 
@@ -155,18 +151,18 @@ public class ShippingService implements AppScreenFormServiceInt<ShippingForm, Qu
 		NoteDO shippingNote = new NoteDO();
 		List trackingNumbers = new ArrayList();
 		List shippingItems = new ArrayList();
-
+		System.out.println("before get out of rpc");
 		// build the shippingDO from the form
 		shippingDO = getShippingDOFromRPC(rpc);
-
+		System.out.println("after out");
 		// tracking numbers info
 		TableDataModel<TableDataRow<Integer>> trackingNumsTable = (TableDataModel<TableDataRow<Integer>>) rpc.shippingItemsForm.trackingNumbersTable.getValue();
 		trackingNumbers = getTrackingNumberListFromRPC(trackingNumsTable, shippingDO.getId());
-
+		System.out.println("after tracking");
 		// shipping items info
 		TableDataModel<TableDataRow<Integer>> shippingItemsTable = (TableDataModel<TableDataRow<Integer>>) rpc.shippingItemsForm.itemsTable.getValue();
 		shippingItems = getShippingItemsListFromRPC(shippingItemsTable, shippingDO.getId());
-
+System.out.println("after shipping items");
 		//set the shipping notes
 		shippingNote.setSubject("");
 		shippingNote.setText((String)rpc.shippingNotesForm.text.getValue());
@@ -611,13 +607,15 @@ public class ShippingService implements AppScreenFormServiceInt<ShippingForm, Qu
 			trackingNums.add(trackingDO);
 		}
 
-		for (int j = 0; j < deletedRows.size(); j++) {
-			TableDataRow<Integer> deletedRow = deletedRows.get(j);
-			if (deletedRow.key != null) {
-				ShippingTrackingDO trackingDO = new ShippingTrackingDO();
-				trackingDO.setDelete(true);
-				trackingDO.setId(deletedRow.key);
-			}
+		if(deletedRows != null){
+    		for (int j = 0; j < deletedRows.size(); j++) {
+    			TableDataRow<Integer> deletedRow = deletedRows.get(j);
+    			if (deletedRow.key != null) {
+    				ShippingTrackingDO trackingDO = new ShippingTrackingDO();
+    				trackingDO.setDelete(true);
+    				trackingDO.setId(deletedRow.key);
+    			}
+    		}
 		}
 
 		return trackingNums;

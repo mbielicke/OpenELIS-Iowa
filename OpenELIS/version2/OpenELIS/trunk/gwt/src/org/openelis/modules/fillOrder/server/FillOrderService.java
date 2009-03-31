@@ -290,7 +290,6 @@ public class FillOrderService implements AppScreenFormServiceInt<FillOrderForm, 
     
     public FillOrderItemInfoForm validateOrders(FillOrderItemInfoForm rpc) throws RPCException { 
         List orders = getListOfOrdersFromTree(rpc.originalOrderItemsTree.getValue());
-        
         FillOrderRemote remote = (FillOrderRemote)EJBFactory.lookup("openelis/FillOrderBean/remote");
         try {
             remote.validateOrders(orders);
@@ -298,8 +297,9 @@ public class FillOrderService implements AppScreenFormServiceInt<FillOrderForm, 
             if(e instanceof ValidationErrorsList){
                 setRpcErrors(((ValidationErrorsList)e).getErrorList(), rpc);
                 return rpc;
-            }else
+            }else{
                 throw new RPCException(e.getMessage());
+            }
         }
         
         return rpc;
@@ -433,10 +433,11 @@ public class FillOrderService implements AppScreenFormServiceInt<FillOrderForm, 
         for(int i=0; i<orderItems.size(); i++){
             ///
             OrderItemDO itemDO = (OrderItemDO)orderItems.get(i);
-            TreeDataItem row = treeModel.createTreeItem("top");
+            //TreeDataItem row = treeModel.createTreeItem("top");
+            TreeDataItem row = treeModel.createTreeItem("orderItem");
             
             row.cells[0].setValue(itemDO.getQuantity());
-            row.cells[1].setValue(rpc.key);
+            row.cells[1].setValue(rpc.entityKey);
             
             if(itemDO.getInventoryItemId() != null){
                 TableDataModel<TableDataRow<Integer>> invItemModel = new TableDataModel<TableDataRow<Integer>>();
@@ -524,10 +525,11 @@ public class FillOrderService implements AppScreenFormServiceInt<FillOrderForm, 
                                         .get(i)).getMessage()));
 
             // if the error is on the entire form
-            else if (exceptionList.get(i) instanceof FormErrorException)
+            else if (exceptionList.get(i) instanceof FormErrorException){
                 form.addError(openElisConstants
                         .getString(((FormErrorException) exceptionList.get(i))
                                 .getMessage()));
+            }
         }
 
         form.status = Form.Status.invalid;

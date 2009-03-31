@@ -39,6 +39,7 @@ import org.openelis.gwt.widget.AToZTable;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.CollapsePanel;
+import org.openelis.gwt.widget.ResultsTable;
 import org.openelis.metamap.TestTrailerMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
@@ -69,7 +70,7 @@ public class TestTrailerScreen extends OpenELISScreenForm<TestTrailerForm,Query<
 	    }
 	
 	public void afterDraw(boolean success) {
-        AToZTable atozTable = (AToZTable)getWidget("azTable");
+	    ResultsTable atozTable = (ResultsTable)getWidget("azTable");
         ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
         ButtonPanel bpanel = (ButtonPanel) getWidget("buttons");
         

@@ -652,17 +652,19 @@ public class OrganizationService implements AppScreenFormServiceInt<Organization
 			organizationContacts.add(contactDO);	
 		}
         
-        for(int j=0; j<deletedRows.size(); j++){
-            TableDataRow<Contact> deletedRow = deletedRows.get(j);
-            if(deletedRow.key != null){
-                OrganizationContactDO contactDO = new OrganizationContactDO();
-                contactDO.setDelete(true);
-                contactDO.setId(deletedRow.key.orgId);
-                contactDO.getAddressDO().setId(deletedRow.key.addId);
-                
-                organizationContacts.add(contactDO);
+		if(deletedRows != null){
+            for(int j=0; j<deletedRows.size(); j++){
+                TableDataRow<Contact> deletedRow = deletedRows.get(j);
+                if(deletedRow.key != null){
+                    OrganizationContactDO contactDO = new OrganizationContactDO();
+                    contactDO.setDelete(true);
+                    contactDO.setId(deletedRow.key.orgId);
+                    contactDO.getAddressDO().setId(deletedRow.key.addId);
+                    
+                    organizationContacts.add(contactDO);
+                }
             }
-        }
+		}
 		
 		return organizationContacts;
 	}

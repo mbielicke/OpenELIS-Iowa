@@ -907,14 +907,16 @@ public class OrderService implements AppScreenFormServiceInt<OrderForm, OrderQue
             orderItems.add(orderItemDO);    
         }
         
-        for(int j=0; j<deletedRows.size(); j++){
-            TableDataRow<Integer> deletedRow = deletedRows.get(j);
-            if(deletedRow.key != null){
-                OrderItemDO itemDO = new OrderItemDO();
-                itemDO.setDelete(true);
-                itemDO.setId(deletedRow.key);
-                
-                orderItems.add(itemDO);
+        if(deletedRows != null){
+            for(int j=0; j<deletedRows.size(); j++){
+                TableDataRow<Integer> deletedRow = deletedRows.get(j);
+                if(deletedRow.key != null){
+                    OrderItemDO itemDO = new OrderItemDO();
+                    itemDO.setDelete(true);
+                    itemDO.setId(deletedRow.key);
+                    
+                    orderItems.add(itemDO);
+                }
             }
         }
         

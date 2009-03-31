@@ -397,16 +397,18 @@ public class StorageLocationService implements AppScreenFormServiceInt<StorageLo
 			storageLocationChildren.add(childDO);	
 		}
         
-        for(int j=0; j<deletedRows.size(); j++){
-            TableDataRow<Integer> deletedRow = deletedRows.get(j);
-            if(deletedRow.key != null){
-                StorageLocationDO childDO = new StorageLocationDO();
-                childDO.setDelete(true);
-                childDO.setId(deletedRow.key);
-                
-                storageLocationChildren.add(childDO);
+		if(deletedRows != null){
+            for(int j=0; j<deletedRows.size(); j++){
+                TableDataRow<Integer> deletedRow = deletedRows.get(j);
+                if(deletedRow.key != null){
+                    StorageLocationDO childDO = new StorageLocationDO();
+                    childDO.setDelete(true);
+                    childDO.setId(deletedRow.key);
+                    
+                    storageLocationChildren.add(childDO);
+                }
             }
-        }
+		}
         
 		return storageLocationChildren;
 	}
