@@ -32,6 +32,7 @@ import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.FormErrorException;
+import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.Query;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.data.AbstractField;
@@ -87,7 +88,8 @@ public class SystemVariableService implements AppScreenFormServiceInt<SystemVari
 
              try{
                  sysVars = remote.query(query.fields,query.page*leftTableRowsPerPage,leftTableRowsPerPage);
-    
+             }catch(LastPageException e) {
+                 throw new LastPageException(openElisConstants.getString("lastPageException"));
              }catch(Exception e){
                  e.printStackTrace();
                  throw new RPCException(e.getMessage());

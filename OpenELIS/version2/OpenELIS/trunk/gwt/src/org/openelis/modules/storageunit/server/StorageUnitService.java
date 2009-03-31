@@ -31,6 +31,7 @@ import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.FormErrorException;
+import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.Query;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.data.AbstractField;
@@ -95,7 +96,8 @@ public class StorageUnitService implements AppScreenFormServiceInt<StorageUnitFo
 
 			try {
                 storageUnits = remote.query(query.fields, query.page*leftTableRowsPerPage, leftTableRowsPerPage);
-
+            }catch(LastPageException e) {
+                throw new LastPageException(openElisConstants.getString("lastPageException"));
 			} catch (Exception e) {
 				throw new RPCException(e.getMessage());
 			}

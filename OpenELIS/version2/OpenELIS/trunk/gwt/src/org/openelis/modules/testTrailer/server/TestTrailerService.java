@@ -88,7 +88,8 @@ public class TestTrailerService implements AppScreenFormServiceInt<TestTrailerFo
     			
     			try{
                     testTrailers = remote.query(query.fields,query.page*leftTableRowsPerPage,leftTableRowsPerPage);
-    
+                }catch(LastPageException e) {
+                    throw new LastPageException(openElisConstants.getString("lastPageException"));
         		}catch(Exception e){
         			throw new RPCException(e.getMessage());
         		}

@@ -110,7 +110,8 @@ public class AuxiliaryService implements
 
             try {
                 auxfgNames = remote.query(query.fields, query.page*leftTableRowsPerPage, leftTableRowsPerPage);
-
+            }catch(LastPageException e) {
+                throw new LastPageException(openElisConstants.getString("lastPageException"));
             } catch (Exception e) {
                 e.printStackTrace();
                 throw new RPCException(e.getMessage());
