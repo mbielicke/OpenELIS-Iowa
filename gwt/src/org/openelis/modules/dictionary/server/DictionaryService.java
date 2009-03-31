@@ -105,8 +105,10 @@ public class DictionaryService implements AppScreenFormServiceInt<DictionaryForm
         } else{*/
             CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
            
-                try{                                        
-                    systemNames = remote.query(query.fields,query.page*leftTableRowsPerPage,leftTableRowsPerPage);                     
+            try{                                        
+                   systemNames = remote.query(query.fields,query.page*leftTableRowsPerPage,leftTableRowsPerPage);        
+            }catch(LastPageException e) {
+                    throw new LastPageException(openElisConstants.getString("lastPageException"));
             }catch(Exception e){
                 e.printStackTrace();
                 throw new RPCException(e.getMessage());                

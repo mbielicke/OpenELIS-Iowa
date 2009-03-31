@@ -127,7 +127,8 @@ public class InventoryReceiptService implements AppScreenFormServiceInt<Inventor
            
             try{    
                 receipts = remote.query(query.fields,query.page*leftTableRowsPerPage,leftTableRowsPerPage, (InventoryReceiptRemote.RECEIPT.equals(query.type)));
-    
+            }catch(LastPageException e) {
+                throw new LastPageException(openElisConstants.getString("lastPageException"));
             }catch(Exception e){
                 throw new RPCException(e.getMessage());
             }
