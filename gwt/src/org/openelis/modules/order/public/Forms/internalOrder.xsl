@@ -297,23 +297,30 @@ UIRF Software License are applicable instead of those above.
       <string key="{orderMeta:getOrderedDate($order)}" required="true"/>
       <string key="{orderMeta:getRequestedBy($order)}" required="true"/>
       <dropdown key="{orderMeta:getCostCenterId($order)}" type="integer" required="false"/>
-      <dropdown key="{orgMeta:getName($organization)}" required="true"/>
-      <dropdown key="{orderMeta:getShipFromId($order)}" required="false"/>
-      <dropdown key="{orderMeta:getDescription($order)}" required="false"/>
       
-      <string key="orderTabPanel" reset="false">itemsTab</string>
-      <rpc key="shippingNote">
-    	  <string key="{noteMeta:getText($shippingNote)}" required="false"/>
-      </rpc>
-      <rpc key="custNote">
-          <string key="{noteMeta:getText($custNote)}" required="false"/>
-      </rpc>
-      <rpc key="items">
+       <rpc key="items">
 	      <table key="itemsTable"/>
       </rpc>
+      
       <rpc key="receipts">
 	  	  <table key="receiptsTable"/>
 	  </rpc>
+	  
+	  <rpc key="shippingNote">
+    	  <string key="{noteMeta:getText($shippingNote)}" required="false"/>
+      </rpc>
+      
+      <string key="orderTabPanel" reset="false">itemsTab</string>
+	  
+      <!-- fields not on this screen -->
+      <dropdown key="{orgMeta:getName($organization)}" required="false"/>
+      <dropdown key="{orderMeta:getShipFromId($order)}" required="false"/>
+      <dropdown key="{orderMeta:getDescription($order)}" required="false"/>
+      
+      <rpc key="custNote">
+          <string key="{noteMeta:getText($custNote)}" required="false"/>
+      </rpc>
+      
       <rpc key="reportToBillTo">
 		  <dropdown key="{orgMeta:getName($reportTo)}" required="false"/>
 	      <dropdown key="{orgMeta:getName($billTo)}" required="false"/>
@@ -339,7 +346,6 @@ UIRF Software License are applicable instead of those above.
       <string key="{addr:getCity($orgAddress)}" required="false"/>
       <string key="{addr:getState($orgAddress)}" required="false"/>
       <string key="{addr:getZipCode($orgAddress)}" required="false"/>
-      
       <string key="{orderMeta:getExternalOrderNumber($order)}" required="false"/>
 	</rpc>
 	<!--

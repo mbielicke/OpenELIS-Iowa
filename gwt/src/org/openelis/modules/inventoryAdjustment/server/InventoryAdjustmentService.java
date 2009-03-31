@@ -485,14 +485,16 @@ public class InventoryAdjustmentService implements AppScreenFormServiceInt<Inven
             adjustmentsList.add(childDO);    
         }
         
-        for(int j=0; j<deletedRows.size(); j++){
-            TableDataRow<Integer> deletedRow = deletedRows.get(j);
-            if(deletedRow.key != null){
-                InventoryAdjustmentChildDO childDO = new InventoryAdjustmentChildDO();
-                childDO.setDelete(true);
-                childDO.setId(deletedRow.key);
-                
-                adjustmentsList.add(childDO);
+        if(deletedRows != null){
+            for(int j=0; j<deletedRows.size(); j++){
+                TableDataRow<Integer> deletedRow = deletedRows.get(j);
+                if(deletedRow.key != null){
+                    InventoryAdjustmentChildDO childDO = new InventoryAdjustmentChildDO();
+                    childDO.setDelete(true);
+                    childDO.setId(deletedRow.key);
+                    
+                    adjustmentsList.add(childDO);
+                }
             }
         }
         
