@@ -27,7 +27,6 @@ package org.openelis.modules.main.client.openelis;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.WindowCloseListener;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -36,6 +35,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 import org.openelis.gwt.common.RPC;
+import org.openelis.gwt.common.SecurityUtil;
 import org.openelis.gwt.screen.AppScreen;
 import org.openelis.gwt.screen.ClassFactory;
 import org.openelis.gwt.screen.ScreenMenuPanel;
@@ -55,6 +55,7 @@ public class OpenELIS extends AppScreen<OpenELISForm> implements ClickListener {
     
     public static ArrayList<String> modules = new ArrayList<String>();
     public static WindowBrowser browser;
+    public static SecurityUtil security;
     private FavoritesScreen fv;
     
 	public OpenELIS() {	    
@@ -70,6 +71,7 @@ public class OpenELIS extends AppScreen<OpenELISForm> implements ClickListener {
         	browser = (WindowBrowser)getWidget("browser");
         	browser.setBrowserHeight();
             AppScreen.consts = form.appConstants;
+            security = form.security;
     }
 
     public void onClick(Widget item) {
