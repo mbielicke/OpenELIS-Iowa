@@ -30,30 +30,42 @@ import org.openelis.entity.Lock;
 import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.local.LockLocal;
 import org.openelis.local.LoginLocal;
-import org.openelis.persistence.JBossCachingManager;
 import org.openelis.security.domain.SystemUserDO;
+import org.openelis.security.local.SystemUserUtilLocal;
 import org.openelis.util.Datetime;
 
 import java.util.Calendar;
 import java.util.Date;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.ejb.EJB;
+import javax.ejb.EJBs;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
+@EJBs({
+    @EJB(name="ejb/Login",beanInterface=LoginLocal.class),
+    @EJB(name="ejb/SystemUser",beanInterface=SystemUserUtilLocal.class)
+})
 @Stateless
 //@SecurityDomain("ttSecurity")
 public class LockBean implements LockLocal{
+    
+    private LoginLocal login;
+    private SystemUserUtilLocal sysUser;
+    
+    @PostConstruct
+    private void init() {
+        login =  (LoginLocal)ctx.lookup("ejb/Login");
+        sysUser = (SystemUserUtilLocal)ctx.lookup("ejb/SystemUser");    
+    }
 	    
 @PersistenceContext
 private EntityManager manager;
-
-@EJB
-private LoginLocal login;
 
 @Resource
 private SessionContext ctx;
@@ -112,7 +124,7 @@ public Integer getLock(Integer table, Integer row, String session) throws Except
     Lock lock = checkForLock(table,row);
     if(lock != null){
         if(lock.getExpires().getDate().after(Calendar.getInstance().getTime()) && !lock.getSystemUserId().equals(getSystemUserId()) && (lock.getSessionId() == null || "".equals(lock.getSessionId()) || !lock.getSessionId().equals(session))){
-             SystemUserDO user = (SystemUserDO)JBossCachingManager.getElement("openelis","security", ctx.getCallerPrincipal().getName()+"userdo");
+             SystemUserDO user = (SystemUserDO)sysUser.getSystemUser(lock.getSystemUserId());
              throw new EntityLockedException("Entity Locked by "+user.getFirstName()+" "+user.getLastName()+".  Lock will expire at "+lock.getExpires().toString()+".");
         }else{
             manager.remove(lock);
