@@ -28,6 +28,7 @@ package org.openelis.modules.main.server;
 import org.openelis.gwt.common.Query;
 import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.RPCException;
+import org.openelis.gwt.common.SecurityUtil;
 import org.openelis.gwt.common.data.FieldType;
 import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.server.ServiceUtils;
@@ -110,6 +111,7 @@ public class OpenELISService implements AppScreenFormServiceInt<OpenELISForm,Que
         try {
             rpc.xml  = ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/OpenELIS.xsl");
             rpc.appConstants = getConstants();
+            rpc.security = (SecurityUtil)SessionManager.getSession().getAttribute("security");
             return rpc;
         }catch(Exception e){
             e.printStackTrace();
