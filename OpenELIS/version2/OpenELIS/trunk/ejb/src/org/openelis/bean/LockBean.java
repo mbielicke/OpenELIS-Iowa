@@ -42,7 +42,6 @@ import javax.ejb.EJB;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
@@ -66,42 +65,61 @@ public boolean isLocked(Integer table, Integer row){
     return isLocked(table,row,"");
 }
 
+/**
+ * This method returns true if an unexpred lock is found in the table and false if 
+ * no lock or an expired lock is found.
+ */
 public boolean isLocked(Integer table, Integer row, String session){
-    Query query = manager.createQuery("from Lock where referenceTableId = "+table+" and referenceId = "+row);
-    boolean locked = false;
+    Lock lock = checkForLock(table,row);
+    if(lock != null && lock.getExpires().getDate().after(Calendar.getInstance().getTime()) && !lock.getSystemUserId().equals(getSystemUserId()) && (lock.getSessionId() == null || "".equals(lock.getSessionId()) || !lock.getSessionId().equals(session)))
+        return true;
+    return false;
+}
+
+public void validateLock(Integer table, Integer row) throws Exception{
+    validateLock(table,row,"");
+}
+
+/**
+ * This method will look for a lock in the table for the specific user and entity.  If none found we assume that they let the lock expire
+ * and someone else locked and possible changed the data.  If a lock is found we can say that it is either still a valid lock or no one else
+ * has changed the data since the first user locker. 
+ * @param table
+ * @param row
+ * @param sessionId
+ * @throws Exception
+ */
+public void validateLock(Integer table, Integer row, String sessionId) throws Exception {
+    Lock lock = null;
     try {
-        Lock lock = (Lock)query.getSingleResult();
-        if(lock.getExpires().getDate().after(Calendar.getInstance().getTime()) && !lock.getSystemUserId().equals(getSystemUserId()) && (lock.getSessionId() == null || "".equals(lock.getSessionId()) || !lock.getSessionId().equals(session))){
-            locked = true;
-        }
-        if((locked && (lock.getSystemUserId().equals(getSystemUserId()) && lock.getSessionId().equals(session))) || !locked){
-            manager.remove(lock);
-            manager.flush();
-            locked = false;
-        }
-    }catch(NoResultException e){
-        return false;
+        Query query = manager.createQuery("from Lock where referenceTableId = "+table+" and referenceId = "+row+" and systemUserId = "+getSystemUserId()+" and sessionId = '"+sessionId+"'");
+        lock = (Lock)query.getSingleResult();
+    }catch(Exception e){
+        
     }
-    return locked;
+    if(lock == null)
+        throw new EntityLockedException("Your Lock on this entity has expired and it is possible that the data your are trying to commit may now be stale.  Please press abort and and try your update again.");
 }
 
 public Integer getLock(Integer table, Integer row) throws Exception {
     return getLock(table,row,"");
 }
 
+/**
+ * This method will check for an existing valid lock by another user.  If this is locked by the calling user it will refresh the lock.
+ */
 public Integer getLock(Integer table, Integer row, String session) throws Exception{
-    if(isLocked(table, row)){
-        Query query = manager.createQuery("from Lock where referenceTableId = "+table+" and referenceId = "+row);
-        try {
-            Lock lock = (Lock)query.getSingleResult();
-            SystemUserDO user = (SystemUserDO)JBossCachingManager.getElement("openelis","security", ctx.getCallerPrincipal().getName()+"userdo");
-            throw new EntityLockedException("Entity Locked by "+user.getFirstName()+" "+user.getLastName()+".  Lock will expire at "+lock.getExpires().toString()+".");
-        }catch(Exception e){
-            e.printStackTrace();
-            throw e;
+    Lock lock = checkForLock(table,row);
+    if(lock != null){
+        if(lock.getExpires().getDate().after(Calendar.getInstance().getTime()) && !lock.getSystemUserId().equals(getSystemUserId()) && (lock.getSessionId() == null || "".equals(lock.getSessionId()) || !lock.getSessionId().equals(session))){
+             SystemUserDO user = (SystemUserDO)JBossCachingManager.getElement("openelis","security", ctx.getCallerPrincipal().getName()+"userdo");
+             throw new EntityLockedException("Entity Locked by "+user.getFirstName()+" "+user.getLastName()+".  Lock will expire at "+lock.getExpires().toString()+".");
+        }else{
+            manager.refresh(lock);
+            manager.flush();
         }
     }
-    Lock lock = new Lock();
+    lock = new Lock();
     lock.setReferenceTableId(table);
     lock.setReferenceId(row);
     lock.setSystemUserId(getSystemUserId());
@@ -114,10 +132,28 @@ public Integer getLock(Integer table, Integer row, String session) throws Except
     return lock.getId();
 }
 
+/**
+ * Returns a lock for this entity by any user.
+ * @param table
+ * @param row
+ * @return
+ */
+private Lock checkForLock(Integer table, Integer row) {
+    Query query = manager.createQuery("from Lock where referenceTableId = "+table+" and referenceId = "+row);
+    try {
+        return (Lock)query.getSingleResult();
+    }catch(Exception e){
+        return null;
+    }
+}
+
 public void giveUpLock(Integer table, Integer row){
     giveUpLock(table,row,"");
 }
 
+/**
+ * This method will remove the given lock from the table.
+ */
 public void giveUpLock(Integer table, Integer row, String session) {
     try {
         Query query = manager.createQuery("from Lock where referenceTableId = "+table+" and referenceId = "+row+" and systemUserId = "+getSystemUserId()+" and sessionId = '"+session+"'");
