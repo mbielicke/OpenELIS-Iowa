@@ -115,7 +115,7 @@ public Integer getLock(Integer table, Integer row, String session) throws Except
              SystemUserDO user = (SystemUserDO)JBossCachingManager.getElement("openelis","security", ctx.getCallerPrincipal().getName()+"userdo");
              throw new EntityLockedException("Entity Locked by "+user.getFirstName()+" "+user.getLastName()+".  Lock will expire at "+lock.getExpires().toString()+".");
         }else{
-            manager.refresh(lock);
+            manager.remove(lock);
             manager.flush();
         }
     }
