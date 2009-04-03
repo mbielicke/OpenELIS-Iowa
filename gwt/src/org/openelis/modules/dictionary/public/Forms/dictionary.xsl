@@ -66,14 +66,7 @@ UIRF Software License are applicable instead of those above.
 	<display>
 		<HorizontalPanel style="WhiteContentPanel" spacing="0" padding="0">
 			<!--left table goes here -->
-			 		<CollapsePanel key="collapsePanel" height="450px" style="LeftSidePanel">
-			 		<!--
-						<azTable colwidths ="175"  key="azTable" maxRows="19" tablewidth="auto" headers="{resource:getString($constants,'catName')}" width="100%">
-							<buttonPanel key="atozButtons">
-								<xsl:call-template name="aToZLeftPanelButtons"/>
-							</buttonPanel>
-						</azTable>
-					-->
+			 		<CollapsePanel key="collapsePanel" height="450px" style="LeftSidePanel">			 	
 					<resultsTable key="azTable" height="425px" width="100%">
 				   	 <buttonPanel key="atozButtons">
 	    			   <xsl:call-template name="aToZLeftPanelButtons"/>		
@@ -157,8 +150,7 @@ UIRF Software License are applicable instead of those above.
 										<textbox case="mixed" max="30" width="215px" key="{meta:getSystemName($cat)}" tab="dictEntTable,{meta:getSectionId($cat)}"/>									
 								</row>						  							
 						</TablePanel>
-					</VerticalPanel>
-					<!--<VerticalPanel height="3px"/>-->
+					</VerticalPanel>					
 					
 					<VerticalPanel  spacing="0" padding = "0">
 						<widget>

@@ -97,7 +97,7 @@ import java.util.Map.Entry;
 public class TestService implements AppScreenFormServiceInt<TestForm,Query<TableDataRow<Integer>>>,
                                     AutoCompleteServiceInt{
 
-    private static final int leftTableRowsPerPage = 28;
+    private static final int leftTableRowsPerPage = 27;
     private UTFResource openElisConstants = UTFResource.getBundle((String)SessionManager.getSession()
                                                                                         .getAttribute("locale"));
 
@@ -918,7 +918,6 @@ public class TestService implements AppScreenFormServiceInt<TestForm,Query<Table
             ((IntegerField)row.cells[7]).setValue(resultDO.getSignificantDigits());   
             
             if(resultDO.getRoundingMethodId()!=null)
-
              ((DropDownField<IntegerObject>)row.cells[8]).setValue(new TableDataRow<Integer>(resultDO.getRoundingMethodId()));
             
             model.add(row);
@@ -955,6 +954,7 @@ public class TestService implements AppScreenFormServiceInt<TestForm,Query<Table
             testPrepDOList.add(testPrepDO);
         }
         
+       if(model.getDeletions() != null) { 
         for (int j = 0; j < model.getDeletions().size(); j++) {
             TableDataRow<Integer>row = (TableDataRow)model.getDeletions().get(j);
             TestPrepDO testPrepDO = new TestPrepDO();
@@ -967,9 +967,9 @@ public class TestService implements AppScreenFormServiceInt<TestForm,Query<Table
             }
             
             testPrepDOList.add(testPrepDO);
-        }
-
-        model.getDeletions().clear(); 
+          }         
+        model.getDeletions().clear();
+       } 
         return testPrepDOList;
     }
 
@@ -1004,7 +1004,8 @@ public class TestService implements AppScreenFormServiceInt<TestForm,Query<Table
               
             typeOfSampleDOList.add(testTypeOfSampleDO);
         }
-        
+       
+       if(model.getDeletions() != null) {        
         for (int i = 0; i < model.getDeletions().size(); i++) {
             row = (TableDataRow)model.getDeletions().get(i);
             testTypeOfSampleDO = new TestTypeOfSampleDO();
@@ -1022,6 +1023,7 @@ public class TestService implements AppScreenFormServiceInt<TestForm,Query<Table
             typeOfSampleDOList.add(testTypeOfSampleDO);
         }
         model.getDeletions().clear();
+       } 
         return typeOfSampleDOList;
     }
     
@@ -1051,7 +1053,9 @@ public class TestService implements AppScreenFormServiceInt<TestForm,Query<Table
                 
             list.add(refDO);
          }
-         for (int i = 0; i < model.getDeletions().size(); i++) {
+        
+         if(model.getDeletions() != null) {     
+          for (int i = 0; i < model.getDeletions().size(); i++) {
              TableDataRow<Integer>row = (TableDataRow)model.getDeletions().get(i);
              TestReflexDO refDO = new TestReflexDO();
              
@@ -1064,7 +1068,8 @@ public class TestService implements AppScreenFormServiceInt<TestForm,Query<Table
              
              list.add(refDO);
           }
-         model.getDeletions().clear();
+          model.getDeletions().clear();
+         }  
          return list;
     }
     
@@ -1134,7 +1139,8 @@ public class TestService implements AppScreenFormServiceInt<TestForm,Query<Table
             tsDOList.add(tsDO);            
         }
         
-        for(int iter = 0; iter < model.getDeletions().size(); iter++){
+        if(model.getDeletions() != null) {     
+         for(int iter = 0; iter < model.getDeletions().size(); iter++){
             TableDataRow<Integer>row = (TableDataRow)model.getDeletions().get(iter);
             TestSectionDO tsDO = new TestSectionDO();
             
@@ -1146,9 +1152,9 @@ public class TestService implements AppScreenFormServiceInt<TestForm,Query<Table
             }                       
 
             tsDOList.add(tsDO);               
-        }
-        
-        model.getDeletions().clear();
+         }        
+         model.getDeletions().clear();
+        } 
         return tsDOList;
     }
     
@@ -1178,6 +1184,7 @@ public class TestService implements AppScreenFormServiceInt<TestForm,Query<Table
             worksheetItemDOList.add(worksheetItemDO);
         }
         
+       if(model.getDeletions() != null) {     
         for (int i = 0; i < model.getDeletions().size(); i++) {
             TableDataRow<Integer>row = (TableDataRow)model.getDeletions().get(i);
             TestWorksheetItemDO worksheetItemDO = new TestWorksheetItemDO();
@@ -1192,6 +1199,7 @@ public class TestService implements AppScreenFormServiceInt<TestForm,Query<Table
             worksheetItemDOList.add(worksheetItemDO);
         }
         model.getDeletions().clear();
+       } 
         return worksheetItemDOList;
     }
     
@@ -1225,7 +1233,8 @@ public class TestService implements AppScreenFormServiceInt<TestForm,Query<Table
             worksheetItemDOList.add(worksheetAnaDO);
         }
         
-        for (int i = 0; i < model.getDeletions().size(); i++) {
+        if(model.getDeletions() != null) {     
+         for (int i = 0; i < model.getDeletions().size(); i++) {
             TableDataRow<Integer> row = (TableDataRow)model.getDeletions().get(i);
             TestWorksheetAnalyteDO worksheetAnaDO = new TestWorksheetAnalyteDO();
             IntegerField id = null;
@@ -1243,7 +1252,8 @@ public class TestService implements AppScreenFormServiceInt<TestForm,Query<Table
             
             worksheetItemDOList.add(worksheetAnaDO);
         }
-        model.getDeletions().clear();
+         model.getDeletions().clear();
+        } 
         return worksheetItemDOList;
     }
     
@@ -1642,8 +1652,9 @@ public class TestService implements AppScreenFormServiceInt<TestForm,Query<Table
            
          } 
         }
-        
-        for(int iter = 0; iter < model.getDeletions().size(); iter++){
+       
+        if(model.getDeletions() != null) {
+         for(int iter = 0; iter < model.getDeletions().size(); iter++){
             TreeDataItem item = model.getDeletions().get(iter);
             if("top".equals(item.leafType)){
               List<TreeDataItem> itemList = item.getItems();
@@ -1658,7 +1669,8 @@ public class TestService implements AppScreenFormServiceInt<TestForm,Query<Table
                 analyteDOList.add(anaDO);                               
             } 
            }        
-        model.getDeletions().clear();        
+         model.getDeletions().clear();     
+        } 
         return analyteDOList;
     }
     
@@ -1696,6 +1708,7 @@ public class TestService implements AppScreenFormServiceInt<TestForm,Query<Table
       IntegerField rg = null;
       IntegerObject valueObj = null;
       IntegerObject valObj = new IntegerObject(-999);
+      TableDataModel<TableDataRow<Integer>> model =  null;
             
       CategoryRemote catRemote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
       Integer dictId = null;
@@ -1709,7 +1722,7 @@ public class TestService implements AppScreenFormServiceInt<TestForm,Query<Table
       List<TestResultDO> trDOlist = new ArrayList<TestResultDO>();
       
       for(int fiter = 0; fiter < list.size(); fiter++){
-        TableDataModel<TableDataRow<Integer>> model = (TableDataModel<TableDataRow<Integer>>)list.get(fiter);
+          model = (TableDataModel<TableDataRow<Integer>>)list.get(fiter);
                 
         for(int iter = 0; iter < model.size(); iter++){
             TableDataRow<Integer> row = model.get(iter);
@@ -1762,7 +1775,8 @@ public class TestService implements AppScreenFormServiceInt<TestForm,Query<Table
             trDOlist.add(resultDO);
         }
         
-        for(int iter = 0; iter < model.getDeletions().size(); iter++){
+        if(model.getDeletions() != null) {
+         for(int iter = 0; iter < model.getDeletions().size(); iter++){
             TableDataRow<Integer>row = (TableDataRow)model.getDeletions().get(iter);
             TestResultDO resultDO = new TestResultDO();
             
@@ -1779,6 +1793,7 @@ public class TestService implements AppScreenFormServiceInt<TestForm,Query<Table
         }
         
         model.getDeletions().clear();
+       }  
       }  
         return trDOlist;
     }

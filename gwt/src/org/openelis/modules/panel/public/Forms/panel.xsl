@@ -63,14 +63,7 @@ UIRF Software License are applicable instead of those above.
 				<HorizontalPanel padding="0" spacing="0">
 					<!--left table goes here -->
 					<CollapsePanel key="collapsePanel" height="225px" style="LeftSidePanel">
-					  <VerticalPanel>	
-					   <!--
-						<azTable colwidths="175"  key="azTable" maxRows="10" tablewidth="auto" headers="{resource:getString($constants,'panel')}" width="100%">
-							<buttonPanel key="atozButtons">
-								<xsl:call-template name="aToZLeftPanelButtons"/>
-							</buttonPanel>
-						</azTable>
-						-->
+					  <VerticalPanel>	 					   
 						  <resultsTable width="100%" key="azTable">
 					       <buttonPanel key="atozButtons">
 								<xsl:call-template name="aToZLeftPanelButtons"/>
@@ -153,8 +146,7 @@ UIRF Software License are applicable instead of those above.
 						  <VerticalPanel height = "10px"/>   
 						  <HorizontalPanel>
 						      						                                    
-                              <VerticalPanel style="Form">
-                                <!--<text ><xsl:value-of select="resource:getString($constants,'testsThisPanel')"/></text>-->
+                              <VerticalPanel style="Form">                                
                                <widget valign="top"> 
                                 <table key="addedTestTable" manager="this" maxRows="8" showError="false" showScroll="ALWAYS" title="" width="auto">												
 												<headers> 
@@ -163,8 +155,8 @@ UIRF Software License are applicable instead of those above.
 												</headers>
 												<widths>120,120</widths>
 												<editors>
-													<label/>
-													<label/>																								
+													<textbox/>
+													<textbox/>																								
 												</editors>
 												<fields>
 													<string key="{panelItem:getTestName($pi)}" required="true"/>
@@ -173,28 +165,7 @@ UIRF Software License are applicable instead of those above.
 												<sorts>false,false</sorts>
 												<filters>false,false</filters>
 												<colAligns>left,left</colAligns>
-							    </table>
-							    <!--
-							    <query>
-								 <queryTable maxRows="8" showError="false" showScroll="ALWAYS" title="" width="auto">
-												<headers>
-												 <xsl:value-of select="resource:getString($constants,'test')"/>,
-												 <xsl:value-of select="resource:getString($constants,'method')"/>														 																							
-												</headers>
-												<widths>120,120</widths>
-												<editors>
-													<textbox case="mixed"/>
-													<textbox case="mixed"/>																									
-												</editors>
-												<fields>
-												    <xsl:value-of select='panelItem:getTestName($pi)'/>,<xsl:value-of select='panelItem:getMethodName($pi)'/>																																																	
-												</fields>
-												<sorts>false,false</sorts>
-												<filters>false,false</filters>
-												<colAligns>left,left</colAligns>
-								 </queryTable>
-								</query>
-								-->
+							    </table>							    
 							   </widget>
 							 
                              </VerticalPanel>
@@ -207,9 +178,8 @@ UIRF Software License are applicable instead of those above.
 						                 </appButton>
 						        </widget>  
 						       <HorizontalPanel width = "10px"/> 
-						      <VerticalPanel style="Form" >						      
-						      <!--<text ><xsl:value-of select="resource:getString($constants,'allTests')"/></text>-->
-                               <table key="allTestsTable" manager="this" maxRows="8" showError="false" showScroll="ALWAYS" title="" width="auto">												
+						      <VerticalPanel style="Form" >						      						      
+                               <table key="allTestsTable" manager="this" maxRows="8" showError="false" showScroll="ALWAYS" query="false" title="" width="auto">												
 												<headers> 
 												 <xsl:value-of select="resource:getString($constants,'test')"/>,
 												 <xsl:value-of select="resource:getString($constants,'method')"/>,
@@ -268,18 +238,6 @@ UIRF Software License are applicable instead of those above.
 			 <string key="{meta:getDescription($panel)}" max="60" required="false"/>		 			 					
 		     <table key = "addedTestTable"/>
 		   </rpc>
-		   <!--
-		   <rpc key="query">			 
-			 <queryString key="{meta:getName($panel)}"/>			 
-			 <queryString key="{meta:getDescription($panel)}"/>	
-			 <queryString key="{panelItem:getTestName($pi)}"/>		 			 							
-			 <queryString key="{panelItem:getMethodName($pi)}"/>
-			 <model key = "addedTestTable"/>
-		    </rpc>
-			<rpc key="queryByLetter">
-			 <queryString key="{meta:getName($panel)}"/>				
-			</rpc>
-			-->
 		</screen>
   </xsl:template>
 </xsl:stylesheet>

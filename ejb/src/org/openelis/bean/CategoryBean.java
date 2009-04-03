@@ -157,6 +157,11 @@ public class CategoryBean implements CategoryRemote {
         if (categoryDO.getId() != null) {
             // we need to call lock one more time to make sure their lock didnt
             // expire and someone else grabbed the record
+            try {
+                lockBean.validateLock(categoryReferenceId,categoryDO.getId());
+              } catch(Exception ex) {
+                 throw ex;
+              } 
             lockBean.getLock(categoryReferenceId, categoryDO.getId());
         }
 

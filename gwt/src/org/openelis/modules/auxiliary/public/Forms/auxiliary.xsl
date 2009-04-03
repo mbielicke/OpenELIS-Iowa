@@ -70,7 +70,7 @@ UIRF Software License are applicable instead of those above.
 				   	 <buttonPanel key="atozButtons">
 	    			   <xsl:call-template name="aToZLeftPanelButtons"/>		
 		    		 </buttonPanel>
-		    		 <table maxRows="20" width="auto">
+		    		 <table maxRows="25" width="auto">
 		    		   <headers><xsl:value-of select="resource:getString($constants,'groupName')"/></headers>
 		    		   <widths>175</widths>
 		    		   <editors>
@@ -235,7 +235,7 @@ UIRF Software License are applicable instead of those above.
 							            <HorizontalPanel width = "7px"/>
 							           </widget>                                       
                                        <widget  align="center">
-									       <appButton action="removeRow" onclick="this" style="Button" key="removeAuxFieldValueButton">
+									       <appButton action="removeRow" onclick="this" style="Button" key="removeAuxFieldValueRowButton">
 									        <HorizontalPanel>
 													<AbsolutePanel style="RemoveRowButtonImage"/>
 													<text><xsl:value-of select="resource:getString($constants,'removeRow')"/></text>

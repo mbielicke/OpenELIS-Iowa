@@ -167,6 +167,11 @@ public class TestBean implements TestRemote {
             if (testIdNameMethodDO.getId() != null) {
                 // we need to call lock one more time to make sure their lock
                 // didn't expire and someone else grabbed the record
+                try {
+                    lockBean.validateLock(testReferenceId,testIdNameMethodDO.getId());
+                  } catch(Exception ex) {
+                     throw ex;
+                  }      
                 lockBean.getLock(testReferenceId, testIdNameMethodDO.getId());
             }
 
@@ -805,12 +810,10 @@ public class TestBean implements TestRemote {
                      +TestMeta.getId()+", "+TestMeta.getName()+", "
                      +TestMeta.getMethod().getName() + ") ");               
         
-        qb.addWhere(fields);
-        System.out.println("fields#######################################  "+ fields);
+        qb.addWhere(fields);        
         qb.setOrderBy(TestMeta.getName()+", "+TestMeta.getMethod().getName());
 
-        sb.append(qb.getEJBQL());                
-        System.out.println("sb#######################################  "+ sb); 
+        sb.append(qb.getEJBQL());                        
         Query query = manager.createQuery(sb.toString());
 
         if (first > -1 && max > -1)

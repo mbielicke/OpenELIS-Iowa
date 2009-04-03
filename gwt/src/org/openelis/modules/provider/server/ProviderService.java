@@ -637,6 +637,7 @@ public class ProviderService implements AppScreenFormServiceInt<ProviderForm, Qu
             
             provAddDOList.add(provAddDO);                                    
         }
+          if(addressTable.getDeletions()!=null) {
            for(int iter = 0; iter < addressTable.getDeletions().size(); iter++){            
                ProviderAddressDO provAddDO = new ProviderAddressDO();
                TableDataRow<Integer> row = (TableDataRow<Integer>)addressTable.getDeletions().get(iter);
@@ -653,7 +654,8 @@ public class ProviderService implements AppScreenFormServiceInt<ProviderForm, Qu
                provAddDO.setDelete(true);                          
                provAddDOList.add(provAddDO);   
               }
-               
+           addressTable.getDeletions().clear();
+          }     
        return provAddDOList;    
     }
 

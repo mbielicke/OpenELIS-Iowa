@@ -93,7 +93,6 @@ public class DictionaryScreen extends OpenELISScreenForm<DictionaryForm,Query<Ta
 
         dictEntryController.addTableWidgetListener(this);
 
-        //tname = (TextBox)getWidget(CatMap.getName());
         startWidget = (ScreenInputWidget)widgets.get(CatMap.getName());
         removeEntryButton = (AppButton)getWidget("removeEntryButton");
                 

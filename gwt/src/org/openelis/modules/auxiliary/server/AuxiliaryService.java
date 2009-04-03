@@ -50,7 +50,6 @@ import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.FieldType;
 import org.openelis.gwt.common.data.IntegerField;
-import org.openelis.gwt.common.data.IntegerObject;
 import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.common.data.TableField;
@@ -64,6 +63,7 @@ import org.openelis.modules.auxiliary.client.AuxiliaryForm;
 import org.openelis.modules.auxiliary.client.AuxiliaryGeneralPurposeRPC;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.AuxiliaryRemote;
+import org.openelis.remote.CategoryRemote;
 import org.openelis.server.constants.Constants;
 import org.openelis.server.handlers.AuxFieldValueTypeCacheHandler;
 import org.openelis.server.handlers.UnitOfMeasureCacheHandler;
@@ -75,37 +75,13 @@ import org.openelis.util.UTFResource;
 public class AuxiliaryService implements
                              AppScreenFormServiceInt<AuxiliaryForm, Query<TableDataRow<Integer>>> , AutoCompleteServiceInt{
     
-    private static final int leftTableRowsPerPage = 21;
+    private static final int leftTableRowsPerPage = 26;
     private UTFResource openElisConstants = UTFResource.getBundle((String)SessionManager.getSession()
                                                                                         .getAttribute("locale"));
-    private static final AuxFieldGroupMetaMap AuxFieldGroupMeta = new AuxFieldGroupMetaMap();
     
     public Query<TableDataRow<Integer>> commitQuery(Query<TableDataRow<Integer>> query) throws RPCException {
         List auxfgNames;
-        // if the rpc is null then we need to get the page
-        /*if (form == null) {
-
-            form = (Form)SessionManager.getSession()
-                                                 .getAttribute("AuxiliaryQuery");
-
-            if (form == null)
-                throw new RPCException(openElisConstants.getString("queryExpiredException"));
-
-            AuxiliaryRemote remote = (AuxiliaryRemote)EJBFactory.lookup("openelis/AuxiliaryBean/remote");
-
-            try {
-                auxfgNames = remote.query(form.getFieldMap(),
-                                         (model.getPage() * leftTableRowsPerPage),
-                                         leftTableRowsPerPage + 1);
-            } catch (Exception e) {
-                if (e instanceof LastPageException) {
-                    throw new LastPageException(openElisConstants.getString("lastPageException"));
-                } else {
-                    e.printStackTrace();
-                    throw new RPCException(e.getMessage());
-                }
-            }
-        } else {*/
+        
             AuxiliaryRemote remote = (AuxiliaryRemote)EJBFactory.lookup("openelis/AuxiliaryBean/remote");
 
             try {
@@ -116,10 +92,7 @@ public class AuxiliaryService implements
                 e.printStackTrace();
                 throw new RPCException(e.getMessage());
             }
-
-            // need to save the rpc used to the encache
-            //SessionManager.getSession().setAttribute("AuxiliaryQuery", form);
-        //}
+            
 
         // fill the model with the query results
         int i = 0;
@@ -140,16 +113,15 @@ public class AuxiliaryService implements
         AuxiliaryRemote remote = (AuxiliaryRemote)EJBFactory.lookup("openelis/AuxiliaryBean/remote");
         AuxFieldGroupDO axfgDO = getAuxFieldGroupDOFromRPC(rpc);
         Integer axfgId;
-        List<AuxFieldDO> axfDOList = getAuxFieldDOListFromRPC(null, rpc);
-        List<AuxFieldValueDO> axfvDOList = getAuxFieldValueDOListFromRPC(null, rpc);
-        List exceptionList = remote.validateForAdd(axfgDO,axfDOList,axfvDOList);
+        List<AuxFieldDO> axfDOList = getAuxFieldDOListFromRPC(null, rpc);        
+        List<Exception> exceptionList = remote.validateForAdd(axfgDO,axfDOList);
         if (exceptionList.size() > 0) {
             setRpcErrors(exceptionList, rpc);    
             return rpc;
         }
     
         try {
-            axfgId = remote.updateAuxiliary(axfgDO,axfDOList,axfvDOList);
+            axfgId = remote.updateAuxiliary(axfgDO,axfDOList);
             axfgDO = remote.getAuxFieldGroup(axfgId);
         } catch (Exception e) {
             if (e instanceof EntityLockedException)
@@ -172,17 +144,15 @@ public class AuxiliaryService implements
         AuxiliaryRemote remote = (AuxiliaryRemote)EJBFactory.lookup("openelis/AuxiliaryBean/remote");
         AuxFieldGroupDO axfgDO = getAuxFieldGroupDOFromRPC(rpc);
         IntegerField axfgId = rpc.id;
-        List<AuxFieldDO> axfDOList = getAuxFieldDOListFromRPC(axfgId.getValue(), rpc);
-        List<AuxFieldValueDO> axfvDOList = getAuxFieldValueDOListFromRPC(axfgId.getValue(), rpc);
-        
-        List exceptionList = remote.validateForUpdate(axfgDO,axfDOList,axfvDOList);
+        List<AuxFieldDO> axfDOList = getAuxFieldDOListFromRPC(axfgId.getValue(), rpc);               
+        List<Exception> exceptionList = remote.validateForUpdate(axfgDO,axfDOList);
         if (exceptionList.size() > 0) {
             setRpcErrors(exceptionList, rpc);    
             return rpc;
         }
     
         try {
-            remote.updateAuxiliary(axfgDO,axfDOList,axfvDOList);
+            remote.updateAuxiliary(axfgDO,axfDOList);
             axfgDO = remote.getAuxFieldGroup(axfgId.getValue());
         } catch (Exception e) {
             if (e instanceof EntityLockedException)
@@ -216,7 +186,6 @@ public class AuxiliaryService implements
     public AuxiliaryForm fetch(AuxiliaryForm rpc) throws RPCException {
         AuxiliaryRemote remote = (AuxiliaryRemote)EJBFactory.lookup("openelis/AuxiliaryBean/remote");
         AuxFieldGroupDO axfgDO = remote.getAuxFieldGroup(rpc.entityKey);
-        List<AuxFieldDO> auxfields = remote.getAuxFields(rpc.entityKey);
         setFieldsInRPC(rpc, axfgDO);        
         fillAuxFieldTable(rpc.entityKey, rpc);
         return rpc;
@@ -320,13 +289,50 @@ public class AuxiliaryService implements
       
       for(AuxFieldValueDO valueDO: valueDOList) {
        set = rpc.auxFieldValueModel.createNewSet();       
-       set.key = (valueDO.getId());      
+       set.key = valueDO.getId();      
        set.cells[0].setValue(new TableDataRow<Integer>(valueDO.getTypeId()));
-       set.cells[1].setValue(valueDO.getValue());
+       
+       if(valueDO.getDictEntry() == null)
+        set.cells[1].setValue(valueDO.getValue());
+       else
+        set.cells[1].setValue(valueDO.getDictEntry());
+       
        rpc.auxFieldValueModel.add(set);
       }
       
       return rpc;
+    }
+    
+    public AuxiliaryGeneralPurposeRPC getEntryIdForSystemName(AuxiliaryGeneralPurposeRPC rpc) {
+        CategoryRemote remote =  (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
+        try{
+            rpc.key = remote.getEntryIdForSystemName(rpc.stringValue);
+          }catch(Exception ex) {
+              ex.printStackTrace();              
+          }
+           
+          return rpc;
+    }
+    
+    public AuxiliaryGeneralPurposeRPC getCategorySystemName(AuxiliaryGeneralPurposeRPC rpc) { 
+      CategoryRemote remote =  (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");        
+      try{
+          rpc.stringValue = remote.getSystemNameForEntryId(rpc.key);
+       }catch(Exception ex) {
+        ex.printStackTrace();
+     }
+    return rpc;
+   }
+    
+    public AuxiliaryGeneralPurposeRPC getEntryIdForEntryText(AuxiliaryGeneralPurposeRPC rpc){
+        CategoryRemote remote =  (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
+        try{
+            rpc.key = remote.getEntryIdForEntry(rpc.stringValue);
+          }catch(Exception ex) {
+              ex.printStackTrace();              
+          }
+           
+          return rpc;
     }
     
     private AuxFieldGroupDO getAuxFieldGroupDOFromRPC(AuxiliaryForm form){
@@ -367,16 +373,14 @@ public class AuxiliaryService implements
          TableDataModel<TableDataRow<Integer>> model = form.auxFieldTable.getValue();
          TableDataRow<Integer> row = null;
          List<AuxFieldDO> afDOList = new ArrayList<AuxFieldDO>();
+         List<AuxFieldValueDO> valueDOList = null;
          AuxFieldDO afDO = null;
          
          for(int i= 0; i < model.size(); i++) {
               row = model.get(i);
-              afDO = new AuxFieldDO();             
-              if(row.key != null)
-                 afDO.setId(row.key); 
-                            
-              afDO.setDelete(false);
-              
+              afDO = new AuxFieldDO();                          
+              afDO.setId(row.key);                             
+              afDO.setDelete(false);              
               afDO.setUnitOfMeasureId((Integer)((DropDownField)row.cells[2]).getSelectedKey());
               afDO.setAnalyteId((Integer)((DropDownField)row.cells[0]).getSelectedKey());
               afDO.setAuxFieldGroupId(key);
@@ -387,72 +391,86 @@ public class AuxiliaryService implements
               afDO.setMethodId((Integer)((DropDownField)row.cells[1]).getSelectedKey());
               afDO.setScriptletId((Integer)((DropDownField)row.cells[7]).getSelectedKey());
               afDO.setSortOrder(i);
+              valueDOList = getAuxFieldValueDOList(row.key,(TableDataModel)row.getData());
+              afDO.setAuxFieldValues(valueDOList);
               afDOList.add(afDO);
          }
-         
-         for(int i= 0; i < model.getDeletions().size(); i++) {
+
+         if(model.getDeletions()!=null) {
+          for(int i= 0; i < model.getDeletions().size(); i++) {
              row = (TableDataRow<Integer>)model.getDeletions().get(i);
              afDO = new AuxFieldDO();
-             if(row.key != null)
-                 afDO.setId(row.key);
-             
+             afDO.setId(row.key);             
              afDO.setDelete(true); 
+             valueDOList = getAuxFieldValueDOList(row.key,(TableDataModel)row.getData());
+             afDO.setAuxFieldValues(valueDOList);
              afDOList.add(afDO);
         }     
-         model.getDeletions().clear();
-         return afDOList;
-         
-     }
+          model.getDeletions().clear();
+       }            
+         return afDOList;         
+     }    
     
-    private List<AuxFieldValueDO> getAuxFieldValueDOListFromRPC(Integer key, AuxiliaryForm form) {
-       TableDataModel<TableDataRow<Integer>> model = null;
-       Iterator<Integer> iter = null;
-       List<AuxFieldValueDO> valueDOList = null;
-       TableDataRow<Integer> row = null;       
-       IntegerObject id = null;
-       AuxFieldValueDO valueDO = null;
-       Integer auxFieldId = null;
-       DropDownField<Integer> type = null; 
-       TableDataModel<TableDataRow<Integer>> fieldModel = form.auxFieldValueTable.getValue();       
-       valueDOList = new ArrayList<AuxFieldValueDO>();
-        for(int i = 0 ; i < fieldModel.size(); i++) {
-         auxFieldId = iter.next();   
-         model = (TableDataModel)fieldModel.get(i).getData();
-         for(int j = 0 ; j <  model.size(); j++) {
-           valueDO = new AuxFieldValueDO();  
-           row = model.get(j);
-          
-           if(row.key != null) {            
+    private List<AuxFieldValueDO> getAuxFieldValueDOList(Integer auxFieldId,TableDataModel model) {
+        List<AuxFieldValueDO> valueDOList = new ArrayList<AuxFieldValueDO>();
+        AuxFieldValueDO valueDO = null;
+        TableDataRow<Integer> row = null; 
+        DropDownField<Integer> type = null; 
+        
+        CategoryRemote catRemote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
+        Integer dictId = null;
+        Integer entryId = null;
+        try {
+          dictId = catRemote.getEntryIdForSystemName("aux_dictionary");
+        }catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        
+       if(model != null) { 
+        for(int j = 0 ; j <  model.size(); j++) {              
+            valueDO = new AuxFieldValueDO();  
+            row = model.get(j);           
             valueDO.setId(row.key);     
-           }
+            
             valueDO.setAuxFieldId(auxFieldId);
             valueDO.setDelete(false);
-            
+             
             type = (DropDownField<Integer>)row.cells[0];            
             valueDO.setTypeId((Integer)type.getSelectedKey());
-               
-            valueDO.setValue(((StringField)row.cells[0]).getValue());
+            
+            if(dictId.equals(valueDO.getTypeId())) {
+                try {
+                    entryId = catRemote.getEntryIdForEntry((String)((StringField)row.cells[1]).getValue());
+                 }catch (Exception ex) {
+                        ex.printStackTrace();
+                 }
+                 valueDO.setValue(entryId.toString());
+                 valueDO.setDictEntry((String)((StringField)row.cells[1]).getValue());
+               } 
+               else {
+                   valueDO.setValue(((StringField)row.cells[1]).getValue());
+                   valueDO.setDictEntry(null);                 
+               }
+            
             valueDOList.add(valueDO);
-         }
+          }
          
-         for(int j = 0 ; j <  model.getDeletions().size(); j++) {
-             valueDO = new AuxFieldValueDO();  
-             row = (TableDataRow<Integer>)model.getDeletions().get(i);
-             if(row.key != null) {            
-                valueDO.setId(row.key);    
-             }              
+        if(model.getDeletions() != null) {
+          for(int j = 0 ; j <  model.getDeletions().size(); j++) {
+              valueDO = new AuxFieldValueDO();  
+              row = (TableDataRow<Integer>)model.getDeletions().get(j);
+              valueDO.setId(row.key);    
               valueDO.setDelete(true);       
               valueDOList.add(valueDO);
-           }
-          model.getDeletions().clear();
-        }        
-
-         return valueDOList;
-    }
+            }
+           model.getDeletions().clear();
+        }
+      } 
+           return valueDOList;     
+     }                 
     
     private void fillAuxFieldTable(Integer key,AuxiliaryForm form) {
-        TableDataRow<Integer> row = null;       
-        IntegerObject id = null;
+        TableDataRow<Integer> row = null;               
         AuxFieldDO afDO = null;
         TableDataRow<Integer> analyteSet = null;
         TableDataModel<TableDataRow<Integer>> analyteModel = null;
@@ -511,34 +529,24 @@ public class AuxiliaryService implements
     }
 
     private void setRpcErrors(List exceptionList, AuxiliaryForm form) {
-        TableField auxFieldTable = form.auxFieldTable;
-        TableField auxFieldValueTable = form.auxFieldValueTable;        
+        TableField auxFieldTable = form.auxFieldTable;        
         HashMap<String,AbstractField> map = null;
+        TableDataRow row = null;
         if(exceptionList.size() > 0)
             map = FormUtil.createFieldMap(form);
         // we need to get the keys and look them up in the resource bundle for
         // internationalization
         for (int i = 0; i < exceptionList.size(); i++) {
             if (exceptionList.get(i) instanceof TableFieldErrorException) {
-                FieldErrorException ferrex = (FieldErrorException)exceptionList.get(i);
-
-                if (ferrex.getFieldName()
-                          .startsWith(AuxFieldMetaMap.getTableName() + ":")) {
-                    String fieldName = ((TableFieldErrorException)exceptionList.get(i)).getFieldName()
-                                                                                       .substring(AuxFieldMetaMap.getTableName()
-                                                                                                                 .length() + 1);
-                   int index =  ((TableFieldErrorException)exceptionList.get(i)).getRowIndex();
-                   auxFieldTable.getField(index, fieldName)
-                    .addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));                                        
-                } else if (ferrex.getFieldName()
-                                 .startsWith(AuxFieldValueMetaMap.getTableName() + ":")) {
-                    String fieldName = ((TableFieldErrorException)exceptionList.get(i)).getFieldName()
-                                                                                       .substring(AuxFieldValueMetaMap.getTableName()
-                                                                                                                         .length() + 1);
-                    int index =  ((TableFieldErrorException)exceptionList.get(i)).getRowIndex();
-                    auxFieldValueTable.getField(index, fieldName)
+                 TableFieldErrorException ferrex = (TableFieldErrorException)exceptionList.get(i);
+                 String fieldName = ferrex.getFieldName();
+                 int index =  ((TableFieldErrorException)exceptionList.get(i)).getRowIndex();
+                  auxFieldTable.getField(index, fieldName)
                     .addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
-                } 
+                 row = auxFieldTable.getValue().get(index);
+                 if(ferrex.getChildExceptionList() != null) {                  
+                  setAuxFieldValueErrors(ferrex.getChildExceptionList(),(TableDataModel)row.getData(),form);  
+                 }
             } else if (exceptionList.get(i) instanceof FieldErrorException) {
                 map.get(((FieldErrorException)exceptionList.get(i)).getFieldName())
                 .addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));   
@@ -548,6 +556,27 @@ public class AuxiliaryService implements
                 form.addError(openElisConstants.getString(((FormErrorException)exceptionList.get(i)).getMessage()));
         }
         form.status = Form.Status.invalid;
+        
+    }   
+    
+    private void setAuxFieldValueErrors(List exceptionList,TableDataModel model,AuxiliaryForm form) {
+        AbstractField field = null;
+        List<String> fieldIndex = form.auxFieldValueTable.getFieldIndex();
+        int fi = -1;
+        TableDataRow row = null;
+        TableFieldErrorException ferrex = null;
+        String fieldName = null;
+        int index = -1;
+        
+        for (int i = 0; i < exceptionList.size(); i++) {             
+          ferrex = (TableFieldErrorException)exceptionList.get(i);
+          fieldName = ferrex.getFieldName();
+          index =  ((TableFieldErrorException)exceptionList.get(i)).getRowIndex();
+          fi = fieldIndex.indexOf(fieldName); 
+          row = (TableDataRow)model.get(index);
+          field = (AbstractField)row.cells[fi];
+          field.addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));                                  
+        }    
         
     }
 

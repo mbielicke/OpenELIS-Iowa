@@ -139,6 +139,13 @@ public class SystemVariableBean implements SystemVariableRemote{
         Integer sysVarReferenceId = (Integer)query.getSingleResult();
         
         if(sysVarDO.getId() != null){
+         // we need to call lock one more time to make sure their lock
+         // didn't expire and someone else grabbed the record
+         try {
+              lockBean.validateLock(sysVarReferenceId,sysVarDO.getId());
+              } catch(Exception ex) {
+                 throw ex;
+            }
             lockBean.getLock(sysVarReferenceId, sysVarDO.getId());   
         }
         manager.setFlushMode(FlushModeType.COMMIT);

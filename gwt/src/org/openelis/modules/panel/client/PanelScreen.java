@@ -25,6 +25,7 @@
 */
 package org.openelis.modules.panel.client;
 
+import com.google.gwt.http.client.Request;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.ChangeListener;
@@ -33,6 +34,7 @@ import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
 import org.openelis.gwt.common.Query;
+import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.common.data.QueryStringField;
@@ -58,22 +60,16 @@ public class PanelScreen extends OpenELISScreenForm<PanelForm,Query<TableDataRow
                                                    TableManager {       
 
     private KeyListManager keyList = new KeyListManager();
+        
+    private TableWidget addedTestsWidget = null, allTestsWidget = null;
     
-    private ScreenTableWidget addedTestsTable = null;
-    private TableWidget addedTestsController = null; 
-    
-    private TableModel addTestModel = null;
-    
-    
+    private TableModel addTestModel = null, allTestsTableModel = null; 
+        
     private PanelMetaMap PanelMeta = new PanelMetaMap();
     
-    private AppButton removeTestButton,moveUpButton, moveDownButton, addTestButton;
+    private AppButton removeTestButton,moveUpButton, moveDownButton, addTestButton;         
     
-    private TableWidget allTestTable;
-    
-    private TableModel allTestsTableModel;
-    
-    private TextBox panelName;
+    private TextBox panelName = null;
     
     public void onClick(Widget sender) {
         if (sender == removeTestButton)
@@ -89,8 +85,7 @@ public class PanelScreen extends OpenELISScreenForm<PanelForm,Query<TableDataRow
     public PanelScreen() {
         super("org.openelis.modules.panel.server.PanelService");
         query = new Query<TableDataRow<Integer>>();
-        getScreen(new PanelForm());
-        
+        getScreen(new PanelForm());        
     }
     
     public void performCommand(Enum action, Object obj) {
@@ -109,73 +104,79 @@ public class PanelScreen extends OpenELISScreenForm<PanelForm,Query<TableDataRow
     public void afterDraw(boolean success) {
         ButtonPanel bpanel = (ButtonPanel) getWidget("buttons");        
         ResultsTable atozTable = (ResultsTable) getWidget("azTable");    
-        ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");        
+        ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons"); 
+        ScreenTableWidget addedTestsTable = null;
         
         CommandChain chain = new CommandChain();
         chain.addCommand(this);
         chain.addCommand(atozTable);
         chain.addCommand(atozButtons);
         chain.addCommand(keyList);
-        chain.addCommand(bpanel);
-                
-        //bpanel.enableButton("delete", false);
-        
-        /*if(allTestsDataModel==null){
-            allTestsDataModel = (DataModel)initData.get("allTests");
-            
-        }*/
+        chain.addCommand(bpanel);               
         
         ((CollapsePanel)getWidget("collapsePanel")).addChangeListener(atozTable);          
         addedTestsTable = (ScreenTableWidget)widgets.get("addedTestTable");
-        addedTestsController = ((TableWidget)addedTestsTable.getWidget());   
+        addedTestsWidget = ((TableWidget)addedTestsTable.getWidget());   
                 
-        addTestModel = (TableModel)addedTestsController.model;                          
+        addTestModel = (TableModel)addedTestsWidget.model;                          
         
         removeTestButton = (AppButton)getWidget("removeTestButton");
         moveUpButton = (AppButton)getWidget("moveUpButton");
         moveDownButton = (AppButton)getWidget("moveDownButton");
         addTestButton = (AppButton)getWidget("addTestButton");
         
-        allTestTable =  ((TableWidget)getWidget("allTestsTable"));
+        allTestsWidget = ((TableWidget)getWidget("allTestsTable"));
         
         setAllTestsDataModel(form.allTests);
         form.allTests = null;
-        allTestsTableModel = (TableModel)allTestTable.model;
+        allTestsTableModel = (TableModel)allTestsWidget.model;
         allTestsTableModel.enableMultiSelect(true);
         
         panelName = (TextBox)getWidget(PanelMeta.getName());
         updateChain.add(afterUpdate);  
-                
+                                
+        super.afterDraw(success);
         form.addedTestTable.setValue(addTestModel.getData());
-        super.afterDraw(success);              
+                        
   }
     
     public void query() {        
-        super.query();        
+        super.query();  
+        
         removeTestButton.changeState(ButtonState.DISABLED) ;
         moveUpButton.changeState(ButtonState.DISABLED) ;
         moveDownButton.changeState(ButtonState.DISABLED) ; 
-        allTestTable.enabled(false);
+        allTestsWidget.enabled(false);
     }
     
     public void add(){
         super.add();
-        allTestTable.enabled(true);
+        allTestsWidget.enabled(true);
         panelName.setFocus(true);
     } 
+    
+    public Request commitQuery() {       
+       loadAllTestsModel();
+       return super.commitQuery();
+    }
+    
+    public void abort(){
+        if(state == State.QUERY)
+            loadAllTestsModel();
+        super.abort();                              
+    }
     
     protected AsyncCallback<PanelForm> afterUpdate = new AsyncCallback<PanelForm>() {
         public void onFailure(Throwable caught) {   
         }
         public void onSuccess(PanelForm result) {            
             panelName.setFocus(true);       
-            allTestTable.enabled(true);
+            allTestsWidget.enabled(true);
         }
     };           
     
                       
-    public boolean canAdd(TableWidget widget,TableDataRow set, int row) {
-        // TODO Auto-generated method stub
+    public boolean canAdd(TableWidget widget,TableDataRow set, int row) {        
         return false;
     }
 
@@ -183,8 +184,7 @@ public class PanelScreen extends OpenELISScreenForm<PanelForm,Query<TableDataRow
        return false;
     }
 
-    public boolean canDelete(TableWidget widget,TableDataRow set, int row) {
-        // TODO Auto-generated method stub
+    public boolean canDelete(TableWidget widget,TableDataRow set, int row) {        
         return false;
     }
 
@@ -195,8 +195,7 @@ public class PanelScreen extends OpenELISScreenForm<PanelForm,Query<TableDataRow
     }
 
     public boolean canSelect(TableWidget widget,TableDataRow set, int row) {        
-       if(state == State.UPDATE || state == State.ADD||
-                       state == State.QUERY)
+       if(state == State.UPDATE || state == State.ADD||state == State.QUERY)
         return true;
        
        return false;
@@ -255,7 +254,7 @@ public class PanelScreen extends OpenELISScreenForm<PanelForm,Query<TableDataRow
               if(selIndex > -1){         
                   TableDataRow<String> atRow =  (TableDataRow<String>)allTestsTableModel.getData().get(selIndex);
                   String display = atRow.key;                  
-                  TableDataRow row = addedTestsController.model.createRow();            
+                  TableDataRow row = addedTestsWidget.model.createRow();            
                   String[] namesArray= display.split(",");                     
                   if(testAdded(namesArray[0],namesArray[1])){
                     boolean ok = Window.confirm("This test has already been added to the panel." +
@@ -276,8 +275,23 @@ public class PanelScreen extends OpenELISScreenForm<PanelForm,Query<TableDataRow
        }
        
        private void setAllTestsDataModel(TableDataModel<TableDataRow<String>> model) {
-           allTestTable.model.setModel(model);
-           allTestTable.model.refresh();
-           allTestTable.enabled(false);             
+           allTestsWidget.model.setModel(model);
+           allTestsWidget.model.refresh();
+           allTestsWidget.enabled(false);             
+       }
+       
+       private void loadAllTestsModel() {
+           PanelForm pf = new PanelForm();
+           screenService.call("getTestMethodNames", pf, new AsyncCallback<PanelForm>(){
+            public void onSuccess(PanelForm result) {
+                allTestsWidget.model.load(result.addedTestTable.getValue());           
+            }
+            
+            public void onFailure(Throwable caught) {
+                Window.alert(caught.getMessage());
+                window.clearStatus();            
+            }
+               
+           }) ;
        }
 }

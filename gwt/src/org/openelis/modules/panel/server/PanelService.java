@@ -28,7 +28,6 @@ package org.openelis.modules.panel.server;
 import org.openelis.domain.IdNameDO;
 import org.openelis.domain.PanelDO;
 import org.openelis.domain.PanelItemDO;
-import org.openelis.domain.QaEventTestDropdownDO;
 import org.openelis.domain.TestMethodSectionNamesDO;
 import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.FieldErrorException;
@@ -49,7 +48,6 @@ import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.common.data.TableField;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
-import org.openelis.metamap.PanelMetaMap;
 import org.openelis.modules.panel.client.PanelForm;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.PanelRemote;
@@ -67,7 +65,6 @@ public class PanelService implements AppScreenFormServiceInt<PanelForm, Query<Ta
     private static final int leftTableRowsPerPage = 10;
     private UTFResource openElisConstants = UTFResource.getBundle((String)SessionManager.getSession()
                                                                                         .getAttribute("locale"));
-    private static final PanelMetaMap PanelMeta = new PanelMetaMap();
     
     public PanelForm abort(PanelForm rpc) throws RPCException {
         PanelRemote remote = (PanelRemote)EJBFactory.lookup("openelis/PanelBean/remote");
@@ -124,47 +121,17 @@ public class PanelService implements AppScreenFormServiceInt<PanelForm, Query<Ta
 
     public Query<TableDataRow<Integer>> commitQuery(Query<TableDataRow<Integer>> query) throws RPCException {
         List panelNames;
-        // if the rpc is null then we need to get the page
-        /*if (qList == null) {
+        PanelRemote remote = (PanelRemote)EJBFactory.lookup("openelis/PanelBean/remote");            
 
-            qList = (ArrayList<AbstractField>)SessionManager.getSession()
-                                                 .getAttribute("PanelQuery");
-
-            if (qList == null)
-                throw new RPCException(openElisConstants.getString("queryExpiredException"));
-
-            PanelRemote remote = (PanelRemote)EJBFactory.lookup("openelis/PanelBean/remote");
-
-            try {
-                panelNames = remote.query(qList,
-                                         (model.getPage() * leftTableRowsPerPage),
-                                         leftTableRowsPerPage + 1);
-            } catch (Exception e) {
-                if (e instanceof LastPageException) {
-                    throw new LastPageException(openElisConstants.getString("lastPageException"));
-                } else {
-                    e.printStackTrace();
-                    throw new RPCException(e.getMessage());
-                }
-            }
-        } else {*/
-            PanelRemote remote = (PanelRemote)EJBFactory.lookup("openelis/PanelBean/remote");
-
-            //HashMap<String, AbstractField> fields = qList.getFieldMap();
-            // fields.remove("contactsTable");
-
-            try {
-                panelNames = remote.query(query.fields, query.page*leftTableRowsPerPage, leftTableRowsPerPage);
-            }catch(LastPageException e) {
-                throw new LastPageException(openElisConstants.getString("lastPageException"));
-            } catch (Exception e) {
-                e.printStackTrace();
-                throw new RPCException(e.getMessage());
-            }
-
-            // need to save the rpc used to the encache
-           // SessionManager.getSession().setAttribute("PanelQuery", qList);
-        //}
+        try {
+            panelNames = remote.query(query.fields, query.page*leftTableRowsPerPage, leftTableRowsPerPage);
+        }catch(LastPageException e) {
+            throw new LastPageException(openElisConstants.getString("lastPageException"));
+         } catch (Exception e) {
+            e.printStackTrace();
+            throw new RPCException(e.getMessage());
+         }
+            
 
         // fill the model with the query results
         int i = 0;
@@ -243,7 +210,12 @@ public class PanelService implements AppScreenFormServiceInt<PanelForm, Query<Ta
         return rpc;
     }
     
-    public TableDataModel<TableDataRow<String>> getTestMethodNames(){
+    public PanelForm getTestMethodNames(PanelForm rpc) {
+      rpc.addedTestTable.setValue(getTestMethodNames());
+      return rpc;
+    }
+    
+    private TableDataModel<TableDataRow<String>> getTestMethodNames(){
        PanelRemote remote = (PanelRemote)EJBFactory.lookup("openelis/PanelBean/remote");
        TableDataModel<TableDataRow<String>> model = new TableDataModel<TableDataRow<String>>();
        List<TestMethodSectionNamesDO> list = remote.getTestMethodNames();
@@ -259,30 +231,7 @@ public class PanelService implements AppScreenFormServiceInt<PanelForm, Query<Ta
            );
        }
        return model;
-    }
-    
-    public TableDataModel<TableDataRow<String>> getInitialModel(String cat){
-        PanelRemote remote = (PanelRemote)EJBFactory.lookup("openelis/PanelBean/remote");
-        TableDataModel<TableDataRow<String>> model = new TableDataModel<TableDataRow<String>>();
-        model.add(new TableDataRow<String>("",new StringObject("")));
-        
-        List<QaEventTestDropdownDO> list = remote.getTestMethodNames();
-        if(cat.equals("test")){
-         for(int iter = 0; iter < list.size(); iter++){
-            QaEventTestDropdownDO qaeDO = list.get(iter);
-            model.add(new TableDataRow<String>(qaeDO.getTest(),new StringObject(qaeDO.getTest())));
-       }
-      }else if(cat.equals("method")) {
-          for(int iter = 0; iter < list.size(); iter++){
-              QaEventTestDropdownDO qaeDO = list.get(iter);
-              model.add(new TableDataRow<String>(qaeDO.getMethod(),new StringObject(qaeDO.getMethod())));
-         }
-      }
-       return model; 
-    }
-    
-    
-    
+    }                  
     
     private void fillPanelItems(List<PanelItemDO> list, PanelForm form){
         TableDataModel<TableDataRow<Integer>> model = form.addedTestTable.getValue();
@@ -341,7 +290,8 @@ public class PanelService implements AppScreenFormServiceInt<PanelForm, Query<Ta
           itemDO.setSortOrder(new Integer(i));          
           itemDOList.add(itemDO);
       }
-      for (int i = 0; i < model.getDeletions().size(); i++) {
+      if(model.getDeletions() != null) {
+       for (int i = 0; i < model.getDeletions().size(); i++) {
           TableDataRow<Integer> row = (TableDataRow<Integer>)model.getDeletions().get(i);
           PanelItemDO itemDO = new PanelItemDO();
           if(row.getData()!=null){
@@ -358,9 +308,10 @@ public class PanelService implements AppScreenFormServiceInt<PanelForm, Query<Ta
           itemDO.setMethodName((String)row.cells[1].getValue());
           itemDO.setSortOrder(new Integer(i));          
           itemDOList.add(itemDO);
-     }
+        }
      
-      model.getDeletions().clear();
+        model.getDeletions().clear();
+      }  
       return itemDOList;
     }
     

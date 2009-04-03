@@ -28,6 +28,7 @@
 package org.openelis.bean;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -48,6 +49,7 @@ import org.openelis.domain.AuxFieldValueDO;
 import org.openelis.domain.IdNameDO;
 import org.openelis.entity.AuxField;
 import org.openelis.entity.AuxFieldGroup;
+import org.openelis.entity.AuxFieldValue;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
@@ -57,6 +59,7 @@ import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.local.LockLocal;
 import org.openelis.metamap.AuxFieldGroupMetaMap;
 import org.openelis.metamap.AuxFieldMetaMap;
+import org.openelis.metamap.AuxFieldValueMetaMap;
 import org.openelis.remote.AuxiliaryRemote;
 import org.openelis.security.local.SystemUserUtilLocal;
 import org.openelis.util.QueryBuilder;
@@ -88,10 +91,38 @@ public class AuxiliaryBean implements AuxiliaryRemote {
         sysUser = (SystemUserUtilLocal)ctx.lookup("ejb/SystemUser");
     }
 
-    public List<AuxFieldValueDO> getAuxFieldValues(Integer auxFieldId) {
+    public List<AuxFieldValueDO> getAuxFieldValues(Integer auxFieldId) {        
+        List<AuxFieldValueDO> auxfieldValues = null;
+        AuxFieldValueDO valueDO = null;
+        Integer typeId = null;
+        String sysName = null;
+        String entry = null;
+        Integer val = null;
+        
         Query query = manager.createNamedQuery("AuxFieldValue.AuxFieldValueDOList");
-        query.setParameter("auxFieldId", auxFieldId);
-        List<AuxFieldValueDO> auxfieldValues = query.getResultList();
+        query.setParameter("auxFieldId", auxFieldId);        
+            auxfieldValues = query.getResultList();
+            for (Iterator iter = auxfieldValues.iterator(); iter.hasNext();) {
+             valueDO = (AuxFieldValueDO)iter.next();
+             typeId = valueDO.getTypeId();
+             query = manager.createNamedQuery("Dictionary.SystemNameById");             
+             query.setParameter("id", typeId);
+             try {
+             sysName = (String)query.getSingleResult();
+             if("aux_dictionary".equals(sysName)) {
+                 val = Integer.parseInt(valueDO.getValue());
+                 query = manager.createNamedQuery("Dictionary.EntryById");
+                 query.setParameter("id", val);
+                 entry = (String)query.getSingleResult();
+                 valueDO.setDictEntry(entry);  
+               } else {
+                 valueDO.setDictEntry(null);  
+              } 
+             } catch(Exception ex) {
+                 ex.printStackTrace();
+             } 
+            }
+        
         return auxfieldValues;
     }
 
@@ -122,22 +153,31 @@ public class AuxiliaryBean implements AuxiliaryRemote {
         
         Query query = manager.createNamedQuery("getTableId");
         query.setParameter("name", "aux_field_group");
-        lockBean.getLock((Integer)query.getSingleResult(), auxFieldGroupId);
+        Integer tableId = (Integer)query.getSingleResult();        
+        lockBean.getLock(tableId, auxFieldGroupId);
         return getAuxFieldGroup(auxFieldGroupId);
     }
 
     public Integer updateAuxiliary(AuxFieldGroupDO auxFieldGroupDO,
-                                   List<AuxFieldDO> auxFields,
-                                   List<AuxFieldValueDO> auxFieldValues) throws Exception {
+                                   List<AuxFieldDO> auxFields) throws Exception {
      try {  
+         
         Query query = manager.createNamedQuery("getTableId");
         query.setParameter("name", "aux_field_group");
         Integer afgReferenceId = (Integer)query.getSingleResult();
-        AuxFieldGroup auxFieldGroup = null;
-
+        
+        AuxFieldGroup auxFieldGroup = null;        
+        List<AuxFieldValueDO> auxFieldValues = null;
+        
+        
         if (auxFieldGroupDO.getId() != null) {
             // we need to call lock one more time to make sure their lock
             // didn't expire and someone else grabbed the record
+         try {
+               lockBean.validateLock(afgReferenceId,auxFieldGroupDO.getId());
+             } catch(Exception ex) {
+                throw ex;
+           }  
             lockBean.getLock(afgReferenceId, auxFieldGroupDO.getId());
         }
 
@@ -193,6 +233,33 @@ public class AuxiliaryBean implements AuxiliaryRemote {
               if(af.getId() == null){
                  manager.persist(af);
              }
+              
+              auxFieldValues = afDO.getAuxFieldValues();
+              if(auxFieldValues != null) {
+                for(int j = 0 ; j < auxFieldValues.size(); j++) {
+                    AuxFieldValueDO valueDO = auxFieldValues.get(j);
+                    AuxFieldValue value = null;
+                    if(valueDO.getId()==null) {
+                        value =  new AuxFieldValue();                        
+                    }else {
+                        value = manager.find(AuxFieldValue.class, valueDO.getId());
+                    }
+                    
+                    if(valueDO.getDelete() && valueDO.getId() !=null) {
+                        manager.remove(value);
+                    } else { 
+                       if(!valueDO.getDelete()) { 
+                         value.setAuxFieldId(af.getId());
+                         value.setTypeId(valueDO.getTypeId());
+                         value.setValue(valueDO.getValue());
+                        
+                        if(value.getId()== null) {
+                            manager.persist(value);
+                        }
+                       } 
+                    }
+                }  
+              }
             } 
          }     
         }
@@ -258,9 +325,7 @@ public class AuxiliaryBean implements AuxiliaryRemote {
                           if("Y".equals(auxFieldGroupDO.getIsActive())){
                               exceptionList.add(new FormErrorException("auxFieldGroupActiveException"));                                   
                               break; 
-                           }else{
-                             // exceptionList.add(new FormErrorException("testInactiveTimeOverlap"));  
-                            }                              
+                          }                             
                      }
                       if(auxFieldGroup.getActiveBegin().before(auxFieldGroupDO.getActiveEnd())&&
                                       (auxFieldGroup.getActiveEnd().after(auxFieldGroupDO.getActiveBegin()))){
@@ -281,12 +346,27 @@ public class AuxiliaryBean implements AuxiliaryRemote {
     }
     
     private void validateAuxField(List<Exception> exceptionList,List<AuxFieldDO> auxFields) {
-        for(int i = 0; i < auxFields.size(); i++){
+        TableFieldErrorException ex = null, auxfvEx = null;
+        List<RPCException> exList = null;        
+        for(int i = 0; i < auxFields.size(); i++) {
             AuxFieldDO afDO = auxFields.get(i);
-            if(!afDO.getDelete() && afDO.getAnalyteId()==null){
-                exceptionList.add(new TableFieldErrorException("fieldRequiredException", i,
-                    AuxFieldMetaMap.getTableName()+":"+AuxFieldGroupMeta.getAuxField().getAnalyteId()));
-            }            
+            if(!afDO.getDelete()) {
+               if(afDO.getAnalyteId() == null || afDO.getAnalyteId() == -1) {
+                 ex = new TableFieldErrorException("fieldRequiredException", i,
+                                                   AuxFieldGroupMeta.getAuxField().getAnalyteId(),
+                                                   AuxFieldMetaMap.getTableName()); 
+                 exceptionList.add(ex);                
+             }  
+               exList = validateAuxFieldValue(afDO.getAuxFieldValues());
+               if(exList != null) {                   
+                   auxfvEx = new TableFieldErrorException("errorsWithAuxFieldValuesException", i,
+                                                     AuxFieldGroupMeta.getAuxField().getAnalyteId(),
+                                                     AuxFieldMetaMap.getTableName());
+                   auxfvEx.setChildExceptionList(exList);
+                   exceptionList.add(auxfvEx); 
+               }
+            }    
+            
         }
     }
     
@@ -311,8 +391,7 @@ public class AuxiliaryBean implements AuxiliaryRemote {
     }
 
     public List<Exception> validateForAdd(AuxFieldGroupDO auxFieldGroupDO,
-                                          List<AuxFieldDO> auxFields,
-                                          List<AuxFieldValueDO> auxFieldValues) {
+                                          List<AuxFieldDO> auxFields) {
         List<Exception> exceptionList = new ArrayList<Exception>();
         validateAuxFieldGroup(exceptionList, auxFieldGroupDO);
         if(auxFields!=null)
@@ -321,10 +400,11 @@ public class AuxiliaryBean implements AuxiliaryRemote {
     }
 
     public List<Exception> validateForUpdate(AuxFieldGroupDO auxFieldGroupDO,
-                                             List<AuxFieldDO> auxFields,
-                                             List<AuxFieldValueDO> auxFieldValues) {
+                                             List<AuxFieldDO> auxFields) {
         List<Exception> exceptionList = new ArrayList<Exception>();
         validateAuxFieldGroup(exceptionList, auxFieldGroupDO);
+        if(auxFields!=null)
+            validateAuxField(exceptionList, auxFields);        
         return exceptionList;
     }
 
@@ -359,8 +439,33 @@ public class AuxiliaryBean implements AuxiliaryRemote {
 
     public List<IdNameDO> getScriptletDropDownValues() {
         Query query = manager.createNamedQuery("Scriptlet.Scriptlet");
-        List<IdNameDO> scriptletList = query.getResultList();
+        List<IdNameDO> scriptletList = query.getResultList();         
         return scriptletList;
+          
     }
+    
+    private List<RPCException> validateAuxFieldValue(List<AuxFieldValueDO> auxFieldValueDOList) {
+      AuxFieldValueDO valueDO = null;  
+      Integer blankId = new Integer(-1);
+      List<RPCException> exList = null; 
+      if(auxFieldValueDOList != null) {
+        for(int i = 0 ; i < auxFieldValueDOList.size(); i++) {
+            valueDO = auxFieldValueDOList.get(i);
+            if(!valueDO.getDelete()) { 
+               if(valueDO.getTypeId() == null || blankId.equals(valueDO.getTypeId())) {
+                if(exList == null) 
+                    exList = new ArrayList<RPCException>();
+               
+                exList.add(new TableFieldErrorException("fieldRequiredException", i,
+                                               AuxFieldGroupMeta.getAuxField().getAuxFieldValue().getTypeId(),
+                                               AuxFieldValueMetaMap.getTableName()));
+            }
+          }     
+        }  
+      } 
+      return exList;
+    }
+    
+    
 
 }

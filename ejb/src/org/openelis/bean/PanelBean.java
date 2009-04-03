@@ -155,6 +155,11 @@ public class PanelBean implements PanelRemote {
         if (panelDO.getId() != null) {
             // we need to call lock one more time to make sure their lock
             // didn't expire and someone else grabbed the record
+            try {
+                lockBean.validateLock(panelReferenceId,panelDO.getId());
+              } catch(Exception ex) {
+                 throw ex;
+            }
             lockBean.getLock(panelReferenceId, panelDO.getId());
         }
         
