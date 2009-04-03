@@ -27,6 +27,7 @@ package org.openelis.modules.test.client;
 
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.SyncCallback;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.PopupListener;
@@ -137,13 +138,10 @@ public class TestScreen extends OpenELISScreenForm<TestForm, Query<TableDataRow<
     private ScreenTextBox testId;
     private TextBox testName;
 
-    private TabPanel resultPanel;
+    private TabPanel resultPanel,testTabPanel;
     // private ScrollableTabBar resultPanel;
 
-    private MenuItem dupItem;
-
-    private TableDataRow<Integer> blankSet = new TableDataRow<Integer>(-1,
-                                                                       new StringObject(""));
+    private MenuItem dupItem;    
 
     private ArrayList<TableDataModel<TableDataRow<Integer>>> resultModelCollection;
 
@@ -164,10 +162,9 @@ public class TestScreen extends OpenELISScreenForm<TestForm, Query<TableDataRow<
     public void afterDraw(boolean success) {
 
         ButtonPanel bpanel, atozButtons;
-        CommandChain chain;
-        TabPanel testTabPanel;
+        CommandChain chain;       
         ResultsTable atozTable;
-        // QueryTable q;
+        
         ScreenTableWidget s;
         ScreenTreeWidget analyteTree;
         ScreenMenuPanel duplicatePanel;
@@ -563,6 +560,7 @@ public class TestScreen extends OpenELISScreenForm<TestForm, Query<TableDataRow<
         }
 
         public void onSuccess(Object result) {
+            int selTab = testTabPanel.getTabBar().getSelectedTab();
             //
             // disable anything that is not editable and set focus to the widget
             // which should get the first focus for editing
@@ -576,8 +574,11 @@ public class TestScreen extends OpenELISScreenForm<TestForm, Query<TableDataRow<
             fillMaps();
             fillResultGroupDropdown();
             fillResultModelCollection();
-            fillUnitDropdownModel();
-
+            fillUnitDropdownModel();                        
+            
+            if(selTab == 1 || selTab == 2) 
+                testTabPanel.selectTab(selTab);            
+            
             fillPrepTestsReflexTests();
             fillWorksheetLayout();
 
@@ -625,20 +626,15 @@ public class TestScreen extends OpenELISScreenForm<TestForm, Query<TableDataRow<
         if (!(state == State.QUERY)) {
             if (prevSelTabIndex == -1 && resultModelCollection.size() > 0) {
                 //         
-                // if a user doesn't select any tab from resultPanel then any
-                // new
-                // rows added to the model for the first tab won't get added to
-                // the
-                // model stored at index zero in resultModelCollection because
-                // the
+                // if a user doesn't select any tab from resultPanel then any new
+                // rows added to the model for the first tab won't get added to the
+                // model stored at index zero in resultModelCollection because the
                 // code in onBeforeTabSelected() wont get a chance to execute;
                 // this line makes sure that on committing a test's data,even if
-                // no tab was selected from resultPanel, the latest model for
-                // the
+                // no tab was selected from resultPanel, the latest model for the
                 // first tab makes its way in resultModelCollection
                 //            
-                resultModelCollection.set(0,
-                                          (TableDataModel)resultWidget.model.getData());
+                resultModelCollection.set(0,(TableDataModel)resultWidget.model.getData());
             }
 
             form.testAnalyte.resultModelCollection = resultModelCollection;
@@ -712,7 +708,7 @@ public class TestScreen extends OpenELISScreenForm<TestForm, Query<TableDataRow<
                 }
             }
         } else {
-            if (state != State.QUERY) {
+            if (state != State.QUERY) {                
                 if (tabIndex == 0 && !form.details.load) {
                     fillTestDetails();
                 } else if (tabIndex == 1 && !form.sampleType.load) {
@@ -830,19 +826,15 @@ public class TestScreen extends OpenELISScreenForm<TestForm, Query<TableDataRow<
             // column of the Test Section table in the Test Details tab, so that
             // the values for the other rows can be changed accordingly
             //
-            screenService.call("getCategorySystemName",
-                               tsrpc,
+            screenService.call("getCategorySystemName",tsrpc,
                                new AsyncCallback<TestGeneralPurposeRPC>() {
                                    public void onSuccess(TestGeneralPurposeRPC result) {
                                        if ("test_section_default".equals(result.stringValue)) {
                                            for (int iter = 0; iter < sectionWidget.model.numRows(); iter++) {
                                                if (iter != currRow) {
                                                    // 
-                                                   // if the option chosen
-                                                   // is "Default" for this
-                                                   // row,
-                                                   // then all the other
-                                                   // rows must be set to
+                                                   // if the option chosen is "Default" for this
+                                                   // row, then all the other rows must be set to
                                                    // the blank option
                                                    //                                                                                                                                                                     
                                                    DropDownField field = (DropDownField)sectionWidget.model.getRow(iter).cells[1];
@@ -855,14 +847,9 @@ public class TestScreen extends OpenELISScreenForm<TestForm, Query<TableDataRow<
                                                for (int iter = 0; iter < sectionWidget.model.numRows(); iter++) {
                                                    DropDownField field = (DropDownField)sectionWidget.model.getRow(iter).cells[1];
                                                    //
-                                                   // if the option chosen
-                                                   // is "Ask" or "Match
-                                                   // User Location" for
-                                                   // this row,
-                                                   // then all the other
-                                                   // rows must be set to
-                                                   // the same option which
-                                                   // is this one
+                                                   // if the option chosen is "Ask" or "Match User Location" for
+                                                   // this row, then all the other rows must be set to
+                                                   // the same option which is this one
                                                    // 
                                                    field.setValue(new TableDataRow<Integer>(selValue));
                                                }
@@ -898,55 +885,31 @@ public class TestScreen extends OpenELISScreenForm<TestForm, Query<TableDataRow<
                 tsrpc.key = selValue;
 
                 //              
-                // This code is for finding out which option was chosen in the
-                // "Type"
-                // column of the Test Results table in the "Analyte" tab, so
-                // that error checking
-                // or formatting can be done for the value set in the "Value"
-                // column
+                // This code is for finding out which option was chosen in the 
+                // "Type" column of the Test Results table in the "Analyte" tab, 
+                // so that error checking or formatting can be done for the value 
+                // set in the "Value" column
                 //
-                screenService.call("getCategorySystemName",
-                                   tsrpc,
-                                   new AsyncCallback<TestGeneralPurposeRPC>() {
-                                       public void onSuccess(TestGeneralPurposeRPC result) {
+                screenService.call("getCategorySystemName",tsrpc,new SyncCallback() {
+                                       public void onSuccess(Object result) {
                                            Double[] darray = new Double[2];
                                            String finalValue = "";
-                                           if ("test_res_type_dictionary".equals(result.stringValue)) {
+                                           if ("test_res_type_dictionary".equals(((TestGeneralPurposeRPC)result).stringValue)) {
                                                //
-                                               // Find out if this value is
-                                               // stored in the database if
-                                               // the type chosen was
-                                               // "Dictionary"
+                                               // Find out if this value is stored in the database if
+                                               // the type chosen was "Dictionary"
                                                //
                                                TestGeneralPurposeRPC tsrpc1 = new TestGeneralPurposeRPC();
                                                tsrpc1.stringValue = value;
-                                               screenService.call("getEntryIdForEntryText",
-                                                                  tsrpc1,
-                                                                  new AsyncCallback<TestGeneralPurposeRPC>() {
-                                                                      public void onSuccess(TestGeneralPurposeRPC result1) {
+                                               screenService.call("getEntryIdForEntryText",tsrpc1,new SyncCallback() {
+                                                                      public void onSuccess(Object result1) {
                                                                           //
-                                                                          // If
-                                                                          // this
-                                                                          // value
-                                                                          // is
-                                                                          // not
-                                                                          // stored
-                                                                          // in
-                                                                          // the
-                                                                          // database
-                                                                          // then
-                                                                          // add
-                                                                          // error
-                                                                          // to
-                                                                          // this
-                                                                          // cell
-                                                                          // in
-                                                                          // the
-                                                                          // "Value"
-                                                                          // column
-                                                                          if (result1.key == null) {
-                                                                              resultWidget.model.setCellError(currRow,
-                                                                                                              2,
+                                                                          // If this value is not stored in the
+                                                                          // database then add error to this
+                                                                          // cell in the "Value" column
+                                                                          //
+                                                                          if (((TestGeneralPurposeRPC)result1).key == null) {
+                                                                              resultWidget.model.setCellError(currRow,2,
                                                                                                               consts.get("illegalDictEntryException"));
                                                                           } else {
                                                                               TableDataRow<Integer> set = resultWidget.model.getRow(currRow);
@@ -963,7 +926,7 @@ public class TestScreen extends OpenELISScreenForm<TestForm, Query<TableDataRow<
                                                                               }
                                                                               resultWidget.model.setCell(currRow,
                                                                                                          2,
-                                                                                                         result1.stringValue);
+                                                                                                         ((TestGeneralPurposeRPC)result1).stringValue);
 
                                                                               checkAndAddNewResultValue(value,
                                                                                                         set);
@@ -976,14 +939,11 @@ public class TestScreen extends OpenELISScreenForm<TestForm, Query<TableDataRow<
                                                                       }
                                                                   });
 
-                                           } else if ("test_res_type_numeric".equals(result.stringValue)) {
+                                           } else if ("test_res_type_numeric".equals(((TestGeneralPurposeRPC)result).stringValue)) {
                                                //
-                                               // Get the string that was
-                                               // entered if the type
-                                               // chosen was "Numeric" and try
-                                               // to break it up at
-                                               // the "," if it follows the
-                                               // pattern number,number
+                                               // Get the string that was entered if the type
+                                               // chosen was "Numeric" and try to break it up at
+                                               // the "," if it follows the pattern number,number
                                                //
                                                String[] strList = value.split(",");
                                                boolean convert = false;
@@ -992,16 +952,10 @@ public class TestScreen extends OpenELISScreenForm<TestForm, Query<TableDataRow<
                                                        String token = strList[iter];
                                                        try {
                                                            // 
-                                                           // Convert each
-                                                           // number obtained
-                                                           // from
-                                                           // the string and
-                                                           // store its value
-                                                           // converted to
-                                                           // double if its a
-                                                           // valid
-                                                           // number, into an
-                                                           // array
+                                                           // Convert each number obtained
+                                                           // from the string and store its value
+                                                           // converted to double if its a valid
+                                                           // number, into an array
                                                            //
                                                            Double doubleVal = Double.valueOf(token);
                                                            darray[iter] = doubleVal.doubleValue();
@@ -1061,7 +1015,7 @@ public class TestScreen extends OpenELISScreenForm<TestForm, Query<TableDataRow<
                                                                                    consts.get("illegalNumericFormatException"));
                                                }
 
-                                           } else if ("test_res_type_titer".equals(result.stringValue)) {
+                                           } else if ("test_res_type_titer".equals(((TestGeneralPurposeRPC)result).stringValue)) {
                                                //
                                                // Get the string that was
                                                // entered if the type
@@ -1315,17 +1269,11 @@ public class TestScreen extends OpenELISScreenForm<TestForm, Query<TableDataRow<
             }
         } else if (sender == wsAnalyteWidget && col == 1) {
             final TableDataRow<Integer> trow = wsAnalyteWidget.model.getRow(row);
-            CheckField chf = (CheckField)trow.cells[1];
-            IntegerField rfield = (IntegerField)trow.cells[2];
-            TestGeneralPurposeRPC tgrpc = null;
 
             if (analyteTreeController.model.getData() == null || analyteTreeController.model.getData()
                                                                                             .size() == 0) {
-                // tgrpc = new TestGeneralPurposeRPC();
-                // tgrpc.key = form.key;
                 form.testAnalyte.entityKey = form.entityKey;
-                screenService.call("getAnalyteTreeModel",
-                                   form.testAnalyte,
+                screenService.call("getAnalyteTreeModel",form.testAnalyte,
                                    new AsyncCallback<TestAnalyteForm>() {
                                        public void onSuccess(TestAnalyteForm result) {
                                            TreeField tfield = result.analyteTree;
@@ -1482,43 +1430,7 @@ public class TestScreen extends OpenELISScreenForm<TestForm, Query<TableDataRow<
     public void stopEditing(SourcesTreeWidgetEvents sender, int row, int col) {
 
     }
-
-    /**
-     * This function adds new rows to the Results table with the values for the
-     * "Value" column being set to the entries that were chosen through the
-     * dictionary entry lookup screen
-     */
-    public void addResultRows(ArrayList<TableDataRow<Integer>> selectedRows,
-                              TableDataRow<Integer> dictSet) {
-        List<String> entries = new ArrayList<String>();
-        TableDataRow<Integer> row = null;
-        TableDataRow<Integer> set;
-        String entry = null;
-        DataMap rowdata = null;
-
-        if (resultPanel.getTabBar().getTabCount() == 0) {
-            Window.alert(consts.get("atleastOneResGrp"));
-            return;
-        }
-        if (selectedRows != null) {
-            for (int iter = 0; iter < selectedRows.size(); iter++) {
-                set = selectedRows.get(iter);
-                entry = (String)((Field)set.cells[0]).getValue();
-                if (entry != null && !entries.contains(entry.trim())) {
-                    entries.add(entry);
-                    row = (TableDataRow<Integer>)resultWidget.model.createRow();
-                    row.cells[1].setValue(dictSet);
-                    row.cells[2].setValue(entry);
-                    rowdata = new DataMap();
-                    row.setData(rowdata);
-                    rowdata.put("id", new IntegerField(getNextTempResId()));
-                    resultWidget.model.addRow(row);
-                    checkAndAddNewResultValue(entry, row);
-                }
-            }
-            resultWidget.model.refresh();
-        }
-    }
+    
 
     public boolean canAdd(TreeWidget widget, TreeDataItem set, int row) {
         return false;
@@ -1559,13 +1471,11 @@ public class TestScreen extends OpenELISScreenForm<TestForm, Query<TableDataRow<
         final DictionaryEntryPickerScreen pickerScreen = (DictionaryEntryPickerScreen)pickerWindow.content;
         TestGeneralPurposeRPC tgrpc = new TestGeneralPurposeRPC();
         tgrpc.stringValue = "test_res_type_dictionary";
-        screenService.call("getEntryIdForSystemName",
-                           tgrpc,
+        screenService.call("getEntryIdForSystemName",tgrpc,
                            new AsyncCallback<TestGeneralPurposeRPC>() {
                                public void onSuccess(TestGeneralPurposeRPC result) {
                                    TableDataRow<Integer> dictSet = new TableDataRow<Integer>(result.key);
-                                   addResultRows(pickerScreen.selectedRows,
-                                                 dictSet);
+                                   addResultRows(pickerScreen.selectedRows,dictSet);
                                }
 
                                public void onFailure(Throwable caught) {
@@ -1574,6 +1484,43 @@ public class TestScreen extends OpenELISScreenForm<TestForm, Query<TableDataRow<
                                }
                            });
 
+    }
+    
+    /**
+     * This function adds new rows to the Results table with the values for the
+     * "Value" column being set to the entries that were chosen through the
+     * dictionary entry lookup screen
+     */
+    private void addResultRows(ArrayList<TableDataRow<Integer>> selectedRows,
+                              TableDataRow<Integer> dictSet) {
+        List<String> entries = new ArrayList<String>();
+        TableDataRow<Integer> row = null;
+        TableDataRow<Integer> set;
+        String entry = null;
+        DataMap rowdata = null;
+
+        if (resultPanel.getTabBar().getTabCount() == 0) {
+            Window.alert(consts.get("atleastOneResGrp"));
+            return;
+        }
+        if (selectedRows != null) {
+            for (int iter = 0; iter < selectedRows.size(); iter++) {
+                set = selectedRows.get(iter);
+                entry = (String)((Field)set.cells[0]).getValue();
+                if (entry != null && !entries.contains(entry.trim())) {
+                    entries.add(entry);
+                    row = (TableDataRow<Integer>)resultWidget.model.createRow();
+                    row.cells[1].setValue(dictSet);
+                    row.cells[2].setValue(entry);
+                    rowdata = new DataMap();
+                    row.setData(rowdata);
+                    rowdata.put("id", new IntegerField(getNextTempResId()));
+                    resultWidget.model.addRow(row);
+                    checkAndAddNewResultValue(entry, row);
+                }
+            }
+            resultWidget.model.refresh();
+        }
     }
 
     private AsyncCallback fetchForDuplicateCallBack = new AsyncCallback<TestForm>() {
@@ -1678,14 +1625,11 @@ public class TestScreen extends OpenELISScreenForm<TestForm, Query<TableDataRow<
      * tab in the tab-panel on the screen
      */
     private void fillTestDetails() {
-        // TestGeneralPurposeRPC drpc = null;
         if (form.entityKey == null)
             return;
 
         window.setBusy();
 
-        // drpc = new TestGeneralPurposeRPC();
-        // drpc.key = key;
         form.details.entityKey = form.entityKey;
 
         screenService.call("loadTestDetails",
@@ -1709,13 +1653,10 @@ public class TestScreen extends OpenELISScreenForm<TestForm, Query<TableDataRow<
      * section as defined in the xsl file for the screen. It's mapped to the
      * "Prep Test & Reflexive Test" tab in the tab-panel on the screen
      */
-    private void fillPrepTestsReflexTests() {
-        // TestGeneralPurposeRPC prrpc = null;
+    private void fillPrepTestsReflexTests() {       
         if (form.entityKey == null)
             return;
 
-        // prrpc = new TestGeneralPurposeRPC();
-        // prrpc.key = key;
         form.prepAndReflex.entityKey = form.entityKey;
 
         window.setBusy();
@@ -1741,12 +1682,10 @@ public class TestScreen extends OpenELISScreenForm<TestForm, Query<TableDataRow<
      * defined in the xsl file for the screen. It's mapped to the "Sample Type"
      * tab in the tab-panel on the screen
      */
-    private void fillSampleTypes() {
-        // TestGeneralPurposeRPC strpc = null;
+    private void fillSampleTypes() {       
         if (form.entityKey == null)
             return;
-
-        // strpc = new TestGeneralPurposeRPC();
+        
         form.sampleType.entityKey = form.entityKey;
 
         window.setBusy();
@@ -1773,12 +1712,9 @@ public class TestScreen extends OpenELISScreenForm<TestForm, Query<TableDataRow<
      * Layout" tab in the tab-panel on the screen
      */
     private void fillWorksheetLayout() {
-        // TestGeneralPurposeRPC wsrpc = null;
         if (form.entityKey == null)
             return;
 
-        // wsrpc = new TestGeneralPurposeRPC();
-        // wsrpc.key = key;
         form.worksheet.entityKey = form.entityKey;
 
         window.setBusy();
@@ -1804,13 +1740,10 @@ public class TestScreen extends OpenELISScreenForm<TestForm, Query<TableDataRow<
      * defined in the xsl file for the screen. It's mapped to the "Analyte" tab
      * in the tab-panel on the screen
      */
-    private void fillTestAnalyte() {
-        // TestGeneralPurposeRPC tarpc = null;
+    private void fillTestAnalyte() {        
         if (form.entityKey == null)
             return;
-
-        // tarpc = new TestGeneralPurposeRPC();
-        // tarpc.key = key;
+        
         form.testAnalyte.entityKey = form.entityKey;
 
         window.setBusy();
@@ -1819,7 +1752,7 @@ public class TestScreen extends OpenELISScreenForm<TestForm, Query<TableDataRow<
                            new AsyncCallback<TestAnalyteForm>() {
                                public void onSuccess(TestAnalyteForm result) {
                                    form.testAnalyte = result;
-                                   load(form.testAnalyte);
+                                   load(form.testAnalyte);                                     
                                    window.clearStatus();
                                }
 
@@ -2017,8 +1950,7 @@ public class TestScreen extends OpenELISScreenForm<TestForm, Query<TableDataRow<
         imrpc.key = form.entityKey;
 
         imrpc.map = new DataMap();
-        screenService.call("getTestResultModelMap",
-                           imrpc,
+        screenService.call("getTestResultModelMap",imrpc,
                            new AsyncCallback<TestGeneralPurposeRPC>() {
                                public void onSuccess(TestGeneralPurposeRPC result) {
                                    resultDropdownModelMap = result.map;
@@ -2031,8 +1963,7 @@ public class TestScreen extends OpenELISScreenForm<TestForm, Query<TableDataRow<
                            });
 
         imrpc.map = new DataMap();
-        screenService.call("getResultGroupAnalyteMap",
-                           imrpc,
+        screenService.call("getResultGroupAnalyteMap",imrpc,
                            new AsyncCallback<TestGeneralPurposeRPC>() {
                                public void onSuccess(TestGeneralPurposeRPC result) {
                                    resGroupAnalyteIdMap = result.map;
@@ -2045,8 +1976,7 @@ public class TestScreen extends OpenELISScreenForm<TestForm, Query<TableDataRow<
                            });
 
         imrpc.map = new DataMap();
-        screenService.call("getUnitIdNumResMapForTest",
-                           imrpc,
+        screenService.call("getUnitIdNumResMapForTest",imrpc,
                            new AsyncCallback<TestGeneralPurposeRPC>() {
                                public void onSuccess(TestGeneralPurposeRPC result) {
                                    unitIdNumResMap = result.map;
@@ -2127,17 +2057,11 @@ public class TestScreen extends OpenELISScreenForm<TestForm, Query<TableDataRow<
                     if (field != null) {
                         disableResultOptions(set);
                         setErrorToReflexFields(consts.get("resultDeleted"),
-                                               field.getValue(),
-                                               2);
+                                               field.getValue(),2);
                     }
                 }
 
-                if (resultWidget.editingCell != null) {
-                    resultWidget.select(resultWidget.activeRow,
-                                        resultWidget.activeCell);
-                }
-                resultWidget.model.deleteRow(selIndex);
-                finishedEditing(resultWidget, selIndex, 2);
+                resultWidget.model.deleteRow(selIndex);      
             } else {
                 Window.alert(consts.get("atleastOneResInResGrp"));
             }
@@ -2350,12 +2274,10 @@ public class TestScreen extends OpenELISScreenForm<TestForm, Query<TableDataRow<
         final String name = fieldName;
         TestGeneralPurposeRPC tfnrpc = new TestGeneralPurposeRPC();
         tfnrpc.fieldName = fieldName;
-        screenService.call("getInitialModel",
-                           tfnrpc,
+        screenService.call("getInitialModel",tfnrpc,
                            new AsyncCallback<TestGeneralPurposeRPC>() {
                                public void onSuccess(TestGeneralPurposeRPC result) {
-                                   setDropdownModel(result.fieldName,
-                                                    result.model);
+                                   setDropdownModel(result.fieldName,result.model);
                                }
 
                                public void onFailure(Throwable caught) {
@@ -2375,8 +2297,7 @@ public class TestScreen extends OpenELISScreenForm<TestForm, Query<TableDataRow<
         TestGeneralPurposeRPC tfnrpc = new TestGeneralPurposeRPC();
         tfnrpc.fieldName = fieldName;
 
-        screenService.call("getInitialModel",
-                           tfnrpc,
+        screenService.call("getInitialModel",tfnrpc,
                            new AsyncCallback<TestGeneralPurposeRPC>() {
                                public void onSuccess(TestGeneralPurposeRPC result) {
                                    setTableDropdownModel(w, col, result.model);
@@ -2401,8 +2322,7 @@ public class TestScreen extends OpenELISScreenForm<TestForm, Query<TableDataRow<
         TestGeneralPurposeRPC tfnrpc = new TestGeneralPurposeRPC();
         tfnrpc.fieldName = fieldName;
 
-        screenService.call("getInitialModel",
-                           tfnrpc,
+        screenService.call("getInitialModel",tfnrpc,
                            new AsyncCallback<TestGeneralPurposeRPC>() {
                                public void onSuccess(TestGeneralPurposeRPC result) {
                                    setTableDropdownModel(w,
@@ -2564,7 +2484,7 @@ public class TestScreen extends OpenELISScreenForm<TestForm, Query<TableDataRow<
         }
         return ddmodel;
     }
-
+    
     private DateField getDateField() {
         DatetimeRPC dr = new DatetimeRPC();
         DateField df = new DateField((byte)0, (byte)2, dr);
@@ -2882,8 +2802,7 @@ public class TestScreen extends OpenELISScreenForm<TestForm, Query<TableDataRow<
                 if (tanaName.equals(ianaName)) {
                     if (available) {
                         ((CheckField)row.cells[1]).setValue("Y");
-                        window.setStatus(consts.get("additionalAnalytesAdded"),
-                                         "");
+                        window.setStatus(consts.get("additionalAnalytesAdded"),"");
                     } else {
                         ((CheckField)row.cells[1]).setValue(null);
                         window.setStatus(consts.get("otherAnalytesRemoved"), "");

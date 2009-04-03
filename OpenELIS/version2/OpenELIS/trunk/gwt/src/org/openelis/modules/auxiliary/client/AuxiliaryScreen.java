@@ -26,10 +26,12 @@
 package org.openelis.modules.auxiliary.client;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.openelis.gwt.common.Query;
-import org.openelis.gwt.common.data.DataMap;
+import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.QueryStringField;
+import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.TableDataModel;
 import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.TableDataRow;
@@ -76,13 +78,12 @@ public class AuxiliaryScreen extends OpenELISScreenForm<AuxiliaryForm, Query<Tab
     
     private TableWidget auxFieldTableWidget, auxFieldValueTableWidget;
     
-    private AppButton removeAuxFieldRowButton,dictionaryLookUpButton;    
+    private AppButton removeAuxFieldRowButton,dictionaryLookUpButton,
+                      removeAuxFieldValueRowButton ;    
     
     private ArrayList<TableDataRow<Integer>> selectedRows = null; 
     
-    private TableDataModel<TableDataRow<Integer>> defaultModel;
-    
-    private int tempAnaId = -1;    
+    private TableDataModel<TableDataRow<Integer>> defaultModel;   
         
     private ScreenWindow pickerWindow = null; 
     
@@ -137,9 +138,11 @@ public class AuxiliaryScreen extends OpenELISScreenForm<AuxiliaryForm, Query<Tab
         auxFieldValueTableWidget.model.enableAutoAdd(false);
         
         auxFieldTableWidget.model.addTableModelListener(this);
+        auxFieldValueTableWidget.addTableWidgetListener(this);
         
         removeAuxFieldRowButton = (AppButton)getWidget("removeAuxFieldRowButton");
         dictionaryLookUpButton = (AppButton)getWidget("dictionaryLookUpButton");
+        removeAuxFieldValueRowButton = (AppButton)getWidget("removeAuxFieldValueRowButton");
          
         setUnitsOfMeasureModel(form.units);
         setAuxFieldValueTypesModel(form.auxFieldValueTypes);
@@ -151,9 +154,7 @@ public class AuxiliaryScreen extends OpenELISScreenForm<AuxiliaryForm, Query<Tab
         fetchChain.add(0,checkModels);
         abortChain.add(0,checkModels);
         commitUpdateChain.add(0,checkModels);
-        commitAddChain.add(0,checkModels);
-                
-        tempAnaId = -1;     
+        commitAddChain.add(0,checkModels);                
         
         super.afterDraw(success);               
         
@@ -203,11 +204,7 @@ public class AuxiliaryScreen extends OpenELISScreenForm<AuxiliaryForm, Query<Tab
             auxFieldValueTableWidget.model.enableAutoAdd(false);   
             auxFieldTableWidget.model.enableAutoAdd(true);  
         }
-    };
-    
-    protected void submitForm() {
-        super.submitForm();
-    }       
+    };         
     
     public boolean canAdd(TableWidget widget, TableDataRow set, int row) {
         // TODO Auto-generated method stub
@@ -232,8 +229,11 @@ public class AuxiliaryScreen extends OpenELISScreenForm<AuxiliaryForm, Query<Tab
     }
 
     public boolean canSelect(TableWidget widget, TableDataRow set, int row) {
-        if (state == State.UPDATE || state == State.ADD || state == State.QUERY)
+        if(widget == auxFieldTableWidget)
             return true;
+        else if (state == State.UPDATE || state == State.ADD || state == State.QUERY)
+            return true;
+        
         return false;          
     }
 
@@ -242,7 +242,8 @@ public class AuxiliaryScreen extends OpenELISScreenForm<AuxiliaryForm, Query<Tab
             onRemoveAuxFieldRowButtonClick();
         if(sender == dictionaryLookUpButton)
             onDictionaryLookUpButtonClicked();
-        
+        if(sender == removeAuxFieldValueRowButton)
+            onRemoveAuxFieldValueRowButtonClick();                
     }   
 
     public void getAuxFieldGroups(String query) {
@@ -254,7 +255,21 @@ public class AuxiliaryScreen extends OpenELISScreenForm<AuxiliaryForm, Query<Tab
     }
     
     public void onPopupClosed(PopupPanel sender, boolean autoClosed) {      
-        
+        final DictionaryEntryPickerScreen pickerScreen = (DictionaryEntryPickerScreen)pickerWindow.content;
+        AuxiliaryGeneralPurposeRPC agrpc = new AuxiliaryGeneralPurposeRPC();
+        agrpc.stringValue = "aux_dictionary";
+        screenService.call("getEntryIdForSystemName",agrpc, 
+                           new AsyncCallback<AuxiliaryGeneralPurposeRPC>(){                            
+                            public void onSuccess(AuxiliaryGeneralPurposeRPC result) {                              
+                                TableDataRow<Integer> dictSet = new TableDataRow<Integer>(result.key);
+                                addAuxFieldValueRows(pickerScreen.selectedRows, dictSet);          
+                            }                   
+                            public void onFailure(Throwable caught) {
+                                Window.alert(caught.getMessage());
+                                window.setStatus("", "");                                
+                            }
+            
+        });
     }  
     
     public void startEditing(SourcesTableWidgetEvents sender, int row, int col) {
@@ -287,10 +302,12 @@ public class AuxiliaryScreen extends OpenELISScreenForm<AuxiliaryForm, Query<Tab
         
     }
 
-    public void rowSelected(SourcesTableModelEvents sender, int row) {
-        if(sender == auxFieldTableWidget.model && row < auxFieldTableWidget.model.getData().size()) {          
-           auxFieldValueTableWidget.model.enableAutoAdd(true);           
-           setModelInFieldValueTable(row);            
+    public void rowSelected(SourcesTableModelEvents sender, int row) {      
+        if(sender == auxFieldTableWidget.model) {          
+         if((state == State.UPDATE || state == State.ADD))  
+           if(!auxFieldValueTableWidget.model.getAutoAdd())  
+            auxFieldValueTableWidget.model.enableAutoAdd(true);           
+         setModelInFieldValueTable(row);            
         }    
     }
 
@@ -309,6 +326,28 @@ public class AuxiliaryScreen extends OpenELISScreenForm<AuxiliaryForm, Query<Tab
         
     }
     
+    private void addAuxFieldValueRows(ArrayList<TableDataRow<Integer>> selectedRows,
+                               TableDataRow<Integer> dictSet) {
+         List<String> entries = new ArrayList<String>();
+         TableDataRow<Integer> row = null;
+         TableDataRow<Integer> set;
+         String entry = null;         
+
+         if (selectedRows != null) {
+             for (int iter = 0; iter < selectedRows.size(); iter++) {
+                 set = selectedRows.get(iter);
+                 entry = (String)(set.cells[0]).getValue();
+                 if (entry != null && !entries.contains(entry.trim())) {
+                     entries.add(entry);
+                     row = (TableDataRow<Integer>)auxFieldValueTableWidget.model.createRow();
+                     row.cells[0].setValue(dictSet);
+                     row.cells[1].setValue(entry);                                                     
+                     auxFieldValueTableWidget.model.addRow(row);                     
+                 }
+             }
+             auxFieldTableWidget.model.refresh();
+         }
+     }
     
     private void setAuxFieldValueTypesModel(TableDataModel<TableDataRow<Integer>> auxFieldValueTypes) {
         ((TableDropdown)auxFieldValueTableWidget.columns.get(0).getColumnWidget()).setModel(auxFieldValueTypes);
@@ -325,6 +364,13 @@ public class AuxiliaryScreen extends OpenELISScreenForm<AuxiliaryForm, Query<Tab
     private void onRemoveAuxFieldRowButtonClick() {
         if (auxFieldTableWidget.model.getData().getSelectedIndex() > -1)
             auxFieldTableWidget.model.deleteRow(auxFieldTableWidget.model.getData()
+                                                               .getSelectedIndex());
+        
+    }
+    
+    private void onRemoveAuxFieldValueRowButtonClick() {
+        if (auxFieldValueTableWidget.model.getData().getSelectedIndex() > -1)
+            auxFieldValueTableWidget.model.deleteRow(auxFieldValueTableWidget.model.getData()
                                                                .getSelectedIndex());
         
     }
@@ -350,19 +396,135 @@ public class AuxiliaryScreen extends OpenELISScreenForm<AuxiliaryForm, Query<Tab
         dictEntryPickerPopupPanel.show();
     }
     
-    private int getNextTempAnaId() {
-        return --tempAnaId;
-   }
 
-    public void finishedEditing(SourcesTableWidgetEvents sender,
-                                int row,
-                                int col) {
-        // TODO Auto-generated method stub
+    public void finishedEditing(SourcesTableWidgetEvents sender,int row,int col) {    
+        AuxiliaryGeneralPurposeRPC agrpc = null;   
+        if(sender == auxFieldValueTableWidget && col == 1) {            
+            final int currRow = row;
+            final Integer selValue = (Integer)((DropDownField)auxFieldValueTableWidget.model.getRow(row).cells[0]).getSelectedKey();
+            final String value = ((StringField)auxFieldValueTableWidget.model.getRow(row).cells[1]).getValue();            
+            if (!"".equals(value.trim())) {  
+                agrpc = new AuxiliaryGeneralPurposeRPC();
+                agrpc.key = selValue;
+
+                
+                screenService.call("getCategorySystemName",agrpc,
+                                   new AsyncCallback<AuxiliaryGeneralPurposeRPC>() {
+                                       public void onSuccess(AuxiliaryGeneralPurposeRPC result) {
+                                           Double[] darray = new Double[2];
+                                           String finalValue = "";
+                                           if ("aux_dictionary".equals(result.stringValue)) {
+                                               //
+                                               // Find out if this value is stored in the database if
+                                               // the type chosen was "Dictionary"
+                                               //
+                                               AuxiliaryGeneralPurposeRPC agrpc1 = new AuxiliaryGeneralPurposeRPC();
+                                               agrpc1.stringValue = value;
+                                               screenService.call("getEntryIdForEntryText",agrpc1,
+                                                                  new AsyncCallback<AuxiliaryGeneralPurposeRPC>() {
+                                                                      public void onSuccess(AuxiliaryGeneralPurposeRPC result1) {
+                                                                          //
+                                                                          // If this value is not stored in the
+                                                                          // database then add error to this
+                                                                          // cell in the "Value" column
+                                                                          //
+                                                                          if (result1.key == null) {
+                                                                              auxFieldValueTableWidget.model.setCellError(currRow,1,
+                                                                                                              consts.get("illegalDictEntryException"));
+                                                                          } else {
+                                                                              auxFieldValueTableWidget.model.setCell(currRow,1,result1.stringValue);
+                                                                          }
+                                                                      }
+
+                                                                      public void onFailure(Throwable caught) {
+                                                                          Window.alert(caught.getMessage());
+                                                                          window.clearStatus();
+                                                                      }
+                                                                  });
+
+                                           } else if ("aux_numeric".equals(result.stringValue)) {
+                                               //
+                                               // Get the string that was entered if the type
+                                               // chosen was "Numeric" and try to break it up at
+                                               // the "," if it follows the pattern number,number
+                                               //
+                                               String[] strList = value.split(",");
+                                               boolean convert = false;
+                                               if (strList.length == 2) {
+                                                   for (int iter = 0; iter < strList.length; iter++) {
+                                                       String token = strList[iter];
+                                                       try {
+                                                           // 
+                                                           // Convert each number obtained
+                                                           // from the string and store its value
+                                                           // converted to double if its a valid
+                                                           // number, into an array
+                                                           //
+                                                           Double doubleVal = Double.valueOf(token);
+                                                           darray[iter] = doubleVal.doubleValue();
+                                                           convert = true;
+                                                       } catch (NumberFormatException ex) {
+                                                           convert = false;
+                                                       }
+                                                   }
+                                               }
+
+                                               if (convert) {
+                                                   //
+                                                   // If its a valid string store the converted
+                                                   // string back into the column otherwise add
+                                                   // an error to the cell and store empty
+                                                   // string into the cell
+                                                   //  
+                                                   if (darray[0].toString()
+                                                                .indexOf(".") == -1) {
+                                                       finalValue = darray[0].toString() + ".0"
+                                                                    + ",";
+                                                   } else {
+                                                       finalValue = darray[0].toString() + ",";
+                                                   }
+
+                                                   if (darray[1].toString()
+                                                                .indexOf(".") == -1) {
+                                                       finalValue += darray[1].toString() + ".0";
+                                                   } else {
+                                                       finalValue += darray[1].toString();
+                                                   }
+                                                   auxFieldValueTableWidget.model.setCell(currRow,1,finalValue);
+
+                                               } else {
+                                                   auxFieldValueTableWidget.model.setCellError(currRow,1,
+                                                                                   consts.get("illegalNumericFormatException"));
+                                               }
+
+                                           } else if ("aux_alpha_lower".equals(result.stringValue)) {
+                                               auxFieldValueTableWidget.model.setCell(currRow,1,value.toLowerCase()); 
+                                           } else if ("aux_alpha_upper".equals(result.stringValue)) {
+                                               auxFieldValueTableWidget.model.setCell(currRow,1,value.toUpperCase()); 
+                                           } else if ("aux_yes_no".equals(result.stringValue)) {
+                                              if((!"Y".equals(value.trim()))&&(!"N".equals(value.trim()))) {
+                                                  auxFieldValueTableWidget.model.setCellError(currRow,1,
+                                                                                              consts.get("illegalYesNoValueException"));
+                                              }
+                                           } else {
+                                               auxFieldValueTableWidget.model.setCell(currRow,1,value);                                               
+                                           }
+
+                                       }
+
+                                       public void onFailure(Throwable caught) {
+                                           Window.alert(caught.getMessage());
+                                           window.clearStatus();
+                                       }
+                                   });
+
+            }
+        }
         
     }
     
     private void setModelInFieldValueTable(int row) {       
-       AuxiliaryGeneralPurposeRPC agrpc = null;      
+       AuxiliaryGeneralPurposeRPC agrpc = null;             
        final TableDataRow<Integer> set = auxFieldTableWidget.model.getRow(row);
        TableDataModel<TableDataRow<Integer>> model = (TableDataModel<TableDataRow<Integer>>)set.getData();
        if(set.key != null && model == null) {            
@@ -379,8 +541,12 @@ public class AuxiliaryScreen extends OpenELISScreenForm<AuxiliaryForm, Query<Tab
                 }
                    
                });                       
-        }       
-       auxFieldValueTableWidget.model.load((TableDataModel)set.getData());       
+        }
+       
+       if(set.getData()==null) 
+        set.setData((TableDataModel)defaultModel.clone());  
+               
+       auxFieldValueTableWidget.model.load((TableDataModel)set.getData());
     }            
                  
   }      

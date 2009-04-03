@@ -81,28 +81,7 @@ public class DictionaryService implements AppScreenFormServiceInt<DictionaryForm
     
     public Query<TableDataRow<Integer>> commitQuery(Query<TableDataRow<Integer>> query) throws RPCException {
         List systemNames = new ArrayList();
-        /*
-        if(qList == null){          
-//          need to get the query rpc out of the cache
-           qList = (ArrayList<AbstractField>)SessionManager.getSession().getAttribute("DictionaryQuery");
-    
-           if(qList == null)
-               throw new QueryException(openElisConstants.getString("queryExpiredException"));
-                
-            try{
-                
-                CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote"); 
-                systemNames = remote.query(qList, (model.getPage()*leftTableRowsPerPage), leftTableRowsPerPage+1);
-                
-            }catch(Exception e){
-            	if(e instanceof LastPageException){
-            		throw new LastPageException(openElisConstants.getString("lastPageException"));
-            	}else{
-            		throw new RPCException(e.getMessage());	
-            	}
-            }
 
-        } else{*/
             CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
            
             try{                                        
@@ -114,9 +93,6 @@ public class DictionaryService implements AppScreenFormServiceInt<DictionaryForm
                 throw new RPCException(e.getMessage());                
             }
     
-//          need to save the rpc used to the ehcache
-            //SessionManager.getSession().setAttribute("DictionaryQuery", qList);
-       //}
         
         int i=0;
         if(query.results == null)
@@ -455,7 +431,9 @@ public class DictionaryService implements AppScreenFormServiceInt<DictionaryForm
                       
             dictDOList.add(dictDO);             
           }
-        for(int iter = 0; iter < dictEntryTable.getDeletions().size(); iter++){
+        
+        if(dictEntryTable.getDeletions() != null) {
+         for(int iter = 0; iter < dictEntryTable.getDeletions().size(); iter++){
             
             TableDataRow row = (TableDataRow)dictEntryTable.getDeletions().get(iter);
             DictionaryDO dictDO = new DictionaryDO();
@@ -485,7 +463,8 @@ public class DictionaryService implements AppScreenFormServiceInt<DictionaryForm
                         
               dictDOList.add(dictDO);             
              }
-        dictEntryTable.getDeletions().clear();
+         dictEntryTable.getDeletions().clear();
+        } 
         return dictDOList;
     }
 

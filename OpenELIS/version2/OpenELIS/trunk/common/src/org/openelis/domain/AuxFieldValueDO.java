@@ -39,6 +39,8 @@ public class AuxFieldValueDO implements Serializable {
     protected Integer auxFieldId;             
     protected Integer typeId;             
     protected String value; 
+    
+    protected String dictEntry;    
     private boolean delete = false;
     
     public AuxFieldValueDO() {
@@ -85,12 +87,20 @@ public class AuxFieldValueDO implements Serializable {
         this.value = value;
     }
 
-    public boolean isDelete() {
+    public boolean getDelete() {
         return delete;
     }
 
     public void setDelete(boolean delete) {
         this.delete = delete;
+    }
+
+    public String getDictEntry() {
+        return dictEntry;
+    }
+
+    public void setDictEntry(String dictEntry) {
+        this.dictEntry = dictEntry;
     }
 
 }
