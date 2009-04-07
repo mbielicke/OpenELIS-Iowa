@@ -60,6 +60,7 @@ import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
+import javax.persistence.LockModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
@@ -135,7 +136,7 @@ public class OrganizationBean implements OrganizationRemote {
             //we need to call lock one more time to make sure their lock didnt expire and someone else grabbed the record
             lockBean.getLock(organizationReferenceId,organizationDO.getOrganizationId());
         }
-        
+
 		 manager.setFlushMode(FlushModeType.COMMIT);
 		 Organization organization = null;
     
