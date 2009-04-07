@@ -348,7 +348,7 @@ public class BuildKitsScreen extends OpenELISScreenForm<BuildKitsForm,Query<Tabl
     private void onTransferRowButtonClick() {
         Object[] args = new Object[1];
         args[0] = new StringObject("transfer");
-        
+        /*
         PopupPanel inventoryTransferPopupPanel = new PopupPanel(false, true);
         ScreenWindow pickerWindow = new ScreenWindow(inventoryTransferPopupPanel,
                                                      "Inventory Transfer",
@@ -362,6 +362,10 @@ public class BuildKitsScreen extends OpenELISScreenForm<BuildKitsForm,Query<Tabl
         int top = this.getAbsoluteTop();
         inventoryTransferPopupPanel.setPopupPosition(left, top);
         inventoryTransferPopupPanel.show();
+        */
+        ScreenWindow modal = new ScreenWindow(null,"Inventory Transfer","inventoryTransferScreen","Loading...",true);
+        modal.setName(consts.get("inventoryTransfer"));
+        modal.setContent(new InventoryReceiptScreen(args));
         
     }
 }

@@ -33,6 +33,8 @@ import org.openelis.gwt.common.data.CheckField;
 import org.openelis.gwt.common.data.DateField;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.StringField;
+import org.openelis.gwt.common.data.TableDataModel;
+import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.metamap.InventoryReceiptMetaMap;
 
 
@@ -52,6 +54,11 @@ public class InvReceiptItemInfoForm extends Form<Integer> {
     public StringField city;
     public StringField state;
     public StringField zipCode;
+    public StringField toDescription;
+    public StringField toStoreId;
+    public StringField toDispensedUnits;
+    public StringField toLotNumber;
+    public StringField toExpDate;
     
     public boolean disableOrderId = false;
     public boolean disableInvItem = false;
@@ -64,6 +71,9 @@ public class InvReceiptItemInfoForm extends Form<Integer> {
     public String itemIsBulk;
     public String itemIsLotMaintained;
     public String itemIsSerialMaintained;
+    
+    //used to unlock the rows
+    public TableDataModel<TableDataRow<Integer>> lockedLocIds;
     
     public InvReceiptItemInfoForm() {
        InventoryReceiptMetaMap meta = new InventoryReceiptMetaMap();
@@ -79,6 +89,11 @@ public class InvReceiptItemInfoForm extends Form<Integer> {
        city = new StringField(meta.ORGANIZATION_META.ADDRESS.getCity());
        state = new StringField(meta.ORGANIZATION_META.ADDRESS.getState());
        zipCode = new StringField(meta.ORGANIZATION_META.ADDRESS.getZipCode());
+       toDescription = new StringField("toDescription");
+       toStoreId = new StringField("toStoreId");
+       toDispensedUnits = new StringField("toDispensedUnits");
+       toLotNumber = new StringField("toLotNumber");
+       toExpDate = new StringField("toExpDate");
    }
    
    public InvReceiptItemInfoForm(Node node) {
@@ -104,7 +119,12 @@ public class InvReceiptItemInfoForm extends Form<Integer> {
                                    streetAddress,
                                    city,
                                    state,
-                                   zipCode
+                                   zipCode,
+                                   toDescription,
+                                   toStoreId,
+                                   toDispensedUnits,
+                                   toLotNumber,
+                                   toExpDate
        };
    }
 }

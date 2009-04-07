@@ -216,7 +216,7 @@ UIRF Software License are applicable instead of those above.
 					</VerticalPanel>
 					<VerticalPanel style="subform">
 		            	<text style="FormTitle">Items Ordered</text>
-						<tree-table key="orderItemsTree" width="500px" showScroll="ALWAYS" manager="this" maxRows="7" enable="true" showError="false">
+						<tree-table key="orderItemsTree" width="auto" showScroll="ALWAYS" manager="this" maxRows="7" enable="true" showError="false">
                                  <headers>Qty,Ord #,Item,Location,Lot #,On Hand</headers>
                                  <widths>65,45,150,145,60,50</widths>					
                                  <leaves>

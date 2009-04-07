@@ -65,6 +65,7 @@ import org.openelis.gwt.widget.tree.event.SourcesTreeWidgetEvents;
 import org.openelis.gwt.widget.tree.event.TreeModelListener;
 import org.openelis.gwt.widget.tree.event.TreeWidgetListener;
 import org.openelis.metamap.FillOrderMetaMap;
+import org.openelis.modules.inventoryReceipt.client.InventoryReceiptScreen;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 import org.openelis.modules.shipping.client.ShippingDataService;
 import org.openelis.modules.shipping.client.ShippingItemsData;
@@ -287,9 +288,7 @@ public class FillOrderScreen extends OpenELISScreenForm<FillOrderForm, Query<Tab
     
     public void setOrdersToProcessedCommit(){
         TableDataModel<TableDataRow<Integer>> lockedSets = getLockedSetsFromLockedList(lockedIndexes);
-        //set the order to processed
-        //FillOrderItemInfoForm foiirpc = new FillOrderItemInfoForm();
-        //foiirpc.orm = form.itemInformation;
+
         form.itemInformation.originalOrderItemsTree.setValue(combinedTree);
         
         form.itemInformation.tableData = lockedSets;
@@ -303,21 +302,22 @@ public class FillOrderScreen extends OpenELISScreenForm<FillOrderForm, Query<Tab
                     fillItemsTable.model.setRow(row, result.tableData.get(i));
                     fillItemsTable.model.setCell(row, 0, CheckBox.UNCHECKED);
                 }
+                
+                unlockRows(lockedIndexes, true);
             }
 
             public void onFailure(Throwable caught) {
                 Window.alert(caught.getMessage());
             }
         });
-        
-        unlockRows((TableDataModel<TableDataRow<Integer>>)lockedIndexes.clone(), true);
+
     }
     
     public void onShippingScreenAbort(){
         //clear the tree so we dont have to piecemeal clear it
         combinedTree.clear();
         
-        unlockRows((TableDataModel<TableDataRow<Integer>>)lockedIndexes.clone(), true);
+        unlockRows(lockedIndexes, true);
         
         //reassert the subform so it shows the current selected row
         loadSubForm(fillItemsTable.model.getSelectedIndex());
@@ -418,8 +418,9 @@ public class FillOrderScreen extends OpenELISScreenForm<FillOrderForm, Query<Tab
         if (lockedIndexes.size() == 0 || row == null)
             return;
         
-        PopupPanel shippingPopupPanel = new PopupPanel(false, true);
-        ScreenWindow pickerWindow = new ScreenWindow(shippingPopupPanel, "Shipping", "shippingScreen", "Loading...");
+        
+        //PopupPanel shippingPopupPanel = new PopupPanel(false, true);
+        //ScreenWindow pickerWindow = new ScreenWindow(shippingPopupPanel, "Shipping", "shippingScreen", "Loading...");
 
         FillOrderItemInfoForm tableRowSubRPC = (FillOrderItemInfoForm)row.getData();
         ShippingScreen shippingScreen = new ShippingScreen();
@@ -438,12 +439,10 @@ public class FillOrderScreen extends OpenELISScreenForm<FillOrderForm, Query<Tab
         shippingScreen.setTarget(this);
         shippingScreen.setShippingData(data);
 
-        pickerWindow.setContent(shippingScreen);
-        shippingPopupPanel.add(pickerWindow);
-        int left = this.getAbsoluteLeft();
-        int top = this.getAbsoluteTop();
-        shippingPopupPanel.setPopupPosition(left, top);
-        shippingPopupPanel.show();
+        ScreenWindow modal = new ScreenWindow(null,"Shipping","shippingScreen","Loading...",true);
+        modal.setName(consts.get("shipping"));
+        modal.setContent(shippingScreen);
+
     }
 
     private void rebuildOrderItemsTree(int row) {

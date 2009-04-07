@@ -282,7 +282,7 @@ UIRF Software License are applicable instead of those above.
 					</TablePanel>
 				</tab>	
 					<!-- TAB 2 (receipts) -->
-					<tab key="receiptTab" text="{resource:getString($constants,'receipt')}">
+					<tab key="receiptTab" text="{resource:getString($constants,'filled')}">
 					<TablePanel spacing="0" padding="0" height="247px" width="626px">
 						<row>
 						<widget align="center">

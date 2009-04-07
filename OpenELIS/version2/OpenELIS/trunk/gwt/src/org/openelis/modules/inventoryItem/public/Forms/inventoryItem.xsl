@@ -423,7 +423,7 @@ UIRF Software License are applicable instead of those above.
 					<!-- start TAB 4 (Manufacturing) -->
 					<tab key="manufacturingTab" text="{resource:getString($constants,'manufacturing')}">
 						<VerticalPanel height="247px" width="645px">
-						<!--<richtext key="manufacturingText" tools="false"/>-->
+						<richtext key="manufacturingText"/>
 						</VerticalPanel>
 					</tab>
 					<!-- start TAB 5 (Comments) -->
