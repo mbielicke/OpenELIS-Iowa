@@ -33,10 +33,12 @@ UIRF Software License are applicable instead of those above.
                 xmlns:orderMeta="xalan://org.openelis.metamap.OrderMetaMap"
                 xmlns:orderItemMeta="xalan://org.openelis.metamap.OrderItemMetaMap"
                 xmlns:transReceiptLocationMeta="xalan://org.openelis.metamap.TransReceiptLocationMetaMap"
-                xmlns:inventoryLocationMeta="xalan://org.openelis.meta.InventoryLocationMeta"
+                xmlns:inventoryLocationMeta="xalan://org.openelis.metamap.InventoryLocationMetaMap"
                 xmlns:organizationMeta="xalan://org.openelis.metamap.OrderOrganizationMetaMap"
                 xmlns:addressMeta="xalan://org.openelis.meta.AddressMeta"
                 xmlns:inventoryItemMeta="xalan://org.openelis.meta.InventoryItemMeta"
+                xmlns:inventoryXUseMeta="xalan://org.openelis.metamap.InventoryXUseMetaMap"
+                xmlns:storageLocationMeta="xalan://org.openelis.metamap.StorageLocationMetaMap"
                 extension-element-prefixes="resource"
                 version="1.0">
 <xsl:import href="aToZOneColumn.xsl"/>
@@ -69,7 +71,7 @@ UIRF Software License are applicable instead of those above.
   </xalan:component>
     
   <xalan:component prefix="inventoryLocationMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.InventoryLocationMeta"/>
+    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.InventoryLocationMetaMap"/>
   </xalan:component>
   
     <xalan:component prefix="organizationMeta">
@@ -84,10 +86,22 @@ UIRF Software License are applicable instead of those above.
     <xalan:script lang="javaclass" src="xalan://org.openelis.meta.InventoryItemMeta"/>
   </xalan:component>
   
+    <xalan:component prefix="inventoryXUseMeta">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.InventoryXUseMetaMap"/>
+  </xalan:component>
+  
+      <xalan:component prefix="storageLocationMeta">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.StorageLocationMetaMap"/>
+  </xalan:component>
+  
   <xsl:template match="doc"> 
     <xsl:variable name="receipt" select="meta:new()"/>
     <xsl:variable name="transForLoc" select="meta:getTransReceiptLocation($receipt)"/>
+    <xsl:variable name="transLocOrder" select="meta:getTransLocationOrder($receipt)"/>
+     <xsl:variable name="fromOrderItem" select="inventoryXUseMeta:getOrderItem($transLocOrder)"/>
+    <xsl:variable name="fromInvItem" select="orderItemMeta:getInventoryItem($fromOrderItem)"/>
     <xsl:variable name="loc" select="transReceiptLocationMeta:getInventoryLocation($transForLoc)"/>
+    <xsl:variable name="toStorageLoc" select="inventoryLocationMeta:getStorageLocation($loc)"/>
     <xsl:variable name="orderItem" select="meta:getOrderItem($receipt)"/>
     <xsl:variable name="order" select="orderItemMeta:getOrder($orderItem)"/>
     <xsl:variable name="invItem" select="meta:getInventoryitem($receipt)"/>
@@ -109,11 +123,6 @@ UIRF Software License are applicable instead of those above.
     			</xsl:call-template>
     			<xsl:call-template name="buttonPanelDivider"/>
     			<xsl:call-template name="addButton">
-    				<xsl:with-param name="language">
-    					<xsl:value-of select="language"/>
-    				</xsl:with-param>
-    			</xsl:call-template>
-    			<xsl:call-template name="updateButton">
     				<xsl:with-param name="language">
     					<xsl:value-of select="language"/>
     				</xsl:with-param>
@@ -157,13 +166,13 @@ UIRF Software License are applicable instead of those above.
 								<textbox case="mixed"/>
 							</editors>
 							<fields>
-								<dropdown key="{inventoryItemMeta:getName($invItem)}" required="true"/>
+								<dropdown key="{inventoryItemMeta:getName($fromInvItem)}" required="true"/>
 								<string key="fromLoc"/>
 								<integer key="qtyOnHand"/>
 								<dropdown key="{inventoryItemMeta:getName($invItem)}" required="true"/>
 								<check key="addToExisting"/>
-								<dropdown required="true"/>
-								<integer key="{inventoryReceiptMeta:getQuantityReceived($receipt)}" required="false"/>
+								<dropdown key="{storageLocationMeta:getName($toStorageLoc)}" required="true"/>
+								<integer key="{inventoryReceiptMeta:getQuantityReceived($receipt)}" required="true"/>
 							</fields>
 							<sorts>false,false,false,false,false,false,false</sorts>
 							<filters>false,false,false,false,false,false,false</filters>
@@ -249,25 +258,47 @@ UIRF Software License are applicable instead of those above.
 		                <text style="FormTitle"><xsl:value-of select='resource:getString($constants,"itemInformation")'/></text>
 							<TablePanel style="Form">
 								<row>
-									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"description")'/>:</text>
+									<HorizontalPanel/>
+									<text style="TopPrompt"><xsl:value-of select='resource:getString($constants,"description")'/></text>
+									<text style="TopPrompt"><xsl:value-of select='resource:getString($constants,"store")'/></text>
+									<text style="TopPrompt"><xsl:value-of select='resource:getString($constants,"dispensedUnits")'/></text>
+									<text style="TopPrompt"><xsl:value-of select='resource:getString($constants,"lotNum")'/></text>
+									<text style="TopPrompt"><xsl:value-of select='resource:getString($constants,"expDate")'/></text>
+								</row>
+								<row>
+									<text style="Prompt">From:</text>
 									<widget>
 										<textbox case="mixed" key="{inventoryItemMeta:getDescription($invItem)}" width="195px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
 									</widget>
-									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"fromLotNum")'/>:</text>
-									<textbox case="mixed" key="{inventoryLocationMeta:getLotNumber($loc)}" onchange="this" width="100px" max="30" tab="{inventoryLocationMeta:getExpirationDate($loc)},{inventoryLocationMeta:getStorageLocationId($loc)}"/>
-								</row>
-								<row>
-									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"store")'/>:</text>
 									<widget>
 										<textbox case="mixed" key="{inventoryItemMeta:getStoreId($invItem)}" width="115px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
 									</widget>
-									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"fromExpDate")'/>:</text>
-									<calendar key="{inventoryLocationMeta:getExpirationDate($loc)}" width="140px" onChange="this" begin="0" end="2" tab="addToExisting,{inventoryLocationMeta:getLotNumber($loc)}"/>							
-								</row>
-								<row>
-									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"dispensedUnits")'/>:</text>
 									<widget>
 										<textbox case="mixed" key="{inventoryItemMeta:getDispensedUnitsId($invItem)}" width="90px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
+									</widget>
+									<widget>
+										<textbox case="mixed" key="{inventoryLocationMeta:getLotNumber($loc)}" onchange="this" width="100px" max="30" style="ScreenTextboxDisplayOnly"/>
+									</widget>
+									<widget>
+										<textbox case="mixed" key="{inventoryLocationMeta:getExpirationDate($loc)}" width="140px" onChange="this" style="ScreenTextboxDisplayOnly"/>
+									</widget>
+								</row>
+								<row>
+									<text style="Prompt">To:</text>
+									<widget>
+										<textbox case="mixed" key="toDescription" width="195px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
+									</widget>
+									<widget>
+										<textbox case="mixed" key="toStoreId" width="115px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
+									</widget>
+									<widget>
+										<textbox case="mixed" key="toDispensedUnits" width="90px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
+									</widget>
+									<widget>
+										<textbox case="mixed" key="toLotNumber" onchange="this" width="100px" max="30" style="ScreenTextboxDisplayOnly"/>
+									</widget>
+									<widget>
+										<textbox case="mixed" key="toExpDate" width="140px" style="ScreenTextboxDisplayOnly" />
 									</widget>
 								</row>
 							</TablePanel>
@@ -294,6 +325,12 @@ UIRF Software License are applicable instead of those above.
     	<dropdown key="{inventoryLocationMeta:getStorageLocationId($loc)}" required="false"/>
 		<string key="{inventoryLocationMeta:getLotNumber($loc)}" required="false"/>
 		<date key="{inventoryLocationMeta:getExpirationDate($loc)}" begin="0" end="2" required="false"/>
+		
+		<string key="toDescription" required="false"/>
+		<string key="toStoreId" required="false"/>
+		<string key="toDispensedUnits" required="false"/>
+		<string key="toLotNumber" required="false"/>
+		<string key="toExpDate" required="false"/>
     	</rpc>
 	</rpc>
 	<!--

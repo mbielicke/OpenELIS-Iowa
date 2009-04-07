@@ -135,7 +135,7 @@ UIRF Software License are applicable instead of those above.
 		<!--end button panel-->
 			<VerticalPanel style="WhiteContentPanel" spacing="0" padding="0">
 					<widget valign="top">
-					<resultsTable colwidths="2" showNavPanel="false" key="receiptsTable" maxRows="18" tablewidth="auto" headers="{resource:getString($constants,'name')}" width="100%">
+					<resultsTable query="true" colwidths="2" showNavPanel="false" key="receiptsTable" maxRows="18" tablewidth="auto" headers="{resource:getString($constants,'name')}" width="100%">
 						<table width="auto" manager="this" maxRows="10" title="" showError="false" showScroll="ALWAYS">
 							<headers><xsl:value-of select='resource:getString($constants,"ordNum")'/>,<xsl:value-of select='resource:getString($constants,"dateRec")'/>,<xsl:value-of select='resource:getString($constants,"upc")'/>,
 							<xsl:value-of select='resource:getString($constants,"inventoryItem")'/>,<xsl:value-of select='resource:getString($constants,"vendor")'/>,<xsl:value-of select='resource:getString($constants,"numRec")'/>,
@@ -318,6 +318,12 @@ UIRF Software License are applicable instead of those above.
     	<dropdown key="{inventoryLocationMeta:getStorageLocationId($loc)}" required="false"/>
 		<string key="{inventoryLocationMeta:getLotNumber($loc)}" required="false"/>
 		<date key="{inventoryLocationMeta:getExpirationDate($loc)}" begin="0" end="2" required="false"/>
+		
+		<string key="toDescription" required="false"/>
+		<string key="toStoreId" required="false"/>
+		<string key="toDispensedUnits" required="false"/>
+		<string key="toLotNumber" required="false"/>
+		<string key="toExpDate" required="false"/>
     	</rpc>
 	</rpc>
 	<!--

@@ -365,13 +365,20 @@ sampleManagementDescription = Description...
 				      <xsl:with-param name="class">BuildKitsScreen</xsl:with-param>
 				      <xsl:with-param name="args"></xsl:with-param>
 				    </xsl:call-template>	
+				    <xsl:call-template name="menuItem">
+				      <xsl:with-param name="key">InventoryTransfer</xsl:with-param>
+				      <xsl:with-param name="label">inventoryTransfer</xsl:with-param>
+				      <xsl:with-param name="enabled">true</xsl:with-param>
+				      <xsl:with-param name="class">InventoryReceiptScreen</xsl:with-param>
+				      <xsl:with-param name="args">transfer</xsl:with-param>
+				    </xsl:call-template>
 				    <html>&lt;hr/&gt;</html>
 				    <xsl:call-template name="menuItem">
 				      <xsl:with-param name="key">InventoryReceipt</xsl:with-param>
 				      <xsl:with-param name="label">inventoryReceipt</xsl:with-param>
 				      <xsl:with-param name="enabled">true</xsl:with-param>
 				      <xsl:with-param name="class">InventoryReceiptScreen</xsl:with-param>
-				      <xsl:with-param name="args"></xsl:with-param>
+				      <xsl:with-param name="args">receipt</xsl:with-param>
 				    </xsl:call-template>	
 				    <xsl:call-template name="menuItem">
 				      <xsl:with-param name="key">InventoryAdjustment</xsl:with-param>

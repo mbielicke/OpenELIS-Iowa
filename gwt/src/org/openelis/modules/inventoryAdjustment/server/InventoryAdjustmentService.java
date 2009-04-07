@@ -25,6 +25,10 @@
 */
 package org.openelis.modules.inventoryAdjustment.server;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 import org.openelis.domain.IdNameDO;
 import org.openelis.domain.IdNameDateDO;
 import org.openelis.domain.InventoryAdjLocationAutoDO;
@@ -66,10 +70,6 @@ import org.openelis.util.Datetime;
 import org.openelis.util.FormUtil;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 
 public class InventoryAdjustmentService implements AppScreenFormServiceInt<InventoryAdjustmentForm,Query<TableDataRow<Integer>>>, AutoCompleteServiceInt{
     
@@ -403,11 +403,10 @@ public class InventoryAdjustmentService implements AppScreenFormServiceInt<Inven
                                                                                     new StringObject(location),
                                                                                     new StringObject(lotNum),
                                                                                     new StringObject(expDate),
-                                                                                    new IntegerObject(qty),
-                                                                                    new IntegerObject(locId)
+                                                                                    new IntegerObject(qty)
                                                                    }
             );
-
+            data.setData(new IntegerObject(locId));
             //add the dataset to the datamodel
             dataModel.add(data);                                 
 
