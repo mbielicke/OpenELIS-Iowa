@@ -27,6 +27,7 @@ package org.openelis.bean;
 
 import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.BuildKitDO;
+import org.openelis.domain.InventoryLocationDO;
 import org.openelis.domain.InventoryReceiptDO;
 import org.openelis.entity.InventoryLocation;
 import org.openelis.entity.InventoryReceipt;
@@ -39,6 +40,8 @@ import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.AbstractField;
+import org.openelis.gwt.common.data.TableDataModel;
+import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.local.LockLocal;
 import org.openelis.metamap.InventoryReceiptMetaMap;
 import org.openelis.persistence.CachingManager;
@@ -125,6 +128,28 @@ public class InventoryReceiptBean implements InventoryReceiptRemote{
         return queryResultList;
     }
     
+    public InventoryLocationDO lockLocationAndFetch(Integer oldLocId, Integer newLocId) throws Exception {
+        Query query = manager.createNamedQuery("getTableId");
+        query.setParameter("name", "inventory_location");
+        Integer inventoryLocationId = (Integer)query.getSingleResult();
+        lockBean.getLock(inventoryLocationId, newLocId);
+        System.out.println("get lock ["+inventoryLocationId+"] ["+newLocId+"]");
+        //if there is an old lock we need to unlock this record
+        if(oldLocId != null)
+            lockBean.giveUpLock(inventoryLocationId, oldLocId);
+        System.out.println("give up lock ["+inventoryLocationId+"] ["+oldLocId+"]");
+        //get the current qty on hand
+        query = manager.createNamedQuery("InventoryLocation.InventoryLocation");
+        query.setParameter("id", newLocId);
+        
+        List resultList = query.getResultList();
+        
+        if(resultList != null && resultList.size() == 1)
+            return (InventoryLocationDO)resultList.get(0);
+        else
+            return null;
+    }
+    
     public List queryAndUnlock(ArrayList<AbstractField> fields, int first, int max, boolean receipt) throws Exception {
         List queryResultList = query(fields, first, max, receipt);
         
@@ -132,6 +157,15 @@ public class InventoryReceiptBean implements InventoryReceiptRemote{
         unlockRecords(queryResultList);
                 
         return queryResultList;
+    }
+    
+    public void unlockLocations(TableDataModel<TableDataRow<Integer>> locIds) {
+        Query query = manager.createNamedQuery("getTableId");
+        query.setParameter("name", "inventory_location");
+        Integer inventoryLocationId = (Integer)query.getSingleResult();
+        
+        for(int i=0; i<locIds.size(); i++)
+            lockBean.giveUpLock(inventoryLocationId, locIds.get(i).key);
     }
     
     public List query(ArrayList<AbstractField> fields, int first, int max, boolean receipt) throws Exception {
@@ -184,6 +218,8 @@ public class InventoryReceiptBean implements InventoryReceiptRemote{
                       selectString+=", "+InventoryReceiptMap.TRANS_LOC_ORDER_META.ORDER_ITEM_META.INVENTORY_ITEM_META.getId()+", "+ //from id
                       InventoryReceiptMap.TRANS_LOC_ORDER_META.ORDER_ITEM_META.INVENTORY_ITEM_META.getName()+", "+ //from name
                       InventoryReceiptMap.TRANS_LOC_ORDER_META.ORDER_ITEM_META.INVENTORY_ITEM_META.getDescription()+", "+ //from desc
+                      InventoryReceiptMap.DICTIONARY_FROM_STORE_META.getEntry()+", "+//from store id
+                      InventoryReceiptMap.DICTIONARY_FROM_DISPENSED_UNITS_META.getEntry()+", "+//from dis units
                       InventoryReceiptMap.TRANS_LOC_ORDER_META.INVENTORY_LOCATION_META.getStorageLocationId()+", "+ //from storage loc
                       InventoryReceiptMap.TRANS_LOC_ORDER_META.INVENTORY_LOCATION_META.INVENTORY_LOCATION_STORAGE_LOCATION.getName()+", "+ //from loc name 
                       InventoryReceiptMap.TRANS_LOC_ORDER_META.INVENTORY_LOCATION_META.INVENTORY_LOCATION_STORAGE_LOCATION.STORAGE_UNIT_META.getDescription()+", "+ //from loc desc
@@ -192,14 +228,17 @@ public class InventoryReceiptBean implements InventoryReceiptRemote{
                   }else
                       selectString+=")";
                  
+                  //need from store
+                  //need from dispensed units
+                  System.out.println(selectString);
         qb.setSelect(selectString);
-        
+        System.out.println("1");
         //this method is going to throw an exception if a column doesnt match
         qb.addWhere(fields); 
-
+System.out.println("2");
         qb.addWhere(InventoryReceiptMap.getInventoryItemId() + " = " + InventoryReceiptMap.INVENTORY_ITEM_META.getId());
         //if(receipt)
-            
+            System.out.println("3");
         
         if(receipt){
             qb.addWhere(InventoryReceiptMap.getOrganizationId() + " = " + InventoryReceiptMap.ORGANIZATION_META.getId());
@@ -207,22 +246,26 @@ public class InventoryReceiptBean implements InventoryReceiptRemote{
             qb.addWhere(InventoryReceiptMap.INVENTORY_ITEM_META.getDispensedUnitsId()+" = "+InventoryReceiptMap.DICTIONARY_DISPENSED_UNITS_META.getId());
             qb.addWhere(InventoryReceiptMap.getOrganizationId()+" is not null ");
         }else{
-            qb.addWhere(InventoryReceiptMap.TRANS_LOC_ORDER_META.ORDER_ITEM_META.INVENTORY_ITEM_META.getStoreId()+" = "+InventoryReceiptMap.DICTIONARY_STORE_META.getId());
-            qb.addWhere(InventoryReceiptMap.TRANS_LOC_ORDER_META.ORDER_ITEM_META.INVENTORY_ITEM_META.getDispensedUnitsId()+" = "+InventoryReceiptMap.DICTIONARY_DISPENSED_UNITS_META.getId());
+            qb.addWhere(InventoryReceiptMap.INVENTORY_ITEM_META.getStoreId()+" = "+InventoryReceiptMap.DICTIONARY_STORE_META.getId());
+            qb.addWhere(InventoryReceiptMap.INVENTORY_ITEM_META.getDispensedUnitsId()+" = "+InventoryReceiptMap.DICTIONARY_DISPENSED_UNITS_META.getId());
+            
+            qb.addWhere(InventoryReceiptMap.TRANS_LOC_ORDER_META.ORDER_ITEM_META.INVENTORY_ITEM_META.getStoreId()+" = "+InventoryReceiptMap.DICTIONARY_FROM_STORE_META.getId());
+            qb.addWhere(InventoryReceiptMap.TRANS_LOC_ORDER_META.ORDER_ITEM_META.INVENTORY_ITEM_META.getDispensedUnitsId()+" = "+InventoryReceiptMap.DICTIONARY_FROM_DISPENSED_UNITS_META.getId());
+            
             qb.addWhere(InventoryReceiptMap.getOrganizationId()+" is null ");
             //tie trans loc order to the receipt somehow
             qb.addWhere(InventoryReceiptMap.TRANS_LOC_ORDER_META.getOrderItemId()+" = "+InventoryReceiptMap.ORDER_ITEM_META.getId());
         }
-        
+        System.out.println("4");
         if(receipt)
             qb.setOrderBy(InventoryReceiptMap.getReceivedDate()+" DESC, "+InventoryReceiptMap.ORGANIZATION_META.getName());
         else
             qb.setOrderBy(InventoryReceiptMap.getReceivedDate()+" DESC");
-        
+        System.out.println("5");
         String fromClause = qb.getFromClause(qb.getWhereClause());
         if(!receipt)
-            fromClause+=", InventoryXUse locOrderTrans ";
-        
+            fromClause+=", InventoryXUse locOrderTrans, Dictionary dictFromStore, Dictionary dictFromDis ";
+        System.out.println("6");
         sb.append(qb.getSelectClause()).append(fromClause).append(qb.getWhereClause()).append(qb.getOrderBy());
         System.out.println(sb.toString());
 //        sb.append(qb.getEJBQL());
@@ -447,9 +490,6 @@ public class InventoryReceiptBean implements InventoryReceiptRemote{
         if(inventoryTransfers.size() == 0)
             return;
         
-        //lock the necessary records
-        //TODO remove for now   lockRecords(inventoryReceipts);
-        
         System.out.println("order ["+((InventoryReceiptDO)inventoryTransfers.get(0)).getOrderNumber()+"]");
         //create a new internal order record only on add
         Query query = manager.createNamedQuery("Dictionary.IdBySystemName");
@@ -473,6 +513,12 @@ public class InventoryReceiptBean implements InventoryReceiptRemote{
         
         for(int i=0; i<inventoryTransfers.size(); i++){
             InventoryReceiptDO transferDO = (InventoryReceiptDO)inventoryTransfers.get(i);
+            
+            Integer qtyInto = -1;
+            if(transferDO.getParentRatio() != null)
+                qtyInto = transferDO.getQuantityReceived() * transferDO.getParentRatio();
+            else if(transferDO.getChildRatio() != null)
+                qtyInto = transferDO.getQuantityReceived() / transferDO.getChildRatio();
             
             System.out.println("order item ["+transferDO.getOrderItemId()+"]");
             //create new order item records with FROM inv item ids
@@ -522,7 +568,7 @@ public class InventoryReceiptBean implements InventoryReceiptRemote{
             
             receipt.setInventoryItemId(transferDO.getInventoryItemId());
             receipt.setOrderItemId(orderItem.getId());
-            receipt.setQuantityReceived(transferDO.getQuantityReceived());
+            receipt.setQuantityReceived(qtyInto);
             if(receipt.getReceivedDate() == null)
                 receipt.setReceivedDate(Datetime.getInstance(Datetime.YEAR, Datetime.DAY));
 
@@ -555,13 +601,13 @@ public class InventoryReceiptBean implements InventoryReceiptRemote{
             if(numberOfLocs > 0)
                 toLoc = manager.find(InventoryLocation.class, (Integer)((Object[])locTransLocIds.get(0))[1]);
             else
-            toLoc = new InventoryLocation();
+                toLoc = new InventoryLocation();
             
             if(location.getExpirationDate() != null)
                 toLoc.setExpirationDate(location.getExpirationDate());
             toLoc.setInventoryItemId(transferDO.getInventoryItemId());
             toLoc.setLotNumber(location.getLotNumber());
-            toLoc.setQuantityOnhand(transferDO.getQuantityReceived());
+            toLoc.setQuantityOnhand(qtyInto);
             toLoc.setStorageLocationId(transferDO.getStorageLocationId());
             
             if(toLoc.getId() == null)
@@ -578,7 +624,7 @@ public class InventoryReceiptBean implements InventoryReceiptRemote{
             
             transReceiptLoc.setInventoryLocationId(toLoc.getId());
             transReceiptLoc.setInventoryReceiptId(receipt.getId());
-            transReceiptLoc.setQuantity(transferDO.getQuantityReceived());
+            transReceiptLoc.setQuantity(qtyInto);
             
             if(transReceiptLoc.getId() == null)
                 manager.persist(transReceiptLoc);
@@ -681,9 +727,11 @@ public class InventoryReceiptBean implements InventoryReceiptRemote{
         System.out.println("8");
         //validate qtys    
         if(transferDO.getQuantityReceived().compareTo(transferDO.getFromQtyOnHand()) > 0){
-            exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex, InventoryReceiptMap.TRANS_LOC_ORDER_META.INVENTORY_LOCATION_META.getQuantityOnhand()));
+            exceptionList.add(new TableFieldErrorException("notEnoughQuantityOnHand", rowIndex, InventoryReceiptMap.getQuantityReceived()));
         }
         System.out.println("9");
+        if(transferDO.getChildRatio() != null && transferDO.getParentRatio() == null && transferDO.getQuantityReceived()%transferDO.getChildRatio() > 0)
+            exceptionList.add(new TableFieldErrorException("qtyToParentRatioInvalid", rowIndex, InventoryReceiptMap.getQuantityReceived()));
             
     }
     
