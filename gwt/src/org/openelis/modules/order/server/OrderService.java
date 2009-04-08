@@ -44,6 +44,7 @@ import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.QueryException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.TableFieldErrorException;
+import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.FieldType;
@@ -187,25 +188,16 @@ public class OrderService implements AppScreenFormServiceInt<OrderForm, OrderQue
         TableDataModel<TableDataRow<Integer>> itemsModel = (TableDataModel<TableDataRow<Integer>>)itemsTableField.getValue();
         orderItems = getOrderItemsListFromRPC(itemsModel, orderDO.getId(), orderType);
                 
-        //validate the fields on the backend
-        List exceptionList = remote.validateForAdd(orderDO, orderType, orderItems);
-        
-        if(exceptionList.size() > 0){
-            setRpcErrors(exceptionList, itemsTableField, rpc);
-            return rpc;
-        } 
-        
         //send the changes to the database
         Integer orderId;
         try{
             orderId = (Integer)remote.updateOrder(orderDO, orderType, orderItems, customerNotes, orderShippingNotes);
         }catch(Exception e){
-            exceptionList = new ArrayList();
-            exceptionList.add(e);
-            
-            setRpcErrors(exceptionList, itemsTableField, rpc);
-            
-            return rpc;
+            if(e instanceof ValidationErrorsList){
+                setRpcErrors(((ValidationErrorsList)e).getErrorList(), itemsTableField, rpc);
+                return rpc;
+            }else
+                throw new RPCException(e.getMessage());
         }
         
         //lookup the changes from the database and build the rpc
@@ -258,47 +250,16 @@ public class OrderService implements AppScreenFormServiceInt<OrderForm, OrderQue
         TableDataModel<TableDataRow<Integer>> itemsModel = itemsTableField.getValue();
         orderItems = getOrderItemsListFromRPC(itemsModel, orderDO.getId(), orderType);     
         
-        //if the status changed we need to verify we have enough quantity to fill the order
-        if((OrderRemote.INTERNAL.equals(orderType) || OrderRemote.KITS.equals(orderType)) && !originalStatus.equals(orderDO.getStatusId())){
-            CategoryRemote catRemote = (CategoryRemote) EJBFactory.lookup("openelis/CategoryBean/remote");
-            try {
-                Integer completedStatusId = catRemote.getEntryIdForSystemName("order_status_processed");
-                
-                if(orderDO.getStatusId().equals(completedStatusId)){
-                    //validate the quantities
-                    List exceptionList = remote.validateQuantities(orderItems);
-                    
-                    if(exceptionList.size() > 0){
-                        setRpcErrors(exceptionList, itemsTableField, rpc);
-                        qtyErrors = true;
-                    }
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        
-        //validate the fields on the backend
-        List exceptionList = remote.validateForUpdate(orderDO, orderType, orderItems, rpc.items.load);
-        if(exceptionList.size() > 0 || qtyErrors){
-            setRpcErrors(exceptionList, itemsTableField, rpc);
-            
-            return rpc;
-        } 
-        
         //send the changes to the database
         try{
             remote.updateOrder(orderDO, orderType, orderItems, customerNote, shippingNote);
+            
         }catch(Exception e){
-            if(e instanceof EntityLockedException)
+            if(e instanceof ValidationErrorsList){
+                setRpcErrors(((ValidationErrorsList)e).getErrorList(), itemsTableField, rpc);
+                return rpc;
+            }else
                 throw new RPCException(e.getMessage());
-            
-            exceptionList = new ArrayList();
-            exceptionList.add(e);
-            
-            setRpcErrors(exceptionList, itemsTableField, rpc);
-            
-            return rpc;
         }
 
         //set the fields in the RPC
@@ -537,45 +498,6 @@ public class OrderService implements AppScreenFormServiceInt<OrderForm, OrderQue
         
         form.status = Form.Status.invalid;
     }
-    
-    /*
-    public DataModel<Integer> getInitialModel(String cat){
-        Integer id = null;
-        CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
-        
-        if(cat.equals("status"))
-            id = remote.getCategoryId("order_status");
-        else if(cat.equals("store"))
-            id = remote.getCategoryId("inventory_item_stores");
-        else if(cat.equals("costCenter"))
-            id = remote.getCategoryId("cost_centers");
-        else if(cat.equals("shipFrom"))
-            id = remote.getCategoryId("shipFrom");
-        
-        List entries = new ArrayList();
-        if(id != null)
-            entries = remote.getDropdownValues(id);
-        
-        //we need to build the model to return
-        DataModel<Integer> returnModel = new DataModel<Integer>();
-
-        if(entries.size() > 0){ 
-            
-            returnModel.add(new DataSet<Integer>(0,new StringObject(" ")));
-        }
-        
-        int i=0;
-        while(i < entries.size()){
-            IdNameDO resultDO = (IdNameDO) entries.get(i);
-            
-            returnModel.add(new DataSet<Integer>(resultDO.getId(),new StringObject(resultDO.getName())));
-            
-            i++;
-        }       
-        
-        return returnModel;
-    }
-    */
     
     public OrderForm getAddAutoFillValues(OrderForm orderRpc) throws Exception {
         OrderRemote remote = (OrderRemote)EJBFactory.lookup("openelis/OrderBean/remote");

@@ -56,7 +56,6 @@ public class ShippingForm extends Form<Integer>{
     public StringField city;
     public StringField state;
     public StringField zipcode;
-    public TableDataModel<TableDataRow<Integer>> unlockModel;
     
     public String shippingTabPanel = "itemsTab";
     public Integer systemUserId;

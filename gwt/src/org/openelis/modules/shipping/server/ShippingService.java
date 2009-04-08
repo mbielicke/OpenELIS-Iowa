@@ -37,7 +37,6 @@ import org.openelis.domain.ShippingDO;
 import org.openelis.domain.ShippingItemDO;
 import org.openelis.domain.ShippingTrackingDO;
 import org.openelis.gwt.common.DatetimeRPC;
-import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.FormErrorException;
@@ -56,7 +55,6 @@ import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
 import org.openelis.gwt.services.AutoCompleteServiceInt;
 import org.openelis.metamap.ShippingMetaMap;
-import org.openelis.modules.fillOrder.client.FillOrderOrderItemsKey;
 import org.openelis.modules.shipping.client.ShippingForm;
 import org.openelis.modules.shipping.client.ShippingItemsData;
 import org.openelis.modules.shipping.client.ShippingItemsForm;
@@ -171,12 +169,10 @@ System.out.println("after shipping items");
 		shippingNote.setIsExternal("Y");
 
 
-		TableDataModel<TableDataRow<Integer>> model = rpc.unlockModel;
-
 		// send the changes to the database
 		Integer shippingId;
 		try {
-			shippingId = (Integer) remote.updateShipment(shippingDO, shippingItems, trackingNumbers, model, shippingNote);
+			shippingId = (Integer) remote.updateShipment(shippingDO, shippingItems, trackingNumbers, shippingNote);
 		} catch (Exception e) {
 		    if(e instanceof ValidationErrorsList){
                 setRpcErrors(((ValidationErrorsList)e).getErrorList(), rpc);
@@ -228,30 +224,16 @@ System.out.println("after shipping items");
         shippingNote.setText((String)rpc.shippingNotesForm.text.getValue());
         shippingNote.setIsExternal("Y");
         
-		// validate the fields on the backend
-		List exceptionList = remote.validateForUpdate(shippingDO,
-				shippingItems, trackingNumbers);
-
-		if (exceptionList.size() > 0) {
-			// TODO setRpcErrors(exceptionList, trackingNumsTable, rpcSend);
-
-			return rpc;
-		}
-
 		// send the changes to the database
 		try {
-			remote.updateShipment(shippingDO, shippingItems, trackingNumbers, null, shippingNote);
+			remote.updateShipment(shippingDO, shippingItems, trackingNumbers, shippingNote);
 		} catch (Exception e) {
-			if (e instanceof EntityLockedException)
-				throw new RPCException(e.getMessage());
-
-			exceptionList = new ArrayList();
-			exceptionList.add(e);
-
-			// TODO setRpcErrors(exceptionList, trackingNumsTable, rpcSend);
-
-			return rpc;
-		}
+            if(e instanceof ValidationErrorsList){
+                setRpcErrors(((ValidationErrorsList)e).getErrorList(), rpc);
+                return rpc;
+            }else
+                throw new RPCException(e.getMessage());
+        }
 
 		// set the fields in the RPC
 		setFieldsInRPC(rpc, shippingDO);
@@ -276,9 +258,8 @@ System.out.println("after shipping items");
 		// remote interface to call the shipping bean
 		ShippingRemote remote = (ShippingRemote) EJBFactory
 				.lookup("openelis/ShippingBean/remote");
-		TableDataModel<TableDataRow<Integer>> model = (TableDataModel<TableDataRow<Integer>>) rpc.unlockModel;
 
-		ShippingDO shippingDO = remote.getShipmentAndUnlock(rpc.entityKey, model);
+		ShippingDO shippingDO = remote.getShipmentAndUnlock(rpc.entityKey);
 
 		// set the fields in the RPC
 		setFieldsInRPC(rpc, shippingDO);
@@ -424,15 +405,12 @@ System.out.println("after shipping items");
 		shippingItemsModel.clear();
 
 		for (int iter = 0; iter < shippingItemsList.size(); iter++) {
-			ShippingItemDO itemDO = (ShippingItemDO) shippingItemsList
-					.get(iter);
+			ShippingItemDO itemDO = (ShippingItemDO) shippingItemsList.get(iter);
 
 			TableDataRow<Integer> row = shippingItemsModel.createNewSet();
-			FillOrderOrderItemsKey hiddenData = new FillOrderOrderItemsKey();
+			ShippingItemsData hiddenData = new ShippingItemsData();
 			hiddenData.referenceTableId = itemDO.getReferenceTableId();
 			hiddenData.referenceId = itemDO.getReferenceId();
-			hiddenData.locId = itemDO.getInventoryLocationId();
-			hiddenData.transId = itemDO.getTransId();
 
 			row.key = itemDO.getId();
 			row.setData(hiddenData);
@@ -475,14 +453,6 @@ System.out.println("after shipping items");
 			return noteDO.getText();
 
 		return null;
-	}
-
-	public ShippingForm unlockOrderRecords(ShippingForm rpc) {
-		ShippingRemote remote = (ShippingRemote) EJBFactory.lookup("openelis/ShippingBean/remote");
-
-		remote.unlockOrders(rpc.checkedOrderIds);
-
-		return rpc;
 	}
 
 	public TableDataModel<TableDataRow<Integer>> getInitialModel(String cat) {

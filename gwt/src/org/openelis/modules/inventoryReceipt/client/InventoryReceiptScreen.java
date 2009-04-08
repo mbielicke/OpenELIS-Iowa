@@ -1027,7 +1027,5 @@ public class InventoryReceiptScreen extends OpenELISScreenForm<InventoryReceiptF
         }
             
         return returnModel;
-    }
-        
-        
+    }   
 }
