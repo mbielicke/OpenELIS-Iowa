@@ -330,10 +330,9 @@ public class BuildKitsBean implements BuildKitsRemote{
         if(components.size() == 0)
             return;
         
-        Integer inventoryLocationId = null;
-        
         Query query = manager.createNamedQuery("getTableId");
         query.setParameter("name", "inventory_location");
+        Integer inventoryLocationId = (Integer)query.getSingleResult();
         
         for(int i=0; i<components.size(); i++){
         

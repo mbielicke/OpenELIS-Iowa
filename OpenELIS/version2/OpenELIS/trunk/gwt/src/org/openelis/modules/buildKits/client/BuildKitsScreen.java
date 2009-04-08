@@ -111,7 +111,7 @@ public class BuildKitsScreen extends OpenELISScreenForm<BuildKitsForm,Query<Tabl
                        //id
                        //name
                        //qty
-                       tableRow.key = form.entityKey;
+                       tableRow.key = set.key;
                        tableRow.cells[0].setValue(set.cells[0].getValue());
                        tableRow.cells[3].setValue(set.cells[1].getValue());
                        
