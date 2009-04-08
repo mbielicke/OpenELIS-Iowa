@@ -25,16 +25,6 @@
 */
 package org.openelis.modules.inventoryItem.client;
 
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.PopupPanel;
-import com.google.gwt.user.client.ui.SourcesTabEvents;
-import com.google.gwt.user.client.ui.TabListener;
-import com.google.gwt.user.client.ui.TextArea;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.Widget;
-
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.Query;
 import org.openelis.gwt.common.data.DropDownField;
@@ -65,6 +55,16 @@ import org.openelis.metamap.InventoryItemMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 import org.openelis.modules.standardnotepicker.client.StandardNotePickerScreen;
 
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.SourcesTabEvents;
+import com.google.gwt.user.client.ui.TabListener;
+import com.google.gwt.user.client.ui.TextArea;
+import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.Widget;
+
 public class InventoryItemScreen extends OpenELISScreenForm<InventoryItemForm, Query<TableDataRow<Integer>>> implements TableWidgetListener, ClickListener, TabListener, AutoCompleteCallInt{
 
     private AppButton        removeComponentButton, standardNoteButton;
@@ -81,7 +81,6 @@ public class InventoryItemScreen extends OpenELISScreenForm<InventoryItemForm, Q
     private Dropdown store, category, dispensedUnit;
     
     private ScreenCheck isActive, isSerializedCheck;
-    
     private ScreenVertical   svp;
 	
     private InventoryItemMetaMap InvItemMeta = new InventoryItemMetaMap();
@@ -406,6 +405,23 @@ public class InventoryItemScreen extends OpenELISScreenForm<InventoryItemForm, Q
     }
     
     private void onDuplicateRecordClick(){
+        screenService.call("getDuplicateRPC", form, new AsyncCallback<InventoryItemForm>(){
+            public void onSuccess(InventoryItemForm result) {
+                form = result;
+                loadScreen();
+                enable(true);
+                changeState(State.ADD);
+                window.setDone(consts.get("enterInformationPressCommit"));
+            }
+
+            public void onFailure(Throwable caught) {
+                handleError(caught);
+                window.setDone("Load Failed");
+                changeState(State.DEFAULT);
+                form.entityKey = null;
+            }
+        });
+        /*
         if(state == State.DISPLAY){
             //we need to do the duplicate method
             InventoryItemForm displayRPC = (InventoryItemForm)form.clone();
@@ -441,16 +457,19 @@ public class InventoryItemScreen extends OpenELISScreenForm<InventoryItemForm, Q
             
             fillComponentsModel(true);
         }
+        */
     }
     
     
     public void changeState(State state) {
-        if(state == State.DISPLAY){
-            ((MenuItem)((MenuItem)duplicateMenuPanel.panel.menuItems.get(0)).menuItemsPanel.menuItems.get(0)).enable(true);
+        if(duplicateMenuPanel != null){ 
+            if(state == State.DISPLAY){
+                ((MenuItem)((MenuItem)duplicateMenuPanel.panel.menuItems.get(0)).menuItemsPanel.menuItems.get(0)).enable(true);
 
-        }else{
-            ((MenuItem)((MenuItem)duplicateMenuPanel.panel.menuItems.get(0)).menuItemsPanel.menuItems.get(0)).enable(false);
-        } 
+            }else{  
+                ((MenuItem)((MenuItem)duplicateMenuPanel.panel.menuItems.get(0)).menuItemsPanel.menuItems.get(0)).enable(false);
+            }
+        }
         
         super.changeState(state);
     }

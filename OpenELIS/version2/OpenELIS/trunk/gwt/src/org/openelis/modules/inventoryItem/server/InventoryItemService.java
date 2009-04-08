@@ -32,6 +32,7 @@ import org.openelis.domain.InventoryItemAutoDO;
 import org.openelis.domain.InventoryItemDO;
 import org.openelis.domain.InventoryLocationDO;
 import org.openelis.domain.NoteDO;
+import org.openelis.domain.TestIdNameMethodIdDO;
 import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.Form;
@@ -41,6 +42,7 @@ import org.openelis.gwt.common.Query;
 import org.openelis.gwt.common.QueryException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.TableFieldErrorException;
+import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.DoubleField;
 import org.openelis.gwt.common.data.DropDownField;
@@ -61,8 +63,10 @@ import org.openelis.modules.inventoryItem.client.InventoryComponentAutoRPC;
 import org.openelis.modules.inventoryItem.client.InventoryComponentsForm;
 import org.openelis.modules.inventoryItem.client.InventoryItemForm;
 import org.openelis.modules.inventoryItem.client.InventoryLocationsForm;
+import org.openelis.modules.test.client.TestForm;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.InventoryItemRemote;
+import org.openelis.remote.TestRemote;
 import org.openelis.security.domain.SystemUserDO;
 import org.openelis.security.remote.SystemUserRemote;
 import org.openelis.server.constants.Constants;
@@ -169,31 +173,22 @@ public class InventoryItemService implements AppScreenFormServiceInt<InventoryIt
         inventoryItemNote.setText(noteRPC.text.getValue());
         inventoryItemNote.setIsExternal("Y");
         
-        //validate the fields on the backend
-        List exceptionList = remote.validateForAdd(inventoryItemDO, components);
-        
-        if(exceptionList.size() > 0){
-            setRpcErrors(exceptionList, componentsField, rpc);
-            return rpc;
-        } 
-        
         //send the changes to the database
         Integer inventoryItemId;
         try{
             inventoryItemId = (Integer)remote.updateInventory(inventoryItemDO, components, inventoryItemNote);
         }catch(Exception e){
-            exceptionList = new ArrayList();
-            exceptionList.add(e);
-            
-            setRpcErrors(exceptionList, componentsField, rpc);
-            
-            return rpc;
+            if(e instanceof ValidationErrorsList){
+                setRpcErrors(((ValidationErrorsList)e).getErrorList(), componentsField, rpc);
+                return rpc;
+            }else
+                throw new RPCException(e.getMessage());
         }
         
         inventoryItemDO.setId(inventoryItemId);
 
         //set the fields in the RPC
-        setFieldsInRPC(rpc, inventoryItemDO);
+        setFieldsInRPC(rpc, inventoryItemDO, false);
 
         //we need to refresh the comments tab if it is showing
         String tab = rpc.itemTabPanel;
@@ -233,31 +228,20 @@ public class InventoryItemService implements AppScreenFormServiceInt<InventoryIt
         inventoryItemNote.setText(rpc.comments.text.getValue());
         inventoryItemNote.setIsExternal("Y");
         
-        //validate the fields on the backend
-        List exceptionList = remote.validateForUpdate(inventoryItemDO, components);
-        if(exceptionList.size() > 0){
-            setRpcErrors(exceptionList, componentsField, rpc);
-            
-            return rpc;
-        } 
-        
         //send the changes to the database
         try{
             remote.updateInventory(inventoryItemDO, components, inventoryItemNote);
+            
         }catch(Exception e){
-            if(e instanceof EntityLockedException)
+            if(e instanceof ValidationErrorsList){
+                setRpcErrors(((ValidationErrorsList)e).getErrorList(), componentsField, rpc);
+                return rpc;
+            }else
                 throw new RPCException(e.getMessage());
-            
-            exceptionList = new ArrayList();
-            exceptionList.add(e);
-            
-            setRpcErrors(exceptionList, componentsField, rpc);
-            
-            return rpc;
         }
         
         //set the fields in the RPC
-        setFieldsInRPC(rpc, inventoryItemDO);   
+        setFieldsInRPC(rpc, inventoryItemDO, false);   
         
         //we need to refresh the comments tab if it is showing
         String tab = rpc.itemTabPanel;
@@ -276,7 +260,6 @@ public class InventoryItemService implements AppScreenFormServiceInt<InventoryIt
     }
 
     public InventoryItemForm commitDelete(InventoryItemForm rpc) throws RPCException {
-    	// TODO Auto-generated method stub
     	return null;
     }
 
@@ -288,7 +271,7 @@ public class InventoryItemService implements AppScreenFormServiceInt<InventoryIt
         InventoryItemDO inventoryItemDO = remote.getInventoryItemAndUnlock(rpc.entityKey, SessionManager.getSession().getId());
 
         //set the fields in the RPC
-        setFieldsInRPC(rpc, inventoryItemDO);
+        setFieldsInRPC(rpc, inventoryItemDO, false);
         
         String tab = rpc.itemTabPanel;
         if(tab.equals("componentsTab")){
@@ -318,7 +301,7 @@ public class InventoryItemService implements AppScreenFormServiceInt<InventoryIt
         InventoryItemDO inventoryItemDO = remote.getInventoryItem(rpc.entityKey);
 
         //set the fields in the RPC
-        setFieldsInRPC(rpc, inventoryItemDO);
+        setFieldsInRPC(rpc, inventoryItemDO, false);
         
         String tab = rpc.itemTabPanel;
         if(tab.equals("componentsTab")){
@@ -353,7 +336,7 @@ public class InventoryItemService implements AppScreenFormServiceInt<InventoryIt
         }
         
         //set the fields in the RPC
-        setFieldsInRPC(rpc, inventoryItemDO);
+        setFieldsInRPC(rpc, inventoryItemDO, false);
         
         String tab = rpc.itemTabPanel;
         if(tab.equals("componentsTab")){
@@ -369,6 +352,23 @@ public class InventoryItemService implements AppScreenFormServiceInt<InventoryIt
         }
         
         return rpc;  
+    }
+    
+    public InventoryItemForm getDuplicateRPC(InventoryItemForm rpc) throws RPCException{
+        InventoryItemRemote remote = (InventoryItemRemote)EJBFactory.lookup("openelis/InventoryItemBean/remote");        
+        
+        InventoryItemDO inventoryItemDO = remote.getInventoryItem(rpc.entityKey);                       
+        
+        setFieldsInRPC(rpc, inventoryItemDO, true);
+        
+        rpc.components.entityKey = rpc.entityKey;
+        rpc.components.forDuplicate = true;
+        loadComponents(rpc.components);
+        
+        rpc.entityKey = null;
+        rpc.components.entityKey = null;
+        
+        return rpc;
     }
     
     public InventoryComponentsForm loadComponents(InventoryComponentsForm rpc) throws RPCException {
@@ -727,14 +727,17 @@ public class InventoryItemService implements AppScreenFormServiceInt<InventoryIt
     }
     */
 
-    private void setFieldsInRPC(InventoryItemForm form, InventoryItemDO inventoryItemDO){
+    private void setFieldsInRPC(InventoryItemForm form, InventoryItemDO inventoryItemDO, boolean forDuplicate){
         form.averageCost.setValue(inventoryItemDO.getAveCost());
         form.averageDailyUse.setValue(inventoryItemDO.getAveDailyUse());
         form.averageLeadTime.setValue(inventoryItemDO.getAveLeadTime());
         form.categoryId.setValue(new TableDataRow<Integer>(inventoryItemDO.getCategory()));
         form.description.setValue(inventoryItemDO.getDescription());
         form.dispensedUnitsId.setValue(new TableDataRow<Integer>(inventoryItemDO.getDispensedUnits()));
-        form.id.setValue(inventoryItemDO.getId());
+        
+        if(!forDuplicate)
+            form.id.setValue(inventoryItemDO.getId());
+        
         form.isActive.setValue(inventoryItemDO.getIsActive());
         form.isBulk.setValue(inventoryItemDO.getIsBulk());
         form.isLabor.setValue(inventoryItemDO.getIsLabor());
