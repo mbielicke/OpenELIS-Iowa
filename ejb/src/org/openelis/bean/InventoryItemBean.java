@@ -36,6 +36,7 @@ import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.TableFieldErrorException;
+import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.local.LockLocal;
 import org.openelis.metamap.InventoryItemMetaMap;
@@ -180,8 +181,11 @@ public class InventoryItemBean implements InventoryItemRemote{
         
         if(inventoryItemDO.getId() != null){
             //we need to call lock one more time to make sure their lock didnt expire and someone else grabbed the record
-            lockBean.getLock(inventoryItemReferenceId,inventoryItemDO.getId());
+            lockBean.validateLock(inventoryItemReferenceId,inventoryItemDO.getId());
         }
+        
+        //validate inventory item
+        validateInventoryItem(inventoryItemDO, components);
         
          manager.setFlushMode(FlushModeType.COMMIT);
          InventoryItem inventoryItem = null;
@@ -190,13 +194,6 @@ public class InventoryItemBean implements InventoryItemRemote{
              inventoryItem = new InventoryItem();
         else
             inventoryItem = manager.find(InventoryItem.class, inventoryItemDO.getId());
-         
-         //validate the inventory item record
-         List exceptionList = new ArrayList();
-         validateInventoryItem(inventoryItemDO, exceptionList);
-         if(exceptionList.size() > 0){
-            throw (RPCException)exceptionList.get(0);
-         }
          
          //update the inventory record
          inventoryItem.setAverageCost(inventoryItemDO.getAveCost());
@@ -232,13 +229,6 @@ public class InventoryItemBean implements InventoryItemRemote{
             
             InventoryComponentDO componentDO = (InventoryComponentDO) components.get(i);
              InventoryComponent component = null;
-             
-             //validate the component records
-             exceptionList = new ArrayList();
-             validateInventoryComponent(componentDO, inventoryItemDO.getStore(), i, exceptionList);
-             if(exceptionList.size() > 0){
-                throw (RPCException)exceptionList.get(0);
-             }
              
              if (componentDO.getId() == null)
                  component = new InventoryComponent();
@@ -372,48 +362,22 @@ public class InventoryItemBean implements InventoryItemRemote{
         return (String)query.getSingleResult();
     }
     
-	public List validateForAdd(InventoryItemDO inventoryItemDO, List components) {
-	    List exceptionList = new ArrayList();
+	public void validateInventoryItem(InventoryItemDO inventoryItemDO, List components) throws Exception{
+	    ValidationErrorsList list = new ValidationErrorsList();
         
-        validateInventoryItem(inventoryItemDO, exceptionList);
-        
-        for(int i=0; i<components.size();i++){            
-            InventoryComponentDO componentDO = (InventoryComponentDO) components.get(i);
-            
-            validateInventoryComponent(componentDO, inventoryItemDO.getStore(), i, exceptionList);
-        }
-        
-        return exceptionList;
-	}
-
-	public List validateForUpdate(InventoryItemDO inventoryItemDO, List components) {
-	    List exceptionList = new ArrayList();
-        
-        validateInventoryItem(inventoryItemDO, exceptionList);
-        
-        for(int i=0; i<components.size();i++){            
-            InventoryComponentDO componentDO = (InventoryComponentDO) components.get(i);
-            
-            validateInventoryComponent(componentDO, inventoryItemDO.getStore(), i, exceptionList);
-        }
-        
-        return exceptionList;
-	}
-    
-    private void validateInventoryItem(InventoryItemDO inventoryItemDO, List exceptionList){
         //name required
         if(inventoryItemDO.getName() == null || "".equals(inventoryItemDO.getName())){
-            exceptionList.add(new FieldErrorException("fieldRequiredException",invItemMap.getName()));
+            list.add(new FieldErrorException("fieldRequiredException",invItemMap.getName()));
         }
         
         //store required
         if(inventoryItemDO.getStore() == null){
-            exceptionList.add(new FieldErrorException("fieldRequiredException",invItemMap.getStoreId()));
+            list.add(new FieldErrorException("fieldRequiredException",invItemMap.getStoreId()));
         }
         
         //dispensed units required
         if(inventoryItemDO.getDispensedUnits() == null){
-            exceptionList.add(new FieldErrorException("fieldRequiredException",invItemMap.getDispensedUnitsId()));
+            list.add(new FieldErrorException("fieldRequiredException",invItemMap.getDispensedUnitsId()));
         }
         
         //item has to have unique name,store duplicates
@@ -431,10 +395,16 @@ public class InventoryItemBean implements InventoryItemRemote{
         }
         
         if(query.getResultList().size() > 0)
-            exceptionList.add(new FieldErrorException("inventoryItemNameUniqueException",invItemMap.getName()));
-    }
+            list.add(new FieldErrorException("inventoryItemNameUniqueException",invItemMap.getName()));
+        
+        for(int i=0; i<components.size();i++)            
+            validateInventoryComponent((InventoryComponentDO)components.get(i), inventoryItemDO.getStore(), i, list);
+        
+        if(list.size() > 0)
+            throw list;
+	}
     
-    private void validateInventoryComponent(InventoryComponentDO componentDO, Integer inventoryItemStoreId, int rowIndex, List exceptionList){
+    private void validateInventoryComponent(InventoryComponentDO componentDO, Integer inventoryItemStoreId, int rowIndex, ValidationErrorsList exceptionList){
         //if the component is flagged for deletion dont validate
         if(componentDO.getDelete())
             return;
