@@ -39,12 +39,6 @@ public interface InventoryAdjustmentRemote {
     //method to return adjustment record
     public InventoryAdjustmentDO getInventoryAdjustment(Integer inventoryAdjustmentId);
     
-    //method to unlock entity and return adjustment record
-    public InventoryAdjustmentDO getInventoryAdjustmentAndUnlock(Integer inventoryAdjustmentId);
-    
-    //method to lock entity and return adjustment record
-    public InventoryAdjustmentDO getInventoryAdjustmentAndLock(Integer inventoryAdjustmentId) throws Exception;
-    
     //commit a change to adjustment, or insert a new adjustment
     public Integer updateInventoryAdjustment(InventoryAdjustmentDO inventoryAdjustmentDO, List children) throws Exception;
     
@@ -55,7 +49,7 @@ public interface InventoryAdjustmentRemote {
     
     public List getChildRecordsAndUnlock(Integer inventoryAdjustmentId);
     
-    public List getInventoryitemData(Integer inventoryLocationId, Integer storeId);
+    public List getInventoryitemDataAndLockLoc(Integer inventoryLocationId, Integer oldLocId, Integer storeId) throws Exception;
     
     //method to query for adjustments
      public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception;
@@ -64,10 +58,4 @@ public interface InventoryAdjustmentRemote {
      public Integer getSystemUserId();
      
      public InventoryAdjustmentAddAutoFillDO getAddAutoFillValues() throws Exception;
-     
-     //method to validate the fields before the backend updates it in the database
-     public List validateForUpdate(InventoryAdjustmentDO inventoryAdjustmentDO, List children);
-     
-     //method to validate the fields before the backend updates it in the database
-     public List validateForAdd(InventoryAdjustmentDO inventoryAdjustmentDO, List children);
 }
