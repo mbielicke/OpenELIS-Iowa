@@ -65,6 +65,7 @@ public class InventoryItemForm extends Form<Integer> {
     public IntegerField averageDailyUse;
     public DropDownField<Integer> parentInventoryItem;
     public IntegerField parentRatio;
+    public StringField manufacturingText;
     
     public InventoryComponentsForm components;
     public InventoryLocationsForm locations;
@@ -105,6 +106,7 @@ public class InventoryItemForm extends Form<Integer> {
        averageDailyUse = new IntegerField(meta.getAverageDailyUse());
        parentInventoryItem = new DropDownField<Integer>(meta.PARENT_INVENTORY_ITEM.getName());
        parentRatio = new IntegerField(meta.getParentRatio());
+       manufacturingText = new StringField("manufacturingText");
        components = new InventoryComponentsForm("components");
        locations = new InventoryLocationsForm("locations");
        comments = new InventoryCommentsForm("comments");

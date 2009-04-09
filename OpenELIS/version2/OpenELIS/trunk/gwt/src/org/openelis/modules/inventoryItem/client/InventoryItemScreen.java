@@ -48,16 +48,19 @@ import org.openelis.gwt.widget.CollapsePanel;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.MenuItem;
 import org.openelis.gwt.widget.ResultsTable;
+import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.gwt.widget.table.event.SourcesTableWidgetEvents;
 import org.openelis.gwt.widget.table.event.TableWidgetListener;
 import org.openelis.metamap.InventoryItemMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
+import org.openelis.modules.richTextPopup.client.RichTextPopupScreen;
 import org.openelis.modules.standardnotepicker.client.StandardNotePickerScreen;
 
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.SourcesTabEvents;
 import com.google.gwt.user.client.ui.TabListener;
@@ -67,7 +70,8 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class InventoryItemScreen extends OpenELISScreenForm<InventoryItemForm, Query<TableDataRow<Integer>>> implements TableWidgetListener, ClickListener, TabListener, AutoCompleteCallInt{
 
-    private AppButton        removeComponentButton, standardNoteButton;
+    private AppButton        removeComponentButton, standardNoteButton, editManufacturing;
+    private HTML manufacturingText;
 	private ScreenTextBox nameTextbox;
     TextBox subjectBox; 
 	private ScreenTextBox idTextBox;
@@ -133,7 +137,8 @@ public class InventoryItemScreen extends OpenELISScreenForm<InventoryItemForm, Q
             onRemoveComponentRowButtonClick();
 		}else if(sender == standardNoteButton){
 			onStandardNoteButtonClick();
-		}
+		}else if(sender == editManufacturing)
+		    onEditManufacturingClick();
 	}
 	
 	public void afterDraw(boolean success) {
@@ -152,6 +157,8 @@ public class InventoryItemScreen extends OpenELISScreenForm<InventoryItemForm, Q
         
         removeComponentButton = (AppButton)getWidget("removeComponentButton");
         standardNoteButton = (AppButton)getWidget("standardNoteButton");
+        editManufacturing = (AppButton)getWidget("editManufacturingButton");
+        manufacturingText = (HTML)getWidget("manufacturingText");
         
         isActive = (ScreenCheck)widgets.get(InvItemMeta.getIsActive());
         isSerializedCheck = (ScreenCheck)widgets.get(InvItemMeta.getIsSerialMaintained());
@@ -194,6 +201,7 @@ public class InventoryItemScreen extends OpenELISScreenForm<InventoryItemForm, Q
         updateChain.add(0,checkModels);
         updateChain.add(afterUpdate);
         fetchChain.add(0,checkModels);
+        fetchChain.add(afterFetch);
         abortChain.add(0,checkModels);
         deleteChain.add(0,checkModels);
         commitUpdateChain.add(0,checkModels);
@@ -209,7 +217,8 @@ public class InventoryItemScreen extends OpenELISScreenForm<InventoryItemForm, Q
 		componentsTable.model.enableAutoAdd(true);
 		
 		super.add();
-		
+		manufacturingText.setHTML(null);
+		form.manufacturingText.setValue(null);
 		idTextBox.enable(false);
         
         ((CheckBox)isActive.getWidget()).setState(CheckBox.CHECKED);
@@ -220,6 +229,7 @@ public class InventoryItemScreen extends OpenELISScreenForm<InventoryItemForm, Q
             nameTextbox.setFocus(true);
 			idTextBox.enable(false);
             componentsTable.model.enableAutoAdd(true);
+            manufacturingText.setHTML(form.manufacturingText.getValue());
          }
          
          public void onFailure(Throwable caught){
@@ -227,12 +237,29 @@ public class InventoryItemScreen extends OpenELISScreenForm<InventoryItemForm, Q
          }
       };
       
-	public void query() {		
+      protected AsyncCallback afterFetch = new AsyncCallback() {
+          public void onSuccess(Object result) {
+              //we need to load the manufacturing tab
+              manufacturingText.setHTML(form.manufacturingText.getValue());
+          }
+          
+          public void onFailure(Throwable caught){
+              
+          }
+       };
+      
+	public void query() {
+	    manufacturingText.setHTML(null);
+        form.manufacturingText.setValue(null);
 		super.query();
         //
         // disable notes and contact remove button
         //
         noteText.enable(false);
+        
+        standardNoteButton.changeState(ButtonState.DISABLED);
+        editManufacturing.changeState(ButtonState.DISABLED);
+        removeComponentButton.changeState(ButtonState.DISABLED);
 	}
 	
 	public void abort() {
@@ -402,6 +429,12 @@ public class InventoryItemScreen extends OpenELISScreenForm<InventoryItemForm, Q
         if (selectedRow > -1 && componentsTable.model.numRows() > 0) {
             componentsTable.model.deleteRow(selectedRow);
         }
+    }
+    
+    private void onEditManufacturingClick(){
+        ScreenWindow modal = new ScreenWindow(null,"Rich Text Editor","richTextEditorScreen","Loading...",true);
+        modal.setName("Rich Text Editor");
+        modal.setContent(new RichTextPopupScreen(manufacturingText, form.manufacturingText));
     }
     
     private void onDuplicateRecordClick(){

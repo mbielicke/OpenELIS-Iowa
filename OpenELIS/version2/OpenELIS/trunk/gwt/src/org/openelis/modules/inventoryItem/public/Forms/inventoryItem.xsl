@@ -1,4 +1,4 @@
-<!--
+ <!--
 Exhibit A - UIRF Open-source Based Public Software License.
 
 The contents of this file are subject to the UIRF Open-source Based
@@ -272,7 +272,7 @@ UIRF Software License are applicable instead of those above.
 				<TabPanel height="200px" key="itemTabPanel">
 					<!-- TAB 1 (Components) -->
 					<tab key="componentsTab" text="{resource:getString($constants,'components')}">
-						<TablePanel spacing="0" padding="0" height="247px" width="645px">
+						<TablePanel spacing="0" padding="0" height="249px" width="645px">
 							<row>
 							<widget align="center">
 								<table width="auto" key="componentsTable" maxRows="9" title="" showError="false" showScroll="ALWAYS">
@@ -328,7 +328,7 @@ UIRF Software License are applicable instead of those above.
 					</tab>			
 					<!-- start TAB 2 (Location/Quantity) -->
 					<tab key="locationTab" text="{resource:getString($constants,'locationQuantity')}">
-						<TablePanel spacing="0" padding="0" height="247px" width="645px">
+						<TablePanel spacing="0" padding="0" height="249px" width="645px">
 						<row>
 							<widget align="center">
 								<table width="auto" key="locQuantitiesTable" maxRows="10" title="" showError="false" showScroll="ALWAYS">
@@ -382,7 +382,7 @@ UIRF Software License are applicable instead of those above.
 					</tab>
 					<!-- start TAB 3 (Additional Info) -->
 					<tab key="additionalInfoTab" text="{resource:getString($constants,'additionalInfo')}">
-					<VerticalPanel height="247px" width="645px" padding="0" spacing="0">
+					<VerticalPanel height="249px" width="645px" padding="0" spacing="0">
 						<TablePanel style="Form" spacing="0" padding="0">
 						<row>
 							<text style="Prompt"><xsl:value-of select='resource:getString($constants,"productURI")'/>:</text>
@@ -422,13 +422,29 @@ UIRF Software License are applicable instead of those above.
 					
 					<!-- start TAB 4 (Manufacturing) -->
 					<tab key="manufacturingTab" text="{resource:getString($constants,'manufacturing')}">
-						<VerticalPanel height="247px" width="645px">
-						<richtext key="manufacturingText"/>
-						</VerticalPanel>
+					<VerticalPanel height="249px" width="645px" spacing="0" padding="0" halign="center">
+					<TablePanel key="manFormPanel" style="Form" padding="0" spacing="0">
+						<row>
+							<widget align="center">
+								<appButton action="editManufacturing" onclick="this" key="editManufacturingButton" style="Button">
+									<HorizontalPanel>
+              							<AbsolutePanel xsi:type="Absolute" layout="absolute" style="StandardNoteButtonImage"/>
+	                					<text>Edit</text>
+						             </HorizontalPanel>
+						    	</appButton>
+						  	</widget>
+						</row>
+						<row>
+							<VerticalPanel overflow="auto" height="200px" width="625px" spacing="0" padding="0" halign="center">
+								<html key="manufacturingText" width="615px" height="188px" showError="false"/>
+							</VerticalPanel>
+						</row>
+						</TablePanel>
+				</VerticalPanel>
 					</tab>
 					<!-- start TAB 5 (Comments) -->
 					<tab key="commentsTab" text="{resource:getString($constants,'comments')}">
-						<VerticalPanel width="645px" height="247px" spacing="0" padding="0">
+						<VerticalPanel width="645px" height="249px" spacing="0" padding="0">
 							<TablePanel key="noteFormPanel" style="Form" padding="0" spacing="0">
 								<row>
 									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"subject")'/></text>
@@ -492,7 +508,7 @@ UIRF Software License are applicable instead of those above.
       
       <dropdown key="{invItemMeta:getName($parentInvItem)}" required="false"/>
       <integer key="{meta:getParentRatio($invItem)}" required="false"/>
-      
+      <string key="manufacturingText" required="false"/>
       <rpc key="components">
 	      <table key="componentsTable"/>
       </rpc>

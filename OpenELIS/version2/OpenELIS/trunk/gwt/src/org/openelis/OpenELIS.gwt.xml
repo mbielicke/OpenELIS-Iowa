@@ -58,11 +58,12 @@ UIRF Software License are applicable instead of those above.
     <inherits name="org.openelis.modules.panel.Panel"/>
     <inherits name="org.openelis.modules.PTSampleLogin.PTSampleLogin"/>
     <inherits name="org.openelis.modules.qaevent.QAEvent"/>
+    <inherits name="org.openelis.modules.richTextPopup.RichTextPopup"/>
     <inherits name="org.openelis.modules.sampleManagement.SampleManagement"/>
     <inherits name="org.openelis.modules.SDWISSampleLogin.SDWISSampleLogin"/>
     <inherits name="org.openelis.modules.shipping.Shipping"/>
     <inherits name="org.openelis.modules.standardnote.StandardNote"/>
-    <inherits name="org.openelis.modules.standardnotepicker.StandardNotePicker"/>        
+    <inherits name="org.openelis.modules.standardnotepicker.StandardNotePicker"/>       
     <inherits name="org.openelis.modules.storage.Storage"/>
     <inherits name="org.openelis.modules.storageunit.StorageUnit"/> 
     <inherits name="org.openelis.modules.systemvariable.SystemVariable"/>        
