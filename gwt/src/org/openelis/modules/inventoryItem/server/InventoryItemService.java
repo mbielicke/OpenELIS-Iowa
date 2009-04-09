@@ -704,37 +704,6 @@ public class InventoryItemService implements AppScreenFormServiceInt<InventoryIt
         return dataModel;       
     }
     
-    /*public DataModel getInitialModel(String cat){
-        Integer id = null;
-        CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
-
-        if(cat.equals("itemCategories"))
-            id = remote.getCategoryId("inventory_item_categories");
-        else if(cat.equals("itemStores"))
-            id = remote.getCategoryId("inventory_item_stores");
-        else if(cat.equals("itemUnits"))
-            id = remote.getCategoryId("inventory_item_units");
-        
-        List<IdNameDO> entries = new ArrayList<IdNameDO>();
-        if(id > -1)
-            entries = (List<IdNameDO>)remote.getDropdownValues(id);
-        
-        
-        //we need to build the model to return
-        DataModel<Integer> returnModel = new DataModel<Integer>();
-        
-        if(entries.size() > 0){ 
-            returnModel.add(new DataSet<Integer>(0,new StringObject("")));
-        }
-        
-        for(IdNameDO resultDO : entries) { 
-            returnModel.add(new DataSet<Integer>(resultDO.getId(),new StringObject(resultDO.getName())));
-        }       
-        
-        return returnModel;
-    }
-    */
-
     private void setFieldsInRPC(InventoryItemForm form, InventoryItemDO inventoryItemDO, boolean forDuplicate){
         form.categoryId.setValue(new TableDataRow<Integer>(inventoryItemDO.getCategory()));
         form.description.setValue(inventoryItemDO.getDescription());
@@ -768,6 +737,7 @@ public class InventoryItemService implements AppScreenFormServiceInt<InventoryIt
         form.quantityToReorder.setValue(inventoryItemDO.getQuantityToReorder());
         form.storeId.setValue(new TableDataRow<Integer>(inventoryItemDO.getStore()));
         form.parentRatio.setValue(inventoryItemDO.getParentRatio());    
+        form.manufacturingText.setValue(inventoryItemDO.getManufacturingText());
         
         //we need to create a dataset for the parent inventory item auto complete
         if(inventoryItemDO.getParentInventoryItemId() == null)
@@ -810,6 +780,7 @@ public class InventoryItemService implements AppScreenFormServiceInt<InventoryIt
         inventoryItemDO.setParentInventoryItemId((Integer)form.parentInventoryItem.getSelectedKey());
         inventoryItemDO.setParentInventoryItem((String)form.parentInventoryItem.getTextValue());
         inventoryItemDO.setParentRatio(form.parentRatio.getValue());
+        inventoryItemDO.setManufacturingText(form.manufacturingText.getValue());
         
         return inventoryItemDO;
     }
