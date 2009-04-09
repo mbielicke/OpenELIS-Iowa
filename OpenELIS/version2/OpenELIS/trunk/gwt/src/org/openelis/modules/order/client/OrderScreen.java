@@ -48,6 +48,7 @@ import org.openelis.gwt.screen.ScreenMenuPanel;
 import org.openelis.gwt.screen.ScreenTextArea;
 import org.openelis.gwt.screen.ScreenTextBox;
 import org.openelis.gwt.screen.ScreenWindow;
+import org.openelis.gwt.screen.AppScreenForm.State;
 import org.openelis.gwt.widget.AToZTable;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
@@ -59,6 +60,7 @@ import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.gwt.widget.table.event.SourcesTableWidgetEvents;
 import org.openelis.gwt.widget.table.event.TableWidgetListener;
 import org.openelis.metamap.OrderMetaMap;
+import org.openelis.modules.inventoryItem.client.InventoryItemForm;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 import org.openelis.modules.standardnotepicker.client.StandardNotePickerScreen;
 
@@ -587,40 +589,22 @@ public class OrderScreen extends OpenELISScreenForm<OrderForm,OrderQuery> implem
     }
     
     private void onDuplicateRecordClick(){
-        if(state == State.DISPLAY){
-            //we need to do the duplicate method
-            OrderForm display = (OrderForm)form.clone();
-            display.id.setValue(null);
-            display.externalOrderNumber.setValue(null);
-            display.type = orderType;
-            if(display.receipts != null){
-                display.receipts.receiptsTable.setValue(null);
-                display.receipts.load = true;
+        screenService.call("getDuplicateRPC", form, new AsyncCallback<OrderForm>(){
+            public void onSuccess(OrderForm result) {
+                form = result;
+                loadScreen();
+                enable(true);
+                changeState(State.ADD);
+                window.setDone(consts.get("enterInformationPressCommit"));
             }
-            if(display.shippingNotes != null){
-                display.shippingNotes.text.setValue(null);
-                display.shippingNotes.load = true;
-            }
-            if(display.customerNotes != null){
-                display.customerNotes.text.setValue(null);
-                display.customerNotes.load = true;
-            }
-            
-            //set the load flags correctly
-            display.items.load = false;
-            
-            Integer tempKey = form.entityKey;
-            
-            add();
-            
-            form.entityKey = tempKey;
 
-            form = display;
-            
-            load();
-            
-            fillItemsModel(true);
-        }
+            public void onFailure(Throwable caught) {
+                handleError(caught);
+                window.setDone("Load Failed");
+                changeState(State.DEFAULT);
+                form.entityKey = null;
+            }
+        });
     }
     
     private void fillItemsModel(final boolean forDuplicate) {

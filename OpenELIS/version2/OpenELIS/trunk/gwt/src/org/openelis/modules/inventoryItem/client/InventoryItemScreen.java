@@ -421,43 +421,6 @@ public class InventoryItemScreen extends OpenELISScreenForm<InventoryItemForm, Q
                 form.entityKey = null;
             }
         });
-        /*
-        if(state == State.DISPLAY){
-            //we need to do the duplicate method
-            InventoryItemForm displayRPC = (InventoryItemForm)form.clone();
-            displayRPC.id.setValue(null);
-            displayRPC.averageLeadTime.setValue(null);
-            displayRPC.averageCost.setValue(null);
-            displayRPC.averageDailyUse.setValue(null);
-            
-            displayRPC.locations.locQuantitiesTable.setValue(null);
-            displayRPC.components.componentsTable.setValue(null);
-            displayRPC.comments.subject.setValue(null);
-            displayRPC.comments.text.setValue(null);
-            
-            Integer tempKey = form.entityKey;
-                    
-            TableDataModel<TableDataRow<Integer>> beforeModel = displayRPC.components.componentsTable.getValue();
-            beforeModel.size();
-            
-            add();
-            
-            TableDataModel<TableDataRow<Integer>> afterModel = displayRPC.components.componentsTable.getValue();
-            afterModel.size();
-            form.entityKey = tempKey;
-            
-            form = displayRPC;
-            
-            //set the load flags correctly
-            form.components.load = false;
-            form.locations.load = true;
-            form.comments.load = true;
-            
-            load();
-            
-            fillComponentsModel(true);
-        }
-        */
     }
     
     

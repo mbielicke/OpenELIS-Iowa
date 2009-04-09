@@ -25,6 +25,11 @@
 */
 package org.openelis.modules.inventoryItem.server;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+
 import org.openelis.domain.IdNameDO;
 import org.openelis.domain.IdNameStoreDO;
 import org.openelis.domain.InventoryComponentDO;
@@ -32,14 +37,11 @@ import org.openelis.domain.InventoryItemAutoDO;
 import org.openelis.domain.InventoryItemDO;
 import org.openelis.domain.InventoryLocationDO;
 import org.openelis.domain.NoteDO;
-import org.openelis.domain.TestIdNameMethodIdDO;
-import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.Query;
-import org.openelis.gwt.common.QueryException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
@@ -63,10 +65,8 @@ import org.openelis.modules.inventoryItem.client.InventoryComponentAutoRPC;
 import org.openelis.modules.inventoryItem.client.InventoryComponentsForm;
 import org.openelis.modules.inventoryItem.client.InventoryItemForm;
 import org.openelis.modules.inventoryItem.client.InventoryLocationsForm;
-import org.openelis.modules.test.client.TestForm;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.InventoryItemRemote;
-import org.openelis.remote.TestRemote;
 import org.openelis.security.domain.SystemUserDO;
 import org.openelis.security.remote.SystemUserRemote;
 import org.openelis.server.constants.Constants;
@@ -80,11 +80,6 @@ import org.openelis.util.UTFResource;
 import org.openelis.util.XMLUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 
 public class InventoryItemService implements AppScreenFormServiceInt<InventoryItemForm,Query<TableDataRow<Integer>>>, 
 									     AutoCompleteServiceInt {
@@ -359,12 +354,25 @@ public class InventoryItemService implements AppScreenFormServiceInt<InventoryIt
         
         InventoryItemDO inventoryItemDO = remote.getInventoryItem(rpc.entityKey);                       
         
+        //reload the main form
         setFieldsInRPC(rpc, inventoryItemDO, true);
         
+        //reload the components
         rpc.components.entityKey = rpc.entityKey;
         rpc.components.forDuplicate = true;
         loadComponents(rpc.components);
         
+        //clear locations
+        rpc.locations.locQuantitiesTable.setValue(null);
+        
+        //clear notes
+        rpc.comments.subject.setValue(null);
+        rpc.comments.text.setValue(null);
+        rpc.comments.notesPanel.setValue(null);
+        
+        //clear the keys
+        rpc.comments.entityKey = null;
+        rpc.locations.entityKey = null;
         rpc.entityKey = null;
         rpc.components.entityKey = null;
         
@@ -728,15 +736,21 @@ public class InventoryItemService implements AppScreenFormServiceInt<InventoryIt
     */
 
     private void setFieldsInRPC(InventoryItemForm form, InventoryItemDO inventoryItemDO, boolean forDuplicate){
-        form.averageCost.setValue(inventoryItemDO.getAveCost());
-        form.averageDailyUse.setValue(inventoryItemDO.getAveDailyUse());
-        form.averageLeadTime.setValue(inventoryItemDO.getAveLeadTime());
         form.categoryId.setValue(new TableDataRow<Integer>(inventoryItemDO.getCategory()));
         form.description.setValue(inventoryItemDO.getDescription());
         form.dispensedUnitsId.setValue(new TableDataRow<Integer>(inventoryItemDO.getDispensedUnits()));
         
-        if(!forDuplicate)
+        if(!forDuplicate){
             form.id.setValue(inventoryItemDO.getId());
+            form.averageCost.setValue(inventoryItemDO.getAveCost());
+            form.averageDailyUse.setValue(inventoryItemDO.getAveDailyUse());
+            form.averageLeadTime.setValue(inventoryItemDO.getAveLeadTime());
+        }else{
+            form.id.setValue(null);
+            form.averageCost.setValue(null);
+            form.averageDailyUse.setValue(null);
+            form.averageLeadTime.setValue(null);
+        }
         
         form.isActive.setValue(inventoryItemDO.getIsActive());
         form.isBulk.setValue(inventoryItemDO.getIsBulk());
@@ -769,7 +783,7 @@ public class InventoryItemService implements AppScreenFormServiceInt<InventoryIt
     private InventoryItemDO getInventoryItemDOFromRPC(InventoryItemForm form){
         InventoryItemDO inventoryItemDO = new InventoryItemDO();
         
-        if(form.averageCost != null)
+        if(form.averageCost != null && form.averageCost.getValue() != null)
             inventoryItemDO.setAveCost(form.averageCost.getValue());
         
         inventoryItemDO.setAveDailyUse(form.averageDailyUse.getValue());
@@ -814,7 +828,7 @@ public class InventoryItemService implements AppScreenFormServiceInt<InventoryIt
                 componentDO.setId(id);
 
             componentDO.setComponentNameId((Integer)((DropDownField)row.cells[0]).getSelectedKey());
-            componentDO.setComponentName((String)((DropDownField)row.cells[1]).getTextValue());
+            componentDO.setComponentName((String)((DropDownField)row.cells[0]).getTextValue());
             componentDO.setComponentDesc((String)((StringField)row.cells[1]).getValue());
             componentDO.setQuantity((Double)((DoubleField)row.cells[2]).getValue());
             componentDO.setParentInventoryItemId(itemId);
