@@ -36,6 +36,7 @@ import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.TableFieldErrorException;
+import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.SecurityModule.ModuleFlags;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.local.AddressLocal;
@@ -132,10 +133,11 @@ public class OrganizationBean implements OrganizationRemote {
         query.setParameter("name", "organization_contact");
         Integer organizationContactReferenceId = (Integer)query.getSingleResult();
         
-        if(organizationDO.getOrganizationId() != null){
-            //we need to call lock one more time to make sure their lock didnt expire and someone else grabbed the record
-            lockBean.getLock(organizationReferenceId,organizationDO.getOrganizationId());
-        }
+        if(organizationDO.getOrganizationId() != null)
+            lockBean.validateLock(organizationReferenceId,organizationDO.getOrganizationId());
+        
+        //validate organization record and its contacts
+        validateOrganization(organizationDO, contacts);
 
 		 manager.setFlushMode(FlushModeType.COMMIT);
 		 Organization organization = null;
@@ -145,14 +147,7 @@ public class OrganizationBean implements OrganizationRemote {
         else
             organization = manager.find(Organization.class, organizationDO.getOrganizationId());
 
-        //validate the organization record and its address
-        List exceptionList = new ArrayList();
-        validateOrganizationAndAddress(organizationDO, exceptionList);
-        if(exceptionList.size() > 0){
-        	throw (RPCException)exceptionList.get(0);
-        }
-        
-        //send the address to the update address bean
+         //send the address to the update address bean
         Integer orgAddressId = addressBean.updateAddress(organizationDO.getAddressDO());
         
         //update organization
@@ -170,13 +165,6 @@ public class OrganizationBean implements OrganizationRemote {
         if(contacts != null) {
             for (OrganizationContactDO contactDO : contacts) {
                 OrganizationContact orgContact = null;
-            
-                //validate the organization record and its address
-                exceptionList = new ArrayList();
-                validateContactAndAddress(contactDO, contacts.indexOf(contactDO), exceptionList);
-                if(exceptionList.size() > 0){
-                    throw (RPCException)exceptionList.get(0);
-                }
             
                 if (contactDO.getId() == null)
                     orgContact = new OrganizationContact();
@@ -297,63 +285,42 @@ public class OrganizationBean implements OrganizationRemote {
 		query.setMaxResults(maxResults);
 		return query.getResultList();
 	}
-
-	public List validateForAdd(OrganizationAddressDO organizationDO, List contacts) {
-		List exceptionList = new ArrayList();
-		
-		validateOrganizationAndAddress(organizationDO, exceptionList);
-		
-		for(int i=0; i<contacts.size();i++){			
-			OrganizationContactDO contactDO = (OrganizationContactDO) contacts.get(i);
-			
-			validateContactAndAddress(contactDO, i, exceptionList);
-		}
-		
-		return exceptionList;
-	}
-
-	public List validateForUpdate(OrganizationAddressDO organizationDO, List contacts) {
-		List exceptionList = new ArrayList();
-		
-		validateOrganizationAndAddress(organizationDO, exceptionList);
-		
-		for(int i=0; i<contacts.size();i++){			
-			OrganizationContactDO contactDO = (OrganizationContactDO) contacts.get(i);
-			
-			validateContactAndAddress(contactDO, i, exceptionList);
-		}
-		
-		return exceptionList;
-	}
 	
-	private void validateOrganizationAndAddress(OrganizationAddressDO organizationDO, List exceptionList){
+	private void validateOrganization(OrganizationAddressDO organizationDO, List contacts) throws Exception {
+	    ValidationErrorsList list = new ValidationErrorsList();
 		//name required
 		if(organizationDO.getName() == null || "".equals(organizationDO.getName())){
-			exceptionList.add(new FieldErrorException("fieldRequiredException",OrgMeta.getName()));
+		    list.add(new FieldErrorException("fieldRequiredException",OrgMeta.getName()));
 		}
 		
 		//street address required
 		if(organizationDO.getAddressDO().getStreetAddress() == null || "".equals(organizationDO.getAddressDO().getStreetAddress())){
-			exceptionList.add(new FieldErrorException("fieldRequiredException",OrgMeta.ADDRESS.getStreetAddress()));
+		    list.add(new FieldErrorException("fieldRequiredException",OrgMeta.ADDRESS.getStreetAddress()));
 		}
 
 		//city required
 		if(organizationDO.getAddressDO().getCity() == null || "".equals(organizationDO.getAddressDO().getCity())){
-			exceptionList.add(new FieldErrorException("fieldRequiredException",OrgMeta.ADDRESS.getCity()));
+		    list.add(new FieldErrorException("fieldRequiredException",OrgMeta.ADDRESS.getCity()));
 		}
 
 		//zipcode required
 		if(organizationDO.getAddressDO().getZipCode() == null || "".equals(organizationDO.getAddressDO().getZipCode())){
-			exceptionList.add(new FieldErrorException("fieldRequiredException",OrgMeta.ADDRESS.getZipCode()));
+		    list.add(new FieldErrorException("fieldRequiredException",OrgMeta.ADDRESS.getZipCode()));
 		}
 		
 		//country required
 		if(organizationDO.getAddressDO().getCountry() == null || "".equals(organizationDO.getAddressDO().getCountry())){
-			exceptionList.add(new FieldErrorException("fieldRequiredException",OrgMeta.ADDRESS.getCountry()));
-		}		
+		    list.add(new FieldErrorException("fieldRequiredException",OrgMeta.ADDRESS.getCountry()));
+		}	
+		
+		for(int i=0; i<contacts.size();i++)       
+            validateContactAndAddress((OrganizationContactDO)contacts.get(i), i, list);
+		
+		if(list.size() > 0)
+            throw list;
 	}
 	
-	private void validateContactAndAddress(OrganizationContactDO orgContactDO, int rowIndex, List exceptionList){
+	private void validateContactAndAddress(OrganizationContactDO orgContactDO, int rowIndex, ValidationErrorsList exceptionList){
 		//contact type required
 		if(orgContactDO.getContactType() == null || "".equals(orgContactDO.getContactType())){
 			exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex, OrgMeta.ORGANIZATION_CONTACT.getContactTypeId()));

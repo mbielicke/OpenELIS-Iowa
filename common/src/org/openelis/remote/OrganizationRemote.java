@@ -62,10 +62,4 @@ public interface OrganizationRemote {
 	 
 	 //auto complete lookup
 	 public List autoCompleteLookupById(Integer id);
-	 
-	 //method to validate the fields before the backend updates it in the database
-	 public List validateForUpdate(OrganizationAddressDO organizationDO, List contacts);
-	 
-	 //method to validate the fields before the backend updates it in the database
-	 public List validateForAdd(OrganizationAddressDO organizationDO, List contacts);
 }
