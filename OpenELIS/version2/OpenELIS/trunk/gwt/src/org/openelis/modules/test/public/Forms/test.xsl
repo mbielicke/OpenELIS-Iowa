@@ -179,7 +179,7 @@ UIRF Software License are applicable instead of those above.
 							</buttonPanel>
 						</AbsolutePanel>
 						<!--end button panel-->
-						<HorizontalPanel padding="0" spacing="0">
+						<HorizontalPanel padding="0" spacing="0" style="WhiteContentPanel">
 						<VerticalPanel width = "10px"/>
 						 <VerticalPanel>						
 							<TablePanel style="Form">
