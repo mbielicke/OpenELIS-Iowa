@@ -30,7 +30,9 @@ UIRF Software License are applicable instead of those above.
                 xmlns:locale="xalan://java.util.Locale"
                 xmlns:meta="xalan://org.openelis.metamap.AuxFieldGroupMetaMap"
                 xmlns:auxField="xalan://org.openelis.metamap.AuxFieldMetaMap"
-                xmlns:auxFieldValue="xalan://org.openelis.metamap.AuxFieldValueMetaMap"                       
+                xmlns:auxFieldValue="xalan://org.openelis.metamap.AuxFieldValueMetaMap"   
+                xmlns:method="xalan://org.openelis.meta.MethodMeta"
+                xmlns:analyte="xalan://org.openelis.meta.AnalyteMeta"                    
                 extension-element-prefixes="resource"
                 version="1.0">
 	<xsl:import href="aToZOneColumn.xsl"/>
@@ -49,10 +51,18 @@ UIRF Software License are applicable instead of those above.
 	<xalan:component prefix="auxFieldValue">
 		<xalan:script lang="javaclass" src="xalan://org.openelis.metamap.AuxFieldValueMetaMap"/>
 	</xalan:component>	
+	<xalan:component prefix="method">
+		<xalan:script lang="javaclass" src="xalan://org.openelis.meta.MethodMeta"/>
+	</xalan:component>
+	<xalan:component prefix="analyte">
+		<xalan:script lang="javaclass" src="xalan://org.openelis.meta.AnalyteMeta"/>
+	</xalan:component>
 	
 	<xsl:template match="doc">
-	   <xsl:variable name="auxfg" select="meta:new()"/>	
+	   <xsl:variable name="auxfg" select="meta:new()"/>		   
 	   <xsl:variable name="auxf" select="meta:getAuxField($auxfg)"/>
+	   <xsl:variable name="mt" select="auxField:getMethod($auxf)"/>
+	   <xsl:variable name="ana" select="auxField:getAnalyte($auxf)"/>
 	   <xsl:variable name="auxfv" select="auxField:getAuxFieldValue($auxf)"/>
 		<xsl:variable name="language">
 		<xsl:value-of select="locale"/>
@@ -63,7 +73,7 @@ UIRF Software License are applicable instead of those above.
 		<xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))"/>
 		<screen id="Auxiliary" name="{resource:getString($constants,'auxiliaryPrompt')}" serviceUrl="ElisService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 			<display>
-				<HorizontalPanel padding="0" spacing="0" style="WhiteContentPanel">
+				<HorizontalPanel padding="0" spacing="0">
 					<!--left table goes here -->
 					<CollapsePanel key="collapsePanel" height="480px">
 					<resultsTable key="azTable" height="480px" width="100%">
@@ -136,27 +146,27 @@ UIRF Software License are applicable instead of those above.
 								<row>
 								  <text style="Prompt"><xsl:value-of select="resource:getString($constants,'groupName')"/>:</text>
 								  <widget colspan = "5">
-							       <textbox  key="{meta:getName($auxfg)}"  width="145px"/>
+							       <textbox  key="{meta:getName($auxfg)}" tab="{meta:getDescription($auxfg)},auxFieldValueTable" width="145px"/>
 							      </widget> 
 								</row> 	
 								<row>
 								  <text style="Prompt"><xsl:value-of select="resource:getString($constants,'description')"/>:</text>
 									<widget colspan = "5">
-										<textbox  key="{meta:getDescription($auxfg)}" max="60" width="425px"/>
+										<textbox  key="{meta:getDescription($auxfg)}" tab="{meta:getIsActive($auxfg)},{meta:getName($auxfg)}" max="60" width="425px"/>
 									</widget>									
 								</row>
 								<row>
 									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"active")'/>:</text>
-									<check key="{meta:getIsActive($auxfg)}" />																	
+									<check key="{meta:getIsActive($auxfg)}" tab="{meta:getActiveBegin($auxfg)},{meta:getDescription($auxfg)}" />																	
 								 <text style="Prompt"><xsl:value-of select='resource:getString($constants,"beginDate")'/>:</text>
-								 <calendar key="{meta:getActiveBegin($auxfg)}"  onChange="this" begin="0" end="2" width = "80px"/>																									 
+								 <calendar key="{meta:getActiveBegin($auxfg)}" tab="{meta:getActiveEnd($auxfg)},{meta:getIsActive($auxfg)}" onChange="this" begin="0" end="2" width = "80px"/>																									 
 								 <text style="Prompt"><xsl:value-of select='resource:getString($constants,"endDate")'/>:</text>
-								 <calendar key="{meta:getActiveEnd($auxfg)}"  onChange="this" begin="0" end="2" width = "80px"/>
+								 <calendar key="{meta:getActiveEnd($auxfg)}" tab="auxFieldTable,{meta:getActiveBegin($auxfg)}" onChange="this" begin="0" end="2" width = "80px"/>
 								</row>
 					          </TablePanel>			
 							 <HorizontalPanel> 							 
 							  <widget>
-                                <table key="auxFieldTable" title="" targets = "auxFieldTable" manager = "this" drop = "default" drag = "default" width="600px" showError="false" showScroll="ALWAYS" maxRows="10">                                
+                                <table key="auxFieldTable" title="" targets = "auxFieldTable" manager = "this" tab="auxFieldValueTable,{meta:getActiveEnd($auxfg)}" drop = "default" drag = "default" width="600px" showError="false" showScroll="ALWAYS" maxRows="10">                                
                                  <headers>                                 
                                   <xsl:value-of select="resource:getString($constants,'analyte')"/>,
                                   <xsl:value-of select="resource:getString($constants,'method')"/>,
@@ -180,11 +190,11 @@ UIRF Software License are applicable instead of those above.
                                     <check/> 
                                     <check/>									                                   
                                     <textbox/>
-                                    <dropdown case="mixed" required = "true" width = "80px" type = "integer"/>   
+                                    <dropdown case="mixed" required = "true" width = "150px" type = "integer"/>   
                                    </editors>
                                    <fields>
-                                    <dropdown key="{auxField:getAnalyteId($auxf)}" required = "true"/>
-                                    <dropdown key="{auxField:getMethodId($auxf)}"/>
+                                    <dropdown key="{analyte:getName($ana)}" required = "true"/>
+                                    <dropdown key="{method:getName($mt)}"/>
                                     <dropdown key="{auxField:getUnitOfMeasureId($auxf)}"/>
                                     <check key = "{auxField:getIsActive($auxf)}"/>
                                     <check key = "{auxField:getIsRequired($auxf)}"/>
@@ -209,7 +219,7 @@ UIRF Software License are applicable instead of those above.
 								</widget> 							 																															 						   							  
 							<HorizontalPanel>
 							  <widget valign="top">
-							    <table key="auxFieldValueTable" manager="this" maxRows="5" showError="false" showScroll="ALWAYS" title="" width="600px">
+							    <table key="auxFieldValueTable" manager="this" maxRows="5" tab="auxFieldTable,{meta:getName($auxfg)}" showError="false" showScroll="ALWAYS" title="" width="600px">
 												<headers>		 										    
 													<xsl:value-of select="resource:getString($constants,'type')"/>,													
 													<xsl:value-of select="resource:getString($constants,'value')"/>																																																																												
@@ -221,7 +231,7 @@ UIRF Software License are applicable instead of those above.
 												</editors>
 												<fields>											    
 												    <dropdown key="{auxFieldValue:getTypeId($auxfv)}" type="integer" required="true"/>																										
-													<string key="{auxFieldValue:getValue($auxfv)}" required="false"/>																																	
+													<string key="{auxFieldValue:getValue($auxfv)}" required="true"/>																																	
 												</fields>
 												<sorts>false,false</sorts>
 												<filters>false,false</filters>

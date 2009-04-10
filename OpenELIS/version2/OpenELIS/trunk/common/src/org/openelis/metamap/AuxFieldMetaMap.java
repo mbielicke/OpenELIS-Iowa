@@ -27,11 +27,17 @@
 package org.openelis.metamap;
 
 import org.openelis.gwt.common.MetaMap;
+import org.openelis.meta.AnalyteMeta;
 import org.openelis.meta.AuxFieldMeta;
+import org.openelis.meta.MethodMeta;
 
 public class AuxFieldMetaMap extends AuxFieldMeta implements MetaMap {
 
     private AuxFieldValueMetaMap AUX_FIELD_VALUE = new AuxFieldValueMetaMap("auxFieldValue.");
+    
+    private MethodMeta METHOD = new MethodMeta("auxField.method.");
+    
+    private AnalyteMeta ANALYTE = new AnalyteMeta("auxField.analyte.");
     
     public AuxFieldMetaMap() {
         super("auxField.");
@@ -48,6 +54,14 @@ public class AuxFieldMetaMap extends AuxFieldMeta implements MetaMap {
      return from;
     }
     
+    public AnalyteMeta getAnalyte(){
+        return ANALYTE;
+    }
+    
+    public MethodMeta getMethod(){
+        return METHOD;
+    }
+    
     public static AuxFieldMetaMap getInstance(){
         return new AuxFieldMetaMap();
     }
@@ -59,6 +73,10 @@ public class AuxFieldMetaMap extends AuxFieldMeta implements MetaMap {
     public boolean hasColumn(String name){        
         if(name.startsWith("auxFieldValue."))
             return AUX_FIELD_VALUE.hasColumn(name);
+        if(name.startsWith(path+"method."))
+            return METHOD.hasColumn(name);
+        if(name.startsWith(path+"analyte."))
+            return ANALYTE.hasColumn(name);
         return super.hasColumn(name);
     }
     

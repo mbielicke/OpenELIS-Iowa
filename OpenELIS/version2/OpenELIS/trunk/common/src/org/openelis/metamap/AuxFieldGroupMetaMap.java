@@ -5,15 +5,15 @@ import org.openelis.meta.AuxFieldGroupMeta;
 
 public class AuxFieldGroupMetaMap extends AuxFieldGroupMeta implements MetaMap{
 
+    private AuxFieldMetaMap AUX_FIELD = new AuxFieldMetaMap("auxField.");
+    
     public AuxFieldGroupMetaMap() {
       super("afg.");
     }
     
     public AuxFieldGroupMetaMap(String path){
         super(path);               
-    }
-    
-    private AuxFieldMetaMap AUX_FIELD = new AuxFieldMetaMap("af.");
+    }       
     
     public String buildFrom(String name) {
         String from = "AuxFieldGroup afg ";

@@ -103,7 +103,7 @@ UIRF Software License are applicable instead of those above.
 		<xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))"/>
 		<screen id="Test" name="{resource:getString($constants,'test')}" serviceUrl="ElisService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 			<display>
-				<HorizontalPanel padding="0" spacing="0" style="WhiteContentPanel">
+				<HorizontalPanel padding="0" spacing="0">
 					<!--left table goes here -->
 					<CollapsePanel key="collapsePanel" height="530px">
 					  <!--
@@ -194,10 +194,7 @@ UIRF Software License are applicable instead of those above.
 								    <widget>
 								      <autoComplete case="mixed" cat="method" key="{method:getName($mt)}" serviceUrl="OpenELISServlet?service=org.openelis.modules.test.server.TestService" tab="{meta:getId($test)}, {meta:getName($test)}" width="145px">
 								       <widths>145</widths>
-									  </autoComplete>
-								      <query>
-										<textbox case="mixed" tab="{meta:getId($test)}, {meta:getName($test)}" width="145px"/>
-									  </query>
+									  </autoComplete>								      
 								    </widget> 
 								</row>	
 						     </TablePanel>	
@@ -820,68 +817,7 @@ UIRF Software License are applicable instead of those above.
 			 <tree key = "analyteTree"/>
 			 <table key = "testResultsTable"/>						 
 			</rpc> 
-		  </rpc>
-		  <!--
-		  <rpc key="query">
-			 <queryNumber key="{meta:getId($test)}"  type="integer"/>
-			 <queryString key="{meta:getName($test)}" />
-			 <queryString key="{method:getName($mt)}"/>
-			 <queryString key="{meta:getDescription($test)}"/>
-				<queryString key="{meta:getReportingDescription($test)}" />
-				<queryNumber key="{meta:getTimeTaMax($test)}" type="integer"/>
-				<queryNumber key="{meta:getTimeTaAverage($test)}" type="integer"/>
-				<queryNumber key="{meta:getTimeTaWarning($test)}" type="integer"/>
-				<queryNumber key="{meta:getTimeTransit($test)}" type="integer"/>	
-				<queryCheck key="{meta:getIsActive($test)}" />
-				<queryCheck key="{meta:getIsReportable($test)}" />				
-				<queryNumber key="{meta:getTimeHolding($test)}" type="integer"/> 			
-				<dropdown key="{meta:getLabelId($test)}"  type="integer"/>				
-				<queryNumber key="{meta:getLabelQty($test)}" type="integer"/>
-				<dropdown key="{meta:getTestTrailerId($test)}" type="integer"/>
-				<dropdown key="{meta:getTestFormatId($test)}"  type="integer"/>				
-				<dropdown key="{meta:getRevisionMethodId($test)}" type="integer"/>	
-				<dropdown key="{meta:getScriptletId($test)}" type="integer"/>
-				<dropdown key="{meta:getLabelId($test)}"  type="integer"/>
-				<dropdown key="{meta:getReportingMethodId($test)}" type="integer"/>
-				<queryNumber key="{meta:getReportingSequence($test)}" type="integer"/>
-				<dropdown key="{meta:getSortingMethodId($test)}" type="integer"/>
-				<dropdown key="{testTOS:getTypeOfSampleId($tos)}" />					
-				<dropdown key="{testTOS:getUnitOfMeasureId($tos)}" /> 
-				<dropdown key="{testPrep:getPrepTestId($tp)}" />	
-				<dropdown key="{testRef:getAddTestId($tref)}" />
-				<dropdown key="{testRef:getTestAnalyteId($tref)}"/>
-				<dropdown key="{testRef:getTestResultId($tref)}"/>
-				<dropdown key="{testRef:getFlagsId($tref)}"/>			
-				<queryCheck key="{testPrep:getIsOptional($tp)}" />	
-				<dropdown key="{testWrksht:getFormatId($tws)}"  type="integer"/>
-				<dropdown key="{testWrksht:getScriptletId($tws)}"  type="integer"/>
-				<queryNumber key="{testWrksht:getBatchCapacity($tws)}" type="integer"/>
-				<queryNumber key="{testWrksht:getTotalCapacity($tws)}" type="integer"/>				
-				<queryNumber key="{testWrkshtItm:getPosition($twsi)}" type="integer"/>
-				<dropdown key="{testWrkshtItm:getTypeId($twsi)}"/>				
-				<queryString key="{testWrkshtItm:getQcName($twsi)}"/>	
-				<dropdown key="{testSection:getSectionId($ts)}" />
-				<dropdown key="{testSection:getFlagId($ts)}"  />
-				<dropdown key="{testResult:getUnitOfMeasureId($tr)}"/>
-				<dropdown key="{testResult:getTypeId($tr)}" />																										
-				<queryString key="{testResult:getValue($tr)}" required="false"/>		
-				<queryInteger key="{testResult:getSignificantDigits($tr)}"  type="integer" required="false"/>	
-				<dropdown key="{testResult:getFlagsId($tr)}"  required="false"/>	
-				<dropdown key="{testResult:getRoundingMethodId($tr)}" required="false"/>	
-				<queryString key="{testResult:getQuantLimit($tr)}"  required="false"/>	
-				<queryString key="{testResult:getContLevel($tr)}"  required="false"/>
-				<queryString key="{testResult:getHazardLevel($tr)}" required="false"/> 
-				<table key = "worksheetTable"/>
-				<table key = "sampleTypeTable"/>
-				<table key = "testReflexTable"/>
-				<table key = "testPrepTable"/>	
-				<table key = "sectionTable"/>
-
-			</rpc>
-			<rpc key="queryByLetter">
-			 <queryString key="{meta:getName($test)}"/>				
-			</rpc>
-			-->
+		  </rpc>		  
 		</screen>
   </xsl:template>
 </xsl:stylesheet>

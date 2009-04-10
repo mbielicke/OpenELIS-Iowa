@@ -565,7 +565,7 @@ public class AuxiliaryService implements
         int fi = -1;
         TableDataRow row = null;
         TableFieldErrorException ferrex = null;
-        String fieldName = null;
+        String fieldName = null, error = null;
         int index = -1;
         
         for (int i = 0; i < exceptionList.size(); i++) {             
@@ -575,7 +575,9 @@ public class AuxiliaryService implements
           fi = fieldIndex.indexOf(fieldName); 
           row = (TableDataRow)model.get(index);
           field = (AbstractField)row.cells[fi];
-          field.addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));                                  
+          error = openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage());
+          if(!field.getErrors().contains(error))
+           field.addError(error);                                  
         }    
         
     }

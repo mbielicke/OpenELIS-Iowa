@@ -28,19 +28,43 @@ UIRF Software License are applicable instead of those above.
                 xmlns:xalan="http://xml.apache.org/xalan"
                 xmlns:resource="xalan://org.openelis.util.UTFResource"
                 xmlns:locale="xalan://java.util.Locale" 
+                xmlns:meta="xalan://org.openelis.metamap.SampleClinicalMetaMap"
+                xmlns:sampleHuman= "xalan://org.openelis.metamap.SampleHumanMetaMap"
+                xmlns:patient= "xalan://org.openelis.metamap.PatientMetaMap" 
+                xmlns:address="xalan://org.openelis.meta.AddressMeta"
+                xmlns:provider="xalan://org.openelis.meta.ProviderMeta" 
                 extension-element-prefixes="resource"
                 version="1.0">
 <xsl:import href="aToZOneColumn.xsl"/>
 
   <xalan:component prefix="resource">
     <xalan:script lang="javaclass" src="xalan://org.openelis.util.UTFResource"/>
-  </xalan:component>
-  
+  </xalan:component>  
   <xalan:component prefix="locale">
     <xalan:script lang="javaclass" src="xalan://java.util.Locale"/>
+  </xalan:component>  
+  <xalan:component prefix="meta">
+		<xalan:script lang="javaclass" src="xalan://org.openelis.metamap.SampleClinicalMetaMap"/>
+  </xalan:component>
+  <xalan:component prefix="sampleHuman">
+		<xalan:script lang="javaclass" src="xalan://org.openelis.metamap.SampleHumanMetaMap"/>
+  </xalan:component>
+  <xalan:component prefix="patient">
+		<xalan:script lang="javaclass" src="xalan://org.openelis.metamap.PatientMetaMap"/>
+  </xalan:component>
+  <xalan:component prefix="address">
+		<xalan:script lang="javaclass" src="xalan://org.openelis.meta.AddressMeta"/>
+  </xalan:component>
+  <xalan:component prefix="provider">
+		<xalan:script lang="javaclass" src="xalan://org.openelis.meta.ProviderMeta"/>
   </xalan:component>
   
   <xsl:template match="doc"> 
+    <xsl:variable name="sc" select="meta:new()"/>
+    <xsl:variable name="sh" select="meta:getSampleHuman($sc)"/>    
+    <xsl:variable name="pt" select="sampleHuman:getPatient($sh)"/>
+    <xsl:variable name="prov" select="sampleHuman:getProvider($sh)"/>
+    <xsl:variable name="addr" select="patient:getAddress($pt)"/>    
     <xsl:variable name="language"><xsl:value-of select="locale"/></xsl:variable>
     <xsl:variable name="props"><xsl:value-of select="props"/></xsl:variable>
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))"/>
@@ -94,22 +118,22 @@ UIRF Software License are applicable instead of those above.
 				<TablePanel style="Form">
 					<row>
 						<text style="Prompt">Accession #:</text>
-						<textbox key="accessionNum" tab="??,??" width="75px"/>
+						<textbox key="{meta:getAccessionNumber($sc)}"  width="75px"/>
 						<text style="Prompt">Order #:</text>
-						<textbox key="orderNum" tab="??,??" width="75px"/>
+						<textbox key="orderNum"  width="75px"/>
 						<text style="Prompt">Collected:</text>
-						<calendar begin="0" end="2" key="collected" tab="??,??" width="75px"/>
+						<calendar begin="0" end="2" key="{meta:getCollectionDate($sc)}" width="75px"/>
 						<text style="Prompt">Time:</text>
 						<textbox key="collectedTime" width="40px"/>
 					</row>
 					<row>
 						<text style="Prompt">Received:</text>
-						<calendar key="recieved" begin="0" end="2" width="110px" tab="??,??"/>
+						<calendar key="{meta:getReceivedDate($sc)}" begin="0" end="2" width="110px"/>
 						<text style="Prompt">Status:</text>
-						<dropdown key="status" case="mixed" width="110px"/>
+						<dropdown key="{meta:getStatusId($sc)}" case="mixed" width="110px"/>
 						<text style="Prompt">Client Reference:</text>
 						<widget colspan="3">
-							<textbox key="clientRef" tab="??,??" width="175px"/>					
+							<textbox key="{meta:getClientReference($sc)}" width="175px"/>					
 						</widget>
 					</row>
 					</TablePanel>
@@ -124,7 +148,7 @@ UIRF Software License are applicable instead of those above.
 					</row>-->
 							<row>
 								<text style="Prompt">Id:</text>
-								<multLookup key="patientId" listeners="this">
+								<multLookup key="{sampleHuman:getPatientId($sh)}" listeners="this">
 								    <icon style="LookupButtonImage" mouse="HoverListener" command="ClincalSampleLogin.id_button_enum.ID_1"/>
 								    <icon style="AdvancedButtonImage" mouse="HoverListener" command="ClincalSampleLogin.id_button_enum.ID_2"/>
 								    <icon style="CommentButtonImage" mouse="HoverListener" command="ClincalSampleLogin.id_button_enum.ID_3"/>
@@ -157,43 +181,43 @@ UIRF Software License are applicable instead of those above.
 							</row>
 							<row>
 								<text style="Prompt">Last:</text>
-								<textbox key="last" tab="??,??" width="175px"/>
+								<textbox key="{patient:getLastName($pt)}"  width="175px"/>
 								<text style="Prompt">Address:</text>
 								<widget colspan="3">
-								<textbox key="address" width="186px"/>	
+								<textbox key="{address:getStreetAddress($addr)}" width="186px"/>	
 								</widget>
 								<text style="Prompt">Gender:</text>
-								<dropdown key="gender" width="75px"/>	
+								<dropdown key="{patient:getGenderId($pt)}" width="75px"/>	
 							</row>
 							<row>
 								<text style="Prompt">First:</text>
-								<textbox key="first" tab="??,??" width="150px"/>		
+								<textbox key="{patient:getFirstName($pt)}"  width="150px"/>		
 									<text style="Prompt">Mult Unit:</text>
 								<widget colspan="3">									
-								<textbox key="multunit" width="186px"/>	
+								<textbox key="{address:getMultipleUnit($addr)}" width="186px"/>	
 								</widget>
 								<text style="Prompt">Race:</text>
-								<dropdown key="race" tab="??,??" width="150px"/>		
+								<dropdown key="{patient:getRace($pt)}"  width="150px"/>		
 							</row>
 							<row>
 								<text style="Prompt">Middle:</text>
-								<textbox key="middle" tab="??,??" width="150px"/>		
+								<textbox key="{patient:getMiddleName($pt)}"  width="150px"/>		
 									<text style="Prompt">City:</text>
 								<widget colspan="3">									
-								<textbox key="city" width="186px"/>	
+								<textbox key="{address:getCity($addr)}" width="186px"/>	
 								</widget>
 								<text style="Prompt">Ethinicity:</text>
-								<dropdown key="ethn" tab="??,??" width="150px"/>
+								<dropdown key="{patient:getEthnicityId($pt)}"  width="150px"/>
 							</row>
 							<row>
 								<text style="Prompt">Birth:</text>
-								<calendar key="birth" begin="0" end="2" width="110px" tab="??,??"/>
+								<calendar key="{patient:getBirthDate($pt)}" begin="0" end="2" width="110px" />
 								<text style="Prompt">State:</text>
-								<textbox key="state" width="33px"/>	
+								<textbox key="{address:getState($addr)}" width="33px"/>	
 								<text style="Prompt">Zip Code:</text>
-								<textbox key="zipCode" tab="??,??" width="63px"/>		
+								<textbox key="{address:getZipCode($addr)}"  width="63px"/>		
 								<text style="Prompt">Phone:</text>
-								<textbox key="phone" tab="??,??" width="125px"/>	
+								<textbox key="phone"  width="125px"/>	
 							</row>
 							</TablePanel>
 							</VerticalPanel>
@@ -284,14 +308,14 @@ UIRF Software License are applicable instead of those above.
                   		-->
                   		<row>
 							<text style="Prompt">Provider:</text>
-							<textbox key="provider" tab="??,??" width="100px"/>		
+							<textbox key="{provider:getLastName($prov)}"  width="100px"/>		
 							<text style="Prompt">Id:</text>
-							<textbox key="provId" tab="??,??" width="50px"/>		
+							<textbox key="{provider:getId($prov)}"  width="50px"/>		
 						</row>
 						<row>
 							<text style="Prompt">Phone:</text>
 							<widget colspan="3">
-							<textbox key="provPhone" tab="??,??" width="200px"/>		
+							<textbox key="{sampleHuman:getProviderPhone($sh)}"  width="200px"/>		
 							</widget>
 						</row>
 						<row>
