@@ -25,16 +25,19 @@
 */
 package org.openelis.modules.standardnote.server;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 import org.openelis.domain.IdNameDO;
 import org.openelis.domain.StandardNoteDO;
-import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.Query;
-import org.openelis.gwt.common.QueryException;
 import org.openelis.gwt.common.RPCException;
+import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.FieldType;
 import org.openelis.gwt.common.data.StringObject;
@@ -53,10 +56,6 @@ import org.openelis.server.handlers.StandardNoteTypeCacheHandler;
 import org.openelis.util.FormUtil;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 
 public class StandardNoteService implements AppScreenFormServiceInt<StandardNoteForm, Query<TableDataRow<Integer>>>, AutoCompleteServiceInt {
 	
@@ -128,25 +127,17 @@ public class StandardNoteService implements AppScreenFormServiceInt<StandardNote
 //		build the storage unit DO from the form
 		newStandardNoteDO = getStandardNoteDOFromRPC(rpc);
 		
-		//validate the fields on the backend
-		List exceptionList = remote.validateForAdd(newStandardNoteDO);
-		if(exceptionList.size() > 0){
-			setRpcErrors(exceptionList, rpc);
-			
-			return rpc;
-		} 
-		
 		// send the changes to the database
 		Integer standardNoteId;
 		try{
 			standardNoteId = (Integer) remote.updateStandardNote(newStandardNoteDO);
 		}catch(Exception e){
-			exceptionList = new ArrayList();
-			exceptionList.add(e);
-			
-			setRpcErrors(exceptionList, rpc);
-			return rpc;
-		}
+            if(e instanceof ValidationErrorsList){
+                setRpcErrors(((ValidationErrorsList)e).getErrorList(), rpc);
+                return rpc;
+            }else
+                throw new RPCException(e.getMessage());
+        }
 		
         newStandardNoteDO.setId(standardNoteId);
         
@@ -164,28 +155,17 @@ public class StandardNoteService implements AppScreenFormServiceInt<StandardNote
 		//build the DO from the form
 		newStandardNoteDO = getStandardNoteDOFromRPC(rpc);
 
-		//validate the fields on the backend
-		List exceptionList = remote.validateForUpdate(newStandardNoteDO);
-		if(exceptionList.size() > 0){
-			setRpcErrors(exceptionList, rpc);
-			
-			return rpc;
-		} 
-		
 		//send the changes to the database
 		try{
 			remote.updateStandardNote(newStandardNoteDO);
 		}catch(Exception e){
-            if(e instanceof EntityLockedException)
+            if(e instanceof ValidationErrorsList){
+                setRpcErrors(((ValidationErrorsList)e).getErrorList(), rpc);
+                return rpc;
+            }else
                 throw new RPCException(e.getMessage());
-            
-			exceptionList = new ArrayList();
-			exceptionList.add(e);
-			
-			setRpcErrors(exceptionList, rpc);
-			return rpc;
-		}
-
+        }
+		
 //		set the fields in the RPC
 		setFieldsInRPC(rpc, newStandardNoteDO);
 		
@@ -196,24 +176,16 @@ public class StandardNoteService implements AppScreenFormServiceInt<StandardNote
     //		remote interface to call the standard note bean
     		StandardNoteRemote remote = (StandardNoteRemote)EJBFactory.lookup("openelis/StandardNoteBean/remote");
     		
-    		//validate the fields on the backend
-    		List exceptionList = remote.validateForDelete(rpc.entityKey);
-    		if(exceptionList.size() > 0){
-    			setRpcErrors(exceptionList, rpc);
-    			
-    			return rpc;
-    		} 
-    		
     		try {
     			remote.deleteStandardNote(rpc.entityKey);
     			
-    		} catch (Exception e) {
-    			exceptionList = new ArrayList();
-    			exceptionList.add(e);
-    			
-    			setRpcErrors(exceptionList, rpc);
-    			return rpc;
-    		}
+    		}catch(Exception e){
+                if(e instanceof ValidationErrorsList){
+                    setRpcErrors(((ValidationErrorsList)e).getErrorList(), rpc);
+                    return rpc;
+                }else
+                    throw new RPCException(e.getMessage());
+            }
     		
     		//this should set all fields in the rpc to null
     		setFieldsInRPC(rpc, new StandardNoteDO());

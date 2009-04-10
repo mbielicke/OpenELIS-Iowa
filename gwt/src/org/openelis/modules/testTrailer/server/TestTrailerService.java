@@ -35,6 +35,7 @@ import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.Query;
 import org.openelis.gwt.common.QueryException;
 import org.openelis.gwt.common.RPCException;
+import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.common.data.TableDataModel;
@@ -120,25 +121,18 @@ public class TestTrailerService implements AppScreenFormServiceInt<TestTrailerFo
 		//build the testTrailer DO from the form
 		newTestTrailerDO = getTestTrailerDOFromRPC(rpc);
 				
-		//validate the fields on the backend
-		List exceptionList = remote.validateForAdd(newTestTrailerDO);
-		if(exceptionList.size() > 0){
-			setRpcErrors(exceptionList, rpc);
-			
-			return rpc;
-		} 
 		
 		//send the changes to the database
 		Integer testTrailerId;
 		try{
 			testTrailerId = (Integer)remote.updateTestTrailer(newTestTrailerDO);
 		}catch(Exception e){
-			exceptionList = new ArrayList();
-			exceptionList.add(e);
-			
-			setRpcErrors(exceptionList, rpc);
-			return rpc;
-		}
+            if(e instanceof ValidationErrorsList){
+                setRpcErrors(((ValidationErrorsList)e).getErrorList(), rpc);
+                return rpc;
+            }else
+                throw new RPCException(e.getMessage());
+        }
 		
         newTestTrailerDO.setId(testTrailerId);
 
@@ -156,27 +150,17 @@ public class TestTrailerService implements AppScreenFormServiceInt<TestTrailerFo
     	//build the DO from the form
     	newTestTrailerDO = getTestTrailerDOFromRPC(rpc);
     	
-    	//validate the fields on the backend
-    	List exceptionList = remote.validateForUpdate(newTestTrailerDO);
-    	if(exceptionList.size() > 0){
-    		setRpcErrors(exceptionList, rpc);
-    		
-    		return rpc;
-    	}
-    	
     	//send the changes to the database
     	try{
     		remote.updateTestTrailer(newTestTrailerDO);
-    	}catch(Exception e){
-            if(e instanceof EntityLockedException)
-                throw new RPCException(e.getMessage());
-            
-    		exceptionList = new ArrayList();
-    		exceptionList.add(e);
     		
-    		setRpcErrors(exceptionList, rpc);
-    		return rpc;
-    	}
+    	}catch(Exception e){
+            if(e instanceof ValidationErrorsList){
+                setRpcErrors(((ValidationErrorsList)e).getErrorList(), rpc);
+                return rpc;
+            }else
+                throw new RPCException(e.getMessage());
+        }
     
     	//set the fields in the RPC
     	setFieldsInRPC(rpc, newTestTrailerDO);
@@ -188,24 +172,16 @@ public class TestTrailerService implements AppScreenFormServiceInt<TestTrailerFo
 		//remote interface to call the test trailer bean
 		TestTrailerRemote remote = (TestTrailerRemote)EJBFactory.lookup("openelis/TestTrailerBean/remote");
 
-		//validate the fields on the backend
-		List exceptionList = remote.validateForDelete(rpc.entityKey);
-		if(exceptionList.size() > 0){
-			setRpcErrors(exceptionList, rpc);
-			
-			return rpc;
-		} 
-		
 		try {
 			remote.deleteTestTrailer(rpc.entityKey);
 			
-		} catch (Exception e) {
-			exceptionList = new ArrayList();
-			exceptionList.add(e);
-			
-			setRpcErrors(exceptionList, rpc);
-			return rpc;
-		}
+		}catch(Exception e){
+            if(e instanceof ValidationErrorsList){
+                setRpcErrors(((ValidationErrorsList)e).getErrorList(), rpc);
+                return rpc;
+            }else
+                throw new RPCException(e.getMessage());
+        }
 		
 		setFieldsInRPC(rpc, new TestTrailerDO());
 		

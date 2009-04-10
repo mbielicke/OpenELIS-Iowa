@@ -37,6 +37,7 @@ import org.openelis.gwt.common.Query;
 import org.openelis.gwt.common.QueryException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.TableFieldErrorException;
+import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.FieldType;
@@ -136,26 +137,18 @@ public class StorageLocationService implements AppScreenFormServiceInt<StorageLo
         TableDataModel<TableDataRow<Integer>> childTable = childTableField.getValue();
 		storageLocationChildren = getChildStorageLocsFromRPC(childTable);
 				
-		//validate the fields on the backend
-		List exceptionList = remote.validateForAdd(newStorageLocDO, storageLocationChildren);
-		
-		if(exceptionList.size() > 0){
-			setRpcErrors(exceptionList, childTableField, rpc);
-			return rpc;
-		} 
-		
 		//send the changes to the database
 		Integer storageLocId;
 		try{
 			storageLocId = (Integer)remote.updateStorageLoc(newStorageLocDO, storageLocationChildren);
+			
 		}catch(Exception e){
-			exceptionList = new ArrayList();
-			exceptionList.add(e);
-			
-			setRpcErrors(exceptionList, childTableField, rpc);
-			
-			return rpc;
-		}
+            if(e instanceof ValidationErrorsList){
+                setRpcErrors(((ValidationErrorsList)e).getErrorList(), childTableField, rpc);
+                return rpc;
+            }else
+                throw new RPCException(e.getMessage());
+        }
 		
 		newStorageLocDO.setId(storageLocId);
         
@@ -179,28 +172,17 @@ public class StorageLocationService implements AppScreenFormServiceInt<StorageLo
         TableDataModel<TableDataRow<Integer>> childTable = childTableField.getValue();
 		storageLocationChildren = getChildStorageLocsFromRPC(childTable);
 		
-		//validate the fields on the backend
-		List exceptionList = remote.validateForUpdate(newStorageLocDO, storageLocationChildren);
-		if(exceptionList.size() > 0){
-			setRpcErrors(exceptionList, childTableField, rpc);
-			
-			return rpc;
-		} 
-		
 //		send the changes to the database
 		try{
 			remote.updateStorageLoc(newStorageLocDO, storageLocationChildren);
+			
 		}catch(Exception e){
-            if(e instanceof EntityLockedException)
+            if(e instanceof ValidationErrorsList){
+                setRpcErrors(((ValidationErrorsList)e).getErrorList(), childTableField, rpc);
+                return rpc;
+            }else
                 throw new RPCException(e.getMessage());
-            
-			exceptionList = new ArrayList();
-			exceptionList.add(e);
-			
-			setRpcErrors(exceptionList, childTableField, rpc);
-			
-			return rpc;
-		}
+        }
 		
 //		set the fields in the RPC
 		setFieldsInRPC(rpc, newStorageLocDO);
@@ -212,24 +194,16 @@ public class StorageLocationService implements AppScreenFormServiceInt<StorageLo
 //		remote interface to call the storage location bean
 		StorageLocationRemote remote = (StorageLocationRemote)EJBFactory.lookup("openelis/StorageLocationBean/remote");
 		
-		//validate the fields on the backend
-		List exceptionList = remote.validateForDelete(rpc.entityKey);
-		if(exceptionList.size() > 0){
-			setRpcErrors(exceptionList, null, rpc);
-			
-			return rpc;
-		} 
-		
 		try {
 			remote.deleteStorageLoc(rpc.entityKey);
 			
-		} catch (Exception e) {
-			exceptionList = new ArrayList();
-			exceptionList.add(e);
-			
-			setRpcErrors(exceptionList, null, rpc);
-			return rpc;
-		}	
+		}catch(Exception e){
+            if(e instanceof ValidationErrorsList){
+                setRpcErrors(((ValidationErrorsList)e).getErrorList(), null, rpc);
+                return rpc;
+            }else
+                throw new RPCException(e.getMessage());
+        }	
 		
 		setFieldsInRPC(rpc, new StorageLocationDO());
 		rpc.childStorageLocsTable.setValue(null);
