@@ -51,13 +51,4 @@ public interface TestTrailerRemote {
 	 public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception;
 	 
 	 public void deleteTestTrailer(Integer testTrailerId) throws Exception;
-	 
-	 //method to validate the fields before the backend updates it in the database
-	 public List validateForUpdate(TestTrailerDO testTrailerDO);
-	 
-	 //method to validate the fields before the backend updates it in the database
-	 public List validateForAdd(TestTrailerDO testTrailerDO);
-	 
-	 //method to validate the fields before the backend deletes it
-	 public List validateForDelete(Integer testTrailerId);
 }

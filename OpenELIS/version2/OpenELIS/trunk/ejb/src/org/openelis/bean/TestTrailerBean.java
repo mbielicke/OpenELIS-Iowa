@@ -25,20 +25,6 @@
 */
 package org.openelis.bean;
 
-import org.jboss.annotation.security.SecurityDomain;
-import org.openelis.domain.TestTrailerDO;
-import org.openelis.entity.TestTrailer;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.RPCException;
-import org.openelis.gwt.common.data.AbstractField;
-import org.openelis.local.LockLocal;
-import org.openelis.metamap.TestTrailerMetaMap;
-import org.openelis.remote.TestTrailerRemote;
-import org.openelis.util.QueryBuilder;
-import org.openelis.utils.GetPage;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,6 +39,20 @@ import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+
+import org.jboss.annotation.security.SecurityDomain;
+import org.openelis.domain.TestTrailerDO;
+import org.openelis.entity.TestTrailer;
+import org.openelis.gwt.common.FieldErrorException;
+import org.openelis.gwt.common.FormErrorException;
+import org.openelis.gwt.common.LastPageException;
+import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.gwt.common.data.AbstractField;
+import org.openelis.local.LockLocal;
+import org.openelis.metamap.TestTrailerMetaMap;
+import org.openelis.remote.TestTrailerRemote;
+import org.openelis.util.QueryBuilder;
+import org.openelis.utils.GetPage;
 
 @Stateless
 @EJBs({
@@ -82,18 +82,13 @@ public class TestTrailerBean implements TestTrailerRemote{
     	Query lockQuery = manager.createNamedQuery("getTableId");
 		lockQuery.setParameter("name", "test_trailer");
 		Integer testTrailerTableId = (Integer)lockQuery.getSingleResult();
-        lockBean.getLock(testTrailerTableId, testTrailerId);
+        lockBean.validateLock(testTrailerTableId, testTrailerId);
+        
+        validateForDelete(testTrailerId);
         
 		manager.setFlushMode(FlushModeType.COMMIT);
 		TestTrailer testTrailer = null;
 		
-		//validate the test trailer record
-        List exceptionList = new ArrayList();
-        exceptionList = validateForDelete(testTrailerId);
-        if(exceptionList.size() > 0){
-        	throw (RPCException)exceptionList.get(0);
-        }
-        
 		//then we need to delete it
 		try {
 			testTrailer = manager.find(TestTrailer.class, testTrailerId);
@@ -170,18 +165,13 @@ public class TestTrailerBean implements TestTrailerRemote{
         Integer testTrailerReferenceId = (Integer)query.getSingleResult();
         
         if(testTrailerDO.getId() != null){
-            lockBean.getLock(testTrailerReferenceId, testTrailerDO.getId());
+            lockBean.validateLock(testTrailerReferenceId, testTrailerDO.getId());
         }
+        
+        validateTestTrailer(testTrailerDO);
         
 		manager.setFlushMode(FlushModeType.COMMIT);
 		TestTrailer testTrailer = null;
-        
-        //validate the test trailer record
-        List exceptionList = new ArrayList();
-        validateTestTrailer(testTrailerDO, exceptionList);
-        if(exceptionList.size() > 0){
-        	throw (RPCException)exceptionList.get(0);
-        }
         
         if (testTrailerDO.getId() == null)
         	testTrailer = new TestTrailer();
@@ -201,16 +191,9 @@ public class TestTrailerBean implements TestTrailerRemote{
 		return testTrailer.getId();
 	}
 
-	public List validateForAdd(TestTrailerDO testTrailerDO) {
-		List exceptionList = new ArrayList();
-		
-		validateTestTrailer(testTrailerDO, exceptionList);
-		
-		return exceptionList;
-	}
-
-	public List validateForDelete(Integer testTrailerId) {
-		List exceptionList = new ArrayList();
+	public void validateForDelete(Integer testTrailerId) throws Exception {
+	    ValidationErrorsList list = new ValidationErrorsList();
+	    
 		//make sure no tests are pointing to this record
 		//getTestByTestTrailerId
 		Query query = null;
@@ -219,24 +202,19 @@ public class TestTrailerBean implements TestTrailerRemote{
 		List linkedRecords = query.getResultList();
 
 		if(linkedRecords.size() > 0){
-			exceptionList.add(new FormErrorException("testTrailerTestDeleteException"));
+		    list.add(new FormErrorException("testTrailerTestDeleteException"));
 		}
 		
-		return exceptionList;
-	}
-
-	public List validateForUpdate(TestTrailerDO testTrailerDO) {
-		List exceptionList = new ArrayList();
-		
-		validateTestTrailer(testTrailerDO, exceptionList);
-		
-		return exceptionList;
+		if(list.size() > 0)
+            throw list;
 	}
 	
-	private void validateTestTrailer(TestTrailerDO testTrailerDO, List exceptionList){
+	private void validateTestTrailer(TestTrailerDO testTrailerDO) throws Exception {
+	    ValidationErrorsList list = new ValidationErrorsList();
+	    
 		//name required	
 		if(testTrailerDO.getName() == null || "".equals(testTrailerDO.getName())){
-			exceptionList.add(new FieldErrorException("fieldRequiredException",TestTrailerMap.getName()));
+		    list.add(new FieldErrorException("fieldRequiredException",TestTrailerMap.getName()));
 		}
 		
 		//name not duplicate
@@ -253,17 +231,20 @@ public class TestTrailerBean implements TestTrailerRemote{
 		}
 		
 		if(query.getResultList().size() > 0)
-			exceptionList.add(new FieldErrorException("fieldUniqueException",TestTrailerMap.getName()));
+		    list.add(new FieldErrorException("fieldUniqueException",TestTrailerMap.getName()));
 		
 		
 		//description required
 		if(testTrailerDO.getDescription() == null || "".equals(testTrailerDO.getDescription())){
-			exceptionList.add(new FieldErrorException("fieldRequiredException",TestTrailerMap.getDescription()));
+		    list.add(new FieldErrorException("fieldRequiredException",TestTrailerMap.getDescription()));
 		}
 		
 		//text required
 		if(testTrailerDO.getText()== null || "".equals(testTrailerDO.getText())){
-			exceptionList.add(new FieldErrorException("fieldRequiredException",TestTrailerMap.getText()));
+		    list.add(new FieldErrorException("fieldRequiredException",TestTrailerMap.getText()));
 		}
+		
+		if(list.size() > 0)
+            throw list;
 	}
 }

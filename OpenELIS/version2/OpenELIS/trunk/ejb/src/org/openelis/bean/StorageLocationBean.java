@@ -25,21 +25,6 @@
 */
 package org.openelis.bean;
 
-import org.jboss.annotation.security.SecurityDomain;
-import org.openelis.domain.StorageLocationDO;
-import org.openelis.entity.StorageLocation;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.RPCException;
-import org.openelis.gwt.common.TableFieldErrorException;
-import org.openelis.gwt.common.data.AbstractField;
-import org.openelis.local.LockLocal;
-import org.openelis.metamap.StorageLocationMetaMap;
-import org.openelis.remote.StorageLocationRemote;
-import org.openelis.util.QueryBuilder;
-import org.openelis.utils.GetPage;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -55,6 +40,21 @@ import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+
+import org.jboss.annotation.security.SecurityDomain;
+import org.openelis.domain.StorageLocationDO;
+import org.openelis.entity.StorageLocation;
+import org.openelis.gwt.common.FieldErrorException;
+import org.openelis.gwt.common.FormErrorException;
+import org.openelis.gwt.common.LastPageException;
+import org.openelis.gwt.common.TableFieldErrorException;
+import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.gwt.common.data.AbstractField;
+import org.openelis.local.LockLocal;
+import org.openelis.metamap.StorageLocationMetaMap;
+import org.openelis.remote.StorageLocationRemote;
+import org.openelis.util.QueryBuilder;
+import org.openelis.utils.GetPage;
 
 @Stateless
 @EJBs({
@@ -94,18 +94,13 @@ public class StorageLocationBean implements StorageLocationRemote{
     	Query lockQuery = manager.createNamedQuery("getTableId");
 		lockQuery.setParameter("name", "storage_location");
 		Integer storageLocTableId = (Integer)lockQuery.getSingleResult();
-        lockBean.getLock(storageLocTableId, StorageLocId);
+        lockBean.validateLock(storageLocTableId, StorageLocId);
         
-		manager.setFlushMode(FlushModeType.COMMIT);
+        validateForDelete(StorageLocId);
+		
+        manager.setFlushMode(FlushModeType.COMMIT);
 		StorageLocation storageLocation = null;
 
-		//validate the storage loc record
-        List exceptionList = new ArrayList();
-        exceptionList = validateForDelete(StorageLocId);
-        if(exceptionList.size() > 0){
-        	throw (RPCException)exceptionList.get(0);
-        }
-        
 		//delete the records				
         //delete the parent record
         storageLocation = manager.find(StorageLocation.class, StorageLocId);
@@ -199,19 +194,13 @@ System.out.println(sb.toString());
         query.setParameter("name", "storage_location");
         Integer storageLocationReferenceId = (Integer)query.getSingleResult();
         
-        if(storageDO.getId() != null){
-            lockBean.getLock(storageLocationReferenceId,storageDO.getId());
-        }
+        if(storageDO.getId() != null)
+            lockBean.validateLock(storageLocationReferenceId,storageDO.getId());
+        
+        validateStorageLocation(storageDO, storageLocationChildren);
         
 		manager.setFlushMode(FlushModeType.COMMIT);
 		StorageLocation storageLocation = null;
-		
-		//validate the storage loc record
-        List exceptionList = new ArrayList();
-        validateStorageLocation(storageDO, exceptionList);
-        if(exceptionList.size() > 0){
-        	throw (RPCException)exceptionList.get(0);
-        }
         
         if (storageDO.getId() == null)
            	storageLocation = new StorageLocation();
@@ -233,13 +222,6 @@ System.out.println(sb.toString());
 	      	 StorageLocationDO childDO = (StorageLocationDO) storageLocationChildren.get(i);
 	      	 StorageLocation childStorageLoc = null;
 		            
-	      	 //validate the child storage loc record
-	         exceptionList = new ArrayList();
-	         validateChildStorageLocation(childDO, i, exceptionList);
-	         if(exceptionList.size() > 0){
-	        	 throw (RPCException)exceptionList.get(0);
-	         }
-	            
 		    if (childDO.getId() == null)
 		    	childStorageLoc = new StorageLocation();
 		    else
@@ -274,30 +256,17 @@ System.out.println(sb.toString());
 		return (Integer) query.getSingleResult();
 	}
 
-	public List validateForAdd(StorageLocationDO storageLocationDO, List childLocs) {
-		List exceptionList = new ArrayList();
-		
-		validateStorageLocation(storageLocationDO, exceptionList);
-		
-		for(int i=0; i<childLocs.size();i++){			
-			StorageLocationDO childDO = (StorageLocationDO) childLocs.get(i);
-			
-			validateChildStorageLocation(childDO, i, exceptionList);
-		}
-		
-		return exceptionList;
-	}
+	public void validateForDelete(Integer storageLocationId) throws Exception {
+	    ValidationErrorsList list = new ValidationErrorsList();
 
-	public List validateForDelete(Integer storageLocationId) {
-		List exceptionList = new ArrayList();
-		//make sure no storage rows are pointing to this record
+	    //make sure no storage rows are pointing to this record
 		Query query = null;
 		query = manager.createNamedQuery("Storage.IdByStorageLocation");
 		query.setParameter("id", storageLocationId);
 		List linkedRecords = query.getResultList();
 
 		if(linkedRecords.size() > 0){
-			exceptionList.add(new FormErrorException("storageLocationStorageDeleteException"));
+		    list.add(new FormErrorException("storageLocationStorageDeleteException"));
 		}
 		
 		//make sure no inventory locations are pointing to this record
@@ -306,30 +275,19 @@ System.out.println(sb.toString());
 		linkedRecords = query.getResultList();
 
 		if(linkedRecords.size() > 0){
-			exceptionList.add(new FormErrorException("storageLocationInventoryLocationDeleteException"));
+		    list.add(new FormErrorException("storageLocationInventoryLocationDeleteException"));
 		}
 		
-		return exceptionList;
-	}
-
-	public List validateForUpdate(StorageLocationDO storageLocationDO, List childLocs) {
-		List exceptionList = new ArrayList();
-		
-		validateStorageLocation(storageLocationDO, exceptionList);
-		
-		for(int i=0; i<childLocs.size();i++){			
-			StorageLocationDO childDO = (StorageLocationDO) childLocs.get(i);
-			
-			validateChildStorageLocation(childDO, i, exceptionList);
-		}
-		
-		return exceptionList;	
+		if(list.size() > 0)
+            throw list;
 	}
 	
-	private void validateStorageLocation(StorageLocationDO storageLocationDO, List exceptionList){
+	private void validateStorageLocation(StorageLocationDO storageLocationDO, List childLocs) throws Exception {
+	    ValidationErrorsList list = new ValidationErrorsList();
+	    
 		//name required
 		if(storageLocationDO.getName() == null || "".equals(storageLocationDO.getName())){
-			exceptionList.add(new FieldErrorException("fieldRequiredException",StorageLocationMeta.getName()));
+		    list.add(new FieldErrorException("fieldRequiredException",StorageLocationMeta.getName()));
 		}
 		
 		//no name duplicates
@@ -345,20 +303,26 @@ System.out.println(sb.toString());
 		}
 		
 		if(query.getResultList().size() > 0)
-			exceptionList.add(new FieldErrorException("fieldUniqueException",StorageLocationMeta.getName()));
+		    list.add(new FieldErrorException("fieldUniqueException",StorageLocationMeta.getName()));
 		
 		//location required
 		if(storageLocationDO.getLocation() == null || "".equals(storageLocationDO.getLocation())){
-			exceptionList.add(new FieldErrorException("fieldRequiredException",StorageLocationMeta.getLocation()));
+		    list.add(new FieldErrorException("fieldRequiredException",StorageLocationMeta.getLocation()));
 		}
 		
 		//storage unit required
 		if(storageLocationDO.getStorageUnitId() == null || "".equals(storageLocationDO.getStorageUnitId())){
-			exceptionList.add(new FieldErrorException("fieldRequiredException",StorageLocationMeta.STORAGE_UNIT_META.getDescription()));
-		}		
+		    list.add(new FieldErrorException("fieldRequiredException",StorageLocationMeta.STORAGE_UNIT_META.getDescription()));
+		}
+		
+		for(int i=0; i<childLocs.size();i++)         
+            validateChildStorageLocation((StorageLocationDO)childLocs.get(i), i, list);
+        
+		if(list.size() > 0)
+            throw list;
 	}
 	
-	private void validateChildStorageLocation(StorageLocationDO storageLocationDO, int rowIndex, List exceptionList){
+	private void validateChildStorageLocation(StorageLocationDO storageLocationDO, int rowIndex, ValidationErrorsList exceptionList){
 		//storage unit required
 		if(storageLocationDO.getStorageUnitId() == null || "".equals(storageLocationDO.getStorageUnitId())){
 			exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex, StorageLocationMeta.CHILD_STORAGE_LOCATION_META.STORAGE_UNIT_META.getDescription()));
