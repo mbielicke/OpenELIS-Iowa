@@ -31,15 +31,7 @@ import org.openelis.meta.TestMeta;
 
 public class TestMetaMap extends TestMeta implements MetaMap {
 
-    public TestMetaMap(){
-        super("t.");
-    }
-            
-    public TestMetaMap(String path){
-        super(path);               
-    }
-    
-    private TestPrepMetaMap TEST_PREP = new TestPrepMetaMap("testPrep.");
+private TestPrepMetaMap TEST_PREP = new TestPrepMetaMap("testPrep.");
     
     private TestTypeOfSampleMetaMap TEST_TYPE_OF_SAMPLE = new TestTypeOfSampleMetaMap("testTypeOfSample."); 
     
@@ -58,6 +50,14 @@ public class TestMetaMap extends TestMeta implements MetaMap {
     private TestResultMetaMap TEST_RESULT = new TestResultMetaMap("testResult.");
     
     private TestWorksheetAnalyteMetaMap TEST_WORKSHEET_ANALYTE = new TestWorksheetAnalyteMetaMap("testWorksheetAnalyte.");
+    
+    public TestMetaMap(){
+        super("t.");
+    }
+            
+    public TestMetaMap(String path){
+        super(path);               
+    }       
     
     public TestWorksheetItemMetaMap getTestWorksheetItem(){
         return TEST_WORKSHEET_ITEM;

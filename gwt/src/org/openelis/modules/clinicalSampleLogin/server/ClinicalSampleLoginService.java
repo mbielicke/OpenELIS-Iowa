@@ -90,7 +90,8 @@ public class ClinicalSampleLoginService implements AppScreenFormServiceInt<Clini
         return null;
     }
     
-    public ClinicalSampleLoginForm getScreen(ClinicalSampleLoginForm rpc) {
+    public ClinicalSampleLoginForm getScreen(ClinicalSampleLoginForm rpc) throws RPCException{
+        rpc.xml = ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/clinicalSampleLogin.xsl");
         return rpc;
     }
 }

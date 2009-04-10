@@ -506,6 +506,7 @@ public class TestScreen extends OpenELISScreenForm<TestForm, Query<TableDataRow<
         deleteButton.changeState(ButtonState.DISABLED);
         addRowButton.changeState(ButtonState.DISABLED);
         removeTestResultButton.changeState(ButtonState.DISABLED);
+        removeTestSectionButton.changeState(ButtonState.DISABLED);
         dictionaryLookUpButton.changeState(ButtonState.DISABLED);
         addResultTabButton.changeState(ButtonState.DISABLED);
         groupAnalytesButton.changeState(ButtonState.DISABLED);

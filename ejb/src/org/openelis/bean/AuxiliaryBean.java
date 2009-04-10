@@ -28,6 +28,7 @@
 package org.openelis.bean;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -60,6 +61,7 @@ import org.openelis.local.LockLocal;
 import org.openelis.metamap.AuxFieldGroupMetaMap;
 import org.openelis.metamap.AuxFieldMetaMap;
 import org.openelis.metamap.AuxFieldValueMetaMap;
+import org.openelis.metamap.TestResultMetaMap;
 import org.openelis.remote.AuxiliaryRemote;
 import org.openelis.security.local.SystemUserUtilLocal;
 import org.openelis.util.QueryBuilder;
@@ -220,7 +222,7 @@ public class AuxiliaryBean implements AuxiliaryRemote {
              } else { 
                 if(!afDO.getDelete()) {  
                  af.setAnalyteId(afDO.getAnalyteId());
-                 af.setAuxFieldGroupId(afDO.getAuxFieldGroupId());
+                 af.setAuxFieldGroupId(auxFieldGroup.getId());
                  af.setDescription(afDO.getDescription());
                  af.setIsActive(afDO.getIsActive());
                  af.setIsReportable(afDO.getIsReportable());
@@ -353,14 +355,14 @@ public class AuxiliaryBean implements AuxiliaryRemote {
             if(!afDO.getDelete()) {
                if(afDO.getAnalyteId() == null || afDO.getAnalyteId() == -1) {
                  ex = new TableFieldErrorException("fieldRequiredException", i,
-                                                   AuxFieldGroupMeta.getAuxField().getAnalyteId(),
+                                                   AuxFieldGroupMeta.getAuxField().getAnalyte().getName(),
                                                    AuxFieldMetaMap.getTableName()); 
                  exceptionList.add(ex);                
              }  
                exList = validateAuxFieldValue(afDO.getAuxFieldValues());
                if(exList != null) {                   
                    auxfvEx = new TableFieldErrorException("errorsWithAuxFieldValuesException", i,
-                                                     AuxFieldGroupMeta.getAuxField().getAnalyteId(),
+                                                     AuxFieldGroupMeta.getAuxField().getAnalyte().getName(),
                                                      AuxFieldMetaMap.getTableName());
                    auxfvEx.setChildExceptionList(exList);
                    exceptionList.add(auxfvEx); 
@@ -420,9 +422,10 @@ public class AuxiliaryBean implements AuxiliaryRemote {
         
         qb.setOrderBy(AuxFieldGroupMeta.getName());
 
-        sb.append(qb.getEJBQL());                
+        sb.append(qb.getEJBQL());               
+        
         Query query = manager.createQuery(sb.toString());
-
+             
         if (first > -1 && max > -1)
             query.setMaxResults(first + max);
 
@@ -444,25 +447,187 @@ public class AuxiliaryBean implements AuxiliaryRemote {
           
     }
     
-    private List<RPCException> validateAuxFieldValue(List<AuxFieldValueDO> auxFieldValueDOList) {
+    private List<RPCException> validateAuxFieldValue(List<AuxFieldValueDO> auxFieldValueDOList) {        
       AuxFieldValueDO valueDO = null;  
+      Integer numId = null;
+      Integer dictId = null;
+      Integer typeId = null;
+      Integer yesNoId = null; 
+      Integer dateId = null;
+      Integer dtId = null;
+      Integer timeId = null;
       Integer blankId = new Integer(-1);
-      List<RPCException> exList = null; 
+      String[] st = null;      
+      ArrayList<String> dvl = new ArrayList<String>();;  
+      ArrayList<Integer> rlist = null;
+      List<RPCException> exList = new ArrayList<RPCException>();
+      Date date = null;
+               
+      Double pnMax = null;
+      Double cnMin = null;
+      Double cnMax = null;                   
+      
+      String value = null;
+      String hhmm = null;
+      String defDate = "2000-01-01 ";
+      String dateStr = null;
+      
+      Query query = manager.createNamedQuery("Dictionary.IdBySystemName");
+       
+      query.setParameter("systemName", "aux_dictionary");
+      dictId = (Integer)query.getSingleResult();
+       
+      query.setParameter("systemName", "aux_numeric");
+      numId = (Integer)query.getSingleResult();
+      
+      query.setParameter("systemName", "aux_yes_no");
+      yesNoId = (Integer)query.getSingleResult(); 
+      
+      query.setParameter("systemName", "aux_date");
+      dateId = (Integer)query.getSingleResult(); 
+      
+      query.setParameter("systemName", "aux_date_time");
+      dtId = (Integer)query.getSingleResult();
+      
+      query.setParameter("systemName", "aux_time");
+      timeId = (Integer)query.getSingleResult();
+      
       if(auxFieldValueDOList != null) {
         for(int i = 0 ; i < auxFieldValueDOList.size(); i++) {
             valueDO = auxFieldValueDOList.get(i);
-            if(!valueDO.getDelete()) { 
-               if(valueDO.getTypeId() == null || blankId.equals(valueDO.getTypeId())) {
-                if(exList == null) 
-                    exList = new ArrayList<RPCException>();
+            if(!valueDO.getDelete()) {  
+               value = valueDO.getValue();
+               typeId = valueDO.getTypeId(); 
                
+            if(typeId == null || blankId.equals(typeId)) {                              
                 exList.add(new TableFieldErrorException("fieldRequiredException", i,
-                                               AuxFieldGroupMeta.getAuxField().getAuxFieldValue().getTypeId(),
-                                               AuxFieldValueMetaMap.getTableName()));
-            }
+                   AuxFieldGroupMeta.getAuxField().getAuxFieldValue().getTypeId()));
+            } else if(numId.equals(typeId)) {           
+                if(value != null && !"".equals(value.trim())) {
+                    st = value.split(",");                 
+                    if(st.length != 2) {                                             
+                      exList.add(new TableFieldErrorException("illegalNumericFormatException", i,
+                        AuxFieldGroupMeta.getAuxField().getAuxFieldValue().getValue()));    
+                    } else {
+                       try {                                      
+                        cnMin = Double.valueOf(st[0]); 
+                        cnMax = Double.valueOf(st[1]);
+                                           
+                        if(!(cnMin < cnMax)) {
+                           exList.add(new TableFieldErrorException("illegalNumericRangeException", i,
+                              AuxFieldGroupMeta.getAuxField().getAuxFieldValue().getValue()));  
+                        }else {                                                                                 
+                            if(pnMax != null && !(cnMin > pnMax)) {
+                              exList.add(new TableFieldErrorException("auxNumRangeOverlapException", i,
+                                AuxFieldGroupMeta.getAuxField().getAuxFieldValue().getValue())); 
+                            }                                               
+                        }
+                        
+                        pnMax = cnMax;                                                          
+                        
+                      } catch (NumberFormatException ex) {
+                          exList.add(new TableFieldErrorException("illegalNumericRangeException", i,
+                           AuxFieldGroupMeta.getAuxField().getAuxFieldValue().getValue()));   
+                      }                   
+                    }
+                 }else {
+                     exList.add(new TableFieldErrorException("fieldRequiredException", i,
+                      AuxFieldGroupMeta.getAuxField().getAuxFieldValue().getValue()));       
+                 }
+              } else if(yesNoId.equals(typeId)) {           
+                  if(value != null && !"".equals(value.trim())) {
+                     if(!"Y".equals(value) && !"N".equals(value)) {
+                       exList.add(new TableFieldErrorException("illegalYesNoValueException", i,
+                        AuxFieldGroupMeta.getAuxField().getAuxFieldValue().getValue())); 
+                     }                      
+                   }else {
+                       exList.add(new TableFieldErrorException("fieldRequiredException", i,
+                        AuxFieldGroupMeta.getAuxField().getAuxFieldValue().getValue()));       
+                   }
+                } else if(dateId.equals(typeId)) {           
+                    if(value != null && !"".equals(value.trim())) {
+                     try{
+                         date = new Date(value.replaceAll("-", "/"));
+                     } catch (IllegalArgumentException ex) {
+                         exList.add(new TableFieldErrorException("illegalDateValueException", i,
+                          AuxFieldGroupMeta.getAuxField().getAuxFieldValue().getValue()));   
+                     }
+                                                                                           
+                    }else {
+                          exList.add(new TableFieldErrorException("fieldRequiredException", i,
+                           AuxFieldGroupMeta.getAuxField().getAuxFieldValue().getValue()));       
+                   }
+                    date = null;
+                } else if(dtId.equals(typeId)) {           
+                    if(value != null && !"".equals(value.trim())) {
+                        try{
+                            st = value.split(" ");                             
+                            if(st.length != 2)
+                             throw new IllegalArgumentException();
+                            
+                            hhmm = st[1];
+                            if(hhmm.split(":").length != 2) 
+                                throw new IllegalArgumentException(); 
+                            
+                            date = new Date(value.replaceAll("-", "/"));
+                        } catch (IllegalArgumentException ex) {
+                            exList.add(new TableFieldErrorException("illegalDateTimeValueException", i,
+                             AuxFieldGroupMeta.getAuxField().getAuxFieldValue().getValue()));   
+                        }
+                                                                                              
+                       }else {
+                             exList.add(new TableFieldErrorException("fieldRequiredException", i,
+                              AuxFieldGroupMeta.getAuxField().getAuxFieldValue().getValue()));       
+                      }
+                       date = null;
+                  } else if(timeId.equals(typeId)) {           
+                      if(value != null && !"".equals(value.trim())) {
+                          try{
+                              st = value.split(":");                             
+                              if(st.length != 2)
+                               throw new IllegalArgumentException();
+                              
+                              dateStr = defDate + value;                                
+                              date = new Date(dateStr.replaceAll("-", "/"));
+                          } catch (IllegalArgumentException ex) {
+                              exList.add(new TableFieldErrorException("illegalTimeValueException", i,
+                               AuxFieldGroupMeta.getAuxField().getAuxFieldValue().getValue()));   
+                          }
+                                                                                                
+                         }else {
+                               exList.add(new TableFieldErrorException("fieldRequiredException", i,
+                                AuxFieldGroupMeta.getAuxField().getAuxFieldValue().getValue()));       
+                        }
+                         date = null;
+                    } else if(dictId.equals(typeId)) {
+                        value = valueDO.getDictEntry();
+                        if(value != null && !"".equals(value.trim())) {
+                          if(!dvl.contains(value)) {
+                            dvl.add(value); 
+                          } else {
+                            exList.add(new TableFieldErrorException("auxDictEntryNotUniqueException", i,
+                             AuxFieldGroupMeta.getAuxField().getAuxFieldValue().getValue())); 
+                         }
+                      
+                         query = manager.createNamedQuery("Dictionary.IdByEntry");
+                         query.setParameter("entry", value);
+                         rlist = (ArrayList<Integer>)query.getResultList();
+                     
+                         if(rlist.size() == 0) {
+                          exList.add(new TableFieldErrorException("illegalDictEntryException", i,
+                           AuxFieldGroupMeta.getAuxField().getAuxFieldValue().getValue()));  
+                    }
+                  } else {
+                      exList.add(new TableFieldErrorException("fieldRequiredException", i,
+                       AuxFieldGroupMeta.getAuxField().getAuxFieldValue().getValue()));    
+                  }
+              }
           }     
         }  
       } 
+      if(exList.size() == 0)
+        exList = null;
+      
       return exList;
     }
     

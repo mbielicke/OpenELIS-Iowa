@@ -55,9 +55,7 @@ public class AuxiliaryForm extends Form<Integer> {
     public TableDataModel<TableDataRow<Integer>> units;
     public TableDataModel<TableDataRow<Integer>> scriptlets;
     public TableDataModel<TableDataRow<Integer>> auxFieldValueTypes;
-
-    
-    
+        
     public AuxiliaryForm() {
      AuxFieldGroupMetaMap meta = new AuxFieldGroupMetaMap();   
      id = new IntegerField(meta.getId());

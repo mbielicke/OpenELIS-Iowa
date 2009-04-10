@@ -132,7 +132,7 @@ public class AuxFieldGroup implements Auditable, Cloneable {
     return new Datetime(Datetime.YEAR ,Datetime. DAY,activeBegin);
   }
   public void setActiveBegin (Datetime active_begin){
-    if((active_begin == null && this.activeBegin != null) || 
+    if((active_begin == null && this.activeBegin != null) || (active_begin != null && this.activeBegin == null) ||
        (active_begin != null && !active_begin.equals(new Datetime(Datetime.YEAR, Datetime.DAY, this.activeBegin))))
       this.activeBegin = active_begin.getDate();
   }
@@ -143,7 +143,7 @@ public class AuxFieldGroup implements Auditable, Cloneable {
     return new Datetime(Datetime.YEAR ,Datetime. DAY,activeEnd);
   }
   public void setActiveEnd (Datetime active_end){
-    if((active_end == null && this.activeEnd != null) || 
+    if((active_end == null && this.activeEnd != null) || (active_end != null && this.activeEnd == null) || 
        (active_end != null && !active_end.equals(new Datetime(Datetime.YEAR, Datetime.DAY, this.activeEnd))))
       this.activeEnd = active_end.getDate();
   }
