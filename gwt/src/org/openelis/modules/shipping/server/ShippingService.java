@@ -55,6 +55,7 @@ import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
 import org.openelis.gwt.services.AutoCompleteServiceInt;
 import org.openelis.metamap.ShippingMetaMap;
+import org.openelis.modules.inventoryItem.client.InventoryManufacturingForm;
 import org.openelis.modules.shipping.client.ShippingForm;
 import org.openelis.modules.shipping.client.ShippingItemsData;
 import org.openelis.modules.shipping.client.ShippingItemsForm;
@@ -220,7 +221,7 @@ System.out.println("after shipping items");
 		shippingItems = getShippingItemsListFromRPC(shippingItemsTable, shippingDO.getId());
 
 		//set the shipping notes
-        shippingNote.setSubject("");
+		shippingNote.setId(rpc.shippingNotesForm.id);
         shippingNote.setText((String)rpc.shippingNotesForm.text.getValue());
         shippingNote.setIsExternal("Y");
         
@@ -391,7 +392,7 @@ System.out.println("after shipping items");
 }
 	
 	public void loadOrderShippingNotesForm(Integer key, ShippingNotesForm form) throws RPCException {
-		form.text.setValue(getOrderShippingNotesValue(key));
+	    getOrderShippingNotesValue(key, form);
 		form.load = true;
 	}
 
@@ -444,15 +445,15 @@ System.out.println("after shipping items");
 		}
 	}
 
-	public String getOrderShippingNotesValue(Integer key) throws RPCException {
+	public void getOrderShippingNotesValue(Integer key, ShippingNotesForm form) throws RPCException {
 		ShippingRemote remote = (ShippingRemote) EJBFactory.lookup("openelis/ShippingBean/remote");
 
 		NoteDO noteDO = remote.getShippingNote(key);
 
-		if (noteDO != null)
-			return noteDO.getText();
-
-		return null;
+		if (noteDO != null){
+		    form.text.setValue(noteDO.getText());
+		    form.id = noteDO.getId();
+		}
 	}
 
 	public TableDataModel<TableDataRow<Integer>> getInitialModel(String cat) {

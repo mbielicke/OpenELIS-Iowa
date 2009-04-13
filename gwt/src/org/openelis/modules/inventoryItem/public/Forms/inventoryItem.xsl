@@ -508,7 +508,7 @@ UIRF Software License are applicable instead of those above.
       
       <dropdown key="{invItemMeta:getName($parentInvItem)}" required="false"/>
       <integer key="{meta:getParentRatio($invItem)}" required="false"/>
-      <string key="manufacturingText" required="false"/>
+      
       <rpc key="components">
 	      <table key="componentsTable"/>
       </rpc>
@@ -521,7 +521,7 @@ UIRF Software License are applicable instead of those above.
       </rpc>-->
 
       <rpc key="manufacturing">
-      	<!--nothing yet-->
+      	<string key="manufacturingText" required="false"/>
       </rpc>
 
       <rpc key="comments">

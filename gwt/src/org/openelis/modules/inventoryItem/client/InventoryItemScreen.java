@@ -201,7 +201,7 @@ public class InventoryItemScreen extends OpenELISScreenForm<InventoryItemForm, Q
         updateChain.add(0,checkModels);
         updateChain.add(afterUpdate);
         fetchChain.add(0,checkModels);
-        fetchChain.add(afterFetch);
+        //fetchChain.add(afterFetch);
         abortChain.add(0,checkModels);
         deleteChain.add(0,checkModels);
         commitUpdateChain.add(0,checkModels);
@@ -217,8 +217,6 @@ public class InventoryItemScreen extends OpenELISScreenForm<InventoryItemForm, Q
 		componentsTable.model.enableAutoAdd(true);
 		
 		super.add();
-		manufacturingText.setHTML(null);
-		form.manufacturingText.setValue(null);
 		idTextBox.enable(false);
         
         ((CheckBox)isActive.getWidget()).setState(CheckBox.CHECKED);
@@ -229,14 +227,14 @@ public class InventoryItemScreen extends OpenELISScreenForm<InventoryItemForm, Q
             nameTextbox.setFocus(true);
 			idTextBox.enable(false);
             componentsTable.model.enableAutoAdd(true);
-            manufacturingText.setHTML(form.manufacturingText.getValue());
          }
          
          public void onFailure(Throwable caught){
              
          }
       };
-      
+
+      /*
       protected AsyncCallback afterFetch = new AsyncCallback() {
           public void onSuccess(Object result) {
               //we need to load the manufacturing tab
@@ -247,10 +245,9 @@ public class InventoryItemScreen extends OpenELISScreenForm<InventoryItemForm, Q
               
           }
        };
+       */
       
 	public void query() {
-	    manufacturingText.setHTML(null);
-        form.manufacturingText.setValue(null);
 		super.query();
         //
         // disable notes and contact remove button
@@ -300,6 +297,8 @@ public class InventoryItemScreen extends OpenELISScreenForm<InventoryItemForm, Q
                 fillComponentsModel(false);
             else if (index == 1 && !form.locations.load) 
                 fillLocationsModel();
+            else if(index == 3 && !form.manufacturing.load)
+                fillManufacturingTab();
             else if(index == 4 && !form.comments.load)
                 fillCommentsModel();
         }
@@ -374,6 +373,34 @@ public class InventoryItemScreen extends OpenELISScreenForm<InventoryItemForm, Q
         });
     }
     
+    private void fillManufacturingTab(){
+        if(form.entityKey == null)
+            return;
+        
+        window.setBusy();
+                 
+      //prepare the argument list
+        form.manufacturing.entityKey = form.entityKey;
+         
+       screenService.call("loadManufacturing", form.manufacturing, new AsyncCallback<InventoryManufacturingForm>(){
+           public void onSuccess(InventoryManufacturingForm result){    
+               load(result);
+               /*
+                * This call has been modified to use the specific sub rpc in the form.  To ensure everything 
+                * stays in sync it needs to be assigned back into the hash and to its member field in the form
+                */
+               form.manufacturing = result;
+
+               window.clearStatus();
+           }
+           
+           public void onFailure(Throwable caught){
+               Window.alert(caught.getMessage());
+               window.clearStatus();
+           }
+       });
+    }
+    
     private void fillCommentsModel(){
         if(form.entityKey == null)
             return;
@@ -434,7 +461,7 @@ public class InventoryItemScreen extends OpenELISScreenForm<InventoryItemForm, Q
     private void onEditManufacturingClick(){
         ScreenWindow modal = new ScreenWindow(null,"Rich Text Editor","richTextEditorScreen","Loading...",true);
         modal.setName("Rich Text Editor");
-        modal.setContent(new RichTextPopupScreen(manufacturingText, form.manufacturingText));
+        modal.setContent(new RichTextPopupScreen(manufacturingText));
     }
     
     private void onDuplicateRecordClick(){

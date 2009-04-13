@@ -154,7 +154,7 @@ UIRF Software License are applicable instead of those above.
 				      <xsl:with-param name="class"></xsl:with-param>
 				      <xsl:with-param name="args"></xsl:with-param>
 				    </xsl:call-template>
-					<html>&lt;hr/&gt;</html>
+					<html panelWidth="100%" showError="false">&lt;hr/&gt;</html>
 					<!--
 					enviromentalSampleLogin = Enviromental Sample Login
 enviromentalSampleLoginDescription = Description...
@@ -224,7 +224,7 @@ sampleManagementDescription = Description...
 				      <xsl:with-param name="args"></xsl:with-param>
 				    </xsl:call-template>
 -->
-					<html>&lt;hr/&gt;</html>
+					<html panelWidth="100%" showError="false">&lt;hr/&gt;</html>
 
 				    <xsl:call-template name="menuItem">
 				      <xsl:with-param name="key"></xsl:with-param>
@@ -342,7 +342,7 @@ sampleManagementDescription = Description...
 				      <xsl:with-param name="class">OrderScreen</xsl:with-param>
 				      <xsl:with-param name="args">kits</xsl:with-param>
 				    </xsl:call-template>	
-				    <html>&lt;hr/&gt;</html>
+				    <html panelWidth="100%" showError="false">&lt;hr/&gt;</html>
    				    <xsl:call-template name="menuItem">
 				      <xsl:with-param name="key">FillOrder</xsl:with-param>
 				      <xsl:with-param name="label">fillOrder</xsl:with-param>
@@ -357,7 +357,7 @@ sampleManagementDescription = Description...
 				      <xsl:with-param name="class">ShippingScreen</xsl:with-param>
 				      <xsl:with-param name="args"></xsl:with-param>
 				    </xsl:call-template>	
-				    <html>&lt;hr/&gt;</html>
+				    <html panelWidth="100%" showError="false">&lt;hr/&gt;</html>
 	   				<xsl:call-template name="menuItem">
 				      <xsl:with-param name="key">BuildKits</xsl:with-param>
 				      <xsl:with-param name="label">buildKits</xsl:with-param>
@@ -372,7 +372,7 @@ sampleManagementDescription = Description...
 				      <xsl:with-param name="class">InventoryReceiptScreen</xsl:with-param>
 				      <xsl:with-param name="args">transfer</xsl:with-param>
 				    </xsl:call-template>
-				    <html>&lt;hr/&gt;</html>
+				    <html panelWidth="100%" showError="false">&lt;hr/&gt;</html>
 				    <xsl:call-template name="menuItem">
 				      <xsl:with-param name="key">InventoryReceipt</xsl:with-param>
 				      <xsl:with-param name="label">inventoryReceipt</xsl:with-param>
@@ -454,7 +454,7 @@ sampleManagementDescription = Description...
 				      <xsl:with-param name="class"></xsl:with-param>
 				      <xsl:with-param name="args"></xsl:with-param>
 				    </xsl:call-template>
-				   <html>&lt;hr/&gt;</html>
+				   <html panelWidth="100%" showError="false">&lt;hr/&gt;</html>
 				    <xsl:if test="security:hasModule($security,'analyte','SELECT')">
 					  <xsl:call-template name="menuItem">
 				        <xsl:with-param name="key">Analyte</xsl:with-param>
@@ -480,7 +480,7 @@ sampleManagementDescription = Description...
 				      <xsl:with-param name="class">AuxiliaryScreen</xsl:with-param>
 				      <xsl:with-param name="args"></xsl:with-param>
 				    </xsl:call-template>
-					<html>&lt;hr/&gt;</html>
+					<html panelWidth="100%" showError="false">&lt;hr/&gt;</html>
 			        <xsl:if test="security:hasModule($security,'label','SELECT')">
 				      <xsl:call-template name="menuItem">
 				        <xsl:with-param name="key">Label</xsl:with-param>
@@ -508,7 +508,7 @@ sampleManagementDescription = Description...
 				        <xsl:with-param name="args"></xsl:with-param>
 				      </xsl:call-template>
 				    </xsl:if>
-					<html>&lt;hr/&gt;</html>
+					<html panelWidth="100%" showError="false">&lt;hr/&gt;</html>
 			        <xsl:if test="security:hasModule($security,'storageunit','SELECT')">
 			    	  <xsl:call-template name="menuItem">
 				        <xsl:with-param name="key">StorageUnit</xsl:with-param>
@@ -527,7 +527,7 @@ sampleManagementDescription = Description...
 				        <xsl:with-param name="args"></xsl:with-param>
 				      </xsl:call-template>
 				    </xsl:if>
-					<html>&lt;hr/&gt;</html>
+					<html panelWidth="100%" showError="false">&lt;hr/&gt;</html>
 				    <xsl:call-template name="menuItem">
 				      <xsl:with-param name="key"></xsl:with-param>
 				      <xsl:with-param name="label">instrument</xsl:with-param>
@@ -535,7 +535,7 @@ sampleManagementDescription = Description...
 				      <xsl:with-param name="class"></xsl:with-param>
 				      <xsl:with-param name="args"></xsl:with-param>
 				    </xsl:call-template>
-					<html>&lt;hr/&gt;</html>
+					<html panelWidth="100%" showError="false">&lt;hr/&gt;</html>
 					<xsl:call-template name="menuItem">
 				      <xsl:with-param name="key"></xsl:with-param>
 				      <xsl:with-param name="label">scriptlet</xsl:with-param>
@@ -580,7 +580,7 @@ sampleManagementDescription = Description...
 				      <xsl:with-param name="class"></xsl:with-param>
 				      <xsl:with-param name="args"></xsl:with-param>
 				    </xsl:call-template>
-						<html>&lt;hr/&gt;</html>
+						<html panelWidth="100%" showError="false">&lt;hr/&gt;</html>
 					<menuItem style="TopMenuRowContainer" 
 						      hover="Hover"
 						      icon="referenceIcon"
