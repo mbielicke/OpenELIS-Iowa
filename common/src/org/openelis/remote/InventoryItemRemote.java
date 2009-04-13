@@ -46,10 +46,13 @@ public interface InventoryItemRemote {
 	public InventoryItemDO getInventoryItemAndLock(Integer inventoryItemId, String session) throws Exception;
 	
 	//commit a change to inventory, or insert a new inventory
-	public Integer updateInventory(InventoryItemDO inventoryItemDO, List components, NoteDO noteDO) throws Exception;
+	public Integer updateInventory(InventoryItemDO inventoryItemDO, List components, NoteDO noteDO, NoteDO manufacturingNote) throws Exception;
 	
 	//method to return just notes
 	public List getInventoryNotes(Integer inventoryItemId);
+	
+	//method to return just notes
+    public NoteDO getInventoryMaunfacturingRecipe(Integer inventoryItemId);
 	
 	//method to return just components
 	public List getInventoryComponents(Integer inventoryItemId);

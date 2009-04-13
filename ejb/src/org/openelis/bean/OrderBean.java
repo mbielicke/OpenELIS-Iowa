@@ -25,29 +25,6 @@
 */
 package org.openelis.bean;
 
-import org.jboss.annotation.security.SecurityDomain;
-import org.openelis.domain.BillToReportToDO;
-import org.openelis.domain.NoteDO;
-import org.openelis.domain.OrderAddAutoFillDO;
-import org.openelis.domain.OrderDO;
-import org.openelis.domain.OrderItemDO;
-import org.openelis.entity.Note;
-import org.openelis.entity.Order;
-import org.openelis.entity.OrderItem;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.RPCException;
-import org.openelis.gwt.common.TableFieldErrorException;
-import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.data.AbstractField;
-import org.openelis.local.LockLocal;
-import org.openelis.metamap.OrderMetaMap;
-import org.openelis.remote.OrderRemote;
-import org.openelis.util.Datetime;
-import org.openelis.util.QueryBuilder;
-import org.openelis.utils.GetPage;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -63,6 +40,27 @@ import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+
+import org.jboss.annotation.security.SecurityDomain;
+import org.openelis.domain.BillToReportToDO;
+import org.openelis.domain.NoteDO;
+import org.openelis.domain.OrderAddAutoFillDO;
+import org.openelis.domain.OrderDO;
+import org.openelis.domain.OrderItemDO;
+import org.openelis.entity.Note;
+import org.openelis.entity.Order;
+import org.openelis.entity.OrderItem;
+import org.openelis.gwt.common.FieldErrorException;
+import org.openelis.gwt.common.LastPageException;
+import org.openelis.gwt.common.TableFieldErrorException;
+import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.gwt.common.data.AbstractField;
+import org.openelis.local.LockLocal;
+import org.openelis.metamap.OrderMetaMap;
+import org.openelis.remote.OrderRemote;
+import org.openelis.util.Datetime;
+import org.openelis.util.QueryBuilder;
+import org.openelis.utils.GetPage;
 
 @Stateless
 @EJBs({

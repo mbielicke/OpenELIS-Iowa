@@ -136,6 +136,20 @@ public class InventoryItemBean implements InventoryItemRemote{
 
         return notes;
 	}
+	
+	public NoteDO getInventoryMaunfacturingRecipe(Integer inventoryItemId){
+	    Query query = null;
+        
+        query = manager.createNamedQuery("InventoryItem.Manufacturing"); 
+        query.setParameter("id", inventoryItemId);
+        
+        List notes = query.getResultList();// getting list of noteDOs from the item id
+
+        if(notes != null && notes.size() > 0)
+            return (NoteDO)notes.get(0);
+        else 
+            return null;
+	}
 
 	public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception {
         
@@ -172,11 +186,16 @@ public class InventoryItemBean implements InventoryItemRemote{
 	}
 
     @RolesAllowed("inventory-update")
-	public Integer updateInventory(InventoryItemDO inventoryItemDO, List components, NoteDO noteDO) throws Exception {
+	public Integer updateInventory(InventoryItemDO inventoryItemDO, List components, NoteDO noteDO, NoteDO manufacturingNote) throws Exception {
         //inventory item reference table id
         Query query = manager.createNamedQuery("getTableId");
         query.setParameter("name", "inventory_item");
         Integer inventoryItemReferenceId = (Integer)query.getSingleResult();
+        
+      //inventory item manufacturing reference table id
+        query = manager.createNamedQuery("getTableId");
+        query.setParameter("name", "inventory_item_manufacturing");
+        Integer inventoryItemManRefId = (Integer)query.getSingleResult();
         
         if(inventoryItemDO.getId() != null){
             //we need to call lock one more time to make sure their lock didnt expire and someone else grabbed the record
@@ -251,6 +270,7 @@ public class InventoryItemBean implements InventoryItemRemote{
          }
          
          //update note
+         System.out.println("update note");
          Note note = null;
          //we need to make sure the note is filled out...
          if(noteDO.getText() != null || noteDO.getSubject() != null){
@@ -267,6 +287,39 @@ public class InventoryItemBean implements InventoryItemRemote{
          //insert into note table if necessary
          if(note != null && note.getId() == null){
             manager.persist(note);
+         }
+         
+         System.out.println("update manu");
+         //update manufacturing note
+         Note manNote = null;
+         //we need to make sure the note is filled out...
+         if(manufacturingNote.getText() != null){
+             System.out.println("1");
+             if (manufacturingNote.getId() == null){
+              System.out.println("2a");   
+                 manNote = new Note();
+             }else{
+                 manNote = manager.find(Note.class, manufacturingNote.getId());
+                 System.out.println("2b");
+             }
+             System.out.println("3");
+             manNote.setIsExternal(manufacturingNote.getIsExternal());
+             System.out.println("4");
+             manNote.setReferenceId(inventoryItem.getId());
+             System.out.println("5");
+             manNote.setReferenceTableId(inventoryItemManRefId);
+             System.out.println("6");
+             manNote.setSystemUserId(lockBean.getSystemUserId());
+             System.out.println("7");
+             manNote.setText(manufacturingNote.getText());
+             System.out.println("8");
+             manNote.setTimestamp(Datetime.getInstance());
+             System.out.println("9");
+        }
+         
+         //insert into note table if necessary
+         if(manNote != null && manNote.getId() == null){
+            manager.persist(manNote);
          }
 
          lockBean.giveUpLock(inventoryItemReferenceId,inventoryItem.getId()); 
