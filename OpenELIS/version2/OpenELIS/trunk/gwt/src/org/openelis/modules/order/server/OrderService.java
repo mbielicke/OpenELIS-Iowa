@@ -232,13 +232,13 @@ public class OrderService implements AppScreenFormServiceInt<OrderForm, OrderQue
         
         //build customer notes do from form (only for kit orders)
         if(OrderRemote.KITS.equals(orderType)){
-            customerNote.setSubject("");
+            customerNote.setId(rpc.customerNotes.id);
             customerNote.setText(rpc.customerNotes.text.getValue());
             customerNote.setIsExternal("Y");
         }
         
         //build order shipping do notes from form
-        shippingNote.setSubject("");
+        shippingNote.setId(rpc.shippingNotes.id);
         shippingNote.setText(rpc.shippingNotes.text.getValue());
         shippingNote.setIsExternal("Y");
         
@@ -483,7 +483,7 @@ public class OrderService implements AppScreenFormServiceInt<OrderForm, OrderQue
     }
     
     public void loadOrderShippingNotesForm(Integer key, OrderShippingNoteForm form) throws RPCException {
-        form.text.setValue(getShippingNotes(key));
+        getShippingNotes(key, form);
         form.load = true;
     }
     
@@ -493,7 +493,7 @@ public class OrderService implements AppScreenFormServiceInt<OrderForm, OrderQue
     }
     
     public void loadCustomerNotesForm(Integer key, OrderNoteForm form) throws RPCException {
-        form.text.setValue(getCustomerNotes(key));
+        getCustomerNotes(key, form);
         form.load = true;
     }
 
@@ -902,26 +902,26 @@ public class OrderService implements AppScreenFormServiceInt<OrderForm, OrderQue
         model.setValue(fillReceiptsTable(model.getValue(),receiptsList, orderType));
     }
     
-    public String getCustomerNotes(Integer orderId){
+    public void getCustomerNotes(Integer orderId, OrderNoteForm form){
         OrderRemote remote = (OrderRemote)EJBFactory.lookup("openelis/OrderBean/remote");
         
         NoteDO noteDO = remote.getCustomerNote(orderId);
         
-        if(noteDO != null)
-            return noteDO.getText();
-        
-        return null;
+        if(noteDO != null){
+            form.id = noteDO.getId();
+            form.text.setValue(noteDO.getText());
+        }
     }
     
-    public String getShippingNotes(Integer orderId){
+    public void getShippingNotes(Integer orderId, OrderShippingNoteForm form){
         OrderRemote remote = (OrderRemote)EJBFactory.lookup("openelis/OrderBean/remote");
         
         NoteDO noteDO = remote.getOrderShippingNote(orderId);
         
-        if(noteDO != null)
-            return noteDO.getText();
-        
-        return null;
+        if(noteDO != null){
+            form.id = noteDO.getId();
+            form.text.setValue(noteDO.getText());
+        }
     }
     
     /*

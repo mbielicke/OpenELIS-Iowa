@@ -26,7 +26,6 @@
 package org.openelis.modules.richTextPopup.client;
 
 import org.openelis.gwt.common.Query;
-import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.richtext.RichTextWidget;
@@ -39,14 +38,12 @@ import com.google.gwt.user.client.ui.Widget;
 public class RichTextPopupScreen extends OpenELISScreenForm<RichTextPopupForm,Query<TableDataRow<Integer>>> implements ClickListener{
 
     public HTML targetHtmlWidget;
-    public StringField targetField;
     private RichTextWidget richText;
     
-    public RichTextPopupScreen(HTML target, StringField targetField) {
+    public RichTextPopupScreen(HTML target) {
         super("org.openelis.modules.richTextPopup.server.RichTextPopupService");
 
         this.targetHtmlWidget = target;
-        this.targetField = targetField;
 
         getScreen(new RichTextPopupForm());
     }
@@ -74,7 +71,6 @@ public class RichTextPopupScreen extends OpenELISScreenForm<RichTextPopupForm,Qu
     
     public void commit() {
         targetHtmlWidget.setHTML(richText.getText());
-        targetField.setValue(richText.getText());
         
         window.close();
     }
