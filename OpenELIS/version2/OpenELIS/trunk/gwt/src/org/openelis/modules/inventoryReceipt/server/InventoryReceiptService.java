@@ -306,10 +306,15 @@ public class InventoryReceiptService implements AppScreenFormServiceInt<Inventor
         return rpc;
     }
     
-    public InventoryReceiptForm getReceipts(InventoryReceiptForm rpc) {
+    public InventoryReceiptForm getReceiptsAndLockOrder(InventoryReceiptForm rpc) throws RPCException {
         InventoryReceiptRemote remote = (InventoryReceiptRemote)EJBFactory.lookup("openelis/InventoryReceiptBean/remote");
-        
-        List receiptRecords = remote.getInventoryReceiptRecords(rpc.orderId);
+        List receiptRecords = null;
+        try{
+            receiptRecords = remote.getInventoryReceiptRecordsAndLock(rpc.orderId);
+            
+        }catch(Exception e){
+            throw new RPCException(e.getMessage());
+        }
         
         TableDataModel<TableDataRow<InvReceiptItemInfoForm>> model = new TableDataModel<TableDataRow<InvReceiptItemInfoForm>>(); 
         fillModelFromQuery(model, receiptRecords, "receipt");
@@ -347,7 +352,7 @@ public class InventoryReceiptService implements AppScreenFormServiceInt<Inventor
         if("location".equals(rpc.cat))
             rpc.autoMatches = getLocationMatches(rpc.match, rpc.addToExisting, rpc.invItemId);
         else if("toInventoryItemTrans".equals(rpc.cat))
-            rpc.autoMatches = getInventoryItemMatches(rpc.match, false, rpc.invItemId);
+            rpc.autoMatches = getInventoryItemMatches(rpc.match, false, rpc.invItemId, rpc.parentInvItemId);
         else
             return null;
         
@@ -357,9 +362,9 @@ public class InventoryReceiptService implements AppScreenFormServiceInt<Inventor
     
     public TableDataModel getMatches(String cat, TableDataModel model, String match, HashMap<String, FieldType> params) throws RPCException {
         if(cat.equals("inventoryItem"))
-            return getInventoryItemMatches(match, false, -1);
+            return getInventoryItemMatches(match, false, -1, -1);
         else if(cat.equals("inventoryItemTrans"))
-            return getInventoryItemMatches(match, true, -1);
+            return getInventoryItemMatches(match, true, -1, -1);
         else if(cat.equals("organization"))
             return getOrganizationMatches(match);
 
@@ -389,9 +394,9 @@ public class InventoryReceiptService implements AppScreenFormServiceInt<Inventor
         return dataModel;       
     }
     
-    private TableDataModel<TableDataRow<Integer>> getInventoryItemMatches(String match, boolean loc, Integer inventoryItemId) throws RPCException{
+    private TableDataModel<TableDataRow<Integer>> getInventoryItemMatches(String match, boolean loc, Integer inventoryItemId, Integer parentInventoryItemId) throws RPCException{
         InventoryItemRemote remote = (InventoryItemRemote)EJBFactory.lookup("openelis/InventoryItemBean/remote");
-        if(inventoryItemId == null)
+        if(inventoryItemId == null && parentInventoryItemId == null)
                 throw new FormErrorException(openElisConstants.getString("inventoryTransferFromItemException"));
 
         TableDataModel<TableDataRow<Integer>> dataModel = new TableDataModel<TableDataRow<Integer>>();
@@ -401,10 +406,10 @@ public class InventoryReceiptService implements AppScreenFormServiceInt<Inventor
 
         if(loc)
             autoCompleteList = remote.inventoryItemStoreLocAutoCompleteLookupByName(parsedMatch+"%", 10, false, true);    
-        else if(inventoryItemId.compareTo(new Integer(-1)) > 0)
-            autoCompleteList = remote.inventoryItemStoreChildAutoCompleteLookupByName(parsedMatch+"%", inventoryItemId, 10);
+        else if(new Integer(-1).compareTo(inventoryItemId) < 0 || new Integer(-1).compareTo(parentInventoryItemId) < 0)
+            autoCompleteList = remote.inventoryItemStoreChildAutoCompleteLookupByName(parsedMatch+"%", parentInventoryItemId, inventoryItemId, 10);
         else
-            autoCompleteList = remote.inventoryItemStoreAutoCompleteLookupByName(parsedMatch+"%", 10, true, true); //this one
+            autoCompleteList = remote.inventoryItemStoreAutoCompleteLookupByName(parsedMatch+"%", 10, true, true); 
         
         for(InventoryItemAutoDO resultDO : autoCompleteList){
             
@@ -848,7 +853,13 @@ public class InventoryReceiptService implements AppScreenFormServiceInt<Inventor
     
     public void unlockLocations(InvReceiptItemInfoForm rpc){
         InventoryReceiptRemote remote = (InventoryReceiptRemote)EJBFactory.lookup("openelis/InventoryReceiptBean/remote");
-        remote.unlockLocations(rpc.lockedLocIds);
+        remote.unlockLocations(rpc.lockedIds);
+        
+    }
+    
+    public void unlockOrders(InvReceiptItemInfoForm rpc){
+        InventoryReceiptRemote remote = (InventoryReceiptRemote)EJBFactory.lookup("openelis/InventoryReceiptBean/remote");
+        remote.unlockOrders(rpc.lockedIds);
         
     }
 }

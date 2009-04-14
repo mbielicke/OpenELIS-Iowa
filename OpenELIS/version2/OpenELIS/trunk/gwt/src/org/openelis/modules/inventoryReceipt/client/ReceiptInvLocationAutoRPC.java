@@ -35,6 +35,7 @@ public class ReceiptInvLocationAutoRPC implements RPC {
     public String cat;
     public String match;
     public Integer invItemId;
+    public Integer parentInvItemId;
     public String addToExisting;
     
     public TableDataModel<TableDataRow<Integer>> autoMatches;

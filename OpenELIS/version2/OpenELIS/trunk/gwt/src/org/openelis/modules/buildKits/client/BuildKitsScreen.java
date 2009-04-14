@@ -228,7 +228,7 @@ public class BuildKitsScreen extends OpenELISScreenForm<BuildKitsForm,Query<Tabl
         if(state == State.ADD){
           //unlock the record
             InvReceiptItemInfoForm iriif = new InvReceiptItemInfoForm();
-            iriif.lockedLocIds = getLockedSetsFromTable();
+            iriif.lockedIds = getLockedSetsFromTable();
 
             screenService.call("unlockLocations", iriif, new AsyncCallback<FillOrderItemInfoForm>() {
                 public void onSuccess(FillOrderItemInfoForm result) {
