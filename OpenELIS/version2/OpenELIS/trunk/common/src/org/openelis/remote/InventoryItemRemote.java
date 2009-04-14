@@ -82,5 +82,5 @@ public interface InventoryItemRemote {
      public List inventoryItemWithComponentsAutoCompleteLookupByName(String itemName, int maxResults);	  
      
      //auto complete inv item lookup for inventory items that are children of the invId param
-     public List inventoryItemStoreChildAutoCompleteLookupByName(String itemName, Integer parentId, int maxResults);    
+     public List inventoryItemStoreChildAutoCompleteLookupByName(String itemName, Integer parentId, Integer id, int maxResults);    
 }

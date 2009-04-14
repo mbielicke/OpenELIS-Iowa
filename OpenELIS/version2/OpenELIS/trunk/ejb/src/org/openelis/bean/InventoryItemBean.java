@@ -378,10 +378,16 @@ public class InventoryItemBean implements InventoryItemRemote{
         return query.getResultList();
     }
     
-    public List inventoryItemStoreChildAutoCompleteLookupByName(String itemName, Integer parentId, int maxResults){
-        Query query = query = manager.createNamedQuery("InventoryItem.AutocompleteItemStoreChildrenByName");
+    public List inventoryItemStoreChildAutoCompleteLookupByName(String itemName, Integer parentId, Integer id, int maxResults){
+        Query query = null;
+        if(parentId != null){
+            query = manager.createNamedQuery("InventoryItem.AutocompleteItemStoreChildrenByNameParentId");
+            query.setParameter("id", parentId);
+        }else if(id != null){
+            query = manager.createNamedQuery("InventoryItem.AutocompleteItemStoreChildrenByNameId");
+            query.setParameter("id", id);
+        }
         query.setParameter("name", itemName);
-        query.setParameter("parentId", parentId);
         
         query.setMaxResults(maxResults);
         
