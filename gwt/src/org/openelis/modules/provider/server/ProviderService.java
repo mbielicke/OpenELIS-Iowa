@@ -34,13 +34,12 @@ import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.FormErrorException;
+import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.Query;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.data.AbstractField;
-import org.openelis.gwt.common.data.DataMap;
 import org.openelis.gwt.common.data.DropDownField;
-import org.openelis.gwt.common.data.Field;
 import org.openelis.gwt.common.data.FieldType;
 import org.openelis.gwt.common.data.IntegerField;
 import org.openelis.gwt.common.data.IntegerObject;
@@ -87,41 +86,18 @@ public class ProviderService implements AppScreenFormServiceInt<ProviderForm, Qu
     
     public Query<TableDataRow<Integer>> commitQuery(Query<TableDataRow<Integer>> query) throws RPCException {        
         List providers = new ArrayList();
-        /*
-        if(qList == null){
-           //need to get the query rpc out of the cache        
-            qList = (ArrayList<AbstractField>)SessionManager.getSession().getAttribute("ProviderQuery");
-    
-           if(qList == null)
-               throw new QueryException(openElisConstants.getString("queryExpiredException"));
-                
-            try{
-                ProviderRemote remote = (ProviderRemote)EJBFactory.lookup("openelis/ProviderBean/remote"); 
-                providers = remote.query(qList, (model.getPage()*leftTableRowsPerPage), leftTableRowsPerPage+1);                
-            }catch(Exception e){
-                if(e instanceof LastPageException){
-                    throw new LastPageException(openElisConstants.getString("lastPageException"));
-                }else{
-                    throw new RPCException(e.getMessage()); 
-                }
-            }
-          
-        } else{*/
-            ProviderRemote remote = (ProviderRemote)EJBFactory.lookup("openelis/ProviderBean/remote");
-            
-            //HashMap<String,AbstractField> fields = qList.getFieldMap();
+
+            ProviderRemote remote = (ProviderRemote)EJBFactory.lookup("openelis/ProviderBean/remote");            
             
                 try{
                     providers = remote.query(query.fields,query.page*leftTableRowsPerPage,leftTableRowsPerPage);
-    
+                }catch(LastPageException e) {
+                    throw new LastPageException(openElisConstants.getString("lastPageException"));
             }catch(Exception e){
                 e.printStackTrace();
                 throw new RPCException(e.getMessage());
             }              
              
-//          need to save the rpc used to the encache
-            //SessionManager.getSession().setAttribute("ProviderQuery", qList);
-            //}
             
             //fill the model with the query result
             int i=0;
@@ -395,30 +371,23 @@ public class ProviderService implements AppScreenFormServiceInt<ProviderForm, Qu
             
             for(int iter = 0;iter < contactsList.size();iter++) {
                 ProviderAddressDO addressRow = (ProviderAddressDO)contactsList.get(iter);
-
-                   TableDataRow<Integer> row = addressModel.createNewSet();
-                   IntegerField id = new IntegerField();
-                   IntegerField addId = new IntegerField();
-                    id.setValue(addressRow.getId());
-                    addId.setValue(addressRow.getAddressDO().getId());
-                    DataMap data = new DataMap();                    
-                    data.put("provAddId", id);
-                    data.put("addId", addId);                    
-                    row.setData(data);                   
+                   TableDataRow<Integer> row = addressModel.createNewSet();                   
+                    row.key = addressRow.getId();                  
+                    row.setData(new IntegerObject(addressRow.getAddressDO().getId()));                   
                     row.getCells().get(0).setValue(addressRow.getLocation());
                     row.getCells().get(1).setValue(addressRow.getExternalId());
                     row.getCells().get(2).setValue(addressRow.getAddressDO().getMultipleUnit());
                     row.getCells().get(3).setValue(addressRow.getAddressDO().getStreetAddress());
                     row.getCells().get(4).setValue(addressRow.getAddressDO().getCity());     
                     if(addressRow.getAddressDO().getState()!=null){
-                     ((DropDownField<String>)(Field)row.getCells().get(5)).setValue(new TableDataRow<String>(addressRow.getAddressDO().getState()));
+                     ((DropDownField<String>)row.getCells().get(5)).setValue(new TableDataRow<String>(addressRow.getAddressDO().getState()));
                     }else{
-                      ((DropDownField<String>)(Field)row.getCells().get(5)).setValue(new TableDataRow<String>(""));  
+                      ((DropDownField<String>)row.getCells().get(5)).setValue(new TableDataRow<String>(""));  
                     } 
                     if(addressRow.getAddressDO().getCountry()!=null){                    
-                      ((DropDownField<String>)(Field)row.getCells().get(6)).setValue(new TableDataRow<String>(addressRow.getAddressDO().getCountry()));
+                      ((DropDownField<String>)row.getCells().get(6)).setValue(new TableDataRow<String>(addressRow.getAddressDO().getCountry()));
                     }else{
-                        ((DropDownField<String>)(Field)row.getCells().get(6)).setValue(new TableDataRow<String>(""));  
+                        ((DropDownField<String>)row.getCells().get(6)).setValue(new TableDataRow<String>(""));  
                     }                    
                                         
                     row.getCells().get(7).setValue(addressRow.getAddressDO().getZipCode());
@@ -635,20 +604,18 @@ public class ProviderService implements AppScreenFormServiceInt<ProviderForm, Qu
     
     private ArrayList<ProviderAddressDO> getProviderAddressListFromRPC(TableDataModel<TableDataRow<Integer>> addressTable, Integer providerId){
         ArrayList<ProviderAddressDO> provAddDOList = new ArrayList<ProviderAddressDO>();
-        IntegerField provAddId = null;  
-        IntegerField addId = null;
+       
+        IntegerObject addId = null;
            for(int iter = 0; iter < addressTable.size(); iter++){            
             ProviderAddressDO provAddDO = new ProviderAddressDO();
-            TableDataRow<Integer> row = addressTable.get(iter);
+            TableDataRow<Integer> row = addressTable.get(iter);            
+            provAddDO.setId(row.key);            
             
-            if(row.getData()!=null) {
-             provAddId = (IntegerField)((DataMap)row.getData()).get("provAddId");
-             addId = (IntegerField)((DataMap)row.getData()).get("addId");
-            }
-            
-            if(provAddId != null){
-             provAddDO.setId(provAddId.getValue());
-            } 
+            addId = (IntegerObject)row.getData();
+                        
+            if(addId != null)
+                provAddDO.getAddressDO().setId(addId.getValue());
+           
             provAddDO.setLocation((String)((StringField)row.getCells().get(0)).getValue());
             provAddDO.setExternalId((String)((StringField)row.getCells().get(1)).getValue());
             provAddDO.setProvider((Integer)providerId);
@@ -656,15 +623,6 @@ public class ProviderService implements AppScreenFormServiceInt<ProviderForm, Qu
  
             provAddDO.setDelete(false);
 
-            //if the user created the row and clicked the remove button before commit...
-            //we dont need to do anything with that row
-            //if(provAddId == null){
-                //do nothing
-            //}else{
-             if(addId != null){              
-              provAddDO.getAddressDO().setId(addId.getValue());          
-             }             
-            //}
             provAddDO.getAddressDO().setMultipleUnit(((String)((StringField)row.getCells().get(2)).getValue()));
             provAddDO.getAddressDO().setStreetAddress(((String)((StringField)row.getCells().get(3)).getValue()));
             provAddDO.getAddressDO().setCity(((String)((StringField)row.getCells().get(4)).getValue()));
@@ -679,38 +637,25 @@ public class ProviderService implements AppScreenFormServiceInt<ProviderForm, Qu
             
             provAddDOList.add(provAddDO);                                    
         }
+          if(addressTable.getDeletions()!=null) {
            for(int iter = 0; iter < addressTable.getDeletions().size(); iter++){            
                ProviderAddressDO provAddDO = new ProviderAddressDO();
                TableDataRow<Integer> row = (TableDataRow<Integer>)addressTable.getDeletions().get(iter);
+               provAddDO.setId(row.key);            
                
-               if(row.getData()!=null){
-                provAddId = (IntegerField)((DataMap)row.getData()).get("provAddId");
-                addId = (IntegerField)((DataMap)row.getData()).get("addId");
-               }
+               addId = (IntegerObject)row.getData();
+                           
+               if(addId != null)
+                 provAddDO.getAddressDO().setId(addId.getValue());
                
-               if(provAddId != null){
-                provAddDO.setId(provAddId.getValue());
-               } 
                provAddDO.setLocation((String)((StringField)row.getCells().get(0)).getValue());
                provAddDO.setExternalId((String)((StringField)row.getCells().get(1)).getValue());
-               provAddDO.setProvider((Integer)providerId);
-              
-    
-               provAddDO.setDelete(true);
-
-               //if the user created the row and clicked the remove button before commit...
-               //we dont need to do anything with that row
-               //if(provAddId == null){
-                   //do nothing
-               //}else{
-                if(addId != null){              
-                 provAddDO.getAddressDO().setId(addId.getValue());             
-                }             
-               //}               
-               
+               provAddDO.setProvider((Integer)providerId);              
+               provAddDO.setDelete(true);                          
                provAddDOList.add(provAddDO);   
               }
-               
+           addressTable.getDeletions().clear();
+          }     
        return provAddDOList;    
     }
 

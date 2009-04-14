@@ -167,6 +167,11 @@ public class TestBean implements TestRemote {
             if (testIdNameMethodDO.getId() != null) {
                 // we need to call lock one more time to make sure their lock
                 // didn't expire and someone else grabbed the record
+                try {
+                    lockBean.validateLock(testReferenceId,testIdNameMethodDO.getId());
+                  } catch(Exception ex) {
+                     throw ex;
+                  }      
                 lockBean.getLock(testReferenceId, testIdNameMethodDO.getId());
             }
 
@@ -805,12 +810,11 @@ public class TestBean implements TestRemote {
                      +TestMeta.getId()+", "+TestMeta.getName()+", "
                      +TestMeta.getMethod().getName() + ") ");               
         
-        qb.addWhere(fields);
-        System.out.println("fields#######################################  "+ fields);
+        qb.addWhere(fields);        
         qb.setOrderBy(TestMeta.getName()+", "+TestMeta.getMethod().getName());
 
-        sb.append(qb.getEJBQL());                
-        System.out.println("sb#######################################  "+ sb); 
+        sb.append(qb.getEJBQL());                        
+        System.out.println("query################################################ "+sb.toString());
         Query query = manager.createQuery(sb.toString());
 
         if (first > -1 && max > -1)
@@ -1419,7 +1423,7 @@ public class TestBean implements TestRemote {
                        }
                        
                        if(pnMax != null && !(cnMin > pnMax)) {
-                           exceptionList.add(new TableFieldErrorException("numRangeOverlapException", i,
+                           exceptionList.add(new TableFieldErrorException("testNumRangeOverlapException", i,
                            TestResultMetaMap.getTableName()+":"+TestMeta.getTestResult().getValue())); 
                        }                                               
                    }
@@ -1463,7 +1467,7 @@ public class TestBean implements TestRemote {
                          }
                          
                          if(ptMax != null && !(ctMin > ptMax)) { 
-                          exceptionList.add(new TableFieldErrorException("titerRangeOverlapException", i,
+                          exceptionList.add(new TableFieldErrorException("testTiterRangeOverlapException", i,
                            TestResultMetaMap.getTableName()+":"+TestMeta.getTestResult().getValue()));
                          } 
                      }
@@ -1491,7 +1495,7 @@ public class TestBean implements TestRemote {
                    if(!dvl.contains(value)) {
                       dvl.add(value); 
                    } else {
-                       exceptionList.add(new TableFieldErrorException("dictEntryNotUniqueException", i,
+                       exceptionList.add(new TableFieldErrorException("testDictEntryNotUniqueException", i,
                         TestResultMetaMap.getTableName()+":"+TestMeta.getTestResult().getValue())); 
                    }
                    

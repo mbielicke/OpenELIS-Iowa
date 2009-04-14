@@ -25,21 +25,6 @@
 */
 package org.openelis.bean;
 
-import org.jboss.annotation.security.SecurityDomain;
-import org.openelis.domain.StandardNoteDO;
-import org.openelis.entity.StandardNote;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.RPCException;
-import org.openelis.gwt.common.data.AbstractField;
-import org.openelis.gwt.common.data.QueryIntegerField;
-import org.openelis.gwt.common.data.QueryStringField;
-import org.openelis.local.LockLocal;
-import org.openelis.metamap.StandardNoteMetaMap;
-import org.openelis.remote.StandardNoteRemote;
-import org.openelis.util.QueryBuilder;
-import org.openelis.utils.GetPage;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -55,6 +40,21 @@ import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+
+import org.jboss.annotation.security.SecurityDomain;
+import org.openelis.domain.StandardNoteDO;
+import org.openelis.entity.StandardNote;
+import org.openelis.gwt.common.FieldErrorException;
+import org.openelis.gwt.common.LastPageException;
+import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.gwt.common.data.AbstractField;
+import org.openelis.gwt.common.data.QueryIntegerField;
+import org.openelis.gwt.common.data.QueryStringField;
+import org.openelis.local.LockLocal;
+import org.openelis.metamap.StandardNoteMetaMap;
+import org.openelis.remote.StandardNoteRemote;
+import org.openelis.util.QueryBuilder;
+import org.openelis.utils.GetPage;
 
 @Stateless
 @EJBs({
@@ -84,17 +84,10 @@ public class StandardNoteBean implements StandardNoteRemote{
     	Query lockQuery = manager.createNamedQuery("getTableId");
 		lockQuery.setParameter("name", "standard_note");
 		Integer standardNoteTableId = (Integer)lockQuery.getSingleResult();
-        lockBean.getLock(standardNoteTableId, standardNoteId);
+        lockBean.validateLock(standardNoteTableId, standardNoteId);
         
 		manager.setFlushMode(FlushModeType.COMMIT);
 		StandardNote standardNote = null;
-		
-//		validate the standard note record
-        List exceptionList = new ArrayList();
-        exceptionList = validateForDelete(standardNoteId);
-        if(exceptionList.size() > 0){
-        	throw (RPCException)exceptionList.get(0);
-        }
         
 		//we delete it
 		try {
@@ -172,18 +165,13 @@ public class StandardNoteBean implements StandardNoteRemote{
         Integer standardNoteReferenceId = (Integer)query.getSingleResult();
         
         if(standardNoteDO.getId() != null){
-            lockBean.getLock(standardNoteReferenceId, standardNoteDO.getId());
+            lockBean.validateLock(standardNoteReferenceId, standardNoteDO.getId());
         }
+        
+        validateStandardNote(standardNoteDO);
         
 		manager.setFlushMode(FlushModeType.COMMIT);
 		StandardNote standardNote = null;
-        
-        //validate the standard note record
-        List exceptionList = new ArrayList();
-        validateStandardNote(standardNoteDO, exceptionList);
-        if(exceptionList.size() > 0){
-        	throw (RPCException)exceptionList.get(0);
-        }
         
         if (standardNoteDO.getId() == null)
            	standardNote = new StandardNote();
@@ -233,46 +221,30 @@ public class StandardNoteBean implements StandardNoteRemote{
          return returnList;
     }
 
-	public List validateForAdd(StandardNoteDO standardNoteDO) {
-		List exceptionList = new ArrayList();
-		
-		validateStandardNote(standardNoteDO, exceptionList);
-		
-		return exceptionList;
-	}
-
-	public List validateForDelete(Integer standardNoteId) {
-		// not required at this time...
-		return new ArrayList();
-	}
-
-	public List validateForUpdate(StandardNoteDO standardNoteDO) {
-		List exceptionList = new ArrayList();
-		
-		validateStandardNote(standardNoteDO, exceptionList);
-		
-		return exceptionList;
-	}
-	
-	private void validateStandardNote(StandardNoteDO standardNoteDO, List exceptionList){
+	private void validateStandardNote(StandardNoteDO standardNoteDO) throws Exception{
+	    ValidationErrorsList list = new ValidationErrorsList();
+	    
 		//name required (duplicates allowed)
 		if(standardNoteDO.getName() == null || "".equals(standardNoteDO.getName())){
-			exceptionList.add(new FieldErrorException("fieldRequiredException",StandardNoteMap.getName()));
+		    list.add(new FieldErrorException("fieldRequiredException",StandardNoteMap.getName()));
 		}
 		
 		//description required
 		if(standardNoteDO.getDescription() == null || "".equals(standardNoteDO.getDescription())){
-			exceptionList.add(new FieldErrorException("fieldRequiredException",StandardNoteMap.getDescription()));
+		    list.add(new FieldErrorException("fieldRequiredException",StandardNoteMap.getDescription()));
 		}
 		
 		//type required
 		if(standardNoteDO.getType() == null || "".equals(standardNoteDO.getType())){
-			exceptionList.add(new FieldErrorException("fieldRequiredException",StandardNoteMap.getTypeId()));
+		    list.add(new FieldErrorException("fieldRequiredException",StandardNoteMap.getTypeId()));
 		}
 		
 		//text required
 		if(standardNoteDO.getText() == null || "".equals(standardNoteDO.getText())){
-			exceptionList.add(new FieldErrorException("fieldRequiredException",StandardNoteMap.getText()));
-		}		
+		    list.add(new FieldErrorException("fieldRequiredException",StandardNoteMap.getText()));
+		}
+		
+		if(list.size() > 0)
+            throw list;
 	}
 }

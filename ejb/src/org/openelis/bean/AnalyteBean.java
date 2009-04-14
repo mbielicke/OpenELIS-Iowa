@@ -179,7 +179,7 @@ public class AnalyteBean implements AnalyteRemote{
         Integer analyteReferenceId = (Integer)query.getSingleResult();
         
         if(analyteDO.getId() != null){
-            lockBean.giveUpLock(analyteReferenceId, analyteDO.getId());
+            lockBean.validateLock(analyteReferenceId, analyteDO.getId());
         }
         
 		manager.setFlushMode(FlushModeType.COMMIT);

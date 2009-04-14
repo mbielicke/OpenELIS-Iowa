@@ -70,7 +70,6 @@ public class ProviderScreen extends OpenELISScreenForm<ProviderForm,Query<TableD
     private TextBox lastName = null;
     private ScreenTextArea noteArea = null;
     private TableWidget provAddController = null;  
-   // private QueryTable queryContactTable = null;
     private Dropdown displayType = null;
     private KeyListManager keyList = new KeyListManager();       
     
@@ -167,7 +166,6 @@ public class ProviderScreen extends OpenELISScreenForm<ProviderForm,Query<TableD
         //load dropdowns                                                                         
         ScreenTableWidget displayAddressTable = (ScreenTableWidget)widgets.get("providerAddressTable");
         provAddController = (TableWidget)displayAddressTable.getWidget();
-        //queryContactTable = (QueryTable)displayAddressTable.getQueryWidget().getWidget();
        
         /*
          * Setting of the models has been split to three methods so that they can be individually updated when needed.
@@ -370,12 +368,10 @@ public class ProviderScreen extends OpenELISScreenForm<ProviderForm,Query<TableD
     }
     
     private void setCountriesModel(TableDataModel<TableDataRow<String>> countriesModel) {
-        ((TableDropdown)provAddController.columns.get(6).getColumnWidget()).setModel(countriesModel);
-        //((TableDropdown)queryContactTable.columns.get(6).getColumnWidget()).setModel(countriesModel);
+        ((TableDropdown)provAddController.columns.get(6).getColumnWidget()).setModel(countriesModel);        
     }
     
     private void setStatesModel(TableDataModel<TableDataRow<String>> statesModel) {
         ((TableDropdown)provAddController.columns.get(5).getColumnWidget()).setModel(statesModel);
-        //((TableDropdown)queryContactTable.columns.get(5).getColumnWidget()).setModel(statesModel);
     }
 }

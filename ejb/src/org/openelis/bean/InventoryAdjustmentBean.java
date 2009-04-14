@@ -29,10 +29,14 @@ import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.InventoryAdjustmentAddAutoFillDO;
 import org.openelis.domain.InventoryAdjustmentChildDO;
 import org.openelis.domain.InventoryAdjustmentDO;
+import org.openelis.domain.InventoryReceiptDO;
 import org.openelis.entity.InventoryAdjustment;
 import org.openelis.entity.InventoryLocation;
 import org.openelis.entity.InventoryXAdjust;
+import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.LastPageException;
+import org.openelis.gwt.common.TableFieldErrorException;
+import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.local.LockLocal;
 import org.openelis.metamap.InventoryAdjustmentMetaMap;
@@ -108,7 +112,7 @@ public class InventoryAdjustmentBean implements InventoryAdjustmentRemote{
     public List getChildRecordsAndLock(Integer inventoryAdjustmentId) throws Exception {
         List children = getChildRecords(inventoryAdjustmentId);
         
-        lockRecords(children);
+        lockRecords(children, false);
         
         return children;
     }
@@ -130,24 +134,6 @@ public class InventoryAdjustmentBean implements InventoryAdjustmentRemote{
         adjDO.setSystemUser(sysUserDO.getLoginName());       
         
         return adjDO;
-    }
-
-    public InventoryAdjustmentDO getInventoryAdjustmentAndLock(Integer inventoryAdjustmentId) throws Exception {
-        //lock the entity
-        Query lockQuery = manager.createNamedQuery("getTableId");
-        lockQuery.setParameter("name", "inventory_adjustment");
-        lockBean.getLock((Integer)lockQuery.getSingleResult(),inventoryAdjustmentId);
-            
-        return getInventoryAdjustment(inventoryAdjustmentId);
-    }
-
-    public InventoryAdjustmentDO getInventoryAdjustmentAndUnlock(Integer inventoryAdjustmentId) {
-        //unlock the entity
-        Query unlockQuery = manager.createNamedQuery("getTableId");
-        unlockQuery.setParameter("name", "inventory_adjustment");
-        lockBean.giveUpLock((Integer)unlockQuery.getSingleResult(),inventoryAdjustmentId);
-            
-        return getInventoryAdjustment(inventoryAdjustmentId);
     }
 
     public Integer getSystemUserId() {
@@ -195,7 +181,10 @@ public class InventoryAdjustmentBean implements InventoryAdjustmentRemote{
         manager.setFlushMode(FlushModeType.COMMIT);
         
         //lock the necessary records
-        lockRecords(children);
+        lockRecords(children, true);
+        
+        //validate the records
+        validateAdjustment(inventoryAdjustmentDO, children);
         
         InventoryAdjustment inventoryAdjustment = null;
     
@@ -204,13 +193,6 @@ public class InventoryAdjustmentBean implements InventoryAdjustmentRemote{
         else
             inventoryAdjustment = manager.find(InventoryAdjustment.class, inventoryAdjustmentDO.getId());
 
-        //validate the inventory adjustment record
-        //List exceptionList = new ArrayList();
-        //validateOrganizationAndAddress(organizationDO, exceptionList);
-        //if(exceptionList.size() > 0){
-        //    throw (RPCException)exceptionList.get(0);
-        //}
-        
         //update inventory adjustment
          inventoryAdjustment.setDescription(inventoryAdjustmentDO.getDescription());
          inventoryAdjustment.setSystemUserId(inventoryAdjustmentDO.getSystemUserId());
@@ -224,14 +206,7 @@ public class InventoryAdjustmentBean implements InventoryAdjustmentRemote{
         for (int i=0; i<children.size();i++) {
             InventoryAdjustmentChildDO childDO = (InventoryAdjustmentChildDO) children.get(i);
             InventoryXAdjust transaction = null;
-            
-            //validate the child record
-            //exceptionList = new ArrayList();
-            //validateContactAndAddress(contactDO, i, exceptionList);
-            //if(exceptionList.size() > 0){
-            //    throw (RPCException)exceptionList.get(0);
-            //}
-            
+
             if (childDO.getId() == null)
                 transaction = new InventoryXAdjust();
             else
@@ -260,25 +235,64 @@ public class InventoryAdjustmentBean implements InventoryAdjustmentRemote{
         return inventoryAdjustment.getId();        
     }
 
-    public List validateForAdd(InventoryAdjustmentDO inventoryAdjustmentDO, List children) {
-        List exceptionList = new ArrayList();
-        return exceptionList;
-    }
-
-    public List validateForUpdate(InventoryAdjustmentDO inventoryAdjustmentDO, List children) {
-        List exceptionList = new ArrayList();
-        return exceptionList;
+    public void validateAdjustment(InventoryAdjustmentDO inventoryAdjustmentDO, List children) throws Exception{
+        ValidationErrorsList list = new ValidationErrorsList();
+        //desc required
+        if(inventoryAdjustmentDO.getDescription() == null || "".equals(inventoryAdjustmentDO.getDescription()))
+            list.add(new FieldErrorException("fieldRequiredException",InventoryAdjustmentMetaMap.getDescription()));
+        
+        //adj date required
+        if(inventoryAdjustmentDO.getAdjustmentDate() == null)
+            list.add(new FieldErrorException("fieldRequiredException",InventoryAdjustmentMetaMap.getAdjustmentDate()));
+        
+        //system user name required
+        if(inventoryAdjustmentDO.getSystemUserId() == null)
+            list.add(new FieldErrorException("fieldRequiredException",InventoryAdjustmentMetaMap.getSystemUserId()));
+        
+        //store id required
+        if(inventoryAdjustmentDO.getStoreId() == null)
+            list.add(new FieldErrorException("fieldRequiredException",InventoryAdjustmentMetaMap.TRANS_ADJUSTMENT_LOCATION_META.INVENTORY_LOCATION_META.INVENTORY_ITEM_META.getStoreId()));
+        
+        for(int i=0; i<children.size(); i++)
+            validateAdjItem((InventoryAdjustmentChildDO)children.get(i), i, list);
+        
+        if(list.size() > 0)
+            throw list;
     }
     
-    public List getInventoryitemData(Integer inventoryLocationId, Integer storeId){
-        Query query = manager.createNamedQuery("InventoryLocation.LocationInfoForAdjustmentFromId");
+    private void validateAdjItem(InventoryAdjustmentChildDO childDO, int rowIndex, ValidationErrorsList exceptionList){
+        //loc required
+        if(childDO.getLocationId() == null)
+            exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex, InventoryAdjustmentMetaMap.TRANS_ADJUSTMENT_LOCATION_META.INVENTORY_LOCATION_META.getId()));
+        
+        //count required
+        if(childDO.getPhysicalCount() == null)
+            exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex, InventoryAdjustmentMetaMap.TRANS_ADJUSTMENT_LOCATION_META.getPhysicalCount()));
+    }
+    
+    public List getInventoryitemDataAndLockLoc(Integer inventoryLocationId, Integer oldLocId, Integer storeId) throws Exception{
+        Query query = manager.createNamedQuery("getTableId");
+        query.setParameter("name", "inventory_location");
+        Integer inventoryLocId = (Integer)query.getSingleResult();
+        
+        //if there is an old lock we need to unlock this record
+        if(oldLocId != null)
+            lockBean.giveUpLock(inventoryLocId, oldLocId);
+        
+        query = manager.createNamedQuery("InventoryLocation.LocationInfoForAdjustmentFromId");
         query.setParameter("id", inventoryLocationId);
         query.setParameter("store", storeId);
+        List resultList = query.getResultList();
         
-        return  query.getResultList();
+        //we need to only get the lock if we bring something back in the query.
+        //if they dont get anything back we can assume they entered an invalid loc id
+        if(resultList != null && resultList.size() > 0)
+            lockBean.getLock(inventoryLocId, inventoryLocationId);
+        
+        return resultList;
     }
     
-    private void lockRecords(List childRows) throws Exception{
+    private void lockRecords(List childRows, boolean validate) throws Exception{
         if(childRows.size() == 0)
             return;
         
@@ -291,8 +305,12 @@ public class InventoryAdjustmentBean implements InventoryAdjustmentRemote{
         
             InventoryAdjustmentChildDO childDO = (InventoryAdjustmentChildDO)childRows.get(i);
         
-            if(childDO.getLocationId() != null)
-                lockBean.getLock(inventoryLocationTableId, childDO.getLocationId());
+            if(childDO.getLocationId() != null){
+                if(validate)
+                    lockBean.validateLock(inventoryLocationTableId, childDO.getLocationId());
+                else
+                    lockBean.getLock(inventoryLocationTableId, childDO.getLocationId());
+            }
         }
     }
     

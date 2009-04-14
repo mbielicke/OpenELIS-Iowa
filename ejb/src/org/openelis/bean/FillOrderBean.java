@@ -199,6 +199,10 @@ public class FillOrderBean implements FillOrderRemote {
         query = manager.createNamedQuery("Dictionary.IdBySystemName");
         query.setParameter("systemName","order_status_processed");
         Integer processedStatusValue = (Integer)query.getResultList().get(0);
+        
+        query = manager.createNamedQuery("getTableId");
+        query.setParameter("name", "order");
+        Integer orderTableId = (Integer)query.getSingleResult();
 
         manager.setFlushMode(FlushModeType.COMMIT);
         
@@ -228,6 +232,9 @@ public class FillOrderBean implements FillOrderRemote {
             Order order = manager.find(Order.class, orderIds.get(j));
             
             order.setStatusId(processedStatusValue);
+            
+            //unlock the orders as they are set to processed
+            lockBean.giveUpLock(orderTableId, orderIds.get(j));
         }
     }
     

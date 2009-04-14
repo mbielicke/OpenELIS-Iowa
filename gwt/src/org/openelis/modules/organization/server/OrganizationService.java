@@ -34,9 +34,11 @@ import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.FormErrorException;
+import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.Query;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.TableFieldErrorException;
+import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.FieldType;
@@ -110,7 +112,8 @@ public class OrganizationService implements AppScreenFormServiceInt<Organization
 
     	    try{	
     	        organizationNames = remote.query(query.fields,query.page*leftTableRowsPerPage,leftTableRowsPerPage);
-    
+            }catch(LastPageException e) {
+                throw new LastPageException(openElisConstants.getString("lastPageException"));
     	    }catch(Exception e){
     	        throw new RPCException(e.getMessage());
     	    }
@@ -156,25 +159,17 @@ public class OrganizationService implements AppScreenFormServiceInt<Organization
             organizationNote.setText(rpc.notes.text.getValue());
             organizationNote.setIsExternal("Y");
     		
-    		//validate the fields on the backend
-            List exceptionList = remote.validateForAdd(newOrganizationDO, organizationContacts);
-                
-            if(exceptionList.size() > 0){
-                setRpcErrors(exceptionList, contactsField, rpc);
-            } 
-    		
     		//send the changes to the database
     		Integer orgId;
     		try{
     			orgId = (Integer)remote.updateOrganization(newOrganizationDO, organizationNote, organizationContacts);
     		}catch(Exception e){
-    			exceptionList = new ArrayList();
-    			exceptionList.add(e);
-    			
-    			setRpcErrors(exceptionList, contactsField, rpc);
-    			
-    			return rpc;
-    		}
+                if(e instanceof ValidationErrorsList){
+                    setRpcErrors(((ValidationErrorsList)e).getErrorList(), contactsField, rpc);
+                    return rpc;
+                }else
+                    throw new RPCException(e.getMessage());
+            }
     		
     		//lookup the changes from the database and build the rpc
     		newOrganizationDO.setOrganizationId(orgId);
@@ -218,28 +213,18 @@ public class OrganizationService implements AppScreenFormServiceInt<Organization
                 organizationNote.setIsExternal("Y");
             }
     		
-    //		validate the fields on the backend
-    		List exceptionList = remote.validateForUpdate(newOrganizationDO, organizationContacts);
-    		if(exceptionList.size() > 0){
-    			setRpcErrors(exceptionList, contactsField, rpc);
-    			
-    			return rpc;
-    		} 
     		
     //		send the changes to the database
     		try{
     			remote.updateOrganization(newOrganizationDO, organizationNote, organizationContacts);
+    			
     		}catch(Exception e){
-                if(e instanceof EntityLockedException)
+                if(e instanceof ValidationErrorsList){
+                    setRpcErrors(((ValidationErrorsList)e).getErrorList(), contactsField, rpc);
+                    return rpc;
+                }else
                     throw new RPCException(e.getMessage());
-                
-    			exceptionList = new ArrayList();
-    			exceptionList.add(e);
-    			
-    			setRpcErrors(exceptionList, contactsField, rpc);
-    			
-    			return rpc;
-    		}
+            }
 
     		//set the fields in the RPC
     		setFieldsInRPC(rpc, newOrganizationDO);	
@@ -652,17 +637,19 @@ public class OrganizationService implements AppScreenFormServiceInt<Organization
 			organizationContacts.add(contactDO);	
 		}
         
-        for(int j=0; j<deletedRows.size(); j++){
-            TableDataRow<Contact> deletedRow = deletedRows.get(j);
-            if(deletedRow.key != null){
-                OrganizationContactDO contactDO = new OrganizationContactDO();
-                contactDO.setDelete(true);
-                contactDO.setId(deletedRow.key.orgId);
-                contactDO.getAddressDO().setId(deletedRow.key.addId);
-                
-                organizationContacts.add(contactDO);
+		if(deletedRows != null){
+            for(int j=0; j<deletedRows.size(); j++){
+                TableDataRow<Contact> deletedRow = deletedRows.get(j);
+                if(deletedRow.key != null){
+                    OrganizationContactDO contactDO = new OrganizationContactDO();
+                    contactDO.setDelete(true);
+                    contactDO.setId(deletedRow.key.orgId);
+                    contactDO.getAddressDO().setId(deletedRow.key.addId);
+                    
+                    organizationContacts.add(contactDO);
+                }
             }
-        }
+		}
 		
 		return organizationContacts;
 	}

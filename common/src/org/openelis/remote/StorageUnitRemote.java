@@ -54,14 +54,4 @@ public interface StorageUnitRemote {
 	 public List autoCompleteLookupByDescription(String desc, int maxResults);
 	 
 	 public void deleteStorageUnit(Integer StorageUnitId) throws Exception;
-	 
-	 //method to validate the fields before the backend updates it in the database
-	 public List validateForUpdate(StorageUnitDO storageUnitDO);
-	 
-	 //method to validate the fields before the backend updates it in the database
-	 public List validateForAdd(StorageUnitDO storageUnitDO);
-	 
-	 //method to validate the fields before the backend deletes it
-	 public List validateForDelete(Integer storageUnitId);
-
 }

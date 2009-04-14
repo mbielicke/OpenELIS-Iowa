@@ -25,38 +25,6 @@
 */
 package org.openelis.bean;
 
-import org.jboss.annotation.security.SecurityDomain;
-import org.openelis.domain.AnalyteDO;
-import org.openelis.domain.NoteDO;
-import org.openelis.domain.ShippingAddAutoFillDO;
-import org.openelis.domain.ShippingDO;
-import org.openelis.domain.ShippingItemDO;
-import org.openelis.domain.ShippingTrackingDO;
-import org.openelis.entity.InventoryLocation;
-import org.openelis.entity.InventoryXUse;
-import org.openelis.entity.Note;
-import org.openelis.entity.Order;
-import org.openelis.entity.OrderItem;
-import org.openelis.entity.Shipping;
-import org.openelis.entity.ShippingItem;
-import org.openelis.entity.ShippingTracking;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.data.AbstractField;
-import org.openelis.gwt.common.data.TableDataModel;
-import org.openelis.gwt.common.TableFieldErrorException;
-import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.LockLocal;
-import org.openelis.metamap.ShippingMetaMap;
-import org.openelis.persistence.JBossCachingManager;
-import org.openelis.remote.ShippingRemote;
-import org.openelis.security.domain.SystemUserDO;
-import org.openelis.security.local.SystemUserUtilLocal;
-import org.openelis.util.Datetime;
-import org.openelis.util.QueryBuilder;
-import org.openelis.utils.GetPage;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -72,6 +40,32 @@ import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+
+import org.jboss.annotation.security.SecurityDomain;
+import org.openelis.domain.NoteDO;
+import org.openelis.domain.ShippingAddAutoFillDO;
+import org.openelis.domain.ShippingDO;
+import org.openelis.domain.ShippingItemDO;
+import org.openelis.domain.ShippingTrackingDO;
+import org.openelis.entity.Note;
+import org.openelis.entity.Shipping;
+import org.openelis.entity.ShippingItem;
+import org.openelis.entity.ShippingTracking;
+import org.openelis.gwt.common.FieldErrorException;
+import org.openelis.gwt.common.FormErrorException;
+import org.openelis.gwt.common.LastPageException;
+import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.gwt.common.data.AbstractField;
+import org.openelis.gwt.common.data.TableDataModel;
+import org.openelis.local.LockLocal;
+import org.openelis.metamap.ShippingMetaMap;
+import org.openelis.persistence.JBossCachingManager;
+import org.openelis.remote.ShippingRemote;
+import org.openelis.security.domain.SystemUserDO;
+import org.openelis.security.local.SystemUserUtilLocal;
+import org.openelis.util.Datetime;
+import org.openelis.util.QueryBuilder;
+import org.openelis.utils.GetPage;
 
 @Stateless
 @EJBs({
@@ -153,7 +147,7 @@ public class ShippingBean implements ShippingRemote{
     }
 
     @RolesAllowed("shipping-update")
- public Integer updateShipment(ShippingDO shippingDO, List<ShippingItemDO> shippingItems, List<ShippingTrackingDO> trackingNumbers, TableDataModel unlockList, NoteDO shippingNote) throws Exception {
+ public Integer updateShipment(ShippingDO shippingDO, List<ShippingItemDO> shippingItems, List<ShippingTrackingDO> trackingNumbers, NoteDO shippingNote) throws Exception {
         validateShipping(shippingDO, shippingItems);
         //shipping reference table id
         Query query = manager.createNamedQuery("getTableId");
@@ -162,7 +156,7 @@ public class ShippingBean implements ShippingRemote{
         
         if(shippingDO.getId() != null){
             //we need to call lock one more time to make sure their lock didnt expire and someone else grabbed the record
-            lockBean.getLock(shippingReferenceId,shippingDO.getId());
+            lockBean.validateLock(shippingReferenceId,shippingDO.getId());
         }
         
          manager.setFlushMode(FlushModeType.COMMIT);
@@ -256,9 +250,9 @@ public class ShippingBean implements ShippingRemote{
                 }
             }
         }
-        
-       //unlock the order records
-//       unlockOrderRecords(unlockList);
+       
+       if(shippingDO.getId() != null)
+           lockBean.giveUpLock(shippingReferenceId,shippingDO.getId());
        
         return shipping.getId();
     }
@@ -283,18 +277,13 @@ public class ShippingBean implements ShippingRemote{
         return getShipment(shippingId);
     }
 
-    public ShippingDO getShipmentAndUnlock(Integer shippingId, TableDataModel unlockList) {
+    public ShippingDO getShipmentAndUnlock(Integer shippingId) {
         //unlock the entity
         Query unlockQuery = manager.createNamedQuery("getTableId");
         unlockQuery.setParameter("name", "shipping");
         lockBean.giveUpLock((Integer)unlockQuery.getSingleResult(),shippingId);
         
         return getShipment(shippingId);
-    }
-    
-    public void unlockOrders(TableDataModel unlockList){
-        //unlock the order records
-        unlockOrderRecords(unlockList);
     }
     
     public NoteDO getShippingNote(Integer shippingId) {
@@ -358,34 +347,6 @@ public class ShippingBean implements ShippingRemote{
         }
         
         return resultList;
-    }
-
-    public List validateForAdd(ShippingDO shippingDO, List shippingItems, List trackngNumbers) {
-        List exceptionList = new ArrayList();
-        return exceptionList;
-    }
-
-    public List validateForUpdate(ShippingDO shippingDO, List shippingItems, List trackngNumbers) {
-        List exceptionList = new ArrayList();
-        return exceptionList;
-    }
-    
-    private void unlockOrderRecords(TableDataModel orders) {
-        if(orders == null || orders.size() == 0)
-            return;
-        
-        Integer orderTableId = null;
-        
-        Query query = manager.createNamedQuery("getTableId");
-        query.setParameter("name", "order");
-        orderTableId = (Integer)query.getSingleResult();
-        
-        for(int i=0; i<orders.size(); i++){
-            Integer orderId = (Integer)orders.get(i).key;
-        
-            if(orderId != null)
-                lockBean.giveUpLock(orderTableId, orderId);
-        }
     }
     
     private void validateShipping(ShippingDO shippingDO, List shippingItems) throws Exception{

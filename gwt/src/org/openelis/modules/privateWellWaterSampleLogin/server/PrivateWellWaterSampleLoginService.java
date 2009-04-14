@@ -28,8 +28,10 @@ package org.openelis.modules.privateWellWaterSampleLogin.server;
 import org.openelis.gwt.common.Query;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.data.TableDataRow;
+import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
 import org.openelis.modules.privateWellWaterSampleLogin.client.PrivateWellWaterSampleLoginForm;
+import org.openelis.server.constants.Constants;
 
 public class PrivateWellWaterSampleLoginService implements AppScreenFormServiceInt<PrivateWellWaterSampleLoginForm, Query<TableDataRow<Integer>>>{
 
@@ -68,7 +70,8 @@ public class PrivateWellWaterSampleLoginService implements AppScreenFormServiceI
         return null;
     }
     
-    public PrivateWellWaterSampleLoginForm getScreen(PrivateWellWaterSampleLoginForm rpc){
+    public PrivateWellWaterSampleLoginForm getScreen(PrivateWellWaterSampleLoginForm rpc) throws RPCException {
+        rpc.xml = ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/privateWellWaterSampleLogin.xsl");
         return rpc;
     }
 }

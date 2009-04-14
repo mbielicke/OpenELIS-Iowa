@@ -25,13 +25,9 @@
 */
 package org.openelis.modules.inventoryReceipt.client;
 
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.ChangeListener;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.Widget;
+import java.util.ArrayList;
 
+import org.openelis.gwt.common.DatetimeRPC;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.KeyListManager;
@@ -44,7 +40,6 @@ import org.openelis.gwt.screen.ScreenAutoCompleteWidget;
 import org.openelis.gwt.screen.ScreenCalendar;
 import org.openelis.gwt.screen.ScreenCheck;
 import org.openelis.gwt.screen.ScreenResultsTable;
-import org.openelis.gwt.screen.ScreenTextBox;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.AutoCompleteCallInt;
@@ -53,6 +48,7 @@ import org.openelis.gwt.widget.CalendarLookUp;
 import org.openelis.gwt.widget.CheckBox;
 import org.openelis.gwt.widget.ResultsTable;
 import org.openelis.gwt.widget.AppButton.ButtonState;
+import org.openelis.gwt.widget.table.QueryTable;
 import org.openelis.gwt.widget.table.TableManager;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.gwt.widget.table.event.SourcesTableModelEvents;
@@ -60,30 +56,38 @@ import org.openelis.gwt.widget.table.event.SourcesTableWidgetEvents;
 import org.openelis.gwt.widget.table.event.TableModelListener;
 import org.openelis.gwt.widget.table.event.TableWidgetListener;
 import org.openelis.metamap.InventoryReceiptMetaMap;
+import org.openelis.modules.fillOrder.client.FillOrderItemInfoForm;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
-import java.util.ArrayList;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.SyncCallback;
+import com.google.gwt.user.client.ui.ChangeListener;
+import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.Widget;
 
 public class InventoryReceiptScreen extends OpenELISScreenForm<InventoryReceiptForm, InventoryReceiptQuery> implements ClickListener, ChangeListener, TableManager, TableWidgetListener, TableModelListener, AutoCompleteCallInt {
     
     private ResultsTable receiptsTable;
-    //private QueryTable receiptsQueryTable;
+    private QueryTable receiptsQueryTable;
     
     private AppButton        removeReceiptButton;
     private TextBox orgAptSuiteText, orgAddressText, orgCityText, orgStateText, orgZipCodeText,
-                    itemDescText, itemStoreText, itemDisUnitsText;
-    ScreenTextBox itemLotNum;
+                    itemDescText, itemStoreText, itemDisUnitsText, itemLotNum, transItemExpDate,
+                    toItemDescText, toItemStoreText, toItemDisUnitsText, toItemLotNum,
+                    toItemExpDate;
     private ScreenAutoCompleteWidget itemLocation;
-    private ScreenCalendar itemExpDate;
+    private ScreenCalendar recItemExpDate;
     private ScreenCheck addToExisiting;
     private ButtonPanel      atozButtons;
     private KeyListManager   keyList = new KeyListManager();
     private String screenType;
     private Integer currentEditingRow = -1;
-    private String tableCheckedValue;
+    private Integer lastLocValue = null;
     private InventoryReceiptMetaMap InventoryReceiptMeta = new InventoryReceiptMetaMap();
     
-    public InventoryReceiptScreen() {                
+    public InventoryReceiptScreen() {     
         super("org.openelis.modules.inventoryReceipt.server.InventoryReceiptService");
         
         screenType = "receipt";
@@ -129,47 +133,46 @@ public class InventoryReceiptScreen extends OpenELISScreenForm<InventoryReceiptF
     
     public void onClick(Widget sender) {
         if (sender == removeReceiptButton)
-            onRemoveReceiptRowButtonClick();
+        onRemoveReceiptRowButtonClick();
         else if(sender == addToExisiting && addToExisiting.isEnabled() && receiptsTable.model.getSelectedIndex() > -1 && receiptsTable.model.numRows() > 0){
             TableDataRow<InvReceiptItemInfoForm> tableRow = receiptsTable.model.getRow(receiptsTable.model.getSelectedIndex());
             InvReceiptItemInfoForm hiddenRPC = tableRow.key;
-            
-            if(((CheckBox)addToExisiting.getWidget()).getState() == CheckBox.CHECKED)
-                hiddenRPC.addToExisting.setValue(CheckBox.UNCHECKED);
+        
+        if(((CheckBox)addToExisiting.getWidget()).getState() == CheckBox.CHECKED)
+            hiddenRPC.addToExisting.setValue(CheckBox.UNCHECKED);
 
-            else
-                hiddenRPC.addToExisting.setValue(CheckBox.CHECKED);
-            
-            ((AutoComplete)itemLocation.getWidget()).setSelections(null);
-            hiddenRPC.storageLocationId.clear();
+        else
+            hiddenRPC.addToExisting.setValue(CheckBox.CHECKED);
+        
+        ((AutoComplete)itemLocation.getWidget()).setSelections(null);
+        hiddenRPC.storageLocationId.clear();
         }
     }
     
     public void onChange(Widget sender) {
         super.onChange(sender);
-         
+        
         if(receiptsTable.model.numRows() > 0){
             if(sender == itemLocation.getWidget()){
                 TableDataRow<InvReceiptItemInfoForm> tableRow = receiptsTable.model.getRow(receiptsTable.model.getSelectedIndex());
                 InvReceiptItemInfoForm hiddenRPC = tableRow.key;
                 hiddenRPC.storageLocationId.setValue(((AutoComplete)itemLocation.getWidget()).getSelections());
                 
-            }else if(sender == itemLotNum.getWidget()){
+            }else if(sender == itemLotNum){
                 TableDataRow<InvReceiptItemInfoForm> tableRow = receiptsTable.model.getRow(receiptsTable.model.getSelectedIndex());
                 InvReceiptItemInfoForm hiddenRPC = tableRow.key;
-                hiddenRPC.lotNumber.setValue(((TextBox)itemLotNum.getWidget()).getText());
+                hiddenRPC.lotNumber.setValue(((TextBox)itemLotNum).getText());
                 
-            }else if(sender == itemExpDate.getWidget()){
+            }else if(sender == recItemExpDate.getWidget()){
                 TableDataRow<InvReceiptItemInfoForm> tableRow = receiptsTable.model.getRow(receiptsTable.model.getSelectedIndex());
                 InvReceiptItemInfoForm hiddenRPC = tableRow.key;
-                hiddenRPC.expirationDate.setValue((String)((CalendarLookUp)itemExpDate.getWidget()).getValue());
+                hiddenRPC.expirationDate.setValue((String)((CalendarLookUp)recItemExpDate.getWidget()).getValue());
                 
             }
         }
     }
     
     public void afterDraw(boolean sucess) {
-        //AToZTable atozTable;
         orgAptSuiteText = (TextBox)getWidget(InventoryReceiptMeta.ORGANIZATION_META.ADDRESS.getMultipleUnit());        
         orgAddressText = (TextBox)getWidget(InventoryReceiptMeta.ORGANIZATION_META.ADDRESS.getStreetAddress());
         orgCityText = (TextBox)getWidget(InventoryReceiptMeta.ORGANIZATION_META.ADDRESS.getCity());
@@ -179,8 +182,18 @@ public class InventoryReceiptScreen extends OpenELISScreenForm<InventoryReceiptF
         itemStoreText = (TextBox)getWidget(InventoryReceiptMeta.INVENTORY_ITEM_META.getStoreId());
         itemDisUnitsText = (TextBox)getWidget(InventoryReceiptMeta.INVENTORY_ITEM_META.getDispensedUnitsId());
         itemLocation = (ScreenAutoCompleteWidget)widgets.get(InventoryReceiptMeta.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getStorageLocationId());
-        itemLotNum = (ScreenTextBox)widgets.get(InventoryReceiptMeta.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getLotNumber());
-        itemExpDate = (ScreenCalendar)widgets.get(InventoryReceiptMeta.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getExpirationDate());
+        itemLotNum = (TextBox)getWidget(InventoryReceiptMeta.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getLotNumber());
+        toItemDescText = (TextBox)getWidget("toDescription");
+        toItemStoreText = (TextBox)getWidget("toStoreId");
+        toItemDisUnitsText = (TextBox)getWidget("toDispensedUnits");
+        toItemLotNum = (TextBox)getWidget("toLotNumber");
+        toItemExpDate = (TextBox)getWidget("toExpDate");
+        
+        if("receipt".equals(screenType))
+            recItemExpDate = (ScreenCalendar)widgets.get(InventoryReceiptMeta.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getExpirationDate());
+        else
+            transItemExpDate = (TextBox)getWidget(InventoryReceiptMeta.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getExpirationDate());
+            
         addToExisiting = (ScreenCheck)widgets.get("addToExisting");
         removeReceiptButton = (AppButton)getWidget("removeReceiptButton");
         
@@ -189,21 +202,17 @@ public class InventoryReceiptScreen extends OpenELISScreenForm<InventoryReceiptF
         //
         ScreenResultsTable sw = (ScreenResultsTable)widgets.get("receiptsTable");
         receiptsTable = (ResultsTable)sw.getWidget();
-       // receiptsQueryTable = (QueryTable)((ScreenQueryTable)sw.getQueryWidget()).getWidget();
         receiptsTable.model.enableAutoAdd(false);
         receiptsTable.table.addTableWidgetListener(this);
         receiptsTable.model.addTableModelListener(this);
         
-        //atozTable = (AToZTable)getWidget("azTable");
         ButtonPanel bpanel = (ButtonPanel)getWidget("buttons");
-        //atozButtons = (ButtonPanel)getWidget("atozButtons");
         
         CommandChain formChain = new CommandChain();
         formChain.addCommand(this);
         formChain.addCommand(bpanel);
         formChain.addCommand(keyList);
         formChain.addCommand(receiptsTable);
-        //formChain.addCommand(atozButtons);
         
         updateChain.add(afterUpdate);
         commitUpdateChain.add(afterCommitUpdate);
@@ -213,6 +222,7 @@ public class InventoryReceiptScreen extends OpenELISScreenForm<InventoryReceiptF
         
         form.receiptsTable.setValue(receiptsTable.model.getData());
     }
+    
     protected AsyncCallback afterUpdate = new AsyncCallback() {
         public void onSuccess(Object result){
             if("transfer".equals(screenType)){
@@ -225,45 +235,21 @@ public class InventoryReceiptScreen extends OpenELISScreenForm<InventoryReceiptF
         }
     };
     
-    
     public void add() {
-        super.add();
         receiptsTable.model.enableAutoAdd(true);
+        super.add();
         
-        itemLotNum.enable(false);
-        if(itemLocation != null)
-            itemLocation.enable(false);
-        itemExpDate.enable(false);
-        if(addToExisiting != null)
+        if("receipt".equals(screenType)){
             addToExisiting.enable(false);
+            recItemExpDate.enable(false);
+            itemLotNum.setReadOnly(true);
+            itemLocation.enable(false);
+        }
+        
         receiptsTable.table.select(0, 0);
         
         //TODO not sure how to replace this  receiptsController.onCellClicked((SourcesTableEvents)receiptsController.view.table, 0, 0);
        
-    }
-    
-    /*
-    public void fetch() {
-        //we dont need to call the super because we arent using the datamodel for lookups
-        //we are using it to fill the table
-        //super.fetch();
-        
-        DataModel<DataSet> model = keyList.getList();
-        
-        receiptsTable.model.clear();
-        
-        for(int i=0; i<model.size(); i++){
-            createRowAndSetRowData(i, (DataMap)model.get(i).getData());    
-        }
-        
-        //loadReceiptsTableFromModel(model);
-               
-        if(model.size() > 0)
-            changeState(State.DISPLAY);
-       
-    }*/
-    public void fetch() {
-        //do nothing
     }
     
     public void query() {
@@ -271,21 +257,18 @@ public class InventoryReceiptScreen extends OpenELISScreenForm<InventoryReceiptF
         
         if("receipt".equals(screenType)){
         addToExisiting.enable(false);
-        itemExpDate.enable(false);
-        itemLotNum.enable(false);
+        recItemExpDate.enable(false);
+        itemLotNum.setReadOnly(true);
         itemLocation.enable(false);
         }
         removeReceiptButton.changeState(AppButton.ButtonState.DISABLED);
-        receiptsTable.table.select(0,0);
+        receiptsQueryTable.select(0,0);
         
     }
     
     public void update() {
         window.setBusy(consts.get("lockForUpdate"));
         
-        //InventoryReceiptRPC irrpc = new InventoryReceiptRPC();
-        //irrpc.key = form.key;
-        //irrpc.form = form.form;
         form.tableRows = keyList.getList(); 
         
         screenService.call("commitQueryAndLock", form, new AsyncCallback<InventoryReceiptForm>(){
@@ -304,9 +287,7 @@ public class InventoryReceiptScreen extends OpenELISScreenForm<InventoryReceiptF
             
             public void onFailure(Throwable caught){
                 Window.alert(caught.getMessage());
-          //      enable(true);
                 window.clearStatus();
-          //      changeState(State.UPDATE);
             }
         });
     }
@@ -321,10 +302,7 @@ public class InventoryReceiptScreen extends OpenELISScreenForm<InventoryReceiptF
             resetForm();
             load();
             enable(false);
-            
-            //InventoryReceiptRPC irrpc = new InventoryReceiptRPC();
-            //irrpc.key = form.key;
-            //irrpc.form = form.form;
+
             form.tableRows = keyList.getList(); 
             
             screenService.call("commitQueryAndUnlock", form, new AsyncCallback<InventoryReceiptForm>(){
@@ -341,9 +319,28 @@ public class InventoryReceiptScreen extends OpenELISScreenForm<InventoryReceiptF
                }
             });
             
+        }else if(state == State.ADD && !screenType.equals("receipt")){
+                //unlock the record
+                InvReceiptItemInfoForm iriif = new InvReceiptItemInfoForm();
+                iriif.lockedLocIds = getLockedSetsFromTable();
+
+                screenService.call("unlockLocations", iriif, new AsyncCallback<FillOrderItemInfoForm>() {
+                    public void onSuccess(FillOrderItemInfoForm result) {
+                        superAbort();
+                        
+                   }
+
+                   public void onFailure(Throwable caught) {
+                       Window.alert(caught.getMessage());
+                   }
+                    });
         }else{
             super.abort();
         }
+    }
+    
+    private void superAbort(){
+        super.abort();
     }
     
     protected AsyncCallback afterCommitUpdate = new AsyncCallback() {
@@ -372,7 +369,7 @@ public class InventoryReceiptScreen extends OpenELISScreenForm<InventoryReceiptF
     }
 
     public boolean canAutoAdd(TableWidget widget, TableDataRow addRow) {
-        if(state != State.UPDATE){
+        if(state != State.UPDATE && state != State.QUERY){
             if("receipt".equals(screenType))
                 return !receiptTableRowEmpty(addRow, true);
             else
@@ -388,7 +385,13 @@ public class InventoryReceiptScreen extends OpenELISScreenForm<InventoryReceiptF
     }
 
     public boolean canEdit(TableWidget widget, TableDataRow set, int row, int col) {
-        if(state != State.UPDATE && state != State.ADD)
+        if(state == State.QUERY){
+            if(col == 0 || col == 3 || col == 5)
+                return true;
+            else
+                return false;
+            
+        }else if(state != State.UPDATE && state != State.ADD)
             return false;
         
         int numRows = receiptsTable.model.numRows();
@@ -431,9 +434,6 @@ public class InventoryReceiptScreen extends OpenELISScreenForm<InventoryReceiptF
             if(state == State.UPDATE || state == State.ADD){
             currentEditingRow = row;
             
-            if(col == 3 && receiptsTable.model.numRows() > 0)
-                tableCheckedValue = (String)receiptsTable.model.getCell(row, 3);
-            
             return true;
             }
         }
@@ -443,6 +443,18 @@ public class InventoryReceiptScreen extends OpenELISScreenForm<InventoryReceiptF
     public boolean canSelect(TableWidget widget, TableDataRow set, int row) {
         return true;
     }
+    
+    public boolean canDrag(TableWidget widget, TableDataRow item, int row) {
+        return false;
+    }
+
+    public boolean canDrop(TableWidget widget, Widget dragWidget, TableDataRow dropTarget, int targetRow) {
+        return false;
+    }
+
+    public void drop(TableWidget widget, Widget dragWidget, TableDataRow dropTarget, int targetRow) {}
+
+    public void drop(TableWidget widget, Widget dragWidget) {}
     //
     //end table manager methods
     //
@@ -450,7 +462,11 @@ public class InventoryReceiptScreen extends OpenELISScreenForm<InventoryReceiptF
     //
     //start table listener methods
     //
+    @SuppressWarnings(value={"unchecked"})
     public void finishedEditing(SourcesTableWidgetEvents sender, final int row, int col) {
+        if(state == State.QUERY)
+            return;
+        
         if("receipt".equals(screenType)){
             //we need to try and lookup the order using the order number that they have entered
             if(col == 0 && row < receiptsTable.model.numRows() && receiptTableRowEmpty(receiptsTable.model.getRow(row), false)){
@@ -497,12 +513,12 @@ public class InventoryReceiptScreen extends OpenELISScreenForm<InventoryReceiptF
                         }else if(result.invItemsByUPC.size() == 1){
                             //we need to set the values in the datamap
                             
-                            InvReceiptItemInfoForm hiddenRPC = (InvReceiptItemInfoForm)tableRow.key;
-                            if(hiddenRPC == null){
-                                hiddenRPC = new InvReceiptItemInfoForm();
+                            InvReceiptItemInfoForm rowSubForm = (InvReceiptItemInfoForm)tableRow.key;
+                            if(rowSubForm == null){
+                                rowSubForm = new InvReceiptItemInfoForm();
                                 
-                                hiddenRPC = new InvReceiptItemInfoForm(form.itemInformation.node);
-                                tableRow.key = hiddenRPC;
+                                rowSubForm = new InvReceiptItemInfoForm(form.itemInformation.node);
+                                tableRow.key = rowSubForm;
                             }
                             
                             TableDataRow<Integer> set = result.invItemsByUPC.get(0);
@@ -511,14 +527,14 @@ public class InventoryReceiptScreen extends OpenELISScreenForm<InventoryReceiptF
                             TableDataModel<TableDataRow<Integer>> invItemModel = new TableDataModel<TableDataRow<Integer>>();
                             invItemModel.add(new TableDataRow<Integer>(set.key, set.cells[0]));
                
-                            hiddenRPC.disableInvItem = true;
-                            hiddenRPC.disableOrderId = true;
-                            hiddenRPC.itemIsSerialMaintained = (String)set.cells[6].getValue();
-                            hiddenRPC.itemIsLotMaintained = (String)set.cells[5].getValue();;
-                            hiddenRPC.itemIsBulk = (String)set.cells[4].getValue();;
-                            hiddenRPC.description.setValue(set.cells[2].getValue());
-                            hiddenRPC.dispensedUnits.setValue(set.cells[3].getValue());
-                            hiddenRPC.storeId.setValue(set.cells[1].getValue());
+                            rowSubForm.disableInvItem = true;
+                            rowSubForm.disableOrderId = true;
+                            rowSubForm.itemIsSerialMaintained = (String)set.cells[6].getValue();
+                            rowSubForm.itemIsLotMaintained = (String)set.cells[5].getValue();;
+                            rowSubForm.itemIsBulk = (String)set.cells[4].getValue();;
+                            rowSubForm.description.setValue(set.cells[2].getValue());
+                            rowSubForm.dispensedUnits.setValue(set.cells[3].getValue());
+                            rowSubForm.storeId.setValue(set.cells[1].getValue());
                             
                             ((DropDownField<Integer>)tableRow.cells[3]).setModel(invItemModel);
                             ((DropDownField<Integer>)tableRow.cells[3]).setValue(invItemModel.get(0));
@@ -526,9 +542,9 @@ public class InventoryReceiptScreen extends OpenELISScreenForm<InventoryReceiptF
                             receiptsTable.model.refresh();
                             
                             //set the text boxes
-                            itemDescText.setText(hiddenRPC.description.getValue());
-                            itemStoreText.setText(hiddenRPC.storeId.getValue());
-                            itemDisUnitsText.setText(hiddenRPC.dispensedUnits.getValue());
+                            itemDescText.setText(rowSubForm.description.getValue());
+                            itemStoreText.setText(rowSubForm.storeId.getValue());
+                            itemDisUnitsText.setText(rowSubForm.dispensedUnits.getValue());
                         }
                             
                         window.clearStatus();
@@ -557,20 +573,20 @@ public class InventoryReceiptScreen extends OpenELISScreenForm<InventoryReceiptF
                    itemStoreText.setText(((StringField)set.cells[1]).getValue());
                    itemDisUnitsText.setText(dropdownData.dispensedUnits);
                     
-                   InvReceiptItemInfoForm hiddenRPC = (InvReceiptItemInfoForm)tableRow.key;
-                    if(hiddenRPC == null){
-                        hiddenRPC = new InvReceiptItemInfoForm();
+                   InvReceiptItemInfoForm rowSubForm = (InvReceiptItemInfoForm)tableRow.key;
+                    if(rowSubForm == null){
+                        rowSubForm = new InvReceiptItemInfoForm();
                         
-                        hiddenRPC = new InvReceiptItemInfoForm(form.itemInformation.node);
-                        tableRow.key = hiddenRPC;
+                        rowSubForm = new InvReceiptItemInfoForm(form.itemInformation.node);
+                        tableRow.key = rowSubForm;
                     }
                     
-                    hiddenRPC.description.setValue(dropdownData.desc);
-                    hiddenRPC.storeId.setValue(((StringField)set.cells[1]).getValue());
-                    hiddenRPC.dispensedUnits.setValue(dropdownData.dispensedUnits);
-                    hiddenRPC.itemIsBulk = dropdownData.isBulk;
-                    hiddenRPC.itemIsLotMaintained = dropdownData.isLotMaintained;
-                    hiddenRPC.itemIsSerialMaintained = dropdownData.isSerialMaintained;
+                    rowSubForm.description.setValue(dropdownData.desc);
+                    rowSubForm.storeId.setValue(((StringField)set.cells[1]).getValue());
+                    rowSubForm.dispensedUnits.setValue(dropdownData.dispensedUnits);
+                    rowSubForm.itemIsBulk = dropdownData.isBulk;
+                    rowSubForm.itemIsLotMaintained = dropdownData.isLotMaintained;
+                    rowSubForm.itemIsSerialMaintained = dropdownData.isSerialMaintained;
                     
                }
             }else if(col == 4 && row > -1 && row < receiptsTable.model.numRows()){
@@ -589,109 +605,125 @@ public class InventoryReceiptScreen extends OpenELISScreenForm<InventoryReceiptF
                     orgAptSuiteText.setText(orgKey.aptSuite);
                     orgZipCodeText.setText(orgKey.zipCode);
                     
-                    InvReceiptItemInfoForm hiddenRPC = (InvReceiptItemInfoForm)tableRow.key;
-                    if(hiddenRPC == null){
-                        hiddenRPC = new InvReceiptItemInfoForm();
+                    InvReceiptItemInfoForm rowSubForm = (InvReceiptItemInfoForm)tableRow.key;
+                    if(rowSubForm == null){
+                        rowSubForm = new InvReceiptItemInfoForm();
                         
-                        hiddenRPC= new InvReceiptItemInfoForm(form.itemInformation.node);
-                        tableRow.key = hiddenRPC;
+                        rowSubForm= new InvReceiptItemInfoForm(form.itemInformation.node);
+                        tableRow.key = rowSubForm;
                     }
                     
-                    hiddenRPC.multUnit.setValue(orgKey.aptSuite);
-                    hiddenRPC.streetAddress.setValue(((StringObject)set.cells[1]).getValue());
-                    hiddenRPC.city.setValue(((StringObject)set.cells[2]).getValue());
-                    hiddenRPC.state.setValue(((StringObject)set.cells[3]).getValue());
-                    hiddenRPC.zipCode.setValue(orgKey.zipCode);
+                    rowSubForm.multUnit.setValue(orgKey.aptSuite);
+                    rowSubForm.streetAddress.setValue(((StringObject)set.cells[1]).getValue());
+                    rowSubForm.city.setValue(((StringObject)set.cells[2]).getValue());
+                    rowSubForm.state.setValue(((StringObject)set.cells[3]).getValue());
+                    rowSubForm.zipCode.setValue(orgKey.zipCode);
                     
                 }
             }
         }else if("transfer".equals(screenType)){
-            /*if(col == 0 && row < receiptsTable.model.numRows()){
-                DataSet<Data> tableRow = receiptsTable.model.getRow(row);
-                ArrayList selections = (ArrayList)((DropDownField)tableRow.get(0)).getValue();
-               
-                DataSet<Data> set = null;
-                if(selections.size() > 0)
-                    set = (DataSet)selections.get(0);
+            if(col == 0 && row < receiptsTable.model.numRows()){
+                final TableDataRow<InvReceiptItemInfoForm> tableRow = receiptsTable.model.getRow(row);
+
+                ArrayList<TableDataRow<Integer>> selections = ((DropDownField<Integer>)tableRow.cells[0]).getValue();
+                Integer currentLocValue = null;
+                if(selections.size() == 1){
+                    ReceiptInvItemKey rowData = (ReceiptInvItemKey)selections.get(0).getData();
+                    currentLocValue = rowData.locId;
+                }
                 
-               if(set != null && set.size() > 1){
-                    //set the text boxes
-                   DataMap dropdownMap = (DataMap)set.getData();
-                   StringField descObj = (StringField)dropdownMap.get("desc");
-                   StringField isBulkObj = (StringField)dropdownMap.get("isBulk");
-                   StringField isLotMaintainedObj = (StringField)dropdownMap.get("isLotMaintained");            
-                   StringField isSerialMaintainedObj = (StringField)dropdownMap.get("isSerialMaintained");
-                   StringField dispensedUnits = (StringField)dropdownMap.get("dispensedUnits");
-                   DateField expDate = (DateField)dropdownMap.get("expDate");
-                   StringField lotNum = (StringField)dropdownMap.get("lotNum");
-                   DropDownField<Integer> storageLocation = new DropDownField<Integer>();
-                   DataModel<Integer> locModel = new DataModel<Integer>();
-                   locModel.add(new DataSet<Integer>((Integer)dropdownMap.get("locId").getValue(), new StringObject((String)set.get(2).getValue())));
-                   storageLocation.setModel(locModel);
-                   storageLocation.setValue(locModel.get(0));
-                   
-                   tableRow.get(1).setValue((String)set.get(2).getValue());
-                   tableRow.get(2).setValue((Integer)set.get(3).getValue());
-                   
-                   itemDescText.setText((String)descObj.getValue());
-                   itemStoreText.setText((String)((StringField)set.get(1)).getValue());
-                   itemDisUnitsText.setText((String)dispensedUnits.getValue());
-                   
-                   ((TextBox)itemLotNum.getWidget()).setText((String)lotNum.getValue());
-                   itemExpDate.load(expDate);                   
-                    
-                    DataMap map = (DataMap)tableRow.getData();
-                    if(map == null)
-                        map = new DataMap();
-                    
-                    map.put("itemDesc", descObj);
-                    map.put("itemStore", set.get(1));
-                    map.put("itemIsBulk", isBulkObj);
-                    map.put("itemIsLotMaintained", isLotMaintainedObj);
-                    map.put("itemIsSerialMaintained", isSerialMaintainedObj);
-                    map.put("itemDisUnit", dispensedUnits);
-                    map.put("expDate", expDate);
-                    map.put("lotNum", lotNum);
-                    map.put(InventoryReceiptMeta.TRANS_RECEIPT_LOCATION_META.INVENTORY_LOCATION_META.getStorageLocationId(), storageLocation);
-                    
-                    tableRow.setData(map);
-                    receiptsTable.model.refresh();
-               }
-               
-               if(receiptsTable.model.getCell(row, 6) != null && ((Integer)receiptsTable.model.getCell(row, 6)).compareTo((Integer)receiptsTable.model.getCell(row, 2)) > 0){
-                   receiptsTable.model.clearCellError(row, 6);
-                   receiptsTable.model.setCellError(row, 6, consts.get("notEnoughQuantityOnHand"));
-               }
+                if((lastLocValue == null && currentLocValue != null) || 
+                                (lastLocValue != null && !lastLocValue.equals(currentLocValue))){
+                    //we need to send lock/fetch call back
+                    TransferLocationRPC tlrpc = new TransferLocationRPC();
+                    tlrpc.oldLocId = lastLocValue;
+                    tlrpc.currentLocId = currentLocValue;
+                    screenService.call("fetchLocationAndLock", tlrpc, new SyncCallback() {
+                        public void onSuccess(Object obj) {
+                            TransferLocationRPC result = (TransferLocationRPC)obj;
+
+                            receiptsTable.model.setCell(row, 2, result.currentQtyOnHand);
+                            
+                            //call refactored method
+                            loadFromInvItemData(row);
+                        }
+
+                        public void onFailure(Throwable caught) {
+                            Window.alert(caught.getMessage());
+                            //clear row
+                            ((DropDownField<Integer>)tableRow.cells[0]).setModel(null);
+                            ((DropDownField<Integer>)tableRow.cells[0]).setValue(null);
+                            tableRow.cells[1].setValue(null);
+                            tableRow.cells[2].setValue(null);
+                            ((DropDownField<Integer>)tableRow.cells[3]).setModel(null);
+                            ((DropDownField<Integer>)tableRow.cells[3]).setValue(null);
+                            tableRow.cells[4].setValue(null);
+                            ((DropDownField<Integer>)tableRow.cells[5]).setModel(null);
+                            ((DropDownField<Integer>)tableRow.cells[5]).setValue(null);
+                            tableRow.cells[6].setValue(null);
+                            receiptsTable.model.refresh();
+                            
+                            //clear subrpc
+                            InvReceiptItemInfoForm rowSubForm = (InvReceiptItemInfoForm)tableRow.key;
+                            if(rowSubForm != null){
+                                rowSubForm.description.setValue(null);
+                                rowSubForm.expirationDate.setValue(null);
+                                rowSubForm.itemIsBulk = null;
+                                rowSubForm.itemIsLotMaintained = null;
+                                rowSubForm.itemIsSerialMaintained = null;
+                                rowSubForm.lotNumber.setValue(null);
+                                rowSubForm.storeId.setValue(null);
+                                rowSubForm.toDescription.setValue(null);
+                                rowSubForm.toDispensedUnits.setValue(null);
+                                rowSubForm.toExpDate.setValue(null);
+                                rowSubForm.toLotNumber.setValue(null);
+                                rowSubForm.toStoreId.setValue(null);
+                                                             
+                                //reload cleared subrpc
+                                load(rowSubForm);
+                            }
+                            
+                        }
+                    });
+                }
                
             }else if(col == 3 && row < receiptsTable.model.numRows()){
-                DataSet tableRow = receiptsTable.model.getRow(row);
-                ArrayList selections = (ArrayList)((DropDownField)tableRow.get(3)).getValue();
+                TableDataRow<InvReceiptItemInfoForm> tableRow = receiptsTable.model.getRow(row);
+                ArrayList selections = (ArrayList)((DropDownField)tableRow.cells[3]).getValue();
                
-                DataSet set = null;
+                TableDataRow<Integer> set = null;
                 if(selections.size() > 0)
-                    set = (DataSet)selections.get(0);
+                    set = (TableDataRow)selections.get(0);
                 
                if(set != null && set.size() > 1){
-                    //set the text boxes
-                   DataMap dropdownMap = (DataMap)set.getData();
-                   NumberField parentRatioObj = (NumberField)dropdownMap.get("parentRatio");
+                   //set the text boxes
+                   ReceiptInvItemKey dropdownData = (ReceiptInvItemKey)set.getData();
+                   //toItemDescText.setText(dropdownData.desc);
+                   //toItemStoreText.setText((String)set.cells[1].getValue());
+                   //toItemDisUnitsText.setText(dropdownData.dispensedUnits);
                    
-                   DataMap map = (DataMap)tableRow.getData();
-                    if(map == null)
-                        map = new DataMap();
+                   InvReceiptItemInfoForm rowSubForm = tableRow.key;
+                   if(rowSubForm == null){
+                       rowSubForm = new InvReceiptItemInfoForm();
+                       rowSubForm= new InvReceiptItemInfoForm(form.itemInformation.node);
+                       tableRow.key = rowSubForm;
+                   }
+                   rowSubForm.toDescription.setValue(dropdownData.desc);
+                   rowSubForm.toStoreId.setValue(set.cells[1].getValue());
+                   rowSubForm.toDispensedUnits.setValue(dropdownData.dispensedUnits);
                     
-                    map.put("parentRatio", parentRatioObj);
-                    
-                    tableRow.setData(map);
+                   load(rowSubForm);
+                   //receiptsTable.model.refresh();
                }
 
             }else if(col == 4 && row < receiptsTable.model.numRows()){
-                String checkedValue = (String)receiptsTable.model.getCell(row, 2);
+                String checkedValue = (String)receiptsTable.model.getCell(row, 4);
 
                 //if the checkbox changes value we need to clear out the to location column
-                if(!checkedValue.equals(tableCheckedValue))
+                if(CheckBox.CHECKED.equals(checkedValue))
                     receiptsTable.model.setCell(row, 5 , null);
-            }else if(col == 6 && row < receiptsTable.model.numRows()){ //qty column
+                
+            }/*else if(col == 6 && row < receiptsTable.model.numRows()){ //qty column
                 if(receiptsTable.model.getCell(row, 2) != null && ((Integer)receiptsTable.model.getCell(row, 2)).compareTo((Integer)receiptsTable.model.getCell(row, 6)) < 0){
                     receiptsTable.model.clearCellError(row, 6);
                     receiptsTable.model.setCellError(row, 6, consts.get("notEnoughQuantityOnHand"));
@@ -701,7 +733,19 @@ public class InventoryReceiptScreen extends OpenELISScreenForm<InventoryReceiptF
         }
     }
 
-    public void startEditing(SourcesTableWidgetEvents sender, int row, int col) {}
+    public void startEditing(SourcesTableWidgetEvents sender, int row, int col) {
+        if(!"receipt".equals(screenType)){
+            //we need to try and lookup the order using the order number that they have entered
+            if(col == 0 && row < receiptsTable.model.numRows()){
+                ArrayList<TableDataRow<Integer>> selections = ((DropDownField<Integer>)receiptsTable.model.getObject(row, col)).getValue();
+                
+                if(selections != null && selections.size() == 1){
+                    ReceiptInvItemKey rowData = (ReceiptInvItemKey)selections.get(0).getData();
+                    lastLocValue = rowData.locId;
+                }
+            }
+        }
+    }
 
     public void stopEditing(SourcesTableWidgetEvents sender, int row, int col) {}
     //
@@ -754,6 +798,69 @@ public class InventoryReceiptScreen extends OpenELISScreenForm<InventoryReceiptF
             receiptsTable.model.deleteRow(selectedRow);
 
         }
+    }
+    
+    private void loadFromInvItemData(int row){
+        TableDataRow<InvReceiptItemInfoForm> tableRow = receiptsTable.model.getRow(row);
+        ArrayList selections = (ArrayList)((DropDownField)tableRow.cells[0]).getValue();
+        
+        TableDataRow<Integer> set = null;
+        if(selections.size() > 0)
+            set = (TableDataRow)selections.get(0);
+        
+       if(set != null && set.size() > 1){
+            //set the text boxes
+           ReceiptInvItemKey dropdownData = (ReceiptInvItemKey)set.getData();
+           String descObj = dropdownData.desc;
+           String isBulkObj = dropdownData.isBulk;
+           String isLotMaintainedObj = dropdownData.isLotMaintained;            
+           String isSerialMaintainedObj = dropdownData.isSerialMaintained;
+           String dispensedUnits = dropdownData.dispensedUnits;
+           String lotNum = dropdownData.lotNum;
+           DatetimeRPC expDate = dropdownData.expDate;
+           
+           tableRow.cells[1].setValue(set.cells[2].getValue());
+           tableRow.cells[2].setValue(set.cells[3].getValue());
+
+           InvReceiptItemInfoForm rowSubForm = tableRow.key;
+           if(rowSubForm == null){
+               rowSubForm = new InvReceiptItemInfoForm();
+               rowSubForm= new InvReceiptItemInfoForm(form.itemInformation.node);
+               tableRow.key = rowSubForm;
+           }
+            
+           rowSubForm.description.setValue(descObj);
+           rowSubForm.storeId.setValue((String)set.cells[1].getValue());
+           rowSubForm.itemIsBulk = isBulkObj;
+           rowSubForm.itemIsLotMaintained = isLotMaintainedObj;
+           rowSubForm.itemIsSerialMaintained = isSerialMaintainedObj;
+           rowSubForm.dispensedUnits.setValue(dispensedUnits);
+           
+           if(expDate != null){
+               rowSubForm.expirationDate.setValue(expDate.toString());
+               rowSubForm.toExpDate.setValue(expDate.toString());
+           }
+           rowSubForm.lotNumber.setValue(lotNum);
+           rowSubForm.toLotNumber.setValue(lotNum);
+            
+           //we need to clear out to item, check box, and location
+           ((DropDownField<Integer>)tableRow.cells[3]).clear();
+           ((DropDownField<Integer>)tableRow.cells[3]).setModel(null);
+           tableRow.cells[4].setValue(null);
+           ((DropDownField<Integer>)tableRow.cells[5]).clear();
+           ((DropDownField<Integer>)tableRow.cells[5]).setModel(null);
+           
+           rowSubForm.toDescription.setValue(null);
+           rowSubForm.toStoreId.setValue(null);
+           
+           receiptsTable.model.refresh();
+           load(rowSubForm);
+       }
+       
+       if(receiptsTable.model.getCell(row, 6) != null && ((Integer)receiptsTable.model.getCell(row, 6)).compareTo((Integer)receiptsTable.model.getCell(row, 2)) > 0){
+           receiptsTable.model.clearCellError(row, 6);
+           receiptsTable.model.setCellError(row, 6, consts.get("notEnoughQuantityOnHand"));
+       }
     }
 /*    
     private void loadDataMapIntoTransferTableRow(DataSet<Data> row){
@@ -822,8 +929,18 @@ public class InventoryReceiptScreen extends OpenELISScreenForm<InventoryReceiptF
         rilrpc.match = text;
         
         if("toInventoryItemTrans".equals(widget.cat)){
-            if(receiptsTable.model.numRows() > 0)
-                rilrpc.invItemId = (Integer)((DropDownField)receiptsTable.model.getObject(currentEditingRow, 0)).getSelectedKey();
+            if(receiptsTable.model.numRows() > 0){
+                //get dropdown key
+                ArrayList<TableDataRow<Integer>> selected = (ArrayList<TableDataRow<Integer>>)receiptsTable.model.getCell(currentEditingRow, 0);
+                ReceiptInvItemKey setData = null;
+                if(selected.size() > 0)
+                    setData = (ReceiptInvItemKey)selected.get(0).getData();
+                
+                if(setData != null && setData.parentInvItemId != null)
+                    rilrpc.invItemId = setData.parentInvItemId;
+                else
+                    rilrpc.invItemId = (Integer)((DropDownField)receiptsTable.model.getObject(currentEditingRow, 0)).getSelectedKey();
+            }
 
         }else{
             //add to existing
@@ -866,11 +983,14 @@ public class InventoryReceiptScreen extends OpenELISScreenForm<InventoryReceiptF
     public void rowDeleted(SourcesTableModelEvents sender, int row) {}
 
     public void rowSelected(SourcesTableModelEvents sender, int row) {
+        if(state == State.QUERY)
+            return;
+        
         TableDataRow<InvReceiptItemInfoForm> tableRow=null;
         if(addToExisiting != null && !addToExisiting.isEnabled() && receiptsTable.model.numRows() > 0 && (state == State.ADD || state == State.UPDATE)){
-            itemLotNum.enable(true);
+            itemLotNum.setReadOnly(false);
             itemLocation.enable(true);
-            itemExpDate.enable(true);
+            recItemExpDate.enable(true);
             addToExisiting.enable(true);
         }
         
@@ -893,4 +1013,20 @@ public class InventoryReceiptScreen extends OpenELISScreenForm<InventoryReceiptF
     //
     //end table model listener methods
     //
+    
+    private TableDataModel<TableDataRow<Integer>> getLockedSetsFromTable(){
+        TableDataModel<TableDataRow<Integer>> returnModel = new TableDataModel<TableDataRow<Integer>>();
+        for(int i=0; i<receiptsTable.model.numRows(); i++){
+            ArrayList<TableDataRow<Integer>> selections = ((DropDownField<Integer>)receiptsTable.model.getObject(i, 0)).getValue();
+            
+            if(selections.size() == 1){
+                ReceiptInvItemKey setData = (ReceiptInvItemKey)selections.get(0).getData();
+                returnModel.add(new TableDataRow<Integer>(setData.locId));
+            }
+        }
+            
+        return returnModel;
+    }   
+        
+        
 }

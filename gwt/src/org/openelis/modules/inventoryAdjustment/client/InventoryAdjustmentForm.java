@@ -56,6 +56,8 @@ public class InventoryAdjustmentForm extends Form<Integer>{
     public TableDataModel<TableDataRow<Integer>> invItemModel;
     public String storageLocation;
     public Integer qtyOnHand;
+    public Integer oldLocId;
+    public TableDataModel<TableDataRow<Integer>> lockedIds;
     
     public InventoryAdjustmentForm() {
        InventoryAdjustmentMetaMap meta = new InventoryAdjustmentMetaMap();

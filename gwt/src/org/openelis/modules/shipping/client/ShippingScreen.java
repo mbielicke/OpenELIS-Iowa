@@ -448,7 +448,7 @@ public class ShippingScreen extends OpenELISScreenForm<ShippingForm, Query<Table
                 form.shippingNotesForm = result;
                 load(form.shippingNotesForm);
                 
-                window.setBusy();
+                window.clearStatus();
             }
 
             public void onFailure(Throwable caught) {

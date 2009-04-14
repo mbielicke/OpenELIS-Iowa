@@ -31,8 +31,10 @@ import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.FormErrorException;
+import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.Query;
 import org.openelis.gwt.common.RPCException;
+import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.common.data.TableDataModel;
@@ -95,7 +97,8 @@ public class StorageUnitService implements AppScreenFormServiceInt<StorageUnitFo
 
 			try {
                 storageUnits = remote.query(query.fields, query.page*leftTableRowsPerPage, leftTableRowsPerPage);
-
+            }catch(LastPageException e) {
+                throw new LastPageException(openElisConstants.getString("lastPageException"));
 			} catch (Exception e) {
 				throw new RPCException(e.getMessage());
 			}
@@ -127,28 +130,17 @@ public class StorageUnitService implements AppScreenFormServiceInt<StorageUnitFo
 
 		// build the DO from the form
 		newStorageUnitDO = getStorageUnitDOFromRPC(rpc);
-
-		//validate the fields on the backend
-		List exceptionList = remote.validateForUpdate(newStorageUnitDO);
-		if(exceptionList.size() > 0){
-			setRpcErrors(exceptionList, rpc);
-			
-			return rpc;
-		} 
 		
 		// send the changes to the database
 		try{
 			remote.updateStorageUnit(newStorageUnitDO);
 		}catch(Exception e){
-            if(e instanceof EntityLockedException)
+            if(e instanceof ValidationErrorsList){
+                setRpcErrors(((ValidationErrorsList)e).getErrorList(), rpc);
+                return rpc;
+            }else
                 throw new RPCException(e.getMessage());
-            
-			exceptionList = new ArrayList();
-			exceptionList.add(e);
-			
-			setRpcErrors(exceptionList, rpc);
-			return rpc;
-		}
+        }
 		
 		// set the fields in the RPC
 		setFieldsInRPC(rpc, newStorageUnitDO);
@@ -165,25 +157,17 @@ public class StorageUnitService implements AppScreenFormServiceInt<StorageUnitFo
     	// build the storage unit DO from the form
     	newStorageUnitDO = getStorageUnitDOFromRPC(rpc);
     
-    	//validate the fields on the backend
-    	List exceptionList = remote.validateForAdd(newStorageUnitDO);
-    	if(exceptionList.size() > 0){
-    		setRpcErrors(exceptionList, rpc);
-    		
-    		return rpc;
-    	} 
-    	
     	// send the changes to the database
     	Integer storageUnitId;
     	try{
     		storageUnitId = (Integer) remote.updateStorageUnit(newStorageUnitDO);
     	}catch(Exception e){
-    		exceptionList = new ArrayList();
-    		exceptionList.add(e);
-    		
-    		setRpcErrors(exceptionList, rpc);
-    		return rpc;
-    	}
+            if(e instanceof ValidationErrorsList){
+                setRpcErrors(((ValidationErrorsList)e).getErrorList(), rpc);
+                return rpc;
+            }else
+                throw new RPCException(e.getMessage());
+        }
     
         newStorageUnitDO.setId(storageUnitId);
     
@@ -198,24 +182,16 @@ public class StorageUnitService implements AppScreenFormServiceInt<StorageUnitFo
 		// remote interface to call the storage unit bean
 		StorageUnitRemote remote = (StorageUnitRemote) EJBFactory.lookup("openelis/StorageUnitBean/remote");
 		
-		//validate the fields on the backend
-		List exceptionList = remote.validateForDelete(rpc.entityKey);
-		if(exceptionList.size() > 0){
-			setRpcErrors(exceptionList, rpc);
-			
-			return rpc;
-		} 
-
 		try {
 			remote.deleteStorageUnit(rpc.entityKey);
 
-		} catch (Exception e) {
-			exceptionList = new ArrayList();
-			exceptionList.add(e);
-			
-			setRpcErrors(exceptionList, rpc);
-			return rpc;
-		}	
+		}catch(Exception e){
+            if(e instanceof ValidationErrorsList){
+                setRpcErrors(((ValidationErrorsList)e).getErrorList(), rpc);
+                return rpc;
+            }else
+                throw new RPCException(e.getMessage());
+        }	
 
 		setFieldsInRPC(rpc, new StorageUnitDO());
 

@@ -38,8 +38,12 @@ import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
@@ -91,6 +95,9 @@ public class Sample implements Auditable, Cloneable {
   @Column(name="released_date")
   private Date releasedDate;             
 
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "sample_id",insertable = false, updatable = false)
+  private SampleHuman sampleHuman;
 
   @Transient
   private Sample original;
@@ -270,5 +277,11 @@ public class Sample implements Auditable, Cloneable {
   public String getTableName() {
     return "sample";
   }
+public SampleHuman getSampleHuman() {
+    return sampleHuman;
+}
+public void setSampleHuman(SampleHuman sampleHuman) {
+    this.sampleHuman = sampleHuman;
+}
   
 }   

@@ -26,6 +26,10 @@
 */
 package org.openelis.modules.order.server;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 import org.openelis.domain.BillToReportToDO;
 import org.openelis.domain.IdNameDO;
 import org.openelis.domain.InventoryItemAutoDO;
@@ -36,14 +40,13 @@ import org.openelis.domain.OrderAddAutoFillDO;
 import org.openelis.domain.OrderDO;
 import org.openelis.domain.OrderItemDO;
 import org.openelis.domain.OrganizationAutoDO;
-import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.QueryException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.TableFieldErrorException;
+import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.FieldType;
@@ -65,7 +68,6 @@ import org.openelis.modules.order.client.OrderShippingNoteForm;
 import org.openelis.modules.order.client.ReceiptForm;
 import org.openelis.modules.order.client.ReportToBillToForm;
 import org.openelis.persistence.EJBFactory;
-import org.openelis.remote.CategoryRemote;
 import org.openelis.remote.InventoryItemRemote;
 import org.openelis.remote.OrderRemote;
 import org.openelis.remote.OrganizationRemote;
@@ -77,10 +79,6 @@ import org.openelis.util.Datetime;
 import org.openelis.util.FormUtil;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 
 public class OrderService implements AppScreenFormServiceInt<OrderForm, OrderQuery>, AutoCompleteServiceInt {
 
@@ -122,7 +120,8 @@ public class OrderService implements AppScreenFormServiceInt<OrderForm, OrderQue
                         
             try{    
                 orderIds = remote.query(query.fields,query.page*leftTableRowsPerPage,leftTableRowsPerPage, query.type);
-    
+            }catch(LastPageException e) {
+                throw new LastPageException(openElisConstants.getString("lastPageException"));
             }catch(Exception e){
                 throw new RPCException(e.getMessage());
             }
@@ -186,32 +185,23 @@ public class OrderService implements AppScreenFormServiceInt<OrderForm, OrderQue
         TableDataModel<TableDataRow<Integer>> itemsModel = (TableDataModel<TableDataRow<Integer>>)itemsTableField.getValue();
         orderItems = getOrderItemsListFromRPC(itemsModel, orderDO.getId(), orderType);
                 
-        //validate the fields on the backend
-        List exceptionList = remote.validateForAdd(orderDO, orderType, orderItems);
-        
-        if(exceptionList.size() > 0){
-            setRpcErrors(exceptionList, itemsTableField, rpc);
-            return rpc;
-        } 
-        
         //send the changes to the database
         Integer orderId;
         try{
             orderId = (Integer)remote.updateOrder(orderDO, orderType, orderItems, customerNotes, orderShippingNotes);
         }catch(Exception e){
-            exceptionList = new ArrayList();
-            exceptionList.add(e);
-            
-            setRpcErrors(exceptionList, itemsTableField, rpc);
-            
-            return rpc;
+            if(e instanceof ValidationErrorsList){
+                setRpcErrors(((ValidationErrorsList)e).getErrorList(), itemsTableField, rpc);
+                return rpc;
+            }else
+                throw new RPCException(e.getMessage());
         }
         
         //lookup the changes from the database and build the rpc
         orderDO.setId(orderId);
 
         //set the fields in the RPC
-        setFieldsInRPC(rpc, orderDO);
+        setFieldsInRPC(rpc, orderDO, false);
 
         return rpc;
     }
@@ -242,13 +232,13 @@ public class OrderService implements AppScreenFormServiceInt<OrderForm, OrderQue
         
         //build customer notes do from form (only for kit orders)
         if(OrderRemote.KITS.equals(orderType)){
-            customerNote.setSubject("");
+            customerNote.setId(rpc.customerNotes.id);
             customerNote.setText(rpc.customerNotes.text.getValue());
             customerNote.setIsExternal("Y");
         }
         
         //build order shipping do notes from form
-        shippingNote.setSubject("");
+        shippingNote.setId(rpc.shippingNotes.id);
         shippingNote.setText(rpc.shippingNotes.text.getValue());
         shippingNote.setIsExternal("Y");
         
@@ -257,51 +247,20 @@ public class OrderService implements AppScreenFormServiceInt<OrderForm, OrderQue
         TableDataModel<TableDataRow<Integer>> itemsModel = itemsTableField.getValue();
         orderItems = getOrderItemsListFromRPC(itemsModel, orderDO.getId(), orderType);     
         
-        //if the status changed we need to verify we have enough quantity to fill the order
-        if((OrderRemote.INTERNAL.equals(orderType) || OrderRemote.KITS.equals(orderType)) && !originalStatus.equals(orderDO.getStatusId())){
-            CategoryRemote catRemote = (CategoryRemote) EJBFactory.lookup("openelis/CategoryBean/remote");
-            try {
-                Integer completedStatusId = catRemote.getEntryIdForSystemName("order_status_processed");
-                
-                if(orderDO.getStatusId().equals(completedStatusId)){
-                    //validate the quantities
-                    List exceptionList = remote.validateQuantities(orderItems);
-                    
-                    if(exceptionList.size() > 0){
-                        setRpcErrors(exceptionList, itemsTableField, rpc);
-                        qtyErrors = true;
-                    }
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        
-        //validate the fields on the backend
-        List exceptionList = remote.validateForUpdate(orderDO, orderType, orderItems, rpc.items.load);
-        if(exceptionList.size() > 0 || qtyErrors){
-            setRpcErrors(exceptionList, itemsTableField, rpc);
-            
-            return rpc;
-        } 
-        
         //send the changes to the database
         try{
             remote.updateOrder(orderDO, orderType, orderItems, customerNote, shippingNote);
+            
         }catch(Exception e){
-            if(e instanceof EntityLockedException)
+            if(e instanceof ValidationErrorsList){
+                setRpcErrors(((ValidationErrorsList)e).getErrorList(), itemsTableField, rpc);
+                return rpc;
+            }else
                 throw new RPCException(e.getMessage());
-            
-            exceptionList = new ArrayList();
-            exceptionList.add(e);
-            
-            setRpcErrors(exceptionList, itemsTableField, rpc);
-            
-            return rpc;
         }
 
         //set the fields in the RPC
-        setFieldsInRPC(rpc, orderDO);   
+        setFieldsInRPC(rpc, orderDO, false);   
         
         return rpc;
     }
@@ -320,7 +279,7 @@ public class OrderService implements AppScreenFormServiceInt<OrderForm, OrderQue
         OrderDO orderDO = remote.getOrderAndUnlock(rpc.entityKey, orderType, SessionManager.getSession().getId());
 
         //set the fields in the RPC
-        setFieldsInRPC(rpc, orderDO);
+        setFieldsInRPC(rpc, orderDO, false);
         
         if(rpc.items.load)
             loadItemsForm(rpc.entityKey, false, rpc.items);
@@ -355,7 +314,7 @@ public class OrderService implements AppScreenFormServiceInt<OrderForm, OrderQue
         OrderDO orderDO = remote.getOrder(rpc.entityKey, orderType);
 
         //set the fields in the RPC
-        setFieldsInRPC(rpc, orderDO);
+        setFieldsInRPC(rpc, orderDO, false);
         
         String tab = rpc.orderTabPanel;
         if(tab.equals("itemsTab"))
@@ -396,7 +355,7 @@ public class OrderService implements AppScreenFormServiceInt<OrderForm, OrderQue
         }
         
         //set the fields in the RPC
-        setFieldsInRPC(rpc, orderDO);
+        setFieldsInRPC(rpc, orderDO, false);
         
         String tab = rpc.orderTabPanel;
         if(tab.equals("itemsTab"))
@@ -415,6 +374,39 @@ public class OrderService implements AppScreenFormServiceInt<OrderForm, OrderQue
             loadReportToBillToForm(rpc.entityKey, rpc.reportToBillTo);
         
         return rpc;  
+    }
+    
+    public OrderForm getDuplicateRPC(OrderForm rpc) throws RPCException{
+        OrderRemote remote = (OrderRemote)EJBFactory.lookup("openelis/OrderBean/remote");        
+        
+        String orderType = rpc.orderType;
+        //StringObject orderTypeObj = new StringObject(orderType);
+        
+        OrderDO orderDO = remote.getOrder(rpc.entityKey, orderType);
+        
+        //reload the main form
+        setFieldsInRPC(rpc, orderDO, true);
+
+        //reload the items
+        loadItemsForm(rpc.entityKey, true, rpc.items);
+        
+        //clear the receipts
+        rpc.receipts.receiptsTable.setValue(null);
+        
+        //clear shipping notes
+        rpc.shippingNotes.text.setValue(null);
+
+        //clear customer notes
+        rpc.customerNotes.text.setValue(null);
+        
+        //clear the keys
+        rpc.entityKey = null;
+        rpc.items.entityKey = null;
+        rpc.receipts.entityKey = null;
+        rpc.shippingNotes.entityKey = null;
+        rpc.customerNotes.entityKey = null;
+
+        return rpc;
     }
     
     public OrderForm getScreen(OrderForm rpc) throws RPCException {
@@ -491,7 +483,7 @@ public class OrderService implements AppScreenFormServiceInt<OrderForm, OrderQue
     }
     
     public void loadOrderShippingNotesForm(Integer key, OrderShippingNoteForm form) throws RPCException {
-        form.text.setValue(getShippingNotes(key));
+        getShippingNotes(key, form);
         form.load = true;
     }
     
@@ -501,7 +493,7 @@ public class OrderService implements AppScreenFormServiceInt<OrderForm, OrderQue
     }
     
     public void loadCustomerNotesForm(Integer key, OrderNoteForm form) throws RPCException {
-        form.text.setValue(getCustomerNotes(key));
+        getCustomerNotes(key, form);
         form.load = true;
     }
 
@@ -536,45 +528,6 @@ public class OrderService implements AppScreenFormServiceInt<OrderForm, OrderQue
         
         form.status = Form.Status.invalid;
     }
-    
-    /*
-    public DataModel<Integer> getInitialModel(String cat){
-        Integer id = null;
-        CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
-        
-        if(cat.equals("status"))
-            id = remote.getCategoryId("order_status");
-        else if(cat.equals("store"))
-            id = remote.getCategoryId("inventory_item_stores");
-        else if(cat.equals("costCenter"))
-            id = remote.getCategoryId("cost_centers");
-        else if(cat.equals("shipFrom"))
-            id = remote.getCategoryId("shipFrom");
-        
-        List entries = new ArrayList();
-        if(id != null)
-            entries = remote.getDropdownValues(id);
-        
-        //we need to build the model to return
-        DataModel<Integer> returnModel = new DataModel<Integer>();
-
-        if(entries.size() > 0){ 
-            
-            returnModel.add(new DataSet<Integer>(0,new StringObject(" ")));
-        }
-        
-        int i=0;
-        while(i < entries.size()){
-            IdNameDO resultDO = (IdNameDO) entries.get(i);
-            
-            returnModel.add(new DataSet<Integer>(resultDO.getId(),new StringObject(resultDO.getName())));
-            
-            i++;
-        }       
-        
-        return returnModel;
-    }
-    */
     
     public OrderForm getAddAutoFillValues(OrderForm orderRpc) throws Exception {
         OrderRemote remote = (OrderRemote)EJBFactory.lookup("openelis/OrderBean/remote");
@@ -803,8 +756,15 @@ public class OrderService implements AppScreenFormServiceInt<OrderForm, OrderQue
         return orderDO;
     }
     
-    private void setFieldsInRPC(OrderForm form, OrderDO orderDO){
-        form.id.setValue(orderDO.getId());
+    private void setFieldsInRPC(OrderForm form, OrderDO orderDO, boolean forDuplicate){
+        if(!forDuplicate){
+            form.id.setValue(orderDO.getId());
+            form.externalOrderNumber.setValue(orderDO.getExternalOrderNumber());
+        }else{
+            form.id.setValue(null);
+            form.externalOrderNumber.setValue(null);
+        }
+        
         form.neededInDays.setValue(orderDO.getNeededInDays());
         form.statusId.setValue(new TableDataRow<Integer>(orderDO.getStatusId()));
         form.orderedDate.setValue(orderDO.getOrderedDate().toString());
@@ -813,14 +773,10 @@ public class OrderService implements AppScreenFormServiceInt<OrderForm, OrderQue
         if(orderDO.getCostCenter() != null)
             form.costCenterId.setValue(new TableDataRow<Integer>(orderDO.getCostCenter()));
         
-        if(orderDO.getExternalOrderNumber() != null)
-            form.externalOrderNumber.setValue(orderDO.getExternalOrderNumber());
-        
         if(orderDO.getShipFromId() != null)
             form.shipFromId.setValue(new TableDataRow<Integer>(orderDO.getShipFromId()));
         
         //create dataset for organization auto complete
-        //if(form.getField(OrderMeta.ORDER_ORGANIZATION_META.getName()) != null){
         if(orderDO.getOrganizationId() == null)
             form.organization.clear();
         else{
@@ -907,14 +863,16 @@ public class OrderService implements AppScreenFormServiceInt<OrderForm, OrderQue
             orderItems.add(orderItemDO);    
         }
         
-        for(int j=0; j<deletedRows.size(); j++){
-            TableDataRow<Integer> deletedRow = deletedRows.get(j);
-            if(deletedRow.key != null){
-                OrderItemDO itemDO = new OrderItemDO();
-                itemDO.setDelete(true);
-                itemDO.setId(deletedRow.key);
-                
-                orderItems.add(itemDO);
+        if(deletedRows != null){
+            for(int j=0; j<deletedRows.size(); j++){
+                TableDataRow<Integer> deletedRow = deletedRows.get(j);
+                if(deletedRow.key != null){
+                    OrderItemDO itemDO = new OrderItemDO();
+                    itemDO.setDelete(true);
+                    itemDO.setId(deletedRow.key);
+                    
+                    orderItems.add(itemDO);
+                }
             }
         }
         
@@ -944,26 +902,26 @@ public class OrderService implements AppScreenFormServiceInt<OrderForm, OrderQue
         model.setValue(fillReceiptsTable(model.getValue(),receiptsList, orderType));
     }
     
-    public String getCustomerNotes(Integer orderId){
+    public void getCustomerNotes(Integer orderId, OrderNoteForm form){
         OrderRemote remote = (OrderRemote)EJBFactory.lookup("openelis/OrderBean/remote");
         
         NoteDO noteDO = remote.getCustomerNote(orderId);
         
-        if(noteDO != null)
-            return noteDO.getText();
-        
-        return null;
+        if(noteDO != null){
+            form.id = noteDO.getId();
+            form.text.setValue(noteDO.getText());
+        }
     }
     
-    public String getShippingNotes(Integer orderId){
+    public void getShippingNotes(Integer orderId, OrderShippingNoteForm form){
         OrderRemote remote = (OrderRemote)EJBFactory.lookup("openelis/OrderBean/remote");
         
         NoteDO noteDO = remote.getOrderShippingNote(orderId);
         
-        if(noteDO != null)
-            return noteDO.getText();
-        
-        return null;
+        if(noteDO != null){
+            form.id = noteDO.getId();
+            form.text.setValue(noteDO.getText());
+        }
     }
     
     /*

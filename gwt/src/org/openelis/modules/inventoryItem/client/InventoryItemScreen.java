@@ -25,16 +25,6 @@
 */
 package org.openelis.modules.inventoryItem.client;
 
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.PopupPanel;
-import com.google.gwt.user.client.ui.SourcesTabEvents;
-import com.google.gwt.user.client.ui.TabListener;
-import com.google.gwt.user.client.ui.TextArea;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.Widget;
-
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.Query;
 import org.openelis.gwt.common.data.DropDownField;
@@ -58,16 +48,30 @@ import org.openelis.gwt.widget.CollapsePanel;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.MenuItem;
 import org.openelis.gwt.widget.ResultsTable;
+import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.gwt.widget.table.event.SourcesTableWidgetEvents;
 import org.openelis.gwt.widget.table.event.TableWidgetListener;
 import org.openelis.metamap.InventoryItemMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
+import org.openelis.modules.richTextPopup.client.RichTextPopupScreen;
 import org.openelis.modules.standardnotepicker.client.StandardNotePickerScreen;
+
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.SourcesTabEvents;
+import com.google.gwt.user.client.ui.TabListener;
+import com.google.gwt.user.client.ui.TextArea;
+import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.Widget;
 
 public class InventoryItemScreen extends OpenELISScreenForm<InventoryItemForm, Query<TableDataRow<Integer>>> implements TableWidgetListener, ClickListener, TabListener, AutoCompleteCallInt{
 
-    private AppButton        removeComponentButton, standardNoteButton;
+    private AppButton        removeComponentButton, standardNoteButton, editManufacturing;
+    private HTML manufacturingText;
 	private ScreenTextBox nameTextbox;
     TextBox subjectBox; 
 	private ScreenTextBox idTextBox;
@@ -81,7 +85,6 @@ public class InventoryItemScreen extends OpenELISScreenForm<InventoryItemForm, Q
     private Dropdown store, category, dispensedUnit;
     
     private ScreenCheck isActive, isSerializedCheck;
-    
     private ScreenVertical   svp;
 	
     private InventoryItemMetaMap InvItemMeta = new InventoryItemMetaMap();
@@ -134,7 +137,8 @@ public class InventoryItemScreen extends OpenELISScreenForm<InventoryItemForm, Q
             onRemoveComponentRowButtonClick();
 		}else if(sender == standardNoteButton){
 			onStandardNoteButtonClick();
-		}
+		}else if(sender == editManufacturing)
+		    onEditManufacturingClick();
 	}
 	
 	public void afterDraw(boolean success) {
@@ -153,6 +157,8 @@ public class InventoryItemScreen extends OpenELISScreenForm<InventoryItemForm, Q
         
         removeComponentButton = (AppButton)getWidget("removeComponentButton");
         standardNoteButton = (AppButton)getWidget("standardNoteButton");
+        editManufacturing = (AppButton)getWidget("editManufacturingButton");
+        manufacturingText = (HTML)getWidget("manufacturingText");
         
         isActive = (ScreenCheck)widgets.get(InvItemMeta.getIsActive());
         isSerializedCheck = (ScreenCheck)widgets.get(InvItemMeta.getIsSerialMaintained());
@@ -195,6 +201,7 @@ public class InventoryItemScreen extends OpenELISScreenForm<InventoryItemForm, Q
         updateChain.add(0,checkModels);
         updateChain.add(afterUpdate);
         fetchChain.add(0,checkModels);
+        //fetchChain.add(afterFetch);
         abortChain.add(0,checkModels);
         deleteChain.add(0,checkModels);
         commitUpdateChain.add(0,checkModels);
@@ -210,7 +217,6 @@ public class InventoryItemScreen extends OpenELISScreenForm<InventoryItemForm, Q
 		componentsTable.model.enableAutoAdd(true);
 		
 		super.add();
-		
 		idTextBox.enable(false);
         
         ((CheckBox)isActive.getWidget()).setState(CheckBox.CHECKED);
@@ -227,13 +233,30 @@ public class InventoryItemScreen extends OpenELISScreenForm<InventoryItemForm, Q
              
          }
       };
+
+      /*
+      protected AsyncCallback afterFetch = new AsyncCallback() {
+          public void onSuccess(Object result) {
+              //we need to load the manufacturing tab
+              manufacturingText.setHTML(form.manufacturingText.getValue());
+          }
+          
+          public void onFailure(Throwable caught){
+              
+          }
+       };
+       */
       
-	public void query() {		
+	public void query() {
 		super.query();
         //
         // disable notes and contact remove button
         //
         noteText.enable(false);
+        
+        standardNoteButton.changeState(ButtonState.DISABLED);
+        editManufacturing.changeState(ButtonState.DISABLED);
+        removeComponentButton.changeState(ButtonState.DISABLED);
 	}
 	
 	public void abort() {
@@ -274,6 +297,8 @@ public class InventoryItemScreen extends OpenELISScreenForm<InventoryItemForm, Q
                 fillComponentsModel(false);
             else if (index == 1 && !form.locations.load) 
                 fillLocationsModel();
+            else if(index == 3 && !form.manufacturing.load)
+                fillManufacturingTab();
             else if(index == 4 && !form.comments.load)
                 fillCommentsModel();
         }
@@ -348,6 +373,34 @@ public class InventoryItemScreen extends OpenELISScreenForm<InventoryItemForm, Q
         });
     }
     
+    private void fillManufacturingTab(){
+        if(form.entityKey == null)
+            return;
+        
+        window.setBusy();
+                 
+      //prepare the argument list
+        form.manufacturing.entityKey = form.entityKey;
+         
+       screenService.call("loadManufacturing", form.manufacturing, new AsyncCallback<InventoryManufacturingForm>(){
+           public void onSuccess(InventoryManufacturingForm result){    
+               load(result);
+               /*
+                * This call has been modified to use the specific sub rpc in the form.  To ensure everything 
+                * stays in sync it needs to be assigned back into the hash and to its member field in the form
+                */
+               form.manufacturing = result;
+
+               window.clearStatus();
+           }
+           
+           public void onFailure(Throwable caught){
+               Window.alert(caught.getMessage());
+               window.clearStatus();
+           }
+       });
+    }
+    
     private void fillCommentsModel(){
         if(form.entityKey == null)
             return;
@@ -405,52 +458,41 @@ public class InventoryItemScreen extends OpenELISScreenForm<InventoryItemForm, Q
         }
     }
     
+    private void onEditManufacturingClick(){
+        ScreenWindow modal = new ScreenWindow(null,"Rich Text Editor","richTextEditorScreen","Loading...",true);
+        modal.setName("Rich Text Editor");
+        modal.setContent(new RichTextPopupScreen(manufacturingText));
+    }
+    
     private void onDuplicateRecordClick(){
-        if(state == State.DISPLAY){
-            //we need to do the duplicate method
-            InventoryItemForm displayRPC = (InventoryItemForm)form.clone();
-            displayRPC.id.setValue(null);
-            displayRPC.averageLeadTime.setValue(null);
-            displayRPC.averageCost.setValue(null);
-            displayRPC.averageDailyUse.setValue(null);
-            
-            displayRPC.locations.locQuantitiesTable.setValue(null);
-            displayRPC.components.componentsTable.setValue(null);
-            displayRPC.comments.subject.setValue(null);
-            displayRPC.comments.text.setValue(null);
-            
-            Integer tempKey = form.entityKey;
-                    
-            TableDataModel<TableDataRow<Integer>> beforeModel = displayRPC.components.componentsTable.getValue();
-            beforeModel.size();
-            
-            add();
-            
-            TableDataModel<TableDataRow<Integer>> afterModel = displayRPC.components.componentsTable.getValue();
-            afterModel.size();
-            form.entityKey = tempKey;
-            
-            form = displayRPC;
-            
-            //set the load flags correctly
-            form.components.load = false;
-            form.locations.load = true;
-            form.comments.load = true;
-            
-            load();
-            
-            fillComponentsModel(true);
-        }
+        screenService.call("getDuplicateRPC", form, new AsyncCallback<InventoryItemForm>(){
+            public void onSuccess(InventoryItemForm result) {
+                form = result;
+                loadScreen();
+                enable(true);
+                changeState(State.ADD);
+                window.setDone(consts.get("enterInformationPressCommit"));
+            }
+
+            public void onFailure(Throwable caught) {
+                handleError(caught);
+                window.setDone("Load Failed");
+                changeState(State.DEFAULT);
+                form.entityKey = null;
+            }
+        });
     }
     
     
     public void changeState(State state) {
-        if(state == State.DISPLAY){
-            ((MenuItem)((MenuItem)duplicateMenuPanel.panel.menuItems.get(0)).menuItemsPanel.menuItems.get(0)).enable(true);
+        if(duplicateMenuPanel != null){ 
+            if(state == State.DISPLAY){
+                ((MenuItem)((MenuItem)duplicateMenuPanel.panel.menuItems.get(0)).menuItemsPanel.menuItems.get(0)).enable(true);
 
-        }else{
-            ((MenuItem)((MenuItem)duplicateMenuPanel.panel.menuItems.get(0)).menuItemsPanel.menuItems.get(0)).enable(false);
-        } 
+            }else{  
+                ((MenuItem)((MenuItem)duplicateMenuPanel.panel.menuItems.get(0)).menuItemsPanel.menuItems.get(0)).enable(false);
+            }
+        }
         
         super.changeState(state);
     }

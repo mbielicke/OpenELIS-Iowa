@@ -36,6 +36,7 @@ public class AuxiliaryGeneralPurposeRPC implements RPC {
      */
     private static final long serialVersionUID = 1L;
     public Integer key;
-    public TableDataModel<TableDataRow<Integer>> auxFieldValueModel; 
+    public TableDataModel<TableDataRow<Integer>> auxFieldValueModel;
+    public String stringValue;
 
 }

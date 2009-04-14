@@ -96,13 +96,11 @@ public class BuildKitsBean implements BuildKitsRemote{
         //lock the necessary records
         lockRecords(kitComponents);
         
-        System.out.println("order ["+kitDO.getOrderId()+"]");
         //create a new internal order record only on add
         Query query = manager.createNamedQuery("Dictionary.IdBySystemName");
         query.setParameter("systemName","order_status_processed");
         Integer completedStatusValue = (Integer)query.getResultList().get(0);
         
-        System.out.println("create internal order");
         Order internalOrder = null;
         if(kitDO.getOrderId() != null)
             internalOrder = manager.find(Order.class, kitDO.getOrderId());
@@ -118,7 +116,6 @@ public class BuildKitsBean implements BuildKitsRemote{
         if(internalOrder.getId() == null)
             manager.persist(internalOrder);
         
-        System.out.println("receipt ["+kitDO.getId()+"]");
         //create new inv receipt records
         InventoryReceipt receipt = null;
         
@@ -141,7 +138,7 @@ public class BuildKitsBean implements BuildKitsRemote{
         query.setParameter("id", receipt.getId());
         List locTransLocIds = query.getResultList();
         int numberOfLocs = locTransLocIds.size();
-        System.out.println("to inv loc ["+numberOfLocs+"]");
+
         //create/update TO inv location records
         InventoryLocation toLoc = null;
 
@@ -160,7 +157,6 @@ public class BuildKitsBean implements BuildKitsRemote{
         if(toLoc.getId() == null)
             manager.persist(toLoc);
         
-        System.out.println("trans receipt loc");
         //create trans_receipt_location records
         InventoryXPut transReceiptLoc = null;
         
@@ -182,7 +178,6 @@ public class BuildKitsBean implements BuildKitsRemote{
         for(int i=0; i<kitComponents.size(); i++){
             BuildKitComponentDO componentDO = (BuildKitComponentDO)kitComponents.get(i);
             
-            System.out.println("order item ["+componentDO.getOrderItemId()+"]");
             //create new order item records with FROM inv item ids
             OrderItem orderItem = null;
             if(componentDO.getOrderItemId() != null)
@@ -197,14 +192,13 @@ public class BuildKitsBean implements BuildKitsRemote{
             if(orderItem.getId() == null)
                 manager.persist(orderItem);
             
-            System.out.println("inv loc ["+componentDO.getLocationId()+"]");
             //subtract quantity from FROM inv loc record for each order item
             InventoryLocation location = null;
             location = manager.find(InventoryLocation.class, componentDO.getLocationId());
             location.setQuantityOnhand(location.getQuantityOnhand()-componentDO.getTotal());
 
             //create new trans_location_order record with each transfer from inv_loc
-            System.out.println("loc trans loc ["+componentDO.getInventoryXUseId()+"]");
+            
             //we need to get the loc trans and the loc ids
             InventoryXUse transLocation = null;
             if(componentDO.getInventoryXUseId() != null)
@@ -330,17 +324,16 @@ public class BuildKitsBean implements BuildKitsRemote{
         if(components.size() == 0)
             return;
         
-        Integer inventoryLocationId = null;
-        
         Query query = manager.createNamedQuery("getTableId");
         query.setParameter("name", "inventory_location");
+        Integer inventoryLocationId = (Integer)query.getSingleResult();
         
         for(int i=0; i<components.size(); i++){
         
             BuildKitComponentDO componentDO = (BuildKitComponentDO)components.get(i);
         
             if(componentDO.getLocationId() != null)
-                lockBean.getLock(inventoryLocationId, componentDO.getLocationId());
+                lockBean.validateLock(inventoryLocationId, componentDO.getLocationId());
         }
     }
     

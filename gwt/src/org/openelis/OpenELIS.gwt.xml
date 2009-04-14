@@ -24,7 +24,7 @@ Alternatively, the contents of this file marked
 license ("UIRF Software License"), in which case the provisions of a
 UIRF Software License are applicable instead of those above. 
 -->
-<module>
+<module rename-to="openelis">
 
 	<!-- Inherit the core Web Toolkit stuff.                  -->
 	<inherits name='com.google.gwt.user.User'/>
@@ -58,11 +58,12 @@ UIRF Software License are applicable instead of those above.
     <inherits name="org.openelis.modules.panel.Panel"/>
     <inherits name="org.openelis.modules.PTSampleLogin.PTSampleLogin"/>
     <inherits name="org.openelis.modules.qaevent.QAEvent"/>
+    <inherits name="org.openelis.modules.richTextPopup.RichTextPopup"/>
     <inherits name="org.openelis.modules.sampleManagement.SampleManagement"/>
     <inherits name="org.openelis.modules.SDWISSampleLogin.SDWISSampleLogin"/>
     <inherits name="org.openelis.modules.shipping.Shipping"/>
     <inherits name="org.openelis.modules.standardnote.StandardNote"/>
-    <inherits name="org.openelis.modules.standardnotepicker.StandardNotePicker"/>        
+    <inherits name="org.openelis.modules.standardnotepicker.StandardNotePicker"/>       
     <inherits name="org.openelis.modules.storage.Storage"/>
     <inherits name="org.openelis.modules.storageunit.StorageUnit"/> 
     <inherits name="org.openelis.modules.systemvariable.SystemVariable"/>        
@@ -74,7 +75,7 @@ UIRF Software License are applicable instead of those above.
 	<!-- Specify the app entry point class.                   -->
 	<entry-point class='org.openelis.modules.main.client.OpenELIS'/>
 	
-	<set-property name="user.agent" value="gecko1_8" />
+	<!-- <set-property name="user.agent" value="gecko1_8" /> -->
     
    <!-- <extend-property name="locale" values="cn"/>
     <extend-property name="locale" values="fa"/>

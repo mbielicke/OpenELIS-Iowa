@@ -58,13 +58,4 @@ public interface StandardNoteRemote {
      public List queryForType(HashMap fields) throws Exception;
 	 
 	 public void deleteStandardNote(Integer standardNoteId) throws Exception;
-	 
-	 //method to validate the fields before the backend updates it in the database
-	 public List validateForUpdate(StandardNoteDO standardNoteDO);
-	 
-	 //method to validate the fields before the backend updates it in the database
-	 public List validateForAdd(StandardNoteDO standardNoteDO);
-	 
-	 //method to validate the fields before the backend deletes it
-	 public List validateForDelete(Integer standardNoteId);
 }

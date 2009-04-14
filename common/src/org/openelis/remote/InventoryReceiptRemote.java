@@ -25,8 +25,11 @@
 */
 package org.openelis.remote;
 
+import org.openelis.domain.InventoryLocationDO;
 import org.openelis.domain.InventoryReceiptDO;
 import org.openelis.gwt.common.data.AbstractField;
+import org.openelis.gwt.common.data.TableDataModel;
+import org.openelis.gwt.common.data.TableDataRow;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,8 +56,13 @@ public interface InventoryReceiptRemote {
      //method to query for inventory receipts..and also lock the necessary records
      public List queryAndLock(ArrayList<AbstractField> fields, int first, int max, boolean receipt) throws Exception;
      
+     //method to lock new inv loc and unlock old inv loc and return location record
+     public InventoryLocationDO lockLocationAndFetch(Integer oldLocId, Integer newLocId) throws Exception;
+     
      //method to query for inventory receipts..and also unlock the necessary records
      public List queryAndUnlock(ArrayList<AbstractField> fields, int first, int max, boolean receipt) throws Exception;
+     
+     public void unlockLocations(TableDataModel<TableDataRow<Integer>> locIds);
      
      //auto complete lookup
      public List autoCompleteLocationLookupByName(String name, int maxResults);

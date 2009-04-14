@@ -1,39 +1,78 @@
-<!--
+<?xml version="1.0" encoding="utf-8" ?>
+<project name="OpenELIS" default="build" basedir=".">
+  <!-- Configure path to GWT SDK -->
+  <property name="gwt.sdk" location="/home/tschmidt/workspace/OpenELIS-Lib-Tools/gwt-linux-1.6.0" />
 
-Builds the a servlet warfile.
+  <path id="project.class.path">
+    <pathelement location="war/WEB-INF/classes"/>
+    <pathelement location="${gwt.sdk}/gwt-user.jar"/>
+    <fileset dir="${gwt.sdk}" includes="gwt-dev*.jar"/>
+    <!-- Add any additional non-server libs (such as JUnit) -->
+    <fileset dir="war/WEB-INF/lib" includes="**/*.jar"/>
+  </path>
 
--->
+  <target name="libs" description="Copy libs to WEB-INF/lib">
+    <mkdir dir="war/WEB-INF/lib" />
+    <copy todir="war/WEB-INF/lib" file="${gwt.sdk}/gwt-servlet.jar" />
+    <!-- Add any additional server libs that need to be copied -->
+  </target>
 
-<project name="openelis-web" default="all" basedir=".">
+  <target name="javac" depends="libs" description="Compile java source">
+    <mkdir dir="war/WEB-INF/classes"/>
+    <javac srcdir="src" includes="**" encoding="utf-8"
+        destdir="war/WEB-INF/classes"
+        source="1.5" target="1.5" nowarn="true"
+        debug="true" debuglevel="lines,vars,source">
+      <classpath refid="project.class.path"/>
+    </javac>
+    <copy todir="war/WEB-INF/classes">
+      <fileset dir="src" excludes="**/*.java"/>
+    </copy>
+  </target>
 
-   <!-- Initialization needed for any target -->
+  <target name="gwtc" depends="libs" description="GWT compile to JavaScript">
+    <java failonerror="true" fork="true" classname="com.google.gwt.dev.Compiler">
+      <classpath>
+        <pathelement location="src"/>
+        <pathelement location="../OpenELIS-Lib/src"/>
+        <pathelement location="../OpenELIS-Common/src"/>
+        <pathelement location="../OpenELIS-EJB/src"/>
+        <pathelement location="../OpenELIS-Lib/lib/gwt-dnd-2.5.6.jar"/>
+        <path refid="project.class.path"/>
+      </classpath>
+      <!-- add jvmarg -Xss16M or similar if you see a StackOverflowError -->
+      <jvmarg value="-Xmx512M"/>
+      <!-- Additional arguments like -style PRETTY or -logLevel DEBUG -->
+      <arg value="org.openelis.OpenELIS"/>
+    </java>
+  </target>
 
-   <target name="init">
-      <property name="name"           value="openelis-web" />
-      <property name="src.dir"        value="src" />
-      <property name="meta.dir"       value="metadata" />
-      <property name="bin.dir"        value="bin" />
-      <property name="build.dir"      value="build" />
-      <property name="build.compiler" value="modern" />
-   	  <property name="openelis.dir"   value="www/org.openelis.OpenELIS"  />
-   	  <property name="webapp.dir"     value="/usr/pub/http/Application" />
-   </target>
+  <target name="hosted" depends="javac" description="Run hosted mode">
+    <java failonerror="true" fork="true" classname="com.google.gwt.dev.HostedMode">
+      <classpath>
+        <pathelement location="src"/>
+        <path refid="project.class.path"/>
+      </classpath>
+      <jvmarg value="-Xmx256M"/>
+      <arg value="-startupUrl"/>
+      <arg value="OpenELIS.html"/>
+      <!-- Additional arguments like -style PRETTY or -logLevel DEBUG -->
+      <arg value="org.openelis.OpenELIS"/>
+    </java>
+  </target>
 
-   <target name="all" depends="init" />
+  <target name="build" depends="gwtc" description="Build this project" />
 
-   <!-- Build the various report warfiles -->
-       <exec executable="./OpenELIS-compile"/>
-	  
-
-	   <target name="openelis-web" depends="init">
-	   	  <jar jarfile="build/elissecurity.jar">
-	   	    <fileset dir="../OpenELIS-Security-EJB/bin">
-	   	  	   <include name="org/openelis/security/domain/*.class"/>
+  <target name="war" depends="build" description="Create a war file">
+  
+       <jar jarfile="build/elissecurity.jar">
+	      <fileset dir="../OpenELIS-Security-EJB/bin">
+	    	   <include name="org/openelis/security/domain/*.class"/>
 	   	       <include name="org/openelis/security/remote/*.class"/>
 	   	    </fileset>
 	   	  </jar>
 	  	<jar jarfile="build/openelis-common.jar">
-	  	    <fileset dir="../OpenELIS-Common/bin">
+    	    <fileset dir="../OpenELIS-Common/bin">
 	  	       <include name="org/openelis/domain/*.class"/>
 	  	       <include name="org/openelis/remote/*.class"/>
 	  	       <include name="org/openelis/local/*.class"/>
@@ -43,46 +82,41 @@ Builds the a servlet warfile.
 	  	       <include name="org/openelis/messages/*.class"/>	
 	  	    </fileset>
 	    </jar>
-	   	  <delete file="${build.dir}/openelis.war" />
-	      <war destfile="${build.dir}/openelis.war"
-	           webxml="${meta.dir}/openelis-web.xml">
-	      	  <webinf dir="${meta.dir}"
+        <jar jarfile="build/openelis-lib.jar">
+	      <fileset dir="../OpenELIS-Lib/bin"/>
+	   	 </jar>
+	    <delete file="OpenELIS.war" />
+	    
+	      <war destfile="OpenELIS.war"
+	           webxml="metadata/openelis-web.xml">
+	      	  <webinf dir="metadata"
 	      	          includes="stylesheet/**/*"/>
-	      	  <metainf dir="${meta.dir}"
+	      	  <metainf dir="metadata"
 	      	           includes="context.xml, ehcache.xml"/>
-	      	  <fileset dir="${meta.dir}"
+	      	  <fileset dir="metadata"
 	      	           excludes="stylesheet/**/**, openelis-web.xml, context.xml, ehcache.xml"/> 
-	      	  <fileset dir="${openelis.dir}"/>
-	          <classes dir="${bin.dir}"
+	      	  <fileset dir="war/openelis">
+	      	  </fileset>
+	          <classes dir="war/WEB-INF/classes"
 	      	           includes="org/openelis/**/*" />
 	          <lib dir="lib"/>
-	      	  <lib dir="../OpenELIS-Lib-Tools/gwt-linux-UHL.1.5"
+	      	  <lib dir="war/WEB-INF/lib"
 	      	  	       includes="gwt-servlet.jar"/>
-	      	  <lib dir="../OpenELIS-Lib"
-	      	           includes="openelis-lib.jar"/>
-	      	   <lib dir="build"
-	      	           includes="openelis-common.jar"/>
 	      	  <lib dir="build"
-	      	           includes="elissecurity.jar"/>
+	      	           includes="openelis-lib.jar,openelis-common.jar,elissecurity.jar" />
+	      	  
 	      </war>
-	   </target>
+	   <!-- 
+       <zip destfile="OpenELIS.war" basedir="war"/>-->
+  </target>
+  
+  <target name="deploy-openelis" depends="war">
+	  <copy file="OpenELIS.war" todir="/usr/pub/http/Application" />
+  </target>
 
-   <!-- ***************************************************************** -->
-   <!-- THE DEPLOY THE SERVLET WARFILES                                   -->
-   <!-- ***************************************************************** -->
-
-   <!-- Build the various report warfiles -->
-
-	   <target name="deploy-openelis" depends="openelis-web">
-	       <copy file="${build.dir}/openelis.war" todir="${webapp.dir}" />
-	   </target>
-
-   <!-- Removes all generated files and directories -->
-
-   <target name="clean" depends="init">
-       <delete includeemptydirs="true">
-           <fileset dir="${build.dir}" includes="**/*" />
-       </delete>
-   </target>
+  <target name="clean" description="Cleans this project">
+    <delete dir="war/WEB-INF/classes" failonerror="false" />
+    <delete dir="war/openelis" failonerror="false" />
+  </target>
 
 </project>

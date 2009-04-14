@@ -49,8 +49,7 @@ public interface AuxiliaryRemote {
   public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception;
  
   public Integer updateAuxiliary(AuxFieldGroupDO auxFieldGroupDO,
-                                 List<AuxFieldDO> auxFields,
-                                 List<AuxFieldValueDO> auxFieldValues)throws Exception;
+                                 List<AuxFieldDO> auxFields)throws Exception;
   
   public AuxFieldGroupDO getAuxFieldGroupAndUnlock(Integer auxFieldGroupId,String session);
   
@@ -58,12 +57,10 @@ public interface AuxiliaryRemote {
                                                  String session) throws Exception ;
   
   public List<Exception> validateForAdd(AuxFieldGroupDO auxFieldGroupDO,
-                                 List<AuxFieldDO> auxFields,
-                                 List<AuxFieldValueDO> auxFieldValues);
+                                 List<AuxFieldDO> auxFields);
   
   public List<Exception> validateForUpdate(AuxFieldGroupDO auxFieldGroupDO,
-                                 List<AuxFieldDO> auxFields,
-                                 List<AuxFieldValueDO> auxFieldValues);
+                                 List<AuxFieldDO> auxFields);
 
   public List getMatchingEntries(String name,int maxResults,String cat);
 

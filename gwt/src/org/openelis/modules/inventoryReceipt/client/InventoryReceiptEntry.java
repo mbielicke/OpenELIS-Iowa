@@ -37,18 +37,11 @@ public class InventoryReceiptEntry implements AppModule {
         ClassFactory.addClassFactory(new String[] {"InventoryReceiptScreen"}, 
                                new ClassFactory.Factory() {
                                    public Object newInstance(Object[] args) {
-                                       return new InventoryReceiptScreen();
+                                       return new InventoryReceiptScreen((Object[])args);
                                    }
                                 }
         );
         
-        ClassFactory.addClassFactory(new String[] {"InventoryReceiptAutoParams"}, 
-                              new ClassFactory.Factory() {
-                                  public Object newInstance(Object[] args) {
-                                      return new InventoryReceiptAutoParams();
-                                  }
-                               }
-       );
     }
 
     public String getModuleName() {
