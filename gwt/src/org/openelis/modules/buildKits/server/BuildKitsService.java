@@ -400,7 +400,7 @@ public class BuildKitsService implements AppScreenFormServiceInt<BuildKitsForm, 
     
     public void unlockLocations(InvReceiptItemInfoForm rpc){
         InventoryReceiptRemote remote = (InventoryReceiptRemote)EJBFactory.lookup("openelis/InventoryReceiptBean/remote");
-        remote.unlockLocations(rpc.lockedLocIds);
+        remote.unlockLocations(rpc.lockedIds);
         
     }
 }

@@ -73,7 +73,7 @@ public class InvReceiptItemInfoForm extends Form<Integer> {
     public String itemIsSerialMaintained;
     
     //used to unlock the rows
-    public TableDataModel<TableDataRow<Integer>> lockedLocIds;
+    public TableDataModel<TableDataRow<Integer>> lockedIds;
     
     public InvReceiptItemInfoForm() {
        InventoryReceiptMetaMap meta = new InventoryReceiptMetaMap();

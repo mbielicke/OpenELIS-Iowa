@@ -320,13 +320,14 @@ public class InventoryReceiptScreen extends OpenELISScreenForm<InventoryReceiptF
                }
             });
             
-        }else if(state == State.ADD && !screenType.equals("receipt")){
-                //unlock the record
+        }else if(state == State.ADD){
+            if(screenType.equals("receipt")){
+                //unlock the order records
                 InvReceiptItemInfoForm iriif = new InvReceiptItemInfoForm();
-                iriif.lockedLocIds = getLockedSetsFromTable();
+                iriif.lockedIds = getLockedSetsFromTable();
 
-                screenService.call("unlockLocations", iriif, new AsyncCallback<FillOrderItemInfoForm>() {
-                    public void onSuccess(FillOrderItemInfoForm result) {
+                screenService.call("unlockOrders", iriif, new AsyncCallback() {
+                    public void onSuccess(Object result) {
                         superAbort();
                         
                    }
@@ -335,6 +336,22 @@ public class InventoryReceiptScreen extends OpenELISScreenForm<InventoryReceiptF
                        Window.alert(caught.getMessage());
                    }
                     });
+            }else{
+                //unlock the loc records
+                InvReceiptItemInfoForm iriif = new InvReceiptItemInfoForm();
+                iriif.lockedIds = getLockedSetsFromTable();
+
+                screenService.call("unlockLocations", iriif, new AsyncCallback() {
+                    public void onSuccess(Object result) {
+                        superAbort();
+                        
+                   }
+
+                   public void onFailure(Throwable caught) {
+                       Window.alert(caught.getMessage());
+                   }
+                    });
+            }
         }else{
             super.abort();
         }
@@ -429,19 +446,16 @@ public class InventoryReceiptScreen extends OpenELISScreenForm<InventoryReceiptF
                 if(hiddenRPC != null && hiddenRPC.disableOrg)
                     return false;
             }
-            currentEditingRow = row;
             return true;
         }else{
-            if(state == State.UPDATE || state == State.ADD){
-            currentEditingRow = row;
-            
-            return true;
-            }
+            if(state == State.UPDATE || state == State.ADD)
+                return true;
         }
         return false;
     }
 
     public boolean canSelect(TableWidget widget, TableDataRow set, int row) {
+        currentEditingRow = row;
         return true;
     }
     
@@ -471,27 +485,26 @@ public class InventoryReceiptScreen extends OpenELISScreenForm<InventoryReceiptF
         if("receipt".equals(screenType)){
             //we need to try and lookup the order using the order number that they have entered
             if(col == 0 && row < receiptsTable.model.numRows() && receiptTableRowEmpty(receiptsTable.model.getRow(row), false)){
-                window.setStatus("","spinnerIcon");
+                window.setBusy();
 
-                // prepare the argument list
-                //InventoryReceiptRPC irrpc = new InventoryReceiptRPC();
-                //irrpc.key = form.key;
-                //irrpc.form = form.form;
                 form.orderId = (Integer)receiptsTable.model.getCell(row, 0);
                 
-                screenService.call("getReceipts", form, new AsyncCallback<InventoryReceiptForm>(){
+                screenService.call("getReceiptsAndLockOrder", form, new AsyncCallback<InventoryReceiptForm>(){
                     public void onSuccess(InventoryReceiptForm result){    
                         if(result.tableRows.size() > 0){
                             createReceiptRows(row, result.tableRows);
+                            receiptsTable.table.activeCell = -1;
+                            receiptsTable.table.activeRow = -1;
                             receiptsTable.table.select(row, 1);
+                            
                         }
                         
-                        window.setStatus("","");
+                        window.clearStatus();
                     }
                     
                     public void onFailure(Throwable caught){
                         Window.alert(caught.getMessage());
-                        window.setStatus("","");
+                        window.clearStatus();
                     }
                 });
             }else if(col == 2 && row > -1 && row < receiptsTable.model.numRows()){
@@ -938,7 +951,7 @@ public class InventoryReceiptScreen extends OpenELISScreenForm<InventoryReceiptF
                     setData = (ReceiptInvItemKey)selected.get(0).getData();
                 
                 if(setData != null && setData.parentInvItemId != null)
-                    rilrpc.invItemId = setData.parentInvItemId;
+                    rilrpc.parentInvItemId = setData.parentInvItemId;
                 else
                     rilrpc.invItemId = (Integer)((DropDownField)receiptsTable.model.getObject(currentEditingRow, 0)).getSelectedKey();
             }
@@ -1018,11 +1031,17 @@ public class InventoryReceiptScreen extends OpenELISScreenForm<InventoryReceiptF
     private TableDataModel<TableDataRow<Integer>> getLockedSetsFromTable(){
         TableDataModel<TableDataRow<Integer>> returnModel = new TableDataModel<TableDataRow<Integer>>();
         for(int i=0; i<receiptsTable.model.numRows(); i++){
-            ArrayList<TableDataRow<Integer>> selections = ((DropDownField<Integer>)receiptsTable.model.getObject(i, 0)).getValue();
-            
-            if(selections.size() == 1){
-                ReceiptInvItemKey setData = (ReceiptInvItemKey)selections.get(0).getData();
-                returnModel.add(new TableDataRow<Integer>(setData.locId));
+            if(screenType.equals("receipt")){
+                if(receiptsTable.model.getCell(i, 0) != null)
+                    returnModel.add(new TableDataRow<Integer>((Integer)receiptsTable.model.getCell(i, 0)));
+                
+            }else{
+                ArrayList<TableDataRow<Integer>> selections = ((DropDownField<Integer>)receiptsTable.model.getObject(i, 0)).getValue();
+                
+                if(selections.size() == 1){
+                    ReceiptInvItemKey setData = (ReceiptInvItemKey)selections.get(0).getData();
+                    returnModel.add(new TableDataRow<Integer>(setData.locId));
+                }
             }
         }
             
