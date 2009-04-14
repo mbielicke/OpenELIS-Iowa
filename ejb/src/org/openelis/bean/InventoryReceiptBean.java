@@ -99,7 +99,7 @@ public class InventoryReceiptBean implements InventoryReceiptRemote{
         } 
     }
     
-    public List getInventoryReceiptRecords(Integer orderId) {
+    public List getInventoryReceiptRecordsAndLock(Integer orderId) throws Exception{
         //get order item id for things that have yet to be received
         Query query = manager.createNamedQuery("InventoryReceipt.OrderItemListByOrderNum");
         query.setParameter("id", orderId);
@@ -112,6 +112,15 @@ public class InventoryReceiptBean implements InventoryReceiptRemote{
             query = manager.createNamedQuery("InventoryReceipt.InventoryReceiptNotRecByOrderId");
             query.setParameter("id", (Integer)orderItemIdsNotRecieved.get(j));
             inventoryReceiptList.add((InventoryReceiptDO)query.getResultList().get(0));
+        }
+        
+        //if we have records we need to lock the order
+        if(inventoryReceiptList.size() > 0){
+            query = manager.createNamedQuery("getTableId");
+            query.setParameter("name", "order");
+            Integer orderRefId = (Integer)query.getSingleResult();
+            
+            lockBean.getLock(orderRefId, orderId);
         }
         
         return inventoryReceiptList;
@@ -166,6 +175,15 @@ public class InventoryReceiptBean implements InventoryReceiptRemote{
         
         for(int i=0; i<locIds.size(); i++)
             lockBean.giveUpLock(inventoryLocationId, locIds.get(i).key);
+    }
+    
+    public void unlockOrders(TableDataModel<TableDataRow<Integer>> orderIds) {
+        Query query = manager.createNamedQuery("getTableId");
+        query.setParameter("name", "order");
+        Integer orderRefId = (Integer)query.getSingleResult();
+        
+        for(int i=0; i<orderIds.size(); i++)
+            lockBean.giveUpLock(orderRefId, orderIds.get(i).key);
     }
     
     public List query(ArrayList<AbstractField> fields, int first, int max, boolean receipt) throws Exception {

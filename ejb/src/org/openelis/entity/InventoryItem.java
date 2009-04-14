@@ -98,17 +98,14 @@ import org.w3c.dom.Element;
                             
                             
                             
-                            
-     @NamedQuery(name = "InventoryItem.AutocompleteItemStoreChildrenByName", query = "select distinct new org.openelis.domain.InventoryItemAutoDO(i.id, i.name, store.entry, i.description, disUnit.entry, " +
+     @NamedQuery(name = "InventoryItem.AutocompleteItemStoreChildrenByNameId", query = "select distinct new org.openelis.domain.InventoryItemAutoDO(i.id, i.name, store.entry, i.description, disUnit.entry, " +
                             " i.isBulk, i.isLotMaintained, i.isSerialMaintained, i.parentRatio, i.parentInventoryItemId) " +
-                            " from InventoryItem i, Dictionary store, Dictionary disUnit where i.storeId = store.id and i.dispensedUnitsId = disUnit.id and (i.parentInventoryItemId = :parentId or i.id = :parentId) and " +
-                            " i.name like :name and i.isActive = 'Y' " +
-                            " and i.isNotForSale = 'N' order by i.name "
-                            /*" UNION ALL " + 
-                            " select distinct new org.openelis.domain.InventoryItemAutoDO(i.id, i.name, store.entry, i.description, disUnit.entry, " +
-                            " i.isBulk, i.isLotMaintained, i.isSerialMaintained, i.parentRatio) " +
-                            " from InventoryItem i, Dictionary store, Dictionary disUnit where i.storeId = store.id and i.dispensedUnitsId = disUnit.id and i.id = :parentId and " +
-                            " i.name like :name and i.isActive = 'Y' and i.isNotForSale = 'N' order by i.name"*/),
+                            " from InventoryItem i, Dictionary store, Dictionary disUnit where i.storeId = store.id and i.dispensedUnitsId = disUnit.id and i.parentInventoryItemId = :id and " +
+                            " i.name like :name and i.isActive = 'Y' and i.isNotForSale = 'N' order by i.name "),           
+     @NamedQuery(name = "InventoryItem.AutocompleteItemStoreChildrenByNameParentId", query = "select distinct new org.openelis.domain.InventoryItemAutoDO(i.id, i.name, store.entry, i.description, disUnit.entry, " +
+                            " i.isBulk, i.isLotMaintained, i.isSerialMaintained, i.parentRatio, i.parentInventoryItemId) " +
+                            " from InventoryItem i, Dictionary store, Dictionary disUnit where i.storeId = store.id and i.dispensedUnitsId = disUnit.id and i.id = :id and " +
+                            " i.name like :name and i.isActive = 'Y' and i.isNotForSale = 'N' order by i.name "),
                             
                             
                             

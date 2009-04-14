@@ -42,7 +42,7 @@ public interface InventoryReceiptRemote {
                                 TRANSFER          = "transfer";
     
     //method to return inventory records by order number
-    public List getInventoryReceiptRecords(Integer orderId);
+    public List getInventoryReceiptRecordsAndLock(Integer orderId) throws Exception;
     
     //commit a change to inventory receipt, or insert a new inventory receipt
     public void updateInventoryReceipt(List inventoryReceipts) throws Exception;
@@ -63,6 +63,8 @@ public interface InventoryReceiptRemote {
      public List queryAndUnlock(ArrayList<AbstractField> fields, int first, int max, boolean receipt) throws Exception;
      
      public void unlockLocations(TableDataModel<TableDataRow<Integer>> locIds);
+     
+     public void unlockOrders(TableDataModel<TableDataRow<Integer>> orderIds);
      
      //auto complete lookup
      public List autoCompleteLocationLookupByName(String name, int maxResults);
