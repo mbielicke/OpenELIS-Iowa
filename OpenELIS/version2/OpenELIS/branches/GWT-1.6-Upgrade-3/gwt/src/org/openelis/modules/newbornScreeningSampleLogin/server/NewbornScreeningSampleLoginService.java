@@ -76,21 +76,9 @@ public class NewbornScreeningSampleLoginService implements AppScreenFormServiceI
         return null;
     }
 
-    public String getXML() throws RPCException {
-        return ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/newbornScreeningSampleLogin.xsl");
-    }
-
-    public HashMap<String, FieldType> getXMLData() throws RPCException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public HashMap<String, FieldType> getXMLData(HashMap<String, FieldType> args) throws RPCException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-    
-    public NewbornScreeningSampleLoginForm getScreen(NewbornScreeningSampleLoginForm rpc){
+    public NewbornScreeningSampleLoginForm getScreen(NewbornScreeningSampleLoginForm rpc) throws RPCException {
+        rpc.xml = ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/newbornScreeningSampleLogin.xsl");
+        
         return rpc;
     }
 }

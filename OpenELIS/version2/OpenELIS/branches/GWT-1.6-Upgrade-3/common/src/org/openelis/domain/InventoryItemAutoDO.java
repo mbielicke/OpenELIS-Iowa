@@ -48,6 +48,7 @@ public class InventoryItemAutoDO implements Serializable{
     protected String isBulk;
     protected String isLotMaintained;
     protected String isSerialMaintained;
+    protected Integer parentInventoryItemId;
     protected Integer parentRatio;
     
     public Integer getParentRatio() {
@@ -105,7 +106,7 @@ public class InventoryItemAutoDO implements Serializable{
     
     public InventoryItemAutoDO(Integer id, String name, String description, String store, Integer locationId, String childStorageLocName, String childStorageLocLocation,  
                                String parentStorageLocName, String childStorageUnit, String lotNum, Date expDate, Integer quantityOnHand, String dispensedUnits,
-                               String isBulk, String isLotMaintained, String isSerialMaintained){
+                               String isBulk, String isLotMaintained, String isSerialMaintained, Integer parentRatio, Integer parentInventoryItemId){
         setId(id);
         setName(name);
         setDescription(description);
@@ -127,10 +128,13 @@ public class InventoryItemAutoDO implements Serializable{
         setIsBulk(isBulk);
         setIsLotMaintained(isLotMaintained);
         setIsSerialMaintained(isSerialMaintained);
+        
+        setParentInventoryItemId(parentInventoryItemId);
+        setParentRatio(parentRatio);
     }
      
     public InventoryItemAutoDO(Integer id, String name, String store, String description, String dispensedUnits, String isBulk, String isLotMaintained, 
-                               String isSerialMaintained, Integer parentRatio){
+                               String isSerialMaintained, Integer parentRatio, Integer parentInventoryItemId){
         setId(id);
         setName(name);
         setStore(store);
@@ -140,6 +144,7 @@ public class InventoryItemAutoDO implements Serializable{
         setIsBulk(isBulk);
         setIsLotMaintained(isLotMaintained);
         setIsSerialMaintained(isSerialMaintained);
+        setParentInventoryItemId(parentInventoryItemId);
         setParentRatio(parentRatio);
     }
     
@@ -257,5 +262,13 @@ public class InventoryItemAutoDO implements Serializable{
 
     public void setIsSerialMaintained(String isSerialMaintained) {
         this.isSerialMaintained = DataBaseUtil.trim(isSerialMaintained);
+    }
+
+    public Integer getParentInventoryItemId() {
+        return parentInventoryItemId;
+    }
+
+    public void setParentInventoryItemId(Integer parentInventoryItemId) {
+        this.parentInventoryItemId = parentInventoryItemId;
     }
 }

@@ -29,6 +29,7 @@ import org.openelis.domain.BuildKitComponentDO;
 import org.openelis.domain.BuildKitDO;
 import org.openelis.domain.InventoryComponentDO;
 import org.openelis.domain.InventoryItemAutoDO;
+import org.openelis.domain.InventoryLocationDO;
 import org.openelis.domain.StorageLocationAutoDO;
 import org.openelis.gwt.common.DatetimeRPC;
 import org.openelis.gwt.common.FieldErrorException;
@@ -54,6 +55,8 @@ import org.openelis.metamap.InventoryItemMetaMap;
 import org.openelis.modules.buildKits.client.BuildKitsForm;
 import org.openelis.modules.buildKits.client.BuildKitsInvItemKey;
 import org.openelis.modules.buildKits.client.SubLocationAutoRPC;
+import org.openelis.modules.inventoryReceipt.client.InvReceiptItemInfoForm;
+import org.openelis.modules.inventoryReceipt.client.TransferLocationRPC;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.BuildKitsRemote;
 import org.openelis.remote.InventoryItemRemote;
@@ -376,5 +379,28 @@ public class BuildKitsService implements AppScreenFormServiceInt<BuildKitsForm, 
             }        
         
         form.status = Form.Status.invalid;
+    }
+    
+    public BuildKitsForm fetchLocationAndLock(BuildKitsForm rpc) throws RPCException {
+        InventoryReceiptRemote remote = (InventoryReceiptRemote)EJBFactory.lookup("openelis/InventoryReceiptBean/remote");
+        InventoryLocationDO locDO;
+        
+        try{
+            locDO = remote.lockLocationAndFetch(rpc.lastLocId, rpc.locId);
+
+        }catch(Exception e){
+            throw new RPCException(e.getMessage());
+        }
+
+        if(locDO != null)
+            rpc.qtyOnHand = locDO.getQuantityOnHand();
+        
+        return rpc;
+    }
+    
+    public void unlockLocations(InvReceiptItemInfoForm rpc){
+        InventoryReceiptRemote remote = (InventoryReceiptRemote)EJBFactory.lookup("openelis/InventoryReceiptBean/remote");
+        remote.unlockLocations(rpc.lockedLocIds);
+        
     }
 }

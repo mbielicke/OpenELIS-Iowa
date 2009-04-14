@@ -58,6 +58,7 @@ public class InventoryItemDO implements Serializable{
     protected String parentInventoryItem;
     protected Integer parentInventoryItemId;
     protected Integer parentRatio;
+    protected String manufacturingText;
 	
     public InventoryItemDO(){
         
@@ -295,5 +296,13 @@ public class InventoryItemDO implements Serializable{
 
     public void setParentInventoryItem(String parentInventoryItem) {
         this.parentInventoryItem = DataBaseUtil.trim(parentInventoryItem);
+    }
+
+    public String getManufacturingText() {
+        return manufacturingText;
+    }
+
+    public void setManufacturingText(String manufacturingText) {
+        this.manufacturingText = DataBaseUtil.trim(manufacturingText);
     }
 }

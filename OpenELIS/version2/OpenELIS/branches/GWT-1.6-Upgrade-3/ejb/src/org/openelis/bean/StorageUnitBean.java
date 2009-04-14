@@ -25,20 +25,6 @@
 */
 package org.openelis.bean;
 
-import org.jboss.annotation.security.SecurityDomain;
-import org.openelis.domain.StorageUnitDO;
-import org.openelis.entity.StorageUnit;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.RPCException;
-import org.openelis.gwt.common.data.AbstractField;
-import org.openelis.local.LockLocal;
-import org.openelis.metamap.StorageUnitMetaMap;
-import org.openelis.remote.StorageUnitRemote;
-import org.openelis.util.QueryBuilder;
-import org.openelis.utils.GetPage;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,6 +39,20 @@ import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+
+import org.jboss.annotation.security.SecurityDomain;
+import org.openelis.domain.StorageUnitDO;
+import org.openelis.entity.StorageUnit;
+import org.openelis.gwt.common.FieldErrorException;
+import org.openelis.gwt.common.FormErrorException;
+import org.openelis.gwt.common.LastPageException;
+import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.gwt.common.data.AbstractField;
+import org.openelis.local.LockLocal;
+import org.openelis.metamap.StorageUnitMetaMap;
+import org.openelis.remote.StorageUnitRemote;
+import org.openelis.util.QueryBuilder;
+import org.openelis.utils.GetPage;
 
 @Stateless
 @EJBs({
@@ -117,20 +117,14 @@ public class StorageUnitBean implements StorageUnitRemote{
         query.setParameter("name", "storage_unit");
         Integer storageUnitReferenceId = (Integer)query.getSingleResult();
         
-        if(unitDO.getId() != null){
-            lockBean.getLock(storageUnitReferenceId,unitDO.getId());
-        }
+        if(unitDO.getId() != null)
+            lockBean.validateLock(storageUnitReferenceId,unitDO.getId());
+        
+        validateStorageUnit(unitDO);
         
 		manager.setFlushMode(FlushModeType.COMMIT);
 		StorageUnit storageUnit = null;
 		
-		//validate the analyte record
-        List exceptionList = new ArrayList();
-        validateStorageUnit(unitDO, exceptionList);
-        if(exceptionList.size() > 0){
-        	throw (RPCException)exceptionList.get(0);
-        }
-        
         if (unitDO.getId() == null)
         	storageUnit = new StorageUnit();
         else
@@ -180,18 +174,13 @@ public class StorageUnitBean implements StorageUnitRemote{
     	Query lockQuery = manager.createNamedQuery("getTableId");
 		lockQuery.setParameter("name", "storage_unit");
 		Integer storageUnitTableId = (Integer)lockQuery.getSingleResult();
-        lockBean.getLock(storageUnitTableId, storageUnitId);
+        lockBean.validateLock(storageUnitTableId, storageUnitId);
+        
+        validateForDelete(storageUnitId);
         
 		manager.setFlushMode(FlushModeType.COMMIT);
 		StorageUnit storageUnit = null;
 		
-		//validate the storage unit record
-        List exceptionList = new ArrayList();
-        exceptionList = validateForDelete(storageUnitId);
-        if(exceptionList.size() > 0){
-        	throw (RPCException)exceptionList.get(0);
-        }
-        
 		//then we need to delete it
 		try {
             	storageUnit = manager.find(StorageUnit.class, storageUnitId);
@@ -214,16 +203,9 @@ public class StorageUnitBean implements StorageUnitRemote{
 		return query.getResultList();
 	}
 
-	public List validateForAdd(StorageUnitDO storageUnitDO) {
-		List exceptionList = new ArrayList();
-		
-		validateStorageUnit(storageUnitDO, exceptionList);
-		
-		return exceptionList;
-	}
-
-	public List validateForDelete(Integer storageUnitId) {
-		List exceptionList = new ArrayList();
+	public void validateForDelete(Integer storageUnitId) throws Exception {
+	    ValidationErrorsList list = new ValidationErrorsList();
+	      
 		//make sure no analytes are pointing to this record
 		Query query = null;
 		query = manager.createNamedQuery("StorageLocation.IdByStorageUnit");
@@ -231,30 +213,27 @@ public class StorageUnitBean implements StorageUnitRemote{
 		List linkedRecords = query.getResultList();
 
 		if(linkedRecords.size() > 0){
-			exceptionList.add(new FormErrorException("storageUnitDeleteException"));
+		    list.add(new FormErrorException("storageUnitDeleteException"));
 		}
 		
-		return exceptionList;
+		if(list.size() > 0)
+            throw list;
 	}
 
-	public List validateForUpdate(StorageUnitDO storageUnitDO) {
-		List exceptionList = new ArrayList();
-		
-		validateStorageUnit(storageUnitDO, exceptionList);
-		
-		return exceptionList;
-	}	 
-	
-	private void validateStorageUnit(StorageUnitDO storageUnitDO, List exceptionList){
+	private void validateStorageUnit(StorageUnitDO storageUnitDO) throws Exception{
+	    ValidationErrorsList list = new ValidationErrorsList();
+	    
 		//category required
 		if(storageUnitDO.getCategory() == null || "".equals(storageUnitDO.getCategory())){
-			exceptionList.add(new FieldErrorException("fieldRequiredException",StorageUnitMeta.getCategory()));
+		    list.add(new FieldErrorException("fieldRequiredException",StorageUnitMeta.getCategory()));
 		}
 		
 		//description required
 		if(storageUnitDO.getDescription() == null || "".equals(storageUnitDO.getDescription())){
-			exceptionList.add(new FieldErrorException("fieldRequiredException",StorageUnitMeta.getDescription()));
+		    list.add(new FieldErrorException("fieldRequiredException",StorageUnitMeta.getDescription()));
 		}
 		
+		if(list.size() > 0)
+            throw list;
 	}
 }

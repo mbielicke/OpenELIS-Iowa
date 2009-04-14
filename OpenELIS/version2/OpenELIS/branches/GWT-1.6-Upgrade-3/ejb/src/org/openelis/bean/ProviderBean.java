@@ -120,37 +120,21 @@ public class ProviderBean implements ProviderRemote {
 
     public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception {
         
-        Query refIdQuery = manager.createNamedQuery("getTableId");
-        refIdQuery.setParameter("name", "provider");
-        //Integer providerReferenceId = (Integer)refIdQuery.getSingleResult();
-               
+       Query refIdQuery = manager.createNamedQuery("getTableId");
+       refIdQuery.setParameter("name", "provider");                       
         
-        StringBuffer sb = new StringBuffer();
-        QueryBuilder qb = new QueryBuilder();
-         
-       //ProviderMeta providerMeta = ProviderMeta.getInstance();
-       //ProviderAddressMeta providerAddressMeta = ProviderAddressMeta.getInstance();
-       //ProviderAddressAddressMeta providerAddressAddressMeta = ProviderAddressAddressMeta.getInstance();
-       //ProviderNoteMeta providerNoteMeta = ProviderNoteMeta.getInstance();
-       
-       //qb.addMeta(new Meta[]{providerMeta, providerAddressMeta, providerAddressAddressMeta, providerNoteMeta});
+       StringBuffer sb = new StringBuffer();
+       QueryBuilder qb = new QueryBuilder();
+                
        qb.setMeta(ProvMeta);
         
        qb.setSelect("distinct new org.openelis.domain.IdLastNameFirstNameDO("+ProvMeta.getId()+", "+ProvMeta.getLastName()+", "+ProvMeta.getFirstName() + ") ");
-       //qb.addTable(providerMeta);
        
        
        //this method is going to throw an exception if a column doesnt match
        qb.addWhere(fields);   
        
-       qb.setOrderBy(ProvMeta.getLastName()+", "+ProvMeta.getFirstName());
-       
-      // if(qb.hasTable(providerAddressAddressMeta.getTable()))
-       //    qb.addTable(providerAddressMeta);
-          
-       //if(qb.hasTable(providerNoteMeta.getTable())){
-       //    qb.addWhere(ProviderNoteMeta.REFERENCE_TABLE+" = "+providerReferenceId+" or "+ProviderNoteMeta.REFERENCE_TABLE+" is null");
-       //   }
+       qb.setOrderBy(ProvMeta.getLastName()+", "+ProvMeta.getFirstName());       
           
        sb.append(qb.getEJBQL());       
        Query query = manager.createQuery(sb.toString());
@@ -177,6 +161,11 @@ public class ProviderBean implements ProviderRemote {
         
         if(providerDO.getId() != null){
             //we need to call lock one more time to make sure their lock didnt expire and someone else grabbed the record
+            try {
+                lockBean.validateLock(providerReferenceId,providerDO.getId());
+              } catch(Exception ex) {
+                 throw ex;
+              }    
             lockBean.getLock(providerReferenceId, providerDO.getId());
         }
         

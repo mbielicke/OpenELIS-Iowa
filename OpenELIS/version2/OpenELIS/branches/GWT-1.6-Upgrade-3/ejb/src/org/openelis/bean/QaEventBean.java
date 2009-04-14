@@ -94,27 +94,16 @@ public class QaEventBean implements QaEventRemote{
 
     public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception {
         StringBuffer sb = new StringBuffer();
-        //QueryBuilder qb = new QueryBuilder();     
+             
         QueryBuilder qb = new QueryBuilder();
-        
-        //QaEventMeta qaEventMeta  = QaEventMeta.getInstance();
-        //QaEventTestMeta qaEventTestMeta = QaEventTestMeta.getInstance();
-        //QaEventMethodMeta qaEventMethodMeta = QaEventMethodMeta.getInstance();
-        
-        //qb.addMeta(new Meta[]{qaEventMeta, qaEventTestMeta, qaEventMethodMeta});
-        qb.setMeta(QaeMeta);
-        //qb.setSelect("distinct new org.openelis.domain.IdNameTestMethodDO("+ QaEventMeta.ID+", "+QaEventMeta.NAME+", "+QaEventTestMeta.NAME+", "+QaEventMethodMeta.NAME + ") ");
-        qb.setSelect("distinct new org.openelis.domain.IdNameTestMethodDO("+ QaeMeta.getId()+", "+QaeMeta.getName()+", "+QaeMeta.getTest().getName()+", "+QaeMeta.getTest().getMethod().getName() + ") ");
-        //qb.addTable(qaEventMeta);
+               
+        qb.setMeta(QaeMeta);        
+        qb.setSelect("distinct new org.openelis.domain.IdNameTestMethodDO("+ QaeMeta.getId()+", "+QaeMeta.getName()+", "+QaeMeta.getTest().getName()+", "+QaeMeta.getTest().getMethod().getName() + ") ");        
         
         //this method is going to throw an exception if a column doesnt match
         qb.addWhere(fields);
-        
-        //qb.setOrderBy(QaEventMeta.NAME+", "+QaEventTestMeta.NAME+", "+QaEventMethodMeta.NAME);
-        qb.setOrderBy(QaeMeta.getName()+", "+QaeMeta.getTest().getName()+", "+QaeMeta.getTest().getMethod().getName());        
-        
-           // qb.addTable(qaEventTestMeta);
-           // qb.addTable(qaEventMethodMeta);
+                
+        qb.setOrderBy(QaeMeta.getName()+", "+QaeMeta.getTest().getName()+", "+QaeMeta.getTest().getMethod().getName());                           
                 
         sb.append(qb.getEJBQL());                 
         Query query = manager.createQuery(sb.toString());
@@ -140,6 +129,11 @@ public class QaEventBean implements QaEventRemote{
         
         if(qaEventDO.getId() != null){
             //we need to call lock one more time to make sure their lock didnt expire and someone else grabbed the record
+            try {
+                lockBean.validateLock(qaEventReferenceId,qaEventDO.getId());
+              } catch(Exception ex) {
+                 throw ex;
+             }    
             lockBean.getLock(qaEventReferenceId, qaEventDO.getId());
         }
         

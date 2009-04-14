@@ -25,25 +25,6 @@
 */
 package org.openelis.bean;
 
-import org.jboss.annotation.security.SecurityDomain;
-import org.openelis.domain.InventoryComponentDO;
-import org.openelis.domain.InventoryItemDO;
-import org.openelis.domain.NoteDO;
-import org.openelis.entity.InventoryComponent;
-import org.openelis.entity.InventoryItem;
-import org.openelis.entity.Note;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.RPCException;
-import org.openelis.gwt.common.TableFieldErrorException;
-import org.openelis.gwt.common.data.AbstractField;
-import org.openelis.local.LockLocal;
-import org.openelis.metamap.InventoryItemMetaMap;
-import org.openelis.remote.InventoryItemRemote;
-import org.openelis.util.Datetime;
-import org.openelis.util.QueryBuilder;
-import org.openelis.utils.GetPage;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -58,6 +39,25 @@ import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+
+import org.jboss.annotation.security.SecurityDomain;
+import org.openelis.domain.InventoryComponentDO;
+import org.openelis.domain.InventoryItemDO;
+import org.openelis.domain.NoteDO;
+import org.openelis.entity.InventoryComponent;
+import org.openelis.entity.InventoryItem;
+import org.openelis.entity.Note;
+import org.openelis.gwt.common.FieldErrorException;
+import org.openelis.gwt.common.LastPageException;
+import org.openelis.gwt.common.TableFieldErrorException;
+import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.gwt.common.data.AbstractField;
+import org.openelis.local.LockLocal;
+import org.openelis.metamap.InventoryItemMetaMap;
+import org.openelis.remote.InventoryItemRemote;
+import org.openelis.util.Datetime;
+import org.openelis.util.QueryBuilder;
+import org.openelis.utils.GetPage;
 
 @Stateless
 @EJBs({
@@ -136,6 +136,20 @@ public class InventoryItemBean implements InventoryItemRemote{
 
         return notes;
 	}
+	
+	public NoteDO getInventoryMaunfacturingRecipe(Integer inventoryItemId){
+	    Query query = null;
+        
+        query = manager.createNamedQuery("InventoryItem.Manufacturing"); 
+        query.setParameter("id", inventoryItemId);
+        
+        List notes = query.getResultList();// getting list of noteDOs from the item id
+
+        if(notes != null && notes.size() > 0)
+            return (NoteDO)notes.get(0);
+        else 
+            return null;
+	}
 
 	public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception {
         
@@ -172,16 +186,24 @@ public class InventoryItemBean implements InventoryItemRemote{
 	}
 
     @RolesAllowed("inventory-update")
-	public Integer updateInventory(InventoryItemDO inventoryItemDO, List components, NoteDO noteDO) throws Exception {
+	public Integer updateInventory(InventoryItemDO inventoryItemDO, List components, NoteDO noteDO, NoteDO manufacturingNote) throws Exception {
         //inventory item reference table id
         Query query = manager.createNamedQuery("getTableId");
         query.setParameter("name", "inventory_item");
         Integer inventoryItemReferenceId = (Integer)query.getSingleResult();
         
+      //inventory item manufacturing reference table id
+        query = manager.createNamedQuery("getTableId");
+        query.setParameter("name", "inventory_item_manufacturing");
+        Integer inventoryItemManRefId = (Integer)query.getSingleResult();
+        
         if(inventoryItemDO.getId() != null){
             //we need to call lock one more time to make sure their lock didnt expire and someone else grabbed the record
-            lockBean.getLock(inventoryItemReferenceId,inventoryItemDO.getId());
+            lockBean.validateLock(inventoryItemReferenceId,inventoryItemDO.getId());
         }
+        
+        //validate inventory item
+        validateInventoryItem(inventoryItemDO, components);
         
          manager.setFlushMode(FlushModeType.COMMIT);
          InventoryItem inventoryItem = null;
@@ -190,13 +212,6 @@ public class InventoryItemBean implements InventoryItemRemote{
              inventoryItem = new InventoryItem();
         else
             inventoryItem = manager.find(InventoryItem.class, inventoryItemDO.getId());
-         
-         //validate the inventory item record
-         List exceptionList = new ArrayList();
-         validateInventoryItem(inventoryItemDO, exceptionList);
-         if(exceptionList.size() > 0){
-            throw (RPCException)exceptionList.get(0);
-         }
          
          //update the inventory record
          inventoryItem.setAverageCost(inventoryItemDO.getAveCost());
@@ -233,13 +248,6 @@ public class InventoryItemBean implements InventoryItemRemote{
             InventoryComponentDO componentDO = (InventoryComponentDO) components.get(i);
              InventoryComponent component = null;
              
-             //validate the component records
-             exceptionList = new ArrayList();
-             validateInventoryComponent(componentDO, inventoryItemDO.getStore(), i, exceptionList);
-             if(exceptionList.size() > 0){
-                throw (RPCException)exceptionList.get(0);
-             }
-             
              if (componentDO.getId() == null)
                  component = new InventoryComponent();
              else
@@ -262,6 +270,7 @@ public class InventoryItemBean implements InventoryItemRemote{
          }
          
          //update note
+         System.out.println("update note");
          Note note = null;
          //we need to make sure the note is filled out...
          if(noteDO.getText() != null || noteDO.getSubject() != null){
@@ -278,6 +287,39 @@ public class InventoryItemBean implements InventoryItemRemote{
          //insert into note table if necessary
          if(note != null && note.getId() == null){
             manager.persist(note);
+         }
+         
+         System.out.println("update manu");
+         //update manufacturing note
+         Note manNote = null;
+         //we need to make sure the note is filled out...
+         if(manufacturingNote.getText() != null){
+             System.out.println("1");
+             if (manufacturingNote.getId() == null){
+              System.out.println("2a");   
+                 manNote = new Note();
+             }else{
+                 manNote = manager.find(Note.class, manufacturingNote.getId());
+                 System.out.println("2b");
+             }
+             System.out.println("3");
+             manNote.setIsExternal(manufacturingNote.getIsExternal());
+             System.out.println("4");
+             manNote.setReferenceId(inventoryItem.getId());
+             System.out.println("5");
+             manNote.setReferenceTableId(inventoryItemManRefId);
+             System.out.println("6");
+             manNote.setSystemUserId(lockBean.getSystemUserId());
+             System.out.println("7");
+             manNote.setText(manufacturingNote.getText());
+             System.out.println("8");
+             manNote.setTimestamp(Datetime.getInstance());
+             System.out.println("9");
+        }
+         
+         //insert into note table if necessary
+         if(manNote != null && manNote.getId() == null){
+            manager.persist(manNote);
          }
 
          lockBean.giveUpLock(inventoryItemReferenceId,inventoryItem.getId()); 
@@ -372,48 +414,22 @@ public class InventoryItemBean implements InventoryItemRemote{
         return (String)query.getSingleResult();
     }
     
-	public List validateForAdd(InventoryItemDO inventoryItemDO, List components) {
-	    List exceptionList = new ArrayList();
+	public void validateInventoryItem(InventoryItemDO inventoryItemDO, List components) throws Exception{
+	    ValidationErrorsList list = new ValidationErrorsList();
         
-        validateInventoryItem(inventoryItemDO, exceptionList);
-        
-        for(int i=0; i<components.size();i++){            
-            InventoryComponentDO componentDO = (InventoryComponentDO) components.get(i);
-            
-            validateInventoryComponent(componentDO, inventoryItemDO.getStore(), i, exceptionList);
-        }
-        
-        return exceptionList;
-	}
-
-	public List validateForUpdate(InventoryItemDO inventoryItemDO, List components) {
-	    List exceptionList = new ArrayList();
-        
-        validateInventoryItem(inventoryItemDO, exceptionList);
-        
-        for(int i=0; i<components.size();i++){            
-            InventoryComponentDO componentDO = (InventoryComponentDO) components.get(i);
-            
-            validateInventoryComponent(componentDO, inventoryItemDO.getStore(), i, exceptionList);
-        }
-        
-        return exceptionList;
-	}
-    
-    private void validateInventoryItem(InventoryItemDO inventoryItemDO, List exceptionList){
         //name required
         if(inventoryItemDO.getName() == null || "".equals(inventoryItemDO.getName())){
-            exceptionList.add(new FieldErrorException("fieldRequiredException",invItemMap.getName()));
+            list.add(new FieldErrorException("fieldRequiredException",invItemMap.getName()));
         }
         
         //store required
         if(inventoryItemDO.getStore() == null){
-            exceptionList.add(new FieldErrorException("fieldRequiredException",invItemMap.getStoreId()));
+            list.add(new FieldErrorException("fieldRequiredException",invItemMap.getStoreId()));
         }
         
         //dispensed units required
         if(inventoryItemDO.getDispensedUnits() == null){
-            exceptionList.add(new FieldErrorException("fieldRequiredException",invItemMap.getDispensedUnitsId()));
+            list.add(new FieldErrorException("fieldRequiredException",invItemMap.getDispensedUnitsId()));
         }
         
         //item has to have unique name,store duplicates
@@ -431,10 +447,16 @@ public class InventoryItemBean implements InventoryItemRemote{
         }
         
         if(query.getResultList().size() > 0)
-            exceptionList.add(new FieldErrorException("inventoryItemNameUniqueException",invItemMap.getName()));
-    }
+            list.add(new FieldErrorException("inventoryItemNameUniqueException",invItemMap.getName()));
+        
+        for(int i=0; i<components.size();i++)            
+            validateInventoryComponent((InventoryComponentDO)components.get(i), inventoryItemDO.getStore(), i, list);
+        
+        if(list.size() > 0)
+            throw list;
+	}
     
-    private void validateInventoryComponent(InventoryComponentDO componentDO, Integer inventoryItemStoreId, int rowIndex, List exceptionList){
+    private void validateInventoryComponent(InventoryComponentDO componentDO, Integer inventoryItemStoreId, int rowIndex, ValidationErrorsList exceptionList){
         //if the component is flagged for deletion dont validate
         if(componentDO.getDelete())
             return;

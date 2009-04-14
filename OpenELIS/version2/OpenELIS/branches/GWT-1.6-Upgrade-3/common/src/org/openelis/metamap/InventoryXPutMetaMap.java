@@ -58,7 +58,7 @@ public class InventoryXPutMetaMap extends InventoryXPutMeta implements MetaMap{
     public boolean hasColumn(String name){
         if(name.startsWith(path+"inventoryReceipt."))
             return INVENTORY_RECEIPT_META.hasColumn(name);
-        if(name.startsWith(path+"toLocation."))
+        if(name.startsWith(path+"inventoryLocation."))
             return INVENTORY_LOCATION_META.hasColumn(name);
         return super.hasColumn(name);
     }

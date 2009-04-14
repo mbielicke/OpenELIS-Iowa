@@ -52,6 +52,9 @@ public class BuildKitsForm extends Form<Integer>{
     
     public Integer kitId;
     public TableDataModel<TableDataRow<Integer>> subItemsModel;
+    public Integer locId;
+    public Integer lastLocId;
+    public Integer qtyOnHand;
     
     public BuildKitsForm() {
        InventoryItemMetaMap meta = new InventoryItemMetaMap();

@@ -54,7 +54,10 @@ public class InventoryReceiptDO implements Serializable{
     protected String fromStorageLocation;
     protected String fromItemDesc;
     protected Integer fromQtyOnHand;
-    protected Integer toParentRatio;
+    protected String fromItemStore;
+    protected String fromitemDispensedUnits;
+    protected Integer parentRatio;
+    protected Integer childRatio;
     protected AddressDO orgAddress = new AddressDO();
     protected String itemDesc;
     protected String itemStore;
@@ -163,7 +166,8 @@ public class InventoryReceiptDO implements Serializable{
                               Integer qty, Double cost, String qc, String extReference, String itemDesc, String itemStore, String itemDispensedUnits, Integer quantityRequested, 
                               String isBulk, String isLotMaintained, String isSerialMaintained, Integer storageLocationId, String storageLocName, String storageLocLocation, 
                               String storageUnitDescription, String lotNumber, Date expDate, Integer fromItemId, String fromItem, String fromItemDesc, 
-                              Integer fromStorageLocationId, String fromStorageLocName, String fromStorageUnitDescription, String fromStorageLocLocation, Integer fromQtyOnHand) {
+                              String fromStore, String fromDisUnits, Integer fromStorageLocationId, String fromStorageLocName, String fromStorageUnitDescription, 
+                              String fromStorageLocLocation, Integer fromQtyOnHand) {
         setId(id);
         setOrderNumber(orderNumber);
         setReceivedDate(dateReceived);
@@ -196,6 +200,8 @@ public class InventoryReceiptDO implements Serializable{
         setFromStorageLocationId(fromStorageLocationId);
         setFromStorageLocation(fromStorageLocName.trim()+", "+fromStorageUnitDescription.trim()+" "+fromStorageLocLocation.trim());
         setFromQtyOnHand(fromQtyOnHand);
+        setFromItemStore(fromStore);
+        setFromitemDispensedUnits(fromDisUnits);
     }
     
     /*used for order number entry*/
@@ -418,12 +424,12 @@ public class InventoryReceiptDO implements Serializable{
         this.itemDispensedUnits = DataBaseUtil.trim(itemDispensedUnits);
     }
 
-    public Integer getToParentRatio() {
-        return toParentRatio;
+    public Integer getParentRatio() {
+        return parentRatio;
     }
 
-    public void setToParentRatio(Integer toParentRatio) {
-        this.toParentRatio = toParentRatio;
+    public void setParentRatio(Integer parentRatio) {
+        this.parentRatio = parentRatio;
     }
 
     public Integer getTransLocationOrderId() {
@@ -488,5 +494,29 @@ public class InventoryReceiptDO implements Serializable{
 
     public void setInventoryReceiptOrderItemId(Integer inventoryReceiptOrderItemId) {
         this.inventoryReceiptOrderItemId = inventoryReceiptOrderItemId;
+    }
+
+    public Integer getChildRatio() {
+        return childRatio;
+    }
+
+    public void setChildRatio(Integer childRatio) {
+        this.childRatio = childRatio;
+    }
+
+    public String getFromItemStore() {
+        return fromItemStore;
+    }
+
+    public void setFromItemStore(String fromItemStore) {
+        this.fromItemStore = fromItemStore;
+    }
+
+    public String getFromitemDispensedUnits() {
+        return fromitemDispensedUnits;
+    }
+
+    public void setFromitemDispensedUnits(String fromitemDispensedUnits) {
+        this.fromitemDispensedUnits = DataBaseUtil.trim(fromitemDispensedUnits);
     }
 }

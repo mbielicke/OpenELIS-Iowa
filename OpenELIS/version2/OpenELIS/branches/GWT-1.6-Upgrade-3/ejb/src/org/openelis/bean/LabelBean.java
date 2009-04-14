@@ -141,6 +141,11 @@ public class LabelBean implements LabelRemote {
         Integer labelReferenceId = (Integer)query.getSingleResult();
         
         if(labelDO.getId() != null){
+            try {
+                lockBean.validateLock(labelReferenceId,labelDO.getId());
+              } catch(Exception ex) {
+                 throw ex;
+            }
             lockBean.getLock(labelReferenceId,labelDO.getId());
         }
         

@@ -25,10 +25,7 @@
 */
 package org.openelis.modules.inventoryAdjustment.client;
 
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.Widget;
+import java.util.ArrayList;
 
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.Query;
@@ -54,9 +51,15 @@ import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.gwt.widget.table.event.SourcesTableWidgetEvents;
 import org.openelis.gwt.widget.table.event.TableWidgetListener;
 import org.openelis.metamap.InventoryAdjustmentMetaMap;
+import org.openelis.modules.fillOrder.client.FillOrderItemInfoForm;
+import org.openelis.modules.inventoryReceipt.client.InvReceiptItemInfoForm;
+import org.openelis.modules.inventoryReceipt.client.ReceiptInvItemKey;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
-import java.util.ArrayList;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.Widget;
 
 public class InventoryAdjustmentScreen extends OpenELISScreenForm<InventoryAdjustmentForm,Query<TableDataRow<Integer>>> implements TableManager, TableWidgetListener, ClickListener, AutoCompleteCallInt {
 
@@ -67,6 +70,7 @@ public class InventoryAdjustmentScreen extends OpenELISScreenForm<InventoryAdjus
     private Dropdown store;
     private ScreenCalendar adjustmentDateText;
     private KeyListManager   keyList = new KeyListManager();
+    private Integer lastLocValue = null;
     
     private InventoryAdjustmentMetaMap InventoryAdjustmentMeta = new InventoryAdjustmentMetaMap();
     private static String storeIdKey;
@@ -200,6 +204,28 @@ public class InventoryAdjustmentScreen extends OpenELISScreenForm<InventoryAdjus
     
     public void abort() {
         adjustmentsTable.model.enableAutoAdd(false);
+        
+        if(state == State.ADD){
+            //we need to unlock all the locs
+          //unlock the record
+            InventoryAdjustmentForm iarpc = new InventoryAdjustmentForm();
+            iarpc.lockedIds = getLockedSetsFromTable();
+
+            screenService.call("unlockLocations", iarpc, new AsyncCallback<FillOrderItemInfoForm>() {
+                public void onSuccess(FillOrderItemInfoForm result) {
+                    superAbort();
+                    
+               }
+
+               public void onFailure(Throwable caught) {
+                   Window.alert(caught.getMessage());
+               }
+                });
+        }else
+            super.abort();
+    }
+    
+    private void superAbort(){
         super.abort();
     }
     
@@ -275,13 +301,10 @@ public class InventoryAdjustmentScreen extends OpenELISScreenForm<InventoryAdjus
                     return;
                 }
                 
-                //InventoryAdjustmentRPC iarpc = new InventoryAdjustmentRPC();
-                //iarpc.key = form.key;
-                //iarpc.form = form.form;
-                
+                Integer currentLocValue = (Integer)adjustmentsTable.model.getCell(row, col);
                 if(store.getSelections().size() > 0)
                     form.storeIdKey = (Integer)store.getSelections().get(0).key;
-                form.locId = (Integer)adjustmentsTable.model.getCell(row, 0);
+                form.locId = currentLocValue;
                 
                 //we need to make sure the location id isnt already in the table
                 if(locationIdAlreadyExists(form.locId, row)){
@@ -290,54 +313,95 @@ public class InventoryAdjustmentScreen extends OpenELISScreenForm<InventoryAdjus
                     return;
                 }
                 
-                window.setBusy();
-                
-                // prepare the argument list for the getObject function
-                //FieldType[] args = new FieldType[] {locIdObj, storeIdObj}; 
-                
-                screenService.call("getInventoryItemInformation", form, new AsyncCallback<InventoryAdjustmentForm>(){
-                    public void onSuccess(InventoryAdjustmentForm result){    
-                        if(row < adjustmentsTable.model.numRows()){
-                        Integer currentId = (Integer)adjustmentsTable.model.getCell(row, 0);
-                        Integer oldId = result.locId;
-                        
-                        //make sure the row hasnt been deleted and it still has the same values
-                        if(currentId.equals(oldId)){
-                              invItemField.setModel(result.invItemModel);
-                              adjustmentsTable.model.setCell(row, 1, result.invItemModel.get(0));
-                              adjustmentsTable.model.setCell(row, 2, result.storageLocation);
-                              adjustmentsTable.model.setCell(row, 3, result.qtyOnHand);
-                        }
-                        }
-                      window.clearStatus();
-                    }
+                if((lastLocValue == null && currentLocValue != null) || 
+                                (lastLocValue != null && !lastLocValue.equals(currentLocValue))){
+                    //we need to send lock/fetch call back
+                    form.oldLocId = lastLocValue;
                     
-                    public void onFailure(Throwable caught){
-                        Window.alert(caught.getMessage());
-                        window.clearStatus();
-                    }
-                });
+                    window.setBusy();
+                    
+                    screenService.call("getInventoryItemInformation", form, new AsyncCallback<InventoryAdjustmentForm>(){
+                        public void onSuccess(InventoryAdjustmentForm result){  
+                            if(result.invItemModel != null && result.invItemModel.size() > 0){
+                                invItemField.setModel(result.invItemModel);
+                                adjustmentsTable.model.setCell(row, 1, result.invItemModel.get(0));
+                                adjustmentsTable.model.clearCellError(row, 1);
+                                adjustmentsTable.model.setCell(row, 2, result.storageLocation);
+                                adjustmentsTable.model.setCell(row, 3, result.qtyOnHand);
+                            }
+                            window.clearStatus();
+                        }
+                        
+                        public void onFailure(Throwable caught){
+                            //clear out the columns
+                            adjustmentsTable.model.setCell(row, 0, null);
+                            adjustmentsTable.model.setCell(row, 1, null);
+                            adjustmentsTable.model.setCell(row, 2, null);
+                            adjustmentsTable.model.setCell(row, 3, null);
+                            adjustmentsTable.model.setCell(row, 4, null);
+                            adjustmentsTable.model.setCell(row, 5, null);
+                            //adjustmentsTable.select(row, 0);
+                            
+                            Window.alert(caught.getMessage());
+                            window.clearStatus();
+                        }
+                    });
+                }
                 break;
             case 1:
-                ArrayList selections = invItemField.getValue();
-      
-                if(selections.size() > 0){
-                    TableDataRow selectedRow = (TableDataRow)selections.get(0);
-      
-                    if(selectedRow.size() > 1){
-                        //we need to make sure this inventory item isnt already in the table
-                        if(locationIdAlreadyExists(((IntegerObject)selectedRow.getData()).getValue(), row)){
-                            ((DropDownField)tableRow.cells[1]).clearErrors();
-                            adjustmentsTable.model.setCellError(row, 1, consts.get("fieldUniqueException"));
-                         
-                        }else{
-                            adjustmentsTable.model.setCell(row, 0, ((IntegerObject)selectedRow.getData()).getValue());
-                            adjustmentsTable.model.setCell(row, 2, ((StringObject)selectedRow.cells[2]).getValue());
-                            adjustmentsTable.model.setCell(row, 3, ((IntegerObject)selectedRow.cells[5]).getValue());
-                            
-                        }
-                    }    
-                }
+                    ArrayList selections = invItemField.getValue();
+          
+                    if(selections.size() > 0){
+                        TableDataRow selectedRow = (TableDataRow)selections.get(0);
+          
+                        if(selectedRow.size() > 1){
+                            Integer curLocValue = ((IntegerObject)selectedRow.getData()).getValue();
+                            if((lastLocValue == null && curLocValue != null) || 
+                                (lastLocValue != null && !lastLocValue.equals(curLocValue))){
+                                //we need to make sure this inventory item isnt already in the table
+                                if(locationIdAlreadyExists(((IntegerObject)selectedRow.getData()).getValue(), row)){
+                                    ((DropDownField)tableRow.cells[1]).clearErrors();
+                                    adjustmentsTable.model.setCellError(row, 1, consts.get("fieldUniqueException"));
+                                 
+                                }else{
+                                    adjustmentsTable.model.setCell(row, 0, ((IntegerObject)selectedRow.getData()).getValue());
+                                    adjustmentsTable.model.clearCellError(row, 0);
+                                    adjustmentsTable.model.setCell(row, 2, ((StringObject)selectedRow.cells[2]).getValue());
+                                    adjustmentsTable.model.setCell(row, 3, ((IntegerObject)selectedRow.cells[5]).getValue());
+                                    
+                                    window.setBusy();
+                                    
+                                    form.locId = curLocValue;
+                                    form.oldLocId = lastLocValue;
+                                    
+                                    screenService.call("fetchLocationAndLock", form, new AsyncCallback<InventoryAdjustmentForm>(){
+                                        public void onSuccess(InventoryAdjustmentForm result){    
+                                            adjustmentsTable.model.setCell(row, 3, result.qtyOnHand);
+
+                                            window.clearStatus();
+                                        }
+                                        
+                                        public void onFailure(Throwable caught){
+                                            //clear out the columns
+                                            adjustmentsTable.model.setCell(row, 0, null);
+                                            adjustmentsTable.model.setCell(row, 1, null);
+                                            adjustmentsTable.model.setCell(row, 2, null);
+                                            adjustmentsTable.model.setCell(row, 3, null);
+                                            adjustmentsTable.model.setCell(row, 4, null);
+                                            adjustmentsTable.model.setCell(row, 5, null);
+                                            adjustmentsTable.select(row, 1);
+                                            
+                                            Window.alert(caught.getMessage());
+                                            window.clearStatus();
+                                            form.locId = null;
+                                            form.oldLocId = null;
+                                        }
+                                    });
+                                
+                                }
+                            }
+                        }    
+                    }
 
                 break;
             case 4:
@@ -357,7 +421,17 @@ public class InventoryAdjustmentScreen extends OpenELISScreenForm<InventoryAdjus
         }
     }
 
-    public void startEditing(SourcesTableWidgetEvents sender, int row, int col) {}
+    public void startEditing(SourcesTableWidgetEvents sender, int row, int col) {
+        if(col == 0 && row < adjustmentsTable.model.numRows()){
+            lastLocValue = (Integer)adjustmentsTable.model.getCell(row, col);
+
+        }else if(col == 1 && row < adjustmentsTable.model.numRows()){
+            ArrayList<TableDataRow<Integer>> selections = ((DropDownField<Integer>)adjustmentsTable.model.getObject(row, col)).getValue();
+            
+            if(selections != null && selections.size() == 1)
+                lastLocValue = (Integer)selections.get(0).getData().getValue();
+        }
+    }
 
     public void stopEditing(SourcesTableWidgetEvents sender, int row, int col) {}
     //
@@ -427,5 +501,14 @@ public class InventoryAdjustmentScreen extends OpenELISScreenForm<InventoryAdjus
     
     public void setStoresModel(TableDataModel<TableDataRow<Integer>> storesModel) {
         store.setModel(storesModel);
+    }
+    
+    private TableDataModel<TableDataRow<Integer>> getLockedSetsFromTable(){
+        TableDataModel<TableDataRow<Integer>> returnModel = new TableDataModel<TableDataRow<Integer>>();
+
+        for(int i=0; i<adjustmentsTable.model.numRows(); i++)
+            returnModel.add(new TableDataRow<Integer>((Integer)adjustmentsTable.model.getCell(i, 0)));
+            
+        return returnModel;
     }
 }

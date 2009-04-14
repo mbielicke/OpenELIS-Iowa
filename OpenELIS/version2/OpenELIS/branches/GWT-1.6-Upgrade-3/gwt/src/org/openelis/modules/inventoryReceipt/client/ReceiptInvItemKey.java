@@ -42,6 +42,7 @@ public class ReceiptInvItemKey implements FieldType {
     public String lotNum;
     public DatetimeRPC expDate;
     public Integer parentRatio;
+    public Integer parentInvItemId;
     
     public Object getValue() {
         return null;

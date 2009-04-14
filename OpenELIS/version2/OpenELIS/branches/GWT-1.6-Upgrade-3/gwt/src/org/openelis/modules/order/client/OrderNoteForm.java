@@ -36,6 +36,7 @@ public class OrderNoteForm extends Form<Integer>{
     private static final long serialVersionUID = 1L;
 
     public StringField text;
+    public Integer id;
     
     public OrderNoteForm(){
         OrderMetaMap meta = new OrderMetaMap();

@@ -27,17 +27,11 @@ package org.openelis.modules.animalSampleLogin.server;
 
 import org.openelis.gwt.common.Query;
 import org.openelis.gwt.common.RPCException;
-import org.openelis.gwt.common.data.AbstractField;
-import org.openelis.gwt.common.data.FieldType;
-import org.openelis.gwt.common.data.TableDataModel;
 import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
 import org.openelis.modules.animalSampleLogin.client.AnimalSampleLoginForm;
 import org.openelis.server.constants.Constants;
-
-import java.util.ArrayList;
-import java.util.HashMap;
 
 public class AnimalSampleLoginService implements AppScreenFormServiceInt<AnimalSampleLoginForm, Query<TableDataRow<Integer>>>{
 
@@ -76,21 +70,9 @@ public class AnimalSampleLoginService implements AppScreenFormServiceInt<AnimalS
         return null;
     }
     
-    public AnimalSampleLoginForm getScreen(AnimalSampleLoginForm rpc){
+    public AnimalSampleLoginForm getScreen(AnimalSampleLoginForm rpc) throws RPCException{
+        rpc.xml = ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/animalSampleLogin.xsl");
+        
         return rpc;
-    }
-
-    public String getXML() throws RPCException {
-        return ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/animalSampleLogin.xsl");
-    }
-
-    public HashMap<String, FieldType> getXMLData() throws RPCException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public HashMap<String, FieldType> getXMLData(HashMap<String, FieldType> args) throws RPCException {
-        // TODO Auto-generated method stub
-        return null;
     }
 }

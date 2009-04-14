@@ -93,7 +93,6 @@ public class DictionaryScreen extends OpenELISScreenForm<DictionaryForm,Query<Ta
 
         dictEntryController.addTableWidgetListener(this);
 
-        //tname = (TextBox)getWidget(CatMap.getName());
         startWidget = (ScreenInputWidget)widgets.get(CatMap.getName());
         removeEntryButton = (AppButton)getWidget("removeEntryButton");
                 
@@ -160,7 +159,7 @@ public class DictionaryScreen extends OpenELISScreenForm<DictionaryForm,Query<Ta
     private void getCategories(String query) {
         if (state == State.DISPLAY || state == State.DEFAULT) {
             QueryStringField qField = new QueryStringField(CatMap.getName());
-            qField.setValue(qField);
+            qField.setValue(query);
             commitQuery(qField);
         }
     }

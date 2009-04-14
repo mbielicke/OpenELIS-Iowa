@@ -25,13 +25,7 @@
 */
 package org.openelis.modules.buildKits.client;
 
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.ChangeListener;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.PopupPanel;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.Widget;
+import java.util.ArrayList;
 
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.Query;
@@ -39,12 +33,10 @@ import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.DoubleField;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.IntegerField;
-import org.openelis.gwt.common.data.IntegerObject;
 import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.common.data.TableDataModel;
 import org.openelis.gwt.common.data.TableDataRow;
-import org.openelis.gwt.screen.AppScreenForm;
 import org.openelis.gwt.screen.CommandChain;
 import org.openelis.gwt.screen.ScreenCheck;
 import org.openelis.gwt.screen.ScreenInputWidget;
@@ -60,10 +52,17 @@ import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.gwt.widget.table.event.SourcesTableWidgetEvents;
 import org.openelis.gwt.widget.table.event.TableWidgetListener;
 import org.openelis.metamap.InventoryItemMetaMap;
+import org.openelis.modules.fillOrder.client.FillOrderItemInfoForm;
+import org.openelis.modules.inventoryReceipt.client.InvReceiptItemInfoForm;
 import org.openelis.modules.inventoryReceipt.client.InventoryReceiptScreen;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
-import java.util.ArrayList;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.ChangeListener;
+import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.Widget;
 
 public class BuildKitsScreen extends OpenELISScreenForm<BuildKitsForm,Query<TableDataRow<Integer>>> implements ClickListener, AutoCompleteCallInt, ChangeListener, TableManager, TableWidgetListener{
 
@@ -75,6 +74,7 @@ public class BuildKitsScreen extends OpenELISScreenForm<BuildKitsForm,Query<Tabl
     private int currentTableRow = -1;
     private ScreenCheck addToExisiting;
     private Integer currentKitDropdownValue;
+    private Integer lastLocValue;
     private AppButton transferButton;
     
     private InventoryItemMetaMap InventoryItemMeta = new InventoryItemMetaMap();
@@ -111,7 +111,7 @@ public class BuildKitsScreen extends OpenELISScreenForm<BuildKitsForm,Query<Tabl
                        //id
                        //name
                        //qty
-                       tableRow.key = form.entityKey;
+                       tableRow.key = set.key;
                        tableRow.cells[0].setValue(set.cells[0].getValue());
                        tableRow.cells[3].setValue(set.cells[1].getValue());
                        
@@ -225,8 +225,28 @@ public class BuildKitsScreen extends OpenELISScreenForm<BuildKitsForm,Query<Tabl
   };
     
     public void abort() {
-        super.abort();
+        if(state == State.ADD){
+          //unlock the record
+            InvReceiptItemInfoForm iriif = new InvReceiptItemInfoForm();
+            iriif.lockedLocIds = getLockedSetsFromTable();
+
+            screenService.call("unlockLocations", iriif, new AsyncCallback<FillOrderItemInfoForm>() {
+                public void onSuccess(FillOrderItemInfoForm result) {
+                    superAbort();
+                    
+               }
+
+               public void onFailure(Throwable caught) {
+                   Window.alert(caught.getMessage());
+               }
+                });
+        }else
+            super.abort();
         currentKitDropdownValue = null;
+    }
+    
+    private void superAbort(){
+        super.abort();
     }
 
     //
@@ -264,27 +284,52 @@ public class BuildKitsScreen extends OpenELISScreenForm<BuildKitsForm,Query<Tabl
     //
     //start table widget listener methods
     //
-    public void finishedEditing(SourcesTableWidgetEvents sender, int row, int col) {
+    public void finishedEditing(SourcesTableWidgetEvents sender, final int row, int col) {
         DropDownField<Object> locationField;
         if(col == 1 && row < subItemsTable.model.numRows()){
-            locationField = (DropDownField)subItemsTable.model.getObject(row, col);
-            if(locationField.getValue() != null){
-                TableDataRow<Integer> tableRow = subItemsTable.model.getRow(row);
-                TableDataRow<Integer> selectedRow = ((ArrayList<TableDataRow<Integer>>)((DropDownField<Integer>)tableRow.getCells().get(1)).getValue()).get(0);
-                
-                subItemsTable.model.setCell(row, 2, ((StringObject)selectedRow.getCells().get(1)).getValue());
-                subItemsTable.model.setCell(row, 5, ((IntegerObject)selectedRow.getCells().get(2)).getValue());
-                
-                if(subItemsTable.model.getCell(row, 4) != null && ((Integer)subItemsTable.model.getCell(row, 5)).compareTo((Integer)subItemsTable.model.getCell(row, 4)) < 0){
-                    subItemsTable.model.clearCellError(row, 4);
-                    subItemsTable.model.setCellError(row, 4, consts.get("totalIsGreaterThanOnHandException"));
-                }else
-                    subItemsTable.model.clearCellError(row, 4);
+            Integer currentLocValue = (Integer)((DropDownField)subItemsTable.model.getObject(row, col)).getSelectedKey();
+            if((lastLocValue == null && currentLocValue != null) || 
+                            (lastLocValue != null && !lastLocValue.equals(currentLocValue))){
+                    //we need to send lock/fetch call back
+                    BuildKitsForm bkf = new BuildKitsForm();
+                    bkf.lastLocId = lastLocValue;
+                    bkf.locId = currentLocValue;
+                    screenService.call("fetchLocationAndLock", bkf, new AsyncCallback<BuildKitsForm>() {
+                        public void onSuccess(BuildKitsForm result) {
+                            TableDataRow<Integer> tableRow = subItemsTable.model.getRow(row);
+                            TableDataRow<Integer> selectedRow = ((ArrayList<TableDataRow<Integer>>)((DropDownField<Integer>)tableRow.getCells().get(1)).getValue()).get(0);
+                            
+                            subItemsTable.model.setCell(row, 2, ((StringObject)selectedRow.getCells().get(1)).getValue());
+                            subItemsTable.model.setCell(row, 5, result.qtyOnHand);
+                            
+                            if(subItemsTable.model.getCell(row, 4) != null && ((Integer)subItemsTable.model.getCell(row, 5)).compareTo((Integer)subItemsTable.model.getCell(row, 4)) < 0){
+                                subItemsTable.model.clearCellError(row, 4);
+                                subItemsTable.model.setCellError(row, 4, consts.get("totalIsGreaterThanOnHandException"));
+                            }else
+                                subItemsTable.model.clearCellError(row, 4);
+                        }
+
+                        public void onFailure(Throwable caught) {
+                            Window.alert(caught.getMessage());
+                            //clear row
+                            TableDataRow<Integer> tableRow = subItemsTable.model.getRow(row);
+                            ((DropDownField<Integer>)tableRow.cells[1]).setModel(null);
+                            ((DropDownField<Integer>)tableRow.cells[1]).clear();
+                            tableRow.cells[2].setValue(null);
+                            tableRow.cells[5].setValue(null);
+                            
+                            subItemsTable.model.refresh();
+                        }
+                    });
+                }
             }
-        }     
     }
 
-    public void startEditing(SourcesTableWidgetEvents sender, int row, int col) {}
+    public void startEditing(SourcesTableWidgetEvents sender, int row, int col) {
+        if(col == 1 && row < subItemsTable.model.numRows())
+            lastLocValue = (Integer)((DropDownField<Integer>)subItemsTable.model.getObject(row, col)).getSelectedKey();
+         
+    }
 
     public void stopEditing(SourcesTableWidgetEvents sender, int row, int col) {}
     //
@@ -348,7 +393,7 @@ public class BuildKitsScreen extends OpenELISScreenForm<BuildKitsForm,Query<Tabl
     private void onTransferRowButtonClick() {
         Object[] args = new Object[1];
         args[0] = new StringObject("transfer");
-        
+        /*
         PopupPanel inventoryTransferPopupPanel = new PopupPanel(false, true);
         ScreenWindow pickerWindow = new ScreenWindow(inventoryTransferPopupPanel,
                                                      "Inventory Transfer",
@@ -362,6 +407,23 @@ public class BuildKitsScreen extends OpenELISScreenForm<BuildKitsForm,Query<Tabl
         int top = this.getAbsoluteTop();
         inventoryTransferPopupPanel.setPopupPosition(left, top);
         inventoryTransferPopupPanel.show();
+        */
+        ScreenWindow modal = new ScreenWindow(null,"Inventory Transfer","inventoryTransferScreen","Loading...",true);
+        modal.setName(consts.get("inventoryTransfer"));
+        modal.setContent(new InventoryReceiptScreen(args));
         
+    }
+    
+    private TableDataModel<TableDataRow<Integer>> getLockedSetsFromTable(){
+        TableDataModel<TableDataRow<Integer>> returnModel = new TableDataModel<TableDataRow<Integer>>();
+        for(int i=0; i<subItemsTable.model.numRows(); i++){
+            ArrayList<TableDataRow<Integer>> selections = ((DropDownField<Integer>)subItemsTable.model.getObject(i, 1)).getValue();
+            
+            if(selections.size() == 1){
+                returnModel.add(new TableDataRow<Integer>(selections.get(0).key));
+            }
+        }
+            
+        return returnModel;
     }
 }

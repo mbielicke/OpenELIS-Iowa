@@ -11,7 +11,7 @@ import org.openelis.gwt.common.Meta;
 import java.util.HashSet;
 
 public class AuxFieldMeta implements Meta {
-  	private String path = "";
+  	public String path = "";
 	private static final String entityName = "AuxField";
 	
 	private static final String

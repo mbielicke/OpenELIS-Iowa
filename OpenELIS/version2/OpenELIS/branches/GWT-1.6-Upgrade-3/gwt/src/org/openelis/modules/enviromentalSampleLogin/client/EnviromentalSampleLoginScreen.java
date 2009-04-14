@@ -59,6 +59,10 @@ public class EnviromentalSampleLoginScreen extends OpenELISScreenForm<Environmen
     public void afterDraw(boolean sucess) {
         ButtonPanel bpanel = (ButtonPanel)getWidget("buttons");
         
+        //disable the buttons for the demo for now
+        bpanel.enableButton("query", false);
+        bpanel.enableButton("add", false);
+        
         CommandChain formChain = new CommandChain();
         formChain.addCommand(this);
         formChain.addCommand(bpanel);

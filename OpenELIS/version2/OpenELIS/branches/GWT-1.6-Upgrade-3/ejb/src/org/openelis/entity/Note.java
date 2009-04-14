@@ -120,10 +120,11 @@ public class Note implements Auditable, Cloneable {
       return null;
     return new Datetime(Datetime.YEAR,Datetime.SECOND,timestamp);
   }
+
   public void setTimestamp (Datetime timestamp){
-    if((timestamp == null && this.timestamp != null) || 
-       (timestamp != null && !timestamp.equals(this.timestamp)))
-      this.timestamp = timestamp.getDate();
+      if((timestamp == null && this.timestamp != null) || (timestamp != null && this.timestamp == null) || 
+                      (timestamp != null && !timestamp.equals(new Datetime(Datetime.YEAR, Datetime.SECOND, this.timestamp))))
+       this.timestamp = timestamp.getDate();
   }
 
   public String getIsExternal() {

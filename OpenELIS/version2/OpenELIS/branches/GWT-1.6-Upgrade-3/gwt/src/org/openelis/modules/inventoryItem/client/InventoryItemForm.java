@@ -69,6 +69,7 @@ public class InventoryItemForm extends Form<Integer> {
     public InventoryComponentsForm components;
     public InventoryLocationsForm locations;
     public InventoryCommentsForm comments;
+    public InventoryManufacturingForm manufacturing;
     
     public String itemTabPanel = "componentsTab";
     
@@ -108,6 +109,7 @@ public class InventoryItemForm extends Form<Integer> {
        components = new InventoryComponentsForm("components");
        locations = new InventoryLocationsForm("locations");
        comments = new InventoryCommentsForm("comments");
+       manufacturing = new InventoryManufacturingForm("manufacturing");
    }
    
    public InventoryItemForm(Node node) {
@@ -143,7 +145,8 @@ public class InventoryItemForm extends Form<Integer> {
                                      parentRatio,
                                      components,
                                      locations,
-                                     comments
+                                     comments,
+                                     manufacturing
        };
    }
 }

@@ -62,6 +62,7 @@ public class ProviderTypeCacheHandler implements MessageHandler {
                 model.add(new TableDataRow<Integer>(resultDO.getId(),new StringObject(resultDO.getName())));
             }   
             CachingManager.putElement("InitialData", "providerTypeDropDown", model);
+            version++;
         }
         return model;
         

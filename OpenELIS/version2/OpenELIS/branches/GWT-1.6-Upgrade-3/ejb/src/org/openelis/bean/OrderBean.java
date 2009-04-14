@@ -25,28 +25,6 @@
 */
 package org.openelis.bean;
 
-import org.jboss.annotation.security.SecurityDomain;
-import org.openelis.domain.BillToReportToDO;
-import org.openelis.domain.NoteDO;
-import org.openelis.domain.OrderAddAutoFillDO;
-import org.openelis.domain.OrderDO;
-import org.openelis.domain.OrderItemDO;
-import org.openelis.entity.Note;
-import org.openelis.entity.Order;
-import org.openelis.entity.OrderItem;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.RPCException;
-import org.openelis.gwt.common.TableFieldErrorException;
-import org.openelis.gwt.common.data.AbstractField;
-import org.openelis.local.LockLocal;
-import org.openelis.metamap.OrderMetaMap;
-import org.openelis.remote.OrderRemote;
-import org.openelis.util.Datetime;
-import org.openelis.util.QueryBuilder;
-import org.openelis.utils.GetPage;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -62,6 +40,27 @@ import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+
+import org.jboss.annotation.security.SecurityDomain;
+import org.openelis.domain.BillToReportToDO;
+import org.openelis.domain.NoteDO;
+import org.openelis.domain.OrderAddAutoFillDO;
+import org.openelis.domain.OrderDO;
+import org.openelis.domain.OrderItemDO;
+import org.openelis.entity.Note;
+import org.openelis.entity.Order;
+import org.openelis.entity.OrderItem;
+import org.openelis.gwt.common.FieldErrorException;
+import org.openelis.gwt.common.LastPageException;
+import org.openelis.gwt.common.TableFieldErrorException;
+import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.gwt.common.data.AbstractField;
+import org.openelis.local.LockLocal;
+import org.openelis.metamap.OrderMetaMap;
+import org.openelis.remote.OrderRemote;
+import org.openelis.util.Datetime;
+import org.openelis.util.QueryBuilder;
+import org.openelis.utils.GetPage;
 
 @Stateless
 @EJBs({
@@ -283,14 +282,10 @@ System.out.println("2");
         query.setParameter("name", "order_shipping_note");
         Integer orderShipNoteReferenceId = (Integer)query.getSingleResult();
         
-        //query = manager.createNamedQuery("Dictionary.IdBySystemName");
-        //query.setParameter("systemName", "order_status_processed");
-        //Integer orderCompletedStatusId = (Integer)query.getSingleResult();
+        if(orderDO.getId() != null)
+            lockBean.validateLock(orderReferenceId,orderDO.getId());
         
-        if(orderDO.getId() != null){
-            //we need to call lock one more time to make sure their lock didnt expire and someone else grabbed the record
-            lockBean.getLock(orderReferenceId,orderDO.getId());
-        }
+        validateOrder(orderDO, orderType, items);
         
          manager.setFlushMode(FlushModeType.COMMIT);
          Order order = null;
@@ -300,13 +295,6 @@ System.out.println("2");
         else
             order = manager.find(Order.class, orderDO.getId());
 
-        //validate the order record
-        List exceptionList = new ArrayList();
-        validateOrder(orderDO, items.size(), orderType, exceptionList, false);
-        
-        if(exceptionList.size() > 0)
-            throw (RPCException)exceptionList.get(0);
-        
         //update order record
          order.setBillToId(orderDO.getBillToId());
          order.setCostCenterId(orderDO.getCostCenter());
@@ -324,24 +312,12 @@ System.out.println("2");
         if (order.getId() == null) {
             manager.persist(order);
         }
- 
-        //lookup the order transaction type to be used later
-        //query = manager.createNamedQuery("Dictionary.IdBySystemName");
-        //query.setParameter("systemName", "inv_trans_order");
-        //Integer orderTypeId = (Integer)query.getSingleResult();
-        
+
         //update order items
         for (int i=0; i<items.size();i++) {
             OrderItemDO orderItemDO = (OrderItemDO) items.get(i);
             OrderItem orderItem = null;
-            
-            //validate the order item record
-            exceptionList = new ArrayList();
-            validateOrderItems(orderItemDO, i, exceptionList);
-            
-            if(exceptionList.size() > 0)
-                throw (RPCException)exceptionList.get(0);
-            
+       
             if (orderItemDO.getId() == null)
                 orderItem = new OrderItem();
             else
@@ -362,30 +338,6 @@ System.out.println("2");
                     manager.persist(orderItem);
                 }
            }
-            
-           //insert transaction record if necessary
-           /*if(orderItemDO.getLocationId() != null){
-               InventoryXUse transLocOrder = null;
-               
-               if (orderItemDO.getTransactionId() == null)
-                   transLocOrder = new InventoryXUse();
-               else
-                   transLocOrder = manager.find(InventoryXUse.class, orderItemDO.getTransactionId());
-               
-               transLocOrder.setInventoryLocationId(orderItemDO.getLocationId());
-               transLocOrder.setOrderItemId(orderItem.getId());
-               transLocOrder.setQuantity(orderItem.getQuantity());
-               
-               if (transLocOrder.getId() == null) {
-                   manager.persist(transLocOrder);
-               }
-               
-               //we need to update the quantity on the location if it is set to complete
-               if((OrderRemote.INTERNAL.equals(orderType) || OrderRemote.KITS.equals(orderType)) && orderDO.getStatusId().equals(orderCompletedStatusId)){
-                   InventoryLocation loc = manager.find(InventoryLocation.class, orderItemDO.getLocationId());                   
-                   loc.setQuantityOnhand(orderItemDO.getQuantityOnHand() - orderItemDO.getQuantity());
-               }
-           }*/
         }
         
         Integer systemUserId = null;
@@ -451,67 +403,48 @@ System.out.println("2");
         return query.getResultList();
     }
     
-    public List validateForAdd(OrderDO orderDO, String orderType, List items) {
-        List exceptionList = new ArrayList();
+    private void validateOrder(OrderDO orderDO, String orderType, List items) throws Exception{
+        ValidationErrorsList list = new ValidationErrorsList();
         
-        validateOrder(orderDO, items.size(), orderType, exceptionList, true);
-        
-        for(int i=0; i<items.size();i++){            
-            OrderItemDO orderItemDO = (OrderItemDO) items.get(i);
-            
-            validateOrderItems(orderItemDO, i, exceptionList);
-        }
-        
-        return exceptionList;
-    }
-
-    public List validateForUpdate(OrderDO orderDO, String orderType, List items,  boolean validateOrderQty) {
-        List exceptionList = new ArrayList();
-        
-        validateOrder(orderDO, items.size(), orderType, exceptionList, validateOrderQty);
-        
-        for(int i=0; i<items.size();i++){            
-            OrderItemDO orderItemDO = (OrderItemDO) items.get(i);
-            
-            validateOrderItems(orderItemDO, i, exceptionList);
-        }
-        
-        return exceptionList;
-    }
-    
-    private void validateOrder(OrderDO orderDO, int numberOfOrderItems, String orderType, List exceptionList, boolean validateOrderQty){
         //status required for all order types
         if(orderDO.getStatusId() == null || "".equals(orderDO.getStatusId())){
-            exceptionList.add(new FieldErrorException("fieldRequiredException",OrderMetaMap.getStatusId()));
+            list.add(new FieldErrorException("fieldRequiredException",OrderMetaMap.getStatusId()));
         }
         
         //needed in days required for all order types
         if(orderDO.getNeededInDays() == null || "".equals(orderDO.getNeededInDays())){
-            exceptionList.add(new FieldErrorException("fieldRequiredException",OrderMetaMap.getNeededInDays()));
+            list.add(new FieldErrorException("fieldRequiredException",OrderMetaMap.getNeededInDays()));
         }
         
         //organization required for vendor orders and kit orders
         if((orderDO.getOrganizationId() == null || "".equals(orderDO.getOrganizationId())) && (OrderRemote.EXTERNAL.equals(orderType) || OrderRemote.KITS.equals(orderType))){
-            exceptionList.add(new FieldErrorException("fieldRequiredException",OrderMetaMap.getOrganizationId()));
+            list.add(new FieldErrorException("fieldRequiredException",OrderMetaMap.getOrganizationId()));
         }        
         
         //ordered date required for all order types
         if(orderDO.getOrderedDate() == null || "".equals(orderDO.getOrderedDate())){
-            exceptionList.add(new FieldErrorException("fieldRequiredException",OrderMetaMap.getOrderedDate()));
+            list.add(new FieldErrorException("fieldRequiredException",OrderMetaMap.getOrderedDate()));
         }
         
         //requested by required for all order types
         if(orderDO.getRequestedBy() == null || "".equals(orderDO.getRequestedBy())){
-            exceptionList.add(new FieldErrorException("fieldRequiredException",OrderMetaMap.getRequestedBy()));
+            list.add(new FieldErrorException("fieldRequiredException",OrderMetaMap.getRequestedBy()));
         }        
         
+        //TODO lazy load kind of messes this up if the table isnt loaded
         //number of order items needs to be > 0
-        if(validateOrderQty && numberOfOrderItems < 1){
-            exceptionList.add(new FormErrorException("zeroOrderItemsException"));
-        }
+        //if(validateOrderQty && items.size() < 1){
+        //    list.add(new FormErrorException("zeroOrderItemsException"));
+        //}
+        
+        for(int i=0; i<items.size();i++)           
+            validateOrderItems((OrderItemDO)items.get(i), i, list);
+        
+        if(list.size() > 0)
+            throw list;
     }
     
-    private void validateOrderItems(OrderItemDO orderItemDO, int rowIndex, List exceptionList){
+    private void validateOrderItems(OrderItemDO orderItemDO, int rowIndex, ValidationErrorsList exceptionList){
         if(orderItemDO.getDelete())
             return;
         
@@ -524,21 +457,5 @@ System.out.println("2");
         if(orderItemDO.getInventoryItemId() == null || "".equals(orderItemDO.getInventoryItemId())){
             exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex, OrderMetaMap.ORDER_ITEM_META.INVENTORY_ITEM_META.getName()));
         }
-    }
-    
-    public List validateQuantities(List items){
-        List exceptionList = new ArrayList();
-        
-        for(int i=0; i<items.size();i++){            
-            OrderItemDO orderItemDO = (OrderItemDO) items.get(i);
-            
-            //quantity on hand needs to be >= quantity requested
-            if(orderItemDO.getQuantity() != null && orderItemDO.getQuantityOnHand() != null && 
-                            orderItemDO.getQuantityOnHand() < orderItemDO.getQuantity()){
-                exceptionList.add(new TableFieldErrorException("notEnoughQuantityOnHand", i, OrderMetaMap.ORDER_ITEM_META.getQuantity()));
-            }
-        }
-        
-        return exceptionList;
     }
 }

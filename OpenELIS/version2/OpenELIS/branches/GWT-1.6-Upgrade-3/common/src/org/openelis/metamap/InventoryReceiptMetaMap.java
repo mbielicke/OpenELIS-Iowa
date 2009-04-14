@@ -36,18 +36,15 @@ public class InventoryReceiptMetaMap extends InventoryReceiptMeta implements Met
         super("receipt.");
     }
     
-    //public TransReceiptOrderMetaMap TRANS_RECEIPT_ORDER_META = new TransReceiptOrderMetaMap("orderTrans.");
     public InventoryXUseMetaMap TRANS_LOC_ORDER_META = new InventoryXUseMetaMap("locOrderTrans.");
     public InventoryXPutMetaMap TRANS_RECEIPT_LOCATION_META = new InventoryXPutMetaMap("locTrans.");
     public InventoryItemMeta INVENTORY_ITEM_META = new InventoryItemMeta("ii.");
     public OrderItemMetaMap ORDER_ITEM_META = new OrderItemMetaMap("oi.");
     public DictionaryMeta DICTIONARY_STORE_META = new DictionaryMeta("dictStore.");
+    public DictionaryMeta DICTIONARY_FROM_STORE_META = new DictionaryMeta("dictFromStore.");
     public DictionaryMeta DICTIONARY_DISPENSED_UNITS_META = new DictionaryMeta("dictDis.");
+    public DictionaryMeta DICTIONARY_FROM_DISPENSED_UNITS_META = new DictionaryMeta("dictFromDis.");
     public OrderOrganizationMetaMap ORGANIZATION_META = new OrderOrganizationMetaMap("orgz.", false);
-
-    //public TransReceiptOrderMetaMap getTransReceiptOrder(){
-    //    return TRANS_RECEIPT_ORDER_META;
-    //}
     
     public OrderItemMetaMap getOrderItem(){
         return ORDER_ITEM_META;
@@ -57,8 +54,16 @@ public class InventoryReceiptMetaMap extends InventoryReceiptMeta implements Met
         return DICTIONARY_DISPENSED_UNITS_META;
     }
     
+    public DictionaryMeta getFromDispensedUnitsDict(){
+        return DICTIONARY_FROM_DISPENSED_UNITS_META;
+    }
+    
     public DictionaryMeta getStoreDict(){
         return DICTIONARY_STORE_META;
+    }
+    
+    public DictionaryMeta getFromStoreDict(){
+        return DICTIONARY_FROM_STORE_META;
     }
     
     public InventoryXPutMetaMap getTransReceiptLocation(){
@@ -98,7 +103,10 @@ public class InventoryReceiptMetaMap extends InventoryReceiptMeta implements Met
             return INVENTORY_ITEM_META.hasColumn(name);
         if(name.startsWith("locOrderTrans."))
             return TRANS_LOC_ORDER_META.hasColumn(name);
-        
+        if(name.startsWith("dictFromStore"))
+            return DICTIONARY_FROM_STORE_META.hasColumn(name);
+        if(name.startsWith("dictFromDis"))
+            return DICTIONARY_FROM_DISPENSED_UNITS_META.hasColumn(name);
         return super.hasColumn(name);
     }
     
