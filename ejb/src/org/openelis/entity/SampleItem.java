@@ -1,0 +1,214 @@
+
+package org.openelis.entity;
+
+/**
+  * SampleItem Entity POJO for database 
+  */
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.openelis.util.Datetime;
+import org.openelis.util.XMLUtil;
+
+import java.util.Date;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+import org.openelis.utils.AuditUtil;
+import org.openelis.utils.Auditable;
+
+@Entity
+@Table(name="sample_item")
+@EntityListeners({AuditUtil.class})
+public class SampleItem implements Auditable, Cloneable {
+  
+  @Id
+  @GeneratedValue
+  @Column(name="id")
+  private Integer id;             
+
+  @Column(name="sample_id")
+  private Integer sampleId;             
+
+  @Column(name="sample_item_id")
+  private Integer sampleItemId;             
+
+  @Column(name="item_sequence")
+  private Integer itemSequence;             
+
+  @Column(name="type_of_sample_id")
+  private Integer typeOfSampleId;             
+
+  @Column(name="source_of_sample_id")
+  private Integer sourceOfSampleId;             
+
+  @Column(name="source_other")
+  private String sourceOther;             
+
+  @Column(name="container_id")
+  private Integer containerId;             
+
+  @Column(name="container_reference")
+  private String containerReference;             
+
+  @Column(name="quantity")
+  private Double quantity;             
+
+  @Column(name="unit_of_measure_id")
+  private Integer unitOfMeasureId;             
+
+
+  @Transient
+  private SampleItem original;
+
+  
+  public Integer getId() {
+    return id;
+  }
+  protected void setId(Integer id) {
+    if((id == null && this.id != null) || 
+       (id != null && !id.equals(this.id)))
+      this.id = id;
+  }
+
+  public Integer getSampleId() {
+    return sampleId;
+  }
+  public void setSampleId(Integer sampleId) {
+    if((sampleId == null && this.sampleId != null) || 
+       (sampleId != null && !sampleId.equals(this.sampleId)))
+      this.sampleId = sampleId;
+  }
+
+  public Integer getSampleItemId() {
+    return sampleItemId;
+  }
+  public void setSampleItemId(Integer sampleItemId) {
+    if((sampleItemId == null && this.sampleItemId != null) || 
+       (sampleItemId != null && !sampleItemId.equals(this.sampleItemId)))
+      this.sampleItemId = sampleItemId;
+  }
+
+  public Integer getItemSequence() {
+    return itemSequence;
+  }
+  public void setItemSequence(Integer itemSequence) {
+    if((itemSequence == null && this.itemSequence != null) || 
+       (itemSequence != null && !itemSequence.equals(this.itemSequence)))
+      this.itemSequence = itemSequence;
+  }
+
+  public Integer getTypeOfSampleId() {
+    return typeOfSampleId;
+  }
+  public void setTypeOfSampleId(Integer typeOfSampleId) {
+    if((typeOfSampleId == null && this.typeOfSampleId != null) || 
+       (typeOfSampleId != null && !typeOfSampleId.equals(this.typeOfSampleId)))
+      this.typeOfSampleId = typeOfSampleId;
+  }
+
+  public Integer getSourceOfSampleId() {
+    return sourceOfSampleId;
+  }
+  public void setSourceOfSampleId(Integer sourceOfSampleId) {
+    if((sourceOfSampleId == null && this.sourceOfSampleId != null) || 
+       (sourceOfSampleId != null && !sourceOfSampleId.equals(this.sourceOfSampleId)))
+      this.sourceOfSampleId = sourceOfSampleId;
+  }
+
+  public String getSourceOther() {
+    return sourceOther;
+  }
+  public void setSourceOther(String sourceOther) {
+    if((sourceOther == null && this.sourceOther != null) || 
+       (sourceOther != null && !sourceOther.equals(this.sourceOther)))
+      this.sourceOther = sourceOther;
+  }
+
+  public Integer getContainerId() {
+    return containerId;
+  }
+  public void setContainerId(Integer containerId) {
+    if((containerId == null && this.containerId != null) || 
+       (containerId != null && !containerId.equals(this.containerId)))
+      this.containerId = containerId;
+  }
+
+  public String getContainerReference() {
+    return containerReference;
+  }
+  public void setContainerReference(String containerReference) {
+    if((containerReference == null && this.containerReference != null) || 
+       (containerReference != null && !containerReference.equals(this.containerReference)))
+      this.containerReference = containerReference;
+  }
+
+  public Double getQuantity() {
+    return quantity;
+  }
+  public void setQuantity(Double quantity) {
+    if((quantity == null && this.quantity != null) || 
+       (quantity != null && !quantity.equals(this.quantity)))
+      this.quantity = quantity;
+  }
+
+  public Integer getUnitOfMeasureId() {
+    return unitOfMeasureId;
+  }
+  public void setUnitOfMeasureId(Integer unitOfMeasureId) {
+    if((unitOfMeasureId == null && this.unitOfMeasureId != null) || 
+       (unitOfMeasureId != null && !unitOfMeasureId.equals(this.unitOfMeasureId)))
+      this.unitOfMeasureId = unitOfMeasureId;
+  }
+
+  
+  public void setClone() {
+    try {
+      original = (SampleItem)this.clone();
+    }catch(Exception e){}
+  }
+  
+  public String getChangeXML() {
+    try {
+      Document doc = XMLUtil.createNew("change");
+      Element root = doc.getDocumentElement();
+      
+      AuditUtil.getChangeXML(id,original.id,doc,"id");
+
+      AuditUtil.getChangeXML(sampleId,original.sampleId,doc,"sample_id");
+
+      AuditUtil.getChangeXML(sampleItemId,original.sampleItemId,doc,"sample_item_id");
+
+      AuditUtil.getChangeXML(itemSequence,original.itemSequence,doc,"item_sequence");
+
+      AuditUtil.getChangeXML(typeOfSampleId,original.typeOfSampleId,doc,"type_of_sample_id");
+
+      AuditUtil.getChangeXML(sourceOfSampleId,original.sourceOfSampleId,doc,"source_of_sample_id");
+
+      AuditUtil.getChangeXML(sourceOther,original.sourceOther,doc,"source_other");
+
+      AuditUtil.getChangeXML(containerId,original.containerId,doc,"container_id");
+
+      AuditUtil.getChangeXML(containerReference,original.containerReference,doc,"container_reference");
+
+      AuditUtil.getChangeXML(quantity,original.quantity,doc,"quantity");
+
+      AuditUtil.getChangeXML(unitOfMeasureId,original.unitOfMeasureId,doc,"unit_of_measure_id");
+
+      if(root.hasChildNodes())
+        return XMLUtil.toString(doc);
+    }catch(Exception e){
+      e.printStackTrace();
+    }
+    return null;
+  }
+   
+  public String getTableName() {
+    return "sample_item";
+  }
+  
+}   
