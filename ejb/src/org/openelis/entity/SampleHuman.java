@@ -38,8 +38,11 @@ import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
@@ -65,8 +68,19 @@ public class SampleHuman implements Auditable, Cloneable {
   private Integer providerId;             
 
   @Column(name="provider_phone")
-  private String providerPhone;             
-
+  private String providerPhone;    
+  
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "sample_id", insertable = false, updatable = false)
+  private Sample sample;
+  
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "patient_id", insertable = false, updatable = false)
+  private Patient patient;
+  
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "provider_id", insertable = false, updatable = false)
+  private Provider provider;
 
   @Transient
   private SampleHuman original;
@@ -150,5 +164,23 @@ public class SampleHuman implements Auditable, Cloneable {
   public String getTableName() {
     return "sample_human";
   }
+public Sample getSample() {
+    return sample;
+}
+public void setSample(Sample sample) {
+    this.sample = sample;
+}
+public Patient getPatient() {
+    return patient;
+}
+public void setPatient(Patient patient) {
+    this.patient = patient;
+}
+public Provider getProvider() {
+    return provider;
+}
+public void setProvider(Provider provider) {
+    this.provider = provider;
+}
   
 }   

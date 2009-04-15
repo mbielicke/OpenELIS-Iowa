@@ -26,48 +26,45 @@
 package org.openelis.metamap;
 
 import org.openelis.gwt.common.MetaMap;
-import org.openelis.meta.NoteMeta;
-import org.openelis.meta.ProviderMeta;
+import org.openelis.meta.ProjectMeta;
+import org.openelis.meta.SampleProjectMeta;
 
-public class ProviderMetaMap extends ProviderMeta implements MetaMap {
- 
-    public ProviderMetaMap(){
-        super("p.");
-        PROVIDER_ADDRESS = new ProviderAddressMetaMap(path+"providerAddress.");
+public class SampleProjectMetaMap extends SampleProjectMeta implements MetaMap {
+    public SampleProjectMetaMap(){
+        super("sampleProject.");
     }
     
-    public ProviderMetaMap(String path){
+    public SampleProjectMetaMap(String path){
         super(path);
-        PROVIDER_ADDRESS = new ProviderAddressMetaMap(path+"providerAddress.");
     }
     
-    private ProviderAddressMetaMap PROVIDER_ADDRESS; 
+    public ProjectMeta PROJECT;
     
-    private NoteMeta NOTE = new NoteMeta("notes.");
-    
-    public String buildFrom(String name) {
-        String from = "Provider p ";
-        if(name.indexOf("notes.") > -1)
-            from += ", IN (p.provNote) notes ";
-    //    if(name.indexOf("locations.") > -1)
-      //      from += ", IN (p.providerAddress) providerAddress "; 
-        return from;
+    public ProjectMeta getProject(){
+        return PROJECT;
     }
     
-    public ProviderAddressMetaMap getProviderAddress(){
-        return PROVIDER_ADDRESS;
-    }
-    
-    public NoteMeta getNote() {
-        return NOTE;
-    }
-    
-    public boolean hasColumn(String name){        
+    public boolean hasColumn(String name){
+        /*if(name.startsWith(path+"address."))
+            return ADDRESS.hasColumn(name);
+        if(name.startsWith(path+"parentOrganization."))
+            return PARENT_ORGANIZATION.hasColumn(name);
         if(name.startsWith("notes."))
             return NOTE.hasColumn(name);
-        if(name.startsWith(path+"providerAddress."))
-            return PROVIDER_ADDRESS.hasColumn(name);
+        if(name.startsWith("contacts."))
+            return ORGANIZATION_CONTACT.hasColumn(name);
+            */
         return super.hasColumn(name);
     }
-
+    
+    public String buildFrom(String name){
+        String from = "";
+        /*Organization o ";
+        if(name.indexOf("notes.") > -1)
+            from += ", IN (o.note) notes ";
+        if(name.indexOf("contacts.") > -1)
+            from += ", IN (o.organizationContact) contacts ";
+            */ 
+        return from;
+    }
 }

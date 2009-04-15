@@ -27,34 +27,47 @@
 package org.openelis.metamap;
 
 import org.openelis.gwt.common.MetaMap;
-import org.openelis.meta.ProviderMeta;
 import org.openelis.meta.SampleHumanMeta;
 
 public class SampleHumanMetaMap extends SampleHumanMeta implements MetaMap {
-
-    private PatientMetaMap PATIENT = new PatientMetaMap("patient"); 
-    
-    private ProviderMeta PROVIDER = new ProviderMeta("provider");
     
     public SampleHumanMetaMap() {
-        super();
+        super("sh.");
     }
     
     public SampleHumanMetaMap(String path){
         super(path);
     }
-
-    public String buildFrom(String where) {       
-        return "SampleHuman ";
-    }
+    
+    public SampleMetaMap SAMPLE = new SampleMetaMap("sample.");
+    
+    public PatientMetaMap PATIENT = new PatientMetaMap("patient."); 
+    
+    public ProviderMetaMap PROVIDER = new ProviderMetaMap("provider.");
     
     public PatientMetaMap getPatient() {
         return PATIENT;
     }
     
-    public ProviderMeta getProvider() {
+    public ProviderMetaMap getProvider() {
         return PROVIDER;
-    } 
+    }
+    
+    public SampleMetaMap getSample() {
+        return SAMPLE;
+    }
+
+    public String buildFrom(String where) {       
+        String from = "SampleHuman sh ";
+        from += ", IN (sh.sample) sample ";
+        
+        //if(where.indexOf("provider.") > -1)
+            from += ", IN (sh.provider) provider ";
+        //if(where.indexOf("patient.") > -1)
+            from += ", IN (sh.patient) patient ";
+            
+        return from;
+    }
     
     public boolean hasColumn(String name){        
         if(name.startsWith("patient."))

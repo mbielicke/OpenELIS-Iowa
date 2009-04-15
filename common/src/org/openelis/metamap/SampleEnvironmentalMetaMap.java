@@ -26,48 +26,52 @@
 package org.openelis.metamap;
 
 import org.openelis.gwt.common.MetaMap;
-import org.openelis.meta.NoteMeta;
-import org.openelis.meta.ProviderMeta;
+import org.openelis.meta.AddressMeta;
+import org.openelis.meta.SampleEnvironmentalMeta;
 
-public class ProviderMetaMap extends ProviderMeta implements MetaMap {
- 
-    public ProviderMetaMap(){
-        super("p.");
-        PROVIDER_ADDRESS = new ProviderAddressMetaMap(path+"providerAddress.");
+public class SampleEnvironmentalMetaMap extends SampleEnvironmentalMeta implements MetaMap{
+
+    public SampleEnvironmentalMetaMap() {
+        super("se.");
     }
     
-    public ProviderMetaMap(String path){
+    public SampleEnvironmentalMetaMap(String path) {
         super(path);
-        PROVIDER_ADDRESS = new ProviderAddressMetaMap(path+"providerAddress.");
     }
     
-    private ProviderAddressMetaMap PROVIDER_ADDRESS; 
+    public SampleMetaMap SAMPLE = new SampleMetaMap("sample.");
     
-    private NoteMeta NOTE = new NoteMeta("notes.");
-    
-    public String buildFrom(String name) {
-        String from = "Provider p ";
-        if(name.indexOf("notes.") > -1)
-            from += ", IN (p.provNote) notes ";
-    //    if(name.indexOf("locations.") > -1)
-      //      from += ", IN (p.providerAddress) providerAddress "; 
-        return from;
+    public AddressMeta ADDRESS = new AddressMeta("address.");
+
+    public SampleMetaMap getSample() {
+        return SAMPLE;
     }
     
-    public ProviderAddressMetaMap getProviderAddress(){
-        return PROVIDER_ADDRESS;
+    public AddressMeta getAddress() {
+        return ADDRESS;
     }
     
-    public NoteMeta getNote() {
-        return NOTE;
+    public static SampleEnvironmentalMetaMap getInstance() {
+        return new SampleEnvironmentalMetaMap();
     }
     
-    public boolean hasColumn(String name){        
-        if(name.startsWith("notes."))
-            return NOTE.hasColumn(name);
-        if(name.startsWith(path+"providerAddress."))
-            return PROVIDER_ADDRESS.hasColumn(name);
+    public boolean hasColumn(String name){
+        if(name.startsWith("address."))
+            return ADDRESS.hasColumn(name);
+        if(name.startsWith("sample."))
+            return SAMPLE.hasColumn(name);
         return super.hasColumn(name);
+    }
+    
+    public String buildFrom(String name){
+        String from = "SampleEnviromental se ";
+        //if(name.indexOf("notes.") > -1)
+        from += ", IN (se.sample) sample ";
+        
+        if(name.indexOf("address.") > -1)
+            from += ", IN (se.address) address ";
+            
+        return from;
     }
 
 }

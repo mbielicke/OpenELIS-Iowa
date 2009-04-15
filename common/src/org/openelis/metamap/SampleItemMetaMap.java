@@ -23,35 +23,45 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-
 package org.openelis.metamap;
 
 import org.openelis.gwt.common.MetaMap;
+import org.openelis.meta.SampleItemMeta;
 
-public class SampleProviderMetaMap implements MetaMap {
+public class SampleItemMetaMap extends SampleItemMeta implements MetaMap {
 
-    public String getProviderName() {
-        return "providerName";
+    private boolean parent = false;
+    
+    public SampleItemMetaMap(){
+        super("sampleItem.");
+        PARENT_SAMPLE_ITEM = new SampleItemMetaMap("parentStorageItem.");
     }
     
-    public String buildFrom(String where) {
-        // TODO Auto-generated method stub
-        return null;
+    public SampleItemMetaMap(String path){
+        this(path, false);
     }
-
-    public String[] getColumnList() {
-        // TODO Auto-generated method stub
-        return null;
+    
+    public SampleItemMetaMap(String path, boolean parent){
+        super(path);
+        this.parent = parent;
+        if(!parent)
+            PARENT_SAMPLE_ITEM = new SampleItemMetaMap(path+"parentSampleItem.", true);
+            
     }
-
-    public String getEntity() {
-        // TODO Auto-generated method stub
-        return null;
+    
+    public SampleItemMetaMap PARENT_SAMPLE_ITEM;
+    
+    public SampleItemMetaMap getParentSampleItem(){
+        return PARENT_SAMPLE_ITEM;
     }
-
-    public boolean hasColumn(String columnName) {
-        // TODO Auto-generated method stub
-        return false;
+    
+    public boolean hasColumn(String name){
+        if(name.startsWith(path+"parentSampleItem."))
+            return PARENT_SAMPLE_ITEM.hasColumn(name);  
+        return super.hasColumn(name);
     }
-
+    
+    public String buildFrom(String name){
+        return "sampleItem";
+    }
 }
