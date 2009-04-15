@@ -29,21 +29,22 @@ package org.openelis.entity;
   * SampleProject Entity POJO for database 
   */
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.openelis.util.Datetime;
-import org.openelis.util.XMLUtil;
-
-import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+
+import org.openelis.util.XMLUtil;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 @Entity
 @Table(name="sample_project")
@@ -64,6 +65,13 @@ public class SampleProject implements Auditable, Cloneable {
   @Column(name="is_permanent")
   private String isPermanent;             
 
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "project_id", insertable = false, updatable = false)
+  private Project project;
+  
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "sample_id", insertable = false, updatable = false)
+  private Sample sample;
 
   @Transient
   private SampleProject original;
@@ -136,5 +144,17 @@ public class SampleProject implements Auditable, Cloneable {
   public String getTableName() {
     return "sample_project";
   }
+public Project getProject() {
+    return project;
+}
+public void setProject(Project project) {
+    this.project = project;
+}
+public Sample getSample() {
+    return sample;
+}
+public void setSample(Sample sample) {
+    this.sample = sample;
+}
   
 }   

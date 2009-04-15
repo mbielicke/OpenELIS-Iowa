@@ -26,34 +26,51 @@
 package org.openelis.metamap;
 
 import org.openelis.gwt.common.MetaMap;
+import org.openelis.meta.SampleMeta;
 
-public class SampleMetaMap implements MetaMap {
+public class SampleMetaMap extends SampleMeta implements MetaMap {
     
-    public String getCollectionDate() {
-        return "collectionDate";
+    public SampleMetaMap() {
+        super("sample.");
+        SAMPLE_ITEM = new SampleItemMetaMap(path+"sampleItem.");
+        SAMPLE_ORGANIZATION = new SampleOrganizationMetaMap(path+"sampleOrganization.");
+        SAMPLE_PROJECT = new SampleProjectMetaMap(path+"sampleProject.");
     }
     
-    public String getCollectionTime() {
-        return "collectionTime";
+    public SampleMetaMap(String path) {
+        super(path);
     }
-
+    
+    public SampleItemMetaMap SAMPLE_ITEM;
+    
+    public SampleOrganizationMetaMap SAMPLE_ORGANIZATION;
+    
+    public SampleProjectMetaMap SAMPLE_PROJECT;
+    
+    public SampleItemMetaMap getSampleItem(){
+        return SAMPLE_ITEM;
+    }
+    
+    public SampleOrganizationMetaMap getSampleOrganization(){
+        return SAMPLE_ORGANIZATION;
+    }
+    
+    public SampleProjectMetaMap getSampleProject(){
+        return SAMPLE_PROJECT;
+    }
+    
     public String buildFrom(String where) {
-        // TODO Auto-generated method stub
-        return null;
+        return "sample";
     }
 
-    public String[] getColumnList() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public String getEntity() {        
-        return null;
-    }
-   
     public boolean hasColumn(String columnName) {
-        // TODO Auto-generated method stub
-        return false;
+        if(columnName.startsWith(path+"sampleItem."))
+            return SAMPLE_ITEM.hasColumn(columnName);
+        if(columnName.startsWith(path+"sampleOrganization."))
+            return SAMPLE_ORGANIZATION.hasColumn(columnName);
+        if(columnName.startsWith(path+"sampleProject."))
+            return SAMPLE_PROJECT.hasColumn(columnName);
+        return super.hasColumn(columnName);
     }      
 
 }

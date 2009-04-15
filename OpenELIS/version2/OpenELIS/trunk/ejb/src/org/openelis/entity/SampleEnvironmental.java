@@ -38,8 +38,11 @@ import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
@@ -74,9 +77,16 @@ public class SampleEnvironmental implements Auditable, Cloneable {
   private String samplingLocation;             
 
   @Column(name="address_id")
-  private Integer addressId;             
-
-
+  private Integer addressId;     
+  
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "address_id", insertable = false, updatable = false)
+  private Address address;
+  
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "sample_id", insertable = false, updatable = false)
+  private Sample sample;
+  
   @Transient
   private SampleEnvironmental original;
 
@@ -192,5 +202,17 @@ public class SampleEnvironmental implements Auditable, Cloneable {
   public String getTableName() {
     return "sample_environmental";
   }
+public Address getAddress() {
+    return address;
+}
+public void setAddress(Address address) {
+    this.address = address;
+}
+public Sample getSample() {
+    return sample;
+}
+public void setSample(Sample sample) {
+    this.sample = sample;
+}
   
 }   

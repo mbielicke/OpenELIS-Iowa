@@ -34,6 +34,7 @@ import org.w3c.dom.Element;
 import org.openelis.util.Datetime;
 import org.openelis.util.XMLUtil;
 
+import java.util.Collection;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -93,11 +94,22 @@ public class Sample implements Auditable, Cloneable {
   private String clientReference;             
 
   @Column(name="released_date")
-  private Date releasedDate;             
-
-  @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "sample_id",insertable = false, updatable = false)
-  private SampleHuman sampleHuman;
+  private Date releasedDate;
+  
+  //sample organizations
+  @OneToMany(fetch = FetchType.LAZY)
+  @JoinColumn(name = "sample_id")
+  private Collection<SampleOrganization> sampleOrganization;
+  
+  //sample projects
+  @OneToMany(fetch = FetchType.LAZY)
+  @JoinColumn(name = "sample_id")
+  private Collection<SampleProject> sampleProject;
+  
+  //sample items
+  @OneToMany(fetch = FetchType.LAZY)
+  @JoinColumn(name = "sample_id")
+  private Collection<SampleItem> sampleItem;
 
   @Transient
   private Sample original;
@@ -277,11 +289,10 @@ public class Sample implements Auditable, Cloneable {
   public String getTableName() {
     return "sample";
   }
-public SampleHuman getSampleHuman() {
-    return sampleHuman;
+public Collection<SampleItem> getSampleItem() {
+    return sampleItem;
 }
-public void setSampleHuman(SampleHuman sampleHuman) {
-    this.sampleHuman = sampleHuman;
+public void setSampleItem(Collection<SampleItem> sampleItem) {
+    this.sampleItem = sampleItem;
 }
-  
 }   
