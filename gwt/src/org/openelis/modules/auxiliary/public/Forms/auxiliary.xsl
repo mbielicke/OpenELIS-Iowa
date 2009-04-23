@@ -146,7 +146,7 @@ UIRF Software License are applicable instead of those above.
 								<row>
 								  <text style="Prompt"><xsl:value-of select="resource:getString($constants,'groupName')"/>:</text>
 								  <widget colspan = "5">
-							       <textbox  key="{meta:getName($auxfg)}" tab="{meta:getDescription($auxfg)},auxFieldValueTable" width="145px"/>
+							       <textbox  key="{meta:getName($auxfg)}" tab="{meta:getDescription($auxfg)},auxFieldValueTable" max="20" width="145px"/>
 							      </widget> 
 								</row> 	
 								<row>
@@ -189,7 +189,7 @@ UIRF Software License are applicable instead of those above.
 									<check/>
                                     <check/> 
                                     <check/>									                                   
-                                    <textbox/>
+                                    <textbox max="60" />
                                     <dropdown case="mixed" required = "true" width = "150px" type = "integer"/>   
                                    </editors>
                                    <fields>
@@ -231,7 +231,7 @@ UIRF Software License are applicable instead of those above.
 												</editors>
 												<fields>											    
 												    <dropdown key="{auxFieldValue:getTypeId($auxfv)}" type="integer" required="true"/>																										
-													<string key="{auxFieldValue:getValue($auxfv)}" required="true"/>																																	
+													<string key="{auxFieldValue:getValue($auxfv)}" max = "80"/>																																	
 												</fields>
 												<sorts>false,false</sorts>
 												<filters>false,false</filters>

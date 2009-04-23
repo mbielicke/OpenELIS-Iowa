@@ -52,9 +52,7 @@ public class AuxiliaryForm extends Form<Integer> {
     public DateField activeBegin,activeEnd;    
     public TableField<TableDataRow<Integer>> auxFieldValueTable, auxFieldTable;
     
-    public TableDataModel<TableDataRow<Integer>> units;
-    public TableDataModel<TableDataRow<Integer>> scriptlets;
-    public TableDataModel<TableDataRow<Integer>> auxFieldValueTypes;
+    public TableDataModel<TableDataRow<Integer>> units,scriptlets,auxFieldValueTypes;
         
     public AuxiliaryForm() {
      AuxFieldGroupMetaMap meta = new AuxFieldGroupMetaMap();   

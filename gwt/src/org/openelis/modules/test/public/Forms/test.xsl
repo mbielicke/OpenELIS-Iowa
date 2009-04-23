@@ -768,35 +768,33 @@ UIRF Software License are applicable instead of those above.
 					  </HorizontalPanel>			
 					</VerticalPanel>					
 				</HorizontalPanel>
-			</display>
-			<rpc key="display">
-			 <integer key="{meta:getId($test)}" required="false" type="integer"/>
-			 <string key="{meta:getName($test)}" max = "20" required="true" />
-			 <dropdown key="{method:getName($mt)}" required="true" type="integer"/>
-			 <string key="testTabPanel" reset="false">detailsTab</string>
-			 <rpc key = "details">
-				<string key="{meta:getDescription($test)}" max="60" required="true"/>
-				<string key="{meta:getReportingDescription($test)}" max="60" required="false"/>
-				<integer key="{meta:getTimeTaMax($test)}"  type="integer" required="false"/>
-				<integer key="{meta:getTimeTaAverage($test)}" type="integer" required="false"/>
-				<integer key="{meta:getTimeTaWarning($test)}" type="integer" required="false"/>
-				<integer key="{meta:getTimeTransit($test)}" type="integer" required="false"/>	
-				<check key="{meta:getIsActive($test)}" required="true"/>
-				<check key="{meta:getIsReportable($test)}" required="true"/>
-				<date key="{meta:getActiveBegin($test)}" begin="0" end="2" required="true"/>
-				<date key="{meta:getActiveEnd($test)}" begin="0" end="2" required="true"/>
-				<integer key="{meta:getTimeHolding($test)}" type="integer" required="false"/> 			
-				<dropdown key="{meta:getLabelId($test)}" required="false" type="integer"/>
-				<integer key="{meta:getLabelQty($test)}" required="false" type="integer"/>
-				<dropdown key="{meta:getTestTrailerId($test)}" required="false" type="integer"/>
-				<dropdown key="{meta:getTestFormatId($test)}" required="false" type="integer"/>				
-				<dropdown key="{meta:getScriptletId($test)}" required="false" type="integer"/>
-				<dropdown key="{meta:getRevisionMethodId($test)}" required="false" type="integer"/>				
-				<dropdown key="{meta:getReportingMethodId($test)}" required="false" type="integer"/>
-				<integer key="{meta:getReportingSequence($test)}" required="false" type="integer"/>
-				<dropdown key="{meta:getSortingMethodId($test)}" required="false" type="integer"/>
-				<table key="sectionTable"/>
-			</rpc>			
+		   </display>
+		   <rpc key="display">
+			<integer key="{meta:getId($test)}" required="false" type="integer"/>
+			<string key="{meta:getName($test)}" max = "20" required="true" />
+			<dropdown key="{method:getName($mt)}" required="true" type="integer"/>
+			<string key="testTabPanel" reset="false">sampleTypeTab</string>			 
+			<string key="{meta:getDescription($test)}" max="60" required="true"/>
+			<string key="{meta:getReportingDescription($test)}" max="60" required="false"/>
+			<integer key="{meta:getTimeTaMax($test)}"  type="integer" required="false"/>
+			<integer key="{meta:getTimeTaAverage($test)}" type="integer" required="false"/>
+			<integer key="{meta:getTimeTaWarning($test)}" type="integer" required="false"/>
+			<integer key="{meta:getTimeTransit($test)}" type="integer" required="false"/>	
+			<check key="{meta:getIsActive($test)}" required="true"/>
+			<check key="{meta:getIsReportable($test)}" required="true"/>
+			<date key="{meta:getActiveBegin($test)}" begin="0" end="2" required="true"/>
+			<date key="{meta:getActiveEnd($test)}" begin="0" end="2" required="true"/>
+			<integer key="{meta:getTimeHolding($test)}" type="integer" required="false"/> 			
+			<dropdown key="{meta:getLabelId($test)}" required="false" type="integer"/>
+			<integer key="{meta:getLabelQty($test)}" required="false" type="integer"/>
+			<dropdown key="{meta:getTestTrailerId($test)}" required="false" type="integer"/>
+			<dropdown key="{meta:getTestFormatId($test)}" required="false" type="integer"/>				
+			<dropdown key="{meta:getScriptletId($test)}" required="false" type="integer"/>
+			<dropdown key="{meta:getRevisionMethodId($test)}" required="false" type="integer"/>				
+			<dropdown key="{meta:getReportingMethodId($test)}" required="false" type="integer"/>
+			<integer key="{meta:getReportingSequence($test)}" required="false" type="integer"/>
+			<dropdown key="{meta:getSortingMethodId($test)}" required="false" type="integer"/>
+			<table key="sectionTable"/>					
 			<rpc key = "prepAndReflex"> 			 
 			 <table key="testPrepTable"/>
 			 <table key="testReflexTable"/>			 			 

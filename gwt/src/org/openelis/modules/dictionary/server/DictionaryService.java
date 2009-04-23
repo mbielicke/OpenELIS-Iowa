@@ -254,101 +254,6 @@ public class DictionaryService implements AppScreenFormServiceInt<DictionaryForm
     }
     
 
-    public TableDataModel<TableDataRow<Integer>> fillDictEntryTable(TableDataModel<TableDataRow<Integer>> dictEntryModel, List contactsList){        
-         try{
-             dictEntryModel.clear();
-                          
-             
-             for(int iter = 0;iter < contactsList.size();iter++) {
-                 DictionaryDO dictDO  = (DictionaryDO)contactsList.get(iter);
-
-                    TableDataRow<Integer> row = dictEntryModel.createNewSet();
-                    IntegerField id = new IntegerField(dictDO.getId());
-                   
-                    DataMap data = new DataMap();
-                    data.put("id", id);
-                    
-                    IntegerField relEntryId = new IntegerField(dictDO.getRelatedEntryId());
-                    data.put("relEntryId", relEntryId);
-                     
-                    row.setData(data);
-                    row.key = dictDO.getId();
-                    
-                    ((Field)row.cells[0]).setValue(dictDO.getIsActive());                      
-                    ((Field)row.cells[1]).setValue(dictDO.getSystemName());                                                               
-                    ((Field)row.cells[2]).setValue(dictDO.getLocalAbbrev());
-                    ((Field)row.cells[3]).setValue(dictDO.getEntry());
-                                                                                                        
-                     
-                    //we need to create a dataset for the parent organization auto complete
-                    if(dictDO.getRelatedEntryId() == null)
-                       ((Field)row.cells[4]).setValue(null);
-                    else{
-                        TableDataModel<TableDataRow<Integer>> model = new TableDataModel<TableDataRow<Integer>>();
-                        model.add(new TableDataRow<Integer>(dictDO.getRelatedEntryId(),new StringObject(dictDO.getRelatedEntryText())));
-                        model.add(new TableDataRow<Integer>(-1,new StringObject("")));                        
-                        ((DropDownField<Integer>)row.cells[4]).setModel(model);
-                        ((Field)row.cells[4]).setValue(model.get(0));
-                    }
-                     dictEntryModel.add(row);
-            } 
-             
-         } catch (Exception e) {
-
-             e.printStackTrace();
-             return null;
-         }       
-         
-         return dictEntryModel;  
-     }        
-    
-           
-    
-    public IntegerField getEntryIdForSystemName(StringObject systemName)throws Exception{
-        try{
-          CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
-          Integer entryId = remote.getEntryIdForSystemName((String)systemName.getValue());
-          IntegerField idField = new IntegerField(entryId);          
-          return idField;
-        }catch(Exception ex){
-            throw ex;
-        } 
-      }
-      
-    // the method that returns a id of that row, if any, from the Dictionary table which stores the Entry specified by "entry" 
-    // it throws an exception if 
-      public IntegerField getEntryIdForEntry(StringObject entry)throws Exception{
-         try{ 
-          CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
-          Integer entryId = remote.getEntryIdForEntry((String)entry.getValue());        
-          IntegerField idField = new IntegerField(entryId);          
-          return idField;
-         }catch(Exception ex){
-             throw ex;
-         }
-      }
-
-    // the method called to load the dropdowns on the screen
-    protected TableDataModel<TableDataRow<Integer>> getInitialModel(String cat) { 
-        TableDataModel<TableDataRow<Integer>> model = new TableDataModel<TableDataRow<Integer>>();             
-        
-        TestRemote remote = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");        
-        List<IdNameDO> values = remote.getSectionDropDownValues();
-                                                      
-         if(values!=null){
-          TableDataRow<Integer> blankset = new TableDataRow<Integer>(-1,new StringObject(""));                                                            
-          model.add(blankset);
-             
-          for (Iterator iter = values.iterator(); iter.hasNext();) {
-              IdNameDO sectionDO = (IdNameDO)iter.next();                           
-              TableDataRow<Integer> set = new TableDataRow<Integer>(sectionDO.getId(),new StringObject(sectionDO.getName()));         
-              model.add(set);                          
-           }                           
-        }        
-        return model;
-        
-    }
-
    //  the method called to load the matching entries in the autocomplete box(es) on the screen
     public TableDataModel<TableDataRow<Integer>> getMatches(String cat, TableDataModel model, String match, HashMap params) {         
       if("relatedEntry".equals(cat)) {        
@@ -379,6 +284,75 @@ public class DictionaryService implements AppScreenFormServiceInt<DictionaryForm
         }
          return rpc;
      }
+    
+    private TableDataModel<TableDataRow<Integer>> fillDictEntryTable(TableDataModel<TableDataRow<Integer>> dictEntryModel, List contactsList){        
+        try{
+            dictEntryModel.clear();
+                         
+            
+            for(int iter = 0;iter < contactsList.size();iter++) {
+                DictionaryDO dictDO  = (DictionaryDO)contactsList.get(iter);
+
+                   TableDataRow<Integer> row = dictEntryModel.createNewSet();
+                   IntegerField id = new IntegerField(dictDO.getId());
+                  
+                   DataMap data = new DataMap();
+                   data.put("id", id);
+                   
+                   IntegerField relEntryId = new IntegerField(dictDO.getRelatedEntryId());
+                   data.put("relEntryId", relEntryId);
+                    
+                   row.setData(data);
+                   row.key = dictDO.getId();
+                   
+                   ((Field)row.cells[0]).setValue(dictDO.getIsActive());                      
+                   ((Field)row.cells[1]).setValue(dictDO.getSystemName());                                                               
+                   ((Field)row.cells[2]).setValue(dictDO.getLocalAbbrev());
+                   ((Field)row.cells[3]).setValue(dictDO.getEntry());
+                                                                                                       
+                    
+                   //we need to create a dataset for the parent organization auto complete
+                   if(dictDO.getRelatedEntryId() == null)
+                      ((Field)row.cells[4]).setValue(null);
+                   else{
+                       TableDataModel<TableDataRow<Integer>> model = new TableDataModel<TableDataRow<Integer>>();
+                       model.add(new TableDataRow<Integer>(dictDO.getRelatedEntryId(),new StringObject(dictDO.getRelatedEntryText())));
+                       model.add(new TableDataRow<Integer>(-1,new StringObject("")));                        
+                       ((DropDownField<Integer>)row.cells[4]).setModel(model);
+                       ((Field)row.cells[4]).setValue(model.get(0));
+                   }
+                    dictEntryModel.add(row);
+           } 
+            
+        } catch (Exception e) {
+
+            e.printStackTrace();
+            return null;
+        }       
+        
+        return dictEntryModel;  
+    }                         
+
+   // the method called to load the dropdowns on the screen
+   private TableDataModel<TableDataRow<Integer>> getInitialModel(String cat) { 
+       TableDataModel<TableDataRow<Integer>> model = new TableDataModel<TableDataRow<Integer>>();             
+       
+       TestRemote remote = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");        
+       List<IdNameDO> values = remote.getSectionDropDownValues();
+                                                     
+        if(values!=null){
+         TableDataRow<Integer> blankset = new TableDataRow<Integer>(-1,new StringObject(""));                                                            
+         model.add(blankset);
+            
+         for (Iterator iter = values.iterator(); iter.hasNext();) {
+             IdNameDO sectionDO = (IdNameDO)iter.next();                           
+             TableDataRow<Integer> set = new TableDataRow<Integer>(sectionDO.getId(),new StringObject(sectionDO.getName()));         
+             model.add(set);                          
+          }                           
+       }        
+       return model;
+       
+   }
 
     private void setFieldsInRPC(DictionaryForm form, CategoryDO catDO){
         form.id.setValue(catDO.getId());
