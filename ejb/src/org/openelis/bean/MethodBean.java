@@ -85,7 +85,7 @@ public class MethodBean implements MethodRemote {
         return methodDO;
     }
 
-    public MethodDO getMethodAndLock(Integer methodId, String session)throws Exception {
+    public MethodDO getMethodAndLock(Integer methodId, String session)throws Exception {        
         Query query = manager.createNamedQuery("getTableId");
         query.setParameter("name", "method");
 
@@ -132,14 +132,19 @@ public class MethodBean implements MethodRemote {
     }
 
     public Integer updateMethod(MethodDO methodDO) throws Exception {
-       try{ 
+       try{         
         Query query = manager.createNamedQuery("getTableId");
         query.setParameter("name", "method");
         Integer methodReferenceId = (Integer)query.getSingleResult();
         
         if(methodDO.getId() != null){
          //we need to call lock one more time to make sure their lock didnt expire and someone else grabbed the record
-            lockBean.getLock(methodReferenceId, methodDO.getId());
+            try {
+                lockBean.validateLock(methodReferenceId,methodDO.getId());
+              } catch(Exception ex) {
+                 throw ex;
+              } 
+           lockBean.getLock(methodReferenceId, methodDO.getId());
          }
         
         manager.setFlushMode(FlushModeType.COMMIT);

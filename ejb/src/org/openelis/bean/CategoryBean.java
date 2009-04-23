@@ -34,6 +34,7 @@ import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.TableFieldErrorException;
+import org.openelis.gwt.common.SecurityModule.ModuleFlags;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.QueryStringField;
 import org.openelis.local.JMSMessageProducerLocal;
@@ -49,6 +50,7 @@ import org.openelis.metamap.CategoryMetaMap;
 import org.openelis.remote.CategoryRemote;
 import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
+import org.openelis.utils.SecurityInterceptor;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -150,6 +152,7 @@ public class CategoryBean implements CategoryRemote {
 
     @RolesAllowed("dictionary-update")
     public Integer updateCategory(CategoryDO categoryDO, List dictEntries) throws Exception {
+        SecurityInterceptor.applySecurity(ctx.getCallerPrincipal().getName(), "dictionary", ModuleFlags.UPDATE);
         Query query = manager.createNamedQuery("getTableId");
         query.setParameter("name", "category");
         Integer categoryReferenceId = (Integer)query.getSingleResult();
@@ -360,6 +363,7 @@ public class CategoryBean implements CategoryRemote {
 
     // @RolesAllowed("dictionary-update")
     public CategoryDO getCategoryAndLock(Integer categoryId, String session) throws Exception {
+        SecurityInterceptor.applySecurity(ctx.getCallerPrincipal().getName(), "dictionary", ModuleFlags.UPDATE);
         Query query = manager.createNamedQuery("getTableId");
         query.setParameter("name", "category");
 

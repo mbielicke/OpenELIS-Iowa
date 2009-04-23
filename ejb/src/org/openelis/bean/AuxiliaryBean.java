@@ -540,9 +540,6 @@ public class AuxiliaryBean implements AuxiliaryRemote {
                        exList.add(new TableFieldErrorException("illegalYesNoValueException", i,
                         AuxFieldGroupMeta.getAuxField().getAuxFieldValue().getValue())); 
                      }                      
-                   }else {
-                       exList.add(new TableFieldErrorException("fieldRequiredException", i,
-                        AuxFieldGroupMeta.getAuxField().getAuxFieldValue().getValue()));       
                    }
                 } else if(dateId.equals(typeId)) {           
                     if(value != null && !"".equals(value.trim())) {
@@ -553,10 +550,7 @@ public class AuxiliaryBean implements AuxiliaryRemote {
                           AuxFieldGroupMeta.getAuxField().getAuxFieldValue().getValue()));   
                      }
                                                                                            
-                    }else {
-                          exList.add(new TableFieldErrorException("fieldRequiredException", i,
-                           AuxFieldGroupMeta.getAuxField().getAuxFieldValue().getValue()));       
-                   }
+                    }
                     date = null;
                 } else if(dtId.equals(typeId)) {           
                     if(value != null && !"".equals(value.trim())) {
@@ -575,10 +569,7 @@ public class AuxiliaryBean implements AuxiliaryRemote {
                              AuxFieldGroupMeta.getAuxField().getAuxFieldValue().getValue()));   
                         }
                                                                                               
-                       }else {
-                             exList.add(new TableFieldErrorException("fieldRequiredException", i,
-                              AuxFieldGroupMeta.getAuxField().getAuxFieldValue().getValue()));       
-                      }
+                       }
                        date = null;
                   } else if(timeId.equals(typeId)) {           
                       if(value != null && !"".equals(value.trim())) {
@@ -594,9 +585,6 @@ public class AuxiliaryBean implements AuxiliaryRemote {
                                AuxFieldGroupMeta.getAuxField().getAuxFieldValue().getValue()));   
                           }
                                                                                                 
-                         }else {
-                               exList.add(new TableFieldErrorException("fieldRequiredException", i,
-                                AuxFieldGroupMeta.getAuxField().getAuxFieldValue().getValue()));       
                         }
                          date = null;
                     } else if(dictId.equals(typeId)) {
@@ -616,11 +604,11 @@ public class AuxiliaryBean implements AuxiliaryRemote {
                          if(rlist.size() == 0) {
                           exList.add(new TableFieldErrorException("illegalDictEntryException", i,
                            AuxFieldGroupMeta.getAuxField().getAuxFieldValue().getValue()));  
-                    }
-                  } else {
-                      exList.add(new TableFieldErrorException("fieldRequiredException", i,
-                       AuxFieldGroupMeta.getAuxField().getAuxFieldValue().getValue()));    
-                  }
+                       }
+                    } else {
+                        exList.add(new TableFieldErrorException("fieldRequiredException", i,
+                         AuxFieldGroupMeta.getAuxField().getAuxFieldValue().getValue()));       
+                   }
               }
           }     
         }  

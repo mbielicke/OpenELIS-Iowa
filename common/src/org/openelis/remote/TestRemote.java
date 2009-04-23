@@ -27,8 +27,7 @@ package org.openelis.remote;
 
 import org.openelis.domain.IdNameDO;
 import org.openelis.domain.TestAnalyteDO;
-import org.openelis.domain.TestDetailsDO;
-import org.openelis.domain.TestIdNameMethodIdDO;
+import org.openelis.domain.TestDO;
 import org.openelis.domain.TestPrepDO;
 import org.openelis.domain.TestReflexDO;
 import org.openelis.domain.TestResultDO;
@@ -48,15 +47,11 @@ import javax.ejb.Remote;
 @Remote
 public interface TestRemote {
 
-    public TestIdNameMethodIdDO getTestIdNameMethod(Integer testId);
+    public TestDO getTestAndUnlock(Integer testId,String session);
 
-    public TestIdNameMethodIdDO getTestIdNameMethodAndUnlock(Integer testId,
-                                                             String session);
+    public TestDO getTestAndLock(Integer testId,String session) throws Exception;
 
-    public TestIdNameMethodIdDO getTestIdNameMethodAndLock(Integer testId,
-                                                           String session) throws Exception;
-
-    public TestDetailsDO getTestDetails(Integer testId);
+    public TestDO getTest(Integer testId);
 
     public List<TestPrepDO> getTestPreps(Integer testId);
     
@@ -78,8 +73,7 @@ public interface TestRemote {
     
     public List<TestResultDO> getTestResults(Integer testId, Integer resultGroup);
 
-    public Integer updateTest(TestIdNameMethodIdDO testIdNameMethod,
-                              TestDetailsDO testDetails,
+    public Integer updateTest(TestDO testDO,                              
                               List<TestPrepDO> prepTestDOList,
                               List<TestTypeOfSampleDO> sampleTypeDOList,
                               List<TestReflexDO> testReflexDOList,
@@ -92,8 +86,7 @@ public interface TestRemote {
     
     public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception;
 
-    public List validateForUpdate(TestIdNameMethodIdDO testIdNameMethod,
-                                  TestDetailsDO testDetails,
+    public List<Exception> validateForUpdate(TestDO testDO,
                                   List<TestPrepDO> prepTestDOList,
                                   List<TestTypeOfSampleDO> sampleTypeDOList,
                                   List<TestReflexDO> testReflexDOList,
@@ -104,8 +97,7 @@ public interface TestRemote {
                                   List<TestSectionDO> sectionDOList,
                                   List<TestResultDO> resultDOList);
 
-    public List validateForAdd(TestIdNameMethodIdDO testIdNameMethod,
-                               TestDetailsDO testDetails,
+    public List<Exception> validateForAdd(TestDO testDO,
                                List<TestPrepDO> prepTestDOList,
                                List<TestTypeOfSampleDO> sampleTypeDOList,
                                List<TestReflexDO> testReflexDOList,
