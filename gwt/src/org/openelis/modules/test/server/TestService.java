@@ -933,7 +933,6 @@ public class TestService implements AppScreenFormServiceInt<TestForm,Query<Table
 
     private List<TestTypeOfSampleDO> getSampleTypesFromRPC(SampleTypeForm form,
                                                            Integer testId) {
-        IntegerField id = null;
 
         TableDataRow<Integer> row = null;
         TableDataModel<TableDataRow<Integer>> model = (TableDataModel)form.sampleTypeTable.getValue();        
@@ -1376,10 +1375,9 @@ public class TestService implements AppScreenFormServiceInt<TestForm,Query<Table
                 TestTypeOfSampleDO testTypeOfSampleDO = (TestTypeOfSampleDO)sampleTypeDOList.get(iter);
                 TableDataRow<Integer> row = model.createNewSet();
                 // new TableRow();                
-                IntegerField unitId = null;
                                 
                 if(!form.duplicate) 
-                                                                                
+                   row.key = testTypeOfSampleDO.getId();                                                         
                 
                 if(testTypeOfSampleDO.getTypeOfSampleId()!=null)
                  ((DropDownField)row.cells[0]).setValue(new TableDataRow<Integer>(testTypeOfSampleDO.getTypeOfSampleId()));
