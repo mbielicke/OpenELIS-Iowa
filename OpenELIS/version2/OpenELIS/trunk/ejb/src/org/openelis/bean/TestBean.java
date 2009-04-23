@@ -29,8 +29,7 @@ import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.IdLastNameFirstNameDO;
 import org.openelis.domain.IdNameDO;
 import org.openelis.domain.TestAnalyteDO;
-import org.openelis.domain.TestDetailsDO;
-import org.openelis.domain.TestIdNameMethodIdDO;
+import org.openelis.domain.TestDO;
 import org.openelis.domain.TestPrepDO;
 import org.openelis.domain.TestReflexDO;
 import org.openelis.domain.TestResultDO;
@@ -54,6 +53,7 @@ import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.TableFieldErrorException;
+import org.openelis.gwt.common.SecurityModule.ModuleFlags;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.local.LockLocal;
 import org.openelis.metamap.TestMetaMap;
@@ -68,8 +68,10 @@ import org.openelis.remote.TestRemote;
 import org.openelis.security.local.SystemUserUtilLocal;
 import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
+import org.openelis.utils.SecurityInterceptor;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -112,36 +114,26 @@ public class TestBean implements TestRemote {
     private void init() {
         lockBean = (LockLocal)ctx.lookup("ejb/Lock");
         sysUser = (SystemUserUtilLocal)ctx.lookup("ejb/SystemUser");
-    }
+    }        
     
-    public TestIdNameMethodIdDO getTestIdNameMethod(Integer testId) {
-        Query query = manager.createNamedQuery("Test.TestMethodIdName");
-        query.setParameter("id", testId);
-        TestIdNameMethodIdDO testDO = (TestIdNameMethodIdDO)query.getSingleResult();
-        return testDO;
-    }
-    
-    
-    public TestIdNameMethodIdDO getTestIdNameMethodAndUnlock(Integer testId,
-                                                             String session) {
+    public TestDO getTestAndUnlock(Integer testId,String session) {
         Query unlockQuery = manager.createNamedQuery("getTableId");
         unlockQuery.setParameter("name", "test");
         lockBean.giveUpLock((Integer)unlockQuery.getSingleResult(), testId);
-        return getTestIdNameMethod(testId);
+        return getTest(testId);
     }
 
-    public TestIdNameMethodIdDO getTestIdNameMethodAndLock(Integer testId,
-                                                           String session) throws Exception {
-        // SecurityInterceptor.applySecurity("test", ModuleFlags.UPDATE);
+    @RolesAllowed("test-update")
+    public TestDO getTestAndLock(Integer testId,String session) throws Exception {
+        SecurityInterceptor.applySecurity(ctx.getCallerPrincipal().getName(), "test", ModuleFlags.UPDATE);
         Query query = manager.createNamedQuery("getTableId");
         query.setParameter("name", "test");
         lockBean.getLock((Integer)query.getSingleResult(), testId);
 
-        return getTestIdNameMethod(testId);
+        return getTest(testId);
     }
-    
-    public Integer updateTest(TestIdNameMethodIdDO testIdNameMethodDO,
-                              TestDetailsDO testDetailsDO,
+        
+    public Integer updateTest(TestDO testDO,
                               List<TestPrepDO> prepTestDOList,
                               List<TestTypeOfSampleDO> typeOfSampleDOList,
                               List<TestReflexDO> testReflexDOList,
@@ -151,6 +143,7 @@ public class TestBean implements TestRemote {
                               List<TestAnalyteDO> analyteDOList,
                               List<TestSectionDO> sectionDOList,
                               List<TestResultDO> resultDOList) throws Exception {
+        SecurityInterceptor.applySecurity(ctx.getCallerPrincipal().getName(), "test", ModuleFlags.UPDATE);
         TestWorksheet testWorksheet = null;
         List<TestAnalyteDO> laterProcAnaList = new ArrayList<TestAnalyteDO>(); 
         List<TestResultDO> laterProcResList = new ArrayList<TestResultDO>();
@@ -164,58 +157,56 @@ public class TestBean implements TestRemote {
             query.setParameter("name", "test");
             Integer testReferenceId = (Integer)query.getSingleResult();
 
-            if (testIdNameMethodDO.getId() != null) {
+            if (testDO.getId() != null) {
                 // we need to call lock one more time to make sure their lock
                 // didn't expire and someone else grabbed the record
                 try {
-                    lockBean.validateLock(testReferenceId,testIdNameMethodDO.getId());
+                    lockBean.validateLock(testReferenceId,testDO.getId());
                   } catch(Exception ex) {
                      throw ex;
                   }      
-                lockBean.getLock(testReferenceId, testIdNameMethodDO.getId());
+                lockBean.getLock(testReferenceId, testDO.getId());
             }
 
             manager.setFlushMode(FlushModeType.COMMIT);
             Test test = null;
 
-            if (testIdNameMethodDO.getId() == null) {
+            if (testDO.getId() == null) {
                 test = new Test();
             } else {
-                test = manager.find(Test.class, testIdNameMethodDO.getId());
+                test = manager.find(Test.class, testDO.getId());
             }
             
             List<Exception> exceptionList = new ArrayList<Exception>();                        
             
-            validateTest(exceptionList,testIdNameMethodDO,testDetailsDO);
+            validateTest(exceptionList,testDO);
             if(exceptionList.size() > 0){
                 throw (RPCException)exceptionList.get(0);
             }
 
-            test.setName(testIdNameMethodDO.getName());
-            test.setMethodId(testIdNameMethodDO.getMethodId());
-            
-           if(testDetailsDO!=null){                                      
-            test.setActiveBegin(testDetailsDO.getActiveBegin());
-            test.setActiveEnd(testDetailsDO.getActiveEnd());
-            test.setDescription(testDetailsDO.getDescription());
-            test.setIsActive(testDetailsDO.getIsActive());
-            test.setIsReportable(testDetailsDO.getIsReportable());
-            test.setLabelId(testDetailsDO.getLabelId());
-            test.setLabelQty(testDetailsDO.getLabelQty());
-            test.setReportingDescription(testDetailsDO.getReportingDescription());
-            test.setRevisionMethodId(testDetailsDO.getRevisionMethodId());
-            test.setScriptletId(testDetailsDO.getScriptletId());            
-            test.setTestFormatId(testDetailsDO.getTestFormatId());
-            test.setTestTrailerId(testDetailsDO.getTestTrailerId());
-            test.setTimeHolding(testDetailsDO.getTimeHolding());
-            test.setTimeTaAverage(testDetailsDO.getTimeTaAverage());
-            test.setTimeTaMax(testDetailsDO.getTimeTaMax());
-            test.setTimeTaWarning(testDetailsDO.getTimeTaWarning());
-            test.setTimeTransit(testDetailsDO.getTimeTransit());
-            test.setReportingMethodId(testDetailsDO.getReportingMethodId());
-            test.setSortingMethodId(testDetailsDO.getSortingMethodId());
-            test.setReportingSequence(testDetailsDO.getReportingSequence());
-           }
+            test.setName(testDO.getName());
+            test.setMethodId(testDO.getMethodId());                                         
+            test.setActiveBegin(testDO.getActiveBegin());
+            test.setActiveEnd(testDO.getActiveEnd());
+            test.setDescription(testDO.getDescription());
+            test.setIsActive(testDO.getIsActive());
+            test.setIsReportable(testDO.getIsReportable());
+            test.setLabelId(testDO.getLabelId());
+            test.setLabelQty(testDO.getLabelQty());
+            test.setReportingDescription(testDO.getReportingDescription());
+            test.setRevisionMethodId(testDO.getRevisionMethodId());
+            test.setScriptletId(testDO.getScriptletId());            
+            test.setTestFormatId(testDO.getTestFormatId());
+            test.setTestTrailerId(testDO.getTestTrailerId());
+            test.setTimeHolding(testDO.getTimeHolding());
+            test.setTimeTaAverage(testDO.getTimeTaAverage());
+            test.setTimeTaMax(testDO.getTimeTaMax());
+            test.setTimeTaWarning(testDO.getTimeTaWarning());
+            test.setTimeTransit(testDO.getTimeTransit());
+            test.setReportingMethodId(testDO.getReportingMethodId());
+            test.setSortingMethodId(testDO.getSortingMethodId());
+            test.setReportingSequence(testDO.getReportingSequence());
+
 
             if (test.getId() == null) {
                 manager.persist(test);
@@ -593,11 +584,11 @@ public class TestBean implements TestRemote {
         }
     }          
 
-    public TestDetailsDO getTestDetails(Integer testId) {
-        Query query = manager.createNamedQuery("Test.TestDetails");
+    public TestDO getTest(Integer testId) {
+        Query query = manager.createNamedQuery("Test.Test");
         query.setParameter("id", testId);
-        TestDetailsDO testDetailsDO = (TestDetailsDO)query.getSingleResult(); 
-        return testDetailsDO;
+        TestDO testDO = (TestDO)query.getSingleResult(); 
+        return testDO;
     }    
     
     public List<TestPrepDO> getTestPreps(Integer testId) {
@@ -813,8 +804,7 @@ public class TestBean implements TestRemote {
         qb.addWhere(fields);        
         qb.setOrderBy(TestMeta.getName()+", "+TestMeta.getMethod().getName());
 
-        sb.append(qb.getEJBQL());                        
-        System.out.println("query################################################ "+sb.toString());
+        sb.append(qb.getEJBQL());                                
         Query query = manager.createQuery(sb.toString());
 
         if (first > -1 && max > -1)
@@ -957,8 +947,7 @@ public class TestBean implements TestRemote {
      }
     
 
-    public List validateForAdd(TestIdNameMethodIdDO testIdNameMethodDO,
-                               TestDetailsDO testDetailsDO,
+    public List<Exception> validateForAdd(TestDO testDO,
                                List<TestPrepDO> prepTestDOList,
                                List<TestTypeOfSampleDO> typeOfSampleDOList,
                                List<TestReflexDO> testReflexDOList,
@@ -969,7 +958,7 @@ public class TestBean implements TestRemote {
                                List<TestSectionDO> sectionDOList,
                                List<TestResultDO> resultDOList) {
      List<Exception> exceptionList = new ArrayList<Exception>();
-     validateTest(exceptionList, testIdNameMethodDO, testDetailsDO);
+     validateTest(exceptionList, testDO);
      if(typeOfSampleDOList!=null)
       validateTypeOfSample(exceptionList,typeOfSampleDOList);
      if(prepTestDOList!=null)
@@ -991,8 +980,7 @@ public class TestBean implements TestRemote {
      return exceptionList;
     }
 
-    public List validateForUpdate(TestIdNameMethodIdDO testIdNameMethodDO,
-                                  TestDetailsDO testDetailsDO,
+    public List<Exception> validateForUpdate(TestDO testDO,
                                   List<TestPrepDO> prepTestDOList,
                                   List<TestTypeOfSampleDO> typeOfSampleDOList,
                                   List<TestReflexDO> testReflexDOList,
@@ -1003,7 +991,7 @@ public class TestBean implements TestRemote {
                                   List<TestSectionDO> sectionDOList,
                                   List<TestResultDO> resultDOList) {
         List<Exception> exceptionList = new ArrayList<Exception>();
-        validateTest(exceptionList, testIdNameMethodDO,testDetailsDO);
+        validateTest(exceptionList, testDO);
         if(typeOfSampleDOList!=null)
          validateTypeOfSample(exceptionList,typeOfSampleDOList);
         if(prepTestDOList!=null)
@@ -1026,49 +1014,47 @@ public class TestBean implements TestRemote {
     }    
     
 
-    private void validateTest(List<Exception> exceptionList,
-                                        TestIdNameMethodIdDO testIdNameMethodIdDO,
-                                        TestDetailsDO testDetailsDO) {
+    private void validateTest(List<Exception> exceptionList,TestDO testDO) {
         boolean checkDuplicate = true;
-        if (testIdNameMethodIdDO.getName() == null || "".equals(testIdNameMethodIdDO.getName())) {
+        if (testDO.getName() == null || "".equals(testDO.getName())) {
             exceptionList.add(new FieldErrorException("fieldRequiredException",
                                                       TestMeta.getName()));
             checkDuplicate = false;
         }
 
-        if (testIdNameMethodIdDO.getMethodId() == null) {
+        if (testDO.getMethodId() == null) {
             exceptionList.add(new FieldErrorException("fieldRequiredException",
                                                       TestMeta.getMethodId()));
             checkDuplicate = false;
         }
         
-        if(testDetailsDO !=null){ 
-            if (testDetailsDO.getDescription() == null || "".equals(testDetailsDO.getDescription())) {
+        if(testDO !=null){ 
+            if (testDO.getDescription() == null || "".equals(testDO.getDescription())) {
                 exceptionList.add(new FieldErrorException("fieldRequiredException",
-                                                          "details:" + TestMeta.getDescription()));
+                                                          TestMeta.getDescription()));
                 checkDuplicate = false;
             }
 
-            if (testDetailsDO.getIsActive() == null) {
+            if (testDO.getIsActive() == null) {
                 exceptionList.add(new FieldErrorException("fieldRequiredException",
-                                                          "details:" + TestMeta.getIsActive()));
+                                                          TestMeta.getIsActive()));
                 checkDuplicate = false;
             }
             
-            if (testDetailsDO.getActiveBegin() == null) {
+            if (testDO.getActiveBegin() == null) {
                 exceptionList.add(new FieldErrorException("fieldRequiredException",
-                                                          "details:" + TestMeta.getActiveBegin()));
+                                                          TestMeta.getActiveBegin()));
                 checkDuplicate = false;
             }
 
-            if (testDetailsDO.getActiveEnd() == null) {
+            if (testDO.getActiveEnd() == null) {
                 exceptionList.add(new FieldErrorException("fieldRequiredException",
-                                                          "details:" + TestMeta.getActiveEnd()));
+                                                          TestMeta.getActiveEnd()));
                 checkDuplicate = false;
             }
             
             if(checkDuplicate){
-                if(testDetailsDO.getActiveEnd().before(testDetailsDO.getActiveBegin())){
+                if(testDO.getActiveEnd().before(testDO.getActiveBegin())){
                     exceptionList.add(new FormErrorException("endDateAfterBeginDateException"));  
                     checkDuplicate = false;
                 }
@@ -1076,26 +1062,26 @@ public class TestBean implements TestRemote {
             
           if(checkDuplicate){
              Query query = manager.createNamedQuery("Test.TestByName");
-             query.setParameter("name", testIdNameMethodIdDO.getName());
+             query.setParameter("name", testDO.getName());
              List<Test> list = query.getResultList();
              for(int iter = 0; iter < list.size(); iter++){
                  boolean overlap = false;
                  Test test = (Test)list.get(iter);
-                 if(!test.getId().equals(testIdNameMethodIdDO.getId())){
-                  if(test.getMethodId().equals(testIdNameMethodIdDO.getMethodId())){                  
-                      if(test.getIsActive().equals(testDetailsDO.getIsActive())){
-                          if("Y".equals(testDetailsDO.getIsActive())){
+                 if(!test.getId().equals(testDO.getId())){
+                  if(test.getMethodId().equals(testDO.getMethodId())){                  
+                      if(test.getIsActive().equals(testDO.getIsActive())){
+                          if("Y".equals(testDO.getIsActive())){
                               exceptionList.add(new FormErrorException("testActiveException"));                                   
                               break; 
                            }else{
                              // exceptionList.add(new FormErrorException("testInactiveTimeOverlap"));  
                             }                              
                      }
-                      if(test.getActiveBegin().before(testDetailsDO.getActiveEnd())&&
-                                      (test.getActiveEnd().after(testDetailsDO.getActiveBegin()))){
+                      if(test.getActiveBegin().before(testDO.getActiveEnd())&&
+                                      (test.getActiveEnd().after(testDO.getActiveBegin()))){
                           overlap = true;  
-                       }else if(test.getActiveBegin().equals(testDetailsDO.getActiveEnd())||
-                                   (test.getActiveEnd().equals(testDetailsDO.getActiveBegin()))){
+                       }else if(test.getActiveBegin().equals(testDO.getActiveEnd())||
+                                   (test.getActiveEnd().equals(testDO.getActiveBegin()))){
                                 overlap = true;                  
                        }
                       
@@ -1342,14 +1328,22 @@ public class TestBean implements TestRemote {
      Integer titerId = null; 
      Integer blankId = new Integer(-1);
      Integer typeId = null;
+     Integer dateId = null;
+     Integer dtId = null;
+     Integer timeId = null;     
      Integer resultGroup = null;
      Integer unit = null;
      HashMap<Integer, Double> unitTtrMaxMap = null;
      HashMap<Integer, Double> unitNumMaxMap = null;
-      
+     Date date = null;
+     
      String[] st = null;
      
-     ArrayList<String> dvl = null;  
+     ArrayList<String> dvlist = null;  
+     ArrayList<String> dlist = null; 
+     ArrayList<String> dtlist = null; 
+     ArrayList<String> tlist = null; 
+     
      ArrayList<Integer> rlist = null;
       
      Double pnMax = null;
@@ -1362,6 +1356,9 @@ public class TestBean implements TestRemote {
      
       
      String value = null;
+     String hhmm = null;
+     String defDate = "2000-01-01 ";
+     String dateStr = null;
       
      Query query = manager.createNamedQuery("Dictionary.IdBySystemName");
       
@@ -1373,6 +1370,15 @@ public class TestBean implements TestRemote {
       
      query.setParameter("systemName", "test_res_type_titer");
      titerId = (Integer)query.getSingleResult();
+     
+     query.setParameter("systemName", "test_res_type_date");
+     dateId = (Integer)query.getSingleResult(); 
+     
+     query.setParameter("systemName", "test_res_type_date_time");
+     dtId = (Integer)query.getSingleResult();
+     
+     query.setParameter("systemName", "test_res_type_time");
+     timeId = (Integer)query.getSingleResult();
       
      for(int i = 0; i < resultDOList.size(); i++){
        resDO = resultDOList.get(i);
@@ -1383,12 +1389,18 @@ public class TestBean implements TestRemote {
            resultGroup = resDO.getResultGroup();
            unitTtrMaxMap = new HashMap<Integer, Double>();
            unitNumMaxMap = new HashMap<Integer, Double>();
-           dvl = new ArrayList<String>();
+           dvlist = new ArrayList<String>();
+           dlist = new ArrayList<String>(); 
+           dtlist = new ArrayList<String>(); 
+           tlist = new ArrayList<String>();
        } else if(!resultGroup.equals(resDO.getResultGroup())) {
            resultGroup = resDO.getResultGroup();
            unitTtrMaxMap = new HashMap<Integer, Double>();
            unitNumMaxMap = new HashMap<Integer, Double>();
-           dvl = new ArrayList<String>();
+           dvlist = new ArrayList<String>();
+           dlist = new ArrayList<String>(); 
+           dtlist = new ArrayList<String>(); 
+           tlist = new ArrayList<String>();
            ptMax = null;
            pnMax = null;
        }
@@ -1466,7 +1478,7 @@ public class TestBean implements TestRemote {
                              ptMax = unitTtrMaxMap.get(unit); 
                          }
                          
-                         if(ptMax != null && !(ctMin > ptMax)) { 
+                        if(ptMax != null && !(ctMin > ptMax)) { 
                           exceptionList.add(new TableFieldErrorException("testTiterRangeOverlapException", i,
                            TestResultMetaMap.getTableName()+":"+TestMeta.getTestResult().getValue()));
                          } 
@@ -1488,24 +1500,93 @@ public class TestBean implements TestRemote {
               } else {
                   exceptionList.add(new TableFieldErrorException("fieldRequiredException", i,
                    TestResultMetaMap.getTableName()+":"+TestMeta.getTestResult().getValue()));    
-              }
-           } else if(dictId.equals(typeId)) {
-               value = resDO.getDictEntry();
+              }             
+           } else if(dateId.equals(typeId)) {           
                if(value != null && !"".equals(value.trim())) {
-                   if(!dvl.contains(value)) {
-                      dvl.add(value); 
-                   } else {
+                   try{
+                       date = new Date(value.replaceAll("-", "/"));
+                       
+                       if(!dlist.contains(value)) {
+                           dlist.add(value); 
+                        } else {
+                         exceptionList.add(new TableFieldErrorException("testDateValueNotUniqueException", i,
+                          TestResultMetaMap.getTableName()+":"+TestMeta.getTestResult().getValue())); 
+                       }
+                   } catch (IllegalArgumentException ex) {
+                       exceptionList.add(new TableFieldErrorException("illegalDateValueException", i,
+                        TestResultMetaMap.getTableName()+":"+TestMeta.getTestResult().getValue()));   
+                   }
+                                                                                         
+                  }
+                  date = null;
+              } else if(dtId.equals(typeId)) {           
+                  if(value != null && !"".equals(value.trim())) {
+                      try{
+                          st = value.split(" ");                             
+                          if(st.length != 2)
+                           throw new IllegalArgumentException();
+                          
+                          hhmm = st[1];
+                          if(hhmm.split(":").length != 2) 
+                              throw new IllegalArgumentException(); 
+                          
+                          date = new Date(value.replaceAll("-", "/"));
+                          
+                          if(!dtlist.contains(value)) {
+                              dtlist.add(value); 
+                           } else {
+                            exceptionList.add(new TableFieldErrorException("testDateTimeValueNotUniqueException", i,
+                             TestResultMetaMap.getTableName()+":"+TestMeta.getTestResult().getValue())); 
+                          }
+                      } catch (IllegalArgumentException ex) {
+                          exceptionList.add(new TableFieldErrorException("illegalDateTimeValueException", i,
+                           TestResultMetaMap.getTableName()+":"+TestMeta.getTestResult().getValue()));   
+                      }
+                                                                                            
+                     }
+                     date = null;
+                } else if(timeId.equals(typeId)) {           
+                    if(value != null && !"".equals(value.trim())) {
+                        
+                        try{
+                            st = value.split(":");                             
+                            if(st.length != 2)
+                             throw new IllegalArgumentException();                                                       
+                            
+                            dateStr = defDate + value;                                
+                            date = new Date(dateStr.replaceAll("-", "/"));
+                            
+                          if(!tlist.contains(value)) {
+                                tlist.add(value); 
+                          } else {
+                            exceptionList.add(new TableFieldErrorException("testTimeValueNotUniqueException", i,
+                             TestResultMetaMap.getTableName()+":"+TestMeta.getTestResult().getValue())); 
+                         }
+                        } catch (IllegalArgumentException ex) {
+                            exceptionList.add(new TableFieldErrorException("illegalTimeValueException", i,
+                             TestResultMetaMap.getTableName()+":"+TestMeta.getTestResult().getValue()));   
+                        }
+                                                                                              
+                      }
+                       date = null;
+                  }else if(dictId.equals(typeId)) {
+                     value = resDO.getDictEntry();
+                     if(value != null && !"".equals(value.trim())) {
+                       if(!dvlist.contains(value)) {
+                           dvlist.add(value); 
+                      } else {
                        exceptionList.add(new TableFieldErrorException("testDictEntryNotUniqueException", i,
                         TestResultMetaMap.getTableName()+":"+TestMeta.getTestResult().getValue())); 
-                   }
+                    }
                    
-                  query = manager.createNamedQuery("Dictionary.IdByEntry");
-                  query.setParameter("entry", value);
-                  rlist = (ArrayList<Integer>)query.getResultList();
+                      query = manager.createNamedQuery("Dictionary.IdByEntry");
+                      query.setParameter("entry", value);
+                      rlist = (ArrayList<Integer>)query.getResultList();
                   
-                  if(rlist.size() == 0)
-                   exceptionList.add(new TableFieldErrorException("illegalDictEntryException", i,
-                    TestResultMetaMap.getTableName()+":"+TestMeta.getTestResult().getValue()));  
+                    if(rlist.size() == 0) {
+                     exceptionList.add(new TableFieldErrorException("illegalDictEntryException", i,
+                       TestResultMetaMap.getTableName()+":"+TestMeta.getTestResult().getValue()));
+                    }
 
                } else {
                    exceptionList.add(new TableFieldErrorException("fieldRequiredException", i,

@@ -31,12 +31,14 @@ import org.openelis.entity.QaEvent;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.RPCException;
+import org.openelis.gwt.common.SecurityModule.ModuleFlags;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.local.LockLocal;
 import org.openelis.metamap.QaEventMetaMap;
 import org.openelis.remote.QaEventRemote;
 import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
+import org.openelis.utils.SecurityInterceptor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -123,6 +125,7 @@ public class QaEventBean implements QaEventRemote{
    
     @RolesAllowed("qaevent-update")
     public Integer updateQaEvent(QaEventDO qaEventDO)throws Exception{ 
+        SecurityInterceptor.applySecurity(ctx.getCallerPrincipal().getName(), "qaevent", ModuleFlags.UPDATE);
         Query query = manager.createNamedQuery("getTableId");
         query.setParameter("name", "qaevent");
         Integer qaEventReferenceId = (Integer)query.getSingleResult();
@@ -171,6 +174,7 @@ public class QaEventBean implements QaEventRemote{
 
     @RolesAllowed("qaevent-update")
     public QaEventDO getQaEventAndLock(Integer qaEventId, String session) throws Exception {
+        SecurityInterceptor.applySecurity(ctx.getCallerPrincipal().getName(), "qaevent", ModuleFlags.UPDATE);
         Query query = manager.createNamedQuery("getTableId");
         query.setParameter("name", "qaevent");
         lockBean.getLock((Integer)query.getSingleResult(),qaEventId);
