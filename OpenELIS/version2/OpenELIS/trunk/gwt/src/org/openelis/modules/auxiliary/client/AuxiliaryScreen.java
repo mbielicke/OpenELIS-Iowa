@@ -91,7 +91,7 @@ public class AuxiliaryScreen extends OpenELISScreenForm<AuxiliaryForm, Query<Tab
         
     private ScreenWindow pickerWindow = null;              
     
-    private TextBox grpName = null;
+    private TextBox grpName = null;       
     
     AsyncCallback<AuxiliaryForm> checkModels = new AsyncCallback<AuxiliaryForm>() {     
       public void onSuccess(AuxiliaryForm rpc) {
@@ -202,7 +202,8 @@ public class AuxiliaryScreen extends OpenELISScreenForm<AuxiliaryForm, Query<Tab
     
     public void abort() {
         auxFieldValueTableWidget.model.enableAutoAdd(false); 
-        auxFieldTableWidget.model.enableAutoAdd(false);         
+        auxFieldTableWidget.model.enableAutoAdd(false);    
+        form.auxFieldValueTable.removeErrors();
         super.abort();
     }
     
@@ -436,15 +437,11 @@ public class AuxiliaryScreen extends OpenELISScreenForm<AuxiliaryForm, Query<Tab
     
 
     public void finishedEditing(SourcesTableWidgetEvents sender,int row,int col) {    
-        AuxiliaryGeneralPurposeRPC agrpc = null;   
+        AuxiliaryGeneralPurposeRPC agrpc = new AuxiliaryGeneralPurposeRPC();   
         if(sender == auxFieldValueTableWidget && col == 1) {            
-            final int currRow = row;
-            final Integer selValue = (Integer)((DropDownField)auxFieldValueTableWidget.model.getRow(row).cells[0]).getSelectedKey();
-            final String value = ((StringField)auxFieldValueTableWidget.model.getRow(row).cells[1]).getValue();            
-            if (!"".equals(value.trim())) {  
-                agrpc = new AuxiliaryGeneralPurposeRPC();
-                agrpc.key = selValue;
-
+            final int currRow = row;            
+            final String value = ((StringField)auxFieldValueTableWidget.model.getRow(row).cells[1]).getValue();
+            agrpc.key = (Integer)((DropDownField)auxFieldValueTableWidget.model.getRow(row).cells[0]).getSelectedKey();
                 
                 screenService.call("getCategorySystemName",agrpc,
                                    new SyncCallback() {
@@ -456,6 +453,7 @@ public class AuxiliaryScreen extends OpenELISScreenForm<AuxiliaryForm, Query<Tab
                                                // Find out if this value is stored in the database if
                                                // the type chosen was "Dictionary"
                                                //
+                                             if (!"".equals(value.trim())) {   
                                                AuxiliaryGeneralPurposeRPC agrpc1 = new AuxiliaryGeneralPurposeRPC();
                                                agrpc1.stringValue = value;
                                                screenService.call("getEntryIdForEntryText",agrpc1,
@@ -479,13 +477,17 @@ public class AuxiliaryScreen extends OpenELISScreenForm<AuxiliaryForm, Query<Tab
                                                                           window.clearStatus();
                                                                       }
                                                                   });
-
+                                            } else {
+                                                auxFieldValueTableWidget.model.setCellError(currRow,1,
+                                                  consts.get("fieldRequiredException"));  
+                                            }
                                            } else if ("aux_numeric".equals(((AuxiliaryGeneralPurposeRPC)result).stringValue)) {
                                                //
                                                // Get the string that was entered if the type
                                                // chosen was "Numeric" and try to break it up at
                                                // the "," if it follows the pattern number,number
                                                //
+                                              if (!"".equals(value.trim())) {    
                                                String[] strList = value.split(",");
                                                boolean convert = false;
                                                if (strList.length == 2) {
@@ -534,32 +536,42 @@ public class AuxiliaryScreen extends OpenELISScreenForm<AuxiliaryForm, Query<Tab
                                                    auxFieldValueTableWidget.model.setCellError(currRow,1,
                                                                                    consts.get("illegalNumericFormatException"));
                                                }
-
+                                            }  else {
+                                                auxFieldValueTableWidget.model.setCellError(currRow,1,
+                                                   consts.get("fieldRequiredException"));  
+                                             }
                                            } else if ("aux_alpha_lower".equals(((AuxiliaryGeneralPurposeRPC)result).stringValue)) {
                                                auxFieldValueTableWidget.model.setCell(currRow,1,value.toLowerCase()); 
                                            } else if ("aux_alpha_upper".equals(((AuxiliaryGeneralPurposeRPC)result).stringValue)) {
                                                auxFieldValueTableWidget.model.setCell(currRow,1,value.toUpperCase()); 
                                            } else if ("aux_yes_no".equals(((AuxiliaryGeneralPurposeRPC)result).stringValue)) {
+                                             if (!"".equals(value.trim())) {      
                                               if((!"Y".equals(value.trim()))&&(!"N".equals(value.trim()))) {
                                                   auxFieldValueTableWidget.model.setCellError(currRow,1,
                                                                                               consts.get("illegalYesNoValueException"));
                                               }
-                                           } else if ("aux_date".equals(((AuxiliaryGeneralPurposeRPC)result).stringValue)) {                                                                                            
-                                             try{                                                                                            
-                                               auxFieldValueTableWidget.model.setCell(currRow,1,validateDate(value)); 
-                                             }catch(IllegalArgumentException ex) {
+                                             }  
+                                           } else if ("aux_date".equals(((AuxiliaryGeneralPurposeRPC)result).stringValue)) {
+                                             if (!"".equals(value.trim())) {      
+                                              try{                                                                                            
+                                                auxFieldValueTableWidget.model.setCell(currRow,1,validateDate(value)); 
+                                               }catch(IllegalArgumentException ex) {
                                                   auxFieldValueTableWidget.model.setCellError(currRow,1,
                                                                    consts.get("illegalDateValueException"));                                                 
-                                              } 
+                                              }
+                                             }  
                                             } else if ("aux_date_time".equals(((AuxiliaryGeneralPurposeRPC)result).stringValue)) {                                                
-                                              try{                                                                                                               
+                                              if (!"".equals(value.trim())) { 
+                                               try{                                                                                                               
                                                 auxFieldValueTableWidget.model.setCell(currRow,1,validateDateTime(value)); 
                                               }catch(IllegalArgumentException ex) {
                                                    auxFieldValueTableWidget.model.setCellError(currRow,1,
                                                                     consts.get("illegalDateTimeValueException"));   
                                                    
-                                               }                                               
-                                           } else if ("aux_time".equals(((AuxiliaryGeneralPurposeRPC)result).stringValue)) {                                                
+                                               }   
+                                              }  
+                                           } else if ("aux_time".equals(((AuxiliaryGeneralPurposeRPC)result).stringValue)) { 
+                                              if (!"".equals(value.trim())) {  
                                                try{                                                                                                               
                                                    auxFieldValueTableWidget.model.setCell(currRow,1,validateTime(value)); 
                                                  }catch(IllegalArgumentException ex) {
@@ -567,17 +579,15 @@ public class AuxiliaryScreen extends OpenELISScreenForm<AuxiliaryForm, Query<Tab
                                                                        consts.get("illegalTimeValueException"));   
                                                       
                                                   }                                               
-                                              }
-
+                                                }
+                                          }  
                                        }
-
                                     public void onFailure(Throwable caught) {
                                            Window.alert(caught.getMessage());
                                            window.clearStatus();
                                        }
                                    });
 
-            }
         }
         
     }
@@ -656,21 +666,31 @@ public class AuxiliaryScreen extends OpenELISScreenForm<AuxiliaryForm, Query<Tab
      DateField df = null;
      String[] split = null;
      String defDate = "2000-01-01 ";
+     String nextDayDate = "2000-01-02 ";
      String dateStr = defDate + value;
+     boolean nextDay = false;
      
      try{                  
         split = value.split(":");  
         if(split.length != 2)
-          throw new IllegalArgumentException();
+          throw new IllegalArgumentException();               
         
-        date = new Date(dateStr.replaceAll("-", "/"));                                              
+        date = new Date(dateStr.replaceAll("-", "/"));
+        
+        if(Integer.parseInt(split[0]) > 23) 
+            nextDay = true;
+            
         df = new DateField((byte)0, (byte)4,date);                                                      
       }catch(IllegalArgumentException ex) {          
           throw ex;                   
        } 
       
-      if(df!=null) 
-       return df.format().replace(defDate,"");
+      if(df!=null) { 
+       if(nextDay)    
+        return df.format().replace(nextDayDate,"");   
+       else   
+        return df.format().replace(defDate,"");
+      } 
       
       return null;
     }

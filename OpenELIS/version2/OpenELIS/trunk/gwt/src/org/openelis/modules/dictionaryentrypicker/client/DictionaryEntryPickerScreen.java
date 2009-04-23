@@ -170,9 +170,11 @@ public class DictionaryEntryPickerScreen extends OpenELISScreenForm<DictionaryEn
     
     private void loadDictionaryModel(String pattern){ 
         DictionaryEntryPickerDataRPC dedrpc = null;
-        if(categoryId == null)
-            categoryId = new Integer(-1);               
-        
+        if(categoryId == null || categoryId == -1) {
+           // categoryId = new Integer(-1);               
+         Window.alert("Please select a category.");
+         return;
+        }
         
         window.setStatus("", "spinnerIcon");   
         dedrpc = new DictionaryEntryPickerDataRPC();

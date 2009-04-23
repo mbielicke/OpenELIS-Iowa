@@ -56,9 +56,6 @@ import org.openelis.gwt.common.data.TableField;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
 import org.openelis.gwt.services.AutoCompleteServiceInt;
-import org.openelis.metamap.AuxFieldGroupMetaMap;
-import org.openelis.metamap.AuxFieldMetaMap;
-import org.openelis.metamap.AuxFieldValueMetaMap;
 import org.openelis.modules.auxiliary.client.AuxiliaryForm;
 import org.openelis.modules.auxiliary.client.AuxiliaryGeneralPurposeRPC;
 import org.openelis.persistence.EJBFactory;
@@ -179,6 +176,7 @@ public class AuxiliaryService implements
         AuxiliaryRemote remote = (AuxiliaryRemote)EJBFactory.lookup("openelis/AuxiliaryBean/remote");
         AuxFieldGroupDO axfgDO = remote.getAuxFieldGroupAndUnlock(rpc.entityKey,SessionManager.getSession().getId());
         setFieldsInRPC(rpc, axfgDO);
+        fillAuxFieldTable(rpc.entityKey, rpc);
         return rpc;
     }
        
@@ -444,8 +442,10 @@ public class AuxiliaryService implements
                  }catch (Exception ex) {
                         ex.printStackTrace();
                  }
-                 valueDO.setValue(entryId.toString());
-                 valueDO.setDictEntry((String)((StringField)row.cells[1]).getValue());
+                 if(entryId != null) {
+                  valueDO.setValue(entryId.toString());
+                  valueDO.setDictEntry((String)((StringField)row.cells[1]).getValue());
+                 } 
                } 
                else {
                    valueDO.setValue(((StringField)row.cells[1]).getValue());

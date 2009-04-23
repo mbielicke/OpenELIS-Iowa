@@ -29,11 +29,14 @@ import com.google.gwt.xml.client.Node;
 
 import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.data.AbstractField;
+import org.openelis.gwt.common.data.CheckField;
+import org.openelis.gwt.common.data.DateField;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.IntegerField;
 import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.TableDataModel;
 import org.openelis.gwt.common.data.TableDataRow;
+import org.openelis.gwt.common.data.TableField;
 import org.openelis.metamap.TestMetaMap;
 
 public class TestForm extends Form<Integer> {
@@ -43,8 +46,29 @@ public class TestForm extends Form<Integer> {
     public IntegerField id; 
     public StringField name;
     public DropDownField<Integer> methodId;
-    public String testTabPanel = "detailsTab";
-    public DetailsForm details;
+    public StringField description; 
+    public StringField reportingDescription;
+    public IntegerField timeTaMax;
+    public IntegerField timeTaAverage;
+    public IntegerField timeTaWarning;
+    public IntegerField timeTransit;
+    public CheckField isActive;
+    public CheckField isReportable;
+    public DateField activeBegin;
+    public DateField activeEnd;
+    public IntegerField timeHolding;
+    public DropDownField<Integer> labelId;
+    public IntegerField labelQty;
+    public DropDownField<Integer> testTrailerId;
+    public DropDownField<Integer> testFormatId;
+    public DropDownField<Integer> scriptletId;
+    public DropDownField<Integer> revisionMethodId;
+    public DropDownField<Integer> reportingMethodId;
+    public IntegerField reportingSequence;
+    public DropDownField<Integer> sortingMethodId;
+    public TableField<TableDataRow<Integer>> sectionTable;
+    public Boolean duplicate;
+    public String testTabPanel = "sampleTypeTab";
     public PrepAndReflexForm prepAndReflex;
     public SampleTypeForm sampleType;
     public TestAnalyteForm testAnalyte;
@@ -58,7 +82,27 @@ public class TestForm extends Form<Integer> {
         id = new IntegerField(meta.getId());
         name = new StringField(meta.getName());
         methodId = new DropDownField<Integer>(meta.getMethod().getName());
-        details = new DetailsForm("details");
+        description = new StringField(meta.getDescription());
+        reportingDescription = new StringField(meta.getReportingDescription());
+        timeTaMax = new IntegerField(meta.getTimeTaMax());
+        timeTaAverage = new IntegerField(meta.getTimeTaAverage());
+        timeTaWarning = new IntegerField(meta.getTimeTaWarning());
+        timeTransit = new IntegerField(meta.getTimeTransit());
+        isActive = new CheckField(meta.getIsActive());
+        isReportable = new CheckField(meta.getIsReportable());
+        activeBegin = new DateField(meta.getActiveBegin());
+        activeEnd = new DateField(meta.getActiveEnd());
+        timeHolding = new IntegerField(meta.getTimeHolding());
+        labelId = new DropDownField<Integer>(meta.getLabelId());
+        labelQty = new IntegerField(meta.getLabelQty());
+        testTrailerId = new DropDownField<Integer>(meta.getTestTrailerId());
+        testFormatId = new DropDownField<Integer>(meta.getTestFormatId());
+        scriptletId = new DropDownField<Integer>(meta.getScriptletId());
+        revisionMethodId = new DropDownField<Integer>(meta.getRevisionMethodId());
+        reportingMethodId = new DropDownField<Integer>(meta.getReportingMethodId());
+        reportingSequence = new IntegerField(meta.getReportingSequence());
+        sortingMethodId = new DropDownField<Integer>(meta.getSortingMethodId());
+        sectionTable = new TableField<TableDataRow<Integer>>("sectionTable");        
         prepAndReflex = new PrepAndReflexForm("prepAndReflex");
         sampleType = new SampleTypeForm("sampleType");
         testAnalyte = new TestAnalyteForm("testAnalyte");
@@ -75,7 +119,27 @@ public class TestForm extends Form<Integer> {
                                     id,
                                     name,
                                     methodId,
-                                    details,
+                                    description,
+                                    reportingDescription,
+                                    timeTaMax,
+                                    timeTaAverage,
+                                    timeTaWarning,
+                                    timeTransit,
+                                    isActive,
+                                    isReportable,
+                                    activeBegin,
+                                    activeEnd,
+                                    timeHolding,
+                                    labelId,
+                                    labelQty,
+                                    testTrailerId,
+                                    testFormatId,
+                                    scriptletId,
+                                    revisionMethodId,
+                                    reportingMethodId,
+                                    reportingSequence,
+                                    sortingMethodId,
+                                    sectionTable,
                                     prepAndReflex,
                                     sampleType,
                                     testAnalyte,

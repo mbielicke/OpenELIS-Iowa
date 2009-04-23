@@ -28,13 +28,8 @@ package org.openelis.modules.dictionaryentrypicker.server;
 import org.openelis.domain.IdNameDO;
 import org.openelis.gwt.common.Query;
 import org.openelis.gwt.common.RPCException;
-import org.openelis.gwt.common.data.AbstractField;
-import org.openelis.gwt.common.data.DataMap;
 import org.openelis.gwt.common.data.TableDataModel;
 import org.openelis.gwt.common.data.TableDataRow;
-import org.openelis.gwt.common.data.Field;
-import org.openelis.gwt.common.data.FieldType;
-import org.openelis.gwt.common.data.IntegerField;
 import org.openelis.gwt.common.data.QueryStringField;
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.server.ServiceUtils;
@@ -44,17 +39,13 @@ import org.openelis.modules.dictionaryentrypicker.client.DictionaryEntryPickerFo
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.CategoryRemote;
 import org.openelis.server.constants.Constants;
-import org.openelis.util.SessionManager;
-import org.openelis.util.UTFResource;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
 public class DictionaryEntryPickerService implements AppScreenFormServiceInt<DictionaryEntryPickerForm, Query<TableDataRow<Integer>>> {
-    private UTFResource openElisConstants = UTFResource.getBundle((String)SessionManager.getSession()
-                                                                  .getAttribute("locale"));
+    //private UTFResource openElisConstants = UTFResource.getBundle((String)SessionManager.getSession()
+    //                                                              .getAttribute("locale"));
 
     public DictionaryEntryPickerForm abort(DictionaryEntryPickerForm rpc) throws RPCException {
         // TODO Auto-generated method stub
@@ -99,9 +90,8 @@ public class DictionaryEntryPickerService implements AppScreenFormServiceInt<Dic
     public DictionaryEntryPickerDataRPC getDictionaryEntries(DictionaryEntryPickerDataRPC rpc){
         CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
         Integer catValue = rpc.id;
-        if(catValue == -1){
-           catValue = null; 
-        }
+        //if(catValue == -1)
+          // catValue = null;         
         
         QueryStringField nameField = new QueryStringField();
         nameField.setValue(rpc.stringValue);
@@ -115,14 +105,9 @@ public class DictionaryEntryPickerService implements AppScreenFormServiceInt<Dic
         rpc.model.clear();
          for(int iter = 0; iter < dictDOList.size(); iter++){
              IdNameDO dictDO = dictDOList.get(iter);             
-             TableDataRow row = rpc.model.createNewSet();
-             IntegerField id = new IntegerField(dictDO.getId());
-             
-             DataMap data = new DataMap();             
-             data.put("id", id);             
-             row.setData(data);
-             
-             ((Field)row.cells[0]).setValue(dictDO.getName());
+             TableDataRow<Integer> row = rpc.model.createNewSet();                         
+             row.key = dictDO.getId();                          
+             row.cells[0].setValue(dictDO.getName());
              rpc.model.add(row);
          }
         return rpc;
@@ -134,10 +119,10 @@ public class DictionaryEntryPickerService implements AppScreenFormServiceInt<Dic
        TableDataModel<TableDataRow<Integer>> model = new TableDataModel<TableDataRow<Integer>>();
        CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
        List<IdNameDO> list = remote.getCategoryList();
-       IdNameDO methodDO = null;
-       StringObject textObject = null;           
+       IdNameDO methodDO = null;         
        TableDataRow<Integer> set = null;
-       TableDataRow<Integer> blankset = new TableDataRow<Integer>(-1,new StringObject(openElisConstants.getString("allCategories")));  
+       //TableDataRow<Integer> blankset = new TableDataRow<Integer>(-1,new StringObject(openElisConstants.getString("allCategories"))); 
+       TableDataRow<Integer> blankset = new TableDataRow<Integer>(-1,new StringObject(""));  
             
        model.add(blankset);
 

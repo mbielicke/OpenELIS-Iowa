@@ -64,7 +64,7 @@ UIRF Software License are applicable instead of those above.
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))"/>
 <screen id="Dictionary" name="{resource:getString($constants,'dictionary')}" serviceUrl="OpenElisService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<display>
-		<HorizontalPanel style="WhiteContentPanel" spacing="0" padding="0">
+		<HorizontalPanel spacing="0" padding="0">
 			<!--left table goes here -->
 			 		<CollapsePanel key="collapsePanel" height="450px" style="LeftSidePanel">			 	
 					<resultsTable key="azTable" height="425px" width="100%">
@@ -152,7 +152,7 @@ UIRF Software License are applicable instead of those above.
 						</TablePanel>
 					</VerticalPanel>					
 					
-					<VerticalPanel  spacing="0" padding = "0">
+					<VerticalPanel style = "WhiteContentPanel" spacing="0" padding = "0">
 						<widget>
 							<table maxRows = "13" width = "auto" manager = "this" key="dictEntTable"  title="" showError="false" showScroll="ALWAYS" tab="{meta:getName($cat)},{meta:getSystemName($cat)}">
 								<headers><xsl:value-of select='resource:getString($constants,"active")'/>,<xsl:value-of select='resource:getString($constants,"systemName")'/>,
