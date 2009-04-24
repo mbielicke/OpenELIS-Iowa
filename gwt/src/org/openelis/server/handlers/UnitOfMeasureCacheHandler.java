@@ -60,7 +60,7 @@ public class UnitOfMeasureCacheHandler implements MessageHandler<UnitOfMeasureCa
             //  we need to build the model to return
             model = new TableDataModel<TableDataRow<Integer>>();
         
-            model.add(new TableDataRow<Integer>(-1,new StringObject(" ")));
+            model.add(new TableDataRow<Integer>(null,new StringObject(" ")));
             for(IdNameDO resultDO :  entries){
                 model.add(new TableDataRow<Integer>(resultDO.getId(),new StringObject(resultDO.getName())));
             }   

@@ -34,7 +34,7 @@ public class CountryCacheHandler implements MessageHandler<CountryCacheMessage> 
             //  we need to build the model to return
             model = new TableDataModel<TableDataRow<String>>();
         
-            model.add(new TableDataRow<String>("",new StringObject(" ")));
+            model.add(new TableDataRow<String>(null, new StringObject(" ")));
             for(IdNameDO resultDO :  entries){
                 model.add(new TableDataRow<String>(resultDO.getName(),new StringObject(resultDO.getName())));
             }   
