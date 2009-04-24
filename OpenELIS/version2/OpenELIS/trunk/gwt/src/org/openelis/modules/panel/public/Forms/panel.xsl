@@ -64,7 +64,7 @@ UIRF Software License are applicable instead of those above.
 					<!--left table goes here -->
 					<CollapsePanel key="collapsePanel" height="225px" style="LeftSidePanel">
 					  <VerticalPanel>	 					   
-						  <resultsTable width="100%" key="azTable">
+						  <resultsTable width="100%" key="azTable" showError="false">
 					       <buttonPanel key="atozButtons">
 								<xsl:call-template name="aToZLeftPanelButtons"/>
 						   </buttonPanel>

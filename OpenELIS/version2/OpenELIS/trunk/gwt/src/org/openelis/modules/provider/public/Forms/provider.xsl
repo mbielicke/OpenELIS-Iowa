@@ -76,7 +76,7 @@ UIRF Software License are applicable instead of those above.
 							</buttonPanel>
 						</azTable>
 					-->
-						<resultsTable width="100%" key="azTable">
+						<resultsTable width="100%" key="azTable" showError="false">
 					       <buttonPanel key="atozButtons">
 								<xsl:call-template name="aToZLeftPanelButtons"/>
 						   </buttonPanel>
