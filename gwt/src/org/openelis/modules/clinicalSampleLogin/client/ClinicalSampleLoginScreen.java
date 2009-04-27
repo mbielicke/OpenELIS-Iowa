@@ -34,7 +34,6 @@ import com.google.gwt.user.client.ui.Widget;
 import org.openelis.gwt.common.Query;
 import org.openelis.gwt.common.data.Field;
 import org.openelis.gwt.common.data.KeyListManager;
-import org.openelis.gwt.common.data.TableDataModel;
 import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.common.data.TreeDataItem;
 import org.openelis.gwt.screen.CommandChain;
@@ -82,7 +81,7 @@ public class ClinicalSampleLoginScreen extends OpenELISScreenForm<ClinicalSample
     }
     
     public void afterDraw(boolean sucess) {
-        ButtonPanel bpanel = (ButtonPanel)getWidget("buttons");
+        ButtonPanel bpanel = (ButtonPanel)getWidget("buttons");        
         
         //disable the buttons for the demo for now
         bpanel.enableButton("query", false);
@@ -93,8 +92,7 @@ public class ClinicalSampleLoginScreen extends OpenELISScreenForm<ClinicalSample
         formChain.addCommand(bpanel);
         formChain.addCommand(keyList);
 
-        itemsTestsTree = (TreeWidget)getWidget("itemsTestsTree");
-        
+        itemsTestsTree = (TreeWidget)getWidget("itemsTestsTree");        
         //build the tree
         TreeDataItem row1 = itemsTestsTree.model.createTreeItem("top");
         ((Field)row1.cells[0]).setValue("0 - Serum");

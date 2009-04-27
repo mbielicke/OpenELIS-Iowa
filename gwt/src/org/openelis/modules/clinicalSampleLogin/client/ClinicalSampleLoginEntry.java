@@ -39,7 +39,7 @@ public class ClinicalSampleLoginEntry implements AppModule{
                                    }
                                 }
         );
-        ClassFactory.addClass(new String[] {"ClincalSampleLogin.id_button_enum"}, ClinicalSampleLoginScreen.LookupType.class);
+        ClassFactory.addClass(new String[] {"ClinicalSampleLogin.id_button_enum"}, ClinicalSampleLoginScreen.LookupType.class);
     }
 
     public String getModuleName() {

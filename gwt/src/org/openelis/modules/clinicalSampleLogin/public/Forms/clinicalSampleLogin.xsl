@@ -27,14 +27,7 @@ UIRF Software License are applicable instead of those above.
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 xmlns:xalan="http://xml.apache.org/xalan"
                 xmlns:resource="xalan://org.openelis.util.UTFResource"
-                xmlns:locale="xalan://java.util.Locale" 
-                xmlns:meta="xalan://org.openelis.metamap.SampleClinicalMetaMap"
-                xmlns:sampleHuman= "xalan://org.openelis.metamap.SampleHumanMetaMap"
-                xmlns:sampleProv= "xalan://org.openelis.metamap.SampleProviderMetaMap"
-                xmlns:patient= "xalan://org.openelis.metamap.PatientMetaMap" 
-                xmlns:address="xalan://org.openelis.meta.AddressMeta"
-                xmlns:provider="xalan://org.openelis.meta.ProviderMeta" 
-                xmlns:sample="xalan://org.openelis.meta.SampleMetaMap" 
+                xmlns:locale="xalan://java.util.Locale"                 
                 extension-element-prefixes="resource"
                 version="1.0">
 <xsl:import href="aToZOneColumn.xsl"/>
@@ -45,37 +38,8 @@ UIRF Software License are applicable instead of those above.
   <xalan:component prefix="locale">
     <xalan:script lang="javaclass" src="xalan://java.util.Locale"/>
   </xalan:component>  
-  <xalan:component prefix="meta">
-		<xalan:script lang="javaclass" src="xalan://org.openelis.metamap.SampleClinicalMetaMap"/>
-  </xalan:component>
-  <xalan:component prefix="sampleHuman">
-		<xalan:script lang="javaclass" src="xalan://org.openelis.metamap.SampleHumanMetaMap"/>
-  </xalan:component>
-  <xalan:component prefix="patient">
-		<xalan:script lang="javaclass" src="xalan://org.openelis.metamap.PatientMetaMap"/>
-  </xalan:component>
-  <xalan:component prefix="address">
-		<xalan:script lang="javaclass" src="xalan://org.openelis.meta.AddressMeta"/>
-  </xalan:component>
-  <xalan:component prefix="provider">
-		<xalan:script lang="javaclass" src="xalan://org.openelis.meta.ProviderMeta"/>
-  </xalan:component>
-  <xalan:component prefix="sampleProv">
-		<xalan:script lang="javaclass" src="xalan://org.openelis.metamap.SampleProviderMetaMap"/>
-  </xalan:component>
-  <xalan:component prefix="sample">
-		<xalan:script lang="javaclass" src="xalan://org.openelis.metamap.SampleMetaMap"/>
-  </xalan:component>
   
   <xsl:template match="doc"> 
-    <xsl:variable name="sc" select="meta:new()"/>
-    <xsl:variable name="sh" select="meta:getSampleHuman($sc)"/>    
-    <xsl:variable name="pt" select="sampleHuman:getPatient($sh)"/>
-    <xsl:variable name="prov" select="sampleHuman:getProvider($sh)"/>
-    <xsl:variable name="addr" select="patient:getAddress($pt)"/>   
-    <xsl:variable name="prov" select="sampleHuman:getProvider($sh)"/> 
-    <xsl:variable name="smplprov" select="sampleProv:new()"/>
-    <xsl:variable name="smpl" select="sample:new()"/>
     <xsl:variable name="language"><xsl:value-of select="locale"/></xsl:variable>
     <xsl:variable name="props"><xsl:value-of select="props"/></xsl:variable>
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))"/>
@@ -129,29 +93,29 @@ UIRF Software License are applicable instead of those above.
 				<TablePanel style="Form">
 					<row>
 						<text style="Prompt"><xsl:value-of select="resource:getString($constants,'accessionNum')"/>:</text>
-						<textbox key="{meta:getAccessionNumber($sc)}"  width="75px"/>
+						<textbox key="accessionNumber"  width="75px"/>
 						<text style="Prompt"><xsl:value-of select="resource:getString($constants,'orderNum')"/>:</text>
 						<textbox key="orderNum"  width="75px"/>
 						<text style="Prompt"><xsl:value-of select="resource:getString($constants,'collected')"/>:</text>
-						<calendar begin="0" end="2" key="{sample:getCollectionDate($smpl)}" width="75px"/>
+						<calendar begin="0" end="2" key="collectionDate" width="75px"/>
 						<text style="Prompt"><xsl:value-of select="resource:getString($constants,'time')"/>:</text>
-						<textbox key="{sample:getCollectionTime($smpl)}" width="40px"/>
+						<textbox key="collectionTime" width="40px"/>
 					</row>
 					<row>
 						<text style="Prompt"><xsl:value-of select="resource:getString($constants,'received')"/>:</text>
-						<calendar key="{meta:getReceivedDate($sc)}" begin="0" end="2" width="110px"/>
+						<calendar key="receivedDate" begin="0" end="2" width="110px"/>
 						<text style="Prompt"><xsl:value-of select="resource:getString($constants,'status')"/>:</text>
-						<dropdown key="{meta:getStatusId($sc)}" case="mixed" width="110px"/>
+						<dropdown key="statusId" case="mixed" width="110px"/>
 						<text style="Prompt"><xsl:value-of select="resource:getString($constants,'clntRef')"/>:</text>
 						<widget colspan="3">
-							<textbox key="{meta:getClientReference($sc)}" width="175px"/>					
+							<textbox key="clientReference" width="175px"/>					
 						</widget>
 					</row>
-					</TablePanel>
-					<VerticalPanel style="subform">
+				</TablePanel>
+				 <VerticalPanel style="subform">
 					<text style="FormTitle"><xsl:value-of select="resource:getString($constants,'ptntInfo')"/></text>
-					<VerticalPanel style="WhiteContentPanel" padding="0" spacing="0">
-					<TablePanel style="Form">
+					 <VerticalPanel style="WhiteContentPanel" padding="0" spacing="0">
+					  <TablePanel style="Form">
 <!--										<row>
 						<widget align="center" colspan="8">
 							<text style="FormTitle">Patient Info</text>
@@ -159,10 +123,10 @@ UIRF Software License are applicable instead of those above.
 					</row>-->
 							<row>
 								<text style="Prompt"><xsl:value-of select="resource:getString($constants,'id')"/>:</text>
-								<multLookup key="{sampleHuman:getPatientId($sh)}" listeners="this">
-								    <icon style="LookupButtonImage" mouse="HoverListener" command="ClincalSampleLogin.id_button_enum.ID_1"/>
-								    <icon style="AdvancedButtonImage" mouse="HoverListener" command="ClincalSampleLogin.id_button_enum.ID_2"/>
-								    <icon style="CommentButtonImage" mouse="HoverListener" command="ClincalSampleLogin.id_button_enum.ID_3"/>
+								<multLookup key="patientId" listeners="this">
+								    <icon style="LookupButtonImage" mouse="HoverListener" command="ClinicalSampleLogin.id_button_enum.ID_1"/>
+								    <icon style="AdvancedButtonImage" mouse="HoverListener" command="ClinicalSampleLogin.id_button_enum.ID_2"/>
+								    <icon style="CommentButtonImage" mouse="HoverListener" command="ClinicalSampleLogin.id_button_enum.ID_3"/>
 								</multLookup>
 								
 								<!--<HorizontalPanel>
@@ -192,41 +156,41 @@ UIRF Software License are applicable instead of those above.
 							</row>
 							<row>
 								<text style="Prompt"><xsl:value-of select="resource:getString($constants,'lastName')"/>:</text>
-								<textbox key="{patient:getLastName($pt)}"  width="175px"/>
+								<textbox key="lastName" max = "30" width="175px"/>
 								<text style="Prompt"><xsl:value-of select="resource:getString($constants,'address')"/>:</text>
 								<widget colspan="3">
-								<textbox key="{address:getStreetAddress($addr)}" width="186px"/>	
+								<textbox key="streetAddress" max = "30" width="186px"/>	
 								</widget>
 								<text style="Prompt"><xsl:value-of select="resource:getString($constants,'gender')"/>:</text>
-								<dropdown key="{patient:getGenderId($pt)}" width="75px"/>	
+								<dropdown key="genderId" width="75px"/>	
 							</row>
 							<row>
 								<text style="Prompt"><xsl:value-of select="resource:getString($constants,'firstName')"/>:</text>
-								<textbox key="{patient:getFirstName($pt)}"  width="150px"/>		
+								<textbox key="firstName" max = "20" width="150px"/>		
 									<text style="Prompt"><xsl:value-of select="resource:getString($constants,'aptSuite')"/>:</text>
 								<widget colspan="3">									
-								<textbox key="{address:getMultipleUnit($addr)}" width="186px"/>	
+								<textbox key="multipleUnit" max = "30" width="186px"/>	
 								</widget>
 								<text style="Prompt"><xsl:value-of select="resource:getString($constants,'race')"/>:</text>
-								<dropdown key="{patient:getRace($pt)}"  width="150px"/>		
+								<textbox key="race" max = "5" width="150px"/>		
 							</row>
 							<row>
 								<text style="Prompt"><xsl:value-of select="resource:getString($constants,'middleName')"/>:</text>
-								<textbox key="{patient:getMiddleName($pt)}"  width="150px"/>		
+								<textbox key="middleName" max = "20" width="150px"/>		
 									<text style="Prompt"><xsl:value-of select="resource:getString($constants,'city')"/>:</text>
 								<widget colspan="3">									
-								<textbox key="{address:getCity($addr)}" width="186px"/>	
+								<textbox key="city" max = "30" width="186px"/>	
 								</widget>
 								<text style="Prompt"><xsl:value-of select="resource:getString($constants,'ethnicity')"/>:</text>
-								<dropdown key="{patient:getEthnicityId($pt)}"  width="150px"/>
+								<dropdown key="ethnicityId"  width="150px"/>
 							</row>
 							<row>
 								<text style="Prompt"><xsl:value-of select="resource:getString($constants,'birth')"/>:</text>
-								<calendar key="{patient:getBirthDate($pt)}" begin="0" end="2" width="110px" />
+								<calendar key="birthDate" begin="0" end="2" width="110px" />
 								<text style="Prompt"><xsl:value-of select="resource:getString($constants,'state')"/>:</text>
-								<textbox key="{address:getState($addr)}" width="33px"/>	
+								<dropdown key="state" width="33px"/>	
 								<text style="Prompt"><xsl:value-of select="resource:getString($constants,'zipcode')"/>:</text>
-								<textbox key="{address:getZipCode($addr)}"  width="63px"/>		
+								<textbox key="zipCode" max = "10" width="63px"/>		
 								<text style="Prompt"><xsl:value-of select="resource:getString($constants,'phone')"/>:</text>
 								<textbox key="phone"  width="125px"/>	
 							</row>
@@ -318,22 +282,22 @@ UIRF Software License are applicable instead of those above.
                   		</row>
                   		-->
                   		<row>
-							<text style="Prompt">Provider:</text>
-							<textbox key="{sampleProv:getProviderName($smplprov)}"  width="100px"/>		
+							<text style="Prompt"><xsl:value-of select="resource:getString($constants,'provider')"/>:</text>
+							<textbox key="providerName"  width="100px"/>		
 							<text style="Prompt"><xsl:value-of select="resource:getString($constants,'id')"/>:</text>
-							<textbox key="{provider:getId($prov)}"  width="50px"/>		
+							<textbox key="providerId"  width="50px"/>
 						</row>
 						<row>
-							<text style="Prompt">Phone:</text>
+							<text style="Prompt"><xsl:value-of select="resource:getString($constants,'phone')"/>:</text>
 							<widget colspan="3">
-							<textbox key="{sampleHuman:getProviderPhone($sh)}"  width="200px"/>		
+							<textbox key="providerPhone" max = "21" width="200px"/>		
 							</widget>
 						</row>
 						<row>
 							<text style="Prompt"><xsl:value-of select="resource:getString($constants,'project')"/>:</text>
 							<widget colspan="3">
 							<multLookup key="projectLook" listeners="this">
-								    <icon style="LookupButtonImage" mouse="HoverListener" command="ClincalSampleLogin.id_button_enum.ID_4"/>
+								    <icon style="LookupButtonImage" mouse="HoverListener" command="ClinicalSampleLogin.id_button_enum.ID_4"/>
 								</multLookup>
 								<!--
 							<HorizontalPanel>
@@ -350,7 +314,7 @@ UIRF Software License are applicable instead of those above.
 							<text style="Prompt"><xsl:value-of select="resource:getString($constants,'reportTo')"/>:</text>
 							<widget colspan="3">
 								<multLookup key="reportToLook" listeners="this">
-								    <icon style="LookupButtonImage" mouse="HoverListener" command="ClincalSampleLogin.id_button_enum.ID_5"/>
+								    <icon style="LookupButtonImage" mouse="HoverListener" command="ClinicalSampleLogin.id_button_enum.ID_5"/>
 								</multLookup>
 								<!--
 															<HorizontalPanel>
@@ -385,7 +349,25 @@ UIRF Software License are applicable instead of those above.
 		</VerticalPanel>
 	</display>
 	<rpc key="display">
-
+     <integer key="id" required="false"/> 
+     <integer key="accessionNumber" required="true"/>
+     <date key="collectionDate" begin="0" end="2" required="true"/> 
+     <string key = "collectionTime" required = "false"/>
+     <date key="receivedDate" begin="0" end="2" required="false"/> 
+     <string key="clientReference" required = "false"/>
+     <string key="lastName" required = "false"/>
+     <string key="multipleUnit" required = "false"/>
+     <integer key="race" required = "false"/>
+     <string key="middleName" required = "false"/>
+     <string key="city" required = "false"/>
+     <dropdown key="ethnicityId" required = "false"/>
+     <date key="birthDate" begin="0" end="2" required="true"/>
+     <dropdown key="state" required = "false"/>
+     <string key="zipCode" required = "false"/>
+     <tree key = "itemsTestsTree"/>
+     <string key="providerName" required = "false"/>
+     <integer key="providerId" required = "false"/>
+     <string key="providerPhone" required = "false"/>
 	</rpc>
 </screen>
   </xsl:template>
