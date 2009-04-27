@@ -1,3 +1,0 @@
-#!/bin/sh
-APPDIR=`dirname $0`;
-java  -cp "$APPDIR/src:$APPDIR/bin:/home/tschmidt/workspace/OpenELISCommon/compile/gwt-user.jar:/home/tschmidt/workspace/OpenELISCommon/compile/gwt-dev-linux.jar" com.google.gwt.dev.GWTShell -out "$APPDIR/www" "$@" org.openelis.OpenELIS/OpenELIS.html;
