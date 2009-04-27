@@ -61,9 +61,9 @@ public interface CategoryRemote {
         
     public List getMatchingEntries(String entry,int maxResults);
     
-    public Integer getEntryIdForSystemName(String systemName) throws Exception;
+    public Integer getEntryIdForSystemName(String systemName);
     
-    public String getSystemNameForEntryId(Integer entryId) throws Exception;
+    public String getSystemNameForEntryId(Integer entryId);
     
     public Integer getEntryIdForEntry(String entry) throws Exception;
     
