@@ -2,10 +2,10 @@
 <classpath>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/OpenELIS-Common"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/OpenELIS-EJB"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/OpenELIS-Security-EJB"/>
-	<classpathentry kind="src" path="src"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/OpenELIS-Lib"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/OpenELIS-Common"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/OpenELIS-Security-EJB"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/OpenELIS-EJB"/>
+	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>
