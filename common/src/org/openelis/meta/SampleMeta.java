@@ -39,20 +39,21 @@ public class SampleMeta implements Meta {
 	private static final String
               ID					="id",
               NEXT_ITEM_SEQUENCE					="nextItemSequence",
-              DOMAIN_ID					="domainId",
+              DOMAIN					="domain",
               ACCESSION_NUMBER					="accessionNumber",
               REVISION					="revision",
               ENTERED_DATE					="enteredDate",
               RECEIVED_DATE					="receivedDate",
               RECEIVED_BY_ID					="receivedById",
               COLLECTION_DATE					="collectionDate",
+              COLLECTION_TIME                   ="collectionTime",
               STATUS_ID					="statusId",
               PACKAGE_ID					="packageId",
               CLIENT_REFERENCE					="clientReference",
               RELEASED_DATE					="releasedDate";
 
   	private static final String[] columnNames = {
-  	  ID,NEXT_ITEM_SEQUENCE,DOMAIN_ID,ACCESSION_NUMBER,REVISION,ENTERED_DATE,RECEIVED_DATE,RECEIVED_BY_ID,COLLECTION_DATE,STATUS_ID,PACKAGE_ID,CLIENT_REFERENCE,RELEASED_DATE};
+  	  ID,NEXT_ITEM_SEQUENCE,DOMAIN,ACCESSION_NUMBER,REVISION,ENTERED_DATE,RECEIVED_DATE,RECEIVED_BY_ID,COLLECTION_DATE,COLLECTION_TIME,STATUS_ID,PACKAGE_ID,CLIENT_REFERENCE,RELEASED_DATE};
   	  
 	private HashSet<String> columnHashList;
     
@@ -93,8 +94,8 @@ public class SampleMeta implements Meta {
         return path + NEXT_ITEM_SEQUENCE;
     } 
 
-    public String getDomainId() {
-        return path + DOMAIN_ID;
+    public String getDomain() {
+        return path + DOMAIN;
     } 
 
     public String getAccessionNumber() {
@@ -120,6 +121,10 @@ public class SampleMeta implements Meta {
     public String getCollectionDate() {
         return path + COLLECTION_DATE;
     } 
+    
+    public String getCollectionTime() {
+        return path + COLLECTION_TIME;
+    }
 
     public String getStatusId() {
         return path + STATUS_ID;
