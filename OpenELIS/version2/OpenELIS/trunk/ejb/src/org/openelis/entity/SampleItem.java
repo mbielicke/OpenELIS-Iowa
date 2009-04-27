@@ -29,12 +29,6 @@ package org.openelis.entity;
   * SampleItem Entity POJO for database 
   */
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.openelis.util.Datetime;
-import org.openelis.util.XMLUtil;
-
-import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -42,12 +36,23 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+
+import org.openelis.util.XMLUtil;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
+@NamedQueries( {
+    @NamedQuery(name = "SampleItem.SampleItemById", query = "select new org.openelis.domain.SampleItemDO(item.id, item.sampleId, " + 
+                "item.sampleItemId, item.itemSequence, item.typeOfSampleId, item.sourceOfSampleId, item.sourceOther, item.containerId, " +
+                "item.containerReference, item.quantity, item.unitOfMeasureId) from SampleItem item where item.id = :id")})
+                
 @Entity
 @Table(name="sample_item")
 @EntityListeners({AuditUtil.class})

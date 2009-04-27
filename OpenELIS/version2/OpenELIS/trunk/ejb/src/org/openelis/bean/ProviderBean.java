@@ -39,6 +39,7 @@ import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.local.AddressLocal;
 import org.openelis.local.LockLocal;
+import org.openelis.local.ProviderLocal;
 import org.openelis.metamap.ProviderMetaMap;
 import org.openelis.remote.ProviderRemote;
 import org.openelis.util.Datetime;
@@ -68,7 +69,7 @@ import javax.persistence.Query;
 })
 @SecurityDomain("openelis")
 @RolesAllowed("provider-select")
-public class ProviderBean implements ProviderRemote {
+public class ProviderBean implements ProviderRemote, ProviderLocal {
 
     @PersistenceContext(name = "openelis")
     private EntityManager manager;

@@ -25,6 +25,19 @@
 */
 package org.openelis.bean;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.annotation.Resource;
+import javax.annotation.security.RolesAllowed;
+import javax.ejb.EJB;
+import javax.ejb.SessionContext;
+import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.FlushModeType;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+
 import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.NoteDO;
 import org.openelis.domain.OrganizationAddressDO;
@@ -34,7 +47,6 @@ import org.openelis.entity.Organization;
 import org.openelis.entity.OrganizationContact;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.SecurityModule.ModuleFlags;
@@ -49,27 +61,11 @@ import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
 import org.openelis.utils.SecurityInterceptor;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
-import javax.annotation.security.RolesAllowed;
-import javax.ejb.EJB;
-import javax.ejb.EJBs;
-import javax.ejb.SessionContext;
-import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.FlushModeType;
-import javax.persistence.LockModeType;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
-
 @Stateless
-@EJBs({
+/*@EJBs({
     @EJB(name="ejb/Lock",beanInterface=LockLocal.class),
     @EJB(name="ejb/Address",beanInterface=AddressLocal.class)
-})
+})*/
 @SecurityDomain("openelis")
 @RolesAllowed("organization-select")
 public class OrganizationBean implements OrganizationRemote {
@@ -80,17 +76,18 @@ public class OrganizationBean implements OrganizationRemote {
 	@Resource
 	private SessionContext ctx;
 	
-    private LockLocal lockBean;
-    private AddressLocal addressBean;
+	@EJB private AddressLocal addressBean;
+    @EJB private LockLocal lockBean;
+    
     private static final OrganizationMetaMap OrgMeta = new OrganizationMetaMap();
     
-    @PostConstruct
+ /*   @PostConstruct
     private void init() 
     {
         lockBean =  (LockLocal)ctx.lookup("ejb/Lock");
         addressBean =  (AddressLocal)ctx.lookup("ejb/Address");
     }
-    
+*/    
 	public OrganizationAddressDO getOrganizationAddress(Integer organizationId) {		
 		Query query = manager.createNamedQuery("Organization.OrganizationAndAddress");
 		query.setParameter("id", organizationId);
