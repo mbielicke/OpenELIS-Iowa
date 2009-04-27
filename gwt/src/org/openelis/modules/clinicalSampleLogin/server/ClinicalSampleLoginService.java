@@ -25,19 +25,18 @@
 */
 package org.openelis.modules.clinicalSampleLogin.server;
 
+import java.util.HashMap;
+
 import org.openelis.gwt.common.Query;
 import org.openelis.gwt.common.RPCException;
-import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.FieldType;
-import org.openelis.gwt.common.data.TableDataModel;
 import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
+import org.openelis.manager.SampleManager;
+import org.openelis.manager.SampleManagerIOClient;
 import org.openelis.modules.clinicalSampleLogin.client.ClinicalSampleLoginForm;
 import org.openelis.server.constants.Constants;
-
-import java.util.ArrayList;
-import java.util.HashMap;
 
 public class ClinicalSampleLoginService implements AppScreenFormServiceInt<ClinicalSampleLoginForm,Query<TableDataRow<Integer>>>{
 
@@ -47,7 +46,6 @@ public class ClinicalSampleLoginService implements AppScreenFormServiceInt<Clini
     }
 
     public ClinicalSampleLoginForm commitAdd(ClinicalSampleLoginForm rpc) throws RPCException {
-        // TODO Auto-generated method stub
         return null;
     }
 
