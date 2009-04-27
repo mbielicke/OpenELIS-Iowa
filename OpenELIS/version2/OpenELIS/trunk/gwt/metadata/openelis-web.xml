@@ -69,7 +69,7 @@ UIRF Software License are applicable instead of those above.
     <servlet-class>org.openelis.gwt.server.CalendarServlet</servlet-class>
     <init-param>
         <param-name>app.root</param-name>
-        <param-value>${catalina.home}/apps/openelis/</param-value>
+        <param-value>${catalina.home}/apps/OpenELIS/</param-value>
     </init-param>
     <load-on-startup>4</load-on-startup>
   </servlet>
