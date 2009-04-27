@@ -40,11 +40,17 @@ import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
+@NamedQueries( {
+    @NamedQuery(name = "Patient.PatientById", query = "select new org.openelis.domain.PatientDO(p.id, p.lastName, p.firstName, p.middleName, p.addressId, " +
+                " p.birthDate, p.birthTime, p.genderId, p.race, p.ethnicityId) from Patient p where p.id = :id")})
+                
 @Entity
 @Table(name="patient")
 @EntityListeners({AuditUtil.class})

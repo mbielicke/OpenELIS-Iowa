@@ -29,13 +29,9 @@ package org.openelis.entity;
   * Sample Entity POJO for database 
   */
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.openelis.util.Datetime;
-import org.openelis.util.XMLUtil;
-
 import java.util.Collection;
 import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -43,12 +39,26 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+
+import org.openelis.util.Datetime;
+import org.openelis.util.XMLUtil;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
+@NamedQueries( {
+    @NamedQuery(name = "Sample.SampleById", query = "select new org.openelis.domain.SampleDO(smpl.id, smpl.nextItemSequence, smpl.domain, "+
+                " smpl.accessionNumber, smpl.revision, smpl.enteredDate, smpl.receivedDate, smpl.receivedById, smpl.collectionDate, smpl.collectionTime, "+
+                "smpl.statusId, smpl.packageId, smpl.clientReference, smpl.releasedDate) from Sample smpl where smpl.id = :id"),
+    @NamedQuery(name = "Sample.SampleByAccessionNumber", query = "select new org.openelis.domain.SampleDO(smpl.id, smpl.nextItemSequence, smpl.domain, "+
+                " smpl.accessionNumber, smpl.revision, smpl.enteredDate, smpl.receivedDate, smpl.receivedById, smpl.collectionDate, smpl.collectionTime, "+
+                "smpl.statusId, smpl.packageId, smpl.clientReference, smpl.releasedDate) from Sample smpl where smpl.accessionNumber = :id")})
 
 @Entity
 @Table(name="sample")
@@ -63,8 +73,8 @@ public class Sample implements Auditable, Cloneable {
   @Column(name="next_item_sequence")
   private Integer nextItemSequence;             
 
-  @Column(name="domain_id")
-  private Integer domainId;             
+  @Column(name="domain")
+  private String domain;             
 
   @Column(name="accession_number")
   private Integer accessionNumber;             
@@ -82,7 +92,10 @@ public class Sample implements Auditable, Cloneable {
   private Integer receivedById;             
 
   @Column(name="collection_date")
-  private Date collectionDate;             
+  private Date collectionDate;       
+  
+  @Column(name="collection_time")
+  private Date collectionTime;   
 
   @Column(name="status_id")
   private Integer statusId;             
@@ -133,13 +146,13 @@ public class Sample implements Auditable, Cloneable {
       this.nextItemSequence = nextItemSequence;
   }
 
-  public Integer getDomainId() {
-    return domainId;
+  public String getDomain() {
+    return domain;
   }
-  public void setDomainId(Integer domainId) {
-    if((domainId == null && this.domainId != null) || 
-       (domainId != null && !domainId.equals(this.domainId)))
-      this.domainId = domainId;
+  public void setDomain(String domain) {
+    if((domain == null && this.domain != null) || 
+       (domain != null && !domain.equals(this.domain)))
+      this.domain = domain;
   }
 
   public Integer getAccessionNumber() {
@@ -165,10 +178,11 @@ public class Sample implements Auditable, Cloneable {
       return null;
     return new Datetime(Datetime.YEAR,Datetime.SECOND,enteredDate);
   }
-  public void setEnteredDate (Datetime entered_date){
-    if((enteredDate == null && this.enteredDate != null) || 
-       (enteredDate != null && !enteredDate.equals(this.enteredDate)))
-      this.enteredDate = entered_date.getDate();
+    
+  public void setEnteredDate (Datetime enteredDate){
+    if((enteredDate == null && this.enteredDate != null) || (enteredDate != null && this.enteredDate == null) ||
+       (enteredDate != null && !enteredDate.equals(new Datetime(Datetime.YEAR, Datetime.SECOND, this.enteredDate))))
+      this.enteredDate = enteredDate.getDate();
   }
 
   public Datetime getReceivedDate() {
@@ -176,10 +190,10 @@ public class Sample implements Auditable, Cloneable {
       return null;
     return new Datetime(Datetime.YEAR,Datetime.SECOND,receivedDate);
   }
-  public void setReceivedDate (Datetime received_date){
-    if((receivedDate == null && this.receivedDate != null) || 
-       (receivedDate != null && !receivedDate.equals(this.receivedDate)))
-      this.receivedDate = received_date.getDate();
+  public void setReceivedDate (Datetime receivedDate){
+    if((receivedDate == null && this.receivedDate != null) || (receivedDate != null && this.receivedDate == null) ||
+       (receivedDate != null && !receivedDate.equals(new Datetime(Datetime.YEAR, Datetime.SECOND, this.receivedDate))))
+      this.receivedDate = receivedDate.getDate();
   }
 
   public Integer getReceivedById() {
@@ -196,11 +210,22 @@ public class Sample implements Auditable, Cloneable {
       return null;
     return new Datetime(Datetime.YEAR,Datetime.SECOND,collectionDate);
   }
-  public void setCollectionDate (Datetime collection_date){
-    if((collectionDate == null && this.collectionDate != null) || 
-       (collectionDate != null && !collectionDate.equals(this.collectionDate)))
-      this.collectionDate = collection_date.getDate();
+  public void setCollectionDate (Datetime collectionDate){
+    if((collectionDate == null && this.collectionDate != null) || (collectionDate != null && this.collectionDate == null) ||
+       (collectionDate != null && !collectionDate.equals(new Datetime(Datetime.YEAR, Datetime.SECOND, this.collectionDate))))
+      this.collectionDate = collectionDate.getDate();
   }
+  
+  public Datetime getCollectionTime() {
+      if(collectionTime == null)
+        return null;
+      return new Datetime(Datetime.HOUR,Datetime.SECOND,collectionTime);
+    }
+    public void setCollectionTime (Datetime collectionTime){
+      if((collectionTime == null && this.collectionTime != null) || (collectionTime != null && this.collectionTime == null) ||
+         (collectionTime != null && !collectionTime.equals(new Datetime(Datetime.HOUR, Datetime.SECOND, this.collectionTime))))
+        this.collectionTime = collectionTime.getDate();
+    }
 
   public Integer getStatusId() {
     return statusId;
@@ -235,8 +260,8 @@ public class Sample implements Auditable, Cloneable {
     return new Datetime(Datetime.YEAR,Datetime.SECOND,releasedDate);
   }
   public void setReleasedDate (Datetime released_date){
-    if((releasedDate == null && this.releasedDate != null) || 
-       (releasedDate != null && !releasedDate.equals(this.releasedDate)))
+    if((releasedDate == null && this.releasedDate != null) || (releasedDate != null && this.releasedDate == null) ||
+       (releasedDate != null && !releasedDate.equals(new Datetime(Datetime.YEAR, Datetime.SECOND, this.releasedDate))))
       this.releasedDate = released_date.getDate();
   }
 
@@ -256,7 +281,7 @@ public class Sample implements Auditable, Cloneable {
 
       AuditUtil.getChangeXML(nextItemSequence,original.nextItemSequence,doc,"next_item_sequence");
 
-      AuditUtil.getChangeXML(domainId,original.domainId,doc,"domain_id");
+      AuditUtil.getChangeXML(domain,original.domain,doc,"domain");
 
       AuditUtil.getChangeXML(accessionNumber,original.accessionNumber,doc,"accession_number");
 
@@ -269,6 +294,8 @@ public class Sample implements Auditable, Cloneable {
       AuditUtil.getChangeXML(receivedById,original.receivedById,doc,"received_by_id");
 
       AuditUtil.getChangeXML(collectionDate,original.collectionDate,doc,"collection_date");
+      
+      AuditUtil.getChangeXML(collectionTime,original.collectionTime,doc,"collection_time");
 
       AuditUtil.getChangeXML(statusId,original.statusId,doc,"status_id");
 

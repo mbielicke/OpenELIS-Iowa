@@ -29,12 +29,6 @@ package org.openelis.entity;
   * SampleEnvironmental Entity POJO for database 
   */
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.openelis.util.Datetime;
-import org.openelis.util.XMLUtil;
-
-import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -42,12 +36,22 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+
+import org.openelis.util.XMLUtil;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
+@NamedQueries( {
+    @NamedQuery(name = "SampleEnvironmental.SampleEnvironmentalBySampleId", query = "select new org.openelis.domain.SampleEnvironmentalDO(se.id, se.sampleId, se.isHazardous, " + 
+                " se.description, se.collector, se.collectorPhone, se.samplingLocation, se.addressId) from SampleEnvironmental se where se.sampleId = :id")})
+                
 @Entity
 @Table(name="sample_environmental")
 @EntityListeners({AuditUtil.class})

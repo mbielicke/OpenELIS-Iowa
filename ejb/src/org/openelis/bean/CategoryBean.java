@@ -302,50 +302,42 @@ public class CategoryBean implements CategoryRemote {
         return entryList;
     }
 
-    public Integer getEntryIdForSystemName(String systemName) throws Exception {
+    public Integer getEntryIdForSystemName(String systemName) {
         Query query = manager.createNamedQuery("Dictionary.IdBySystemName");
         query.setParameter("systemName", systemName);
-        Integer entryId = null;
-        try {
-            entryId = (Integer)query.getSingleResult();
-        } catch (NoResultException ex) {
+        List results;
+        results = query.getResultList();
+        
+        if(results.size() == 0)
             return null;
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            throw ex;
-        }
-        return entryId;
+        
+        return (Integer)results.get(0);
     }
 
-    public Integer getEntryIdForEntry(String entry) throws Exception {
+    public Integer getEntryIdForEntry(String entry) {
         Query query = manager.createNamedQuery("Dictionary.IdByEntry");
         query.setParameter("entry", entry);
-        Integer entryId = null;
-        try {
-            if(query.getResultList().size() > 0)
-             entryId = (Integer)(query.getResultList().get(0));
-        } catch (NoResultException ex) {
+        List results;
+        
+        results = query.getResultList();
+        
+        if(results.size() == 0)
             return null;
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            throw ex;
-        }
-        return entryId;
+        
+        return (Integer)results.get(0);
     }
 
-    public String getSystemNameForEntryId(Integer entryId) throws Exception {
+    public String getSystemNameForEntryId(Integer entryId) {
         Query query = manager.createNamedQuery("Dictionary.SystemNameById");
         query.setParameter("id", entryId);
-        String systemName = null;
-        try {
-            systemName = (String)query.getSingleResult();
-        } catch (NoResultException ex) {
+        List results = null;
+
+        results = query.getResultList();
+        
+        if(results.size() == 0)
             return null;
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            throw ex;
-        }
-        return systemName;
+        
+        return (String)results.get(0);
     }
 
     public Integer getCategoryId(String systemName) {
