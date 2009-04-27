@@ -28,6 +28,15 @@ UIRF Software License are applicable instead of those above.
                 xmlns:xalan="http://xml.apache.org/xalan"
                 xmlns:resource="xalan://org.openelis.util.UTFResource"
                 xmlns:locale="xalan://java.util.Locale" 
+                xmlns:envMeta="xalan://org.openelis.metamap.SampleEnvironmentalMetaMap"
+                xmlns:sampleMetaMap="xalan://org.openelis.metamap.SampleMetaMap"
+                xmlns:addressMeta="xalan://org.openelis.meta.AddressMeta"
+                xmlns:sampleItemMetaMap="xalan://org.openelis.metamap.SampleItemMetaMap"
+                xmlns:sampleOrgMetaMap="xalan://org.openelis.metamap.SampleOrganizationMetaMap"
+                xmlns:orgMeta="xalan://org.openelis.meta.OrganizationMeta"
+                xmlns:sampleProjectMetaMap="xalan://org.openelis.metamap.SampleProjectMetaMap"
+                xmlns:projectMeta="xalan://org.openelis.meta.ProjectMeta"
+                
                 extension-element-prefixes="resource"
                 version="1.0">
 <xsl:import href="aToZOneColumn.xsl"/>
@@ -40,7 +49,48 @@ UIRF Software License are applicable instead of those above.
     <xalan:script lang="javaclass" src="xalan://java.util.Locale"/>
   </xalan:component>
   
+  <xalan:component prefix="envMeta">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.SampleEnvironmentalMetaMap"/>
+  </xalan:component>
+  
+  <xalan:component prefix="sampleMetaMap">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.SampleMetaMap"/>
+  </xalan:component>
+  
+  <xalan:component prefix="addressMeta">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.AddressMeta"/>
+  </xalan:component>
+  
+  <xalan:component prefix="sampleItemMetaMap">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.SampleItemMetaMap"/>
+  </xalan:component>
+  
+  <xalan:component prefix="sampleOrgMetaMap">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.SampleOrganizationMetaMap"/>
+  </xalan:component>
+  
+  <xalan:component prefix="orgMeta">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.OrganizationMeta"/>
+  </xalan:component>
+  
+  <xalan:component prefix="sampleProjectMetaMap">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.SampleProjectMetaMap"/>
+  </xalan:component>
+  
+  <xalan:component prefix="projectMeta">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.ProjectMeta"/>
+  </xalan:component>
+  
   <xsl:template match="doc"> 
+  <xsl:variable name="env" select="envMeta:new()"/>
+    <xsl:variable name="sample" select="envMeta:getSample($env)"/>
+    <xsl:variable name="address" select="envMeta:getAddress($env)"/>
+    <xsl:variable name="sampleItem" select="sampleMetaMap:getSampleItem($sample)"/>
+    <xsl:variable name="sampleOrg" select="sampleMetaMap:getSampleOrganization($sample)"/>
+    <xsl:variable name="sampleProject" select="sampleMetaMap:getSampleProject($sample)"/>
+    <xsl:variable name="parentSampleItem" select="sampleItemMetaMap:getParentSampleItem($sampleItem)"/>
+    <xsl:variable name="org" select="sampleOrgMetaMap:getOrganization($sampleOrg)"/>
+    <xsl:variable name="project" select="sampleProjectMetaMap:getProject($sampleProject)"/>
     <xsl:variable name="language"><xsl:value-of select="locale"/></xsl:variable>
     <xsl:variable name="props"><xsl:value-of select="props"/></xsl:variable>
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))"/>
