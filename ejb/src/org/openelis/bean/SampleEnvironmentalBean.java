@@ -49,7 +49,7 @@ public class SampleEnvironmentalBean implements SampleEnvironmentalRemote, Sampl
     public Integer update(SampleDomainInt sampleDomain){
         System.out.println("start env up method");
         SampleEnvironmentalManager envManager = (SampleEnvironmentalManager)sampleDomain;
-        SampleEnvironmentalDO envDO = envManager.getEnviromental();
+        SampleEnvironmentalDO envDO = envManager.getEnvironmental();
         
         //validate the sample domain
         
