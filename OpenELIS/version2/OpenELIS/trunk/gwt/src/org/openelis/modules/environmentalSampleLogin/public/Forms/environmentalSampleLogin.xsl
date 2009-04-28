@@ -94,7 +94,7 @@ UIRF Software License are applicable instead of those above.
     <xsl:variable name="language"><xsl:value-of select="locale"/></xsl:variable>
     <xsl:variable name="props"><xsl:value-of select="props"/></xsl:variable>
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))"/>
-<screen id="EnviromentalSampleLogin" name="{resource:getString($constants,'enviromentalSampleLogin')}" serviceUrl="ElisService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<screen id="EnvironmentalSampleLogin" name="{resource:getString($constants,'environmentalSampleLogin')}" serviceUrl="ElisService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<display>
 		<VerticalPanel spacing="0" padding="0">
 		<!--button panel code-->
@@ -141,30 +141,30 @@ UIRF Software License are applicable instead of those above.
 				</AbsolutePanel>
 				<!--end button panel code-->
 				<VerticalPanel style="WhiteContentPanel" spacing="0" padding="0">		
-				<TablePanel style="Form">
-					<row>
-						<text style="Prompt">Accession #:</text>
-						<textbox key="accessionNum" tab="??,??" width="75px"/>
-						<text style="Prompt">Order #:</text>
-						<textbox key="orderNum" tab="??,??" width="75px"/>
-						<text style="Prompt">Collected:</text>
-						<calendar begin="0" end="2" key="collected" tab="??,??" width="75px"/>
-						<text style="Prompt">Time:</text>
-						<textbox key="collectedTime" width="40px"/>
-					</row>
-					<row>
-						<text style="Prompt">Received:</text>
-						<calendar key="receuived" begin="0" end="2" width="110px" tab="??,??"/>
-						<text style="Prompt">Status:</text>
-						<dropdown key="status" case="mixed" width="110px"/>
-						<text style="Prompt">Client Reference:</text>
-						<widget colspan="3">
-							<textbox key="clientref" tab="??,??" width="175px"/>					
-						</widget>
-					</row>
+					<TablePanel style="Form">
+						<row>
+							<text style="Prompt"><xsl:value-of select="resource:getString($constants,'accessionNum')"/>:</text>
+							<textbox key="accessionNumber"  width="75px"/>
+							<text style="Prompt"><xsl:value-of select="resource:getString($constants,'orderNum')"/>:</text>
+							<textbox key="orderNum"  width="75px"/>
+							<text style="Prompt"><xsl:value-of select="resource:getString($constants,'collected')"/>:</text>
+							<calendar begin="0" end="2" key="collectionDate" width="75px"/>
+							<text style="Prompt"><xsl:value-of select="resource:getString($constants,'time')"/>:</text>
+							<textbox key="collectionTime" width="40px"/>
+						</row>
+						<row>
+							<text style="Prompt"><xsl:value-of select="resource:getString($constants,'received')"/>:</text>
+							<calendar key="receivedDate" begin="0" end="2" width="110px"/>
+							<text style="Prompt"><xsl:value-of select="resource:getString($constants,'status')"/>:</text>
+							<dropdown key="statusId" case="mixed" width="110px"/>
+							<text style="Prompt"><xsl:value-of select="resource:getString($constants,'clntRef')"/>:</text>
+							<widget colspan="3">
+								<textbox key="clientReference" width="175px"/>					
+							</widget>
+						</row>
 					</TablePanel>
 					<VerticalPanel style="subform" width="98%">
-					<text style="FormTitle">Enviromental Info</text>
+					<text style="FormTitle">Environmental Info</text>
 					<TablePanel style="Form" width="100%">
 						<row>
 							<text style="Prompt">Hazardous:</text>
@@ -181,7 +181,7 @@ UIRF Software License are applicable instead of those above.
 						<row>
 							<text style="Prompt">Location:</text>
 							<multLookup key="locationLook" listeners="this">
-								    <icon style="LookupButtonImage" mouse="HoverListener" command="ClincalSampleLogin.id_button_enum.ID_4"/>
+								    <icon style="LookupButtonImage" mouse="HoverListener" command="EnvironmentalSampleLogin.id_button_enum.LOCATION_VIEW"/>
 							</multLookup>
 						</row>
 					</TablePanel>
@@ -247,14 +247,14 @@ UIRF Software License are applicable instead of those above.
 						<row>
 							<text style="Prompt">Project:</text>
 							<multLookup key="projectLook" listeners="this">
-								    <icon style="LookupButtonImage" mouse="HoverListener" command="ClincalSampleLogin.id_button_enum.ID_4"/>
+								    <icon style="LookupButtonImage" mouse="HoverListener" command="EnvironmentalSampleLogin.id_button_enum.PROJECT_VIEW"/>
 							</multLookup>
 						</row>
 						<row>
 							<text style="Prompt">Report To:</text>
 							<!--<lookup key="" icon="LookupButtonImage" onclick="this"/>-->
 							<multLookup key="reportToLook" listeners="this">
-							    <icon style="LookupButtonImage" mouse="HoverListener" command="ClincalSampleLogin.id_button_enum.ID_4"/>
+							    <icon style="LookupButtonImage" mouse="HoverListener" command="EnvironmentalSampleLogin.id_button_enum.REPORT_TO_VIEW"/>
 							</multLookup>
 						</row>
 						<row>

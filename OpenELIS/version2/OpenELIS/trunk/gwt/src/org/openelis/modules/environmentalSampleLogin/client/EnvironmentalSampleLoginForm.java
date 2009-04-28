@@ -1,4 +1,4 @@
-package org.openelis.modules.enviromentalSampleLogin.client;
+package org.openelis.modules.environmentalSampleLogin.client;
 
 import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.data.AbstractField;

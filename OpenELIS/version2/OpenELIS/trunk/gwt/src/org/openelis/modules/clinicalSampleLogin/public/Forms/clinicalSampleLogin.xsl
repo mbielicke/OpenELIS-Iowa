@@ -124,9 +124,9 @@ UIRF Software License are applicable instead of those above.
 							<row>
 								<text style="Prompt"><xsl:value-of select="resource:getString($constants,'id')"/>:</text>
 								<multLookup key="patientId" listeners="this">
-								    <icon style="LookupButtonImage" mouse="HoverListener" command="ClinicalSampleLogin.id_button_enum.ID_1"/>
-								    <icon style="AdvancedButtonImage" mouse="HoverListener" command="ClinicalSampleLogin.id_button_enum.ID_2"/>
-								    <icon style="CommentButtonImage" mouse="HoverListener" command="ClinicalSampleLogin.id_button_enum.ID_3"/>
+								    <icon style="LookupButtonImage" mouse="HoverListener" command="ClinicalSampleLogin.id_button_enum.PATIENT_SEARCH"/>
+								    <icon style="AdvancedButtonImage" mouse="HoverListener" command="ClinicalSampleLogin.id_button_enum.PATIENT_NAME_SEARCH"/>
+								    <icon style="CommentButtonImage" mouse="HoverListener" command="ClinicalSampleLogin.id_button_enum.PATIENT_COMMENTS"/>
 								</multLookup>
 								
 								<!--<HorizontalPanel>
@@ -297,7 +297,7 @@ UIRF Software License are applicable instead of those above.
 							<text style="Prompt"><xsl:value-of select="resource:getString($constants,'project')"/>:</text>
 							<widget colspan="3">
 							<multLookup key="projectLook" listeners="this">
-								    <icon style="LookupButtonImage" mouse="HoverListener" command="ClinicalSampleLogin.id_button_enum.ID_4"/>
+								    <icon style="LookupButtonImage" mouse="HoverListener" command="ClinicalSampleLogin.id_button_enum.ORGANIZATION_VIEW"/>
 								</multLookup>
 								<!--
 							<HorizontalPanel>
@@ -314,7 +314,7 @@ UIRF Software License are applicable instead of those above.
 							<text style="Prompt"><xsl:value-of select="resource:getString($constants,'reportTo')"/>:</text>
 							<widget colspan="3">
 								<multLookup key="reportToLook" listeners="this">
-								    <icon style="LookupButtonImage" mouse="HoverListener" command="ClinicalSampleLogin.id_button_enum.ID_5"/>
+								    <icon style="LookupButtonImage" mouse="HoverListener" command="ClinicalSampleLogin.id_button_enum.PROJECT_VIEW"/>
 								</multLookup>
 								<!--
 															<HorizontalPanel>

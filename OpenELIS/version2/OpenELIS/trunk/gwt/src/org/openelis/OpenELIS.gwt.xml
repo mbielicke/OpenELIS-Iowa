@@ -33,7 +33,7 @@ UIRF Software License are applicable instead of those above.
     <inherits name="org.openelis.gwt.Widget"/>
     <inherits name="org.openelis.gwt.Common"/>
     <inherits name="org.openelis.gwt.Screen"/>
-<!--    <inherits name="gwt.canvas.gwt-canvas"/> -->
+    <inherits name="gwt.canvas.gwt-canvas"/> 
     <inherits name='com.allen_sauer.gwt.dnd.gwt-dnd'/> 
     <inherits name="org.openelis.modules.main.Main"/>
     <inherits name="org.openelis.modules.analyte.Analyte"/>
@@ -42,7 +42,7 @@ UIRF Software License are applicable instead of those above.
     <inherits name="org.openelis.modules.buildKits.BuildKits"/>
     <inherits name="org.openelis.modules.clinicalSampleLogin.ClinicalSampleLogin"/>
     <inherits name="org.openelis.modules.dictionary.Dictionary"/>
-    <inherits name="org.openelis.modules.enviromentalSampleLogin.EnviromentalSampleLogin"/>
+    <inherits name="org.openelis.modules.environmentalSampleLogin.EnvironmentalSampleLogin"/>
     <inherits name="org.openelis.modules.favorites.Favorites"/>
     <inherits name="org.openelis.modules.fillOrder.FillOrder"/>
     <inherits name="org.openelis.modules.inventoryAdjustment.InventoryAdjustment"/>
@@ -75,7 +75,7 @@ UIRF Software License are applicable instead of those above.
 	<!-- Specify the app entry point class.                   -->
 	<entry-point class='org.openelis.modules.main.client.OpenELIS'/>
 	
-	<!-- <set-property name="user.agent" value="gecko1_8" /> -->
+	 <set-property name="user.agent" value="gecko1_8" />
     
    <!-- <extend-property name="locale" values="cn"/>
     <extend-property name="locale" values="fa"/>
