@@ -39,6 +39,10 @@ public class SampleMetaMap extends SampleMeta implements MetaMap {
     
     public SampleMetaMap(String path) {
         super(path);
+        
+        SAMPLE_ITEM = new SampleItemMetaMap(path+"sampleItem.");
+        SAMPLE_ORGANIZATION = new SampleOrganizationMetaMap(path+"sampleOrganization.");
+        SAMPLE_PROJECT = new SampleProjectMetaMap(path+"sampleProject.");
     }
     
     public SampleItemMetaMap SAMPLE_ITEM;

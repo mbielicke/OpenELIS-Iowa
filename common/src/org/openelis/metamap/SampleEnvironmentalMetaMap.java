@@ -64,7 +64,7 @@ public class SampleEnvironmentalMetaMap extends SampleEnvironmentalMeta implemen
     }
     
     public String buildFrom(String name){
-        String from = "SampleEnviromental se ";
+        String from = "SampleEnvironmental se ";
         //if(name.indexOf("notes.") > -1)
         from += ", IN (se.sample) sample ";
         

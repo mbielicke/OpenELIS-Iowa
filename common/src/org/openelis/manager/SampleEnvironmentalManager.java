@@ -7,7 +7,7 @@ public class SampleEnvironmentalManager implements RPC, SampleDomainInt{
 
     private static final long serialVersionUID = 1L;
     protected Integer sampleId;
-    protected SampleEnvironmentalDO enviromental;
+    protected SampleEnvironmentalDO environmental;
     
     protected transient SampleEnvironmentalManagerIOInt manager;
     
@@ -18,7 +18,7 @@ public class SampleEnvironmentalManager implements RPC, SampleDomainInt{
         SampleEnvironmentalManager sem;
 
         sem = new SampleEnvironmentalManager();
-        sem.enviromental = new SampleEnvironmentalDO();
+        sem.environmental = new SampleEnvironmentalDO();
 
         return sem;
     }
@@ -32,22 +32,22 @@ public class SampleEnvironmentalManager implements RPC, SampleDomainInt{
         return sampleId;
     }
 
-    public SampleEnvironmentalDO getEnviromental() {
-        return enviromental;
+    public SampleEnvironmentalDO getEnvironmental() {
+        return environmental;
     }
 
     //manager methods
     public Integer update() {
         Integer newId = manager().update(this);
-        enviromental.setId(newId);
+        environmental.setId(newId);
         
         return newId;
     }
     
     public SampleEnvironmentalDO fetch(){
-        enviromental = manager().fetch(sampleId);
+        environmental = manager().fetch(sampleId);
         
-        return enviromental;
+        return environmental;
     }
     
     private SampleEnvironmentalManagerIOInt manager(){
