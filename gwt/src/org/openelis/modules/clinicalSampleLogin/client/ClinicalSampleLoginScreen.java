@@ -45,7 +45,7 @@ import org.openelis.modules.main.client.OpenELISScreenForm;
 public class ClinicalSampleLoginScreen extends OpenELISScreenForm<ClinicalSampleLoginForm,Query<TableDataRow<Integer>>> implements ClickListener, TabListener, TreeManager{
 
     private TreeWidget itemsTestsTree;
-    public enum LookupType {ID_1,ID_2,ID_3,ID_4,ID_5};
+    public enum LookupType {PATIENT_SEARCH, PATIENT_NAME_SEARCH, PATIENT_COMMENTS, ORGANIZATION_VIEW, PROJECT_VIEW};
     private KeyListManager keyList = new KeyListManager();
     
     public ClinicalSampleLoginScreen() {
@@ -66,16 +66,16 @@ public class ClinicalSampleLoginScreen extends OpenELISScreenForm<ClinicalSample
     }
     
     public void performCommand(Enum action, Object obj) {
-        if(action.equals(LookupType.ID_1))
-            Window.alert("clicked first id lookup button");
-        else if(action.equals(LookupType.ID_2))
-            Window.alert("clicked second id lookup button");
-        else if(action.equals(LookupType.ID_3))
-            Window.alert("clicked third id lookup button");
-        else if(action.equals(LookupType.ID_4))
-            Window.alert("clicked project lookup button");
-        else if(action.equals(LookupType.ID_5))
-            Window.alert("clicked report to lookup button");
+        if(action.equals(LookupType.PATIENT_SEARCH))
+            Window.alert("clicked patient search button");
+        else if(action.equals(LookupType.PATIENT_NAME_SEARCH))
+            Window.alert("clicked patient name search button");
+        else if(action.equals(LookupType.PATIENT_COMMENTS))
+            Window.alert("clicked patient comments button");
+        else if(action.equals(LookupType.ORGANIZATION_VIEW))
+            Window.alert("clicked org view button");
+        else if(action.equals(LookupType.PROJECT_VIEW))
+            Window.alert("clicked project view button");
         else
             super.performCommand(action, obj);
     }
@@ -84,8 +84,8 @@ public class ClinicalSampleLoginScreen extends OpenELISScreenForm<ClinicalSample
         ButtonPanel bpanel = (ButtonPanel)getWidget("buttons");        
         
         //disable the buttons for the demo for now
-        bpanel.enableButton("query", false);
-        bpanel.enableButton("add", false);
+        //bpanel.enableButton("query", false);
+        //bpanel.enableButton("add", false);
        
         CommandChain formChain = new CommandChain();
         formChain.addCommand(this);

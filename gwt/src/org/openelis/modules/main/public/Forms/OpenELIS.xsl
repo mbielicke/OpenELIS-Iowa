@@ -167,10 +167,10 @@ sampleManagement = Sample Management
 sampleManagementDescription = Description...
 -->
 				    <xsl:call-template name="menuItem">
-				      <xsl:with-param name="key">EnviromentalSampleLogin</xsl:with-param>
-				      <xsl:with-param name="label">enviromentalSampleLogin</xsl:with-param>
+				      <xsl:with-param name="key">EnvironmentalSampleLogin</xsl:with-param>
+				      <xsl:with-param name="label">environmentalSampleLogin</xsl:with-param>
 				      <xsl:with-param name="enabled">true</xsl:with-param>
-				      <xsl:with-param name="class">EnviromentalSampleLoginScreen</xsl:with-param>
+				      <xsl:with-param name="class">EnvironmentalSampleLoginScreen</xsl:with-param>
 				      <xsl:with-param name="args"></xsl:with-param>
 				    </xsl:call-template>
 				    <xsl:call-template name="menuItem">

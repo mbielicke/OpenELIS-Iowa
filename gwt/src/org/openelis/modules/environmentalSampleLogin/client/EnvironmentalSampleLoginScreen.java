@@ -23,12 +23,7 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.modules.enviromentalSampleLogin.client;
-
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.SourcesTabEvents;
-import com.google.gwt.user.client.ui.TabListener;
-import com.google.gwt.user.client.ui.Widget;
+package org.openelis.modules.environmentalSampleLogin.client;
 
 import org.openelis.gwt.common.Query;
 import org.openelis.gwt.common.data.Field;
@@ -41,19 +36,38 @@ import org.openelis.gwt.widget.tree.TreeManager;
 import org.openelis.gwt.widget.tree.TreeWidget;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
-public class EnviromentalSampleLoginScreen extends OpenELISScreenForm<EnvironmentalSampleLoginForm,Query<TableDataRow<Integer>>> implements ClickListener, TabListener, TreeManager{
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.SourcesTabEvents;
+import com.google.gwt.user.client.ui.TabListener;
+import com.google.gwt.user.client.ui.Widget;
 
+public class EnvironmentalSampleLoginScreen extends OpenELISScreenForm<EnvironmentalSampleLoginForm,Query<TableDataRow<Integer>>> implements ClickListener, TabListener, TreeManager{
+
+    public enum LookupType {LOCATION_VIEW, REPORT_TO_VIEW, PROJECT_VIEW};
+    
     private TreeWidget itemsTestsTree;
     private KeyListManager keyList = new KeyListManager();
     
-    public EnviromentalSampleLoginScreen() {
-        super("org.openelis.modules.enviromentalSampleLogin.server.EnviromentalSampleLoginService");
+    public EnvironmentalSampleLoginScreen() {
+        super("org.openelis.modules.environmentalSampleLogin.server.EnvironmentalSampleLoginService");
         query = new Query<TableDataRow<Integer>>();
         getScreen(new EnvironmentalSampleLoginForm());
     }
 
     public void onClick(Widget sender) {
     
+    }
+    
+    public void performCommand(Enum action, Object obj) {
+        if(action.equals(LookupType.LOCATION_VIEW))
+            Window.alert("clicked location view button");
+        else if(action.equals(LookupType.REPORT_TO_VIEW))
+            Window.alert("clicked report to view button");
+        else if(action.equals(LookupType.PROJECT_VIEW))
+            Window.alert("clicked project view button");
+        else
+            super.performCommand(action, obj);
     }
     
     public void afterDraw(boolean sucess) {

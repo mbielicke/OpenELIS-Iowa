@@ -23,7 +23,7 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.modules.enviromentalSampleLogin.server;
+package org.openelis.modules.environmentalSampleLogin.server;
 
 import java.util.Date;
 
@@ -39,10 +39,10 @@ import org.openelis.manager.SampleEnvironmentalManager;
 import org.openelis.manager.SampleItemsManager;
 import org.openelis.manager.SampleManager;
 import org.openelis.manager.SampleManagerIOClient;
-import org.openelis.modules.enviromentalSampleLogin.client.EnvironmentalSampleLoginForm;
+import org.openelis.modules.environmentalSampleLogin.client.EnvironmentalSampleLoginForm;
 import org.openelis.server.constants.Constants;
 
-public class EnviromentalSampleLoginService implements AppScreenFormServiceInt<EnvironmentalSampleLoginForm,Query<TableDataRow<Integer>>>{
+public class EnvironmentalSampleLoginService implements AppScreenFormServiceInt<EnvironmentalSampleLoginForm,Query<TableDataRow<Integer>>>{
 
     public EnvironmentalSampleLoginForm abort(EnvironmentalSampleLoginForm rpc) throws RPCException {
         // TODO Auto-generated method stub
@@ -70,7 +70,7 @@ public class EnviromentalSampleLoginService implements AppScreenFormServiceInt<E
         
         //create sample domain
         SampleEnvironmentalManager envManager = SampleEnvironmentalManager.getInstance();
-        SampleEnvironmentalDO envDO = envManager.getEnviromental();
+        SampleEnvironmentalDO envDO = envManager.getEnvironmental();
         envDO.setAddressId(4);
         envDO.setCollector("Joe Farmer");
         envDO.setCollectorPhone("319-325-3256");
@@ -134,7 +134,7 @@ public class EnviromentalSampleLoginService implements AppScreenFormServiceInt<E
     }
 
     public EnvironmentalSampleLoginForm getScreen(EnvironmentalSampleLoginForm rpc) throws RPCException {
-        rpc.xml = ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/enviromentalSampleLogin.xsl");
+        rpc.xml = ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/environmentalSampleLogin.xsl");
         return rpc;
     }
 }

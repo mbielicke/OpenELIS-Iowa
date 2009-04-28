@@ -23,25 +23,28 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.modules.enviromentalSampleLogin.client;
+package org.openelis.modules.environmentalSampleLogin.client;
 
 import org.openelis.gwt.screen.AppModule;
 import org.openelis.gwt.screen.ClassFactory;
+import org.openelis.modules.clinicalSampleLogin.client.ClinicalSampleLoginScreen;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 
-public class EnviromentalSampleLoginEntry implements AppModule{
+public class EnvironmentalSampleLoginEntry implements AppModule{
     public void onModuleLoad() {
         OpenELIS.modules.add(getModuleName());
-        ClassFactory.addClassFactory(new String[] {"EnviromentalSampleLoginScreen"}, 
+        ClassFactory.addClassFactory(new String[] {"EnvironmentalSampleLoginScreen"}, 
                                new ClassFactory.Factory() {
                                    public Object newInstance(Object[] args) {
-                                       return new EnviromentalSampleLoginScreen();
+                                       return new EnvironmentalSampleLoginScreen();
                                    }
                                 }
         );
+        
+        ClassFactory.addClass(new String[] {"EnvironmentalSampleLogin.id_button_enum"}, EnvironmentalSampleLoginScreen.LookupType.class);
     }
 
     public String getModuleName() {
-        return "EnviromentalSampleLogin";
+        return "EnvironmentalSampleLogin";
     }
 }
