@@ -50,8 +50,15 @@ import org.w3c.dom.Element;
 
 @NamedQueries( {
     @NamedQuery(name = "SampleItem.SampleItemById", query = "select new org.openelis.domain.SampleItemDO(item.id, item.sampleId, " + 
-                "item.sampleItemId, item.itemSequence, item.typeOfSampleId, item.sourceOfSampleId, item.sourceOther, item.containerId, " +
-                "item.containerReference, item.quantity, item.unitOfMeasureId) from SampleItem item where item.id = :id")})
+                "item.sampleItemId, item.itemSequence, item.typeOfSampleId, typeDict.entry, item.sourceOfSampleId, sourceDict.entry, " + 
+                "item.sourceOther, item.containerId, " +
+                "item.containerReference, item.quantity, item.unitOfMeasureId) from SampleItem item, Dictionary sourceDict, Dictionary typeDict where " + 
+                " item.sourceOfSampleId = sourceDict.id AND item.typeOfSampleId=typeDict.id AND item.id = :id"),
+    @NamedQuery(name = "SampleItem.SampleItemBySampleId", query = "select new org.openelis.domain.SampleItemDO(item.id, item.sampleId, " + 
+                "item.sampleItemId, item.itemSequence, item.typeOfSampleId, typeDict.entry, item.sourceOfSampleId, sourceDict.entry, " + 
+                "item.sourceOther, item.containerId, " +
+                "item.containerReference, item.quantity, item.unitOfMeasureId) from SampleItem item, Dictionary sourceDict, Dictionary typeDict where " + 
+                " item.sourceOfSampleId = sourceDict.id AND item.typeOfSampleId=typeDict.id AND item.sampleId = :id")})
                 
 @Entity
 @Table(name="sample_item")
