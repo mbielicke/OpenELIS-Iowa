@@ -28,15 +28,21 @@ package org.openelis.modules.environmentalSampleLogin.client;
 import org.openelis.gwt.common.Query;
 import org.openelis.gwt.common.data.Field;
 import org.openelis.gwt.common.data.KeyListManager;
+import org.openelis.gwt.common.data.TableDataModel;
 import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.common.data.TreeDataItem;
 import org.openelis.gwt.screen.CommandChain;
 import org.openelis.gwt.widget.ButtonPanel;
+import org.openelis.gwt.widget.Dropdown;
+import org.openelis.gwt.widget.table.TableDropdown;
 import org.openelis.gwt.widget.tree.TreeManager;
 import org.openelis.gwt.widget.tree.TreeWidget;
+import org.openelis.metamap.OrderMetaMap;
+import org.openelis.metamap.SampleEnvironmentalMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.SourcesTabEvents;
 import com.google.gwt.user.client.ui.TabListener;
@@ -49,14 +55,47 @@ public class EnvironmentalSampleLoginScreen extends OpenELISScreenForm<Environme
     private TreeWidget itemsTestsTree;
     private KeyListManager keyList = new KeyListManager();
     
+    private Dropdown status;
+    
+    private SampleEnvironmentalMetaMap Meta = new SampleEnvironmentalMetaMap();
+    
+    AsyncCallback<EnvironmentalSampleLoginForm> checkModels = new AsyncCallback<EnvironmentalSampleLoginForm>() {
+        public void onSuccess(EnvironmentalSampleLoginForm rpc) {
+            if(rpc.sampleContainers != null) {
+                setSampleContainerModel(rpc.sampleContainers);
+                rpc.sampleContainers = null;
+            }
+            if(rpc.sampleStatuses != null) {
+                setSampleStatusModel(rpc.sampleStatuses);
+                rpc.sampleStatuses = null;
+            }
+            if(rpc.sampleTypes != null) {
+                setSampleTypeModel(rpc.sampleTypes);
+                rpc.sampleTypes = null;
+            }
+        }
+        
+        public void onFailure(Throwable caught) {
+            
+        }
+    };
+    
     public EnvironmentalSampleLoginScreen() {
         super("org.openelis.modules.environmentalSampleLogin.server.EnvironmentalSampleLoginService");
         query = new Query<TableDataRow<Integer>>();
+        
         getScreen(new EnvironmentalSampleLoginForm());
     }
 
     public void onClick(Widget sender) {
     
+    }
+    
+    public boolean canPerformCommand(Enum action, Object obj) {
+        if(action instanceof LookupType)
+            return true;
+        else
+            return super.canPerformCommand(action, obj);
     }
     
     public void performCommand(Enum action, Object obj) {
@@ -85,7 +124,7 @@ public class EnvironmentalSampleLoginScreen extends OpenELISScreenForm<Environme
         itemsTestsTree = (TreeWidget)getWidget("itemsTestsTree");
         
         //build the tree
-        TreeDataItem row1 = itemsTestsTree.model.createTreeItem("top");
+        /*TreeDataItem row1 = itemsTestsTree.model.createTreeItem("top");
         ((Field)row1.cells[0]).setValue("0 - #69 Bottle");
         ((Field)row1.cells[1]).setValue("Water");
         TreeDataItem row2 = itemsTestsTree.model.createTreeItem("top");
@@ -105,8 +144,24 @@ public class EnvironmentalSampleLoginScreen extends OpenELISScreenForm<Environme
         itemsTestsTree.model.addRow(row4);
         
         itemsTestsTree.model.refresh();
-
+         */
+        
+        status = (Dropdown)getWidget(Meta.SAMPLE.getStatusId());
+        
+        //setSampleTypeModel(form.sampleTypes);
+        setSampleStatusModel(form.sampleStatuses);
+        setSampleContainerModel(form.sampleContainers);
+        
+        /*
+         * Null out the rpc models so they are not sent with future rpc calls
+         */
+        form.sampleStatuses = null;
+        //form.sampleTypes = null;
+        form.sampleContainers = null;
+                
         super.afterDraw(sucess);
+        
+        form.sampleItemsForm.itemsTestsTree.setValue(itemsTestsTree.model.getData());
     }
 
     public boolean onBeforeTabSelected(SourcesTabEvents sender, int tabIndex) {
@@ -156,5 +211,17 @@ public class EnvironmentalSampleLoginScreen extends OpenELISScreenForm<Environme
     public boolean canDrop(TreeWidget widget, Widget dragWidget, Widget dropWidget) {
         // TODO Auto-generated method stub
         return false;
+    }
+    
+    public void setSampleContainerModel(TableDataModel<TableDataRow<Integer>> containersModel) {
+        ((TableDropdown)itemsTestsTree.columns.get(0).getColumnWidget("sampleItem")).setModel(containersModel);
+    }
+    
+    public void setSampleStatusModel(TableDataModel<TableDataRow<Integer>> statusesModel) {
+        status.setModel(statusesModel);
+    }
+    
+    public void setSampleTypeModel(TableDataModel<TableDataRow<Integer>> typesModel) {
+        ((TableDropdown)itemsTestsTree.columns.get(1).getColumnWidget("sampleItem")).setModel(typesModel);
     }
 }

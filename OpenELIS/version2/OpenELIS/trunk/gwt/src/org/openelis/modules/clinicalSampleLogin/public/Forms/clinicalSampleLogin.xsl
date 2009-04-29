@@ -29,6 +29,16 @@ UIRF Software License are applicable instead of those above.
                 xmlns:resource="xalan://org.openelis.util.UTFResource"
                 xmlns:locale="xalan://java.util.Locale"                 
                 extension-element-prefixes="resource"
+                xmlns:humanMeta="xalan://org.openelis.metamap.SampleHumanMetaMap"
+                xmlns:patientMetaMap="xalan://org.openelis.metamap.PatientHumanMetaMap"
+                xmlns:providerMetaMap="xalan://org.openelis.metamap.ProviderHumanMetaMap"
+                xmlns:sampleMetaMap="xalan://org.openelis.metamap.SampleMetaMap"
+                xmlns:addressMeta="xalan://org.openelis.meta.AddressMeta"
+                xmlns:sampleItemMetaMap="xalan://org.openelis.metamap.SampleItemMetaMap"
+                xmlns:sampleOrgMetaMap="xalan://org.openelis.metamap.SampleOrganizationMetaMap"
+                xmlns:orgMeta="xalan://org.openelis.meta.OrganizationMeta"
+                xmlns:sampleProjectMetaMap="xalan://org.openelis.metamap.SampleProjectMetaMap"
+                xmlns:projectMeta="xalan://org.openelis.meta.ProjectMeta"
                 version="1.0">
 <xsl:import href="aToZOneColumn.xsl"/>
 
@@ -38,6 +48,46 @@ UIRF Software License are applicable instead of those above.
   <xalan:component prefix="locale">
     <xalan:script lang="javaclass" src="xalan://java.util.Locale"/>
   </xalan:component>  
+  
+  <xalan:component prefix="humanMeta">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.SampleHumanMetaMap"/>
+  </xalan:component>
+  
+  <xalan:component prefix="patientMetaMap">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.PatientMetaMap"/>
+  </xalan:component>
+  
+  <xalan:component prefix="providerMetaMap">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.ProviderMetaMap"/>
+  </xalan:component>
+  
+  <xalan:component prefix="sampleMetaMap">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.SampleMetaMap"/>
+  </xalan:component>
+  
+  <xalan:component prefix="addressMeta">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.AddressMeta"/>
+  </xalan:component>
+  
+  <xalan:component prefix="sampleItemMetaMap">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.SampleItemMetaMap"/>
+  </xalan:component>
+  
+  <xalan:component prefix="sampleOrgMetaMap">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.SampleOrganizationMetaMap"/>
+  </xalan:component>
+  
+  <xalan:component prefix="orgMeta">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.OrganizationMeta"/>
+  </xalan:component>
+  
+  <xalan:component prefix="sampleProjectMetaMap">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.SampleProjectMetaMap"/>
+  </xalan:component>
+  
+  <xalan:component prefix="projectMeta">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.ProjectMeta"/>
+  </xalan:component>
   
   <xsl:template match="doc"> 
     <xsl:variable name="language"><xsl:value-of select="locale"/></xsl:variable>
@@ -331,7 +381,7 @@ UIRF Software License are applicable instead of those above.
 					</VerticalPanel>
 					</VerticalPanel>
 				</HorizontalPanel>
-				<TabPanel height="170px" key="orderTabPanel">
+				<TabPanel height="170px" key="sampleItemTabPanel">
 					<tab key="tab1" text="{resource:getString($constants,'testInfoResult')}">
 						<VerticalPanel height="170px" width="730px"/>
 					</tab>
