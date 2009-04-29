@@ -26,27 +26,77 @@
 package org.openelis.modules.environmentalSampleLogin.server;
 
 import java.util.Date;
+import java.util.List;
 
+import org.openelis.domain.IdNameDO;
+import org.openelis.domain.OrganizationAddressDO;
 import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleEnvironmentalDO;
 import org.openelis.domain.SampleItemDO;
+import org.openelis.gwt.common.DatetimeRPC;
+import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.Query;
 import org.openelis.gwt.common.RPCException;
+import org.openelis.gwt.common.data.StringObject;
+import org.openelis.gwt.common.data.TableDataModel;
 import org.openelis.gwt.common.data.TableDataRow;
+import org.openelis.gwt.common.data.TreeDataItem;
+import org.openelis.gwt.common.data.TreeDataModel;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
 import org.openelis.manager.SampleEnvironmentalManager;
 import org.openelis.manager.SampleItemsManager;
 import org.openelis.manager.SampleManager;
 import org.openelis.manager.SampleManagerIOClient;
+import org.openelis.manager.SampleOrganizationsManager;
+import org.openelis.manager.SampleProjectsManager;
 import org.openelis.modules.environmentalSampleLogin.client.EnvironmentalSampleLoginForm;
+import org.openelis.modules.environmentalSampleLogin.client.EnvironmentalSubForm;
+import org.openelis.modules.environmentalSampleLogin.client.SampleItemsForm;
+import org.openelis.modules.environmentalSampleLogin.client.SampleOrgProjectForm;
+import org.openelis.modules.order.client.OrderForm;
+import org.openelis.modules.organization.client.OrganizationForm;
+import org.openelis.persistence.EJBFactory;
+import org.openelis.remote.SampleEnvironmentalRemote;
 import org.openelis.server.constants.Constants;
+import org.openelis.server.handlers.CostCentersCacheHandler;
+import org.openelis.server.handlers.OrderStatusCacheHandler;
+import org.openelis.server.handlers.SampleContainerCacheHandler;
+import org.openelis.server.handlers.SampleStatusCacheHandler;
+import org.openelis.server.handlers.SampleTypeCacheHandler;
+import org.openelis.server.handlers.ShipFromCacheHandler;
+import org.openelis.util.Datetime;
+import org.openelis.util.SessionManager;
+import org.openelis.util.UTFResource;
 
 public class EnvironmentalSampleLoginService implements AppScreenFormServiceInt<EnvironmentalSampleLoginForm,Query<TableDataRow<Integer>>>{
 
-    public EnvironmentalSampleLoginForm abort(EnvironmentalSampleLoginForm rpc) throws RPCException {
-        // TODO Auto-generated method stub
-        return null;
+    private UTFResource openElisConstants= UTFResource.getBundle((String)SessionManager.getSession().getAttribute("locale"));
+    private static final int leftTableRowsPerPage = 12;
+    
+    public Query<TableDataRow<Integer>> commitQuery(Query<TableDataRow<Integer>> query) throws RPCException {
+        SampleEnvironmentalRemote remote = (SampleEnvironmentalRemote)EJBFactory.lookup("openelis/SampleEnvironmentalBean/remote");
+        List sampleIds = null;
+        try{    
+            sampleIds = remote.query(query.fields,query.page*leftTableRowsPerPage,leftTableRowsPerPage);
+        }catch(LastPageException e) {
+            throw new LastPageException(openElisConstants.getString("lastPageException"));
+        }catch(Exception e){
+            throw new RPCException(e.getMessage());
+        }
+
+    //fill the model with the query results
+    int i=0;
+    if(query.results == null)
+        query.results = new TableDataModel<TableDataRow<Integer>>();
+    else
+        query.results.clear();
+    while(i < sampleIds.size() && i < leftTableRowsPerPage) {
+        IdNameDO resultDO = (IdNameDO)sampleIds.get(i); 
+        query.results.add(new TableDataRow<Integer>(resultDO.getId()));
+        i++;
+    } 
+    return query;
     }
 
     public EnvironmentalSampleLoginForm commitAdd(EnvironmentalSampleLoginForm rpc) throws RPCException {
@@ -77,13 +127,13 @@ public class EnvironmentalSampleLoginService implements AppScreenFormServiceInt<
         envDO.setDescription("test env item");
         envDO.setIsHazardous("N");
         envDO.setSamplingLocation("location");
-        manager.setAdditonalDomain(envManager);
+        manager.setAdditonalDomainManager(envManager);
         
         //create a few sample items
-        SampleItemsManager itemsManager = manager.getSampleItems();
+        SampleItemsManager itemsManager = manager.getSampleItemsManager();
         SampleItemDO itemDO = itemsManager.add();
         itemDO.setContainerId(1);
-        itemDO.setContainerReferenceId("ref");
+        itemDO.setContainerReference("ref");
         itemDO.setItemSequence(2);
         itemDO.setQuantity(new Double(3));
         itemDO.setSourceOfSampleId(4);
@@ -93,7 +143,7 @@ public class EnvironmentalSampleLoginService implements AppScreenFormServiceInt<
         
         SampleItemDO item2DO = itemsManager.add();
         item2DO.setContainerId(7);
-        item2DO.setContainerReferenceId("ref2");
+        item2DO.setContainerReference("ref2");
         item2DO.setItemSequence(8);
         item2DO.setQuantity(new Double(9));
         item2DO.setSourceOfSampleId(10);
@@ -108,33 +158,147 @@ public class EnvironmentalSampleLoginService implements AppScreenFormServiceInt<
         return null;
     }
 
-    public EnvironmentalSampleLoginForm commitDelete(EnvironmentalSampleLoginForm rpc) throws RPCException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public Query<TableDataRow<Integer>> commitQuery(Query<TableDataRow<Integer>> query) throws RPCException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
     public EnvironmentalSampleLoginForm commitUpdate(EnvironmentalSampleLoginForm rpc) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public EnvironmentalSampleLoginForm fetch(EnvironmentalSampleLoginForm rpc) throws RPCException {
+    public EnvironmentalSampleLoginForm commitDelete(EnvironmentalSampleLoginForm rpc) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
 
+    public EnvironmentalSampleLoginForm fetch(EnvironmentalSampleLoginForm rpc) throws RPCException {
+        /*
+         * Call checkModels to make screen has most recent versions of dropdowns
+         */
+        checkModels(rpc);
+        
+        //SampleManager manager = (SampleManager)SessionManager.getSession().getAttribute("sampleManager");
+        SampleManager manager = SampleManager.findById(rpc.entityKey);
+        SampleDO sampleDO = manager.getSample();
+        sampleDO.setId(rpc.entityKey);
+        manager.fetch();
+        
+        setFieldsInRPC(rpc, sampleDO);
+        loadDomainForm(rpc.envInfoForm, ((SampleEnvironmentalManager)manager.getAdditionalDomainManager()).getEnvironmental());
+        loadSampleItemsForm(rpc.sampleItemsForm, manager.getSampleItemsManager());
+        
+        return rpc;
+    }
+
     public EnvironmentalSampleLoginForm fetchForUpdate(EnvironmentalSampleLoginForm rpc) throws RPCException {
+        /*
+         * Call checkModels to make screen has most recent versions of dropdowns
+         */
+        checkModels(rpc);
+        
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public EnvironmentalSampleLoginForm abort(EnvironmentalSampleLoginForm rpc) throws RPCException {
         // TODO Auto-generated method stub
         return null;
     }
 
     public EnvironmentalSampleLoginForm getScreen(EnvironmentalSampleLoginForm rpc) throws RPCException {
         rpc.xml = ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/environmentalSampleLogin.xsl");
+        
+        //FIXME this doesnt need to be in here
+        //create the sample manager if it doesn't already exist
+        SampleManager manager = (SampleManager)SessionManager.getSession().getAttribute("sampleManager");
+        
+        if(manager == null)
+            SessionManager.getSession().setAttribute("sampleManager", SampleManager.getInstance());
+        
+        /*
+         * Load initial  models to RPC and store cache verison of models into Session for 
+         * comparisons for later fetches
+         */
+        rpc.sampleContainers = SampleContainerCacheHandler.getSampleContainers();
+        SessionManager.getSession().setAttribute("sampleContainerVersion",SampleContainerCacheHandler.version);
+        //rpc.sampleTypes = SampleTypeCacheHandler.getSampleTypes();
+        //SessionManager.getSession().setAttribute("sampleTypeVersion",SampleTypeCacheHandler.version);
+        rpc.sampleStatuses = SampleStatusCacheHandler.getSampleStatuses();
+        SessionManager.getSession().setAttribute("sampleStatusVersion",SampleStatusCacheHandler.version);
+        
         return rpc;
+    }
+    
+    public void checkModels(EnvironmentalSampleLoginForm rpc) {
+        /*
+         * Retrieve current version of models from session.
+         */
+        int sampleContainers = (Integer)SessionManager.getSession().getAttribute("sampleContainerVersion");
+        int sampleStatuses = (Integer)SessionManager.getSession().getAttribute("sampleStatusVersion");
+        //int sampleTypes = (Integer)SessionManager.getSession().getAttribute("sampleTypeVersion");
+        /*
+         * Compare stored version to current cache versions and update if necessary. 
+         */
+        if(sampleContainers != SampleContainerCacheHandler.version){
+            rpc.sampleContainers = SampleContainerCacheHandler.getSampleContainers();
+            SessionManager.getSession().setAttribute("sampleContainerVersion",SampleContainerCacheHandler.version);
+        }
+        if(sampleStatuses != SampleStatusCacheHandler.version){
+            rpc.sampleStatuses = SampleStatusCacheHandler.getSampleStatuses();
+            SessionManager.getSession().setAttribute("sampleStatusVersion",SampleStatusCacheHandler.version);
+        }
+        //if(sampleTypes != SampleTypeCacheHandler.version){
+        //    rpc.sampleTypes = SampleTypeCacheHandler.getSampleTypes();
+        //    SessionManager.getSession().setAttribute("sampleTypeVersion",SampleTypeCacheHandler.version);
+        //}
+    }
+    
+    private void setFieldsInRPC(EnvironmentalSampleLoginForm form, SampleDO sampleDO){
+        form.accessionNumber.setValue(sampleDO.getAccessionNumber());
+        form.clientReference.setValue(sampleDO.getClientReference());
+        
+        if(sampleDO.getCollectionDate() != null && sampleDO.getCollectionDate().getDate() != null)
+            form.collectionDate.setValue(DatetimeRPC.getInstance(Datetime.YEAR, Datetime.DAY, sampleDO.getCollectionDate().getDate()));
+        
+        if(sampleDO.getCollectionTime() != null && sampleDO.getCollectionTime().getDate() != null)
+            form.collectionTime.setValue(DatetimeRPC.getInstance(Datetime.HOUR, Datetime.MINUTE, sampleDO.getCollectionTime().getDate()));
+        
+        form.id.setValue(sampleDO.getId());
+        //form.orderNumber.setValue(sampleDO.getor);
+        
+        if(sampleDO.getReceivedDate() != null && sampleDO.getReceivedDate().getDate() != null)
+            form.receivedDate.setValue(DatetimeRPC.getInstance(Datetime.YEAR, Datetime.DAY, sampleDO.getReceivedDate().getDate()));
+        
+        form.statusId.setValue(new TableDataRow<Integer>(sampleDO.getStatusId()));
+    }
+    
+    private void loadDomainForm(EnvironmentalSubForm form, SampleEnvironmentalDO envDO) {
+        form.collector.setValue(envDO.getCollector());
+        form.collectorPhone.setValue(envDO.getCollectorPhone());
+        form.description.setValue(envDO.getDescription());
+        form.isHazardous.setValue(envDO.getIsHazardous());
+        form.samplingLocation.setValue(envDO.getSamplingLocation());
+    }
+    
+    private void loadSampleItemsForm(SampleItemsForm form, SampleItemsManager itemsManager) {
+        TreeDataModel treeModel = form.itemsTestsTree.getValue();
+        
+        //we need to load the items, this call will load them
+        itemsManager.getSampleItemAt(0);
+        
+        treeModel.clear();
+        for(int i=0; i<itemsManager.count(); i++){
+            SampleItemDO itemDO = (SampleItemDO)itemsManager.getSampleItemAt(i);
+            TreeDataItem row = treeModel.createTreeItem("sampleItem");
+            row.lazy = true;
+            
+            //container
+            row.cells[0].setValue(new TableDataRow<Integer>(itemDO.getContainerId()));
+            //source,type
+            row.cells[1].setValue(itemDO.getTypeOfSample()+" | "+itemDO.getSourceOfSample());
+            
+            treeModel.add(row);
+        }
+    }
+    
+    private void loadOrgProjectForm(SampleOrgProjectForm form, SampleOrganizationsManager orgManager, SampleProjectsManager projManager) {
+        
     }
 }

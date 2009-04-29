@@ -221,16 +221,16 @@ public class OrderScreen extends OpenELISScreenForm<OrderForm,OrderQuery> implem
         shippingNoteText = (ScreenTextArea)widgets.get(OrderMeta.ORDER_SHIPPING_NOTE_META.getText());
         customerNoteText = (ScreenTextArea)widgets.get(OrderMeta.ORDER_CUSTOMER_NOTE_META.getText());
         
-        AToZTable atozTable = (AToZTable) getWidget("azTable");
-        ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
+        //AToZTable atozTable = (AToZTable) getWidget("azTable");
+        //ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
         ButtonPanel bpanel = (ButtonPanel)getWidget("buttons");
         
         CommandChain chain = new CommandChain();
         chain.addCommand(this);
         chain.addCommand(keyList);
         chain.addCommand(bpanel);
-        chain.addCommand(atozTable);
-        chain.addCommand(atozButtons);
+        //chain.addCommand(atozTable);
+        //chain.addCommand(atozButtons);
         
         itemsTable = (TableWidget)getWidget("itemsTable");
         itemsTable.addTableWidgetListener(this);

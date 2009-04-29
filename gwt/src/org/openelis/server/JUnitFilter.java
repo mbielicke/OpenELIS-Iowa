@@ -29,6 +29,7 @@ import org.apache.log4j.Logger;
 import org.openelis.gwt.common.SecurityUtil;
 import org.openelis.gwt.common.SecurityModule.ModuleFlags;
 import org.openelis.gwt.server.ServiceUtils;
+import org.openelis.manager.ManagerFactory;
 import org.openelis.persistence.CachingManager;
 import org.openelis.security.remote.SecurityRemote;
 import org.openelis.server.constants.Constants;
@@ -85,6 +86,8 @@ public class JUnitFilter implements Filter {
         SessionManager.init("OpenELIS"); 
         ServiceUtils.props = "org.openelis.modules.main.server.constants.OpenELISConstants";
         CachingManager.init(Constants.APP_ROOT);
+        //set sample manager context to client
+        ManagerFactory.isClient = true;
         log.debug("getting out");
     }
 
