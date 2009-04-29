@@ -32,10 +32,12 @@ import org.openelis.meta.SampleOrganizationMeta;
 public class SampleOrganizationMetaMap extends SampleOrganizationMeta implements MetaMap{
     public SampleOrganizationMetaMap() {
         super("sampleOrg.");
+        ORGANIZATION = new OrganizationMeta(path+"organization");
     }
     
     public SampleOrganizationMetaMap(String path) {
         super(path);
+        ORGANIZATION = new OrganizationMeta(path+"organization");
     }
     
     public OrganizationMeta ORGANIZATION;

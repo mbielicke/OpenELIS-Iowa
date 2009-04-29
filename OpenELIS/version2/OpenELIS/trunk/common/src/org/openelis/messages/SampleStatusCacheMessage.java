@@ -23,23 +23,19 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.remote;
+package org.openelis.messages;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.openelis.persistence.Message;
 
-import javax.ejb.Remote;
+public class SampleStatusCacheMessage implements Message {
+    private static final long serialVersionUID = 1L;
 
-import org.openelis.domain.SampleEnvironmentalDO;
-import org.openelis.gwt.common.data.AbstractField;
-import org.openelis.manager.SampleDomainInt;
-
-@Remote
-public interface SampleEnvironmentalRemote {
-    public SampleEnvironmentalDO getEnvBySampleId(Integer sampleId);
+    public String handler = "org.openelis.server.handlers.SampleStatusCacheHandler";
+    public enum Action {ADDED,UPDATED,DELETED}
+    public Action action;
     
-    public Integer update(SampleDomainInt sampleDomain);
-    
-    public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception;
+    public String getHandler() {
+        return handler;
+    }
 
 }
