@@ -1,3 +1,28 @@
+/** Exhibit A - UIRF Open-source Based Public Software License.
+* 
+* The contents of this file are subject to the UIRF Open-source Based
+* Public Software License(the "License"); you may not use this file except
+* in compliance with the License. You may obtain a copy of the License at
+* openelis.uhl.uiowa.edu
+* 
+* Software distributed under the License is distributed on an "AS IS"
+* basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+* License for the specific language governing rights and limitations
+* under the License.
+* 
+* The Original Code is OpenELIS code.
+* 
+* The Initial Developer of the Original Code is The University of Iowa.
+* Portions created by The University of Iowa are Copyright 2006-2008. All
+* Rights Reserved.
+* 
+* Contributor(s): ______________________________________.
+* 
+* Alternatively, the contents of this file marked
+* "Separately-Licensed" may be used under the terms of a UIRF Software
+* license ("UIRF Software License"), in which case the provisions of a
+* UIRF Software License are applicable instead of those above. 
+*/
 package org.openelis.manager;
 
 import org.openelis.domain.SampleDO;
@@ -83,7 +108,7 @@ public class SampleManager implements RPC {
         return sample;
     }
     
-    public void setAdditonalDomain(SampleDomainInt sampleDomain) {
+    public void setAdditonalDomainManager(SampleDomainInt sampleDomain) {
         this.sampleDomain = sampleDomain;
         
         if(sampleDomain instanceof SampleHumanManager)
@@ -92,7 +117,7 @@ public class SampleManager implements RPC {
             sample.setDomain("E");
     }
     
-    public SampleDomainInt getAdditionalDomain() {
+    public SampleDomainInt getAdditionalDomainManager() {
         if(sample.getDomain() == null)
             return null;
         
@@ -101,12 +126,18 @@ public class SampleManager implements RPC {
                 sampleDomain = SampleHumanManager.getInstance();
             else if("E".equals(sample.getDomain()))
                 sampleDomain = SampleEnvironmentalManager.getInstance();
+            
+            sampleDomain.setSampleId(sample.getId());
         }
         
         return sampleDomain;
     }
 
-    public SampleItemsManager getSampleItems() {
+    public void setSampleItemsManager(SampleItemsManager sampleItems) {
+        this.sampleItems = sampleItems;
+    }
+    
+    public SampleItemsManager getSampleItemsManager() {
         if (sampleItems == null) {
             sampleItems = SampleItemsManager.getInstance();
             sampleItems.setSampleId(sample.getId());
@@ -115,7 +146,7 @@ public class SampleManager implements RPC {
         return sampleItems;
     }
 
-    public SampleOrganizationsManager getOrganizations() {
+    public SampleOrganizationsManager getOrganizationsManager() {
         if (organizations == null) {
             organizations = SampleOrganizationsManager.getInstance();
             organizations.setSampleId(sample.getId());
@@ -124,11 +155,11 @@ public class SampleManager implements RPC {
         return organizations;
     }
 
-    public void setOrganizations(SampleOrganizationsManager organizations) {
+    public void setOrganizationsManager(SampleOrganizationsManager organizations) {
         this.organizations = organizations;
     }
 
-    public SampleProjectsManager getProjects() {
+    public SampleProjectsManager getProjectsManager() {
         if (projects == null) {
             projects = SampleProjectsManager.getInstance();
             projects.setSampleId(sample.getId());
@@ -137,11 +168,11 @@ public class SampleManager implements RPC {
         return projects;
     }
 
-    public void setProjects(SampleProjectsManager projects) {
+    public void setProjectsManager(SampleProjectsManager projects) {
         this.projects = projects;
     }   
     
-    public QaEventsManager getQaEvents() {
+    public QaEventsManager getQaEventsManager() {
         if (qaEvents == null) {
             qaEvents = QaEventsManager.getInstance();
             qaEvents.setSampleId(sample.getId());
@@ -150,7 +181,7 @@ public class SampleManager implements RPC {
         return qaEvents;
     }
 
-    public void setQaEvents(QaEventsManager qaEvents) {
+    public void setQaEventsManager(QaEventsManager qaEvents) {
         this.qaEvents = qaEvents;
     }
     

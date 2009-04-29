@@ -1,8 +1,32 @@
+/** Exhibit A - UIRF Open-source Based Public Software License.
+* 
+* The contents of this file are subject to the UIRF Open-source Based
+* Public Software License(the "License"); you may not use this file except
+* in compliance with the License. You may obtain a copy of the License at
+* openelis.uhl.uiowa.edu
+* 
+* Software distributed under the License is distributed on an "AS IS"
+* basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+* License for the specific language governing rights and limitations
+* under the License.
+* 
+* The Original Code is OpenELIS code.
+* 
+* The Initial Developer of the Original Code is The University of Iowa.
+* Portions created by The University of Iowa are Copyright 2006-2008. All
+* Rights Reserved.
+* 
+* Contributor(s): ______________________________________.
+* 
+* Alternatively, the contents of this file marked
+* "Separately-Licensed" may be used under the terms of a UIRF Software
+* license ("UIRF Software License"), in which case the provisions of a
+* UIRF Software License are applicable instead of those above. 
+*/
 package org.openelis.domain;
 
 import java.io.Serializable;
 
-import org.openelis.gwt.common.RPC;
 import org.openelis.util.DataBaseUtil;
 
 public class SampleItemDO implements Serializable {
@@ -14,7 +38,9 @@ public class SampleItemDO implements Serializable {
     protected Integer sampleItemId;
     protected Integer itemSequence;
     protected Integer typeOfSampleId;
+    protected String typeOfSample;
     protected Integer sourceOfSampleId;
+    protected String sourceOfSample;
     protected String sourceOther;
     protected Integer containerId;
     protected String containerReference;
@@ -26,18 +52,20 @@ public class SampleItemDO implements Serializable {
     }
     
     public SampleItemDO(Integer id, Integer sampleId, Integer sampleItemId, Integer itemSequence,
-                        Integer typeOfSampleId, Integer sourceOfSampleId, String sourceOther,
-                        Integer containerId, String containerReference, Double quantity,
+                        Integer typeOfSampleId, String typeOfSample, Integer sourceOfSampleId, String sourceOfSample, 
+                        String sourceOther, Integer containerId, String containerReference, Double quantity,
                         Integer unitOfMeasureId){
         setId(id);
         setSampleId(sourceOfSampleId);
         setSampleItemId(sampleItemId);
         setItemSequence(itemSequence);
         setTypeOfSampleId(typeOfSampleId);
+        setTypeOfSample(typeOfSample);
         setSourceOfSampleId(sourceOfSampleId);
+        setSourceOfSample(sourceOfSample);
         setSourceOther(sourceOther);
         setContainerId(containerId);
-        setContainerReferenceId(containerReference);
+        setContainerReference(containerReference);
         setQuantity(quantity);
         setUnitOfMeasureId(unitOfMeasureId);
         
@@ -91,12 +119,6 @@ public class SampleItemDO implements Serializable {
     public void setContainerId(Integer containerId) {
         this.containerId = containerId;
     }
-    public String getContainerReferenceId() {
-        return containerReference;
-    }
-    public void setContainerReferenceId(String containerReference) {
-        this.containerReference = containerReference;
-    }
     public Double getQuantity() {
         return quantity;
     }
@@ -108,5 +130,29 @@ public class SampleItemDO implements Serializable {
     }
     public void setUnitOfMeasureId(Integer unitOfMeasureId) {
         this.unitOfMeasureId = unitOfMeasureId;
+    }
+
+    public String getTypeOfSample() {
+        return typeOfSample;
+    }
+
+    public void setTypeOfSample(String typeOfSample) {
+        this.typeOfSample = DataBaseUtil.trim(typeOfSample);
+    }
+
+    public String getSourceOfSample() {
+        return sourceOfSample;
+    }
+
+    public void setSourceOfSample(String sourceOfSample) {
+        this.sourceOfSample = DataBaseUtil.trim(sourceOfSample);
+    }
+
+    public String getContainerReference() {
+        return containerReference;
+    }
+
+    public void setContainerReference(String containerReference) {
+        this.containerReference = DataBaseUtil.trim(containerReference);
     }
 }
