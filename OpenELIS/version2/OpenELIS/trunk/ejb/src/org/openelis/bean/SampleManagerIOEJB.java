@@ -34,6 +34,12 @@ public class SampleManagerIOEJB implements SampleManagerIOInt {
         
     }
     
+    public SampleDO fetchAndUnlock(Integer sampleId) {
+        SampleLocal sl = getSampleLocal();
+        
+        return sl.getSampleByIdAndUnlock(sampleId);
+    }
+    
     private SampleLocal getSampleLocal(){
         try{
             InitialContext ctx = new InitialContext();
@@ -42,5 +48,5 @@ public class SampleManagerIOEJB implements SampleManagerIOInt {
              System.out.println(e.getMessage());
              return null;
         }
-    }
+    }    
 }

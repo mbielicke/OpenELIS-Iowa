@@ -29,12 +29,6 @@ package org.openelis.entity;
   * SampleOrganization Entity POJO for database 
   */
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.openelis.util.Datetime;
-import org.openelis.util.XMLUtil;
-
-import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -42,12 +36,22 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+
+import org.openelis.util.XMLUtil;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
+@NamedQueries( {
+    @NamedQuery(name = "SampleOrg.SampleOrgBySampleId", query = "select new org.openelis.domain.SampleOrganizationDO(so.id, so.sampleId, " + 
+                " so.organizationId, so.typeId, o.parentOrganizationId, o.name, o.isActive) from SampleOrganization so LEFT JOIN so.organization o where so.sampleId = :id")})
+                
 @Entity
 @Table(name="sample_organization")
 @EntityListeners({AuditUtil.class})

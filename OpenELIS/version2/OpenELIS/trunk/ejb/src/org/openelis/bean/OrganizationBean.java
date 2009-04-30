@@ -56,6 +56,8 @@ import org.openelis.local.LockLocal;
 import org.openelis.metamap.OrganizationMetaMap;
 import org.openelis.persistence.CachingManager;
 import org.openelis.remote.OrganizationRemote;
+import org.openelis.security.domain.SystemUserDO;
+import org.openelis.security.local.SystemUserLocal;
 import org.openelis.util.Datetime;
 import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
@@ -72,6 +74,8 @@ public class OrganizationBean implements OrganizationRemote {
 
 	@PersistenceContext(name = "openelis")
     private EntityManager manager;
+	
+	@EJB private SystemUserLocal userLocal;
 	
 	@Resource
 	private SessionContext ctx;
@@ -234,6 +238,12 @@ public class OrganizationBean implements OrganizationRemote {
 		
 		List orgNotes = query.getResultList();// getting list of noteDOs from the org id
 
+		for(int i=0; i<orgNotes.size(); i++){
+	           NoteDO noteDO = (NoteDO)orgNotes.get(i);
+	           SystemUserDO userDO = userLocal.getSystemUser(noteDO.getSystemUserId());
+	           noteDO.setSystemUser(userDO.getLoginName());
+	       }
+		
         return orgNotes;
 	}
 

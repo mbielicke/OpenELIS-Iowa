@@ -13,6 +13,8 @@ public interface SampleLocal {
     //return sample by primary key and lock
     public SampleDO getSampleByIdAndLock(Integer sampleId) throws Exception;
     
+    public SampleDO getSampleByIdAndUnlock(Integer sampleId);
+    
     //return sample by accession number
     public SampleDO getSampleByAccessionLabNumber(Integer accessionLabNumber); 
     

@@ -55,6 +55,8 @@ import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.local.LockLocal;
 import org.openelis.metamap.InventoryItemMetaMap;
 import org.openelis.remote.InventoryItemRemote;
+import org.openelis.security.domain.SystemUserDO;
+import org.openelis.security.local.SystemUserLocal;
 import org.openelis.util.Datetime;
 import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
@@ -70,6 +72,8 @@ public class InventoryItemBean implements InventoryItemRemote{
 	@PersistenceContext(name = "openelis")
     private EntityManager manager;
    
+	@EJB private SystemUserLocal userLocal;
+	
 	@Resource
 	private SessionContext ctx;
 	
@@ -134,6 +138,12 @@ public class InventoryItemBean implements InventoryItemRemote{
         
         List notes = query.getResultList();// getting list of noteDOs from the item id
 
+        for(int i=0; i<notes.size(); i++){
+            NoteDO noteDO = (NoteDO)notes.get(i);
+            SystemUserDO userDO = userLocal.getSystemUser(noteDO.getSystemUserId());
+            noteDO.setSystemUser(userDO.getLoginName());
+        }
+        
         return notes;
 	}
 	
