@@ -28,23 +28,27 @@ package org.openelis.manager;
 import java.util.List;
 
 import org.openelis.persistence.EJBFactory;
-import org.openelis.remote.SampleItemRemote;
+import org.openelis.remote.SampleOrganizationRemote;
 
-public class SampleItemsManagerIOClient implements SampleItemsManagerIOInt {
+public class SampleOrganizationsManagerIOClient implements SampleOrganizationsManagerIOInt {
 
     public List fetch(Integer sampleId) {
-        SampleItemRemote remote = getSampleItemRemote();
+        
+        SampleOrganizationRemote remote = getSampleOrganizationRemote();
 
-        return remote.getItemsBySampleId(sampleId);
+        return remote.getOrganizationsBySampleId(sampleId);
+        
     }
 
-    public Integer update(SampleItemsManager sampleItems) {
-        SampleItemRemote remote = getSampleItemRemote();
+    public void update(SampleOrganizationsManager sampleOrgs) {
+        
+        SampleOrganizationRemote remote = getSampleOrganizationRemote();
 
-        return remote.update(sampleItems);
+        remote.update(sampleOrgs);
+        
     }
     
-    private SampleItemRemote getSampleItemRemote(){
-        return (SampleItemRemote)EJBFactory.lookup("openelis/SampleItemBean/remote");
+    private SampleOrganizationRemote getSampleOrganizationRemote(){
+        return (SampleOrganizationRemote)EJBFactory.lookup("openelis/SampleOrganizationBean/remote");
     }
 }
