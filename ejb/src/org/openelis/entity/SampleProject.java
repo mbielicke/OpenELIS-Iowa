@@ -36,6 +36,8 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -46,6 +48,10 @@ import org.openelis.utils.Auditable;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+@NamedQueries( {
+    @NamedQuery(name = "SampleProject.SampleProjectBySampleId", query = "select new org.openelis.domain.SampleProjectDO(sp.id, sp.sampleId, " + 
+                " sp.projectId, sp.isPermanent, p.name, p.description, p.startedDate, p.completedDate, p.isActive, p.referenceTo, " + 
+                " p.ownerId, p.scriptletId) from SampleProject sp LEFT JOIN sp.project p where sp.sampleId = :id")})
 @Entity
 @Table(name="sample_project")
 @EntityListeners({AuditUtil.class})

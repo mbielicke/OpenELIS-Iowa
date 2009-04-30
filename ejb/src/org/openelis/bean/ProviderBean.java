@@ -42,6 +42,9 @@ import org.openelis.local.LockLocal;
 import org.openelis.local.ProviderLocal;
 import org.openelis.metamap.ProviderMetaMap;
 import org.openelis.remote.ProviderRemote;
+import org.openelis.security.domain.SystemUserDO;
+import org.openelis.security.local.SecurityLocal;
+import org.openelis.security.local.SystemUserLocal;
 import org.openelis.util.Datetime;
 import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
@@ -76,6 +79,8 @@ public class ProviderBean implements ProviderRemote, ProviderLocal {
     
     @Resource
     private SessionContext ctx;
+    
+    @EJB private SystemUserLocal userLocal;
     
     private LockLocal lockBean;
     private AddressLocal addressBean;
@@ -115,7 +120,13 @@ public class ProviderBean implements ProviderRemote, ProviderLocal {
        query.setParameter("id", providerId);
         
        List provNotes = query.getResultList(); // getting list of noteDOs from the provider id
-
+       
+       for(int i=0; i<provNotes.size(); i++){
+           NoteDO noteDO = (NoteDO)provNotes.get(i);
+           SystemUserDO userDO = userLocal.getSystemUser(noteDO.getSystemUserId());
+           noteDO.setSystemUser(userDO.getLoginName());
+       }
+       
        return provNotes;
     }
 
