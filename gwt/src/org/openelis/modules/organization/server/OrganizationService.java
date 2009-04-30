@@ -25,12 +25,16 @@
 */
 package org.openelis.modules.organization.server;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+
 import org.openelis.domain.IdNameDO;
 import org.openelis.domain.NoteDO;
 import org.openelis.domain.OrganizationAddressDO;
 import org.openelis.domain.OrganizationAutoDO;
 import org.openelis.domain.OrganizationContactDO;
-import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.FormErrorException;
@@ -56,8 +60,6 @@ import org.openelis.modules.organization.client.NotesForm;
 import org.openelis.modules.organization.client.OrganizationForm;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.OrganizationRemote;
-import org.openelis.security.domain.SystemUserDO;
-import org.openelis.security.remote.SystemUserRemote;
 import org.openelis.server.constants.Constants;
 import org.openelis.server.handlers.ContactTypeCacheHandler;
 import org.openelis.server.handlers.CountryCacheHandler;
@@ -68,11 +70,6 @@ import org.openelis.util.UTFResource;
 import org.openelis.util.XMLUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 
 public class OrganizationService implements AppScreenFormServiceInt<OrganizationForm,Query<TableDataRow<Integer>>>, 
 															  AutoCompleteServiceInt {
@@ -456,7 +453,7 @@ public class OrganizationService implements AppScreenFormServiceInt<Organization
     	    NoteDO noteRow = (NoteDO)itr.next();
             
             //user id
-            Integer userId = noteRow.getSystemUser();
+            String userName = noteRow.getSystemUser();
             //body
             String body = noteRow.getText();
             
@@ -471,12 +468,6 @@ public class OrganizationService implements AppScreenFormServiceInt<Organization
             if(subject == null)
                 subject = "";
                         
-            
-            SystemUserRemote securityRemote = (SystemUserRemote)EJBFactory.lookup("SystemUserBean/remote");
-            SystemUserDO user = securityRemote.getSystemUser(userId,false);
-            
-            String userName = user.getLoginName().trim();  
-    
         	 Element mainRowPanel = (Element) doc.createElement("VerticalPanel");
         	 Element topRowPanel = (Element) doc.createElement("HorizontalPanel");
         	 Element titleWidgetTag = (Element) doc.createElement("widget");

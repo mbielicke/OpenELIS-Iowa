@@ -68,8 +68,6 @@ import org.openelis.modules.inventoryItem.client.InventoryLocationsForm;
 import org.openelis.modules.inventoryItem.client.InventoryManufacturingForm;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.InventoryItemRemote;
-import org.openelis.security.domain.SystemUserDO;
-import org.openelis.security.remote.SystemUserRemote;
 import org.openelis.server.constants.Constants;
 import org.openelis.server.handlers.InventoryItemCategoriesCacheHandler;
 import org.openelis.server.handlers.InventoryItemDispensedUnitsCacheHandler;
@@ -511,7 +509,7 @@ public class InventoryItemService implements AppScreenFormServiceInt<InventoryIt
             NoteDO noteRow = (NoteDO)itr.next();
             
             //user id
-            Integer userId = noteRow.getSystemUser();
+            String userName = noteRow.getSystemUser();
             //body
             String body = noteRow.getText();
             
@@ -525,13 +523,7 @@ public class InventoryItemService implements AppScreenFormServiceInt<InventoryIt
             
             if(subject == null)
                 subject = "";
-                        
             
-            SystemUserRemote securityRemote = (SystemUserRemote)EJBFactory.lookup("SystemUserBean/remote");
-            SystemUserDO user = securityRemote.getSystemUser(userId,false);
-            
-            String userName = user.getLoginName().trim();  
-    
             Element mainRowPanel = (Element) doc.createElement("VerticalPanel");
              Element topRowPanel = (Element) doc.createElement("HorizontalPanel");
              Element titleWidgetTag = (Element) doc.createElement("widget");

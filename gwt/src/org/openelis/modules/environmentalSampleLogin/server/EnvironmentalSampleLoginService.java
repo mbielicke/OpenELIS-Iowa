@@ -174,7 +174,6 @@ public class EnvironmentalSampleLoginService implements AppScreenFormServiceInt<
          */
         checkModels(rpc);
         
-        //SampleManager manager = (SampleManager)SessionManager.getSession().getAttribute("sampleManager");
         SampleManager manager = SampleManager.findById(rpc.entityKey);
         SampleDO sampleDO = manager.getSample();
         sampleDO.setId(rpc.entityKey);
@@ -183,6 +182,10 @@ public class EnvironmentalSampleLoginService implements AppScreenFormServiceInt<
         setFieldsInRPC(rpc, sampleDO);
         loadDomainForm(rpc.envInfoForm, ((SampleEnvironmentalManager)manager.getAdditionalDomainManager()).getEnvironmental());
         loadSampleItemsForm(rpc.sampleItemsForm, manager.getSampleItemsManager());
+        loadOrgProjectForm(rpc.orgProjectForm, manager.getOrganizationsManager(), manager.getProjectsManager());
+        
+        //save the new manager in the session
+        SessionManager.getSession().setAttribute("envScreenSampleManager", manager);
         
         return rpc;
     }
@@ -193,24 +196,48 @@ public class EnvironmentalSampleLoginService implements AppScreenFormServiceInt<
          */
         checkModels(rpc);
         
-        // TODO Auto-generated method stub
-        return null;
+        SampleManager manager = SampleManager.findById(rpc.entityKey);
+        SampleDO sampleDO = manager.getSample();
+        sampleDO.setId(rpc.entityKey);
+        
+        try{
+            manager.fetchForUpdate();
+            
+        }catch(Exception e){
+            throw new RPCException(e.getMessage());
+        }
+        
+        setFieldsInRPC(rpc, sampleDO);
+        loadDomainForm(rpc.envInfoForm, ((SampleEnvironmentalManager)manager.getAdditionalDomainManager()).getEnvironmental());
+        loadSampleItemsForm(rpc.sampleItemsForm, manager.getSampleItemsManager());
+        loadOrgProjectForm(rpc.orgProjectForm, manager.getOrganizationsManager(), manager.getProjectsManager());
+        
+        //save the new manager in the session
+        SessionManager.getSession().setAttribute("envScreenSampleManager", manager);
+        
+        return rpc;
     }
 
     public EnvironmentalSampleLoginForm abort(EnvironmentalSampleLoginForm rpc) throws RPCException {
-        // TODO Auto-generated method stub
-        return null;
+        SampleManager manager = SampleManager.findById(rpc.entityKey);
+        SampleDO sampleDO = manager.getSample();
+        sampleDO.setId(rpc.entityKey);
+        
+        manager.fetchAndUnlock();
+        
+        setFieldsInRPC(rpc, sampleDO);
+        loadDomainForm(rpc.envInfoForm, ((SampleEnvironmentalManager)manager.getAdditionalDomainManager()).getEnvironmental());
+        loadSampleItemsForm(rpc.sampleItemsForm, manager.getSampleItemsManager());
+        loadOrgProjectForm(rpc.orgProjectForm, manager.getOrganizationsManager(), manager.getProjectsManager());
+        
+        //save the new manager in the session
+        SessionManager.getSession().setAttribute("envScreenSampleManager", manager);
+        
+        return rpc;
     }
 
     public EnvironmentalSampleLoginForm getScreen(EnvironmentalSampleLoginForm rpc) throws RPCException {
         rpc.xml = ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/environmentalSampleLogin.xsl");
-        
-        //FIXME this doesnt need to be in here
-        //create the sample manager if it doesn't already exist
-        SampleManager manager = (SampleManager)SessionManager.getSession().getAttribute("sampleManager");
-        
-        if(manager == null)
-            SessionManager.getSession().setAttribute("sampleManager", SampleManager.getInstance());
         
         /*
          * Load initial  models to RPC and store cache verison of models into Session for 
@@ -279,11 +306,8 @@ public class EnvironmentalSampleLoginService implements AppScreenFormServiceInt<
     
     private void loadSampleItemsForm(SampleItemsForm form, SampleItemsManager itemsManager) {
         TreeDataModel treeModel = form.itemsTestsTree.getValue();
-        
-        //we need to load the items, this call will load them
-        itemsManager.getSampleItemAt(0);
-        
         treeModel.clear();
+        
         for(int i=0; i<itemsManager.count(); i++){
             SampleItemDO itemDO = (SampleItemDO)itemsManager.getSampleItemAt(i);
             TreeDataItem row = treeModel.createTreeItem("sampleItem");
@@ -299,6 +323,10 @@ public class EnvironmentalSampleLoginService implements AppScreenFormServiceInt<
     }
     
     private void loadOrgProjectForm(SampleOrgProjectForm form, SampleOrganizationsManager orgManager, SampleProjectsManager projManager) {
+        if(projManager.count() > 0)
+            form.projectName.setValue(projManager.getSampleProjectAt(0).getProject().getName());
         
+        if(orgManager.count() > 0)
+            form.reportToName.setValue(orgManager.getSampleOrganizationAt(0).getOrganization().getName());
     }
 }
