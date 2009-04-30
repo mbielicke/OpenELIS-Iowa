@@ -206,10 +206,14 @@ public class SampleManager implements RPC {
     }
     
     public void fetchForUpdate() throws Exception{
-        sample = manager().fetchForUpdate(sample.getId());   
+        sample = manager().fetchForUpdate(sample.getId());
     }
     
-    public void fetchByAccessionNumber() {
+    public void fetchAndUnlock(){
+        sample = manager().fetchAndUnlock(sample.getId());
+    }
+    
+    protected void fetchByAccessionNumber() {
         sample = manager().fetchByAccessionNumber(sample.getAccessionNumber());
     }
 

@@ -61,7 +61,7 @@ public class SampleItemsManager implements RPC {
     }
 
     /**
-     * Creates a new instance of this object with the specified Specimen. Use this function to load an instance of this object from database.
+     * Creates a new instance of this object with the specified sample id. Use this function to load an instance of this object from database.
      */
     public static SampleItemsManager findBySampleId(Integer sampleId) {
         SampleItemsManager sim = new SampleItemsManager();
@@ -73,6 +73,7 @@ public class SampleItemsManager implements RPC {
     }
     
     public int count(){
+        fetch();
         return items.size();
     }
 
@@ -165,7 +166,7 @@ public class SampleItemsManager implements RPC {
         return manager().update(this);
     }
 
-    private void fetch() {
+    protected void fetch() {
         if (cached)
             return;
 

@@ -7,4 +7,5 @@ public interface SampleManagerIOInt {
     public SampleDO fetch(Integer sampleId);
     public SampleDO fetchByAccessionNumber(Integer accessionNumber);
     public SampleDO fetchForUpdate(Integer sampleId) throws Exception;
+    public SampleDO fetchAndUnlock(Integer sampleId);
 }

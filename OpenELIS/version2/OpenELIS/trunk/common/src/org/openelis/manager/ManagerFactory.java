@@ -55,6 +55,20 @@ public class ManagerFactory {
         else
             return (SampleEnvironmentalManagerIOInt)getManager("org.openelis.bean.SampleEnvironmentalManagerIOEJB");
     }
+    
+    public static SampleProjectsManagerIOInt getSampleProjectManagerIO() {
+        if (isClient)
+            return (SampleProjectsManagerIOInt)getManager("org.openelis.manager.SampleProjectsManagerIOClient");
+        else
+            return (SampleProjectsManagerIOInt)getManager("org.openelis.bean.SampleProjectsManagerIOEJB");
+    }
+    
+    public static SampleOrganizationsManagerIOInt getSampleOrganizationManagerIO() {
+        if (isClient)
+            return (SampleOrganizationsManagerIOInt)getManager("org.openelis.manager.SampleOrganizationsManagerIOClient");
+        else
+            return (SampleOrganizationsManagerIOInt)getManager("org.openelis.bean.SampleOrganizationsManagerIOEJB");
+    }
 
     private static Object getManager(String className) {
         Class cls;

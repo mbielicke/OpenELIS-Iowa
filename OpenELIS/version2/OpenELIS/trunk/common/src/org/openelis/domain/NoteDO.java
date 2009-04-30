@@ -43,7 +43,8 @@ public class NoteDO implements Serializable{
 	protected Integer referenceTable;   
 	protected Datetime timestamp;    
 	protected String isExternal;  
-	protected Integer systemUser; 
+	protected Integer systemUserId;
+	protected String systemUser;
 	protected String subject; 
 	protected String text;
 	
@@ -57,7 +58,7 @@ public class NoteDO implements Serializable{
     	setReferenceTable(referenceTable);
     	setTimestamp(new Datetime(Datetime.YEAR,Datetime.MINUTE,timestamp));
     	setIsExternal(isExternal);
-    	setSystemUser(systemUser);
+    	setSystemUserId(systemUser);
     	setSubject(subject);
     	setText(text);
     }
@@ -65,7 +66,7 @@ public class NoteDO implements Serializable{
     public NoteDO(Integer id, Integer systemUser, String text, Date timestamp, String subject){
     	setId(id);
     	setTimestamp(new Datetime(Datetime.YEAR,Datetime.MINUTE,timestamp));
-    	setSystemUser(systemUser);
+    	setSystemUserId(systemUser);
     	setSubject(subject);
     	setText(text);
     }
@@ -100,11 +101,11 @@ public class NoteDO implements Serializable{
 	public void setSubject(String subject) {
 		this.subject = DataBaseUtil.trim(subject);
 	}
-	public Integer getSystemUser() {
-		return systemUser;
+	public Integer getSystemUserId() {
+		return systemUserId;
 	}
-	public void setSystemUser(Integer systemUser) {
-		this.systemUser = systemUser;
+	public void setSystemUserId(Integer systemUser) {
+		this.systemUserId = systemUser;
 	}
 	public String getText() {
 		return text;
@@ -117,6 +118,13 @@ public class NoteDO implements Serializable{
 	}
 	public void setTimestamp(Datetime timestamp) {
 		this.timestamp = timestamp;
-	} 
+	}
 
+    public String getSystemUser() {
+        return systemUser;
+    }
+
+    public void setSystemUser(String systemUser) {
+        this.systemUser = DataBaseUtil.trim(systemUser);
+    } 
 }
