@@ -23,82 +23,89 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.manager;
+package org.openelis.domain;
 
 import java.io.Serializable;
 import java.util.Date;
 
+import org.openelis.util.DataBaseUtil;
 import org.openelis.util.Datetime;
 
-public class AnalysisDO implements Serializable {
-
-    /**
-     * 
-     */
+public class AnalysisTestDO implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    protected Integer id;             
-
-    protected Integer sampleItemId;             
-
-    protected Integer revision;             
-
-    protected Integer testId;             
-
-    protected Integer sectionId;             
-
-    protected Integer preAnalysisId;             
-
-    protected Integer parentAnalysisId;             
-
-    protected Integer parentResultId;             
-
-    protected String isReportable;             
-
-    protected Integer unitOfMeasureId;             
-
-    protected Integer statusId;             
-
-    protected Datetime availableDate;             
-
-    protected Datetime startedDate;             
-
-    protected Datetime completedDate;             
-
-    protected Datetime releasedDate;             
-
-    protected Datetime printedDate;  
+    protected Integer         id;
+    protected Integer         sampleItemId;
+    protected Integer         revision;
+    protected Integer         testId;
+    protected Integer         sectionId;
+    protected Integer         preAnalysisId;
+    protected Integer         parentAnalysisId;
+    protected Integer         parentResultId;
+    protected String          isReportable;
+    protected Integer         unitOfMeasureId;
+    protected Integer         statusId;
+    protected Datetime        availableDate;
+    protected Datetime        startedDate;
+    protected Datetime        completedDate;
+    protected Datetime        releasedDate;
+    protected Datetime        printedDate;
+    public TestDO          test             = new TestDO();
     
-    private Boolean delete = false;
-    
-    public AnalysisDO() {
+    public AnalysisTestDO(){
         
     }
-
-    public AnalysisDO(Integer id,Integer sampleItemId,Integer revision,
-                      Integer testId,Integer sectionId,Integer preAnalysisId,
-                      Integer parentAnalysisId,Integer parentResultId,
-                      String isReportable,Integer unitOfMeasureId,
-                      Integer statusId,Date availableDate,
-                      Date startedDate,Date completedDate,
-                      Date releasedDate,Date printedDate) {
-                                                                                
-        this.id = id;
-        this.sampleItemId = sampleItemId;
-        this.revision = revision;
-        this.testId = testId;
-        this.sectionId = sectionId;
-        this.preAnalysisId = preAnalysisId;
-        this.parentAnalysisId = parentAnalysisId;
-        this.parentResultId = parentResultId;
-        this.isReportable = isReportable;
-        this.unitOfMeasureId = unitOfMeasureId;
-        this.statusId = statusId;
+    
+    //just analysis values
+    public AnalysisTestDO(Integer id, Integer sampleItemId, Integer revision, Integer testId,
+                          Integer sectionId, Integer preAnalysisId, Integer parentAnalysisId, Integer parentResultId,
+                          String isReportable, Integer unitOfMeasureId, Integer statusId, Date availableDate,
+                          Date startedDate, Date completedDate, Date releasedDate, Date printedDate){
+        setId(id);
+        setSampleItemId(sampleItemId);
+        setRevision(revision);
+        setTestId(testId);
+        setSectionId(sectionId);
+        setPreAnalysisId(preAnalysisId);
+        setParentAnalysisId(parentAnalysisId);
+        setParentResultId(parentResultId);
+        setIsReportable(isReportable);
+        setUnitOfMeasureId(unitOfMeasureId);
+        setStatusId(statusId);
         setAvailableDate(availableDate);
         setStartedDate(startedDate);
         setCompletedDate(completedDate);
         setReleasedDate(releasedDate);
         setPrintedDate(printedDate);
+    }
+
+    //analysis and test name,method name, and status
+    public AnalysisTestDO(Integer id, Integer sampleItemId, Integer revision, Integer testId,
+                          Integer sectionId, Integer preAnalysisId, Integer parentAnalysisId, Integer parentResultId,
+                          String isReportable, Integer unitOfMeasureId, Integer statusId, Date availableDate,
+                          Date startedDate, Date completedDate, Date releasedDate, Date printedDate, String testName, 
+                          String testMethodName){
+        
+        setId(id);
+        setSampleItemId(sampleItemId);
+        setRevision(revision);
+        setTestId(testId);
+        setSectionId(sectionId);
+        setPreAnalysisId(preAnalysisId);
+        setParentAnalysisId(parentAnalysisId);
+        setParentResultId(parentResultId);
+        setIsReportable(isReportable);
+        setUnitOfMeasureId(unitOfMeasureId);
+        setStatusId(statusId);
+        setAvailableDate(availableDate);
+        setStartedDate(startedDate);
+        setCompletedDate(completedDate);
+        setReleasedDate(releasedDate);
+        setPrintedDate(printedDate);
+        
+        //test params
+        test.setName(testName);
+        test.setMethodName(testMethodName);
     }
 
     public Integer getId() {
@@ -170,7 +177,7 @@ public class AnalysisDO implements Serializable {
     }
 
     public void setIsReportable(String isReportable) {
-        this.isReportable = isReportable;
+        this.isReportable = DataBaseUtil.trim(isReportable);
     }
 
     public Integer getUnitOfMeasureId() {
@@ -194,7 +201,7 @@ public class AnalysisDO implements Serializable {
     }
 
     public void setAvailableDate(Date availableDate) {
-        this.availableDate = new Datetime(Datetime.YEAR,Datetime.DAY,availableDate);
+        this.availableDate = new Datetime(Datetime.YEAR, Datetime.DAY, availableDate);
     }
 
     public Datetime getStartedDate() {
@@ -202,7 +209,7 @@ public class AnalysisDO implements Serializable {
     }
 
     public void setStartedDate(Date startedDate) {
-        this.startedDate = new Datetime(Datetime.YEAR,Datetime.DAY,startedDate);
+        this.startedDate = new Datetime(Datetime.YEAR, Datetime.DAY, startedDate);
     }
 
     public Datetime getCompletedDate() {
@@ -210,7 +217,7 @@ public class AnalysisDO implements Serializable {
     }
 
     public void setCompletedDate(Date completedDate) {
-        this.completedDate = new Datetime(Datetime.YEAR,Datetime.DAY,completedDate);
+        this.completedDate = new Datetime(Datetime.YEAR, Datetime.DAY, completedDate);
     }
 
     public Datetime getReleasedDate() {
@@ -218,7 +225,7 @@ public class AnalysisDO implements Serializable {
     }
 
     public void setReleasedDate(Date releasedDate) {
-        this.releasedDate = new Datetime(Datetime.YEAR,Datetime.DAY,releasedDate);
+        this.releasedDate = new Datetime(Datetime.YEAR, Datetime.DAY, releasedDate);
     }
 
     public Datetime getPrintedDate() {
@@ -226,16 +233,6 @@ public class AnalysisDO implements Serializable {
     }
 
     public void setPrintedDate(Date printedDate) {
-        this.printedDate = new Datetime(Datetime.YEAR,Datetime.DAY,printedDate);
+        this.printedDate = new Datetime(Datetime.YEAR, Datetime.DAY, printedDate);
     }
-
-    public Boolean getDelete() {
-        return delete;
-    }
-
-    public void setDelete(Boolean delete) {
-        this.delete = delete;
-    }
-    
-    
 }

@@ -114,7 +114,8 @@ public class SampleItemsManager implements RPC {
 
         if (item.storage == null) {
             item.storage = StorageManager.getInstance();
-            item.storage.setSampleItemId(item.sampleItem.getId());
+            item.storage.setReferenceId(item.sampleItem.getId());
+            //item.storage.setReferenceTableId(referenceTableId);
         }
 
         return item.storage;

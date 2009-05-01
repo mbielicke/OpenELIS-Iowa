@@ -69,6 +69,13 @@ public class ManagerFactory {
         else
             return (SampleOrganizationsManagerIOInt)getManager("org.openelis.bean.SampleOrganizationsManagerIOEJB");
     }
+    
+    public static AnalysesManagerIOInt getAnalysesManagerIO() {
+        if (isClient)
+            return (AnalysesManagerIOInt)getManager("org.openelis.manager.AnalysesManagerIOClient");
+        else
+            return (AnalysesManagerIOInt)getManager("org.openelis.bean.AnalysesManagerIOEJB");
+    }
 
     private static Object getManager(String className) {
         Class cls;

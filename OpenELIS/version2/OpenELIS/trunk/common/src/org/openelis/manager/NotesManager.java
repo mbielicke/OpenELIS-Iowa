@@ -40,21 +40,25 @@ public class NotesManager implements Serializable{
      
     protected boolean external, loaded;
     protected Integer referenceId;
-    // previously "type"
     protected Integer referenceTableId;
     protected ArrayList<NoteDO> notes;
     
     @Transient
     protected NotesManagerIOInt manager;
     
-    public NotesManager() {
-       external = false;
-       loaded = false;
-       referenceTableId = null;
-       referenceId = null;
-       notes = null;
+    /**
+     * Creates a new instance of this object.
+     */
+    public static NotesManager getInstance() {
+        NotesManager nm;
+
+        nm = new NotesManager();
+        nm.notes = new ArrayList<NoteDO>();
+
+        return nm;
     }
     
+    //FIXME cleanup this code...
     public NoteDO add(){
          boolean needOne = false;
          NoteDO noteDO = null;
@@ -82,6 +86,14 @@ public class NotesManager implements Serializable{
     public void setReferenceId(Integer referenceId) {
         this.referenceId = referenceId;
     }
+    
+    public Integer getReferenceId() {
+        return referenceId;
+    }
+
+    public Integer getReferenceTableId() {
+        return referenceTableId;
+    }
 
     /**
       * Sets the behavior for allocating and storing notes.
@@ -106,6 +118,5 @@ public class NotesManager implements Serializable{
      private NotesManagerIOInt manager() {
          //manager = ManagerFactory.getNotesManager();
          return manager;
-     }
-     
+     }     
 }

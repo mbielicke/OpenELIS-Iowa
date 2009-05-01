@@ -31,6 +31,8 @@ import java.util.ArrayList;
 
 import javax.persistence.Transient;
 
+import org.openelis.domain.AnalysisQaEventDO;
+import org.openelis.domain.NoteDO;
 import org.openelis.domain.QaEventDO;
 
 
@@ -54,11 +56,17 @@ public class AnalysisQaEventsManager implements Serializable {
         public QaEventDO         qaEvent;
     }
 
-    public AnalysisQaEventsManager() {
-        loaded = false;
-        analysisId = null;
-        items = new ArrayList<Item>();
-        removedAnaQaEvents = new ArrayList<AnalysisQaEventDO>();
+    /**
+     * Creates a new instance of this object.
+     */
+    public static AnalysisQaEventsManager getInstance() {
+        AnalysisQaEventsManager aqm;
+
+        aqm = new AnalysisQaEventsManager();
+        aqm.items = new ArrayList<Item>();
+        aqm.removedAnaQaEvents = new ArrayList<AnalysisQaEventDO>();
+
+        return aqm;
     }
     
     public void setAnalysisId(Integer analysisId) {

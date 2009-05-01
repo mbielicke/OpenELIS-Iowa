@@ -25,10 +25,31 @@
 */
 package org.openelis.manager;
 
-import java.util.List;
+import org.openelis.gwt.common.RPC;
 
-public interface AnalysesManagerIOInt {
-   
-    public List fetch(Integer sampleItemId);
-    public void update(AnalysesManager analyses);
+public class SampleQaEventsManager implements RPC {
+    
+    private static final long serialVersionUID = 1L;
+    
+    Integer  sampleId;
+
+    /**
+     * Creates a new instance of this object.
+     */
+    public static SampleQaEventsManager getInstance() {
+        SampleQaEventsManager qem;
+
+        qem = new SampleQaEventsManager();
+
+        return qem;
+    }
+    
+    public Integer getSampleId() {
+        return sampleId;
+    }
+
+    public void setSampleId(Integer sampleId) {
+        this.sampleId = sampleId;
+    }
+
 }
