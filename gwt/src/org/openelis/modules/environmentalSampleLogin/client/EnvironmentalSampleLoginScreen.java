@@ -36,10 +36,13 @@ import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.table.TableDropdown;
 import org.openelis.gwt.widget.tree.TreeManager;
+import org.openelis.gwt.widget.tree.TreeModel;
+import org.openelis.gwt.widget.tree.TreeServiceCallInt;
 import org.openelis.gwt.widget.tree.TreeWidget;
 import org.openelis.metamap.OrderMetaMap;
 import org.openelis.metamap.SampleEnvironmentalMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
+import org.openelis.modules.standardnotepicker.client.StandardNotePickerForm;
 
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -48,7 +51,7 @@ import com.google.gwt.user.client.ui.SourcesTabEvents;
 import com.google.gwt.user.client.ui.TabListener;
 import com.google.gwt.user.client.ui.Widget;
 
-public class EnvironmentalSampleLoginScreen extends OpenELISScreenForm<EnvironmentalSampleLoginForm,Query<TableDataRow<Integer>>> implements ClickListener, TabListener, TreeManager{
+public class EnvironmentalSampleLoginScreen extends OpenELISScreenForm<EnvironmentalSampleLoginForm,Query<TableDataRow<Integer>>> implements ClickListener, TabListener, TreeManager, TreeServiceCallInt {
 
     public enum LookupType {LOCATION_VIEW, REPORT_TO_VIEW, PROJECT_VIEW};
     
@@ -61,6 +64,11 @@ public class EnvironmentalSampleLoginScreen extends OpenELISScreenForm<Environme
     
     AsyncCallback<EnvironmentalSampleLoginForm> checkModels = new AsyncCallback<EnvironmentalSampleLoginForm>() {
         public void onSuccess(EnvironmentalSampleLoginForm rpc) {
+            
+            if(rpc.analysisStatuses != null) {
+                setAnalysisTypeModel(rpc.analysisStatuses);
+                rpc.analysisStatuses = null;
+            }
             if(rpc.sampleContainers != null) {
                 setSampleContainerModel(rpc.sampleContainers);
                 rpc.sampleContainers = null;
@@ -149,12 +157,14 @@ public class EnvironmentalSampleLoginScreen extends OpenELISScreenForm<Environme
         status = (Dropdown)getWidget(Meta.SAMPLE.getStatusId());
         
         //setSampleTypeModel(form.sampleTypes);
+        setAnalysisTypeModel(form.analysisStatuses);
         setSampleStatusModel(form.sampleStatuses);
         setSampleContainerModel(form.sampleContainers);
         
         /*
          * Null out the rpc models so they are not sent with future rpc calls
          */
+        form.analysisStatuses = null;
         form.sampleStatuses = null;
         //form.sampleTypes = null;
         form.sampleContainers = null;
@@ -213,6 +223,10 @@ public class EnvironmentalSampleLoginScreen extends OpenELISScreenForm<Environme
         return false;
     }
     
+    public void setAnalysisTypeModel(TableDataModel<TableDataRow<Integer>> analysisStatusesModel) {
+        ((TableDropdown)itemsTestsTree.columns.get(1).getColumnWidget("analysis")).setModel(analysisStatusesModel);
+    }
+    
     public void setSampleContainerModel(TableDataModel<TableDataRow<Integer>> containersModel) {
         ((TableDropdown)itemsTestsTree.columns.get(0).getColumnWidget("sampleItem")).setModel(containersModel);
     }
@@ -223,5 +237,33 @@ public class EnvironmentalSampleLoginScreen extends OpenELISScreenForm<Environme
     
     public void setSampleTypeModel(TableDataModel<TableDataRow<Integer>> typesModel) {
         ((TableDropdown)itemsTestsTree.columns.get(1).getColumnWidget("sampleItem")).setModel(typesModel);
+    }
+
+    public void getChildNodes(final TreeModel model, final int row) {
+        final TreeDataItem item = model.getRow(row);
+        Integer id = item.key;
+        item.getItems().clear();
+
+        window.setBusy();
+
+        SampleTreeForm form = new SampleTreeForm();
+        form.treeRow = row;
+        
+        screenService.call("getSampleItemAnalysesTreeModel", form, new AsyncCallback<SampleTreeForm>(){
+            public void onSuccess(SampleTreeForm result){
+                for(int i=0; i<result.treeModel.size(); i++)
+                    item.addItem(result.treeModel.get(i));
+                item.loaded = true;
+                
+                model.toggle(row);
+                
+                window.clearStatus();
+            }
+            
+            public void onFailure(Throwable caught){
+                Window.alert(caught.getMessage());
+            }
+         });        
+        
     }
 }

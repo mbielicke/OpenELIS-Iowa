@@ -57,6 +57,7 @@ private static final long serialVersionUID = 1L;
     public ExternalCommentForm externalCommentForm;
     public InternalCommentForm internalCommentForm;
     
+    public TableDataModel<TableDataRow<Integer>> analysisStatuses;
     public TableDataModel<TableDataRow<Integer>> sampleContainers;
     public TableDataModel<TableDataRow<Integer>> sampleStatuses;
     public TableDataModel<TableDataRow<Integer>> sampleTypes;
