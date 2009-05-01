@@ -38,13 +38,24 @@ import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
+@NamedQueries( {
+    @NamedQuery(name = "Analysis.AnalysisTestBySampleItemId", query = "select new org.openelis.domain.AnalysisTestDO(a.id, a.sampleItemId, a.revision, " + 
+                " a.testId, a.sectionId, a.preAnalysisId, a.parentAnalysisId, a.parentResultId, a.isReportable, a.unitOfMeasureId, a.statusId, " + 
+                " a.availableDate, a.startedDate, a.completedDate, a.releasedDate, a.printedDate, t.name, t.method.name) from " +
+                " Analysis a LEFT JOIN a.test t where a.sampleItemId = :id")})
+                
 @Entity
 @Table(name="analysis")
 @EntityListeners({AuditUtil.class})
@@ -100,6 +111,9 @@ public class Analysis implements Auditable, Cloneable {
   @Column(name="printed_date")
   private Date printedDate;             
 
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "test_id", insertable = false, updatable = false)
+  private Test test;
 
   @Transient
   private Analysis original;
@@ -314,5 +328,11 @@ public class Analysis implements Auditable, Cloneable {
   public String getTableName() {
     return "analysis";
   }
+public Test getTest() {
+    return test;
+}
+public void setTest(Test test) {
+    this.test = test;
+}
   
 }   
