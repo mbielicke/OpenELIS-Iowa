@@ -23,12 +23,55 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.manager;
+package org.openelis.domain;
 
-import java.util.List;
+import java.io.Serializable;
 
-public interface AnalysesManagerIOInt {
-   
-    public List fetch(Integer sampleItemId);
-    public void update(AnalysesManager analyses);
+
+public class AnalysisQaEventDO implements Serializable {
+
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+
+    protected Integer id;             
+
+    protected Integer analysisId;             
+
+    protected Integer qaeventId;
+    
+    public AnalysisQaEventDO() {
+     
+    }
+    
+    public AnalysisQaEventDO(Integer id,Integer analysisId,Integer qaeventId) {
+        this.id = id;
+        this.analysisId = analysisId;
+        this.qaeventId = qaeventId;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Integer getAnalysisId() {
+        return analysisId;
+    }
+
+    public void setAnalysisId(Integer analysisId) {
+        this.analysisId = analysisId;
+    }
+
+    public Integer getQaEventId() {
+        return qaeventId;
+    }
+
+    public void setQaEventId(Integer qaeventId) {
+        this.qaeventId = qaeventId;
+    }
 }

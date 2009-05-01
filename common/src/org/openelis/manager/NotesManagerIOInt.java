@@ -33,9 +33,5 @@ public interface NotesManagerIOInt {
   
     public void fetch();
     
-    public void fetchForUpdate();
-    
-    public void validate();
-    
     public Integer update();
 }

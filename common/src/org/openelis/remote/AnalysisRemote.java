@@ -23,12 +23,18 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.manager;
+package org.openelis.remote;
 
 import java.util.List;
 
-public interface AnalysesManagerIOInt {
-   
-    public List fetch(Integer sampleItemId);
+import javax.ejb.Remote;
+
+import org.openelis.manager.AnalysesManager;
+
+@Remote
+public interface AnalysisRemote {
+
+    public List getAnalysisTestsBySampleItemId(Integer sampleItemId);
+    
     public void update(AnalysesManager analyses);
 }

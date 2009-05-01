@@ -23,55 +23,18 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.manager;
+package org.openelis.messages;
 
-import java.io.Serializable;
+import org.openelis.persistence.Message;
 
-
-public class AnalysisQaEventDO implements Serializable {
-
-    /**
-     * 
-     */
+public class AnalysisStatusCacheMessage implements Message {
     private static final long serialVersionUID = 1L;
 
-    protected Integer id;             
-
-    protected Integer analysisId;             
-
-    protected Integer qaeventId;
+    public String handler = "org.openelis.server.handlers.AnalysisStatusCacheHandler";
+    public enum Action {ADDED,UPDATED,DELETED}
+    public Action action;
     
-    public AnalysisQaEventDO() {
-     
-    }
-    
-    public AnalysisQaEventDO(Integer id,Integer analysisId,Integer qaeventId) {
-        this.id = id;
-        this.analysisId = analysisId;
-        this.qaeventId = qaeventId;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public Integer getAnalysisId() {
-        return analysisId;
-    }
-
-    public void setAnalysisId(Integer analysisId) {
-        this.analysisId = analysisId;
-    }
-
-    public Integer getQaEventId() {
-        return qaeventId;
-    }
-
-    public void setQaEventId(Integer qaeventId) {
-        this.qaeventId = qaeventId;
+    public String getHandler() {
+        return handler;
     }
 }

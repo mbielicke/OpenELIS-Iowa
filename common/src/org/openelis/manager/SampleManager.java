@@ -35,7 +35,7 @@ public class SampleManager implements RPC {
     protected SampleItemsManager sampleItems;
     protected SampleOrganizationsManager organizations;
     protected SampleProjectsManager projects;
-    protected QaEventsManager qaEvents;
+    protected SampleQaEventsManager qaEvents;
     protected SampleDomainInt sampleDomain;
     
     protected transient SampleManagerIOInt manager;
@@ -172,16 +172,16 @@ public class SampleManager implements RPC {
         this.projects = projects;
     }   
     
-    public QaEventsManager getQaEventsManager() {
+    public SampleQaEventsManager getQaEventsManager() {
         if (qaEvents == null) {
-            qaEvents = QaEventsManager.getInstance();
+            qaEvents = SampleQaEventsManager.getInstance();
             qaEvents.setSampleId(sample.getId());
         }
 
         return qaEvents;
     }
 
-    public void setQaEventsManager(QaEventsManager qaEvents) {
+    public void setQaEventsManager(SampleQaEventsManager qaEvents) {
         this.qaEvents = qaEvents;
     }
     
