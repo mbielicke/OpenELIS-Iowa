@@ -190,7 +190,7 @@ UIRF Software License are applicable instead of those above.
 					<VerticalPanel style="subform">
 						<text style="FormTitle"><xsl:value-of select="resource:getString($constants,'analytes')"/></text>
 						<VerticalPanel style="WhiteContentPanel">
-						<tree-table key="itemsTestsTree" width="auto" showScroll="ALWAYS" manager="this" maxRows="4" enable="true" showError="false" tab="{projectMeta:getName($project)},{envMeta:getSamplingLocation($env)}">
+						<tree-table key="itemsTestsTree" width="auto" showScroll="ALWAYS" manager="this" treeCall="this" maxRows="4" enable="true" showError="false" tab="{projectMeta:getName($project)},{envMeta:getSamplingLocation($env)}">
 	    	                <headers><xsl:value-of select="resource:getString($constants,'itemTests')"/>,<xsl:value-of select="resource:getString($constants,'typeSourceStatus')"/></headers>
 	                        <widths>280,130</widths>					
 	                        <leaves>
@@ -204,21 +204,17 @@ UIRF Software License are applicable instead of those above.
 	                                	<string/>
 	                              	</fields>
 	                        	</leaf>
-	                            <!--<leaf type="analysis">                                   
-	                             	<editors>
-	                                	<textbox/>
-	                              		<label/>
-	                              		<textbox/>
-	                               		<label/>
-	                             	</editors>
+	                        	<leaf type="analysis">
+	            	                <editors>
+	                	                <label/>
+	                	                <dropdown width="110px"/>
+	                               	</editors>
 	                                <fields>
-										<number type="integer" required="false"/>
-									    <string required="false"/>
-										<string required="false"/>
-										<string required="false"/>
+	                                	<string/>
+	                                	<dropdown/>
 	                              	</fields>
-	                        	</leaf>--> 
-	                      	</leaves> 
+	                        	</leaf>
+                            </leaves> 
 	                  	</tree-table>
 	                  	<HorizontalPanel style="TableButtonFooter">
 	                  		<appButton action="addItem" key="addItemButton" onclick="this" style="Button">
