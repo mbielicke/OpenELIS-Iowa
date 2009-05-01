@@ -23,109 +23,79 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-
 package org.openelis.domain;
 
 import java.io.Serializable;
 import java.util.Date;
 
+import org.openelis.util.DataBaseUtil;
 import org.openelis.util.Datetime;
 
 public class TestDO implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    
-    protected Integer id;             
 
-    protected String name;
-    
-    protected Integer methodId;
-    
-    protected String methodName;        
-    
-    protected String description;             
+    protected Integer         id;
+    protected String          name;
+    protected Integer         methodId;
+    protected String          methodName;
+    protected String          description;
+    protected String          reportingDescription;
+    protected String          isActive;
+    protected Datetime        activeBegin;
+    protected Datetime        activeEnd;
+    protected String          isReportable;
+    protected Integer         timeTransit;
+    protected Integer         timeHolding;
+    protected Integer         timeTaAverage;
+    protected Integer         timeTaWarning;
+    protected Integer         timeTaMax;
+    protected Integer         labelId;
+    protected Integer         labelQty;
+    protected Integer         testTrailerId;
+    protected Integer         scriptletId;
+    protected Integer         testFormatId;
+    protected Integer         revisionMethodId;
+    protected Integer         reportingMethodId;
+    protected Integer         sortingMethodId;
+    protected Integer         reportingSequence;
 
-    protected String reportingDescription;   
-    
-    protected String isActive;             
+    private Boolean           delete           = false;
 
-    protected Datetime activeBegin;             
+    public TestDO() {
 
-    protected Datetime activeEnd;             
-
-    protected String isReportable;             
-
-    protected Integer timeTransit;             
-
-    protected Integer timeHolding;             
-    
-    protected Integer timeTaAverage;             
-
-    protected Integer timeTaWarning;             
-
-    protected Integer timeTaMax;             
-
-    protected Integer labelId;             
-
-    protected Integer labelQty;             
-    
-    protected Integer testTrailerId;                      
-
-    protected Integer scriptletId;             
-
-    protected Integer testFormatId;             
-
-    protected Integer revisionMethodId;
-    
-    protected Integer reportingMethodId; 
-    
-    protected Integer sortingMethodId;
-    
-    protected Integer reportingSequence;
-    
-    private Boolean delete = false;
-
-    public TestDO(){
-        
     }
-    
-    public TestDO(Integer id,String name,Integer methodId,String methodName,
-                  String description, String reportingDescription,                            
-                  String isActive,Date activeBegin,Date activeEnd,             
-                  String isReportable, Integer timeTransit,
-                  Integer timeHolding, Integer timeTaAverage,             
-                  Integer timeTaWarning, Integer timeTaMax,             
-                  Integer labelId, Integer labelQty,Integer testTrailerId,                         
-                  Integer scriptletId,Integer testFormatId,
-                  Integer revisionMethodId,Integer reportingMethodId,
-                  Integer sortingMethodId,Integer reportingSequence){
-        
-        this.id =  id;
-        this.name = name;
-        this.methodId = methodId;        
-        this.methodName = methodName;         
-        this.description = description;
-        this.reportingDescription = reportingDescription;
-        this.isActive = isActive;
+
+    public TestDO(Integer id, String name, Integer methodId, String methodName, String description, String reportingDescription,
+                  String isActive, Date activeBegin, Date activeEnd, String isReportable, Integer timeTransit, Integer timeHolding,
+                  Integer timeTaAverage, Integer timeTaWarning, Integer timeTaMax, Integer labelId, Integer labelQty, Integer testTrailerId,
+                  Integer scriptletId, Integer testFormatId, Integer revisionMethodId, Integer reportingMethodId, Integer sortingMethodId,
+                  Integer reportingSequence) {
+        setId(id);
+        setName(name);
+        setMethodId(methodId);
+        setMethodName(methodName);
+        setDescription(description);
+        setReportingDescription(reportingDescription);
+        setIsActive(isActive);
         setActiveBegin(activeBegin);
         setActiveEnd(activeEnd);
-        this.isReportable = isReportable;
-        this.timeTransit = timeTransit;
-        this.timeHolding = timeHolding;
-        this.timeTaAverage = timeTaAverage;
-        this.timeTaWarning = timeTaWarning;
-        this.timeTaMax = timeTaMax;
-        this.labelId = labelId;
-        this.labelQty = labelQty;
-        this.testTrailerId = testTrailerId;        
-        this.scriptletId = scriptletId;
-        this.testFormatId = testFormatId;        
-        this.revisionMethodId = revisionMethodId;
-        this.reportingMethodId = reportingMethodId;
-        this.sortingMethodId = sortingMethodId;
-        this.reportingSequence = reportingSequence;       
+        setIsReportable(isReportable);
+        setTimeTransit(timeTransit);
+        setTimeHolding(timeHolding);
+        setTimeTaAverage(timeTaAverage);
+        setTimeTaWarning(timeTaWarning);
+        setTimeTaMax(timeTaMax);
+        setLabelId(labelId);
+        setLabelQty(labelQty);
+        setTestTrailerId(testTrailerId);
+        setScriptletId(scriptletId);
+        setTestFormatId(testFormatId);
+        setRevisionMethodId(revisionMethodId);
+        setSortingMethodId(sortingMethodId);
+        setReportingSequence(reportingSequence);
     }
-    
+
     public Integer getId() {
         return id;
     }
@@ -147,7 +117,7 @@ public class TestDO implements Serializable {
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.name = DataBaseUtil.trim(name);
     }
 
     public Boolean getDelete() {
@@ -163,15 +133,17 @@ public class TestDO implements Serializable {
     }
 
     public void setMethodName(String methodName) {
-        this.methodName = methodName;
+        this.methodName = DataBaseUtil.trim(methodName);
     }
-    
+
     public Datetime getActiveBegin() {
         return activeBegin;
     }
 
     public void setActiveBegin(Date activeBegin) {
-        this.activeBegin = new Datetime(Datetime.YEAR,Datetime.DAY,activeBegin);
+        this.activeBegin = new Datetime(Datetime.YEAR,
+                                        Datetime.DAY,
+                                        activeBegin);
     }
 
     public Datetime getActiveEnd() {
@@ -179,7 +151,7 @@ public class TestDO implements Serializable {
     }
 
     public void setActiveEnd(Date activeEnd) {
-        this.activeEnd = new Datetime(Datetime.YEAR,Datetime.DAY,activeEnd);
+        this.activeEnd = new Datetime(Datetime.YEAR, Datetime.DAY, activeEnd);
     }
 
     public String getDescription() {
@@ -187,7 +159,7 @@ public class TestDO implements Serializable {
     }
 
     public void setDescription(String description) {
-        this.description = description;
+        this.description = DataBaseUtil.trim(description);
     }
 
     public String getIsActive() {
@@ -195,7 +167,7 @@ public class TestDO implements Serializable {
     }
 
     public void setIsActive(String isActive) {
-        this.isActive = isActive;
+        this.isActive = DataBaseUtil.trim(isActive);
     }
 
     public String getIsReportable() {
@@ -203,7 +175,7 @@ public class TestDO implements Serializable {
     }
 
     public void setIsReportable(String isReportable) {
-        this.isReportable = isReportable;
+        this.isReportable = DataBaseUtil.trim(isReportable);
     }
 
     public Integer getLabelId() {
@@ -227,7 +199,7 @@ public class TestDO implements Serializable {
     }
 
     public void setReportingDescription(String reportingDescription) {
-        this.reportingDescription = reportingDescription;
+        this.reportingDescription = DataBaseUtil.trim(reportingDescription);
     }
 
     public Integer getRevisionMethodId() {
