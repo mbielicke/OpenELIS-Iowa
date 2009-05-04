@@ -191,8 +191,6 @@ public class EnvironmentalSampleLoginService implements AppScreenFormServiceInt<
         
         SampleManager manager = SampleManager.findById(rpc.entityKey);
         SampleDO sampleDO = manager.getSample();
-        sampleDO.setId(rpc.entityKey);
-        manager.fetch();
         
         setFieldsInRPC(rpc, sampleDO);
         loadDomainForm(rpc.envInfoForm, ((SampleEnvironmentalManager)manager.getAdditionalDomainManager()).getEnvironmental());
@@ -211,7 +209,10 @@ public class EnvironmentalSampleLoginService implements AppScreenFormServiceInt<
          */
         checkModels(rpc);
         
-        SampleManager manager = SampleManager.findById(rpc.entityKey);
+        //get the current manager in the session
+        SampleManager manager = (SampleManager)SessionManager.getSession().getAttribute("envScreenSampleManager");
+        
+        //set the id again and lock
         SampleDO sampleDO = manager.getSample();
         sampleDO.setId(rpc.entityKey);
         
@@ -234,7 +235,10 @@ public class EnvironmentalSampleLoginService implements AppScreenFormServiceInt<
     }
 
     public EnvironmentalSampleLoginForm abort(EnvironmentalSampleLoginForm rpc) throws RPCException {
-        SampleManager manager = SampleManager.findById(rpc.entityKey);
+        //get the current manager in the session
+        SampleManager manager = (SampleManager)SessionManager.getSession().getAttribute("envScreenSampleManager");
+        
+        //set the id again and unlock the record
         SampleDO sampleDO = manager.getSample();
         sampleDO.setId(rpc.entityKey);
         
