@@ -60,8 +60,6 @@ import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.local.LockLocal;
 import org.openelis.metamap.AuxFieldGroupMetaMap;
 import org.openelis.metamap.AuxFieldMetaMap;
-import org.openelis.metamap.AuxFieldValueMetaMap;
-import org.openelis.metamap.TestResultMetaMap;
 import org.openelis.remote.AuxiliaryRemote;
 import org.openelis.security.local.SystemUserUtilLocal;
 import org.openelis.util.QueryBuilder;
@@ -417,11 +415,11 @@ public class AuxiliaryBean implements AuxiliaryRemote {
 
         qb.setSelect("distinct new org.openelis.domain.IdNameDO("
                      +AuxFieldGroupMeta.getId()+", "+AuxFieldGroupMeta.getName()+") ");               
-                
+                 
         qb.addWhere(fields);
         
         qb.setOrderBy(AuxFieldGroupMeta.getName());
-
+         
         sb.append(qb.getEJBQL());               
         
         Query query = manager.createQuery(sb.toString());
