@@ -37,10 +37,13 @@ import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.common.data.TreeDataItem;
 import org.openelis.gwt.screen.CommandChain;
+import org.openelis.gwt.screen.ScreenWindow;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.tree.TreeManager;
 import org.openelis.gwt.widget.tree.TreeWidget;
 import org.openelis.modules.main.client.OpenELISScreenForm;
+import org.openelis.modules.sampleOrganization.client.SampleOrganizationScreen;
+import org.openelis.modules.sampleProject.client.SampleProjectScreen;
 
 public class ClinicalSampleLoginScreen extends OpenELISScreenForm<ClinicalSampleLoginForm,Query<TableDataRow<Integer>>> implements ClickListener, TabListener, TreeManager{
 
@@ -73,9 +76,9 @@ public class ClinicalSampleLoginScreen extends OpenELISScreenForm<ClinicalSample
         else if(action.equals(LookupType.PATIENT_COMMENTS))
             Window.alert("clicked patient comments button");
         else if(action.equals(LookupType.ORGANIZATION_VIEW))
-            Window.alert("clicked org view button");
+            onOrganizationLookupClick();
         else if(action.equals(LookupType.PROJECT_VIEW))
-            Window.alert("clicked project view button");
+            onProjectLookupClick();
         else
             super.performCommand(action, obj);
     }
@@ -136,5 +139,17 @@ public class ClinicalSampleLoginScreen extends OpenELISScreenForm<ClinicalSample
 
     public boolean canSelect(TreeWidget widget, TreeDataItem set, int row) {
         return false;
+    }
+    
+    private void onProjectLookupClick(){
+        ScreenWindow modal = new ScreenWindow(null,"Sample Project","sampleProjectScreen","Loading...",true,false);
+        modal.setName(consts.get("sampleProject"));
+        modal.setContent(new SampleProjectScreen());
+    }
+    
+    private void onOrganizationLookupClick(){
+        ScreenWindow modal = new ScreenWindow(null,"Sample Organization","sampleOrganizationScreen","Loading...",true,false);
+        modal.setName(consts.get("sampleOrganization"));
+        modal.setContent(new SampleOrganizationScreen());
     }
 }

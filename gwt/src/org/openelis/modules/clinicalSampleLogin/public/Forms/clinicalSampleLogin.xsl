@@ -347,7 +347,7 @@ UIRF Software License are applicable instead of those above.
 							<text style="Prompt"><xsl:value-of select="resource:getString($constants,'project')"/>:</text>
 							<widget colspan="3">
 							<multLookup key="projectLook" listeners="this">
-								    <icon style="LookupButtonImage" mouse="HoverListener" command="ClinicalSampleLogin.id_button_enum.ORGANIZATION_VIEW"/>
+								    <icon style="LookupButtonImage" mouse="HoverListener" command="ClinicalSampleLogin.id_button_enum.PROJECT_VIEW"/>
 								</multLookup>
 								<!--
 							<HorizontalPanel>
@@ -364,7 +364,7 @@ UIRF Software License are applicable instead of those above.
 							<text style="Prompt"><xsl:value-of select="resource:getString($constants,'reportTo')"/>:</text>
 							<widget colspan="3">
 								<multLookup key="reportToLook" listeners="this">
-								    <icon style="LookupButtonImage" mouse="HoverListener" command="ClinicalSampleLogin.id_button_enum.PROJECT_VIEW"/>
+								    <icon style="LookupButtonImage" mouse="HoverListener" command="ClinicalSampleLogin.id_button_enum.ORGANIZATION_VIEW"/>
 								</multLookup>
 								<!--
 															<HorizontalPanel>

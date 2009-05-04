@@ -32,6 +32,7 @@ import org.openelis.gwt.common.data.TableDataModel;
 import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.common.data.TreeDataItem;
 import org.openelis.gwt.screen.CommandChain;
+import org.openelis.gwt.screen.ScreenWindow;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.table.TableDropdown;
@@ -42,6 +43,10 @@ import org.openelis.gwt.widget.tree.TreeWidget;
 import org.openelis.metamap.OrderMetaMap;
 import org.openelis.metamap.SampleEnvironmentalMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
+import org.openelis.modules.richTextPopup.client.RichTextPopupScreen;
+import org.openelis.modules.sampleLocation.client.SampleLocationScreen;
+import org.openelis.modules.sampleOrganization.client.SampleOrganizationScreen;
+import org.openelis.modules.sampleProject.client.SampleProjectScreen;
 import org.openelis.modules.standardnotepicker.client.StandardNotePickerForm;
 
 import com.google.gwt.user.client.Window;
@@ -108,11 +113,11 @@ public class EnvironmentalSampleLoginScreen extends OpenELISScreenForm<Environme
     
     public void performCommand(Enum action, Object obj) {
         if(action.equals(LookupType.LOCATION_VIEW))
-            Window.alert("clicked location view button");
+            onLocationLookupClick();
         else if(action.equals(LookupType.REPORT_TO_VIEW))
-            Window.alert("clicked report to view button");
+            onOrganizationLookupClick();
         else if(action.equals(LookupType.PROJECT_VIEW))
-            Window.alert("clicked project view button");
+            onProjectLookupClick();
         else
             super.performCommand(action, obj);
     }
@@ -264,6 +269,23 @@ public class EnvironmentalSampleLoginScreen extends OpenELISScreenForm<Environme
                 Window.alert(caught.getMessage());
             }
          });        
-        
+    }
+    
+    private void onProjectLookupClick(){
+        ScreenWindow modal = new ScreenWindow(null,"Sample Project","sampleProjectScreen","Loading...",true,false);
+        modal.setName(consts.get("sampleProject"));
+        modal.setContent(new SampleProjectScreen());
+    }
+    
+    private void onOrganizationLookupClick(){
+        ScreenWindow modal = new ScreenWindow(null,"Sample Organization","sampleOrganizationScreen","Loading...",true,false);
+        modal.setName(consts.get("sampleOrganization"));
+        modal.setContent(new SampleOrganizationScreen());
+    }
+    
+    private void onLocationLookupClick(){
+        ScreenWindow modal = new ScreenWindow(null,"Sample Location","sampleLocationScreen","Loading...",true,false);
+        modal.setName(consts.get("sampleLocation"));
+        modal.setContent(new SampleLocationScreen());
     }
 }
