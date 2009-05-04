@@ -44,7 +44,9 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-@NamedQueries( {@NamedQuery(name = "getTableId", query = "select id from ReferenceTable where name = :name")})
+@NamedQueries( {@NamedQuery(name = "ReferenceTable.getAll", query = "select new org.openelis.domain.IdNameDO(id,name) " + 
+                            " from ReferenceTable"),
+                @NamedQuery(name = "getTableId", query = "select id from ReferenceTable where name = :name")})
 @Entity
 @Table(name="reference_table")
 @EntityListeners({AuditUtil.class})
