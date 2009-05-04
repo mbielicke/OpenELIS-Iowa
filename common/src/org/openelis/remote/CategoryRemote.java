@@ -73,9 +73,11 @@ public interface CategoryRemote {
     
     public List getDropdownAbbreviations(Integer categoryId);
     
+    public List getIdEntrySystemNames(Integer categoryId);
+    
     public List validateForUpdate(CategoryDO categoryDO, List<DictionaryDO> dictDOList);
     
-    public List validateForAdd(CategoryDO categoryDO, List<DictionaryDO> dictDOList);
+    public List validateForAdd(CategoryDO categoryDO, List<DictionaryDO> dictDOList);       
     
     public Integer getNumResultsAffected(String entry, Integer id);
     
