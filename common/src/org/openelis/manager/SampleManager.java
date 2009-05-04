@@ -38,6 +38,11 @@ public class SampleManager implements RPC {
     protected SampleQaEventsManager qaEvents;
     protected SampleDomainInt sampleDomain;
     
+    public static final String  ENVIRONMENTAL_DOMAIN_FLAG   = "E",
+                                HUMAN_DOMAIN_FLAG           = "H",
+                                ANIMAL_DOMAIN_FLAG          = "A",
+                                NEWBORN_DOMAIN_FLAG         = "N";
+    
     protected transient SampleManagerIOInt manager;
     
     /**
