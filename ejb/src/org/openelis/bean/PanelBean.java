@@ -87,7 +87,7 @@ public class PanelBean implements PanelRemote {
         return panelDO;
     }
 
-    public PanelDO getPanelAndLock(Integer panelId, String session) throws Exception {
+    public PanelDO getPanelAndLock(Integer panelId, String session) throws Exception {        
         Query query = manager.createNamedQuery("getTableId");
         query.setParameter("name", "panel");
         lockBean.getLock((Integer)query.getSingleResult(), panelId);
@@ -148,7 +148,7 @@ public class PanelBean implements PanelRemote {
 
     public Integer updatePanel(PanelDO panelDO,
                                List<PanelItemDO> panelItemDOList) throws Exception {
-     try {  
+     try {          
         Query query = manager.createNamedQuery("getTableId");
         query.setParameter("name", "panel");
         Integer panelReferenceId = (Integer)query.getSingleResult();

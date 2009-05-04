@@ -213,7 +213,7 @@ public class CategoryBean implements CategoryRemote {
                     // delete the dictionary record
                     manager.remove(dictionary);
 
-                } else {
+                } else if(!dictDO.getDelete()){
                     dictionary.setCategoryId(category.getId());
                     dictionary.setEntry(dictDO.getEntry());
                     dictionary.setIsActive(dictDO.getIsActive());
@@ -284,6 +284,12 @@ public class CategoryBean implements CategoryRemote {
         Query query = manager.createNamedQuery("Dictionary.DropdownAbbreviations");
         query.setParameter("id", categoryId);
 
+        return query.getResultList();
+    }
+    
+    public List getIdEntrySystemNames(Integer categoryId) {
+        Query query = manager.createNamedQuery("Dictionary.IdEntrySystemName");
+        query.setParameter("id", categoryId);
         return query.getResultList();
     }
 
