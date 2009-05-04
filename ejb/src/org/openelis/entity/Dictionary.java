@@ -54,7 +54,9 @@ import org.openelis.utils.Auditable;
                            "  from  Dictionary d left join d.relatedEntry dre  where d.categoryId = :id " +
                            " order by d.systemName "),
 @NamedQuery(name = "Dictionary.DropdownValues", query = "select new org.openelis.domain.IdNameDO(d.id, d.entry) from Dictionary d where " +
-                                " d.isActive='Y' and d.categoryId = :id order by d.entry"),
+                                " d.isActive='Y' and d.categoryId = :id"),
+@NamedQuery(name = "Dictionary.IdEntrySystemName", query = "select new org.openelis.domain.DictionaryIdEntrySysNameDO(d.id, d.entry,d.systemName) from Dictionary d where " +
+                                " d.isActive='Y' and d.categoryId = :id order by d.entry"),                                
 @NamedQuery(name = "Dictionary.DropdownAbbreviations", query = "select new org.openelis.domain.IdNameDO(d.id, d.localAbbrev) from Dictionary d where " +
                                 " d.isActive='Y' and d.categoryId = :id order by d.localAbbrev"),                                
 @NamedQuery(name = "Dictionary.autoCompleteByEntry", query = "select new org.openelis.domain.IdNameDO(d.id, d.entry) from Dictionary d where d.entry like :entry order by d.entry"),
