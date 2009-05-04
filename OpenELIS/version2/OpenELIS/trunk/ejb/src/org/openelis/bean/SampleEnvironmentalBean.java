@@ -46,6 +46,7 @@ import org.openelis.local.LockLocal;
 import org.openelis.local.SampleEnvironmentalLocal;
 import org.openelis.manager.SampleDomainInt;
 import org.openelis.manager.SampleEnvironmentalManager;
+import org.openelis.manager.SampleManager;
 import org.openelis.metamap.SampleEnvironmentalMetaMap;
 import org.openelis.remote.SampleEnvironmentalRemote;
 import org.openelis.util.QueryBuilder;
@@ -122,7 +123,9 @@ public class SampleEnvironmentalBean implements SampleEnvironmentalRemote, Sampl
         qb.setSelect("distinct new org.openelis.domain.IdNameDO("+Meta.SAMPLE.getId()+") ");
        
         //this method is going to throw an exception if a column doesnt match
-        qb.addWhere(fields);      
+        qb.addWhere(fields);     
+        
+        qb.addWhere(Meta.SAMPLE.getDomain() + " = '" + SampleManager.ENVIRONMENTAL_DOMAIN_FLAG + "'");
 
         //qb.setOrderBy(Meta.SAMPLE.getAccessionNumber());
        
