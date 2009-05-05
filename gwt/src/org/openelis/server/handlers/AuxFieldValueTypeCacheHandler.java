@@ -25,7 +25,7 @@
 */
 package org.openelis.server.handlers;
 
-import org.openelis.domain.IdNameDO;
+import org.openelis.domain.DictionaryIdEntrySysNameDO;
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.common.data.TableDataModel;
 import org.openelis.gwt.common.data.TableDataRow;
@@ -50,18 +50,21 @@ public class AuxFieldValueTypeCacheHandler implements
     
     public static TableDataModel<TableDataRow<Integer>> getAuxFieldValueTypes() {
         TableDataModel<TableDataRow<Integer>> model = (TableDataModel<TableDataRow<Integer>>)CachingManager.getElement("InitialData", "auxFieldValueTypeDropdown");
+        TableDataRow<Integer> row = null;
         if(model == null) {
             CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");        
             Integer id = remote.getCategoryId("aux_field_value_type");
         
-            ArrayList<IdNameDO> entries = (ArrayList<IdNameDO>)remote.getDropdownValues(id);
+            ArrayList<DictionaryIdEntrySysNameDO> entries = (ArrayList<DictionaryIdEntrySysNameDO>)remote.getIdEntrySystemNames(id);
         
             //  we need to build the model to return
             model = new TableDataModel<TableDataRow<Integer>>();
         
             model.add(new TableDataRow<Integer>(null, new StringObject(" ")));
-            for(IdNameDO resultDO :  entries){
-                model.add(new TableDataRow<Integer>(resultDO.getId(),new StringObject(resultDO.getName())));
+            for(DictionaryIdEntrySysNameDO resultDO :  entries){
+                row = new TableDataRow<Integer>(resultDO.getId(),new StringObject(resultDO.getEntry()));
+                row.setData(new StringObject(resultDO.getSystemName()));
+                model.add(row);
             }   
             CachingManager.putElement("InitialData", "auxFieldValueTypeDropdown", model);
             version++;
