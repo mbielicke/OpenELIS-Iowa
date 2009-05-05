@@ -43,6 +43,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
@@ -52,11 +53,12 @@ import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
 
-@NamedQuery(name = "AuxField.AuxFieldDOList", query = "select distinct new org.openelis.domain.AuxFieldDO(af.id, af.sortOrder,"+
+@NamedQueries({@NamedQuery(name = "AuxField.AuxFieldDOList", query = "select distinct new org.openelis.domain.AuxFieldDO(af.id, af.sortOrder,"+
                        " af.analyteId,a.name,af.description,af.auxFieldGroupId,af.methodId,m.name,af.unitOfMeasureId,af.isRequired,"+
                        " af.isActive,af.isReportable,af.scriptletId) " +
-                       " from AuxField af left join af.analyte a left join af.method m where af.auxFieldGroupId = :auxFieldGroupId order by af.sortOrder ")
-
+                       " from AuxField af left join af.analyte a left join af.method m where af.auxFieldGroupId = :auxFieldGroupId order by af.sortOrder "),
+                @NamedQuery(name = "AuxField.AuxFieldByAnalyteId", query = "select a.id from AuxField a where a.analyteId = :id ")       })
+        
 @Entity
 @Table(name="aux_field")
 @EntityListeners({AuditUtil.class})
