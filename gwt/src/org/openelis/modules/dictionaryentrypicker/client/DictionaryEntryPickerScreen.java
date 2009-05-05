@@ -83,7 +83,8 @@ public class DictionaryEntryPickerScreen extends OpenELISScreenForm<DictionaryEn
                     atozButtons.setButtonState(prevPressed, AppButton.ButtonState.UNPRESSED);
                 String query = baction.substring(6);
                 findTextBox.setText(query); 
-                prevPressed = (AppButton)obj;
+                prevPressed = (AppButton)obj;                                          
+                loadDictionaryModel(query);
             }else{
                 super.performCommand(action, obj);
             }
@@ -170,9 +171,9 @@ public class DictionaryEntryPickerScreen extends OpenELISScreenForm<DictionaryEn
     
     private void loadDictionaryModel(String pattern){ 
         DictionaryEntryPickerDataRPC dedrpc = null;
-        if(categoryId == null || categoryId == -1) {
+        if(categoryId == null) {
            // categoryId = new Integer(-1);               
-         Window.alert("Please select a category.");
+         Window.alert(consts.get("plsSelCat"));
          return;
         }
         
@@ -216,7 +217,7 @@ public class DictionaryEntryPickerScreen extends OpenELISScreenForm<DictionaryEn
                                         window.setStatus("", "");
                                     }
                             });
-    }
+    }    
     
 
 }

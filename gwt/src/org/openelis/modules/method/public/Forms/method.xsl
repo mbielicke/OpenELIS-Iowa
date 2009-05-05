@@ -140,7 +140,7 @@ UIRF Software License are applicable instead of those above.
 								<row>
 								  <text style="Prompt"><xsl:value-of select="resource:getString($constants,'name')"/>:</text>
 								  <widget colspan = "6">	
-									<textbox key="{meta:getName($method)}" case = "mixed" tab="{meta:getDescription($method)},{meta:getActiveEnd($method)}" max="20" width="145px"/>																									    								   
+									<textbox key="{meta:getName($method)}" case = "lower" tab="{meta:getDescription($method)},{meta:getActiveEnd($method)}" max="20" width="145px"/>																									    								   
 								  </widget>
 								</row>
 								<row>

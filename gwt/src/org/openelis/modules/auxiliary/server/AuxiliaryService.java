@@ -516,7 +516,7 @@ public class AuxiliaryService implements
     }
     
     private TableDataModel<TableDataRow<Integer>> loadDropDown(List<IdNameDO> list) {
-        TableDataRow<Integer> blankset = new TableDataRow<Integer>(-1,new StringObject(""));
+        TableDataRow<Integer> blankset = new TableDataRow<Integer>(null,new StringObject(""));
         TableDataModel<TableDataRow<Integer>> model = new TableDataModel<TableDataRow<Integer>>();
         model.add(blankset);
 

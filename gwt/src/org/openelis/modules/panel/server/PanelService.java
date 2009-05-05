@@ -38,7 +38,6 @@ import org.openelis.gwt.common.Query;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.data.AbstractField;
-import org.openelis.gwt.common.data.DataMap;
 import org.openelis.gwt.common.data.Field;
 import org.openelis.gwt.common.data.FieldType;
 import org.openelis.gwt.common.data.IntegerField;
@@ -241,13 +240,10 @@ public class PanelService implements AppScreenFormServiceInt<PanelForm, Query<Ta
            for(int iter = 0 ; iter < list.size(); iter++){
                PanelItemDO itemDO = list.get(iter);
                TableDataRow<Integer> row = model.createNewSet();
-               
-               IntegerField id = new IntegerField(itemDO.getId());
-               DataMap data = new DataMap();                    
-               data.put("id", id);
-               row.setData(data);
-               ((Field)row.getCells().get(0)).setValue(itemDO.getTestName().trim());
-               ((Field)row.getCells().get(1)).setValue(itemDO.getMethodName().trim());
+                                 
+               row.key = itemDO.getId();
+               (row.getCells().get(0)).setValue(itemDO.getTestName().trim());
+               (row.getCells().get(1)).setValue(itemDO.getMethodName().trim());
                model.add(row);
            }  
           }
@@ -275,15 +271,8 @@ public class PanelService implements AppScreenFormServiceInt<PanelForm, Query<Ta
       for (int i = 0; i < model.size(); i++) {
           TableDataRow<Integer> row = model.get(i);
           PanelItemDO itemDO = new PanelItemDO();         
-          itemDO.setDelete(new Boolean(false));   
-          if(row.getData()!=null){
-              IntegerField id = (IntegerField)((DataMap)row.getData()).get("id");
-           if (id != null) {
-              if (id.getValue() != null) {
-                  itemDO.setId(id.getValue());
-              }
-           }
-          } 
+          itemDO.setDelete(false);             
+          itemDO.setId(row.key);           
           itemDO.setPanelId(panelId);
           itemDO.setTestName((String)row.getCells().get(0).getValue());
           itemDO.setMethodName((String)row.getCells().get(1).getValue());
@@ -294,15 +283,8 @@ public class PanelService implements AppScreenFormServiceInt<PanelForm, Query<Ta
        for (int i = 0; i < model.getDeletions().size(); i++) {
           TableDataRow<Integer> row = (TableDataRow<Integer>)model.getDeletions().get(i);
           PanelItemDO itemDO = new PanelItemDO();
-          if(row.getData()!=null){
-              IntegerField id = (IntegerField)((DataMap)row.getData()).get("id");
-              if (id != null) {
-                 if (id.getValue() != null) {
-                     itemDO.setId(id.getValue());
-                 }
-              }
-             }
-          itemDO.setDelete(new Boolean(true));
+          itemDO.setId(row.key);
+          itemDO.setDelete(true);
           itemDO.setPanelId(panelId);
           itemDO.setTestName((String)row.cells[0].getValue());
           itemDO.setMethodName((String)row.cells[1].getValue());

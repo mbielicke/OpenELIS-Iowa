@@ -421,19 +421,19 @@ UIRF Software License are applicable instead of those above.
                                     <autoComplete cat="analyte" serviceUrl="OpenELISServlet?service=org.openelis.modules.test.server.TestService" case="mixed" width="300px">												
 										 <widths>300</widths>
 									</autoComplete>
-                                    <dropdown case="mixed" required = "true" width = "80px" type = "integer"/> 
+                                    <dropdown case="mixed" width = "80px" type = "integer"/> 
                                     <check/>  
                                     <dropdown case="mixed" width = "165px" type = "integer"/>
                                     <dropdown case="mixed" width = "40px" type = "integer" />
                                    </editors>
                                    <fields>
-                                    <dropdown key="{testAnalyte:getAnalyteId($tana)}"/>
-                                    <dropdown key="{testAnalyte:getTypeId($tana)}"/>
+                                    <dropdown key="{testAnalyte:getAnalyteId($tana)}" required = "true" />
+                                    <dropdown key="{testAnalyte:getTypeId($tana)}" required = "true"/>
                                     <check key = "{testAnalyte:getIsReportable($tana)}"/> 
                                     <dropdown key="{testAnalyte:getScriptletId($tana)}" />
                                     <dropdown key="{testAnalyte:getResultGroup($tana)}" type = "integer"/>
                                    </fields>
-                                   <colAligns>left,left,left,left,center</colAligns>
+                                   <colAligns>left,left,center,left,left</colAligns>
                                   </leaf> 
                                  </leaves> 
                                 </tree-table>

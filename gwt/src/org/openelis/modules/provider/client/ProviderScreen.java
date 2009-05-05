@@ -247,8 +247,10 @@ public class ProviderScreen extends OpenELISScreenForm<ProviderForm,Query<TableD
     public boolean onBeforeTabSelected(SourcesTabEvents sender, int index) {
         if(state != State.QUERY){
             if (index == 0 && !form.addresses.load) {
+                form.provTabPanel = "addressesTab";
                 fillAddressModel();
             } else if (index == 1 && !form.notes.load) {
+                form.provTabPanel = "notesTab";
                 fillNotesModel();
             }
         }

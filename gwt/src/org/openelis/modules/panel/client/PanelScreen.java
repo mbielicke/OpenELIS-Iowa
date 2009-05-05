@@ -25,16 +25,7 @@
 */
 package org.openelis.modules.panel.client;
 
-import com.google.gwt.http.client.Request;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.ChangeListener;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.Widget;
-
 import org.openelis.gwt.common.Query;
-import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.common.data.QueryStringField;
@@ -54,6 +45,14 @@ import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.metamap.PanelMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
+import com.google.gwt.http.client.Request;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.ChangeListener;
+import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.Widget;
+
 public class PanelScreen extends OpenELISScreenForm<PanelForm,Query<TableDataRow<Integer>>> implements
                                                    ClickListener,
                                                    ChangeListener,
@@ -61,7 +60,8 @@ public class PanelScreen extends OpenELISScreenForm<PanelForm,Query<TableDataRow
 
     private KeyListManager keyList = new KeyListManager();
         
-    private TableWidget addedTestsWidget = null, allTestsWidget = null;
+    private TableWidget addedTestsWidget = null, // the table that contains the tests in this panel
+                        allTestsWidget = null; // the table that shows all the tests in the system
     
     private TableModel addTestModel = null, allTestsTableModel = null; 
         
@@ -222,11 +222,13 @@ public class PanelScreen extends OpenELISScreenForm<PanelForm,Query<TableDataRow
     }
     
     private void onTestRowButtonClick(){
-        addTestModel.deleteRow(addTestModel.getData().getSelectedIndex());                
+        int selIndex = addedTestsWidget.modelIndexList[addedTestsWidget.activeRow];  
+        if(selIndex > -1)  
+         addTestModel.deleteRow(selIndex);                
     } 
     
     private void onMoveUpButtonClick(){
-        int selIndex = addTestModel.getData().getSelectedIndex();
+        int selIndex = addedTestsWidget.modelIndexList[addedTestsWidget.activeRow];
         if(selIndex > 0){         
          TableDataRow moveUpRow = addTestModel.getRow(selIndex);
          TableDataRow movedownRow = addTestModel.getRow(selIndex-1);
@@ -238,7 +240,7 @@ public class PanelScreen extends OpenELISScreenForm<PanelForm,Query<TableDataRow
     }
     
       private void onMoveDownButtonClick(){
-          int selIndex = addTestModel.getData().getSelectedIndex();
+          int selIndex = addedTestsWidget.modelIndexList[addedTestsWidget.activeRow];
           if(selIndex < addTestModel.getData().size()-1){         
            TableDataRow moveUpRow = addTestModel.getRow(selIndex+1);
            TableDataRow movedownRow = addTestModel.getRow(selIndex);
@@ -249,29 +251,42 @@ public class PanelScreen extends OpenELISScreenForm<PanelForm,Query<TableDataRow
         }
       } 
       
+      /**
+       * This method goes through the list of selected tests from allTestsWidget
+       * and adds them to addedTestsWidget sequentially.If a selected test 
+       * has already been  to addedTestsWidget then user is asked through an alert
+       * as to whether  they want to add this test to the panel or not. If they 
+       * respond affirmatively then the test is added otherwise not.  
+       */
        private void addTestButtonClick(){
-              int selIndex = allTestsTableModel.getData().getSelectedIndex();
-              if(selIndex > -1){         
-                  TableDataRow<String> atRow =  (TableDataRow<String>)allTestsTableModel.getData().get(selIndex);
-                  String display = atRow.key;                  
-                  TableDataRow row = addedTestsWidget.model.createRow();            
-                  String[] namesArray= display.split(",");                     
-                  if(testAdded(namesArray[0],namesArray[1])){
-                    boolean ok = Window.confirm("This test has already been added to the panel." +
-                          " Add it anyway?");
-                    if(ok){    
-                        ((StringField)row.getCells().get(0)).setValue(namesArray[0]);
-                        ((StringField)row.getCells().get(1)).setValue(namesArray[1]);    
-                        addTestModel.addRow(row);
-                        addTestModel.refresh();
-                    }
-                  }else{                
-                      ((StringField)row.getCells().get(0)).setValue(namesArray[0]);
-                      ((StringField)row.getCells().get(1)).setValue(namesArray[1]);              
-                      addTestModel.addRow(row);
-                      addTestModel.refresh();
-                  }
-          }            
+           int[] selIndexes = allTestsWidget.model.getSelectedIndexes();
+           int selIndex = 0;
+           for(int i = 0 ; i < selIndexes.length;i++) { 
+            selIndex = selIndexes[i];   
+            TableDataRow<String> atRow =  allTestsTableModel.getRow(selIndex);
+            String display = atRow.key;                  
+            TableDataRow row = addedTestsWidget.model.createRow();            
+            String[] namesArray= display.split(",");  
+            //
+            // check to see if a currently selected test already exists in the 
+            // panel , if it does then show the alert, if it doesn't then add the 
+            // test to the panel
+            //
+            if(testAdded(namesArray[0],namesArray[1])){
+                boolean ok = Window.confirm(consts.get("testAlreadyAdded"));
+                if(ok){    
+                    ((StringField)row.getCells().get(0)).setValue(namesArray[0]);
+                    ((StringField)row.getCells().get(1)).setValue(namesArray[1]);    
+                    addTestModel.addRow(row);
+                    addTestModel.refresh();
+                }
+            }else{                
+                ((StringField)row.getCells().get(0)).setValue(namesArray[0]);
+                ((StringField)row.getCells().get(1)).setValue(namesArray[1]);              
+                addTestModel.addRow(row);
+                addTestModel.refresh();
+           }
+          }                    
        }
        
        private void setAllTestsDataModel(TableDataModel<TableDataRow<String>> model) {

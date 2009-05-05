@@ -31,13 +31,10 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Widget;
 
-import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.Query;
-import org.openelis.gwt.common.data.DataMap;
+import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.TableDataModel;
-import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.TableDataRow;
-import org.openelis.gwt.common.data.IntegerField;
 import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.common.data.QueryStringField;
 import org.openelis.gwt.screen.CommandChain;
@@ -65,8 +62,6 @@ public class DictionaryScreen extends OpenELISScreenForm<DictionaryForm,Query<Ta
     private KeyListManager keyList = new KeyListManager();
 
     private Dropdown displaySection = null;
-    
-    private static TableDataModel<TableDataRow<Integer>> sectionDropDown = null;
         
     private CategoryMetaMap CatMap = new CategoryMetaMap();
     public DictionaryScreen() {
@@ -165,10 +160,10 @@ public class DictionaryScreen extends OpenELISScreenForm<DictionaryForm,Query<Ta
     }
     
     private void onRemoveRowButtonClick(){
-      if(dictEntryController.model.getData().getSelectedIndex() > -1)  {
-        dictEntryController.model
-        .deleteRow(dictEntryController.model.getData().getSelectedIndex());
-      } 
+      int index = dictEntryController.modelIndexList[dictEntryController.activeRow];  
+      if(index > -1)  
+          dictEntryController.model.deleteRow(index);
+       
     }     
             
 
@@ -179,7 +174,7 @@ public class DictionaryScreen extends OpenELISScreenForm<DictionaryForm,Query<Ta
 
 
     public boolean canAutoAdd(TableWidget widget,TableDataRow row) {        
-        return ((DataObject)row.cells[0]).getValue() != null;
+        return (row.cells[0]).getValue() != null;
     }
 
 
@@ -200,41 +195,47 @@ public class DictionaryScreen extends OpenELISScreenForm<DictionaryForm,Query<Ta
             return true;       
            return false;
        }
-
+    
+   /**
+    * In the specific context of this class, the code in this method is used to make sure 
+    * that if a user is trying to change a dictionary entry that has been added 
+    * as a result for a test then the user gets notified about this issue and the
+    * new value for the entry is set in the row only after the user explicitly consents
+    * to do so.    
+    */
     public void finishedEditing(SourcesTableWidgetEvents sender, int row, int col) {
-      if(col == 3)  {
-        final TableDataRow<Integer> set = dictEntryController.model.getRow(row) ;
-        final int currRow = row;
-        DataMap data =  (DataMap)set.getData();
-        DictionaryEntryTextRPC detrpc = null;
-        Integer id = null;        
-        if(data != null) {            
-            id = ((IntegerField)data.get("id")).getValue();
-            if(id != null) {
+        if(col == 3)  {
+            final TableDataRow<Integer> set = dictEntryController.model.getRow(row) ;
+            final int currRow = row;
+       
+            DictionaryEntryTextRPC detrpc = null;                                    
+            if(set.key != null) {
                 detrpc = new DictionaryEntryTextRPC();
-                detrpc.id = id;                
+                detrpc.id = set.key;  
+                detrpc.entryText = ((StringField)set.cells[3]).getValue();
+                //
+                // find out how many test results will be affected if the previous 
+                // entry is changed to the new one and if at least one result will be
+                // affected then show the alert
+                //
                 screenService.call("getNumResultsAffected",detrpc,
-                                        new AsyncCallback<DictionaryEntryTextRPC>() {
-                                          public void onSuccess(DictionaryEntryTextRPC result) {
-                                            if(result != null) {
-                                             if(result.count > 0) {
-                                              boolean ok = Window.confirm(consts.get("entryAddedAsResultValue"));
-                                               if(!ok) {                                                 
-                                                 dictEntryController.model.setCell(currRow, 3, result.entryText);
-                                                 dictEntryController.model.refresh();  
+                                   new AsyncCallback<DictionaryEntryTextRPC>() {
+                                    public void onSuccess(DictionaryEntryTextRPC result) {
+                                        if(result != null && result.count > 0) {                                            
+                                            boolean ok = Window.confirm(consts.get("entryAddedAsResultValue"));
+                                            if(!ok) {                                                 
+                                                    dictEntryController.model.setCell(currRow, 3, result.entryText);
+                                                    dictEntryController.model.refresh();  
                                                } 
                                              } 
-                                            }    
-                                                                                              
-                                           }
-
+                                            }                                                                                                  
                                             public void onFailure(Throwable caught) {
                                                 Window.alert(caught.getMessage());
-                                                window.setStatus("", "");
+                                                window.clearStatus();
                                             }
                                         });
             }
-        }
+
       } 
     }
 
