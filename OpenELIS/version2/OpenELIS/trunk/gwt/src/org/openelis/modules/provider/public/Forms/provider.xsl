@@ -165,11 +165,11 @@ UIRF Software License are applicable instead of those above.
     </row>
    </TablePanel>
    
-    <TabPanel width = "640px" key= "provTabPanel"  halign="center">
+    <TabPanel width = "648px"  key= "provTabPanel"  halign="center">
      <tab key= "addressesTab" text= "{resource:getString($constants,'locations')}">      
       <VerticalPanel>
        <widget valign="top">
-        <table width= "606px" maxRows = "10" key= "providerAddressTable" manager = "this" title= "" showError="false" showScroll="ALWAYS">
+        <table width= "615px" maxRows = "10" key= "providerAddressTable" manager = "this" title= "" showError="false" showScroll="ALWAYS">
          <headers><xsl:value-of select='resource:getString($constants,"location")'/>,<xsl:value-of select='resource:getString($constants,"externalId")'/>,<xsl:value-of select='resource:getString($constants,"aptSuite")'/>,
 				  <xsl:value-of select='resource:getString($constants,"address")'/>,<xsl:value-of select='resource:getString($constants,"city")'/>,
                   <xsl:value-of select='resource:getString($constants,"state")'/>, <xsl:value-of select='resource:getString($constants,"country")'/>,
@@ -211,40 +211,6 @@ UIRF Software License are applicable instead of those above.
 		  <filters>false,false,false,false,false,false,false,false,false,false,false,false,false</filters>
 		  <colAligns>left,left,left,left,left,left,left,left,left,left,left,left,left</colAligns>
 	    </table>
-	    <!--
-	    <query>
-	     <queryTable width= "606px" maxRows = "10" title = "" showError="false" showScroll="ALWAYS">
-          <headers><xsl:value-of select='resource:getString($constants,"location")'/>,<xsl:value-of select='resource:getString($constants,"externalId")'/>,<xsl:value-of select='resource:getString($constants,"aptSuite")'/>,
-				  <xsl:value-of select='resource:getString($constants,"address")'/>,<xsl:value-of select='resource:getString($constants,"city")'/>,
-                  <xsl:value-of select='resource:getString($constants,"state")'/>, <xsl:value-of select='resource:getString($constants,"country")'/>,
-                  <xsl:value-of select='resource:getString($constants,"zipcode")'/>,<xsl:value-of select='resource:getString($constants,"workNumber")'/>,<xsl:value-of select='resource:getString($constants,"homeNumber")'/>,
-				  <xsl:value-of select='resource:getString($constants,"cellNumber")'/>,<xsl:value-of select='resource:getString($constants,"faxNumber")'/>,
-				  <xsl:value-of select='resource:getString($constants,"email")'/></headers>
-		  <widths>115,130,130,130,130,60,130,100,90,90,90,150,145</widths>
-		  <editors>
-		  <textbox case= "mixed"/>
-		  <textbox case= "mixed"/>
-		  <textbox case= "mixed"/>
-		  <textbox case= "mixed"/>
-		  <textbox case= "mixed"/>		  
-			<dropdown case="upper"  width="45px" multiSelect = "true"/>
-			<dropdown case="mixed" width="110px" multiSelect = "true"/>
-			<textbox case= "mixed"/>
-			<textbox case= "mixed"/>
-			<textbox case= "mixed"/>
-			<textbox case= "mixed"/>
-			<textbox case= "mixed"/>
-			<textbox case= "mixed"/>		 
-		</editors>
-		<fields>
-		  <xsl:value-of select='location:getLocation($loc)'/>,<xsl:value-of select='location:getExternalId($loc)'/>,<xsl:value-of select='addr:getMultipleUnit($locAddr)'/>,<xsl:value-of select='addr:getStreetAddress($locAddr)'/>,<xsl:value-of select='addr:getCity($locAddr)'/>,<xsl:value-of select='addr:getState($locAddr)'/>,<xsl:value-of select='addr:getCountry($locAddr)'/>,<xsl:value-of select='addr:getZipCode($locAddr)'/>,<xsl:value-of select='addr:getWorkPhone($locAddr)'/>,<xsl:value-of select='addr:getHomePhone($locAddr)'/>,<xsl:value-of select='addr:getCellPhone($locAddr)'/>,<xsl:value-of select='addr:getFaxPhone($locAddr)'/>,<xsl:value-of select='addr:getEmail($locAddr)'/>																				
-		  </fields>
-		  <sorts>true,true,true,true,true,true,true,true,true,true,true,true,true</sorts>
-		  <filters>false,false,false,false,false,false,false,false,false,false,false,false,false</filters>
-		  <colAligns>left,left,left,left,left,left,left,left,left,left,left,left,left</colAligns>
-	    </queryTable>
-	    </query>
-	    -->
 	  </widget>							
 							
 	  <widget style="WhiteContentPanel" halign="center">
@@ -261,7 +227,7 @@ UIRF Software License are applicable instead of those above.
   </tab>
   
   <tab key="notesTab" text="{resource:getString($constants,'note')}">
-						<VerticalPanel key="secMod3" height="164px" xsi:type="Panel">
+						<VerticalPanel key="secMod3" >
 							<TablePanel key="noteFormPanel" style="Form" >
 										<row>
 										
@@ -283,7 +249,7 @@ UIRF Software License are applicable instead of those above.
 											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"note")'/>:</text>
 										</widget>
 										<widget colspan="2">
-										<textarea width="549px" height="50px" case="mixed" key="{note:getText($note)}" showError="false" tab="{note:getSubject($note)},{note:getSubject($note)}"/>
+										<textarea width="552px" height="50px" case="mixed" key="{note:getText($note)}" showError="false" tab="{note:getSubject($note)},{note:getSubject($note)}"/>
 										</widget>
 										</row>
 								 
@@ -291,9 +257,7 @@ UIRF Software License are applicable instead of those above.
 								<html key="spacer" xml:space="preserve"> </html>
 								<widget colspan="2">
 								<HorizontalPanel style="notesPanelContainer">
-								<VerticalPanel key="notesPanel" style="NotesPanel" valign="top" onclick="this" height="170px" width="549px"  overflowY="scroll">
-								
-								</VerticalPanel>
+								<VerticalPanel key="notesPanel" style="NotesPanel" valign="top" onclick="this" height="179px" width="552px"  overflowY="scroll"/>															
 								</HorizontalPanel>
 								</widget>
 							</row>
@@ -324,36 +288,6 @@ UIRF Software License are applicable instead of those above.
    </rpc>
    <string key="provTabPanel" reset="false">addressesTab</string>
 </rpc>
-<!--					   
-<rpc key= "query">     
-  <queryInteger key="{meta:getId($pro)}" type="integer" />				
-  <queryString key="{meta:getLastName($pro)}" />
-  <queryString key="{meta:getFirstName($pro)}" /> 
-  <queryString key="{meta:getNpi($pro)}" />
-  <queryString key="{meta:getMiddleName($pro)}" />	  
-  <queryString key="{note:getSubject($note)}" />
-  <queryString key="{note:getText($note)}" /> 
-  <dropdown key="{meta:getTypeId($pro)}" type="integer" required = "false"/>                            
-  <queryString key="{location:getLocation($loc)}" required="false"/>
-  <queryString key="{location:getExternalId($loc)}" required="false"/>
-  <queryString key="{addr:getMultipleUnit($locAddr)}" required="false"/>
-  <queryString key="{addr:getStreetAddress($locAddr)}" required="false"/>
-  <queryString key="{addr:getCity($locAddr)}" required="false"/>
-  <dropdown key="{addr:getState($locAddr)}" required="false"/>
-  <queryString key="{addr:getZipCode($locAddr)}" required="false"/>
-  <queryString key="{addr:getWorkPhone($locAddr)}" required="false"/>
-  <queryString key="{addr:getHomePhone($locAddr)}" required="false"/>
-  <queryString key="{addr:getCellPhone($locAddr)}" required="false"/>
-  <queryString key="{addr:getFaxPhone($locAddr)}" required="false"/>
-  <queryString key="{addr:getEmail($locAddr)}" required="false"/>
-  <dropdown key="{addr:getCountry($locAddr)}" required="false"/>
-  <model key="providerAddressTable"/>
-</rpc>
-
-<rpc key="queryByLetter">
-  <queryString key="{meta:getLastName($pro)}"/>
-</rpc> 
--->
 </screen>
 </xsl:template>
 </xsl:stylesheet>     

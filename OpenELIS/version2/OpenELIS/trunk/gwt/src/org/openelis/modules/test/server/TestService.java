@@ -153,9 +153,7 @@ public class TestService implements AppScreenFormServiceInt<TestForm,Query<Table
         rpc.worksheet.duplicate = false;
         rpc.testAnalyte.duplicate = false;
         
-        testDO = getTestDOFromRPC(rpc);
-        // if(((FormRPC)rpcSend.getField("details")).load){        
-        // }
+        testDO = getTestDOFromRPC(rpc);        
         testSectionDOList = getTestSectionsFromRPC(rpc,null) ;
             
         sampleTypeDOList = getSampleTypesFromRPC(rpc.sampleType,null);
@@ -163,17 +161,13 @@ public class TestService implements AppScreenFormServiceInt<TestForm,Query<Table
         prepTestDOList = getPrepTestsFromRPC(rpc.prepAndReflex,null);
         testReflexDOList = getTestReflexesFromRPC(rpc.prepAndReflex,null);
         
+        itemsDOList = getWorksheetItemsFromRPC(rpc.worksheet);               
+        worksheetDO = getTestWorkSheetFromRPC(rpc.worksheet,null);
+        twsaList = getWorksheetAnalytesFromRPC(rpc.worksheet,null);
         
-        //if (((FormRPC)rpcSend.getField("worksheet")).load) {
-         itemsDOList = getWorksheetItemsFromRPC(rpc.worksheet);               
-         worksheetDO = getTestWorkSheetFromRPC(rpc.worksheet,null);
-         twsaList = getWorksheetAnalytesFromRPC(rpc.worksheet,null);
-        //}
+        testAnalyteDOList = getTestAnalyteDOListFromRPC(rpc.testAnalyte,null);
+        resultDOList = getTestResultDOListFromRPC(rpc.testAnalyte,null);
         
-       // if (((FormRPC)rpcSend.getField("testAnalyte")).load) {
-            testAnalyteDOList = getTestAnalyteDOListFromRPC(rpc.testAnalyte,null);
-            resultDOList = getTestResultDOListFromRPC(rpc.testAnalyte,null);
-        //}
         
         List exceptionList = remote.validateForAdd(testDO,prepTestDOList,
                                                    sampleTypeDOList,
@@ -309,7 +303,7 @@ public class TestService implements AppScreenFormServiceInt<TestForm,Query<Table
     public TestForm abort(TestForm rpc) throws RPCException {
         TestRemote remote = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
 
-        TestDO testDO = remote.getTest(rpc.entityKey);
+        TestDO testDO = remote.getTestAndUnlock(rpc.entityKey,SessionManager.getSession().getId());
         List<TestSectionDO> tsDOList = remote.getTestSections(rpc.entityKey);
         rpc.duplicate = false; 
         setFieldsInRPC(rpc, testDO,false);                   
@@ -353,7 +347,7 @@ public class TestService implements AppScreenFormServiceInt<TestForm,Query<Table
         rpc.worksheet.duplicate = false;
         rpc.testAnalyte.duplicate = false;
 
-        String tab = (String)rpc.testTabPanel;
+        String tab = rpc.testTabPanel;
 
         if (tab.equals("sampleTypeTab")) {
             loadSampleTypes(rpc.entityKey, rpc.sampleType);
@@ -620,7 +614,7 @@ public class TestService implements AppScreenFormServiceInt<TestForm,Query<Table
         }else if (cat.equals(TestMeta.getTestFormatId())) {            
             values = catRemote.getDropdownValues(catRemote.getCategoryId("test_format"));
         } else if (cat.equals(TestMeta.getTestTypeOfSample().getUnitOfMeasureId())) {
-            values = catRemote.getDropdownValues(catRemote.getCategoryId("unit_of_measure"));
+            values = catRemote.getDropdownAbbreviations(catRemote.getCategoryId("unit_of_measure"));
         } else if (cat.equals(TestMeta.getTestTypeOfSample().getTypeOfSampleId())) {
             values = catRemote.getDropdownValues(catRemote.getCategoryId("type_of_sample"));
         } else if (cat.equals(TestMeta.getTestPrep().getPrepTestId())) {            
@@ -717,15 +711,15 @@ public class TestService implements AppScreenFormServiceInt<TestForm,Query<Table
              
              if(!form.duplicate) 
               row.key = resultDO.getId();              
-              else 
-                row.key = (resultDO.getId() * -2);                                                         
+             else 
+              row.key = (resultDO.getId() * -2);                                                         
                          
              if(resultDO.getUnitOfMeasureId() != null) {                 
               ((DropDownField<Integer>)row.cells[0]).setValue(new TableDataRow<Integer>(resultDO.getUnitOfMeasureId()));
               row.setData(new IntegerObject(resultDO.getUnitOfMeasureId()));
              } 
              
-             ((DropDownField<IntegerObject>)row.cells[1]).setValue(new TableDataRow<Integer>(resultDO.getTypeId()));
+             ((DropDownField<Integer>)row.cells[1]).setValue(new TableDataRow<Integer>(resultDO.getTypeId()));
              
              if(resultDO.getDictEntry() == null) {
               ((StringField)row.cells[2]).setValue(resultDO.getValue());     
@@ -877,12 +871,12 @@ public class TestService implements AppScreenFormServiceInt<TestForm,Query<Table
             ((StringField)row.cells[5]).setValue(resultDO.getHazardLevel()); 
             
             if(resultDO.getFlagsId()!=null)
-             ((DropDownField<IntegerObject>)row.cells[6]).setValue(new TableDataRow<Integer>(resultDO.getFlagsId()));                                              
+             ((DropDownField<Integer>)row.cells[6]).setValue(new TableDataRow<Integer>(resultDO.getFlagsId()));                                              
             
             ((IntegerField)row.cells[7]).setValue(resultDO.getSignificantDigits());   
             
             if(resultDO.getRoundingMethodId()!=null)
-             ((DropDownField<IntegerObject>)row.cells[8]).setValue(new TableDataRow<Integer>(resultDO.getRoundingMethodId()));
+             ((DropDownField<Integer>)row.cells[8]).setValue(new TableDataRow<Integer>(resultDO.getRoundingMethodId()));
             
             model.add(row);
         }
@@ -1682,7 +1676,6 @@ public class TestService implements AppScreenFormServiceInt<TestForm,Query<Table
         TableDataRow<Integer> analyteSet = new TableDataRow<Integer>(analyteDO.getAnalyteId(),new StringObject(analyteDO.getAnalyteName()));       
         TableDataModel<TableDataRow<Integer>> autoModel = new TableDataModel<TableDataRow<Integer>>();
         autoModel.add(analyteSet);
-        //autoModel.add(new TableDataRow<Integer>(-1,new StringObject("")));
         ((DropDownField)item.cells[0]).setModel(autoModel);
         item.cells[0].setValue(analyteSet);
         TableDataModel typeModel = getInitialModel(TestMeta.getTestAnalyte().getTypeId());

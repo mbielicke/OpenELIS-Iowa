@@ -34,17 +34,14 @@ import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.Query;
-import org.openelis.gwt.common.QueryException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.CheckField;
-import org.openelis.gwt.common.data.DataMap;
 import org.openelis.gwt.common.data.TableDataModel;
 import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.Field;
-import org.openelis.gwt.common.data.FieldType;
 import org.openelis.gwt.common.data.IntegerField;
 import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.StringObject;
@@ -292,34 +289,26 @@ public class DictionaryService implements AppScreenFormServiceInt<DictionaryForm
             
             for(int iter = 0;iter < contactsList.size();iter++) {
                 DictionaryDO dictDO  = (DictionaryDO)contactsList.get(iter);
-
-                   TableDataRow<Integer> row = dictEntryModel.createNewSet();
-                   IntegerField id = new IntegerField(dictDO.getId());
-                  
-                   DataMap data = new DataMap();
-                   data.put("id", id);
-                   
-                   IntegerField relEntryId = new IntegerField(dictDO.getRelatedEntryId());
-                   data.put("relEntryId", relEntryId);
-                    
-                   row.setData(data);
+                   TableDataRow<Integer> row = dictEntryModel.createNewSet();                   
+                   IntegerField relEntryId = new IntegerField(dictDO.getRelatedEntryId());                    
+                   row.setData(relEntryId);
                    row.key = dictDO.getId();
                    
-                   ((Field)row.cells[0]).setValue(dictDO.getIsActive());                      
-                   ((Field)row.cells[1]).setValue(dictDO.getSystemName());                                                               
-                   ((Field)row.cells[2]).setValue(dictDO.getLocalAbbrev());
-                   ((Field)row.cells[3]).setValue(dictDO.getEntry());
+                   (row.cells[0]).setValue(dictDO.getIsActive());                      
+                   (row.cells[1]).setValue(dictDO.getSystemName());                                                               
+                   (row.cells[2]).setValue(dictDO.getLocalAbbrev());
+                   (row.cells[3]).setValue(dictDO.getEntry());
                                                                                                        
                     
                    //we need to create a dataset for the parent organization auto complete
                    if(dictDO.getRelatedEntryId() == null)
-                      ((Field)row.cells[4]).setValue(null);
+                      (row.cells[4]).setValue(null);
                    else{
                        TableDataModel<TableDataRow<Integer>> model = new TableDataModel<TableDataRow<Integer>>();
                        model.add(new TableDataRow<Integer>(dictDO.getRelatedEntryId(),new StringObject(dictDO.getRelatedEntryText())));
                        model.add(new TableDataRow<Integer>(-1,new StringObject("")));                        
                        ((DropDownField<Integer>)row.cells[4]).setModel(model);
-                       ((Field)row.cells[4]).setValue(model.get(0));
+                       (row.cells[4]).setValue(model.get(0));
                    }
                     dictEntryModel.add(row);
            } 
@@ -379,64 +368,49 @@ public class DictionaryService implements AppScreenFormServiceInt<DictionaryForm
     private ArrayList<DictionaryDO> getDictionaryEntriesFromRPC(TableDataModel<TableDataRow<Integer>> dictEntryTable, Integer categoryId){
         
         ArrayList<DictionaryDO> dictDOList = new ArrayList<DictionaryDO>();
-        for(int iter = 0; iter < dictEntryTable.size(); iter++){
-            
+        for(int iter = 0; iter < dictEntryTable.size(); iter++){            
          TableDataRow<Integer> row = dictEntryTable.get(iter);
          DictionaryDO dictDO = new DictionaryDO();
-
-         IntegerField id = null;
-           if(row.getData()!=null)
-             id = (IntegerField)((DataMap)row.getData()).get("id");           
-           
-           if(id!=null){              
-                 dictDO.setId(id.getValue());                
-              } 
-         
-           
-            dictDO.setDelete(false);
+                               
+         dictDO.setId(row.key);                
+                  
+         dictDO.setDelete(false);
                            
-            dictDO.setIsActive((String)((CheckField)row.cells[0]).getValue());
-            dictDO.setSystemName((String)((StringField)row.cells[1]).getValue()); 
-            dictDO.setLocalAbbrev(((String)((StringField)row.cells[2]).getValue()));
-            dictDO.setEntry((String)((StringField)row.cells[3]).getValue());                                    
-            dictDO.setRelatedEntryId((Integer)((DropDownField)row.cells[4]).getSelectedKey());                                       
+         dictDO.setIsActive((String)((CheckField)row.cells[0]).getValue());
+         dictDO.setSystemName((String)((StringField)row.cells[1]).getValue()); 
+         dictDO.setLocalAbbrev(((String)((StringField)row.cells[2]).getValue()));
+         dictDO.setEntry((String)((StringField)row.cells[3]).getValue());                                    
+         dictDO.setRelatedEntryId((Integer)((DropDownField)row.cells[4]).getSelectedKey());                                       
               
-            dictDO.setCategory(categoryId);         
+         dictDO.setCategory(categoryId);         
                       
-            dictDOList.add(dictDO);             
-          }
+         dictDOList.add(dictDO);             
+       }
         
         if(dictEntryTable.getDeletions() != null) {
-         for(int iter = 0; iter < dictEntryTable.getDeletions().size(); iter++){
-            
-            TableDataRow row = (TableDataRow)dictEntryTable.getDeletions().get(iter);
+         for(int iter = 0; iter < dictEntryTable.getDeletions().size(); iter++){            
+            TableDataRow<Integer> row = (TableDataRow<Integer>)dictEntryTable.getDeletions().get(iter);
             DictionaryDO dictDO = new DictionaryDO();
                              
             String sysName = (String)((StringField)row.cells[1]).getValue();
             String entry = (String)((StringField)row.cells[3]).getValue();
             
-              dictDO.setSystemName(sysName);           
-              dictDO.setEntry(entry);  
-              IntegerField id = null;
-              if(row.getData()!=null)
-                id = (IntegerField)((DataMap)row.getData()).get("id");           
+            dictDO.setSystemName(sysName);           
+            dictDO.setEntry(entry);  
+            dictDO.setId(row.key);                    
               
-              if(id!=null){                  
-                    dictDO.setId(id.getValue());                   
-                 } 
-              
-              dictDO.setDelete(true);
+            dictDO.setDelete(true);
                                                
-              dictDO.setIsActive((String)row.cells[0].getValue());
-              dictDO.setSystemName((String)row.cells[1].getValue()); 
-              dictDO.setLocalAbbrev(((String)row.cells[2].getValue()));
-              dictDO.setEntry((String)row.cells[3].getValue());                                    
-              dictDO.setRelatedEntryId((Integer)((DropDownField<Integer>)row.cells[4]).getSelectedKey());                                       
+            dictDO.setIsActive((String)row.cells[0].getValue());
+            dictDO.setSystemName((String)row.cells[1].getValue()); 
+            dictDO.setLocalAbbrev(((String)row.cells[2].getValue()));
+            dictDO.setEntry((String)row.cells[3].getValue());                                    
+            dictDO.setRelatedEntryId((Integer)((DropDownField<Integer>)row.cells[4]).getSelectedKey());                                       
                 
-              dictDO.setCategory(categoryId);         
+            dictDO.setCategory(categoryId);         
                         
-              dictDOList.add(dictDO);             
-             }
+            dictDOList.add(dictDO);             
+           }
          dictEntryTable.getDeletions().clear();
         } 
         return dictDOList;

@@ -74,7 +74,12 @@ public class TestForm extends Form<Integer> {
     public TestAnalyteForm testAnalyte;
     public WorksheetForm worksheet;
     
-    public TableDataModel<TableDataRow<Integer>> resultTableModel;
+    public TableDataModel<TableDataRow<Integer>> resultTableModel,sections,sectionFlags,
+                                      revisionMethods,sortingMethods,reportingMethods,
+                                      trailers,formats,sampleTypes,units,scriptlets,
+                                      resultTypes,resultFlags,roundingMethods,
+                                      testMethods,reflexFlags,wsNumberFormats,
+                                      wsItemTypes,wsAnalyteFlags;
     public Integer numGroups;
     
     public TestForm() {

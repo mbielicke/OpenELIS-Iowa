@@ -122,7 +122,7 @@ public class DictionaryEntryPickerService implements AppScreenFormServiceInt<Dic
        IdNameDO methodDO = null;         
        TableDataRow<Integer> set = null;
        //TableDataRow<Integer> blankset = new TableDataRow<Integer>(-1,new StringObject(openElisConstants.getString("allCategories"))); 
-       TableDataRow<Integer> blankset = new TableDataRow<Integer>(-1,new StringObject(""));  
+       TableDataRow<Integer> blankset = new TableDataRow<Integer>(null,new StringObject(""));  
             
        model.add(blankset);
 

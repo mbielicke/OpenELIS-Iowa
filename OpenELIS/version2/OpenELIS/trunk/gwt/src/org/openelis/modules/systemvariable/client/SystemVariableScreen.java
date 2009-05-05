@@ -31,7 +31,6 @@ import com.google.gwt.user.client.ui.Widget;
 import org.openelis.gwt.common.Query;
 import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.common.data.QueryStringField;
-import org.openelis.gwt.common.data.TableDataModel;
 import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.screen.CommandChain;
 import org.openelis.gwt.screen.ScreenInputWidget;

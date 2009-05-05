@@ -33,8 +33,10 @@ import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.Query;
 import org.openelis.gwt.common.data.DateField;
 import org.openelis.gwt.common.data.DropDownField;
+import org.openelis.gwt.common.data.IntegerObject;
 import org.openelis.gwt.common.data.QueryStringField;
 import org.openelis.gwt.common.data.StringField;
+import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.common.data.TableDataModel;
 import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.TableDataRow;
@@ -121,7 +123,7 @@ public class AuxiliaryScreen extends OpenELISScreenForm<AuxiliaryForm, Query<Tab
 
         //
         // we are interested in getting button actions in two places,
-        // modelwidget and the screen.
+        // modelwidget and the screen
         //
         atozTable = (ResultsTable)getWidget("azTable");
         ButtonPanel bpanel = (ButtonPanel)getWidget("buttons");
@@ -198,6 +200,7 @@ public class AuxiliaryScreen extends OpenELISScreenForm<AuxiliaryForm, Query<Tab
         auxFieldValueTableWidget.model.enableAutoAdd(false);
         auxFieldTableWidget.model.enableAutoAdd(true);  
         grpName.setFocus(true);
+        auxFieldTableWidget.activeRow = -1;
     }
     
     public void abort() {
@@ -214,8 +217,9 @@ public class AuxiliaryScreen extends OpenELISScreenForm<AuxiliaryForm, Query<Tab
 
         public void onSuccess(Object result) {
             auxFieldValueTableWidget.model.enableAutoAdd(false);   
-            auxFieldTableWidget.model.enableAutoAdd(true);  
+            auxFieldTableWidget.model.enableAutoAdd(true);            
             grpName.setFocus(true);
+            auxFieldTableWidget.activeRow = -1;
         }
     };  
     
@@ -251,8 +255,7 @@ public class AuxiliaryScreen extends OpenELISScreenForm<AuxiliaryForm, Query<Tab
     }
 
     public boolean canAutoAdd(TableWidget widget, TableDataRow set) {
-       return ((DataObject)set.cells[0]).getValue() != null && !((DataObject)set.cells[0]).getValue()
-        .equals(-1);
+       return ((DropDownField)set.cells[0]).getSelectedKey() != null;
     }
 
     public boolean canDelete(TableWidget widget, TableDataRow set, int row) {
@@ -295,20 +298,27 @@ public class AuxiliaryScreen extends OpenELISScreenForm<AuxiliaryForm, Query<Tab
     
     public void onPopupClosed(PopupPanel sender, boolean autoClosed) {      
         final DictionaryEntryPickerScreen pickerScreen = (DictionaryEntryPickerScreen)pickerWindow.content;
-        AuxiliaryGeneralPurposeRPC agrpc = new AuxiliaryGeneralPurposeRPC();
-        agrpc.stringValue = "aux_dictionary";
-        screenService.call("getEntryIdForSystemName",agrpc, 
-                           new AsyncCallback<AuxiliaryGeneralPurposeRPC>(){                            
-                            public void onSuccess(AuxiliaryGeneralPurposeRPC result) {                              
-                                TableDataRow<Integer> dictSet = new TableDataRow<Integer>(result.key);
-                                addAuxFieldValueRows(pickerScreen.selectedRows, dictSet);          
-                            }                   
-                            public void onFailure(Throwable caught) {
-                                Window.alert(caught.getMessage());
-                                window.setStatus("", "");                                
-                            }
+        AuxiliaryGeneralPurposeRPC agrpc = null;
+        if(pickerScreen.selectedRows != null) {
+            if(auxFieldValueTableWidget.model.getAutoAdd()) {
+                agrpc = new AuxiliaryGeneralPurposeRPC();        
+                agrpc.stringValue = "aux_dictionary";        
+                screenService.call("getEntryIdForSystemName",agrpc, 
+                               new AsyncCallback<AuxiliaryGeneralPurposeRPC>(){                            
+                                public void onSuccess(AuxiliaryGeneralPurposeRPC result) {                              
+                                    TableDataRow<Integer> dictSet = new TableDataRow<Integer>(result.key);
+                                    addAuxFieldValueRows(pickerScreen.selectedRows, dictSet);          
+                                }                   
+                                public void onFailure(Throwable caught) {
+                                    Window.alert(caught.getMessage());
+                                    window.clearStatus();                                
+                                }
             
         });
+            } else {
+                Window.alert(consts.get("auxFieldSelFirst"));             
+            }  
+      }       
     }  
     
     public void startEditing(SourcesTableWidgetEvents sender, int row, int col) {
@@ -401,22 +411,30 @@ public class AuxiliaryScreen extends OpenELISScreenForm<AuxiliaryForm, Query<Tab
     }
     
     private void onRemoveAuxFieldRowButtonClick() {
-        if (auxFieldTableWidget.model.getData().getSelectedIndex() > -1)
-            auxFieldTableWidget.model.deleteRow(auxFieldTableWidget.model.getData()
-                                                               .getSelectedIndex());
+        int index = auxFieldTableWidget.modelIndexList[auxFieldTableWidget.activeRow];
+        int numRows = 0 ;
+        if (index > -1)
+            auxFieldTableWidget.model.deleteRow(index);  
         
+        numRows = auxFieldTableWidget.model.numRows(); 
+        //
+        // The following is done because after a row is deleted from auxFieldTableWidget,
+        // auxFieldTableValueWidget should be loaded with the model that belongs to the 
+        // row in auxFieldTableWidget that gets selected next after the deletion.
+        //
+        if(numRows > 0 && index <= numRows)
+            setModelInFieldValueTable(index);
     }
     
     private void onRemoveAuxFieldValueRowButtonClick() {
-        int selIndex = auxFieldValueTableWidget.model.getData().getSelectedIndex();
-        if (selIndex > -1) {                    
-          auxFieldValueTableWidget.model.deleteRow(selIndex);          
-        }
+        int selIndex = auxFieldValueTableWidget.modelIndexList[auxFieldValueTableWidget.activeRow];
+        if (selIndex > -1)                     
+          auxFieldValueTableWidget.model.deleteRow(selIndex);                  
     }
     
     /**
      * This function opens a modal window which allows the users to select one
-     * or more dictionary entries to be added to the Test Results table
+     * or more dictionary entries to be added to the table for aux field values 
      */
     private void onDictionaryLookUpButtonClicked() {
         int left = getAbsoluteLeft();
@@ -448,7 +466,8 @@ public class AuxiliaryScreen extends OpenELISScreenForm<AuxiliaryForm, Query<Tab
                                        public void onSuccess(Object result) {
                                            Double[] darray = new Double[2];
                                            String finalValue = "";
-                                           if ("aux_dictionary".equals(((AuxiliaryGeneralPurposeRPC)result).stringValue)) {
+                                          if ("aux_dictionary".equals(((AuxiliaryGeneralPurposeRPC)result).stringValue)) {
+                                          //if ("aux_dictionary".equals(getSelectedSystemName(row))) {
                                                //
                                                // Find out if this value is stored in the database if
                                                // the type chosen was "Dictionary"
@@ -481,7 +500,7 @@ public class AuxiliaryScreen extends OpenELISScreenForm<AuxiliaryForm, Query<Tab
                                                 auxFieldValueTableWidget.model.setCellError(currRow,1,
                                                   consts.get("fieldRequiredException"));  
                                             }
-                                           } else if ("aux_numeric".equals(((AuxiliaryGeneralPurposeRPC)result).stringValue)) {
+                                           } else if ("aux_numeric".equals(((AuxiliaryGeneralPurposeRPC)result).stringValue)) {                                              
                                                //
                                                // Get the string that was entered if the type
                                                // chosen was "Numeric" and try to break it up at
@@ -511,7 +530,7 @@ public class AuxiliaryScreen extends OpenELISScreenForm<AuxiliaryForm, Query<Tab
 
                                                if (convert) {
                                                    //
-                                                   // If its a valid string store the converted
+                                                   // If it's a valid string store the converted
                                                    // string back into the column otherwise add
                                                    // an error to the cell and store empty
                                                    // string into the cell
@@ -581,11 +600,11 @@ public class AuxiliaryScreen extends OpenELISScreenForm<AuxiliaryForm, Query<Tab
                                                   }                                               
                                                 }
                                           }  
-                                       }
+                                     }
                                     public void onFailure(Throwable caught) {
                                            Window.alert(caught.getMessage());
-                                           window.clearStatus();
-                                       }
+                                          window.clearStatus();
+                                      }
                                    });
 
         }
@@ -606,7 +625,7 @@ public class AuxiliaryScreen extends OpenELISScreenForm<AuxiliaryForm, Query<Tab
                 }            
                 public void onFailure(Throwable caught) {                
                     Window.alert(caught.getMessage());
-                    window.setStatus("", "");
+                    window.clearStatus();
                 }
                    
                });                       
@@ -661,6 +680,12 @@ public class AuxiliaryScreen extends OpenELISScreenForm<AuxiliaryForm, Query<Tab
       return null;
     }
     
+    /**
+     * This method validates whether the argument "value" is of the format
+     * [HH:mm] and then returns the formatted version of it , if it conforms with
+     * format. For example a string like "7:5" will be converted to "07:05".
+     * It throws an IllegalArgumentException if the value doesn't conform with the format 
+     */
     private String validateTime(String value) throws IllegalArgumentException {
      Date date = null;                                               
      DateField df = null;
@@ -693,5 +718,32 @@ public class AuxiliaryScreen extends OpenELISScreenForm<AuxiliaryForm, Query<Tab
       } 
       
       return null;
+    }
+    
+    /**
+     * This function returns the system name for the option that was selected
+     * in a given row, represented by the argument "row", from the type dropdown
+     * in auxFieldTableWidget, it returns null if no option was selected   
+     */
+    private String getSelectedSystemName(int row){
+        TableDataRow<Integer> trow = null;
+        ArrayList<TableDataRow<Integer>> list = null;
+        StringObject data = null;
+        if(row > -1) {
+            trow = auxFieldValueTableWidget.model.getRow(row);
+            list = (ArrayList<TableDataRow<Integer>>)trow.cells[0].getValue();
+        
+            if(list == null) {
+                return null;
+            } else  {
+                if(list.get(0).key == null) { 
+                   return null;
+                } else {
+                   data = (StringObject)list.get(0).getData();
+                   return data.getValue();
+                }   
+            }                      
+        }    
+        return null;
     }
   }      
