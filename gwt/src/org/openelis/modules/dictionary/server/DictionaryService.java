@@ -41,7 +41,6 @@ import org.openelis.gwt.common.data.CheckField;
 import org.openelis.gwt.common.data.TableDataModel;
 import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.common.data.DropDownField;
-import org.openelis.gwt.common.data.Field;
 import org.openelis.gwt.common.data.IntegerField;
 import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.StringObject;
@@ -108,7 +107,7 @@ public class DictionaryService implements AppScreenFormServiceInt<DictionaryForm
 
     public DictionaryForm commitAdd(DictionaryForm rpc) throws RPCException {       
         CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");         
-        IntegerField catId = (IntegerField) rpc.id;
+        IntegerField catId = rpc.id;
         
         CategoryDO categoryDO = getCategoryDOFromRPC(rpc);
         
@@ -146,7 +145,7 @@ public class DictionaryService implements AppScreenFormServiceInt<DictionaryForm
     public DictionaryForm commitUpdate(DictionaryForm rpc) throws RPCException {
         
         CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");         
-        IntegerField categoryId = (IntegerField) rpc.id;
+        IntegerField categoryId = rpc.id;
         
         CategoryDO categoryDO = getCategoryDOFromRPC(rpc);
         
@@ -190,7 +189,7 @@ public class DictionaryService implements AppScreenFormServiceInt<DictionaryForm
 
     public DictionaryForm abort(DictionaryForm rpc) throws RPCException {
             CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
-            Integer categoryId = (Integer)rpc.entityKey;
+            Integer categoryId = rpc.entityKey;
     
             CategoryDO catDO = new CategoryDO();
              try{
@@ -306,7 +305,7 @@ public class DictionaryService implements AppScreenFormServiceInt<DictionaryForm
                    else{
                        TableDataModel<TableDataRow<Integer>> model = new TableDataModel<TableDataRow<Integer>>();
                        model.add(new TableDataRow<Integer>(dictDO.getRelatedEntryId(),new StringObject(dictDO.getRelatedEntryText())));
-                       model.add(new TableDataRow<Integer>(-1,new StringObject("")));                        
+                       model.add(new TableDataRow<Integer>(null,new StringObject("")));                        
                        ((DropDownField<Integer>)row.cells[4]).setModel(model);
                        (row.cells[4]).setValue(model.get(0));
                    }
@@ -322,7 +321,9 @@ public class DictionaryService implements AppScreenFormServiceInt<DictionaryForm
         return dictEntryModel;  
     }                         
 
-   // the method called to load the dropdowns on the screen
+   /**
+    * The method called to load the dropdowns on the screen
+    */
    private TableDataModel<TableDataRow<Integer>> getInitialModel(String cat) { 
        TableDataModel<TableDataRow<Integer>> model = new TableDataModel<TableDataRow<Integer>>();             
        
@@ -330,7 +331,7 @@ public class DictionaryService implements AppScreenFormServiceInt<DictionaryForm
        List<IdNameDO> values = remote.getSectionDropDownValues();
                                                      
         if(values!=null){
-         TableDataRow<Integer> blankset = new TableDataRow<Integer>(-1,new StringObject(""));                                                            
+         TableDataRow<Integer> blankset = new TableDataRow<Integer>(null,new StringObject(""));                                                            
          model.add(blankset);
             
          for (Iterator iter = values.iterator(); iter.hasNext();) {

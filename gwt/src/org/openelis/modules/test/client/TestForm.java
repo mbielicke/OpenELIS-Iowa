@@ -76,9 +76,9 @@ public class TestForm extends Form<Integer> {
     
     public TableDataModel<TableDataRow<Integer>> resultTableModel,sections,sectionFlags,
                                       revisionMethods,sortingMethods,reportingMethods,
-                                      trailers,formats,sampleTypes,units,scriptlets,
-                                      resultTypes,resultFlags,roundingMethods,
-                                      testMethods,reflexFlags,wsNumberFormats,
+                                      trailers,testFormats,sampleTypes,units,scriptlets,
+                                      analyteTypes,resultTypes,resultFlags,roundingMethods,
+                                      testMethods,reflexFlags,wsFormats,
                                       wsItemTypes,wsAnalyteFlags;
     public Integer numGroups;
     

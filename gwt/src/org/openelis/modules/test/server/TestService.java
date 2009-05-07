@@ -62,6 +62,7 @@ import org.openelis.gwt.common.data.TreeDataModel;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
 import org.openelis.gwt.services.AutoCompleteServiceInt;
+import org.openelis.messages.TestWorksheetFormatCacheHandler;
 import org.openelis.metamap.TestMetaMap;
 import org.openelis.metamap.TestPrepMetaMap;
 import org.openelis.metamap.TestReflexMetaMap;
@@ -80,10 +81,26 @@ import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.CategoryRemote;
 import org.openelis.remote.TestRemote;
 import org.openelis.server.constants.Constants;
+import org.openelis.server.handlers.RoundingMethodCacheHandler;
+import org.openelis.server.handlers.SampleTypeCacheHandler;
+import org.openelis.server.handlers.TestAnalyteTypeCacheHandler;
+import org.openelis.server.handlers.TestFormatCacheHandler;
+import org.openelis.server.handlers.TestReflexFlagCacheHandler;
+import org.openelis.server.handlers.TestReportingMethodCacheHandler;
+import org.openelis.server.handlers.TestResultFlagsCacheHandler;
+import org.openelis.server.handlers.TestResultTypeCacheHandler;
+import org.openelis.server.handlers.TestRevisionMethodCacheHandler;
+import org.openelis.server.handlers.TestSectionFlagsCacheHandler;
+import org.openelis.server.handlers.TestSortingMethodCacheHandler;
+import org.openelis.server.handlers.TestWorksheetAnalyteFlagsCacheHandler;
+import org.openelis.server.handlers.TestWorksheetItemTypeCacheHandler;
+import org.openelis.server.handlers.UnitOfMeasureCacheHandler;
 import org.openelis.util.Datetime;
 import org.openelis.util.FormUtil;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
+
+import sun.management.counter.Units;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -334,6 +351,7 @@ public class TestService implements AppScreenFormServiceInt<TestForm,Query<Table
     }   
 
     public TestForm fetch(TestForm rpc) throws RPCException {
+        checkModels(rpc);
         TestRemote remote = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
 
         TestDO testDO = remote.getTest(rpc.entityKey);
@@ -436,6 +454,7 @@ public class TestService implements AppScreenFormServiceInt<TestForm,Query<Table
     }
     
     public TestForm fetchForUpdate(TestForm rpc) throws RPCException {
+        checkModels(rpc);
         TestRemote remote = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
 
         TestDO testDO = new TestDO();
@@ -479,7 +498,118 @@ public class TestService implements AppScreenFormServiceInt<TestForm,Query<Table
     
     public TestForm getScreen(TestForm rpc) throws RPCException{
         rpc.xml = ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/test.xsl");
+        rpc.revisionMethods = TestRevisionMethodCacheHandler.getTestRevisionMethods();
+        SessionManager.getSession().setAttribute("testRevisionMethodVersion",TestRevisionMethodCacheHandler.version);
+        rpc.reflexFlags = TestReflexFlagCacheHandler.getTestReflexFlags();
+        SessionManager.getSession().setAttribute("testReflexFlagVersion",TestReflexFlagCacheHandler.version);
+        rpc.reportingMethods = TestReportingMethodCacheHandler.getTestReportingMethods();
+        SessionManager.getSession().setAttribute("testReportingMethodVersion",TestReportingMethodCacheHandler.version);
+        rpc.analyteTypes = TestAnalyteTypeCacheHandler.getTestAnalyteTypes();
+        SessionManager.getSession().setAttribute("testAnalyteTypeVersion",TestAnalyteTypeCacheHandler.version);
+        rpc.resultFlags = TestResultFlagsCacheHandler.getTestResultFlags();
+        SessionManager.getSession().setAttribute("testResultFlagsVersion",TestResultFlagsCacheHandler.version);
+        rpc.resultTypes = TestResultTypeCacheHandler.getTestResultTypes();
+        SessionManager.getSession().setAttribute("testResultTypeVersion",TestResultTypeCacheHandler.version);
+        rpc.roundingMethods = RoundingMethodCacheHandler.getRoundingMethods();
+        SessionManager.getSession().setAttribute("roundingMethodVersion",RoundingMethodCacheHandler.version);
+        rpc.units = UnitOfMeasureCacheHandler.getUnitsOfMeasure();
+        SessionManager.getSession().setAttribute("unitOfMeasureVersion",UnitOfMeasureCacheHandler.version);
+        rpc.sampleTypes = SampleTypeCacheHandler.getSampleTypes();
+        SessionManager.getSession().setAttribute("sampleTypeVersion",SampleTypeCacheHandler.version);
+        rpc.sectionFlags = TestSectionFlagsCacheHandler.getTestSections();
+        SessionManager.getSession().setAttribute("testSectionFlagVersion",TestSectionFlagsCacheHandler.version);
+        rpc.testFormats = TestFormatCacheHandler.getTestFormats();
+        SessionManager.getSession().setAttribute("testFormatVersion",TestFormatCacheHandler.version);
+        rpc.sortingMethods = TestSortingMethodCacheHandler.getTestSortingMethods();
+        SessionManager.getSession().setAttribute("testSortingMethodVersion",TestSortingMethodCacheHandler.version);
+        rpc.wsAnalyteFlags = TestWorksheetAnalyteFlagsCacheHandler.getTestWorksheetAnalyteFlags();
+        SessionManager.getSession().setAttribute("testWorksheetAnalyteFlagsVersion",TestWorksheetAnalyteFlagsCacheHandler.version);
+        rpc.wsItemTypes = TestWorksheetItemTypeCacheHandler.getTestWorksheetItemTypes();
+        SessionManager.getSession().setAttribute("testWorksheetItemTypeVersion",TestWorksheetItemTypeCacheHandler.version);
+        rpc.wsFormats = TestWorksheetFormatCacheHandler.getTestWorksheetFormats();      
+        SessionManager.getSession().setAttribute("testWorksheetFormatVersion",TestWorksheetFormatCacheHandler.version);        
         return rpc;
+    }
+    
+    public void checkModels(TestForm rpc) {
+        int revisionMethods = (Integer)SessionManager.getSession().getAttribute("testRevisionMethodVersion");
+        int reflexFlags = (Integer)SessionManager.getSession().getAttribute("testReflexFlagVersion");
+        int reportingMethods = (Integer)SessionManager.getSession().getAttribute("testReportingMethodVersion");
+        int analyteTypes = (Integer)SessionManager.getSession().getAttribute("testAnalyteTypeVersion");
+        int resultFlags = (Integer)SessionManager.getSession().getAttribute("testResultFlagsVersion");
+        int resultTypes = (Integer)SessionManager.getSession().getAttribute("testResultTypeVersion");
+        int roundingMethods = (Integer)SessionManager.getSession().getAttribute("roundingMethodVersion");
+        int units = (Integer)SessionManager.getSession().getAttribute("unitOfMeasureVersion");
+        int sampleTypes = (Integer)SessionManager.getSession().getAttribute("sampleTypeVersion");
+        int sectionFlags = (Integer)SessionManager.getSession().getAttribute("testSectionFlagVersion");
+        int testFormats = (Integer)SessionManager.getSession().getAttribute("testFormatVersion");
+        int sortingMethods = (Integer)SessionManager.getSession().getAttribute("testSortingMethodVersion");
+        int wsAnalyteFlags = (Integer)SessionManager.getSession().getAttribute("testWorksheetAnalyteFlagsVersion");
+        int wsItemTypes = (Integer)SessionManager.getSession().getAttribute("testWorksheetItemTypeVersion");
+        int wsFormats = (Integer)SessionManager.getSession().getAttribute("testWorksheetFormatVersion");
+        
+        if(revisionMethods != TestRevisionMethodCacheHandler.version) {
+            rpc.revisionMethods = TestRevisionMethodCacheHandler.getTestRevisionMethods();
+            SessionManager.getSession().setAttribute("testRevisionMethodVersion",TestRevisionMethodCacheHandler.version);   
+        }
+        if(reflexFlags != TestReflexFlagCacheHandler.version) {
+            rpc.reflexFlags = TestReflexFlagCacheHandler.getTestReflexFlags();
+            SessionManager.getSession().setAttribute("testReflexFlagVersion",TestReflexFlagCacheHandler.version);   
+        }
+        if(reportingMethods != TestReportingMethodCacheHandler.version) {
+            rpc.reportingMethods = TestReportingMethodCacheHandler.getTestReportingMethods();
+            SessionManager.getSession().setAttribute("testReportingMethodVersion",TestReportingMethodCacheHandler.version);   
+        }
+        if(resultFlags != TestResultFlagsCacheHandler.version) {
+            rpc.resultFlags = TestResultFlagsCacheHandler.getTestResultFlags();
+            SessionManager.getSession().setAttribute("testResultFlagsVersion",TestResultFlagsCacheHandler.version);   
+        }
+        if(analyteTypes != TestAnalyteTypeCacheHandler.version) {
+            rpc.analyteTypes = TestAnalyteTypeCacheHandler.getTestAnalyteTypes();
+            SessionManager.getSession().setAttribute("testAnalyteTypeVersion",TestAnalyteTypeCacheHandler.version);   
+        }
+        if(resultTypes != TestResultTypeCacheHandler.version) {
+            rpc.resultTypes = TestResultTypeCacheHandler.getTestResultTypes();
+            SessionManager.getSession().setAttribute("testResultTypeVersion",TestResultTypeCacheHandler.version);   
+        }
+        if(roundingMethods != RoundingMethodCacheHandler.version) {
+            rpc.roundingMethods = RoundingMethodCacheHandler.getRoundingMethods();
+            SessionManager.getSession().setAttribute("roundingMethodVersion",RoundingMethodCacheHandler.version);   
+        }
+        if(units != UnitOfMeasureCacheHandler.version) {
+            rpc.units = UnitOfMeasureCacheHandler.getUnitsOfMeasure();
+            SessionManager.getSession().setAttribute("unitOfMeasureVersion",UnitOfMeasureCacheHandler.version);   
+        }
+        if(sampleTypes != SampleTypeCacheHandler.version) {
+            rpc.sampleTypes = SampleTypeCacheHandler.getSampleTypes();
+            SessionManager.getSession().setAttribute("sampleTypeVersion",SampleTypeCacheHandler.version);   
+        }
+        if(sectionFlags != TestSectionFlagsCacheHandler.version) {
+            rpc.sectionFlags = TestSectionFlagsCacheHandler.getTestSections();
+            SessionManager.getSession().setAttribute("testSectionFlagVersion",TestSectionFlagsCacheHandler.version);   
+        }
+        if(testFormats != TestFormatCacheHandler.version) {
+            rpc.testFormats = TestFormatCacheHandler.getTestFormats();
+            SessionManager.getSession().setAttribute("testFormatVersion",TestFormatCacheHandler.version);   
+        }
+        if(sortingMethods != TestSortingMethodCacheHandler.version) {
+            rpc.sortingMethods = TestSortingMethodCacheHandler.getTestSortingMethods();
+            SessionManager.getSession().setAttribute("testSortingMethodVersion",TestSortingMethodCacheHandler.version);   
+        }
+        if(wsAnalyteFlags != TestWorksheetAnalyteFlagsCacheHandler.version) {
+            rpc.wsAnalyteFlags = TestWorksheetAnalyteFlagsCacheHandler.getTestWorksheetAnalyteFlags();
+            SessionManager.getSession().setAttribute("testWorksheetAnalyteFlagsVersion",TestWorksheetAnalyteFlagsCacheHandler.version);   
+        }
+        if(wsItemTypes != TestWorksheetItemTypeCacheHandler.version) {
+            rpc.wsItemTypes = TestWorksheetItemTypeCacheHandler.getTestWorksheetItemTypes();
+            SessionManager.getSession().setAttribute("testWorksheetItemTypeVersion",TestWorksheetItemTypeCacheHandler.version);   
+        }
+        if(wsFormats != TestWorksheetFormatCacheHandler.version) {
+            rpc.wsFormats = TestWorksheetFormatCacheHandler.getTestWorksheetFormats();
+            SessionManager.getSession().setAttribute("testWorksheetFormatVersion",TestWorksheetFormatCacheHandler.version);   
+        }
+        
+        
     }
     
     public TestAnalyteForm getTestAnalyteModel(TestAnalyteForm rpc){
@@ -585,9 +715,7 @@ public class TestService implements AppScreenFormServiceInt<TestForm,Query<Table
         TestRemote remote = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
         CategoryRemote catRemote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
 
-        if (cat.equals(TestMeta.getMethodId())) {
-            values = remote.getMethodDropDownValues();
-        } else if (cat.equals(TestMeta.getLabelId())) {
+        if (cat.equals(TestMeta.getLabelId())) {
             values = remote.getLabelDropDownValues();
         } else if (cat.equals(TestMeta.getTestTrailerId())) {
             values = remote.getTestTrailerDropDownValues();
@@ -623,7 +751,7 @@ public class TestService implements AppScreenFormServiceInt<TestForm,Query<Table
         }else if (cat.equals(TestMeta.getTestReflex().getFlagsId())) {            
             values = catRemote.getDropdownValues(catRemote.getCategoryId("test_reflex_flags"));
         }else if (cat.equals(TestMeta.getTestWorksheet().getFormatId())) {            
-            values = catRemote.getDropdownValues(catRemote.getCategoryId("test_worksheet_number_format"));
+            values = catRemote.getDropdownValues(catRemote.getCategoryId("test_worksheet_format"));
         }else if (cat.equals(TestMeta.getTestWorksheetItem().getTypeId())) {            
             values = remote.getTestWSItemTypeDropDownValues();
         }else if (cat.equals(TestMeta.getTestAnalyte().getTypeId())) {            
@@ -835,8 +963,6 @@ public class TestService implements AppScreenFormServiceInt<TestForm,Query<Table
     private TableDataModel<TableDataRow<Integer>> getTestResultsByGroup(Integer key, Integer resultGroup, TableDataModel model, boolean forDuplicate){
         TableDataRow<Integer> row = null;        
         TestResultDO resultDO = null;
-        IntegerField id = null;
-        IntegerField rg = null;
         TestRemote remote  = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
         List<TestResultDO> resultDOList = remote.getTestResults(key, resultGroup);
         
@@ -844,9 +970,7 @@ public class TestService implements AppScreenFormServiceInt<TestForm,Query<Table
         
         for(int iter = 0; iter < resultDOList.size(); iter++){
             row = model.createNewSet();
-            resultDO = resultDOList.get(iter);  
-                           
-            rg = new IntegerField(resultDO.getResultGroup());   
+            resultDO = resultDOList.get(iter);                              
             
             if(!forDuplicate) 
               row.key = resultDO.getId();   

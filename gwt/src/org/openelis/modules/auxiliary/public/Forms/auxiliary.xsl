@@ -146,7 +146,7 @@ UIRF Software License are applicable instead of those above.
 								<row>
 								  <text style="Prompt"><xsl:value-of select="resource:getString($constants,'groupName')"/>:</text>
 								  <widget colspan = "5">
-							       <textbox  key="{meta:getName($auxfg)}" tab="{meta:getDescription($auxfg)},auxFieldValueTable" max="20" width="145px"/>
+							       <textbox case = "lower" key="{meta:getName($auxfg)}" tab="{meta:getDescription($auxfg)},auxFieldValueTable" max="20" width="145px"/>
 							      </widget> 
 								</row> 	
 								<row>
@@ -219,7 +219,7 @@ UIRF Software License are applicable instead of those above.
 								</widget> 							 																															 						   							  
 							<HorizontalPanel>
 							  <widget valign="top">
-							    <table key="auxFieldValueTable" manager="this" maxRows="5" tab="auxFieldTable,{meta:getName($auxfg)}" showError="false" showScroll="ALWAYS" title="" width="600px">
+							    <table key="auxFieldValueTable" manager="this" maxRows="5" tab="{meta:getName($auxfg)},auxFieldTable" showError="false" showScroll="ALWAYS" title="" width="600px">
 												<headers>		 										    
 													<xsl:value-of select="resource:getString($constants,'type')"/>,													
 													<xsl:value-of select="resource:getString($constants,'value')"/>																																																																												

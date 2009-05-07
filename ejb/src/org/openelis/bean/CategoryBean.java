@@ -44,7 +44,21 @@ import org.openelis.messages.ContactTypeCacheMessage;
 import org.openelis.messages.CountryCacheMessage;
 import org.openelis.messages.ProviderTypeCacheMessage;
 import org.openelis.messages.QaEventTypeCacheMessage;
+import org.openelis.messages.RoundingMethodCacheMessage;
+import org.openelis.messages.SampleTypeCacheMessage;
 import org.openelis.messages.StateCacheMessage;
+import org.openelis.messages.TestAnalyteTypeCacheMessage;
+import org.openelis.messages.TestFormatCacheMessage;
+import org.openelis.messages.TestReflexFlagCacheMessage;
+import org.openelis.messages.TestReportingMethodCacheMessage;
+import org.openelis.messages.TestResultFlagsCacheMessage;
+import org.openelis.messages.TestResultTypeCacheMessage;
+import org.openelis.messages.TestRevisionMethodCacheMessage;
+import org.openelis.messages.TestSectionFlagsCacheMessage;
+import org.openelis.messages.TestSortingMethodCacheMessage;
+import org.openelis.messages.TestWorksheetAnalyteFlagsCacheMessage;
+import org.openelis.messages.TestWorksheetFormatCacheMessage;
+import org.openelis.messages.TestWorksheetItemTypeCacheMessage;
 import org.openelis.messages.UnitOfMeasureCacheMessage;
 import org.openelis.metamap.CategoryMetaMap;
 import org.openelis.remote.CategoryRemote;
@@ -249,7 +263,7 @@ public class CategoryBean implements CategoryRemote {
         }else if(("qaevent_type").equals(categoryDO.getSystemName())){
             QaEventTypeCacheMessage msg = new QaEventTypeCacheMessage();
             msg.action = QaEventTypeCacheMessage.Action.UPDATED;
-            jmsProducer.writeMessage(msg);
+            jmsProducer.writeMessage(msg);            
         }else if(("unit_of_measure").equals(categoryDO.getSystemName())){
             UnitOfMeasureCacheMessage msg = new UnitOfMeasureCacheMessage();
             msg.action = UnitOfMeasureCacheMessage.Action.UPDATED;
@@ -257,6 +271,62 @@ public class CategoryBean implements CategoryRemote {
         }else if(("aux_field_value_type").equals(categoryDO.getSystemName())){
             AuxFieldValueTypeCacheMessage msg = new AuxFieldValueTypeCacheMessage();
             msg.action = AuxFieldValueTypeCacheMessage.Action.UPDATED;
+            jmsProducer.writeMessage(msg);           
+        }else if(("test_revision_method").equals(categoryDO.getSystemName())){
+            TestRevisionMethodCacheMessage msg = new TestRevisionMethodCacheMessage();
+            msg.action = TestRevisionMethodCacheMessage.Action.UPDATED;
+            jmsProducer.writeMessage(msg);
+        }else if(("test_reflex_flags").equals(categoryDO.getSystemName())){
+            TestReflexFlagCacheMessage msg = new TestReflexFlagCacheMessage();
+            msg.action = TestReflexFlagCacheMessage.Action.UPDATED;
+            jmsProducer.writeMessage(msg);
+        }else if(("test_reporting_method").equals(categoryDO.getSystemName())){
+            TestReportingMethodCacheMessage msg = new TestReportingMethodCacheMessage();
+            msg.action = TestReportingMethodCacheMessage.Action.UPDATED;
+            jmsProducer.writeMessage(msg);
+        }else if(("test_analyte_type").equals(categoryDO.getSystemName())){
+            TestAnalyteTypeCacheMessage msg = new TestAnalyteTypeCacheMessage();
+            msg.action = TestAnalyteTypeCacheMessage.Action.UPDATED;
+            jmsProducer.writeMessage(msg);
+        }else if(("test_result_flags").equals(categoryDO.getSystemName())){
+            TestResultFlagsCacheMessage msg = new TestResultFlagsCacheMessage();
+            msg.action = TestResultFlagsCacheMessage.Action.UPDATED;
+            jmsProducer.writeMessage(msg);
+        }else if(("test_result_type").equals(categoryDO.getSystemName())){
+            TestResultTypeCacheMessage msg = new TestResultTypeCacheMessage();
+            msg.action = TestResultTypeCacheMessage.Action.UPDATED;
+            jmsProducer.writeMessage(msg);
+        }else if(("rounding_method").equals(categoryDO.getSystemName())){
+            RoundingMethodCacheMessage msg = new RoundingMethodCacheMessage();
+            msg.action = RoundingMethodCacheMessage.Action.UPDATED;
+            jmsProducer.writeMessage(msg);
+        }else if(("type_of_sample").equals(categoryDO.getSystemName())){
+            SampleTypeCacheMessage msg = new SampleTypeCacheMessage();
+            msg.action = SampleTypeCacheMessage.Action.UPDATED;
+            jmsProducer.writeMessage(msg);
+        }else if(("test_section_flags").equals(categoryDO.getSystemName())){
+            TestSectionFlagsCacheMessage msg = new TestSectionFlagsCacheMessage();
+            msg.action = TestSectionFlagsCacheMessage.Action.UPDATED;
+            jmsProducer.writeMessage(msg);
+        }else if(("test_format").equals(categoryDO.getSystemName())){
+            TestFormatCacheMessage msg = new TestFormatCacheMessage();
+            msg.action = TestFormatCacheMessage.Action.UPDATED;
+            jmsProducer.writeMessage(msg);
+        }else if(("test_sorting_method").equals(categoryDO.getSystemName())){
+            TestSortingMethodCacheMessage msg = new TestSortingMethodCacheMessage();
+            msg.action = TestSortingMethodCacheMessage.Action.UPDATED;
+            jmsProducer.writeMessage(msg);
+        }else if(("test_worksheet_analyte_flags").equals(categoryDO.getSystemName())){
+            TestWorksheetAnalyteFlagsCacheMessage msg = new TestWorksheetAnalyteFlagsCacheMessage();
+            msg.action = TestWorksheetAnalyteFlagsCacheMessage.Action.UPDATED;
+            jmsProducer.writeMessage(msg);
+        }else if(("test_worksheet_item_type").equals(categoryDO.getSystemName())){
+            TestWorksheetItemTypeCacheMessage msg = new TestWorksheetItemTypeCacheMessage();
+            msg.action = TestWorksheetItemTypeCacheMessage.Action.UPDATED;
+            jmsProducer.writeMessage(msg);
+        }else if(("test_worksheet_format").equals(categoryDO.getSystemName())){
+            TestWorksheetFormatCacheMessage msg = new TestWorksheetFormatCacheMessage();
+            msg.action = TestWorksheetFormatCacheMessage.Action.UPDATED;
             jmsProducer.writeMessage(msg);
         }
         
