@@ -85,6 +85,7 @@ import org.openelis.gwt.widget.tree.TreeWidget;
 import org.openelis.gwt.widget.tree.event.SourcesTreeWidgetEvents;
 import org.openelis.gwt.widget.tree.event.TreeWidgetListener;
 import org.openelis.metamap.TestMetaMap;
+import org.openelis.modules.auxiliary.client.AuxiliaryForm;
 import org.openelis.modules.dictionaryentrypicker.client.DictionaryEntryPickerScreen;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
@@ -136,12 +137,12 @@ public class TestScreen extends OpenELISScreenForm<TestForm, Query<TableDataRow<
     
     private HashMap<Integer, List<Integer>> resGroupAnalyteIdMap;           // the HashMap that contains mappings between a 
                                                                             // given result group number such as 1, 2 etc. and 
-                                                                            // list of the test analyte id's that have this
+                                                                            // the list of the test analyte id's that have this
                                                                             // result group assigned to them 
     
     private HashMap<Integer,Integer> unitIdNumResMap;                       // the HashMap that contains mappings between the id's 
-                                                                            // for units of measure and how many test results have
-                                                                            // this unit assigned to them currently  
+                                                                            // for units of measure and the number of test results
+                                                                            // that have this unit assigned to them currently  
 
 
     private TestMetaMap TestMeta = new TestMetaMap();
@@ -166,6 +167,78 @@ public class TestScreen extends OpenELISScreenForm<TestForm, Query<TableDataRow<
     private ArrayList<TableDataRow<Integer>> selectedRows = null;
 
     private ScreenWindow pickerWindow = null;
+    
+    private Dropdown revisionMethod, sortingMethod, reportingMethod, trailer,
+                     testFormat, testScriptlet, label, wsFormat,wsScriptlet;  
+    
+    AsyncCallback<TestForm> checkModels = new AsyncCallback<TestForm>() {     
+        public void onSuccess(TestForm rpc) {
+              if(rpc.revisionMethods != null) {
+                  setRevisionMethodsModel(rpc.revisionMethods);
+                  rpc.revisionMethods = null;
+              }
+              if(rpc.reflexFlags != null) {
+                  setReflexFlagsModel(rpc.reflexFlags);
+                  rpc.reflexFlags = null;
+              }
+              if(rpc.reportingMethods != null) {
+                  setReportingMethods(rpc.reportingMethods);
+                  rpc.reportingMethods = null;
+              }
+              if(rpc.analyteTypes != null) {
+                  setAnalyteTypesModel(rpc.analyteTypes);
+                  rpc.analyteTypes = null;
+              }
+              if(rpc.resultFlags != null) {
+                  setResultFlagsModel(rpc.resultFlags);
+                  rpc.resultFlags = null;
+              }
+              if(rpc.resultTypes != null) {
+                  setResultTypesModel(rpc.resultTypes);
+                  rpc.resultTypes = null;
+              }
+              if(rpc.roundingMethods != null) {
+                  setRoundingMethodsModel(rpc.roundingMethods);
+                  rpc.roundingMethods = null;
+              }
+              if(rpc.units != null) {
+                  setUnitsOfMeasureModel(rpc.units);
+                  rpc.units = null;
+              }
+              if(rpc.sampleTypes != null) {
+                  setSampleTypesModel(rpc.sampleTypes);
+                  rpc.sampleTypes = null;
+              }
+              if(rpc.sectionFlags != null) {
+                  setSectionFlagsModel(rpc.sectionFlags);
+                  rpc.sectionFlags = null;
+              }
+              if(rpc.testFormats != null) {
+                  setTestFormatsModel(rpc.testFormats);
+                  rpc.testFormats = null;
+              }
+              if(rpc.sortingMethods != null) {
+                  setSortingMethodsModel(rpc.sortingMethods);
+                  rpc.sortingMethods = null;
+              }
+              if(rpc.wsAnalyteFlags != null) {
+                  setWorksheetAnalyteFlagsModel(rpc.wsAnalyteFlags);
+                  rpc.wsAnalyteFlags = null;
+              }
+              if(rpc.wsItemTypes != null) {
+                  setWorksheetItemTypesModel(rpc.wsItemTypes);
+                  rpc.wsItemTypes = null;
+              }
+              if(rpc.wsFormats != null) {
+                  setWorksheetFormatsModel(rpc.wsFormats);
+                  rpc.wsFormats = null;
+              }
+        }
+
+        public void onFailure(Throwable caught) {
+              
+          }
+      };
 
     public TestScreen() {
         super("org.openelis.modules.test.server.TestService");
@@ -235,7 +308,7 @@ public class TestScreen extends OpenELISScreenForm<TestForm, Query<TableDataRow<
         dictionaryLookUpButton = (AppButton)getWidget("dictionaryLookUpButton");
         removeTestResultButton = (AppButton)getWidget("removeTestResultButton");
         addResultTabButton = (AppButton)getWidget("addResultTabButton");
-
+        
         testId = (ScreenTextBox)widgets.get(TestMeta.getId());
         testName = (TextBox)getWidget(TestMeta.getName());
 
@@ -244,19 +317,37 @@ public class TestScreen extends OpenELISScreenForm<TestForm, Query<TableDataRow<
         //
         analyteTree = (ScreenTreeWidget)widgets.get("analyteTree");
         analyteTreeController = (TreeWidget)analyteTree.getWidget();
-
+        
+        // initializing all the dropdown widgets
+        revisionMethod = (Dropdown)getWidget(TestMeta.getRevisionMethodId());
+        sortingMethod = (Dropdown)getWidget(TestMeta.getSortingMethodId());
+        reportingMethod = (Dropdown)getWidget(TestMeta.getReportingMethodId());
+        trailer = (Dropdown)getWidget(TestMeta.getTestTrailerId());
+        testFormat = (Dropdown)getWidget(TestMeta.getTestFormatId());
+        testScriptlet = (Dropdown)getWidget(TestMeta.getScriptletId());
+        label = (Dropdown)getWidget(TestMeta.getLabelId());
+        wsFormat = (Dropdown)getWidget(TestMeta.getTestWorksheet().getFormatId());
+        wsScriptlet = (Dropdown)getWidget(TestMeta.getTestWorksheet().getScriptletId());
+        
+        
         //
         // loading the models of all the dropdowns
-        //        
+        //   
+        setRevisionMethodsModel(form.revisionMethods);        
+        setReportingMethods(form.reportingMethods);                                    
+        setTestFormatsModel(form.testFormats);
+        setSortingMethodsModel(form.sortingMethods);        
+        setWorksheetFormatsModel(form.wsFormats);
+        
         loadDropdownModel(TestMeta.getLabelId());
         loadDropdownModel(TestMeta.getTestTrailerId());
         loadDropdownModel(TestMeta.getScriptletId());
-        loadDropdownModel(TestMeta.getRevisionMethodId());
-        loadDropdownModel(TestMeta.getTestFormatId());
-        loadDropdownModel(TestMeta.getSortingMethodId());
-        loadDropdownModel(TestMeta.getReportingMethodId());
+        //loadDropdownModel(TestMeta.getRevisionMethodId());
+        //loadDropdownModel(TestMeta.getTestFormatId());
+        //loadDropdownModel(TestMeta.getSortingMethodId());
+        //loadDropdownModel(TestMeta.getReportingMethodId());
         loadDropdownModel(TestMeta.getTestWorksheet().getScriptletId());
-        loadDropdownModel(TestMeta.getTestWorksheet().getFormatId());
+        //loadDropdownModel(TestMeta.getTestWorksheet().getFormatId());
 
         //
         // set the model for each column. Note that we have to do it twice:
@@ -266,13 +357,11 @@ public class TestScreen extends OpenELISScreenForm<TestForm, Query<TableDataRow<
         //
         s = (ScreenTableWidget)widgets.get("sampleTypeTable");
         sampleTypeWidget = (TableWidget)s.getWidget();
-        loadTableDropdownModel(sampleTypeWidget,0,
-                               TestMeta.getTestTypeOfSample()
-                                       .getTypeOfSampleId());
-        loadTableDropdownModel(sampleTypeWidget,1,
-                               TestMeta.getTestTypeOfSample()
-                                       .getUnitOfMeasureId());
+        //loadTableDropdownModel(sampleTypeWidget,0,TestMeta.getTestTypeOfSample().getTypeOfSampleId());
+        //loadTableDropdownModel(sampleTypeWidget,1,TestMeta.getTestTypeOfSample().getUnitOfMeasureId());
         sampleTypeWidget.addTableWidgetListener(this);
+        setUnitsOfMeasureModel(form.units);
+        setSampleTypesModel(form.sampleTypes);
 
         s = (ScreenTableWidget)widgets.get("testPrepTable");
         prepTestWidget = (TableWidget)s.getWidget();
@@ -284,57 +373,46 @@ public class TestScreen extends OpenELISScreenForm<TestForm, Query<TableDataRow<
         reflexTestWidget.addTableWidgetListener(this);
         loadTableDropdownModel(reflexTestWidget, 0, TestMeta.getTestPrep()
                                                             .getPrepTestId());
-
-        loadTableDropdownModel(reflexTestWidget, 3, TestMeta.getTestReflex()
-                                                            .getFlagsId());
+        setReflexFlagsModel(form.reflexFlags);
 
         ((TableDropdown)reflexTestWidget.columns.get(2).getColumnWidget()).setModel(getSingleRowModel());
 
         s = (ScreenTableWidget)widgets.get("worksheetTable");
-        wsItemWidget = (TableWidget)s.getWidget();
-        loadTableDropdownModel(wsItemWidget, 1, TestMeta.getTestWorksheetItem()
-                                                        .getTypeId());
+        wsItemWidget = (TableWidget)s.getWidget();       
 
         s = (ScreenTableWidget)widgets.get("sectionTable");
         sectionWidget = (TableWidget)s.getWidget();
         sectionWidget.addTableWidgetListener(this);
         loadTableDropdownModel(sectionWidget, 0, TestMeta.getTestSection()
                                                          .getSectionId());
-        loadTableDropdownModel(sectionWidget, 1, TestMeta.getTestSection()
-                                                         .getFlagId());
+        setSectionFlagsModel(form.sectionFlags);
 
         s = (ScreenTableWidget)widgets.get("testResultsTable");
         resultWidget = (TableWidget)s.getWidget();
         resultWidget.addTableWidgetListener(this);
-
-        loadTableDropdownModel(resultWidget, 1, TestMeta.getTestResult()
-                                                        .getTypeId());
-        loadTableDropdownModel(resultWidget, 8, TestMeta.getTestResult()
-                                                        .getRoundingMethodId());
+        
+        setResultFlagsModel(form.resultFlags);  
+        setResultTypesModel(form.resultTypes);
+        setRoundingMethodsModel(form.roundingMethods);
 
         s = (ScreenTableWidget)widgets.get("worksheetAnalyteTable");
-        wsAnalyteWidget = (TableWidget)s.getWidget();
-
-        loadTableDropdownModel(wsAnalyteWidget,3,
-                               TestMeta.getTestWorksheetAnalyte().getFlagId());
+        wsAnalyteWidget = (TableWidget)s.getWidget();        
 
         wsAnalyteWidget.addTableWidgetListener(this);
+        
+        setWorksheetAnalyteFlagsModel(form.wsAnalyteFlags);
+        setWorksheetItemTypesModel(form.wsItemTypes);
 
         //
         // set dropdown models for column 1 and 3
-        //               
-        loadTableDropdownModel(analyteTreeController,1,"analyte",
-                               TestMeta.getTestAnalyte().getTypeId());
-        loadTableDropdownModel(analyteTreeController,3,"analyte",
-                               TestMeta.getTestAnalyte().getScriptletId());
+        //                       
+        setAnalyteTypesModel(form.analyteTypes);        
 
         resultGroupDropdownModel = new TableDataModel<TableDataRow<Integer>>();
         
-        resultGroupDropdownModel.setDefaultSet(new TableDataRow<Integer>(-1,
-                                                         new StringObject("")));
+        resultGroupDropdownModel.setDefaultSet(new TableDataRow<Integer>(null,new StringObject("")));
         
-        setTableDropdownModel(analyteTreeController,4,"analyte",
-                              resultGroupDropdownModel);
+        setTableDropdownModel(analyteTreeController,4,"analyte",resultGroupDropdownModel);
 
         analyteTreeController.model.manager = this;
         analyteTreeController.enabled(false);
@@ -344,6 +422,12 @@ public class TestScreen extends OpenELISScreenForm<TestForm, Query<TableDataRow<
         updateChain.add(afterUpdate);
         commitUpdateChain.add(commitUpdateCallback);
         commitAddChain.add(commitAddCallback);
+        
+        updateChain.add(0,checkModels);
+        fetchChain.add(0,checkModels);
+        abortChain.add(0,checkModels);
+        commitUpdateChain.add(0,checkModels);
+        commitAddChain.add(0,checkModels);
 
         super.afterDraw(success);
 
@@ -849,12 +933,12 @@ public class TestScreen extends OpenELISScreenForm<TestForm, Query<TableDataRow<
                                                    // the blank option
                                                    //                                                                                                                                                                     
                                                    DropDownField field = (DropDownField)sectionWidget.model.getRow(iter).cells[1];
-                                                   field.setValue(new TableDataRow<Integer>(new Integer(-1)));
+                                                   field.setValue(new TableDataRow<Integer>(null));
                                                }
                                            }
                                            sectionWidget.model.refresh();
                                        } else {
-                                           if (selValue.intValue() != -1) {
+                                           if (selValue != null) {
                                                for (int iter = 0; iter < sectionWidget.model.numRows(); iter++) {
                                                    DropDownField field = (DropDownField)sectionWidget.model.getRow(iter).cells[1];
                                                    //
@@ -1495,7 +1579,7 @@ public class TestScreen extends OpenELISScreenForm<TestForm, Query<TableDataRow<
         if ("analyte".equals(item.leafType)) {
             DropDownField field = (DropDownField)item.cells[4];
             Integer key = (Integer)field.getSelectedKey();
-            if (key != null && key != -1) {
+            if (key != null) {
                 resultPanel.getTabBar().selectTab(key - 1);
             }
         }        
@@ -1643,11 +1727,70 @@ public class TestScreen extends OpenELISScreenForm<TestForm, Query<TableDataRow<
      * TreeWidget "widget" in the column "column" of the node with leafType
      * "leafType" to the argument "model"
      */
-    private void setTableDropdownModel(TreeWidget widget,
-                                       int column,
-                                       String leafType,
+    private void setTableDropdownModel(TreeWidget widget,int column,String leafType,
                                        TableDataModel<TableDataRow<Integer>> model) {
         ((TableDropdown)widget.columns.get(column).getColumnWidget(leafType)).setModel(model);
+    }
+    
+    
+    private void setRevisionMethodsModel(TableDataModel<TableDataRow<Integer>> revisionMethods) {
+        revisionMethod.setModel(revisionMethods);        
+    }
+    
+    private void setReportingMethods(TableDataModel<TableDataRow<Integer>> reportingMethods) {
+        reportingMethod.setModel(reportingMethods);        
+    }
+    
+    private void setTestFormatsModel(TableDataModel<TableDataRow<Integer>> testFormats) {
+        testFormat.setModel(testFormats);        
+    }
+    
+    private void setSortingMethodsModel(TableDataModel<TableDataRow<Integer>> sortingMethods) {        
+        sortingMethod.setModel(sortingMethods);
+    }
+    
+    private void setWorksheetFormatsModel(TableDataModel<TableDataRow<Integer>> wsFormats) {       
+        wsFormat.setModel(wsFormats);
+    }
+    
+    private void setReflexFlagsModel(TableDataModel<TableDataRow<Integer>> reflexFlags) {
+        ((TableDropdown)reflexTestWidget.columns.get(3).getColumnWidget()).setModel(reflexFlags);        
+    }
+    
+    private void setAnalyteTypesModel(TableDataModel<TableDataRow<Integer>> analyteTypes) {        
+        ((TableDropdown)analyteTreeController.columns.get(1).getColumnWidget("analyte")).setModel(analyteTypes);
+    }
+    
+    private void setResultFlagsModel(TableDataModel<TableDataRow<Integer>> resultFlags) {
+        ((TableDropdown)resultWidget.columns.get(6).getColumnWidget()).setModel(resultFlags);        
+    }
+    
+    private void setResultTypesModel(TableDataModel<TableDataRow<Integer>> resultTypes) {
+        ((TableDropdown)resultWidget.columns.get(1).getColumnWidget()).setModel(resultTypes);        
+    }
+    
+    private void setRoundingMethodsModel(TableDataModel<TableDataRow<Integer>> roundingMethods) {
+        ((TableDropdown)resultWidget.columns.get(8).getColumnWidget()).setModel(roundingMethods);        
+    }
+    
+    private void setUnitsOfMeasureModel(TableDataModel<TableDataRow<Integer>> units) {
+        ((TableDropdown)sampleTypeWidget.columns.get(1).getColumnWidget()).setModel(units);        
+    }
+    
+    private void setSampleTypesModel(TableDataModel<TableDataRow<Integer>> sampleTypes) {
+        ((TableDropdown)sampleTypeWidget.columns.get(0).getColumnWidget()).setModel(sampleTypes);        
+    }
+    
+    private void setSectionFlagsModel(TableDataModel<TableDataRow<Integer>> sectionFlags) {        
+        ((TableDropdown)sectionWidget.columns.get(1).getColumnWidget()).setModel(sectionFlags);
+    }
+    
+    private void setWorksheetAnalyteFlagsModel(TableDataModel<TableDataRow<Integer>> wsAnalyteFlags) {
+        ((TableDropdown)wsAnalyteWidget.columns.get(3).getColumnWidget()).setModel(wsAnalyteFlags);        
+    }
+    
+    private void setWorksheetItemTypesModel(TableDataModel<TableDataRow<Integer>> wsItemTypes) {
+        ((TableDropdown)wsItemWidget.columns.get(1).getColumnWidget()).setModel(wsItemTypes);        
     }
 
 

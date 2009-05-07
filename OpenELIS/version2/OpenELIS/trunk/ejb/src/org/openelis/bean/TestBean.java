@@ -366,7 +366,7 @@ public class TestBean implements TestRemote {
                 
                 if(analyteDOList!=null) {
                     exceptionList = new ArrayList<Exception>();
-                    validateTestAnalytes(exceptionList,analyteDOList);
+                    validateTestAnalytes(exceptionList,analyteDOList,resultDOList);
                     
                     if(exceptionList.size() > 0){
                         throw (RPCException)exceptionList.get(0);
@@ -972,7 +972,7 @@ public class TestBean implements TestRemote {
      if(twsaDOList!=null) 
          validateTestWorksheetAnalytes(exceptionList, twsaDOList);
      if(analyteDOList!=null)
-         validateTestAnalytes(exceptionList,analyteDOList);
+         validateTestAnalytes(exceptionList,analyteDOList,resultDOList);
      if(sectionDOList!=null)
          validateTestSections(exceptionList,sectionDOList);
      if(resultDOList!=null) 
@@ -1005,7 +1005,7 @@ public class TestBean implements TestRemote {
         if(twsaDOList!=null) 
             validateTestWorksheetAnalytes(exceptionList, twsaDOList);
         if(analyteDOList!=null)
-            validateTestAnalytes(exceptionList,analyteDOList);
+            validateTestAnalytes(exceptionList,analyteDOList,resultDOList);
         if(sectionDOList!=null)
             validateTestSections(exceptionList,sectionDOList);
         if(resultDOList!=null) 
@@ -1317,8 +1317,29 @@ public class TestBean implements TestRemote {
         
     }
     
-    private void validateTestAnalytes(List<Exception> exceptionList,List<TestAnalyteDO> analyteDOList){
-        
+    private void validateTestAnalytes(List<Exception> exceptionList,List<TestAnalyteDO> analyteDOList, List<TestResultDO> resultDOList){
+        int i;
+        TestAnalyteDO testAnalyteDO = null;
+        TestResultDO resultDO = null;
+        HashMap<Integer, Boolean> resultGroups;
+        Integer rg;
+
+        resultGroups = new HashMap<Integer, Boolean>();
+        if (resultDOList != null) {
+            for (i = 0; i < resultDOList.size(); i++) {
+                resultDO = resultDOList.get(i);
+                resultGroups.put(resultDO.getResultGroup(), Boolean.TRUE);
+            }
+        }
+
+        for (i = 0; i < analyteDOList.size(); i++) {
+            testAnalyteDO = analyteDOList.get(i);
+            rg = testAnalyteDO.getResultGroup();
+            if (rg != null && !resultGroups.containsKey(rg)) {
+                exceptionList.add(new FormErrorException("emptyResultGroupException"));
+                return;
+            }    
+        }
     }
     
    private void validateTestResults(List<Exception> exceptionList, List<TestResultDO> resultDOList) {
@@ -1746,5 +1767,8 @@ public class TestBean implements TestRemote {
         result.setTestId(testId);
         result.setTypeId(resultDO.getTypeId());    
     }
+    
+    
+   
      
 }
