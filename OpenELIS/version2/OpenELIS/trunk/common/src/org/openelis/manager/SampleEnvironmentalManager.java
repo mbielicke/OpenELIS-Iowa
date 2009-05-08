@@ -25,6 +25,7 @@
 */
 package org.openelis.manager;
 
+import org.openelis.domain.AddressDO;
 import org.openelis.domain.SampleEnvironmentalDO;
 import org.openelis.gwt.common.RPC;
 
@@ -34,6 +35,7 @@ public class SampleEnvironmentalManager implements RPC, SampleDomainInt {
     protected boolean                                   cached;
     protected Integer                                   sampleId;
     protected SampleEnvironmentalDO                     environmental;
+    protected AddressDO                                 address;
 
     protected transient SampleEnvironmentalManagerIOInt manager;
 
@@ -74,6 +76,19 @@ public class SampleEnvironmentalManager implements RPC, SampleDomainInt {
         fetch();
         
         return environmental;
+    }
+    
+    public AddressDO getAddress(){
+        fetch();
+        
+        if (address == null) 
+            address = manager().getAddressById(environmental.getAddressId());
+        
+        return address;
+    }
+    
+    public void setAddress(AddressDO address){
+        this.address = address;
     }
 
     // manager methods

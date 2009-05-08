@@ -34,9 +34,6 @@ public class AddressDO implements Serializable{
 	private static final long serialVersionUID = -6675858186327436797L;
 
 	protected Integer id; 
-	protected Integer referenceId;   
-	protected Integer referenceTable; 
-	protected Integer type; 
 	protected String multipleUnit;  
 	protected String streetAddress;
 	protected String city;  
@@ -54,13 +51,10 @@ public class AddressDO implements Serializable{
 
     }
 
-    public AddressDO(Integer id, Integer referenceId, Integer referenceTable, Integer type, String multipleUnit,
+    public AddressDO(Integer id, String multipleUnit,
     		String streetAddress, String city, String state, String zipCode, String workPhone, String homePhone, 
     		String cellPhone, String faxPhone, String email, String country) {
         setId(id);
-        setReferenceId(referenceId);
-        setReferenceTable(referenceTable);
-        setType(type);
         setMultipleUnit(multipleUnit);
         setStreetAddress(streetAddress);
         setCity(city);
@@ -138,22 +132,6 @@ public class AddressDO implements Serializable{
 		this.multipleUnit = DataBaseUtil.trim(multipleUnit);
 	}
 
-	public Integer getReferenceId() {
-		return referenceId;
-	}
-
-	public void setReferenceId(Integer referenceId) {
-		this.referenceId = referenceId;
-	}
-
-	public Integer getReferenceTable() {
-		return referenceTable;
-	}
-
-	public void setReferenceTable(Integer referenceTable) {
-		this.referenceTable = referenceTable;
-	}
-
 	public String getState() {
 		return state;
 	}
@@ -168,14 +146,6 @@ public class AddressDO implements Serializable{
 
 	public void setStreetAddress(String streetAddress) {
 		this.streetAddress = DataBaseUtil.trim(streetAddress);
-	}
-
-	public Integer getType() {
-		return type;
-	}
-
-	public void setType(Integer type) {
-		this.type = type;
 	}
 
 	public String getWorkPhone() {
