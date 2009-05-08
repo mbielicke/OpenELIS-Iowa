@@ -61,6 +61,10 @@ public class EnvironmentalSampleLoginScreen extends OpenELISScreenForm<Environme
     public enum LookupType {LOCATION_VIEW, REPORT_TO_VIEW, PROJECT_VIEW};
     
     private TreeWidget itemsTestsTree;
+    private SampleLocationScreen locationScreen;
+    private SampleOrganizationScreen organizationScreen;
+    private SampleProjectScreen projectScreen;
+    
     private KeyListManager keyList = new KeyListManager();
     
     private Dropdown status;
@@ -136,29 +140,6 @@ public class EnvironmentalSampleLoginScreen extends OpenELISScreenForm<Environme
         
         itemsTestsTree = (TreeWidget)getWidget("itemsTestsTree");
         
-        //build the tree
-        /*TreeDataItem row1 = itemsTestsTree.model.createTreeItem("top");
-        ((Field)row1.cells[0]).setValue("0 - #69 Bottle");
-        ((Field)row1.cells[1]).setValue("Water");
-        TreeDataItem row2 = itemsTestsTree.model.createTreeItem("top");
-        ((Field)row2.cells[0]).setValue("Lead Analysis - Logged In");
-        TreeDataItem row3 = itemsTestsTree.model.createTreeItem("top");
-        ((Field)row3.cells[0]).setValue("Metals - Logged In");
-        row1.addItem(row2);
-        row1.addItem(row3);
-        itemsTestsTree.model.addRow(row1);
-        
-        TreeDataItem row4 = itemsTestsTree.model.createTreeItem("top");
-        ((Field)row4.cells[0]).setValue("1 - #18 Bottle");
-        ((Field)row4.cells[1]).setValue("Water");
-        TreeDataItem row5 = itemsTestsTree.model.createTreeItem("top");
-        ((Field)row5.cells[1]).setValue("Ortho Phosphate - Logged In");
-        row4.addItem(row5);
-        itemsTestsTree.model.addRow(row4);
-        
-        itemsTestsTree.model.refresh();
-         */
-        
         status = (Dropdown)getWidget(Meta.SAMPLE.getStatusId());
         
         //setSampleTypeModel(form.sampleTypes);
@@ -233,7 +214,7 @@ public class EnvironmentalSampleLoginScreen extends OpenELISScreenForm<Environme
     }
     
     public void setSampleContainerModel(TableDataModel<TableDataRow<Integer>> containersModel) {
-        ((TableDropdown)itemsTestsTree.columns.get(0).getColumnWidget("sampleItem")).setModel(containersModel);
+//        ((TableDropdown)itemsTestsTree.columns.get(0).getColumnWidget("sampleItem")).setModel(containersModel);
     }
     
     public void setSampleStatusModel(TableDataModel<TableDataRow<Integer>> statusesModel) {
@@ -272,20 +253,59 @@ public class EnvironmentalSampleLoginScreen extends OpenELISScreenForm<Environme
     }
     
     private void onProjectLookupClick(){
+        if(projectScreen == null)
+            projectScreen = new SampleProjectScreen(form.orgProjectForm.sampleProjectForm);
+        else
+            projectScreen.setForm(form.orgProjectForm.sampleProjectForm);
+        
         ScreenWindow modal = new ScreenWindow(null,"Sample Project","sampleProjectScreen","Loading...",true,false);
         modal.setName(consts.get("sampleProject"));
-        modal.setContent(new SampleProjectScreen());
+        modal.setContent(projectScreen);
     }
     
     private void onOrganizationLookupClick(){
+        if(organizationScreen == null)
+            organizationScreen = new SampleOrganizationScreen(form.orgProjectForm.sampleOrgForm);
+        else
+            organizationScreen.setForm(form.orgProjectForm.sampleOrgForm);
+        
         ScreenWindow modal = new ScreenWindow(null,"Sample Organization","sampleOrganizationScreen","Loading...",true,false);
         modal.setName(consts.get("sampleOrganization"));
-        modal.setContent(new SampleOrganizationScreen());
+        modal.setContent(organizationScreen);
     }
     
     private void onLocationLookupClick(){
+        //we need to load the address if it isnt already loaded
+        if(form.envInfoForm.locationForm.load)
+            createSampleLocationPopup();
+        
+        else{
+            window.setBusy();
+            screenService.call("loadLocationForm", form.envInfoForm.locationForm, new AsyncCallback<SampleLocationForm>(){
+                public void onSuccess(SampleLocationForm result){
+                    form.envInfoForm.locationForm = result;
+                    window.clearStatus();
+                    createSampleLocationPopup();
+                    
+                }
+                
+                public void onFailure(Throwable caught){
+                    Window.alert(caught.getMessage());
+                }
+             });  
+        }
+        
+    }
+    
+    private void createSampleLocationPopup(){
+        if(locationScreen == null)
+            locationScreen = new SampleLocationScreen(form.envInfoForm.locationForm);
+        else
+            locationScreen.setForm(form.envInfoForm.locationForm);
+        
         ScreenWindow modal = new ScreenWindow(null,"Sample Location","sampleLocationScreen","Loading...",true,false);
         modal.setName(consts.get("sampleLocation"));
-        modal.setContent(new SampleLocationScreen());
+        modal.setContent(locationScreen);
     }
+    
 }

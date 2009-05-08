@@ -30,10 +30,11 @@ import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
-import org.openelis.modules.sampleLocation.client.SampleLocationEntry;
-import org.openelis.modules.sampleLocation.client.SampleLocationForm;
-import org.openelis.modules.sampleOrganization.client.SampleOrganizationForm;
+import org.openelis.modules.environmentalSampleLogin.client.SampleLocationForm;
 import org.openelis.server.constants.Constants;
+import org.openelis.server.handlers.CountryCacheHandler;
+import org.openelis.server.handlers.StatesCacheHandler;
+import org.openelis.util.SessionManager;
 
 public class SampleLocationService implements AppScreenFormServiceInt<SampleLocationForm,Query<TableDataRow<Integer>>>{
 
@@ -74,6 +75,15 @@ public class SampleLocationService implements AppScreenFormServiceInt<SampleLoca
 
     public SampleLocationForm getScreen(SampleLocationForm rpc) throws RPCException {
         rpc.xml = ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/sampleLocation.xsl");
+        
+        /*
+         * Load initial  models to RPC and store cache verison of models into Session for 
+         * comparisons for later fetches
+         */
+        rpc.states = StatesCacheHandler.getStates();
+        SessionManager.getSession().setAttribute("statesVersion",StatesCacheHandler.version);
+        rpc.countries = CountryCacheHandler.getCountries();
+        SessionManager.getSession().setAttribute("countriesVersion",CountryCacheHandler.version);
         return rpc;
     }
 }

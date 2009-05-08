@@ -30,8 +30,10 @@ import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
-import org.openelis.modules.sampleOrganization.client.SampleOrganizationForm;
+import org.openelis.modules.environmentalSampleLogin.client.SampleOrganizationForm;
 import org.openelis.server.constants.Constants;
+import org.openelis.server.handlers.SampleOrganizationTypeCacheHandler;
+import org.openelis.util.SessionManager;
 
 public class SampleOrganizationService implements AppScreenFormServiceInt<SampleOrganizationForm,Query<TableDataRow<Integer>>>{
 
@@ -72,6 +74,9 @@ public class SampleOrganizationService implements AppScreenFormServiceInt<Sample
 
     public SampleOrganizationForm getScreen(SampleOrganizationForm rpc) throws RPCException {
         rpc.xml = ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/sampleOrganization.xsl");
+        rpc.types = SampleOrganizationTypeCacheHandler.getOrgTypes();
+        SessionManager.getSession().setAttribute("sampleOrgTypesVersion",SampleOrganizationTypeCacheHandler.version);
+        
         return rpc;
     }
 }

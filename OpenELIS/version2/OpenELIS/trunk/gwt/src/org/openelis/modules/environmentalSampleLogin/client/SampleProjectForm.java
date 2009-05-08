@@ -23,32 +23,38 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.modules.sampleOrganization.client;
+package org.openelis.modules.environmentalSampleLogin.client;
 
 import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.data.AbstractField;
+import org.openelis.gwt.common.data.TableDataRow;
+import org.openelis.gwt.common.data.TableField;
 
 import com.google.gwt.xml.client.Node;
 
-public class SampleOrganizationForm extends Form<Integer> {
+public class SampleProjectForm extends Form<Integer> {
 
     private static final long serialVersionUID = 1L;
     
-    public SampleOrganizationForm() {
+    public TableField<TableDataRow<Integer>> sampleProjectTable;
+    
+    public SampleProjectForm() {
+        sampleProjectTable = new TableField<TableDataRow<Integer>>("sampleProjectTable");
    }
    
-   public SampleOrganizationForm(Node node) {
+   public SampleProjectForm(Node node) {
        this();
        createFields(node);
    }
    
-   public SampleOrganizationForm(String key) {
+   public SampleProjectForm(String key) {
        this();
        this.key = key;
    }
    
    public AbstractField[] getFields() {
        return new AbstractField[] {
+                                   sampleProjectTable
        };
    }
 }

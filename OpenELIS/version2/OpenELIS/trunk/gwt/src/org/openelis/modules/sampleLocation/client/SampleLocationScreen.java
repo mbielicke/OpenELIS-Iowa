@@ -27,32 +27,83 @@ package org.openelis.modules.sampleLocation.client;
 
 import org.openelis.gwt.common.Query;
 import org.openelis.gwt.common.data.KeyListManager;
+import org.openelis.gwt.common.data.TableDataModel;
 import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.screen.CommandChain;
 import org.openelis.gwt.widget.ButtonPanel;
+import org.openelis.gwt.widget.Dropdown;
+import org.openelis.metamap.SampleEnvironmentalMetaMap;
+import org.openelis.modules.environmentalSampleLogin.client.SampleLocationForm;
+import org.openelis.modules.environmentalSampleLogin.client.SampleProjectForm;
 import org.openelis.modules.main.client.OpenELISScreenForm;
-import org.openelis.modules.sampleOrganization.client.SampleOrganizationForm;
+
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.TextBox;
 
 public class SampleLocationScreen extends OpenELISScreenForm<SampleLocationForm,Query<TableDataRow<Integer>>> {
 
+    private Dropdown               states, countries;
+    private TextBox                 location;
+    
     private KeyListManager keyList = new KeyListManager();
+    
+    private SampleEnvironmentalMetaMap Meta = new SampleEnvironmentalMetaMap();
 
-    public SampleLocationScreen() {                
+    AsyncCallback<SampleLocationForm> checkModels = new AsyncCallback<SampleLocationForm>() {
+        public void onSuccess(SampleLocationForm rpc) {
+            if(rpc.countries != null) {
+                setCountriesModel(rpc.countries);
+                rpc.countries = null;
+            }
+            if(rpc.states != null) {
+                setStatesModel(rpc.states);
+                rpc.states = null;
+            }
+        }
+        
+        public void onFailure(Throwable caught) {
+            
+        }
+    };
+
+    public SampleLocationScreen() {          
+        this(new SampleLocationForm());
+    }
+    
+    public SampleLocationScreen(SampleLocationForm form) {                
         super("org.openelis.modules.sampleLocation.server.SampleLocationService");
         query = new Query<TableDataRow<Integer>>();
 
-        getScreen(new SampleLocationForm());
+        getScreen(form);
     }
-
+    
+    public void setForm(SampleLocationForm form){
+        this.form = form;
+        load(form);
+    }
+    
     public void afterDraw(boolean success) {
         ButtonPanel bpanel = (ButtonPanel) getWidget("buttons");
+        
+        states = (Dropdown)getWidget(Meta.ADDRESS.getState());
+        countries = (Dropdown)getWidget(Meta.ADDRESS.getCountry());
+        location = (TextBox)getWidget(Meta.getSamplingLocation());
         
         CommandChain chain = new CommandChain();
         chain.addCommand(this);
         chain.addCommand(keyList);
         chain.addCommand(bpanel);
         
+        setCountriesModel(form.countries);
+        setStatesModel(form.states);
+        
+        form.countries = null;
+        form.states = null;
+        
         super.afterDraw(success);
+        
+        load(form);
+        location.setFocus(true);
     }
     
     public void commit() {
@@ -61,5 +112,13 @@ public class SampleLocationScreen extends OpenELISScreenForm<SampleLocationForm,
 
     public void abort() {
         window.close();
+    }
+    
+    public void setCountriesModel(TableDataModel<TableDataRow<String>> countriesModel) {
+        countries.setModel(countriesModel);
+    }
+    
+    public void setStatesModel(TableDataModel<TableDataRow<String>> statesModel) {
+        states.setModel(statesModel);
     }
 }

@@ -141,7 +141,7 @@ UIRF Software License are applicable instead of those above.
 						<text style="Prompt">Location:</text>
 						<widget colspan="3">
 						<multLookup key="locLook" listeners="this">
-								    <icon style="LookupButtonImage" mouse="HoverListener" command="ClincalSampleLogin.id_button_enum.ID_4"/>
+								    <icon style="LookupButtonImage" mouse="HoverListener" command="ClinicalSampleLogin.id_button_enum.PATIENT_SEARCH"/>
 								</multLookup>
 						</widget>
 					</row>
@@ -221,7 +221,7 @@ UIRF Software License are applicable instead of those above.
 							<text style="Prompt">Project:</text>
 							<widget colspan="3">
 							<multLookup key="projectLook" listeners="this">
-								    <icon style="LookupButtonImage" mouse="HoverListener" command="ClincalSampleLogin.id_button_enum.ID_4"/>
+								    <icon style="LookupButtonImage" mouse="HoverListener" command="ClinicalSampleLogin.id_button_enum.PATIENT_SEARCH"/>
 								</multLookup>
 							</widget>
 						</row>
@@ -229,7 +229,7 @@ UIRF Software License are applicable instead of those above.
 							<text style="Prompt">Report To:</text>
 							<widget colspan="3">
 							<multLookup key="reportToLook" listeners="this">
-								    <icon style="LookupButtonImage" mouse="HoverListener" command="ClincalSampleLogin.id_button_enum.ID_4"/>
+								    <icon style="LookupButtonImage" mouse="HoverListener" command="ClinicalSampleLogin.id_button_enum.PATIENT_SEARCH"/>
 								</multLookup>
 							</widget>
 						</row>

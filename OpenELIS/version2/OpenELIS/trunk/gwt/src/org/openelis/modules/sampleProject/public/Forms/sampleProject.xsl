@@ -45,7 +45,26 @@
 			<display>
 				<VerticalPanel spacing="0" padding="0">
 					<VerticalPanel style="WhiteContentPanel" spacing="0" padding="0" width="300px">
-						
+						<table key="sampleProjectTable" manager="this" width="auto" maxRows="10" title="" showError="false" showScroll="ALWAYS">
+							<headers>Name, Description, Is Perm</headers>
+							<widths>120,160,60</widths>										
+							<editors>
+								<autoComplete cat="project" case="upper" serviceUrl="OpenELISServlet?service=org.openelis.modules.sampleProject.server.SampleProjectService" width="100px">				
+									<headers>Name, Desc</headers>
+									<widths>100,170</widths>												
+								</autoComplete>
+								<textbox case="mixed"/>
+								<check/>
+							</editors>
+							<fields>
+								<dropdown/>
+								<string/>
+								<check/>
+							</fields>
+							<sorts>false,false,false</sorts>
+							<filters>false,false,false</filters>
+							<colAligns>left,left,left</colAligns>
+						</table>
 					</VerticalPanel>
 					<!--button panel code-->
 					<AbsolutePanel spacing="0" style="ButtonPanelContainer"
@@ -67,7 +86,7 @@
 				</VerticalPanel>
 			</display>
 			<rpc key="display">
-				
+				<table key="sampleProjectTable"/>
 			</rpc>
 		</screen>
 	</xsl:template>

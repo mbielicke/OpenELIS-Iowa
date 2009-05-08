@@ -226,7 +226,7 @@ UIRF Software License are applicable instead of those above.
 						<row>
 							<text style="Prompt">Project:</text>
 							<multLookup key="projectLook" listeners="this">
-								    <icon style="LookupButtonImage" mouse="HoverListener" command="ClincalSampleLogin.id_button_enum.ID_4"/>
+								    <icon style="LookupButtonImage" mouse="HoverListener" command="ClinicalSampleLogin.id_button_enum.PATIENT_SEARCH"/>
 								</multLookup>
 						</row>
 						<row>
@@ -236,7 +236,7 @@ UIRF Software License are applicable instead of those above.
 						<row>
 							<text style="Prompt">Report To:</text>
 							<multLookup key="reportToLook" listeners="this">
-								    <icon style="LookupButtonImage" mouse="HoverListener" command="ClincalSampleLogin.id_button_enum.ID_4"/>
+								    <icon style="LookupButtonImage" mouse="HoverListener" command="ClinicalSampleLogin.id_button_enum.PATIENT_SEARCH"/>
 								</multLookup>
 						</row>
 					</TablePanel>

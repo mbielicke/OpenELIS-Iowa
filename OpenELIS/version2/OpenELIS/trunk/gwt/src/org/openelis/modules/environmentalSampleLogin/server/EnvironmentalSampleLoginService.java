@@ -25,27 +25,25 @@
 */
 package org.openelis.modules.environmentalSampleLogin.server;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 
+import org.openelis.domain.AddressDO;
 import org.openelis.domain.AnalysisTestDO;
 import org.openelis.domain.IdNameDO;
-import org.openelis.domain.OrganizationAddressDO;
 import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleEnvironmentalDO;
 import org.openelis.domain.SampleItemDO;
-import org.openelis.domain.StandardNoteDO;
+import org.openelis.domain.SampleOrganizationDO;
+import org.openelis.domain.SampleProjectDO;
 import org.openelis.gwt.common.DatetimeRPC;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.Query;
 import org.openelis.gwt.common.RPCException;
-import org.openelis.gwt.common.data.AbstractField;
+import org.openelis.gwt.common.data.CheckField;
 import org.openelis.gwt.common.data.DropDownField;
-import org.openelis.gwt.common.data.QueryIntegerField;
-import org.openelis.gwt.common.data.QueryStringField;
+import org.openelis.gwt.common.data.FieldType;
+import org.openelis.gwt.common.data.IntegerField;
 import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.common.data.TableDataModel;
@@ -54,6 +52,7 @@ import org.openelis.gwt.common.data.TreeDataItem;
 import org.openelis.gwt.common.data.TreeDataModel;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
+import org.openelis.gwt.widget.table.TableModel;
 import org.openelis.manager.AnalysesManager;
 import org.openelis.manager.SampleEnvironmentalManager;
 import org.openelis.manager.SampleItemsManager;
@@ -64,22 +63,16 @@ import org.openelis.manager.SampleProjectsManager;
 import org.openelis.modules.environmentalSampleLogin.client.EnvironmentalSampleLoginForm;
 import org.openelis.modules.environmentalSampleLogin.client.EnvironmentalSubForm;
 import org.openelis.modules.environmentalSampleLogin.client.SampleItemsForm;
+import org.openelis.modules.environmentalSampleLogin.client.SampleLocationForm;
 import org.openelis.modules.environmentalSampleLogin.client.SampleOrgProjectForm;
 import org.openelis.modules.environmentalSampleLogin.client.SampleTreeForm;
-import org.openelis.modules.order.client.OrderForm;
-import org.openelis.modules.organization.client.OrganizationForm;
-import org.openelis.modules.standardnotepicker.client.StandardNotePickerForm;
+import org.openelis.modules.organization.client.NotesForm;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.SampleEnvironmentalRemote;
-import org.openelis.remote.StandardNoteRemote;
 import org.openelis.server.constants.Constants;
 import org.openelis.server.handlers.AnalysisStatusCacheHandler;
-import org.openelis.server.handlers.CostCentersCacheHandler;
-import org.openelis.server.handlers.OrderStatusCacheHandler;
 import org.openelis.server.handlers.SampleContainerCacheHandler;
 import org.openelis.server.handlers.SampleStatusCacheHandler;
-import org.openelis.server.handlers.SampleTypeCacheHandler;
-import org.openelis.server.handlers.ShipFromCacheHandler;
 import org.openelis.util.Datetime;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
@@ -193,7 +186,7 @@ public class EnvironmentalSampleLoginService implements AppScreenFormServiceInt<
         SampleDO sampleDO = manager.getSample();
         
         setFieldsInRPC(rpc, sampleDO);
-        loadDomainForm(rpc.envInfoForm, ((SampleEnvironmentalManager)manager.getAdditionalDomainManager()).getEnvironmental());
+        loadDomainForm(rpc.envInfoForm, (SampleEnvironmentalManager)manager.getAdditionalDomainManager());
         loadSampleItemsForm(rpc.sampleItemsForm, manager.getSampleItemsManager());
         loadOrgProjectForm(rpc.orgProjectForm, manager.getOrganizationsManager(), manager.getProjectsManager());
         
@@ -224,7 +217,7 @@ public class EnvironmentalSampleLoginService implements AppScreenFormServiceInt<
         }
         
         setFieldsInRPC(rpc, sampleDO);
-        loadDomainForm(rpc.envInfoForm, ((SampleEnvironmentalManager)manager.getAdditionalDomainManager()).getEnvironmental());
+        loadDomainForm(rpc.envInfoForm, (SampleEnvironmentalManager)manager.getAdditionalDomainManager());
         loadSampleItemsForm(rpc.sampleItemsForm, manager.getSampleItemsManager());
         loadOrgProjectForm(rpc.orgProjectForm, manager.getOrganizationsManager(), manager.getProjectsManager());
         
@@ -245,7 +238,7 @@ public class EnvironmentalSampleLoginService implements AppScreenFormServiceInt<
         manager.fetchAndUnlock();
         
         setFieldsInRPC(rpc, sampleDO);
-        loadDomainForm(rpc.envInfoForm, ((SampleEnvironmentalManager)manager.getAdditionalDomainManager()).getEnvironmental());
+        loadDomainForm(rpc.envInfoForm, (SampleEnvironmentalManager)manager.getAdditionalDomainManager());
         loadSampleItemsForm(rpc.sampleItemsForm, manager.getSampleItemsManager());
         loadOrgProjectForm(rpc.orgProjectForm, manager.getOrganizationsManager(), manager.getProjectsManager());
         
@@ -320,14 +313,39 @@ public class EnvironmentalSampleLoginService implements AppScreenFormServiceInt<
             form.receivedDate.setValue(DatetimeRPC.getInstance(Datetime.YEAR, Datetime.DAY, sampleDO.getReceivedDate().getDate()));
         
         form.statusId.setValue(new TableDataRow<Integer>(sampleDO.getStatusId()));
+        form.load = true;
     }
     
-    private void loadDomainForm(EnvironmentalSubForm form, SampleEnvironmentalDO envDO) {
+    private void loadDomainForm(EnvironmentalSubForm form, SampleEnvironmentalManager envManager) {
+        SampleEnvironmentalDO envDO = envManager.getEnvironmental();
         form.collector.setValue(envDO.getCollector());
         form.collectorPhone.setValue(envDO.getCollectorPhone());
         form.description.setValue(envDO.getDescription());
         form.isHazardous.setValue(envDO.getIsHazardous());
-        form.samplingLocation.setValue(envDO.getSamplingLocation());
+        
+        form.locationForm.samplingLocation.setValue(envDO.getSamplingLocation());
+    }
+    
+    public SampleLocationForm loadLocationForm(SampleLocationForm rpc) throws RPCException {
+        SampleManager manager = (SampleManager)SessionManager.getSession().getAttribute("envScreenSampleManager");
+        if(manager != null)
+            loadLocationAddress(rpc, ((SampleEnvironmentalManager)manager.getAdditionalDomainManager()).getAddress());
+        
+        return rpc;
+    }
+    
+    private void loadLocationAddress(SampleLocationForm form, AddressDO addressDO){
+        if(addressDO != null){
+            form.city.setValue(addressDO.getCity());
+            form.country.setValue(new TableDataRow<String>(addressDO.getCountry()));
+            form.multUnit.setValue(addressDO.getMultipleUnit());
+            form.state.setValue(new TableDataRow<String>(addressDO.getState()));
+            form.streetName.setValue(addressDO.getStreetAddress());
+            form.zipCode.setValue(addressDO.getZipCode());
+        }
+        
+        form.load = true;
+        
     }
     
     private void loadSampleItemsForm(SampleItemsForm form, SampleItemsManager itemsManager) {
@@ -340,20 +358,109 @@ public class EnvironmentalSampleLoginService implements AppScreenFormServiceInt<
             row.lazy = true;
             
             //container
-            row.cells[0].setValue(new TableDataRow<Integer>(itemDO.getContainerId()));
+            row.cells[0].setValue(itemDO.getItemSequence()+" - "+itemDO.getContainer());
             //source,type
-            row.cells[1].setValue(itemDO.getTypeOfSample()+" | "+itemDO.getSourceOfSample());
+            row.cells[1].setValue(itemDO.getTypeOfSample());
             
             treeModel.add(row);
         }
     }
     
     private void loadOrgProjectForm(SampleOrgProjectForm form, SampleOrganizationsManager orgManager, SampleProjectsManager projManager) {
-        if(projManager.count() > 0)
+        if(projManager.count() > 0){
             form.projectName.setValue(projManager.getSampleProjectAt(0).getProject().getName());
+            form.sampleProjectForm.sampleProjectTable.setValue(buildSampleProjectTable(projManager));
+            form.sampleProjectForm.load = true;
+        }
         
-        if(orgManager.count() > 0)
-            form.reportToName.setValue(orgManager.getSampleOrganizationAt(0).getOrganization().getName());
+        if(orgManager.count() > 0){
+            SampleOrganizationDO reportToDO = orgManager.getFirstReportTo();
+            SampleOrganizationDO billToDO = orgManager.getFirstBillTo();
+            
+            if(reportToDO != null)
+                form.reportToName.setValue(reportToDO.getOrganization().getName());
+            if(billToDO != null)
+                form.billToName.setValue(billToDO.getOrganization().getName());
+            
+            form.sampleOrgForm.sampleOrganizationTable.setValue(buildSampleOrganizationTable(orgManager));
+            form.sampleOrgForm.load = true;
+        }
+    }
+    
+    private TableDataModel<TableDataRow<Integer>> buildSampleProjectTable(SampleProjectsManager projManager){
+        TableDataModel<TableDataRow<Integer>> tableModel = new TableDataModel<TableDataRow<Integer>>();
+        
+        //create the default set
+        TableDataRow<Integer> defaultRow = new TableDataRow<Integer>(3);
+        defaultRow.cells[0] =  new DropDownField<Integer>();
+        defaultRow.cells[1] = new StringField();
+        defaultRow.cells[2] = new CheckField();
+        tableModel.setDefaultSet(defaultRow);
+
+        
+        for(int i=0; i<projManager.count(); i++){
+            TableDataRow<Integer> row = tableModel.createNewSet();
+            SampleProjectDO projDO = projManager.getSampleProjectAt(i);
+            
+            if(projDO.getProject().getId() != null){
+                TableDataModel<TableDataRow<Integer>> model = new TableDataModel<TableDataRow<Integer>>();
+                model.add(new TableDataRow<Integer>(projDO.getProject().getId(), new FieldType[]{
+                                                                                                 new StringObject(projDO.getProject().getName()),
+                                                                                                 new StringObject(projDO.getProject().getDescription())}));
+                ((DropDownField<Integer>)row.cells[0]).setModel(model);
+                row.cells[0].setValue(model.get(0));
+            }
+            
+            row.cells[1].setValue(projDO.getProject().getDescription());
+            row.cells[2].setValue(projDO.getIsPermanent());
+            
+            tableModel.add(row);
+        }
+        
+        return tableModel;
+    }
+    
+    private TableDataModel<TableDataRow<Integer>> buildSampleOrganizationTable(SampleOrganizationsManager orgManager){
+        TableDataModel<TableDataRow<Integer>> tableModel = new TableDataModel<TableDataRow<Integer>>();
+        
+        //create the default set
+        TableDataRow<Integer> defaultRow = new TableDataRow<Integer>(5);
+        defaultRow.cells[0]= new DropDownField<Integer>();
+        defaultRow.cells[1] = new IntegerField();
+        defaultRow.cells[2] =  new DropDownField<Integer>();
+        defaultRow.cells[3] = new StringField();
+        defaultRow.cells[4] = new StringField();
+        tableModel.setDefaultSet(defaultRow);
+        
+        for(int i=0; i<orgManager.count(); i++){
+            TableDataRow<Integer> row = tableModel.createNewSet();
+            SampleOrganizationDO orgDO = orgManager.getSampleOrganizationAt(i);
+            
+            if(orgDO.getTypeId() != null)
+                row.cells[0].setValue(new TableDataRow<Integer>(orgDO.getTypeId()));
+            
+            row.cells[1].setValue(orgDO.getOrganization().getOrganizationId());
+            
+            if(orgDO.getOrganization().getOrganizationId() != null){
+                TableDataModel<TableDataRow<Integer>> model = new TableDataModel<TableDataRow<Integer>>();
+                model.add(new TableDataRow<Integer>(orgDO.getOrganization().getOrganizationId(), 
+                                                    new FieldType[]{
+                                                                     new StringObject(orgDO.getOrganization().getName()),
+                                                                     new StringObject(orgDO.getOrganization().getAddressDO().getStreetAddress()),
+                                                                     new StringObject(orgDO.getOrganization().getAddressDO().getCity()),
+                                                                     new StringObject(orgDO.getOrganization().getAddressDO().getState())}));
+                
+                ((DropDownField<Integer>)row.cells[2]).setModel(model);
+                row.cells[2].setValue(model.get(0));
+            }
+            
+            row.cells[3].setValue(orgDO.getOrganization().getAddressDO().getCity());
+            row.cells[4].setValue(orgDO.getOrganization().getAddressDO().getState());
+            
+            tableModel.add(row);
+        }
+        
+        return tableModel;
     }
     
     public SampleTreeForm getSampleItemAnalysesTreeModel(SampleTreeForm rpc) throws RPCException{

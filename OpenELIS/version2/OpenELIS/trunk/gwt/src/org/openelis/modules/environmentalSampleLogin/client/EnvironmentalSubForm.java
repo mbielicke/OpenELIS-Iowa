@@ -41,17 +41,15 @@ public class EnvironmentalSubForm extends Form<Integer> {
     public StringField description;
     public StringField collector;
     public StringField collectorPhone;
-    public StringField samplingLocation;
+    public SampleLocationForm locationForm;
 
-    //FIXME need something else to store the address/location
-    
     public EnvironmentalSubForm() {
         SampleEnvironmentalMetaMap meta = new SampleEnvironmentalMetaMap();
         isHazardous = new CheckField(meta.getIsHazardous());
         description = new StringField(meta.getDescription());
         collector = new StringField(meta.getCollector());
         collectorPhone = new StringField(meta.getCollectorPhone());
-        samplingLocation = new StringField(meta.getSamplingLocation());
+        locationForm = new SampleLocationForm("locationInfo");
    }
    
    public EnvironmentalSubForm(Node node) {
@@ -70,7 +68,7 @@ public class EnvironmentalSubForm extends Form<Integer> {
                                    description, 
                                    collector,
                                    collectorPhone,
-                                   samplingLocation
+                                   locationForm
        };
    }
 }
