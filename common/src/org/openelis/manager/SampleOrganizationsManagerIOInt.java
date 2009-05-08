@@ -30,4 +30,5 @@ import java.util.List;
 public interface SampleOrganizationsManagerIOInt {
     public void update(SampleOrganizationsManager sampleOrganizations);
     public List fetch(Integer sampleId);
+    public Integer getIdFromSystemName(String systemName);
 }

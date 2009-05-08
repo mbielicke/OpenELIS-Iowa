@@ -25,18 +25,11 @@
 */
 package org.openelis.remote;
 
-import java.util.List;
-
 import javax.ejb.Remote;
 
-import org.openelis.manager.SampleProjectsManager;
+import org.openelis.domain.AddressDO;
 
 @Remote
-public interface SampleProjectRemote {
-    
-    public List getProjectsBySampleId(Integer sampleId);   
-    
-    public void update(SampleProjectsManager sampleProjects);
-
-    public List autoCompleteLookupByName(String projectName, Integer maxResults);
+public interface AddressRemote {
+    public AddressDO getAddress(Integer addressId);
 }

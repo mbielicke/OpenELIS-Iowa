@@ -117,12 +117,13 @@ public class SampleManager implements RPC {
         this.sampleDomain = sampleDomain;
         
         if(sampleDomain instanceof SampleHumanManager)
-            sample.setDomain("H");
+            sample.setDomain("H");  //getDictIdFromSystemName("Human")
         else if(sampleDomain instanceof SampleEnvironmentalManager)
             sample.setDomain("E");
     }
     
     public SampleDomainInt getAdditionalDomainManager() {
+        //getSystemNameByDictId(sample.getDomain();)
         if(sample.getDomain() == null)
             return null;
         

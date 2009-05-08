@@ -70,6 +70,48 @@ public class SampleOrganizationsManager implements RPC {
     public void setSampleOrganizationAt(SampleOrganizationDO sampleOrg, int i) {
         items.add(i, sampleOrg);
     }
+    
+    public SampleOrganizationDO getFirstBillTo(){
+        fetch();
+        Integer billToId = manager().getIdFromSystemName("org_bill_to");
+        int i=0;
+        
+        while(i<items.size() && !billToId.equals(((SampleOrganizationDO)items.get(i)).getTypeId()))
+            i++;
+            
+        if(i < items.size())
+            return (SampleOrganizationDO)items.get(i);
+        else
+            return null;
+    }
+    
+    public SampleOrganizationDO getFirstReportTo(){
+        fetch();
+        Integer reportToId = manager().getIdFromSystemName("org_report_to");
+        int i=0;
+        
+        while(i<items.size() && !reportToId.equals(((SampleOrganizationDO)items.get(i)).getTypeId()))
+            i++;
+            
+        if(i < items.size())
+            return (SampleOrganizationDO)items.get(i);
+        else
+            return null;
+    }
+    
+    public SampleOrganizationDO getFirstSecondaryReportTo(){
+        fetch();
+        Integer reportToId = manager().getIdFromSystemName("org_second_report_to");
+        int i=0;
+        
+        while(i<items.size() && !reportToId.equals(((SampleOrganizationDO)items.get(i)).getTypeId()))
+            i++;
+            
+        if(i < items.size())
+            return (SampleOrganizationDO)items.get(i);
+        else
+            return null;
+    }
 
     public SampleOrganizationsManagerIOInt getManager() {
         return manager;

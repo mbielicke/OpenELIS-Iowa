@@ -43,6 +43,7 @@ public class SampleItemDO implements Serializable {
     protected String sourceOfSample;
     protected String sourceOther;
     protected Integer containerId;
+    protected String container;
     protected String containerReference;
     protected Double quantity;
     protected Integer unitOfMeasureId;
@@ -53,7 +54,7 @@ public class SampleItemDO implements Serializable {
     
     public SampleItemDO(Integer id, Integer sampleId, Integer sampleItemId, Integer itemSequence,
                         Integer typeOfSampleId, String typeOfSample, Integer sourceOfSampleId, String sourceOfSample, 
-                        String sourceOther, Integer containerId, String containerReference, Double quantity,
+                        String sourceOther, Integer containerId, String container, String containerReference, Double quantity,
                         Integer unitOfMeasureId){
         setId(id);
         setSampleId(sourceOfSampleId);
@@ -65,6 +66,7 @@ public class SampleItemDO implements Serializable {
         setSourceOfSample(sourceOfSample);
         setSourceOther(sourceOther);
         setContainerId(containerId);
+        setContainer(container);
         setContainerReference(containerReference);
         setQuantity(quantity);
         setUnitOfMeasureId(unitOfMeasureId);
@@ -154,5 +156,13 @@ public class SampleItemDO implements Serializable {
 
     public void setContainerReference(String containerReference) {
         this.containerReference = DataBaseUtil.trim(containerReference);
+    }
+
+    public String getContainer() {
+        return container;
+    }
+
+    public void setContainer(String container) {
+        this.container = DataBaseUtil.trim(container);
     }
 }

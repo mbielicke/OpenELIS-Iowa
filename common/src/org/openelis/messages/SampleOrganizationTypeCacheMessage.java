@@ -23,20 +23,18 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.remote;
+package org.openelis.messages;
 
-import java.util.List;
+import org.openelis.persistence.Message;
 
-import javax.ejb.Remote;
+public class SampleOrganizationTypeCacheMessage implements Message {
 
-import org.openelis.manager.SampleProjectsManager;
-
-@Remote
-public interface SampleProjectRemote {
+    public String handler = "org.openelis.server.handlers.SampleOrganizationTypeCacheHandler";
+    public enum Action {ADDED,UPDATED,DELETED}
+    public Action action;
     
-    public List getProjectsBySampleId(Integer sampleId);   
-    
-    public void update(SampleProjectsManager sampleProjects);
+    public String getHandler() {
+        return handler;
+    }
 
-    public List autoCompleteLookupByName(String projectName, Integer maxResults);
 }
