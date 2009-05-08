@@ -40,9 +40,15 @@ import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+@NamedQueries( {
+    @NamedQuery(name = "Address.AddressById", query = "select new org.openelis.domain.AddressDO(a.id, a.multipleUnit, a.streetAddress, a.city, " + 
+                "  a.state, a.zipCode, a.workPhone, a.homePhone, a.cellPhone, a.faxPhone, a.email, a.country) from Address a where a.id = :id")})
+                
 @Entity
 @Table(name="address")
 @EntityListeners({AuditUtil.class})
