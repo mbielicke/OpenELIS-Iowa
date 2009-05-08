@@ -29,6 +29,7 @@ import java.util.List;
 
 import javax.naming.InitialContext;
 
+import org.openelis.local.CategoryLocal;
 import org.openelis.local.SampleOrganizationLocal;
 import org.openelis.manager.SampleOrganizationsManager;
 import org.openelis.manager.SampleOrganizationsManagerIOInt;
@@ -51,6 +52,12 @@ public List fetch(Integer sampleId) {
         
     }
     
+    public Integer getIdFromSystemName(String systemName) {
+        CategoryLocal local = getCategoryLocal();
+
+        return local.getEntryIdForSystemName(systemName);
+    }
+    
     private SampleOrganizationLocal getSampleOrganizationLocal(){
         
         try{
@@ -61,4 +68,15 @@ public List fetch(Integer sampleId) {
              return null;
         }
     }
+    
+    private CategoryLocal getCategoryLocal(){
+        
+        try{
+            InitialContext ctx = new InitialContext();
+            return (CategoryLocal)ctx.lookup("openelis/CategoryBean/local");
+        }catch(Exception e){
+             System.out.println(e.getMessage());
+             return null;
+        }
+    }    
 }

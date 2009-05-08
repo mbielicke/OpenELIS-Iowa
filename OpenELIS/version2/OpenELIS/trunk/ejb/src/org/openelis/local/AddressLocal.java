@@ -32,6 +32,8 @@ import org.openelis.domain.AddressDO;
 @Local
 public interface AddressLocal {
 	
+    public AddressDO getAddress(Integer addressId);
+    
 //	commit a change to address, or insert a new address
 	public Integer updateAddress(AddressDO addressDO);
 	

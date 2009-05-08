@@ -83,7 +83,15 @@ public class SampleProjectBean implements SampleProjectRemote, SampleProjectLoca
         }
     }
     
+    public List autoCompleteLookupByName(String projectName, Integer maxResults) {
+        Query query = manager.createNamedQuery("Project.ProjectByName");
+        query.setParameter("name", projectName);
+        query.setMaxResults(maxResults);
+ 
+        return query.getResultList(); 
+    }
+    
     private void validateProjects() throws Exception {
         
-    }
+    }    
 }

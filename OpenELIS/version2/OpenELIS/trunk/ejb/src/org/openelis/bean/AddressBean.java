@@ -25,17 +25,21 @@
 */
 package org.openelis.bean;
 
+import java.util.List;
+
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 
 import org.openelis.domain.AddressDO;
 import org.openelis.entity.Address;
 import org.openelis.local.AddressLocal;
+import org.openelis.remote.AddressRemote;
 
 @Stateless
-public class AddressBean implements AddressLocal{
+public class AddressBean implements AddressRemote, AddressLocal{
 
     @PersistenceContext(unitName = "openelis")
     EntityManager manager;
@@ -85,5 +89,16 @@ public class AddressBean implements AddressLocal{
 		 }
 		
 	}
+
+    public AddressDO getAddress(Integer addressId) {
+        Query query = manager.createNamedQuery("Address.AddressById");
+        query.setParameter("id", addressId);
+        List resultList = query.getResultList();
+        
+        if(resultList.size() > 0)
+            return (AddressDO)resultList.get(0);
+        
+        return null;
+    }
 
 }

@@ -5,4 +5,6 @@ import javax.ejb.Local;
 @Local
 public interface CategoryLocal {
     public String getSystemNameForEntryId(Integer entryId);
+    
+    public Integer getEntryIdForSystemName(String systemName);
 }

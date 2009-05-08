@@ -40,11 +40,18 @@ import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
+@NamedQueries( {
+    @NamedQuery(name = "Project.ProjectByName", query = "select new org.openelis.domain.ProjectDO(p.id, p.name, " + 
+                " p.description, p.startedDate, p.completedDate, p.isActive, p.referenceTo, p.ownerId, p.scriptletId) " + 
+                " from Project p where p.name like :name")})
+                
 @Entity
 @Table(name="project")
 @EntityListeners({AuditUtil.class})
