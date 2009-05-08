@@ -188,19 +188,19 @@ UIRF Software License are applicable instead of those above.
 					</VerticalPanel>
 				<HorizontalPanel>
 					<VerticalPanel style="subform">
-						<text style="FormTitle"><xsl:value-of select="resource:getString($constants,'analytes')"/></text>
+						<text style="FormTitle"><xsl:value-of select="resource:getString($constants,'itemsAndAnalyses')"/></text>
 						<VerticalPanel style="WhiteContentPanel">
 						<tree-table key="itemsTestsTree" width="auto" showScroll="ALWAYS" manager="this" treeCall="this" maxRows="4" enable="true" showError="false" tab="{projectMeta:getName($project)},{envMeta:getSamplingLocation($env)}">
-	    	                <headers><xsl:value-of select="resource:getString($constants,'itemTests')"/>,<xsl:value-of select="resource:getString($constants,'typeSourceStatus')"/></headers>
+	    	                <headers><xsl:value-of select="resource:getString($constants,'itemTests')"/>,<xsl:value-of select="resource:getString($constants,'typeStatus')"/></headers>
 	                        <widths>280,130</widths>					
 	                        <leaves>
 	        	                <leaf type="sampleItem">
 	            	                <editors>
-	                	                <dropdown width="260px"/>
+	                	                <label/>
 	                	                <label/>
 	                               	</editors>
 	                                <fields>
-	                                	<dropdown/>
+	                                	<string/>
 	                                	<string/>
 	                              	</fields>
 	                        	</leaf>
@@ -243,20 +243,22 @@ UIRF Software License are applicable instead of those above.
                   <TablePanel style="Form">
 						<row>
 							<text style="Prompt"><xsl:value-of select="resource:getString($constants,'project')"/>:</text>
-							<multLookup key="{projectMeta:getName($project)}" listeners="this" tab="{orgMeta:getName($org)},itemsTestsTree">
+							<multLookup key="{projectMeta:getName($project)}" width="176px" listeners="this" tab="{orgMeta:getName($org)},itemsTestsTree">
 								    <icon style="LookupButtonImage" mouse="HoverListener" command="EnvironmentalSampleLogin.id_button_enum.PROJECT_VIEW"/>
 							</multLookup>
 						</row>
 						<row>
 							<text style="Prompt"><xsl:value-of select="resource:getString($constants,'reportTo')"/>:</text>
 							<!--<lookup key="" icon="LookupButtonImage" onclick="this"/>-->
-							<multLookup key="{orgMeta:getName($org)}" listeners="this" tab="billTo,{projectMeta:getName($project)}">
+							<multLookup key="{orgMeta:getName($org)}" width="176px" listeners="this" tab="billTo,{projectMeta:getName($project)}">
 							    <icon style="LookupButtonImage" mouse="HoverListener" command="EnvironmentalSampleLogin.id_button_enum.REPORT_TO_VIEW"/>
 							</multLookup>
 						</row>
 						<row>
 							<text style="Prompt"><xsl:value-of select="resource:getString($constants,'billTo')"/>:</text>
-							<textbox key="billTo" tab="{sampleMetaMap:getAccessionNumber($sample)},{orgMeta:getName($org)}" width="200px"/>		
+							<multLookup key="billTo" width="176px" listeners="this" tab="{sampleMetaMap:getAccessionNumber($sample)},{orgMeta:getName($org)}">
+							    <icon style="LookupButtonImage" mouse="HoverListener" command="EnvironmentalSampleLogin.id_button_enum.REPORT_TO_VIEW"/>
+							</multLookup>
 						</row>
 					</TablePanel>
 					</VerticalPanel>
@@ -299,8 +301,17 @@ UIRF Software License are applicable instead of those above.
 			<check key="{envMeta:getIsHazardous($env)}"/>
 			<string key="{envMeta:getDescription($env)}" required="false"/>		
 			<string key="{envMeta:getCollector($env)}" required="false"/>		
-			<string key="{envMeta:getCollectorPhone($env)}" required="false"/>		
-			<string key="{envMeta:getSamplingLocation($env)}" required="false"/>   
+			<string key="{envMeta:getCollectorPhone($env)}" required="false"/>	
+				
+			<rpc key="locationInfo">
+				<string key="{envMeta:getSamplingLocation($env)}" required="false"/>
+				<string key="{addressMeta:getMultipleUnit($address)}"/>
+				<string key="{addressMeta:getStreetAddress($address)}"/>
+				<string key="{addressMeta:getCity($address)}"/>
+				<dropdown key="{addressMeta:getState($address)}"/>
+				<string key="{addressMeta:getZipCode($address)}"/>
+				<dropdown key="{addressMeta:getCountry($address)}"/>
+			</rpc>   
 		</rpc>
 		
 		<rpc key="sampleItems">
@@ -311,6 +322,14 @@ UIRF Software License are applicable instead of those above.
 			<string key="{projectMeta:getName($project)}" required="false"/>
 			<string key="{orgMeta:getName($org)}"/>
 			<string key="billTo" required="false"/>
+			
+			<rpc key="sampleOrganization">
+				<table key="sampleOrganizationTable"/>
+			</rpc>
+			
+			<rpc key="sampleProject">
+				<table key="sampleProjectTable"/>
+			</rpc>
 		</rpc>
 		
 		<rpc key="testInfoResult">

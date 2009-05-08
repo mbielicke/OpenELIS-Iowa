@@ -234,7 +234,7 @@ UIRF Software License are applicable instead of those above.
 							<text style="Prompt">Report To:</text>
 							<widget colspan="3">
 							<multLookup key="reportTOLook" listeners="this">
-								    <icon style="LookupButtonImage" mouse="HoverListener" command="ClincalSampleLogin.id_button_enum.ID_4"/>
+								    <icon style="LookupButtonImage" mouse="HoverListener" command="ClinicalSampleLogin.id_button_enum.PATIENT_SEARCH"/>
 								</multLookup>
 							</widget>
 						</row>

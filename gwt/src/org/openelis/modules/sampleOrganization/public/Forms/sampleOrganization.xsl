@@ -44,7 +44,30 @@
 			<display>
 				<VerticalPanel spacing="0" padding="0">
 					<VerticalPanel style="WhiteContentPanel" spacing="0" padding="0" width="300px">
-						
+						<table key="sampleOrganizationTable" manager="this" width="auto" maxRows="10" title="" showError="false" showScroll="ALWAYS">
+							<headers>Type,Id,Name,City,State</headers>
+							<widths>120,35,160,110,50</widths>										
+							<editors>
+								<dropdown case="mixed" width="110px"/>
+								<textbox case="mixed"/>
+								<autoComplete cat="organization" case="upper" serviceUrl="OpenELISServlet?service=org.openelis.modules.order.server.OrderService" width="130px">												
+									<headers>Name,Street,City,St</headers>
+									<widths>180,110,100,20</widths>
+								</autoComplete>
+								<textbox case="mixed"/>
+								<textbox case="mixed"/>
+							</editors>
+							<fields>
+								<dropdown/>
+								<integer/>
+								<dropdown/>
+								<string/>
+								<string/>
+							</fields>
+							<sorts>false,false,false,false,false</sorts>
+							<filters>false,false,false,false,false</filters>
+							<colAligns>left,left,left,left,left</colAligns>
+						</table>
 					</VerticalPanel>
 					<!--button panel code-->
 					<AbsolutePanel spacing="0" style="ButtonPanelContainer"
@@ -66,7 +89,7 @@
 				</VerticalPanel>
 			</display>
 			<rpc key="display">
-				
+				<table key="sampleOrganizationTable"/>
 			</rpc>
 		</screen>
 	</xsl:template>

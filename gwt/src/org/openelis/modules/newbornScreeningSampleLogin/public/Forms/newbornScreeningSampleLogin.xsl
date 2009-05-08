@@ -117,9 +117,9 @@ UIRF Software License are applicable instead of those above.
 							<row>
 							<text style="Prompt">Id:</text>
 								<multLookup key="babyId" listeners="this">
-								    <icon style="LookupButtonImage" mouse="HoverListener" command="ClincalSampleLogin.id_button_enum.ID_1"/>
-								    <icon style="AdvancedButtonImage" mouse="HoverListener" command="ClincalSampleLogin.id_button_enum.ID_2"/>
-								    <icon style="CommentButtonImage" mouse="HoverListener" command="ClincalSampleLogin.id_button_enum.ID_3"/>
+								    <icon style="LookupButtonImage" mouse="HoverListener" command="ClinicalSampleLogin.id_button_enum.PATIENT_SEARCH"/>
+								    <icon style="AdvancedButtonImage" mouse="HoverListener" command="ClinicalSampleLogin.id_button_enum.PATIENT_SEARCH"/>
+								    <icon style="CommentButtonImage" mouse="HoverListener" command="ClinicalSampleLogin.id_button_enum.PATIENT_SEARCH"/>
 								</multLookup>
 							</row>
 							<row>
@@ -320,7 +320,7 @@ UIRF Software License are applicable instead of those above.
 									<text style="Prompt">Report To:</text>
 									<widget colspan="3">
 									<multLookup key="reportToLook" listeners="this">
-								    <icon style="LookupButtonImage" mouse="HoverListener" command="ClincalSampleLogin.id_button_enum.ID_4"/>
+								    <icon style="LookupButtonImage" mouse="HoverListener" command="ClinicalSampleLogin.id_button_enum.PATIENT_SEARCH"/>
 								</multLookup>
 									</widget>
 								</row>
@@ -328,7 +328,7 @@ UIRF Software License are applicable instead of those above.
 									<text style="Prompt">Birth Org:</text>
 									<widget colspan="3">
 									<multLookup key="birthOrgLook" listeners="this">
-								    <icon style="LookupButtonImage" mouse="HoverListener" command="ClincalSampleLogin.id_button_enum.ID_4"/>
+								    <icon style="LookupButtonImage" mouse="HoverListener" command="ClinicalSampleLogin.id_button_enum.PATIENT_SEARCH"/>
 								</multLookup>
 									</widget>
 								</row>

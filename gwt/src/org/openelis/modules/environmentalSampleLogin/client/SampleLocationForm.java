@@ -23,18 +23,42 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.modules.sampleLocation.client;
+package org.openelis.modules.environmentalSampleLogin.client;
 
 import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.data.AbstractField;
+import org.openelis.gwt.common.data.DropDownField;
+import org.openelis.gwt.common.data.StringField;
+import org.openelis.gwt.common.data.TableDataModel;
+import org.openelis.gwt.common.data.TableDataRow;
+import org.openelis.metamap.SampleEnvironmentalMetaMap;
 
 import com.google.gwt.xml.client.Node;
 
 public class SampleLocationForm extends Form<Integer> {
 
     private static final long serialVersionUID = 1L;
+
+    public StringField samplingLocation;
+    public StringField multUnit;
+    public StringField streetName;
+    public StringField city;
+    public DropDownField<String> state;
+    public StringField zipCode;
+    public DropDownField<String> country;
+    
+    public TableDataModel<TableDataRow<String>> states;
+    public TableDataModel<TableDataRow<String>> countries;
     
     public SampleLocationForm() {
+        SampleEnvironmentalMetaMap meta = new SampleEnvironmentalMetaMap();
+        samplingLocation = new StringField(meta.getSamplingLocation());
+        multUnit = new StringField(meta.ADDRESS.getMultipleUnit());
+        streetName = new StringField(meta.ADDRESS.getStreetAddress());
+        city = new StringField(meta.ADDRESS.getCity());
+        state = new DropDownField<String>(meta.ADDRESS.getState());
+        zipCode = new StringField(meta.ADDRESS.getZipCode());
+        country = new DropDownField<String>(meta.ADDRESS.getCountry());
    }
    
    public SampleLocationForm(Node node) {
@@ -49,6 +73,13 @@ public class SampleLocationForm extends Form<Integer> {
    
    public AbstractField[] getFields() {
        return new AbstractField[] {
+                                   samplingLocation,
+                                   multUnit,
+                                   streetName,
+                                   city,
+                                   state,
+                                   zipCode,
+                                   country
        };
    }
 }

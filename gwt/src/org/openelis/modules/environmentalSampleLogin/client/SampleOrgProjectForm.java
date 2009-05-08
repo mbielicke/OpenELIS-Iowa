@@ -40,14 +40,16 @@ public class SampleOrgProjectForm extends Form<Integer> {
     public StringField reportToName;
     public StringField billToName;
     
-    //FIXME need way to store multiple projects
-    //FIXME need way to store multiple report tos
+    public SampleOrganizationForm sampleOrgForm;
+    public SampleProjectForm sampleProjectForm;
     
     public SampleOrgProjectForm() {
         SampleEnvironmentalMetaMap meta = new SampleEnvironmentalMetaMap();
         projectName = new StringField(meta.SAMPLE.SAMPLE_PROJECT.PROJECT.getName());
         reportToName = new StringField(meta.SAMPLE.SAMPLE_ORGANIZATION.ORGANIZATION.getName());
         billToName = new StringField("billTo");
+        sampleOrgForm = new SampleOrganizationForm("sampleOrganization");
+        sampleProjectForm = new SampleProjectForm("sampleProject");
    }
    
    public SampleOrgProjectForm(Node node) {
@@ -64,7 +66,9 @@ public class SampleOrgProjectForm extends Form<Integer> {
        return new AbstractField[] {
                                    projectName,
                                    reportToName,
-                                   billToName
+                                   billToName,
+                                   sampleOrgForm,
+                                   sampleProjectForm
        };
    }
 }

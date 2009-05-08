@@ -25,15 +25,25 @@
 */
 package org.openelis.modules.sampleProject.server;
 
+import java.util.HashMap;
+import java.util.List;
+
+import org.openelis.domain.ProjectDO;
 import org.openelis.gwt.common.Query;
 import org.openelis.gwt.common.RPCException;
+import org.openelis.gwt.common.data.FieldType;
+import org.openelis.gwt.common.data.StringObject;
+import org.openelis.gwt.common.data.TableDataModel;
 import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
-import org.openelis.modules.sampleProject.client.SampleProjectForm;
+import org.openelis.gwt.services.AutoCompleteServiceInt;
+import org.openelis.modules.environmentalSampleLogin.client.SampleProjectForm;
+import org.openelis.persistence.EJBFactory;
+import org.openelis.remote.SampleProjectRemote;
 import org.openelis.server.constants.Constants;
 
-public class SampleProjectService implements AppScreenFormServiceInt<SampleProjectForm,Query<TableDataRow<Integer>>>{
+public class SampleProjectService implements AppScreenFormServiceInt<SampleProjectForm,Query<TableDataRow<Integer>>>, AutoCompleteServiceInt {
 
     public SampleProjectForm abort(SampleProjectForm rpcReturn) throws RPCException {
         // TODO Auto-generated method stub
@@ -73,5 +83,43 @@ public class SampleProjectService implements AppScreenFormServiceInt<SampleProje
     public SampleProjectForm getScreen(SampleProjectForm rpc) throws RPCException {
         rpc.xml = ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/sampleProject.xsl");
         return rpc;
+    }
+
+    public TableDataModel getMatches(String cat, TableDataModel model, String match, HashMap<String, FieldType> params) throws RPCException {
+        if(cat.equals("project"))
+            return getProjectMatches(match);
+        
+        return null;
+    }
+    
+    private TableDataModel<TableDataRow<Integer>> getProjectMatches(String match){
+        SampleProjectRemote remote = (SampleProjectRemote)EJBFactory.lookup("openelis/SampleProjectBean/remote");
+        TableDataModel<TableDataRow<Integer>> dataModel = new TableDataModel<TableDataRow<Integer>>();
+        List autoCompleteList;
+    
+        //lookup by name
+        autoCompleteList = remote.autoCompleteLookupByName(match+"%", 10);
+        
+        for(int i=0; i < autoCompleteList.size(); i++){
+            ProjectDO resultDO = (ProjectDO) autoCompleteList.get(i);
+            //org id
+            Integer id = resultDO.getId();
+            //org name
+            String name = resultDO.getName();
+            //org street address
+            String desc = resultDO.getDescription();
+            
+            TableDataRow<Integer> data = new TableDataRow<Integer>(id,
+                                                                   new FieldType[] {
+                                                                                    new StringObject(name),
+                                                                                    new StringObject(desc),
+                                                                   }
+                                         );
+            
+            //add the dataset to the datamodel
+            dataModel.add(data);                            
+        }       
+        
+        return dataModel;       
     }
 }

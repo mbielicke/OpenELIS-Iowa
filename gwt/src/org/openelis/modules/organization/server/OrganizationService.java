@@ -157,16 +157,24 @@ public class OrganizationService implements AppScreenFormServiceInt<Organization
             organizationNote.setIsExternal("Y");
     		
     		//send the changes to the database
-    		Integer orgId;
-    		try{
+    		Integer orgId = 4;
+    	/*	try{
     			orgId = (Integer)remote.updateOrganization(newOrganizationDO, organizationNote, organizationContacts);
     		}catch(Exception e){
                 if(e instanceof ValidationErrorsList){
-                    setRpcErrors(((ValidationErrorsList)e).getErrorList(), contactsField, rpc);
-                    return rpc;
+                
+            */  
+    		 ValidationErrorsList list = new ValidationErrorsList();
+    	        //name required
+    	            list.add(new FormErrorException("fieldRequiredException"));
+    	            list.add(new FormErrorException("fieldRequiredException"));
+    	        setRpcErrors(list.getErrorList(), contactsField, rpc);
+              /*      return rpc;
                 }else
                     throw new RPCException(e.getMessage());
-            }
+            }*/
+    		
+    		
     		
     		//lookup the changes from the database and build the rpc
     		newOrganizationDO.setOrganizationId(orgId);

@@ -28,6 +28,7 @@ package org.openelis.manager;
 import java.util.List;
 
 import org.openelis.persistence.EJBFactory;
+import org.openelis.remote.CategoryRemote;
 import org.openelis.remote.SampleOrganizationRemote;
 
 public class SampleOrganizationsManagerIOClient implements SampleOrganizationsManagerIOInt {
@@ -48,7 +49,17 @@ public class SampleOrganizationsManagerIOClient implements SampleOrganizationsMa
         
     }
     
+    public Integer getIdFromSystemName(String systemName) {
+        CategoryRemote remote = getCategoryRemote();
+
+        return remote.getEntryIdForSystemName(systemName);
+    }
+    
     private SampleOrganizationRemote getSampleOrganizationRemote(){
         return (SampleOrganizationRemote)EJBFactory.lookup("openelis/SampleOrganizationBean/remote");
+    }
+
+    private CategoryRemote getCategoryRemote(){
+        return (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
     }
 }
