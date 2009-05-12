@@ -1650,7 +1650,7 @@ public class TestScreen extends OpenELISScreenForm<TestForm, Query<TableDataRow<
             flipSignsInModelMaps();
             loadScreen();
             enable(true);
-            changeState(State.ADD);
+            setState(State.ADD);
             enableTableAutoAdd(true);
             window.setDone(consts.get("enterInformationPressCommit"));
         }
@@ -1658,7 +1658,7 @@ public class TestScreen extends OpenELISScreenForm<TestForm, Query<TableDataRow<
         public void onFailure(Throwable caught) {
             handleError(caught);
             window.setDone("Load Failed");
-            changeState(State.DEFAULT);
+            setState(State.DEFAULT);
             form.entityKey = null;
         }
     };

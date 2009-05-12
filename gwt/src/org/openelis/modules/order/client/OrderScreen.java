@@ -543,7 +543,7 @@ public class OrderScreen extends OpenELISScreenForm<OrderForm,OrderQuery> implem
     //end table listener methods
     //
     
-    public void changeState(State state) {
+    public void setState(State state) {
         if(duplicateMenuPanel != null){ 
             if(state == State.DISPLAY){
                 ((MenuItem)((MenuItem)duplicateMenuPanel.panel.menuItems.get(0)).menuItemsPanel.menuItems.get(0)).enable(true);
@@ -553,7 +553,7 @@ public class OrderScreen extends OpenELISScreenForm<OrderForm,OrderQuery> implem
             }
         }
         
-        super.changeState(state);
+        super.setState(state);
     }
     
     private void onRemoveItemButtonClick() {
@@ -594,14 +594,14 @@ public class OrderScreen extends OpenELISScreenForm<OrderForm,OrderQuery> implem
                 form = result;
                 loadScreen();
                 enable(true);
-                changeState(State.ADD);
+                setState(State.ADD);
                 window.setDone(consts.get("enterInformationPressCommit"));
             }
 
             public void onFailure(Throwable caught) {
                 handleError(caught);
                 window.setDone("Load Failed");
-                changeState(State.DEFAULT);
+                setState(State.DEFAULT);
                 form.entityKey = null;
             }
         });

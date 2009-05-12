@@ -117,9 +117,9 @@ public class InventoryReceiptScreen extends OpenELISScreenForm<InventoryReceiptF
         if(action == KeyListManager.Action.FETCH){
             if(state == State.DISPLAY || state == State.DEFAULT){
                 if(keyList.getList().size() > 0)
-                    changeState(State.DISPLAY);
+                    setState(State.DISPLAY);
                 else
-                    changeState(State.DEFAULT);
+                    setState(State.DEFAULT);
             }
         }else if(action == KeyListManager.Action.SELECTION){
             //do nothing for now
@@ -281,7 +281,7 @@ public class InventoryReceiptScreen extends OpenELISScreenForm<InventoryReceiptF
                 
                 enable(true);
                 window.setDone(consts.get("updateFields"));
-                changeState(State.UPDATE);
+                setState(State.UPDATE);
                 receiptsTable.model.load(result.tableRows);
                 receiptsTable.table.select(0, 0);
             }
@@ -311,7 +311,7 @@ public class InventoryReceiptScreen extends OpenELISScreenForm<InventoryReceiptF
                     receiptsTable.model.load(result.tableRows);
 
                     window.clearStatus();
-                    changeState(State.DISPLAY);
+                    setState(State.DISPLAY);
                 }
                 
                 public void onFailure(Throwable caught){

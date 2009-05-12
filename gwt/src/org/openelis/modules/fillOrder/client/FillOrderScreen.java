@@ -141,9 +141,9 @@ public class FillOrderScreen extends OpenELISScreenForm<FillOrderForm, Query<Tab
         if (action == KeyListManager.Action.FETCH) {
             if (state == State.DISPLAY || state == State.DEFAULT) {
                 if (keyList.getList().size() > 0)
-                    changeState(State.DISPLAY);
+                    setState(State.DISPLAY);
                 else
-                    changeState(State.DEFAULT);
+                    setState(State.DEFAULT);
             }
         } else if (action == KeyListManager.Action.SELECTION) {
             // do nothing for now
@@ -227,7 +227,7 @@ public class FillOrderScreen extends OpenELISScreenForm<FillOrderForm, Query<Tab
         // super.add();
         form.entityKey = null;
         enable(true);
-        changeState(State.ADD);
+        setState(State.ADD);
         window.setStatus(consts.get("enterInformationPressCommit"), "");
 
         removeRowButton.changeState(ButtonState.DISABLED);
@@ -276,7 +276,7 @@ public class FillOrderScreen extends OpenELISScreenForm<FillOrderForm, Query<Tab
         if (state == State.ADD) {
             clearErrors();
             enable(false);
-            changeState(State.DISPLAY);
+            setState(State.DISPLAY);
             //clear the tree so we dont have to piecemeal clear it
             combinedTree.clear();
             
