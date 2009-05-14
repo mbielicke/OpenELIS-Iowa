@@ -51,19 +51,30 @@ import org.openelis.modules.main.client.OpenELISScreenForm;
 
 public class StandardNotePickerScreen extends OpenELISScreenForm<StandardNotePickerForm,Query<TableDataRow<Integer>>> implements TreeManager, TreeServiceCallInt, TreeModelListener, ClickListener{
 
-	public TextArea noteTextArea;
+	public TextArea targetBodyTextArea, moveText, text;
+	public TextBox targetSubjectTextBox, subject;
 	private TextBox findTextBox;
 	private TreeWidget tree;
     private StandardNoteMetaMap StandardNoteMeta = new StandardNoteMetaMap();
     
-	public StandardNotePickerScreen(TextArea noteTextArea) {
+	public StandardNotePickerScreen(TextArea targetBodyTextArea) {
 		super("org.openelis.modules.standardnotepicker.server.StandardNotePickerService");
 
-		this.noteTextArea = noteTextArea;		
+		this.targetBodyTextArea = targetBodyTextArea;		
         name="Standard Note Selection";
         query = new Query<TableDataRow<Integer>>();
         getScreen(new StandardNotePickerForm());
 	}
+	
+	public StandardNotePickerScreen(TextBox targetSubjectTextBox, TextArea targetBodyTextArea) {
+        super("org.openelis.modules.standardnotepicker.server.StandardNotePickerService");
+
+        this.targetSubjectTextBox = targetSubjectTextBox;
+        this.targetBodyTextArea = targetBodyTextArea;     
+        name="Standard Note Selection";
+        query = new Query<TableDataRow<Integer>>();
+        getScreen(new StandardNotePickerForm());
+    }
 		
 	public void onClick(Widget sender) {
 		String action = ((AppButton)sender).action;
@@ -82,6 +93,8 @@ public class StandardNotePickerScreen extends OpenELISScreenForm<StandardNotePic
 	                Window.alert(caught.getMessage());
 	            }
 	         });        
+		}else if(action.equals("move")){
+		    text.setText(text.getText()+moveText.getText());
 		}
 	}
 	
@@ -89,20 +102,20 @@ public class StandardNotePickerScreen extends OpenELISScreenForm<StandardNotePic
         tree = (TreeWidget)getWidget("noteTree");
         tree.model.addTreeModelListener(this);
         findTextBox = (TextBox)getWidget("findTextBox");
+        moveText = (TextArea)getWidget("moveText");
+        text = (TextArea)getWidget("text");
+        subject = (TextBox)getWidget("subject");
+        
+        if(targetSubjectTextBox == null)
+            subject.setEnabled(false);
         
         addCommandListener((ButtonPanel) getWidget("buttons"));
         ((ButtonPanel)getWidget("buttons")).addCommandListener(this);
         
         final ScreenVertical vp = (ScreenVertical) widgets.get("treeContainer");
         
-        //vp.clear();
-       // vp.remove(tree);
-        
         window.setBusy();
-       // prepare the argument list for the getObject function
-        //StandardNotePickerRPC snprpc = new StandardNotePickerRPC();
-        //snprpc.key = form.key;
-        //snprpc.form = form.form;
+       
         form.queryString = "*";
         
         screenService.call("getTreeModel" , form, new AsyncCallback<StandardNotePickerForm>(){
@@ -117,11 +130,15 @@ public class StandardNotePickerScreen extends OpenELISScreenForm<StandardNotePic
             }
          });        
         super.afterDraw(sucess);
+        
+        text.setText(targetBodyTextArea.getText());
 	}
 	
 	public void commit() {
-    	TextArea textArea = (TextArea)getWidget("noteText");
-    	noteTextArea.setText(noteTextArea.getText()+textArea.getText());
+	    targetBodyTextArea.setText(text.getText());
+    	
+    	if(targetSubjectTextBox != null)
+    	    targetSubjectTextBox.setText(subject.getText());
     	
     	window.close();
     }
@@ -129,53 +146,6 @@ public class StandardNotePickerScreen extends OpenELISScreenForm<StandardNotePic
     public void abort() {
     	window.close();
     }
-/*
-    public void onTreeItemSelected(TreeItem item) {
-		
-	}
-	
-	public void onTreeItemStateChanged(TreeItem item) {
-		try{
-			Integer id = Integer.valueOf((String)item.getUserObject());
-			final TreeItem finalTreeItem = item;
-			finalTreeItem.removeItems();
-			
-			final ScreenPagedTree tree = (ScreenPagedTree)widgets.get("noteTree");
-
-            window.setStatus("","spinnerIcon");
-            
-			Form queryRPC = (Form)forms.get("queryByNameDescription");
-
-			StringObject name = new StringObject();
-	        StringObject desc = new StringObject();
-	        name.setValue(queryRPC.getFieldValue(StandardNoteMeta.getName())+(((String)queryRPC.getFieldValue(StandardNoteMeta.getName())).endsWith("*") ? "" : "*"));
-	        desc.setValue(queryRPC.getFieldValue(StandardNoteMeta.getDescription())+(((String)queryRPC.getFieldValue(StandardNoteMeta.getName())).endsWith("*") ? "" : "*"));
-	        
-	        NumberObject idObj = new NumberObject(NumberObject.Type.INTEGER);
-			idObj.setValue(id);
-	        
-	       // prepare the argument list for the getObject function
-            FieldType[] args = new FieldType[] {idObj,name,desc}; 
-	        
-            screenService.getObject("getTreeModelSecondLevel", args, new AsyncCallback<StringObject>(){
-	            public void onSuccess(StringObject result){
-	               finalTreeItem.removeItems();
-	               tree.controller.model.addTextChildItems(finalTreeItem, (String)result.getValue());	        
-                   
-                   window.setStatus("","");
-	            }
-	            
-	            public void onFailure(Throwable caught){
-	            	finalTreeItem.removeItems();
-	                Window.alert(caught.getMessage());
-	            }
-	         });        
-		
-		}catch(NumberFormatException e){
-			//this means that it is the bottom level...
-		}
-	}
-	*/
 
 	//
 	//start tree manager methods
@@ -258,8 +228,7 @@ public class StandardNotePickerScreen extends OpenELISScreenForm<StandardNotePic
 
     public void rowSelectd(SourcesTreeModelEvents sender, int row) {
         final TreeDataItem item = tree.model.getRow(row);
-            TextArea textArea = (TextArea)getWidget("noteText");
-            textArea.setText((String)((StringObject)item.getData()).getValue());
+            moveText.setText((String)((StringObject)item.getData()).getValue());
                 
     }
 

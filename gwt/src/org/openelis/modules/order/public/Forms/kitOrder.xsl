@@ -229,45 +229,18 @@ UIRF Software License are applicable instead of those above.
 								<xsl:value-of select='resource:getString($constants,"store")'/></headers>
 								<widths>65,275,235</widths>
 								<editors>
-									<textbox case="mixed"/>
-									<autoComplete cat="inventoryItemWithStore" case="lower" serviceUrl="OpenELISServlet?service=org.openelis.modules.order.server.OrderService" width="130px">			
+									<textbox cellKey="{orderItemMeta:getQuantity($orderItem)}" case="mixed"/>
+									<autoComplete cellKey="{invItemMeta:getName($orderItemInvItem)}" cat="inventoryItemWithStore" case="lower" serviceUrl="OpenELISServlet?service=org.openelis.modules.order.server.OrderService" width="130px">			
 										<headers>Name,Store, Dispensed Units</headers>
 										<widths>135,110,110</widths>									
-		<!--								<headers>Name,Store,Location,Lot #, Exp Date,Qty</headers>
-										<widths>135,110,160,70,70,30</widths>
-										-->
 									</autoComplete>
-									<label/>
+									<label cellKey="{dictionaryMeta:getEntry($store)}"/>
 								</editors>
-								<fields>
-									<integer key="{orderItemMeta:getQuantity($orderItem)}" required="true"/>
-									<dropdown key="{invItemMeta:getName($orderItemInvItem)}" required="true"/>
-									<string key="{dictionaryMeta:getEntry($store)}" required="false"/>
-								</fields>
 								<sorts>false,true,true</sorts>
 								<filters>false,false,false</filters>
 								<colAligns>left,left,left</colAligns>
 							</table>
-							<!--
-							<query>
-								<queryTable width="auto" maxRows="9" title="" showError="false" showScroll="ALWAYS">
-									<headers><xsl:value-of select='resource:getString($constants,"quantity")'/>,<xsl:value-of select='resource:getString($constants,"inventoryItem")'/>,
-									<xsl:value-of select='resource:getString($constants,"store")'/></headers>
-									<widths>65,275,235</widths>
-									<editors>
-										<textbox case="mixed"/>
-										<textbox case="lower"/>
-										<textbox case="mixed"/>
-									</editors>
-									<fields>
-										<xsl:value-of select='orderItemMeta:getQuantity($orderItem)'/>,
-										<xsl:value-of select='invItemMeta:getName($orderItemInvItem)'/>,
-										<xsl:value-of select='dictionaryMeta:getEntry($store)'/>
-									</fields>							
-								</queryTable>
-							</query>
-							-->
-						</widget>
+							</widget>
 						</row>
 						<row>
 						<widget align="center">
@@ -282,7 +255,7 @@ UIRF Software License are applicable instead of those above.
 					</TablePanel>
 				</tab>	
 					<!-- TAB 2 (receipts) -->
-					<tab key="receiptTab" text="{resource:getString($constants,'filled')}">
+					<tab key="receiptsTab" text="{resource:getString($constants,'filled')}">
 					<TablePanel spacing="0" padding="0" height="247px" width="626px">
 						<row>
 						<widget align="center">
@@ -298,13 +271,6 @@ UIRF Software License are applicable instead of those above.
 									<label/>
 									<label/>									
 								</editors>
-								<fields>
-									<string/>
-									<string/>									
-									<integer/>
-									<string/>
-									<string/>
-								</fields>
 								<sorts>false,false,false,false,false</sorts>
 								<filters>false,false,false,false,false</filters>
 								<colAligns>left,left,left,left,left</colAligns>
@@ -471,10 +437,20 @@ UIRF Software License are applicable instead of those above.
           <string key="{noteMeta:getText($custNote)}" required="false"/>
       </rpc>
       <rpc key="items">
-	      <table key="itemsTable"/>
+	      <table key="itemsTable">
+	      	<integer key="{orderItemMeta:getQuantity($orderItem)}" required="true"/>
+			<dropdown key="{invItemMeta:getName($orderItemInvItem)}" required="true"/>
+			<string key="{dictionaryMeta:getEntry($store)}" required="false"/>
+		  </table>
       </rpc>
       <rpc key="receipts">
-	  	  <table key="receiptsTable"/>
+	  	  <table key="receiptsTable">
+	  	  	<string/>
+			<string/>									
+			<integer/>
+			<string/>
+			<string/>
+	  	  </table>
 	  </rpc>
       <rpc key="reportToBillTo">
 		  <dropdown key="{orgMeta:getName($reportTo)}" required="false"/>

@@ -223,50 +223,19 @@ UIRF Software License are applicable instead of those above.
 										<xsl:value-of select='resource:getString($constants,"catalogNum")'/></headers>
 										<widths>60,178,163,70,87</widths>
 										<editors>
-											<textbox case="mixed"/>
-											<autoComplete cat="inventoryItemWithStoreMain" case="lower" serviceUrl="OpenELISServlet?service=org.openelis.modules.order.server.OrderService" width="210px">												
+											<textbox cellKey="{orderItemMeta:getQuantity($orderItem)}" case="mixed"/>
+											<autoComplete cellKey="{invItemMeta:getName($orderItemInvItem)}" cat="inventoryItemWithStoreMain" case="lower" serviceUrl="OpenELISServlet?service=org.openelis.modules.order.server.OrderService" width="210px">												
 												<headers>Name,Store, Dispensed Units</headers>
 												<widths>135,110,110</widths>
 											</autoComplete>
-											<label/>
+											<label cellKey="{dictionaryMeta:getEntry($store)}"/>
 											<textbox case="mixed" displayMask="{resource:getString($constants,'displayCurrencyFormat')}" editorMask="{resource:getString($constants,'editorCurrencyFormat')}"/>
 											<textbox case="mixed"/>
 										</editors>
-										<fields>
-											<integer key="{orderItemMeta:getQuantity($orderItem)}" required="true"/>
-											<dropdown key="{invItemMeta:getName($orderItemInvItem)}" required="true"/>
-											<string key="{dictionaryMeta:getEntry($store)}" required="false"/>
-											<double required="false"/>
-											<string required="false"/>
-										</fields>
 										<sorts>false,true,true,false,false</sorts>
 										<filters>false,false,false,false,false</filters>
 										<colAligns>left,left,left,right,left</colAligns>
 									</table>
-									<!--
-									<query>
-									<queryTable width="auto" maxRows="9" title="" showError="false" showScroll="ALWAYS">
-										<headers><xsl:value-of select='resource:getString($constants,"quantity")'/>,<xsl:value-of select='resource:getString($constants,"inventoryItem")'/>,
-										<xsl:value-of select='resource:getString($constants,"store")'/>,<xsl:value-of select='resource:getString($constants,"unitCost")'/>,
-										<xsl:value-of select='resource:getString($constants,"catalogNum")'/></headers>
-										<widths>60,178,163,70,87</widths>
-										<editors>
-											<textbox case="mixed"/>
-											<textbox case="lower"/>
-											<textbox case="mixed"/>
-											<textbox case="mixed" />
-											<textbox case="mixed"/>
-										</editors>
-										<fields>
-											<xsl:value-of select='orderItemMeta:getQuantity($orderItem)'/>,
-											<xsl:value-of select='invItemMeta:getName($orderItemInvItem)'/>,
-											<xsl:value-of select='dictionaryMeta:getEntry($store)'/>,
-											<xsl:value-of select='orderItemMeta:getUnitCost($orderItem)'/>,
-											<xsl:value-of select='orderItemMeta:getCatalogNumber($orderItem)'/>
-										</fields>								
-									</queryTable>
-									</query>
-									-->
 								</widget>
 								</row>
 								<row>
@@ -299,14 +268,6 @@ UIRF Software License are applicable instead of those above.
 											<label displayMask="{resource:getString($constants,'displayCurrencyFormat')}"/>
 											<label/>
 										</editors>
-										<fields>
-											<string/>
-											<string/>
-											<string/>
-											<integer/>
-											<double/>
-											<string/>
-										</fields>
 										<sorts>true,true,true,true,true,true</sorts>
 										<filters>false,false,false,false,false,false</filters>
 										<colAligns>left,left,left,left,left,left</colAligns>
@@ -388,10 +349,23 @@ UIRF Software License are applicable instead of those above.
           <string key="{noteMeta:getText($custNote)}" required="false"/>
       </rpc>
       <rpc key="items">
-	      <table key="itemsTable"/>
+	      <table key="itemsTable">
+			<integer key="{orderItemMeta:getQuantity($orderItem)}" required="true"/>
+			<dropdown key="{invItemMeta:getName($orderItemInvItem)}" required="true"/>
+			<string key="{dictionaryMeta:getEntry($store)}" required="false"/>
+			<double required="false"/>
+			<string required="false"/>
+	      </table>
       </rpc>
       <rpc key="receipts">
-	  	  <table key="receiptsTable"/>
+	  	  <table key="receiptsTable">
+	  	  	<string/>
+			<string/>
+			<string/>
+			<integer/>
+			<double/>
+			<string/>
+	  	  </table>
 	  </rpc>
       <rpc key="reportToBillTo">
 		  <dropdown key="{orgMeta:getName($reportTo)}" required="false"/>
@@ -421,35 +395,6 @@ UIRF Software License are applicable instead of those above.
       
       <string key="{orderMeta:getExternalOrderNumber($order)}" required="false"/>
 	</rpc>
-	<!--
-	<rpc key="query">
-	  <queryNumber key="{orderMeta:getId($order)}" type="integer" required="false"/>
-      <queryNumber key="{orderMeta:getNeededInDays($order)}" type="integer" required="false"/>
-      <dropdown key="{orderMeta:getStatusId($order)}" type="integer" required="false"/> 
-      <queryString key="{orgMeta:getName($organization)}" required="false"/>
-      <queryString key="{orderMeta:getOrderedDate($order)}" required="false"/>
-      <queryString key="{orderMeta:getRequestedBy($order)}" required="false"/>
-      <dropdown key="{orderMeta:getCostCenterId($order)}" type="integer" required="false"/>
-      <queryString key="{orderMeta:getExternalOrderNumber($order)}" required="false"/>
-      
-      <string key="orderType" reset="false"/>
-      
-      <table key="itemsTable"/>
-      <queryNumber key="{orderItemMeta:getQuantity($orderItem)}" type="integer" required="false"/>
-	  <queryString key="{invItemMeta:getName($orderItemInvItem)}" required="false"/>
-	  <queryString key="{dictionaryMeta:getEntry($store)}" required="false"/>
-	  <queryString key="{orderItemMeta:getCatalogNumber($orderItem)}" required="false"/>
- 	  <queryNumber key="{orderItemMeta:getUnitCost($orderItem)}" type="double" required="false"/>
-
-      <table key="receiptsTable"/>
-	  <queryString key="{invReceiptMeta:getReceivedDate($receipt)}" required="false"/>
-	  <queryString key="item" required="false"/>
-	  <queryString key="{invReceiptMeta:getUpc($receipt)}" required="false"/>
-	  <queryNumber key="{invReceiptMeta:getQuantityReceived($receipt)}" type="integer" required="false"/>
-	  <queryNumber key="{invReceiptMeta:getUnitCost($receipt)}" type="double" required="false"/>
-	  <queryString key="{invReceiptMeta:getExternalReference($receipt)}" required="false"/>
-	</rpc>
-	-->
 </screen>
   </xsl:template>
 </xsl:stylesheet>

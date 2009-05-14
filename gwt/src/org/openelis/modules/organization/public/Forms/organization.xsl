@@ -219,76 +219,25 @@ UIRF Software License are applicable instead of those above.
 												</headers>
 												<widths>106,130,130,130,130,56,68,126,100,90,90,90,150</widths>
 												<editors>
-													<dropdown case="mixed" width="90px"/>
-													<textbox case="upper"/>
-													<textbox case="upper"/>
-													<textbox case="upper"/>
-													<textbox case="upper"/>
-
-													<dropdown case="upper" width="40px"/>
-													<textbox case="mixed"/>
-													<dropdown case="mixed" width="110px"/>
-													<textbox case="mixed"/>
-													<textbox case="mixed"/>
-													<textbox case="mixed"/>
-													<textbox case="mixed"/>
-													<textbox case="mixed"/>
+													<dropdown cellKey="{contact:getContactTypeId($cont)}" case="mixed" width="90px"/>
+													<textbox cellKey="{contact:getName($cont)}" case="upper"/>
+													<textbox cellKey="{addr:getMultipleUnit($contAddr)}" case="upper"/>
+													<textbox cellKey="{addr:getStreetAddress($contAddr)}" case="upper"/>
+													<textbox cellKey="{addr:getCity($contAddr)}" case="upper"/>
+													<dropdown cellKey="{addr:getState($contAddr)}" case="upper" width="40px"/>
+													<textbox cellKey="{addr:getZipCode($contAddr)}" case="mixed"/>
+													<dropdown cellKey="{addr:getCountry($contAddr)}" case="mixed" width="110px"/>
+													<textbox cellKey="{addr:getWorkPhone($contAddr)}" case="mixed"/>
+													<textbox cellKey="{addr:getHomePhone($contAddr)}" case="mixed"/>
+													<textbox cellKey="{addr:getCellPhone($contAddr)}" case="mixed"/>
+													<textbox cellKey="{addr:getFaxPhone($contAddr)}" case="mixed"/>
+													<textbox cellKey="{addr:getEmail($contAddr)}" case="mixed"/>
 												</editors>
-
-												<fields>
-													<dropdown key="{contact:getContactTypeId($cont)}" required="true"/>
-													<string key="{contact:getName($cont)}" required="true"/>
-													<string key="{addr:getMultipleUnit($contAddr)}"/>
-													<string key="{addr:getStreetAddress($contAddr)}" required="true"/>
-													<string key="{addr:getCity($contAddr)}" required="true"/>
-													<dropdown key="{addr:getState($contAddr)}"/>
-													<string key="{addr:getZipCode($contAddr)}" required="true"/>
-													<dropdown key="{addr:getCountry($contAddr)}" required="true"/>
-
-													<string key="{addr:getWorkPhone($contAddr)}"/>
-													<string key="{addr:getHomePhone($contAddr)}"/>
-													<string key="{addr:getCellPhone($contAddr)}"/>
-													<string key="{addr:getFaxPhone($contAddr)}"/>
-													<string key="{addr:getEmail($contAddr)}"/>
-												</fields>
 												<sorts>true,true,true,true,true,true,true,true,true,true,true,true,true</sorts>
 												<filters>false,false ,false,false,false,false ,false,false,false,false ,false,false,false</filters>
 
 												<colAligns>left,left,left,left,left,left,left,left,left,left,left,left,left</colAligns>
 											</table>
-											<!--
-											<query>
-												<queryTable maxRows="9" showError="false" title="" width="574px" showScroll="ALWAYS">
-													<headers>
-														<xsl:value-of select="resource:getString($constants,'type')"/>,<xsl:value-of select="resource:getString($constants,'contactName')"/>,<xsl:value-of select="resource:getString($constants,'aptSuite')"/>,<xsl:value-of select="resource:getString($constants,'address')"/>,<xsl:value-of select="resource:getString($constants,'city')"/>,<xsl:value-of select="resource:getString($constants,'state')"/>,<xsl:value-of select="resource:getString($constants,'zipcode')"/>,<xsl:value-of select="resource:getString($constants,'country')"/>,<xsl:value-of select="resource:getString($constants,'workNumber')"/>,<xsl:value-of select="resource:getString($constants,'homeNumber')"/>,<xsl:value-of select="resource:getString($constants,'cellNumber')"/>,<xsl:value-of select="resource:getString($constants,'faxNumber')"/>,<xsl:value-of select="resource:getString($constants,'email')"/>
-
-													</headers>
-													<widths>106,130,130,130,130,56,68,126,100,90,90,90,150</widths>
-													<editors>
-														<dropdown case="mixed" multiSelect="true" width="90px"/>
-														<textbox case="upper"/>
-														<textbox case="upper"/>
-														<textbox case="upper"/>
-														<textbox case="upper"/>
-
-														<dropdown case="upper" multiSelect="true" width="40px"/>
-														<textbox case="mixed"/>
-														<dropdown case="mixed" multiSelect="true" width="110px"/>
-														<textbox case="mixed"/>
-														<textbox case="mixed"/>
-														<textbox case="mixed"/>
-														<textbox case="mixed"/>
-														<textbox case="mixed"/>
-													</editors>
-
-													<fields>
-														<xsl:value-of select="contact:getContactTypeId($cont)"/>,<xsl:value-of select="contact:getName($cont)"/>,<xsl:value-of select="addr:getMultipleUnit($contAddr)"/>,<xsl:value-of select="addr:getStreetAddress($contAddr)"/>,<xsl:value-of select="addr:getCity($contAddr)"/>,<xsl:value-of select="addr:getState($contAddr)"/>,<xsl:value-of select="addr:getZipCode($contAddr)"/>,<xsl:value-of select="addr:getCountry($contAddr)"/>,<xsl:value-of select="addr:getWorkPhone($contAddr)"/>,<xsl:value-of select="addr:getHomePhone($contAddr)"/>,<xsl:value-of select="addr:getCellPhone($contAddr)"/>,<xsl:value-of select="addr:getFaxPhone($contAddr)"/>,<xsl:value-of select="addr:getEmail($contAddr)"/>
-													</fields>
-
-													
-												</queryTable>
-											</query>
-											-->
 										</widget>
 										<widget halign="center" style="WhiteContentPanel">
 											<appButton action="removeRow" key="removeContactButton" onclick="this" style="Button">
@@ -303,7 +252,7 @@ UIRF Software License are applicable instead of those above.
 									<!-- END TAB 1 -->
 								</tab>
 								<!-- START TAB 2 -->
-								<tab text="{resource:getString($constants,'identifier')}">
+								<tab key="identifierTab" text="{resource:getString($constants,'identifier')}">
 									<VerticalPanel padding="0" spacing="0">
 									<widget valign="top">
 										<table key="identifierstsTable" maxRows="9" showError="false" showScroll="ALWAYS" title="" width="auto">
@@ -382,7 +331,7 @@ UIRF Software License are applicable instead of those above.
 										<TablePanel key="noteFormPanel" layout="table" padding="0" spacing="0" style="Form" xsi:type="Table">
 											<row>
 												<text style="Prompt"><xsl:value-of select="resource:getString($constants,'subject')"/>:</text>
-												<textbox case="mixed" key="{note:getSubject($note)}" max="60" showError="false" tab="{note:getText($note)},{note:getText($note)}" width="429px"/>
+												<textbox case="mixed" key="{note:getSubject($note)}" max="60" showError="false" enabledStates="" tab="{note:getText($note)},{note:getText($note)}" width="429px"/>
 												<appButton action="standardNote" key="standardNoteButton" onclick="this" style="Button">
 													<HorizontalPanel>
 														<AbsolutePanel style="StandardNoteButtonImage"/>
@@ -394,7 +343,7 @@ UIRF Software License are applicable instead of those above.
 											<row>
 												<text style="Prompt"><xsl:value-of select="resource:getString($constants,'note')"/>:</text>
 												<widget colspan="2">
-													<textarea case="mixed" height="48px" key="{note:getText($note)}" showError="false" tab="{note:getSubject($note)},{note:getSubject($note)}" width="545px"/>
+													<textarea case="mixed" height="48px" key="{note:getText($note)}" showError="false" enabledStates="" tab="{note:getSubject($note)},{note:getSubject($note)}" width="545px"/>
 												</widget>
 											</row>
 											<row>
@@ -432,7 +381,21 @@ UIRF Software License are applicable instead of those above.
 				<dropdown key="{addr:getState($addr)}" required="false"/>
 				<dropdown key="{addr:getCountry($addr)}" required="true"/>
 				<rpc key="contacts">
-				  <table key="contactsTable"/>
+				  <table key="contactsTable">
+				  	<dropdown key="{contact:getContactTypeId($cont)}" required="true"/>
+					<string key="{contact:getName($cont)}" required="true"/>
+					<string key="{addr:getMultipleUnit($contAddr)}"/>
+					<string key="{addr:getStreetAddress($contAddr)}" required="true"/>
+					<string key="{addr:getCity($contAddr)}" required="true"/>
+					<dropdown key="{addr:getState($contAddr)}" required="false"/>
+					<string key="{addr:getZipCode($contAddr)}" required="true"/>
+					<dropdown key="{addr:getCountry($contAddr)}" required="true"/>
+					<string key="{addr:getWorkPhone($contAddr)}" required="false"/>
+					<string key="{addr:getHomePhone($contAddr)}" required="false"/>
+					<string key="{addr:getCellPhone($contAddr)}" required="false"/>
+					<string key="{addr:getFaxPhone($contAddr)}" required="false"/>
+					<string key="{addr:getEmail($contAddr)}" required="false"/>
+				  </table>
 				</rpc>
 				<rpc key="notes">
 				  <string key="{note:getSubject($note)}" max="60" required="false"/>
@@ -442,42 +405,6 @@ UIRF Software License are applicable instead of those above.
 				</rpc>
 				<string key="orgTabPanel" reset="false">contactsTab</string>
 			</rpc>
-			<!--
-			<rpc key="query">
-				<queryNumber key="{meta:getId($org)}" type="integer"/>
-				<queryString key="{meta:getName($org)}"/>
-				<queryString key="{addr:getStreetAddress($addr)}"/>
-
-				<queryString key="{addr:getMultipleUnit($addr)}" value="query"/>
-				<queryString key="{addr:getCity($addr)}"/>
-				<queryString key="{addr:getZipCode($addr)}"/>
-				<queryString key="{parent:getName($parent)}"/>
-				<queryString key="{note:getSubject($note)}"/>
-				<queryString key="{note:getText($note)}"/>
-				<dropdown key="{addr:getState($addr)}" required="false"/>
-				<dropdown key="{addr:getCountry($addr)}" required="false"/>
-				<queryCheck key="{meta:getIsActive($org)}" required="false"/>
-
-				<table key="contactsTable"/>
-			    <dropdown key="{contact:getContactTypeId($cont)}" required="false"/>
-				<queryString key="{contact:getName($cont)}" required="false"/>
-				<queryString key="{addr:getMultipleUnit($contAddr)}" required="false"/>
-				<queryString key="{addr:getStreetAddress($contAddr)}" required="false"/>
-				<queryString key="{addr:getCity($contAddr)}" required="false"/>
-				<dropdown key="{addr:getState($contAddr)}" required="false"/>
-				<queryString key="{addr:getZipCode($contAddr)}" required="false"/>
-				<queryString key="{addr:getWorkPhone($contAddr)}" required="false"/>
-
-				<queryString key="{addr:getHomePhone($contAddr)}" required="false"/>
-				<queryString key="{addr:getCellPhone($contAddr)}" required="false"/>
-				<queryString key="{addr:getFaxPhone($contAddr)}" required="false"/>
-				<queryString key="{addr:getEmail($contAddr)}" required="false"/>
-				<dropdown key="{addr:getCountry($contAddr)}" required="false"/>
-			</rpc>
-			<rpc key="queryByLetter">
-				<queryString key="{meta:getName($org)}"/>
-			</rpc>
-            -->
 		</screen>
   </xsl:template>
 </xsl:stylesheet>

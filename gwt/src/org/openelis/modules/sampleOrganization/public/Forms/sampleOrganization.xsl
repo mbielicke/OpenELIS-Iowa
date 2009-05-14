@@ -57,13 +57,6 @@
 								<textbox case="mixed"/>
 								<textbox case="mixed"/>
 							</editors>
-							<fields>
-								<dropdown/>
-								<integer/>
-								<dropdown/>
-								<string/>
-								<string/>
-							</fields>
 							<sorts>false,false,false,false,false</sorts>
 							<filters>false,false,false,false,false</filters>
 							<colAligns>left,left,left,left,left</colAligns>
@@ -89,7 +82,13 @@
 				</VerticalPanel>
 			</display>
 			<rpc key="display">
-				<table key="sampleOrganizationTable"/>
+				<table key="sampleOrganizationTable">
+					<dropdown/>
+					<integer/>
+					<dropdown/>
+					<string/>
+					<string/>
+				</table>
 			</rpc>
 		</screen>
 	</xsl:template>

@@ -155,13 +155,9 @@ UIRF Software License are applicable instead of those above.
 												</headers>
 												<widths>120,120</widths>
 												<editors>
-													<textbox/>
-													<textbox/>																								
+													<textbox cellKey="{panelItem:getTestName($pi)}"/>
+													<textbox cellKey="{panelItem:getMethodName($pi)}"/>																								
 												</editors>
-												<fields>
-													<string key="{panelItem:getTestName($pi)}" required="true"/>
-													<string key="{panelItem:getMethodName($pi)}" required="true"/>													
-												</fields>
 												<sorts>false,false</sorts>
 												<filters>false,false</filters>
 												<colAligns>left,left</colAligns>
@@ -173,7 +169,7 @@ UIRF Software License are applicable instead of those above.
 						         <widget style="WhiteContentPanel" valign="middle">
 									       <appButton action="removeRow" onclick="this" style="Button" key="addTestButton">									        
 						                      <widget>
-                						       <text><xsl:value-of select='resource:getString($constants,"moveTestLeft")'/> </text>
+                						       <text><xsl:value-of select='resource:getString($constants,"moveLeft")'/> </text>
 							                 </widget>							               
 						                 </appButton>
 						        </widget>  
@@ -236,7 +232,10 @@ UIRF Software License are applicable instead of those above.
 			 <integer key="{meta:getId($panel)}" type = "integer" required="false" />	 
 			 <string key="{meta:getName($panel)}" max = "20" required="true" />			 
 			 <string key="{meta:getDescription($panel)}" max="60" required="false"/>		 			 					
-		     <table key = "addedTestTable"/>
+		     <table key = "addedTestTable">
+		     	<string key="{panelItem:getTestName($pi)}" required="true"/>
+				<string key="{panelItem:getMethodName($pi)}" required="true"/>	
+		     </table>
 		   </rpc>
 		</screen>
   </xsl:template>

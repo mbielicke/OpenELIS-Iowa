@@ -173,41 +173,17 @@ UIRF Software License are applicable instead of those above.
 										<xsl:value-of select='resource:getString($constants,"isAvailable")'/></headers>
 										<widths>225,275,80</widths>
 										<editors>
-											<autoComplete cat="storageUnit" case="lower" serviceUrl="OpenELISServlet?service=org.openelis.modules.storage.server.StorageLocationService" width="150px">
+											<autoComplete cellKey="{storageUnitMeta:getDescription($storageLocChildUnit)}" cat="storageUnit" case="lower" serviceUrl="OpenELISServlet?service=org.openelis.modules.storage.server.StorageLocationService" width="150px">
 												<headers>Desc,Category</headers>
 												<widths>180,70</widths>
 											</autoComplete>
-											<textbox case="mixed" max="80"/>
-											<check/>
+											<textbox cellKey="{storageLocationMeta:getLocation($storageLocChild)}" case="mixed" max="80"/>
+											<check cellKey="{storageLocationMeta:getIsAvailable($storageLocChild)}">Y</check>
 										</editors>
-										<fields>
-											<dropdown key="{storageUnitMeta:getDescription($storageLocChildUnit)}" required="true"/>
-											<string key="{storageLocationMeta:getLocation($storageLocChild)}" required="true"/>
-											<check key="{storageLocationMeta:getIsAvailable($storageLocChild)}">Y</check>
-										</fields>
 										<sorts>true,true,true</sorts>
 										<filters>false,false ,false</filters>
 										<colAligns>left,left,left</colAligns>
 									</table>
-									<!--
-									<query>
-									<queryTable width="auto" maxRows="11" title="" showError="false" showScroll="ALWAYS">
-										<headers><xsl:value-of select='resource:getString($constants,"storageUnit")'/>,<xsl:value-of select='resource:getString($constants,"location")'/>,
-										<xsl:value-of select='resource:getString($constants,"isAvailable")'/></headers>
-										<widths>225,275,80</widths>
-										<editors>
-											<textbox case="lower"/>
-											<textbox case="mixed"/>
-											<check threeState="true"/>
-										</editors>
-										<fields>
-											<xsl:value-of select='storageUnitMeta:getDescription($storageLocChildUnit)'/>,
-											<xsl:value-of select='storageLocationMeta:getLocation($storageLocChild)'/>,
-											<xsl:value-of select='storageLocationMeta:getIsAvailable($storageLocChild)'/>
-										</fields>
-									</queryTable>
-									</query>             
-									-->
                            </widget>
 		                <widget halign = "center">
                             <appButton action="removeRow" onclick="this" key = "removeEntryButton">
@@ -228,26 +204,12 @@ UIRF Software License are applicable instead of those above.
     <dropdown  key="{storageUnitMeta:getDescription($storageUnit)}" type="integer" required="true"/>
     <string key="{storageLocationMeta:getLocation($storageLoc)}" max="80" required="true"/>
     <check key="{storageLocationMeta:getIsAvailable($storageLoc)}" required="false"/>
-    <table key="childStorageLocsTable"/>
+    <table key="childStorageLocsTable">
+    	<dropdown key="{storageUnitMeta:getDescription($storageLocChildUnit)}" required="true"/>
+		<string key="{storageLocationMeta:getLocation($storageLocChild)}" required="true"/>
+		<check key="{storageLocationMeta:getIsAvailable($storageLocChild)}">Y</check>
+    </table>
 	</rpc>
-	<!--
-	<rpc key="query">
-	<queryNumber key="{storageLocationMeta:getId($storageLoc)}" type="integer" required="false"/>
-    <queryString key="{storageLocationMeta:getName($storageLoc)}" required="false"/>
-    <queryString key="{storageLocationMeta:getLocation($storageLoc)}" required="false"/>
-    <queryString key="{storageUnitMeta:getDescription($storageUnit)}" required="false"/>
-    <queryCheck key="{storageLocationMeta:getIsAvailable($storageLoc)}" required="false"/>
-    <table key="childStorageLocsTable"/>
-    
-
-	<queryString key="{storageUnitMeta:getDescription($storageLocChildUnit)}" required="false"/>
-	<queryString key="{storageLocationMeta:getLocation($storageLocChild)}" required="false"/>
-	<queryCheck key="{storageLocationMeta:getIsAvailable($storageLocChild)}" required="false"/>
-	</rpc>
-	<rpc key="queryByLetter">
-		<queryString key="{storageLocationMeta:getName($storageLoc)}"/>
-	</rpc>
-	-->
 </screen>
   </xsl:template>
 </xsl:stylesheet>

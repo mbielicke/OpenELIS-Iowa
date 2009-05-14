@@ -43,6 +43,7 @@ import org.openelis.gwt.common.data.QueryStringField;
 import org.openelis.gwt.common.data.TableDataModel;
 import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.screen.CommandChain;
+import org.openelis.gwt.screen.ScreenTab;
 import org.openelis.gwt.screen.ScreenTableWidget;
 import org.openelis.gwt.screen.ScreenTextArea;
 import org.openelis.gwt.screen.ScreenTextBox;
@@ -71,6 +72,7 @@ public class ProviderScreen extends OpenELISScreenForm<ProviderForm,Query<TableD
     private ScreenTextArea noteArea = null;
     private TableWidget provAddController = null;  
     private Dropdown displayType = null;
+    private ScreenTab tabPanel;
     private KeyListManager keyList = new KeyListManager();       
     
     private ProviderMetaMap ProvMeta = new ProviderMetaMap(); 
@@ -156,8 +158,7 @@ public class ProviderScreen extends OpenELISScreenForm<ProviderForm,Query<TableD
         //subjectBox = (TextBox)getWidget(ProvMeta.getNote().getSubject());
         noteArea = (ScreenTextArea)widgets.get(ProvMeta.getNote().getText());
         svp = (ScreenVertical) widgets.get("notesPanel");
-        
-        //noteTab = (TabPanel)getWidget("provTabPanel");  
+        tabPanel = (ScreenTab)widgets.get("provTabPanel");
         
         displayType = (Dropdown)getWidget(ProvMeta.getTypeId());
         
@@ -198,8 +199,6 @@ public class ProviderScreen extends OpenELISScreenForm<ProviderForm,Query<TableD
        commitAddChain.add(0,checkModels);
        
        super.afterDraw(success);
-       
-       form.addresses.providerAddressTable.setValue(provAddController.model.getData());
     }
     
        
@@ -246,20 +245,16 @@ public class ProviderScreen extends OpenELISScreenForm<ProviderForm,Query<TableD
     
     public boolean onBeforeTabSelected(SourcesTabEvents sender, int index) {
         if(state != State.QUERY){
-            if (index == 0 && !form.addresses.load) {
-                form.provTabPanel = "addressesTab";
+            if (index == 0 && !form.addresses.load) 
                 fillAddressModel();
-            } else if (index == 1 && !form.notes.load) {
-                form.provTabPanel = "notesTab";
+            else if (index == 1 && !form.notes.load) 
                 fillNotesModel();
-            }
         }
         return true;
     }
 
     public void onTabSelected(SourcesTabEvents sender, int tabIndex) {
-    	// TODO Auto-generated method stub
-    	
+        form.provTabPanel = tabPanel.getSelectedTabKey();
     }
     
     public boolean canAdd(TableWidget widget,TableDataRow set, int row) {

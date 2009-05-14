@@ -56,11 +56,11 @@
 								<textbox case="mixed"/>
 								<check/>
 							</editors>
-							<fields>
+							<!-- <fields>
 								<dropdown/>
 								<string/>
 								<check/>
-							</fields>
+							</fields>-->
 							<sorts>false,false,false</sorts>
 							<filters>false,false,false</filters>
 							<colAligns>left,left,left</colAligns>
@@ -86,7 +86,11 @@
 				</VerticalPanel>
 			</display>
 			<rpc key="display">
-				<table key="sampleProjectTable"/>
+				<table key="sampleProjectTable">
+					<dropdown/>
+					<string/>
+					<check/>
+				</table>
 			</rpc>
 		</screen>
 	</xsl:template>

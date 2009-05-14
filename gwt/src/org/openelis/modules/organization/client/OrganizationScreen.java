@@ -31,6 +31,7 @@ import org.openelis.gwt.common.data.QueryStringField;
 import org.openelis.gwt.common.data.TableDataModel;
 import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.screen.CommandChain;
+import org.openelis.gwt.screen.ScreenTab;
 import org.openelis.gwt.screen.ScreenTextArea;
 import org.openelis.gwt.screen.ScreenTextBox;
 import org.openelis.gwt.screen.ScreenVertical;
@@ -53,6 +54,7 @@ import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.SourcesTabEvents;
 import com.google.gwt.user.client.ui.TabListener;
+import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
@@ -70,7 +72,7 @@ public class OrganizationScreen extends OpenELISScreenForm<OrganizationForm,Quer
     private KeyListManager         keyList = new KeyListManager();
     private Dropdown               states;
     private Dropdown               countries;
-    private QueryTable             queryContactsTable;
+    private ScreenTab              tabPanel;
     
     private OrganizationMetaMap OrgMeta = new OrganizationMetaMap();
     
@@ -177,6 +179,7 @@ public class OrganizationScreen extends OpenELISScreenForm<OrganizationForm,Quer
         orgName = (TextBox)getWidget(OrgMeta.getName());
         noteText = (ScreenTextArea)widgets.get(OrgMeta.getNote().getText());
         orgId = (ScreenTextBox)widgets.get(OrgMeta.getId());
+        tabPanel = (ScreenTab)widgets.get("orgTabPanel");
    
         //queryContactsTable = (QueryTable)((ScreenTableWidget)widgets.get("contactsTable")).getQueryWidget().getWidget();
    
@@ -211,10 +214,8 @@ public class OrganizationScreen extends OpenELISScreenForm<OrganizationForm,Quer
         deleteChain.add(0,checkModels);
         commitUpdateChain.add(0,checkModels);
         commitAddChain.add(0,checkModels);
-        
-        
+
         super.afterDraw(success);
-        form.contacts.contacts.setValue(contactsTable.model.getData());
     }
     
     public void setContactTypesModel(TableDataModel<TableDataRow<Integer>> typesModel) {
@@ -270,6 +271,7 @@ public class OrganizationScreen extends OpenELISScreenForm<OrganizationForm,Quer
 
 
     public void onTabSelected(SourcesTabEvents sender, int tabIndex) {
+        form.orgTabPanel = tabPanel.getSelectedTabKey();
     }
 
     /*
@@ -342,18 +344,9 @@ public class OrganizationScreen extends OpenELISScreenForm<OrganizationForm,Quer
     }
 
     private void onStandardNoteButtonClick() {
-        PopupPanel standardNotePopupPanel = new PopupPanel(false, true);
-        ScreenWindow pickerWindow = new ScreenWindow(standardNotePopupPanel,
-                                                     "Choose Standard Note",
-                                                     "standardNotePicker",
-                                                     "Loading...");
-        pickerWindow.setContent(new StandardNotePickerScreen((TextArea)getWidget(OrgMeta.getNote().getText())));
-
-        standardNotePopupPanel.add(pickerWindow);
-        int left = this.getAbsoluteLeft();
-        int top = this.getAbsoluteTop();
-        standardNotePopupPanel.setPopupPosition(left, top);
-        standardNotePopupPanel.show();
+        ScreenWindow modal = new ScreenWindow(null,"Standard Note Screen","standardNoteScreen","",true,false);
+        modal.setName(consts.get("standardNote"));
+        modal.setContent(new StandardNotePickerScreen((TextBox)getWidget(OrgMeta.getNote().getSubject()), (TextArea)getWidget(OrgMeta.getNote().getText())));
     }
 
     private void onRemoveContactRowButtonClick() {

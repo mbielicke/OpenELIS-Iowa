@@ -52,15 +52,25 @@
 			serviceUrl="ElisService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 			<display>
 				<VerticalPanel spacing="0" padding="0">
-					<VerticalPanel style="WhiteContentPanel" spacing="0"
-						padding="0" width="300px">
+					<HorizontalPanel style="WhiteContentPanel" spacing="0" padding="0">
+					<TablePanel style="Form">
+				<row>
+					<text style="Prompt">Subject:</text>
+					<textbox case="mixed" key="subject" width="250px" enabledStates="default"/>
+				</row>
+				<row>
+					<text style="Prompt">Text:</text>
+					<textarea case="mixed" key="text" width="250px" height="415px" enabledStates="default"/>
+				</row>
+				<row>
+				</row>
+				</TablePanel>
+					<VerticalPanel spacing="0" padding="0" width="250px">
 						<HorizontalPanel spacing="0">
 							<HorizontalPanel spacing="3">
-								<textbox key="findTextBox" width="200px" showError="false"
-									alwaysEnabled="true" />
+								<textbox key="findTextBox" width="190px" showError="false" enabledStates="default" />
 							</HorizontalPanel>
-							<appButton action="find" onclick="this" style="Button"
-								key="findButton" alwaysEnabled="true">
+							<appButton action="find" onclick="this" style="Button" key="findButton" enabledStates="default">
 								<HorizontalPanel>
 									<AbsolutePanel style="FindButtonImage" />
 									<text>
@@ -69,14 +79,9 @@
 								</HorizontalPanel>
 							</appButton>
 						</HorizontalPanel>
-						<!-- <VerticalPanel key="treeContainer" height="250px"
-							width="320px" overflow="auto">-->
-							<!--tree-->
-							<!-- <pagedtree key="noteTree" vertical="true" height="250px"
-								width="320px" itemsPerPage="1000" title="" />-->
 							<tree-table key="noteTree" width="auto" showScroll="ALWAYS" manager="this" treeCall="this" maxRows="10" enable="true" showError="false">
 								<headers>Category/Name</headers>
-								<widths>280</widths>
+								<widths>230</widths>
 								<leaves>
 									<leaf type="top">
 										<editors>
@@ -96,12 +101,14 @@
 									</leaf>
 								</leaves>
 							</tree-table>
-						<!-- </VerticalPanel>-->
-						<HorizontalPanel spacing="10">
-							<!-- text area-->
-							<textarea key="noteText" width="300px" height="200px" showError="false" />
-						</HorizontalPanel>
+						<appButton action="move" onclick="this" style="Button" key="moveButton" enabledStates="default">
+								<widget>
+                					<text><xsl:value-of select='resource:getString($constants,"moveLeft")'/> </text>
+							    </widget>			
+							</appButton>
+							<textarea key="moveText" width="255px" height="150px" showError="false" />
 					</VerticalPanel>
+					</HorizontalPanel>
 					<!--button panel code-->
 					<AbsolutePanel spacing="0" style="ButtonPanelContainer"
 						align="center">
