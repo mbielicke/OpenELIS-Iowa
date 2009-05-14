@@ -170,46 +170,44 @@ UIRF Software License are applicable instead of those above.
       <VerticalPanel>
        <widget valign="top">
         <table width= "615px" maxRows = "10" key= "providerAddressTable" manager = "this" title= "" showError="false" showScroll="ALWAYS">
-         <headers><xsl:value-of select='resource:getString($constants,"location")'/>,<xsl:value-of select='resource:getString($constants,"externalId")'/>,<xsl:value-of select='resource:getString($constants,"aptSuite")'/>,
-				  <xsl:value-of select='resource:getString($constants,"address")'/>,<xsl:value-of select='resource:getString($constants,"city")'/>,
-                  <xsl:value-of select='resource:getString($constants,"state")'/>, <xsl:value-of select='resource:getString($constants,"country")'/>,
-                  <xsl:value-of select='resource:getString($constants,"zipcode")'/>,<xsl:value-of select='resource:getString($constants,"workNumber")'/>,<xsl:value-of select='resource:getString($constants,"homeNumber")'/>,
-				  <xsl:value-of select='resource:getString($constants,"cellNumber")'/>,<xsl:value-of select='resource:getString($constants,"faxNumber")'/>,
-				  <xsl:value-of select='resource:getString($constants,"email")'/></headers>
-		 <widths>115,130,130,130,130,60,130,100,90,90,90,150,145</widths>
-		 <editors>
-		  <textbox case= "mixed" max="50"/>
-		  <textbox case= "mixed" max="10"/>
-		  <textbox case= "mixed" max="30"/>
-		  <textbox case= "mixed" max="30"/>
-		  <textbox case= "mixed" max="30"/>		  
-			<dropdown  case="upper" width="45px"/>
-			<dropdown case="mixed" width="110px"/>
-			<textbox case= "mixed" max="10"/>
-			<textbox case= "mixed" max="21"/>
-			<textbox case= "mixed" max="16"/>
-			<textbox case= "mixed" max="16"/>
-			<textbox case= "mixed" max="16"/>
-			<textbox case= "mixed" max="80"/>		 
-		</editors>
-		 <fields>
-		  <string key = "{location:getLocation($loc)}" required = "true"/>
-		  <string key="{location:getExternalId($loc)}"/>
-		  <string key="{addr:getMultipleUnit($locAddr)}"/>
-		  <string key="{addr:getStreetAddress($locAddr)}" required="true"/>
-		  <string key="{addr:getCity($locAddr)}" required="true"/>
-		  <dropdown key="{addr:getState($locAddr)}"/>		  
-		  <dropdown key="{addr:getCountry($locAddr)}" required="true"/>
-		  <string key="{addr:getZipCode($locAddr)}" required="true"/>
-		  <string key="{addr:getWorkPhone($locAddr)}"/>
-		  <string key="{addr:getHomePhone($locAddr)}"/>
-		  <string key="{addr:getCellPhone($locAddr)}"/>
-		  <string key="{addr:getFaxPhone($locAddr)}"/>
-		  <string key="{addr:getEmail($locAddr)}"/>  
-		</fields>
-		  <sorts>true,true,true,true,true,true,true,true,true,true,true,true,true</sorts>
-		  <filters>false,false,false,false,false,false,false,false,false,false,false,false,false</filters>
-		  <colAligns>left,left,left,left,left,left,left,left,left,left,left,left,left</colAligns>
+	         <headers><xsl:value-of select='resource:getString($constants,"location")'/>,<xsl:value-of select='resource:getString($constants,"externalId")'/>,<xsl:value-of select='resource:getString($constants,"aptSuite")'/>,
+					  <xsl:value-of select='resource:getString($constants,"address")'/>,<xsl:value-of select='resource:getString($constants,"city")'/>,
+	                  <xsl:value-of select='resource:getString($constants,"state")'/>, <xsl:value-of select='resource:getString($constants,"country")'/>,
+	                  <xsl:value-of select='resource:getString($constants,"zipcode")'/>,<xsl:value-of select='resource:getString($constants,"workNumber")'/>,<xsl:value-of select='resource:getString($constants,"homeNumber")'/>,
+					  <xsl:value-of select='resource:getString($constants,"cellNumber")'/>,<xsl:value-of select='resource:getString($constants,"faxNumber")'/>,
+					  <xsl:value-of select='resource:getString($constants,"email")'/></headers>
+			 <widths>115,130,130,130,130,60,130,100,90,90,90,150,145</widths>
+			 <editors>
+			  	<textbox cellKey = "{location:getLocation($loc)}" case="mixed" max="50"/>
+		  		<textbox cellKey="{location:getExternalId($loc)}" case= "mixed" max="10"/>
+		  		<textbox cellKey="{addr:getMultipleUnit($locAddr)}" case= "mixed" max="30"/>
+		  		<textbox cellKey="{addr:getStreetAddress($locAddr)}" case= "mixed" max="30"/>
+		  		<textbox cellKey="{addr:getCity($locAddr)}" case= "mixed" max="30"/>		  
+				<dropdown  cellKey="{addr:getState($locAddr)}" case="upper" width="45px"/>
+				<dropdown cellKey="{addr:getCountry($locAddr)}" case="mixed" width="110px"/>
+				<textbox cellKey="{addr:getZipCode($locAddr)}" case= "mixed" max="10"/>
+				<textbox cellKey="{addr:getWorkPhone($locAddr)}" case= "mixed" max="21"/>
+				<textbox cellKey="{addr:getHomePhone($locAddr)}" case= "mixed" max="16"/>
+				<textbox cellKey="{addr:getCellPhone($locAddr)}" case= "mixed" max="16"/>
+				<textbox cellKey="{addr:getFaxPhone($locAddr)}" case= "mixed" max="16"/>
+				<textbox cellKey="{addr:getEmail($locAddr)}" case= "mixed" max="80"/>		 
+<!--				<textbox case="mixed" max="50"/>-->
+<!--		  		<textbox case= "mixed" max="10"/>-->
+<!--		  		<textbox case= "mixed" max="30"/>-->
+<!--		  		<textbox case= "mixed" max="30"/>-->
+<!--		  		<textbox case= "mixed" max="30"/>		  -->
+<!--				<dropdown case="upper" width="45px"/>-->
+<!--				<dropdown case="mixed" width="110px"/>-->
+<!--				<textbox case= "mixed" max="10"/>-->
+<!--				<textbox case= "mixed" max="21"/>-->
+<!--				<textbox case= "mixed" max="16"/>-->
+<!--				<textbox case= "mixed" max="16"/>-->
+<!--				<textbox case= "mixed" max="16"/>-->
+<!--				<textbox case= "mixed" max="80"/>	-->
+			</editors>
+			<sorts>true,true,true,true,true,true,true,true,true,true,true,true,true</sorts>
+			<filters>false,false,false,false,false,false,false,false,false,false,false,false,false</filters>
+			<colAligns>left,left,left,left,left,left,left,left,left,left,left,left,left</colAligns>
 	    </table>
 	  </widget>							
 							
@@ -279,7 +277,21 @@ UIRF Software License are applicable instead of those above.
   <string key="{meta:getMiddleName($pro)}"  required="false"/>	
   <dropdown key="{meta:getTypeId($pro)}" type="integer" required = "true"/>
    <rpc key = "addresses">
-    <table key="providerAddressTable"/>						      		       
+    <table key="providerAddressTable">
+    	<string key = "{location:getLocation($loc)}" required = "true"/>
+	  	<string key="{location:getExternalId($loc)}" required="false"/>
+	  	<string key="{addr:getMultipleUnit($locAddr)}" required="false"/>
+	  	<string key="{addr:getStreetAddress($locAddr)}" required="true"/>
+	  	<string key="{addr:getCity($locAddr)}" required="true"/>
+	  	<dropdown key="{addr:getState($locAddr)}" required="false"/>		  
+	  	<dropdown key="{addr:getCountry($locAddr)}" required="true"/>
+	  	<string key="{addr:getZipCode($locAddr)}" required="true"/>
+	  	<string key="{addr:getWorkPhone($locAddr)}" required="false"/>
+	  	<string key="{addr:getHomePhone($locAddr)}" required="false"/>
+	  	<string key="{addr:getCellPhone($locAddr)}" required="false"/>
+	  	<string key="{addr:getFaxPhone($locAddr)}" required="false"/>
+	  	<string key="{addr:getEmail($locAddr)}" required="false"/>  
+    </table>						      		       
    </rpc>
    <rpc key = "notes"> 
     <string key="{note:getSubject($note)}" required="false"/>

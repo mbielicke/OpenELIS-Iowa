@@ -136,8 +136,6 @@ public class PanelScreen extends OpenELISScreenForm<PanelForm,Query<TableDataRow
         updateChain.add(afterUpdate);  
                                 
         super.afterDraw(success);
-        form.addedTestTable.setValue(addTestModel.getData());
-                        
   }
     
     public void query() {        

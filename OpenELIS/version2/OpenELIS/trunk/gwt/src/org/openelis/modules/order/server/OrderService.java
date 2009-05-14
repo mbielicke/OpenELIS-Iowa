@@ -457,7 +457,7 @@ public class OrderService implements AppScreenFormServiceInt<OrderForm, OrderQue
         }
     }
     
-    public ItemsForm loadContacts(ItemsForm rpc) throws RPCException {
+    public ItemsForm loadItems(ItemsForm rpc) throws RPCException {
         loadItemsForm(rpc.entityKey, rpc.forDuplicate, rpc);
         return rpc;
     }

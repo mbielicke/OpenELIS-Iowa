@@ -101,8 +101,6 @@ public class StorageLocationScreen extends OpenELISScreenForm<StorageLocationFor
         childTable.model.enableAutoAdd(false);
 
 		super.afterDraw(success);
-        
-        form.childStorageLocsTable.setValue(childTable.model.getData());
 	}
 	
 	public void query() {

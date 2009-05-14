@@ -208,10 +208,6 @@ UIRF Software License are applicable instead of those above.
 									<label/>
 									<label/>
 								</editors>
-								<fields>
-									<integer required="true"/>
-									<string required="true"/>
-								</fields>
 								<sorts>false,false</sorts>
 								<filters>false,false</filters>
 								<colAligns>left,left</colAligns>
@@ -224,11 +220,8 @@ UIRF Software License are applicable instead of those above.
 							<headers><xsl:value-of select="resource:getString($constants,'trackingNums')"/></headers>
 							<widths>180</widths>
 							<editors>
-								<textbox case="mixed" max="30"/>
+								<textbox cellKey="{trackingMeta:getTrackingNumber($tracking)}" case="mixed" max="30"/>
 							</editors>
-							<fields>
-								<string key="{trackingMeta:getTrackingNumber($tracking)}" required="true"/>
-							</fields>
 							<sorts>false</sorts>
 							<filters>false</filters>
 							<colAligns>left</colAligns>
@@ -297,8 +290,13 @@ UIRF Software License are applicable instead of those above.
         <integer key="systemUserId" required="false"/>
 		
 		<rpc key="shippingItems">
-    		<table key="itemsTable"/>
-	   		<table key="trackingNumbersTable"/>
+    		<table key="itemsTable">
+    			<integer required="true"/>
+				<string required="true"/>
+    		</table>
+	   		<table key="trackingNumbersTable">
+	   			<string key="{trackingMeta:getTrackingNumber($tracking)}" required="true"/>
+	   		</table>
 	   	</rpc>
 	   	
 	   	<rpc key="orderShippingNotes">
@@ -308,21 +306,6 @@ UIRF Software License are applicable instead of those above.
  		<string key="shippingTabPanel" reset="false">itemsTab</string>  
  		<model key="unlockModel"/>
 	</rpc>
-	<!--
-	<rpc key="query">
-		<dropdown key="{meta:getStatusId($shipping)}"/>
-		<queryNumber key="{meta:getNumberOfPackages($shipping)}" type="integer"/>
-		<queryNumber key="{meta:getCost($shipping)}" type="double"/>
-		<dropdown key="{meta:getShippedFromId($shipping)}"/>
-		<queryString key="{orgMeta:getName($organization)}"/>
-		<queryDate key="{meta:getProcessedDate($shipping)}" begin="0" end="2"/>
-   	    <queryDate key="{meta:getShippedDate($shipping)}" begin="0" end="2"/>
-	    <dropdown key="{meta:getShippedMethodId($shipping)}" required="false"/>
-	    
-	    <table key="trackingNumbersTable"/>
-	    <queryString key="{trackingMeta:getTrackingNumber($tracking)}" required="false"/>
-	</rpc>
-	-->
 </screen>
   </xsl:template>
 </xsl:stylesheet>

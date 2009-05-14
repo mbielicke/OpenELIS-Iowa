@@ -129,14 +129,8 @@ UIRF Software License are applicable instead of those above.
 							</buttonPanel>
 						</AbsolutePanel>
 						<!--end button panel-->
-						 <VerticalPanel spacing="0" padding="0" height="235px" style="WhiteContentPanel">
+						 <VerticalPanel spacing="0" padding="0" height="235px" width="620px" style="WhiteContentPanel">
 							<TablePanel style="Form">
-								<!--<row>
-								   <text style="Prompt"><xsl:value-of select="resource:getString($constants,'id')"/>:</text>
-								   <widget colspan = "6">	
-									<textbox  key="{meta:getId($method)}" tab="{meta:getName($method)},{meta:getActiveEnd($method)}" width="50px"/>
-								   </widget>
-								</row> 	-->
 								<row>
 								  <text style="Prompt"><xsl:value-of select="resource:getString($constants,'name')"/>:</text>
 								  <widget colspan = "6">	

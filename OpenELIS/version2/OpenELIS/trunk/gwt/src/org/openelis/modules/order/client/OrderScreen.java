@@ -45,6 +45,7 @@ import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.screen.CommandChain;
 import org.openelis.gwt.screen.ScreenDropDownWidget;
 import org.openelis.gwt.screen.ScreenMenuPanel;
+import org.openelis.gwt.screen.ScreenTab;
 import org.openelis.gwt.screen.ScreenTextArea;
 import org.openelis.gwt.screen.ScreenTextBox;
 import org.openelis.gwt.screen.ScreenWindow;
@@ -86,7 +87,7 @@ public class OrderScreen extends OpenELISScreenForm<OrderForm,OrderQuery> implem
     private Dropdown status, shipFrom, costCenter;
     
     private TableWidget itemsTable, receiptsTable;
-    
+    private ScreenTab tabPanel;
     private String orderType;
     
     private OrderMetaMap OrderMeta = new OrderMetaMap();
@@ -244,6 +245,7 @@ public class OrderScreen extends OpenELISScreenForm<OrderForm,OrderQuery> implem
         shipFrom = (Dropdown)getWidget(OrderMeta.getShipFromId());
         
         duplicateMenuPanel = (ScreenMenuPanel)widgets.get("optionsMenu");
+        tabPanel = (ScreenTab)widgets.get("orderTabPanel");
         
         //buttons
         removeItemButton = (AppButton)getWidget("removeItemButton");
@@ -302,34 +304,7 @@ public class OrderScreen extends OpenELISScreenForm<OrderForm,OrderQuery> implem
         commitAddChain.add(0,checkModels);
         
         super.afterDraw(sucess);
-        
-        form.items.itemsTable.setValue(itemsTable.model.getData());
-        form.receipts.receiptsTable.setValue(receiptsTable.model.getData());
     }
-     
-    /*protected AsyncCallback afterCommitAdd = new AsyncCallback() {
-         public void onSuccess(Object result){
-             Window.alert("AFTER!!");
-             itemsController.setAutoAdd(false);
-             itemsController.reset();
-         }
-         
-         public void onFailure(Throwable caught){
-             
-         }
-      };*/
-      
-    /*
-   protected AsyncCallback afterCommitQuery = new AsyncCallback() {
-          public void onFailure(Throwable caught) {
-          
-          }
-
-          public void onSuccess(Object result) {
-              rpc.setFieldValue("orderType", orderType);    
-          }
-    };
-    */
     
     public void update() {
         form.originalStatus = (Integer)((TableDataRow<Integer>)status.getSelections().get(0)).key;
@@ -340,8 +315,6 @@ public class OrderScreen extends OpenELISScreenForm<OrderForm,OrderQuery> implem
     public void query() {
         super.query();
         
-        //rpc.setFieldValue("orderType", orderType);
-
         orderNum.setFocus(true);
         
         //disable the remove row button, standard note buttons, and note text fields
@@ -459,7 +432,9 @@ public class OrderScreen extends OpenELISScreenForm<OrderForm,OrderQuery> implem
         return true;
     }
 
-    public void onTabSelected(SourcesTabEvents sender, int tabIndex) { }
+    public void onTabSelected(SourcesTabEvents sender, int tabIndex) {
+        form.orderTabPanel = tabPanel.getSelectedTabKey();
+    }
 
     //
     //start table manager methods
@@ -481,7 +456,7 @@ public class OrderScreen extends OpenELISScreenForm<OrderForm,OrderQuery> implem
     }
 
     public boolean canSelect(TableWidget widget, TableDataRow set, int row) {
-        if(state == State.ADD || state == State.UPDATE)           
+        if(state == State.ADD || state == State.UPDATE || state == State.QUERY)           
             return true;
         return false;
     }

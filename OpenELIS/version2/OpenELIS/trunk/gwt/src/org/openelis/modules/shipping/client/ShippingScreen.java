@@ -46,6 +46,7 @@ import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.event.CommandListener;
 import org.openelis.gwt.screen.CommandChain;
 import org.openelis.gwt.screen.ScreenDropDownWidget;
+import org.openelis.gwt.screen.ScreenTab;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.ButtonPanel;
@@ -69,6 +70,7 @@ public class ShippingScreen extends OpenELISScreenForm<ShippingForm, Query<Table
     private Dropdown status, shippedFrom, shippedMethod;
     private TableDataModel<TableDataRow<Integer>> itemsShippedModel, checkedOrderIds;
     private ShippingDataService data;
+    private ScreenTab tabPanel;
     private boolean closeOnCommitAbort = false;
     
     private ShippingMetaMap ShippingMeta = new ShippingMetaMap();
@@ -194,6 +196,8 @@ public class ShippingScreen extends OpenELISScreenForm<ShippingForm, Query<Table
         trackingNumbersTable = (TableWidget)getWidget("trackingNumbersTable");
         trackingNumbersTable.model.enableAutoAdd(false);
 
+        tabPanel = (ScreenTab)widgets.get("shippingTabPanel");
+        
         ButtonPanel bpanel = (ButtonPanel)getWidget("buttons");
         
         CommandChain chain = new CommandChain();
@@ -226,9 +230,6 @@ public class ShippingScreen extends OpenELISScreenForm<ShippingForm, Query<Table
         
         super.afterDraw(success);
         
-        form.shippingItemsForm.itemsTable.setValue(itemsTable.model.getData());
-        form.shippingItemsForm.trackingNumbersTable.setValue(trackingNumbersTable.model.getData());
-        
         if(data != null)
             add();
     }
@@ -238,7 +239,9 @@ public class ShippingScreen extends OpenELISScreenForm<ShippingForm, Query<Table
         }
         public void onSuccess(Object result) {
             trackingNumbersTable.model.enableAutoAdd(false);
-            target.performCommand(Action.Commited, this);
+            
+            if(target != null)
+                target.performCommand(Action.Commited, this);
             
             if(closeOnCommitAbort)
                 window.close();
@@ -330,7 +333,8 @@ public class ShippingScreen extends OpenELISScreenForm<ShippingForm, Query<Table
         trackingNumbersTable.model.enableAutoAdd(false);
         super.abort();
         
-        target.performCommand(Action.Aborted, this);
+        if(target != null)
+            target.performCommand(Action.Aborted, this);
         
         if(closeOnCommitAbort)
             window.close();
@@ -405,7 +409,9 @@ public class ShippingScreen extends OpenELISScreenForm<ShippingForm, Query<Table
         return true;
     }
 
-    public void onTabSelected(SourcesTabEvents sender, int tabIndex) { }
+    public void onTabSelected(SourcesTabEvents sender, int tabIndex) { 
+        form.shippingTabPanel = tabPanel.getSelectedTabKey();
+    }
     
     private void fillShippingItems() {
         if(form.entityKey == null)
