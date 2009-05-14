@@ -219,8 +219,6 @@ public class InventoryReceiptScreen extends OpenELISScreenForm<InventoryReceiptF
         commitAddChain.add(afterCommitAdd);
         
         super.afterDraw(sucess);
-        
-        form.receiptsTable.setValue(receiptsTable.model.getData());
     }
     
     protected AsyncCallback afterUpdate = new AsyncCallback() {

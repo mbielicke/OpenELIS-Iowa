@@ -432,11 +432,9 @@ public class FillOrderService implements AppScreenFormServiceInt<FillOrderForm, 
         TreeDataModel treeModel = rpc.originalOrderItemsTree.getValue();
         treeModel.clear();
         for(int i=0; i<orderItems.size(); i++){
-            ///
             OrderItemDO itemDO = (OrderItemDO)orderItems.get(i);
-            //TreeDataItem row = treeModel.createTreeItem("top");
-            TreeDataItem row = treeModel.createTreeItem("orderItem");
-            
+            TreeDataItem row = treeModel.createTreeItem("top");
+                        
             row.cells[0].setValue(itemDO.getQuantity());
             row.cells[1].setValue(rpc.entityKey);
             
@@ -447,17 +445,6 @@ public class FillOrderService implements AppScreenFormServiceInt<FillOrderForm, 
                 ((DropDownField<Integer>)row.cells[2]).setValue(invItemModel.get(0));
             }
             
-            /*
-            if(itemDO.getLocationId() != null){
-                TableDataModel<TableDataRow<Integer>> locModel = new TableDataModel<TableDataRow<Integer>>();
-                locModel.add(new TableDataRow<Integer>(itemDO.getLocationId(),new StringObject(itemDO.getLocation())));
-                ((DropDownField<Integer>)row.get(3)).setModel(locModel);
-                ((DropDownField<Integer>)row.get(3)).setValue(locModel.get(0));
-            }
-            
-            row.get(4).setValue(itemDO.getLotNumber());
-            row.get(5).setValue(itemDO.getQuantityOnHand());
-            */
             FillOrderOrderItemsKey rowHiddenMap = new FillOrderOrderItemsKey();
             rowHiddenMap.referenceTableId = orderItemReferenceTableId;
             rowHiddenMap.referenceId = itemDO.getId();

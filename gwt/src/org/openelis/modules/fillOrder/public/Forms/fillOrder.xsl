@@ -111,61 +111,21 @@ UIRF Software License are applicable instead of those above.
 							<xsl:value-of select='resource:getString($constants,"neededNumDays")'/>,<xsl:value-of select='resource:getString($constants,"numDaysLeft")'/>,Internal</headers>
 							<widths>20,45,95,65,125,160,155,60,60,50</widths>										
 							<editors>
-								<check onclick="this"/>
-								<textbox case="mixed"/>
-								<dropdown case="mixed" width="70px"/>
-								<calendar begin="0" end="2"/>							
-								<dropdown case="mixed" width="100px"/>
-								<dropdown case="upper" width="130px"/>
-								<textbox case="mixed"/>
-								<textbox case="mixed"/>
-								<textbox case="mixed"/>				
+								<check cellKey="process" onclick="this"/>
+								<textbox cellKey="{meta:getId($order)}" case="mixed"/>
+								<dropdown cellKey="{meta:getStatusId($order)}" case="mixed" width="70px"/>
+								<calendar cellKey="{meta:getOrderedDate($order)}" begin="0" end="2"/>							
+								<dropdown cellKey="{meta:getShipFromId($order)}" case="mixed" width="100px"/>
+								<dropdown cellKey="{orgMeta:getName($org)}" case="upper" width="130px"/>
+								<textbox cellKey="{meta:getDescription($order)}" case="mixed"/>
+								<textbox cellKey="{meta:getNeededInDays($order)}" case="mixed"/>
+								<textbox cellKey="daysLeft" case="mixed"/>				
 								<check/>				
 							</editors>
-							<fields>
-								<check key="process" type="integer" required="false"/>
-								<integer key="{meta:getId($order)}" required="true"/>
-								<dropdown key="{meta:getStatusId($order)}" required="false"/>
-								<date key="{meta:getOrderedDate($order)}" begin="0" end="2" required="false"/>
-								<dropdown key="{meta:getShipFromId($order)}" required="false"/>
-								<dropdown key="{orgMeta:getName($org)}" required="false"/>
-								<string key="{meta:getDescription($order)}" required="false"/>
-								<integer key="{meta:getNeededInDays($order)}" required="false"/>
-								<integer key="daysLeft" required="false"/>
-								<check required="false"/>
-							</fields>
 							<sorts>false,false,true,false,true,true,true,false,false,false</sorts>
 							<filters>false,false,false,false,false,false,false,false,false,false</filters>
 							<colAligns>left,left,left,left,left,left,left,left,left,left</colAligns>
 						</table>
-						<!--
-						<query>
-							<queryTable width="auto" title="" maxRows="10" showError="false" showScroll="ALWAYS">
-							<headers> ,<xsl:value-of select='resource:getString($constants,"ordNum")'/>,<xsl:value-of select='resource:getString($constants,"status")'/>,
-							<xsl:value-of select='resource:getString($constants,"orderDate")'/>,<xsl:value-of select='resource:getString($constants,"shipFrom")'/>,
-							<xsl:value-of select='resource:getString($constants,"shipTo")'/>,<xsl:value-of select='resource:getString($constants,"description")'/>,
-							<xsl:value-of select='resource:getString($constants,"neededNumDays")'/>,<xsl:value-of select='resource:getString($constants,"numDaysLeft")'/>,Internal</headers>
-							<widths>20,45,95,65,125,160,155,60,60,50</widths>												
-								<editors>
-									<label/>
-									<textbox case="mixed"/>
-									<dropdown case="mixed" width="70px"/>
-									<textbox case="mixed"/>
-									<dropdown case="mixed" width="100px"/>
-									<textbox case="mixed"/>
-									<textbox case="mixed"/>
-									<textbox case="mixed"/>
-									<textbox case="mixed"/> 
-									<check/>	
-								</editors>
-								<fields>process,<xsl:value-of select='meta:getId($order)'/>,<xsl:value-of select='meta:getStatusId($order)'/>,
-								<xsl:value-of select='meta:getOrderedDate($order)'/>,<xsl:value-of select='meta:getShipFromId($order)'/>,
-								<xsl:value-of select='orgMeta:getName($org)'/>,<xsl:value-of select='meta:getDescription($order)'/>,
-								<xsl:value-of select='meta:getNeededInDays($order)'/>,daysLeft,isInternal
-								</fields>
-							</queryTable>
-							</query>
-							-->
 						</resultsTable>
 						</widget>
 			<HorizontalPanel>
@@ -304,7 +264,18 @@ UIRF Software License are applicable instead of those above.
 					</VerticalPanel>		
 	</display>
 	<rpc key="display">
-		<table key="fillItemsTable"/>
+		<table key="fillItemsTable">
+			<check key="process" type="integer" required="false"/>
+			<integer key="{meta:getId($order)}" required="true"/>
+			<dropdown key="{meta:getStatusId($order)}" required="false"/>
+			<date key="{meta:getOrderedDate($order)}" begin="0" end="2" required="false"/>
+			<dropdown key="{meta:getShipFromId($order)}" required="false"/>
+			<dropdown key="{orgMeta:getName($org)}" required="false"/>
+			<string key="{meta:getDescription($order)}" required="false"/>
+			<integer key="{meta:getNeededInDays($order)}" required="false"/>
+			<integer key="daysLeft" required="false"/>
+			<check required="false"/>
+		</table>
 		
 		<rpc key="itemInformation">
 			<table key="orderItemsTable"/>

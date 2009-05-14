@@ -139,24 +139,16 @@ UIRF Software License are applicable instead of those above.
 							<headers>Kit Component Name,Location,Lot #,Unit,Total,On Hand</headers>
 							<widths>160,177,80,60,60,60</widths>										
 							<editors>
-								<label/>
-								<autoComplete cat="componentLocation" autoCall="this" serviceUrl="OpenELISServlet?service=org.openelis.modules.buildKits.server.BuildKitsService" case="mixed" width="150px">
+								<label cellKey="{inventoryComponentMeta:getComponentId($component)}"/>
+								<autoComplete cellKey="{storageLocationMeta:getLocation($componentLocStorageLoc)}" cat="componentLocation" autoCall="this" serviceUrl="OpenELISServlet?service=org.openelis.modules.buildKits.server.BuildKitsService" case="mixed" width="150px">
 									<headers>Desc,Lot #,Qty</headers>
 									<widths>300,65,30</widths>
 								</autoComplete>
-								<label/>
-								<label/>
-								<textbox/>
-								<label/>
+								<label cellKey="{locationMeta:getLotNumber($componentLocation)}"/>
+								<label cellKey="{inventoryComponentMeta:getQuantity($component)}"/>
+								<textbox cellKey="total"/>
+								<label cellKey="{locationMeta:getQuantityOnhand($componentLocation)}"/>
 							</editors>
-							<fields>
-								<string key="{inventoryComponentMeta:getComponentId($component)}" required="true"/>
-      							<dropdown key="{storageLocationMeta:getLocation($componentLocStorageLoc)}" required="true"/>
-      							<string key="{locationMeta:getLotNumber($componentLocation)}" required="false"/>
-      							<double key="{inventoryComponentMeta:getQuantity($component)}" required="true"/>
-      							<integer key="total" required="true"/>
-      							<integer key="{locationMeta:getQuantityOnhand($componentLocation)}" required="true"/>
-							</fields>
 							<sorts>false,false,false,false,false,false</sorts>
 							<filters>false,false,false,false,false,false</filters>
 							<colAligns>left,left,left,left,left,left</colAligns>
@@ -185,7 +177,14 @@ UIRF Software License are applicable instead of those above.
   	  <string key="{locationMeta:getLotNumber($location)}" required="false"/>
 	  <date key="{locationMeta:getExpirationDate($location)}" begin="0" end="2" required="false"/>
   	  
-  	  <table key="subItemsTable"/>
+  	  <table key="subItemsTable">
+  	  	<string key="{inventoryComponentMeta:getComponentId($component)}" required="true"/>
+      	<dropdown key="{storageLocationMeta:getLocation($componentLocStorageLoc)}" required="true"/>
+      	<string key="{locationMeta:getLotNumber($componentLocation)}" required="false"/>
+      	<double key="{inventoryComponentMeta:getQuantity($component)}" required="true"/>
+      	<integer key="total" required="true"/>
+      	<integer key="{locationMeta:getQuantityOnhand($componentLocation)}" required="true"/>
+  	  </table>
 	</rpc>
 </screen>
   </xsl:template>

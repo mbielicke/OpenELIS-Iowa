@@ -141,49 +141,20 @@ UIRF Software License are applicable instead of those above.
 							<xsl:value-of select='resource:getString($constants,"physCount")'/>, <xsl:value-of select='resource:getString($constants,"adjQuan")'/></headers>
 							<widths>55,205,225,65,65,65</widths>										
 							<editors>
-								<textbox case="mixed"/>
-								<autoComplete cat="inventoryItem" autoCall="this" case="lower" serviceUrl="OpenELISServlet?service=org.openelis.modules.inventoryAdjustment.server.InventoryAdjustmentService" width="189px">												
+								<textbox cellKey="{inventoryLocationMeta:getId($loc)}" case="mixed"/>
+								<autoComplete cellKey="{inventoryItemMeta:getName($invItem)}" cat="inventoryItem" autoCall="this" case="lower" serviceUrl="OpenELISServlet?service=org.openelis.modules.inventoryAdjustment.server.InventoryAdjustmentService" width="189px">												
 									<headers>Name,Store,Location,Lot #,Exp Date,Qty</headers>
 							        <widths>130,110,160,70,70,30</widths>
 								</autoComplete>
 								<label/>
-								<label/>
-								<textbox case="mixed"/>
-								<label/>
+								<label cellKey="{inventoryLocationMeta:getQuantityOnhand($loc)}"/>
+								<textbox cellKey="{transAdjustmentLocationMeta:getPhysicalCount($transAdjustmentLocation)}" case="mixed"/>
+								<label cellKey="{transAdjustmentLocationMeta:getQuantity($transAdjustmentLocation)}"/>
 							</editors>
-							<fields>
-								<integer key="{inventoryLocationMeta:getId($loc)}" required="true"/>
-      							<dropdown key="{inventoryItemMeta:getName($invItem)}" required="true"/>
-      							<string required="false"/>
-      							<integer key="{inventoryLocationMeta:getQuantityOnhand($loc)}" required="false"/>
-      							<integer key="{transAdjustmentLocationMeta:getPhysicalCount($transAdjustmentLocation)}" required="true"/>
-      							<integer key="{transAdjustmentLocationMeta:getQuantity($transAdjustmentLocation)}" required="false"/>
-							</fields>
 							<sorts>false,false,false,false,false,false</sorts>
 							<filters>false,false,false,false,false,false</filters>
 							<colAligns>left,left,left,left,left,left</colAligns>
 						</table>
-						<!--
-						<query>
-							<queryTable width="auto" title="" maxRows="14" showError="false" showScroll="ALWAYS">
-								<headers><xsl:value-of select='resource:getString($constants,"locationNum")'/>,<xsl:value-of select='resource:getString($constants,"inventoryItem")'/>,
-							<xsl:value-of select='resource:getString($constants,"storageLocation")'/>, <xsl:value-of select='resource:getString($constants,"onHand")'/>, 
-							<xsl:value-of select='resource:getString($constants,"physCount")'/>, <xsl:value-of select='resource:getString($constants,"adjQuan")'/></headers>
-								<widths>55,205,225,65,65,65</widths>										
-								<editors>
-									<textbox case="mixed"/>
-									<textbox case="mixed"/>
-									<label/>
-									<textbox case="mixed"/>
-									<textbox case="mixed"/>
-									<textbox case="mixed"/>		 	
-								</editors>
-								<fields><xsl:value-of select='inventoryLocationMeta:getId($loc)'/>,<xsl:value-of select='inventoryItemMeta:getName($invItem)'/>,label1,
-								<xsl:value-of select='inventoryLocationMeta:getQuantityOnhand($loc)'/>,<xsl:value-of select='transAdjustmentLocationMeta:getPhysicalCount($transAdjustmentLocation)'/>,
-								<xsl:value-of select='transAdjustmentLocationMeta:getQuantity($transAdjustmentLocation)'/></fields>
-							</queryTable>
-							</query>
-							-->
 						</widget>
 						<widget style="WhiteContentPanel" halign="center">									
 							<appButton action="removeRow" onclick="this" style="Button" key="removeRowButton">
@@ -203,27 +174,17 @@ UIRF Software License are applicable instead of those above.
 	  <date key="{meta:getAdjustmentDate($adj)}" begin="0" end="2" required="true"/>
       <string key="{meta:getSystemUserId($adj)}" required="true"/>
       <dropdown key="{inventoryItemMeta:getStoreId($invItem)}" required="true"/>
-      <table key="adjustmentsTable"/>
+      <table key="adjustmentsTable">
+      	<integer key="{inventoryLocationMeta:getId($loc)}" required="true"/>
+      	<dropdown key="{inventoryItemMeta:getName($invItem)}" required="true"/>
+      	<string required="false"/>
+      	<integer key="{inventoryLocationMeta:getQuantityOnhand($loc)}" required="false"/>
+      	<integer key="{transAdjustmentLocationMeta:getPhysicalCount($transAdjustmentLocation)}" required="true"/>
+      	<integer key="{transAdjustmentLocationMeta:getQuantity($transAdjustmentLocation)}" required="false"/>
+      </table>
       
       <integer key="systemUserId" required="false"/>
 	</rpc>
-	<!--
-	<rpc key="query">
-  	  <queryNumber key="{meta:getId($adj)}" type="integer"/>
-      <queryString key="{meta:getDescription($adj)}"/>
-      <queryDate key="{meta:getAdjustmentDate($adj)}" begin="0" end="2"/>
-      <queryString key="{meta:getSystemUserId($adj)}"/>
-      <dropdown key="{inventoryItemMeta:getStoreId($invItem)}"/>
-      
-      <table key="adjustmentsTable"/>
-      <queryNumber key="{inventoryLocationMeta:getId($loc)}" type="integer"/>
-      <queryString key="{inventoryItemMeta:getName($invItem)}"/>
-      <queryString key="label1"/>
-      <queryNumber key="{inventoryLocationMeta:getQuantityOnhand($loc)}" type="integer"/>
-      <queryNumber key="{transAdjustmentLocationMeta:getPhysicalCount($transAdjustmentLocation)}" type="integer"/>
-      <queryNumber key="{transAdjustmentLocationMeta:getQuantity($transAdjustmentLocation)}" type="integer"/>
-	</rpc>
-	-->
 </screen>
   </xsl:template>
 </xsl:stylesheet>

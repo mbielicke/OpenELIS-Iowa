@@ -196,8 +196,6 @@ public class BuildKitsScreen extends OpenELISScreenForm<BuildKitsForm,Query<Tabl
         commitUpdateChain.add(afterCommitUpdate);
         
         super.afterDraw(success);
-        
-        form.subItemsTable.setValue(subItemsTable.model.getData());
     }
     
     public void commit() {
