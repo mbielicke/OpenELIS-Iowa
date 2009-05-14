@@ -214,13 +214,10 @@ public class FillOrderScreen extends OpenELISScreenForm<FillOrderForm, Query<Tab
         commitUpdateChain.add(0, checkModels);
         commitAddChain.add(0, checkModels);
 
-        super.afterDraw(success);
-
         emptyTreeModel = orderItemsTree.model.getData();
-        form.fillItemsTable.setValue(fillItemsTable.model.getData());
         form.itemInformation.originalOrderItemsTree.setValue(emptyTreeModel);
         
-
+        super.afterDraw(success);
     }
 
     public void add() {

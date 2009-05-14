@@ -148,61 +148,28 @@ UIRF Software License are applicable instead of those above.
 							<headers>From Item,From Loc,On Hand,To Item,Ext,To Loc,Qty</headers>
 							<widths>140,160,65,140,40,160,50</widths>										
 							<editors>
-								<autoComplete cat="inventoryItemTrans" case="lower" serviceUrl="OpenELISServlet?service=org.openelis.modules.inventoryReceipt.server.InventoryReceiptService" width="120px">												
+								<autoComplete key="{inventoryItemMeta:getName($fromInvItem)}" cat="inventoryItemTrans" case="lower" serviceUrl="OpenELISServlet?service=org.openelis.modules.inventoryReceipt.server.InventoryReceiptService" width="120px">												
 									<headers>Name,Store,Location,Qty</headers>
 									<widths>135,110,160,30</widths>
 								</autoComplete>
-								<label/>
-								<label/>
-								<autoComplete cat="toInventoryItemTrans" case="lower" autoCall="this" serviceUrl="OpenELISServlet?service=org.openelis.modules.inventoryReceipt.server.InventoryReceiptService" width="120px">												
+								<label cellKey="fromLoc"/>
+								<label cellKey="qtyOnHand"/>
+								<autoComplete cellKey="{inventoryItemMeta:getName($invItem)}" cat="toInventoryItemTrans" case="lower" autoCall="this" serviceUrl="OpenELISServlet?service=org.openelis.modules.inventoryReceipt.server.InventoryReceiptService" width="120px">												
 									<headers>Name,Store</headers>
 									<widths>135,110</widths>
 								</autoComplete>
-								<check/>
-								<autoComplete cat="location" autoCall="this" serviceUrl="OpenELISServlet?service=org.openelis.modules.inventoryReceipt.server.InventoryReceiptService" case="mixed" width="160px">
+								<check cellKey="addToExisting"/>
+								<autoComplete cellKey="{storageLocationMeta:getName($toStorageLoc)}" cat="location" autoCall="this" serviceUrl="OpenELISServlet?service=org.openelis.modules.inventoryReceipt.server.InventoryReceiptService" case="mixed" width="160px">
 									<headers>Desc</headers>
 									<widths>300</widths>
 								</autoComplete>
-								<textbox case="mixed"/>
+								<textbox cellKey="{inventoryReceiptMeta:getQuantityReceived($receipt)}" case="mixed"/>
 							</editors>
-							<fields>
-								<dropdown key="{inventoryItemMeta:getName($fromInvItem)}" required="true"/>
-								<string key="fromLoc"/>
-								<integer key="qtyOnHand"/>
-								<dropdown key="{inventoryItemMeta:getName($invItem)}" required="true"/>
-								<check key="addToExisting"/>
-								<dropdown key="{storageLocationMeta:getName($toStorageLoc)}" required="true"/>
-								<integer key="{inventoryReceiptMeta:getQuantityReceived($receipt)}" required="true"/>
-							</fields>
 							<sorts>false,false,false,false,false,false,false</sorts>
 							<filters>false,false,false,false,false,false,false</filters>
 							<colAligns>left,left,left,left,left,left,left</colAligns>
 						</table>
-						<!--
-						<query>
-							<queryTable width="auto" title="" maxRows="10" showError="false" showScroll="ALWAYS">
-								<headers>From Item,From Loc,On Hand,To Item,Ext,To Loc,Qty</headers>
-								<widths>140,160,65,140,40,160,50</widths>							
-								<editors>
-								<textbox/>
-								<label/>
-								<label/>
-								<textbox/>
-								<check/>
-								<textbox/>
-								<textbox/>
-							</editors>
-								<fields>
-									<xsl:value-of select='orderMeta:getId($order)'/>,<xsl:value-of select='inventoryReceiptMeta:getReceivedDate($receipt)'/>,label1,<xsl:value-of select='inventoryReceiptMeta:getUpc($receipt)'/>,
-									<xsl:value-of select='inventoryItemMeta:getName($invItem)'/>,<xsl:value-of select='organizationMeta:getName($org)'/>,<xsl:value-of select='inventoryReceiptMeta:getQuantityReceived($receipt)'/>
-									
-									<xsl:value-of select='orderItemMeta:getQuantity($orderItem)'/>,
-									<xsl:value-of select='inventoryReceiptMeta:getUnitCost($receipt)'/>,<xsl:value-of select='inventoryReceiptMeta:getQcReference($receipt)'/>,<xsl:value-of select='inventoryReceiptMeta:getExternalReference($receipt)'/>										-->
-							<!--	</fields>
-							</queryTable>
-							</query>
-			-->
-							</resultsTable>
+					</resultsTable>
 
 						</widget>
 						<widget style="WhiteContentPanel" halign="center">									
@@ -213,47 +180,6 @@ UIRF Software License are applicable instead of those above.
 							              </HorizontalPanel>
 						            </appButton>
 						            </widget>
-							
-						
-
-				<!--<VerticalPanel style="Form">
-					<titledPanel key="borderedPanel">
-						<legend><text style="LegendTitle"><xsl:value-of select='resource:getString($constants,"vendorAddress")'/></text></legend>
-							<content>
-								<TablePanel style="Form">
-								<row>
-									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"aptSuite")'/>:</text>
-									<widget colspan="3">
-										<textbox case="upper" key="{addressMeta:getMultipleUnit($address)}" width="180px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
-									</widget>		
-								</row>
-								<row>
-									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"address")'/>:</text>
-									<widget colspan="3">
-										<textbox case="upper" key="{addressMeta:getStreetAddress($address)}" width="180px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
-									</widget>		
-								</row>
-								<row>
-									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"city")'/>:</text>
-									<widget colspan="3">
-										<textbox case="upper" key="{addressMeta:getCity($address)}" width="180px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
-									</widget>		
-								</row>
-								<row>
-									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"state")'/>:</text>
-									<widget>
-										<textbox case="upper" key="{addressMeta:getState($address)}" width="30px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
-									</widget>
-									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"zipcode")'/>:</text>
-									<widget>
-										<textbox case="upper" key="{addressMeta:getZipCode($address)}" width="60px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
-									</widget>
-								</row>
-							</TablePanel>
-						</content>
-						</titledPanel>
-					</VerticalPanel>
-					-->
 					<VerticalPanel style="subform">
 		                <text style="FormTitle"><xsl:value-of select='resource:getString($constants,"itemInformation")'/></text>
 							<TablePanel style="Form">
@@ -268,37 +194,37 @@ UIRF Software License are applicable instead of those above.
 								<row>
 									<text style="Prompt">From:</text>
 									<widget>
-										<textbox case="mixed" key="{inventoryItemMeta:getDescription($invItem)}" width="195px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
+										<textbox case="mixed" key="{inventoryItemMeta:getDescription($invItem)}" width="195px" max="30" enabledStates="" style="ScreenTextboxDisplayOnly"/>
 									</widget>
 									<widget>
-										<textbox case="mixed" key="{inventoryItemMeta:getStoreId($invItem)}" width="115px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
+										<textbox case="mixed" key="{inventoryItemMeta:getStoreId($invItem)}" width="115px" max="30" enabledStates="" style="ScreenTextboxDisplayOnly"/>
 									</widget>
 									<widget>
-										<textbox case="mixed" key="{inventoryItemMeta:getDispensedUnitsId($invItem)}" width="90px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
+										<textbox case="mixed" key="{inventoryItemMeta:getDispensedUnitsId($invItem)}" width="90px" max="30" enabledStates="" style="ScreenTextboxDisplayOnly"/>
 									</widget>
 									<widget>
-										<textbox case="mixed" key="{inventoryLocationMeta:getLotNumber($loc)}" onchange="this" width="100px" max="30" style="ScreenTextboxDisplayOnly"/>
+										<textbox case="mixed" key="{inventoryLocationMeta:getLotNumber($loc)}" onchange="this" width="100px" max="30" enabledStates="" style="ScreenTextboxDisplayOnly"/>
 									</widget>
 									<widget>
-										<textbox case="mixed" key="{inventoryLocationMeta:getExpirationDate($loc)}" width="140px" onChange="this" style="ScreenTextboxDisplayOnly"/>
+										<textbox case="mixed" key="{inventoryLocationMeta:getExpirationDate($loc)}" width="140px" onChange="this" enabledStates="" style="ScreenTextboxDisplayOnly"/>
 									</widget>
 								</row>
 								<row>
 									<text style="Prompt">To:</text>
 									<widget>
-										<textbox case="mixed" key="toDescription" width="195px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
+										<textbox case="mixed" key="toDescription" width="195px" max="30" enabledStates="" style="ScreenTextboxDisplayOnly"/>
 									</widget>
 									<widget>
-										<textbox case="mixed" key="toStoreId" width="115px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
+										<textbox case="mixed" key="toStoreId" width="115px" max="30" enabledStates="" style="ScreenTextboxDisplayOnly"/>
 									</widget>
 									<widget>
-										<textbox case="mixed" key="toDispensedUnits" width="90px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
+										<textbox case="mixed" key="toDispensedUnits" width="90px" max="30" enabledStates="" style="ScreenTextboxDisplayOnly"/>
 									</widget>
 									<widget>
-										<textbox case="mixed" key="toLotNumber" onchange="this" width="100px" max="30" style="ScreenTextboxDisplayOnly"/>
+										<textbox case="mixed" key="toLotNumber" onchange="this" width="100px" max="30" enabledStates="" style="ScreenTextboxDisplayOnly"/>
 									</widget>
 									<widget>
-										<textbox case="mixed" key="toExpDate" width="140px" style="ScreenTextboxDisplayOnly" />
+										<textbox case="mixed" key="toExpDate" width="140px" enabledStates="" style="ScreenTextboxDisplayOnly"/>
 									</widget>
 								</row>
 							</TablePanel>
@@ -307,7 +233,15 @@ UIRF Software License are applicable instead of those above.
 				</VerticalPanel>
 	</display>
 	<rpc key="display">
-	<table key="receiptsTable"/>
+		<table key="receiptsTable">
+			<dropdown key="{inventoryItemMeta:getName($fromInvItem)}" required="true"/>
+			<string key="fromLoc"/>
+			<integer key="qtyOnHand"/>
+			<dropdown key="{inventoryItemMeta:getName($invItem)}" required="true"/>
+			<check key="addToExisting"/>
+			<dropdown key="{storageLocationMeta:getName($toStorageLoc)}" required="true"/>
+			<integer key="{inventoryReceiptMeta:getQuantityReceived($receipt)}" required="true"/>
+		</table>
     	<string key="type" reset="false">transfer</string>
     	
     	<rpc key="itemInformation">
@@ -333,24 +267,6 @@ UIRF Software License are applicable instead of those above.
 		<string key="toExpDate" required="false"/>
     	</rpc>
 	</rpc>
-	<!--
-	<rpc key="query">
-		<string key="type" reset="false">transfer</string>
-    	<table key="receiptsTable"/>
-      	<queryNumber key="{orderMeta:getId($order)}" type="integer" required="false"/>
-		<queryDate key="{inventoryReceiptMeta:getReceivedDate($receipt)}"  begin="0" end="2" required="false"/>
-		<queryString key="{inventoryReceiptMeta:getUpc($receipt)}" required="false"/>
-		<queryString key="{inventoryItemMeta:getName($invItem)}" required="false"/>
-		<queryString key="{organizationMeta:getName($org)}" required="false"/>
-		<queryNumber key="{inventoryReceiptMeta:getQuantityReceived($receipt)}" type="integer" required="false"/>
-		<queryNumber key="{orderItemMeta:getQuantity($orderItem)}" type="integer" required="false"/>
-		<queryNumber key="{inventoryReceiptMeta:getUnitCost($receipt)}" type="double" required="false"/>
-		<queryString key="{inventoryReceiptMeta:getQcReference($receipt)}" required="false"/>
-		<queryString key="{inventoryReceiptMeta:getExternalReference($receipt)}" required="false"/>
-		<queryString key="label1"/>
-      
-    </rpc>
-    -->
 </screen>
   </xsl:template>
 </xsl:stylesheet>

@@ -143,69 +143,28 @@ UIRF Software License are applicable instead of those above.
 							<xsl:value-of select='resource:getString($constants,"extReference")'/></headers>
 							<widths>50,75,80,140,155,50,50,55,80,100</widths>										
 							<editors>
-								<textbox case="mixed"/>
-								<calendar begin="0" end="2"/>							
-								<textbox case="mixed"/>
-								<autoComplete cat="inventoryItem" case="lower" serviceUrl="OpenELISServlet?service=org.openelis.modules.inventoryReceipt.server.InventoryReceiptService" width="120px">												
+								<textbox cellKey="{orderMeta:getId($order)}" case="mixed"/>
+								<calendar cellKey="{inventoryReceiptMeta:getReceivedDate($receipt)}" begin="0" end="2"/>							
+								<textbox cellKey="{inventoryReceiptMeta:getUpc($receipt)}" case="mixed"/>
+								<autoComplete cellKey="{inventoryItemMeta:getName($invItem)}" cat="inventoryItem" case="lower" serviceUrl="OpenELISServlet?service=org.openelis.modules.inventoryReceipt.server.InventoryReceiptService" width="120px">												
 									<headers>Name,Store</headers>
 									<widths>100,150</widths>
 								</autoComplete>
-								<autoComplete cat="organization" case="upper" serviceUrl="OpenELISServlet?service=org.openelis.modules.inventoryReceipt.server.InventoryReceiptService" width="140px">
+								<autoComplete cellKey="{organizationMeta:getName($org)}" cat="organization" case="upper" serviceUrl="OpenELISServlet?service=org.openelis.modules.inventoryReceipt.server.InventoryReceiptService" width="140px">
 									<headers>Name,Street,City,St</headers>
 									<widths>180,110,100,20</widths>
 								</autoComplete>
-								<textbox case="mixed"/>
-								<label/>
-								<textbox case="mixed" displayMask="{resource:getString($constants,'displayCurrencyFormat')}" editorMask="{resource:getString($constants,'editorCurrencyFormat')}"/>
-								<textbox case="mixed"/>
-								<textbox case="mixed"/>
+								<textbox cellKey="{inventoryReceiptMeta:getQuantityReceived($receipt)}" case="mixed"/>
+								<label cellKey="{orderItemMeta:getQuantity($orderItem)}"/>
+								<textbox cellKey="{inventoryReceiptMeta:getUnitCost($receipt)}" case="mixed" displayMask="{resource:getString($constants,'displayCurrencyFormat')}" editorMask="{resource:getString($constants,'editorCurrencyFormat')}"/>
+								<textbox cellKey="{inventoryReceiptMeta:getQcReference($receipt)}" case="mixed"/>
+								<textbox cellKey="{inventoryReceiptMeta:getExternalReference($receipt)}" case="mixed"/>
 							</editors>
-							<fields>
-								<integer key="{orderMeta:getId($order)}" required="false"/>
-								<date key="{inventoryReceiptMeta:getReceivedDate($receipt)}" begin="0" end="2" required="true">current</date>
-								<string key="{inventoryReceiptMeta:getUpc($receipt)}" required="false"/>
-								<dropdown key="{inventoryItemMeta:getName($invItem)}" required="true"/>
-								<dropdown key="{organizationMeta:getName($org)}" required="true"/>
-								<integer key="{inventoryReceiptMeta:getQuantityReceived($receipt)}" required="false"/>
-								<integer key="{orderItemMeta:getQuantity($orderItem)}" required="false"/>
-								<double key="{inventoryReceiptMeta:getUnitCost($receipt)}" required="false"/>
-								<string key="{inventoryReceiptMeta:getQcReference($receipt)}" required="false"/>
-								<string key="{inventoryReceiptMeta:getExternalReference($receipt)}" required="false"/>
-							</fields>
 							<sorts>false,false,true,true,true,false,false,false,true,true</sorts>
 							<filters>false,false,false,false,false,false,false,false,false,false</filters>
 							<colAligns>left,left,left,left,left,left,left,right,left,left</colAligns>
 						</table>
-						<!--
-						<query>
-							<queryTable width="auto" title="" maxRows="10" showError="false" showScroll="ALWAYS">
-								<headers><xsl:value-of select='resource:getString($constants,"ordNum")'/>,<xsl:value-of select='resource:getString($constants,"dateRec")'/>,<xsl:value-of select='resource:getString($constants,"upc")'/>,
-							<xsl:value-of select='resource:getString($constants,"inventoryItem")'/>,<xsl:value-of select='resource:getString($constants,"vendor")'/>,<xsl:value-of select='resource:getString($constants,"numRec")'/>,
-							<xsl:value-of select='resource:getString($constants,"numReq")'/>,<xsl:value-of select='resource:getString($constants,"cost")'/>,<xsl:value-of select='resource:getString($constants,"extQC")'/>,
-							<xsl:value-of select='resource:getString($constants,"extReference")'/></headers>
-							<widths>50,75,80,140,155,50,50,55,80,100</widths>										
-								<editors>
-									<textbox case="mixed"/>
-									<calendar begin="0" end="2"/>
-									<textbox case="mixed"/>
-									<textbox case="mixed"/>
-									<textbox case="upper"/>
-									<label/>
-									<label/>
-									<label/>
-									<label/>
-									<textbox case="mixed"/>		 	
-								</editors>
-								<fields>
-									<xsl:value-of select='orderMeta:getId($order)'/>,<xsl:value-of select='inventoryReceiptMeta:getReceivedDate($receipt)'/>,<xsl:value-of select='inventoryReceiptMeta:getUpc($receipt)'/>,
-									<xsl:value-of select='inventoryItemMeta:getName($invItem)'/>,<xsl:value-of select='organizationMeta:getName($org)'/>,<xsl:value-of select='inventoryReceiptMeta:getQuantityReceived($receipt)'/>,
-									<xsl:value-of select='orderItemMeta:getQuantity($orderItem)'/>,
-									<xsl:value-of select='inventoryReceiptMeta:getUnitCost($receipt)'/>,<xsl:value-of select='inventoryReceiptMeta:getQcReference($receipt)'/>,<xsl:value-of select='inventoryReceiptMeta:getExternalReference($receipt)'/>										
-								</fields>
-							</queryTable>
-							</query>
-							-->
-							</resultsTable>
+					</resultsTable>
 						</widget>
 						<widget style="WhiteContentPanel" halign="center">									
 							<appButton action="removeRow" onclick="this" style="Button" key="removeReceiptButton">
@@ -222,25 +181,25 @@ UIRF Software License are applicable instead of those above.
 					<row>
 						<text style="Prompt"><xsl:value-of select='resource:getString($constants,"aptSuite")'/>:</text>
 						<widget colspan="3">
-							<textbox case="upper" key="{addressMeta:getMultipleUnit($address)}" width="180px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
+							<textbox case="upper" key="{addressMeta:getMultipleUnit($address)}" width="180px" max="30" style="ScreenTextboxDisplayOnly" enabledStates=""/>
 						</widget>		
 					</row>
 					<row>
 						<text style="Prompt"><xsl:value-of select='resource:getString($constants,"address")'/>:</text>
 						<widget colspan="3">
-							<textbox case="upper" key="{addressMeta:getStreetAddress($address)}" width="180px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
+							<textbox case="upper" key="{addressMeta:getStreetAddress($address)}" width="180px" max="30" style="ScreenTextboxDisplayOnly" enabledStates=""/>
 						</widget>		
 					</row>
 					<row>
 						<text style="Prompt"><xsl:value-of select='resource:getString($constants,"city")'/>:</text>
 						<widget colspan="3">
-							<textbox case="upper" key="{addressMeta:getCity($address)}" width="180px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
+							<textbox case="upper" key="{addressMeta:getCity($address)}" width="180px" max="30" style="ScreenTextboxDisplayOnly" enabledStates=""/>
 						</widget>		
 					</row>
 					<row>
 						<text style="Prompt"><xsl:value-of select='resource:getString($constants,"state")'/>:</text>
 						<widget>
-							<textbox case="upper" key="{addressMeta:getState($address)}" width="30px" max="30" style="ScreenTextboxDisplayOnly" alwaysDisabled="true"/>
+							<textbox case="upper" key="{addressMeta:getState($address)}" width="30px" max="30" style="ScreenTextboxDisplayOnly" enabledStates=""/>
 						</widget>
 						<text style="Prompt"><xsl:value-of select='resource:getString($constants,"zipcode")'/>:</text>
 						<widget>
@@ -300,7 +259,19 @@ UIRF Software License are applicable instead of those above.
 		</VerticalPanel>
 	</display>
 	<rpc key="display">
-		<table key="receiptsTable"/>
+		<table key="receiptsTable">
+			<integer key="{orderMeta:getId($order)}" required="false"/>
+			<date key="{inventoryReceiptMeta:getReceivedDate($receipt)}" begin="0" end="2" required="true">current</date>
+			<string key="{inventoryReceiptMeta:getUpc($receipt)}" required="false"/>
+			<dropdown key="{inventoryItemMeta:getName($invItem)}" required="true"/>
+			<dropdown key="{organizationMeta:getName($org)}" required="true"/>
+			<integer key="{inventoryReceiptMeta:getQuantityReceived($receipt)}" required="false"/>
+			<integer key="{orderItemMeta:getQuantity($orderItem)}" required="false"/>
+			<double key="{inventoryReceiptMeta:getUnitCost($receipt)}" required="false"/>
+			<string key="{inventoryReceiptMeta:getQcReference($receipt)}" required="false"/>
+			<string key="{inventoryReceiptMeta:getExternalReference($receipt)}" required="false"/>
+		</table>
+		
     	<string key="type" reset="false">receipt</string>
     	
     	<rpc key="itemInformation">

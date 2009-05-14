@@ -99,8 +99,6 @@ public class DictionaryScreen extends OpenELISScreenForm<DictionaryForm,Query<Ta
         // override the callbacks
         updateChain.add(afterUpdate);
         super.afterDraw(success);        
-        
-        form.dictEntTable.setValue(dictEntryController.model.getData());
     }
     
     public void performCommand(Enum action, Object obj) {        

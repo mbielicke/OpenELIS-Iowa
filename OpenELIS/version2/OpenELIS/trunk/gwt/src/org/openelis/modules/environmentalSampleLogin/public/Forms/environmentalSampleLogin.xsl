@@ -266,7 +266,28 @@ UIRF Software License are applicable instead of those above.
 				<VerticalPanel height="5px"/>
 				<TabPanel height="170px" key="sampleItemTabPanel">
 					<tab key="tab0" text="{resource:getString($constants,'sampleItem')}">
-						<VerticalPanel height="170px" width="730px"/>
+					<!--						type_of_sample_id  container_id     container_reference     quantity     unit_of_measure_id -->
+						<VerticalPanel height="170px" width="730px">
+							<TablePanel style="Form" spacing="0" padding="0">
+								<row>
+									<text style="Prompt">Sample Type:</text>
+									<dropdown case="mixed" key="a" width="150px"/>
+									
+								</row>
+								<row>
+									<text style="Prompt">Container:</text>
+									<textbox case="mixed" key="b" width="150px"/>
+									<text style="Prompt">Container Reference:</text>
+									<textbox case="mixed" key="c" width="200px"/>
+								</row>
+								<row>
+									<text style="Prompt">Qty:</text>
+									<textbox case="mixed" key="d" width="150px"/>
+									<text style="Prompt">Unit:</text>
+									<textbox case="mixed" key="e" width="150px"/>
+								</row>
+							</TablePanel>
+						</VerticalPanel>
 					</tab>
 					<tab key="tab1" text="{resource:getString($constants,'testInfoResult')}">
 						<VerticalPanel height="170px" width="730px"/>
@@ -324,11 +345,21 @@ UIRF Software License are applicable instead of those above.
 			<string key="billTo" required="false"/>
 			
 			<rpc key="sampleOrganization">
-				<table key="sampleOrganizationTable"/>
+				<table key="sampleOrganizationTable">
+					<dropdown/>
+					<integer/>
+					<dropdown/>
+					<string/>
+					<string/>
+				</table>
 			</rpc>
 			
 			<rpc key="sampleProject">
-				<table key="sampleProjectTable"/>
+				<table key="sampleProjectTable">
+					<dropdown/>
+					<string/>
+					<check/>
+				</table>
 			</rpc>
 		</rpc>
 		

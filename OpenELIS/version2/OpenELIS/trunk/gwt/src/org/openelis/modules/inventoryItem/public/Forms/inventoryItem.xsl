@@ -280,38 +280,16 @@ UIRF Software License are applicable instead of those above.
 										<xsl:value-of select='resource:getString($constants,"quantity")'/></headers>
 										<widths>129,335,104</widths>
 										<editors>
-											<autoComplete cat="component" autoCall="this" case="lower" serviceUrl="OpenELISServlet?service=org.openelis.modules.inventoryItem.server.InventoryItemService" width="100px">												
+											<autoComplete cellKey="{componentMeta:getComponentId($component)}" cat="component" autoCall="this" case="lower" serviceUrl="OpenELISServlet?service=org.openelis.modules.inventoryItem.server.InventoryItemService" width="100px">												
 												<widths>118</widths>
 											</autoComplete>
-											<label/>
-											<textbox case="mixed"/>
+											<label cellKey="{invItemMeta:getDescription($compInvItem)}"/>
+											<textbox cellKey="{componentMeta:getQuantity($component)}" case="mixed"/>
 										</editors>
-										<fields>
-											<dropdown key="{componentMeta:getComponentId($component)}" required="true"/>
-											<string key="{invItemMeta:getDescription($compInvItem)}"/>
-											<double key="{componentMeta:getQuantity($component)}" required="true"/>
-										</fields>
 										<sorts>true,true,true</sorts>
 										<filters>false,false,false</filters>
 										<colAligns>left,left,left</colAligns>
 									</table>
-									<!--
-									<query>
-									<queryTable width="auto" title="" maxRows="9" showError="false" showScroll="ALWAYS">
-										<headers><xsl:value-of select='resource:getString($constants,"component")'/>,<xsl:value-of select='resource:getString($constants,"description")'/>,
-										<xsl:value-of select='resource:getString($constants,"quantity")'/></headers>
-										<widths>129,335,104</widths>
-										<editors>
-											<textbox case="lower"/>
-											<textbox case="mixed"/>
-											<textbox case="mixed"/>
-										</editors>
-										<fields><xsl:value-of select='invItemMeta:getName($compInvItem)'/>,<xsl:value-of select='invItemMeta:getDescription($compInvItem)'/>,
-										<xsl:value-of select='componentMeta:getQuantity($component)'/>
-										</fields>										
-									</queryTable>
-									</query>
-									-->
 								</widget>
 								</row>
 								<row>
@@ -327,7 +305,7 @@ UIRF Software License are applicable instead of those above.
 							</TablePanel>
 					</tab>			
 					<!-- start TAB 2 (Location/Quantity) -->
-					<tab key="locationTab" text="{resource:getString($constants,'locationQuantity')}">
+					<tab key="locationsTab" text="{resource:getString($constants,'locationQuantity')}">
 						<TablePanel spacing="0" padding="0" height="249px" width="645px">
 						<row>
 							<widget align="center">
@@ -337,19 +315,12 @@ UIRF Software License are applicable instead of those above.
 										<xsl:value-of select='resource:getString($constants,"expirationDate")'/>,<xsl:value-of select='resource:getString($constants,"quantityOnHand")'/></headers>
 										<widths>166,70,70,133,123</widths>
 										<editors>
-											<label/>
-											<label/>
-											<label/>
-											<label/>
-											<label/>
+											<label cellKey="{locationMeta:getStorageLocationId($location)}"/>
+											<label cellKey="{locationMeta:getLotNumber($location)}"/>
+											<label cellKey="{locationMeta:getId($location)}"/>
+											<label cellKey="{locationMeta:getExpirationDate($location)}"/>
+											<label cellKey="{locationMeta:getQuantityOnhand($location)}"/>
 										</editors>
-										<fields>
-											<string key="{locationMeta:getStorageLocationId($location)}"/>
-											<string key="{locationMeta:getLotNumber($location)}"/>
-											<integer key="{locationMeta:getId($location)}"/>
-											<string key="{locationMeta:getExpirationDate($location)}"/>
-											<integer key="{locationMeta:getQuantityOnhand($location)}"/>
-										</fields>
 										<sorts>true,true,true,true,true</sorts>
 										<filters>false,false,false,false,false</filters>
 										<colAligns>left,left,left,left,left</colAligns>
@@ -510,11 +481,21 @@ UIRF Software License are applicable instead of those above.
       <integer key="{meta:getParentRatio($invItem)}" required="false"/>
       
       <rpc key="components">
-	      <table key="componentsTable"/>
+	      <table key="componentsTable">
+	      	<dropdown key="{componentMeta:getComponentId($component)}" required="true"/>
+			<string key="{invItemMeta:getDescription($compInvItem)}"/>
+			<double key="{componentMeta:getQuantity($component)}" required="true"/>
+	      </table>
       </rpc>
 
       <rpc key="locations">
-	      <table key="locQuantitiesTable"/>
+	      <table key="locQuantitiesTable">
+	      	<string key="{locationMeta:getStorageLocationId($location)}"/>
+			<string key="{locationMeta:getLotNumber($location)}"/>
+			<integer key="{locationMeta:getId($location)}"/>
+			<string key="{locationMeta:getExpirationDate($location)}"/>
+			<integer key="{locationMeta:getQuantityOnhand($location)}"/>
+	      </table>
       </rpc>
 
       <!--<rpc key="additionalInfo">
@@ -532,55 +513,6 @@ UIRF Software License are applicable instead of those above.
 
       <string key="itemTabPanel" reset="false">componentsTab</string>
 	</rpc>
-	<!--
-	<rpc key="query">
-      <queryNumber key="{meta:getId($invItem)}" type="integer" required="false"/>
-      <queryString key="{meta:getName($invItem)}" max="20" required="false"/>
-      <queryString key="{meta:getDescription($invItem)}" max="60" required="false"/>
-      <dropdown key="{meta:getStoreId($invItem)}" type="integer" required="false"/> 
-      <dropdown key="{meta:getCategoryId($invItem)}" type="integer" required="false"/> 
-      <queryNumber key="{meta:getQuantityMinLevel($invItem)}" type="integer" required="false"/>
-      <queryNumber key="{meta:getQuantityMaxLevel($invItem)}" type="integer" required="false"/>
-      <queryNumber key="{meta:getQuantityToReorder($invItem)}" type="integer" required="false"/>
-      <dropdown key="{meta:getDispensedUnitsId($invItem)}" type="integer" required="false"/> 
-      <queryCheck key="{meta:getIsActive($invItem)}" required="false"/>
-      <queryCheck key="{meta:getIsReorderAuto($invItem)}" required="false"/>
-      <queryCheck key="{meta:getIsLotMaintained($invItem)}" required="false"/>
-      <queryCheck key="{meta:getIsSerialMaintained($invItem)}" required="false"/>
-      <queryCheck key="{meta:getIsBulk($invItem)}" required="false"/>
-      <queryCheck key="{meta:getIsNotForSale($invItem)}" required="false"/>
-      <queryCheck key="{meta:getIsSubAssembly($invItem)}" required="false"/>
-      <queryCheck key="{meta:getIsLabor($invItem)}" required="false"/>
-      <queryCheck key="{meta:getIsNoInventory($invItem)}" required="false"/>
-
-      <queryNumber key="{meta:getAverageLeadTime($invItem)}" type="integer" required="false"/>
-      <queryNumber key="{meta:getAverageCost($invItem)}" type="double" required="false"/>
-      <queryNumber key="{meta:getAverageDailyUse($invItem)}" type="integer" required="false"/>
-      <queryString key="{meta:getProductUri($invItem)}" required="false"/>
-      
-      <dropdown key="{invItemMeta:getName($parentInvItem)}" required="false"/>
-      <queryNumber key="{meta:getParentRatio($invItem)}" type="integer" required="false"/>
-      
-      <queryString key="{noteMeta:getSubject($note)}" max="60" required="false"/>
-      
-      <table key="componentsTable"/>
-
-      <queryString key="{invItemMeta:getName($compInvItem)}" required="false"/>
-	  <queryString key="{invItemMeta:getDescription($compInvItem)}" required="false"/>
-	  <queryNumber key="{componentMeta:getQuantity($component)}" type="double" required="false"/>   
-
-      <table key="locQuantitiesTable"/>	  
-
-	  <queryString key="{storageLocationMeta:getLocation($locStorageLoc)}" required="false"/>
-	  <queryString key="{locationMeta:getLotNumber($location)}" required="false"/>
-	  <queryNumber key="{locationMeta:getId($location)}" type="integer" required="false"/>
-	  <queryString key="{locationMeta:getExpirationDate($location)}" required="false"/>
-	  <queryNumber key="{locationMeta:getQuantityOnhand($location)}" type="integer" required="false"/>
-	</rpc>
-	<rpc key="queryByLetter">
-		<queryString key="{meta:getName($invItem)}"/>
-	</rpc>
-	-->
 </screen>
   </xsl:template>
 </xsl:stylesheet>

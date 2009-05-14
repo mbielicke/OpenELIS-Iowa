@@ -172,9 +172,6 @@ public class AuxiliaryScreen extends OpenELISScreenForm<AuxiliaryForm, Query<Tab
         
         super.afterDraw(success);               
         
-        form.auxFieldTable.setValue(auxFieldTableWidget.model.getData());
-        form.auxFieldValueTable.setValue(auxFieldValueTableWidget.model.getData());
-        
         defaultModel = (TableDataModel<TableDataRow<Integer>>)auxFieldValueTableWidget.model.getData().clone();
     }
     

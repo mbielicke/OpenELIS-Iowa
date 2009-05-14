@@ -136,12 +136,7 @@ UIRF Software License are applicable instead of those above.
 							</buttonPanel>
 						</AbsolutePanel>
 						<!--end button panel-->
-						<HorizontalPanel padding="0" spacing="0" style="WhiteContentPanel">
-						<VerticalPanel width = "10px"/>
-						 <VerticalPanel>						
-								
-				  <VerticalPanel height = "10px"/>						   							    																			
-							<VerticalPanel>
+						<VerticalPanel padding="0" spacing="0" style="WhiteContentPanel">
 							<TablePanel style="Form">
 								<row>
 								  <text style="Prompt"><xsl:value-of select="resource:getString($constants,'groupName')"/>:</text>
@@ -163,9 +158,8 @@ UIRF Software License are applicable instead of those above.
 								 <text style="Prompt"><xsl:value-of select='resource:getString($constants,"endDate")'/>:</text>
 								 <calendar key="{meta:getActiveEnd($auxfg)}" tab="auxFieldTable,{meta:getActiveBegin($auxfg)}" onChange="this" begin="0" end="2" width = "80px"/>
 								</row>
-					          </TablePanel>			
-							 <HorizontalPanel> 							 
-							  <widget>
+					          </TablePanel>		
+					          <HorizontalPanel width="630px">	
                                 <table key="auxFieldTable" title="" targets = "auxFieldTable" manager = "this" tab="auxFieldValueTable,{meta:getActiveEnd($auxfg)}" drop = "default" drag = "default" width="600px" showError="false" showScroll="ALWAYS" maxRows="10">                                
                                  <headers>                                 
                                   <xsl:value-of select="resource:getString($constants,'analyte')"/>,
@@ -179,36 +173,24 @@ UIRF Software License are applicable instead of those above.
                                  </headers>
                                  <widths>250,70,50,60,70,60,200,150</widths>                                 
                                    <editors>
-                                    <autoComplete cat="analyte" serviceUrl="OpenELISServlet?service=org.openelis.modules.auxiliary.server.AuxiliaryService" case="mixed" width="300px">												
+                                    <autoComplete cellKey="{analyte:getName($ana)}" cat="analyte" serviceUrl="OpenELISServlet?service=org.openelis.modules.auxiliary.server.AuxiliaryService" case="mixed" width="300px">												
 										 <widths>300</widths>
 									</autoComplete>
-									<autoComplete cat="method" serviceUrl="OpenELISServlet?service=org.openelis.modules.auxiliary.server.AuxiliaryService" case="mixed" width="300px">												
+									<autoComplete cellKey="{method:getName($mt)}" cat="method" serviceUrl="OpenELISServlet?service=org.openelis.modules.auxiliary.server.AuxiliaryService" case="mixed" width="300px">												
 										 <widths>100</widths>
 									</autoComplete>
-                                    <dropdown case="mixed" width = "80px" type = "integer"/>
-									<check/>
-                                    <check/> 
-                                    <check/>									                                   
-                                    <textbox max="60" />
-                                    <dropdown case="mixed" required = "true" width = "150px" type = "integer"/>   
+                                    <dropdown cellKey="{auxField:getUnitOfMeasureId($auxf)}" case="mixed" width = "80px" type = "integer"/>
+									<check cellKey = "{auxField:getIsActive($auxf)}"/>
+                                    <check cellKey = "{auxField:getIsRequired($auxf)}"/> 
+                                    <check cellKey = "{auxField:getIsReportable($auxf)}"/>									                                   
+                                    <textbox cellKey="{auxField:getDescription($auxf)}" max="60" />
+                                    <dropdown cellKey="{auxField:getScriptletId($auxf)}" case="mixed" required = "true" width = "150px" type = "integer"/>   
                                    </editors>
-                                   <fields>
-                                    <dropdown key="{analyte:getName($ana)}" required = "true"/>
-                                    <dropdown key="{method:getName($mt)}"/>
-                                    <dropdown key="{auxField:getUnitOfMeasureId($auxf)}"/>
-                                    <check key = "{auxField:getIsActive($auxf)}"/>
-                                    <check key = "{auxField:getIsRequired($auxf)}"/>
-                                    <check key = "{auxField:getIsReportable($auxf)}"/>                                                                                                              
-                                    <string key="{auxField:getDescription($auxf)}"/> 
-                                    <dropdown key="{auxField:getScriptletId($auxf)}" />                                                       
-                                   </fields>
                                    <sorts>false,false,false,false,false,false,false,false</sorts>
 								   <filters>false,false,false,false,false,false,false,false</filters>
                                    <colAligns>left,left,left,center,center,center,left,left</colAligns>
                                 </table>
-                              </widget> 
-                              <HorizontalPanel width = "10px"/>
-                             </HorizontalPanel>                              						 							
+                             	</HorizontalPanel>		 							
 								<widget halign="center">
 											<appButton action="removeIdentifierRow" key="removeAuxFieldRowButton" onclick="this" style="Button">
 												<HorizontalPanel>
@@ -217,7 +199,6 @@ UIRF Software License are applicable instead of those above.
 												</HorizontalPanel>
 											</appButton>
 								</widget> 							 																															 						   							  
-							<HorizontalPanel>
 							  <widget valign="top">
 							    <table key="auxFieldValueTable" manager="this" maxRows="5" tab="{meta:getName($auxfg)},auxFieldTable" showError="false" showScroll="ALWAYS" title="" width="600px">
 												<headers>		 										    
@@ -226,21 +207,15 @@ UIRF Software License are applicable instead of those above.
 												</headers>
 												<widths>100,493</widths>
 												<editors>
-												    <dropdown case="mixed" width="100px"/>													
-													<textbox/>																																			
+												    <dropdown cellKey="{auxFieldValue:getTypeId($auxfv)}" case="mixed" width="100px"/>													
+													<textbox cellKey="{auxFieldValue:getValue($auxfv)}"/>																																			
 												</editors>
-												<fields>											    
-												    <dropdown key="{auxFieldValue:getTypeId($auxfv)}" type="integer" required="true"/>																										
-													<string key="{auxFieldValue:getValue($auxfv)}" max = "80"/>																																	
-												</fields>
 												<sorts>false,false</sorts>
 												<filters>false,false</filters>
 												<colAligns>left,left</colAligns>
 								 </table>
 							  </widget>
-							 <HorizontalPanel width = "10px"/>                             
-							</HorizontalPanel>     
-                                     <HorizontalPanel>    
+                                <HorizontalPanel>    
                                        <widget>
 							            <HorizontalPanel width = "7px"/>
 							           </widget>                                       
@@ -263,11 +238,8 @@ UIRF Software License are applicable instead of those above.
 						               </widget>
 						             </HorizontalPanel>  							        															                   		
 						</VerticalPanel>			 					   												   							  								 					    			
-					 </VerticalPanel>
-						<HorizontalPanel width = "10px"/>
-					  </HorizontalPanel>			
-					</VerticalPanel>					
-				</HorizontalPanel>
+					</VerticalPanel>		
+					</HorizontalPanel>			
 			</display>
 			<rpc key="display">	
 			 <integer key="{meta:getId($auxfg)}" required="false" />
@@ -276,8 +248,20 @@ UIRF Software License are applicable instead of those above.
 			 <date key="{meta:getActiveBegin($auxfg)}" begin="0" end="2" required = "true"/>	
 			 <date key="{meta:getActiveEnd($auxfg)}" begin="0" end="2" required = "true"/>	
 			 <check key = "{meta:getIsActive($auxfg)}" required = "true"/>	 
-	         <table key = "auxFieldTable"/>
-			 <table key = "auxFieldValueTable"/>					 										
+	         <table key = "auxFieldTable">
+	         	<dropdown key="{analyte:getName($ana)}" required = "true"/>
+                <dropdown key="{method:getName($mt)}"/>
+                <dropdown key="{auxField:getUnitOfMeasureId($auxf)}"/>
+                <check key = "{auxField:getIsActive($auxf)}"/>
+                <check key = "{auxField:getIsRequired($auxf)}"/>
+                <check key = "{auxField:getIsReportable($auxf)}"/>                                                                                                              
+                <string key="{auxField:getDescription($auxf)}"/> 
+                <dropdown key="{auxField:getScriptletId($auxf)}" />     
+	         </table>
+			 <table key = "auxFieldValueTable">
+			 	<dropdown key="{auxFieldValue:getTypeId($auxfv)}" type="integer" required="true"/>																										
+				<string key="{auxFieldValue:getValue($auxfv)}" max = "80"/>
+			 </table>					 										
 		    </rpc>
 		</screen>
   </xsl:template>

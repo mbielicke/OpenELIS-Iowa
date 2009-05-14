@@ -369,7 +369,7 @@ public class EnvironmentalSampleLoginService implements AppScreenFormServiceInt<
     private void loadOrgProjectForm(SampleOrgProjectForm form, SampleOrganizationsManager orgManager, SampleProjectsManager projManager) {
         if(projManager.count() > 0){
             form.projectName.setValue(projManager.getSampleProjectAt(0).getProject().getName());
-            form.sampleProjectForm.sampleProjectTable.setValue(buildSampleProjectTable(projManager));
+            form.sampleProjectForm.sampleProjectTable.setValue(buildSampleProjectTable(form.sampleProjectForm.sampleProjectTable.getValue(), projManager));
             form.sampleProjectForm.load = true;
         }
         
@@ -387,17 +387,8 @@ public class EnvironmentalSampleLoginService implements AppScreenFormServiceInt<
         }
     }
     
-    private TableDataModel<TableDataRow<Integer>> buildSampleProjectTable(SampleProjectsManager projManager){
-        TableDataModel<TableDataRow<Integer>> tableModel = new TableDataModel<TableDataRow<Integer>>();
-        
-        //create the default set
-        TableDataRow<Integer> defaultRow = new TableDataRow<Integer>(3);
-        defaultRow.cells[0] =  new DropDownField<Integer>();
-        defaultRow.cells[1] = new StringField();
-        defaultRow.cells[2] = new CheckField();
-        tableModel.setDefaultSet(defaultRow);
+    private TableDataModel<TableDataRow<Integer>> buildSampleProjectTable(TableDataModel<TableDataRow<Integer>> tableModel, SampleProjectsManager projManager){
 
-        
         for(int i=0; i<projManager.count(); i++){
             TableDataRow<Integer> row = tableModel.createNewSet();
             SampleProjectDO projDO = projManager.getSampleProjectAt(i);

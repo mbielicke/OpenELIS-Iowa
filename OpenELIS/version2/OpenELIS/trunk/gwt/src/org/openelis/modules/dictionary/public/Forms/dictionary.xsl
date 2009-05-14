@@ -150,36 +150,24 @@ UIRF Software License are applicable instead of those above.
 										<textbox case="mixed" max="30" width="215px" key="{meta:getSystemName($cat)}" tab="dictEntTable,{meta:getSectionId($cat)}"/>									
 								</row>						  							
 						</TablePanel>
-					</VerticalPanel>					
-					
-					<VerticalPanel style = "WhiteContentPanel" spacing="0" padding = "0">
-						<widget>
 							<table maxRows = "13" width = "auto" manager = "this" key="dictEntTable"  title="" showError="false" showScroll="ALWAYS" tab="{meta:getName($cat)},{meta:getSystemName($cat)}">
 								<headers><xsl:value-of select='resource:getString($constants,"active")'/>,<xsl:value-of select='resource:getString($constants,"systemName")'/>,
 								         <xsl:value-of select='resource:getString($constants,"abbr")'/>, <xsl:value-of select='resource:getString($constants,"entry")'/>,
 								         <xsl:value-of select='resource:getString($constants,"relEntry")'/></headers>
 								<widths>47,95,87,155,130</widths>
 								<editors>
-									<check/>									
-									<textbox max = "30"/>									
-									<textbox max = "10"/>									
-									<textbox/>																			
-									<autoComplete cat="relatedEntry" case="mixed" serviceUrl="OpenELISServlet?service=org.openelis.modules.dictionary.server.DictionaryService" width="100px">												
+									<check cellKey="{dictionary:getIsActive($dictNew)}">Y</check>									
+									<textbox cellKey="{dictionary:getSystemName($dictNew)}" max = "30"/>									
+									<textbox cellKey="{dictionary:getLocalAbbrev($dictNew)}" max = "10"/>									
+									<textbox cellKey="{dictionary:getEntry($dictNew)}"/>																			
+									<autoComplete cellKey="{relentry:getEntry($rel)}" cat="relatedEntry" case="mixed" serviceUrl="OpenELISServlet?service=org.openelis.modules.dictionary.server.DictionaryService" width="100px">												
 												<widths>123</widths>
 									</autoComplete>
 								</editors>
-								<fields>																											
-									<check key="{dictionary:getIsActive($dictNew)}">Y</check>
-									<string key="{dictionary:getSystemName($dictNew)}"/>									
-									<string key="{dictionary:getLocalAbbrev($dictNew)}"/>
-									<string key="{dictionary:getEntry($dictNew)}" required = "true"/>																		
-									<dropdown key="{relentry:getEntry($rel)}"/>
-								</fields>
 								<sorts>false,false,false,true,false</sorts>
 								<filters>false,false,false,false,false</filters>
 								<colAligns>left,left,left,left,left</colAligns>
 							</table>
-						</widget>			
 											                
 		                <TablePanel width = "500px" spacing="0" padding="0" style="TableFooter">
 						 <row>
@@ -202,7 +190,13 @@ UIRF Software License are applicable instead of those above.
 	 <string key="{meta:getSystemName($cat)}" max="30" required = "true"/>
 	 <string key="{meta:getName($cat)}" max="50" required = "true"/>
 	 <string key="{meta:getDescription($cat)}" max="60" required="false"/>
-     <table key="dictEntTable"/>	 
+     <table key="dictEntTable">
+     	<check key="{dictionary:getIsActive($dictNew)}">Y</check>
+		<string key="{dictionary:getSystemName($dictNew)}"/>									
+		<string key="{dictionary:getLocalAbbrev($dictNew)}"/>
+		<string key="{dictionary:getEntry($dictNew)}" required = "true"/>																		
+		<dropdown key="{relentry:getEntry($rel)}"/>	 
+     </table>
      <dropdown key="{meta:getSectionId($cat)}" required="false"/>    
 	</rpc>
 </screen>

@@ -35,6 +35,7 @@ import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.screen.CommandChain;
 import org.openelis.gwt.screen.ScreenCheck;
 import org.openelis.gwt.screen.ScreenMenuPanel;
+import org.openelis.gwt.screen.ScreenTab;
 import org.openelis.gwt.screen.ScreenTextArea;
 import org.openelis.gwt.screen.ScreenTextBox;
 import org.openelis.gwt.screen.ScreenVertical;
@@ -76,6 +77,7 @@ public class InventoryItemScreen extends OpenELISScreenForm<InventoryItemForm, Q
     TextBox subjectBox; 
 	private ScreenTextBox idTextBox;
 	private ScreenTextArea noteText;
+	private ScreenTab tabPanel;
     private KeyListManager keyList = new KeyListManager();
 	
 	private TableWidget componentsTable, locsTable;
@@ -177,6 +179,8 @@ public class InventoryItemScreen extends OpenELISScreenForm<InventoryItemForm, Q
 		componentsTable = (TableWidget)getWidget("componentsTable");
         componentsTable.addTableWidgetListener(this);
 		componentsTable.model.enableAutoAdd(false);
+		
+		tabPanel = (ScreenTab)widgets.get("itemTabPanel");
        
         svp = (ScreenVertical) widgets.get("notesPanel");
         
@@ -208,9 +212,6 @@ public class InventoryItemScreen extends OpenELISScreenForm<InventoryItemForm, Q
         commitAddChain.add(0,checkModels);
         
 		super.afterDraw(success);			
-        
-		form.components.componentsTable.setValue(componentsTable.model.getData());
-		form.locations.locQuantitiesTable.setValue(locsTable.model.getData());
 	}
     
     public void add() {
@@ -306,7 +307,9 @@ public class InventoryItemScreen extends OpenELISScreenForm<InventoryItemForm, Q
         return true;
 	}
 
-	public void onTabSelected(SourcesTabEvents sender, int tabIndex) {}
+	public void onTabSelected(SourcesTabEvents sender, int tabIndex) {
+	    form.itemTabPanel = tabPanel.getSelectedTabKey();
+	}
       
     private void fillComponentsModel(final boolean forDuplicate){
         if(form.entityKey == null)

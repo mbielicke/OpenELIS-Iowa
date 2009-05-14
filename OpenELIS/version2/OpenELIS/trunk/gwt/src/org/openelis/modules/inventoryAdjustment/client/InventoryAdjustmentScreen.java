@@ -100,16 +100,6 @@ public class InventoryAdjustmentScreen extends OpenELISScreenForm<InventoryAdjus
             onRemoveRowButtonClick();
     }
     
-/*    public void onChange(Widget sender) {
-        if(sender == storesDropdown.getWidget()){
-            Dropdown storeD = (Dropdown)storesDropdown.getWidget();
-            form.setFieldValue(storeIdKey, storeD.getSelections());
-           
-        }else
-            super.onChange(sender);
-    }
-    */
-    
     public void afterDraw(boolean sucess) {
         removeRowButton = (AppButton)getWidget("removeRowButton");
         adjustmentsTable = (TableWidget)getWidget("adjustmentsTable");
@@ -146,9 +136,6 @@ public class InventoryAdjustmentScreen extends OpenELISScreenForm<InventoryAdjus
         commitAddChain.add(0,checkModels);
         
         super.afterDraw(sucess);
-        
-        form.adjustmentsTable.setValue(adjustmentsTable.model.getData());
-        
     }
     
     public void add() {
@@ -270,8 +257,7 @@ public class InventoryAdjustmentScreen extends OpenELISScreenForm<InventoryAdjus
     }
 
     public boolean canEdit(TableWidget widget, TableDataRow set, int row, int col) {
-        int numRows = adjustmentsTable.model.numRows();
-        if(state == State.UPDATE && (col == 0 || col == 1) && row > -1 && numRows > 0 && row < numRows)
+        if(state == State.UPDATE && (col == 0 || col == 1))
             return false;
         
        return true;
