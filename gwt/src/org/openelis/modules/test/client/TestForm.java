@@ -78,7 +78,7 @@ public class TestForm extends Form<Integer> {
                                       revisionMethods,sortingMethods,reportingMethods,
                                       trailers,testFormats,sampleTypes,units,scriptlets,
                                       analyteTypes,resultTypes,resultFlags,roundingMethods,
-                                      testMethods,reflexFlags,wsFormats,
+                                      testMethods,reflexFlags,wsFormats,labels,
                                       wsItemTypes,wsAnalyteFlags;
     public Integer numGroups;
     
