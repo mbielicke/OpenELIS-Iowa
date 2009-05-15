@@ -84,6 +84,7 @@ public class DictionaryEntryPickerService implements AppScreenFormServiceInt<Dic
     
     public DictionaryEntryPickerForm getScreen(DictionaryEntryPickerForm rpc) throws RPCException{
         rpc.xml = ServiceUtils.getXML(Constants.APP_ROOT + "/Forms/dictionaryEntryPicker.xsl");
+        rpc.categoryModel = getInitialModel();
         return rpc;
     }
     
@@ -102,20 +103,20 @@ public class DictionaryEntryPickerService implements AppScreenFormServiceInt<Dic
        }catch(Exception ex) {
            ex.printStackTrace();
        }
-        rpc.model.clear();
+        rpc.dictionaryTableModel.clear();
          for(int iter = 0; iter < dictDOList.size(); iter++){
              IdNameDO dictDO = dictDOList.get(iter);             
-             TableDataRow<Integer> row = rpc.model.createNewSet();                         
+             TableDataRow<Integer> row = rpc.dictionaryTableModel.createNewSet();                         
              row.key = dictDO.getId();                          
              row.cells[0].setValue(dictDO.getName());
-             rpc.model.add(row);
+             rpc.dictionaryTableModel.add(row);
          }
         return rpc;
     }
     
 
     
-    public DictionaryEntryPickerDataRPC getInitialModel(DictionaryEntryPickerDataRPC rpc){
+    private TableDataModel<TableDataRow<Integer>> getInitialModel(){
        TableDataModel<TableDataRow<Integer>> model = new TableDataModel<TableDataRow<Integer>>();
        CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
        List<IdNameDO> list = remote.getCategoryList();
@@ -131,9 +132,8 @@ public class DictionaryEntryPickerService implements AppScreenFormServiceInt<Dic
            set = new TableDataRow<Integer>(methodDO.getId(),new StringObject(methodDO.getName()));
            model.add(set);
        }
-       rpc.model = model;
-
-       return rpc;
+      
+       return model;
     } 
 
 }

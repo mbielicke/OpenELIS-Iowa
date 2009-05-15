@@ -237,8 +237,7 @@ UIRF Software License are applicable instead of those above.
 									<textbox key="{meta:getTimeTaWarning($test)}" tab="{meta:getTimeTransit($test)},{meta:getTimeTaAverage($test)}" width = "50px"/>									
 								</row>																
 								</TablePanel>
-							   </VerticalPanel>
-							  <!--<HorizontalPanel width = "1px"/>	-->
+							   </VerticalPanel>							  
 								<VerticalPanel style="subform"> 								
 								<text style="FormTitle"><xsl:value-of select='resource:getString($constants,"activity")'/></text>
 								<TablePanel style="Form">
@@ -248,11 +247,11 @@ UIRF Software License are applicable instead of those above.
 								</row>
 								<row>
 								 <text style="Prompt"><xsl:value-of select='resource:getString($constants,"beginDate")'/>:</text>
-								 <calendar key="{meta:getActiveBegin($test)}" tab="{meta:getActiveEnd($test)},{meta:getIsActive($test)}" onChange="this" begin="0" end="2" width = "80px"/>																	
+								 <calendar key="{meta:getActiveBegin($test)}" tab="{meta:getActiveEnd($test)},{meta:getIsActive($test)}" begin="0" end="2" width = "80px"/>																	
 								 </row>
 								 <row>
 								 <text style="Prompt"><xsl:value-of select='resource:getString($constants,"endDate")'/>:</text>
-								 <calendar key="{meta:getActiveEnd($test)}" tab="{meta:getLabelId($test)},{meta:getActiveBegin($test)}" onChange="this" begin="0" end="2" width = "80px"/>
+								 <calendar key="{meta:getActiveEnd($test)}" tab="{meta:getLabelId($test)},{meta:getActiveBegin($test)}" begin="0" end="2" width = "80px"/>
 								</row>																						
 								</TablePanel>								
 								</VerticalPanel>							
@@ -278,8 +277,7 @@ UIRF Software License are applicable instead of those above.
 								</VerticalPanel>
 								<HorizontalPanel width = "1px"/>
 								<VerticalPanel style="subform"> 								
-								 <text style="FormTitle"><xsl:value-of select='resource:getString($constants,"sections")'/></text>
-								  <!--<VerticalPanel height = "6px"/>-->
+								 <text style="FormTitle"><xsl:value-of select='resource:getString($constants,"sections")'/></text>								  
 										<widget valign="bottom">
 											<table key="sectionTable" maxRows="3" manager = "this" showError="false" showScroll="ALWAYS" title="" width="auto" tab="removeTestSectionButton,{meta:getIsReportable($test)}">
 												<headers>
@@ -288,13 +286,9 @@ UIRF Software License are applicable instead of those above.
 												</headers>
 												<widths>119,119</widths>
 												<editors>
-													<dropdown case="mixed" width="85px"/>
-													<dropdown case="mixed" width="110px"/>													
-												</editors>
-												<fields>
-													<dropdown key="{testSection:getSectionId($ts)}" required="true"/>													
-													<dropdown key="{testSection:getFlagId($ts)}" required="true"/>													
-												</fields>
+													<dropdown cellKey="{testSection:getSectionId($ts)}" case="mixed" width="85px"/>
+													<dropdown cellKey="{testSection:getFlagId($ts)}" case="mixed" width="110px"/>													
+												</editors>																																																	
 												<sorts>false,false</sorts>
 												<filters>false,false</filters>
 												<colAligns>left,left</colAligns>
@@ -361,13 +355,9 @@ UIRF Software License are applicable instead of those above.
 												</headers>
 												<widths>290,291</widths>
 												<editors>
-													<dropdown case = "mixed" width="285px" />
-													<dropdown case = "mixed" width="286px"/>
-												</editors>
-												<fields>
-													<dropdown key="{testTOS:getTypeOfSampleId($tos)}" required="true"/>
-													<dropdown key="{testTOS:getUnitOfMeasureId($tos)}"/>
-												</fields>
+													<dropdown cellKey="{testTOS:getTypeOfSampleId($tos)}" case = "mixed" width="285px" />
+													<dropdown cellKey="{testTOS:getUnitOfMeasureId($tos)}" case = "mixed" width="286px"/>
+												</editors>																								
 												<sorts>false,false</sorts>
 												<filters>false,false</filters>
 												<colAligns>left,left</colAligns>
@@ -511,27 +501,28 @@ UIRF Software License are applicable instead of those above.
 												</headers>
 												<widths>50,55,200,80,70,65,120,70,100</widths>
 												<editors>
-												    <dropdown case="mixed" width="75px"/>													
-													<dropdown case="mixed" width="75px"/>
-													<textbox/>
-													<textbox/>
-													<textbox/>
-													<textbox/>
-													<dropdown case="mixed" width="115px"/>
-													<textbox/>													
-													<dropdown case="mixed" width="95px"/>																																			
+												    <dropdown cellKey="{testResult:getUnitOfMeasureId($tr)}" case="mixed" width="75px"/>													
+													<dropdown cellKey="{testResult:getTypeId($tr)}" case="mixed" width="75px"/>
+													<textbox cellKey="{testResult:getValue($tr)}"/>
+													<textbox cellKey="{testResult:getQuantLimit($tr)}"/>
+													<textbox cellKey="{testResult:getContLevel($tr)}"/>
+													<textbox cellKey="{testResult:getHazardLevel($tr)}"/>
+													<dropdown cellKey="{testResult:getFlagsId($tr)}" case="mixed" width="115px"/>
+													<textbox cellKey="{testResult:getSignificantDigits($tr)}"/>													
+													<dropdown cellKey="{testResult:getRoundingMethodId($tr)}" case="mixed" width="95px"/>																																			
 												</editors>
-												<fields>		
-												    <dropdown key="{testResult:getUnitOfMeasureId($tr)}" type="integer" required="false"/>										    
-												    <dropdown key="{testResult:getTypeId($tr)}" type="integer" required="true"/>																										
+												<!--this table has a special requirement which needs the fields tag to be here for the time being -->		
+												<fields>
+													<dropdown key="{testResult:getUnitOfMeasureId($tr)}" type="integer" required="false"/>										    
+													<dropdown key="{testResult:getTypeId($tr)}" type="integer" required="true"/>																										
 													<string key="{testResult:getValue($tr)}" required="false"/>	
 													<string key="{testResult:getQuantLimit($tr)}"  required="false"/>	
 													<string key="{testResult:getContLevel($tr)}"  required="false"/>
 													<string key="{testResult:getHazardLevel($tr)}" required="false"/>	
 													<dropdown key="{testResult:getFlagsId($tr)}" type="integer" required="false"/>	
 													<integer key="{testResult:getSignificantDigits($tr)}"  required="false"/>														
-													<dropdown key="{testResult:getRoundingMethodId($tr)}" type="integer" required="false"/>																																		
-												</fields>
+													<dropdown key="{testResult:getRoundingMethodId($tr)}" type="integer" required="false"/>	
+												</fields>										
 												<sorts>false,false,false,false,false,false,false,false,false</sorts>
 												<filters>false,false,false,false,false,false,false,false,false</filters>
 												<colAligns>left,left,left,left,left,left,left,left,left</colAligns>
@@ -577,13 +568,9 @@ UIRF Software License are applicable instead of those above.
 												</headers>
 												<widths>489,92</widths>
 												<editors>
-													<dropdown case="mixed" width="470px"/>
-													<check/>													
-												</editors>
-												<fields>
-													<dropdown type = "integer" key="{testPrep:getPrepTestId($tp)}" required="true"/>													
-													<check key="{testPrep:getIsOptional($tp)}"/>													
-												</fields>
+													<dropdown cellKey="{testPrep:getPrepTestId($tp)}" case="mixed" width="470px"/>
+													<check cellKey="{testPrep:getIsOptional($tp)}" />													
+												</editors>																																															
 												<sorts>false,false</sorts>
 												<filters>false,false</filters>
 												<colAligns>left,left</colAligns>
@@ -617,17 +604,11 @@ UIRF Software License are applicable instead of those above.
 												</headers>
 												<widths>150,181,140,104</widths>
 												<editors>
-													<dropdown case="mixed" width="160px"/>
-													<dropdown case="mixed" width="181px" onchange = "this"/>
-													<dropdown case="mixed" width="140px"/>
-													<dropdown case="mixed" width="104px"/>													
+													<dropdown cellKey="{testRef:getAddTestId($tref)}" case="mixed" width="160px"/>
+													<dropdown cellKey="{testRef:getTestAnalyteId($tref)}" case="mixed" width="181px" onchange = "this"/>
+													<dropdown cellKey="{testRef:getTestResultId($tref)}" case="mixed" width="140px"/>
+													<dropdown cellKey="{testRef:getFlagsId($tref)}" case="mixed" width="104px"/>													
 												</editors>
-												<fields>
-												    <dropdown key="{testRef:getAddTestId($tref)}" required="true"/>
-													<dropdown key="{testRef:getTestAnalyteId($tref)}" required="true"/>													
-													<dropdown key="{testRef:getTestResultId($tref)}" required="true"/>	
-													<dropdown key="{testRef:getFlagsId($tref)}" required="false"/>																									
-												</fields>
 												<sorts>false,false,false,false</sorts>
 												<filters>false,false,false,false</filters>
 												<colAligns>left,left,left,left</colAligns>
@@ -695,15 +676,10 @@ UIRF Software License are applicable instead of those above.
 												</headers>
 												<widths>74,147,347</widths>
 												<editors>
-													<textbox/>
-													<dropdown case="mixed" width="140px"/>
-													<textbox/>																						
-												</editors>
-												<fields>
-												    <integer key="{testWrkshtItm:getPosition($twsi)}" required="false"/>
-													<dropdown key="{testWrkshtItm:getTypeId($twsi)}" type="integer" required="true"/>													
-													<string key="{testWrkshtItm:getQcName($twsi)}" required="true"/>																										
-												</fields>
+													<textbox cellKey="{testWrkshtItm:getPosition($twsi)}"/>
+													<dropdown cellKey="{testWrkshtItm:getTypeId($twsi)}" case="mixed" width="140px"/>
+													<textbox cellKey="{testWrkshtItm:getQcName($twsi)}"/>																						
+												</editors>												
 												<sorts>false,false,false</sorts>
 												<filters>false,false,false</filters>
 												<colAligns>left,left,left</colAligns>
@@ -740,17 +716,11 @@ UIRF Software License are applicable instead of those above.
 												</headers>
 												<widths>275,156,65,72</widths>
 												<editors>
-													<label/>
-													<check/>
-													<textbox/>
-													<dropdown case="mixed" width="100px"/>																					
-												</editors>
-												<fields>
-												    <string key="analyteName"/>
-												    <check key="available"/>
-												    <integer key="{testWrkshtAna:getRepeat($twsa)}" required="false"/>												    
-													<dropdown key="{testWrkshtAna:getFlagId($twsa)}" type="integer"/>																																																				
-												</fields>
+													<label cellKey="analyteName"/>
+													<check cellKey="available"/>
+													<textbox cellKey="{testWrkshtAna:getRepeat($twsa)}"/>
+													<dropdown cellKey="{testWrkshtAna:getFlagId($twsa)}" case="mixed" width="100px"/>																					
+												</editors>																							    																																																															
 												<sorts>false,false,false,false</sorts>
 												<filters>false,false,false,false</filters>
 												<colAligns>left,left,left,left</colAligns>
@@ -793,13 +763,27 @@ UIRF Software License are applicable instead of those above.
 			<dropdown key="{meta:getReportingMethodId($test)}" required="false" type="integer"/>
 			<integer key="{meta:getReportingSequence($test)}" required="false" type="integer"/>
 			<dropdown key="{meta:getSortingMethodId($test)}" required="false" type="integer"/>
-			<table key="sectionTable"/>					
+			<table key="sectionTable">
+				<dropdown key="{testSection:getSectionId($ts)}" required="true"/>													
+				<dropdown key="{testSection:getFlagId($ts)}" required="true"/>	
+			</table>				
 			<rpc key = "prepAndReflex"> 			 
-			 <table key="testPrepTable"/>
-			 <table key="testReflexTable"/>			 			 
+			 <table key="testPrepTable">
+			 	<dropdown type = "integer" key="{testPrep:getPrepTestId($tp)}" required="true"/>													
+				<check key="{testPrep:getIsOptional($tp)}"/>
+			 </table>
+			 <table key="testReflexTable">
+			 	<dropdown key="{testRef:getAddTestId($tref)}" required="true"/>
+				<dropdown key="{testRef:getTestAnalyteId($tref)}" required="true"/>													
+				<dropdown key="{testRef:getTestResultId($tref)}" required="true"/>	
+				<dropdown key="{testRef:getFlagsId($tref)}" required="true"/>
+			 </table>					 	 			 
 			</rpc> 
 			<rpc key = "sampleType"> 
-		 	 <table key="sampleTypeTable"/>
+		 	 <table key="sampleTypeTable">
+		 	 	<dropdown key="{testTOS:getTypeOfSampleId($tos)}" required="true"/>
+				<dropdown key="{testTOS:getUnitOfMeasureId($tos)}"/>
+		 	 </table>
 			</rpc>
 			<rpc key = "worksheet">
 			 <integer key="{testWrksht:getId($tws)}" required="false" type="integer"/>
@@ -807,12 +791,31 @@ UIRF Software License are applicable instead of those above.
 			 <dropdown key="{testWrksht:getScriptletId($tws)}" required="false" type="integer"/>
 			 <integer key="{testWrksht:getBatchCapacity($tws)}" required="false" type="integer"/>
 			 <integer key="{testWrksht:getTotalCapacity($tws)}" required="false" type="integer"/>
-		 	 <table key="worksheetTable"/>
-		 	 <table key="worksheetAnalyteTable"/>
+		 	 <table key="worksheetTable">
+		 	 	<integer key="{testWrkshtItm:getPosition($twsi)}" required="false"/>
+			  	<dropdown key="{testWrkshtItm:getTypeId($twsi)}" type="integer" required="true"/>													
+			  	<string key="{testWrkshtItm:getQcName($twsi)}" required="true"/>
+		 	 </table>
+		 	 <table key="worksheetAnalyteTable">
+		 	 	<string key="analyteName"/>
+				<check key="available"/>
+				<integer key="{testWrkshtAna:getRepeat($twsa)}" required="false"/>												    
+				<dropdown key="{testWrkshtAna:getFlagId($twsa)}" type="integer"/>
+		 	 </table>
 			</rpc>
 			<rpc key = "testAnalyte">
 			 <tree key = "analyteTree"/>
-			 <table key = "testResultsTable"/>						 
+			 <table key = "testResultsTable">
+	 			<dropdown key="{testResult:getUnitOfMeasureId($tr)}" type="integer" required="false"/>										    
+				<dropdown key="{testResult:getTypeId($tr)}" type="integer" required="true"/>																										
+				<string key="{testResult:getValue($tr)}" required="false"/>	
+				<string key="{testResult:getQuantLimit($tr)}"  required="false"/>	
+				<string key="{testResult:getContLevel($tr)}"  required="false"/>
+				<string key="{testResult:getHazardLevel($tr)}" required="false"/>	
+				<dropdown key="{testResult:getFlagsId($tr)}" type="integer" required="false"/>	
+				<integer key="{testResult:getSignificantDigits($tr)}"  required="false"/>														
+				<dropdown key="{testResult:getRoundingMethodId($tr)}" type="integer" required="false"/>		
+			 </table>			 				 
 			</rpc> 
 		  </rpc>		  
 		</screen>

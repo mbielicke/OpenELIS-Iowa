@@ -38,7 +38,7 @@ public class DictionaryEntryPickerDataRPC implements RPC {
     private static final long serialVersionUID = 1L;
     
     public Integer id;
-    public TableDataModel<TableDataRow<Integer>> model;
+    public TableDataModel<TableDataRow<Integer>> dictionaryTableModel;
     public String stringValue;
     
 

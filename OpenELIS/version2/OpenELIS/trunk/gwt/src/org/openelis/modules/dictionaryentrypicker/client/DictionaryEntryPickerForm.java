@@ -29,6 +29,8 @@ package org.openelis.modules.dictionaryentrypicker.client;
 import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.DropDownField;
+import org.openelis.gwt.common.data.TableDataModel;
+import org.openelis.gwt.common.data.TableDataRow;
 
 import com.google.gwt.xml.client.Node;
 
@@ -40,6 +42,7 @@ public class DictionaryEntryPickerForm extends Form<Integer> {
     private static final long serialVersionUID = 1L;
     
     public DropDownField<Integer> category;
+    public TableDataModel<TableDataRow<Integer>> categoryModel;
     
     public DictionaryEntryPickerForm(){
         category = new DropDownField<Integer>("category");

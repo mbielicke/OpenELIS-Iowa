@@ -1,7 +1,6 @@
 package org.openelis.modules.test.client;
 
-import java.util.HashMap;
-import java.util.List;
+import java.util.ArrayList;
 
 import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.data.TableDataModel;
@@ -14,13 +13,11 @@ public class TestGeneralPurposeRPC implements RPC {
      */
     private static final long serialVersionUID = 1L;
     
-    public Integer key;
-    public String stringValue;
-    public TableDataModel<TableDataRow<Integer>> model;
-    public HashMap<Integer, TableDataModel<TableDataRow<Integer>>> resultDropdownModelMap; 
-    public HashMap<Integer, List<Integer>> resGroupAnalyteIdMap;
-    public HashMap<Integer,Integer> unitIdNumResMap;
-    public Integer integerValue;
-    public String fieldName;
+    public Integer key,integerValue;
+    public String stringValue,fieldName;
+    public TableDataModel<TableDataRow<Integer>> defaultResultModel, testAnalyteModel, resultGroupModel;
+    public ArrayList<TableDataModel<TableDataRow<Integer>>> resultTableModelCollection,
+                                                            resultDropdownModelCollection;
+    public boolean duplicate;
        
 }

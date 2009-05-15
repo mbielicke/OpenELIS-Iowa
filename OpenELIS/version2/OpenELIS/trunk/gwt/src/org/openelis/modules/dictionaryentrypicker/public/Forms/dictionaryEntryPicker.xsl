@@ -56,7 +56,7 @@ UIRF Software License are applicable instead of those above.
          <row>
           <text style="Prompt"><xsl:value-of select="resource:getString($constants,'search')"/>:</text>
           <widget colspan = "3">	 		
-		   <dropdown key="category" onchange = "this" width="250px" showError="false" alwaysEnabled="true"/>				  
+		   <dropdown key="category" width="250px" showError="false" alwaysEnabled="true"/>				  
 		  </widget> 
 		 </row> 
 		 <row>
@@ -115,11 +115,6 @@ UIRF Software License are applicable instead of those above.
 	<rpc key="display">	
 	 <dropdown key="category" required="false" type="integer"/>    
 	</rpc>
-	<!--
-	<rpc key="queryByName"> 
-	  <queryString key="findTextBox" type="string" required="false"/>
-	</rpc>
-	-->
 </screen>
   </xsl:template>
 </xsl:stylesheet>					
