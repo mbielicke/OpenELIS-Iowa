@@ -92,6 +92,7 @@ public class TestDO implements Serializable {
         setScriptletId(scriptletId);
         setTestFormatId(testFormatId);
         setRevisionMethodId(revisionMethodId);
+        setReportingMethodId(reportingMethodId);
         setSortingMethodId(sortingMethodId);
         setReportingSequence(reportingSequence);
     }

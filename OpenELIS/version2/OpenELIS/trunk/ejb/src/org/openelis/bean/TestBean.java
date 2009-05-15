@@ -239,39 +239,7 @@ public class TestBean implements TestRemote {
                           }
                          } 
                      }
-                 }
-                                
-                  if(typeOfSampleDOList!=null){
-                      exceptionList = new ArrayList<Exception>();
-                      validateTypeOfSample(exceptionList,typeOfSampleDOList);
-                      if(exceptionList.size() > 0){
-                          throw (RPCException)exceptionList.get(0);
-                      }
-                      
-                     for(int i = 0; i < typeOfSampleDOList.size(); i++){
-                         TestTypeOfSampleDO typeOfSampleDO = typeOfSampleDOList.get(i);
-                        
-                         if(typeOfSampleDO !=null){
-                             TestTypeOfSample typeOfSample = null;
-                              if(typeOfSampleDO.getId() == null){
-                                  typeOfSample = new TestTypeOfSample();
-                              } else {
-                                  typeOfSample = manager.find(TestTypeOfSample.class, typeOfSampleDO.getId());
-                              }
-                              if(typeOfSampleDO.getDelete() && typeOfSampleDO.getId() != null){                           
-                                  manager.remove(typeOfSample);                                                     
-                              }else{                                     
-                                typeOfSample.setTestId(test.getId());
-                                typeOfSample.setTypeOfSampleId(typeOfSampleDO.getTypeOfSampleId());
-                                typeOfSample.setUnitOfMeasureId(typeOfSampleDO.getUnitOfMeasureId());
-                              
-                              if(typeOfSample.getId() == null){
-                                  manager.persist(typeOfSample);
-                              }
-                            } 
-                         }
-                     }
-                  }                                                     
+                 }                                                                                                     
                 
                 if(worksheetDO!=null){
                     exceptionList = new ArrayList<Exception>();
@@ -384,16 +352,7 @@ public class TestBean implements TestRemote {
                             laterProcAnaList.add(analyteDO);
                         }
                         
-                        if(analyteDO.getDelete() && analyteDO.getId() != null && !laterProcAnaList.contains(analyteDO)){
-                         /* query = manager.createNamedQuery("TestReflex.TestReflexesByTestAndTestAnalyte") ;
-                            query.setParameter("testId", test.getId());
-                            query.setParameter("testAnalyteId", analyte.getId());
-                            List<TestReflex> refList = (List<TestReflex>)query.getResultList();
-                            
-                            for(int i = 0; i < refList.size(); i++) {
-                                 manager.remove(refList.get(i));
-                            } */
-                            
+                        if(analyteDO.getDelete() && analyteDO.getId() != null && !laterProcAnaList.contains(analyteDO)){                            
                             manager.remove(analyte);                                 
                         }else if(!analyteDO.getDelete() && !laterProcAnaList.contains(analyteDO)){
                             updateTestAnalyte(analyteDO, analyte, test.getId()); 
@@ -440,7 +399,7 @@ public class TestBean implements TestRemote {
                 
                 if(resultDOList!=null) {
                     exceptionList = new ArrayList<Exception>();
-                    validateTestResults(exceptionList, resultDOList);
+                    validateTestResults(exceptionList, resultDOList,typeOfSampleDOList);
                     
                     if(exceptionList.size() > 0){
                         throw (RPCException)exceptionList.get(0);
@@ -458,15 +417,7 @@ public class TestBean implements TestRemote {
                             laterProcResList.add(resultDO);
                         }
                         
-                       if(resultDO.getDelete() && resultDO.getId() != null && !laterProcResList.contains(resultDO)){
-                        /* query = manager.createNamedQuery("TestReflex.TestReflexesByTestAndTestResult") ;
-                           query.setParameter("testId", test.getId());
-                           query.setParameter("testResultId", result.getId());
-                           List<TestReflex> reflexList = (List<TestReflex>)query.getResultList();
-                           
-                           for(int i = 0; i < reflexList.size(); i++) {
-                                manager.remove(reflexList.get(i));
-                           } */                           
+                       if(resultDO.getDelete() && resultDO.getId() != null && !laterProcResList.contains(resultDO)){                                                
                            manager.remove(result);   
                            
                         } else { 
@@ -479,6 +430,38 @@ public class TestBean implements TestRemote {
                          }
                        }      
                     }
+                }
+                
+                if(typeOfSampleDOList!=null){
+                    exceptionList = new ArrayList<Exception>();
+                    validateTypeOfSample(exceptionList,typeOfSampleDOList);
+                    if(exceptionList.size() > 0){
+                        throw (RPCException)exceptionList.get(0);
+                    }
+                    
+                   for(int i = 0; i < typeOfSampleDOList.size(); i++){
+                       TestTypeOfSampleDO typeOfSampleDO = typeOfSampleDOList.get(i);
+                      
+                       if(typeOfSampleDO !=null){
+                           TestTypeOfSample typeOfSample = null;
+                            if(typeOfSampleDO.getId() == null){
+                                typeOfSample = new TestTypeOfSample();
+                            } else {
+                                typeOfSample = manager.find(TestTypeOfSample.class, typeOfSampleDO.getId());
+                            }
+                            if(typeOfSampleDO.getDelete() && typeOfSampleDO.getId() != null){                           
+                                manager.remove(typeOfSample);                                                     
+                            }else if(!typeOfSampleDO.getDelete()){                                     
+                              typeOfSample.setTestId(test.getId());
+                              typeOfSample.setTypeOfSampleId(typeOfSampleDO.getTypeOfSampleId());
+                              typeOfSample.setUnitOfMeasureId(typeOfSampleDO.getUnitOfMeasureId());
+                            
+                            if(typeOfSample.getId() == null){
+                                manager.persist(typeOfSample);
+                            }
+                          } 
+                       }
+                   }
                 }
                 
                 if(testReflexDOList!=null) {
@@ -498,12 +481,12 @@ public class TestBean implements TestRemote {
                        }
                        if(refDO.getDelete() && refDO.getId() != null){                           
                            manager.remove(testReflex);                                                     
-                       }else{                                
+                       }else if(!refDO.getDelete()){                                
                            testReflex.setTestId(test.getId());
                            testReflex.setAddTestId(refDO.getAddTestId());
                            
                            if(refDO.getTestAnalyteId() != null && refDO.getTestAnalyteId() < 0) {
-                               found = false; 
+                              found = false; 
                               for(int i = 0; i < laterProcAnaList.size(); i++) {
                                  if(refDO.getTestAnalyteId().equals(laterProcAnaList.get(i).getId())) {                                     
                                      TestAnalyteDO analyteDO = laterProcAnaList.get(i);
@@ -958,9 +941,7 @@ public class TestBean implements TestRemote {
                                List<TestSectionDO> sectionDOList,
                                List<TestResultDO> resultDOList) {
      List<Exception> exceptionList = new ArrayList<Exception>();
-     validateTest(exceptionList, testDO);
-     if(typeOfSampleDOList!=null)
-      validateTypeOfSample(exceptionList,typeOfSampleDOList);
+     validateTest(exceptionList, testDO);     
      if(prepTestDOList!=null)
       validateTestPrep(exceptionList,prepTestDOList);
      if(testReflexDOList!=null)
@@ -976,7 +957,9 @@ public class TestBean implements TestRemote {
      if(sectionDOList!=null)
          validateTestSections(exceptionList,sectionDOList);
      if(resultDOList!=null) 
-      validateTestResults(exceptionList, resultDOList);
+      validateTestResults(exceptionList, resultDOList,typeOfSampleDOList);
+     if(typeOfSampleDOList!=null)
+         validateTypeOfSample(exceptionList,typeOfSampleDOList);
      return exceptionList;
     }
 
@@ -992,8 +975,7 @@ public class TestBean implements TestRemote {
                                   List<TestResultDO> resultDOList) {
         List<Exception> exceptionList = new ArrayList<Exception>();
         validateTest(exceptionList, testDO);
-        if(typeOfSampleDOList!=null)
-         validateTypeOfSample(exceptionList,typeOfSampleDOList);
+        
         if(prepTestDOList!=null)
          validateTestPrep(exceptionList,prepTestDOList);
         if(testReflexDOList!=null)
@@ -1009,7 +991,9 @@ public class TestBean implements TestRemote {
         if(sectionDOList!=null)
             validateTestSections(exceptionList,sectionDOList);
         if(resultDOList!=null) 
-            validateTestResults(exceptionList, resultDOList);
+            validateTestResults(exceptionList, resultDOList,typeOfSampleDOList);
+        if(typeOfSampleDOList!=null)
+            validateTypeOfSample(exceptionList,typeOfSampleDOList);
         return exceptionList;
     }    
     
@@ -1108,75 +1092,105 @@ public class TestBean implements TestRemote {
     
     private void validateTestPrep(List<Exception> exceptionList,List<TestPrepDO> testPrepDOList){    
             List<Integer> testPrepIdList = new ArrayList<Integer>();
-            Integer blankId = new Integer(-1);
-            int numReq = 0; 
-            for(int i = 0; i < testPrepDOList.size(); i++) {
-              TestPrepDO prepDO = testPrepDOList.get(i);
-              if(!prepDO.getDelete()) {
-                if(idIsBlank(prepDO.getPrepTestId(), blankId)) {
-                    exceptionList.add(new TableFieldErrorException("fieldRequiredException", i,
-                          TestPrepMetaMap.getTableName()+":"+TestMeta.getTestPrep().getPrepTestId()));
-                }else {
-                  if(!testPrepIdList.contains(prepDO.getPrepTestId())) {                
-                      testPrepIdList.add(prepDO.getPrepTestId());
-                   } else {        
-                   exceptionList.add(new TableFieldErrorException("fieldUniqueOnlyException", i,
-                          TestPrepMetaMap.getTableName()+":"+TestMeta.getTestPrep().getPrepTestId()));
-                  }                                              
-              }   
-                if(!"Y".equals(prepDO.getIsOptional()) ) {
-                  if(numReq >= 1) {  
-                    exceptionList.add(new TableFieldErrorException("moreThanOnePrepTestOptionalException", i,
-                     TestPrepMetaMap.getTableName()+":"+TestMeta.getTestPrep().getIsOptional()));
-                  }
-                  numReq++;
-                } 
-            }    
-          }       
+        int numReq = 0;
+        for (int i = 0; i < testPrepDOList.size(); i++) {
+            TestPrepDO prepDO = testPrepDOList.get(i);
+            if (!prepDO.getDelete()) {
+                if (prepDO.getPrepTestId() == null) {
+                    exceptionList.add(new TableFieldErrorException("fieldRequiredException",
+                                                                   i,
+                                                                   TestPrepMetaMap.getTableName() + ":"
+                                                                                   + TestMeta.getTestPrep()
+                                                                                             .getPrepTestId()));
+                } else {
+                    if (!testPrepIdList.contains(prepDO.getPrepTestId())) {
+                        testPrepIdList.add(prepDO.getPrepTestId());
+                    } else {
+                        exceptionList.add(new TableFieldErrorException("fieldUniqueOnlyException",
+                                                                       i,
+                                                                       TestPrepMetaMap.getTableName() + ":"
+                                                                                       + TestMeta.getTestPrep()
+                                                                                                 .getPrepTestId()));
+                    }
+                }
+                if (!"Y".equals(prepDO.getIsOptional())) {
+                    if (numReq >= 1) {
+                        exceptionList.add(new TableFieldErrorException("moreThanOnePrepTestOptionalException",
+                                                                       i,
+                                                                       TestPrepMetaMap.getTableName() + ":"
+                                                                                       + TestMeta.getTestPrep()
+                                                                                                 .getIsOptional()));
+                    }
+                    numReq++;
+                }
+            }
+        }       
     }
     
     private void validateTestReflex(List<Exception> exceptionList,List<TestReflexDO> testReflexDOList){
-        List<List<Integer>> idsList = new ArrayList<List<Integer>>();
-        for(int i = 0; i < testReflexDOList.size(); i++){
-          TestReflexDO refDO = testReflexDOList.get(i);
-          if(!refDO.getDelete()) {
-            boolean checkForDuplicate = false;
-            List<Integer> ids = new ArrayList<Integer>();
-            if(refDO.getAddTestId()==null) {
-                exceptionList.add(new TableFieldErrorException("fieldRequiredException", i,
-                      TestReflexMetaMap.getTableName()+":"+TestMeta.getTestReflex().getAddTestId()));                    
-            }else {
-                ids.add(refDO.getAddTestId());
-                checkForDuplicate = true;
-            }
-            
-            if(refDO.getTestAnalyteId()==null){
-                exceptionList.add(new TableFieldErrorException("fieldRequiredException", i,
-                      TestReflexMetaMap.getTableName()+":"+TestMeta.getTestReflex().getTestAnalyteId()));
-                checkForDuplicate = false;  
-            }else{
-                ids.add(refDO.getTestAnalyteId());
-                checkForDuplicate = true;
-            }
-            
-            if(refDO.getTestResultId()==null){
-                exceptionList.add(new TableFieldErrorException("fieldRequiredException", i,
-                      TestReflexMetaMap.getTableName()+":"+TestMeta.getTestReflex().getTestResultId()));
+        TestReflexDO refDO;
+        List<List<Integer>> idsList;
+        List<Integer> ids;
+        boolean checkForDuplicate;
+        int i;
+        TableFieldErrorException exc;
+        
+        idsList = new ArrayList<List<Integer>>();
+        for(i = 0; i < testReflexDOList.size(); i++){
+            refDO = testReflexDOList.get(i);
+            if(!refDO.getDelete()) {
                 checkForDuplicate = false;
-            }else{
-                ids.add(refDO.getTestResultId());
-                checkForDuplicate = true;
-            }
+                ids = new ArrayList<Integer>();
+                if(refDO.getAddTestId()==null) {
+                    exc = new TableFieldErrorException("fieldRequiredException", i,
+                                                           TestMeta.getTestReflex().getAddTestId());
+                    exc.setTableKey(TestReflexMetaMap.getTableName());
+                    exceptionList.add(exc);                    
+                }else {
+                    ids.add(refDO.getAddTestId());
+                    checkForDuplicate = true;
+                }
+            
+                if(refDO.getTestAnalyteId()==null){
+                    exc = new TableFieldErrorException("fieldRequiredException", i,
+                                                        TestMeta.getTestReflex().getTestAnalyteId());
+                    exc.setTableKey(TestReflexMetaMap.getTableName());
+                    exceptionList.add(exc);
+                    checkForDuplicate = false;  
+                }else{
+                    ids.add(refDO.getTestAnalyteId());
+                    checkForDuplicate = true;
+                }
+            
+                if(refDO.getTestResultId()==null){
+                    exc = new TableFieldErrorException("fieldRequiredException", i,
+                                                           TestMeta.getTestReflex().getTestResultId());
+                    exc.setTableKey(TestReflexMetaMap.getTableName());
+                    exceptionList.add(exc);
+                    checkForDuplicate = false;
+                }else{
+                    ids.add(refDO.getTestResultId());
+                    checkForDuplicate = true;
+                }
+            
+                if(refDO.getFlagsId()==null){
+                    exc = new TableFieldErrorException("fieldRequiredException", i,
+                                                           TestMeta.getTestReflex().getFlagsId());
+                    exc.setTableKey(TestReflexMetaMap.getTableName());
+                    exceptionList.add(exc);                    
+                }
            
-            if(checkForDuplicate){
-                if(!idsList.contains(ids)){                
-                    idsList.add(ids);
-                 }else{
-                     exceptionList.add(new TableFieldErrorException("fieldUniqueOnlyException", i,
-                      TestReflexMetaMap.getTableName()+":"+TestMeta.getTestReflex().getAddTestId())); 
-                 }
-            }
-         }  
+                if(checkForDuplicate){
+                    if(!idsList.contains(ids)){                
+                        idsList.add(ids);
+                    }else{
+                        exc = new TableFieldErrorException("fieldUniqueOnlyException", i,
+                                                               TestMeta.getTestReflex().getAddTestId());
+                        exc.setTableKey(TestReflexMetaMap.getTableName());
+                        exceptionList.add(exc); 
+                    }
+                }
+            }  
         }       
       }
     
@@ -1220,79 +1234,101 @@ public class TestBean implements TestRemote {
     
     private void validateTestWorksheetItems(List<Exception> exceptionList,
                                            List<TestWorksheetItemDO> itemDOList,
-                                           TestWorksheetDO worksheetDO) {
-        Integer blankId = new Integer(-1);
+                                           TestWorksheetDO worksheetDO) {        
         Integer bc = null;
-        if(worksheetDO!=null)
-         bc = worksheetDO.getBatchCapacity();
-        Integer position = null; 
+        if (worksheetDO != null)
+            bc = worksheetDO.getBatchCapacity();
+        Integer position = null;
         ArrayList<Integer> posList = new ArrayList<Integer>();
-        
+
         TestWorksheetItemDO itemDO = null;
         boolean checkPosition = false;
-        
+
         Query query = null;
-        
-        String sysName = null;      
-            
-        for(int i = 0; i < itemDOList.size(); i++) {
+
+        String sysName = null;
+
+        for (int i = 0; i < itemDOList.size(); i++) {
             itemDO = itemDOList.get(i);
-            if(!itemDO.getDelete()) { 
-            position = itemDO.getPosition();
-            checkPosition = true;
-             
-            if(itemDO.getQcName()==null || ("").equals(itemDO.getQcName())) {
-                exceptionList.add(new TableFieldErrorException("fieldRequiredException", i,
-                TestWorksheetItemMetaMap.getTableName()+":"+TestMeta.getTestWorksheetItem().getQcName()));
-            }
-            if(idIsBlank(itemDO.getTypeId(), blankId)){
-                exceptionList.add(new TableFieldErrorException("fieldRequiredException", i,
-                 TestWorksheetItemMetaMap.getTableName()+":"+TestMeta.getTestWorksheetItem().getTypeId()));
-                checkPosition = false;    
-            }            
-            
-            if(position!=null) {
-               if(position <= 0) {  
-                exceptionList.add(new TableFieldErrorException("posMoreThanZeroException", i,
-                 TestWorksheetItemMetaMap.getTableName()+":"+TestMeta.getTestWorksheetItem().getPosition()));  
-                checkPosition = false;
-             } else if(bc!=null && position > bc) {
-                 exceptionList.add(new TableFieldErrorException("posExcBatchCapacityException", i,
-                  TestWorksheetItemMetaMap.getTableName()+":"+TestMeta.getTestWorksheetItem().getPosition()));  
-                 checkPosition = false;
-             } else { 
-                 if(!posList.contains(position)) {
-                   posList.add(position);
-               } else {
-                   exceptionList.add(new TableFieldErrorException("duplicatePosForQCsException", i,
-                    TestWorksheetItemMetaMap.getTableName()+":"+TestMeta.getTestWorksheetItem().getPosition()));  
-                   checkPosition = false;
-               } 
-             }
-            }
-               
-            
-            if(checkPosition){
-                query = manager.createNamedQuery("Dictionary.SystemNameById");
-                query.setParameter("id", itemDO.getTypeId());
-                sysName = (String)query.getSingleResult();
-                
-                if(position == null){
-                 if("pos_duplicate".equals(sysName)||"pos_fixed".equals(sysName)){
-                        exceptionList.add(new TableFieldErrorException("fixedDuplicatePosException", i,
-                         TestWorksheetItemMetaMap.getTableName()+":"+TestMeta.getTestWorksheetItem().getPosition()));
+            if (!itemDO.getDelete()) {
+                position = itemDO.getPosition();
+                checkPosition = true;
+
+                if (itemDO.getQcName() == null || ("").equals(itemDO.getQcName())) {
+                    exceptionList.add(new TableFieldErrorException("fieldRequiredException",
+                                                                   i,
+                                                                   TestWorksheetItemMetaMap.getTableName() + ":"
+                                                                                   + TestMeta.getTestWorksheetItem()
+                                                                                             .getQcName()));
+                }
+                if (itemDO.getTypeId() == null) {
+                    exceptionList.add(new TableFieldErrorException("fieldRequiredException",
+                                                                   i,
+                                                                   TestWorksheetItemMetaMap.getTableName() + ":"
+                                                                                   + TestMeta.getTestWorksheetItem()
+                                                                                             .getTypeId()));
+                    checkPosition = false;
+                }
+
+                if (position != null) {
+                    if (position <= 0) {
+                        exceptionList.add(new TableFieldErrorException("posMoreThanZeroException",
+                                                                       i,
+                                                                       TestWorksheetItemMetaMap.getTableName() + ":"
+                                                                                       + TestMeta.getTestWorksheetItem()
+                                                                                                 .getPosition()));
+                        checkPosition = false;
+                    } else if (bc != null && position > bc) {
+                        exceptionList.add(new TableFieldErrorException("posExcBatchCapacityException",
+                                                                       i,
+                                                                       TestWorksheetItemMetaMap.getTableName() + ":"
+                                                                                       + TestMeta.getTestWorksheetItem()
+                                                                                                 .getPosition()));
+                        checkPosition = false;
+                    } else {
+                        if (!posList.contains(position)) {
+                            posList.add(position);
+                        } else {
+                            exceptionList.add(new TableFieldErrorException("duplicatePosForQCsException",
+                                                                           i,
+                                                                           TestWorksheetItemMetaMap.getTableName() + ":"
+                                                                                           + TestMeta.getTestWorksheetItem()
+                                                                                                     .getPosition()));
+                            checkPosition = false;
+                        }
                     }
-                } else {  
-                   if(position == 1 && "pos_duplicate".equals(sysName)) { 
-                     exceptionList.add(new TableFieldErrorException("posOneDuplicateException", i,
-                      TestWorksheetItemMetaMap.getTableName()+":"+TestMeta.getTestWorksheetItem().getTypeId()));
-                  } else if(!"pos_duplicate".equals(sysName) && !"pos_fixed".equals(sysName)){
-                      exceptionList.add(new TableFieldErrorException("posSpecifiedException", i,
-                       TestWorksheetItemMetaMap.getTableName()+":"+TestMeta.getTestWorksheetItem().getPosition()));
-                 }
-              }  
-            } 
-         }
+                }
+
+                if (checkPosition) {
+                    query = manager.createNamedQuery("Dictionary.SystemNameById");
+                    query.setParameter("id", itemDO.getTypeId());
+                    sysName = (String)query.getSingleResult();
+
+                    if (position == null) {
+                        if ("pos_duplicate".equals(sysName) || "pos_fixed".equals(sysName)) {
+                            exceptionList.add(new TableFieldErrorException("fixedDuplicatePosException",
+                                                                           i,
+                                                                           TestWorksheetItemMetaMap.getTableName() + ":"
+                                                                                           + TestMeta.getTestWorksheetItem()
+                                                                                                     .getPosition()));
+                        }
+                    } else {
+                        if (position == 1 && "pos_duplicate".equals(sysName)) {
+                            exceptionList.add(new TableFieldErrorException("posOneDuplicateException",
+                                                                           i,
+                                                                           TestWorksheetItemMetaMap.getTableName() + ":"
+                                                                                           + TestMeta.getTestWorksheetItem()
+                                                                                                     .getTypeId()));
+                        } else if (!"pos_duplicate".equals(sysName) && !"pos_fixed".equals(sysName)) {
+                            exceptionList.add(new TableFieldErrorException("posSpecifiedException",
+                                                                           i,
+                                                                           TestWorksheetItemMetaMap.getTableName() + ":"
+                                                                                           + TestMeta.getTestWorksheetItem()
+                                                                                                     .getPosition()));
+                        }
+                    }
+                }
+            }
         }       
     }
     
@@ -1342,46 +1378,38 @@ public class TestBean implements TestRemote {
         }
     }
     
-   private void validateTestResults(List<Exception> exceptionList, List<TestResultDO> resultDOList) {
-     TestResultDO resDO = null;
-     Integer numId = null;
-     Integer dictId = null;
-     Integer titerId = null; 
-     Integer blankId = new Integer(-1);
-     Integer typeId = null;
-     Integer dateId = null;
-     Integer dtId = null;
-     Integer timeId = null;     
-     Integer resultGroup = null;
-     Integer unit = null;
-     HashMap<Integer, Double> unitTtrMaxMap = null;
-     HashMap<Integer, Double> unitNumMaxMap = null;
-     Date date = null;
+   private void validateTestResults(List<Exception> exceptionList,
+                                    List<TestResultDO> resultDOList,
+                                    List<TestTypeOfSampleDO> sampleTypeDOList) {
+     TestResultDO resDO;
+     Integer numId,dictId, titerId , typeId , dateId ,dtId,timeId,resultGroup,unit;
+     HashMap<Integer, Double> unitTtrMaxMap, unitNumMaxMap;
+     TableFieldErrorException exc;
+     Date date;
      
-     String[] st = null;
+     String[] st;
      
-     ArrayList<String> dvlist = null;  
-     ArrayList<String> dlist = null; 
-     ArrayList<String> dtlist = null; 
-     ArrayList<String> tlist = null; 
-     
-     ArrayList<Integer> rlist = null;
+     ArrayList<String> dvlist,dlist,dtlist,tlist;     
+     ArrayList<Integer> rlist;
       
-     Double pnMax = null;
-     Double cnMin = null;
-     Double cnMax = null;
-                  
-     Double ptMax = null;
-     Double ctMin = null;
-     Double ctMax = null;
+     Double pnMax ,cnMin,cnMax,ptMax,ctMin,ctMax;
+           
+     String value,hhmm,defDate,dateStr, unitText;
+      
+     Query query;
      
-      
-     String value = null;
-     String hhmm = null;
-     String defDate = "2000-01-01 ";
-     String dateStr = null;
-      
-     Query query = manager.createNamedQuery("Dictionary.IdBySystemName");
+     query = manager.createNamedQuery("Dictionary.IdBySystemName");
+     
+     resultGroup = null;
+     pnMax = null;    
+     ptMax = null;
+     unitTtrMaxMap = null;
+     unitNumMaxMap = null;
+     dlist = null;
+     tlist = null;
+     dvlist = null;
+     dtlist = null;
+     defDate = "2000-01-01 ";
       
      query.setParameter("systemName", "test_res_type_dictionary");
      dictId = (Integer)query.getSingleResult();
@@ -1405,6 +1433,16 @@ public class TestBean implements TestRemote {
        resDO = resultDOList.get(i);
        typeId = resDO.getTypeId();
        unit = resDO.getUnitOfMeasureId();
+       
+       if(!unitIsValid(unit, sampleTypeDOList)) {
+           query = manager.createNamedQuery("Dictionary.EntryById");
+           query.setParameter("id", unit);
+           unitText = (String)query.getResultList().get(0);
+           exc = new TableFieldErrorException("illegalUnitOfMeasureException:"+unitText, i,
+                                                  TestMeta.getTestResult().getUnitOfMeasureId());
+           exc.setTableKey(TestResultMetaMap.getTableName());
+           exceptionList.add(exc);
+       }
        
        if(resultGroup == null){
            resultGroup = resDO.getResultGroup();
@@ -1430,97 +1468,121 @@ public class TestBean implements TestRemote {
       if(!resDO.getDelete()) {                   
        value = resDO.getValue();           
        
-        if(idIsBlank(typeId, blankId)) {
-         exceptionList.add(new TableFieldErrorException("fieldRequiredException", i,
-          TestResultMetaMap.getTableName()+":"+TestMeta.getTestResult().getTypeId()));  
+        if(typeId == null) {
+            exc = new TableFieldErrorException("fieldRequiredException", i,
+                                               TestMeta.getTestResult().getTypeId());
+            exc.setTableKey(TestResultMetaMap.getTableName());
+            exceptionList.add(exc);  
         }else {
          if(numId.equals(typeId)) {           
             if(value != null && !"".equals(value.trim())) {
                st = value.split(",");                 
                if(st.length != 2) {
-                  exceptionList.add(new TableFieldErrorException("illegalNumericFormatException", i,
-                   TestResultMetaMap.getTableName()+":"+TestMeta.getTestResult().getValue()));    
+                  exc = new TableFieldErrorException("illegalNumericFormatException", i,
+                                                         TestMeta.getTestResult().getValue());  
+                  exc.setTableKey(TestResultMetaMap.getTableName());
+                  exceptionList.add(exc);    
                } else {
                   try {                                      
                    cnMin = Double.valueOf(st[0]); 
                    cnMax = Double.valueOf(st[1]);
                                       
                    if(!(cnMin < cnMax)) {
-                      exceptionList.add(new TableFieldErrorException("illegalNumericRangeException", i,
-                       TestResultMetaMap.getTableName()+":"+TestMeta.getTestResult().getValue()));  
+                      exc =  new TableFieldErrorException("illegalNumericRangeException", i,
+                                                              TestMeta.getTestResult().getValue());
+                      exc.setTableKey(TestResultMetaMap.getTableName());
+                      exceptionList.add(exc);  
                    }else if(pnMax != null && resultGroup.equals(resDO.getResultGroup())){                         
-                       if(idIsBlank(unit, blankId)) { 
+                       if(unit == null) { 
                            pnMax = unitNumMaxMap.get(-1);
                        } else {
                            pnMax = unitNumMaxMap.get(unit); 
                        }
                        
                        if(pnMax != null && !(cnMin > pnMax)) {
-                           exceptionList.add(new TableFieldErrorException("testNumRangeOverlapException", i,
-                           TestResultMetaMap.getTableName()+":"+TestMeta.getTestResult().getValue())); 
+                           exc = new TableFieldErrorException("testNumRangeOverlapException", i,
+                                                                  TestMeta.getTestResult().getValue());
+                           exc.setTableKey(TestResultMetaMap.getTableName());
+                           exceptionList.add(exc); 
                        }                                               
                    }
                    
                    pnMax = cnMax;
                    
-                   if(idIsBlank(unit, blankId)) {
+                   if(unit == null) {
                        unitNumMaxMap.put(-1, cnMax);  
                    } else {
                        unitNumMaxMap.put(unit, cnMax);
-                   }                                     
+                   }            
+                   
+                   
                    
                  } catch (NumberFormatException ex) {
-                     exceptionList.add(new TableFieldErrorException("illegalNumericFormatException", i,
-                      TestResultMetaMap.getTableName()+":"+TestMeta.getTestResult().getValue()));   
+                     exc = new TableFieldErrorException("illegalNumericFormatException", i,
+                                                                TestMeta.getTestResult().getValue());
+                     exc.setTableKey(TestResultMetaMap.getTableName());
+                     exceptionList.add(exc);   
                  }                   
                }
             }else {
-                exceptionList.add(new TableFieldErrorException("fieldRequiredException", i,
-                 TestResultMetaMap.getTableName()+":"+TestMeta.getTestResult().getValue()));    
+                exc = new TableFieldErrorException("fieldRequiredException", i,
+                                                       TestMeta.getTestResult().getValue());
+                exc.setTableKey(TestResultMetaMap.getTableName());
+                exceptionList.add(exc);    
             }
          } else if(titerId.equals(typeId)) {           
              if(value != null && !"".equals(value.trim())) {
                  st = value.split(":");                 
                  if(st.length != 2) {
-                    exceptionList.add(new TableFieldErrorException("illegalTiterFormatException", i,
-                     TestResultMetaMap.getTableName()+":"+TestMeta.getTestResult().getValue()));    
+                    exc = new TableFieldErrorException("illegalTiterFormatException", i,
+                                                           TestMeta.getTestResult().getValue());
+                    exc.setTableKey(TestResultMetaMap.getTableName());
+                    exceptionList.add(exc);    
                  } else {
                     try {                                        
                      ctMin = Double.valueOf(st[0]); 
                      ctMax = Double.valueOf(st[1]);
                      
                      if(ctMin > ctMax) {
-                         exceptionList.add(new TableFieldErrorException("illegalTiterRangeException", i,
-                          TestResultMetaMap.getTableName()+":"+TestMeta.getTestResult().getValue()));  
+                         exc = new TableFieldErrorException("illegalTiterRangeException", i,
+                                                                TestMeta.getTestResult().getValue());
+                         exc.setTableKey(TestResultMetaMap.getTableName());
+                         exceptionList.add(exc);  
                      }else if(ptMax != null && resultGroup.equals(resDO.getResultGroup())){                         
-                         if(idIsBlank(unit, blankId)) { 
+                         if(unit == null) { 
                              ptMax = unitTtrMaxMap.get(-1);
                          } else {
                              ptMax = unitTtrMaxMap.get(unit); 
                          }
                          
                         if(ptMax != null && !(ctMin > ptMax)) { 
-                          exceptionList.add(new TableFieldErrorException("testTiterRangeOverlapException", i,
-                           TestResultMetaMap.getTableName()+":"+TestMeta.getTestResult().getValue()));
+                            exc = new TableFieldErrorException("testTiterRangeOverlapException", i,
+                                                                   TestMeta.getTestResult().getValue());
+                            exc.setTableKey(TestResultMetaMap.getTableName());
+                            exceptionList.add(exc);
                          } 
                      }
                      
                      ptMax = ctMax;                           
                      
-                     if(idIsBlank(unit, blankId)) {
+                     if(unit == null) {
                          unitTtrMaxMap.put(-1, ptMax);  
                      } else {
                          unitTtrMaxMap.put(unit, ptMax);
                      }
                      
                    } catch (NumberFormatException ex) {
-                       exceptionList.add(new TableFieldErrorException("illegalTiterFormatException", i,
-                        TestResultMetaMap.getTableName()+":"+TestMeta.getTestResult().getValue()));   
+                       exc = new TableFieldErrorException("illegalTiterFormatException", i,
+                                                              TestMeta.getTestResult().getValue());
+                       exc.setTableKey(TestResultMetaMap.getTableName());
+                       exceptionList.add(exc);   
                    }                   
                  }
               } else {
-                  exceptionList.add(new TableFieldErrorException("fieldRequiredException", i,
-                   TestResultMetaMap.getTableName()+":"+TestMeta.getTestResult().getValue()));    
+                  exc = new TableFieldErrorException("fieldRequiredException", i,
+                                                         TestMeta.getTestResult().getValue());
+                  exc.setTableKey(TestResultMetaMap.getTableName());
+                  exceptionList.add(exc);    
               }             
            } else if(dateId.equals(typeId)) {           
                if(value != null && !"".equals(value.trim())) {
@@ -1530,12 +1592,16 @@ public class TestBean implements TestRemote {
                        if(!dlist.contains(value)) {
                            dlist.add(value); 
                         } else {
-                         exceptionList.add(new TableFieldErrorException("testDateValueNotUniqueException", i,
-                          TestResultMetaMap.getTableName()+":"+TestMeta.getTestResult().getValue())); 
+                            exc = new TableFieldErrorException("testDateValueNotUniqueException", i,
+                                                                   TestMeta.getTestResult().getValue());
+                            exc.setTableKey(TestResultMetaMap.getTableName());
+                            exceptionList.add(exc); 
                        }
                    } catch (IllegalArgumentException ex) {
-                       exceptionList.add(new TableFieldErrorException("illegalDateValueException", i,
-                        TestResultMetaMap.getTableName()+":"+TestMeta.getTestResult().getValue()));   
+                       exc = new TableFieldErrorException("illegalDateValueException", i,
+                                                              TestMeta.getTestResult().getValue());
+                       exc.setTableKey(TestResultMetaMap.getTableName());
+                       exceptionList.add(exc);   
                    }
                                                                                          
                   }
@@ -1556,12 +1622,16 @@ public class TestBean implements TestRemote {
                           if(!dtlist.contains(value)) {
                               dtlist.add(value); 
                            } else {
-                            exceptionList.add(new TableFieldErrorException("testDateTimeValueNotUniqueException", i,
-                             TestResultMetaMap.getTableName()+":"+TestMeta.getTestResult().getValue())); 
+                               exc = new TableFieldErrorException("testDateTimeValueNotUniqueException", i,
+                                                                      TestMeta.getTestResult().getValue());
+                               exc.setTableKey(TestResultMetaMap.getTableName());
+                               exceptionList.add(exc); 
                           }
                       } catch (IllegalArgumentException ex) {
-                          exceptionList.add(new TableFieldErrorException("illegalDateTimeValueException", i,
-                           TestResultMetaMap.getTableName()+":"+TestMeta.getTestResult().getValue()));   
+                          exc = new TableFieldErrorException("illegalDateTimeValueException", i,
+                                                                 TestMeta.getTestResult().getValue());
+                          exc.setTableKey(TestResultMetaMap.getTableName());
+                          exceptionList.add(exc);   
                       }
                                                                                             
                      }
@@ -1580,12 +1650,16 @@ public class TestBean implements TestRemote {
                           if(!tlist.contains(value)) {
                                 tlist.add(value); 
                           } else {
-                            exceptionList.add(new TableFieldErrorException("testTimeValueNotUniqueException", i,
-                             TestResultMetaMap.getTableName()+":"+TestMeta.getTestResult().getValue())); 
+                              exc = new TableFieldErrorException("testTimeValueNotUniqueException", i,
+                                                                     TestMeta.getTestResult().getValue());
+                              exc.setTableKey(TestResultMetaMap.getTableName());
+                              exceptionList.add(exc); 
                          }
                         } catch (IllegalArgumentException ex) {
-                            exceptionList.add(new TableFieldErrorException("illegalTimeValueException", i,
-                             TestResultMetaMap.getTableName()+":"+TestMeta.getTestResult().getValue()));   
+                            exc = new TableFieldErrorException("illegalTimeValueException", i,
+                                                                   TestMeta.getTestResult().getValue());
+                            exc.setTableKey(TestResultMetaMap.getTableName());
+                            exceptionList.add(exc);   
                         }
                                                                                               
                       }
@@ -1596,8 +1670,10 @@ public class TestBean implements TestRemote {
                        if(!dvlist.contains(value)) {
                            dvlist.add(value); 
                       } else {
-                       exceptionList.add(new TableFieldErrorException("testDictEntryNotUniqueException", i,
-                        TestResultMetaMap.getTableName()+":"+TestMeta.getTestResult().getValue())); 
+                          exc = new TableFieldErrorException("testDictEntryNotUniqueException", i,
+                                                                 TestMeta.getTestResult().getValue());
+                          exc.setTableKey(TestResultMetaMap.getTableName());
+                          exceptionList.add(exc); 
                     }
                    
                       query = manager.createNamedQuery("Dictionary.IdByEntry");
@@ -1605,13 +1681,17 @@ public class TestBean implements TestRemote {
                       rlist = (ArrayList<Integer>)query.getResultList();
                   
                     if(rlist.size() == 0) {
-                     exceptionList.add(new TableFieldErrorException("illegalDictEntryException", i,
-                       TestResultMetaMap.getTableName()+":"+TestMeta.getTestResult().getValue()));
+                        exc = new TableFieldErrorException("illegalDictEntryException", i,
+                                                               TestMeta.getTestResult().getValue());
+                        exc.setTableKey(TestResultMetaMap.getTableName());
+                        exceptionList.add(exc);
                     }
 
                } else {
-                   exceptionList.add(new TableFieldErrorException("fieldRequiredException", i,
-                    TestResultMetaMap.getTableName()+":"+TestMeta.getTestResult().getValue()));    
+                   exc = new TableFieldErrorException("fieldRequiredException", i,
+                                                          TestMeta.getTestResult().getValue());
+                   exc.setTableKey(TestResultMetaMap.getTableName());
+                   exceptionList.add(exc);    
                }
            }
          }            
@@ -1626,7 +1706,6 @@ public class TestBean implements TestRemote {
         Integer defId = null;
         Integer askId = null;
         Integer matchId = null;
-        Integer blankId = new Integer(-1);
         Integer flagId = null;
         Integer sectId = null;
         
@@ -1659,7 +1738,7 @@ public class TestBean implements TestRemote {
            flagId = secDO.getFlagId();          
            sectId = secDO.getSectionId();
           
-           if(idIsBlank(sectId, blankId)) {
+           if(sectId == null) {
             exceptionList.add(new TableFieldErrorException("fieldRequiredException", iter,
              TestSectionMetaMap.getTableName()+":"+TestMeta.getTestSection().getSectionId()));  
            }else if(idList.contains(sectId)){
@@ -1670,7 +1749,7 @@ public class TestBean implements TestRemote {
            }
           
           
-          if(idIsBlank(flagId, blankId)) {
+          if(flagId == null) {
               numBlank++;
           }else if(defId.equals(flagId)) {
               numDef++;
@@ -1691,7 +1770,7 @@ public class TestBean implements TestRemote {
              for(int iter = 0; iter < size; iter++) {
                  secDO = sectionDOList.get(iter);  
                  flagId = secDO.getFlagId();
-                 if(!secDO.getDelete() && !idIsBlank(flagId,blankId)) {
+                 if(!secDO.getDelete() && (flagId != null)) {
                   exceptionList.add(new TableFieldErrorException("allSectBlankIfDefException", iter,
                    TestSectionMetaMap.getTableName()+":"+TestMeta.getTestSection().getFlagId()));
                  } 
@@ -1700,7 +1779,7 @@ public class TestBean implements TestRemote {
              for(int iter = 0; iter < size; iter++) {
                  secDO = sectionDOList.get(iter);  
                  flagId = secDO.getFlagId();
-                 if(!secDO.getDelete() && !idIsBlank(flagId,blankId) && !defId.equals(flagId)) {
+                 if(!secDO.getDelete() && (flagId != null) && !defId.equals(flagId)) {
                   exceptionList.add(new TableFieldErrorException("allSectBlankIfDefException", iter,
                    TestSectionMetaMap.getTableName()+":"+TestMeta.getTestSection().getFlagId()));
                  } 
@@ -1710,10 +1789,10 @@ public class TestBean implements TestRemote {
                secDO = sectionDOList.get(iter);  
                flagId = secDO.getFlagId();
                if(!secDO.getDelete()) { 
-                 if(!idIsBlank(flagId, blankId) && !matchId.equals(flagId)) {
+                 if((flagId != null) && !matchId.equals(flagId)) {
                   exceptionList.add(new TableFieldErrorException("allSectMatchFlagException", iter,
                    TestSectionMetaMap.getTableName()+":"+TestMeta.getTestSection().getFlagId()));
-                 }else if(idIsBlank(flagId, blankId)) {
+                 }else if(flagId ==null) {
                     exceptionList.add(new TableFieldErrorException("allSectMatchFlagException", iter,
                      TestSectionMetaMap.getTableName()+":"+TestMeta.getTestSection().getFlagId())); 
                 }                
@@ -1724,10 +1803,10 @@ public class TestBean implements TestRemote {
                secDO = sectionDOList.get(iter);  
                flagId = secDO.getFlagId();
                if(!secDO.getDelete()) {
-                 if(!idIsBlank(flagId, blankId) && !askId.equals(flagId)) {
+                 if((flagId != null) && !askId.equals(flagId)) {
                   exceptionList.add(new TableFieldErrorException("allSectAskFlagException", iter,
                    TestSectionMetaMap.getTableName()+":"+TestMeta.getTestSection().getFlagId()));
-                 }else if(idIsBlank(flagId, blankId)) {
+                 }else if(flagId == null) {
                     exceptionList.add(new TableFieldErrorException("allSectAskFlagException", iter,
                      TestSectionMetaMap.getTableName()+":"+TestMeta.getTestSection().getFlagId())); 
                 }                
@@ -1737,10 +1816,7 @@ public class TestBean implements TestRemote {
        }                                     
                                                                            
     }
-    
-    private boolean idIsBlank(Integer id,Integer blankId){        
-        return (id == null || blankId.equals(id)) ;            
-    }  
+     
     
     private void updateTestAnalyte(TestAnalyteDO analyteDO, TestAnalyte analyte, Integer testId) {
         analyte.setAnalyteGroup(analyteDO.getAnalyteGroup());
@@ -1768,7 +1844,34 @@ public class TestBean implements TestRemote {
         result.setTypeId(resultDO.getTypeId());    
     }
     
-    
-   
+    /**
+     * This method checks to see if a unit of measure (resultUnitId) assigned to a test result    
+     * belongs to the list of units added to the test 
+     */
+    private boolean unitIsValid(Integer resultUnitId,List<TestTypeOfSampleDO> sampleTypeDOList) {
+        int i,numMatch;
+        TestTypeOfSampleDO sampleDO;
+        Integer unitId;
+        
+        numMatch = 0;
+        
+        if(resultUnitId == null) 
+            return true;
+        
+        if(sampleTypeDOList == null) {              
+            return false;
+        }else {
+            for(i = 0; i < sampleTypeDOList.size(); i++) {
+                sampleDO = sampleTypeDOList.get(i);
+                unitId = sampleDO.getUnitOfMeasureId();
+                if(!sampleDO.getDelete() && unitId != null && unitId.equals(resultUnitId)) {
+                    numMatch++;
+                }
+            }
+        }
+        
+        return (numMatch != 0) ;
+    }
+        
      
 }
