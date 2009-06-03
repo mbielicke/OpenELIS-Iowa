@@ -108,7 +108,7 @@ public class StorageUnitService implements AppScreenFormServiceInt<StorageUnitFo
 		//}
         
         int i = 0;
-        if(query.fields == null)
+        if(query.results == null)
             query.results = new TableDataModel<TableDataRow<Integer>>();
         else
             query.results.clear();
