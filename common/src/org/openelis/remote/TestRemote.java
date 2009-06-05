@@ -134,6 +134,8 @@ public interface TestRemote {
     
     public List getMatchingEntries(String name,int maxResults,String cat);
     
+    public List getTestAutoCompleteByName(String name, int maxResults);
+    
     public HashMap<Integer,List<IdNameDO>> getAnalyteResultsMap(Integer testId);
     
     public HashMap<Integer,List<Integer>> getResultGroupAnalytesMap(Integer testId);

@@ -39,6 +39,7 @@ public class AnalysisTestDO implements Serializable {
     protected Integer         revision;
     protected Integer         testId;
     protected Integer         sectionId;
+    protected String          section;
     protected Integer         preAnalysisId;
     protected Integer         parentAnalysisId;
     protected Integer         parentResultId;
@@ -81,9 +82,9 @@ public class AnalysisTestDO implements Serializable {
 
     //analysis and test name,method name, and status
     public AnalysisTestDO(Integer id, Integer sampleItemId, Integer revision, Integer testId,
-                          Integer sectionId, Integer preAnalysisId, Integer parentAnalysisId, Integer parentResultId,
+                          Integer sectionId, String section, Integer preAnalysisId, Integer parentAnalysisId, Integer parentResultId,
                           String isReportable, Integer unitOfMeasureId, Integer statusId, Date availableDate,
-                          Date startedDate, Date completedDate, Date releasedDate, Date printedDate, String testName, 
+                          Date startedDate, Date completedDate, Date releasedDate, Date printedDate, String testName, Integer testMethodId, 
                           String testMethodName){
         
         setId(id);
@@ -91,6 +92,7 @@ public class AnalysisTestDO implements Serializable {
         setRevision(revision);
         setTestId(testId);
         setSectionId(sectionId);
+        setSection(section);
         setPreAnalysisId(preAnalysisId);
         setParentAnalysisId(parentAnalysisId);
         setParentResultId(parentResultId);
@@ -104,7 +106,9 @@ public class AnalysisTestDO implements Serializable {
         setPrintedDate(printedDate);
         
         //test params
+        test.setId(testId);
         test.setName(testName);
+        test.setMethodId(testMethodId);
         test.setMethodName(testMethodName);
     }
 
@@ -234,5 +238,13 @@ public class AnalysisTestDO implements Serializable {
 
     public void setPrintedDate(Date printedDate) {
         this.printedDate = new Datetime(Datetime.YEAR, Datetime.DAY, printedDate);
+    }
+
+    public String getSection() {
+        return section;
+    }
+
+    public void setSection(String section) {
+        this.section = DataBaseUtil.trim(section);
     }
 }

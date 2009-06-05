@@ -76,7 +76,7 @@ public class SampleItemsManager implements RPC {
         fetch();
         return items.size();
     }
-
+    
     // getters/setters of child objects
     public Integer getSampleId() {
         return sampleId;
