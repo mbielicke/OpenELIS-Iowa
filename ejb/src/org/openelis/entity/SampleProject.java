@@ -51,7 +51,7 @@ import org.w3c.dom.Element;
 @NamedQueries( {
     @NamedQuery(name = "SampleProject.SampleProjectBySampleId", query = "select new org.openelis.domain.SampleProjectDO(sp.id, sp.sampleId, " + 
                 " sp.projectId, sp.isPermanent, p.name, p.description, p.startedDate, p.completedDate, p.isActive, p.referenceTo, " + 
-                " p.ownerId, p.scriptletId) from SampleProject sp LEFT JOIN sp.project p where sp.sampleId = :id")})
+                " p.ownerId, p.scriptletId) from SampleProject sp LEFT JOIN sp.project p where sp.sampleId = :id order by sp.isPermanent DESC, p.name")})
 @Entity
 @Table(name="sample_project")
 @EntityListeners({AuditUtil.class})

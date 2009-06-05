@@ -38,13 +38,15 @@ import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
-@NamedQuery(name = "Section.IdName", query = "select distinct new org.openelis.domain.IdNameDO(s.id, s.name) " + "  from Section s order by s.name")
+@NamedQueries({ @NamedQuery(name = "Section.IdName", query = "select distinct new org.openelis.domain.IdNameDO(s.id, s.name) " + "  from Section s order by s.name"),
+                @NamedQuery(name = "Section.AutoByName", query = "select distinct new org.openelis.domain.SectionDO(s.id, s.name) from Section s where s.name like :name order by s.name")})
 
 @Entity
 @Table(name="section")

@@ -52,9 +52,9 @@ import org.openelis.utils.Auditable;
 
 @NamedQueries( {
     @NamedQuery(name = "Analysis.AnalysisTestBySampleItemId", query = "select new org.openelis.domain.AnalysisTestDO(a.id, a.sampleItemId, a.revision, " + 
-                " a.testId, a.sectionId, a.preAnalysisId, a.parentAnalysisId, a.parentResultId, a.isReportable, a.unitOfMeasureId, a.statusId, " + 
-                " a.availableDate, a.startedDate, a.completedDate, a.releasedDate, a.printedDate, t.name, t.method.name) from " +
-                " Analysis a LEFT JOIN a.test t where a.sampleItemId = :id")})
+                " a.testId, a.sectionId, s.name, a.preAnalysisId, a.parentAnalysisId, a.parentResultId, a.isReportable, a.unitOfMeasureId, a.statusId, " + 
+                " a.availableDate, a.startedDate, a.completedDate, a.releasedDate, a.printedDate, t.name, t.method.id, t.method.name) from " +
+                " Analysis a LEFT JOIN a.section s LEFT JOIN a.test t where a.sampleItemId = :id")})
                 
 @Entity
 @Table(name="analysis")
@@ -114,6 +114,10 @@ public class Analysis implements Auditable, Cloneable {
   @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "test_id", insertable = false, updatable = false)
   private Test test;
+  
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "section_id", insertable = false, updatable = false)
+  private Section section;
 
   @Transient
   private Analysis original;
@@ -333,6 +337,12 @@ public Test getTest() {
 }
 public void setTest(Test test) {
     this.test = test;
+}
+public Section getSection() {
+    return section;
+}
+public void setSection(Section section) {
+    this.section = section;
 }
   
 }   

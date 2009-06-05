@@ -31,13 +31,9 @@ package org.openelis.entity;
   */
 
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.openelis.entity.Method;
-import org.openelis.util.Datetime;
-import org.openelis.util.XMLUtil;
-
 import java.util.Collection;
 import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -51,6 +47,11 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+
+import org.w3c.dom.Element;
+
+import org.openelis.util.Datetime;
+import org.openelis.util.XMLUtil;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
@@ -64,7 +65,9 @@ import org.openelis.utils.Auditable;
     @NamedQuery(name = "Test.IdName", query = "select distinct new org.openelis.domain.IdNameDO(t.id, t.name) " + "  from Test t left join t.method order by t.name "),
     @NamedQuery(name = "Test.TestByName", query = "from Test t where t.name = :name order by t.name"),
     @NamedQuery(name = "Test.TestIdNameMethodSectionNames", query = "select distinct new org.openelis.domain.TestMethodSectionNamesDO(t.id,t.name,m.name,s.name)" 
-             + "  from Test t left join t.method m left join t.testSection ts left join ts.section s where t.isActive = :isActive order by t.name,m.name,s.name ")})
+             + "  from Test t left join t.method m left join t.testSection ts left join ts.section s where t.isActive = :isActive order by t.name,m.name,s.name "),
+   @NamedQuery(name = "Test.TestMethodAutoByName", query = "select new org.openelis.domain.TestMethodAutoDO(t.id, t.name, m.id, m.name)from Test t LEFT JOIN t.method m " +
+   		                " where t.name like :name and t.isActive='Y' order by t.name")})
     
 
 @Entity
