@@ -26,6 +26,7 @@
 package org.openelis.bean;
 
 import org.jboss.annotation.security.SecurityDomain;
+import org.openelis.domain.DictionaryIdEntrySysNameDO;
 import org.openelis.domain.IdLastNameFirstNameDO;
 import org.openelis.domain.IdNameDO;
 import org.openelis.domain.TestAnalyteDO;
@@ -53,6 +54,7 @@ import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.TableFieldErrorException;
+import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.SecurityModule.ModuleFlags;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.local.LockLocal;
@@ -66,7 +68,12 @@ import org.openelis.metamap.TestWorksheetAnalyteMetaMap;
 import org.openelis.metamap.TestWorksheetItemMetaMap;
 import org.openelis.remote.TestRemote;
 import org.openelis.security.local.SystemUserUtilLocal;
+import org.openelis.util.NumericRange;
+import org.openelis.util.InconsistentException;
+import org.openelis.util.ParseException;
 import org.openelis.util.QueryBuilder;
+import org.openelis.util.TestResultValidator;
+import org.openelis.util.TiterRange;
 import org.openelis.utils.GetPage;
 import org.openelis.utils.SecurityInterceptor;
 
@@ -109,6 +116,8 @@ public class TestBean implements TestRemote {
     private LockLocal lockBean;
 
     private static final TestMetaMap TestMeta = new TestMetaMap();
+    
+    
 
     @PostConstruct
     private void init() {
@@ -145,426 +154,374 @@ public class TestBean implements TestRemote {
                               List<TestResultDO> resultDOList) throws Exception {
         SecurityInterceptor.applySecurity(ctx.getCallerPrincipal().getName(), "test", ModuleFlags.UPDATE);
         TestWorksheet testWorksheet = null;
-        List<TestAnalyteDO> laterProcAnaList = new ArrayList<TestAnalyteDO>(); 
-        List<TestResultDO> laterProcResList = new ArrayList<TestResultDO>();
-        HashMap<Integer, Integer> tempRealResIdMap = new HashMap<Integer, Integer>();
-        HashMap<Integer, Integer> tempRealAnaIdMap = new HashMap<Integer, Integer>();
+        List<TestAnalyteDO> laterProcAnaList; 
+        List<TestResultDO> laterProcResList;
+        HashMap<Integer, Integer> tempRealResIdMap;
+        HashMap<Integer, Integer> tempRealAnaIdMap;                      
         
         boolean found = false;
-        
-        try {
-            Query query = manager.createNamedQuery("getTableId");
-            query.setParameter("name", "test");
-            Integer testReferenceId = (Integer)query.getSingleResult();
 
-            if (testDO.getId() != null) {
-                // we need to call lock one more time to make sure their lock
-                // didn't expire and someone else grabbed the record
-                try {
-                    lockBean.validateLock(testReferenceId,testDO.getId());
-                  } catch(Exception ex) {
-                     throw ex;
-                  }      
-                lockBean.getLock(testReferenceId, testDO.getId());
-            }
+        Query query = manager.createNamedQuery("getTableId");
+        query.setParameter("name", "test");
+        Integer testReferenceId = (Integer)query.getSingleResult();
 
-            manager.setFlushMode(FlushModeType.COMMIT);
-            Test test = null;
+        if (testDO.getId() != null) {
+            // we need to call lock one more time to make sure their lock
+            // didn't expire and someone else grabbed the record
+            lockBean.validateLock(testReferenceId, testDO.getId());
+        }
 
-            if (testDO.getId() == null) {
-                test = new Test();
-            } else {
-                test = manager.find(Test.class, testDO.getId());
-            }
-            
-            List<Exception> exceptionList = new ArrayList<Exception>();                        
-            
-            validateTest(exceptionList,testDO);
-            if(exceptionList.size() > 0){
-                throw (RPCException)exceptionList.get(0);
-            }
+        validateTest(testDO,prepTestDOList,typeOfSampleDOList,testReflexDOList,
+                     worksheetDO,itemDOList,twsaDOList,analyteDOList,
+                     sectionDOList,resultDOList);
 
-            test.setName(testDO.getName());
-            test.setMethodId(testDO.getMethodId());                                         
-            test.setActiveBegin(testDO.getActiveBegin());
-            test.setActiveEnd(testDO.getActiveEnd());
-            test.setDescription(testDO.getDescription());
-            test.setIsActive(testDO.getIsActive());
-            test.setIsReportable(testDO.getIsReportable());
-            test.setLabelId(testDO.getLabelId());
-            test.setLabelQty(testDO.getLabelQty());
-            test.setReportingDescription(testDO.getReportingDescription());
-            test.setRevisionMethodId(testDO.getRevisionMethodId());
-            test.setScriptletId(testDO.getScriptletId());            
-            test.setTestFormatId(testDO.getTestFormatId());
-            test.setTestTrailerId(testDO.getTestTrailerId());
-            test.setTimeHolding(testDO.getTimeHolding());
-            test.setTimeTaAverage(testDO.getTimeTaAverage());
-            test.setTimeTaMax(testDO.getTimeTaMax());
-            test.setTimeTaWarning(testDO.getTimeTaWarning());
-            test.setTimeTransit(testDO.getTimeTransit());
-            test.setReportingMethodId(testDO.getReportingMethodId());
-            test.setSortingMethodId(testDO.getSortingMethodId());
-            test.setReportingSequence(testDO.getReportingSequence());
+        laterProcAnaList = new ArrayList<TestAnalyteDO>();
+        laterProcResList = new ArrayList<TestResultDO>();
+        tempRealResIdMap = new HashMap<Integer, Integer>();
+        tempRealAnaIdMap = new HashMap<Integer, Integer>();
 
+        manager.setFlushMode(FlushModeType.COMMIT);
+        Test test = null;
 
-            if (test.getId() == null) {
-                manager.persist(test);
-            }
-            
-             if(prepTestDOList!=null){      
-                     exceptionList = new ArrayList<Exception>();
-                     validateTestPrep(exceptionList,prepTestDOList);
-                     if(exceptionList.size() > 0){
-                         throw (RPCException)exceptionList.get(0);
-                     }
-                     
-                     for(int i = 0; i < prepTestDOList.size() ; i++){
-                         TestPrepDO testPrepDO = prepTestDOList.get(i);
-                         TestPrep testPrep = null;
-                         if (testPrepDO.getId() == null) {
-                             testPrep = new TestPrep();
-                         } else {
-                             testPrep = manager.find(TestPrep.class, testPrepDO.getId());                             
-                         } 
-                         if(testPrepDO.getDelete() && testPrepDO.getId() != null){                           
-                             manager.remove(testPrep);                                                     
-                         }else{                           
-                          testPrep.setIsOptional(testPrepDO.getIsOptional());
-                          testPrep.setPrepTestId(testPrepDO.getPrepTestId());
-                          testPrep.setTestId(test.getId());
-                          
-                          if(testPrep.getId()==null){
-                              manager.persist(testPrep);
-                          }
-                         } 
-                     }
-                 }                                                                                                     
-                
-                if(worksheetDO!=null){
-                    exceptionList = new ArrayList<Exception>();
-                    validateTestWorksheet(exceptionList,worksheetDO);
-                    if(exceptionList.size() > 0){
-                        throw (RPCException)exceptionList.get(0);
-                    }
-                                       
-                    if(worksheetDO.getId()!=null){
-                        testWorksheet = manager.find(TestWorksheet.class, worksheetDO.getId());
-                    }else{
-                        testWorksheet = new TestWorksheet();
-                    }
-                    
-                    testWorksheet.setTestId(test.getId());
-                    testWorksheet.setBatchCapacity(worksheetDO.getBatchCapacity());
-                    testWorksheet.setNumberFormatId(worksheetDO.getNumberFormatId());
-                    testWorksheet.setTotalCapacity(worksheetDO.getTotalCapacity());       
-                    testWorksheet.setScriptletId(worksheetDO.getScriptletId());          
-                    
-                    if(testWorksheet.getId() == null){
-                        manager.persist(testWorksheet);
-                    }                                                          
+        if (testDO.getId() == null) {
+            test = new Test();
+        } else {
+            lockBean.getLock(testReferenceId, testDO.getId());
+            test = manager.find(Test.class, testDO.getId());
+        }
+
+        test.setName(testDO.getName());
+        test.setMethodId(testDO.getMethodId());
+        test.setActiveBegin(testDO.getActiveBegin());
+        test.setActiveEnd(testDO.getActiveEnd());
+        test.setDescription(testDO.getDescription());
+        test.setIsActive(testDO.getIsActive());
+        test.setIsReportable(testDO.getIsReportable());
+        test.setLabelId(testDO.getLabelId());
+        test.setLabelQty(testDO.getLabelQty());
+        test.setReportingDescription(testDO.getReportingDescription());
+        test.setRevisionMethodId(testDO.getRevisionMethodId());
+        test.setScriptletId(testDO.getScriptletId());
+        test.setTestFormatId(testDO.getTestFormatId());
+        test.setTestTrailerId(testDO.getTestTrailerId());
+        test.setTimeHolding(testDO.getTimeHolding());
+        test.setTimeTaAverage(testDO.getTimeTaAverage());
+        test.setTimeTaMax(testDO.getTimeTaMax());
+        test.setTimeTaWarning(testDO.getTimeTaWarning());
+        test.setTimeTransit(testDO.getTimeTransit());
+        test.setReportingMethodId(testDO.getReportingMethodId());
+        test.setSortingMethodId(testDO.getSortingMethodId());
+        test.setReportingSequence(testDO.getReportingSequence());
+
+        if (test.getId() == null) {
+            manager.persist(test);
+        }
+
+        if (prepTestDOList != null) {
+            for (int i = 0; i < prepTestDOList.size(); i++) {
+                TestPrepDO testPrepDO = prepTestDOList.get(i);
+                TestPrep testPrep = null;
+                if (testPrepDO.getId() == null) {
+                    testPrep = new TestPrep();
+                } else {
+                    testPrep = manager.find(TestPrep.class, testPrepDO.getId());
                 }
-                
-                if(itemDOList!=null && itemDOList.size() > 0) {
-                    exceptionList = new ArrayList<Exception>();
-                    validateTestWorksheetItems(exceptionList,itemDOList,worksheetDO);
-                    if(exceptionList.size() > 0){
-                        throw (RPCException)exceptionList.get(0);
+                if (testPrepDO.getDelete() && testPrepDO.getId() != null) {
+                    manager.remove(testPrep);
+                } else {
+                    testPrep.setIsOptional(testPrepDO.getIsOptional());
+                    testPrep.setPrepTestId(testPrepDO.getPrepTestId());
+                    testPrep.setTestId(test.getId());
+
+                    if (testPrep.getId() == null) {
+                        manager.persist(testPrep);
                     }
-                    
-                    for(int iter = 0; iter < itemDOList.size(); iter++){
-                        TestWorksheetItemDO itemDO = itemDOList.get(iter);
-                        TestWorksheetItem testWorksheetItem = null;
-                        if(itemDO.getId() == null){
-                            testWorksheetItem = new TestWorksheetItem();
-                        } else {
-                            testWorksheetItem = manager.find(TestWorksheetItem.class, itemDO.getId());
-                        }
-                        if(itemDO.getDelete() && itemDO.getId() != null){                           
-                            manager.remove(testWorksheetItem);                                                     
-                        }else {                                
-                           if(!itemDO.getDelete()) { 
-                            testWorksheetItem.setPosition(itemDO.getPosition());
-                            testWorksheetItem.setQcName(itemDO.getQcName());
-                            testWorksheetItem.setTestWorksheetId(testWorksheet.getId());
-                            testWorksheetItem.setTypeId(itemDO.getTypeId());                                                  
-                        
-                        if(testWorksheetItem.getId() == null){
+                }
+            }
+        }
+
+        if (worksheetDO != null) {
+            if (worksheetDO.getId() != null) {
+                testWorksheet = manager.find(TestWorksheet.class,
+                                             worksheetDO.getId());
+            } else {
+                testWorksheet = new TestWorksheet();
+            }
+
+            testWorksheet.setTestId(test.getId());
+            testWorksheet.setBatchCapacity(worksheetDO.getBatchCapacity());
+            testWorksheet.setNumberFormatId(worksheetDO.getNumberFormatId());
+            testWorksheet.setTotalCapacity(worksheetDO.getTotalCapacity());
+            testWorksheet.setScriptletId(worksheetDO.getScriptletId());
+
+            if (testWorksheet.getId() == null) {
+                manager.persist(testWorksheet);
+            }
+        }
+
+        if (itemDOList != null && itemDOList.size() > 0) {
+            for (int iter = 0; iter < itemDOList.size(); iter++) {
+                TestWorksheetItemDO itemDO = itemDOList.get(iter);
+                TestWorksheetItem testWorksheetItem = null;
+                if (itemDO.getId() == null) {
+                    testWorksheetItem = new TestWorksheetItem();
+                } else {
+                    testWorksheetItem = manager.find(TestWorksheetItem.class,
+                                                     itemDO.getId());
+                }
+                if (itemDO.getDelete() && itemDO.getId() != null) {
+                    manager.remove(testWorksheetItem);
+                } else {
+                    if (!itemDO.getDelete()) {
+                        testWorksheetItem.setPosition(itemDO.getPosition());
+                        testWorksheetItem.setQcName(itemDO.getQcName());
+                        testWorksheetItem.setTestWorksheetId(testWorksheet.getId());
+                        testWorksheetItem.setTypeId(itemDO.getTypeId());
+
+                        if (testWorksheetItem.getId() == null) {
                             manager.persist(testWorksheetItem);
                         }
-                     }
-                    }    
-                   }
-                    
-                }
-                
-                if(twsaDOList != null) {
-                    exceptionList = new ArrayList<Exception>();
-                    validateTestWorksheetAnalytes(exceptionList, twsaDOList);
-                    
-                    if(exceptionList.size() > 0){
-                        throw (RPCException)exceptionList.get(0);
-                    }
-                    
-                    for(TestWorksheetAnalyteDO twsaDO : twsaDOList){  
-                      TestWorksheetAnalyte twsa = null;  
-                      if(twsaDO.getId() == null){
-                         twsa = new TestWorksheetAnalyte();
-                      } else {
-                         twsa = manager.find(TestWorksheetAnalyte.class,twsaDO.getId()); 
-                      } 
-                      
-                      if(twsaDO.getDelete() && twsaDO.getId() != null){                           
-                          manager.remove(twsa);                                                     
-                      }else { 
-                         if(!twsaDO.getDelete()) { 
-                          twsa.setFlagId(twsaDO.getFlagId());                          
-                          twsa.setTestId(test.getId());
-                          twsa.setAnalyteId(twsaDO.getAnalyteId());
-                          twsa.setRepeat(twsaDO.getRepeat());
-                          
-                          if(twsa.getId() == null){
-                              manager.persist(twsa);
-                          }
-                       }
-                      }
-                    }
-                    
-                }
-                
-                if(analyteDOList!=null) {
-                    exceptionList = new ArrayList<Exception>();
-                    validateTestAnalytes(exceptionList,analyteDOList,resultDOList);
-                    
-                    if(exceptionList.size() > 0){
-                        throw (RPCException)exceptionList.get(0);
-                    }
-                    
-                    for(int iter = 0; iter < analyteDOList.size();iter++){
-                        TestAnalyteDO analyteDO = analyteDOList.get(iter);
-                        TestAnalyte analyte = null;
-                        
-                        if(analyteDO.getId()==null){
-                            analyte = new TestAnalyte();                           
-                        }else if(analyteDO.getId() > 0){
-                            analyte =  manager.find(TestAnalyte.class, analyteDO.getId());
-                        }else {
-                            laterProcAnaList.add(analyteDO);
-                        }
-                        
-                        if(analyteDO.getDelete() && analyteDO.getId() != null && !laterProcAnaList.contains(analyteDO)){                            
-                            manager.remove(analyte);                                 
-                        }else if(!analyteDO.getDelete() && !laterProcAnaList.contains(analyteDO)){
-                            updateTestAnalyte(analyteDO, analyte, test.getId()); 
-                            
-                            if(analyte.getId() == null){
-                                manager.persist(analyte);
-                            }
-                        }
-                        
                     }
                 }
-                
-                if(sectionDOList!=null) {
-                    exceptionList = new ArrayList<Exception>();
-                    validateTestSections(exceptionList, sectionDOList);
-                    
-                    if(exceptionList.size() > 0){
-                        throw (RPCException)exceptionList.get(0);
-                    }
-                    
-                    for(int iter = 0; iter < sectionDOList.size(); iter++){
-                        TestSectionDO tsDO = sectionDOList.get(iter);
-                        TestSection ts = null;
-                        
-                        if(tsDO.getId()==null) {
-                            ts = new TestSection();                           
-                        } else {
-                            ts =  manager.find(TestSection.class, tsDO.getId());
-                        }
-                        
-                        if(tsDO.getDelete() && tsDO.getId() != null){                           
-                            manager.remove(ts);                                                     
-                        }else{
-                            ts.setFlagId(tsDO.getFlagId());
-                            ts.setSectionId(tsDO.getSectionId());
-                            ts.setTestId(test.getId());
-                            
-                            if(ts.getId() == null){
-                                manager.persist(ts);
-                            }
-                        }
-                    }
-                }
-                
-                if(resultDOList!=null) {
-                    exceptionList = new ArrayList<Exception>();
-                    validateTestResults(exceptionList, resultDOList,typeOfSampleDOList);
-                    
-                    if(exceptionList.size() > 0){
-                        throw (RPCException)exceptionList.get(0);
-                    }
-                    
-                    for(int iter = 0 ; iter < resultDOList.size(); iter++){
-                        TestResultDO resultDO = resultDOList.get(iter);
-                        TestResult result = null;   
-                        
-                        if(resultDO.getId()==null) {
-                            result = new TestResult();                            
-                        } else if(resultDO.getId() > 0) {
-                            result = manager.find(TestResult.class, resultDO.getId());
-                        } else {
-                            laterProcResList.add(resultDO);
-                        }
-                        
-                       if(resultDO.getDelete() && resultDO.getId() != null && !laterProcResList.contains(resultDO)){                                                
-                           manager.remove(result);   
-                           
-                        } else { 
-                            if(!laterProcResList.contains(resultDO)){                        
-                                updateTestResult(resultDO, result,test.getId());
-                            
-                            if(result.getId() == null){
-                                manager.persist(result);
-                            }
-                         }
-                       }      
-                    }
-                }
-                
-                if(typeOfSampleDOList!=null){
-                    exceptionList = new ArrayList<Exception>();
-                    validateTypeOfSample(exceptionList,typeOfSampleDOList);
-                    if(exceptionList.size() > 0){
-                        throw (RPCException)exceptionList.get(0);
-                    }
-                    
-                   for(int i = 0; i < typeOfSampleDOList.size(); i++){
-                       TestTypeOfSampleDO typeOfSampleDO = typeOfSampleDOList.get(i);
-                      
-                       if(typeOfSampleDO !=null){
-                           TestTypeOfSample typeOfSample = null;
-                            if(typeOfSampleDO.getId() == null){
-                                typeOfSample = new TestTypeOfSample();
-                            } else {
-                                typeOfSample = manager.find(TestTypeOfSample.class, typeOfSampleDO.getId());
-                            }
-                            if(typeOfSampleDO.getDelete() && typeOfSampleDO.getId() != null){                           
-                                manager.remove(typeOfSample);                                                     
-                            }else if(!typeOfSampleDO.getDelete()){                                     
-                              typeOfSample.setTestId(test.getId());
-                              typeOfSample.setTypeOfSampleId(typeOfSampleDO.getTypeOfSampleId());
-                              typeOfSample.setUnitOfMeasureId(typeOfSampleDO.getUnitOfMeasureId());
-                            
-                            if(typeOfSample.getId() == null){
-                                manager.persist(typeOfSample);
-                            }
-                          } 
-                       }
-                   }
-                }
-                
-                if(testReflexDOList!=null) {
-                    exceptionList = new ArrayList<Exception>();
-                    validateTestReflex(exceptionList,testReflexDOList);
-                    if(exceptionList.size() > 0){
-                        throw (RPCException)exceptionList.get(0);
-                    }
-                    
-                    for(int iter = 0; iter < testReflexDOList.size(); iter++){
-                       TestReflexDO refDO = testReflexDOList.get(iter);
-                       TestReflex testReflex = null;
-                       if(refDO.getId() == null){
-                           testReflex = new TestReflex();
-                       } else {
-                           testReflex = manager.find(TestReflex.class, refDO.getId());
-                       }
-                       if(refDO.getDelete() && refDO.getId() != null){                           
-                           manager.remove(testReflex);                                                     
-                       }else if(!refDO.getDelete()){                                
-                           testReflex.setTestId(test.getId());
-                           testReflex.setAddTestId(refDO.getAddTestId());
-                           
-                           if(refDO.getTestAnalyteId() != null && refDO.getTestAnalyteId() < 0) {
-                              found = false; 
-                              for(int i = 0; i < laterProcAnaList.size(); i++) {
-                                 if(refDO.getTestAnalyteId().equals(laterProcAnaList.get(i).getId())) {                                     
-                                     TestAnalyteDO analyteDO = laterProcAnaList.get(i);
-                                     TestAnalyte analyte = new TestAnalyte();                                    
-                                     
-                                     if(!analyteDO.getDelete()) {
-                                         found = true;
-                                         updateTestAnalyte(analyteDO, analyte,test.getId());                                          
-                                         manager.persist(analyte);                                                           
-                                         refDO.setTestAnalyteId(analyte.getId());
-                                         tempRealAnaIdMap.put(analyteDO.getId(),analyte.getId());
-                                         laterProcAnaList.remove(analyteDO);
-                                    }  
-                                 } 
-                              }  
-                              if(!found)
-                                refDO.setTestAnalyteId(tempRealAnaIdMap.get(refDO.getTestAnalyteId()));
-                           }  
-                                                                                
-                          testReflex.setTestAnalyteId(refDO.getTestAnalyteId());
-                           
-                           if(refDO.getTestResultId() != null && refDO.getTestResultId() < 0) {
-                               found = false;
-                               for(int i = 0; i < laterProcResList.size(); i++) {                                  
-                                  if(refDO.getTestResultId().equals(laterProcResList.get(i).getId())) {
-                                      TestResultDO resultDO = laterProcResList.get(i);
-                                      TestResult result = new TestResult();                                    
-                                      
-                                      if(!resultDO.getDelete()) {
-                                         found = true; 
-                                         updateTestResult(resultDO, result,test.getId());                                                                                 
-                                         manager.persist(result);                                         
-                                         refDO.setTestResultId(result.getId());
-                                         tempRealResIdMap.put(resultDO.getId(),result.getId());
-                                         laterProcResList.remove(resultDO);
-                                     }  
-                                  } 
-                               } 
-                               if(!found)
-                                   refDO.setTestResultId(tempRealResIdMap.get(refDO.getTestResultId()));
-                            }
-                                                                             
-                       testReflex.setTestResultId(refDO.getTestResultId());                                                 
-                       testReflex.setFlagsId(refDO.getFlagsId());
-                                                                                                     
-                       if(testReflex.getId() == null) {
-                           manager.persist(testReflex);
-                       }
-                    }
-                  }
-                }
-                
-                for(int i =0; i < laterProcAnaList.size(); i++) {
-                    TestAnalyteDO analyteDO = laterProcAnaList.get(i);
-                    TestAnalyte analyte = new TestAnalyte();
-                    
-                    if(!analyteDO.getDelete()){
-                        updateTestAnalyte(analyteDO, analyte,test.getId());                        
-                        manager.persist(analyte); 
-                    }       
-                }
-                
-                for(int i =0; i < laterProcResList.size(); i++) {
-                    TestResultDO resultDO = laterProcResList.get(i);
-                    TestResult result = new TestResult();
-                    
-                    if(!resultDO.getDelete()) {
-                        updateTestResult(resultDO, result,test.getId());                                                                
-                        manager.persist(result);
-                    }     
-                }
-                                                       
-            lockBean.giveUpLock(testReferenceId, test.getId());
-            return test.getId();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            throw ex;
+            }
+
         }
+
+        if (twsaDOList != null) {
+            for (TestWorksheetAnalyteDO twsaDO : twsaDOList) {
+                TestWorksheetAnalyte twsa = null;
+                if (twsaDO.getId() == null) {
+                    twsa = new TestWorksheetAnalyte();
+                } else {
+                    twsa = manager.find(TestWorksheetAnalyte.class,
+                                        twsaDO.getId());
+                }
+
+                if (twsaDO.getDelete() && twsaDO.getId() != null) {
+                    manager.remove(twsa);
+                } else {
+                    if (!twsaDO.getDelete()) {
+                        twsa.setFlagId(twsaDO.getFlagId());
+                        twsa.setTestId(test.getId());
+                        twsa.setAnalyteId(twsaDO.getAnalyteId());
+                        twsa.setRepeat(twsaDO.getRepeat());
+
+                        if (twsa.getId() == null) {
+                            manager.persist(twsa);
+                        }
+                    }
+                }
+            }
+
+        }
+
+        if (analyteDOList != null) {
+            for (int iter = 0; iter < analyteDOList.size(); iter++) {
+                TestAnalyteDO analyteDO = analyteDOList.get(iter);
+                TestAnalyte analyte = null;
+
+                if (analyteDO.getId() == null) {
+                    analyte = new TestAnalyte();
+                } else if (analyteDO.getId() > 0) {
+                    analyte = manager.find(TestAnalyte.class, analyteDO.getId());
+                } else {
+                    laterProcAnaList.add(analyteDO);
+                }
+
+                if (analyteDO.getDelete() && analyteDO.getId() != null
+                    && !laterProcAnaList.contains(analyteDO)) {
+                    manager.remove(analyte);
+                } else if (!analyteDO.getDelete() && !laterProcAnaList.contains(analyteDO)) {
+                    updateTestAnalyte(analyteDO, analyte, test.getId());
+
+                    if (analyte.getId() == null) {
+                        manager.persist(analyte);
+                    }
+                }
+
+            }
+        }
+
+        if (sectionDOList != null) {
+            for (int iter = 0; iter < sectionDOList.size(); iter++) {
+                TestSectionDO tsDO = sectionDOList.get(iter);
+                TestSection ts = null;
+
+                if (tsDO.getId() == null) {
+                    ts = new TestSection();
+                } else {
+                    ts = manager.find(TestSection.class, tsDO.getId());
+                }
+
+                if (tsDO.getDelete() && tsDO.getId() != null) {
+                    manager.remove(ts);
+                } else {
+                    ts.setFlagId(tsDO.getFlagId());
+                    ts.setSectionId(tsDO.getSectionId());
+                    ts.setTestId(test.getId());
+
+                    if (ts.getId() == null) {
+                        manager.persist(ts);
+                    }
+                }
+            }
+        }
+
+        if (resultDOList != null) {
+            for (int iter = 0; iter < resultDOList.size(); iter++) {
+                TestResultDO resultDO = resultDOList.get(iter);
+                TestResult result = null;
+
+                if (resultDO.getId() == null) {
+                    result = new TestResult();
+                } else if (resultDO.getId() > 0) {
+                    result = manager.find(TestResult.class, resultDO.getId());
+                } else {
+                    laterProcResList.add(resultDO);
+                }
+
+                if (resultDO.getDelete() && resultDO.getId() != null
+                    && !laterProcResList.contains(resultDO)) {
+                    manager.remove(result);
+
+                } else {
+                    if (!laterProcResList.contains(resultDO)) {
+                        updateTestResult(resultDO, result, test.getId());
+
+                        if (result.getId() == null) {
+                            manager.persist(result);
+                        }
+                    }
+                }
+            }
+        }
+
+        if (typeOfSampleDOList != null) {
+            for (int i = 0; i < typeOfSampleDOList.size(); i++) {
+                TestTypeOfSampleDO typeOfSampleDO = typeOfSampleDOList.get(i);
+
+                if (typeOfSampleDO != null) {
+                    TestTypeOfSample typeOfSample = null;
+                    if (typeOfSampleDO.getId() == null) {
+                        typeOfSample = new TestTypeOfSample();
+                    } else {
+                        typeOfSample = manager.find(TestTypeOfSample.class,
+                                                    typeOfSampleDO.getId());
+                    }
+                    if (typeOfSampleDO.getDelete() && typeOfSampleDO.getId() != null) {
+                        manager.remove(typeOfSample);
+                    } else if (!typeOfSampleDO.getDelete()) {
+                        typeOfSample.setTestId(test.getId());
+                        typeOfSample.setTypeOfSampleId(typeOfSampleDO.getTypeOfSampleId());
+                        typeOfSample.setUnitOfMeasureId(typeOfSampleDO.getUnitOfMeasureId());
+
+                        if (typeOfSample.getId() == null) {
+                            manager.persist(typeOfSample);
+                        }
+                    }
+                }
+            }
+        }
+
+        if (testReflexDOList != null) {
+            for (int iter = 0; iter < testReflexDOList.size(); iter++) {
+                TestReflexDO refDO = testReflexDOList.get(iter);
+                TestReflex testReflex = null;
+                if (refDO.getId() == null) {
+                    testReflex = new TestReflex();
+                } else {
+                    testReflex = manager.find(TestReflex.class, refDO.getId());
+                }
+                if (refDO.getDelete() && refDO.getId() != null) {
+                    manager.remove(testReflex);
+                } else if (!refDO.getDelete()) {
+                    testReflex.setTestId(test.getId());
+                    testReflex.setAddTestId(refDO.getAddTestId());
+
+                    if (refDO.getTestAnalyteId() != null && refDO.getTestAnalyteId() < 0) {
+                        found = false;
+                        for (int i = 0; i < laterProcAnaList.size(); i++) {
+                            if (refDO.getTestAnalyteId()
+                                     .equals(laterProcAnaList.get(i).getId())) {
+                                TestAnalyteDO analyteDO = laterProcAnaList.get(i);
+                                TestAnalyte analyte = new TestAnalyte();
+
+                                if (!analyteDO.getDelete()) {
+                                    found = true;
+                                    updateTestAnalyte(analyteDO,
+                                                      analyte,
+                                                      test.getId());
+                                    manager.persist(analyte);
+                                    refDO.setTestAnalyteId(analyte.getId());
+                                    tempRealAnaIdMap.put(analyteDO.getId(),
+                                                         analyte.getId());
+                                    laterProcAnaList.remove(analyteDO);
+                                }
+                            }
+                        }
+                        if (!found)
+                            refDO.setTestAnalyteId(tempRealAnaIdMap.get(refDO.getTestAnalyteId()));
+                    }
+
+                    testReflex.setTestAnalyteId(refDO.getTestAnalyteId());
+
+                    if (refDO.getTestResultId() != null && refDO.getTestResultId() < 0) {
+                        found = false;
+                        for (int i = 0; i < laterProcResList.size(); i++) {
+                            if (refDO.getTestResultId()
+                                     .equals(laterProcResList.get(i).getId())) {
+                                TestResultDO resultDO = laterProcResList.get(i);
+                                TestResult result = new TestResult();
+
+                                if (!resultDO.getDelete()) {
+                                    found = true;
+                                    updateTestResult(resultDO,
+                                                     result,
+                                                     test.getId());
+                                    manager.persist(result);
+                                    refDO.setTestResultId(result.getId());
+                                    tempRealResIdMap.put(resultDO.getId(),
+                                                         result.getId());
+                                    laterProcResList.remove(resultDO);
+                                }
+                            }
+                        }
+                        if (!found)
+                            refDO.setTestResultId(tempRealResIdMap.get(refDO.getTestResultId()));
+                    }
+
+                    testReflex.setTestResultId(refDO.getTestResultId());
+                    testReflex.setFlagsId(refDO.getFlagsId());
+
+                    if (testReflex.getId() == null) {
+                        manager.persist(testReflex);
+                    }
+                }
+            }
+        }
+
+        for (int i = 0; i < laterProcAnaList.size(); i++) {
+            TestAnalyteDO analyteDO = laterProcAnaList.get(i);
+            TestAnalyte analyte = new TestAnalyte();
+
+            if (!analyteDO.getDelete()) {
+                updateTestAnalyte(analyteDO, analyte, test.getId());
+                manager.persist(analyte);
+            }
+        }
+
+        for (int i = 0; i < laterProcResList.size(); i++) {
+            TestResultDO resultDO = laterProcResList.get(i);
+            TestResult result = new TestResult();
+
+            if (!resultDO.getDelete()) {
+                updateTestResult(resultDO, result, test.getId());
+                manager.persist(result);
+            }
+        }
+
+        lockBean.giveUpLock(testReferenceId, test.getId());
+        return test.getId();        
     }          
 
     public TestDO getTest(Integer testId) {
@@ -738,41 +695,99 @@ public class TestBean implements TestRemote {
         return list;
     }
     
+    /**
+     * This method returns the data for the test results that belong to a test with
+     * id "testId" and a specific result group of that test specified by "resultGroup" 
+     */
     public List<TestResultDO> getTestResults(Integer testId, Integer resultGroup){
-        List<TestResultDO> list = null;
-        TestResultDO resDO = null;
-        Integer typeId = null;
-        Integer val =null;
-        String sysName = null;
-        String entry = null;
-        
-        Query query = manager.createNamedQuery("TestResult.TestResultDOList");        
+        List<TestResultDO> list;
+        TestResultDO resDO;
+        Integer typeId,val;
+        String sysName,entry;
+        Query query;
+               
+        list = null;
+        query = manager.createNamedQuery("TestResult.TestResultDOList");        
         query.setParameter("testId", testId);
         query.setParameter("resultGroup", resultGroup);
         try {
-         list = query.getResultList();
+            list = query.getResultList();
         
-        for (Iterator iter = list.iterator(); iter.hasNext();) {
-            resDO = (TestResultDO)iter.next();
-            typeId = resDO.getTypeId();
-            query = manager.createNamedQuery("Dictionary.SystemNameById");
-            query.setParameter("id", typeId);
-            sysName = (String)query.getSingleResult();
-            if("test_res_type_dictionary".equals(sysName)) {
-              val = Integer.parseInt(resDO.getValue());
-              query = manager.createNamedQuery("Dictionary.EntryById");
-              query.setParameter("id", val);
-              entry = (String)query.getSingleResult();
-              resDO.setDictEntry(entry);  
-            } else {
-              resDO.setDictEntry(null);  
-            }
+            for (Iterator iter = list.iterator(); iter.hasNext();) {
+                resDO = (TestResultDO)iter.next();
+                typeId = resDO.getTypeId();
+                query = manager.createNamedQuery("Dictionary.SystemNameById");
+                query.setParameter("id", typeId);
+                sysName = (String)query.getSingleResult();
+                if("test_res_type_dictionary".equals(sysName)) {
+                    val = Integer.parseInt(resDO.getValue());
+                    query = manager.createNamedQuery("Dictionary.EntryById");
+                    query.setParameter("id", val);
+                    entry = (String)query.getSingleResult();
+                    resDO.setDictEntry(entry);  
+                } else {
+                    resDO.setDictEntry(null);  
+                }
             
-        }
-       } catch(Exception ex) {
-           ex.printStackTrace();
-       }
+            }
+        } catch(Exception ex) {
+            ex.printStackTrace();
+        }    
         return list;
+    }
+    
+    /**
+     * This method returns the data for all test results belonging to a test with
+     * id "testId". The test results are arranged by sequentially increasing 
+     * result group numbers.  
+     */
+    public List<List<TestResultDO>> getTestResults(Integer testId){
+        List<List<TestResultDO>> listCollection;
+        List<TestResultDO> list;
+        TestResultDO resDO;
+        Integer typeId,val,resultGroup;
+        String sysName,entry;
+        Query query;
+        Iterator iter;
+               
+        list = null;
+        listCollection = null;
+        resultGroup = 1;
+        while(resultGroup != null) {            
+            query = manager.createNamedQuery("TestResult.TestResultDOList");        
+            query.setParameter("testId", testId);
+            query.setParameter("resultGroup", resultGroup);
+            if(listCollection == null)
+                listCollection = new ArrayList<List<TestResultDO>>();            
+            try {
+                list = query.getResultList();
+                if(list.size() == 0) { 
+                    resultGroup = null;
+                    break;
+                }                                             
+                for (iter = list.iterator(); iter.hasNext();) {
+                    resDO = (TestResultDO)iter.next();
+                    typeId = resDO.getTypeId();
+                    query = manager.createNamedQuery("Dictionary.SystemNameById");
+                    query.setParameter("id", typeId);
+                    sysName = (String)query.getResultList().get(0);
+                    if("test_res_type_dictionary".equals(sysName)) {
+                        val = Integer.parseInt(resDO.getValue());
+                        query = manager.createNamedQuery("Dictionary.EntryById");
+                        query.setParameter("id", val);
+                        entry = (String)query.getResultList().get(0);
+                        resDO.setDictEntry(entry);  
+                    } else {
+                        resDO.setDictEntry(null);  
+                    }            
+                }
+                listCollection.add(list);                
+            } catch(Exception ex) {
+                ex.printStackTrace();
+            }   
+            resultGroup++;
+        }
+        return listCollection;
     }
 
     public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception {
@@ -802,12 +817,6 @@ public class TestBean implements TestRemote {
             throw new LastPageException();
         else
             return returnList;
-    }
-    
-    public List getMethodDropDownValues() {
-        Query query = manager.createNamedQuery("Method.MethodIdName");
-        List methodList = query.getResultList();
-        return methodList;
     }
 
     public List getLabelDropDownValues() {
@@ -850,37 +859,30 @@ public class TestBean implements TestRemote {
     
     public List getTestWSItemTypeDropDownValues() {
       Query query = null;        
-      List<IdLastNameFirstNameDO> qlist = null;
-      List<IdNameDO> rlist = null; 
-      IdLastNameFirstNameDO qDO = null;
-      IdNameDO retDO = null;
+      List<DictionaryIdEntrySysNameDO> qlist,rlist; 
+      DictionaryIdEntrySysNameDO qDO = null;      
         
+      rlist = null;
       try{                 
         query = manager.createNamedQuery("Dictionary.SystemNamesByCatSysName");
         query.setParameter("systemName", "test_worksheet_item_type");
         qlist = query.getResultList();
-        rlist = new ArrayList<IdNameDO>(qlist.size());                
+        rlist = new ArrayList<DictionaryIdEntrySysNameDO>(qlist.size());                
         
         for(int iter = 0; iter < qlist.size(); iter++) {
             qDO = qlist.get(iter);                   
-           if("pos_fixed".equals(qDO.getFirstName())) {
-               retDO = new IdNameDO(qDO.getId(), qDO.getLastName());
-               rlist.add(0, retDO);  
-           }else if("pos_duplicate".equals(qDO.getFirstName())) {
-               retDO = new IdNameDO(qDO.getId(), qDO.getLastName());
-               rlist.add(1, retDO);  
-           }else if("pos_random".equals(qDO.getFirstName())) {
-               retDO = new IdNameDO(qDO.getId(), qDO.getLastName());
-               rlist.add(2, retDO);  
-           }else if("pos_last_of_well".equals(qDO.getFirstName())) {
-               retDO = new IdNameDO(qDO.getId(), qDO.getLastName());
-               rlist.add(3, retDO);  
-           }else if("pos_last_of_run".equals(qDO.getFirstName())) {
-               retDO = new IdNameDO(qDO.getId(), qDO.getLastName());
-               rlist.add(4, retDO);  
-           }else if("pos_last_of_well_&_run".equals(qDO.getFirstName())) {
-               retDO = new IdNameDO(qDO.getId(), qDO.getLastName());
-               rlist.add(5, retDO);  
+           if("pos_fixed".equals(qDO.getSystemName())) {
+               rlist.add(0, qDO);  
+           }else if("pos_duplicate".equals(qDO.getSystemName())) {               
+               rlist.add(1, qDO);  
+           }else if("pos_random".equals(qDO.getSystemName())) {              
+               rlist.add(2, qDO);  
+           }else if("pos_last_of_well".equals(qDO.getSystemName())) {
+               rlist.add(3, qDO);  
+           }else if("pos_last_of_run".equals(qDO.getSystemName())) {
+               rlist.add(4, qDO);  
+           }else if("pos_last_of_well_&_run".equals(qDO.getSystemName())) {
+               rlist.add(5, qDO);  
            }
         }
        }catch(Exception ex) {
@@ -907,27 +909,7 @@ public class TestBean implements TestRemote {
             ex.printStackTrace();
        }
        return testumList;
-    }
-    
-    public List getMatchingEntries(String name, int maxResults,String cat){
-        Query query = null;
-        List entryList = null;
-        if("analyte".equals(cat)) {
-         query = manager.createNamedQuery("Analyte.AutoCompleteByName");              
-        }else if("method".equals(cat)) {
-          query = manager.createNamedQuery("Method.AutoCompleteByName"); 
-          query.setParameter("isActive", "Y");
-        }
-         query.setParameter("name", name);       
-         query.setMaxResults(maxResults);            
-        try{ 
-            entryList = (List)query.getResultList();
-        }catch(Exception ex){
-            ex.printStackTrace();
-           
-        }     
-        return entryList;
-     }
+    }      
     
     public List getTestAutoCompleteByName(String name, int maxResults){
         Query query = manager.createNamedQuery("Test.TestMethodAutoByName");
@@ -936,76 +918,69 @@ public class TestBean implements TestRemote {
 
         return query.getResultList();
     }
-
-    public List<Exception> validateForAdd(TestDO testDO,
-                               List<TestPrepDO> prepTestDOList,
-                               List<TestTypeOfSampleDO> typeOfSampleDOList,
-                               List<TestReflexDO> testReflexDOList,
-                               TestWorksheetDO worksheetDO,
-                               List<TestWorksheetItemDO> itemDOList,
-                               List<TestWorksheetAnalyteDO> twsaDOList,
-                               List<TestAnalyteDO> analyteDOList,
-                               List<TestSectionDO> sectionDOList,
-                               List<TestResultDO> resultDOList) {
-     List<Exception> exceptionList = new ArrayList<Exception>();
-     validateTest(exceptionList, testDO);     
-     if(prepTestDOList!=null)
-      validateTestPrep(exceptionList,prepTestDOList);
-     if(testReflexDOList!=null)
-      validateTestReflex(exceptionList,testReflexDOList);  
-     if(worksheetDO!=null)
-         validateTestWorksheet(exceptionList,worksheetDO);
-     if(itemDOList!=null && itemDOList.size() >0 )
-         validateTestWorksheetItems(exceptionList,itemDOList,worksheetDO);
-     if(twsaDOList!=null) 
-         validateTestWorksheetAnalytes(exceptionList, twsaDOList);
-     if(analyteDOList!=null)
-         validateTestAnalytes(exceptionList,analyteDOList,resultDOList);
-     if(sectionDOList!=null)
-         validateTestSections(exceptionList,sectionDOList);
-     if(resultDOList!=null) 
-      validateTestResults(exceptionList, resultDOList,typeOfSampleDOList);
-     if(typeOfSampleDOList!=null)
-         validateTypeOfSample(exceptionList,typeOfSampleDOList);
-     return exceptionList;
-    }
-
-    public List<Exception> validateForUpdate(TestDO testDO,
-                                  List<TestPrepDO> prepTestDOList,
-                                  List<TestTypeOfSampleDO> typeOfSampleDOList,
-                                  List<TestReflexDO> testReflexDOList,
-                                  TestWorksheetDO worksheetDO,
-                                  List<TestWorksheetItemDO> itemDOList,
-                                  List<TestWorksheetAnalyteDO> twsaDOList,
-                                  List<TestAnalyteDO> analyteDOList,
-                                  List<TestSectionDO> sectionDOList,
-                                  List<TestResultDO> resultDOList) {
-        List<Exception> exceptionList = new ArrayList<Exception>();
-        validateTest(exceptionList, testDO);
+    
+    public void validateTest(TestDO testDO,List<TestPrepDO> prepTestDOList,
+                             List<TestTypeOfSampleDO> typeOfSampleDOList,
+                             List<TestReflexDO> testReflexDOList,
+                             TestWorksheetDO worksheetDO,
+                             List<TestWorksheetItemDO> itemDOList,
+                             List<TestWorksheetAnalyteDO> twsaDOList,
+                             List<TestAnalyteDO> analyteDOList,
+                             List<TestSectionDO> sectionDOList,
+                             List<TestResultDO> resultDOList) throws Exception{
+        ValidationErrorsList exceptionList = new ValidationErrorsList();        
         
+        boolean anaListValid, resListValid;
+        
+        //
+        // the hashmap that contains mappings such that the key is a test analyte's
+        // id and the value is the result group number that corresponds to it
+        //
+        HashMap<Integer,Integer> anaResGrpMap;
+        
+        //
+        // the hashmap that contains mappings such that the key is a result group 
+        // number and the value is the list of test result ids that correspond to it 
+        //
+        HashMap<Integer, List<Integer>> resGrpRsltMap;
+               
+        anaResGrpMap = new HashMap<Integer, Integer>();
+        resGrpRsltMap = new HashMap<Integer, List<Integer>>();
+        anaListValid = false;
+        resListValid = false;
+        
+        validateTestDO(exceptionList, testDO);        
         if(prepTestDOList!=null)
-         validateTestPrep(exceptionList,prepTestDOList);
-        if(testReflexDOList!=null)
-            validateTestReflex(exceptionList,testReflexDOList); 
+            validateTestPrep(exceptionList,prepTestDOList);        
         if(worksheetDO!=null)
             validateTestWorksheet(exceptionList,worksheetDO);
-        if(itemDOList!=null && itemDOList.size() >0)
+        if(itemDOList!=null && itemDOList.size() > 0)
             validateTestWorksheetItems(exceptionList,itemDOList,worksheetDO);
         if(twsaDOList!=null) 
             validateTestWorksheetAnalytes(exceptionList, twsaDOList);
-        if(analyteDOList!=null)
-            validateTestAnalytes(exceptionList,analyteDOList,resultDOList);
+        if(analyteDOList!=null) {
+            anaListValid = validateTestAnalytes(exceptionList,analyteDOList,
+                                                resultDOList,anaResGrpMap);
+        }
         if(sectionDOList!=null)
             validateTestSections(exceptionList,sectionDOList);
-        if(resultDOList!=null) 
-            validateTestResults(exceptionList, resultDOList,typeOfSampleDOList);
+        if(resultDOList!=null) {
+            resListValid = validateTestResults(exceptionList,resultDOList,
+                                               typeOfSampleDOList,resGrpRsltMap);
+        }
+        if(testReflexDOList!=null) {
+            validateTestReflex(exceptionList,testReflexDOList,anaListValid,
+                               resListValid,anaResGrpMap,resGrpRsltMap);
+        }
         if(typeOfSampleDOList!=null)
             validateTypeOfSample(exceptionList,typeOfSampleDOList);
-        return exceptionList;
-    }    
+     
+        if(exceptionList.size() > 0)
+            throw exceptionList;
+    }
     
 
-    private void validateTest(List<Exception> exceptionList,TestDO testDO) {
+    private void validateTestDO(ValidationErrorsList exceptionList,TestDO testDO) {
         boolean checkDuplicate = true;
         if (testDO.getName() == null || "".equals(testDO.getName())) {
             exceptionList.add(new FieldErrorException("fieldRequiredException",
@@ -1064,9 +1039,7 @@ public class TestBean implements TestRemote {
                           if("Y".equals(testDO.getIsActive())){
                               exceptionList.add(new FormErrorException("testActiveException"));                                   
                               break; 
-                           }else{
-                             // exceptionList.add(new FormErrorException("testInactiveTimeOverlap"));  
-                            }                              
+                           }                            
                      }
                       if(test.getActiveBegin().before(testDO.getActiveEnd())&&
                                       (test.getActiveEnd().after(testDO.getActiveBegin()))){
@@ -1087,7 +1060,7 @@ public class TestBean implements TestRemote {
     }
 
     
-    private void validateTypeOfSample(List<Exception> exceptionList,List<TestTypeOfSampleDO> typeOfSampleDOList){        
+    private void validateTypeOfSample(ValidationErrorsList exceptionList,List<TestTypeOfSampleDO> typeOfSampleDOList){        
             for(int i = 0; i < typeOfSampleDOList.size(); i++){
                 TestTypeOfSampleDO typeDO = typeOfSampleDOList.get(i);
                 if(!typeDO.getDelete() && typeDO.getTypeOfSampleId()==null){
@@ -1097,8 +1070,8 @@ public class TestBean implements TestRemote {
         }
     }
     
-    private void validateTestPrep(List<Exception> exceptionList,List<TestPrepDO> testPrepDOList){    
-            List<Integer> testPrepIdList = new ArrayList<Integer>();
+    private void validateTestPrep(ValidationErrorsList exceptionList,List<TestPrepDO> testPrepDOList){    
+        List<Integer> testPrepIdList = new ArrayList<Integer>();
         int numReq = 0;
         for (int i = 0; i < testPrepDOList.size(); i++) {
             TestPrepDO prepDO = testPrepDOList.get(i);
@@ -1134,74 +1107,72 @@ public class TestBean implements TestRemote {
         }       
     }
     
-    private void validateTestReflex(List<Exception> exceptionList,List<TestReflexDO> testReflexDOList){
+    private void validateTestReflex(ValidationErrorsList exceptionList,List<TestReflexDO> testReflexDOList,
+                                    boolean anaListValid, boolean resListValid,
+                                    HashMap<Integer,Integer> anaResGrpMap,
+                                    HashMap<Integer, List<Integer>> resGrpRsltMap){
         TestReflexDO refDO;
         List<List<Integer>> idsList;
         List<Integer> ids;
-        boolean checkForDuplicate;
         int i;
-        TableFieldErrorException exc;
+        String fieldName;
         
+        fieldName = null;        
         idsList = new ArrayList<List<Integer>>();
-        for(i = 0; i < testReflexDOList.size(); i++){
+        
+        for(i = 0; i < testReflexDOList.size(); i++) {            
             refDO = testReflexDOList.get(i);
-            if(!refDO.getDelete()) {
-                checkForDuplicate = false;
-                ids = new ArrayList<Integer>();
-                if(refDO.getAddTestId()==null) {
-                    exc = new TableFieldErrorException("fieldRequiredException", i,
-                                                           TestMeta.getTestReflex().getAddTestId());
-                    exc.setTableKey(TestReflexMetaMap.getTableName());
-                    exceptionList.add(exc);                    
-                }else {
-                    ids.add(refDO.getAddTestId());
-                    checkForDuplicate = true;
+            if (refDO.getDelete())
+                continue;
+
+            ids = new ArrayList<Integer>();
+
+            if (refDO.getAddTestId() != null && refDO.getTestAnalyteId() != null
+                            && refDO.getTestResultId() != null) {
+                ids.add(refDO.getAddTestId());
+                ids.add(refDO.getTestAnalyteId());
+                ids.add(refDO.getTestResultId());
+            }
+            try{
+                if (refDO.getAddTestId() == null) {
+                    fieldName = TestMeta.getTestReflex().getAddTestId();
+                    throw new InconsistentException("fieldRequiredException");
                 }
+
+                if (refDO.getTestAnalyteId() == null) {
+                    fieldName = TestMeta.getTestReflex().getTestAnalyteId();
+                    throw new InconsistentException("fieldRequiredException");
+                }
+
+                if (refDO.getTestResultId() == null) {
+                    fieldName = TestMeta.getTestReflex().getTestResultId();
+                    throw new InconsistentException("fieldRequiredException");
+                }
+
+                if (refDO.getFlagsId() == null) {
+                    fieldName = TestMeta.getTestReflex().getFlagsId();
+                    throw new InconsistentException("fieldRequiredException");
+                }
+
+                if (!idsList.contains(ids)) {
+                    idsList.add(ids);
+                } else {
+                    fieldName = TestMeta.getTestReflex().getAddTestId();
+                    throw new InconsistentException("fieldUniqueOnlyException");
+                }
+
+                fieldName = TestMeta.getTestReflex().getTestResultId();
+                validateAnalyteResultMapping(anaListValid,resListValid,anaResGrpMap,
+                                             resGrpRsltMap,refDO);                
+            } catch (InconsistentException ex) {
+                addErrorToTableField(ex.getMessage(), TestReflexMetaMap.getTableName(),
+                                     fieldName, i, exceptionList);
+            } 
             
-                if(refDO.getTestAnalyteId()==null){
-                    exc = new TableFieldErrorException("fieldRequiredException", i,
-                                                        TestMeta.getTestReflex().getTestAnalyteId());
-                    exc.setTableKey(TestReflexMetaMap.getTableName());
-                    exceptionList.add(exc);
-                    checkForDuplicate = false;  
-                }else{
-                    ids.add(refDO.getTestAnalyteId());
-                    checkForDuplicate = true;
-                }
-            
-                if(refDO.getTestResultId()==null){
-                    exc = new TableFieldErrorException("fieldRequiredException", i,
-                                                           TestMeta.getTestReflex().getTestResultId());
-                    exc.setTableKey(TestReflexMetaMap.getTableName());
-                    exceptionList.add(exc);
-                    checkForDuplicate = false;
-                }else{
-                    ids.add(refDO.getTestResultId());
-                    checkForDuplicate = true;
-                }
-            
-                if(refDO.getFlagsId()==null){
-                    exc = new TableFieldErrorException("fieldRequiredException", i,
-                                                           TestMeta.getTestReflex().getFlagsId());
-                    exc.setTableKey(TestReflexMetaMap.getTableName());
-                    exceptionList.add(exc);                    
-                }
-           
-                if(checkForDuplicate){
-                    if(!idsList.contains(ids)){                
-                        idsList.add(ids);
-                    }else{
-                        exc = new TableFieldErrorException("fieldUniqueOnlyException", i,
-                                                               TestMeta.getTestReflex().getAddTestId());
-                        exc.setTableKey(TestReflexMetaMap.getTableName());
-                        exceptionList.add(exc); 
-                    }
-                }
-            }  
-        }       
-      }
+        }        
+    }
     
-    private void validateTestWorksheet(List<Exception> exceptionList,TestWorksheetDO worksheetDO){
+    private void validateTestWorksheet(ValidationErrorsList exceptionList,TestWorksheetDO worksheetDO){
         boolean checkForMultiple = true;
         if(worksheetDO.getBatchCapacity()==null){
             exceptionList.add(new FieldErrorException("fieldRequiredException",
@@ -1239,7 +1210,7 @@ public class TestBean implements TestRemote {
         }                
     }    
     
-    private void validateTestWorksheetItems(List<Exception> exceptionList,
+    private void validateTestWorksheetItems(ValidationErrorsList exceptionList,
                                            List<TestWorksheetItemDO> itemDOList,
                                            TestWorksheetDO worksheetDO) {        
         Integer bc = null;
@@ -1339,7 +1310,7 @@ public class TestBean implements TestRemote {
         }       
     }
     
-    private void validateTestWorksheetAnalytes(List<Exception> exceptionList,
+    private void validateTestWorksheetAnalytes(ValidationErrorsList exceptionList,
                                                List<TestWorksheetAnalyteDO> twsaDOList) {
       TestWorksheetAnalyteDO twsaDO = null;
         
@@ -1360,14 +1331,17 @@ public class TestBean implements TestRemote {
         
     }
     
-    private void validateTestAnalytes(List<Exception> exceptionList,List<TestAnalyteDO> analyteDOList, List<TestResultDO> resultDOList){
+    private boolean validateTestAnalytes(ValidationErrorsList exceptionList,List<TestAnalyteDO> analyteDOList,
+                                      List<TestResultDO> resultDOList, HashMap<Integer,Integer> anaResGrpMap){
         int i;
         TestAnalyteDO testAnalyteDO = null;
         TestResultDO resultDO = null;
         HashMap<Integer, Boolean> resultGroups;
-        Integer rg;
+        Integer id,rg;            
 
         resultGroups = new HashMap<Integer, Boolean>();
+        
+        
         if (resultDOList != null) {
             for (i = 0; i < resultDOList.size(); i++) {
                 resultDO = resultDOList.get(i);
@@ -1377,355 +1351,189 @@ public class TestBean implements TestRemote {
 
         for (i = 0; i < analyteDOList.size(); i++) {
             testAnalyteDO = analyteDOList.get(i);
-            rg = testAnalyteDO.getResultGroup();
-            if (rg != null && !resultGroups.containsKey(rg)) {
-                exceptionList.add(new FormErrorException("emptyResultGroupException"));
-                return;
-            }    
-        }
-    }
-    
-   private void validateTestResults(List<Exception> exceptionList,
-                                    List<TestResultDO> resultDOList,
-                                    List<TestTypeOfSampleDO> sampleTypeDOList) {
-     TestResultDO resDO;
-     Integer numId,dictId, titerId , typeId , dateId ,dtId,timeId,resultGroup,unit;
-     HashMap<Integer, Double> unitTtrMaxMap, unitNumMaxMap;
-     TableFieldErrorException exc;
-     Date date;
-     
-     String[] st;
-     
-     ArrayList<String> dvlist,dlist,dtlist,tlist;     
-     ArrayList<Integer> rlist;
-      
-     Double pnMax ,cnMin,cnMax,ptMax,ctMin,ctMax;
-           
-     String value,hhmm,defDate,dateStr, unitText;
-      
-     Query query;
-     
-     query = manager.createNamedQuery("Dictionary.IdBySystemName");
-     
-     resultGroup = null;
-     pnMax = null;    
-     ptMax = null;
-     unitTtrMaxMap = null;
-     unitNumMaxMap = null;
-     dlist = null;
-     tlist = null;
-     dvlist = null;
-     dtlist = null;
-     defDate = "2000-01-01 ";
-      
-     query.setParameter("systemName", "test_res_type_dictionary");
-     dictId = (Integer)query.getSingleResult();
-      
-     query.setParameter("systemName", "test_res_type_numeric");
-     numId = (Integer)query.getSingleResult();
-      
-     query.setParameter("systemName", "test_res_type_titer");
-     titerId = (Integer)query.getSingleResult();
-     
-     query.setParameter("systemName", "test_res_type_date");
-     dateId = (Integer)query.getSingleResult(); 
-     
-     query.setParameter("systemName", "test_res_type_date_time");
-     dtId = (Integer)query.getSingleResult();
-     
-     query.setParameter("systemName", "test_res_type_time");
-     timeId = (Integer)query.getSingleResult();
-      
-     for(int i = 0; i < resultDOList.size(); i++){
-       resDO = resultDOList.get(i);
-       typeId = resDO.getTypeId();
-       unit = resDO.getUnitOfMeasureId();
-       
-       if(!unitIsValid(unit, sampleTypeDOList)) {
-           query = manager.createNamedQuery("Dictionary.EntryById");
-           query.setParameter("id", unit);
-           unitText = (String)query.getResultList().get(0);
-           exc = new TableFieldErrorException("illegalUnitOfMeasureException:"+unitText, i,
-                                                  TestMeta.getTestResult().getUnitOfMeasureId());
-           exc.setTableKey(TestResultMetaMap.getTableName());
-           exceptionList.add(exc);
-       }
-       
-       if(resultGroup == null){
-           resultGroup = resDO.getResultGroup();
-           unitTtrMaxMap = new HashMap<Integer, Double>();
-           unitNumMaxMap = new HashMap<Integer, Double>();
-           dvlist = new ArrayList<String>();
-           dlist = new ArrayList<String>(); 
-           dtlist = new ArrayList<String>(); 
-           tlist = new ArrayList<String>();
-       } else if(!resultGroup.equals(resDO.getResultGroup())) {
-           resultGroup = resDO.getResultGroup();
-           unitTtrMaxMap = new HashMap<Integer, Double>();
-           unitNumMaxMap = new HashMap<Integer, Double>();
-           dvlist = new ArrayList<String>();
-           dlist = new ArrayList<String>(); 
-           dtlist = new ArrayList<String>(); 
-           tlist = new ArrayList<String>();
-           ptMax = null;
-           pnMax = null;
-       }
-       
-       
-      if(!resDO.getDelete()) {                   
-       value = resDO.getValue();           
-       
-        if(typeId == null) {
-            exc = new TableFieldErrorException("fieldRequiredException", i,
-                                               TestMeta.getTestResult().getTypeId());
-            exc.setTableKey(TestResultMetaMap.getTableName());
-            exceptionList.add(exc);  
-        }else {
-         if(numId.equals(typeId)) {           
-            if(value != null && !"".equals(value.trim())) {
-               st = value.split(",");                 
-               if(st.length != 2) {
-                  exc = new TableFieldErrorException("illegalNumericFormatException", i,
-                                                         TestMeta.getTestResult().getValue());  
-                  exc.setTableKey(TestResultMetaMap.getTableName());
-                  exceptionList.add(exc);    
-               } else {
-                  try {                                      
-                   cnMin = Double.valueOf(st[0]); 
-                   cnMax = Double.valueOf(st[1]);
-                                      
-                   if(!(cnMin < cnMax)) {
-                      exc =  new TableFieldErrorException("illegalNumericRangeException", i,
-                                                              TestMeta.getTestResult().getValue());
-                      exc.setTableKey(TestResultMetaMap.getTableName());
-                      exceptionList.add(exc);  
-                   }else if(pnMax != null && resultGroup.equals(resDO.getResultGroup())){                         
-                       if(unit == null) { 
-                           pnMax = unitNumMaxMap.get(-1);
-                       } else {
-                           pnMax = unitNumMaxMap.get(unit); 
-                       }
-                       
-                       if(pnMax != null && !(cnMin > pnMax)) {
-                           exc = new TableFieldErrorException("testNumRangeOverlapException", i,
-                                                                  TestMeta.getTestResult().getValue());
-                           exc.setTableKey(TestResultMetaMap.getTableName());
-                           exceptionList.add(exc); 
-                       }                                               
-                   }
-                   
-                   pnMax = cnMax;
-                   
-                   if(unit == null) {
-                       unitNumMaxMap.put(-1, cnMax);  
-                   } else {
-                       unitNumMaxMap.put(unit, cnMax);
-                   }            
-                   
-                   
-                   
-                 } catch (NumberFormatException ex) {
-                     exc = new TableFieldErrorException("illegalNumericFormatException", i,
-                                                                TestMeta.getTestResult().getValue());
-                     exc.setTableKey(TestResultMetaMap.getTableName());
-                     exceptionList.add(exc);   
-                 }                   
-               }
-            }else {
-                exc = new TableFieldErrorException("fieldRequiredException", i,
-                                                       TestMeta.getTestResult().getValue());
-                exc.setTableKey(TestResultMetaMap.getTableName());
-                exceptionList.add(exc);    
+            id = testAnalyteDO.getId();
+            rg = testAnalyteDO.getResultGroup();             
+            if (rg != null ){
+                if(!resultGroups.containsKey(rg)) {
+                    exceptionList.add(new FormErrorException("emptyResultGroupException"));
+                    
+                    return false;
+                } 
+                if(id != null) {
+                    anaResGrpMap.put(id, rg);
+                }
             }
-         } else if(titerId.equals(typeId)) {           
-             if(value != null && !"".equals(value.trim())) {
-                 st = value.split(":");                 
-                 if(st.length != 2) {
-                    exc = new TableFieldErrorException("illegalTiterFormatException", i,
-                                                           TestMeta.getTestResult().getValue());
-                    exc.setTableKey(TestResultMetaMap.getTableName());
-                    exceptionList.add(exc);    
-                 } else {
-                    try {                                        
-                     ctMin = Double.valueOf(st[0]); 
-                     ctMax = Double.valueOf(st[1]);
-                     
-                     if(ctMin > ctMax) {
-                         exc = new TableFieldErrorException("illegalTiterRangeException", i,
-                                                                TestMeta.getTestResult().getValue());
-                         exc.setTableKey(TestResultMetaMap.getTableName());
-                         exceptionList.add(exc);  
-                     }else if(ptMax != null && resultGroup.equals(resDO.getResultGroup())){                         
-                         if(unit == null) { 
-                             ptMax = unitTtrMaxMap.get(-1);
-                         } else {
-                             ptMax = unitTtrMaxMap.get(unit); 
-                         }
-                         
-                        if(ptMax != null && !(ctMin > ptMax)) { 
-                            exc = new TableFieldErrorException("testTiterRangeOverlapException", i,
-                                                                   TestMeta.getTestResult().getValue());
-                            exc.setTableKey(TestResultMetaMap.getTableName());
-                            exceptionList.add(exc);
-                         } 
-                     }
-                     
-                     ptMax = ctMax;                           
-                     
-                     if(unit == null) {
-                         unitTtrMaxMap.put(-1, ptMax);  
-                     } else {
-                         unitTtrMaxMap.put(unit, ptMax);
-                     }
-                     
-                   } catch (NumberFormatException ex) {
-                       exc = new TableFieldErrorException("illegalTiterFormatException", i,
-                                                              TestMeta.getTestResult().getValue());
-                       exc.setTableKey(TestResultMetaMap.getTableName());
-                       exceptionList.add(exc);   
-                   }                   
-                 }
-              } else {
-                  exc = new TableFieldErrorException("fieldRequiredException", i,
-                                                         TestMeta.getTestResult().getValue());
-                  exc.setTableKey(TestResultMetaMap.getTableName());
-                  exceptionList.add(exc);    
-              }             
-           } else if(dateId.equals(typeId)) {           
-               if(value != null && !"".equals(value.trim())) {
-                   try{
-                       date = new Date(value.replaceAll("-", "/"));
-                       
-                       if(!dlist.contains(value)) {
-                           dlist.add(value); 
-                        } else {
-                            exc = new TableFieldErrorException("testDateValueNotUniqueException", i,
-                                                                   TestMeta.getTestResult().getValue());
-                            exc.setTableKey(TestResultMetaMap.getTableName());
-                            exceptionList.add(exc); 
-                       }
-                   } catch (IllegalArgumentException ex) {
-                       exc = new TableFieldErrorException("illegalDateValueException", i,
-                                                              TestMeta.getTestResult().getValue());
-                       exc.setTableKey(TestResultMetaMap.getTableName());
-                       exceptionList.add(exc);   
-                   }
-                                                                                         
-                  }
-                  date = null;
-              } else if(dtId.equals(typeId)) {           
-                  if(value != null && !"".equals(value.trim())) {
-                      try{
-                          st = value.split(" ");                             
-                          if(st.length != 2)
-                           throw new IllegalArgumentException();
-                          
-                          hhmm = st[1];
-                          if(hhmm.split(":").length != 2) 
-                              throw new IllegalArgumentException(); 
-                          
-                          date = new Date(value.replaceAll("-", "/"));
-                          
-                          if(!dtlist.contains(value)) {
-                              dtlist.add(value); 
-                           } else {
-                               exc = new TableFieldErrorException("testDateTimeValueNotUniqueException", i,
-                                                                      TestMeta.getTestResult().getValue());
-                               exc.setTableKey(TestResultMetaMap.getTableName());
-                               exceptionList.add(exc); 
-                          }
-                      } catch (IllegalArgumentException ex) {
-                          exc = new TableFieldErrorException("illegalDateTimeValueException", i,
-                                                                 TestMeta.getTestResult().getValue());
-                          exc.setTableKey(TestResultMetaMap.getTableName());
-                          exceptionList.add(exc);   
-                      }
-                                                                                            
-                     }
-                     date = null;
-                } else if(timeId.equals(typeId)) {           
-                    if(value != null && !"".equals(value.trim())) {
-                        
-                        try{
-                            st = value.split(":");                             
-                            if(st.length != 2)
-                             throw new IllegalArgumentException();                                                       
-                            
-                            dateStr = defDate + value;                                
-                            date = new Date(dateStr.replaceAll("-", "/"));
-                            
-                          if(!tlist.contains(value)) {
-                                tlist.add(value); 
-                          } else {
-                              exc = new TableFieldErrorException("testTimeValueNotUniqueException", i,
-                                                                     TestMeta.getTestResult().getValue());
-                              exc.setTableKey(TestResultMetaMap.getTableName());
-                              exceptionList.add(exc); 
-                         }
-                        } catch (IllegalArgumentException ex) {
-                            exc = new TableFieldErrorException("illegalTimeValueException", i,
-                                                                   TestMeta.getTestResult().getValue());
-                            exc.setTableKey(TestResultMetaMap.getTableName());
-                            exceptionList.add(exc);   
-                        }
-                                                                                              
-                      }
-                       date = null;
-                  }else if(dictId.equals(typeId)) {
-                     value = resDO.getDictEntry();
-                     if(value != null && !"".equals(value.trim())) {
-                       if(!dvlist.contains(value)) {
-                           dvlist.add(value); 
-                      } else {
-                          exc = new TableFieldErrorException("testDictEntryNotUniqueException", i,
-                                                                 TestMeta.getTestResult().getValue());
-                          exc.setTableKey(TestResultMetaMap.getTableName());
-                          exceptionList.add(exc); 
-                    }
-                   
-                      query = manager.createNamedQuery("Dictionary.IdByEntry");
-                      query.setParameter("entry", value);
-                      rlist = (ArrayList<Integer>)query.getResultList();
-                  
-                    if(rlist.size() == 0) {
-                        exc = new TableFieldErrorException("illegalDictEntryException", i,
-                                                               TestMeta.getTestResult().getValue());
-                        exc.setTableKey(TestResultMetaMap.getTableName());
-                        exceptionList.add(exc);
-                    }
-
-               } else {
-                   exc = new TableFieldErrorException("fieldRequiredException", i,
-                                                          TestMeta.getTestResult().getValue());
-                   exc.setTableKey(TestResultMetaMap.getTableName());
-                   exceptionList.add(exc);    
-               }
-           }
-         }            
-        } 
-      
-        resultGroup = resDO.getResultGroup();
-      }
-        
+        }
+        return true;
     }
-    
-    private void validateTestSections(List<Exception> exceptionList,List<TestSectionDO> sectionDOList){
-        Integer defId = null;
-        Integer askId = null;
-        Integer matchId = null;
-        Integer flagId = null;
-        Integer sectId = null;
+   
+   private boolean validateTestResults(ValidationErrorsList exceptionList,
+                                       List<TestResultDO> resultDOList,
+                                       List<TestTypeOfSampleDO> sampleTypeDOList,
+                                       HashMap<Integer, List<Integer>> resGrpRsltMap) {
+       TestResultDO resDO;
+       Integer numId,dictId,titerId,typeId,dateId,dtId,timeId,unitId;             
+       int i;                   
+       String value, fieldName;       
+       boolean hasDateType,resListValid;        
+       Query query;
+       NumericRange nr;
+       TiterRange tr;
+       HashMap<Integer,List<TiterRange>> trMap;
+       HashMap<Integer,List<NumericRange>> nrMap;
+       List<String> dictList;
+       List<Integer> resIdList;
+       Integer resultGroup;       
+              
+       query = manager.createNamedQuery("Dictionary.IdBySystemName");              
+       
+       value = null;             
         
-        List<Integer> idList = null; 
-                 
-        int size = sectionDOList.size();
-        int numDef = 0;
-        int numAsk = 0;
-        int numMatch = 0;
-        int numBlank = 0;
+       query.setParameter("systemName", "test_res_type_dictionary");
+       dictId = (Integer)query.getSingleResult();
         
-        Query query = manager.createNamedQuery("Dictionary.IdBySystemName");  
-        TestSectionDO secDO = null;
+       query.setParameter("systemName", "test_res_type_numeric");
+       numId = (Integer)query.getSingleResult();
+        
+       query.setParameter("systemName", "test_res_type_titer");
+       titerId = (Integer)query.getSingleResult();
+       
+       query.setParameter("systemName", "test_res_type_date");
+       dateId = (Integer)query.getSingleResult(); 
+       
+       query.setParameter("systemName", "test_res_type_date_time");
+       dtId = (Integer)query.getSingleResult();
+       
+       query.setParameter("systemName", "test_res_type_time");
+       timeId = (Integer)query.getSingleResult();
+                    
+       trMap = new HashMap<Integer, List<TiterRange>>();
+       nrMap = new HashMap<Integer, List<NumericRange>>();       
+       dictList = new ArrayList<String>();
+       resultGroup = new Integer(-1);
+       hasDateType = false;       
+       resListValid = true;
+              
+       for(i = 0; i < resultDOList.size(); i++) {           
+           resDO = resultDOList.get(i);               
+           if(resDO.getDelete())
+               continue;
+               
+           if(!resultGroup.equals(resDO.getResultGroup())) {
+               trMap.clear();
+               nrMap.clear();
+               dictList.clear();
+               hasDateType = false;
+               resultGroup = resDO.getResultGroup();                   
+           }
+                  
+           resIdList = resGrpRsltMap.get(resultGroup);
+           if(resIdList == null) {
+               resIdList = new ArrayList<Integer>();
+               resGrpRsltMap.put(resultGroup, resIdList);
+           }
+           resIdList.add(resDO.getId());       
+           
+           value = resDO.getValue();               
+           typeId = resDO.getTypeId();
+           unitId = resDO.getUnitOfMeasureId();
+           //
+           // units need to be valid for every result type because
+           // their use is dependent on the unit
+           //
+           if (!unitIsValid(unitId, sampleTypeDOList)) {
+                addErrorToTestResultUnitField(i, unitId, exceptionList);
+                resListValid = false;
+                continue;                
+           }
+           
+           fieldName = TestMeta.getTestResult().getValue();
+           //
+           // dictionary, titers, numeric require a value
+           //
+           if (value == null && (numId.equals(typeId) || titerId.equals(typeId) ||
+                               dictId.equals(typeId))) {
+                   addErrorToTableField("fieldRequiredException",
+                                        TestResultMetaMap.getTableName(),
+                                        fieldName,i,exceptionList); 
+                   resListValid = false;
+               continue;
+           }
+                                     
+           try {
+               if (numId.equals(typeId)) {                  
+                   nr = new NumericRange(value);
+                   addNumericIfNoOverLap(nrMap, unitId, nr);
+               } else if (titerId.equals(typeId)) {                   
+                   tr = new TiterRange(value);
+                   addTiterIfNoOverLap(trMap, unitId, tr);
+               } else if (dateId.equals(typeId)) {
+                   TestResultValidator.validateDate(value);
+                   if (hasDateType) {
+                       fieldName = TestMeta.getTestResult().getTypeId();
+                       throw new InconsistentException("testMoreThanOneDateTypeException");                       
+                   }
+                   hasDateType = true;                   
+               } else if (dtId.equals(typeId)) {              
+                   TestResultValidator.validateDateTime(value);
+                   if (hasDateType) {
+                       fieldName = TestMeta.getTestResult().getTypeId();
+                       throw new InconsistentException("testMoreThanOneDateTypeException");                       
+                   }                   
+                   hasDateType = true;                        
+               } else if (dtId.equals(typeId)) {               
+                   TestResultValidator.validateDateTime(value);
+                   if (hasDateType) {
+                       fieldName = TestMeta.getTestResult().getTypeId();
+                       throw new InconsistentException("testMoreThanOneDateTypeException");                       
+                   }                   
+                   hasDateType = true;                   
+               } else if (timeId.equals(typeId)) {                   
+                   TestResultValidator.validateTime(value);
+                   if (hasDateType) {
+                       fieldName = TestMeta.getTestResult().getTypeId();
+                       throw new InconsistentException("testMoreThanOneDateTypeException");                       
+                   }                   
+                   hasDateType = true;                   
+               } else if (dictId.equals(typeId)) {
+                   query = manager.createNamedQuery("Dictionary.EntryById");
+                   query.setParameter("id", Integer.valueOf(value));
+                   if (query.getResultList().size() == 0)
+                       throw new ParseException("illegalDictEntryException");
+
+                   if (!dictList.contains(value))
+                       dictList.add(value);
+                   else
+                       throw new InconsistentException("testDictEntryNotUniqueException");                                              
+               } else {
+                   fieldName = TestMeta.getTestResult().getTypeId();
+                   throw new ParseException("fieldRequiredException");
+               }
+           } catch (ParseException ex) {
+               addErrorToTableField(ex.getMessage(),
+                                    TestResultMetaMap.getTableName(),
+                                    fieldName,i,exceptionList);
+               resListValid = false;
+           } catch (InconsistentException ex) {               
+               addErrorToTableField(ex.getMessage(),
+                                    TestResultMetaMap.getTableName(),
+                                    fieldName,i,exceptionList);
+               resListValid = false;
+           }                                                
+        }           
+       return resListValid;
+   }   
+
+    private void validateTestSections(ValidationErrorsList exceptionList,List<TestSectionDO> sectionDOList){
+        Integer defId,askId,matchId,flagId,sectId;        
+        List<Integer> idList;                  
+        int size,numDef,numAsk,numMatch,numBlank, iter;
+        Query query;
+        TestSectionDO secDO;
+        
+        size = sectionDOList.size();
+                
+        query = manager.createNamedQuery("Dictionary.IdBySystemName");          
                 
         query.setParameter("systemName", "test_section_default");   
         defId = (Integer)query.getSingleResult();
@@ -1735,93 +1543,89 @@ public class TestBean implements TestRemote {
         
         query.setParameter("systemName", "test_section_match");   
         matchId = (Integer)query.getSingleResult();
-                        
-        
-       if(size > 0) {
-         idList = new ArrayList<Integer>();            
-         for(int iter = 0; iter < size; iter++) {
-          secDO = sectionDOList.get(iter); 
-          if(!secDO.getDelete()) {
-           flagId = secDO.getFlagId();          
-           sectId = secDO.getSectionId();
+                               
+        numDef = 0 ;
+        numAsk = 0;
+        numMatch = 0;
+        numBlank = 0;
+       
+        if(size > 0) {
+            idList = new ArrayList<Integer>();            
+            for(iter = 0; iter < size; iter++) {
+                secDO = sectionDOList.get(iter); 
+                if(!secDO.getDelete()) {
+                    flagId = secDO.getFlagId();          
+                    sectId = secDO.getSectionId();
           
-           if(sectId == null) {
-            exceptionList.add(new TableFieldErrorException("fieldRequiredException", iter,
-             TestSectionMetaMap.getTableName()+":"+TestMeta.getTestSection().getSectionId()));  
-           }else if(idList.contains(sectId)){
-              exceptionList.add(new TableFieldErrorException("fieldUniqueOnlyException", iter,
-               TestSectionMetaMap.getTableName()+":"+TestMeta.getTestSection().getSectionId())); 
-           }else {
-             idList.add(sectId);
-           }
+                    if(sectId == null) {  
+                        addErrorToTableField("fieldRequiredException", TestSectionMetaMap.getTableName(),
+                                             TestMeta.getTestSection().getFlagId(), iter, exceptionList);
+                    }else if(idList.contains(sectId)){                        
+                        addErrorToTableField("fieldUniqueOnlyException", TestSectionMetaMap.getTableName(),
+                                             TestMeta.getTestSection().getFlagId(), iter, exceptionList);
+                    }else {
+                        idList.add(sectId);
+                    }          
           
-          
-          if(flagId == null) {
-              numBlank++;
-          }else if(defId.equals(flagId)) {
-              numDef++;
-          }else if(askId.equals(flagId)) {
-              numAsk++;
-          }else if(matchId.equals(flagId)) {
-              numMatch++;              
-          }
-         } 
-        }
+                    if(flagId == null) {
+                        numBlank++;
+                    }else if(defId.equals(flagId)) {
+                        numDef++;
+                    }else if(askId.equals(flagId)) {
+                        numAsk++;
+                    }else if(matchId.equals(flagId)) {
+                        numMatch++;              
+                    }
+                }     
+            }
                 
-        if(numBlank == size) {
-            for(int iter = 0; iter < size; iter++) {
-                exceptionList.add(new TableFieldErrorException("allSectCantBeBlankException", iter,
-                 TestSectionMetaMap.getTableName()+":"+TestMeta.getTestSection().getFlagId()));                  
-            }           
-         } else if(numDef > 1) {
-             for(int iter = 0; iter < size; iter++) {
-                 secDO = sectionDOList.get(iter);  
-                 flagId = secDO.getFlagId();
-                 if(!secDO.getDelete() && (flagId != null)) {
-                  exceptionList.add(new TableFieldErrorException("allSectBlankIfDefException", iter,
-                   TestSectionMetaMap.getTableName()+":"+TestMeta.getTestSection().getFlagId()));
-                 } 
-             }
-         } else if(numDef == 1 && numBlank != (size-1)) {
-             for(int iter = 0; iter < size; iter++) {
-                 secDO = sectionDOList.get(iter);  
-                 flagId = secDO.getFlagId();
-                 if(!secDO.getDelete() && (flagId != null) && !defId.equals(flagId)) {
-                  exceptionList.add(new TableFieldErrorException("allSectBlankIfDefException", iter,
-                   TestSectionMetaMap.getTableName()+":"+TestMeta.getTestSection().getFlagId()));
-                 } 
-             }
-         } else if(numMatch > 0 && numMatch != size) {
-             for(int iter = 0; iter < size; iter++) {
-               secDO = sectionDOList.get(iter);  
-               flagId = secDO.getFlagId();
-               if(!secDO.getDelete()) { 
-                 if((flagId != null) && !matchId.equals(flagId)) {
-                  exceptionList.add(new TableFieldErrorException("allSectMatchFlagException", iter,
-                   TestSectionMetaMap.getTableName()+":"+TestMeta.getTestSection().getFlagId()));
-                 }else if(flagId ==null) {
-                    exceptionList.add(new TableFieldErrorException("allSectMatchFlagException", iter,
-                     TestSectionMetaMap.getTableName()+":"+TestMeta.getTestSection().getFlagId())); 
-                }                
-             }
-            }    
-         } else if(numAsk > 0 && numAsk != size) {
-             for(int iter = 0; iter < size; iter++) {
-               secDO = sectionDOList.get(iter);  
-               flagId = secDO.getFlagId();
-               if(!secDO.getDelete()) {
-                 if((flagId != null) && !askId.equals(flagId)) {
-                  exceptionList.add(new TableFieldErrorException("allSectAskFlagException", iter,
-                   TestSectionMetaMap.getTableName()+":"+TestMeta.getTestSection().getFlagId()));
-                 }else if(flagId == null) {
-                    exceptionList.add(new TableFieldErrorException("allSectAskFlagException", iter,
-                     TestSectionMetaMap.getTableName()+":"+TestMeta.getTestSection().getFlagId())); 
-                }                
-             }
-            }     
-         } 
-       }                                     
-                                                                           
+            if(numBlank == size) {
+                for(iter = 0; iter < size; iter++) {                       
+                    addErrorToTableField("allSectCantBeBlankException", TestSectionMetaMap.getTableName(),
+                                         TestMeta.getTestSection().getFlagId(), iter, exceptionList);
+                }           
+            } else if(numDef > 1) {
+                for(iter = 0; iter < size; iter++) {
+                    secDO = sectionDOList.get(iter);  
+                    flagId = secDO.getFlagId();
+                    if(!secDO.getDelete() && (flagId != null)) {
+                        addErrorToTableField("allSectBlankIfDefException", TestSectionMetaMap.getTableName(),
+                                             TestMeta.getTestSection().getFlagId(), iter, exceptionList);
+                    } 
+                }
+            } else if(numDef == 1 && numBlank != (size-1)) {
+                for(iter = 0; iter < size; iter++) {
+                    secDO = sectionDOList.get(iter);  
+                    flagId = secDO.getFlagId();
+                    if(!secDO.getDelete() && (flagId != null) && !defId.equals(flagId)) {
+                        addErrorToTableField("allSectBlankIfDefException", TestSectionMetaMap.getTableName(),
+                                             TestMeta.getTestSection().getFlagId(), iter, exceptionList);
+                    } 
+                }
+            } else if(numMatch > 0 && numMatch != size) {
+                for(iter = 0; iter < size; iter++) {
+                    secDO = sectionDOList.get(iter);  
+                    flagId = secDO.getFlagId();
+                    if(!secDO.getDelete()) { 
+                        if(flagId == null || (flagId != null && !matchId.equals(flagId))) {
+                            addErrorToTableField("allSectMatchFlagException", TestSectionMetaMap.getTableName(),
+                                                 TestMeta.getTestSection().getFlagId(), iter, exceptionList);
+                        }                
+                    }
+                }       
+            } else if(numAsk > 0 && numAsk != size) {
+                for(iter = 0; iter < size; iter++) {
+                    secDO = sectionDOList.get(iter);  
+                    flagId = secDO.getFlagId();
+                    if(!secDO.getDelete()) {
+                        if((flagId == null) || (flagId != null && !askId.equals(flagId))) {
+                            addErrorToTableField("allSectAskFlagException", TestSectionMetaMap.getTableName(),
+                                                 TestMeta.getTestSection().getFlagId(), iter, exceptionList);
+                        }                
+                    }
+                }     
+            } 
+        }                                                                                                               
     }
      
     
@@ -1867,7 +1671,7 @@ public class TestBean implements TestRemote {
         
         if(sampleTypeDOList == null) {              
             return false;
-        }else {
+        } else {
             for(i = 0; i < sampleTypeDOList.size(); i++) {
                 sampleDO = sampleTypeDOList.get(i);
                 unitId = sampleDO.getUnitOfMeasureId();
@@ -1879,6 +1683,109 @@ public class TestBean implements TestRemote {
         
         return (numMatch != 0) ;
     }
+    
+    private void addErrorToTableField(String error,String tableKey,String fieldName,
+                                      int index,ValidationErrorsList exceptionList) {
+        TableFieldErrorException exc;
+        exc = new TableFieldErrorException(error, index,fieldName);
+        exc.setTableKey(tableKey);
+        exceptionList.add(exc); 
+    }
+    
+    /**
+     * This method finds out what the entry string for the dictionary record is 
+     * that has "unitId" as its id. The method then adds an exception, with its 
+     * message corresponding to "illegalUnitOfMeasureException" and the entry 
+     * string attached at the end of that message, to the list of exceptions.
+     */
+    private void addErrorToTestResultUnitField(int index,Integer unitId,ValidationErrorsList exceptionList) {
+        Query query;
+        String unitText;
         
-     
+        query = manager.createNamedQuery("Dictionary.EntryById");
+        query.setParameter("id", unitId);
+        unitText = (String)query.getResultList().get(0);
+        
+        addErrorToTableField("illegalUnitOfMeasureException:"+unitText,TestResultMetaMap.getTableName(),
+                             TestMeta.getTestResult().getUnitOfMeasureId(),index,exceptionList);       
+    }        
+               
+    private void addTiterIfNoOverLap(HashMap<Integer,List<TiterRange>> trMap,
+                                        Integer unitId,TiterRange tr) throws InconsistentException{ 
+        TiterRange lr;
+        List<TiterRange> trList;
+        
+        trList = trMap.get(unitId);
+        if(trList != null) {
+            for(int i = 0; i < trList.size(); i++) {
+                lr = trList.get(i);
+                if(lr.isOverlapping(tr)) 
+                   throw new InconsistentException("testTiterRangeOverlapException");            
+            } 
+            trList.add(tr);
+        } else {
+            trList = new ArrayList<TiterRange>();
+            trList.add(tr);
+            trMap.put(unitId, trList);
+        }       
+    }
+
+    private void addNumericIfNoOverLap(HashMap<Integer,List<NumericRange>> nrMap,
+                                          Integer unitId, NumericRange nr) throws InconsistentException{
+        NumericRange lr;
+        List<NumericRange> nrList;
+        
+        nrList = nrMap.get(unitId);
+        if(nrList != null) {
+            for(int i = 0; i < nrList.size(); i++) {
+                lr = nrList.get(i);
+                if(lr.isOverlapping(nr)) 
+                    throw new InconsistentException("testNumRangeOverlapException");            
+            } 
+            nrList.add(nr);
+        } else {
+            nrList = new ArrayList<NumericRange>();
+            nrList.add(nr);
+            nrMap.put(unitId, nrList);
+        }
+    }
+    
+    /**
+     * This method validates whether the test result id and test analyte id in
+     * "refDO" form a valid mapping such that the test result id belongs to the
+     * result group that has been selected for the test analyte represented by its id
+     */
+    private void validateAnalyteResultMapping(boolean anaListValid, boolean resListValid,        
+                                              HashMap<Integer,Integer> anaResGrpMap,    
+                                              HashMap<Integer, List<Integer>> resGrpRsltMap,
+                                              TestReflexDO refDO) throws InconsistentException {
+        Integer rg, resId, anaId;
+        List<Integer> resIdList;               
+        
+        resId = refDO.getTestResultId();
+        anaId = refDO.getTestAnalyteId();       
+        
+        if(!anaListValid || !resListValid)
+            return;        
+                
+        //
+        // find the result group selected for the test analyte from anaResGrpMap
+        // using its id set in refDO,
+        //        
+        rg = anaResGrpMap.get(anaId);
+        if(rg != null) {
+            //
+            // if the list obtained from anaResGrpMap does not contain the 
+            // test result id in refDO then that implies that this the test result
+            // doesn't belong to the result group selected for the test analyte
+            // and thus an exception is thrown containing this message.
+            //
+            resIdList = resGrpRsltMap.get(rg);
+            if(resIdList == null){
+              throw new InconsistentException("resultDoesntBelongToAnalyteException");
+            } else if(!resIdList.contains(resId)) 
+                throw new InconsistentException("resultDoesntBelongToAnalyteException");                            
+        }                            
+    }
+    
 }

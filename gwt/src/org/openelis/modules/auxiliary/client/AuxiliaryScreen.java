@@ -63,8 +63,6 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.SyncCallback;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.PopupListener;
-import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -72,8 +70,7 @@ public class AuxiliaryScreen extends OpenELISScreenForm<AuxiliaryForm, Query<Tab
                                                                                                          ClickListener,
                                                                                                          ChangeListener,
                                                                                                          TableWidgetListener,
-                                                                                                         TableModelListener,
-                                                                                                         PopupListener{
+                                                                                                         TableModelListener{
     private ButtonPanel atozButtons;
     
     private KeyListManager keyList = new KeyListManager();
@@ -86,15 +83,13 @@ public class AuxiliaryScreen extends OpenELISScreenForm<AuxiliaryForm, Query<Tab
     private AppButton removeAuxFieldRowButton,dictionaryLookUpButton,
                       removeAuxFieldValueRowButton ;    
     
-    private ArrayList<TableDataRow<Integer>> selectedRows = null; 
+    private ArrayList<TableDataRow<Integer>> selectedRows; 
     
-    private TableDataModel<TableDataRow<Integer>> defaultModel,          // the model that's used to represent the default structure of    
+    private TableDataModel<TableDataRow<Integer>>         // the model that's used to represent the default structure of    
                                                                          // the data in auxFieldValueTableWidget
-                                                 auxFieldValueTypeModel; // the model that acts as a reference to auxFieldValueTableWidget's
-                                                                         // type dropdown's TableDataModel 
-    private ScreenWindow pickerWindow = null;              
-    
-    private TextBox grpName = null;       
+                                                  auxFieldValueTypeModel; // the model that acts as a reference to auxFieldValueTableWidget's
+                                                                         // type dropdown's TableDataModel           
+    private TextBox grpName;       
     
     AsyncCallback<AuxiliaryForm> checkModels = new AsyncCallback<AuxiliaryForm>() {     
       public void onSuccess(AuxiliaryForm rpc) {
@@ -158,7 +153,11 @@ public class AuxiliaryScreen extends OpenELISScreenForm<AuxiliaryForm, Query<Tab
             
         setUnitsOfMeasureModel(form.units);
         setAuxFieldValueTypesModel(form.auxFieldValueTypes);
-        setScriptletsModel(form.scriptlets);                
+        setScriptletsModel(form.scriptlets);           
+        
+        form.units = null;
+        form.auxFieldValueTypes = null;
+        form.scriptlets = null;
         
         updateChain.add(afterUpdate);
         commitUpdateChain.add(commitUpdateCallback);
@@ -168,11 +167,10 @@ public class AuxiliaryScreen extends OpenELISScreenForm<AuxiliaryForm, Query<Tab
         fetchChain.add(0,checkModels);
         abortChain.add(0,checkModels);
         commitUpdateChain.add(0,checkModels);
-        commitAddChain.add(0,checkModels);                
+        commitAddChain.add(0,checkModels);                                     
         
-        super.afterDraw(success);               
+        super.afterDraw(success);                      
         
-        defaultModel = (TableDataModel<TableDataRow<Integer>>)auxFieldValueTableWidget.model.getData().clone();
     }
     
     public void performCommand(Enum action, Object obj) {
@@ -182,9 +180,20 @@ public class AuxiliaryScreen extends OpenELISScreenForm<AuxiliaryForm, Query<Tab
                 getAuxFieldGroups(query.substring(6));
             else
                 super.performCommand(action, obj);
+        } else if(action == DictionaryEntryPickerScreen.Action.COMMIT) {              
+            selectedRows = (ArrayList<TableDataRow<Integer>>)obj;
+            dictionaryLookupClosed();
         } else{
             super.performCommand(action, obj);
         }
+    }
+    
+    public boolean canPerformCommand(Enum action, Object obj) {
+        if(action == DictionaryEntryPickerScreen.Action.COMMIT || 
+                        action == DictionaryEntryPickerScreen.Action.ABORT)
+            return true;
+        else
+            return super.canPerformCommand(action, obj);
     }
     
     public void query() {
@@ -205,9 +214,11 @@ public class AuxiliaryScreen extends OpenELISScreenForm<AuxiliaryForm, Query<Tab
     
     public void abort() {
         auxFieldValueTableWidget.model.enableAutoAdd(false); 
-        auxFieldTableWidget.model.enableAutoAdd(false);    
-        form.auxFieldValueTable.removeErrors();
+        auxFieldTableWidget.model.enableAutoAdd(false);                    
+        auxFieldValueTableWidget.model.clear();
         super.abort();
+        
+        
     }
     
     protected AsyncCallback afterUpdate = new AsyncCallback() {
@@ -249,8 +260,7 @@ public class AuxiliaryScreen extends OpenELISScreenForm<AuxiliaryForm, Query<Tab
         }
     };
     
-    public boolean canAdd(TableWidget widget, TableDataRow set, int row) {
-        // TODO Auto-generated method stub
+    public boolean canAdd(TableWidget widget, TableDataRow set, int row) {        
         return true;
     }
 
@@ -258,23 +268,29 @@ public class AuxiliaryScreen extends OpenELISScreenForm<AuxiliaryForm, Query<Tab
        return ((DropDownField)set.cells[0]).getSelectedKey() != null;
     }
 
-    public boolean canDelete(TableWidget widget, TableDataRow set, int row) {
-        // TODO Auto-generated method stub
+    public boolean canDelete(TableWidget widget, TableDataRow set, int row) {        
         return false;
     }
 
     public boolean canEdit(TableWidget widget, TableDataRow set, int row, int col) {
-        if (state == State.UPDATE || state == State.ADD || state == State.QUERY)
-            return true;
+        if(widget == auxFieldTableWidget) {
+            if (state == State.UPDATE || state == State.ADD || state == State.QUERY)
+                return true;
+        } else {
+            if (state == State.UPDATE || state == State.ADD)
+                return true;
+        }
         
         return false;
     }
 
     public boolean canSelect(TableWidget widget, TableDataRow set, int row) {
-        if(widget == auxFieldTableWidget)
+        if(widget == auxFieldTableWidget) {
             return true;
-        else if (state == State.UPDATE || state == State.ADD || state == State.QUERY)
-            return true;
+        }   else  {
+                if (state == State.UPDATE || state == State.ADD)
+                    return true;
+        }
         
         return false;          
     }
@@ -297,56 +313,47 @@ public class AuxiliaryScreen extends OpenELISScreenForm<AuxiliaryForm, Query<Tab
     }
     
     /**
-     * This function is executed whenever the pop up window for dictionary lookup
+     * This function is executed whenever the modal window for dictionary lookup
      * is closed. If autoadd is enabled for auxFieldValueTableWidget which 
      * means that the data currently showing in it is being referred to as the field
      * values for some row in auxFieldTableWidget, then the rows selected, if any,
-     * from the pop up screen are added to auxFieldValueTableWidget. If autoadd is
+     * from the lookup screen are added to auxFieldValueTableWidget. If autoadd is
      * not enabled for auxFieldValueTableWidget, then the user is notified about first 
      * selecting some row in auxFieldTableWidget.
      */
-    public void onPopupClosed(PopupPanel sender, boolean autoClosed) {      
-        DictionaryEntryPickerScreen pickerScreen = (DictionaryEntryPickerScreen)pickerWindow.content;
-        Integer key = null;
-        TableDataRow<Integer> dictSet = null;
+    public void dictionaryLookupClosed() {              
+        Integer key;
+        TableDataRow<Integer> dictSet;
         if(auxFieldValueTableWidget.model.getAutoAdd()) {        
             key = getIdForSystemName("aux_dictionary");  
-            if(key != null) {
-                dictSet = new TableDataRow<Integer>(key);
-                addAuxFieldValueRows(pickerScreen.selectedRows, dictSet);          
-            }                                  
+            dictSet = new TableDataRow<Integer>(key);
+            addAuxFieldValueRows(selectedRows,key);                                                      
         } else {
             Window.alert(consts.get("auxFieldSelFirst"));             
         }       
-    }  
+    }
     
     public void startEditing(SourcesTableWidgetEvents sender, int row, int col) {
-        // TODO Auto-generated method stub
         
     }
 
     public void stopEditing(SourcesTableWidgetEvents sender, int row, int col) {
-        // TODO Auto-generated method stub
         
     }
     
     public void cellUpdated(SourcesTableModelEvents sender, int row, int cell) {
-        // TODO Auto-generated method stub
         
     }
 
     public void dataChanged(SourcesTableModelEvents sender) {
-        // TODO Auto-generated method stub
         
     }
 
     public void rowAdded(SourcesTableModelEvents sender, int rows) {
-        // TODO Auto-generated method stub
         
     }
 
     public void rowDeleted(SourcesTableModelEvents sender, int row) {
-        // TODO Auto-generated method stub
         
     }
 
@@ -360,28 +367,26 @@ public class AuxiliaryScreen extends OpenELISScreenForm<AuxiliaryForm, Query<Tab
     }
 
     public void rowUnselected(SourcesTableModelEvents sender, int row) {
-        // TODO Auto-generated method stub
         
     }
 
     public void rowUpdated(SourcesTableModelEvents sender, int row) {
-        // TODO Auto-generated method stub
         
     }
 
     public void unload(SourcesTableModelEvents sender) {
-        // TODO Auto-generated method stub
         
     }
     
     private void addAuxFieldValueRows(ArrayList<TableDataRow<Integer>> selectedRows,
-                               TableDataRow<Integer> dictSet) {
-         List<String> entries = new ArrayList<String>();
-         TableDataRow<Integer> row = null;
-         TableDataRow<Integer> set;
+                                      Integer key) {
+         List<String> entries;
+         TableDataRow<Integer> row , set, dictSet;
          String entry = null;         
 
          if (selectedRows != null) {
+             dictSet = new TableDataRow<Integer>(key); 
+             entries = new ArrayList<String>();
              for (int iter = 0; iter < selectedRows.size(); iter++) {
                  set = selectedRows.get(iter);
                  entry = (String)(set.cells[0]).getValue();
@@ -436,36 +441,33 @@ public class AuxiliaryScreen extends OpenELISScreenForm<AuxiliaryForm, Query<Tab
     }
     
     /**
-     * This function opens a modal window which allows the users to select one
-     * or more dictionary entries to be added to the table for aux field values 
+     * This function opens a dialog window which allows the users to select one
+     * or more dictionary entries to be added to the auxiliary field value  table
      */
     private void onDictionaryLookUpButtonClicked() {
-        int left = getAbsoluteLeft();
-        int top = getAbsoluteTop();
-        DictionaryEntryPickerScreen pickerScreen = new DictionaryEntryPickerScreen();        
-        PopupPanel dictEntryPickerPopupPanel = new PopupPanel(false, true);
-        pickerWindow = new ScreenWindow(dictEntryPickerPopupPanel,
-                                                     consts.get("chooseDictEntry"),
-                                                     "dictionaryEntryPicker",
-                                                     "Loading...");
-        pickerScreen.selectedRows = selectedRows;        
-        pickerWindow.setContent(pickerScreen);   
-        dictEntryPickerPopupPanel.addPopupListener(this);
-        dictEntryPickerPopupPanel.add(pickerWindow);
-        dictEntryPickerPopupPanel.setPopupPosition(left, top);
-        dictEntryPickerPopupPanel.show();
+        ScreenWindow modal;
+        DictionaryEntryPickerScreen pickerScreen;
+        
+        pickerScreen = new DictionaryEntryPickerScreen();       
+        modal = new ScreenWindow(null,"Dictionary LookUp","dictionaryEntryPickerScreen","Loading...",true,false);
+        pickerScreen.addCommandListener(this);
+        modal.setName(consts.get("chooseDictEntry"));
+        modal.setContent(pickerScreen);
     }
     
 
     public void finishedEditing(SourcesTableWidgetEvents sender,int row,int col) {    
-        AuxiliaryGeneralPurposeRPC agrpc = new AuxiliaryGeneralPurposeRPC();   
+        AuxiliaryGeneralPurposeRPC agrpc;   
+        Double[] darray;
+        String finalValue,systemName;
         if(sender == auxFieldValueTableWidget && col == 1) {            
             final int currRow = row;            
             final String value = ((StringField)auxFieldValueTableWidget.model.getRow(row).cells[1]).getValue();
+            agrpc = new AuxiliaryGeneralPurposeRPC();
             agrpc.key = (Integer)((DropDownField)auxFieldValueTableWidget.model.getRow(row).cells[0]).getSelectedKey();
-            Double[] darray = new Double[2];
-            String finalValue = "";
-            String systemName = getSelectedSystemName(row);                                  
+            darray = new Double[2];
+            finalValue = "";
+            systemName = getSelectedSystemName(row);                                  
             if(systemName!=null){
                 if ("aux_dictionary".equals(systemName)) {
                     //
@@ -607,12 +609,16 @@ public class AuxiliaryScreen extends OpenELISScreenForm<AuxiliaryForm, Query<Tab
     }
     
     private void setModelInFieldValueTable(int row) {       
-       AuxiliaryGeneralPurposeRPC agrpc = null;             
+       AuxiliaryGeneralPurposeRPC agrpc;
+       TableDataModel<TableDataRow<Integer>> defaultModel;
+       
        final TableDataRow<Integer> set = auxFieldTableWidget.model.getRow(row);
        TableDataModel<TableDataRow<Integer>> model = (TableDataModel<TableDataRow<Integer>>)set.getData();
        if(set.key != null && model == null) {            
             agrpc = new AuxiliaryGeneralPurposeRPC();
-            agrpc.auxFieldValueModel = (TableDataModel<TableDataRow<Integer>>)defaultModel.clone();
+            defaultModel = new TableDataModel<TableDataRow<Integer>>();
+            defaultModel.setDefaultSet(form.auxFieldValueTable.defaultRow);
+            agrpc.auxFieldValueModel = defaultModel;
             agrpc.key = set.key;
             screenService.call("getAuxFieldValueModel", agrpc, new SyncCallback(){
                 public void onSuccess(Object result) {                      
@@ -626,8 +632,11 @@ public class AuxiliaryScreen extends OpenELISScreenForm<AuxiliaryForm, Query<Tab
                });                       
         }
        
-       if(set.getData()==null) 
-        set.setData((TableDataModel)defaultModel.clone());  
+       if(set.getData()==null) {
+           defaultModel = new TableDataModel<TableDataRow<Integer>>();
+           defaultModel.setDefaultSet(form.auxFieldValueTable.defaultRow);
+           set.setData(defaultModel);
+       }
                
        auxFieldValueTableWidget.model.load((TableDataModel)set.getData());
     }     
@@ -721,9 +730,9 @@ public class AuxiliaryScreen extends OpenELISScreenForm<AuxiliaryForm, Query<Tab
      * in auxFieldTableWidget, it returns null if no option was selected   
      */
     private String getSelectedSystemName(int row){
-        TableDataRow<Integer> trow = null;
-        ArrayList<TableDataRow<Integer>> list = null;
-        StringObject data = null;
+        TableDataRow<Integer> trow;
+        ArrayList<TableDataRow<Integer>> list;
+        StringObject data;
         if(row > -1) {
             trow = auxFieldValueTableWidget.model.getRow(row);
             list = (ArrayList<TableDataRow<Integer>>)trow.cells[0].getValue();
@@ -748,7 +757,7 @@ public class AuxiliaryScreen extends OpenELISScreenForm<AuxiliaryForm, Query<Tab
      * has the value of its data, set to the argument "systemName" 
      */
     private Integer getIdForSystemName(String systemName) {
-        TableDataRow<Integer> row = null;
+        TableDataRow<Integer> row;
         StringObject data = null;
         if(auxFieldValueTypeModel != null) {
             for(int i = 0; i < auxFieldValueTypeModel.size(); i++) {

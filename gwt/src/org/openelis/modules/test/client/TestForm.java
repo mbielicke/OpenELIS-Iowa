@@ -68,7 +68,7 @@ public class TestForm extends Form<Integer> {
     public DropDownField<Integer> sortingMethodId;
     public TableField<TableDataRow<Integer>> sectionTable;
     public Boolean duplicate;
-    public String testTabPanel = "sampleTypeTab";
+    public String testTabPanel = "detailsTab";
     public PrepAndReflexForm prepAndReflex;
     public SampleTypeForm sampleType;
     public TestAnalyteForm testAnalyte;

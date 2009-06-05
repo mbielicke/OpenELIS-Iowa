@@ -368,51 +368,37 @@ public class DictionaryService implements AppScreenFormServiceInt<DictionaryForm
     
     private ArrayList<DictionaryDO> getDictionaryEntriesFromRPC(TableDataModel<TableDataRow<Integer>> dictEntryTable, Integer categoryId){
         
-        ArrayList<DictionaryDO> dictDOList = new ArrayList<DictionaryDO>();
-        for(int iter = 0; iter < dictEntryTable.size(); iter++){            
-         TableDataRow<Integer> row = dictEntryTable.get(iter);
-         DictionaryDO dictDO = new DictionaryDO();
-                               
-         dictDO.setId(row.key);                
-                  
-         dictDO.setDelete(false);
-                           
-         dictDO.setIsActive((String)((CheckField)row.cells[0]).getValue());
-         dictDO.setSystemName((String)((StringField)row.cells[1]).getValue()); 
-         dictDO.setLocalAbbrev(((String)((StringField)row.cells[2]).getValue()));
-         dictDO.setEntry((String)((StringField)row.cells[3]).getValue());                                    
-         dictDO.setRelatedEntryId((Integer)((DropDownField)row.cells[4]).getSelectedKey());                                       
-              
-         dictDO.setCategory(categoryId);         
-                      
-         dictDOList.add(dictDO);             
+        ArrayList<DictionaryDO> dictDOList;
+        DictionaryDO dictDO;
+        List<TableDataRow<Integer>> deletions;
+        TableDataRow<Integer> row;
+        int i;
+        
+        dictDOList = new ArrayList<DictionaryDO>();
+        for(i = 0; i < dictEntryTable.size(); i++){            
+             row = dictEntryTable.get(i);
+             dictDO = new DictionaryDO();                               
+             dictDO.setId(row.key);                                  
+             dictDO.setDelete(false);                           
+             dictDO.setIsActive((String)(row.cells[0]).getValue());
+             dictDO.setSystemName((String)(row.cells[1]).getValue()); 
+             dictDO.setLocalAbbrev(((String)(row.cells[2]).getValue()));
+             dictDO.setEntry((String)(row.cells[3]).getValue());                                    
+             dictDO.setRelatedEntryId((Integer)((DropDownField)row.cells[4]).getSelectedKey());                                                     
+             dictDO.setCategory(categoryId);                               
+             dictDOList.add(dictDO);             
        }
         
-        if(dictEntryTable.getDeletions() != null) {
-         for(int iter = 0; iter < dictEntryTable.getDeletions().size(); iter++){            
-            TableDataRow<Integer> row = (TableDataRow<Integer>)dictEntryTable.getDeletions().get(iter);
-            DictionaryDO dictDO = new DictionaryDO();
-                             
-            String sysName = (String)((StringField)row.cells[1]).getValue();
-            String entry = (String)((StringField)row.cells[3]).getValue();
-            
-            dictDO.setSystemName(sysName);           
-            dictDO.setEntry(entry);  
-            dictDO.setId(row.key);                    
-              
-            dictDO.setDelete(true);
-                                               
-            dictDO.setIsActive((String)row.cells[0].getValue());
-            dictDO.setSystemName((String)row.cells[1].getValue()); 
-            dictDO.setLocalAbbrev(((String)row.cells[2].getValue()));
-            dictDO.setEntry((String)row.cells[3].getValue());                                    
-            dictDO.setRelatedEntryId((Integer)((DropDownField<Integer>)row.cells[4]).getSelectedKey());                                       
-                
-            dictDO.setCategory(categoryId);         
-                        
-            dictDOList.add(dictDO);             
-           }
-         dictEntryTable.getDeletions().clear();
+        deletions = dictEntryTable.getDeletions();
+        if(deletions != null) {
+            for(i = 0; i < deletions.size(); i++){            
+                row = deletions.get(i);
+                dictDO = new DictionaryDO();                                         
+                dictDO.setId(row.key);                                  
+                dictDO.setDelete(true);                                                                               
+                dictDOList.add(dictDO);             
+            }
+            deletions.clear();
         } 
         return dictDOList;
     }

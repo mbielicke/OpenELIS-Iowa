@@ -43,6 +43,7 @@ public class TestAnalyteForm extends Form<Integer> {
     public TreeField analyteTree;
     public TableField<TableDataRow<Integer>> testResultsTable;
     public ArrayList<TableDataModel<TableDataRow<Integer>>> resultTableModelCollection, resultDropdownModelCollection;
+    public TableDataModel<TableDataRow<Integer>> defaultResultModel;
     public Boolean duplicate;
     
     public TableDataModel<TableDataRow<Integer>> model;

@@ -154,9 +154,9 @@ UIRF Software License are applicable instead of those above.
 									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"active")'/>:</text>
 									<check key="{meta:getIsActive($auxfg)}" tab="{meta:getActiveBegin($auxfg)},{meta:getDescription($auxfg)}" />																	
 								 <text style="Prompt"><xsl:value-of select='resource:getString($constants,"beginDate")'/>:</text>
-								 <calendar key="{meta:getActiveBegin($auxfg)}" tab="{meta:getActiveEnd($auxfg)},{meta:getIsActive($auxfg)}" onChange="this" begin="0" end="2" width = "80px"/>																									 
+								 <calendar key="{meta:getActiveBegin($auxfg)}" tab="{meta:getActiveEnd($auxfg)},{meta:getIsActive($auxfg)}" begin="0" end="2" width = "90px"/>																									 
 								 <text style="Prompt"><xsl:value-of select='resource:getString($constants,"endDate")'/>:</text>
-								 <calendar key="{meta:getActiveEnd($auxfg)}" tab="auxFieldTable,{meta:getActiveBegin($auxfg)}" onChange="this" begin="0" end="2" width = "80px"/>
+								 <calendar key="{meta:getActiveEnd($auxfg)}" tab="auxFieldTable,{meta:getActiveBegin($auxfg)}" begin="0" end="2" width = "90px"/>
 								</row>
 					          </TablePanel>		
 					          <HorizontalPanel width="630px">	
@@ -210,6 +210,11 @@ UIRF Software License are applicable instead of those above.
 												    <dropdown cellKey="{auxFieldValue:getTypeId($auxfv)}" case="mixed" width="100px"/>													
 													<textbox cellKey="{auxFieldValue:getValue($auxfv)}"/>																																			
 												</editors>
+												<!--this table has a special requirement which needs the fields tag to be here for the time being -->
+												<field>												
+													<dropdown key="{auxFieldValue:getTypeId($auxfv)}" type="integer" required="true"/>																										
+													<string key="{auxFieldValue:getValue($auxfv)}" max = "80"/>
+												</field>
 												<sorts>false,false</sorts>
 												<filters>false,false</filters>
 												<colAligns>left,left</colAligns>

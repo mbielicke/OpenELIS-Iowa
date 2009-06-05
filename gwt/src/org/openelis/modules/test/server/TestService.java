@@ -39,7 +39,6 @@ import org.openelis.domain.TestWorksheetAnalyteDO;
 import org.openelis.domain.TestWorksheetDO;
 import org.openelis.domain.TestWorksheetItemDO;
 import org.openelis.gwt.common.DatetimeRPC;
-import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.FormErrorException;
@@ -47,6 +46,7 @@ import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.Query;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.TableFieldErrorException;
+import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.CheckField;
 import org.openelis.gwt.common.data.DropDownField;
@@ -56,7 +56,6 @@ import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.common.data.TableDataModel;
 import org.openelis.gwt.common.data.TableDataRow;
-import org.openelis.gwt.common.data.TableField;
 import org.openelis.gwt.common.data.TreeDataItem;
 import org.openelis.gwt.common.data.TreeDataModel;
 import org.openelis.gwt.server.ServiceUtils;
@@ -78,7 +77,9 @@ import org.openelis.modules.test.client.TestForm;
 import org.openelis.modules.test.client.TestGeneralPurposeRPC;
 import org.openelis.modules.test.client.WorksheetForm;
 import org.openelis.persistence.EJBFactory;
+import org.openelis.remote.AnalyteRemote;
 import org.openelis.remote.CategoryRemote;
+import org.openelis.remote.MethodRemote;
 import org.openelis.remote.TestRemote;
 import org.openelis.server.constants.Constants;
 import org.openelis.server.handlers.RoundingMethodCacheHandler;
@@ -163,7 +164,6 @@ public class TestService implements
 
         Integer testId;
 
-        // rpc.details.duplicate = false;
         rpc.duplicate = false;
         rpc.sampleType.duplicate = false;
         rpc.prepAndReflex.duplicate = false;
@@ -174,6 +174,9 @@ public class TestService implements
         testSectionDOList = getTestSectionsFromRPC(rpc, null);
 
         sampleTypeDOList = getSampleTypesFromRPC(rpc.sampleType, null);
+        
+        testAnalyteDOList = getTestAnalyteDOListFromRPC(rpc.testAnalyte, null);
+        resultDOList = getTestResultDOListFromRPC(rpc.testAnalyte, null);
 
         prepTestDOList = getPrepTestsFromRPC(rpc.prepAndReflex, null);
         testReflexDOList = getTestReflexesFromRPC(rpc.prepAndReflex, null);
@@ -181,48 +184,18 @@ public class TestService implements
         itemsDOList = getWorksheetItemsFromRPC(rpc.worksheet);
         worksheetDO = getTestWorkSheetFromRPC(rpc.worksheet, null);
         twsaList = getWorksheetAnalytesFromRPC(rpc.worksheet, null);
-
-        testAnalyteDOList = getTestAnalyteDOListFromRPC(rpc.testAnalyte, null);
-        resultDOList = getTestResultDOListFromRPC(rpc.testAnalyte, null);
-
-        List exceptionList = remote.validateForAdd(testDO,
-                                                   prepTestDOList,
-                                                   sampleTypeDOList,
-                                                   testReflexDOList,
-                                                   worksheetDO,
-                                                   itemsDOList,
-                                                   twsaList,
-                                                   testAnalyteDOList,
-                                                   testSectionDOList,
-                                                   resultDOList);
-        if (exceptionList.size() > 0) {
-            setRpcErrors(exceptionList, rpc);
-
-            return rpc;
-        }
-
+       
         try {
-            testId = remote.updateTest(testDO,
-                                       prepTestDOList,
-                                       sampleTypeDOList,
-                                       testReflexDOList,
-                                       worksheetDO,
-                                       itemsDOList,
-                                       twsaList,
-                                       testAnalyteDOList,
-                                       testSectionDOList,
+            testId = remote.updateTest(testDO,prepTestDOList,sampleTypeDOList,
+                                       testReflexDOList,worksheetDO,itemsDOList,
+                                       twsaList,testAnalyteDOList,testSectionDOList,
                                        resultDOList);
             testDO = remote.getTest(testId);
-        } catch (Exception e) {
-            if (e instanceof EntityLockedException)
-                throw new RPCException(e.getMessage());
-
-            exceptionList = new ArrayList();
-            exceptionList.add(e);
-
-            setRpcErrors(exceptionList, rpc);
-
+        } catch (ValidationErrorsList e) {
+            setRpcErrors(e.getErrorList(), rpc);
             return rpc;
+        } catch (Exception e) {
+            throw new RPCException(e.getMessage());            
         }
 
         testDO.setId(testId);
@@ -255,51 +228,24 @@ public class TestService implements
 
         testSectionDOList = getTestSectionsFromRPC(rpc, testId.getValue());
 
-        if (rpc.prepAndReflex.load) {
-
-            testPrepDOList = getPrepTestsFromRPC(rpc.prepAndReflex,
+        testPrepDOList = getPrepTestsFromRPC(rpc.prepAndReflex,
                                                  testId.getValue());
+        testReflexDOList = getTestReflexesFromRPC(rpc.prepAndReflex,
+                                                      testId.getValue());        
 
-            testReflexDOList = getTestReflexesFromRPC(rpc.prepAndReflex,
-                                                      testId.getValue());
-        }
-
-        if (rpc.sampleType.load) {
-            sampleTypeDOList = getSampleTypesFromRPC(rpc.sampleType,
-                                                     testId.getValue());
-        }
-
-        if (rpc.worksheet.load) {
-            itemsDOList = getWorksheetItemsFromRPC(rpc.worksheet);
-            worksheetDO = getTestWorkSheetFromRPC(rpc.worksheet,
+        sampleTypeDOList = getSampleTypesFromRPC(rpc.sampleType,
+                                                     testId.getValue());        
+        
+        itemsDOList = getWorksheetItemsFromRPC(rpc.worksheet);
+        worksheetDO = getTestWorkSheetFromRPC(rpc.worksheet,
                                                   testId.getValue());
-            twsaList = getWorksheetAnalytesFromRPC(rpc.worksheet,
-                                                   testId.getValue());
-        }
-
-        if (rpc.testAnalyte.load) {
-            testAnalyteDOList = getTestAnalyteDOListFromRPC(rpc.testAnalyte,
+        twsaList = getWorksheetAnalytesFromRPC(rpc.worksheet,
+                                                   testId.getValue()); 
+        
+        testAnalyteDOList = getTestAnalyteDOListFromRPC(rpc.testAnalyte,
                                                             testId.getValue());
-            resultDOList = getTestResultDOListFromRPC(rpc.testAnalyte,
+        resultDOList = getTestResultDOListFromRPC(rpc.testAnalyte,
                                                       testId.getValue());
-
-        }
-
-        List exceptionList = remote.validateForUpdate(testDO,testPrepDOList,
-                                                      sampleTypeDOList,
-                                                      testReflexDOList,
-                                                      worksheetDO,
-                                                      itemsDOList,
-                                                      twsaList,
-                                                      testAnalyteDOList,
-                                                      testSectionDOList,
-                                                      resultDOList);
-
-        if (exceptionList.size() > 0) {
-            setRpcErrors(exceptionList, rpc);
-
-            return rpc;
-        }
 
         try {
             remote.updateTest(testDO,testPrepDOList,sampleTypeDOList,
@@ -307,18 +253,13 @@ public class TestService implements
                               twsaList,testAnalyteDOList,testSectionDOList,
                               resultDOList);
             testDO = remote.getTest(testId.getValue());
-        } catch (Exception e) {
-            if (e instanceof EntityLockedException)
-                throw new RPCException(e.getMessage());
-
-            exceptionList = new ArrayList();
-            exceptionList.add(e);
-
-            setRpcErrors(exceptionList, rpc);
-
+        } catch (ValidationErrorsList e) {
+            setRpcErrors(e.getErrorList(), rpc);
             return rpc;
-
+        } catch (Exception e) {
+            throw new RPCException(e.getMessage());            
         }
+        
         setFieldsInRPC(rpc, testDO, false);
         return rpc;
     }
@@ -379,23 +320,17 @@ public class TestService implements
 
         String tab = rpc.testTabPanel;
 
-        if (tab.equals("sampleTypeTab")) {
-            loadSampleTypes(rpc.entityKey, rpc.sampleType);
-        }
-
-        if (tab.equals("prepAndReflexTab")) {
-            loadPrepTestsReflexTests(rpc.entityKey, rpc.prepAndReflex);
-        }
-
-        if (tab.equals("worksheetTab")) {
+        if ("sampleTypeTab".equals(tab)) 
+            loadSampleTypes(rpc.entityKey, rpc.sampleType);        
+        else if ("analyteTab".equals(tab)) 
+            loadTestAnalyte(rpc.entityKey, rpc.testAnalyte);        
+        else if ("prepAndReflexTab".equals(tab)) 
+            loadPrepTestsReflexTests(rpc.entityKey, rpc.prepAndReflex);        
+        else if ("worksheetTab".equals(tab)) 
             loadWorksheetLayout(rpc.entityKey, rpc.worksheet);
-        }
-
-        if (tab.equals("analyteTab")) {
-            loadTestAnalyte(rpc.entityKey, rpc.testAnalyte);
-        }
-
+                                
         return rpc;
+        
     }
 
     private void loadSampleTypes(Integer key, SampleTypeForm form) {
@@ -411,11 +346,33 @@ public class TestService implements
     }
 
     private void loadPrepTestsReflexTests(Integer key, PrepAndReflexForm form) {
+        List<TestAnalyteDO> anaDOlist;
+        TableDataRow<Integer> row;
+        Iterator iter;
+        TestAnalyteDO anaDO;
+        Integer id;
         TestRemote remote = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
         List<TestPrepDO> prepList = remote.getTestPreps(key);
         List<TestReflexDO> reflexList = remote.getTestReflexes(key);
         fillPrepTests(prepList, form);
         fillTestReflexes(reflexList, form, key);
+        
+        anaDOlist = remote.getTestAnalytes(key);
+                                          
+        form.testAnalyteModel = new TableDataModel<TableDataRow<Integer>>();
+        form.testAnalyteModel.add(new TableDataRow<Integer>(null, new StringObject("")));
+
+        for (iter = anaDOlist.iterator(); iter.hasNext();) {
+            anaDO = (TestAnalyteDO)iter.next();
+            id = anaDO.getId();
+            if(form.duplicate)
+                id *= -2;            
+            
+            row = new TableDataRow<Integer>(id,new StringObject(anaDO.getAnalyteName()));               
+            if(anaDO.getResultGroup()!=null)
+                row.setData(new IntegerObject(anaDO.getResultGroup()));
+            form.testAnalyteModel.add(row);
+        }
         form.load = true;
     }
 
@@ -447,19 +404,12 @@ public class TestService implements
         TestRemote remote = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
         List<TestAnalyteDO> taList = remote.getTestAnalytes(key);
         fillAnalyteTree(taList, form);
-        fillTestResults(key, form);
+        fillTestResults(key, form);                          
         form.load = true;
     }
 
     public TestAnalyteForm loadTestAnalyte(TestAnalyteForm rpc) {
         loadTestAnalyte(rpc.entityKey, rpc);
-        return rpc;
-    }
-
-    public TestAnalyteForm getAnalyteTreeModel(TestAnalyteForm rpc) {
-        TestRemote remote = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
-        List<TestAnalyteDO> taList = remote.getTestAnalytes(rpc.entityKey);
-        fillAnalyteTree(taList, rpc);
         return rpc;
     }
 
@@ -685,13 +635,7 @@ public class TestService implements
             SessionManager.getSession()
                           .setAttribute("testWorksheetFormatVersion",
                                         TestWorksheetFormatCacheHandler.version);
-        }
-        
-        rpc.labels = getInitialModel(TestMeta.getLabelId());
-        rpc.scriptlets = getInitialModel(TestMeta.getScriptletId());
-        rpc.trailers = getInitialModel(TestMeta.getTestTrailerId());
-        rpc.testMethods = getInitialModel(TestMeta.getTestPrep().getPrepTestId());
-        rpc.sections = getInitialModel(TestMeta.getTestSection().getSectionId());
+        }        
 
     }
 
@@ -735,70 +679,7 @@ public class TestService implements
                                                     new StringObject(methodDO.getName())));
         }
 
-        return model;
-    }
-
-
-    private TableDataModel getInitialModel(String cat) {
-        // String cat = obj.getValue();
-        TableDataModel model = new TableDataModel<TableDataRow<Integer>>();
-        List<IdNameDO> values = null;
-
-        TestRemote remote = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
-        CategoryRemote catRemote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
-
-        if (cat.equals(TestMeta.getLabelId())) {
-            values = remote.getLabelDropDownValues();
-        } else if (cat.equals(TestMeta.getTestTrailerId())) {
-            values = remote.getTestTrailerDropDownValues();
-        } else if (cat.equals(TestMeta.getScriptletId()) || cat.equals(TestMeta.getTestWorksheet()
-                                                                               .getScriptletId())
-                   || cat.equals(TestMeta.getTestAnalyte().getScriptletId())) {
-            values = remote.getScriptletDropDownValues();
-        } else if (cat.equals(TestMeta.getTestSection().getSectionId())) {
-            values = remote.getSectionDropDownValues();
-        } else if (cat.equals(TestMeta.getRevisionMethodId())) {
-            values = catRemote.getDropdownValues(catRemote.getCategoryId("test_revision_method"));
-        } else if (cat.equals(TestMeta.getTestResult().getRoundingMethodId())) {
-            values = catRemote.getDropdownValues(catRemote.getCategoryId("rounding_method"));
-        } else if (cat.equals(TestMeta.getReportingMethodId())) {
-            values = catRemote.getDropdownValues(catRemote.getCategoryId("test_reporting_method"));
-        } else if (cat.equals(TestMeta.getSortingMethodId())) {
-            values = catRemote.getDropdownValues(catRemote.getCategoryId("test_sorting_method"));
-        } else if (cat.equals(TestMeta.getTestSection().getFlagId())) {
-            values = catRemote.getDropdownValues(catRemote.getCategoryId("test_section_flags"));
-        } else if (cat.equals(TestMeta.getTestResult().getTypeId())) {
-            values = catRemote.getDropdownValues(catRemote.getCategoryId("test_result_type"));
-        } else if (cat.equals(TestMeta.getTestResult().getFlagsId())) {
-            values = catRemote.getDropdownValues(catRemote.getCategoryId("test_result_flags"));
-        } else if (cat.equals(TestMeta.getTestFormatId())) {
-            values = catRemote.getDropdownValues(catRemote.getCategoryId("test_format"));
-        } else if (cat.equals(TestMeta.getTestTypeOfSample()
-                                      .getUnitOfMeasureId())) {
-            values = catRemote.getDropdownAbbreviations(catRemote.getCategoryId("unit_of_measure"));
-        } else if (cat.equals(TestMeta.getTestTypeOfSample()
-                                      .getTypeOfSampleId())) {
-            values = catRemote.getDropdownValues(catRemote.getCategoryId("type_of_sample"));
-        } else if (cat.equals(TestMeta.getTestPrep().getPrepTestId())) {
-            List<QaEventTestDropdownDO> qaedDOList = remote.getPrepTestDropDownValues();
-            loadPrepTestDropDown(qaedDOList, model);
-        } else if (cat.equals(TestMeta.getTestReflex().getFlagsId())) {
-            values = catRemote.getDropdownValues(catRemote.getCategoryId("test_reflex_flags"));
-        } else if (cat.equals(TestMeta.getTestWorksheet().getFormatId())) {
-            values = catRemote.getDropdownValues(catRemote.getCategoryId("test_worksheet_format"));
-        } else if (cat.equals(TestMeta.getTestWorksheetItem().getTypeId())) {
-            values = remote.getTestWSItemTypeDropDownValues();
-        } else if (cat.equals(TestMeta.getTestAnalyte().getTypeId())) {
-            values = catRemote.getDropdownValues(catRemote.getCategoryId("test_analyte_type"));
-        } else if (cat.equals(TestMeta.getTestWorksheetAnalyte().getFlagId())) {
-            values = catRemote.getDropdownValues(catRemote.getCategoryId("test_worksheet_analyte_flags"));
-        }
-
-        if (values != null) {
-            loadDropDown(values, model);
-        }
-
-        return model;
+        return model;    
     }
 
     public TableDataModel<TableDataRow<Integer>> getMatches(String cat,
@@ -806,23 +687,19 @@ public class TestService implements
                                                             String match,
                                                             HashMap params) {
 
-        // if(("analyte").equals(cat)){
-        TestRemote remote = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
-        List entries = remote.getMatchingEntries(match.trim() + "%", 10, cat);
-        TableDataModel<TableDataRow<Integer>> dataModel = new TableDataModel<TableDataRow<Integer>>();
-        for (Iterator iter = entries.iterator(); iter.hasNext();) {
-
-            IdNameDO element = (IdNameDO)iter.next();
-            Integer entryId = element.getId();
-            String entryText = element.getName();
-
-            TableDataRow<Integer> data = new TableDataRow<Integer>(entryId,
-                                                                   new StringObject(entryText));
-            dataModel.add(data);
+        TableDataModel<TableDataRow<Integer>> dataModel = null;
+        List<IdNameDO> entries;
+        if(("analyte").equals(cat)) {
+            AnalyteRemote remote = (AnalyteRemote)EJBFactory.lookup("openelis/AnalyteBean/remote");
+            entries = remote.autoCompleteLookupByName(match.trim() + "%", 10);
+            dataModel = getAutocompleteModel(entries);
+        } else if(("method").equals(cat)) {
+            MethodRemote remote = (MethodRemote)EJBFactory.lookup("openelis/MethodBean/remote");
+            entries = remote.autoCompleteLookupByName(match.trim() + "%", 10);
+            dataModel = getAutocompleteModel(entries);
         }
-
+        
         return dataModel;
-
     }
 
     public TestGeneralPurposeRPC getCategorySystemName(TestGeneralPurposeRPC rpc) {
@@ -859,116 +736,32 @@ public class TestService implements
 
     public TestAnalyteForm fillTestResults(Integer key, TestAnalyteForm form) {
         try {
-            TableDataRow<Integer> row = null;
-
-            TestResultDO resultDO = null;
+            
+            TableDataModel<TableDataRow<Integer>> tableModel, dropdownModel; 
+            List<List<TestResultDO>> resDOLists;
+            List<TestResultDO> resDOList;
+                        
+            form.testResultsTable.setValue(null);
             TestRemote remote = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
-            TableDataModel<TableDataRow<Integer>> model = (TableDataModel)form.testResultsTable.getValue();
-            List<IdNameDO> rglist = remote.getResultGroupsForTest(key);
-
-            model.clear();
-
-            if (rglist.size() > 0) {
-                List<TestResultDO> resultDOList = remote.getTestResults(key, 1);
-                for (int iter = 0; iter < resultDOList.size(); iter++) {
-                    row = model.createNewSet();
-                    resultDO = resultDOList.get(iter);
-
-                    if (!form.duplicate)
-                        row.key = resultDO.getId();
-                    else
-                        row.key = (resultDO.getId() * -2);
-
-                    if (resultDO.getUnitOfMeasureId() != null) {
-                        (row.cells[0]).setValue(new TableDataRow<Integer>(resultDO.getUnitOfMeasureId()));
-                        row.setData(new IntegerObject(resultDO.getUnitOfMeasureId()));
-                    }
-
-                    row.cells[1].setValue(new TableDataRow<Integer>(resultDO.getTypeId()));
-
-                    if (resultDO.getDictEntry() == null) {
-                        row.cells[2].setValue(resultDO.getValue());
-                    } else {
-                        row.cells[2].setValue(resultDO.getDictEntry());
-                    }
-
-                    row.cells[3].setValue(resultDO.getQuantLimit());
-                    row.cells[4].setValue(resultDO.getContLevel());
-                    row.cells[5].setValue(resultDO.getHazardLevel());                    
-                    row.cells[6].setValue(new TableDataRow<Integer>(resultDO.getFlagsId()));
-                    row.cells[7].setValue(resultDO.getSignificantDigits());
-                    row.cells[8].setValue(new TableDataRow<Integer>(resultDO.getRoundingMethodId()));
-
-                    model.add(row);
-                }
-            }
+            
+            resDOLists = remote.getTestResults(key);
+            form.resultTableModelCollection = new ArrayList<TableDataModel<TableDataRow<Integer>>>();
+            form.resultDropdownModelCollection = new ArrayList<TableDataModel<TableDataRow<Integer>>>();
+            
+            for (int i = 0; i < resDOLists.size(); i++) {
+                resDOList = resDOLists.get(i);
+                tableModel = getTestResultsFromResultDOList(key,resDOList,
+                                              (TableDataModel)form.defaultResultModel.clone(),
+                                              form.duplicate);
+                form.resultTableModelCollection.add(tableModel);            
+                dropdownModel = getResultDropdownModel(tableModel);                       
+                form.resultDropdownModelCollection.add(dropdownModel);
+            } 
         } catch (Exception ex) {
             ex.printStackTrace();
         }
         return form;
-    }
-
-    public TestAnalyteForm loadTestResultModelList(TestAnalyteForm rpc) {
-        TableDataModel<TableDataRow<Integer>> tableModel, dropdownModel;        
-        int i;
-                              
-        for (i = 1; i < rpc.integerValue + 1; i++) {
-            tableModel = getTestResultsByGroup(rpc.entityKey,i,
-                                          (TableDataModel)rpc.model.clone(),
-                                          rpc.duplicate);
-            rpc.resultTableModelCollection.add(tableModel);
-            
-            dropdownModel = getResultDropdownModel(tableModel);                       
-            rpc.resultDropdownModelCollection.add(dropdownModel);
-        }
-                        
-        return rpc;
-    }
-    
-    public TestGeneralPurposeRPC getGroupsAndModels(TestGeneralPurposeRPC rpc) {
-        TableDataModel<TableDataRow<Integer>> tableModel, dropdownModel; 
-        TestRemote remote;
-        List<IdNameDO> rglist;
-        List<TestAnalyteDO> anaDOlist;
-        TestAnalyteDO anaDO;
-        TableDataRow<Integer> row;
-        int i;
-        Iterator iter;
-        
-        remote = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
-        rglist = remote.getResultGroupsForTest(rpc.key);
-        
-        rpc.resultGroupModel.add(new TableDataRow<Integer>(null, new StringObject("")));
-        for (iter = rglist.iterator(); iter.hasNext();) {
-            IdNameDO rgDO = (IdNameDO)iter.next();
-            rpc.resultGroupModel.add(new TableDataRow<Integer>(rgDO.getId(),new StringObject(rgDO.getId().toString())));
-        }
-        anaDOlist = remote.getTestAnalytes(rpc.key);
-        
-        rpc.integerValue = rglist.size();                                                   
-        rpc.testAnalyteModel = new TableDataModel<TableDataRow<Integer>>();
-        rpc.testAnalyteModel.add(new TableDataRow<Integer>(null, new StringObject("")));
-
-        for (iter = anaDOlist.iterator(); iter.hasNext();) {
-            anaDO = (TestAnalyteDO)iter.next();
-            row = new TableDataRow<Integer>(anaDO.getId(),new StringObject(anaDO.getAnalyteName()));
-            if(anaDO.getResultGroup()!=null)
-                row.setData(new IntegerObject(anaDO.getResultGroup()));
-            rpc.testAnalyteModel.add(row);
-        }                
-                                      
-        for (i = 1; i < rpc.integerValue + 1; i++) {
-            tableModel = getTestResultsByGroup(rpc.key,i,
-                                          (TableDataModel)rpc.defaultResultModel.clone(),
-                                          rpc.duplicate);
-            rpc.resultTableModelCollection.add(tableModel);
-            
-            dropdownModel = getResultDropdownModel(tableModel);                       
-            rpc.resultDropdownModelCollection.add(dropdownModel);
-        }
-                        
-        return rpc;
-    }
+    }   
 
     public TestForm getDuplicateRPC(TestForm rpc) throws RPCException {
         TestRemote remote = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
@@ -990,19 +783,54 @@ public class TestService implements
         loadWorksheetLayout(rpc.entityKey, rpc.worksheet);
         loadTestAnalyte(rpc.entityKey, rpc.testAnalyte);
 
-        rpc.testAnalyte.resultTableModelCollection = new ArrayList<TableDataModel<TableDataRow<Integer>>>();
-        rpc.testAnalyte.resultDropdownModelCollection = new ArrayList<TableDataModel<TableDataRow<Integer>>>();
-
-        for (i = 1; i < rpc.numGroups + 1; i++) {
-            tableModel = getTestResultsByGroup(rpc.entityKey,i,(TableDataModel)rpc.resultTableModel.clone(),
-                                               true);
-            rpc.testAnalyte.resultTableModelCollection.add(tableModel);
-            dropdownModel = getResultDropdownModel(tableModel);                       
-            rpc.testAnalyte.resultDropdownModelCollection.add(dropdownModel);
-        }
-
         rpc.entityKey = null;
         return rpc;
+    }
+    
+    private TableDataModel getInitialModel(String cat) {        
+        TableDataModel model = new TableDataModel<TableDataRow<Integer>>();
+        List<IdNameDO> values = null;
+
+        TestRemote remote = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
+        CategoryRemote catRemote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
+
+        if (cat.equals(TestMeta.getLabelId())) {
+            values = remote.getLabelDropDownValues();
+        } else if (cat.equals(TestMeta.getTestTrailerId())) {
+            values = remote.getTestTrailerDropDownValues();
+        } else if (cat.equals(TestMeta.getScriptletId()) || cat.equals(TestMeta.getTestWorksheet()
+                                                                               .getScriptletId())
+                   || cat.equals(TestMeta.getTestAnalyte().getScriptletId())) {
+            values = remote.getScriptletDropDownValues();
+        } else if (cat.equals(TestMeta.getTestSection().getSectionId())) {
+            values = remote.getSectionDropDownValues();
+        } else if (cat.equals(TestMeta.getTestPrep().getPrepTestId())) {
+            List<QaEventTestDropdownDO> qaedDOList = remote.getPrepTestDropDownValues();
+            loadPrepTestDropDown(qaedDOList, model);
+        } else if (cat.equals(TestMeta.getTestWorksheetItem().getTypeId())) {
+            values = remote.getTestWSItemTypeDropDownValues();
+        } 
+        if (values != null) {
+            loadDropDown(values, model);
+        }
+
+        return model;
+    }
+    
+    private TableDataModel<TableDataRow<Integer>> getAutocompleteModel(List<IdNameDO> entries){
+        TableDataModel<TableDataRow<Integer>> dataModel = new TableDataModel<TableDataRow<Integer>>();
+        for (Iterator iter = entries.iterator(); iter.hasNext();) {
+
+            IdNameDO element = (IdNameDO)iter.next();
+            Integer entryId = element.getId();
+            String entryText = element.getName();
+
+            TableDataRow<Integer> data = new TableDataRow<Integer>(entryId,
+                                                                   new StringObject(entryText));
+            dataModel.add(data);
+        }
+        
+        return dataModel;
     }
     
     private TableDataModel<TableDataRow<Integer>> getResultDropdownModel(TableDataModel<TableDataRow<Integer>> tableModel) {
@@ -1026,13 +854,56 @@ public class TestService implements
 
     private TableDataModel<TableDataRow<Integer>> getTestResultsByGroup(Integer key,
                                                                         Integer resultGroup,
-                                                                        TableDataModel model,
+                                                                        TableDataModel<TableDataRow<Integer>> model,
                                                                         boolean forDuplicate) {
         TableDataRow<Integer> row = null;
         TestResultDO resultDO = null;
         TestRemote remote = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
         List<TestResultDO> resultDOList = remote.getTestResults(key,
                                                                 resultGroup);
+
+        model.clear();
+
+        for (int iter = 0; iter < resultDOList.size(); iter++) {
+            row = model.createNewSet();
+            resultDO = resultDOList.get(iter);
+
+            if (!forDuplicate)
+                row.key = resultDO.getId();
+            else
+                row.key = (resultDO.getId() * -2);
+
+            if (resultDO.getUnitOfMeasureId() != null) {
+                row.cells[0].setValue(new TableDataRow<Integer>(resultDO.getUnitOfMeasureId()));
+                row.setData(new IntegerObject(resultDO.getUnitOfMeasureId()));
+            }
+
+            row.cells[1].setValue(new TableDataRow<Integer>(resultDO.getTypeId()));
+
+            if (resultDO.getDictEntry() == null) {
+                (row.cells[2]).setValue(resultDO.getValue());
+            } else {
+                (row.cells[2]).setValue(resultDO.getDictEntry());
+            }
+
+            row.cells[4].setValue(resultDO.getContLevel());
+            row.cells[5].setValue(resultDO.getHazardLevel());
+            row.cells[6].setValue(new TableDataRow<Integer>(resultDO.getFlagsId()));
+            row.cells[7].setValue(resultDO.getSignificantDigits());
+            row.cells[8].setValue(new TableDataRow<Integer>(resultDO.getRoundingMethodId()));
+
+            model.add(row);
+        }
+
+        return model;
+    }
+    
+    private TableDataModel<TableDataRow<Integer>> getTestResultsFromResultDOList(Integer key,
+                                                                                 List<TestResultDO> resultDOList,
+                                                                                 TableDataModel<TableDataRow<Integer>> model,
+                                                                                 boolean forDuplicate) {
+        TableDataRow<Integer> row;
+        TestResultDO resultDO;               
 
         model.clear();
 
@@ -1263,8 +1134,7 @@ public class TestService implements
 
         if (model.getDeletions() != null) {
             for (int i = 0; i < model.getDeletions().size(); i++) {
-                TableDataRow<Integer> row = (TableDataRow)model.getDeletions()
-                                                               .get(i);
+                TableDataRow<Integer> row = (TableDataRow)model.getDeletions().get(i);
                 TestWorksheetItemDO worksheetItemDO = new TestWorksheetItemDO();
                 worksheetItemDO.setDelete(true);
                 worksheetItemDO.setId(row.key);
@@ -1369,7 +1239,6 @@ public class TestService implements
         form.sortingMethodId.setValue(new TableDataRow<Integer>(testDO.getSortingMethodId()));        
         form.reportingMethodId.setValue(new TableDataRow<Integer>(testDO.getReportingMethodId()));
         form.reportingSequence.setValue(testDO.getReportingSequence());
-
     }
 
     private void fillTestSections(List<TestSectionDO> testSectionDOList,
@@ -1496,8 +1365,7 @@ public class TestService implements
                                List<IdNameDO> anaIdNameDOList,
                                WorksheetForm form) {
 
-        TableDataModel<TableDataRow<Integer>> itemModel = null;
-        TableDataModel<TableDataRow<Integer>> anaModel = null;
+        TableDataModel<TableDataRow<Integer>> itemModel,anaModel;
 
         if (worksheetDO != null) {
             form.batchCapacity.setValue(worksheetDO.getBatchCapacity());
@@ -1554,7 +1422,6 @@ public class TestService implements
         for (int iter = 0; iter < anaIdNameDOList.size(); iter++) {
             IdNameDO idNameDO = (IdNameDO)anaIdNameDOList.get(iter);
             TableDataRow<Integer> row = anaModel.createNewSet();
-
             row.setData(new IntegerField(idNameDO.getId()));
             row.cells[0].setValue(idNameDO.getName());
             row.cells[1].setValue("N");
@@ -1609,32 +1476,23 @@ public class TestService implements
                 for (int ctr = 0; ctr < itemList.size(); ctr++) {
                     TreeDataItem chItem = itemList.get(ctr);
                     sortOrder++;
-                    TestAnalyteDO anaDO = getTestAnalyteDO(chItem,
-                                                           currGroup,
-                                                           testId,
-                                                           sortOrder,
-                                                           false);
+                    TestAnalyteDO anaDO = getTestAnalyteDO(chItem,currGroup,testId,
+                                                           sortOrder,false);
                     analyteDOList.add(anaDO);
                 }
                 if (dmodel != null) {
                     for (int ctr = 0; ctr < dmodel.size(); ctr++) {
                         TreeDataItem chItem = dmodel.get(ctr);
-                        TestAnalyteDO anaDO = getTestAnalyteDO(chItem,
-                                                               null,
-                                                               testId,
-                                                               0,
-                                                               true);
+                        TestAnalyteDO anaDO = getTestAnalyteDO(chItem,null,testId,
+                                                               0,true);
                         analyteDOList.add(anaDO);
                     }
                 }
             } else {
                 sortOrder++;
 
-                TestAnalyteDO anaDO = getTestAnalyteDO(item,
-                                                       null,
-                                                       testId,
-                                                       sortOrder,
-                                                       false);
+                TestAnalyteDO anaDO = getTestAnalyteDO(item,null,testId,
+                                                       sortOrder,false);
                 analyteDOList.add(anaDO);
 
             }
@@ -1647,19 +1505,13 @@ public class TestService implements
                     List<TreeDataItem> itemList = item.getItems();
                     for (int ctr = 0; ctr < itemList.size(); ctr++) {
                         TreeDataItem chItem = itemList.get(ctr);
-                        TestAnalyteDO anaDO = getTestAnalyteDO(chItem,
-                                                               null,
-                                                               testId,
-                                                               0,
-                                                               true);
+                        TestAnalyteDO anaDO = getTestAnalyteDO(chItem,null,testId,
+                                                               0,true);
                         analyteDOList.add(anaDO);
                     }
                 } else {
-                    TestAnalyteDO anaDO = getTestAnalyteDO(item,
-                                                           null,
-                                                           testId,
-                                                           0,
-                                                           true);
+                    TestAnalyteDO anaDO = getTestAnalyteDO(item,null,testId,
+                                                           0,true);
                     analyteDOList.add(anaDO);
                 }
             }
@@ -1690,84 +1542,71 @@ public class TestService implements
 
     private List<TestResultDO> getTestResultDOListFromRPC(TestAnalyteForm form,
                                                           Integer testId) {
-        ArrayList<TableDataModel<TableDataRow<Integer>>> list = form.resultTableModelCollection;
-        IntegerField id = null;
-        IntegerField rg = null;
-        IntegerObject valueObj = null;
-        IntegerObject valObj = new IntegerObject(-999);
-        TableDataModel<TableDataRow<Integer>> model = null;
-
-        CategoryRemote catRemote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
-        Integer dictId = null;
-        Integer entryId = null;
+        ArrayList<TableDataModel<TableDataRow<Integer>>> list;
+        TableDataModel<TableDataRow<Integer>> model;
+        TestResultDO resultDO;
+        TableDataRow<Integer> row;
+        CategoryRemote catRemote;
+        Integer dictId,entryId;
+        List<TestResultDO> trDOlist;
+        
+        dictId = null;
+        entryId = null;
+        
+        int i,j;        
+        catRemote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
+        list = form.resultTableModelCollection;
+        
         try {
             dictId = catRemote.getEntryIdForSystemName("test_res_type_dictionary");
         } catch (Exception ex) {
             ex.printStackTrace();
         }
 
-        List<TestResultDO> trDOlist = new ArrayList<TestResultDO>();
+        trDOlist = new ArrayList<TestResultDO>();
+        
+        for (i = 0; i < list.size(); i++) {
+            model = (TableDataModel<TableDataRow<Integer>>)list.get(i);
 
-        for (int fiter = 0; fiter < list.size(); fiter++) {
-            model = (TableDataModel<TableDataRow<Integer>>)list.get(fiter);
-
-            for (int iter = 0; iter < model.size(); iter++) {
-                TableDataRow<Integer> row = model.get(iter);
-                TestResultDO resultDO = new TestResultDO();
-
+            for (j = 0; j < model.size(); j++) {
+                row = model.get(j);
+                resultDO = new TestResultDO();
                 resultDO.setId(row.key);
-
                 resultDO.setDelete(false);
-
                 resultDO.setUnitOfMeasureId((Integer)((DropDownField)row.cells[0]).getSelectedKey());
-
                 resultDO.setTypeId((Integer)((DropDownField)row.cells[1]).getSelectedKey());
 
                 if (dictId.equals(resultDO.getTypeId())) {
                     try {
-                        entryId = catRemote.getEntryIdForEntry((String)((StringField)row.cells[2]).getValue());
+                        entryId = catRemote.getEntryIdForEntry(((StringField)row.cells[2]).getValue());
+                        resultDO.setValue(entryId.toString());                        
                     } catch (Exception ex) {
                         ex.printStackTrace();
-                    }
-                    resultDO.setValue(entryId.toString());
-                    resultDO.setDictEntry((String)((StringField)row.cells[2]).getValue());
+                    }                    
                 } else {
-                    resultDO.setValue(((StringField)row.cells[2]).getValue());
-                    resultDO.setDictEntry(null);
+                    resultDO.setValue(((StringField)row.cells[2]).getValue());                    
                 }
-
-                resultDO.setQuantLimit((String)((StringField)row.cells[3]).getValue());
-
-                resultDO.setContLevel((String)((StringField)row.cells[4]).getValue());
-
-                resultDO.setHazardLevel((String)((StringField)row.cells[5]).getValue());
-
+                resultDO.setQuantLimit(((StringField)row.cells[3]).getValue());
+                resultDO.setContLevel(((StringField)row.cells[4]).getValue());
+                resultDO.setHazardLevel(((StringField)row.cells[5]).getValue());
                 resultDO.setFlagsId((Integer)((DropDownField)row.cells[6]).getSelectedKey());
-
                 resultDO.setSignificantDigits(((IntegerField)row.cells[7]).getValue());
-
                 resultDO.setRoundingMethodId((Integer)((DropDownField)row.cells[8]).getSelectedKey());
-
-                resultDO.setResultGroup(fiter + 1);
-
+                resultDO.setResultGroup(i+1);
                 resultDO.setTestId(testId);
-
-                resultDO.setSortOrder(iter);
+                resultDO.setSortOrder(j);                
 
                 trDOlist.add(resultDO);
             }
 
             if (model.getDeletions() != null) {
                 for (int iter = 0; iter < model.getDeletions().size(); iter++) {
-                    TableDataRow<Integer> row = (TableDataRow)model.getDeletions()
-                                                                   .get(iter);
-                    TestResultDO resultDO = new TestResultDO();
-
+                    row = (TableDataRow<Integer>)model.getDeletions().get(iter);
+                    resultDO = new TestResultDO();
                     resultDO.setId(row.key);
-
-                    resultDO.setResultGroup(fiter + 1);
-                    resultDO.setDelete(true);
-
+                    resultDO.setResultGroup(i+1);
+                    resultDO.setDelete(true);                                        
+                    
                     trDOlist.add(resultDO);
                 }
 
@@ -1829,102 +1668,77 @@ public class TestService implements
         DatetimeRPC activeEnd = form.activeEnd.getValue();
         if (activeEnd != null)
             testDO.setActiveEnd(activeEnd.getDate());
-
         testDO.setDescription(form.description.getValue());
         testDO.setIsActive(form.isActive.getValue());
         testDO.setIsReportable(form.isReportable.getValue());
-
         testDO.setLabelId((Integer)(form.labelId.getSelectedKey()));
-
         testDO.setLabelQty(form.labelQty.getValue());
         testDO.setReportingDescription((String)form.reportingDescription.getValue());
-
         testDO.setRevisionMethodId((Integer)form.revisionMethodId.getSelectedKey());
-
         testDO.setScriptletId((Integer)form.scriptletId.getSelectedKey());
-
         testDO.setTestFormatId((Integer)form.testFormatId.getSelectedKey());
-
         testDO.setTestTrailerId((Integer)form.testTrailerId.getSelectedKey());
-
         testDO.setTimeHolding(form.timeHolding.getValue());
         testDO.setTimeTaAverage(form.timeTaAverage.getValue());
         testDO.setTimeTaMax(form.timeTaMax.getValue());
         testDO.setTimeTaWarning(form.timeTaWarning.getValue());
         testDO.setTimeTransit(form.timeTransit.getValue());
-
         testDO.setSortingMethodId((Integer)form.sortingMethodId.getSelectedKey());
-
         testDO.setReportingMethodId((Integer)form.reportingMethodId.getSelectedKey());
-
         testDO.setReportingSequence(form.reportingSequence.getValue());
         return testDO;
     }
 
-    private void setRpcErrors(List exceptionList, TestForm form) {
-        TableField sampleTypeTable = (TableField)form.sampleType.sampleTypeTable;
-        TableField prepTestTable = (TableField)form.prepAndReflex.testPrepTable;
-        TableField testReflexTable = (TableField)form.prepAndReflex.testReflexTable;
-        TableField worksheetTable = (TableField)form.worksheet.worksheetTable;
-        TableField worksheetAnaTable = (TableField)form.worksheet.worksheetAnalyteTable;
-        TableField testSectionTable = (TableField)form.sectionTable;
-        TableField testResultsTable = (TableField)form.testAnalyte.testResultsTable;
-        ArrayList<TableDataModel<TableDataRow<Integer>>> cfield = (ArrayList<TableDataModel<TableDataRow<Integer>>>)form.testAnalyte.resultTableModelCollection;
-
+    private void setRpcErrors(List exceptionList, TestForm form) {                                                        
         // we need to get the keys and look them up in the resource bundle for
         // internationalization
+        int index;
         for (int i = 0; i < exceptionList.size(); i++) {
             if (exceptionList.get(i) instanceof TableFieldErrorException) {
                 TableFieldErrorException ferrex = (TableFieldErrorException)exceptionList.get(i);
-
+                index = ferrex.getRowIndex();
                 if (ferrex.getFieldName()
                           .startsWith(TestPrepMetaMap.getTableName() + ":")) {
                     String fieldName = (ferrex.getFieldName().substring(TestPrepMetaMap.getTableName().length() + 1));
-                    int index = ferrex.getRowIndex();
-                    prepTestTable.getField(index, fieldName)
+                    
+                    form.prepAndReflex.testPrepTable.getField(index, fieldName)
                                  .addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
                 } else if (ferrex.getFieldName()
                                  .startsWith(TestTypeOfSampleMetaMap.getTableName() + ":")) {
                     String fieldName = ferrex.getFieldName().substring(TestTypeOfSampleMetaMap.getTableName()
-                                                                                                                         .length() + 1);
-                    int index = ferrex.getRowIndex();
-                    sampleTypeTable.getField(index, fieldName)
+                                                                                                                         .length() + 1);                    
+                    form.sampleType.sampleTypeTable.getField(index, fieldName)
                                    .addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
                 } else if (ferrex.getTableKey().equals(TestReflexMetaMap.getTableName())) {
-                    String fieldName = ferrex.getFieldName();
-                    int index = ferrex.getRowIndex();
-                    testReflexTable.getField(index, fieldName)
+                    String fieldName = ferrex.getFieldName();                    
+                    form.prepAndReflex.testReflexTable.getField(index, fieldName)
                                    .addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
                 } else if (ferrex.getFieldName()
                                  .startsWith(TestWorksheetItemMetaMap.getTableName() + ":")) {
-                    String fieldName = ferrex.getFieldName().substring(TestWorksheetItemMetaMap.getTableName().length() + 1);
-                    int index = ferrex.getRowIndex();
-                    worksheetTable.getField(index, fieldName)
+                    String fieldName = ferrex.getFieldName().substring(TestWorksheetItemMetaMap.getTableName().length() + 1);                    
+                    form.worksheet.worksheetTable.getField(index, fieldName)
                                   .addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
                 } else if (ferrex.getFieldName()
                                  .startsWith(TestWorksheetAnalyteMetaMap.getTableName() + ":")) {
-                    String fieldName = ferrex.getFieldName().substring(TestWorksheetAnalyteMetaMap.getTableName().length() + 1);
-                    int index = ferrex.getRowIndex();
+                    String fieldName = ferrex.getFieldName().substring(TestWorksheetAnalyteMetaMap.getTableName().length() + 1);                    
                     String error = openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage());
-                    worksheetAnaTable.getField(index, fieldName).addError(error);
-                } else if (ferrex.getFieldName()
-                                 .startsWith(TestSectionMetaMap.getTableName() + ":")) {
-                    String fieldName = ferrex.getFieldName().substring(TestSectionMetaMap.getTableName().length() + 1);
-
-                    int index = ferrex.getRowIndex();
-                    testSectionTable.getField(index, fieldName)
+                    form.worksheet.worksheetAnalyteTable.getField(index, fieldName).addError(error);
+                } else if (ferrex.getTableKey().equals(TestSectionMetaMap.getTableName())) {
+                    String fieldName = ferrex.getFieldName();                    
+                    form.sectionTable.getField(index, fieldName)
                                     .addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
                 } else if (ferrex.getTableKey().equals(TestResultMetaMap.getTableName())) {
                     String fieldName = ferrex.getFieldName(),message[] = null,messageValue;
                     message = ferrex.getMessage().split(":");
                     
-                    List<String> findexes = testResultsTable.getFieldIndex();                                  
+                    List<String> findexes = form.testAnalyte.testResultsTable.getFieldIndex();                                  
                     messageValue = openElisConstants.getString(message[0]);
                     
                     if(message.length == 2)                         
                          messageValue += message[1];                                        
-                    int row = ferrex.getRowIndex();
-                    addErrorToResultField(row,fieldName,findexes,messageValue,cfield);
+                    //int row = ferrex.getRowIndex();
+                    addErrorToResultField(index,fieldName,findexes,messageValue,
+                                          form.testAnalyte.resultTableModelCollection);
                 }
             } else if (exceptionList.get(i) instanceof FieldErrorException) {
                 String nameWithRPC = ((FieldErrorException)exceptionList.get(i)).getFieldName();
@@ -1981,19 +1795,28 @@ public class TestService implements
         }
     }
 
-    private void addErrorToResultField(int row,
-                                       String fieldName,
-                                       List<String> findexes,
-                                       String exc,
+    /**
+     * This method adds errors to the fields in the table for test results. It
+     * finds out first which model the row at the index "row" is in.
+     * Finding out which model the row is in is essential because
+     * the size of each model is neither predetermined nor does it have be the
+     * same as that of any other model. The method then reduces the global index 
+     * to a local index that refers to a row that the model contains and then adds
+     * the error "exc" to the field that's in error    
+     */
+    private void addErrorToResultField(int row,String fieldName,
+                                       List<String> findexes,String exc,
                                        ArrayList<TableDataModel<TableDataRow<Integer>>> cfield) {
         
-        int findex = findexes.indexOf(fieldName);
-        int llim = 0;
-        int ulim = 0;
-
-        TableDataModel<TableDataRow<Integer>> m = null;
-
-        TableDataRow<Integer> errRow = null;
+        int findex,llim,ulim;
+        TableDataModel<TableDataRow<Integer>> m;
+        TableDataRow<Integer> errRow;
+        AbstractField field;
+        
+        errRow = null;
+       
+        findex = findexes.indexOf(fieldName);
+        llim = 0;               
 
         for (int i = 0; i < cfield.size(); i++) {
             ulim = getUpperLimit(i, cfield);
@@ -2006,10 +1829,17 @@ public class TestService implements
         }
         System.out.println("error: "+exc);
         System.out.println("row: "+row);
-        System.out.println("findex: "+findex);        
-        ((AbstractField)errRow.cells[findex]).addError(exc);
+        System.out.println("findex: "+findex);               
+        field = ((AbstractField)errRow.cells[findex]);
+        if(!field.getErrors().contains(exc))
+            field.addError(exc);
     }
 
+    /**
+     * This method finds out the cumulative size of all the models upto the 
+     * index "i" in "mlist". For example if there are two models in "mlist" of 
+     * size 2 each, then if "i" is 1, this method will return 4.  
+     */
     private int getUpperLimit(int i,
                               ArrayList<TableDataModel<TableDataRow<Integer>>> mlist) {
         int ulim = 0;
@@ -2018,4 +1848,4 @@ public class TestService implements
         }
         return ulim;
     }
-}
+} 

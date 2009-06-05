@@ -102,6 +102,21 @@ public class MethodBean implements MethodRemote {
         
         return getMethod(methodId);
     }
+    
+    public List autoCompleteLookupByName(String name, int maxResults){
+        Query query = null;
+        List entryList = null;
+        query = manager.createNamedQuery("Method.AutoCompleteByName"); 
+        query.setParameter("isActive", "Y");        
+        query.setParameter("name", name);       
+        query.setMaxResults(maxResults);            
+        try{ 
+            entryList = (List)query.getResultList();
+        }catch(Exception ex){
+            ex.printStackTrace();           
+        }     
+        return entryList;
+     }
 
     public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception {
         StringBuffer sb = new StringBuffer();

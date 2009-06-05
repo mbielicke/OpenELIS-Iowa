@@ -23,33 +23,30 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.remote;
+package org.openelis.util;
 
-import org.openelis.domain.MethodDO;
-import org.openelis.gwt.common.data.AbstractField;
+import java.lang.Math;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.ejb.Remote;
-
-@Remote
-public interface MethodRemote {
+public class MathUtil {
     
-    public MethodDO getMethod(Integer methodId);
-    
-    public MethodDO getMethodAndUnlock(Integer methodId,String session);
-    
-    public MethodDO getMethodAndLock(Integer methodId,String session)throws Exception;
-    
-    public Integer updateMethod(MethodDO methodDO) throws Exception;
-    
-    public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception;
-    
-    public List autoCompleteLookupByName(String name, int maxResults);
-    
-    public List validateForUpdate(MethodDO methodDO);
-    
-    public List validateForAdd(MethodDO methodDO);        
+    /**
+     * This functions returns true if the arguments satisfy the following equation,      
+     * value = base ^ n; such that n is a natural number.    
+     */
+    public static boolean isPowerOf(int value, int base) {                
+        double n;        
+        String str;        
+        
+        n = Math.log(value)/Math.log(base);        
+        str = String.valueOf(n); 
+        
+        try{
+            Integer.parseInt(str);               
+        } catch(NumberFormatException numE) {
+            return false;
+        } 
+        
+        return true;
+    }
 
 }

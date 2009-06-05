@@ -395,75 +395,77 @@ public class AuxiliaryService implements
          }
 
          if(model.getDeletions()!=null) {
-          for(int i= 0; i < model.getDeletions().size(); i++) {
-             row = (TableDataRow<Integer>)model.getDeletions().get(i);
-             afDO = new AuxFieldDO();
-             afDO.setId(row.key);             
-             afDO.setDelete(true); 
-             valueDOList = getAuxFieldValueDOList(row.key,(TableDataModel)row.getData());
-             afDO.setAuxFieldValues(valueDOList);
-             afDOList.add(afDO);
-        }     
+             for (int i = 0; i < model.getDeletions().size(); i++) {
+                row = (TableDataRow<Integer>)model.getDeletions().get(i);
+                afDO = new AuxFieldDO();
+                afDO.setId(row.key);
+                afDO.setDelete(true);
+                valueDOList = getAuxFieldValueDOList(row.key,
+                                                     (TableDataModel)row.getData());
+                afDO.setAuxFieldValues(valueDOList);
+                afDOList.add(afDO);
+            }     
           model.getDeletions().clear();
        }            
          return afDOList;         
      }    
     
     private List<AuxFieldValueDO> getAuxFieldValueDOList(Integer auxFieldId,TableDataModel model) {
-        List<AuxFieldValueDO> valueDOList = new ArrayList<AuxFieldValueDO>();
-        AuxFieldValueDO valueDO = null;
-        TableDataRow<Integer> row = null; 
-        DropDownField<Integer> type = null; 
+        List<AuxFieldValueDO> valueDOList;
+        AuxFieldValueDO valueDO;
+        TableDataRow<Integer> row; 
+        DropDownField<Integer> type; 
+        CategoryRemote catRemote;
+        Integer dictId,entryId;
+        int j;
+        dictId = null;
+        entryId = null;
+        valueDOList = null;
+                
+        catRemote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
         
-        CategoryRemote catRemote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
-        Integer dictId = null;
-        Integer entryId = null;
         try {
-          dictId = catRemote.getEntryIdForSystemName("aux_dictionary");
+            dictId = catRemote.getEntryIdForSystemName("aux_dictionary");
         }catch (Exception ex) {
             ex.printStackTrace();
         }
         
        if(model != null) { 
-        for(int j = 0 ; j <  model.size(); j++) {              
-            valueDO = new AuxFieldValueDO();  
-            row = model.get(j);           
-            valueDO.setId(row.key);     
+           valueDOList = new ArrayList<AuxFieldValueDO>();
+           for(j = 0 ; j <  model.size(); j++) {              
+               valueDO = new AuxFieldValueDO();  
+               row = model.get(j);           
+               valueDO.setId(row.key);     
             
-            valueDO.setAuxFieldId(auxFieldId);
-            valueDO.setDelete(false);
+               valueDO.setAuxFieldId(auxFieldId);
+               valueDO.setDelete(false);
              
-            type = (DropDownField<Integer>)row.cells[0];            
-            valueDO.setTypeId((Integer)type.getSelectedKey());
+               type = (DropDownField<Integer>)row.cells[0];            
+               valueDO.setTypeId((Integer)type.getSelectedKey());
             
-            if(dictId.equals(valueDO.getTypeId())) {
-                try {
-                    entryId = catRemote.getEntryIdForEntry((String)((StringField)row.cells[1]).getValue());
-                 }catch (Exception ex) {
+               if(dictId.equals(valueDO.getTypeId())) {
+                   try {
+                       entryId = catRemote.getEntryIdForEntry((String)((StringField)row.cells[1]).getValue());
+                       valueDO.setValue(entryId.toString());
+                   }catch (Exception ex) {
                         ex.printStackTrace();
-                 }
-                 if(entryId != null) {
-                  valueDO.setValue(entryId.toString());
-                  valueDO.setDictEntry((String)((StringField)row.cells[1]).getValue());
-                 } 
-               } 
-               else {
-                   valueDO.setValue(((StringField)row.cells[1]).getValue());
-                   valueDO.setDictEntry(null);                 
+                   }
+               } else {
+                   valueDO.setValue(((StringField)row.cells[1]).getValue());                                 
                }
             
             valueDOList.add(valueDO);
           }
          
         if(model.getDeletions() != null) {
-          for(int j = 0 ; j <  model.getDeletions().size(); j++) {
-              valueDO = new AuxFieldValueDO();  
-              row = (TableDataRow<Integer>)model.getDeletions().get(j);
-              valueDO.setId(row.key);    
-              valueDO.setDelete(true);       
-              valueDOList.add(valueDO);
+            for(j = 0 ; j <  model.getDeletions().size(); j++) {
+                valueDO = new AuxFieldValueDO();  
+                row = (TableDataRow<Integer>)model.getDeletions().get(j);
+                valueDO.setId(row.key);    
+                valueDO.setDelete(true);       
+                valueDOList.add(valueDO);
             }
-           model.getDeletions().clear();
+            model.getDeletions().clear();
         }
       } 
            return valueDOList;     
@@ -493,22 +495,18 @@ public class AuxiliaryService implements
             row.cells[0].setValue(analyteSet);
             
             if(afDO.getMethodId()!=null) {
-             methodSet = new TableDataRow<Integer>(afDO.getMethodId(),new StringObject(afDO.getMethodName()));       
-             methodModel = new TableDataModel<TableDataRow<Integer>>();
-             methodModel.add(methodSet);            
-             ((DropDownField)row.cells[1]).setModel(methodModel);
-             row.cells[1].setValue(methodSet);
+                 methodSet = new TableDataRow<Integer>(afDO.getMethodId(),new StringObject(afDO.getMethodName()));       
+                 methodModel = new TableDataModel<TableDataRow<Integer>>();
+                 methodModel.add(methodSet);            
+                 ((DropDownField)row.cells[1]).setModel(methodModel);
+                 row.cells[1].setValue(methodSet);
             }
-            
-            if(afDO.getUnitOfMeasureId()!=null)
-             row.cells[2].setValue(new TableDataRow<Integer>(afDO.getUnitOfMeasureId()));
-            
+                        
+            row.cells[2].setValue(new TableDataRow<Integer>(afDO.getUnitOfMeasureId()));            
             row.cells[3].setValue(afDO.getIsActive());
             row.cells[4].setValue(afDO.getIsRequired());
             row.cells[5].setValue(afDO.getIsReportable());
-            row.cells[6].setValue(afDO.getDescription());
-            
-            if(afDO.getScriptletId()!=null)
+            row.cells[6].setValue(afDO.getDescription());            
             row.cells[7].setValue(new TableDataRow<Integer>(afDO.getScriptletId()));
             model.add(row);
         }
@@ -577,7 +575,7 @@ public class AuxiliaryService implements
           field = (AbstractField)row.cells[fi];
           error = openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage());
           if(!field.getErrors().contains(error))
-           field.addError(error);                                  
+              field.addError(error);                                  
         }    
         
     }

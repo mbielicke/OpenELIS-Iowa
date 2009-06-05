@@ -23,33 +23,16 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.remote;
+package org.openelis.util;
 
-import org.openelis.domain.MethodDO;
-import org.openelis.gwt.common.data.AbstractField;
+public class InconsistentException extends Exception {
 
-import java.util.ArrayList;
-import java.util.List;
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
 
-import javax.ejb.Remote;
-
-@Remote
-public interface MethodRemote {
-    
-    public MethodDO getMethod(Integer methodId);
-    
-    public MethodDO getMethodAndUnlock(Integer methodId,String session);
-    
-    public MethodDO getMethodAndLock(Integer methodId,String session)throws Exception;
-    
-    public Integer updateMethod(MethodDO methodDO) throws Exception;
-    
-    public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception;
-    
-    public List autoCompleteLookupByName(String name, int maxResults);
-    
-    public List validateForUpdate(MethodDO methodDO);
-    
-    public List validateForAdd(MethodDO methodDO);        
-
+    public InconsistentException (String arg) {
+        super(arg);
+    }
 }

@@ -46,7 +46,7 @@ import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
 @NamedQueries({@NamedQuery(name = "AuxFieldValue.AuxFieldValueDOList", query = "select distinct new org.openelis.domain.AuxFieldValueDO(afv.id,afv.auxFieldId,"+
-                          " afv.typeId,afv.value) " +" from AuxFieldValue afv where afv.auxFieldId = :auxFieldId order by afv.value")})
+                          " afv.typeId,afv.value) " +" from AuxFieldValue afv where afv.auxFieldId = :auxFieldId")})
 
 @Entity
 @Table(name="aux_field_value")

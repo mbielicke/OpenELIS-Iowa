@@ -28,6 +28,8 @@ package org.openelis.domain;
 
 import java.io.Serializable;
 
+import org.openelis.util.DataBaseUtil;
+
 public class AuxFieldValueDO implements Serializable {
 
     /**
@@ -38,8 +40,7 @@ public class AuxFieldValueDO implements Serializable {
     protected Integer id;             
     protected Integer auxFieldId;             
     protected Integer typeId;             
-    protected String value; 
-    
+    protected String value;     
     protected String dictEntry;    
     private boolean delete = false;
     
@@ -49,10 +50,10 @@ public class AuxFieldValueDO implements Serializable {
     
     public AuxFieldValueDO(Integer id,Integer auxFieldId,
                            Integer typeId,String value) {
-        this.id = id;
-        this.auxFieldId = auxFieldId;
-        this.typeId = typeId;
-        this.value = value;
+        setId(id);
+        setAuxFieldId(auxFieldId);
+        setTypeId(typeId);
+        setValue(value);
     }
 
     public Integer getId() {
@@ -84,7 +85,7 @@ public class AuxFieldValueDO implements Serializable {
     }
 
     public void setValue(String value) {
-        this.value = value;
+        this.value = DataBaseUtil.trim(value);
     }
 
     public boolean getDelete() {
@@ -100,7 +101,7 @@ public class AuxFieldValueDO implements Serializable {
     }
 
     public void setDictEntry(String dictEntry) {
-        this.dictEntry = dictEntry;
+        this.dictEntry = DataBaseUtil.trim(dictEntry);
     }
 
 }

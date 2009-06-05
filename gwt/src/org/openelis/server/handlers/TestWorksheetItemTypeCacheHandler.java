@@ -36,7 +36,7 @@ import org.openelis.messages.TestWorksheetItemTypeCacheMessage;
 import org.openelis.persistence.CachingManager;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.persistence.MessageHandler;
-import org.openelis.remote.CategoryRemote;
+import org.openelis.remote.TestRemote;
 
 public class TestWorksheetItemTypeCacheHandler implements
                                               MessageHandler<TestWorksheetItemTypeCacheMessage> {
@@ -51,10 +51,8 @@ public class TestWorksheetItemTypeCacheHandler implements
         TableDataModel<TableDataRow<Integer>> model = (TableDataModel<TableDataRow<Integer>>)CachingManager.getElement("InitialData", "testWorksheetItemTypeDropDown");
         TableDataRow<Integer> row = null;
         if(model == null) {
-            CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");        
-            Integer id = remote.getCategoryId("test_worksheet_item_type");
-        
-            ArrayList<DictionaryIdEntrySysNameDO> entries = (ArrayList<DictionaryIdEntrySysNameDO>)remote.getIdEntrySystemNames(id);
+            TestRemote remote = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");                           
+            ArrayList<DictionaryIdEntrySysNameDO> entries = (ArrayList<DictionaryIdEntrySysNameDO>)remote.getTestWSItemTypeDropDownValues();
         
             //  we need to build the model to return
             model = new TableDataModel<TableDataRow<Integer>>();
@@ -63,8 +61,7 @@ public class TestWorksheetItemTypeCacheHandler implements
             for(DictionaryIdEntrySysNameDO resultDO :  entries){
                 row = new TableDataRow<Integer>(resultDO.getId(),new StringObject(resultDO.getEntry()));
                 row.setData(new StringObject(resultDO.getSystemName()));
-                model.add(row);
-                
+                model.add(row);                
             }   
             CachingManager.putElement("InitialData", "testWorksheetItemTypeDropDown", model);
             version++;

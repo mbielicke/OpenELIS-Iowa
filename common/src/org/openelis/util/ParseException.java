@@ -23,33 +23,19 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.remote;
+package org.openelis.util;
 
-import org.openelis.domain.MethodDO;
-import org.openelis.gwt.common.data.AbstractField;
+/**
+ * This excepiton is thrown when the range for a numeric or titer value is invalid.
+ * Valid numeric ranges are of the format min,max such as 5,20; and valid titer
+ * ranges are of the format min:max where min and max are arbitrary concentrations. 
+ */
+public class ParseException extends Exception {
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.ejb.Remote;
-
-@Remote
-public interface MethodRemote {
+    private static final long serialVersionUID = 1L;    
     
-    public MethodDO getMethod(Integer methodId);
-    
-    public MethodDO getMethodAndUnlock(Integer methodId,String session);
-    
-    public MethodDO getMethodAndLock(Integer methodId,String session)throws Exception;
-    
-    public Integer updateMethod(MethodDO methodDO) throws Exception;
-    
-    public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception;
-    
-    public List autoCompleteLookupByName(String name, int maxResults);
-    
-    public List validateForUpdate(MethodDO methodDO);
-    
-    public List validateForAdd(MethodDO methodDO);        
+    public ParseException(String arg) {
+        super(arg);
+    }
 
 }
