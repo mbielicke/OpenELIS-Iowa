@@ -155,11 +155,11 @@ UIRF Software License are applicable instead of those above.
 								</row>		
 								<row>
 								 <text style="Prompt"><xsl:value-of select='resource:getString($constants,"beginDate")'/>:</text>
-								 <calendar key="{meta:getActiveBegin($method)}" tab="{meta:getActiveEnd($method)},{meta:getIsActive($method)}" onChange="this" begin="0" end="2" width = "70px"/>																	
+								 <calendar key="{meta:getActiveBegin($method)}" tab="{meta:getActiveEnd($method)},{meta:getIsActive($method)}" onChange="this" begin="0" end="2" width = "90px"/>																	
 								 </row>
 								 <row>
 								 <text style="Prompt"><xsl:value-of select='resource:getString($constants,"endDate")'/>:</text>
-								 <calendar key="{meta:getActiveEnd($method)}" tab="{meta:getName($method)},{meta:getActiveBegin($method)}" onChange="this" begin="0" end="2" width = "70px"/>
+								 <calendar key="{meta:getActiveEnd($method)}" tab="{meta:getName($method)},{meta:getActiveBegin($method)}" onChange="this" begin="0" end="2" width = "90px"/>
 								</row>						
 						     </TablePanel>						    	
 						</VerticalPanel>   			
@@ -175,18 +175,6 @@ UIRF Software License are applicable instead of those above.
 			 <string key="{meta:getDescription($method)}" max="60" required="false"/>
 			 <string key="{meta:getReportingDescription($method)}" max="60" required="false"/>			 			 								 
 		  </rpc>
-		  <!--
-		  <rpc key="query">
-			 <queryInteger key="{meta:getId($method)}"/>
-			 <queryString key="{meta:getName($method)}" />			 
-			 <queryString key="{meta:getDescription($method)}"/>
-			 <queryString key="{meta:getReportingDescription($method)}" />					
-			 <queryCheck key="{meta:getIsActive($method)}" />							
-			</rpc>
-			<rpc key="queryByLetter">
-			 <queryString key="{meta:getName($method)}"/>				
-			</rpc>
-			-->
 		</screen>
   </xsl:template>
 </xsl:stylesheet>

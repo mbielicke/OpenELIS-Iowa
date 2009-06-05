@@ -27,6 +27,8 @@ package org.openelis.domain;
 
 import java.io.Serializable;
 
+import org.openelis.util.DataBaseUtil;
+
 public class TestResultDO implements Serializable {
 
     /**
@@ -35,34 +37,20 @@ public class TestResultDO implements Serializable {
     private static final long serialVersionUID = 8348989200199215217L;
     
     protected Integer id;             
-
     protected Integer testId;             
-
     protected Integer resultGroup;             
-
     protected Integer sortOrder;
-    
     protected Integer flagsId;             
-
     protected Integer typeId;             
-
     protected String value;             
-
     protected Integer significantDigits;             
-
     protected Integer roundingMethodId;
-    
     protected String quantLimit;             
-    
     protected String contLevel;      
-   
     protected String hazardLevel;
-    
     protected String dictEntry;
-    
-    protected Integer unitOfMeasureId;
-    
-    private boolean delete = false;
+    protected Integer unitOfMeasureId;   
+    private boolean delete;
     
     public TestResultDO() {
         
@@ -74,27 +62,27 @@ public class TestResultDO implements Serializable {
                         Integer roundingMethodId,String quantLimit,
                         String contLevel,String hazardLevel,Integer unitOfMeasureId) {
         
-        this.id = id;
-        this.testId = testId;
-        this.resultGroup = resultGroup;
-        this.sortOrder = sortOrder;
-        this.flagsId = flagsId;
-        this.typeId = typeId;
-        this.value = value;
-        this.significantDigits = significantDigits;
-        this.roundingMethodId = roundingMethodId;
-        this.quantLimit = quantLimit;
-        this.contLevel = contLevel;
-        this.hazardLevel = hazardLevel;        
-        this.unitOfMeasureId = unitOfMeasureId;
-    }
+        setId(id);
+        setTestId(testId);
+        setResultGroup(resultGroup);
+        setSortOrder(sortOrder);
+        setFlagsId(flagsId);
+        setTypeId(typeId);
+        setValue(value);
+        setSignificantDigits(significantDigits);
+        setRoundingMethodId(roundingMethodId);
+        setQuantLimit(quantLimit);
+        setContLevel(contLevel);
+        setHazardLevel(hazardLevel);        
+        setUnitOfMeasureId(unitOfMeasureId);
+    }   
     
     public String getContLevel() {
         return contLevel;
     }
 
     public void setContLevel(String contLevel) {
-        this.contLevel = contLevel;
+        this.contLevel = DataBaseUtil.trim(contLevel);
     }
 
     public Integer getFlagsId() {
@@ -110,7 +98,7 @@ public class TestResultDO implements Serializable {
     }
 
     public void setHazardLevel(String hazardLevel) {
-        this.hazardLevel = hazardLevel;
+        this.hazardLevel = DataBaseUtil.trim(hazardLevel);
     }
 
     public Integer getId() {
@@ -126,7 +114,7 @@ public class TestResultDO implements Serializable {
     }
 
     public void setQuantLimit(String quantLimit) {
-        this.quantLimit = quantLimit;
+        this.quantLimit = DataBaseUtil.trim(quantLimit);
     }
 
     public Integer getResultGroup() {
@@ -182,7 +170,7 @@ public class TestResultDO implements Serializable {
     }
 
     public void setValue(String value) {
-        this.value = value;
+        this.value = DataBaseUtil.trim(value);
     }
 
     public boolean getDelete() {
@@ -198,7 +186,7 @@ public class TestResultDO implements Serializable {
     }
 
     public void setDictEntry(String dictEntry) {
-        this.dictEntry = dictEntry;
+        this.dictEntry = DataBaseUtil.trim(dictEntry);
     }
 
     public Integer getUnitOfMeasureId() {

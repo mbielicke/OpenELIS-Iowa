@@ -167,7 +167,7 @@ UIRF Software License are applicable instead of those above.
    
     <TabPanel width = "648px"  key= "provTabPanel"  halign="center">
      <tab key= "addressesTab" text= "{resource:getString($constants,'locations')}">      
-      <VerticalPanel>
+      <VerticalPanel width= "645px">
        <widget valign="top">
         <table width= "615px" maxRows = "10" key= "providerAddressTable" manager = "this" title= "" showError="false" showScroll="ALWAYS">
 	         <headers><xsl:value-of select='resource:getString($constants,"location")'/>,<xsl:value-of select='resource:getString($constants,"externalId")'/>,<xsl:value-of select='resource:getString($constants,"aptSuite")'/>,
@@ -191,19 +191,6 @@ UIRF Software License are applicable instead of those above.
 				<textbox cellKey="{addr:getCellPhone($locAddr)}" case= "mixed" max="16"/>
 				<textbox cellKey="{addr:getFaxPhone($locAddr)}" case= "mixed" max="16"/>
 				<textbox cellKey="{addr:getEmail($locAddr)}" case= "mixed" max="80"/>		 
-<!--				<textbox case="mixed" max="50"/>-->
-<!--		  		<textbox case= "mixed" max="10"/>-->
-<!--		  		<textbox case= "mixed" max="30"/>-->
-<!--		  		<textbox case= "mixed" max="30"/>-->
-<!--		  		<textbox case= "mixed" max="30"/>		  -->
-<!--				<dropdown case="upper" width="45px"/>-->
-<!--				<dropdown case="mixed" width="110px"/>-->
-<!--				<textbox case= "mixed" max="10"/>-->
-<!--				<textbox case= "mixed" max="21"/>-->
-<!--				<textbox case= "mixed" max="16"/>-->
-<!--				<textbox case= "mixed" max="16"/>-->
-<!--				<textbox case= "mixed" max="16"/>-->
-<!--				<textbox case= "mixed" max="80"/>	-->
 			</editors>
 			<sorts>true,true,true,true,true,true,true,true,true,true,true,true,true</sorts>
 			<filters>false,false,false,false,false,false,false,false,false,false,false,false,false</filters>
@@ -247,7 +234,7 @@ UIRF Software License are applicable instead of those above.
 											<text style="Prompt"><xsl:value-of select='resource:getString($constants,"note")'/>:</text>
 										</widget>
 										<widget colspan="2">
-										<textarea width="552px" height="50px" case="mixed" key="{note:getText($note)}" showError="false" tab="{note:getSubject($note)},{note:getSubject($note)}"/>
+										<textarea width="559px" height="50px" case="mixed" key="{note:getText($note)}" showError="false" tab="{note:getSubject($note)},{note:getSubject($note)}"/>
 										</widget>
 										</row>
 								 
@@ -255,7 +242,7 @@ UIRF Software License are applicable instead of those above.
 								<html key="spacer" xml:space="preserve"> </html>
 								<widget colspan="2">
 								<HorizontalPanel style="notesPanelContainer">
-								<VerticalPanel key="notesPanel" style="NotesPanel" valign="top" onclick="this" height="179px" width="552px"  overflowY="scroll"/>															
+								<VerticalPanel key="notesPanel" style="NotesPanel" valign="top" onclick="this" height="179px" width="559px"  overflowY="scroll"/>															
 								</HorizontalPanel>
 								</widget>
 							</row>

@@ -33,8 +33,10 @@ import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
 import org.openelis.gwt.common.Query;
-import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.TableDataRow;
+import org.openelis.gwt.event.CommandListener;
+import org.openelis.gwt.event.CommandListenerCollection;
+import org.openelis.gwt.event.SourcesCommandEvents;
 import org.openelis.gwt.screen.CommandChain;
 import org.openelis.gwt.screen.ScreenTableWidget;
 import org.openelis.gwt.widget.AppButton;
@@ -47,9 +49,10 @@ import org.openelis.modules.main.client.OpenELISScreenForm;
 import java.util.ArrayList;
 
 public class DictionaryEntryPickerScreen extends OpenELISScreenForm<DictionaryEntryPickerForm,Query<TableDataRow<Integer>>> implements TableManager, 
-                                                                                                                                 ClickListener{
+                                                                                                                                 ClickListener,
+                                                                                                                                 SourcesCommandEvents{
     
-    private TextBox findTextBox = null;
+    private TextBox findTextBox;
     
     private TableWidget dictionaryController;
     
@@ -57,11 +60,11 @@ public class DictionaryEntryPickerScreen extends OpenELISScreenForm<DictionaryEn
     
     private AppButton findButton,prevPressed;
     
-    private ButtonPanel atozButtons = null;      
+    private ButtonPanel atozButtons;      
    
-    public enum action {COMMIT,ABORT};
+    public enum Action {COMMIT,ABORT};
     
-    public ArrayList<TableDataRow<Integer>> selectedRows = null; 
+    public ArrayList<TableDataRow<Integer>> selectedRows; 
     
     
     public DictionaryEntryPickerScreen() {        
@@ -70,13 +73,14 @@ public class DictionaryEntryPickerScreen extends OpenELISScreenForm<DictionaryEn
         getScreen(new DictionaryEntryPickerForm());
     }
     
-    public void performCommand(Enum action, Object obj) {        
+    public void performCommand(Enum action, Object obj) {   
+        String baction, query;
         if (obj instanceof AppButton) {
-            String baction = ((AppButton)obj).action;
+            baction = ((AppButton)obj).action;
             if (baction.startsWith("query:")) {
                 if(prevPressed!=null) 
                     atozButtons.setButtonState(prevPressed, AppButton.ButtonState.UNPRESSED);
-                String query = baction.substring(6);
+                query = baction.substring(6);                
                 findTextBox.setText(query); 
                 prevPressed = (AppButton)obj;                                          
                 loadDictionaryModel(query);
@@ -119,32 +123,32 @@ public class DictionaryEntryPickerScreen extends OpenELISScreenForm<DictionaryEn
     }
     
     public void commit() {
-        selectedRows = dictionaryController.model.getSelections();
-        window.close();          
+        selectedRows = dictionaryController.model.getSelections();   
+        if(commandListeners != null)
+            commandListeners.fireCommand(Action.COMMIT,selectedRows);     
+        window.close();
     }
 
     public void abort() {
         selectedRows = null;
+        if(commandListeners != null)
+            commandListeners.fireCommand(Action.ABORT,selectedRows);
         window.close();
     }
     
     public boolean canAdd(TableWidget widget, TableDataRow set, int row) {
-        // TODO Auto-generated method stub
         return false;
     }
 
     public boolean canAutoAdd(TableWidget widget, TableDataRow addRow) {
-        // TODO Auto-generated method stub
         return false;
     }
 
     public boolean canDelete(TableWidget widget, TableDataRow set, int row) {
-        // TODO Auto-generated method stub
         return false;
     }
 
     public boolean canEdit(TableWidget widget, TableDataRow set, int row, int col) {
-        // TODO Auto-generated method stub
         return false;
     }
 
@@ -155,12 +159,18 @@ public class DictionaryEntryPickerScreen extends OpenELISScreenForm<DictionaryEn
     public void onClick(Widget sender) {
         String queryString;
         if(sender == findButton){                     
-          queryString = findTextBox.getText()+(findTextBox.getText().endsWith("*") ? "" : "*");
-          loadDictionaryModel(queryString);
+          queryString = findTextBox.getText();   
+          if(queryString != null && !"".equals(queryString.trim()))
+              loadDictionaryModel(queryString);
         }
     }
     
-   
+    public void addCommandListener(CommandListener listener) {
+        if(commandListeners == null){
+            commandListeners = new CommandListenerCollection();
+        }
+        commandListeners.add(listener);
+    }
     
     private void loadDictionaryModel(String pattern){ 
         DictionaryEntryPickerDataRPC dedrpc;

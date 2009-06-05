@@ -27,6 +27,7 @@ package org.openelis.modules.test.client;
 
 import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.data.AbstractField;
+import org.openelis.gwt.common.data.TableDataModel;
 import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.common.data.TableField;
 
@@ -41,7 +42,8 @@ public class PrepAndReflexForm extends Form<Integer> {
     
     public TableField<TableDataRow<Integer>> testPrepTable;
     public TableField<TableDataRow<Integer>> testReflexTable;
-    public Boolean duplicate;
+    public TableDataModel<TableDataRow<Integer>> testAnalyteModel;
+    public boolean duplicate;
 
     public PrepAndReflexForm() {
        testPrepTable = new TableField<TableDataRow<Integer>>("testPrepTable");

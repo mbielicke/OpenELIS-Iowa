@@ -72,9 +72,10 @@ public interface TestRemote {
     public List<TestSectionDO> getTestSections(Integer testId);
     
     public List<TestResultDO> getTestResults(Integer testId, Integer resultGroup);
+    
+    public List<List<TestResultDO>> getTestResults(Integer testId);
 
-    public Integer updateTest(TestDO testDO,                              
-                              List<TestPrepDO> prepTestDOList,
+    public Integer updateTest(TestDO testDO,List<TestPrepDO> prepTestDOList,
                               List<TestTypeOfSampleDO> sampleTypeDOList,
                               List<TestReflexDO> testReflexDOList,
                               TestWorksheetDO worksheetDO,
@@ -85,30 +86,6 @@ public interface TestRemote {
                               List<TestResultDO> resultDOList) throws Exception;
     
     public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception;
-
-    public List<Exception> validateForUpdate(TestDO testDO,
-                                  List<TestPrepDO> prepTestDOList,
-                                  List<TestTypeOfSampleDO> sampleTypeDOList,
-                                  List<TestReflexDO> testReflexDOList,
-                                  TestWorksheetDO worksheetDO,
-                                  List<TestWorksheetItemDO> itemDOList,
-                                  List<TestWorksheetAnalyteDO> twsaDOList,
-                                  List<TestAnalyteDO> analyteDOList,
-                                  List<TestSectionDO> sectionDOList,
-                                  List<TestResultDO> resultDOList);
-
-    public List<Exception> validateForAdd(TestDO testDO,
-                               List<TestPrepDO> prepTestDOList,
-                               List<TestTypeOfSampleDO> sampleTypeDOList,
-                               List<TestReflexDO> testReflexDOList,
-                               TestWorksheetDO worksheetDO,
-                               List<TestWorksheetItemDO> itemDOList,
-                               List<TestWorksheetAnalyteDO> twsaDOList,
-                               List<TestAnalyteDO> analyteDOList,
-                               List<TestSectionDO> sectionDOList,
-                               List<TestResultDO> resultDOList);
-    
-    public List getMethodDropDownValues();
 
     public List getLabelDropDownValues();
 
@@ -130,9 +107,7 @@ public interface TestRemote {
     
     public List<IdNameDO> getResultGroupsForTest(Integer testId);
     
-    public List<IdNameDO> getUnitsOfMeasureForTest(Integer testId);
-    
-    public List getMatchingEntries(String name,int maxResults,String cat);
+    public List<IdNameDO> getUnitsOfMeasureForTest(Integer testId);   
     
     public List getTestAutoCompleteByName(String name, int maxResults);
     

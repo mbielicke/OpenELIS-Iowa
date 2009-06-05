@@ -57,8 +57,7 @@ public class DictionaryScreen extends OpenELISScreenForm<DictionaryForm,Query<Ta
                                                                     TableWidgetListener{
 
     private TableWidget dictEntryController = null;
-    private AppButton removeEntryButton = null;
-    //private TextBox tname = null;
+    private AppButton removeEntryButton = null;    
     private KeyListManager keyList = new KeyListManager();
 
     private Dropdown displaySection = null;
@@ -160,24 +159,25 @@ public class DictionaryScreen extends OpenELISScreenForm<DictionaryForm,Query<Ta
     private void onRemoveRowButtonClick(){
       int index = dictEntryController.modelIndexList[dictEntryController.activeRow];  
       if(index > -1)  
-          dictEntryController.model.deleteRow(index);
-       
+          dictEntryController.model.deleteRow(index);       
     }     
             
 
-    public boolean canAdd(TableWidget widget,TableDataRow set, int row) {
-        // TODO Auto-generated method stub
+    public boolean canAdd(TableWidget widget,TableDataRow set, int row) {        
         return false;
     }
 
 
-    public boolean canAutoAdd(TableWidget widget,TableDataRow row) {        
-        return (row.cells[0]).getValue() != null;
+    public boolean canAutoAdd(TableWidget widget,TableDataRow row) {
+        String s,e ; 
+        s = (String)row.cells[1].getValue();
+        e = (String)row.cells[3].getValue();        
+        return  ((e!= null && !e.trim().equals("")) || 
+                        (s!= null && !s.trim().equals("")));
     }
 
 
-    public boolean canDelete(TableWidget widget,TableDataRow set, int row) {
-        // TODO Auto-generated method stub
+    public boolean canDelete(TableWidget widget,TableDataRow set, int row) {        
         return false;
     }
 
@@ -185,14 +185,14 @@ public class DictionaryScreen extends OpenELISScreenForm<DictionaryForm,Query<Ta
     public boolean canEdit(TableWidget widget, TableDataRow set, int row, int col) {        
         if(state == State.UPDATE || state == State.ADD|| state == State.QUERY)
             return true;       
-           return false;
+        return false;
        }
 
     public boolean canSelect(TableWidget widget, TableDataRow set, int row) {
         if(state == State.UPDATE || state == State.ADD|| state == State.QUERY)
             return true;       
-           return false;
-       }
+        return false;
+     }
     
    /**
     * In the specific context of this class, the code in this method is used to make sure 

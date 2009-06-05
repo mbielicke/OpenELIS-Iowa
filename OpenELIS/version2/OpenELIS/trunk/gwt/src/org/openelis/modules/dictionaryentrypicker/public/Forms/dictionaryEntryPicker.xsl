@@ -54,7 +54,7 @@ UIRF Software License are applicable instead of those above.
 		 
          <TablePanel style = "Form" spacing="0"> 
          <row>
-          <text style="Prompt"><xsl:value-of select="resource:getString($constants,'search')"/>:</text>
+          <text style="Prompt"><xsl:value-of select="resource:getString($constants,'selectCategory')"/>:</text>
           <widget colspan = "3">	 		
 		   <dropdown key="category" width="250px" showError="false" alwaysEnabled="true"/>				  
 		  </widget> 
@@ -65,9 +65,9 @@ UIRF Software License are applicable instead of those above.
 		  </widget> 
 		 </row>
 		<row>
-		  <text style="Prompt"><xsl:value-of select="resource:getString($constants,'for')"/>:</text>
+		  <text style="Prompt"><xsl:value-of select="resource:getString($constants,'enterSearch')"/>:</text>
 		  
-		   <textbox key="findTextBox" width="100px" showError="false" alwaysEnabled="true"/>
+		   <textbox key="findTextBox" width="120px" showError="false" alwaysEnabled="true"/>
 		   <appButton action="find" onclick="this" style="Button" key="findButton" showError="false" alwaysEnabled="true">
 			<HorizontalPanel>
             	<AbsolutePanel style="FindButtonImage"/>
@@ -81,7 +81,7 @@ UIRF Software License are applicable instead of those above.
 		 <widget>
 							<table maxRows = "14" width = "auto" manager = "this" key="dictEntTable"  title="" showError="false" showScroll="ALWAYS">
 								<headers><xsl:value-of select='resource:getString($constants,"entry")'/></headers>
-								<widths>300</widths>
+								<widths>320</widths>
 								<editors>																	
 									<label/>																		
 								</editors>

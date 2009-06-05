@@ -68,7 +68,7 @@ import org.openelis.utils.Auditable;
 @NamedQuery(name = "Dictionary.EntryById", query = "select d.entry from Dictionary d where d.id = :id"),
 @NamedQuery(name = "Dictionary.DictionaryListByPatternAndCategory", query = "select new org.openelis.domain.IdNameDO(d.id, d.entry)" +
         " from Dictionary d where d.categoryId = :categoryId and d.entry like :pattern order by d.entry"),
-@NamedQuery(name = "Dictionary.SystemNamesByCatSysName", query = "select  new org.openelis.domain.IdLastNameFirstNameDO(d.id, d.entry, d.systemName) from Dictionary d, Category c " +
+@NamedQuery(name = "Dictionary.SystemNamesByCatSysName", query = "select  new org.openelis.domain.DictionaryIdEntrySysNameDO(d.id, d.entry, d.systemName) from Dictionary d, Category c " +
         " where d.categoryId = c.id and c.systemName = :systemName ")        })
 
 @Entity

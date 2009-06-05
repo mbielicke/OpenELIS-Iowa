@@ -228,7 +228,6 @@ UIRF Software License are applicable instead of those above.
 								 <row>						
 									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"turnAroundAverage")'/>:</text>
 									<textbox key="{meta:getTimeTaAverage($test)}" tab="{meta:getTimeTaWarning($test)},{meta:getTimeTaMax($test)}" width = "50px"/>
-
 									<text style="Prompt"><xsl:value-of select="resource:getString($constants,'timeHolding')"/>:</text>									
 									<textbox key="{meta:getTimeHolding($test)}" tab="{meta:getIsActive($test)},{meta:getTimeTransit($test)}" max="30" width="50px"/>																																				   	 
 								 </row>
@@ -247,11 +246,11 @@ UIRF Software License are applicable instead of those above.
 								</row>
 								<row>
 								 <text style="Prompt"><xsl:value-of select='resource:getString($constants,"beginDate")'/>:</text>
-								 <calendar key="{meta:getActiveBegin($test)}" tab="{meta:getActiveEnd($test)},{meta:getIsActive($test)}" begin="0" end="2" width = "80px"/>																	
+								 <calendar key="{meta:getActiveBegin($test)}" tab="{meta:getActiveEnd($test)},{meta:getIsActive($test)}" begin="0" end="2" width = "90px"/>																	
 								 </row>
 								 <row>
 								 <text style="Prompt"><xsl:value-of select='resource:getString($constants,"endDate")'/>:</text>
-								 <calendar key="{meta:getActiveEnd($test)}" tab="{meta:getLabelId($test)},{meta:getActiveBegin($test)}" begin="0" end="2" width = "80px"/>
+								 <calendar key="{meta:getActiveEnd($test)}" tab="{meta:getLabelId($test)},{meta:getActiveBegin($test)}" begin="0" end="2" width = "90px"/>
 								</row>																						
 								</TablePanel>								
 								</VerticalPanel>							
@@ -279,7 +278,7 @@ UIRF Software License are applicable instead of those above.
 								<VerticalPanel style="subform"> 								
 								 <text style="FormTitle"><xsl:value-of select='resource:getString($constants,"sections")'/></text>								  
 										<widget valign="bottom">
-											<table key="sectionTable" maxRows="3" manager = "this" showError="false" showScroll="ALWAYS" title="" width="auto" tab="removeTestSectionButton,{meta:getIsReportable($test)}">
+											<table key="sectionTable" maxRows="4" manager = "this" showError="false" showScroll="ALWAYS" title="" width="auto" tab="removeTestSectionButton,{meta:getIsReportable($test)}">
 												<headers>
 													<xsl:value-of select="resource:getString($constants,'name')"/>,													
 													<xsl:value-of select="resource:getString($constants,'options')"/>
@@ -348,7 +347,7 @@ UIRF Software License are applicable instead of those above.
 							 <VerticalPanel>
 							 <HorizontalPanel>                           
 							  	<widget valign="top">
-											<table key="sampleTypeTable" manager="this" maxRows="20" showError="false" showScroll="ALWAYS" title="" width="auto">
+											<table key="sampleTypeTable" manager="this" maxRows="21" showError="false" showScroll="ALWAYS" title="" width="auto">
 												<headers>
 													<xsl:value-of select="resource:getString($constants,'sampleType')"/>,
 													<xsl:value-of select="resource:getString($constants,'unitOfMeasure')"/>
@@ -363,7 +362,7 @@ UIRF Software License are applicable instead of those above.
 												<colAligns>left,left</colAligns>
 											</table>
 							 			 </widget>	
-							 			<HorizontalPanel width = "10px"/>
+							 			<!-- <HorizontalPanel width = "10px"/> -->
                                        </HorizontalPanel> 
 							 										 		 	 
 						                <TablePanel width = "567px" spacing="0" padding="0" style="TableFooter">
@@ -427,7 +426,7 @@ UIRF Software License are applicable instead of those above.
                                  </leaves> 
                                 </tree-table>
                               </widget> 
-                              <HorizontalPanel width = "10px"/>
+                             <!-- <HorizontalPanel width = "10px"/> -->
                              </HorizontalPanel>                              						 
 							<HorizontalPanel style = "Form"> 
 							    <widget halign="center">
@@ -462,19 +461,16 @@ UIRF Software License are applicable instead of those above.
 													 <text><xsl:value-of select="resource:getString($constants,'ungroupAnalytes')"/></text>	
 										     </HorizontalPanel> 														
 											</appButton>
-								</widget>							 			
-																								
-						  </HorizontalPanel>
-						  <!--<VerticalPanel height = "1px"/>-->
-						  
+								</widget>							 																										
+						  </HorizontalPanel>						  
+						  <VerticalPanel height = "7px"/>
 						   <HorizontalPanel>	
 							<VerticalPanel> 
 							  <TabPanel width = "491px" halign="center" key="resultTabPanel">
 							   <tab key="tab" text="">
 							    <VerticalPanel/>							    
 							   </tab>
-							  </TabPanel>
-							  <!--<ScrollTabBar width = "491px" halign="center" key="resultTabPanel"/>-->
+							  </TabPanel>							  
 						    </VerticalPanel> 						      
 							  <widget halign="center">
 											<appButton action="removeIdentifierRow" key="addResultTabButton" onclick="this" style="Button">	
@@ -485,9 +481,9 @@ UIRF Software License are applicable instead of those above.
 											</appButton>
 							  </widget>
 						  </HorizontalPanel>							   
-							<HorizontalPanel>
+							<HorizontalPanel width="624px">
 							  <widget valign="top">
-							    <table key="testResultsTable" manager="this" maxRows="7" showError="false" showScroll="ALWAYS" title="" width="585px">
+							    <table key="testResultsTable" manager="this" maxRows="7" showError="false" showScroll="ALWAYS" title="" width="589px">
 												<headers>		
 												    <xsl:value-of select="resource:getString($constants,'unit')"/>, 										    
 													<xsl:value-of select="resource:getString($constants,'type')"/>,													
@@ -528,7 +524,7 @@ UIRF Software License are applicable instead of those above.
 												<colAligns>left,left,left,left,left,left,left,left,left</colAligns>
 								 </table>
 							  </widget>
-							 <HorizontalPanel width = "10px"/>                             
+							 <!-- <HorizontalPanel width = "10px"/> -->                             
 							</HorizontalPanel>     
                                      <HorizontalPanel>    
                                        <widget>
@@ -551,8 +547,7 @@ UIRF Software License are applicable instead of those above.
 							              </HorizontalPanel>
 						                </appButton>
 						               </widget>
-						             </HorizontalPanel>  	
-						        															                   			
+						             </HorizontalPanel>  							        															                   			
 						</VerticalPanel>			 
 					   </tab>	 
 					   <tab key="prepAndReflexTab" text="{resource:getString($constants,'prepAndReflex')}">
@@ -576,7 +571,7 @@ UIRF Software License are applicable instead of those above.
 												<colAligns>left,left</colAligns>
 											</table>
 							 			 </widget>
-							 			<HorizontalPanel width = "10px"/>
+							 			<!-- <HorizontalPanel width = "10px"/> -->
                                        </HorizontalPanel> 
 							 			  <TablePanel width = "567px" spacing="0" padding="0" style="TableFooter">
                                             <row>
@@ -595,7 +590,7 @@ UIRF Software License are applicable instead of those above.
 						                 <VerticalPanel height = "10px"/>
 						     <HorizontalPanel>           
 						      <widget valign="top">
-							   <table key="testReflexTable" manager="this" maxRows="8" showError="false" showScroll="ALWAYS" title="" width="auto">
+							   <table key="testReflexTable" manager="this" maxRows="9" showError="false" showScroll="ALWAYS" title="" width="auto">
 												<headers>
 												    <xsl:value-of select="resource:getString($constants,'reflexiveTest')"/>,
 													<xsl:value-of select="resource:getString($constants,'testAnalyte')"/>,													
@@ -614,7 +609,7 @@ UIRF Software License are applicable instead of those above.
 												<colAligns>left,left,left,left</colAligns>
 								</table>
 						      </widget>
-						     <HorizontalPanel width = "10px"/>
+						     <!-- <HorizontalPanel width = "10px"/> -->
                             </HorizontalPanel> 
 						        <TablePanel width = "565px" spacing="0" padding="0" style="TableFooter">
                                       <row>
@@ -668,7 +663,7 @@ UIRF Software License are applicable instead of those above.
 							  <text style="FormTitle"><xsl:value-of select='resource:getString($constants,"qcItems")'/></text>
 							  <HorizontalPanel>							 
 							   <widget valign="top">
-							    <table key="worksheetTable" manager="this" maxRows="6" showError="false" showScroll="ALWAYS" title="" width="auto" tab="removeWSItemButton, {testWrksht:getScriptletId($tws)}">
+							    <table key="worksheetTable" manager="this" maxRows="7" showError="false" showScroll="ALWAYS" title="" width="auto" tab="removeWSItemButton, {testWrksht:getScriptletId($tws)}">
 												<headers>
 												    <xsl:value-of select="resource:getString($constants,'position')"/>,
 													<xsl:value-of select="resource:getString($constants,'type')"/>,													
@@ -684,8 +679,7 @@ UIRF Software License are applicable instead of those above.
 												<filters>false,false,false</filters>
 												<colAligns>left,left,left</colAligns>
 								</table>						
-						       </widget>							     
-						     <!-- <HorizontalPanel width = "10px"/> -->
+						       </widget>							     						     
                             </HorizontalPanel>                                                       
 						           <TablePanel width = "565px" spacing="0" padding="0" style="TableFooter">
                                       <row>
@@ -725,8 +719,7 @@ UIRF Software License are applicable instead of those above.
 												<filters>false,false,false,false</filters>
 												<colAligns>left,left,left,left</colAligns>
 								</table>												
-						       </widget>							     
-						     <!-- <HorizontalPanel width = "10px"/> -->
+						       </widget>							     						     
                             </HorizontalPanel> 						        
 						   </VerticalPanel>
 						  </VerticalPanel>
