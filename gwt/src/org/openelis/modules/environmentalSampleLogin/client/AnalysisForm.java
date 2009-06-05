@@ -27,14 +27,41 @@ package org.openelis.modules.environmentalSampleLogin.client;
 
 import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.data.AbstractField;
+import org.openelis.gwt.common.data.CheckField;
+import org.openelis.gwt.common.data.DateField;
+import org.openelis.gwt.common.data.DropDownField;
+import org.openelis.gwt.common.data.IntegerField;
+import org.openelis.gwt.common.data.StringField;
+import org.openelis.metamap.AnalysisMetaMap;
 
 import com.google.gwt.xml.client.Node;
 
 public class AnalysisForm extends Form<Integer> {
-
+    public DropDownField<Integer> testId;
+    public DropDownField<Integer> methodId;
+    public DropDownField<Integer> statusId;
+    public IntegerField revision;
+    public CheckField isReportable;
+    public DropDownField<Integer> sectionId;
+    public DateField startedDate;
+    public DateField completedDate;
+    public DateField releasedDate;
+    public DateField printedDate;
+    
     private static final long serialVersionUID = 1L;
 
     public AnalysisForm() {
+        AnalysisMetaMap meta = new AnalysisMetaMap("a.");
+        testId = new DropDownField<Integer>(meta.TEST.getName());
+        methodId = new DropDownField<Integer>(meta.TEST.METHOD.getName());
+        statusId = new DropDownField<Integer>(meta.getStatusId());
+        revision = new IntegerField(meta.getRevision());
+        isReportable = new CheckField(meta.getIsReportable());
+        sectionId = new DropDownField<Integer>(meta.getSectionId());
+        startedDate = new DateField(meta.getStartedDate());
+        completedDate = new DateField(meta.getCompletedDate());
+        releasedDate = new DateField(meta.getReleasedDate());
+        printedDate = new DateField(meta.getPrintedDate());
         
     }
     
@@ -50,7 +77,16 @@ public class AnalysisForm extends Form<Integer> {
     
     public AbstractField[] getFields() {
         return new AbstractField[] {
-                                    
+                                    testId,
+                                    methodId,
+                                    statusId,
+                                    revision,
+                                    isReportable,
+                                    sectionId,
+                                    startedDate,
+                                    completedDate,
+                                    releasedDate,
+                                    printedDate
         };
     }
 }

@@ -23,16 +23,49 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.modules.environmentalSampleLogin.client;
+package org.openelis.util;
 
-import org.openelis.gwt.common.RPC;
-import org.openelis.gwt.common.data.TreeDataModel;
+import org.openelis.gwt.common.data.TableDataRow;
 
-public class SampleTreeForm implements RPC{
+import org.openelis.gwt.common.data.TableDataModel;
 
-    private static final long serialVersionUID = 1L;
-    public Integer treeRow;
-    public Integer sampleItemId;
-    public TreeDataModel treeModel;
+public class MultipleEntryManager<Key> {
+
+    protected TableDataModel<TableDataRow<Key>> list;
     
+    public MultipleEntryManager(){
+        list = null;
+    }
+    
+    public MultipleEntryManager(TableDataModel<TableDataRow<Key>> list){
+        this.list = list;
+    }
+    
+    public void setList(TableDataModel<TableDataRow<Key>> model){
+        list = model;
+    }
+    
+    public int size(){
+        return list.size();
+    }
+    
+    public TableDataRow<Key> getRow(int i){
+        return list.get(i);
+    }
+    
+    public void setRow(int i, TableDataRow<Key> row){
+        list.set(i, row);
+    }
+    
+    public void addRow(TableDataRow<Key> row){
+        addRow(list.size(), row);
+    }
+    
+    public void addRow(int i, TableDataRow<Key> row){
+        list.add(i, row);
+    }
+    
+    public void delete(int i){
+        list.delete(i);
+    }
 }

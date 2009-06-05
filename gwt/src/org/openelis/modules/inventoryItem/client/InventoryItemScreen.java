@@ -82,8 +82,6 @@ public class InventoryItemScreen extends OpenELISScreenForm<InventoryItemForm, Q
 	
 	private TableWidget componentsTable, locsTable;
     
-    private ScreenMenuPanel duplicateMenuPanel;
-    
     private Dropdown store, category, dispensedUnit;
     
     private ScreenCheck isActive, isSerializedCheck;
@@ -165,8 +163,6 @@ public class InventoryItemScreen extends OpenELISScreenForm<InventoryItemForm, Q
         isActive = (ScreenCheck)widgets.get(InvItemMeta.getIsActive());
         isSerializedCheck = (ScreenCheck)widgets.get(InvItemMeta.getIsSerialMaintained());
         
-        duplicateMenuPanel = (ScreenMenuPanel)widgets.get("optionsMenu");
-        
         nameTextbox = (ScreenTextBox) widgets.get(InvItemMeta.getName());
         startWidget = nameTextbox;
         idTextBox = (ScreenTextBox) widgets.get(InvItemMeta.getId());
@@ -215,9 +211,8 @@ public class InventoryItemScreen extends OpenELISScreenForm<InventoryItemForm, Q
 	}
     
     public void add() {
-		componentsTable.model.enableAutoAdd(true);
-		
-		super.add();
+        super.add();
+        componentsTable.model.enableAutoAdd(true);
 		idTextBox.enable(false);
         
         ((CheckBox)isActive.getWidget()).setState(CheckBox.CHECKED);
@@ -261,13 +256,8 @@ public class InventoryItemScreen extends OpenELISScreenForm<InventoryItemForm, Q
 	}
 	
 	public void abort() {
-        componentsTable.model.enableAutoAdd(false);
         super.abort();
-	}
-	
-	public void update() {
-      
-		super.update();
+        componentsTable.model.enableAutoAdd(false);
 	}
 	
 	protected AsyncCallback afterCommitUpdate = new AsyncCallback() {
@@ -484,20 +474,6 @@ public class InventoryItemScreen extends OpenELISScreenForm<InventoryItemForm, Q
                 form.entityKey = null;
             }
         });
-    }
-    
-    
-    public void setState(State state) {
-        if(duplicateMenuPanel != null){ 
-            if(state == State.DISPLAY){
-                ((MenuItem)((MenuItem)duplicateMenuPanel.panel.menuItems.get(0)).menuItemsPanel.menuItems.get(0)).enable(true);
-
-            }else{  
-                ((MenuItem)((MenuItem)duplicateMenuPanel.panel.menuItems.get(0)).menuItemsPanel.menuItems.get(0)).enable(false);
-            }
-        }
-        
-        super.setState(state);
     }
     
     //

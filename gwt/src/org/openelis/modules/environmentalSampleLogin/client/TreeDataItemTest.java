@@ -25,35 +25,13 @@
 */
 package org.openelis.modules.environmentalSampleLogin.client;
 
-import org.openelis.gwt.common.Form;
-import org.openelis.gwt.common.data.AbstractField;
-import org.openelis.gwt.common.data.TreeField;
+import org.openelis.gwt.common.data.TreeDataItem;
 
-import com.google.gwt.xml.client.Node;
-
-public class SampleItemsForm extends Form<Integer> {
-
-    private static final long serialVersionUID = 1L;
+public class TreeDataItemTest extends TreeDataItem {
+    TestInfoForm testInfoForm;
+    AnalysisForm analysisForm;
     
-    public TreeField itemsTestsTree;
-    
-    public SampleItemsForm() {
-        itemsTestsTree = new TreeField("itemsTestsTree");
-   }
-   
-   public SampleItemsForm(Node node) {
-       this();
-       createFields(node);
-   }
-   
-   public SampleItemsForm(String key) {
-       this();
-       this.key = key;
-   }
-   
-   public AbstractField[] getFields() {
-       return new AbstractField[] {
-                                   itemsTestsTree
-       };
-   }
+    public TreeDataItemTest(int size) {
+        super(size);
+    }
 }

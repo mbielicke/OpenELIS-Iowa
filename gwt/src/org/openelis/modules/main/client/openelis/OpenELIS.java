@@ -47,6 +47,7 @@ import org.openelis.modules.main.client.service.OpenELISServiceInt;
 import org.openelis.modules.main.client.service.OpenELISServiceIntAsync;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class OpenELIS extends AppScreen<OpenELISForm> implements ClickListener {
     
@@ -57,6 +58,7 @@ public class OpenELIS extends AppScreen<OpenELISForm> implements ClickListener {
     public static WindowBrowser browser;
     public static SecurityUtil security;
     private FavoritesScreen fv;
+    private static HashMap<String, HashMap> cacheList;
     
 	public OpenELIS() {	    
         super();              
@@ -126,5 +128,16 @@ public class OpenELIS extends AppScreen<OpenELISForm> implements ClickListener {
                 break;
             }
         }
+    }
+    
+    public static HashMap<String, HashMap> getCacheList(){
+        if(cacheList == null)
+            cacheList = new HashMap<String, HashMap>();
+        
+        return cacheList;
+    }
+    
+    public static void setCacheList(HashMap<String, HashMap> hash){
+        cacheList = hash;
     }
 }

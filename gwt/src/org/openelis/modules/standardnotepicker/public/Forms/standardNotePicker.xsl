@@ -110,7 +110,7 @@
 					</VerticalPanel>
 					</HorizontalPanel>
 					<!--button panel code-->
-					<AbsolutePanel spacing="0" style="ButtonPanelContainer"
+					<AbsolutePanel spacing="0" style="BottomButtonPanelContainer"
 						align="center">
 						<buttonPanel key="buttons">
 							<xsl:call-template name="popupSelectButton">

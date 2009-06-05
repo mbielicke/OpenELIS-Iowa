@@ -23,16 +23,19 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.modules.environmentalSampleLogin.client;
+package org.openelis.modules.main.client;
 
-import org.openelis.gwt.common.RPC;
-import org.openelis.gwt.common.data.TreeDataModel;
+import org.openelis.modules.main.client.service.ScreenCacheServiceInt;
+import org.openelis.modules.main.client.service.ScreenCacheServiceIntAsync;
 
-public class SampleTreeForm implements RPC{
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.rpc.ServiceDefTarget;
 
-    private static final long serialVersionUID = 1L;
-    public Integer treeRow;
-    public Integer sampleItemId;
-    public TreeDataModel treeModel;
+public class ScreenCache {
+    protected ScreenCacheServiceIntAsync screenService = (ScreenCacheServiceIntAsync) GWT.create(ScreenCacheServiceInt.class);
+    protected ServiceDefTarget target = (ServiceDefTarget) screenService;
     
+    public ScreenCache(String serviceClass){
+        target.setServiceEntryPoint(target.getServiceEntryPoint()+"?service="+serviceClass);
+    }
 }

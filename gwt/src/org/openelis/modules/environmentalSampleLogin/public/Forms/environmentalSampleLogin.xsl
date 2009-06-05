@@ -36,7 +36,10 @@ UIRF Software License are applicable instead of those above.
                 xmlns:orgMeta="xalan://org.openelis.meta.OrganizationMeta"
                 xmlns:sampleProjectMetaMap="xalan://org.openelis.metamap.SampleProjectMetaMap"
                 xmlns:projectMeta="xalan://org.openelis.meta.ProjectMeta"
-                
+                xmlns:analysisMetaMap="xalan://org.openelis.metamap.AnalysisMetaMap"
+                xmlns:sampleTestMetaMap="xalan://org.openelis.metamap.SampleTestMetaMap"
+                xmlns:sectionMeta="xalan://org.openelis.meta.SectionMeta"
+                xmlns:methodMeta="xalan://org.openelis.meta.MethodMeta"
                 extension-element-prefixes="resource"
                 version="1.0">
 <xsl:import href="aToZOneColumn.xsl"/>
@@ -81,11 +84,31 @@ UIRF Software License are applicable instead of those above.
     <xalan:script lang="javaclass" src="xalan://org.openelis.meta.ProjectMeta"/>
   </xalan:component>
   
+  <xalan:component prefix="analysisMetaMap">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.AnalysisMetaMap"/>
+  </xalan:component>
+  
+  <xalan:component prefix="sampleTestMetaMap">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.SampleTestMetaMap"/>
+  </xalan:component>
+  
+  <xalan:component prefix="sectionMeta">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.SectionMeta"/>
+  </xalan:component>
+  
+  <xalan:component prefix="methodMeta">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.MethodMeta"/>
+  </xalan:component>
+  
   <xsl:template match="doc"> 
   <xsl:variable name="env" select="envMeta:new()"/>
     <xsl:variable name="sample" select="envMeta:getSample($env)"/>
     <xsl:variable name="address" select="envMeta:getAddress($env)"/>
     <xsl:variable name="sampleItem" select="sampleMetaMap:getSampleItem($sample)"/>
+    <xsl:variable name="analysis" select="sampleItemMetaMap:getAnalysis($sampleItem)"/>
+    <xsl:variable name="test" select="analysisMetaMap:getTest($analysis)"/>
+    <xsl:variable name="section" select="analysisMetaMap:getSection($analysis)"/>
+    <xsl:variable name="method" select="sampleTestMetaMap:getMethod($test)"/>
     <xsl:variable name="sampleOrg" select="sampleMetaMap:getSampleOrganization($sample)"/>
     <xsl:variable name="sampleProject" select="sampleMetaMap:getSampleProject($sample)"/>
     <xsl:variable name="parentSampleItem" select="sampleItemMetaMap:getParentSampleItem($sampleItem)"/>
@@ -180,9 +203,10 @@ UIRF Software License are applicable instead of those above.
 						</row>
 						<row>
 							<text style="Prompt"><xsl:value-of select="resource:getString($constants,'location')"/>:</text>
-							<multLookup key="{envMeta:getSamplingLocation($env)}" listeners="this" tab="itemsTestsTree,{envMeta:getCollectorPhone($env)}">
-								    <icon style="LookupButtonImage" mouse="HoverListener" command="EnvironmentalSampleLogin.id_button_enum.LOCATION_VIEW"/>
-							</multLookup>
+							<HorizontalPanel> 
+							<textbox key="{envMeta:getSamplingLocation($env)}" onchange="this" width="175px"/>
+							<comButton key="locButton" style="LookupButtonImage" useDiv="true" listeners="this" enabledStates="display,query,add,update" command="EnvironmentalSampleLogin.id_button_enum.LOCATION_VIEW"/>
+							</HorizontalPanel>
 						</row>
 					</TablePanel>
 					</VerticalPanel>
@@ -190,7 +214,7 @@ UIRF Software License are applicable instead of those above.
 					<VerticalPanel style="subform">
 						<text style="FormTitle"><xsl:value-of select="resource:getString($constants,'itemsAndAnalyses')"/></text>
 						<VerticalPanel style="WhiteContentPanel">
-						<tree-table key="itemsTestsTree" width="auto" showScroll="ALWAYS" manager="this" treeCall="this" maxRows="4" enable="true" showError="false" tab="{projectMeta:getName($project)},{envMeta:getSamplingLocation($env)}">
+						<tree-table key="itemsTestsTree" width="auto" showScroll="ALWAYS" manager="this" maxRows="4" enable="true" showError="false" tab="{projectMeta:getName($project)},{envMeta:getSamplingLocation($env)}">
 	    	                <headers><xsl:value-of select="resource:getString($constants,'itemTests')"/>,<xsl:value-of select="resource:getString($constants,'typeStatus')"/></headers>
 	                        <widths>280,130</widths>					
 	                        <leaves>
@@ -217,19 +241,19 @@ UIRF Software License are applicable instead of those above.
                             </leaves> 
 	                  	</tree-table>
 	                  	<HorizontalPanel style="TableButtonFooter">
-	                  		<appButton action="addItem" key="addItemButton" onclick="this" style="Button">
+	                  		<appButton action="addItem" key="addItemButton" onclick="this" style="Button" enabledStates="add,update">
 								<HorizontalPanel>
 									<AbsolutePanel style="AddRowButtonImage"/>
 									<text><xsl:value-of select="resource:getString($constants,'addItem')"/></text>
 								</HorizontalPanel>
 							</appButton>
-							<appButton action="addTest" key="addTestButton" onclick="this" style="Button">
+							<appButton action="addTest" key="addTestButton" onclick="this" style="Button" enabledStates="add,update">
 								<HorizontalPanel>
 									<AbsolutePanel style="AddRowButtonImage"/>
 									<text><xsl:value-of select="resource:getString($constants,'addTest')"/></text>
 								</HorizontalPanel>
 							</appButton>
-							<appButton action="removeRow" key="removeContactButton" onclick="this" style="Button">
+							<appButton action="removeRow" key="removeRowButton" onclick="this" style="Button" enabledStates="add,update">
 								<HorizontalPanel>
 									<AbsolutePanel style="RemoveRowButtonImage"/>
 									<text><xsl:value-of select="resource:getString($constants,'removeRow')"/></text>
@@ -243,22 +267,33 @@ UIRF Software License are applicable instead of those above.
                   <TablePanel style="Form">
 						<row>
 							<text style="Prompt"><xsl:value-of select="resource:getString($constants,'project')"/>:</text>
-							<multLookup key="{projectMeta:getName($project)}" width="176px" listeners="this" tab="{orgMeta:getName($org)},itemsTestsTree">
-								    <icon style="LookupButtonImage" mouse="HoverListener" command="EnvironmentalSampleLogin.id_button_enum.PROJECT_VIEW"/>
-							</multLookup>
+							<HorizontalPanel> 
+								<autoComplete key="{projectMeta:getName($project)}" width="175px" onchange="this" cat="project" case="upper" serviceUrl="OpenELISServlet?service=org.openelis.modules.sampleProject.server.SampleProjectService">				
+									<headers>Name, Desc</headers>
+									<widths>100,170</widths>												
+								</autoComplete>
+								<comButton key="projectLookupIcon" style="LookupButtonImage" useDiv="true" listeners="this" command="EnvironmentalSampleLogin.id_button_enum.PROJECT_VIEW"/>
+							</HorizontalPanel>
 						</row>
 						<row>
 							<text style="Prompt"><xsl:value-of select="resource:getString($constants,'reportTo')"/>:</text>
-							<!--<lookup key="" icon="LookupButtonImage" onclick="this"/>-->
-							<multLookup key="{orgMeta:getName($org)}" width="176px" listeners="this" tab="billTo,{projectMeta:getName($project)}">
-							    <icon style="LookupButtonImage" mouse="HoverListener" command="EnvironmentalSampleLogin.id_button_enum.REPORT_TO_VIEW"/>
-							</multLookup>
+							<HorizontalPanel> 
+								<autoComplete key="{orgMeta:getName($org)}" cat="organization" width="175px" onchange="this" case="upper" serviceUrl="OpenELISServlet?service=org.openelis.modules.order.server.OrderService">												
+									<headers>Name,Street,City,St</headers>
+									<widths>180,110,100,20</widths>
+								</autoComplete>
+								<comButton key="reportToLookupIcon" style="LookupButtonImage" useDiv="true" listeners="this" command="EnvironmentalSampleLogin.id_button_enum.REPORT_TO_VIEW"/>
+							</HorizontalPanel>
 						</row>
 						<row>
 							<text style="Prompt"><xsl:value-of select="resource:getString($constants,'billTo')"/>:</text>
-							<multLookup key="billTo" width="176px" listeners="this" tab="{sampleMetaMap:getAccessionNumber($sample)},{orgMeta:getName($org)}">
-							    <icon style="LookupButtonImage" mouse="HoverListener" command="EnvironmentalSampleLogin.id_button_enum.REPORT_TO_VIEW"/>
-							</multLookup>
+							<HorizontalPanel> 
+								<autoComplete key="billTo" cat="organization" width="175px" onchange="this" case="upper" serviceUrl="OpenELISServlet?service=org.openelis.modules.order.server.OrderService">												
+									<headers>Name,Street,City,St</headers>
+									<widths>180,110,100,20</widths>
+								</autoComplete>
+								<comButton key="billToLookupIcon" style="LookupButtonImage" useDiv="true" listeners="this" command="EnvironmentalSampleLogin.id_button_enum.REPORT_TO_VIEW"/>
+							</HorizontalPanel>
 						</row>
 					</TablePanel>
 					</VerticalPanel>
@@ -266,43 +301,174 @@ UIRF Software License are applicable instead of those above.
 				<VerticalPanel height="5px"/>
 				<TabPanel height="170px" key="sampleItemTabPanel">
 					<tab key="tab0" text="{resource:getString($constants,'sampleItem')}">
-					<!--						type_of_sample_id  container_id     container_reference     quantity     unit_of_measure_id -->
 						<VerticalPanel height="170px" width="730px">
 							<TablePanel style="Form" spacing="0" padding="0">
 								<row>
 									<text style="Prompt">Sample Type:</text>
-									<dropdown case="mixed" key="a" width="150px"/>
+									<dropdown case="mixed" key="{sampleItemMetaMap:getTypeOfSampleId($sampleItem)}" onchange="this" width="150px"/>
 									
 								</row>
 								<row>
 									<text style="Prompt">Container:</text>
-									<textbox case="mixed" key="b" width="150px"/>
+									<dropdown case="mixed" key="{sampleItemMetaMap:getContainerId($sampleItem)}" onchange="this" width="225px"/>
 									<text style="Prompt">Container Reference:</text>
-									<textbox case="mixed" key="c" width="200px"/>
+									<textbox case="mixed" key="{sampleItemMetaMap:getContainerReference($sampleItem)}" onchange="this" width="215px"/>
 								</row>
 								<row>
 									<text style="Prompt">Qty:</text>
-									<textbox case="mixed" key="d" width="150px"/>
+									<textbox case="mixed" key="{sampleItemMetaMap:getQuantity($sampleItem)}" onchange="this" width="150px"/>
 									<text style="Prompt">Unit:</text>
-									<textbox case="mixed" key="e" width="150px"/>
+									<dropdown case="mixed" key="{sampleItemMetaMap:getUnitOfMeasureId($sampleItem)}" onchange="this" width="150px"/>
 								</row>
 							</TablePanel>
 						</VerticalPanel>
 					</tab>
-					<tab key="tab1" text="{resource:getString($constants,'testInfoResult')}">
+					<tab key="tab1" text="{resource:getString($constants,'analysis')}">
+						<VerticalPanel height="170px" width="730px">
+							<TablePanel style="Form" spacing="0" padding="0">
+								<row>
+									<text style="Prompt">Test:</text>
+									<autoComplete key="{sampleTestMetaMap:getName($test)}" cat="testMethod" width="150px" onchange="this" case="lower" serviceUrl="OpenELISServlet?service=org.openelis.modules.environmentalSampleLogin.server.EnvironmentalSampleLoginService">												
+										<headers>Test,Method</headers>
+										<widths>150,150</widths>
+									</autoComplete>
+									<text style="Prompt">Method:</text>
+									<autoComplete key="{methodMeta:getName($method)}" cat="testMethod" width="150px" onchange="this" case="lower" enabledStates="" serviceUrl="OpenELISServlet?service=org.openelis.modules.environmentalSampleLogin.server.EnvironmentalSampleLoginService">												
+										<headers>Method</headers>
+										<widths>150</widths>
+									</autoComplete>
+								</row>
+								<row>
+									<text style="Prompt">Status:</text>
+									<dropdown case="mixed" key="{analysisMetaMap:getStatusId($analysis)}" onchange="this" width="150px"/>
+									<text style="Prompt">Revision:</text>
+									<textbox case="mixed" key="{analysisMetaMap:getRevision($analysis)}" onchange="this" width="60px"/>
+								</row>
+								<row>
+									<text style="Prompt">Reportable:</text>
+									<check key="{analysisMetaMap:getIsReportable($analysis)}"/>
+									<text style="Prompt">Section:</text>
+									<autoComplete key="{analysisMetaMap:getSectionId($analysis)}" cat="section" width="150px" onchange="this" case="upper" serviceUrl="OpenELISServlet?service=org.openelis.modules.environmentalSampleLogin.server.EnvironmentalSampleLoginService">												
+										<headers>name</headers>
+										<widths>150</widths>
+									</autoComplete>
+								</row>
+								<row>
+									<text style="Prompt">Started:</text>
+									<calendar begin="0" end="2" key="{analysisMetaMap:getStartedDate($analysis)}"/>
+									<text style="Prompt">Completed:</text>
+									<calendar begin="0" end="2" key="{analysisMetaMap:getCompletedDate($analysis)}"/>
+								</row>
+								<row>
+									<text style="Prompt">Released:</text>
+									<calendar begin="0" end="2" key="{analysisMetaMap:getReleasedDate($analysis)}"/>
+									<text style="Prompt">Printed:</text>
+									<calendar begin="0" end="2" key="{analysisMetaMap:getPrintedDate($analysis)}"/>
+								</row>
+							</TablePanel>
+						</VerticalPanel>
+					</tab>
+					<tab key="tab2" text="{resource:getString($constants,'testResults')}">
+						<VerticalPanel height="170px" width="730px">
+							<table maxRows="6" width="auto">
+						     <headers>Analyte,Result1,Result2,Result3</headers>
+						     <widths>175,100,100,100</widths>
+						     <editors>
+						       <label/>
+						       <label/>
+						       <label/>
+						       <label/>
+						     </editors>
+						     <fields>
+						       <string/>
+						       <string/>
+						       <string/>
+						       <string/>
+						     </fields>
+						     <sorts>true,true,true,true</sorts>
+							<filters>false,false,false,false</filters>
+							<colAligns>left,left,left,left</colAligns>
+						   </table>
+						</VerticalPanel>
+					</tab>
+					<tab key="tab3" text="{resource:getString($constants,'analysisExtrnlCmnts')}">
+						<VerticalPanel height="170px" width="730px">
+						<TablePanel style="Form" padding="0" spacing="0">
+						<row>
+							<widget colspan="2" align="center">
+								<appButton action="analysisNoteExt" onclick="this" key="analysisNoteExt" style="Button" enabledStates="">
+									<HorizontalPanel>
+              							<AbsolutePanel xsi:type="Absolute" layout="absolute" style="StandardNoteButtonImage"/>
+	                					<text><xsl:value-of select='resource:getString($constants,"edit")'/></text>
+						             </HorizontalPanel>
+						    	</appButton>
+						  	</widget>
+						</row>
+						<row>
+							<widget>
+								<textarea width="710px" height="125px" case="mixed"/>
+							</widget>
+						</row>
+					</TablePanel>
+						</VerticalPanel>
+					</tab>
+					<tab key="tab4" text="{resource:getString($constants,'analysisIntrnlCmnts')}">
+						<VerticalPanel height="170px" width="730px">
+							<widget halign="center">
+								<appButton action="analysisNoteInt" key="analysisNoteInt" onclick="this" style="Button" enabledStates="">
+									<HorizontalPanel>
+										<AbsolutePanel style="StandardNoteButtonImage"/>
+										<text><xsl:value-of select="resource:getString($constants,'edit')"/></text>
+									</HorizontalPanel>
+								</appButton>
+							</widget>
+							<widget halign="center">
+								<HorizontalPanel style="notesPanelContainer">
+									<VerticalPanel height="125px" key="notesPanel" onclick="this" overflowX="auto" overflowY="scroll" style="NotesPanel" valign="top" width="715px"/>
+								</HorizontalPanel>
+							</widget>
+						</VerticalPanel>
+					</tab>
+					<tab key="tab5" text="{resource:getString($constants,'storage')}">
 						<VerticalPanel height="170px" width="730px"/>
 					</tab>
-					<tab key="tab2" text="{resource:getString($constants,'analysis')}">
-						<VerticalPanel height="170px" width="730px"/>
+					<tab key="tab6" text="{resource:getString($constants,'sampleExtrnlCmnts')}">
+						<VerticalPanel height="170px" width="730px">
+						<TablePanel style="Form" padding="0" spacing="0">
+						<row>
+							<widget colspan="2" align="center">
+								<appButton action="standardNoteShipping" onclick="this" key="sampleNoteExtButton" style="Button">
+									<HorizontalPanel>
+              							<AbsolutePanel xsi:type="Absolute" layout="absolute" style="StandardNoteButtonImage"/>
+	                					<text><xsl:value-of select='resource:getString($constants,"edit")'/></text>
+						             </HorizontalPanel>
+						    	</appButton>
+						  	</widget>
+						</row>
+						<row>
+							<widget>
+								<textarea width="710px" height="125px" case="mixed"/>
+							</widget>
+						</row>
+					</TablePanel>
+						</VerticalPanel>
 					</tab>
-					<tab key="tab3" text="{resource:getString($constants,'extrnlCmnts')}">
-						<VerticalPanel height="170px" width="730px"/>
-					</tab>
-					<tab key="tab4" text="{resource:getString($constants,'intrnlCmnts')}">
-						<VerticalPanel height="170px" width="730px"/>
-					</tab>
-					<tab key="tab0" text="{resource:getString($constants,'storage')}">
-						<VerticalPanel height="170px" width="730px"/>
+					<tab key="tab7" text="{resource:getString($constants,'sampleIntrnlCmnts')}">
+						<VerticalPanel height="170px" width="730px">
+							<widget halign="center">
+								<appButton action="standardNote" key="sampleNoteIntButton" onclick="this" style="Button">
+									<HorizontalPanel>
+										<AbsolutePanel style="StandardNoteButtonImage"/>
+										<text><xsl:value-of select="resource:getString($constants,'edit')"/></text>
+									</HorizontalPanel>
+								</appButton>
+							</widget>
+							<widget halign="center">
+								<HorizontalPanel style="notesPanelContainer">
+									<VerticalPanel height="125px" key="notesPanel" onclick="this" overflowX="auto" overflowY="scroll" style="NotesPanel" valign="top" width="715px"/>
+								</HorizontalPanel>
+							</widget>
+						</VerticalPanel>
 					</tab>
 				</TabPanel>
 			</VerticalPanel>
@@ -335,14 +501,14 @@ UIRF Software License are applicable instead of those above.
 			</rpc>   
 		</rpc>
 		
-		<rpc key="sampleItems">
+		<rpc key="sampleItemAndAnalysis">
 			<tree key="itemsTestsTree"/>
 		</rpc>
 		
 		<rpc key="orgprojectInfo">
-			<string key="{projectMeta:getName($project)}" required="false"/>
-			<string key="{orgMeta:getName($org)}"/>
-			<string key="billTo" required="false"/>
+			<dropdown key="{projectMeta:getName($project)}" required="false"/>
+			<dropdown key="{orgMeta:getName($org)}"/>
+			<dropdown key="billTo" required="false"/>
 			
 			<rpc key="sampleOrganization">
 				<table key="sampleOrganizationTable">
@@ -363,21 +529,50 @@ UIRF Software License are applicable instead of those above.
 			</rpc>
 		</rpc>
 		
+		<rpc key="sampleItemForm">
+			<dropdown key="{sampleItemMetaMap:getTypeOfSampleId($sampleItem)}"/>
+			<dropdown key="{sampleItemMetaMap:getContainerId($sampleItem)}"/>
+			<string key="{sampleItemMetaMap:getContainerReference($sampleItem)}"/>
+			<integer key="{sampleItemMetaMap:getQuantity($sampleItem)}"/>
+			<dropdown key="{sampleItemMetaMap:getUnitOfMeasureId($sampleItem)}"/>
+		</rpc>
+		
 		<rpc key="testInfoResult">
 			<!--	empty	 -->
 		</rpc>
 		
 		<rpc key="analysis">
+			<dropdown key="{sampleTestMetaMap:getName($test)}" required="false"/>
+			<dropdown key="{methodMeta:getName($method)}" required="false"/>
+			<dropdown key="{analysisMetaMap:getStatusId($analysis)}" required="false"/>
+			<integer key="{analysisMetaMap:getRevision($analysis)}" required="false"/>
+			<check key="{analysisMetaMap:getIsReportable($analysis)}"/>
+			<dropdown key="{analysisMetaMap:getSectionId($analysis)}" required="false"/>
+			<date begin="0" end="2" key="{analysisMetaMap:getStartedDate($analysis)}" required="false"/>
+			<date begin="0" end="2" key="{analysisMetaMap:getCompletedDate($analysis)}" required="false"/>
+			<date begin="0" end="2" key="{analysisMetaMap:getReleasedDate($analysis)}" required="false"/>
+			<date begin="0" end="2" key="{analysisMetaMap:getPrintedDate($analysis)}" required="false"/>
+		</rpc>
+		
+		<rpc key="analysisExternalComment">
 			<!--	empty	 -->
 		</rpc>
 		
-		<rpc key="externalComment">
+		<rpc key="analysisInternalComments">
 			<!--	empty	 -->
 		</rpc>
-		
-		<rpc key="internalComments">
-			<!--	empty	 -->
-		</rpc>
+<!--		-->
+<!--		<rpc key="storage">-->
+	 
+<!--		</rpc>-->
+<!--		-->
+<!--		<rpc key="sampleExternalComment">-->
+	 
+<!--		</rpc>-->
+<!--		-->
+<!--		<rpc key="sampleInternalComments">-->
+	 
+<!--		</rpc>-->
 	</rpc>
 </screen>
   </xsl:template>
