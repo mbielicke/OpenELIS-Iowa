@@ -26,51 +26,41 @@
 package org.openelis.metamap;
 
 import org.openelis.gwt.common.MetaMap;
-import org.openelis.meta.SampleItemMeta;
+import org.openelis.meta.AnalysisMeta;
+import org.openelis.meta.SectionMeta;
 
-public class SampleItemMetaMap extends SampleItemMeta implements MetaMap {
-
-    private boolean parent = false;
+public class AnalysisMetaMap extends AnalysisMeta implements MetaMap {
     
-    public SampleItemMetaMap(){
-        super("sampleItem.");
-        PARENT_SAMPLE_ITEM = new SampleItemMetaMap("parentStorageItem.");
-        ANALYSIS = new AnalysisMetaMap("a.");
+    public AnalysisMetaMap(){
+        super("analysis.");
+        SECTION = new SectionMeta();
     }
     
-    public SampleItemMetaMap(String path){
-        this(path, false);
-    }
-    
-    public SampleItemMetaMap(String path, boolean parent){
+    public AnalysisMetaMap(String path){
         super(path);
-        ANALYSIS = new AnalysisMetaMap("a.");
-        this.parent = parent;
-        if(!parent)
-            PARENT_SAMPLE_ITEM = new SampleItemMetaMap(path+"parentSampleItem.", true);
-            
+        SECTION = new SectionMeta();
     }
     
-    public SampleItemMetaMap PARENT_SAMPLE_ITEM;
-    public AnalysisMetaMap   ANALYSIS;
+    public SampleTestMetaMap TEST = new SampleTestMetaMap("t.");
+    public SectionMeta SECTION = new SectionMeta("s.");
     
-    public SampleItemMetaMap getParentSampleItem(){
-        return PARENT_SAMPLE_ITEM;
+    public SampleTestMetaMap getTest(){
+        return TEST;
     }
     
-    public AnalysisMetaMap getAnalysis(){
-        return ANALYSIS;
+    public SectionMeta getSection(){
+        return SECTION;
     }
     
     public boolean hasColumn(String name){
-        if(name.startsWith(path+"parentSampleItem."))
-            return PARENT_SAMPLE_ITEM.hasColumn(name);  
-        if(name.startsWith(path+"a."))
-            return ANALYSIS.hasColumn(name);
+        if(name.startsWith("t."))
+            return TEST.hasColumn(name);
+        else if(name.startsWith("s."))
+            return SECTION.hasColumn(name);  
         return super.hasColumn(name);
     }
     
     public String buildFrom(String name){
-        return "sampleItem";
+        return "analysis";
     }
 }

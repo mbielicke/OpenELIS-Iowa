@@ -26,51 +26,37 @@
 package org.openelis.metamap;
 
 import org.openelis.gwt.common.MetaMap;
-import org.openelis.meta.SampleItemMeta;
+import org.openelis.meta.MethodMeta;
+import org.openelis.meta.TestMeta;
 
-public class SampleItemMetaMap extends SampleItemMeta implements MetaMap {
+public class SampleTestMetaMap extends TestMeta implements MetaMap {
 
-    private boolean parent = false;
+    public MethodMeta METHOD = new MethodMeta("t.method.");
     
-    public SampleItemMetaMap(){
-        super("sampleItem.");
-        PARENT_SAMPLE_ITEM = new SampleItemMetaMap("parentStorageItem.");
-        ANALYSIS = new AnalysisMetaMap("a.");
+    public SampleTestMetaMap(){
+        super("t.");
     }
-    
-    public SampleItemMetaMap(String path){
-        this(path, false);
-    }
-    
-    public SampleItemMetaMap(String path, boolean parent){
-        super(path);
-        ANALYSIS = new AnalysisMetaMap("a.");
-        this.parent = parent;
-        if(!parent)
-            PARENT_SAMPLE_ITEM = new SampleItemMetaMap(path+"parentSampleItem.", true);
             
+    public SampleTestMetaMap(String path){
+        super(path);               
     }
     
-    public SampleItemMetaMap PARENT_SAMPLE_ITEM;
-    public AnalysisMetaMap   ANALYSIS;
-    
-    public SampleItemMetaMap getParentSampleItem(){
-        return PARENT_SAMPLE_ITEM;
+    public MethodMeta getMethod(){
+        return METHOD;
     }
     
-    public AnalysisMetaMap getAnalysis(){
-        return ANALYSIS;
+    public static TestMetaMap getInstance(){
+        return new TestMetaMap();
     }
     
-    public boolean hasColumn(String name){
-        if(name.startsWith(path+"parentSampleItem."))
-            return PARENT_SAMPLE_ITEM.hasColumn(name);  
-        if(name.startsWith(path+"a."))
-            return ANALYSIS.hasColumn(name);
+    public boolean hasColumn(String name){        
+        if(name.startsWith("t.method."))
+            return METHOD.hasColumn(name);
         return super.hasColumn(name);
     }
     
-    public String buildFrom(String name){
-        return "sampleItem";
+    public String buildFrom(String name) {        
+        String from = "Test ";
+        return from;
     }
 }
