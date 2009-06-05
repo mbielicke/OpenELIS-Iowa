@@ -73,8 +73,6 @@ public class OrderScreen extends OpenELISScreenForm<OrderForm,OrderQuery> implem
     
     private AppButton        removeItemButton, standardNoteCustomerButton, standardNoteShippingButton;
     
-    private ScreenMenuPanel duplicateMenuPanel;
-    
     private ScreenTextBox          orderNum, neededInDays, orderDate, requestedBy;
     private TextBox orgAptSuite, orgAddress, orgCity, orgState, orgZipCode,
                     reportToAptSuite, reportToAddress, reportToCity, reportToState, reportToZipCode,
@@ -244,7 +242,6 @@ public class OrderScreen extends OpenELISScreenForm<OrderForm,OrderQuery> implem
         costCenter = (Dropdown)getWidget(OrderMeta.getCostCenterId());
         shipFrom = (Dropdown)getWidget(OrderMeta.getShipFromId());
         
-        duplicateMenuPanel = (ScreenMenuPanel)widgets.get("optionsMenu");
         tabPanel = (ScreenTab)widgets.get("orderTabPanel");
         
         //buttons
@@ -517,19 +514,6 @@ public class OrderScreen extends OpenELISScreenForm<OrderForm,OrderQuery> implem
     //
     //end table listener methods
     //
-    
-    public void setState(State state) {
-        if(duplicateMenuPanel != null){ 
-            if(state == State.DISPLAY){
-                ((MenuItem)((MenuItem)duplicateMenuPanel.panel.menuItems.get(0)).menuItemsPanel.menuItems.get(0)).enable(true);
-
-            }else{  
-                ((MenuItem)((MenuItem)duplicateMenuPanel.panel.menuItems.get(0)).menuItemsPanel.menuItems.get(0)).enable(false);
-            }
-        }
-        
-        super.setState(state);
-    }
     
     private void onRemoveItemButtonClick() {
         int selectedRow = itemsTable.model.getSelectedIndex();

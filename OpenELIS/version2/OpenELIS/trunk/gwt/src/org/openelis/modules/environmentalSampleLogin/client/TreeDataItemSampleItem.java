@@ -25,14 +25,15 @@
 */
 package org.openelis.modules.environmentalSampleLogin.client;
 
-import org.openelis.gwt.common.RPC;
-import org.openelis.gwt.common.data.TreeDataModel;
+import org.openelis.gwt.common.data.TreeDataItem;
 
-public class SampleTreeForm implements RPC{
-
-    private static final long serialVersionUID = 1L;
-    public Integer treeRow;
-    public Integer sampleItemId;
-    public TreeDataModel treeModel;
+public class TreeDataItemSampleItem extends TreeDataItem {
+    SampleItemAndAnalysisForm sampleItemsForm;
+    ExternalCommentForm externalCommentForm;
+    InternalCommentForm internalCommentForm;
+    //StorageForm storageForm;
     
+    public TreeDataItemSampleItem(int size) {
+        super(size);
+    }
 }

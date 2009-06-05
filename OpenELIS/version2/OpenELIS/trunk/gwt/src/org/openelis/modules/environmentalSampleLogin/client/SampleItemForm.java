@@ -28,48 +28,48 @@ package org.openelis.modules.environmentalSampleLogin.client;
 import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.DropDownField;
+import org.openelis.gwt.common.data.IntegerField;
 import org.openelis.gwt.common.data.StringField;
 import org.openelis.metamap.SampleEnvironmentalMetaMap;
 
 import com.google.gwt.xml.client.Node;
 
-public class SampleOrgProjectForm extends Form<Integer> {
-
+public class SampleItemForm extends Form<Integer> {
     private static final long serialVersionUID = 1L;
-
-    public DropDownField<Integer> projectName;
-    public DropDownField<Integer> reportToName;
-    public DropDownField<Integer> billToName;
     
-    public SampleOrganizationForm sampleOrgForm;
-    public SampleProjectForm sampleProjectForm;
+    public DropDownField<Integer> typeOfSample;
+    public DropDownField<Integer> container;
+    public StringField containerReference;
+    public IntegerField quantity;
+    public DropDownField<Integer> unitOfMeasure;
+    public Integer itemSequence;
     
-    public SampleOrgProjectForm() {
+    public SampleItemForm() {
         SampleEnvironmentalMetaMap meta = new SampleEnvironmentalMetaMap();
-        projectName = new DropDownField<Integer>(meta.SAMPLE.SAMPLE_PROJECT.PROJECT.getName());
-        reportToName = new DropDownField<Integer>(meta.SAMPLE.SAMPLE_ORGANIZATION.ORGANIZATION.getName());
-        billToName = new DropDownField<Integer>("billTo");
-        sampleOrgForm = new SampleOrganizationForm("sampleOrganization");
-        sampleProjectForm = new SampleProjectForm("sampleProject");
+        typeOfSample = new DropDownField<Integer>(meta.SAMPLE.SAMPLE_ITEM.getTypeOfSampleId());
+        container = new DropDownField<Integer>(meta.SAMPLE.SAMPLE_ITEM.getContainerId());
+        containerReference = new StringField(meta.SAMPLE.SAMPLE_ITEM.getContainerReference());
+        quantity = new IntegerField(meta.SAMPLE.SAMPLE_ITEM.getQuantity());
+        unitOfMeasure = new DropDownField<Integer>(meta.SAMPLE.SAMPLE_ITEM.getUnitOfMeasureId());
    }
    
-   public SampleOrgProjectForm(Node node) {
+   public SampleItemForm(Node node) {
        this();
        createFields(node);
    }
    
-   public SampleOrgProjectForm(String key) {
+   public SampleItemForm(String key) {
        this();
        this.key = key;
    }
    
    public AbstractField[] getFields() {
        return new AbstractField[] {
-                                   projectName,
-                                   reportToName,
-                                   billToName,
-                                   sampleOrgForm,
-                                   sampleProjectForm
+                                   typeOfSample,
+                                   container,
+                                   containerReference,
+                                   quantity,
+                                   unitOfMeasure
        };
    }
 }

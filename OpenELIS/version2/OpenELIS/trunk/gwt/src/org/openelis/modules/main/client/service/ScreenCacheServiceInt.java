@@ -23,16 +23,14 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.modules.environmentalSampleLogin.client;
+package org.openelis.modules.main.client.service;
 
-import org.openelis.gwt.common.RPC;
-import org.openelis.gwt.common.data.TreeDataModel;
+import org.openelis.gwt.common.data.FieldType;
 
-public class SampleTreeForm implements RPC{
+import com.google.gwt.user.client.rpc.RemoteService;
+import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
-    private static final long serialVersionUID = 1L;
-    public Integer treeRow;
-    public Integer sampleItemId;
-    public TreeDataModel treeModel;
-    
+@RemoteServiceRelativePath("ScreenCacheService")
+public interface ScreenCacheServiceInt extends RemoteService {
+    public FieldType call(String method, FieldType param) throws Exception;
 }

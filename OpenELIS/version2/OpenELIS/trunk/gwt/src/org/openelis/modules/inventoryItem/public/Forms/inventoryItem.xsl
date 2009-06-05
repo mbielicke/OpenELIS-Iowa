@@ -396,6 +396,12 @@ UIRF Software License are applicable instead of those above.
 					<VerticalPanel height="249px" width="645px" spacing="0" padding="0" halign="center">
 					<TablePanel key="manFormPanel" style="Form" padding="0" spacing="0">
 						<row>
+							<VerticalPanel overflow="auto" height="200px" width="625px" spacing="0" padding="0" halign="center">
+							<!-- width="615px" height="188px"-->
+								<html key="manufacturingText" width="100%" height="100%" showError="false"/>
+							</VerticalPanel>
+						</row>
+						<row>
 							<widget align="center">
 								<appButton action="editManufacturing" onclick="this" key="editManufacturingButton" style="Button">
 									<HorizontalPanel>
@@ -404,11 +410,6 @@ UIRF Software License are applicable instead of those above.
 						             </HorizontalPanel>
 						    	</appButton>
 						  	</widget>
-						</row>
-						<row>
-							<VerticalPanel overflow="auto" height="200px" width="625px" spacing="0" padding="0" halign="center">
-								<html key="manufacturingText" width="615px" height="188px" showError="false"/>
-							</VerticalPanel>
 						</row>
 						</TablePanel>
 				</VerticalPanel>

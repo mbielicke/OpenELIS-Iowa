@@ -26,24 +26,31 @@
 package org.openelis.modules.environmentalSampleLogin.server;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 
 import org.openelis.domain.AddressDO;
 import org.openelis.domain.AnalysisTestDO;
 import org.openelis.domain.IdNameDO;
+import org.openelis.domain.OrganizationAutoDO;
 import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleEnvironmentalDO;
 import org.openelis.domain.SampleItemDO;
 import org.openelis.domain.SampleOrganizationDO;
 import org.openelis.domain.SampleProjectDO;
+import org.openelis.domain.SectionDO;
+import org.openelis.domain.TestMethodAutoDO;
 import org.openelis.gwt.common.DatetimeRPC;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.Query;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.data.CheckField;
+import org.openelis.gwt.common.data.DateField;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.FieldType;
 import org.openelis.gwt.common.data.IntegerField;
+import org.openelis.gwt.common.data.IntegerObject;
 import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.common.data.TableDataModel;
@@ -52,6 +59,7 @@ import org.openelis.gwt.common.data.TreeDataItem;
 import org.openelis.gwt.common.data.TreeDataModel;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
+import org.openelis.gwt.services.AutoCompleteServiceInt;
 import org.openelis.gwt.widget.table.TableModel;
 import org.openelis.manager.AnalysesManager;
 import org.openelis.manager.SampleEnvironmentalManager;
@@ -60,24 +68,33 @@ import org.openelis.manager.SampleManager;
 import org.openelis.manager.SampleManagerIOClient;
 import org.openelis.manager.SampleOrganizationsManager;
 import org.openelis.manager.SampleProjectsManager;
+import org.openelis.modules.environmentalSampleLogin.client.AnalysisForm;
 import org.openelis.modules.environmentalSampleLogin.client.EnvironmentalSampleLoginForm;
 import org.openelis.modules.environmentalSampleLogin.client.EnvironmentalSubForm;
-import org.openelis.modules.environmentalSampleLogin.client.SampleItemsForm;
+import org.openelis.modules.environmentalSampleLogin.client.SampleItemAndAnalysisForm;
+import org.openelis.modules.environmentalSampleLogin.client.SampleItemForm;
 import org.openelis.modules.environmentalSampleLogin.client.SampleLocationForm;
 import org.openelis.modules.environmentalSampleLogin.client.SampleOrgProjectForm;
 import org.openelis.modules.environmentalSampleLogin.client.SampleTreeForm;
+import org.openelis.modules.environmentalSampleLogin.client.TreeDataItemSampleItem;
+import org.openelis.modules.environmentalSampleLogin.client.TreeDataItemTest;
 import org.openelis.modules.organization.client.NotesForm;
 import org.openelis.persistence.EJBFactory;
+import org.openelis.remote.OrganizationRemote;
 import org.openelis.remote.SampleEnvironmentalRemote;
+import org.openelis.remote.SectionRemote;
+import org.openelis.remote.TestRemote;
 import org.openelis.server.constants.Constants;
 import org.openelis.server.handlers.AnalysisStatusCacheHandler;
 import org.openelis.server.handlers.SampleContainerCacheHandler;
 import org.openelis.server.handlers.SampleStatusCacheHandler;
+import org.openelis.server.handlers.SampleTypeCacheHandler;
+import org.openelis.server.handlers.UnitOfMeasureCacheHandler;
 import org.openelis.util.Datetime;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
 
-public class EnvironmentalSampleLoginService implements AppScreenFormServiceInt<EnvironmentalSampleLoginForm,Query<TableDataRow<Integer>>>{
+public class EnvironmentalSampleLoginService implements AppScreenFormServiceInt<EnvironmentalSampleLoginForm,Query<TableDataRow<Integer>>>, AutoCompleteServiceInt {
 
     private UTFResource openElisConstants= UTFResource.getBundle((String)SessionManager.getSession().getAttribute("locale"));
     private static final int leftTableRowsPerPage = 12;
@@ -187,7 +204,7 @@ public class EnvironmentalSampleLoginService implements AppScreenFormServiceInt<
         
         setFieldsInRPC(rpc, sampleDO);
         loadDomainForm(rpc.envInfoForm, (SampleEnvironmentalManager)manager.getAdditionalDomainManager());
-        loadSampleItemsForm(rpc.sampleItemsForm, manager.getSampleItemsManager());
+        loadSampleItemsForm(rpc.sampleItemAndAnalysisForm, manager.getSampleItemsManager());
         loadOrgProjectForm(rpc.orgProjectForm, manager.getOrganizationsManager(), manager.getProjectsManager());
         
         //save the new manager in the session
@@ -218,7 +235,7 @@ public class EnvironmentalSampleLoginService implements AppScreenFormServiceInt<
         
         setFieldsInRPC(rpc, sampleDO);
         loadDomainForm(rpc.envInfoForm, (SampleEnvironmentalManager)manager.getAdditionalDomainManager());
-        loadSampleItemsForm(rpc.sampleItemsForm, manager.getSampleItemsManager());
+        loadSampleItemsForm(rpc.sampleItemAndAnalysisForm, manager.getSampleItemsManager());
         loadOrgProjectForm(rpc.orgProjectForm, manager.getOrganizationsManager(), manager.getProjectsManager());
         
         //save the new manager in the session
@@ -239,7 +256,7 @@ public class EnvironmentalSampleLoginService implements AppScreenFormServiceInt<
         
         setFieldsInRPC(rpc, sampleDO);
         loadDomainForm(rpc.envInfoForm, (SampleEnvironmentalManager)manager.getAdditionalDomainManager());
-        loadSampleItemsForm(rpc.sampleItemsForm, manager.getSampleItemsManager());
+        loadSampleItemsForm(rpc.sampleItemAndAnalysisForm, manager.getSampleItemsManager());
         loadOrgProjectForm(rpc.orgProjectForm, manager.getOrganizationsManager(), manager.getProjectsManager());
         
         //save the new manager in the session
@@ -259,10 +276,12 @@ public class EnvironmentalSampleLoginService implements AppScreenFormServiceInt<
         SessionManager.getSession().setAttribute("analysisStatusesVersion",AnalysisStatusCacheHandler.version);
         rpc.sampleContainers = SampleContainerCacheHandler.getSampleContainers();
         SessionManager.getSession().setAttribute("sampleContainerVersion",SampleContainerCacheHandler.version);
-        //rpc.sampleTypes = SampleTypeCacheHandler.getSampleTypes();
-        //SessionManager.getSession().setAttribute("sampleTypeVersion",SampleTypeCacheHandler.version);
+        rpc.sampleTypes = SampleTypeCacheHandler.getSampleTypes();
+        SessionManager.getSession().setAttribute("sampleTypeVersion",SampleTypeCacheHandler.version);
         rpc.sampleStatuses = SampleStatusCacheHandler.getSampleStatuses();
         SessionManager.getSession().setAttribute("sampleStatusVersion",SampleStatusCacheHandler.version);
+        rpc.units = UnitOfMeasureCacheHandler.getUnitsOfMeasure();
+        SessionManager.getSession().setAttribute("unitsOfMeasureVersion",UnitOfMeasureCacheHandler.version);
         
         return rpc;
     }
@@ -274,7 +293,9 @@ public class EnvironmentalSampleLoginService implements AppScreenFormServiceInt<
         int analysisStatuses = (Integer)SessionManager.getSession().getAttribute("analysisStatusesVersion");
         int sampleContainers = (Integer)SessionManager.getSession().getAttribute("sampleContainerVersion");
         int sampleStatuses = (Integer)SessionManager.getSession().getAttribute("sampleStatusVersion");
-        //int sampleTypes = (Integer)SessionManager.getSession().getAttribute("sampleTypeVersion");
+        int sampleTypes = (Integer)SessionManager.getSession().getAttribute("sampleTypeVersion");
+        int units = (Integer)SessionManager.getSession().getAttribute("unitsOfMeasureVersion");        
+        
         /*
          * Compare stored version to current cache versions and update if necessary. 
          */
@@ -290,10 +311,14 @@ public class EnvironmentalSampleLoginService implements AppScreenFormServiceInt<
             rpc.sampleStatuses = SampleStatusCacheHandler.getSampleStatuses();
             SessionManager.getSession().setAttribute("sampleStatusVersion",SampleStatusCacheHandler.version);
         }
-        //if(sampleTypes != SampleTypeCacheHandler.version){
-        //    rpc.sampleTypes = SampleTypeCacheHandler.getSampleTypes();
-        //    SessionManager.getSession().setAttribute("sampleTypeVersion",SampleTypeCacheHandler.version);
-        //}
+        if(sampleTypes != SampleTypeCacheHandler.version){
+            rpc.sampleTypes = SampleTypeCacheHandler.getSampleTypes();
+            SessionManager.getSession().setAttribute("sampleTypeVersion",SampleTypeCacheHandler.version);
+        }
+        if(units != UnitOfMeasureCacheHandler.version){
+            rpc.units = UnitOfMeasureCacheHandler.getUnitsOfMeasure();
+            SessionManager.getSession().setAttribute("unitsOfMeasureVersion",UnitOfMeasureCacheHandler.version);
+        }
     }
     
     private void setFieldsInRPC(EnvironmentalSampleLoginForm form, SampleDO sampleDO){
@@ -348,21 +373,119 @@ public class EnvironmentalSampleLoginService implements AppScreenFormServiceInt<
         
     }
     
-    private void loadSampleItemsForm(SampleItemsForm form, SampleItemsManager itemsManager) {
+    private void loadSampleItemsForm(SampleItemAndAnalysisForm form, SampleItemsManager itemsManager) {
+        int i, j;
+        AnalysesManager am;
+        SampleItemDO itemDO;
+        TreeDataItem tmp;
+        TreeDataItem treeModelItem, row;
+        AnalysisForm analysisSubForm;
+        SampleItemForm itemSubForm;
+        Hashtable<Integer, TreeDataItem> keyTable = new Hashtable<Integer, TreeDataItem>();
+        
         TreeDataModel treeModel = form.itemsTestsTree.getValue();
         treeModel.clear();
         
-        for(int i=0; i<itemsManager.count(); i++){
-            SampleItemDO itemDO = (SampleItemDO)itemsManager.getSampleItemAt(i);
-            TreeDataItem row = treeModel.createTreeItem("sampleItem");
-            row.lazy = true;
+        for(i=0; i<itemsManager.count(); i++){
+            itemDO = itemsManager.getSampleItemAt(i);
             
+            row = new TreeDataItem(2);
+            row.leafType = "sampleItem";
+            row.toggle();
+            
+            itemSubForm = new SampleItemForm();
+            itemSubForm.entityKey = itemDO.getId();
+            itemSubForm.container.setValue(new TableDataRow<Integer>(itemDO.getContainerId(), new StringObject(itemDO.getContainer())));
+            itemSubForm.containerReference.setValue(itemDO.getContainerReference());
+            itemSubForm.quantity.setValue(itemDO.getQuantity());
+            itemSubForm.typeOfSample.setValue(new TableDataRow<Integer>(itemDO.getTypeOfSampleId(), new StringObject(itemDO.getTypeOfSample())));
+            itemSubForm.unitOfMeasure.setValue(new TableDataRow<Integer>(itemDO.getUnitOfMeasureId()));
+            itemSubForm.itemSequence = itemDO.getItemSequence();
+            
+            row.setData(itemSubForm);
+            row.key = itemDO.getId();
             //container
-            row.cells[0].setValue(itemDO.getItemSequence()+" - "+itemDO.getContainer());
+            row.cells[0] = new StringObject(itemDO.getItemSequence()+" - "+itemDO.getContainer());
             //source,type
-            row.cells[1].setValue(itemDO.getTypeOfSample());
+            row.cells[1] = new StringObject(itemDO.getTypeOfSample());
             
-            treeModel.add(row);
+            tmp = keyTable.get(itemDO.getId());
+            if(tmp != null){
+                tmp.addItem(row);
+            }else{
+                keyTable.put(itemDO.getId(), row);
+                treeModel.add(row);
+            }
+            
+            am = itemsManager.getAnalysisAt(i);
+            for(j=0; j<am.count(); j++){
+                AnalysisTestDO aDO = (AnalysisTestDO)am.getAnalysisAt(j);
+                
+                //TreeDataItemTest treeModelItem = new TreeDataItemTest(2);
+                treeModelItem = new TreeDataItem(2);
+                treeModelItem.leafType = "analysis";
+                analysisSubForm = new AnalysisForm();
+                analysisSubForm.entityKey = aDO.getId();
+         
+                //autocomplete
+                if(aDO.getTestId() == null){
+                    analysisSubForm.testId.clear();
+                    analysisSubForm.testId.setModel(null);
+                }else{
+                    TableDataModel<TableDataRow<Integer>> model = new TableDataModel<TableDataRow<Integer>>();
+                    TableDataRow<Integer> testRow = new TableDataRow<Integer>(aDO.getTestId(), new FieldType[]{new StringObject(aDO.test.getName()), new StringObject(aDO.test.getMethodName())});
+                    testRow.setData(new IntegerObject(aDO.test.getMethodId()));
+                    model.add(testRow);
+                    analysisSubForm.testId.setModel(model);
+                    analysisSubForm.testId.setValue(model.get(0));
+                }
+                
+                //autocomplete
+                if(aDO.test.getMethodId() == null){
+                    analysisSubForm.methodId.clear();
+                    analysisSubForm.methodId.setModel(null);
+                }else{
+                    TableDataModel<TableDataRow<Integer>> model = new TableDataModel<TableDataRow<Integer>>();
+                    model.add(new TableDataRow<Integer>(aDO.test.getMethodId(), new StringObject(aDO.test.getMethodName())));
+                    analysisSubForm.methodId.setModel(model);
+                    analysisSubForm.methodId.setValue(model.get(0));
+                }
+                
+                //autocomplete
+                if(aDO.getSectionId() == null){
+                    analysisSubForm.sectionId.clear();
+                    analysisSubForm.sectionId.setModel(null);
+                }else{
+                    TableDataModel<TableDataRow<Integer>> model = new TableDataModel<TableDataRow<Integer>>();
+                    model.add(new TableDataRow<Integer>(aDO.getSectionId(), new StringObject(aDO.getSection())));
+                    analysisSubForm.sectionId.setModel(model);
+                    analysisSubForm.sectionId.setValue(model.get(0));
+                }
+               
+                analysisSubForm.statusId.setValue(new TableDataRow<Integer>(aDO.getStatusId()));
+                analysisSubForm.revision.setValue(aDO.getRevision());
+                analysisSubForm.isReportable.setValue(aDO.getIsReportable());
+                
+                if (aDO.getStartedDate() != null && aDO.getStartedDate().getDate() != null)
+                    analysisSubForm.startedDate.setValue(DatetimeRPC.getInstance(Datetime.YEAR, Datetime.DAY, aDO.getStartedDate().getDate()));
+                
+                if (aDO.getCompletedDate() != null && aDO.getCompletedDate().getDate() != null)
+                    analysisSubForm.completedDate.setValue(DatetimeRPC.getInstance(Datetime.YEAR, Datetime.DAY, aDO.getCompletedDate().getDate()));
+                
+                if (aDO.getReleasedDate() != null && aDO.getReleasedDate().getDate() != null)
+                    analysisSubForm.releasedDate.setValue(DatetimeRPC.getInstance(Datetime.YEAR, Datetime.DAY, aDO.getReleasedDate().getDate()));
+                
+                if (aDO.getPrintedDate() != null && aDO.getPrintedDate().getDate() != null)
+                    analysisSubForm.printedDate.setValue(DatetimeRPC.getInstance(Datetime.YEAR, Datetime.DAY, aDO.getPrintedDate().getDate()));
+                
+                treeModelItem.setData(analysisSubForm);
+                
+                treeModelItem.key = aDO.getId();
+                treeModelItem.cells[0] = new StringObject(aDO.test.getName() + " : " + aDO.test.getMethodName());
+                treeModelItem.cells[1] = new DropDownField<Integer>(new TableDataRow<Integer>(aDO.getStatusId()));
+                
+                row.addItem(treeModelItem);
+            }
         }
     }
     
@@ -453,26 +576,127 @@ public class EnvironmentalSampleLoginService implements AppScreenFormServiceInt<
         
         return tableModel;
     }
+
+    public TableDataModel getMatches(String cat, TableDataModel model, String match, HashMap<String, FieldType> params) throws RPCException {
+        if(cat.equals("testMethod"))
+            return getTestMethodMatches(match);
+        else if(cat.equals("section"))
+            return getSectionMatches(match);
+        return null;
+    }
     
+    private TableDataModel<TableDataRow<Integer>> getTestMethodMatches(String match){
+        TestRemote remote = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
+        TableDataModel<TableDataRow<Integer>> dataModel = new TableDataModel<TableDataRow<Integer>>();
+        List autoCompleteList;
+    
+        autoCompleteList = remote.getTestAutoCompleteByName(match+"%", 10);
+        
+        for(int i=0; i < autoCompleteList.size(); i++){
+            TestMethodAutoDO resultDO = (TestMethodAutoDO) autoCompleteList.get(i);
+            Integer testId = resultDO.getTestId();
+            String testName = resultDO.getTestName();
+            Integer methodId = resultDO.getMethodId();
+            String methodName = resultDO.getMethodName();
+
+            TableDataRow<Integer> data = new TableDataRow<Integer>(testId,
+                                                                   new FieldType[] {
+                                                                                    new StringObject(testName),
+                                                                                    new StringObject(methodName)
+                                                                   }
+                                         );
+            data.setData(new IntegerObject(methodId));
+            
+            //add the dataset to the datamodel
+            dataModel.add(data);                            
+        }       
+        
+        return dataModel;       
+    }
+    
+    private TableDataModel<TableDataRow<Integer>> getSectionMatches(String match){
+        SectionRemote remote = (SectionRemote)EJBFactory.lookup("openelis/SectionBean/remote");
+        TableDataModel<TableDataRow<Integer>> dataModel = new TableDataModel<TableDataRow<Integer>>();
+        List autoCompleteList;
+    
+        autoCompleteList = remote.getAutoCompleteSectionByName(match+"%", 10);
+        
+        for(int i=0; i < autoCompleteList.size(); i++){
+            SectionDO resultDO = (SectionDO) autoCompleteList.get(i);
+            Integer id = resultDO.getId();
+            String name = resultDO.getName();
+            
+            TableDataRow<Integer> data = new TableDataRow<Integer>(id, new StringObject(name));
+            
+            //add the dataset to the datamodel
+            dataModel.add(data);                            
+        }       
+        
+        return dataModel;       
+    }
+    
+    /*
     public SampleTreeForm getSampleItemAnalysesTreeModel(SampleTreeForm rpc) throws RPCException{
         //get manager from session
         SampleManager manager = (SampleManager)SessionManager.getSession().getAttribute("envScreenSampleManager");
-        AnalysesManager am = manager.getSampleItemsManager().getAnalysisAt(rpc.treeRow);
+        SampleItemsManager sim = manager.getSampleItemsManager();
+        AnalysesManager am = sim.getAnalysisAt(rpc.treeRow);
         
+        //get analyses for the sample item
         TreeDataModel treeModel = new TreeDataModel();
         for(int i=0; i<am.count(); i++){
             AnalysisTestDO aDO = (AnalysisTestDO)am.getAnalysisAt(i);
                     
+            //TreeDataItemTest treeModelItem = new TreeDataItemTest(2);
             TreeDataItem treeModelItem = new TreeDataItem(2);
             treeModelItem.leafType = "analysis";
-            treeModelItem.key = (aDO.getId());
-            treeModelItem.cells[0] = new StringObject(aDO.test.getName() + " : " + aDO.test.getMethodName());
-            treeModelItem.cells[1] = new DropDownField<Integer>(new TableDataRow<Integer>(aDO.getStatusId()));
+            AnalysisForm analysisSubForm = new AnalysisForm();
+            analysisSubForm.testName.setValue(aDO.test.getName());
+            analysisSubForm.statusId.setValue(aDO.test.getMethodName());
+            analysisSubForm.methodName.setValue(new TableDataRow<Integer>(aDO.getStatusId()));
+            analysisSubForm.entityKey = aDO.getId();
+            
+            treeModelItem.setData(analysisSubForm);
+            
+            treeModelItem.cells[0] = new StringObject();
+            //aDO.test.getName() + " : " + aDO.test.getMethodName());
+            treeModelItem.cells[1] = new DropDownField<Integer>();
+            //new TableDataRow<Integer>(aDO.getStatusId()));
             
             treeModel.add(treeModelItem);
+        }
+        
+        //get child sample items
+        List childItemList = sim.getChildSampleItems(rpc.sampleItemId);
+        
+        for(int i=0; i<childItemList.size(); i++){
+            SampleItemDO itemDO = (SampleItemDO)childItemList.get(i);
+            //TreeDataItemSampleItem row = new TreeDataItemSampleItem(2);
+            TreeDataItem row = new TreeDataItem(2);
+            row.leafType = "sampleItem";
+            row.lazy = true;
+            SampleItemForm itemSubForm = new SampleItemForm();
+            itemSubForm.entityKey = itemDO.getId();
+            itemSubForm.container.setValue(new TableDataRow<Integer>(itemDO.getContainerId(), new StringObject(itemDO.getContainer())));
+            itemSubForm.containerReference.setValue(itemDO.getContainerReference());
+            itemSubForm.quantity.setValue(itemDO.getQuantity());
+            itemSubForm.typeOfSample.setValue(new TableDataRow<Integer>(itemDO.getTypeOfSampleId(), new StringObject(itemDO.getTypeOfSample())));
+            itemSubForm.unitOfMeasure.setValue(new TableDataRow<Integer>(itemDO.getUnitOfMeasureId()));
+            itemSubForm.itemSequence = itemDO.getItemSequence();
+            
+            row.setData(itemSubForm);
+            //container
+            row.cells[0] = new StringObject();
+            //itemDO.getItemSequence()+" - "+itemDO.getContainer());
+            //source,type
+            row.cells[1] = new StringObject();
+            //itemDO.getTypeOfSample());
+            
+            treeModel.add(row);
         }
         
         rpc.treeModel = treeModel;
         return rpc;
     }
+    */
 }

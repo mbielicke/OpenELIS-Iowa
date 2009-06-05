@@ -46,12 +46,12 @@
 			serviceUrl="ElisService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 			<display>
 				<VerticalPanel spacing="0" padding="0">
-					<VerticalPanel style="WhiteContentPanel" spacing="0" padding="0" width="300px">
-							<richtext key="richText" tools="true" width="500px" height="400px" showError="false"/>
+					<VerticalPanel style="RichTextContentPanel" spacing="0" padding="0" width="300px">
+							<richtext key="richText" tools="true" width="100%" height="250px" showError="false"/>
 					</VerticalPanel>
 					
 					<!--button panel code-->
-					<AbsolutePanel spacing="0" style="ButtonPanelContainer"
+					<AbsolutePanel spacing="0" style="BottomButtonPanelContainer"
 						align="center">
 						<buttonPanel key="buttons">
 							<xsl:call-template name="popupSelectButton">

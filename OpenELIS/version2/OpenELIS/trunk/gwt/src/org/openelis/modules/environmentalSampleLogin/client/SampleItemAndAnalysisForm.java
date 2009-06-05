@@ -27,49 +27,33 @@ package org.openelis.modules.environmentalSampleLogin.client;
 
 import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.data.AbstractField;
-import org.openelis.gwt.common.data.DropDownField;
-import org.openelis.gwt.common.data.StringField;
-import org.openelis.metamap.SampleEnvironmentalMetaMap;
+import org.openelis.gwt.common.data.TreeField;
 
 import com.google.gwt.xml.client.Node;
 
-public class SampleOrgProjectForm extends Form<Integer> {
+public class SampleItemAndAnalysisForm extends Form<Integer> {
 
     private static final long serialVersionUID = 1L;
-
-    public DropDownField<Integer> projectName;
-    public DropDownField<Integer> reportToName;
-    public DropDownField<Integer> billToName;
     
-    public SampleOrganizationForm sampleOrgForm;
-    public SampleProjectForm sampleProjectForm;
+    public TreeField itemsTestsTree;
     
-    public SampleOrgProjectForm() {
-        SampleEnvironmentalMetaMap meta = new SampleEnvironmentalMetaMap();
-        projectName = new DropDownField<Integer>(meta.SAMPLE.SAMPLE_PROJECT.PROJECT.getName());
-        reportToName = new DropDownField<Integer>(meta.SAMPLE.SAMPLE_ORGANIZATION.ORGANIZATION.getName());
-        billToName = new DropDownField<Integer>("billTo");
-        sampleOrgForm = new SampleOrganizationForm("sampleOrganization");
-        sampleProjectForm = new SampleProjectForm("sampleProject");
+    public SampleItemAndAnalysisForm() {
+        itemsTestsTree = new TreeField("itemsTestsTree");
    }
    
-   public SampleOrgProjectForm(Node node) {
+   public SampleItemAndAnalysisForm(Node node) {
        this();
        createFields(node);
    }
    
-   public SampleOrgProjectForm(String key) {
+   public SampleItemAndAnalysisForm(String key) {
        this();
        this.key = key;
    }
    
    public AbstractField[] getFields() {
        return new AbstractField[] {
-                                   projectName,
-                                   reportToName,
-                                   billToName,
-                                   sampleOrgForm,
-                                   sampleProjectForm
+                                   itemsTestsTree
        };
    }
 }

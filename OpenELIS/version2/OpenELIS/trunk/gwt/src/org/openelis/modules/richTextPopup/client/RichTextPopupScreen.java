@@ -60,13 +60,13 @@ public class RichTextPopupScreen extends OpenELISScreenForm<RichTextPopupForm,Qu
     public void afterDraw(boolean sucess) {
         richText = (RichTextWidget)getWidget("richText");
         
-        if(targetHtmlWidget.getHTML() != null)
-            richText.setText(targetHtmlWidget.getHTML());
-        
         addCommandListener((ButtonPanel) getWidget("buttons"));
         ((ButtonPanel)getWidget("buttons")).addCommandListener(this);
         
         super.afterDraw(sucess);
+        
+        if(targetHtmlWidget.getHTML() != null)
+            richText.setText(targetHtmlWidget.getHTML());
     }
     
     public void commit() {

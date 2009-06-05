@@ -50,17 +50,20 @@ private static final long serialVersionUID = 1L;
     public StringField clientReference;
     
     public EnvironmentalSubForm envInfoForm;
-    public SampleItemsForm sampleItemsForm;
+    public SampleItemAndAnalysisForm sampleItemAndAnalysisForm;
     public SampleOrgProjectForm orgProjectForm;
+    public SampleItemForm sampleItemForm;
     public TestInfoForm testInfoForm;
     public AnalysisForm analysisForm;
     public ExternalCommentForm externalCommentForm;
     public InternalCommentForm internalCommentForm;
     
+    
     public TableDataModel<TableDataRow<Integer>> analysisStatuses;
     public TableDataModel<TableDataRow<Integer>> sampleContainers;
     public TableDataModel<TableDataRow<Integer>> sampleStatuses;
     public TableDataModel<TableDataRow<Integer>> sampleTypes;
+    public TableDataModel<TableDataRow<Integer>> units;
     
     public EnvironmentalSampleLoginForm() {
         SampleEnvironmentalMetaMap meta = new SampleEnvironmentalMetaMap();
@@ -75,12 +78,13 @@ private static final long serialVersionUID = 1L;
         
         //forms
         envInfoForm = new EnvironmentalSubForm("envInfo");
-        sampleItemsForm = new SampleItemsForm("sampleItems");
+        sampleItemAndAnalysisForm = new SampleItemAndAnalysisForm("sampleItemAndAnalysis");
         orgProjectForm = new SampleOrgProjectForm("orgprojectInfo");
+        sampleItemForm = new SampleItemForm("sampleItemForm");
         testInfoForm = new TestInfoForm("testInfoResult");
         analysisForm = new AnalysisForm("analysis");
-        externalCommentForm = new ExternalCommentForm("externalComment");
-        internalCommentForm = new InternalCommentForm("internalComments");
+        externalCommentForm = new ExternalCommentForm("analysisExternalComment");
+        internalCommentForm = new InternalCommentForm("analysisInternalComments");
    }
    
    public EnvironmentalSampleLoginForm(Node node) {
@@ -99,7 +103,8 @@ private static final long serialVersionUID = 1L;
                                        statusId,
                                        clientReference,
                                        envInfoForm,
-                                       sampleItemsForm,
+                                       sampleItemAndAnalysisForm,
+                                       sampleItemForm,
                                        orgProjectForm,
                                        testInfoForm,
                                        analysisForm,

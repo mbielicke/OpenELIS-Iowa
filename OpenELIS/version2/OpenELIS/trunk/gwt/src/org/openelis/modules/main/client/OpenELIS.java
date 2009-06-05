@@ -61,9 +61,11 @@ import org.openelis.gwt.screen.ScreenButtonPanel;
 import org.openelis.gwt.screen.ScreenCalendar;
 import org.openelis.gwt.screen.ScreenCheck;
 import org.openelis.gwt.screen.ScreenCollapsePanel;
+import org.openelis.gwt.screen.ScreenCommandButton;
 import org.openelis.gwt.screen.ScreenDropDownWidget;
 import org.openelis.gwt.screen.ScreenHTML;
 import org.openelis.gwt.screen.ScreenHorizontal;
+import org.openelis.gwt.screen.ScreenIcon;
 import org.openelis.gwt.screen.ScreenLabel;
 import org.openelis.gwt.screen.ScreenLookUp;
 import org.openelis.gwt.screen.ScreenMaskedBox;
@@ -167,6 +169,16 @@ public class OpenELIS implements EntryPoint, EventListener {
                                       return null;
                                   }
       });
+      ClassFactory.addClassFactory(new String[] {ScreenCommandButton.class.getName(),ScreenCommandButton.TAG_NAME},
+                                   new ClassFactory.Factory() {
+                                         public Object newInstance(Object args[]) {
+                                             if(args == null)
+                                                 return new ScreenCommandButton();
+                                             else if(args[0] instanceof Node)
+                                                 return new ScreenCommandButton((Node)args[0],(ScreenBase)args[1]);
+                                             return null;
+                                         }
+             });
       ClassFactory.addClassFactory(new String[] {ScreenAbsolute.class.getName(),ScreenAbsolute.TAG_NAME},
                             new ClassFactory.Factory() {
                                   public Object newInstance(Object[] args) {
@@ -177,6 +189,16 @@ public class OpenELIS implements EntryPoint, EventListener {
                                       return null;
                                   }
       });
+      ClassFactory.addClassFactory(new String[] {ScreenIcon.class.getName(),ScreenIcon.TAG_NAME},
+                                   new ClassFactory.Factory() {
+                                         public Object newInstance(Object[] args) {
+                                             if(args == null)
+                                                 return new ScreenIcon();
+                                             else if(args[0] instanceof Node)
+                                                 return new ScreenIcon((Node)args[0],(ScreenBase)args[1]);
+                                             return null;
+                                         }
+             });
       ClassFactory.addClassFactory(new String[] {ScreenAppButton.class.getName(),ScreenAppButton.TAG_NAME},
                             new ClassFactory.Factory() {
                                   public Object newInstance(Object[] args) {
