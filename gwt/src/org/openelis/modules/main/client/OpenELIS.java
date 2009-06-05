@@ -25,16 +25,6 @@
 */
 package org.openelis.modules.main.client;
 
-import com.google.gwt.core.client.EntryPoint;
-import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.EventListener;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.WindowCloseListener;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.xml.client.Node;
-
 import org.openelis.gwt.common.data.CheckField;
 import org.openelis.gwt.common.data.DateField;
 import org.openelis.gwt.common.data.DoubleField;
@@ -65,7 +55,6 @@ import org.openelis.gwt.screen.ScreenCommandButton;
 import org.openelis.gwt.screen.ScreenDropDownWidget;
 import org.openelis.gwt.screen.ScreenHTML;
 import org.openelis.gwt.screen.ScreenHorizontal;
-import org.openelis.gwt.screen.ScreenIcon;
 import org.openelis.gwt.screen.ScreenLabel;
 import org.openelis.gwt.screen.ScreenLookUp;
 import org.openelis.gwt.screen.ScreenMaskedBox;
@@ -100,6 +89,16 @@ import org.openelis.gwt.widget.table.TableLabel;
 import org.openelis.gwt.widget.table.TableMaskedTextBox;
 import org.openelis.gwt.widget.table.TableTextBox;
 import org.openelis.gwt.widget.tree.TableTree;
+
+import com.google.gwt.core.client.EntryPoint;
+import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.EventListener;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.WindowCloseListener;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.xml.client.Node;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
@@ -189,16 +188,6 @@ public class OpenELIS implements EntryPoint, EventListener {
                                       return null;
                                   }
       });
-      ClassFactory.addClassFactory(new String[] {ScreenIcon.class.getName(),ScreenIcon.TAG_NAME},
-                                   new ClassFactory.Factory() {
-                                         public Object newInstance(Object[] args) {
-                                             if(args == null)
-                                                 return new ScreenIcon();
-                                             else if(args[0] instanceof Node)
-                                                 return new ScreenIcon((Node)args[0],(ScreenBase)args[1]);
-                                             return null;
-                                         }
-             });
       ClassFactory.addClassFactory(new String[] {ScreenAppButton.class.getName(),ScreenAppButton.TAG_NAME},
                             new ClassFactory.Factory() {
                                   public Object newInstance(Object[] args) {
