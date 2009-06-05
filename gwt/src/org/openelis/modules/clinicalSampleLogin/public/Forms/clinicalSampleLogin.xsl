@@ -382,7 +382,7 @@ UIRF Software License are applicable instead of those above.
 					</VerticalPanel>
 				</HorizontalPanel>
 				<TabPanel height="170px" key="sampleItemTabPanel">
-					<tab key="tab1" text="{resource:getString($constants,'testInfoResult')}">
+					<tab key="tab1" text="{resource:getString($constants,'testResults')}">
 						<VerticalPanel height="170px" width="730px"/>
 					</tab>
 					<tab key="tab2" text="{resource:getString($constants,'analysis')}">

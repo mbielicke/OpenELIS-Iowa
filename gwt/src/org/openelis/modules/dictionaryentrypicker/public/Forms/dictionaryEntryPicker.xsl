@@ -95,7 +95,7 @@ UIRF Software License are applicable instead of those above.
 							
 	     </widget>						
 							
-	  <AbsolutePanel spacing="0" style="ButtonPanelContainer" align="center">
+	  <AbsolutePanel spacing="0" style="BottomButtonPanelContainer" align="center">
     			<buttonPanel key="buttons">
     			<xsl:call-template name="popupSelectButton">
 						<xsl:with-param name="language">
