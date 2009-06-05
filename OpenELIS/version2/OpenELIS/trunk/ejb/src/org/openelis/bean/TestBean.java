@@ -929,6 +929,13 @@ public class TestBean implements TestRemote {
         return entryList;
      }
     
+    public List getTestAutoCompleteByName(String name, int maxResults){
+        Query query = manager.createNamedQuery("Test.TestMethodAutoByName");
+        query.setParameter("name", name);       
+        query.setMaxResults(maxResults);
+
+        return query.getResultList();
+    }
 
     public List<Exception> validateForAdd(TestDO testDO,
                                List<TestPrepDO> prepTestDOList,
