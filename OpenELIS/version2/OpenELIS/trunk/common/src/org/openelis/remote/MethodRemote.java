@@ -46,10 +46,6 @@ public interface MethodRemote {
     
     public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception;
     
-    public List autoCompleteLookupByName(String name, int maxResults);
-    
-    public List validateForUpdate(MethodDO methodDO);
-    
-    public List validateForAdd(MethodDO methodDO);        
+    public List autoCompleteLookupByName(String name, int maxResults);   
 
 }

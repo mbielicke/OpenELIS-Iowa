@@ -34,14 +34,18 @@ import org.w3c.dom.Element;
 import org.openelis.util.Datetime;
 import org.openelis.util.XMLUtil;
 
+import java.util.Collection;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
@@ -50,7 +54,11 @@ import org.openelis.utils.Auditable;
 @NamedQueries( {
     @NamedQuery(name = "Project.ProjectByName", query = "select new org.openelis.domain.ProjectDO(p.id, p.name, " + 
                 " p.description, p.startedDate, p.completedDate, p.isActive, p.referenceTo, p.ownerId, p.scriptletId) " + 
-                " from Project p where p.name like :name")})
+                " from Project p where p.name like :name"),
+    @NamedQuery(name = "Project.ProjectById", query = "select new org.openelis.domain.ProjectDO(p.id, p.name, " + 
+                " p.description, p.startedDate, p.completedDate, p.isActive, p.referenceTo, p.ownerId, p.scriptletId) " + 
+                " from Project p where p.id = :id "),
+    @NamedQuery(name = "Project.ProjectListByName", query = "from Project p where p.name = :name order by p.name")            })
                 
 @Entity
 @Table(name="project")
@@ -86,10 +94,12 @@ public class Project implements Auditable, Cloneable {
   @Column(name="scriptlet_id")
   private Integer scriptletId;             
 
+  @OneToMany(fetch = FetchType.LAZY)
+  @JoinColumn(name = "project_id")
+  private Collection<ProjectParameter> projectParameter;
 
   @Transient
   private Project original;
-
   
   public Integer getId() {
     return id;
@@ -123,10 +133,10 @@ public class Project implements Auditable, Cloneable {
       return null;
     return new Datetime(Datetime.YEAR ,Datetime. DAY,startedDate);
   }
-  public void setStartedDate (Datetime started_date){
-    if((startedDate == null && this.startedDate != null) || 
-       (startedDate != null && !startedDate.equals(this.startedDate)))
-      this.startedDate = started_date.getDate();
+  public void setStartedDate (Datetime started_date){    
+    if((started_date == null && this.startedDate != null) || (started_date != null && this.startedDate == null) ||
+       (started_date != null && !started_date.equals(new Datetime(Datetime.YEAR, Datetime.DAY, this.startedDate))))
+        this.startedDate = started_date.getDate();
   }
 
   public Datetime getCompletedDate() {
@@ -134,10 +144,10 @@ public class Project implements Auditable, Cloneable {
       return null;
     return new Datetime(Datetime.YEAR ,Datetime. DAY,completedDate);
   }
-  public void setCompletedDate (Datetime completed_date){
-    if((completedDate == null && this.completedDate != null) || 
-       (completedDate != null && !completedDate.equals(this.completedDate)))
-      this.completedDate = completed_date.getDate();
+  public void setCompletedDate (Datetime completed_date){    
+    if((completed_date == null && this.completedDate != null) || (completed_date != null && this.completedDate == null) ||
+       (completed_date != null && !completed_date.equals(new Datetime(Datetime.YEAR, Datetime.DAY, this.startedDate))))
+        this.completedDate = completed_date.getDate();
   }
 
   public String getIsActive() {
@@ -175,7 +185,14 @@ public class Project implements Auditable, Cloneable {
        (scriptletId != null && !scriptletId.equals(this.scriptletId)))
       this.scriptletId = scriptletId;
   }
-
+ 
+  public Collection<ProjectParameter> getProjectParameter() {
+      return projectParameter;
+  }
+  
+  public void setProjectParameter(Collection<ProjectParameter> projectParameter) {
+      this.projectParameter = projectParameter;
+  }
   
   public void setClone() {
     try {
@@ -217,5 +234,6 @@ public class Project implements Auditable, Cloneable {
   public String getTableName() {
     return "project";
   }
+
   
 }   

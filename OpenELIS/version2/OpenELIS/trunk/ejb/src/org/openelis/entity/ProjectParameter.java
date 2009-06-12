@@ -31,19 +31,22 @@ package org.openelis.entity;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.openelis.util.Datetime;
 import org.openelis.util.XMLUtil;
 
-import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
+
+@NamedQueries({@NamedQuery(name = "ProjectParameter.ProjectParameterByProjectId", query = "select distinct new org.openelis.domain.ProjectParameterDO(pp.id,pp.projectId,"+
+                              "pp.parameter,pp.operationId,pp.value) from ProjectParameter pp where pp.projectId = :projectId")})
 
 @Entity
 @Table(name="project_parameter")
@@ -61,8 +64,8 @@ public class ProjectParameter implements Auditable, Cloneable {
   @Column(name="parameter")
   private String parameter;             
 
-  @Column(name="operation")
-  private String operation;             
+  @Column(name="operation_id")
+  private Integer operationId;             
 
   @Column(name="value")
   private String value;             
@@ -99,13 +102,13 @@ public class ProjectParameter implements Auditable, Cloneable {
       this.parameter = parameter;
   }
 
-  public String getOperation() {
-    return operation;
+  public Integer getOperationId() {
+    return operationId;
   }
-  public void setOperation(String operation) {
-    if((operation == null && this.operation != null) || 
-       (operation != null && !operation.equals(this.operation)))
-      this.operation = operation;
+  public void setOperationId(Integer operationId) {
+    if((operationId == null && this.operationId != null) || 
+       (operationId != null && !operationId.equals(this.operationId)))
+      this.operationId = operationId;
   }
 
   public String getValue() {
@@ -135,7 +138,7 @@ public class ProjectParameter implements Auditable, Cloneable {
 
       AuditUtil.getChangeXML(parameter,original.parameter,doc,"parameter");
 
-      AuditUtil.getChangeXML(operation,original.operation,doc,"operation");
+      AuditUtil.getChangeXML(operationId,original.operationId,doc,"operation_id");
 
       AuditUtil.getChangeXML(value,original.value,doc,"value");
 

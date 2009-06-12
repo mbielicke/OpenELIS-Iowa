@@ -40,11 +40,11 @@ public class ProjectParameterMeta implements Meta {
               ID					="id",
               PROJECT_ID					="projectId",
               PARAMETER					="parameter",
-              OPERATION					="operation",
+              OPERATION_ID					="operationId",
               VALUE					="value";
 
   	private static final String[] columnNames = {
-  	  ID,PROJECT_ID,PARAMETER,OPERATION,VALUE};
+  	  ID,PROJECT_ID,PARAMETER,OPERATION_ID,VALUE};
   	  
 	private HashSet<String> columnHashList;
     
@@ -89,8 +89,8 @@ public class ProjectParameterMeta implements Meta {
         return path + PARAMETER;
     } 
 
-    public String getOperation() {
-        return path + OPERATION;
+    public String getOperationId() {
+        return path + OPERATION_ID;
     } 
 
     public String getValue() {
