@@ -34,6 +34,7 @@ import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.TableFieldErrorException;
+import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.SecurityModule.ModuleFlags;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.QueryStringField;
@@ -42,6 +43,7 @@ import org.openelis.local.LockLocal;
 import org.openelis.messages.AuxFieldValueTypeCacheMessage;
 import org.openelis.messages.ContactTypeCacheMessage;
 import org.openelis.messages.CountryCacheMessage;
+import org.openelis.messages.ProjectParameterOperationCacheMessage;
 import org.openelis.messages.ProviderTypeCacheMessage;
 import org.openelis.messages.QaEventTypeCacheMessage;
 import org.openelis.messages.RoundingMethodCacheMessage;
@@ -170,34 +172,31 @@ public class CategoryBean implements CategoryRemote {
         Query query = manager.createNamedQuery("getTableId");
         query.setParameter("name", "category");
         Integer categoryReferenceId = (Integer)query.getSingleResult();
-
-        if (categoryDO.getId() != null) {
+        Integer categoryId = categoryDO.getId(); 
+        if (categoryId != null) {
             // we need to call lock one more time to make sure their lock didnt
             // expire and someone else grabbed the record
             try {
                 lockBean.validateLock(categoryReferenceId,categoryDO.getId());
-              } catch(Exception ex) {
-                 throw ex;
-              } 
-            lockBean.getLock(categoryReferenceId, categoryDO.getId());
+            } catch(Exception ex) {
+                throw ex;
+            } 
+            
         }
 
+        validateCategory(categoryDO, dictEntries);
+        
         manager.setFlushMode(FlushModeType.COMMIT);
 
         Category category = null;
         Dictionary dictionary = null;
 
-        List<Exception> exceptionList = new ArrayList<Exception>();
-        validateCategory(categoryDO, exceptionList);
-        if (exceptionList.size() > 0) {
-            throw (RPCException)exceptionList.get(0);
-        }
-
         // update the category
         if (categoryDO.getId() == null) {
             category = new Category();
         } else {
-            category = manager.find(Category.class, categoryDO.getId());
+            lockBean.getLock(categoryReferenceId, categoryId);
+            category = manager.find(Category.class, categoryId);
         }
 
         category.setDescription(categoryDO.getDescription());
@@ -210,12 +209,6 @@ public class CategoryBean implements CategoryRemote {
         }
         
         if(dictEntries!=null) {
-            exceptionList = new ArrayList<Exception>();
-            validateDictionary(dictEntries, exceptionList, category.getId());
-            if (exceptionList.size() > 0) {
-                throw (RPCException)exceptionList.get(0);
-            }
-            
             for (Iterator iter = dictEntries.iterator(); iter.hasNext();) {
                 DictionaryDO dictDO = (DictionaryDO)iter.next();
                 if (dictDO.getId() == null)
@@ -327,6 +320,10 @@ public class CategoryBean implements CategoryRemote {
         }else if(("test_worksheet_format").equals(categoryDO.getSystemName())){
             TestWorksheetFormatCacheMessage msg = new TestWorksheetFormatCacheMessage();
             msg.action = TestWorksheetFormatCacheMessage.Action.UPDATED;
+            jmsProducer.writeMessage(msg);
+        }else if(("project_parameter_operations").equals(categoryDO.getSystemName())){
+            ProjectParameterOperationCacheMessage msg = new ProjectParameterOperationCacheMessage();
+            msg.action = ProjectParameterOperationCacheMessage.Action.UPDATED;
             jmsProducer.writeMessage(msg);
         }
         
@@ -451,36 +448,30 @@ public class CategoryBean implements CategoryRemote {
     }
 
     private void validateCategory(CategoryDO categoryDO,
-                                  List<Exception> exceptionList) {
+                                  ValidationErrorsList exceptionList) {
 
         if (!("").equals(categoryDO.getSystemName())) {
             Query catIdQuery = manager.createNamedQuery("Category.IdBySystemName");
             catIdQuery.setParameter("systemName", categoryDO.getSystemName());
             Integer catId = null;
+            List<Integer> list = catIdQuery.getResultList();
             try {
-
-                catId = (Integer)catIdQuery.getSingleResult();
+                if(list.size()>0)
+                    catId = list.get(0);
             } catch (NoResultException ex) {
                 ex.printStackTrace();
-            } catch (Exception ex) {
-                exceptionList.add(ex);
             }
 
-            if (catId != null) {
-                if (!catId.equals(categoryDO.getId())) {
+            if (catId != null && !catId.equals(categoryDO.getId())) {
                     exceptionList.add(new FieldErrorException("fieldUniqueException",
                                                               CatMeta.getSystemName()));
-                }
-            }
-
+            }            
         } else {
-
             exceptionList.add(new FieldErrorException("fieldRequiredException",
                                                       CatMeta.getSystemName()));
         }
 
         if (("").equals(categoryDO.getName())) {
-
             exceptionList.add(new FieldErrorException("fieldRequiredException",
                                                       CatMeta.getName()));
         }
@@ -488,7 +479,7 @@ public class CategoryBean implements CategoryRemote {
     }
     
     private void validateDictionary(List<DictionaryDO> dictList,
-                                    List<Exception> exceptionList,
+                                    ValidationErrorsList exceptionList,
                                     Integer categoryId) { 
       ArrayList<String> systemNames = new ArrayList<String>();
       ArrayList<String> entries = new ArrayList<String>();  
@@ -496,7 +487,7 @@ public class CategoryBean implements CategoryRemote {
       for(int iter = 0; iter < dictList.size(); iter++) {             
         dictDO = dictList.get(iter);  
         if(!dictDO.getDelete()) {
-        if (dictDO.getEntry()!=null && !("").equals(dictDO.getEntry().trim())) {
+        if (dictDO.getEntry()!=null && !("").equals(dictDO.getEntry())) {
             if (!entries.contains(dictDO.getEntry())) {
                 entries.add(dictDO.getEntry());
             } else {
@@ -514,19 +505,18 @@ public class CategoryBean implements CategoryRemote {
                                                                   .getEntry()));
         }
 
-        if (dictDO.getSystemName() !=null && !("").equals(dictDO.getSystemName().trim())) {
+        if (dictDO.getSystemName() !=null && !("").equals(dictDO.getSystemName())) {
             if (!systemNames.contains(dictDO.getSystemName())) {
                 Query catIdQuery = manager.createNamedQuery("Dictionary.CategoryIdBySystemName");
                 catIdQuery.setParameter("systemName", dictDO.getSystemName());
                 Integer catId = null;
+                List<Integer> list = catIdQuery.getResultList();
                 try {
-                    if(catIdQuery.getResultList().size() > 0)
-                      catId = (Integer)catIdQuery.getResultList().get(0);
+                    if(list.size() > 0)
+                      catId = list.get(0);
                 } catch (NoResultException ex) {
                     ex.printStackTrace();
-                } catch (Exception ex) {
-                    exceptionList.add(ex);
-                }
+                } 
 
                 if (catId != null) {
                     if (!catId.equals(categoryId)) {
@@ -555,27 +545,17 @@ public class CategoryBean implements CategoryRemote {
       } 
      }   
     }
-
-    public List validateForAdd(CategoryDO categoryDO,
-                               List<DictionaryDO> dictDOList) {
-
-        List<Exception> exceptionList = new ArrayList<Exception>();
-
+    
+    private void validateCategory(CategoryDO categoryDO,
+                               List<DictionaryDO> dictDOList) throws Exception{
+        ValidationErrorsList exceptionList = new ValidationErrorsList();
         validateCategory(categoryDO, exceptionList);
         validateDictionary(dictDOList, exceptionList, categoryDO.getId());
-
-        return exceptionList;
+     
+        if(exceptionList.size() > 0)
+            throw exceptionList;
     }
 
-    public List validateForUpdate(CategoryDO categoryDO,
-                                  List<DictionaryDO> dictDOList) {
-        List<Exception> exceptionList = new ArrayList<Exception>();
-
-        validateCategory(categoryDO, exceptionList);
-        validateDictionary(dictDOList, exceptionList, categoryDO.getId());
-
-        return exceptionList;
-    }
 
     public List getDictionaryListByPatternAndCategory(QueryStringField pattern,
                                                       Integer categoryId) {

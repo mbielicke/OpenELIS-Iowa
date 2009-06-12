@@ -34,8 +34,8 @@ import org.openelis.entity.Provider;
 import org.openelis.entity.ProviderAddress;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.TableFieldErrorException;
+import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.local.AddressLocal;
 import org.openelis.local.LockLocal;
@@ -43,7 +43,6 @@ import org.openelis.local.ProviderLocal;
 import org.openelis.metamap.ProviderMetaMap;
 import org.openelis.remote.ProviderRemote;
 import org.openelis.security.domain.SystemUserDO;
-import org.openelis.security.local.SecurityLocal;
 import org.openelis.security.local.SystemUserLocal;
 import org.openelis.util.Datetime;
 import org.openelis.util.QueryBuilder;
@@ -68,7 +67,8 @@ import javax.persistence.Query;
 @Stateless
 @EJBs({
     @EJB(name="ejb/Lock",beanInterface=LockLocal.class),
-    @EJB(name="ejb/Address",beanInterface=AddressLocal.class)
+    @EJB(name="ejb/Address",beanInterface=AddressLocal.class),
+    @EJB(name="ejb/SystemUser",beanInterface=SystemUserLocal.class)
 })
 @SecurityDomain("openelis")
 @RolesAllowed("provider-select")
@@ -80,7 +80,7 @@ public class ProviderBean implements ProviderRemote, ProviderLocal {
     @Resource
     private SessionContext ctx;
     
-    @EJB private SystemUserLocal userLocal;
+    private SystemUserLocal userLocal;
     
     private LockLocal lockBean;
     private AddressLocal addressBean;
@@ -92,6 +92,7 @@ public class ProviderBean implements ProviderRemote, ProviderLocal {
     {
         lockBean =  (LockLocal)ctx.lookup("ejb/Lock");
         addressBean =  (AddressLocal)ctx.lookup("ejb/Address");
+        userLocal = (SystemUserLocal)ctx.lookup("ejb/SystemUser");
     }
     
     public ProviderDO getProvider(Integer providerId) {                 
@@ -170,78 +171,63 @@ public class ProviderBean implements ProviderRemote, ProviderLocal {
         Query query = manager.createNamedQuery("getTableId");
         query.setParameter("name", "provider");
         Integer providerReferenceId = (Integer)query.getSingleResult();
+        Integer providerId = providerDO.getId();
         
-        if(providerDO.getId() != null){
+        if(providerId != null){
             //we need to call lock one more time to make sure their lock didnt expire and someone else grabbed the record
-            try {
-                lockBean.validateLock(providerReferenceId,providerDO.getId());
-              } catch(Exception ex) {
-                 throw ex;
-              }    
-            lockBean.getLock(providerReferenceId, providerDO.getId());
+            lockBean.validateLock(providerReferenceId,providerId);
         }
+        
+        validateProvider(providerDO,addresses);
         
         manager.setFlushMode(FlushModeType.COMMIT);
         Provider provider = null;
         ProviderAddress provAdd = null;
             
-            if (providerDO.getId() == null){
-                provider = new Provider();
-            } 
-            else{
-                provider = manager.find(Provider.class, providerDO.getId());
-            }
+        if (providerId == null){
+            provider = new Provider();
+        } 
+        else{
+            lockBean.getLock(providerReferenceId, providerId);
+            provider = manager.find(Provider.class, providerDO.getId());
+        }            
             
-            List<Exception> exceptionList = new ArrayList<Exception>();
-            validateProvider(providerDO,exceptionList);  
-            if(exceptionList.size() > 0){
-                throw (RPCException)exceptionList.get(0);
-            }
+        provider.setFirstName(providerDO.getFirstName());
+        provider.setLastName(providerDO.getLastName());
+        provider.setMiddleName(providerDO.getMiddleName());
+        provider.setNpi(providerDO.getNpi());
+        provider.setTypeId(providerDO.getTypeId());
             
-            provider.setFirstName(providerDO.getFirstName());
-            provider.setLastName(providerDO.getLastName());
-            provider.setMiddleName(providerDO.getMiddleName());
-            provider.setNpi(providerDO.getNpi());
-            provider.setTypeId(providerDO.getTypeId());
+        if (provider.getId() == null) {
+            manager.persist(provider);
+        }
             
-            if (provider.getId() == null) {
-                manager.persist(provider);
-            }
-            
-           try{
+        try{
             int index = 0 ;
             for (Iterator iter = addresses.iterator(); iter.hasNext();) {
                 ProviderAddressDO provAddDO = (ProviderAddressDO)iter.next();                
-                                
-                exceptionList = new ArrayList<Exception>();
-                validateProviderAddress(provAddDO,index,exceptionList);
-                if(exceptionList.size() > 0){
-                    throw (RPCException)exceptionList.get(0);
-                }
-                
+                                                
                 if (provAddDO.getId() == null){
                     provAdd = new ProviderAddress();
-                } 
-                else{
+                } else{
                     provAdd = manager.find(ProviderAddress.class, provAddDO.getId());
                 }
                                 
-                  if(provAddDO.getDelete() && provAddDO.getId() != null){
-                      manager.remove(provAdd);                     
-                      addressBean.deleteAddress(provAddDO.getAddressDO());
+                if(provAddDO.getDelete() && provAddDO.getId() != null){
+                    manager.remove(provAdd);                     
+                    addressBean.deleteAddress(provAddDO.getAddressDO());                    
+                }else if(!provAddDO.getDelete()){   
+                    Integer addressId = addressBean.updateAddress(provAddDO.getAddressDO());                                                                                      
+                    provAdd.setExternalId(provAddDO.getExternalId());
+                    provAdd.setLocation(provAddDO.getLocation());
+                    provAdd.setProviderId(provider.getId());
+                    provAdd.setAddressId(addressId);
                     
-                  }else{   
-                      Integer addressId = addressBean.updateAddress(provAddDO.getAddressDO());                                                                                      
-                      provAdd.setExternalId(provAddDO.getExternalId());
-                      provAdd.setLocation(provAddDO.getLocation());
-                      provAdd.setProviderId(provider.getId());
-                      provAdd.setAddressId(addressId);
-                                                             
-                      if(provAdd.getId()==null){
-                         manager.persist(provAdd);                          
-                      }
-                  } 
-              index++;
+                    if(provAdd.getId()==null){
+                        manager.persist(provAdd);                          
+                    }
+                } 
+                index++;
             }
             
             //update note
@@ -259,15 +245,13 @@ public class ProviderBean implements ProviderRemote, ProviderLocal {
             }
             
             //insert into note table if necessary
-            if(note != null){
-                if(note.getId() == null){
-                manager.persist(note);                 
-             }
+            if(note != null && note.getId() == null){
+                manager.persist(note);                              
             }
-           }catch(Exception ex){
-               ex.printStackTrace();
-               throw ex;
-           } 
+        }catch(Exception ex){
+            ex.printStackTrace();
+            throw ex;
+        } 
         lockBean.giveUpLock(providerReferenceId,provider.getId()); 
             
         return provider.getId();
@@ -288,17 +272,16 @@ public class ProviderBean implements ProviderRemote, ProviderLocal {
         return getProvider(providerId);
     }
 
-   private List validateProvider(ProviderDO providerDO,List<Exception> exceptionList){            
+   private void validateProvider(ProviderDO providerDO,ValidationErrorsList exceptionList){            
        if("".equals(providerDO.getLastName())){           
            exceptionList.add(new FieldErrorException("fieldRequiredException",ProvMeta.getLastName()));
-          }
+       }
        if(providerDO.getTypeId()==null){           
            exceptionList.add(new FieldErrorException("fieldRequiredException",ProvMeta.getTypeId()));
-          }
-       return exceptionList;
-    }
+       }      
+   }
    
-   private List validateProviderAddress(ProviderAddressDO provAddDO,int rowIndex,List<Exception> exceptionList){
+   private void validateProviderAddress(ProviderAddressDO provAddDO,int rowIndex,ValidationErrorsList exceptionList){
        String location = provAddDO.getLocation();  
        String city = provAddDO.getAddressDO().getCity();
        String state = provAddDO.getAddressDO().getState();
@@ -315,30 +298,21 @@ public class ProviderBean implements ProviderRemote, ProviderLocal {
          }
         if(zipcode == null || "".equals(zipcode)){            
            exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex,ProvMeta.getProviderAddress().getAddress().getZipCode()));
-         }
         }
-       return  exceptionList;
-      }
-
-     public List validateForAdd(ProviderDO providerDO, List<ProviderAddressDO> addresses) {
-         List<Exception> exceptionList = new ArrayList<Exception>();
-         validateProvider(providerDO,exceptionList);
-         for(int iter = 0; iter < addresses.size(); iter++){
-             ProviderAddressDO provAddDO = (ProviderAddressDO)addresses.get(iter);
-             validateProviderAddress(provAddDO,iter, exceptionList);
-         }
-         return exceptionList;
-     }
-
-    public List validateForUpdate(ProviderDO providerDO, List<ProviderAddressDO> addresses) {
-        List<Exception> exceptionList = new ArrayList<Exception>();
+       }
+   }
+    
+    private void validateProvider(ProviderDO providerDO, List<ProviderAddressDO> addresses) throws Exception{
+        ValidationErrorsList exceptionList = new ValidationErrorsList();
         validateProvider(providerDO,exceptionList);
        
         for(int iter = 0; iter < addresses.size(); iter++){
             ProviderAddressDO provAddDO = (ProviderAddressDO)addresses.get(iter);
             validateProviderAddress(provAddDO,iter, exceptionList);
         }
-        return exceptionList;
-     } 
+
+        if(exceptionList.size() > 0) 
+            throw exceptionList;
+     }
    
 }

@@ -27,7 +27,6 @@ package org.openelis.bean;
 
 import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.DictionaryIdEntrySysNameDO;
-import org.openelis.domain.IdLastNameFirstNameDO;
 import org.openelis.domain.IdNameDO;
 import org.openelis.domain.TestAnalyteDO;
 import org.openelis.domain.TestDO;
@@ -52,7 +51,6 @@ import org.openelis.entity.TestWorksheetItem;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.SecurityModule.ModuleFlags;
@@ -1044,10 +1042,13 @@ public class TestBean implements TestRemote {
                       if(test.getActiveBegin().before(testDO.getActiveEnd())&&
                                       (test.getActiveEnd().after(testDO.getActiveBegin()))){
                           overlap = true;  
-                       }else if(test.getActiveBegin().equals(testDO.getActiveEnd())||
+                      }else if(test.getActiveBegin().equals(testDO.getActiveEnd())||
                                    (test.getActiveEnd().equals(testDO.getActiveBegin()))){
                                 overlap = true;                  
-                       }
+                      }else if(test.getActiveBegin().equals(testDO.getActiveBegin())||
+                                      (test.getActiveEnd().equals(testDO.getActiveEnd()))){
+                          overlap = true;
+                      }
                       
                      if(overlap){
                          exceptionList.add(new FormErrorException("testTimeOverlapException"));

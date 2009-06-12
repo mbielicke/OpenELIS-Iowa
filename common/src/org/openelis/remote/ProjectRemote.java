@@ -25,36 +25,35 @@
 */
 package org.openelis.remote;
 
-import org.openelis.domain.NoteDO;
-import org.openelis.domain.ProviderAddressDO;
-import org.openelis.domain.ProviderDO;
-import org.openelis.gwt.common.data.AbstractField;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.ejb.Remote;
 
+import org.openelis.domain.IdNameDO;
+import org.openelis.domain.ProjectDO;
+import org.openelis.domain.ProjectParameterDO;
+import org.openelis.domain.SecuritySystemUserDO;
+import org.openelis.gwt.common.data.AbstractField;
+
 @Remote
-public interface ProviderRemote {
+public interface ProjectRemote {
+
+    public ProjectDO getProject(Integer projectId);
     
-    //  method to return provider 
-    public ProviderDO getProvider(Integer providerId);
-        
-    public ProviderDO getProviderAndUnlock(Integer providerId, String session);
+    public ProjectDO getProjectAndUnlock(Integer projectId, String session);
     
-    public ProviderDO getProviderAndLock(Integer providerId, String session)throws Exception;
+    public ProjectDO getProjectAndLock(Integer projectId, String session)throws Exception;
     
-    //commit a change to provider, or insert a new provider
-    public Integer updateProvider(ProviderDO providerDO, NoteDO noteDO, List addresses) throws Exception;
+    public Integer updateProject(ProjectDO projectDO,
+                                 List<ProjectParameterDO> projParamDOList)throws Exception;
     
-    //method to return just notes
-    public List getProviderNotes(Integer providerId);
+    public List<IdNameDO> query(ArrayList<AbstractField> fields, int first, int max) throws Exception;    
     
-    //method to return just provider addresses
-    public List getProviderAddresses(Integer providerId);
+    public List<ProjectParameterDO> getProjectParameters(Integer projectId);
     
-     //method to query for provider
-    public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception;
-        
+    public List<SecuritySystemUserDO> ownerAutocompleteByName(String loginName, int numResult);
+    
+    public List getScriptletDropDownValues();
+    
 }

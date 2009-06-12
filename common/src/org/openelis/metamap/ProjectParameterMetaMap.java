@@ -23,20 +23,28 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.messages;
+package org.openelis.metamap;
 
-import org.openelis.persistence.Message;
+import org.openelis.gwt.common.MetaMap;
+import org.openelis.meta.ProjectParameterMeta;
 
-public class TestFormatCacheMessage implements Message {
-
-    private static final long serialVersionUID = 1L;
-
-    private String handler = "org.openelis.server.handlers.TestFormatCacheHandler";
-    public enum Action {ADDED,UPDATED,DELETED}
-    public Action action;
+public class ProjectParameterMetaMap extends ProjectParameterMeta implements
+                                                                 MetaMap {
+   
+    public ProjectParameterMetaMap() {
+        super();
+    }
     
-    public String getHandler() {       
-        return handler;
+    public ProjectParameterMetaMap(String path){
+        super(path);
+    }
+    
+    public String buildFrom(String where) {        
+        return "ProjectParameter ";
+    }
+    
+    public boolean hasColumn(String name){
+        return super.hasColumn(name);
     }
 
 }

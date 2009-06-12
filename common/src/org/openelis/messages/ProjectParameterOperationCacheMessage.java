@@ -27,11 +27,11 @@ package org.openelis.messages;
 
 import org.openelis.persistence.Message;
 
-public class TestFormatCacheMessage implements Message {
+public class ProjectParameterOperationCacheMessage implements Message {
 
     private static final long serialVersionUID = 1L;
 
-    private String handler = "org.openelis.server.handlers.TestFormatCacheHandler";
+    private String handler = "org.openelis.server.handlers.ProjectParameterOperationCacheHandler";
     public enum Action {ADDED,UPDATED,DELETED}
     public Action action;
     

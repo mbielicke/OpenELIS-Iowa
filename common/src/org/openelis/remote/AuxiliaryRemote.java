@@ -55,12 +55,6 @@ public interface AuxiliaryRemote {
   
   public AuxFieldGroupDO getAuxFieldGroupAndLock(Integer auxFieldGroupId,
                                                  String session) throws Exception ;
-  
-  public List<Exception> validateForAdd(AuxFieldGroupDO auxFieldGroupDO,
-                                 List<AuxFieldDO> auxFields);
-  
-  public List<Exception> validateForUpdate(AuxFieldGroupDO auxFieldGroupDO,
-                                 List<AuxFieldDO> auxFields);
 
   public List getMatchingEntries(String name,int maxResults,String cat);
 

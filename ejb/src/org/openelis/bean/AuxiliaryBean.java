@@ -55,6 +55,7 @@ import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.TableFieldErrorException;
+import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.local.LockLocal;
 import org.openelis.metamap.AuxFieldGroupMetaMap;
@@ -174,27 +175,19 @@ public class AuxiliaryBean implements AuxiliaryRemote {
         if (auxFieldGroupDO.getId() != null) {
             // we need to call lock one more time to make sure their lock
             // didn't expire and someone else grabbed the record
-         try {
-               lockBean.validateLock(afgReferenceId,auxFieldGroupDO.getId());
-             } catch(Exception ex) {
-                throw ex;
-           }  
-            lockBean.getLock(afgReferenceId, auxFieldGroupDO.getId());
+            lockBean.validateLock(afgReferenceId,auxFieldGroupDO.getId());                         
         }
 
+        validateAuxiliary(auxFieldGroupDO, auxFields);
+        
         manager.setFlushMode(FlushModeType.COMMIT);        
         
         if(auxFieldGroupDO.getId() == null) {
           auxFieldGroup = new AuxFieldGroup();  
         } else {
+            lockBean.getLock(afgReferenceId, auxFieldGroupDO.getId());
             auxFieldGroup = manager.find(AuxFieldGroup.class,auxFieldGroupDO.getId()); 
         } 
-        
-        List<Exception> exceptionList = new ArrayList<Exception>();
-        validateAuxFieldGroup(exceptionList,auxFieldGroupDO);
-        if(exceptionList.size() > 0){
-            throw (RPCException)exceptionList.get(0);
-        }
         
         auxFieldGroup.setActiveBegin(auxFieldGroupDO.getActiveBegin());
         auxFieldGroup.setActiveEnd(auxFieldGroupDO.getActiveEnd());
@@ -273,7 +266,7 @@ public class AuxiliaryBean implements AuxiliaryRemote {
     }
    }
 
-    private void validateAuxFieldGroup(List<Exception> exceptionList,
+    private void validateAuxFieldGroup(ValidationErrorsList exceptionList,
                                        AuxFieldGroupDO auxFieldGroupDO) {
         boolean checkDuplicate = true;
         if (auxFieldGroupDO.getName() == null || "".equals(auxFieldGroupDO.getName())) {
@@ -346,7 +339,7 @@ public class AuxiliaryBean implements AuxiliaryRemote {
         
     }
     
-    private void validateAuxField(List<Exception> exceptionList,List<AuxFieldDO> auxFields) {
+    private void validateAuxField(ValidationErrorsList exceptionList,List<AuxFieldDO> auxFields) {
         TableFieldErrorException ex, auxfvEx;
         List<RPCException> exList = null;
         
@@ -394,22 +387,6 @@ public class AuxiliaryBean implements AuxiliaryRemote {
         return entryList;
     }
 
-    public List<Exception> validateForAdd(AuxFieldGroupDO auxFieldGroupDO,
-                                          List<AuxFieldDO> auxFields) {
-        List<Exception> exceptionList = new ArrayList<Exception>();
-        validateAuxFieldGroup(exceptionList, auxFieldGroupDO);
-        validateAuxField(exceptionList, auxFields);        
-        return exceptionList;
-    }
-
-    public List<Exception> validateForUpdate(AuxFieldGroupDO auxFieldGroupDO,
-                                             List<AuxFieldDO> auxFields) {
-        List<Exception> exceptionList = new ArrayList<Exception>();
-        validateAuxFieldGroup(exceptionList, auxFieldGroupDO);
-        validateAuxField(exceptionList, auxFields);        
-        return exceptionList;
-    }
-
     public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception { 
         StringBuffer sb = new StringBuffer();
         QueryBuilder qb = new QueryBuilder();
@@ -439,13 +416,22 @@ public class AuxiliaryBean implements AuxiliaryRemote {
         else
             return returnList;
     }
-
+    
     public List<IdNameDO> getScriptletDropDownValues() {
         Query query = manager.createNamedQuery("Scriptlet.Scriptlet");
         List<IdNameDO> scriptletList = query.getResultList();         
         return scriptletList;
           
-    }    
+    }
+    
+    private void validateAuxiliary(AuxFieldGroupDO auxFieldGroupDO,
+                                             List<AuxFieldDO> auxFields) throws Exception{
+        ValidationErrorsList exceptionList = new ValidationErrorsList();
+        validateAuxFieldGroup(exceptionList, auxFieldGroupDO);
+        validateAuxField(exceptionList, auxFields);        
+        if(exceptionList.size() > 0)
+            throw exceptionList;
+    }
     
     private List<RPCException> validateAuxFieldValue(List<AuxFieldValueDO> auxFieldValueDOList) {        
         AuxFieldValueDO valueDO;

@@ -28,6 +28,7 @@ package org.openelis.domain;
 import java.io.Serializable;
 import java.util.Date;
 
+import org.openelis.util.DataBaseUtil;
 import org.openelis.util.Datetime;
 
 public class MethodDO implements Serializable {
@@ -59,11 +60,11 @@ public class MethodDO implements Serializable {
                     String reportingDescription,String isActive,
                     Date activeBegin, Date activeEnd){
         
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.reportingDescription = reportingDescription;
-        this.isActive = isActive;
+        setId(id);
+        setName(name);
+        setDescription(description);
+        setReportingDescription(reportingDescription);
+        setIsActive(isActive);
         setActiveBegin(activeBegin);
         setActiveEnd(activeEnd);
     }
@@ -89,7 +90,7 @@ public class MethodDO implements Serializable {
     }
 
     public void setDescription(String description) {
-        this.description = description;
+        this.description = DataBaseUtil.trim(description);
     }
 
     public Integer getId() {
@@ -105,7 +106,7 @@ public class MethodDO implements Serializable {
     }
 
     public void setIsActive(String isActive) {
-        this.isActive = isActive;
+        this.isActive = DataBaseUtil.trim(isActive);
     }
 
     public String getName() {
@@ -113,7 +114,7 @@ public class MethodDO implements Serializable {
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.name = DataBaseUtil.trim(name);
     }
 
     public String getReportingDescription() {
@@ -121,7 +122,7 @@ public class MethodDO implements Serializable {
     }
 
     public void setReportingDescription(String reportingDescription) {
-        this.reportingDescription = reportingDescription;
+        this.reportingDescription = DataBaseUtil.trim(reportingDescription);
     }   
     
 

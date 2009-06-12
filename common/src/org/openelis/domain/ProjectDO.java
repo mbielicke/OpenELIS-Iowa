@@ -43,6 +43,7 @@ public class ProjectDO implements Serializable {
     protected String isActive;
     protected String referenceTo;
     protected Integer ownerId;
+    protected String ownerName;
     protected Integer scriptletId;
     
     public ProjectDO(){
@@ -117,5 +118,13 @@ public class ProjectDO implements Serializable {
     }
     public void setScriptletId(Integer scriptletId) {
         this.scriptletId = scriptletId;
+    }
+
+    public String getOwnerName() {
+        return ownerName;
+    }
+
+    public void setOwnerName(String ownerName) {
+        this.ownerName = DataBaseUtil.trim(ownerName);
     }
 }
