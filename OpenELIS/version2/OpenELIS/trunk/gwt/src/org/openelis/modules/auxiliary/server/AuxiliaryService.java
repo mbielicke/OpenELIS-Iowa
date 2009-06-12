@@ -36,7 +36,6 @@ import org.openelis.domain.AuxFieldGroupDO;
 import org.openelis.domain.AuxFieldValueDO;
 import org.openelis.domain.IdNameDO;
 import org.openelis.gwt.common.DatetimeRPC;
-import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.FormErrorException;
@@ -44,6 +43,7 @@ import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.Query;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.TableFieldErrorException;
+import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.TableDataModel;
 import org.openelis.gwt.common.data.TableDataRow;
@@ -111,25 +111,15 @@ public class AuxiliaryService implements
         AuxFieldGroupDO axfgDO = getAuxFieldGroupDOFromRPC(rpc);
         Integer axfgId;
         List<AuxFieldDO> axfDOList = getAuxFieldDOListFromRPC(null, rpc);        
-        List<Exception> exceptionList = remote.validateForAdd(axfgDO,axfDOList);
-        if (exceptionList.size() > 0) {
-            setRpcErrors(exceptionList, rpc);    
-            return rpc;
-        }
     
         try {
             axfgId = remote.updateAuxiliary(axfgDO,axfDOList);
             axfgDO = remote.getAuxFieldGroup(axfgId);
-        } catch (Exception e) {
-            if (e instanceof EntityLockedException)
-                throw new RPCException(e.getMessage());
-    
-            exceptionList = new ArrayList<Exception>();
-            exceptionList.add(e);
-    
-            setRpcErrors(exceptionList, rpc);
-    
+        } catch (ValidationErrorsList e) {
+            setRpcErrors(e.getErrorList(), rpc);
             return rpc;
+        } catch (Exception e) {
+            throw new RPCException(e.getMessage());            
         }
     
         axfgDO.setId(axfgId);
@@ -142,25 +132,15 @@ public class AuxiliaryService implements
         AuxFieldGroupDO axfgDO = getAuxFieldGroupDOFromRPC(rpc);
         IntegerField axfgId = rpc.id;
         List<AuxFieldDO> axfDOList = getAuxFieldDOListFromRPC(axfgId.getValue(), rpc);               
-        List<Exception> exceptionList = remote.validateForUpdate(axfgDO,axfDOList);
-        if (exceptionList.size() > 0) {
-            setRpcErrors(exceptionList, rpc);    
-            return rpc;
-        }
     
         try {
             remote.updateAuxiliary(axfgDO,axfDOList);
             axfgDO = remote.getAuxFieldGroup(axfgId.getValue());
-        } catch (Exception e) {
-            if (e instanceof EntityLockedException)
-                throw new RPCException(e.getMessage());
-    
-            exceptionList = new ArrayList<Exception>();
-            exceptionList.add(e);
-    
-            setRpcErrors(exceptionList, rpc);
-    
+        } catch (ValidationErrorsList e) {
+            setRpcErrors(e.getErrorList(), rpc);
             return rpc;
+        } catch (Exception e) {
+            throw new RPCException(e.getMessage());            
         }
            
         setFieldsInRPC(rpc, axfgDO);

@@ -28,13 +28,13 @@ package org.openelis.modules.method.server;
 import org.openelis.domain.IdNameDO;
 import org.openelis.domain.MethodDO;
 import org.openelis.gwt.common.DatetimeRPC;
-import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.Query;
 import org.openelis.gwt.common.RPCException;
+import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.FieldType;
 import org.openelis.gwt.common.data.IntegerField;
@@ -43,7 +43,6 @@ import org.openelis.gwt.common.data.TableDataModel;
 import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
-import org.openelis.metamap.MethodMetaMap;
 import org.openelis.modules.method.client.MethodForm;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.MethodRemote;
@@ -53,7 +52,6 @@ import org.openelis.util.FormUtil;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -61,31 +59,10 @@ public class MethodService implements AppScreenFormServiceInt<MethodForm, Query<
 
     private UTFResource openElisConstants= UTFResource.getBundle((String)SessionManager.getSession().getAttribute("locale"));
     
-    private static final int leftTableRowsPerPage = 9;
-    
-    private static final MethodMetaMap MethodMeta = new MethodMetaMap();
+    private static final int leftTableRowsPerPage = 9;   
     
     public Query<TableDataRow<Integer>> commitQuery(Query<TableDataRow<Integer>> query) throws RPCException {
-        List methodNames;
-        //if the rpc is null then we need to get the page
-        /*if(qList == null){
-
-            qList = (ArrayList<AbstractField>)SessionManager.getSession().getAttribute("MethodQuery");
-    
-            if(qList == null)
-                throw new RPCException(openElisConstants.getString("queryExpiredException"));
-
-            MethodRemote remote = (MethodRemote)EJBFactory.lookup("openelis/MethodBean/remote");
-            try{
-                methodNames = remote.query(qList, (model.getPage()*leftTableRowsPerPage), leftTableRowsPerPage+1);
-            }catch(Exception e){
-                if(e instanceof LastPageException){
-                    throw new LastPageException(openElisConstants.getString("lastPageException"));
-                }else{
-                    throw new RPCException(e.getMessage()); 
-                }           
-            }    
-        }else{*/
+        List methodNames;        
             MethodRemote remote = (MethodRemote)EJBFactory.lookup("openelis/MethodBean/remote");
             
             try{    
@@ -96,12 +73,6 @@ public class MethodService implements AppScreenFormServiceInt<MethodForm, Query<
                 throw new RPCException(e.getMessage());
             }
     
-        
-            //need to save the rpc used to the encache
-            //SessionManager.getSession().setAttribute("MethodQuery", qList);
-       // }
-        
-        //fill the model with the query results
         int i=0;
         if(query.results == null)
             query.results = new TableDataModel<TableDataRow<Integer>>();
@@ -132,27 +103,17 @@ public class MethodService implements AppScreenFormServiceInt<MethodForm, Query<
     public MethodForm commitAdd(MethodForm rpc) throws RPCException {
         MethodRemote remote = (MethodRemote)EJBFactory.lookup("openelis/MethodBean/remote");
         MethodDO methodDO = getMethodDOFromRPC(rpc);
-        List<Exception> exceptionList = remote.validateForAdd(methodDO);
-        if (exceptionList.size() > 0) {
-            setRpcErrors(exceptionList, rpc);    
-            return rpc;
-        }
-        Integer testId =null;
+
+        Integer methodId =null;
         try{
-           testId = remote.updateMethod(methodDO);
-        }catch (Exception e) {
-          if(e instanceof EntityLockedException) 
-            throw new RPCException(e.getMessage());
-            
-           exceptionList = new ArrayList<Exception>();
-           exceptionList.add(e);
-            
-            setRpcErrors(exceptionList, rpc);
-            
+            methodId = remote.updateMethod(methodDO);
+        } catch (ValidationErrorsList e) {
+            setRpcErrors(e.getErrorList(), rpc);
             return rpc;
-            
+        } catch (Exception e) {
+            throw new RPCException(e.getMessage());            
         }
-        methodDO.setId(testId);
+        methodDO.setId(methodId);
         setFieldsInRPC(rpc, methodDO);
         return rpc;
     }
@@ -163,31 +124,18 @@ public class MethodService implements AppScreenFormServiceInt<MethodForm, Query<
     }
 
 
-    public MethodForm commitUpdate(MethodForm rpc) throws RPCException {
-       
+    public MethodForm commitUpdate(MethodForm rpc) throws RPCException {       
         MethodRemote remote = (MethodRemote)EJBFactory.lookup("openelis/MethodBean/remote");
         MethodDO methodDO = getMethodDOFromRPC(rpc);
-        List<Exception> exceptionList = remote.validateForUpdate(methodDO);
-        if (exceptionList.size() > 0) {
-            setRpcErrors(exceptionList, rpc);    
-            return rpc;
-        }
         try{
             remote.updateMethod(methodDO);
-        }catch (Exception e) {
-          if(e instanceof EntityLockedException) 
-            throw new RPCException(e.getMessage());
-            
-            exceptionList = new ArrayList<Exception>();
-            exceptionList.add(e);
-            
-            setRpcErrors(exceptionList, rpc);
-            
+        }catch (ValidationErrorsList e) {
+            setRpcErrors(e.getErrorList(), rpc);
             return rpc;
-            
+        } catch (Exception e) {
+            throw new RPCException(e.getMessage());            
         }
-        setFieldsInRPC(rpc, methodDO);
-        
+        setFieldsInRPC(rpc, methodDO);        
         return rpc;
     }
 

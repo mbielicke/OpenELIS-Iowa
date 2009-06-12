@@ -227,10 +227,10 @@ sampleManagementDescription = Description...
 					<html panelWidth="100%" showError="false">&lt;hr/&gt;</html>
 
 				    <xsl:call-template name="menuItem">
-				      <xsl:with-param name="key"></xsl:with-param>
+				      <xsl:with-param name="key">Project</xsl:with-param>
 				      <xsl:with-param name="label">project</xsl:with-param>
-				      <xsl:with-param name="enabled">false</xsl:with-param>
-				      <xsl:with-param name="class"></xsl:with-param>
+				      <xsl:with-param name="enabled">true</xsl:with-param>
+				      <xsl:with-param name="class">ProjectScreen</xsl:with-param>
 				      <xsl:with-param name="args"></xsl:with-param>
 				    </xsl:call-template>
 				    <xsl:if test="security:hasModule($security,'provider','SELECT')">				  

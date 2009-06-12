@@ -216,9 +216,7 @@ public class AuxiliaryScreen extends OpenELISScreenForm<AuxiliaryForm, Query<Tab
         auxFieldValueTableWidget.model.enableAutoAdd(false); 
         auxFieldTableWidget.model.enableAutoAdd(false);                    
         auxFieldValueTableWidget.model.clear();
-        super.abort();
-        
-        
+        super.abort();                
     }
     
     protected AsyncCallback afterUpdate = new AsyncCallback() {
@@ -323,10 +321,8 @@ public class AuxiliaryScreen extends OpenELISScreenForm<AuxiliaryForm, Query<Tab
      */
     public void dictionaryLookupClosed() {              
         Integer key;
-        TableDataRow<Integer> dictSet;
         if(auxFieldValueTableWidget.model.getAutoAdd()) {        
             key = getIdForSystemName("aux_dictionary");  
-            dictSet = new TableDataRow<Integer>(key);
             addAuxFieldValueRows(selectedRows,key);                                                      
         } else {
             Window.alert(consts.get("auxFieldSelFirst"));             

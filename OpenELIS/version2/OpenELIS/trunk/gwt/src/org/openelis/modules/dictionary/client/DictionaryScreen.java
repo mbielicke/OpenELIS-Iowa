@@ -31,6 +31,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Widget;
 
+import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.Query;
 import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.TableDataModel;
@@ -97,6 +98,8 @@ public class DictionaryScreen extends OpenELISScreenForm<DictionaryForm,Query<Ta
         
         // override the callbacks
         updateChain.add(afterUpdate);
+        commitUpdateChain.add(commitUpdateCallback);
+        commitAddChain.add(commitAddCallback);
         super.afterDraw(success);        
     }
     
@@ -141,13 +144,30 @@ public class DictionaryScreen extends OpenELISScreenForm<DictionaryForm,Query<Ta
         public void onSuccess(Object result) {
             dictEntryController.model.enableAutoAdd(true);             
         }
+    };   
+
+    protected AsyncCallback<DictionaryForm> commitUpdateCallback = new AsyncCallback<DictionaryForm>() {
+        public void onSuccess(DictionaryForm result) {
+            if (form.status != Form.Status.invalid)                                
+                dictEntryController.model.enableAutoAdd(false); 
+        }
+
+        public void onFailure(Throwable caught) {
+            handleError(caught);
+        }
+    };
+
+    protected AsyncCallback<DictionaryForm> commitAddCallback = new AsyncCallback<DictionaryForm>() {
+        public void onSuccess(DictionaryForm result) {
+            if (form.status != Form.Status.invalid)                                
+                dictEntryController.model.enableAutoAdd(false); 
+        }
+
+        public void onFailure(Throwable caught) {
+            handleError(caught);
+        }
     };
     
-    protected void submitForm(){  
-        super.submitForm();
-        dictEntryController.model.enableAutoAdd(false);
-    }
-
     private void getCategories(String query) {
         if (state == State.DISPLAY || state == State.DEFAULT) {
             QueryStringField qField = new QueryStringField(CatMap.getName());
@@ -186,7 +206,7 @@ public class DictionaryScreen extends OpenELISScreenForm<DictionaryForm,Query<Ta
         if(state == State.UPDATE || state == State.ADD|| state == State.QUERY)
             return true;       
         return false;
-       }
+    }
 
     public boolean canSelect(TableWidget widget, TableDataRow set, int row) {
         if(state == State.UPDATE || state == State.ADD|| state == State.QUERY)
@@ -203,7 +223,7 @@ public class DictionaryScreen extends OpenELISScreenForm<DictionaryForm,Query<Ta
     */
     public void finishedEditing(SourcesTableWidgetEvents sender, int row, int col) {
         if(col == 3)  {
-            final TableDataRow<Integer> set = dictEntryController.model.getRow(row) ;
+            TableDataRow<Integer> set = dictEntryController.model.getRow(row) ;
             final int currRow = row;
        
             DictionaryEntryTextRPC detrpc = null;                                    

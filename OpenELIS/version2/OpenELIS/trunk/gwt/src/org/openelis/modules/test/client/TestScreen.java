@@ -1738,8 +1738,7 @@ public class TestScreen extends OpenELISScreenForm<TestForm, Query<TableDataRow<
     }
 
     private void onAddRowButtonClicked() {
-        TreeDataItem newItem = analyteTreeWidget.model.getData()
-                                                          .createTreeItem("analyte");
+        TreeDataItem newItem = analyteTreeWidget.model.createTreeItem("analyte");
         analyteTreeWidget.model.addRow(newItem);
         analyteTreeWidget.model.refresh();
     }

@@ -36,6 +36,7 @@ import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
+import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.Query;
 import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.KeyListManager;
@@ -112,18 +113,13 @@ public class ProviderScreen extends OpenELISScreenForm<ProviderForm,Query<TableD
     }
     
     public void performCommand(Enum action, Object obj) {
-        if(obj instanceof AppButton){           
-           String baction = ((AppButton)obj).action;           
-           if(baction.startsWith("query:")){
-               getProviders(baction.substring(6, baction.length()));      
-           }else
-               super.performCommand(action, obj);
-        }else{
-            if(action == State.ADD ||action == State.UPDATE){
-                provAddController.model.enableAutoAdd(true);                
-            }else{
-                provAddController.model.enableAutoAdd(false);
-            }
+        if(obj instanceof AppButton) {
+            String query = ((AppButton)obj).action;
+            if (query.indexOf("query:") != -1)
+                getProviders(query.substring(6));
+            else                         
+                super.performCommand(action, obj);            
+         }  else {                         
             super.performCommand(action, obj);
         }
     }
@@ -136,92 +132,82 @@ public class ProviderScreen extends OpenELISScreenForm<ProviderForm,Query<TableD
     }
 
     public void afterDraw(boolean success) {
-        ResultsTable atozTable = (ResultsTable) getWidget("azTable");
-        ButtonPanel bpanel = (ButtonPanel) getWidget("buttons");
+        ResultsTable atozTable = (ResultsTable)getWidget("azTable");
+        ButtonPanel bpanel = (ButtonPanel)getWidget("buttons");
         ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
-        
+
         CommandChain chain = new CommandChain();
         chain.addCommand(this);
         chain.addCommand(bpanel);
         chain.addCommand(atozTable);
         chain.addCommand(atozButtons);
         chain.addCommand(keyList);
-        
+
         ((CollapsePanel)getWidget("collapsePanel")).addChangeListener(atozTable);
-                   
-        //load other widgets
-        removeContactButton = (AppButton) getWidget("removeAddressButton");        
-        standardNoteButton = (AppButton) getWidget("standardNoteButton");
-        
+
+        // load other widgets
+        removeContactButton = (AppButton)getWidget("removeAddressButton");
+        standardNoteButton = (AppButton)getWidget("standardNoteButton");
+
         provId = (ScreenTextBox)widgets.get(ProvMeta.getId());
         lastName = (TextBox)getWidget(ProvMeta.getLastName());
-        //subjectBox = (TextBox)getWidget(ProvMeta.getNote().getSubject());
+        // subjectBox = (TextBox)getWidget(ProvMeta.getNote().getSubject());
         noteArea = (ScreenTextArea)widgets.get(ProvMeta.getNote().getText());
-        svp = (ScreenVertical) widgets.get("notesPanel");
+        svp = (ScreenVertical)widgets.get("notesPanel");
         tabPanel = (ScreenTab)widgets.get("provTabPanel");
-        
+
         displayType = (Dropdown)getWidget(ProvMeta.getTypeId());
-        
+
         provAddController = ((TableWidget)getWidget("providerAddressTable"));
-                
-        //load dropdowns                                                                         
+
+        // load dropdowns
         ScreenTableWidget displayAddressTable = (ScreenTableWidget)widgets.get("providerAddressTable");
         provAddController = (TableWidget)displayAddressTable.getWidget();
-       
+
         /*
-         * Setting of the models has been split to three methods so that they can be individually updated when needed.
+         * Setting of the models has been split to three methods so that they
+         * can be individually updated when needed.
          * 
          * Models are now pulled directly from RPC rather than initData.
          */
         setProviderTypesModel(form.providerTypes);
         setCountriesModel(form.countries);
         setStatesModel(form.states);
-        
+
         /*
          * Null out the rpc models so they are not sent with future rpc calls
          */
         form.providerTypes = null;
         form.countries = null;
-        form.states = null;                      
-  
-       updateChain.add(afterUpdate);
-       
-       /*
-        * Set the CheckModels to the first call back in all chains
-        * 
-        * It is debatable if the checkmodels needs to be in all call chains
-        * at a minimum though it should be in fetchChain and updateChain 
-        */
-       updateChain.add(0,checkModels);
-       fetchChain.add(0,checkModels);
-       abortChain.add(0,checkModels);
-       commitUpdateChain.add(0,checkModels);
-       commitAddChain.add(0,checkModels);
-       
-       super.afterDraw(success);
+        form.states = null;
+
+        updateChain.add(afterUpdate);
+        commitUpdateChain.add(commitUpdateCallback);
+        commitAddChain.add(commitAddCallback);
+
+        /*
+         * Set the CheckModels to the first call back in all chains
+         * 
+         * It is debatable if the checkmodels needs to be in all call chains at
+         * a minimum though it should be in fetchChain and updateChain
+         */
+        updateChain.add(0, checkModels);
+        fetchChain.add(0, checkModels);
+        abortChain.add(0, checkModels);
+        commitUpdateChain.add(0, checkModels);
+        commitAddChain.add(0, checkModels);
+
+        super.afterDraw(success);
     }
     
-       
-    protected AsyncCallback afterUpdate = new AsyncCallback() {
-        public void onFailure(Throwable caught) {
-        }
-        public void onSuccess(Object result) {
-            
-            provId.enable(false);
-                                       
-            //set focus to the last name field
-            lastName.setFocus(true);
-        }
-           
-    };      
-       
     public void query(){
-    	//clearNotes();   	       
+        //clearNotes();            
        super.query();
     
         //set focus to the last name field
         provId.setFocus(true);
         noteArea.enable(false);
+        provAddController.model.enableAutoAdd(false);
     }
 
     public void add(){                                                  
@@ -235,13 +221,50 @@ public class ProviderScreen extends OpenELISScreenForm<ProviderForm,Query<TableD
         
         //set focus to the last name field       
         lastName.setFocus(true);
+        provAddController.model.enableAutoAdd(true);
         
+    }   
+    
+    public void abort() {
+        provAddController.model.enableAutoAdd(false); 
+        super.abort();
     }
+    
+    protected AsyncCallback afterUpdate = new AsyncCallback() {
+        public void onFailure(Throwable caught) {
+        }
+        public void onSuccess(Object result) {            
+            provId.enable(false);                                      
+            noteArea.enable(true);
+            
+            //set focus to the last name field
+            lastName.setFocus(true);
+            provAddController.model.enableAutoAdd(true);
+        }
+           
+    };    
+    
+    protected AsyncCallback<ProviderForm> commitUpdateCallback = new AsyncCallback<ProviderForm>() {
+        public void onSuccess(ProviderForm result) {
+            if (form.status != Form.Status.invalid)                                
+                provAddController.model.enableAutoAdd(false);
+        }
 
-    public void update() {                        
-        noteArea.enable(true);
-        super.update();      
-    }    
+        public void onFailure(Throwable caught) {
+            handleError(caught);
+        }
+    };
+
+    protected AsyncCallback<ProviderForm> commitAddCallback = new AsyncCallback<ProviderForm>() {
+        public void onSuccess(ProviderForm result) {
+            if (form.status != Form.Status.invalid)                                
+                provAddController.model.enableAutoAdd(false); 
+        }
+
+        public void onFailure(Throwable caught) {
+            handleError(caught);
+        }
+    };   
     
     public boolean onBeforeTabSelected(SourcesTabEvents sender, int index) {
         if(state != State.QUERY){
