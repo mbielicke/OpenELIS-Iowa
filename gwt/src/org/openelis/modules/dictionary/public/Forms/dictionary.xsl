@@ -156,7 +156,7 @@ UIRF Software License are applicable instead of those above.
 								         <xsl:value-of select='resource:getString($constants,"relEntry")'/></headers>
 								<widths>47,95,87,155,130</widths>
 								<editors>
-									<check cellKey="{dictionary:getIsActive($dictNew)}">Y</check>									
+									<check cellKey="{dictionary:getIsActive($dictNew)}"/>									
 									<textbox cellKey="{dictionary:getSystemName($dictNew)}" max = "30"/>									
 									<textbox cellKey="{dictionary:getLocalAbbrev($dictNew)}" max = "10"/>									
 									<textbox cellKey="{dictionary:getEntry($dictNew)}"/>																			

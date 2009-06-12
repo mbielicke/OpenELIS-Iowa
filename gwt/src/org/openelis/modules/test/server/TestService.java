@@ -1693,42 +1693,43 @@ public class TestService implements
         // we need to get the keys and look them up in the resource bundle for
         // internationalization
         int index;
+        String fieldName,message[] = null,messageValue;
         for (int i = 0; i < exceptionList.size(); i++) {
             if (exceptionList.get(i) instanceof TableFieldErrorException) {
                 TableFieldErrorException ferrex = (TableFieldErrorException)exceptionList.get(i);
                 index = ferrex.getRowIndex();
                 if (ferrex.getFieldName()
                           .startsWith(TestPrepMetaMap.getTableName() + ":")) {
-                    String fieldName = (ferrex.getFieldName().substring(TestPrepMetaMap.getTableName().length() + 1));
+                    fieldName = (ferrex.getFieldName().substring(TestPrepMetaMap.getTableName().length() + 1));
                     
                     form.prepAndReflex.testPrepTable.getField(index, fieldName)
                                  .addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
                 } else if (ferrex.getFieldName()
                                  .startsWith(TestTypeOfSampleMetaMap.getTableName() + ":")) {
-                    String fieldName = ferrex.getFieldName().substring(TestTypeOfSampleMetaMap.getTableName()
+                    fieldName = ferrex.getFieldName().substring(TestTypeOfSampleMetaMap.getTableName()
                                                                                                                          .length() + 1);                    
                     form.sampleType.sampleTypeTable.getField(index, fieldName)
                                    .addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
                 } else if (ferrex.getTableKey().equals(TestReflexMetaMap.getTableName())) {
-                    String fieldName = ferrex.getFieldName();                    
+                    fieldName = ferrex.getFieldName();                    
                     form.prepAndReflex.testReflexTable.getField(index, fieldName)
                                    .addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
                 } else if (ferrex.getFieldName()
                                  .startsWith(TestWorksheetItemMetaMap.getTableName() + ":")) {
-                    String fieldName = ferrex.getFieldName().substring(TestWorksheetItemMetaMap.getTableName().length() + 1);                    
+                    fieldName = ferrex.getFieldName().substring(TestWorksheetItemMetaMap.getTableName().length() + 1);                    
                     form.worksheet.worksheetTable.getField(index, fieldName)
                                   .addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
                 } else if (ferrex.getFieldName()
                                  .startsWith(TestWorksheetAnalyteMetaMap.getTableName() + ":")) {
-                    String fieldName = ferrex.getFieldName().substring(TestWorksheetAnalyteMetaMap.getTableName().length() + 1);                    
+                    fieldName = ferrex.getFieldName().substring(TestWorksheetAnalyteMetaMap.getTableName().length() + 1);                    
                     String error = openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage());
                     form.worksheet.worksheetAnalyteTable.getField(index, fieldName).addError(error);
                 } else if (ferrex.getTableKey().equals(TestSectionMetaMap.getTableName())) {
-                    String fieldName = ferrex.getFieldName();                    
+                    fieldName = ferrex.getFieldName();                    
                     form.sectionTable.getField(index, fieldName)
                                     .addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
                 } else if (ferrex.getTableKey().equals(TestResultMetaMap.getTableName())) {
-                    String fieldName = ferrex.getFieldName(),message[] = null,messageValue;
+                    fieldName = ferrex.getFieldName();
                     message = ferrex.getMessage().split(":");
                     
                     List<String> findexes = form.testAnalyte.testResultsTable.getFieldIndex();                                  
@@ -1744,7 +1745,7 @@ public class TestService implements
                 String nameWithRPC = ((FieldErrorException)exceptionList.get(i)).getFieldName();
                 if (nameWithRPC.startsWith("worksheet:")) {
                     HashMap<String, AbstractField> map = FormUtil.createFieldMap(form.worksheet);
-                    String fieldName = nameWithRPC.substring(10);
+                    fieldName = nameWithRPC.substring(10);
 
                     map.get(fieldName)
                        .addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));

@@ -35,7 +35,6 @@ import org.openelis.domain.IdNameDO;
 import org.openelis.domain.NoteDO;
 import org.openelis.domain.ProviderAddressDO;
 import org.openelis.domain.ProviderDO;
-import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.FormErrorException;
@@ -43,6 +42,7 @@ import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.Query;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.TableFieldErrorException;
+import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.FieldType;
@@ -77,8 +77,7 @@ public class ProviderService implements AppScreenFormServiceInt<ProviderForm, Qu
     
     private static final long serialVersionUID = 0L;
     private static final int leftTableRowsPerPage = 18;
-    
-    private static final ProviderMetaMap ProvMeta = new ProviderMetaMap(); 
+     
     private UTFResource openElisConstants= UTFResource.getBundle((String)SessionManager.getSession().getAttribute("locale"));
     
     public Query<TableDataRow<Integer>> commitQuery(Query<TableDataRow<Integer>> query) throws RPCException {        
@@ -129,28 +128,19 @@ public class ProviderService implements AppScreenFormServiceInt<ProviderForm, Qu
                 
         ArrayList<ProviderAddressDO> provAddDOList =  getProviderAddressListFromRPC(addressTable,providerId);
                                         
-//      build the noteDo from the form
+        //build the noteDO from the form
         providerNote.setSubject(rpc.notes.subject.getValue());
         providerNote.setText(rpc.notes.text.getValue());
         providerNote.setIsExternal("Y");
         
-        List<Exception> exceptionList = remote.validateForAdd(providerDO, provAddDOList);
-        if(exceptionList.size() > 0){
-            //we need to get the keys and look them up in the resource bundle for internationalization
-            setRpcErrors(exceptionList, rpc);   
-            
-            return rpc;
-        } 
                          
         try{
             providerId = (Integer)remote.updateProvider(providerDO, providerNote, provAddDOList);        
-        }catch(Exception e){
-            exceptionList = new ArrayList<Exception>();
-            exceptionList.add(e);
-            
-            setRpcErrors(exceptionList,rpc);
-            
+        }catch (ValidationErrorsList e) {
+            setRpcErrors(e.getErrorList(), rpc);
             return rpc;
+        } catch (Exception e) {
+            throw new RPCException(e.getMessage());            
         }
          
         providerDO.setId(providerId);
@@ -184,34 +174,19 @@ public class ProviderService implements AppScreenFormServiceInt<ProviderForm, Qu
          provAddDOList = getProviderAddressListFromRPC(addressTable,providerDO.getId());
          
         if(rpc.notes.load){
-         NotesForm notesRPC = rpc.notes;  
-         providerNote.setSubject(notesRPC.subject.getValue());
-         providerNote.setText(notesRPC.text.getValue());
-         providerNote.setIsExternal("Y");
-        }
-        
-        List<Exception> exceptionList = remote.validateForUpdate(providerDO, provAddDOList);
-        if(exceptionList.size() > 0){
-            //we need to get the keys and look them up in the resource bundle for internationalization
-            setRpcErrors(exceptionList,rpc);   
-            rpc.status = Form.Status.invalid;
-            return rpc;
-        } 
+            NotesForm notesRPC = rpc.notes;  
+            providerNote.setSubject(notesRPC.subject.getValue());
+            providerNote.setText(notesRPC.text.getValue());
+            providerNote.setIsExternal("Y");
+        }       
                          
         try{
             remote.updateProvider(providerDO, providerNote, provAddDOList);        
-        }catch(Exception e){
-            if(e instanceof EntityLockedException)
-                throw new RPCException(e.getMessage());
-            
-            exceptionList = new ArrayList<Exception>();
-            exceptionList.add(e);
-            
-            setRpcErrors(exceptionList,rpc);
-            
-//          we need to refresh the notes tab if it is showing            
-            
+        }catch (ValidationErrorsList e) {
+            setRpcErrors(e.getErrorList(), rpc);
             return rpc;
+        } catch (Exception e) {
+            throw new RPCException(e.getMessage());            
         }
 
         //set the fields in the RPC
@@ -579,18 +554,16 @@ public class ProviderService implements AppScreenFormServiceInt<ProviderForm, Qu
     }
     
     private ProviderDO getProviderDOFromRPC(ProviderForm form){
-     ProviderDO providerDO = new ProviderDO();
-     //provider info        
-     providerDO.setId(form.id.getValue());
-     providerDO.setFirstName(form.firstName.getValue());
-     providerDO.setLastName(form.lastName.getValue());
-     providerDO.setMiddleName(form.middleName.getValue());
-     providerDO.setNpi(form.npi.getValue());
+        ProviderDO providerDO = new ProviderDO();
+        //provider info        
+        providerDO.setId(form.id.getValue());
+        providerDO.setFirstName(form.firstName.getValue());
+        providerDO.setLastName(form.lastName.getValue());
+        providerDO.setMiddleName(form.middleName.getValue());
+        providerDO.setNpi(form.npi.getValue());     
+        providerDO.setTypeId((Integer)(form.typeId.getSelectedKey()));
      
-     if(!new Integer(-1).equals(form.typeId.getSelectedKey()))
-      providerDO.setTypeId((Integer)(form.typeId.getSelectedKey()));
-     
-     return providerDO;
+        return providerDO;
     }
     
     
@@ -654,22 +627,31 @@ public class ProviderService implements AppScreenFormServiceInt<ProviderForm, Qu
     private void setRpcErrors(List exceptionList, ProviderForm form){
         TableField contactsTable = form.addresses.providerAddressTable;
         HashMap<String,AbstractField> map = null;
+        int index;
+        String fieldName, error;
+        TableFieldErrorException exc;
+        AbstractField field;
         if(exceptionList.size() > 0)
             map = FormUtil.createFieldMap(form);
         //we need to get the keys and look them up in the resource bundle for internationalization
         for (int i=0; i<exceptionList.size();i++) {
             //if the error is inside the org contacts table
             if(exceptionList.get(i) instanceof TableFieldErrorException){
-                int index =  ((TableFieldErrorException)exceptionList.get(i)).getRowIndex();
-                String fieldName = ((TableFieldErrorException)exceptionList.get(i)).getFieldName();
-                contactsTable.getField(index, fieldName)
-                 .addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
+                exc = (TableFieldErrorException)exceptionList.get(i);
+                index =  exc.getRowIndex();
+                fieldName = exc.getFieldName();
+                error = openElisConstants.getString(exc.getMessage());
+                field = contactsTable.getField(index, fieldName);
+                if(!field.getErrors().contains(error))
+                    field.addError(error);
             //if the error is on the field
-            }else if(exceptionList.get(i) instanceof FieldErrorException)
+            }else if(exceptionList.get(i) instanceof FieldErrorException) {
                 map.get(((FieldErrorException)exceptionList.get(i)).getFieldName()).addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
+            }
             //if the error is on the entire form
-            else if(exceptionList.get(i) instanceof FormErrorException)
+            else if(exceptionList.get(i) instanceof FormErrorException) {
                 form.addError(openElisConstants.getString(((FormErrorException)exceptionList.get(i)).getMessage()));
+            }
         }   
         form.status = Form.Status.invalid;
     }
