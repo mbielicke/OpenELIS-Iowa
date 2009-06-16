@@ -45,7 +45,7 @@ import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.screen.CommandChain;
 import org.openelis.gwt.screen.ScreenDropDownWidget;
 import org.openelis.gwt.screen.ScreenMenuPanel;
-import org.openelis.gwt.screen.ScreenTab;
+import org.openelis.gwt.screen.ScreenTabPanel;
 import org.openelis.gwt.screen.ScreenTextArea;
 import org.openelis.gwt.screen.ScreenTextBox;
 import org.openelis.gwt.screen.ScreenWindow;
@@ -85,7 +85,7 @@ public class OrderScreen extends OpenELISScreenForm<OrderForm,OrderQuery> implem
     private Dropdown status, shipFrom, costCenter;
     
     private TableWidget itemsTable, receiptsTable;
-    private ScreenTab tabPanel;
+    private ScreenTabPanel tabPanel;
     private String orderType;
     
     private OrderMetaMap OrderMeta = new OrderMetaMap();
@@ -242,7 +242,7 @@ public class OrderScreen extends OpenELISScreenForm<OrderForm,OrderQuery> implem
         costCenter = (Dropdown)getWidget(OrderMeta.getCostCenterId());
         shipFrom = (Dropdown)getWidget(OrderMeta.getShipFromId());
         
-        tabPanel = (ScreenTab)widgets.get("orderTabPanel");
+        tabPanel = (ScreenTabPanel)widgets.get("orderTabPanel");
         
         //buttons
         removeItemButton = (AppButton)getWidget("removeItemButton");

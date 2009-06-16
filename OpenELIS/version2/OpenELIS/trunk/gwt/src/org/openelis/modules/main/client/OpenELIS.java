@@ -62,13 +62,12 @@ import org.openelis.gwt.screen.ScreenMenuItem;
 import org.openelis.gwt.screen.ScreenMenuLabel;
 import org.openelis.gwt.screen.ScreenMenuPanel;
 import org.openelis.gwt.screen.ScreenMultipleLookUp;
-import org.openelis.gwt.screen.ScreenPagedTree;
 import org.openelis.gwt.screen.ScreenRadio;
 import org.openelis.gwt.screen.ScreenResultsTable;
 import org.openelis.gwt.screen.ScreenRichTextArea;
 import org.openelis.gwt.screen.ScreenScrollableTabBar;
 import org.openelis.gwt.screen.ScreenStack;
-import org.openelis.gwt.screen.ScreenTab;
+import org.openelis.gwt.screen.ScreenTabPanel;
 import org.openelis.gwt.screen.ScreenTablePanel;
 import org.openelis.gwt.screen.ScreenTableWidget;
 import org.openelis.gwt.screen.ScreenText;
@@ -584,13 +583,13 @@ public class OpenELIS implements EntryPoint, EventListener {
                                   }
       });
      
-      ClassFactory.addClassFactory(new String[] {ScreenTab.class.getName(),ScreenTab.TAG_NAME},
+      ClassFactory.addClassFactory(new String[] {ScreenTabPanel.class.getName(),ScreenTabPanel.TAG_NAME},
                             new ClassFactory.Factory() {
                                   public Object newInstance(Object[] args) {
                                       if(args == null)
-                                          return new ScreenTab();
+                                          return new ScreenTabPanel();
                                       else if(args[0] instanceof Node)
-                                          return new ScreenTab((Node)args[0],(ScreenBase)args[1]);
+                                          return new ScreenTabPanel((Node)args[0],(ScreenBase)args[1]);
                                       return null;
                                   }
       });
@@ -652,16 +651,6 @@ public class OpenELIS implements EntryPoint, EventListener {
                                       return listener;
                                   }
       });      
-      ClassFactory.addClassFactory(new String[] {ScreenPagedTree.class.getName(),ScreenPagedTree.TAG_NAME},
-                            new ClassFactory.Factory() {
-                                  public Object newInstance(Object[] args) {
-                                      if(args == null)
-                                          return new ScreenPagedTree();
-                                      else if(args[0] instanceof Node)
-                                          return new ScreenPagedTree((Node)args[0],(ScreenBase)args[1]);
-                                      return null;
-                                  }
-      });
       
       ClassFactory.addClassFactory(new String[] {ScreenAutoCompleteWidget.class.getName(),ScreenAutoCompleteWidget.TAG_NAME},
                             new ClassFactory.Factory() {

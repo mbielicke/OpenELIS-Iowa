@@ -35,7 +35,7 @@ import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.screen.CommandChain;
 import org.openelis.gwt.screen.ScreenCheck;
 import org.openelis.gwt.screen.ScreenMenuPanel;
-import org.openelis.gwt.screen.ScreenTab;
+import org.openelis.gwt.screen.ScreenTabPanel;
 import org.openelis.gwt.screen.ScreenTextArea;
 import org.openelis.gwt.screen.ScreenTextBox;
 import org.openelis.gwt.screen.ScreenVertical;
@@ -77,7 +77,7 @@ public class InventoryItemScreen extends OpenELISScreenForm<InventoryItemForm, Q
     TextBox subjectBox; 
 	private ScreenTextBox idTextBox;
 	private ScreenTextArea noteText;
-	private ScreenTab tabPanel;
+	private ScreenTabPanel tabPanel;
     private KeyListManager keyList = new KeyListManager();
 	
 	private TableWidget componentsTable, locsTable;
@@ -176,7 +176,7 @@ public class InventoryItemScreen extends OpenELISScreenForm<InventoryItemForm, Q
         componentsTable.addTableWidgetListener(this);
 		componentsTable.model.enableAutoAdd(false);
 		
-		tabPanel = (ScreenTab)widgets.get("itemTabPanel");
+		tabPanel = (ScreenTabPanel)widgets.get("itemTabPanel");
        
         svp = (ScreenVertical) widgets.get("notesPanel");
         

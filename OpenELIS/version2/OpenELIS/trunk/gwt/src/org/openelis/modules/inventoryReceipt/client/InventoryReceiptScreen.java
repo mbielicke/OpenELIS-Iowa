@@ -166,7 +166,7 @@ public class InventoryReceiptScreen extends OpenELISScreenForm<InventoryReceiptF
             }else if(sender == recItemExpDate.getWidget()){
                 TableDataRow<InvReceiptItemInfoForm> tableRow = receiptsTable.model.getRow(receiptsTable.model.getSelectedIndex());
                 InvReceiptItemInfoForm hiddenRPC = tableRow.key;
-                hiddenRPC.expirationDate.setValue((String)((CalendarLookUp)recItemExpDate.getWidget()).getValue());
+                hiddenRPC.expirationDate.setValue((String)((CalendarLookUp)recItemExpDate.getWidget()).getValue().toString());
                 
             }
         }
