@@ -1,6 +1,9 @@
 package org.openelis.server.handlers;
 
 import org.openelis.domain.IdNameDO;
+import org.openelis.gwt.common.data.StringObject;
+import org.openelis.gwt.common.data.TableDataModel;
+import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.messages.CountryCacheMessage;
 import org.openelis.persistence.CachingManager;
 import org.openelis.persistence.EJBFactory;
@@ -20,19 +23,39 @@ public class CountryCacheHandler implements MessageHandler<CountryCacheMessage> 
         
     }
     
-    public static ArrayList<IdNameDO> getCountries() {
-        ArrayList<IdNameDO> model = (ArrayList<IdNameDO>)CachingManager.getElement("InitialData", "countryDropdown");
+    public static TableDataModel<TableDataRow<String>> getCountries() {
+        TableDataModel<TableDataRow<String>> model = (TableDataModel<TableDataRow<String>>)CachingManager.getElement("InitialData", "countryDropdown");
         if(model == null) {
             CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");        
             Integer id = remote.getCategoryId("country");
         
-            model = (ArrayList<IdNameDO>)remote.getDropdownValues(id);
+            ArrayList<IdNameDO> entries = (ArrayList<IdNameDO>)remote.getDropdownValues(id);
         
-           
+            //  we need to build the model to return
+            model = new TableDataModel<TableDataRow<String>>();
+        
+            model.add(new TableDataRow<String>(null, new StringObject(" ")));
+            for(IdNameDO resultDO :  entries){
+                model.add(new TableDataRow<String>(resultDO.getName(),new StringObject(resultDO.getName())));
+            }   
             CachingManager.putElement("InitialData", "countryDropdown", model);
             version++;
         }
-        return model;
+        return model;   
+    }
+    
+    public static ArrayList<IdNameDO> getCountriesList() {
+        ArrayList<IdNameDO> list = (ArrayList<IdNameDO>)CachingManager.getElement("InitialData", "countryList");
+        if(list == null) {
+            CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");        
+            Integer id = remote.getCategoryId("country");
+        
+            list = (ArrayList<IdNameDO>)remote.getDropdownValues(id);
+            
+            CachingManager.putElement("InitialData","countryList",list);
+            version++;
+        }
+        return list;
         
     }
 

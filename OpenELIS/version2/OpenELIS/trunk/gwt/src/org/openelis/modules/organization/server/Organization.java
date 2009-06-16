@@ -323,9 +323,9 @@ public class Organization implements ScreenServiceInt, AutoCompleteServiceInt {
          * comparisons for later fetches
          */
         //OrganizationRPC rpc = new OrganizationRPC();
-        rpc.states = StatesCacheHandler.getStates();
+        rpc.states = StatesCacheHandler.getStatesList();
         SessionManager.getSession().setAttribute("statesVersion",StatesCacheHandler.version);
-        rpc.countries = CountryCacheHandler.getCountries();
+        rpc.countries = CountryCacheHandler.getCountriesList();
         SessionManager.getSession().setAttribute("countriesVersion",CountryCacheHandler.version);
         //rpc.contactTypes = ContactTypeCacheHandler.getContactTypes();
         //SessionManager.getSession().setAttribute("contactTypesVersion",ContactTypeCacheHandler.version);
@@ -422,7 +422,7 @@ public class Organization implements ScreenServiceInt, AutoCompleteServiceInt {
     public void getContactsModel(Integer orgId, ContactsRPC rpc){
         OrganizationRemote remote = (OrganizationRemote)EJBFactory.lookup("openelis/OrganizationBean/remote");
         rpc.orgContacts = (ArrayList<OrganizationContactDO>)remote.getOrganizationContacts(orgId);
-        rpc.contactTypes = ContactTypeCacheHandler.getContactTypes();
+        rpc.contactTypes = ContactTypeCacheHandler.getContactTypesList();
         SessionManager.getSession().setAttribute("contactTypesVersion",ContactTypeCacheHandler.version);
 
     }
