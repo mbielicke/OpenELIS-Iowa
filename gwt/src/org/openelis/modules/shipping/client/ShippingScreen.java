@@ -46,7 +46,7 @@ import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.event.CommandListener;
 import org.openelis.gwt.screen.CommandChain;
 import org.openelis.gwt.screen.ScreenDropDownWidget;
-import org.openelis.gwt.screen.ScreenTab;
+import org.openelis.gwt.screen.ScreenTabPanel;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.ButtonPanel;
@@ -70,7 +70,7 @@ public class ShippingScreen extends OpenELISScreenForm<ShippingForm, Query<Table
     private Dropdown status, shippedFrom, shippedMethod;
     private TableDataModel<TableDataRow<Integer>> itemsShippedModel, checkedOrderIds;
     private ShippingDataService data;
-    private ScreenTab tabPanel;
+    private ScreenTabPanel tabPanel;
     private boolean closeOnCommitAbort = false;
     
     private ShippingMetaMap ShippingMeta = new ShippingMetaMap();
@@ -196,7 +196,7 @@ public class ShippingScreen extends OpenELISScreenForm<ShippingForm, Query<Table
         trackingNumbersTable = (TableWidget)getWidget("trackingNumbersTable");
         trackingNumbersTable.model.enableAutoAdd(false);
 
-        tabPanel = (ScreenTab)widgets.get("shippingTabPanel");
+        tabPanel = (ScreenTabPanel)widgets.get("shippingTabPanel");
         
         ButtonPanel bpanel = (ButtonPanel)getWidget("buttons");
         

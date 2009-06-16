@@ -25,13 +25,17 @@
 */
 package org.openelis.modules.organization.client;
 
+import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.Query;
+import org.openelis.gwt.common.data.AbstractField;
+import org.openelis.gwt.common.data.FieldType;
 import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.common.data.QueryStringField;
 import org.openelis.gwt.common.data.TableDataModel;
 import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.screen.CommandChain;
-import org.openelis.gwt.screen.ScreenTab;
+import org.openelis.gwt.screen.ScreenBase;
+import org.openelis.gwt.screen.ScreenTabPanel;
 import org.openelis.gwt.screen.ScreenTextArea;
 import org.openelis.gwt.screen.ScreenTextBox;
 import org.openelis.gwt.screen.ScreenVertical;
@@ -48,6 +52,8 @@ import org.openelis.metamap.OrganizationMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 import org.openelis.modules.standardnotepicker.client.StandardNotePickerScreen;
 
+import java.util.HashMap;
+
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -58,6 +64,9 @@ import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.xml.client.Node;
+import com.google.gwt.xml.client.NodeList;
+import com.google.gwt.xml.client.XMLParser;
 
 public class OrganizationScreen extends OpenELISScreenForm<OrganizationForm,Query<TableDataRow<Integer>>> implements
                                                           ClickListener,
@@ -72,7 +81,8 @@ public class OrganizationScreen extends OpenELISScreenForm<OrganizationForm,Quer
     private KeyListManager         keyList = new KeyListManager();
     private Dropdown               states;
     private Dropdown               countries;
-    private ScreenTab              tabPanel;
+    private ScreenTabPanel         tabPanel;
+    private HashMap<String,FieldType> fields;
     
     private OrganizationMetaMap OrgMeta = new OrganizationMetaMap();
     
@@ -179,7 +189,7 @@ public class OrganizationScreen extends OpenELISScreenForm<OrganizationForm,Quer
         orgName = (TextBox)getWidget(OrgMeta.getName());
         noteText = (ScreenTextArea)widgets.get(OrgMeta.getNote().getText());
         orgId = (ScreenTextBox)widgets.get(OrgMeta.getId());
-        tabPanel = (ScreenTab)widgets.get("orgTabPanel");
+        tabPanel = (ScreenTabPanel)widgets.get("orgTabPanel");
    
         //queryContactsTable = (QueryTable)((ScreenTableWidget)widgets.get("contactsTable")).getQueryWidget().getWidget();
    
@@ -218,6 +228,45 @@ public class OrganizationScreen extends OpenELISScreenForm<OrganizationForm,Quer
         super.afterDraw(success);
     }
     
+    public void loadScreen(OrganizationForm rpc) {
+        form.load(rpc);
+        load();
+        if (form.status == Form.Status.invalid) {
+            drawErrors();
+        }
+        if(form.getErrors() != null && form.getErrors().size() > 0){
+            if(form.getErrors().size() > 1){
+                window.setMessagePopup((String[])form.getErrors().toArray(new String[form.getErrors().size()]), "ErrorPanel");
+                window.setError("(Error 1 of "+form.getErrors().size()+") "+(String)form.getErrors().get(0));
+            }else
+                window.setError((String)form.getErrors().get(0));
+        }            
+    }
+    /*
+    public void drawScreen(String xmlDef) {
+        xml = XMLParser.parse(xmlDef);
+        draw();
+        this.fields = new HashMap<String,FieldType>();
+            NodeList rpcList = xml.getDocumentElement().getElementsByTagName("rpc");
+            for(int i = 0; i < rpcList.getLength(); i++){
+                if(rpcList.item(i).getNodeType() == Node.ELEMENT_NODE && rpcList.item(i).getNodeName().equals("rpc")){
+                    String key = rpcList.item(i).getAttributes().getNamedItem("key").getNodeValue();
+                    NodeList fields = rpcList.item(i).getChildNodes();
+                    for(int j = 0; j < fields.getLength(); j++){
+                        if(fields.item(j).getNodeType() == Node.ELEMENT_NODE && !fields.item(j).getNodeName().equals("rpc")){
+                            String fkey = fields.item(j).getAttributes().getNamedItem("key").getNodeValue();
+                            FieldType field = (FieldType)ScreenBase.createField(fields.item(j));
+                            if(widgets.get(fkey) != null)
+                                widgets.get(fkey).load((AbstractField)field);
+                            this.fields.put(fkey,field);
+                        }
+                    }
+                }
+            }
+           
+   }
+   */
+    
     public void setContactTypesModel(TableDataModel<TableDataRow<Integer>> typesModel) {
         ((TableDropdown)contactsTable.columns.get(0).getColumnWidget()).setModel(typesModel);
         //((TableDropdown)queryContactsTable.columns.get(0).getColumnWidget()).setModel(typesModel);
@@ -235,6 +284,7 @@ public class OrganizationScreen extends OpenELISScreenForm<OrganizationForm,Quer
         //((TableDropdown)queryContactsTable.columns.get(5).getColumnWidget()).setModel(statesModel);
     }
     
+ 
     public void query() {
         super.query();
         orgId.setFocus(true);
@@ -271,7 +321,7 @@ public class OrganizationScreen extends OpenELISScreenForm<OrganizationForm,Quer
 
 
     public void onTabSelected(SourcesTabEvents sender, int tabIndex) {
-        form.orgTabPanel = tabPanel.getSelectedTabKey();
+        //form.orgTabPanel = tabPanel.getSelectedTabKey();
     }
 
     /*
@@ -310,6 +360,7 @@ public class OrganizationScreen extends OpenELISScreenForm<OrganizationForm,Quer
         screenService.call("loadNotes", form.notes, new AsyncCallback<NotesForm>(){
             public void onSuccess(NotesForm result){    
                 form.notes = result;
+                form.notes.load(form.notes.data);
                 load(form.notes);
                 window.setStatus("","");
             }

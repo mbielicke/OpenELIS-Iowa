@@ -37,7 +37,7 @@ public class OrganizationEntry implements AppModule {
         ClassFactory.addClassFactory(new String[] {"OrganizationScreen"}, 
                                new ClassFactory.Factory() {
                                    public Object newInstance(Object[] args) {
-                                       return new OrganizationScreen();
+                                       return new Organization();
                                    }
                                 }
         );

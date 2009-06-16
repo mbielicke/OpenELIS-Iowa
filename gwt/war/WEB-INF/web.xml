@@ -34,7 +34,7 @@ UIRF Software License are applicable instead of those above.
         <filter-class>org.openelis.server.JUnitFilter</filter-class>
         <init-param>
             <param-name>AppRoot</param-name>
-            <param-value>/home/tbrady/workspace/OpenELIS-GWT/war/openelis</param-value>
+            <param-value>/home/USERNAME/workspace/OpenELIS-GWT/war/openelis</param-value>
         </init-param>
         <init-param>
             <param-name>User</param-name>
@@ -63,15 +63,15 @@ UIRF Software License are applicable instead of those above.
   </servlet>
   
   <servlet>
-    <servlet-name>ScreenCacheService</servlet-name>
-    <servlet-class>org.openelis.modules.main.server.ScreenCacheService</servlet-class>
+    <servlet-name>OpenELISScreenServlet</servlet-name>
+    <servlet-class>org.openelis.modules.main.server.ScreenServiceControllerServlet</servlet-class>
     <load-on-startup>3</load-on-startup>
   </servlet>
   
   <servlet>
     <servlet-name>PreferencesServlet</servlet-name>
     <servlet-class>org.openelis.server.PreferencesServlet</servlet-class>
-    <load-on-startup>4</load-on-startup>
+    <load-on-startup>3</load-on-startup>
   </servlet>
   
   <servlet>
@@ -81,7 +81,7 @@ UIRF Software License are applicable instead of those above.
         <param-name>app.root</param-name>
         <param-value>war/openelis/</param-value>
     </init-param>
-    <load-on-startup>5</load-on-startup>
+    <load-on-startup>4</load-on-startup>
   </servlet>
   
 
@@ -91,8 +91,8 @@ UIRF Software License are applicable instead of those above.
   </servlet-mapping>
   
   <servlet-mapping>
-    <servlet-name>ScreenCacheService</servlet-name>
-    <url-pattern>/openelis/ScreenCacheService</url-pattern>
+    <servlet-name>OpenELISScreenServlet</servlet-name>
+    <url-pattern>/openelis/OpenELISScreenServlet</url-pattern>
   </servlet-mapping>
   
   <servlet-mapping>
@@ -104,7 +104,8 @@ UIRF Software License are applicable instead of those above.
     <servlet-name>CalendarServlet</servlet-name>
     <url-pattern>/openelis/CalendarServlet</url-pattern>
   </servlet-mapping>
-      
+      <servlet> 
+      <servlet-name>remoteLoggingServiceImpl</servlet-name> <servlet-class>com.google.gwt.libideas.logging.server.RemoteLoggingServiceImpl</servlet-class> </servlet> <servlet-mapping> <servlet-name>remoteLoggingServiceImpl</servlet-name> <url-pattern>/openelis/logging</url-pattern> </servlet-mapping>
   <session-config>
     <session-timeout>300</session-timeout>
   </session-config>
@@ -114,11 +115,7 @@ UIRF Software License are applicable instead of those above.
     <location>/.no_file.html</location>
   </error-page>     
  
-  <listener>
-    <listener-class>
-      org.openelis.util.SessionManager
-    </listener-class>
-  </listener>
+
   
   <resource-ref>
     <res-ref-name>openELISJNDI</res-ref-name>

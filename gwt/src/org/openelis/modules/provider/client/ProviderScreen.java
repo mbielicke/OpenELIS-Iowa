@@ -44,7 +44,7 @@ import org.openelis.gwt.common.data.QueryStringField;
 import org.openelis.gwt.common.data.TableDataModel;
 import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.screen.CommandChain;
-import org.openelis.gwt.screen.ScreenTab;
+import org.openelis.gwt.screen.ScreenTabPanel;
 import org.openelis.gwt.screen.ScreenTableWidget;
 import org.openelis.gwt.screen.ScreenTextArea;
 import org.openelis.gwt.screen.ScreenTextBox;
@@ -73,7 +73,7 @@ public class ProviderScreen extends OpenELISScreenForm<ProviderForm,Query<TableD
     private ScreenTextArea noteArea = null;
     private TableWidget provAddController = null;  
     private Dropdown displayType = null;
-    private ScreenTab tabPanel;
+    private ScreenTabPanel tabPanel;
     private KeyListManager keyList = new KeyListManager();       
     
     private ProviderMetaMap ProvMeta = new ProviderMetaMap(); 
@@ -153,9 +153,9 @@ public class ProviderScreen extends OpenELISScreenForm<ProviderForm,Query<TableD
         lastName = (TextBox)getWidget(ProvMeta.getLastName());
         // subjectBox = (TextBox)getWidget(ProvMeta.getNote().getSubject());
         noteArea = (ScreenTextArea)widgets.get(ProvMeta.getNote().getText());
-        svp = (ScreenVertical)widgets.get("notesPanel");
-        tabPanel = (ScreenTab)widgets.get("provTabPanel");
-
+        svp = (ScreenVertical) widgets.get("notesPanel");
+        tabPanel = (ScreenTabPanel)widgets.get("provTabPanel");
+        
         displayType = (Dropdown)getWidget(ProvMeta.getTypeId());
 
         provAddController = ((TableWidget)getWidget("providerAddressTable"));

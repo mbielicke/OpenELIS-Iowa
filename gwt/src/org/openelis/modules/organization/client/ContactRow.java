@@ -12,22 +12,23 @@ public class ContactRow extends TableDataRow<Contact> {
 
     private static final long serialVersionUID = 1L;
     
-    public DropDownField<Integer> contactType;
-    public StringField name;
-    public StringField multipleUnit;
-    public StringField streetAddress;
-    public StringField city;
-    public DropDownField<String> state;
-    public StringField zipCode;
-    public DropDownField<String> country;
-    public StringField workPhone;
-    public StringField homePhone;
-    public StringField cellPhone;
-    public StringField faxPhone;
-    public StringField email;
+    public Integer contactType;
+    public String name;
+    public String multipleUnit;
+    public String streetAddress;
+    public String city;
+    public String state;
+    public String zipCode;
+    public String country;
+    public String workPhone;
+    public String homePhone;
+    public String cellPhone;
+    public String faxPhone;
+    public String email;
     
     
     public ContactRow() {
+        /*
         contactType = new DropDownField<Integer>();
         name = new StringField();
         multipleUnit = new StringField();
@@ -41,9 +42,11 @@ public class ContactRow extends TableDataRow<Contact> {
         cellPhone = new StringField();
         faxPhone = new StringField();
         email = new StringField();
+        */
     }
     
     public ContactRow(ContactRow orig){
+        /*
         contactType = (DropDownField<Integer>)orig.contactType.clone();
         name = (StringField)orig.name.clone();
         multipleUnit = (StringField)orig.multipleUnit.clone();
@@ -57,22 +60,29 @@ public class ContactRow extends TableDataRow<Contact> {
         cellPhone = (StringField)orig.cellPhone.clone();
         faxPhone = (StringField)orig.faxPhone.clone();
         email = (StringField)orig.email.clone();
+        */
     }
     
     public Object clone() {
         return new ContactRow(this);
     }
     
-    public List<FieldType> getCells() {
-        return Arrays.asList(new FieldType[] {
-                                              contactType,
+    public List getCells() {
+        DropDownField<Integer> contact = new DropDownField<Integer>();
+        contact.setValue(new TableDataRow<Integer>(contactType));
+        DropDownField<String> stateD = new DropDownField<String>();
+        stateD.setValue(new TableDataRow<String>(state));
+        DropDownField<String> countryD = new DropDownField<String>();
+        countryD.setValue(new TableDataRow<String>(country));
+        return Arrays.asList(new Object[] {
+                                              contact,
                                               name,
                                               multipleUnit,
                                               streetAddress,
                                               city,
-                                              state,
+                                              stateD,
                                               zipCode,
-                                              country,
+                                              countryD,
                                               workPhone,
                                               homePhone,
                                               cellPhone,

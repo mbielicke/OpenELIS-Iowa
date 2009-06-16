@@ -304,9 +304,9 @@ public class ProviderService implements AppScreenFormServiceInt<ProviderForm, Qu
          * Load initial  models to RPC and store cache verison of models into Session for 
          * comparisons for later fetches
          */
-        rpc.states = StatesCacheHandler.getStates();
+        rpc.states = null;//StatesCacheHandler.getStates();
         SessionManager.getSession().setAttribute("statesVersion",StatesCacheHandler.version);
-        rpc.countries = CountryCacheHandler.getCountries();
+        rpc.countries = null;//CountryCacheHandler.getCountries();
         SessionManager.getSession().setAttribute("countriesVersion",CountryCacheHandler.version);
         rpc.providerTypes = ProviderTypeCacheHandler.getProviderTypes();
         SessionManager.getSession().setAttribute("providerTypesVersion",ProviderTypeCacheHandler.version);
@@ -324,11 +324,11 @@ public class ProviderService implements AppScreenFormServiceInt<ProviderForm, Qu
          * Compare stored version to current cache versions and update if necessary. 
          */
         if(states != StatesCacheHandler.version){
-            rpc.states = StatesCacheHandler.getStates();
+            rpc.states = null;//StatesCacheHandler.getStates();
             SessionManager.getSession().setAttribute("statesVersion", StatesCacheHandler.version);
         }
         if(countries != CountryCacheHandler.version){
-            rpc.countries = CountryCacheHandler.getCountries();
+            rpc.countries = null;//CountryCacheHandler.getCountries();
             SessionManager.getSession().setAttribute("countriesVersion", CountryCacheHandler.version);
         }
         if(types != ProviderTypeCacheHandler.version){

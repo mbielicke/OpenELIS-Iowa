@@ -57,7 +57,8 @@ import org.openelis.gwt.common.data.TreeDataItem;
 import org.openelis.gwt.common.data.TreeDataModel;
 
 import org.openelis.gwt.screen.CommandChain;
-import org.openelis.gwt.screen.ScreenTab;
+import org.openelis.gwt.screen.ScreenMenuPanel;
+import org.openelis.gwt.screen.ScreenTabPanel;
 import org.openelis.gwt.screen.ScreenTableWidget;
 import org.openelis.gwt.screen.ScreenTextBox;
 import org.openelis.gwt.screen.ScreenTreeWidget;
@@ -133,7 +134,9 @@ public class TestScreen extends OpenELISScreenForm<TestForm, Query<TableDataRow<
 
     private TabPanel resultPanel,testTabPanel;    
     
-    private ScreenTab screenTestTab;   
+    private ScreenTabPanel screenTestTab;
+    
+    private MenuItem dupItem;    
 
     private ArrayList<TableDataModel<TableDataRow<Integer>>> resultTableModelCollection,
                                                              resultDropdownModelCollection;
@@ -253,7 +256,7 @@ public class TestScreen extends OpenELISScreenForm<TestForm, Query<TableDataRow<
         //
         testTabPanel.remove(3);
         
-        screenTestTab = (ScreenTab)widgets.get("testTabPanel");
+        screenTestTab = (ScreenTabPanel)widgets.get("testTabPanel");
  
         //
         // this is done to remove the default tab that's added to

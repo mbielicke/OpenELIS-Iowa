@@ -80,9 +80,9 @@ public class SampleLocationService implements AppScreenFormServiceInt<SampleLoca
          * Load initial  models to RPC and store cache verison of models into Session for 
          * comparisons for later fetches
          */
-        rpc.states = StatesCacheHandler.getStates();
+        rpc.states = null;//StatesCacheHandler.getStates();
         SessionManager.getSession().setAttribute("statesVersion",StatesCacheHandler.version);
-        rpc.countries = CountryCacheHandler.getCountries();
+        rpc.countries = null;//CountryCacheHandler.getCountries();
         SessionManager.getSession().setAttribute("countriesVersion",CountryCacheHandler.version);
         return rpc;
     }

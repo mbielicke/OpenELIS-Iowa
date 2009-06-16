@@ -25,6 +25,7 @@
 */
 package org.openelis.server;
 
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -76,6 +77,7 @@ public class JUnitFilter implements Filter {
         log.debug("Initializing the Application.");
         if(config.getInitParameter("AppRoot") != null)
             Constants.APP_ROOT = config.getInitParameter("AppRoot");
+        System.out.println(Constants.APP_ROOT);
         if(config.getInitParameter("Locale") != null)
             locale = config.getInitParameter("Locale");
         if(config.getInitParameter("User") != null)

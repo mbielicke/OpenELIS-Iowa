@@ -40,6 +40,7 @@ import org.openelis.gwt.screen.AppScreen;
 import org.openelis.gwt.screen.ClassFactory;
 import org.openelis.gwt.screen.ScreenMenuPanel;
 import org.openelis.gwt.screen.ScreenWidget;
+import org.openelis.gwt.screen.rewrite.Screen;
 import org.openelis.gwt.widget.MenuItem;
 import org.openelis.gwt.widget.WindowBrowser;
 import org.openelis.modules.favorites.client.FavoritesScreen;
@@ -106,10 +107,16 @@ public class OpenELIS extends AppScreen<OpenELISForm> implements ClickListener {
         		return;
         	}
             MenuItem menuItem = (MenuItem)item;
+            Object screen = null;
             if(menuItem.args != null){
-                OpenELIS.browser.addScreen((AppScreen)ClassFactory.forName(menuItem.objClass,menuItem.args),menuItem.key);
+                screen = ClassFactory.forName(menuItem.objClass,menuItem.args);
             }else{    
-                OpenELIS.browser.addScreen((AppScreen)ClassFactory.forName(menuItem.objClass),menuItem.key);
+                screen = ClassFactory.forName(menuItem.objClass);
+            }
+            if(screen instanceof AppScreen){
+                OpenELIS.browser.addScreen((AppScreen)screen,menuItem.key);
+            }else{    
+                OpenELIS.browser.addScreen((Screen)screen,menuItem.key);
             }
         }
     }
