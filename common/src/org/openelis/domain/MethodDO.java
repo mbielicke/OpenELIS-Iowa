@@ -28,7 +28,7 @@ package org.openelis.domain;
 import java.io.Serializable;
 import java.util.Date;
 
-import org.openelis.util.DataBaseUtil;
+import org.openelis.utilcommon.DataBaseUtil;
 import org.openelis.util.Datetime;
 
 public class MethodDO implements Serializable {

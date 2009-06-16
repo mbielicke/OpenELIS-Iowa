@@ -25,8 +25,8 @@
 */
 package org.openelis.domain;
 
-import org.openelis.util.DataBaseUtil;
 import org.openelis.util.Datetime;
+import org.openelis.utilcommon.DataBaseUtil;
 
 import java.io.Serializable;
 import java.util.Date;

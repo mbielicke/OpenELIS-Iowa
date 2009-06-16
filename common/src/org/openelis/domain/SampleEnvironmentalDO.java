@@ -28,7 +28,7 @@ package org.openelis.domain;
 import java.io.Serializable;
 
 import org.openelis.gwt.common.RPC;
-import org.openelis.util.DataBaseUtil;
+import org.openelis.utilcommon.DataBaseUtil;
 
 public class SampleEnvironmentalDO implements Serializable {
 

@@ -27,7 +27,7 @@ package org.openelis.domain;
 
 import java.io.Serializable;
 
-import org.openelis.util.DataBaseUtil;
+import org.openelis.utilcommon.DataBaseUtil;
 
 public class IdNameDO implements Serializable{
     
@@ -35,6 +35,10 @@ public class IdNameDO implements Serializable{
     
     protected Integer id;
     protected String name;
+    
+    public IdNameDO() {
+        
+    }
     
     public IdNameDO(Integer id, String name){
         setId(id);
