@@ -23,30 +23,14 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.util;
+package org.openelis.utilcommon;
 
-import java.lang.Math;
+public class DataBaseUtil {
 
-public class MathUtil {
-    
-    /**
-     * This functions returns true if the arguments satisfy the following equation,      
-     * value = base ^ n; such that n is a natural number.    
-     */
-    public static boolean isPowerOf(int value, int base) {                
-        double n;        
-        String str;        
-        
-        n = Math.log(value)/Math.log(base);        
-        str = String.valueOf(n); 
-        
-        try{
-            Integer.parseInt(str);               
-        } catch(NumberFormatException numE) {
-            return false;
-        } 
-        
-        return true;
+    public static String trim(String result) {
+        if (result == null || result.length() == 0)
+            return null;
+        else
+            return result.trim();
     }
-
 }

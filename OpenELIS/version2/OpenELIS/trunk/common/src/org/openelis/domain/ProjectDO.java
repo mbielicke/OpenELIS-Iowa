@@ -28,8 +28,8 @@ package org.openelis.domain;
 import java.io.Serializable;
 import java.util.Date;
 
-import org.openelis.util.DataBaseUtil;
 import org.openelis.util.Datetime;
+import org.openelis.utilcommon.DataBaseUtil;
 
 public class ProjectDO implements Serializable {
 

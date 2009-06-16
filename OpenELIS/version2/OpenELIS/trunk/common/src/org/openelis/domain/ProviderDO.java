@@ -27,7 +27,7 @@ package org.openelis.domain;
 
 import java.io.Serializable;
 
-import org.openelis.util.DataBaseUtil;
+import org.openelis.utilcommon.DataBaseUtil;
 
 
 public class ProviderDO implements Serializable{

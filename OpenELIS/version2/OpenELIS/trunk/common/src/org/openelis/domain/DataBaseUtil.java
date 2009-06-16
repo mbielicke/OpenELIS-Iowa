@@ -23,19 +23,14 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.util;
+package org.openelis.domain;
 
-/**
- * This excepiton is thrown when the range for a numeric or titer value is invalid.
- * Valid numeric ranges are of the format min,max such as 5,20; and valid titer
- * ranges are of the format min:max where min and max are arbitrary concentrations. 
- */
-public class ParseException extends Exception {
+public class DataBaseUtil {
 
-    private static final long serialVersionUID = 1L;    
-    
-    public ParseException(String arg) {
-        super(arg);
+    public static String trim(String result) {
+        if (result == null || result.length() == 0)
+            return null;
+        else
+            return result.trim();
     }
-
 }

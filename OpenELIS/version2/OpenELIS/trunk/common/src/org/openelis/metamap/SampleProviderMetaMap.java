@@ -23,16 +23,35 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.util;
 
-public class InconsistentException extends Exception {
+package org.openelis.metamap;
 
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 1L;
+import org.openelis.gwt.common.MetaMap;
 
-    public InconsistentException (String arg) {
-        super(arg);
+public class SampleProviderMetaMap implements MetaMap {
+
+    public String getProviderName() {
+        return "providerName";
     }
+    
+    public String buildFrom(String where) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public String[] getColumnList() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public String getEntity() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public boolean hasColumn(String columnName) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
 }
