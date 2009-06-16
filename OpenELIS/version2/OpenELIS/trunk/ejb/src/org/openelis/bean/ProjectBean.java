@@ -146,7 +146,7 @@ public class ProjectBean implements ProjectRemote {
     }
 
     public Integer updateProject(ProjectDO projectDO,         
-                                 List<ProjectParameterDO> paramDOList) throws Exception {
+                                 List<ProjectParameterDO> paramDOList) throws Exception {       
         Query query;
         Integer projectReferenceId,projectId;
         Project project;
@@ -285,8 +285,7 @@ public class ProjectBean implements ProjectRemote {
         dstartDate = projectDO.getStartedDate();
         dcompleteDate = projectDO.getCompletedDate();
         id = projectDO.getId();
-        active = projectDO.getIsActive();
-        
+        active = projectDO.getIsActive();        
         if (projectDO.getName() == null || "".equals(projectDO.getName())) {
             exceptionList.add(new FieldErrorException("fieldRequiredException",
                                                       ProjMeta.getName()));
@@ -313,16 +312,7 @@ public class ProjectBean implements ProjectRemote {
             query = manager.createNamedQuery("Project.ProjectListByName");
             query.setParameter("name", projectDO.getName());
             list = query.getResultList();
-
-            for (iter = 0; iter < list.size(); iter++) {
-                project = (Project)list.get(iter);
-                if (!project.getId().equals(id)) {
-                    exceptionList.add(new FieldErrorException("fieldUniqueException",
-                                                              ProjMeta.getName()));
-                    break;
-                }
-            }
-            /*
+            
             for (iter = 0; iter < list.size(); iter++) {
                 overlap = false;
                 project = (Project)list.get(iter);
@@ -334,9 +324,11 @@ public class ProjectBean implements ProjectRemote {
                         }
                         
                         qcompleteDate = project.getCompletedDate();
-                        qstartDate = project.getStartedDate();                        
+                        qstartDate = project.getStartedDate();                                    
                         if(qstartDate !=null && qcompleteDate != null) {
                             if (qstartDate.before(dcompleteDate) && (qcompleteDate.after(dstartDate))) {
+                                overlap = true;
+                            } else if (qstartDate.before(dstartDate) && (qcompleteDate.after(dcompleteDate))) {
                                 overlap = true;
                             } else if (qstartDate.equals(dcompleteDate) || (qcompleteDate.equals(dstartDate))) {
                                 overlap = true;
@@ -350,7 +342,7 @@ public class ProjectBean implements ProjectRemote {
 
                     }
                 }
-            } */
+            } 
         }
     }       
     

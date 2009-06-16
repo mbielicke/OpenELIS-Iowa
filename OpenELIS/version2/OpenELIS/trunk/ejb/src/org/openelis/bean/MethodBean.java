@@ -31,7 +31,6 @@ import org.openelis.entity.Method;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.local.LockLocal;
@@ -253,6 +252,9 @@ public class MethodBean implements MethodRemote {
                         }
                         if (method.getActiveBegin().before(activeEnd) && (method.getActiveEnd().after(activeBegin))) {
                             overlap = true;
+                        } else if(method.getActiveBegin().before(methodDO.getActiveBegin())&&
+                                        (method.getActiveEnd().after(methodDO.getActiveEnd()))){
+                            overlap = true;  
                         } else if (method.getActiveBegin().equals(activeEnd) || (method.getActiveEnd().equals(activeBegin))) {
                             overlap = true;
                         } else if (method.getActiveBegin().equals(activeBegin) || (method.getActiveEnd().equals(activeEnd))) {

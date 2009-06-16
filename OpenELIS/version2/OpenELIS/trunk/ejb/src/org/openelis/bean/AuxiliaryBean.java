@@ -62,11 +62,11 @@ import org.openelis.metamap.AuxFieldGroupMetaMap;
 import org.openelis.metamap.AuxFieldMetaMap;
 import org.openelis.remote.AuxiliaryRemote;
 import org.openelis.security.local.SystemUserUtilLocal;
-import org.openelis.util.NumericRange;
-import org.openelis.util.InconsistentException;
+import org.openelis.utilcommon.NumericRange;
+import org.openelis.utilcommon.InconsistentException;
 import org.openelis.util.QueryBuilder;
-import org.openelis.util.ParseException;
-import org.openelis.util.TestResultValidator;
+import org.openelis.utilcommon.ParseException;
+import org.openelis.utilcommon.TestResultValidator;
 import org.openelis.utils.GetPage;
 
 @Stateless
