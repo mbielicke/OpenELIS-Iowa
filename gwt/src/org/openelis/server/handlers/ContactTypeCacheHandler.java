@@ -23,19 +23,39 @@ public class ContactTypeCacheHandler implements MessageHandler<ContactTypeCacheM
         
     }
     
-    public static ArrayList<IdNameDO> getContactTypes() {
-        ArrayList<IdNameDO> model = (ArrayList<IdNameDO>)CachingManager.getElement("InitialData", "contactTypeDropdown");
+    public static TableDataModel<TableDataRow<Integer>> getContactTypes() {
+        TableDataModel<TableDataRow<Integer>> model = (TableDataModel<TableDataRow<Integer>>)CachingManager.getElement("InitialData", "contactTypeDropdown");
         if(model == null) {
             CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");        
             Integer id = remote.getCategoryId("contact_type");
-            
-            model = (ArrayList<IdNameDO>)remote.getDropdownValues(id);
         
+            ArrayList<IdNameDO> entries = (ArrayList<IdNameDO>)remote.getDropdownValues(id);
+        
+            //  we need to build the model to return
+            model = new TableDataModel<TableDataRow<Integer>>();
+        
+            model.add(new TableDataRow<Integer>(null, new StringObject("")));
+            for(IdNameDO resultDO :  entries){
+                model.add(new TableDataRow<Integer>(resultDO.getId(),new StringObject(resultDO.getName())));
+            }   
             CachingManager.putElement("InitialData", "contactTypeDropdown", model);
             version++;
         }
         return model;
+    }
+    
+    public static ArrayList<IdNameDO> getContactTypesList() {
+        ArrayList<IdNameDO> list = (ArrayList<IdNameDO>)CachingManager.getElement("InitialData", "contactTypeList");
+        if(list == null) {
+            CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");        
+            Integer id = remote.getCategoryId("contact_type");
         
+            list = (ArrayList<IdNameDO>)remote.getDropdownValues(id);
+        
+            CachingManager.putElement("InitialData", "contactTypeDropdown", list);
+            version++;
+        }
+        return list;
     }
 
 }

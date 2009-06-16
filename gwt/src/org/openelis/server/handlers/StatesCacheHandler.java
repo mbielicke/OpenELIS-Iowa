@@ -48,8 +48,8 @@ public class StatesCacheHandler implements MessageHandler<StateCacheMessage> {
         
     }
     
-    public static ArrayList<IdNameDO> getStates() {
-        ArrayList<IdNameDO> model = (ArrayList<IdNameDO>)CachingManager.getElement("InitialData", "stateDropdown");
+    public static TableDataModel<TableDataRow<String>> getStates() {
+        TableDataModel<TableDataRow<String>> model = (TableDataModel<TableDataRow<String>>)CachingManager.getElement("InitialData", "stateDropdown");
         if(model == null) {
             CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");        
             Integer id = remote.getCategoryId("state");
@@ -57,16 +57,29 @@ public class StatesCacheHandler implements MessageHandler<StateCacheMessage> {
             ArrayList<IdNameDO> entries = (ArrayList<IdNameDO>)remote.getDropdownValues(id);
         
             //  we need to build the model to return
-            model = new ArrayList<IdNameDO>();
+            model = new TableDataModel<TableDataRow<String>>();
         
-            model.add(new IdNameDO(null,""));
+            model.add(new TableDataRow<String>(null, new StringObject(" ")));
             for(IdNameDO resultDO :  entries){
-                model.add(new IdNameDO(resultDO.getId(),resultDO.getName()));
+                model.add(new TableDataRow<String>(resultDO.getName(),new StringObject(resultDO.getName())));
             }   
             CachingManager.putElement("InitialData", "stateDropdown", model);
             version++;
         }
         return model;
+    }
+    
+    public static ArrayList<IdNameDO> getStatesList() {
+        ArrayList<IdNameDO> list = (ArrayList<IdNameDO>)CachingManager.getElement("InitialData","stateList");
+        if(list == null) {
+            CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");        
+            Integer id = remote.getCategoryId("state");
+        
+            list = (ArrayList<IdNameDO>)remote.getDropdownValues(id);
+            CachingManager.putElement("InitialData", "stateList", list);
+            version++;
+        }
+        return list;
         
     }
 
