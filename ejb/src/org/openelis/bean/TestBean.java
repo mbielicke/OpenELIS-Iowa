@@ -66,17 +66,16 @@ import org.openelis.metamap.TestWorksheetAnalyteMetaMap;
 import org.openelis.metamap.TestWorksheetItemMetaMap;
 import org.openelis.remote.TestRemote;
 import org.openelis.security.local.SystemUserUtilLocal;
-import org.openelis.util.NumericRange;
-import org.openelis.util.InconsistentException;
-import org.openelis.util.ParseException;
+import org.openelis.utilcommon.NumericRange;
+import org.openelis.utilcommon.InconsistentException;
+import org.openelis.utilcommon.ParseException;
 import org.openelis.util.QueryBuilder;
-import org.openelis.util.TestResultValidator;
-import org.openelis.util.TiterRange;
+import org.openelis.utilcommon.TestResultValidator;
+import org.openelis.utilcommon.TiterRange;
 import org.openelis.utils.GetPage;
 import org.openelis.utils.SecurityInterceptor;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -1042,10 +1041,13 @@ public class TestBean implements TestRemote {
                       if(test.getActiveBegin().before(testDO.getActiveEnd())&&
                                       (test.getActiveEnd().after(testDO.getActiveBegin()))){
                           overlap = true;  
-                      }else if(test.getActiveBegin().equals(testDO.getActiveEnd())||
+                      } else if(test.getActiveBegin().before(testDO.getActiveBegin())&&
+                                      (test.getActiveEnd().after(testDO.getActiveEnd()))){
+                          overlap = true;  
+                      } else if(test.getActiveBegin().equals(testDO.getActiveEnd())||
                                    (test.getActiveEnd().equals(testDO.getActiveBegin()))){
-                                overlap = true;                  
-                      }else if(test.getActiveBegin().equals(testDO.getActiveBegin())||
+                          overlap = true;                  
+                      } else if(test.getActiveBegin().equals(testDO.getActiveBegin())||
                                       (test.getActiveEnd().equals(testDO.getActiveEnd()))){
                           overlap = true;
                       }

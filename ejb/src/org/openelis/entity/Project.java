@@ -135,8 +135,12 @@ public class Project implements Auditable, Cloneable {
   }
   public void setStartedDate (Datetime started_date){    
     if((started_date == null && this.startedDate != null) || (started_date != null && this.startedDate == null) ||
-       (started_date != null && !started_date.equals(new Datetime(Datetime.YEAR, Datetime.DAY, this.startedDate))))
-        this.startedDate = started_date.getDate();
+       (started_date != null && !started_date.equals(new Datetime(Datetime.YEAR, Datetime.DAY, this.startedDate)))) {
+        if(started_date != null)
+            this.startedDate = started_date.getDate();
+        else 
+            this.startedDate = null;
+    }
   }
 
   public Datetime getCompletedDate() {
@@ -146,8 +150,12 @@ public class Project implements Auditable, Cloneable {
   }
   public void setCompletedDate (Datetime completed_date){    
     if((completed_date == null && this.completedDate != null) || (completed_date != null && this.completedDate == null) ||
-       (completed_date != null && !completed_date.equals(new Datetime(Datetime.YEAR, Datetime.DAY, this.startedDate))))
-        this.completedDate = completed_date.getDate();
+       (completed_date != null && !completed_date.equals(new Datetime(Datetime.YEAR, Datetime.DAY, this.startedDate)))) {
+        if(completed_date != null)
+            this.completedDate = completed_date.getDate();
+        else
+            this.completedDate = null;
+    }
   }
 
   public String getIsActive() {
