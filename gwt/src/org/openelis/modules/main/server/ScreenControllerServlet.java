@@ -37,6 +37,7 @@ import org.openelis.gwt.server.AppServlet;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
 import org.openelis.gwt.services.AppScreenServiceInt;
 import org.openelis.gwt.services.AutoCompleteServiceInt;
+import org.openelis.gwt.services.ScreenServiceInt;
 import org.openelis.modules.favorites.client.FavoritesServiceInt;
 import org.openelis.modules.favorites.server.FavoritesService;
 import org.openelis.modules.main.client.service.OpenELISServiceInt;
@@ -47,7 +48,7 @@ import java.util.HashMap;
 
 import javax.servlet.http.HttpSession;
 
-public class ScreenControllerServlet extends AppServlet implements OpenELISServiceInt<RPC,RPC>, AutoCompleteServiceInt, FavoritesServiceInt {
+public class ScreenControllerServlet extends AppServlet implements OpenELISServiceInt<RPC,RPC>, AutoCompleteServiceInt, FavoritesServiceInt, ScreenServiceInt {
 
     private static final long serialVersionUID = 1L; 
 
@@ -119,6 +120,19 @@ public class ScreenControllerServlet extends AppServlet implements OpenELISServi
         }
     }
     
+    private ScreenServiceInt getScreenService() throws RPCException {
+        try {
+            return (ScreenServiceInt)Class.forName(getThreadLocalRequest().getParameter("service")).newInstance();
+        }catch(Exception e){
+            if(e instanceof FormErrorException)
+                throw new FormErrorException(e.getMessage());
+            else{
+                e.printStackTrace();
+                throw new RPCException(e.getMessage());
+            }
+        }
+    }
+    
     public void logout() {
         HttpSession session;
         try {
@@ -161,6 +175,8 @@ public class ScreenControllerServlet extends AppServlet implements OpenELISServi
         AppScreenFormServiceInt service = (AppScreenFormServiceInt) getService();
         try {
             return (T)service.getClass().getMethod(method,new Class[] {rpc.getClass()}).invoke(service, new Object[]{rpc});
+            //return (T)Class.forName(getThreadLocalRequest().getParameter("service")).newInstance().getClass().
+            //getMethod(method,new Class[] {rpc.getClass()}).invoke(Class.forName(getThreadLocalRequest().getParameter("service")).newInstance(), new Object[]{rpc});
         }catch(Exception e){
             if(e instanceof InvocationTargetException){
                 InvocationTargetException er = (InvocationTargetException)e;
@@ -172,5 +188,25 @@ public class ScreenControllerServlet extends AppServlet implements OpenELISServi
             throw new RPCException(e.getMessage());
         }
     }
+
+	public String getScreen() throws RPCException {
+		 return ((ScreenServiceInt)getScreenService()).getScreen();
+	}
+
+	public <T extends RPC> T callScreen(String method, T rpc) throws Exception {
+		ScreenServiceInt service = getScreenService();
+		try{
+			return (T)service.getClass().getMethod(method,new Class[] {rpc.getClass()}).invoke(service, new Object[]{rpc});
+		}catch(Exception e){
+			if(e instanceof InvocationTargetException){
+				InvocationTargetException er = (InvocationTargetException)e;
+				if(er.getCause() != null)
+					throw (RPCException)er.getCause();
+			}
+
+			e.printStackTrace();
+			throw new RPCException(e.getMessage());
+		}
+	}
 
 }

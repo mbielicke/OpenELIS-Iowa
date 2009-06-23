@@ -29,18 +29,31 @@ import org.openelis.gwt.screen.AppModule;
 import org.openelis.gwt.screen.ClassFactory;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.RunAsyncCallback;
+
 public class QAEventEntry implements AppModule {
 
     
     public void onModuleLoad() {
     	OpenELIS.modules.add(getModuleName());
-        ClassFactory.addClassFactory(new String[] {"QAEventScreen"},
-                               new ClassFactory.Factory() {
-                                   public Object newInstance(Object[] args) {
-                                       return new org.openelis.modules.qaevent.client.QAEventScreen();
-                                   }
-                                }
-        );
+
+        ClassFactory.addScreen("QAEventScreen", 
+                new ClassFactory.ShowScreen() {
+                    public void showScreen(Object[] args) {
+                 	   GWT.runAsync(new RunAsyncCallback() {
+                 		   public void onSuccess() {
+                 			   OpenELIS.browser.addScreen(new QAEventScreen());
+                 		   }
+                 		   
+                 		   public void onFailure(Throwable caught) {
+                 			   
+                 		   }
+                 	   }); 
+                        
+                    }
+                 }
+);
     }
 
     public String getModuleName() {

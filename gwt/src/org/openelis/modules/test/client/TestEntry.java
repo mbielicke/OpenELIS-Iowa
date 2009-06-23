@@ -29,6 +29,9 @@ import org.openelis.gwt.screen.AppModule;
 import org.openelis.gwt.screen.ClassFactory;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.RunAsyncCallback;
+
 public class TestEntry implements AppModule {
 
     public String getModuleName() {        
@@ -37,15 +40,25 @@ public class TestEntry implements AppModule {
 
     public void onModuleLoad() {
         OpenELIS.modules.add(getModuleName());
-        ClassFactory.addClassFactory(new String[] {"TestScreen"}, 
-                              new ClassFactory.Factory() {
-                                  public Object newInstance(Object[] args) {
-                                      return new TestScreen();
-                                  }
+        ClassFactory.addScreen("TestScreen", 
+                  new ClassFactory.ShowScreen() {
+                           public void showScreen(Object[] args) {
+                        	   GWT.runAsync(new RunAsyncCallback() {
+                        		  public void onSuccess() {   
+                        	   
+									OpenELIS.browser.addScreen(new TestScreen());
+                        		  }
+                        		  
+                        		  public void onFailure(Throwable caught) {
+                        			  
+                        		  }
+                        	   });
+										
+                                 
+                           }                               
            }
-       );       
-        
-
+       );
     }
+       
 
 }

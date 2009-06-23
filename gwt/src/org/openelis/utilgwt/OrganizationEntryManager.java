@@ -23,7 +23,7 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.util;
+package org.openelis.utilgwt;
 
 import org.openelis.cache.CacheEntryNotFoundException;
 import org.openelis.cache.DictSystemNameCache;

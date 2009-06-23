@@ -40,5 +40,5 @@ UIRF Software License are applicable instead of those above.
  Copyright (C) The University of Iowa.  All Rights Reserved.
 -->
 <module>
-	<source path="util"/>
+	<source path="utilgwt"/>
 </module>

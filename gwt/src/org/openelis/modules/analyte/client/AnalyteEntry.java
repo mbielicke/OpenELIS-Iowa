@@ -29,14 +29,25 @@ import org.openelis.gwt.screen.AppModule;
 import org.openelis.gwt.screen.ClassFactory;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.RunAsyncCallback;
+
 public class AnalyteEntry implements AppModule {
 	
 	public void onModuleLoad() {
 		OpenELIS.modules.add(getModuleName());
-        ClassFactory.addClassFactory(new String[] {"AnalyteScreen"}, 
-                               new ClassFactory.Factory() {
-                                   public Object newInstance(Object[] args) {
-                                       return new AnalyteScreen();
+        ClassFactory.addScreen("AnalyteScreen", 
+                               new ClassFactory.ShowScreen() {
+                                   public void showScreen(Object[] args) {
+                                	   GWT.runAsync(new RunAsyncCallback() {
+                                		   public void onSuccess() {
+                                			   OpenELIS.browser.addScreen(new AnalyteScreen());
+                                		   }
+                                		   public void onFailure(Throwable caught) {
+                                			   
+                                		   }
+                                	   });
+                               
                                    }
                                 }
         );

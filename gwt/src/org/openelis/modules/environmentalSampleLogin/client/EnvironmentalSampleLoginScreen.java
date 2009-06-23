@@ -59,8 +59,8 @@ import org.openelis.modules.main.client.OpenELISScreenForm;
 import org.openelis.modules.sampleLocation.client.SampleLocationScreen;
 import org.openelis.modules.sampleOrganization.client.SampleOrganizationScreen;
 import org.openelis.modules.sampleProject.client.SampleProjectScreen;
-import org.openelis.util.OrganizationEntryManager;
-import org.openelis.util.ProjectEntryManager;
+import org.openelis.utilgwt.OrganizationEntryManager;
+import org.openelis.utilgwt.ProjectEntryManager;
 
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;

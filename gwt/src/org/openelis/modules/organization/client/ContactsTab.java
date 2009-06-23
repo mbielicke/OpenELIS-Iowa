@@ -12,6 +12,7 @@ import org.openelis.gwt.event.HasDataChangeHandlers;
 import org.openelis.gwt.event.HasStateChangeHandlers;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.event.StateChangeHandler;
+import org.openelis.gwt.screen.rewrite.Screen;
 import org.openelis.gwt.screen.rewrite.ScreenDef;
 import org.openelis.gwt.screen.rewrite.ScreenEventHandler;
 import org.openelis.gwt.screen.rewrite.Screen.State;
@@ -27,12 +28,11 @@ import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.Widget;
 
-public class ContactsTab extends HandlesEvents implements HasStateChangeHandlers<State>, HasDataChangeHandlers{
+public class ContactsTab extends Screen {
 	
 	private ScreenDef def;
 	private ContactsRPC rpc;
 	private TableWidget table;
-	private CommandListenerCollection commandListeners;
 
 	public ContactsTab(ScreenDef def) {
 		this.def = def;
@@ -80,6 +80,8 @@ public class ContactsTab extends HandlesEvents implements HasStateChangeHandlers
 	
 	private ArrayList<TableDataRow> getTableModel() {
 		ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
+		if(rpc.orgContacts == null)
+			return model;
     	try 
         {	
     		for(int iter = 0;iter < rpc.orgContacts.size();iter++) {
@@ -204,6 +206,9 @@ public class ContactsTab extends HandlesEvents implements HasStateChangeHandlers
 	}
 	
 	public void setRPC(ContactsRPC rpc) {
+		if(rpc == null) {
+			rpc = new ContactsRPC();
+		}
 		this.rpc = rpc;
 		if(rpc.contactTypes != null) {
 		    ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
@@ -215,25 +220,5 @@ public class ContactsTab extends HandlesEvents implements HasStateChangeHandlers
 		}                
 		DataChangeEvent.fire(this);
 	}
-
-    private ScreenEventHandler addScreenHandler(Widget wid, ScreenEventHandler<?> screenHandler) {
-    	addDataChangeHandler(screenHandler);
-    	addStateChangeHandler(screenHandler);
-    	if(wid instanceof HasValue)
-    		((HasValue)wid).addValueChangeHandler(screenHandler);
-    	return screenHandler;
-    }
-
-	public HandlerRegistration addDataChangeHandler(DataChangeHandler handler) {
-		return addHandler(handler, DataChangeEvent.getType());
-	}
-
-	public HandlerRegistration addStateChangeHandler(
-			StateChangeHandler<org.openelis.gwt.screen.rewrite.Screen.State> handler) {
-		return addHandler(handler, StateChangeEvent.getType());
-	}
-	
-	
-	
 
 }

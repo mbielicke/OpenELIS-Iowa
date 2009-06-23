@@ -27,19 +27,32 @@ package org.openelis.modules.SDWISSampleLogin.client;
 
 import org.openelis.gwt.screen.AppModule;
 import org.openelis.gwt.screen.ClassFactory;
+import org.openelis.modules.auxiliary.client.AuxiliaryScreen;
 import org.openelis.modules.main.client.openelis.OpenELIS;
+
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.RunAsyncCallback;
 
 public class SDWISSampleLoginEntry  implements AppModule {
 
     public void onModuleLoad() {   
         OpenELIS.modules.add(getModuleName());        
-        ClassFactory.addClassFactory(new String[] {"SDWISSampleLoginScreen"}, 
-                               new ClassFactory.Factory() {
-                                   public Object newInstance(Object[] args) {
-                                       return new SDWISSampleLoginScreen();
-                                   }
-            }
-        );
+        ClassFactory.addScreen("SDWISSSampleLoginScreen", 
+                new ClassFactory.ShowScreen() {
+                    public void showScreen(Object[] args) {
+                 	   GWT.runAsync(new RunAsyncCallback() {
+                 		   public void onSuccess() {
+                 			   OpenELIS.browser.addScreen(new SDWISSampleLoginScreen());
+                 		   }
+                 		   
+                 		   public void onFailure(Throwable caught) {
+                 			   
+                 		   }
+                 	   }); 
+                        
+                    }
+                 }
+);
     }
 
     public String getModuleName() {
