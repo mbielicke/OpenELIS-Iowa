@@ -29,6 +29,9 @@ import org.openelis.gwt.screen.AppModule;
 import org.openelis.gwt.screen.ClassFactory;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
+
 public class OrganizationEntry implements AppModule {
 
     public void onModuleLoad() {
@@ -37,7 +40,10 @@ public class OrganizationEntry implements AppModule {
         ClassFactory.addClassFactory(new String[] {"OrganizationScreen"}, 
                                new ClassFactory.Factory() {
                                    public Object newInstance(Object[] args) {
-                                       return new Organization();
+                                	   
+                                			   return new Organization();
+                                		 
+                                	   
                                    }
                                 }
         );

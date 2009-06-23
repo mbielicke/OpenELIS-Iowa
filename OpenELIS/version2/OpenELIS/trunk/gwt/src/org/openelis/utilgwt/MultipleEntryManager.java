@@ -23,43 +23,49 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.util;
+package org.openelis.utilgwt;
 
 import org.openelis.gwt.common.data.TableDataRow;
 
-public class ProjectEntryManager extends MultipleEntryManager<Integer> {
+import org.openelis.gwt.common.data.TableDataModel;
 
-    public TableDataRow<Integer> getFirstPermanentProject(){
-        int i;
-        TableDataRow<Integer> row;
-        
-        for(i=0;i<size(); i++){
-            row = getRow(i);
-            if("Y".equals(row.cells[2].getValue()))
-                return row;
-        }
-        return null;
+public class MultipleEntryManager<Key> {
+
+    protected TableDataModel<TableDataRow<Key>> list;
+    
+    public MultipleEntryManager(){
+        list = null;
     }
     
-    public void addFirstPermanentProject(TableDataRow<Integer> newRow) {
-        TableDataRow<Integer> oldRow = getFirstPermanentProject();
-
-        if (oldRow == null && newRow != null) { // insert
-            newRow.cells[2].setValue("Y");
-            addRow(newRow);
-
-        } else if (oldRow != null && newRow == null) { // delete
-            delete(0);
-        } else if (oldRow != null && newRow != null) { // update
-            newRow.cells[2].setValue("Y");
-            setRow(0, newRow);
-        }
+    public MultipleEntryManager(TableDataModel<TableDataRow<Key>> list){
+        this.list = list;
     }
     
-    public void addRow(int i, TableDataRow<Integer> row) {
-        if("Y".equals(row.cells[2].getValue()))
-            super.addRow(0,row);
-        else
-            super.addRow(i, row);
+    public void setList(TableDataModel<TableDataRow<Key>> model){
+        list = model;
+    }
+    
+    public int size(){
+        return list.size();
+    }
+    
+    public TableDataRow<Key> getRow(int i){
+        return list.get(i);
+    }
+    
+    public void setRow(int i, TableDataRow<Key> row){
+        list.set(i, row);
+    }
+    
+    public void addRow(TableDataRow<Key> row){
+        addRow(list.size(), row);
+    }
+    
+    public void addRow(int i, TableDataRow<Key> row){
+        list.add(i, row);
+    }
+    
+    public void delete(int i){
+        list.delete(i);
     }
 }

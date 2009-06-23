@@ -1,9 +1,25 @@
 package org.openelis.modules.organization.client;
 
+import java.util.EnumSet;
+import java.util.Iterator;
+
+import org.openelis.domain.NoteDO;
+import org.openelis.gwt.event.CommandListenerCollection;
+import org.openelis.gwt.event.DataChangeEvent;
+import org.openelis.gwt.event.StateChangeEvent;
+import org.openelis.gwt.screen.AppScreen;
+import org.openelis.gwt.screen.ScreenWindow;
+import org.openelis.gwt.screen.rewrite.Screen;
+import org.openelis.gwt.screen.rewrite.ScreenDef;
+import org.openelis.gwt.screen.rewrite.ScreenEventHandler;
+import org.openelis.gwt.screen.rewrite.UIUtil;
+import org.openelis.gwt.widget.TextBox;
+import org.openelis.gwt.widget.rewrite.AppButton;
+import org.openelis.metamap.OrganizationMetaMap;
+import org.openelis.modules.standardnotepicker.client.StandardNotePickerScreen;
+
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.Widget;
@@ -11,32 +27,8 @@ import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.Element;
 import com.google.gwt.xml.client.XMLParser;
 
-import org.openelis.domain.NoteDO;
-import org.openelis.gwt.event.CommandListenerCollection;
-import org.openelis.gwt.event.DataChangeEvent;
-import org.openelis.gwt.event.DataChangeHandler;
-import org.openelis.gwt.event.HasDataChangeHandlers;
-import org.openelis.gwt.event.HasStateChangeHandlers;
-import org.openelis.gwt.event.StateChangeEvent;
-import org.openelis.gwt.event.StateChangeHandler;
-import org.openelis.gwt.screen.AppScreen;
-import org.openelis.gwt.screen.ScreenWindow;
-import org.openelis.gwt.screen.rewrite.Screen;
-import org.openelis.gwt.screen.rewrite.ScreenDef;
-import org.openelis.gwt.screen.rewrite.ScreenEventHandler;
-import org.openelis.gwt.screen.rewrite.UIUtil;
-import org.openelis.gwt.screen.rewrite.Screen.State;
-import org.openelis.gwt.widget.HandlesEvents;
-import org.openelis.gwt.widget.TextBox;
-import org.openelis.gwt.widget.rewrite.AppButton;
-import org.openelis.metamap.OrganizationMetaMap;
-import org.openelis.modules.standardnotepicker.client.StandardNotePickerScreen;
 
-import java.util.EnumSet;
-import java.util.Iterator;
-
-
-public class NotesTab extends HandlesEvents implements HasStateChangeHandlers<State>, HasDataChangeHandlers{
+public class NotesTab extends Screen {
 	
 	private ScreenDef def;
 	private NotesRPC rpc;
@@ -98,12 +90,16 @@ public class NotesTab extends HandlesEvents implements HasStateChangeHandlers<St
 	}
 	
 	private Widget getNotes() {
-        Iterator itr = rpc.notes.iterator();
+        
         try{
-        Document doc = XMLParser.parse("<panel/>");
+        Document doc = XMLParser.parse("<VerticalPanel/>");
     	Element root = (Element) doc.getDocumentElement();
-    	root.setAttribute("key", "notePanel");   
+    	root.setAttribute("key", "notePanel");
+    	if(rpc.notes == null) {
+			return UIUtil.createWidget(root);
+		}
     	int i=0;
+    	Iterator itr = rpc.notes.iterator();
     	while(itr.hasNext()){
     	    NoteDO noteRow = (NoteDO)itr.next();
             
@@ -172,30 +168,17 @@ public class NotesTab extends HandlesEvents implements HasStateChangeHandlers<St
         return UIUtil.createWidget(root);
     	
         }catch(Exception e){
-        	System.out.println(e.getMessage());
+        	e.printStackTrace();
         }
         return null;
 	}
 	
 	public void setRPC(NotesRPC rpc) {
+		if(rpc == null)
+			rpc = new NotesRPC();
 		this.rpc = rpc;
-		commandListeners.fireCommand(Screen.Action.LOAD,null);
+		DataChangeEvent.fire(this);
 	}
 	
-    private void addScreenHandler(Widget wid, ScreenEventHandler<?> screenHandler) {
-    	addDataChangeHandler(screenHandler);
-    	addStateChangeHandler(screenHandler);
-    	if(wid instanceof HasValue)
-    		((HasValue)wid).addValueChangeHandler(screenHandler);
-    }
-
-	public HandlerRegistration addDataChangeHandler(DataChangeHandler handler) {
-		return addHandler(handler, DataChangeEvent.getType());
-	}
-
-	public HandlerRegistration addStateChangeHandler(
-			StateChangeHandler<org.openelis.gwt.screen.rewrite.Screen.State> handler) {
-		return addHandler(handler, StateChangeEvent.getType());
-	}
 
 }

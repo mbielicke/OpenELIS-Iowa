@@ -25,21 +25,11 @@
 */
 package org.openelis.modules.organization.client;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.rpc.ServiceDefTarget;
-import com.google.gwt.user.client.rpc.SyncCallback;
-import com.google.gwt.user.client.ui.HasValue;
-import com.google.gwt.user.client.ui.SourcesTabEvents;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.Widget;
+import java.util.ArrayList;
+import java.util.EnumSet;
 
 import org.openelis.domain.IdNameDO;
+import org.openelis.domain.OrganizationAutoDO;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.QueryField;
 import org.openelis.gwt.common.data.QueryStringField;
@@ -63,6 +53,7 @@ import org.openelis.gwt.widget.CheckBox;
 import org.openelis.gwt.widget.CollapsePanel;
 import org.openelis.gwt.widget.rewrite.AppButton;
 import org.openelis.gwt.widget.rewrite.AutoComplete;
+import org.openelis.gwt.widget.rewrite.AutoCompleteCallInt;
 import org.openelis.gwt.widget.rewrite.ButtonPanel;
 import org.openelis.gwt.widget.rewrite.Dropdown;
 import org.openelis.gwt.widget.rewrite.KeyListManager;
@@ -70,22 +61,35 @@ import org.openelis.gwt.widget.rewrite.ResultsTable;
 import org.openelis.gwt.widget.table.rewrite.TableWidget;
 import org.openelis.metamap.OrganizationMetaMap;
 
-import java.util.ArrayList;
-import java.util.EnumSet;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
+import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.ServiceDefTarget;
+import com.google.gwt.user.client.rpc.SyncCallback;
+import com.google.gwt.user.client.ui.HasValue;
+import com.google.gwt.user.client.ui.TabPanel;
+import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.Widget;
 
-public class Organization extends Screen implements HasStateChangeHandlers<Screen.State>, HasDataChangeHandlers, HasActionHandlers<Screen.Action> {
+public class Organization extends Screen implements AutoCompleteCallInt {
 
     private TableWidget            contactsTable;
-    private ButtonPanel            atozButtons;
     private KeyListManager<org.openelis.gwt.common.rewrite.Query<Object>>    keyList; 
-    private Dropdown               states;
-    private Dropdown               countries;
+    private Dropdown<String>               states;
+    private Dropdown<String>               countries;
     private ScreenServiceIntAsync  service;
     private OrganizationRPC        rpc;
     private ContactsTab 		   contactsTab;
     private NotesTab 		  	   notesTab;
-    private CommandListenerCollection commandListeners; 
-    public ScreenWindow window;
+   
     
     private OrganizationMetaMap OrgMeta = new OrganizationMetaMap();
     
@@ -95,41 +99,71 @@ public class Organization extends Screen implements HasStateChangeHandlers<Scree
         ServiceDefTarget target = (ServiceDefTarget)service;
         target.setServiceEntryPoint(GWT.getModuleBaseURL()+"OpenELISScreenServlet?service=org.openelis.modules.organization.server.Organization");
         DeferredCommand.addCommand(new Command() {
-            public void execute() {
-        
-        rpc = new OrganizationRPC();
-        countries = (Dropdown)def.getWidget(OrgMeta.ADDRESS.getCountry());
-        states = (Dropdown)def.getWidget(OrgMeta.ADDRESS.getState());
-        contactsTable = (TableWidget)def.getWidget("contactsTable");
-        service.callScreen("getDefaults",rpc,new SyncCallback<OrganizationRPC>() {
-        	public void onSuccess(OrganizationRPC result) {
-        	    rpc = result;
-        	    setCountriesModel();
-        	    setStatesModel();
-        		
-        	}
-        	public void onFailure(Throwable caught) {
-        		
+
+        	public void execute() {
+        		rpc = new OrganizationRPC();
+        		countries = (Dropdown)def.getWidget(OrgMeta.ADDRESS.getCountry());
+        		states = (Dropdown)def.getWidget(OrgMeta.ADDRESS.getState());
+        		contactsTable = (TableWidget)def.getWidget("contactsTable");
+        		window.setBusy("Initialing screen ...");
+        		service.callScreen("getDefaults",rpc,new SyncCallback<OrganizationRPC>() {
+        			public void onSuccess(OrganizationRPC result) {
+        				rpc = result;
+        				setCountriesModel();
+        				setStatesModel();
+        				window.clearStatus();
+        				setState(State.DEFAULT);
+        			}
+        			public void onFailure(Throwable caught) {
+
+        			}
+        		});
         	}
         });
-            }
-        });
+
     }
 
     public void afterDraw() {
     	keyList = new KeyListManager<org.openelis.gwt.common.rewrite.Query<Object>>();
     	OrgMeta = new OrganizationMetaMap();
     	setHandlers();
+    	
+    	//Create the Handler for the Contacts tab passing in the ScreenDef
         contactsTab = new ContactsTab(def);
+      
+        //Create the Handler for the Notes tab passing in the ScreenDef;
         notesTab = new NotesTab(def);
-        //DOM.addEventPreview(this);
-//        setCountriesModel();
-  //      setStatesModel();
+        
+        // Set up tabs to recieve State Change events from the main Screen.
+        addScreenHandler(contactsTab, new ScreenEventHandler<ContactsRPC>() {
+        	public void onDataChange(DataChangeEvent event) {
+        		contactsTab.setRPC(rpc.orgContacts);
+        	}
+        	public void onValueChange(ValueChangeEvent<ContactsRPC> event) {
+        		rpc.orgContacts = event.getValue();
+        	}
+        	public void onStateChange(StateChangeEvent<State> event) {
+        		StateChangeEvent.fire(contactsTab, event.getState());
+        	}
+        });
+        addScreenHandler(contactsTab, new ScreenEventHandler<NotesRPC>() {
+        	public void onDataChange(DataChangeEvent event) {
+        		notesTab.setRPC(rpc.notes);
+        	}
+        	public void onValueChange(ValueChangeEvent<NotesRPC> event) {
+        		rpc.notes = event.getValue();
+        	}
+        	public void onStateChange(StateChangeEvent<State> event) {
+        		StateChangeEvent.fire(notesTab, event.getState());
+        	}
+        });
     }
     
     EnumSet<State> enabledStates = EnumSet.of(State.ADD,State.UPDATE,State.QUERY); 
     
     private void setHandlers() {
+    	//Set up widgets on Screen with Handlers
+    	
     	final TextBox name = (TextBox)def.getWidget(OrgMeta.getName());
     	addScreenHandler(name,new ScreenEventHandler<String>() {
     		public void onDataChange(DataChangeEvent event) {
@@ -144,8 +178,9 @@ public class Organization extends Screen implements HasStateChangeHandlers<Scree
     				name.setFocus(true);
     		}
     	});
+    	
     	final TextBox street = (TextBox)def.getWidget(OrgMeta.ADDRESS.getStreetAddress());
-    	addScreenHandler(street,new ScreenEventHandler<String>() {
+    	addScreenHandler(street, new ScreenEventHandler<String>() {
 			public void onDataChange(DataChangeEvent event) {
 				street.setValue(rpc.orgAddressDO.getAddressDO().getStreetAddress());
 			}
@@ -156,6 +191,7 @@ public class Organization extends Screen implements HasStateChangeHandlers<Scree
 				street.setReadOnly(!enabledStates.contains(event.getState()));
 			}
     	});
+    	
     	final TextBox id = (TextBox)def.getWidget(OrgMeta.getId());
     	addScreenHandler(id,new ScreenEventHandler<Integer>() {
     		public void onDataChange(DataChangeEvent event) {
@@ -175,6 +211,7 @@ public class Organization extends Screen implements HasStateChangeHandlers<Scree
     				id.setReadOnly(true);
     		}
     	});
+    	
     	final TextBox multipleUnit = (TextBox)def.getWidget(OrgMeta.getAddress().getMultipleUnit());
     	addScreenHandler(multipleUnit,new ScreenEventHandler<String>() {
     		public void onDataChange(DataChangeEvent event) {
@@ -186,7 +223,8 @@ public class Organization extends Screen implements HasStateChangeHandlers<Scree
     		public void onStateChange(StateChangeEvent<State> event) {
     			multipleUnit.setReadOnly(!enabledStates.contains(event.getState()));
     		}
-    	});	
+    	});
+    	
     	final TextBox city = (TextBox)def.getWidget(OrgMeta.getAddress().getCity());
     	addScreenHandler(city, new ScreenEventHandler<String>() {
     		public void onDataChange(DataChangeEvent event) {
@@ -199,6 +237,7 @@ public class Organization extends Screen implements HasStateChangeHandlers<Scree
     			city.setReadOnly(!enabledStates.contains(event.getState()));
     		}
     	});
+    	
     	final TextBox zipCode = (TextBox)def.getWidget(OrgMeta.getAddress().getZipCode());
     	addScreenHandler(zipCode,new ScreenEventHandler<String>() {
     		public void onDataChange(DataChangeEvent event) {
@@ -211,7 +250,8 @@ public class Organization extends Screen implements HasStateChangeHandlers<Scree
     			zipCode.setReadOnly(!enabledStates.contains(event.getState()));
     		}
     	});
-    	final Dropdown state = (Dropdown)def.getWidget(OrgMeta.getAddress().getState());
+    	
+    	final Dropdown<String> state = (Dropdown<String>)def.getWidget(OrgMeta.getAddress().getState());
     	addScreenHandler(state,new ScreenEventHandler<String>() {
     		public void onDataChange(DataChangeEvent event) {
     			state.setSelection(rpc.orgAddressDO.getAddressDO().getState());
@@ -223,7 +263,8 @@ public class Organization extends Screen implements HasStateChangeHandlers<Scree
     			state.enabled(enabledStates.contains(event.getState()));
     		}
     	});
-    	final Dropdown country = (Dropdown)def.getWidget(OrgMeta.getAddress().getCountry());
+    	
+    	final Dropdown<String> country = (Dropdown<String>)def.getWidget(OrgMeta.getAddress().getCountry());
     	addScreenHandler(country,new ScreenEventHandler<String>() {
     		public void onDataChange(DataChangeEvent event) {
     			country.setSelection(rpc.orgAddressDO.getAddressDO().getCountry());
@@ -235,6 +276,7 @@ public class Organization extends Screen implements HasStateChangeHandlers<Scree
     			country.enabled(enabledStates.contains(event.getState()));
     		}
     	});
+    	
     	final CheckBox isActive = (CheckBox)def.getWidget(OrgMeta.getIsActive());
     	addScreenHandler(isActive,new ScreenEventHandler<String>() {
     		public void onDataChange(DataChangeEvent event) {
@@ -247,9 +289,24 @@ public class Organization extends Screen implements HasStateChangeHandlers<Scree
     			isActive.enable(enabledStates.contains(event.getState()));
     		}
     	});
-    	final AutoComplete parentOrg = (AutoComplete)def.getWidget(OrgMeta.getParentOrganization().getName());
+    	
+    	final AutoComplete<Integer> parentOrg = (AutoComplete)def.getWidget(OrgMeta.getParentOrganization().getName());
     	addScreenHandler(parentOrg,new ScreenEventHandler<Integer>() {
     		public void onDataChange(DataChangeEvent event){
+    			if(rpc.parentOrgRPC != null){
+    				if(rpc.parentOrgRPC.model != null){
+    					ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();	
+    					for(OrganizationAutoDO autoDO : rpc.parentOrgRPC.model){
+    						TableDataRow row = new TableDataRow(4);
+    						row.key = autoDO.getId();
+    						row.cells[0] = autoDO.getName();
+    						row.cells[1] = autoDO.getAddress();
+    						row.cells[2] = autoDO.getCity();
+    						row.cells[3] = autoDO.getState();
+    						model.add(row);
+    					}
+    				}
+    			}
     			parentOrg.setSelection(rpc.orgAddressDO.getParentOrganizationId());
     		}
     		public void onValueChangeEvent(ValueChangeEvent<Integer> event) {
@@ -259,9 +316,22 @@ public class Organization extends Screen implements HasStateChangeHandlers<Scree
     			parentOrg.enabled(enabledStates.contains(event.getState()));
     		}
     	});
+    	
+    	//Create Default blank model for AutoComplete field Parent Org
     	ArrayList<TableDataRow>  model = new ArrayList<TableDataRow>();
-    	model.add(new TableDataRow(null,""));
+    	TableDataRow row = new TableDataRow(4);
+    	row.key = null;
+    	row.cells[0] = "";
+    	row.cells[1] = "";
+    	row.cells[2] = "";
+    	row.cells[3] = "";
+    	model.add(row);
     	parentOrg.setModel(model);
+    	
+    	//Screens now must implement AutoCompleteCallInt and set themselves as the calling interface
+    	parentOrg.setAutoCall(this);
+    	
+    	//Get ButtonPanel and set Handlers for Screen Functionality
     	final ButtonPanel bpanel = (ButtonPanel)def.getWidget("buttons");
     	addScreenHandler(bpanel, new ScreenEventHandler<Object>() {
     		public void onStateChange(StateChangeEvent<State> event) {
@@ -291,17 +361,25 @@ public class Organization extends Screen implements HasStateChangeHandlers<Scree
 			}
     	});
     	bpanel.addActionHandler(keyList.buttonActions);
+    	
+    	//Set Up Key listeners
     	keyList.addActionHandler(new ActionHandler<KeyListManager.Action>() {
     		public void onAction(ActionEvent<KeyListManager.Action> event) {
     	        if(event.getAction() == KeyListManager.Action.FETCH){
+    	        	String tab = rpc.orgTabPanel;
     	        	rpc = new OrganizationRPC();
+    	        	contactsTab.setRPC(new ContactsRPC());
+    	        	notesTab.setRPC(new NotesRPC());
+    	        	rpc.orgTabPanel = tab;
     	            rpc.orgAddressDO.setOrganizationId((Integer)((Object[])event.getData())[0]);
     	            final AsyncCallback call = ((AsyncCallback)((Object[])event.getData())[1]);
+    	            window.setBusy("Fetching ...");
     	        	service.callScreen("fetch",rpc,new AsyncCallback<OrganizationRPC>() {
     	        		public void onSuccess(OrganizationRPC result) {
     	        			load(result);
     	        			setState(Screen.State.DISPLAY);
     	        			call.onSuccess(result);
+    	        			window.clearStatus();
     	        		}
     	        		public void onFailure(Throwable caught) {
     	        			Window.alert(caught.getMessage());
@@ -318,6 +396,8 @@ public class Organization extends Screen implements HasStateChangeHandlers<Scree
     	addActionHandler(results.screenActions);
     	keyList.addActionHandler(results.keyListActions);
     	results.addActionHandler(keyList.resultsActions);
+    	
+    	//Get AZ buttons and setup Screen listeners and call to for query
     	final ButtonPanel azButtons = (ButtonPanel)def.getWidget("atozButtons");
     	addScreenHandler(azButtons, new ScreenEventHandler<Object>() {
     		public void onStateChange(StateChangeEvent<State> event) {
@@ -331,7 +411,39 @@ public class Organization extends Screen implements HasStateChangeHandlers<Scree
 		            getOrganizations(baction.substring(6, baction.length()));
 			}
     	});
-    	((CollapsePanel)def.getWidget("collapsePanel")).addChangeListener(results);
+    	
+    	//Get TabPanel and set Tab Selection Handlers
+    	final TabPanel tabs = (TabPanel)def.getWidget("orgTabPanel");
+    	tabs.addSelectionHandler(new SelectionHandler<Integer>() {
+			public void onSelection(SelectionEvent<Integer> event) {
+				switch(event.getSelectedItem().intValue()) {
+					case 0 : {
+						rpc.orgTabPanel = "contactsTab";
+						break;
+					}
+					case 2 : {
+						rpc.orgTabPanel = "notesTab";
+						break;
+					}
+				}
+			}
+    	});
+    	tabs.addBeforeSelectionHandler(new BeforeSelectionHandler<Integer>() {
+			public void onBeforeSelection(BeforeSelectionEvent<Integer> event) {
+				switch(event.getItem().intValue()) {
+					case 0 : {
+						if(rpc.orgContacts == null)
+							fillContactsModel();
+						break;
+					}
+					case 2 : {
+						if(rpc.notes == null)
+							fillNotesModel();
+						break;
+					}
+				}
+			}
+    	});
     	
     }
     
@@ -342,7 +454,7 @@ public class Organization extends Screen implements HasStateChangeHandlers<Scree
             model.add(new TableDataRow(resultDO.getName(),resultDO.getName()));
         } 
         countries.setModel(model);
-        ((Dropdown)contactsTable.columns.get(7).getColumnWidget()).setModel(model);
+        ((Dropdown<String>)contactsTable.columns.get(7).getColumnWidget()).setModel(model);
         rpc.countries = null;
     }
     
@@ -353,7 +465,7 @@ public class Organization extends Screen implements HasStateChangeHandlers<Scree
             model.add(new TableDataRow(resultDO.getName(),resultDO.getName()));
         } 
         states.setModel(model);
-        ((Dropdown)contactsTable.columns.get(5).getColumnWidget()).setModel(model);
+        ((Dropdown<String>)contactsTable.columns.get(5).getColumnWidget()).setModel(model);
         rpc.states = null;
     }
     
@@ -369,7 +481,7 @@ public class Organization extends Screen implements HasStateChangeHandlers<Scree
     }
     
     public void update() {
-    	service.callScreen("update",rpc, new SyncCallback<OrganizationRPC>() {
+    	service.callScreen("fetchForUpdate",rpc, new SyncCallback<OrganizationRPC>() {
     		public void onFailure(Throwable caught) {   
     		}
 
@@ -410,24 +522,6 @@ public class Organization extends Screen implements HasStateChangeHandlers<Scree
     }
 
 
-    public void onTabSelected(SourcesTabEvents sender, int tabIndex) {
-       // rpc.orgTabPanel = tabPanel.getSelectedTabKey();
-    }
-
-    /*
-     * Overriden to allow lazy loading Contact and Note tabs
-     */
-    public boolean onBeforeTabSelected(SourcesTabEvents sender, int index) {
-        if(state != State.QUERY){
-            if (index == 0 && rpc.orgContacts == null) {
-                fillContactsModel();
-            } else if (index == 2 && rpc.notes == null) {
-                fillNotesModel();
-            }
-        }
-        return true;
-    }
-
     private void getOrganizations(String query) {
         if (state == State.DISPLAY || state == State.DEFAULT) {
             QueryStringField qField = new QueryStringField(OrgMeta.getName());
@@ -443,18 +537,19 @@ public class Organization extends Screen implements HasStateChangeHandlers<Scree
         if(rpc.orgAddressDO.getOrganizationId() == null)
             return;
         
-        //window.setStatus("","spinnerIcon");
+        window.setBusy("Loading notes...");
+        rpc.notes = new NotesRPC();
         rpc.notes.key = rpc.orgAddressDO.getOrganizationId();
         service.callScreen("loadNotes", rpc.notes, new AsyncCallback<NotesRPC>(){
             public void onSuccess(NotesRPC result){    
                 rpc.notes = result;
                 notesTab.setRPC(result);
-                //window.setStatus("","");
+                window.clearStatus();
             }
                    
             public void onFailure(Throwable caught){
                 Window.alert(caught.getMessage());
-                //window.setStatus("","");
+                window.clearStatus();
             }
         });        
     }
@@ -463,19 +558,19 @@ public class Organization extends Screen implements HasStateChangeHandlers<Scree
         if(rpc.orgAddressDO.getOrganizationId() == null)
             return;
         
-        //window.setStatus("","spinnerIcon");
+        window.setBusy("Loading contacts...");
         rpc.orgContacts = new ContactsRPC();
         rpc.orgContacts.orgId = rpc.orgAddressDO.getOrganizationId();
         service.callScreen("loadContacts", rpc.orgContacts, new AsyncCallback<ContactsRPC>() {
             public void onSuccess(ContactsRPC result) {
                 rpc.orgContacts = result;
                 contactsTab.setRPC(rpc.orgContacts);
-                //window.setStatus("","");
+                window.clearStatus();
 
             }
             public void onFailure(Throwable caught) {
                 Window.alert(caught.getMessage());
-                //window.setStatus("","");
+                window.clearStatus();
             }
         });
     }
@@ -625,25 +720,29 @@ public class Organization extends Screen implements HasStateChangeHandlers<Scree
         
     }
 
-    private void addScreenHandler(Widget wid, ScreenEventHandler<?> screenHandler) {
-    	addDataChangeHandler(screenHandler);
-    	addStateChangeHandler(screenHandler);
-    	if(wid instanceof HasValue)
-    		((HasValue)wid).addValueChangeHandler(screenHandler);
-    }
-
-	public HandlerRegistration addDataChangeHandler(DataChangeHandler handler) {
-		return addHandler(handler, DataChangeEvent.getType());
-	}
-
-	public HandlerRegistration addStateChangeHandler(
-			StateChangeHandler<org.openelis.gwt.screen.rewrite.Screen.State> handler) {
-		return addHandler(handler, StateChangeEvent.getType());
-	}
-
-	public HandlerRegistration addActionHandler(
-			ActionHandler<org.openelis.gwt.screen.rewrite.Screen.Action> handler) {
-		return addHandler(handler,ActionEvent.getType());
+	public void callForMatches(final AutoComplete widget,	String text) {
+		ParentOrgRPC prpc = new ParentOrgRPC();
+		prpc.match = text;
+		service.callScreen("getMatches",prpc,new AsyncCallback<ParentOrgRPC>() {
+			public void onSuccess(ParentOrgRPC rpc) {
+				ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
+				for(OrganizationAutoDO autoDO : rpc.model) {
+					TableDataRow row = new TableDataRow(4);
+					row.key = autoDO.getId();
+					row.cells[0] = autoDO.getName();
+					row.cells[1] = autoDO.getAddress();
+					row.cells[2] = autoDO.getCity();
+					row.cells[3] = autoDO.getState();
+					model.add(row);
+				}
+				widget.showAutoMatches(model);
+			}
+			
+			public void onFailure(Throwable caught) {
+				Window.alert(caught.getMessage());
+			}
+		});
+		
 	}
 
 }

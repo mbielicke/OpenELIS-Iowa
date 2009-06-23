@@ -74,6 +74,7 @@ public class OpenELIS extends AppScreen<OpenELISForm> implements ClickListener {
         	browser = (WindowBrowser)getWidget("browser");
         	browser.setBrowserHeight();
             AppScreen.consts = form.appConstants;
+            Screen.consts = form.appConstants;
             security = form.security;
     }
 

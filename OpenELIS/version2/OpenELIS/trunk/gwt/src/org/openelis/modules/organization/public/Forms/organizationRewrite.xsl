@@ -168,7 +168,7 @@ UIRF Software License are applicable instead of those above.
                   <text style="Prompt"><xsl:value-of select="resource:getString($constants,'aptSuite')"/>:</text>
                   <textbox case="upper" key="{addr:getMultipleUnit($addr)}" max="30" tab="{addr:getStreetAddress($addr)},{meta:getName($org)}" width="212px" field="String"/>
                   <text style="Prompt"><xsl:value-of select="resource:getString($constants,'state')"/>:</text>
-                  <dropdown case="upper" key="{addr:getState($addr)}" tab="{addr:getZipCode($addr)},{addr:getCity($addr)}" width="40px" field="String"/>
+                  <dropdown case="upper" key="{addr:getState($addr)}" tab="{addr:getZipCode($addr)},{addr:getCity($addr)}" width="40px" field="String" popWidth="40px"/>
                   <text style="Prompt"><xsl:value-of select="resource:getString($constants,'zipcode')"/>:</text>
                   <textbox key="{addr:getZipCode($addr)}" mask="99999-9999" tab="{addr:getCountry($addr)},{addr:getState($addr)}" width="70" field="String"/>
 
@@ -178,13 +178,13 @@ UIRF Software License are applicable instead of those above.
                   <textbox case="upper" key="{addr:getStreetAddress($addr)}" max="30" tab="{addr:getCity($addr)},{addr:getMultipleUnit($addr)}" width="212px" field="String"/>
                   <text style="Prompt"><xsl:value-of select="resource:getString($constants,'country')"/>:</text>
                   <widget colspan="3">
-                    <dropdown case="mixed" key="{addr:getCountry($addr)}" tab="{parent:getName($parent)},{addr:getZipCode($addr)}" width="175px" field="String"/>
+                    <dropdown case="mixed" key="{addr:getCountry($addr)}" tab="{parent:getName($parent)},{addr:getZipCode($addr)}" width="175px" popWidth="175px" field="String"/>
                   </widget>
 
                 </row>
                 <row>
                   <text style="Prompt"><xsl:value-of select="resource:getString($constants,'parentOrganization')"/>:</text>
-                  <autoComplete case="upper" cat="parentOrg" key="{parent:getName($parent)}" field="Integer" serviceUrl="OpenELISServlet?service=org.openelis.modules.organization.server.OrganizationService" tab="{meta:getIsActive($org)},{addr:getCountry($addr)}" width="241px">
+                  <autoComplete case="upper" cat="parentOrg" key="{parent:getName($parent)}" field="Integer" tab="{meta:getIsActive($org)},{addr:getCountry($addr)}" width="241px" popWidth="241px">
                       <col header="Name" width="180"/>
                       <col header="Street" width="110"/>
                       <col header="City" width="100"/>
@@ -286,7 +286,7 @@ UIRF Software License are applicable instead of those above.
                 <tab key="notesTab" text="{resource:getString($constants,'note')}">
                   <VerticalPanel height="164px" key="secMod3" padding="0" spacing="0" width="100%">
 
-                    <TablePanel key="noteFormPanel" layout="table" padding="0" spacing="0" style="Form" xsi:type="Table">
+                    <TablePanel key="noteFormPanel" padding="0" spacing="0" style="Form">
                       <row>
                         <text style="Prompt"><xsl:value-of select="resource:getString($constants,'subject')"/>:</text>
                         <textbox case="mixed" key="{note:getSubject($note)}" max="60" showError="false" enabledStates="" tab="{note:getText($note)},{note:getText($note)}" width="429px" field="String"/>
