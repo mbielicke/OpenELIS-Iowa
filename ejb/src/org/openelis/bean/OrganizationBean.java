@@ -39,6 +39,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
+import org.openelis.domain.IdNameDO;
 import org.openelis.domain.NoteDO;
 import org.openelis.domain.OrganizationAddressDO;
 import org.openelis.domain.OrganizationContactDO;
@@ -51,6 +52,7 @@ import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.SecurityModule.ModuleFlags;
 import org.openelis.gwt.common.data.AbstractField;
+import org.openelis.gwt.common.data.QueryField;
 import org.openelis.local.AddressLocal;
 import org.openelis.local.LockLocal;
 import org.openelis.metamap.OrganizationMetaMap;
@@ -247,7 +249,7 @@ public class OrganizationBean implements OrganizationRemote {
         return orgNotes;
 	}
 
-	public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception{
+	public ArrayList<IdNameDO> query(ArrayList<AbstractField> fields, int first, int max) throws Exception{
         StringBuffer sb = new StringBuffer();
         QueryBuilder qb = new QueryBuilder();
 
@@ -256,6 +258,7 @@ public class OrganizationBean implements OrganizationRemote {
         qb.setSelect("distinct new org.openelis.domain.IdNameDO("+OrgMeta.getId()+", "+OrgMeta.getName()+") ");
        
         //this method is going to throw an exception if a column doesnt match
+       
         qb.addWhere(fields);      
 
         qb.setOrderBy(OrgMeta.getName());
@@ -270,7 +273,7 @@ public class OrganizationBean implements OrganizationRemote {
 //      ***set the parameters in the query
         qb.setQueryParams(query);
         
-        List returnList = GetPage.getPage(query.getResultList(), first, max);
+        ArrayList<IdNameDO> returnList = (ArrayList<IdNameDO>)GetPage.getPage(query.getResultList(), first, max);
         
         if(returnList == null)
          throw new LastPageException();
