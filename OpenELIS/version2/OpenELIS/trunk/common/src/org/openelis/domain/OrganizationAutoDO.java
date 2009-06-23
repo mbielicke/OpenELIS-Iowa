@@ -41,6 +41,10 @@ public class OrganizationAutoDO implements Serializable{
     protected String state;
     protected String zipCode;
     
+    public OrganizationAutoDO() {
+    	
+    }
+    
     public OrganizationAutoDO(Integer id, String name, String aptSuite, String address, String city, String state, String zipCode){
         setId(id);
         setName(name);
