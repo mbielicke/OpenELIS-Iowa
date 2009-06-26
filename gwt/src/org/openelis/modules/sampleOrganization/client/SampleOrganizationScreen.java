@@ -34,6 +34,7 @@ import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.common.data.TableDataModel;
 import org.openelis.gwt.common.data.TableDataRow;
+import org.openelis.gwt.event.CommandListener;
 import org.openelis.gwt.screen.CommandChain;
 import org.openelis.gwt.screen.ScreenTableWidget;
 import org.openelis.gwt.widget.ButtonPanel;
@@ -49,6 +50,7 @@ import org.openelis.modules.inventoryReceipt.client.InvReceiptItemInfoForm;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 import org.openelis.modules.order.client.OrderOrgKey;
 import org.openelis.modules.organization.client.OrganizationForm;
+import org.openelis.modules.sampleProject.client.SampleProjectScreen.Action;
 
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -58,6 +60,8 @@ import com.google.gwt.user.client.ui.TextArea;
 
 public class SampleOrganizationScreen extends OpenELISScreenForm<SampleOrganizationForm,Query<TableDataRow<Integer>>> implements TableManager, TableWidgetListener {
 
+    public enum Action {Commited, Aborted}
+    private CommandListener commandTarget;
     private ScreenTableWidget            sampleOrgTable;
     
     private KeyListManager keyList = new KeyListManager();
@@ -83,6 +87,15 @@ public class SampleOrganizationScreen extends OpenELISScreenForm<SampleOrganizat
     public SampleOrganizationScreen(SampleOrganizationForm form) {                
         super("org.openelis.modules.sampleOrganization.server.SampleOrganizationService");
         query = new Query<TableDataRow<Integer>>();
+
+        getScreen(form);
+    }
+    
+    public SampleOrganizationScreen(SampleOrganizationForm form, CommandListener target) {                
+        super("org.openelis.modules.sampleOrganization.server.SampleOrganizationService");
+        query = new Query<TableDataRow<Integer>>();
+        
+        commandTarget = target;
 
         getScreen(form);
     }
@@ -121,10 +134,16 @@ public class SampleOrganizationScreen extends OpenELISScreenForm<SampleOrganizat
     }
     
     public void commit() {
+        if(commandTarget != null)
+            commandTarget.performCommand(Action.Commited, form.sampleOrganizationTable.getValue());
+        
         window.close();
     }
 
     public void abort() {
+        if(commandTarget != null)
+            commandTarget.performCommand(Action.Aborted, null);
+        
         window.close();
     }
 

@@ -338,6 +338,8 @@ public class EnvironmentalSampleLoginService implements AppScreenFormServiceInt<
             form.receivedDate.setValue(DatetimeRPC.getInstance(Datetime.YEAR, Datetime.DAY, sampleDO.getReceivedDate().getDate()));
         
         form.statusId.setValue(new TableDataRow<Integer>(sampleDO.getStatusId()));
+        form.nextItemSequence = sampleDO.getNextItemSequence();
+        
         form.load = true;
     }
     

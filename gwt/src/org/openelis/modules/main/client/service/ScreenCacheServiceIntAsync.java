@@ -25,11 +25,13 @@
 */
 package org.openelis.modules.main.client.service;
 
+import java.util.ArrayList;
+
 import org.openelis.gwt.common.data.FieldType;
 
 import com.google.gwt.http.client.Request;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public interface ScreenCacheServiceIntAsync {
-    public Request call(String method, FieldType param, AsyncCallback<? extends FieldType> callback);
+    public Request call(String method, FieldType param, AsyncCallback<ArrayList> callback);
 }

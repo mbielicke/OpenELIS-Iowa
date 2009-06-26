@@ -26,6 +26,7 @@
 package org.openelis.modules.main.server;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.data.FieldType;
@@ -36,9 +37,9 @@ import org.openelis.modules.main.client.service.ScreenCacheServiceInt;
 public class ScreenCacheService extends AppServlet implements ScreenCacheServiceInt {
     private static final long serialVersionUID = 1L; 
     
-    public FieldType call(String method, FieldType param) throws Exception {
+    public ArrayList call(String method, FieldType param) throws Exception {
         try {
-            return (FieldType)Class.forName(getThreadLocalRequest().getParameter("service")).newInstance().getClass().
+            return (ArrayList)Class.forName(getThreadLocalRequest().getParameter("service")).newInstance().getClass().
                 getMethod(method,new Class[] {param.getClass()}).invoke(Class.forName(getThreadLocalRequest().getParameter("service")).newInstance(), new Object[]{param});
         }catch(Exception e){
             if(e instanceof InvocationTargetException){
