@@ -179,7 +179,7 @@ UIRF Software License are applicable instead of those above.
 							<text style="Prompt"><xsl:value-of select="resource:getString($constants,'received')"/>:</text>
 							<calendar key="{sampleMetaMap:getReceivedDate($sample)}" begin="0" end="2" width="110px" tab="{sampleMetaMap:getStatusId($sample)},{sampleMetaMap:getCollectionTime($sample)}"/>
 							<text style="Prompt"><xsl:value-of select="resource:getString($constants,'status')"/>:</text>
-							<dropdown key="{sampleMetaMap:getStatusId($sample)}" case="mixed" width="110px" tab="{sampleMetaMap:getClientReference($sample)},{sampleMetaMap:getReceivedDate($sample)}"/>
+							<dropdown key="{sampleMetaMap:getStatusId($sample)}" case="mixed" width="110px" enabledStates="" tab="{sampleMetaMap:getClientReference($sample)},{sampleMetaMap:getReceivedDate($sample)}"/>
 							<text style="Prompt"><xsl:value-of select="resource:getString($constants,'clntRef')"/>:</text>
 							<widget colspan="3">
 								<textbox key="{sampleMetaMap:getClientReference($sample)}" width="175px" tab="{envMeta:getIsHazardous($env)},{sampleMetaMap:getStatusId($sample)}"/>					
@@ -340,7 +340,7 @@ UIRF Software License are applicable instead of those above.
 								</row>
 								<row>
 									<text style="Prompt">Status:</text>
-									<dropdown case="mixed" key="{analysisMetaMap:getStatusId($analysis)}" onchange="this" width="150px"/>
+									<dropdown case="mixed" key="{analysisMetaMap:getStatusId($analysis)}" enabledStates="" onchange="this" width="150px"/>
 									<text style="Prompt">Revision:</text>
 									<textbox case="mixed" key="{analysisMetaMap:getRevision($analysis)}" onchange="this" width="60px"/>
 								</row>
