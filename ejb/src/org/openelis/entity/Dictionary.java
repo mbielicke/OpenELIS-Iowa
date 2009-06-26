@@ -52,7 +52,19 @@ import org.openelis.utils.Auditable;
 @NamedQueries({@NamedQuery(name = "Dictionary.Dictionary", query = "select distinct new org.openelis.domain.DictionaryDO(d.id, d.categoryId, d.relatedEntryId, dre.entry, " +
                            "d.systemName,d.isActive,  d.localAbbrev, d.entry)" +                                                                                                  
                            "  from  Dictionary d left join d.relatedEntry dre  where d.categoryId = :id " +
-                           " order by d.systemName "),
+                           " order by d.entry "),
+@NamedQuery(name = "Dictionary.DictionaryByEntrySystemName", query = "select distinct new org.openelis.domain.DictionaryDO(d.id, d.categoryId, d.relatedEntryId, dre.entry, " +
+                           " d.systemName,d.isActive,  d.localAbbrev, d.entry)" +                                                                                                  
+                           " from  Dictionary d left join d.relatedEntry dre where d.systemName = :name " +
+                           " order by d.entry "),
+@NamedQuery(name = "Dictionary.DictionaryByEntryId", query = "select distinct new org.openelis.domain.DictionaryDO(d.id, d.categoryId, d.relatedEntryId, dre.entry, " +
+                           " d.systemName,d.isActive,  d.localAbbrev, d.entry)" +                                                                                                  
+                           " from  Dictionary d left join d.relatedEntry dre where d.id = :id " +
+                           " order by d.entry "),
+@NamedQuery(name = "Dictionary.EntriesByCategoryName", query = "select distinct new org.openelis.domain.DictionaryDO(d.id, d.categoryId, d.relatedEntryId, dre.entry, " +
+                           " d.systemName,d.isActive,  d.localAbbrev, d.entry)" +                                                                                                  
+                           " from  Dictionary d left join d.relatedEntry dre left join d.category c where c.systemName = :name " +
+                           " order by d.entry "),
 @NamedQuery(name = "Dictionary.DropdownValues", query = "select new org.openelis.domain.IdNameDO(d.id, d.entry) from Dictionary d where " +
                                 " d.isActive='Y' and d.categoryId = :id order by d.entry"),
 @NamedQuery(name = "Dictionary.IdEntrySystemName", query = "select new org.openelis.domain.DictionaryIdEntrySysNameDO(d.id, d.entry,d.systemName) from Dictionary d where " +
@@ -102,6 +114,11 @@ public class Dictionary implements Auditable, Cloneable {
   @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "related_entry_id",insertable = false, updatable = false)
   private Dictionary relatedEntry;
+  
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "category_id",insertable = false, updatable = false)
+  private Category category;
+  
 
 
   @Transient
@@ -215,6 +232,12 @@ public class Dictionary implements Auditable, Cloneable {
     }
     public void setRelatedEntry(Dictionary relatedEntryRow) {
       this.relatedEntry = relatedEntryRow;
+    }
+    public Category getCategory() {
+        return category;
+    }
+    public void setCategory(Category category) {
+        this.category = category;
     }
   
 }   
