@@ -25,16 +25,26 @@
 */
 package org.openelis.messages;
 
+import org.openelis.domain.CategoryDO;
 import org.openelis.persistence.Message;
 
-public class DictionarySystemNameCacheMessage implements Message {
+public class DictionaryCacheMessage implements Message {
     private static final long serialVersionUID = 1L;
 
-    public String handler = "org.openelis.server.handlers.DictionarySystemNameCacheHandler";
+    public String handler = "org.openelis.server.handlers.DictionaryCacheHandler";
     public enum Action {UPDATED,DELETED}
     public Action action;
+    protected CategoryDO catDO;
     
     public String getHandler() {
         return handler;
+    }
+
+    public CategoryDO getCatDO() {
+        return catDO;
+    }
+
+    public void setCatDO(CategoryDO catDO) {
+        this.catDO = catDO;
     }
 }
