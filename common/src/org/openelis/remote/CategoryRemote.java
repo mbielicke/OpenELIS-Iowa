@@ -63,7 +63,13 @@ public interface CategoryRemote {
     
     public Integer getEntryIdForSystemName(String systemName);
     
+    public DictionaryDO getDictionaryDOBySystemName(String systemName);
+    
     public String getSystemNameForEntryId(Integer entryId);
+    
+    public DictionaryDO getDictionaryDOByEntryId(Integer entryId);
+    
+    public List getListByCategoryName(String categoryName);
     
     public Integer getEntryIdForEntry(String entry) throws Exception;
     
