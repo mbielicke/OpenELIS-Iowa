@@ -65,6 +65,8 @@ private static final long serialVersionUID = 1L;
     public TableDataModel<TableDataRow<Integer>> sampleTypes;
     public TableDataModel<TableDataRow<Integer>> units;
     
+    public Integer nextItemSequence;
+    
     public EnvironmentalSampleLoginForm() {
         SampleEnvironmentalMetaMap meta = new SampleEnvironmentalMetaMap();
         id = new IntegerField(meta.SAMPLE.getId());

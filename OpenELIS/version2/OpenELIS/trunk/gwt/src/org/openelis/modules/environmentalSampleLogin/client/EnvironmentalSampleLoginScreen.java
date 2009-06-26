@@ -27,6 +27,7 @@ package org.openelis.modules.environmentalSampleLogin.client;
 
 import java.util.ArrayList;
 
+import org.openelis.cache.DictionaryCache;
 import org.openelis.gwt.common.Query;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.KeyListManager;
@@ -39,6 +40,8 @@ import org.openelis.gwt.screen.ScreenAutoCompleteWidget;
 import org.openelis.gwt.screen.ScreenCalendar;
 import org.openelis.gwt.screen.ScreenCheck;
 import org.openelis.gwt.screen.ScreenDropDownWidget;
+import org.openelis.gwt.screen.ScreenTab;
+import org.openelis.gwt.screen.ScreenTabPanel;
 import org.openelis.gwt.screen.ScreenTextBox;
 import org.openelis.gwt.screen.ScreenWindow;
 import org.openelis.gwt.widget.AppButton;
@@ -81,16 +84,16 @@ public class EnvironmentalSampleLoginScreen extends OpenELISScreenForm<Environme
     private SampleOrganizationScreen organizationScreen;
     private SampleProjectScreen projectScreen;
     private TextBox locationTextBox;
-    private boolean canEditTestResultsTab = false;
-     
+    private ScreenTabPanel tabPanel;
+    private boolean canEditTestResultsTab;
+    
     private KeyListManager keyList = new KeyListManager();
     
-    private ScreenDropDownWidget sampleType, container, unit, analysisStatus;
+    private ScreenDropDownWidget sampleType, sampleStatus, container, unit, analysisStatus;
     private ScreenAutoCompleteWidget projectAuto, reportToAuto, billToAuto, section, test, method;
     private ScreenTextBox containerRef, qty, revision;
     private ScreenCheck isReportable;
     private ScreenCalendar startedDate, completedDate, releasedDate, printedDate;
-    private Dropdown status;
     
     private ProjectEntryManager projectManager;
     private OrganizationEntryManager orgManager;
@@ -157,7 +160,35 @@ public class EnvironmentalSampleLoginScreen extends OpenELISScreenForm<Environme
             onOrganizationLookupClick();
         else if(action.equals(LookupType.PROJECT_VIEW))
             onProjectLookupClick();
-        else
+        else if(action.equals(SampleProjectScreen.Action.Commited)){
+            form.orgProjectForm.sampleProjectForm.sampleProjectTable.setValue(obj);
+            projectManager.setList(form.orgProjectForm.sampleProjectForm.sampleProjectTable.getValue());
+            TableDataRow newTableRow = projectManager.getFirstPermanentProject();
+            
+            if(newTableRow != null)
+                projectAuto.load((DropDownField<Integer>)newTableRow.cells[0]);
+            else
+                ((AutoComplete)projectAuto.getWidget()).setSelections(new ArrayList());
+            
+        }else if(action.equals(SampleOrganizationScreen.Action.Commited)){
+            form.orgProjectForm.sampleOrgForm.sampleOrganizationTable.setValue(obj);
+            orgManager.setList(form.orgProjectForm.sampleOrgForm.sampleOrganizationTable.getValue());
+            
+            //update billto
+            TableDataRow newTableRow = orgManager.getBillTo();
+            if(newTableRow != null)
+                billToAuto.load((DropDownField<Integer>)newTableRow.cells[2]);
+            else
+                ((AutoComplete)billToAuto.getWidget()).setSelections(new ArrayList());
+            
+            //update report to
+            newTableRow = orgManager.getReportTo();
+            if(newTableRow != null)
+                reportToAuto.load((DropDownField<Integer>)newTableRow.cells[2]);
+            else
+                ((AutoComplete)reportToAuto.getWidget()).setSelections(new ArrayList());
+            
+        }else
             super.performCommand(action, obj);
     }
     
@@ -205,8 +236,8 @@ public class EnvironmentalSampleLoginScreen extends OpenELISScreenForm<Environme
         ButtonPanel bpanel = (ButtonPanel)getWidget("buttons");
         
         //disable the buttons for the demo for now
-        //bpanel.enableButton("query", false);
-        //bpanel.enableButton("add", false);
+       // bpanel.enableButton("query", false);
+       // bpanel.enableButton("add", false);
         
         CommandChain formChain = new CommandChain();
         formChain.addCommand(this);
@@ -216,6 +247,8 @@ public class EnvironmentalSampleLoginScreen extends OpenELISScreenForm<Environme
         itemsTestsTree = (TreeWidget)getWidget("itemsTestsTree");
         itemsTestsTree.model.addTreeModelListener(this);
         
+        tabPanel = (ScreenTabPanel)widgets.get("sampleItemTabPanel");
+        
         //buttons
         addItemButton = (AppButton)getWidget("addItemButton");
         addTestButton = (AppButton)getWidget("addTestButton");
@@ -223,7 +256,7 @@ public class EnvironmentalSampleLoginScreen extends OpenELISScreenForm<Environme
         analysisNoteInt = (AppButton)getWidget("analysisNoteInt");
         analysisNoteExt = (AppButton)getWidget("analysisNoteExt");
         
-        status = (Dropdown)getWidget(Meta.SAMPLE.getStatusId());
+        sampleStatus = (ScreenDropDownWidget)widgets.get(Meta.SAMPLE.getStatusId());
         locationTextBox = (TextBox)getWidget(Meta.getSamplingLocation());
         projectAuto = (ScreenAutoCompleteWidget)widgets.get(Meta.SAMPLE.SAMPLE_PROJECT.PROJECT.getName());
         projectManager = new ProjectEntryManager();
@@ -282,6 +315,12 @@ public class EnvironmentalSampleLoginScreen extends OpenELISScreenForm<Environme
     public void add() {
         super.add();
         addTestButton.changeState(ButtonState.DISABLED);
+        
+        //default the status dropdown to initiated
+        form.statusId.setValue(new TableDataRow<Integer>(DictionaryCache.getIdFromSystemName("sample_initiated")));
+        sampleStatus.load(form.statusId);
+        
+        form.nextItemSequence = 0;
     }
     
     public void update() {
@@ -319,7 +358,7 @@ public class EnvironmentalSampleLoginScreen extends OpenELISScreenForm<Environme
     }
 
     public void onTabSelected(SourcesTabEvents sender, int tabIndex) {
-        
+        loadTabs();
     }
 
     //
@@ -386,32 +425,12 @@ public class EnvironmentalSampleLoginScreen extends OpenELISScreenForm<Environme
     public void rowSelectd(SourcesTreeModelEvents sender, int row) {
         TreeDataItem selectedRow = itemsTestsTree.model.getRow(row);
         //enable/disable the tabs and tree buttons
-        if(state == State.ADD || state == State.UPDATE){
+        if(state == State.ADD || state == State.UPDATE)
             addTestButton.changeState(ButtonState.UNPRESSED);
-            itemsTestsTree.setFocus(true);
-            
-            if("sampleItem".equals(selectedRow.leafType)){
-                enableDataForSampleItemRow(true);
-                enableDataForTestRow(false);
-            }else if("analysis".equals(selectedRow.leafType)){
-                enableDataForTestRow(true);
-                enableDataForSampleItemRow(false);
-                
-            }
-        }
-        
-        //load the necessary data
-        if("sampleItem".equals(selectedRow.leafType)){
-        SampleItemForm subForm = (SampleItemForm)itemsTestsTree.model.getRow(row).getData();
-        load(subForm);
-        }else if("analysis".equals(selectedRow.leafType)){
-            AnalysisForm subForm = (AnalysisForm)itemsTestsTree.model.getRow(row).getData();
-            load(subForm);    
-        }
-        
-        
-        //FIXME code this
-    }
+//            itemsTestsTree.setFocus(true);
+          
+        loadTabs();
+   }
 
     public void rowUnselected(SourcesTreeModelEvents sender, int row) {}
 
@@ -458,7 +477,7 @@ public class EnvironmentalSampleLoginScreen extends OpenELISScreenForm<Environme
     }
     
     public void setSampleStatusModel(TableDataModel<TableDataRow<Integer>> statusesModel) {
-        status.setModel(statusesModel);
+        ((Dropdown)sampleStatus.getWidget()).setModel(statusesModel);
     }
     
     public void setSampleTypeModel(TableDataModel<TableDataRow<Integer>> typesModel) {
@@ -500,7 +519,7 @@ public class EnvironmentalSampleLoginScreen extends OpenELISScreenForm<Environme
     
     private void onProjectLookupClick(){
         if(projectScreen == null)
-            projectScreen = new SampleProjectScreen(form.orgProjectForm.sampleProjectForm);
+            projectScreen = new SampleProjectScreen(form.orgProjectForm.sampleProjectForm, this);
         else
             projectScreen.setForm(form.orgProjectForm.sampleProjectForm);
         
@@ -511,7 +530,7 @@ public class EnvironmentalSampleLoginScreen extends OpenELISScreenForm<Environme
     
     private void onOrganizationLookupClick(){
         if(organizationScreen == null)
-            organizationScreen = new SampleOrganizationScreen(form.orgProjectForm.sampleOrgForm);
+            organizationScreen = new SampleOrganizationScreen(form.orgProjectForm.sampleOrgForm, this);
         else
             organizationScreen.setForm(form.orgProjectForm.sampleOrgForm);
         
@@ -643,9 +662,11 @@ public class EnvironmentalSampleLoginScreen extends OpenELISScreenForm<Environme
     public void onAddItemButtonClick() {
         int selectedIndex = itemsTestsTree.model.getSelectedIndex();
         TreeDataItem newRow = itemsTestsTree.model.createTreeItem("sampleItem");
-        newRow.cells[0].setValue("0 - ");
+        newRow.cells[0].setValue(form.nextItemSequence + " - ");
         
-        if(selectedIndex != -1){
+        form.nextItemSequence++;
+        
+        /*if(selectedIndex != -1){
             TreeDataItem selectedRow = itemsTestsTree.model.getSelection();
             if(!"sampleItem".equals(selectedRow.leafType))
                 selectedRow = selectedRow.parent;
@@ -654,7 +675,8 @@ public class EnvironmentalSampleLoginScreen extends OpenELISScreenForm<Environme
             if (!selectedRow.open)
                 selectedRow.toggle();
         }else
-            itemsTestsTree.model.addRow(newRow);
+        */
+        itemsTestsTree.model.addRow(newRow);
         
         itemsTestsTree.model.refresh();
     }
@@ -682,40 +704,42 @@ public class EnvironmentalSampleLoginScreen extends OpenELISScreenForm<Environme
         addTestButton.changeState(ButtonState.DISABLED);
     }
     
-    private void enableDataForSampleItemRow(boolean enable){
-        //sample type
-        sampleType.enable(enable);
-        //container
-        container.enable(enable);
-        //container ref
-        containerRef.enable(enable);
-        //qty
-        qty.enable(enable);
-        //unit
-        unit.enable(enable);
+    private void loadTabs(){
+        int tabSelected = tabPanel.getSelectedIndex();
         
-        //FIXME add storage tab when implemented
-    }
-    
-    private void enableDataForTestRow(boolean enable){
-        //test results
-        canEditTestResultsTab = enable;
+        String treeRowType = null;
         
-        //analysis ext comment
-        if(enable)
-            analysisNoteExt.changeState(ButtonState.UNPRESSED);
-        else
-            analysisNoteExt.changeState(ButtonState.DISABLED);
+        if(itemsTestsTree.model.getSelectedIndex() != -1)
+            treeRowType = itemsTestsTree.model.getSelection().leafType;
         
-        //analysis int comment
-        if(enable)
-            analysisNoteInt.changeState(ButtonState.UNPRESSED);
-        else
-            analysisNoteInt.changeState(ButtonState.DISABLED);
-    }
-    
-    private void loadTabs(int loadIndex){
-        
+        if(tabSelected == 0){
+            if("sampleItem".equals(treeRowType)){
+                enableSampleItemTab(true);
+                loadSampleItemTab(itemsTestsTree.model.getSelection());
+            }else if("analysis".equals(treeRowType)){
+                enableSampleItemTab(true);
+                loadSampleItemTab(itemsTestsTree.model.getSelection().parent);
+            }
+        }else if(tabSelected == 1){
+            if("sampleItem".equals(treeRowType)){
+                enableAnalysisTab(false);
+            }else if("analysis".equals(treeRowType)){
+                enableAnalysisTab(true);
+                loadAnalysisTab(itemsTestsTree.model.getSelection());
+            }
+        }else if(tabSelected == 2){
+            //
+        }else if(tabSelected == 3){
+            //
+        }else if(tabSelected == 4){
+            //
+        }else if(tabSelected == 5){
+            //
+        }else if(tabSelected == 6){
+            //
+        }else if(tabSelected == 7){
+            //
+        }
     }
     
     private void redrawRow(){
@@ -746,53 +770,84 @@ public class EnvironmentalSampleLoginScreen extends OpenELISScreenForm<Environme
             model.setCell(selectedRow, 1, subForm.statusId.getValue());
         }
     }
-    /*
-    private void loadSampleItemLeaf(TreeDataItem sampleItemLeaf){
-        SampleItemForm subForm = (SampleItemForm)sampleItemLeaf.getData();
+    
+    //tab load methods
+    private void loadSampleItemTab(TreeDataItem itemRow){
+        SampleItemForm subForm = (SampleItemForm)itemRow.getData();
         
-        if(subForm != null){
-            sampleItemLeaf.key = subForm.entityKey;
-            sampleItemLeaf.cells[0].setValue(subForm.itemSequence + " - " + subForm.container.getTextValue());
-            sampleItemLeaf.cells[1].setValue(subForm.typeOfSample.getTextValue());
-        }
+        if(subForm != null)
+            load(subForm);
     }
     
-    private void loadAnalysisLeaf(TreeDataItem analysisLeaf){
-        AnalysisForm subForm = (AnalysisForm)analysisLeaf.getData();
-        
-        if(subForm != null){
-            analysisLeaf.key = subForm.entityKey;
-            analysisLeaf.cells[0].setValue(subForm.testName.getValue() + " - " + subForm.methodName.getValue());
-            analysisLeaf.cells[1].setValue(subForm.statusId.getValue());
-        }
+    private void loadAnalysisTab(TreeDataItem testRow){
+        AnalysisForm subForm = (AnalysisForm)testRow.getData();
+        if(subForm  != null)
+            load(subForm);  
     }
     
-    private void loadSampleItemTree(){
+    private void loadTestResultsTab(TreeDataItem testRow){
         
-        for(int i=0; i<itemsTestsTree.model.numRows(); i++){
-            TreeDataItem item = itemsTestsTree.model.getRow(i);
-            
-            if("sampleItem".equals(item.leafType))
-                loadSampleItemLeaf(item);
-            else if("analysis".equals(item.leafType))
-                loadAnalysisLeaf(item);
-            
-            //FIXME evenually make this recursive to load subtrees
-        }
-        
-        itemsTestsTree.model.refresh();
     }
     
-    private void loadSampleItemTree(int row){
-            TreeDataItem item = itemsTestsTree.model.getRow(row);
-            
-            if("sampleItem".equals(item.leafType))
-                loadSampleItemLeaf(item);
-            else if("analysis".equals(item.leafType))
-                loadAnalysisLeaf(item);
-            
-            //FIXME evenually make this recursive to load subtrees
-            
-           // itemsTestsTree.model.setCell(row, col, value);
-    }*/
+    private void loadAnExtCommentTab(TreeDataItem testRow){
+        
+    }
+    
+    private void loadAnIntCommentsTab(TreeDataItem testRow){
+        
+    }
+    
+    private void loadStorageTab(TreeDataItem itemRow){
+        
+    }
+    
+    private void loadSmpExtCommentTab(){
+        
+    }
+    
+    private void loadSmpIntCommentsTab(){
+        
+    }
+    
+    //tab enable/disable methods
+    private void enableSampleItemTab(boolean enable){
+        sampleType.enable(enable);
+        container.enable(enable);
+        containerRef.enable(enable);
+        qty.enable(enable);
+        unit.enable(enable);
+    }
+    
+    private void enableAnalysisTab(boolean enable){
+        test.enable(enable);
+        revision.enable(enable);
+        isReportable.enable(enable);
+        section.enable(enable);
+        startedDate.enable(enable);
+        completedDate.enable(enable);
+        releasedDate.enable(enable);
+        printedDate.enable(enable);
+    }
+    
+    private void enableTestResultsTab(boolean enable){
+        canEditTestResultsTab = enable; 
+    }
+    
+    private void enableAnExtCommentTab(boolean enable){
+        if(enable)
+            analysisNoteExt.changeState(ButtonState.UNPRESSED);
+        else
+            analysisNoteExt.changeState(ButtonState.DISABLED);
+    }
+    
+    private void enableAnIntCommentsTab(boolean enable){
+        if(enable)
+            analysisNoteInt.changeState(ButtonState.UNPRESSED);
+        else
+            analysisNoteInt.changeState(ButtonState.DISABLED);        
+    }
+    
+    private void enableStorageTab(boolean enable){
+        //FIXME add this code when we have widgets on that tab
+    }
 }
