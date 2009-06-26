@@ -304,7 +304,6 @@ public class TestService implements
     }
 
     public TestForm fetch(TestForm rpc) throws RPCException {
-        checkModels(rpc);
         TestRemote remote = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
 
         TestDO testDO = remote.getTest(rpc.entityKey);
@@ -414,7 +413,6 @@ public class TestService implements
     }
 
     public TestForm fetchForUpdate(TestForm rpc) throws RPCException {
-        checkModels(rpc);
         TestRemote remote = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
 
         TestDO testDO = new TestDO();
@@ -446,197 +444,72 @@ public class TestService implements
 
     public TestForm getScreen(TestForm rpc) throws RPCException {
         rpc.xml = ServiceUtils.getXML(Constants.APP_ROOT + "/Forms/test.xsl");
-        rpc.revisionMethods = TestRevisionMethodCacheHandler.getTestRevisionMethods();
-        SessionManager.getSession()
-                      .setAttribute("testRevisionMethodVersion",
-                                    TestRevisionMethodCacheHandler.version);
-        rpc.reflexFlags = TestReflexFlagCacheHandler.getTestReflexFlags();
-        SessionManager.getSession()
-                      .setAttribute("testReflexFlagVersion",
-                                    TestReflexFlagCacheHandler.version);
-        rpc.reportingMethods = TestReportingMethodCacheHandler.getTestReportingMethods();
-        SessionManager.getSession()
-                      .setAttribute("testReportingMethodVersion",
-                                    TestReportingMethodCacheHandler.version);
-        rpc.analyteTypes = TestAnalyteTypeCacheHandler.getTestAnalyteTypes();
-        SessionManager.getSession()
-                      .setAttribute("testAnalyteTypeVersion",
-                                    TestAnalyteTypeCacheHandler.version);
-        rpc.resultFlags = TestResultFlagsCacheHandler.getTestResultFlags();
-        SessionManager.getSession()
-                      .setAttribute("testResultFlagsVersion",
-                                    TestResultFlagsCacheHandler.version);
-        rpc.resultTypes = TestResultTypeCacheHandler.getTestResultTypes();
-        SessionManager.getSession()
-                      .setAttribute("testResultTypeVersion",
-                                    TestResultTypeCacheHandler.version);
-        rpc.roundingMethods = RoundingMethodCacheHandler.getRoundingMethods();
-        SessionManager.getSession()
-                      .setAttribute("roundingMethodVersion",
-                                    RoundingMethodCacheHandler.version);
-        rpc.units = UnitOfMeasureCacheHandler.getUnitsOfMeasure();
-        SessionManager.getSession()
-                      .setAttribute("unitOfMeasureVersion",
-                                    UnitOfMeasureCacheHandler.version);
-        rpc.sampleTypes = SampleTypeCacheHandler.getSampleTypes();
-        SessionManager.getSession()
-                      .setAttribute("sampleTypeVersion",
-                                    SampleTypeCacheHandler.version);
-        rpc.sectionFlags = TestSectionFlagsCacheHandler.getTestSections();
-        SessionManager.getSession()
-                      .setAttribute("testSectionFlagVersion",
-                                    TestSectionFlagsCacheHandler.version);
-        rpc.testFormats = TestFormatCacheHandler.getTestFormats();
-        SessionManager.getSession()
-                      .setAttribute("testFormatVersion",
-                                    TestFormatCacheHandler.version);
-        rpc.sortingMethods = TestSortingMethodCacheHandler.getTestSortingMethods();
-        SessionManager.getSession()
-                      .setAttribute("testSortingMethodVersion",
-                                    TestSortingMethodCacheHandler.version);
-        rpc.wsAnalyteFlags = TestWorksheetAnalyteFlagsCacheHandler.getTestWorksheetAnalyteFlags();
-        SessionManager.getSession()
-                      .setAttribute("testWorksheetAnalyteFlagsVersion",
-                                    TestWorksheetAnalyteFlagsCacheHandler.version);
+//        rpc.revisionMethods = TestRevisionMethodCacheHandler.getTestRevisionMethods();
+//        SessionManager.getSession()
+//                      .setAttribute("testRevisionMethodVersion",
+//                                    TestRevisionMethodCacheHandler.version);
+//        rpc.reflexFlags = TestReflexFlagCacheHandler.getTestReflexFlags();
+//        SessionManager.getSession()
+//                      .setAttribute("testReflexFlagVersion",
+//                                    TestReflexFlagCacheHandler.version);
+//        rpc.reportingMethods = TestReportingMethodCacheHandler.getTestReportingMethods();
+//        SessionManager.getSession()
+//                      .setAttribute("testReportingMethodVersion",
+//                                    TestReportingMethodCacheHandler.version);
+//        rpc.analyteTypes = TestAnalyteTypeCacheHandler.getTestAnalyteTypes();
+//        SessionManager.getSession()
+//                      .setAttribute("testAnalyteTypeVersion",
+//                                    TestAnalyteTypeCacheHandler.version);
+//        rpc.resultFlags = TestResultFlagsCacheHandler.getTestResultFlags();
+//        SessionManager.getSession()
+//                      .setAttribute("testResultFlagsVersion",
+//                                    TestResultFlagsCacheHandler.version);
+//        rpc.resultTypes = TestResultTypeCacheHandler.getTestResultTypes();
+//        SessionManager.getSession()
+//                      .setAttribute("testResultTypeVersion",
+//                                    TestResultTypeCacheHandler.version);
+//        rpc.roundingMethods = RoundingMethodCacheHandler.getRoundingMethods();
+//        SessionManager.getSession()
+//                      .setAttribute("roundingMethodVersion",
+//                                    RoundingMethodCacheHandler.version);
+//        rpc.units = UnitOfMeasureCacheHandler.getUnitsOfMeasure();
+//        SessionManager.getSession()
+//                      .setAttribute("unitOfMeasureVersion",
+//                                    UnitOfMeasureCacheHandler.version);
+//        rpc.sampleTypes = SampleTypeCacheHandler.getSampleTypes();
+//        SessionManager.getSession()
+//                      .setAttribute("sampleTypeVersion",
+//                                    SampleTypeCacheHandler.version);
+//        rpc.sectionFlags = TestSectionFlagsCacheHandler.getTestSections();
+//        SessionManager.getSession()
+//                      .setAttribute("testSectionFlagVersion",
+//                                    TestSectionFlagsCacheHandler.version);
+//        rpc.testFormats = TestFormatCacheHandler.getTestFormats();
+//        SessionManager.getSession()
+//                      .setAttribute("testFormatVersion",
+//                                    TestFormatCacheHandler.version);
+//        rpc.sortingMethods = TestSortingMethodCacheHandler.getTestSortingMethods();
+//        SessionManager.getSession()
+//                      .setAttribute("testSortingMethodVersion",
+//                                    TestSortingMethodCacheHandler.version);
+//        rpc.wsAnalyteFlags = TestWorksheetAnalyteFlagsCacheHandler.getTestWorksheetAnalyteFlags();
+//        SessionManager.getSession()
+//                      .setAttribute("testWorksheetAnalyteFlagsVersion",
+//                                    TestWorksheetAnalyteFlagsCacheHandler.version);
         rpc.wsItemTypes = TestWorksheetItemTypeCacheHandler.getTestWorksheetItemTypes();
         SessionManager.getSession()
                       .setAttribute("testWorksheetItemTypeVersion",
                                     TestWorksheetItemTypeCacheHandler.version);
-        rpc.wsFormats = TestWorksheetFormatCacheHandler.getTestWorksheetFormats();
-        SessionManager.getSession()
-                      .setAttribute("testWorksheetFormatVersion",
-                                    TestWorksheetFormatCacheHandler.version);
+//        rpc.wsFormats = TestWorksheetFormatCacheHandler.getTestWorksheetFormats();
+//        SessionManager.getSession()
+//                      .setAttribute("testWorksheetFormatVersion",
+//                                    TestWorksheetFormatCacheHandler.version);
         rpc.labels = getInitialModel(TestMeta.getLabelId());
         rpc.scriptlets = getInitialModel(TestMeta.getScriptletId());
         rpc.trailers = getInitialModel(TestMeta.getTestTrailerId());
         rpc.testMethods = getInitialModel(TestMeta.getTestPrep().getPrepTestId());
         rpc.sections = getInitialModel(TestMeta.getTestSection().getSectionId());
         return rpc;
-    }
-
-    public void checkModels(TestForm rpc) {
-        int revisionMethods = (Integer)SessionManager.getSession()
-                                                     .getAttribute("testRevisionMethodVersion");
-        int reflexFlags = (Integer)SessionManager.getSession()
-                                                 .getAttribute("testReflexFlagVersion");
-        int reportingMethods = (Integer)SessionManager.getSession()
-                                                      .getAttribute("testReportingMethodVersion");
-        int analyteTypes = (Integer)SessionManager.getSession()
-                                                  .getAttribute("testAnalyteTypeVersion");
-        int resultFlags = (Integer)SessionManager.getSession()
-                                                 .getAttribute("testResultFlagsVersion");
-        int resultTypes = (Integer)SessionManager.getSession()
-                                                 .getAttribute("testResultTypeVersion");
-        int roundingMethods = (Integer)SessionManager.getSession()
-                                                     .getAttribute("roundingMethodVersion");
-        int units = (Integer)SessionManager.getSession()
-                                           .getAttribute("unitOfMeasureVersion");
-        int sampleTypes = (Integer)SessionManager.getSession()
-                                                 .getAttribute("sampleTypeVersion");
-        int sectionFlags = (Integer)SessionManager.getSession()
-                                                  .getAttribute("testSectionFlagVersion");
-        int testFormats = (Integer)SessionManager.getSession()
-                                                 .getAttribute("testFormatVersion");
-        int sortingMethods = (Integer)SessionManager.getSession()
-                                                    .getAttribute("testSortingMethodVersion");
-        int wsAnalyteFlags = (Integer)SessionManager.getSession()
-                                                    .getAttribute("testWorksheetAnalyteFlagsVersion");
-        int wsItemTypes = (Integer)SessionManager.getSession()
-                                                 .getAttribute("testWorksheetItemTypeVersion");
-        int wsFormats = (Integer)SessionManager.getSession()
-                                               .getAttribute("testWorksheetFormatVersion");
-
-        if (revisionMethods != TestRevisionMethodCacheHandler.version) {
-            rpc.revisionMethods = TestRevisionMethodCacheHandler.getTestRevisionMethods();
-            SessionManager.getSession()
-                          .setAttribute("testRevisionMethodVersion",
-                                        TestRevisionMethodCacheHandler.version);
-        }
-        if (reflexFlags != TestReflexFlagCacheHandler.version) {
-            rpc.reflexFlags = TestReflexFlagCacheHandler.getTestReflexFlags();
-            SessionManager.getSession()
-                          .setAttribute("testReflexFlagVersion",
-                                        TestReflexFlagCacheHandler.version);
-        }
-        if (reportingMethods != TestReportingMethodCacheHandler.version) {
-            rpc.reportingMethods = TestReportingMethodCacheHandler.getTestReportingMethods();
-            SessionManager.getSession()
-                          .setAttribute("testReportingMethodVersion",
-                                        TestReportingMethodCacheHandler.version);
-        }
-        if (resultFlags != TestResultFlagsCacheHandler.version) {
-            rpc.resultFlags = TestResultFlagsCacheHandler.getTestResultFlags();
-            SessionManager.getSession()
-                          .setAttribute("testResultFlagsVersion",
-                                        TestResultFlagsCacheHandler.version);
-        }
-        if (analyteTypes != TestAnalyteTypeCacheHandler.version) {
-            rpc.analyteTypes = TestAnalyteTypeCacheHandler.getTestAnalyteTypes();
-            SessionManager.getSession()
-                          .setAttribute("testAnalyteTypeVersion",
-                                        TestAnalyteTypeCacheHandler.version);
-        }
-        if (resultTypes != TestResultTypeCacheHandler.version) {
-            rpc.resultTypes = TestResultTypeCacheHandler.getTestResultTypes();
-            SessionManager.getSession()
-                          .setAttribute("testResultTypeVersion",
-                                        TestResultTypeCacheHandler.version);
-        }
-        if (roundingMethods != RoundingMethodCacheHandler.version) {
-            rpc.roundingMethods = RoundingMethodCacheHandler.getRoundingMethods();
-            SessionManager.getSession()
-                          .setAttribute("roundingMethodVersion",
-                                        RoundingMethodCacheHandler.version);
-        }
-        if (units != UnitOfMeasureCacheHandler.version) {
-            rpc.units = UnitOfMeasureCacheHandler.getUnitsOfMeasure();
-            SessionManager.getSession()
-                          .setAttribute("unitOfMeasureVersion",
-                                        UnitOfMeasureCacheHandler.version);
-        }
-        if (sampleTypes != SampleTypeCacheHandler.version) {
-            rpc.sampleTypes = SampleTypeCacheHandler.getSampleTypes();
-            SessionManager.getSession()
-                          .setAttribute("sampleTypeVersion",
-                                        SampleTypeCacheHandler.version);
-        }
-        if (sectionFlags != TestSectionFlagsCacheHandler.version) {
-            rpc.sectionFlags = TestSectionFlagsCacheHandler.getTestSections();
-            SessionManager.getSession()
-                          .setAttribute("testSectionFlagVersion",
-                                        TestSectionFlagsCacheHandler.version);
-        }
-        if (testFormats != TestFormatCacheHandler.version) {
-            rpc.testFormats = TestFormatCacheHandler.getTestFormats();
-            SessionManager.getSession()
-                          .setAttribute("testFormatVersion",
-                                        TestFormatCacheHandler.version);
-        }
-        if (sortingMethods != TestSortingMethodCacheHandler.version) {
-            rpc.sortingMethods = TestSortingMethodCacheHandler.getTestSortingMethods();
-            SessionManager.getSession()
-                          .setAttribute("testSortingMethodVersion",
-                                        TestSortingMethodCacheHandler.version);
-        }
-        if (wsAnalyteFlags != TestWorksheetAnalyteFlagsCacheHandler.version) {
-            rpc.wsAnalyteFlags = TestWorksheetAnalyteFlagsCacheHandler.getTestWorksheetAnalyteFlags();
-            SessionManager.getSession()
-                          .setAttribute("testWorksheetAnalyteFlagsVersion",
-                                        TestWorksheetAnalyteFlagsCacheHandler.version);
-        }
-        if (wsItemTypes != TestWorksheetItemTypeCacheHandler.version) {
-            rpc.wsItemTypes = TestWorksheetItemTypeCacheHandler.getTestWorksheetItemTypes();
-            SessionManager.getSession()
-                          .setAttribute("testWorksheetItemTypeVersion",
-                                        TestWorksheetItemTypeCacheHandler.version);
-        }
-        if (wsFormats != TestWorksheetFormatCacheHandler.version) {
-            rpc.wsFormats = TestWorksheetFormatCacheHandler.getTestWorksheetFormats();
-            SessionManager.getSession()
-                          .setAttribute("testWorksheetFormatVersion",
-                                        TestWorksheetFormatCacheHandler.version);
-        }        
-
     }
 
     public TestAnalyteForm getTestAnalyteModel(TestAnalyteForm rpc) {

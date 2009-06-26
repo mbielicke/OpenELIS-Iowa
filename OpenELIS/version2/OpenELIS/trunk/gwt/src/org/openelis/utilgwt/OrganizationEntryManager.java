@@ -26,7 +26,7 @@
 package org.openelis.utilgwt;
 
 import org.openelis.cache.CacheEntryNotFoundException;
-import org.openelis.cache.DictSystemNameCache;
+import org.openelis.cache.DictionaryCache;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.TableDataRow;
 
@@ -35,8 +35,8 @@ public class OrganizationEntryManager extends MultipleEntryManager<Integer> {
     protected Integer primaryBillToId;
 
     public OrganizationEntryManager() {
-        primaryReportToId = DictSystemNameCache.getIdFromSystemName("org_report_to");
-        primaryBillToId = DictSystemNameCache.getIdFromSystemName("org_bill_to");
+        primaryReportToId = DictionaryCache.getIdFromSystemName("org_report_to");
+        primaryBillToId = DictionaryCache.getIdFromSystemName("org_bill_to");
 
         if (primaryBillToId == null || primaryReportToId == null)
             throw new CacheEntryNotFoundException("OrganizationEntryManager: org_report_to and/or org_bill_to report dictionary entry not found");
