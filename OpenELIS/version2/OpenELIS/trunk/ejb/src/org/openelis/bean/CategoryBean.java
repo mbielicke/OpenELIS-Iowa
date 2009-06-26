@@ -25,49 +25,6 @@
 */
 package org.openelis.bean;
 
-import org.jboss.annotation.security.SecurityDomain;
-import org.openelis.domain.CategoryDO;
-import org.openelis.domain.DictionaryDO;
-import org.openelis.entity.Category;
-import org.openelis.entity.Dictionary;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.RPCException;
-import org.openelis.gwt.common.TableFieldErrorException;
-import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.SecurityModule.ModuleFlags;
-import org.openelis.gwt.common.data.AbstractField;
-import org.openelis.gwt.common.data.QueryStringField;
-import org.openelis.local.JMSMessageProducerLocal;
-import org.openelis.local.LockLocal;
-import org.openelis.messages.AuxFieldValueTypeCacheMessage;
-import org.openelis.messages.ContactTypeCacheMessage;
-import org.openelis.messages.CountryCacheMessage;
-import org.openelis.messages.ProjectParameterOperationCacheMessage;
-import org.openelis.messages.ProviderTypeCacheMessage;
-import org.openelis.messages.QaEventTypeCacheMessage;
-import org.openelis.messages.RoundingMethodCacheMessage;
-import org.openelis.messages.SampleTypeCacheMessage;
-import org.openelis.messages.StateCacheMessage;
-import org.openelis.messages.TestAnalyteTypeCacheMessage;
-import org.openelis.messages.TestFormatCacheMessage;
-import org.openelis.messages.TestReflexFlagCacheMessage;
-import org.openelis.messages.TestReportingMethodCacheMessage;
-import org.openelis.messages.TestResultFlagsCacheMessage;
-import org.openelis.messages.TestResultTypeCacheMessage;
-import org.openelis.messages.TestRevisionMethodCacheMessage;
-import org.openelis.messages.TestSectionFlagsCacheMessage;
-import org.openelis.messages.TestSortingMethodCacheMessage;
-import org.openelis.messages.TestWorksheetAnalyteFlagsCacheMessage;
-import org.openelis.messages.TestWorksheetFormatCacheMessage;
-import org.openelis.messages.TestWorksheetItemTypeCacheMessage;
-import org.openelis.messages.UnitOfMeasureCacheMessage;
-import org.openelis.metamap.CategoryMetaMap;
-import org.openelis.remote.CategoryRemote;
-import org.openelis.util.QueryBuilder;
-import org.openelis.utils.GetPage;
-import org.openelis.utils.SecurityInterceptor;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -84,6 +41,27 @@ import javax.persistence.FlushModeType;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+
+import org.jboss.annotation.security.SecurityDomain;
+import org.openelis.domain.CategoryDO;
+import org.openelis.domain.DictionaryDO;
+import org.openelis.entity.Category;
+import org.openelis.entity.Dictionary;
+import org.openelis.gwt.common.FieldErrorException;
+import org.openelis.gwt.common.LastPageException;
+import org.openelis.gwt.common.TableFieldErrorException;
+import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.gwt.common.SecurityModule.ModuleFlags;
+import org.openelis.gwt.common.data.AbstractField;
+import org.openelis.gwt.common.data.QueryStringField;
+import org.openelis.local.JMSMessageProducerLocal;
+import org.openelis.local.LockLocal;
+import org.openelis.messages.DictionaryCacheMessage;
+import org.openelis.metamap.CategoryMetaMap;
+import org.openelis.remote.CategoryRemote;
+import org.openelis.util.QueryBuilder;
+import org.openelis.utils.GetPage;
+import org.openelis.utils.SecurityInterceptor;
 
 @Stateless
 @EJBs({
@@ -237,95 +215,11 @@ public class CategoryBean implements CategoryRemote {
         
         lockBean.giveUpLock(categoryReferenceId,category.getId()); 
         
-        if(("state").equals(categoryDO.getSystemName())){
-            StateCacheMessage msg = new StateCacheMessage();
-            msg.action = StateCacheMessage.Action.UPDATED;
-            jmsProducer.writeMessage(msg);
-        }else if(("country").equals(categoryDO.getSystemName())){
-            CountryCacheMessage msg = new CountryCacheMessage();
-            msg.action = CountryCacheMessage.Action.UPDATED;
-            jmsProducer.writeMessage(msg);
-        }else if(("contact_type").equals(categoryDO.getSystemName())){
-            ContactTypeCacheMessage msg = new ContactTypeCacheMessage();
-            msg.action = ContactTypeCacheMessage.Action.UPDATED;
-            jmsProducer.writeMessage(msg);
-        }else if(("provider_type").equals(categoryDO.getSystemName())){
-            ProviderTypeCacheMessage msg = new ProviderTypeCacheMessage();
-            msg.action = ProviderTypeCacheMessage.Action.UPDATED;
-            jmsProducer.writeMessage(msg);
-        }else if(("qaevent_type").equals(categoryDO.getSystemName())){
-            QaEventTypeCacheMessage msg = new QaEventTypeCacheMessage();
-            msg.action = QaEventTypeCacheMessage.Action.UPDATED;
-            jmsProducer.writeMessage(msg);            
-        }else if(("unit_of_measure").equals(categoryDO.getSystemName())){
-            UnitOfMeasureCacheMessage msg = new UnitOfMeasureCacheMessage();
-            msg.action = UnitOfMeasureCacheMessage.Action.UPDATED;
-            jmsProducer.writeMessage(msg);
-        }else if(("aux_field_value_type").equals(categoryDO.getSystemName())){
-            AuxFieldValueTypeCacheMessage msg = new AuxFieldValueTypeCacheMessage();
-            msg.action = AuxFieldValueTypeCacheMessage.Action.UPDATED;
-            jmsProducer.writeMessage(msg);           
-        }else if(("test_revision_method").equals(categoryDO.getSystemName())){
-            TestRevisionMethodCacheMessage msg = new TestRevisionMethodCacheMessage();
-            msg.action = TestRevisionMethodCacheMessage.Action.UPDATED;
-            jmsProducer.writeMessage(msg);
-        }else if(("test_reflex_flags").equals(categoryDO.getSystemName())){
-            TestReflexFlagCacheMessage msg = new TestReflexFlagCacheMessage();
-            msg.action = TestReflexFlagCacheMessage.Action.UPDATED;
-            jmsProducer.writeMessage(msg);
-        }else if(("test_reporting_method").equals(categoryDO.getSystemName())){
-            TestReportingMethodCacheMessage msg = new TestReportingMethodCacheMessage();
-            msg.action = TestReportingMethodCacheMessage.Action.UPDATED;
-            jmsProducer.writeMessage(msg);
-        }else if(("test_analyte_type").equals(categoryDO.getSystemName())){
-            TestAnalyteTypeCacheMessage msg = new TestAnalyteTypeCacheMessage();
-            msg.action = TestAnalyteTypeCacheMessage.Action.UPDATED;
-            jmsProducer.writeMessage(msg);
-        }else if(("test_result_flags").equals(categoryDO.getSystemName())){
-            TestResultFlagsCacheMessage msg = new TestResultFlagsCacheMessage();
-            msg.action = TestResultFlagsCacheMessage.Action.UPDATED;
-            jmsProducer.writeMessage(msg);
-        }else if(("test_result_type").equals(categoryDO.getSystemName())){
-            TestResultTypeCacheMessage msg = new TestResultTypeCacheMessage();
-            msg.action = TestResultTypeCacheMessage.Action.UPDATED;
-            jmsProducer.writeMessage(msg);
-        }else if(("rounding_method").equals(categoryDO.getSystemName())){
-            RoundingMethodCacheMessage msg = new RoundingMethodCacheMessage();
-            msg.action = RoundingMethodCacheMessage.Action.UPDATED;
-            jmsProducer.writeMessage(msg);
-        }else if(("type_of_sample").equals(categoryDO.getSystemName())){
-            SampleTypeCacheMessage msg = new SampleTypeCacheMessage();
-            msg.action = SampleTypeCacheMessage.Action.UPDATED;
-            jmsProducer.writeMessage(msg);
-        }else if(("test_section_flags").equals(categoryDO.getSystemName())){
-            TestSectionFlagsCacheMessage msg = new TestSectionFlagsCacheMessage();
-            msg.action = TestSectionFlagsCacheMessage.Action.UPDATED;
-            jmsProducer.writeMessage(msg);
-        }else if(("test_format").equals(categoryDO.getSystemName())){
-            TestFormatCacheMessage msg = new TestFormatCacheMessage();
-            msg.action = TestFormatCacheMessage.Action.UPDATED;
-            jmsProducer.writeMessage(msg);
-        }else if(("test_sorting_method").equals(categoryDO.getSystemName())){
-            TestSortingMethodCacheMessage msg = new TestSortingMethodCacheMessage();
-            msg.action = TestSortingMethodCacheMessage.Action.UPDATED;
-            jmsProducer.writeMessage(msg);
-        }else if(("test_worksheet_analyte_flags").equals(categoryDO.getSystemName())){
-            TestWorksheetAnalyteFlagsCacheMessage msg = new TestWorksheetAnalyteFlagsCacheMessage();
-            msg.action = TestWorksheetAnalyteFlagsCacheMessage.Action.UPDATED;
-            jmsProducer.writeMessage(msg);
-        }else if(("test_worksheet_item_type").equals(categoryDO.getSystemName())){
-            TestWorksheetItemTypeCacheMessage msg = new TestWorksheetItemTypeCacheMessage();
-            msg.action = TestWorksheetItemTypeCacheMessage.Action.UPDATED;
-            jmsProducer.writeMessage(msg);
-        }else if(("test_worksheet_format").equals(categoryDO.getSystemName())){
-            TestWorksheetFormatCacheMessage msg = new TestWorksheetFormatCacheMessage();
-            msg.action = TestWorksheetFormatCacheMessage.Action.UPDATED;
-            jmsProducer.writeMessage(msg);
-        }else if(("project_parameter_operations").equals(categoryDO.getSystemName())){
-            ProjectParameterOperationCacheMessage msg = new ProjectParameterOperationCacheMessage();
-            msg.action = ProjectParameterOperationCacheMessage.Action.UPDATED;
-            jmsProducer.writeMessage(msg);
-        }
+        //invalidate the cache
+        DictionaryCacheMessage msg = new DictionaryCacheMessage();
+        msg.setCatDO(categoryDO);
+        msg.action = DictionaryCacheMessage.Action.UPDATED;
+        jmsProducer.writeMessage(msg);
         
         return  category.getId();
     }
@@ -338,6 +232,37 @@ public class CategoryBean implements CategoryRemote {
                                                         // dictionary entries
 
         return dictionaryEntries;
+    }
+    
+    public DictionaryDO getDictionaryDOBySystemName(String systemName) { 
+        Query query = manager.createNamedQuery("Dictionary.DictionaryByEntrySystemName");
+        query.setParameter("name", systemName);
+        
+        List resultList = query.getResultList();
+        
+        if(resultList.size() > 0)
+            return (DictionaryDO)resultList.get(0);
+        else 
+            return null;
+    }
+    
+    public DictionaryDO getDictionaryDOByEntryId(Integer entryId) {
+        Query query = manager.createNamedQuery("Dictionary.DictionaryByEntryId");
+        query.setParameter("name", entryId);
+        
+        List resultList = query.getResultList();
+        
+        if(resultList.size() > 0)
+            return (DictionaryDO)resultList.get(0);
+        else 
+            return null;
+    }
+    
+    public List getListByCategoryName(String categoryName) {
+        Query query = manager.createNamedQuery("Dictionary.EntriesByCategoryName");
+        query.setParameter("name", categoryName);
+        
+        return query.getResultList();
     }
 
     public List getDropdownValues(Integer categoryId) {
