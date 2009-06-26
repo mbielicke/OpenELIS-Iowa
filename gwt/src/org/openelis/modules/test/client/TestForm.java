@@ -37,6 +37,7 @@ import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.TableDataModel;
 import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.common.data.TableField;
+import org.openelis.gwt.widget.table.TableDropdown;
 import org.openelis.metamap.TestMetaMap;
 
 public class TestForm extends Form<Integer> {
@@ -74,12 +75,8 @@ public class TestForm extends Form<Integer> {
     public TestAnalyteForm testAnalyte;
     public WorksheetForm worksheet;
     
-    public TableDataModel<TableDataRow<Integer>> resultTableModel,sections,sectionFlags,
-                                      revisionMethods,sortingMethods,reportingMethods,
-                                      trailers,testFormats,sampleTypes,units,scriptlets,
-                                      analyteTypes,resultTypes,resultFlags,roundingMethods,
-                                      testMethods,reflexFlags,wsFormats,labels,
-                                      wsItemTypes,wsAnalyteFlags;
+    public TableDataModel<TableDataRow<Integer>> testMethods, labels, trailers, scriptlets, wsItemTypes, sections, resultTableModel;
+    
     public Integer numGroups;
     
     public TestForm() {

@@ -39,8 +39,6 @@ import java.util.ArrayList;
 
 public class StatesCacheHandler implements MessageHandler<StateCacheMessage> {
     
-    static CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
-    
     public static int version = 0;
 
     public void handle(StateCacheMessage message) {
