@@ -25,20 +25,10 @@
 */
 package org.openelis.modules.shipping.client;
 
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.ChangeListener;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.SourcesTabEvents;
-import com.google.gwt.user.client.ui.TabListener;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.Widget;
-
 import org.openelis.gwt.common.Query;
 import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.FieldType;
-import org.openelis.gwt.common.data.IntegerObject;
 import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.common.data.TableDataModel;
@@ -54,13 +44,21 @@ import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.table.TableManager;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.metamap.ShippingMetaMap;
-import org.openelis.modules.fillOrder.client.FillOrderScreen;
 import org.openelis.modules.main.client.OpenELISScreenForm;
+
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.ChangeListener;
+import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.SourcesTabEvents;
+import com.google.gwt.user.client.ui.TabListener;
+import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.Widget;
 
 public class ShippingScreen extends OpenELISScreenForm<ShippingForm, Query<TableDataRow<Integer>>> implements ClickListener, TableManager, ChangeListener, TabListener{
 
     public enum Action {Commited, Aborted}
-    private CommandListener target;
+    private CommandListener commandTarget;
     private Integer shipFromId, shipToId;
     private String shipToText, multUnitText, streetAddressText, cityText, stateText, zipCodeText;
     private AppButton removeRowButton;
@@ -110,7 +108,7 @@ public class ShippingScreen extends OpenELISScreenForm<ShippingForm, Query<Table
     }
     
     public void setTarget(CommandListener target){
-        this.target = target;
+        this.commandTarget = target;
     }
     
     private void setCloseOnCommitAbort(boolean close){
@@ -240,8 +238,8 @@ public class ShippingScreen extends OpenELISScreenForm<ShippingForm, Query<Table
         public void onSuccess(Object result) {
             trackingNumbersTable.model.enableAutoAdd(false);
             
-            if(target != null)
-                target.performCommand(Action.Commited, this);
+            if(commandTarget != null)
+                commandTarget.performCommand(Action.Commited, this);
             
             if(closeOnCommitAbort)
                 window.close();
@@ -333,8 +331,8 @@ public class ShippingScreen extends OpenELISScreenForm<ShippingForm, Query<Table
         trackingNumbersTable.model.enableAutoAdd(false);
         super.abort();
         
-        if(target != null)
-            target.performCommand(Action.Aborted, this);
+        if(commandTarget != null)
+            commandTarget.performCommand(Action.Aborted, this);
         
         if(closeOnCommitAbort)
             window.close();

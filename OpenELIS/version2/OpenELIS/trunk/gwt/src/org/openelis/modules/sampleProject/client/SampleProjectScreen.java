@@ -31,6 +31,7 @@ import org.openelis.gwt.common.Query;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.common.data.TableDataRow;
+import org.openelis.gwt.event.CommandListener;
 import org.openelis.gwt.screen.CommandChain;
 import org.openelis.gwt.screen.ScreenTableWidget;
 import org.openelis.gwt.widget.ButtonPanel;
@@ -40,9 +41,14 @@ import org.openelis.gwt.widget.table.event.SourcesTableWidgetEvents;
 import org.openelis.gwt.widget.table.event.TableWidgetListener;
 import org.openelis.modules.environmentalSampleLogin.client.SampleProjectForm;
 import org.openelis.modules.main.client.OpenELISScreenForm;
+import org.openelis.modules.shipping.client.ShippingScreen.Action;
+
+import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class SampleProjectScreen extends OpenELISScreenForm<SampleProjectForm,Query<TableDataRow<Integer>>> implements TableManager, TableWidgetListener {
 
+    public enum Action {Commited, Aborted}
+    private CommandListener commandTarget;
     private ScreenTableWidget            sampleProjectTable;
     
     private KeyListManager keyList = new KeyListManager();
@@ -55,6 +61,15 @@ public class SampleProjectScreen extends OpenELISScreenForm<SampleProjectForm,Qu
     public SampleProjectScreen(SampleProjectForm form) {                
         super("org.openelis.modules.sampleProject.server.SampleProjectService");
         query = new Query<TableDataRow<Integer>>();
+
+        getScreen(form);
+    }
+    
+    public SampleProjectScreen(SampleProjectForm form, CommandListener target) {                
+        super("org.openelis.modules.sampleProject.server.SampleProjectService");
+        query = new Query<TableDataRow<Integer>>();
+        
+        commandTarget = target;
 
         getScreen(form);
     }
@@ -78,10 +93,10 @@ public class SampleProjectScreen extends OpenELISScreenForm<SampleProjectForm,Qu
         super.afterDraw(success);
         
         //if the default set is null we can assume the rpc hasnt been loaded
-        if(form.sampleProjectTable.getValue().getDefaultSet() != null)
-            load(form);
-        else
-            form.sampleProjectTable.setValue(((TableWidget)sampleProjectTable.getWidget()).model.getData());
+        //if(form.sampleProjectTable.getValue().getDefaultSet() != null)
+        //    load(form);
+        //else
+        //    form.sampleProjectTable.setValue(((TableWidget)sampleProjectTable.getWidget()).model.getData());
         
         //enable auto add and put the cursor in the first cell
         sampleProjectTable.enable(true);
@@ -89,11 +104,32 @@ public class SampleProjectScreen extends OpenELISScreenForm<SampleProjectForm,Qu
         ((TableWidget)sampleProjectTable.getWidget()).select(0, 0);
     }
     
+    /*
+    protected AsyncCallback afterCommit = new AsyncCallback() {
+        public void onFailure(Throwable caught) {   
+        }
+        public void onSuccess(Object result) {
+            trackingNumbersTable.model.enableAutoAdd(false);
+            
+            if(target != null)
+                target.performCommand(Action.Commited, this);
+            r
+            if(closeOnCommitAbort)
+                window.close();
+        }
+    };*/
+    
     public void commit() {
+        if(commandTarget != null)
+            commandTarget.performCommand(Action.Commited, form.sampleProjectTable.getValue());
+        
         window.close();
     }
 
     public void abort() {
+        if(commandTarget != null)
+            commandTarget.performCommand(Action.Aborted, null);
+        
         window.close();
     }
     

@@ -25,6 +25,8 @@
 */
 package org.openelis.modules.main.client.service;
 
+import java.util.ArrayList;
+
 import org.openelis.gwt.common.data.FieldType;
 
 import com.google.gwt.user.client.rpc.RemoteService;
@@ -32,5 +34,5 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
 @RemoteServiceRelativePath("ScreenCacheService")
 public interface ScreenCacheServiceInt extends RemoteService {
-    public FieldType call(String method, FieldType param) throws Exception;
+    public ArrayList call(String method, FieldType param) throws Exception;
 }
