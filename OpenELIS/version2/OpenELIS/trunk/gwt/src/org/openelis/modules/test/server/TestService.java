@@ -25,6 +25,11 @@
  */
 package org.openelis.modules.test.server;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+
 import org.openelis.domain.IdLastNameFirstNameDO;
 import org.openelis.domain.IdNameDO;
 import org.openelis.domain.QaEventTestDropdownDO;
@@ -61,7 +66,6 @@ import org.openelis.gwt.common.data.TreeDataModel;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
 import org.openelis.gwt.services.AutoCompleteServiceInt;
-import org.openelis.messages.TestWorksheetFormatCacheHandler;
 import org.openelis.metamap.TestMetaMap;
 import org.openelis.metamap.TestPrepMetaMap;
 import org.openelis.metamap.TestReflexMetaMap;
@@ -82,29 +86,11 @@ import org.openelis.remote.CategoryRemote;
 import org.openelis.remote.MethodRemote;
 import org.openelis.remote.TestRemote;
 import org.openelis.server.constants.Constants;
-import org.openelis.server.handlers.RoundingMethodCacheHandler;
-import org.openelis.server.handlers.SampleTypeCacheHandler;
-import org.openelis.server.handlers.TestAnalyteTypeCacheHandler;
-import org.openelis.server.handlers.TestFormatCacheHandler;
-import org.openelis.server.handlers.TestReflexFlagCacheHandler;
-import org.openelis.server.handlers.TestReportingMethodCacheHandler;
-import org.openelis.server.handlers.TestResultFlagsCacheHandler;
-import org.openelis.server.handlers.TestResultTypeCacheHandler;
-import org.openelis.server.handlers.TestRevisionMethodCacheHandler;
-import org.openelis.server.handlers.TestSectionFlagsCacheHandler;
-import org.openelis.server.handlers.TestSortingMethodCacheHandler;
-import org.openelis.server.handlers.TestWorksheetAnalyteFlagsCacheHandler;
 import org.openelis.server.handlers.TestWorksheetItemTypeCacheHandler;
-import org.openelis.server.handlers.UnitOfMeasureCacheHandler;
 import org.openelis.util.Datetime;
 import org.openelis.util.FormUtil;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 
 public class TestService implements
                         AppScreenFormServiceInt<TestForm, Query<TableDataRow<Integer>>>,
@@ -444,66 +430,12 @@ public class TestService implements
 
     public TestForm getScreen(TestForm rpc) throws RPCException {
         rpc.xml = ServiceUtils.getXML(Constants.APP_ROOT + "/Forms/test.xsl");
-//        rpc.revisionMethods = TestRevisionMethodCacheHandler.getTestRevisionMethods();
-//        SessionManager.getSession()
-//                      .setAttribute("testRevisionMethodVersion",
-//                                    TestRevisionMethodCacheHandler.version);
-//        rpc.reflexFlags = TestReflexFlagCacheHandler.getTestReflexFlags();
-//        SessionManager.getSession()
-//                      .setAttribute("testReflexFlagVersion",
-//                                    TestReflexFlagCacheHandler.version);
-//        rpc.reportingMethods = TestReportingMethodCacheHandler.getTestReportingMethods();
-//        SessionManager.getSession()
-//                      .setAttribute("testReportingMethodVersion",
-//                                    TestReportingMethodCacheHandler.version);
-//        rpc.analyteTypes = TestAnalyteTypeCacheHandler.getTestAnalyteTypes();
-//        SessionManager.getSession()
-//                      .setAttribute("testAnalyteTypeVersion",
-//                                    TestAnalyteTypeCacheHandler.version);
-//        rpc.resultFlags = TestResultFlagsCacheHandler.getTestResultFlags();
-//        SessionManager.getSession()
-//                      .setAttribute("testResultFlagsVersion",
-//                                    TestResultFlagsCacheHandler.version);
-//        rpc.resultTypes = TestResultTypeCacheHandler.getTestResultTypes();
-//        SessionManager.getSession()
-//                      .setAttribute("testResultTypeVersion",
-//                                    TestResultTypeCacheHandler.version);
-//        rpc.roundingMethods = RoundingMethodCacheHandler.getRoundingMethods();
-//        SessionManager.getSession()
-//                      .setAttribute("roundingMethodVersion",
-//                                    RoundingMethodCacheHandler.version);
-//        rpc.units = UnitOfMeasureCacheHandler.getUnitsOfMeasure();
-//        SessionManager.getSession()
-//                      .setAttribute("unitOfMeasureVersion",
-//                                    UnitOfMeasureCacheHandler.version);
-//        rpc.sampleTypes = SampleTypeCacheHandler.getSampleTypes();
-//        SessionManager.getSession()
-//                      .setAttribute("sampleTypeVersion",
-//                                    SampleTypeCacheHandler.version);
-//        rpc.sectionFlags = TestSectionFlagsCacheHandler.getTestSections();
-//        SessionManager.getSession()
-//                      .setAttribute("testSectionFlagVersion",
-//                                    TestSectionFlagsCacheHandler.version);
-//        rpc.testFormats = TestFormatCacheHandler.getTestFormats();
-//        SessionManager.getSession()
-//                      .setAttribute("testFormatVersion",
-//                                    TestFormatCacheHandler.version);
-//        rpc.sortingMethods = TestSortingMethodCacheHandler.getTestSortingMethods();
-//        SessionManager.getSession()
-//                      .setAttribute("testSortingMethodVersion",
-//                                    TestSortingMethodCacheHandler.version);
-//        rpc.wsAnalyteFlags = TestWorksheetAnalyteFlagsCacheHandler.getTestWorksheetAnalyteFlags();
-//        SessionManager.getSession()
-//                      .setAttribute("testWorksheetAnalyteFlagsVersion",
-//                                    TestWorksheetAnalyteFlagsCacheHandler.version);
+
         rpc.wsItemTypes = TestWorksheetItemTypeCacheHandler.getTestWorksheetItemTypes();
         SessionManager.getSession()
                       .setAttribute("testWorksheetItemTypeVersion",
                                     TestWorksheetItemTypeCacheHandler.version);
-//        rpc.wsFormats = TestWorksheetFormatCacheHandler.getTestWorksheetFormats();
-//        SessionManager.getSession()
-//                      .setAttribute("testWorksheetFormatVersion",
-//                                    TestWorksheetFormatCacheHandler.version);
+
         rpc.labels = getInitialModel(TestMeta.getLabelId());
         rpc.scriptlets = getInitialModel(TestMeta.getScriptletId());
         rpc.trailers = getInitialModel(TestMeta.getTestTrailerId());
