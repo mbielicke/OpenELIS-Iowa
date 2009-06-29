@@ -29,34 +29,20 @@ import org.openelis.gwt.screen.AppModule;
 import org.openelis.gwt.screen.ClassFactory;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.RunAsyncCallback;
-
 public class PanelEntry implements AppModule {
-
     public String getModuleName() {        
         return "Panel";
     }
 
     public void onModuleLoad() {
         OpenELIS.modules.add(getModuleName());
-
-        ClassFactory.addScreen("PanelScreen", 
-                new ClassFactory.ShowScreen() {
-                    public void showScreen(Object[] args) {
-                 	   GWT.runAsync(new RunAsyncCallback() {
-                 		   public void onSuccess() {
-                 			   OpenELIS.browser.addScreen(new PanelScreen());
-                 		   }
-                 		   
-                 		   public void onFailure(Throwable caught) {
-                 			   
-                 		   }
-                 	   }); 
-                        
-                    }
-                 }
-);
+        ClassFactory.addClassFactory(new String[] {"PanelScreen"}, 
+                              new ClassFactory.Factory() {
+                                  public Object newInstance(Object[] args) {
+                                      return new PanelScreen();
+                                  }
+           }
+       );
 
     }
 

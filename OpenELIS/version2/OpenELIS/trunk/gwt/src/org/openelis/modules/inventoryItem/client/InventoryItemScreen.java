@@ -25,16 +25,20 @@
 */
 package org.openelis.modules.inventoryItem.client;
 
+import java.util.ArrayList;
+
+import org.openelis.cache.DictionaryCache;
+import org.openelis.domain.DictionaryDO;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.Query;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.common.data.QueryStringField;
+import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.common.data.TableDataModel;
 import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.screen.CommandChain;
 import org.openelis.gwt.screen.ScreenCheck;
-import org.openelis.gwt.screen.ScreenMenuPanel;
 import org.openelis.gwt.screen.ScreenTabPanel;
 import org.openelis.gwt.screen.ScreenTextArea;
 import org.openelis.gwt.screen.ScreenTextBox;
@@ -60,6 +64,7 @@ import org.openelis.modules.standardnotepicker.client.StandardNotePickerScreen;
 
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.SyncCallback;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.PopupPanel;
@@ -88,27 +93,6 @@ public class InventoryItemScreen extends OpenELISScreenForm<InventoryItemForm, Q
     private ScreenVertical   svp;
 	
     private InventoryItemMetaMap InvItemMeta = new InventoryItemMetaMap();
-    
-    AsyncCallback<InventoryItemForm> checkModels = new AsyncCallback<InventoryItemForm>() {
-        public void onSuccess(InventoryItemForm rpc) {
-            if(rpc.categories != null) {
-                setCategoriesModel(rpc.categories);
-                rpc.categories = null;
-            }
-            if(rpc.dispensedUnits != null) {
-                setDispensedUnitsModel(rpc.dispensedUnits);
-                rpc.dispensedUnits = null;
-            }
-            if(rpc.stores != null) {
-                setStoresModel(rpc.stores);
-                rpc.stores = null;
-            }
-        }
-        
-        public void onFailure(Throwable caught) {
-            
-        }
-    };
     
 	public InventoryItemScreen() {
 	    super("org.openelis.modules.inventoryItem.server.InventoryItemService");
@@ -184,30 +168,25 @@ public class InventoryItemScreen extends OpenELISScreenForm<InventoryItemForm, Q
         category = (Dropdown)getWidget(InvItemMeta.getCategoryId());
         dispensedUnit =(Dropdown)getWidget(InvItemMeta.getDispensedUnitsId());
         
-        setStoresModel(form.stores);
-        setCategoriesModel(form.categories);
-        setDispensedUnitsModel(form.dispensedUnits);
-        
-        /*
-         * Null out the rpc models so they are not sent with future rpc calls
-         */
-        form.stores = null;
-        form.categories = null;
-        form.dispensedUnits = null;
-        
         commitAddChain.add(afterCommitAdd);
         commitUpdateChain.add(afterCommitUpdate);
-        
-        updateChain.add(0,checkModels);
         updateChain.add(afterUpdate);
-        fetchChain.add(0,checkModels);
-        //fetchChain.add(afterFetch);
-        abortChain.add(0,checkModels);
-        deleteChain.add(0,checkModels);
-        commitUpdateChain.add(0,checkModels);
-        commitAddChain.add(0,checkModels);
         
-		super.afterDraw(success);			
+		super.afterDraw(success);
+		
+		ArrayList cache;
+        TableDataModel<TableDataRow> model;
+        cache = DictionaryCache.getListByCategorySystemName("inventory_item_categories");
+        model = getDictionaryIdEntryList(cache);
+        category.setModel(model);
+        
+        cache = DictionaryCache.getListByCategorySystemName("inventory_item_stores");
+        model = getDictionaryIdEntryList(cache);
+        store.setModel(model);
+        
+        cache = DictionaryCache.getListByCategorySystemName("inventory_item_units");
+        model = getDictionaryIdEntryList(cache);
+        dispensedUnit.setModel(model);
 	}
     
     public void add() {
@@ -218,7 +197,7 @@ public class InventoryItemScreen extends OpenELISScreenForm<InventoryItemForm, Q
         ((CheckBox)isActive.getWidget()).setState(CheckBox.CHECKED);
 	}
 	
-	protected AsyncCallback afterUpdate = new AsyncCallback() {
+	protected SyncCallback afterUpdate = new SyncCallback() {
          public void onSuccess(Object result) {
             nameTextbox.setFocus(true);
 			idTextBox.enable(false);
@@ -229,20 +208,7 @@ public class InventoryItemScreen extends OpenELISScreenForm<InventoryItemForm, Q
              
          }
       };
-
-      /*
-      protected AsyncCallback afterFetch = new AsyncCallback() {
-          public void onSuccess(Object result) {
-              //we need to load the manufacturing tab
-              manufacturingText.setHTML(form.manufacturingText.getValue());
-          }
-          
-          public void onFailure(Throwable caught){
-              
-          }
-       };
-       */
-      
+   
 	public void query() {
 		super.query();
         //
@@ -260,7 +226,7 @@ public class InventoryItemScreen extends OpenELISScreenForm<InventoryItemForm, Q
         componentsTable.model.enableAutoAdd(false);
 	}
 	
-	protected AsyncCallback afterCommitUpdate = new AsyncCallback() {
+	protected SyncCallback afterCommitUpdate = new SyncCallback() {
           public void onSuccess(Object result){
               componentsTable.model.enableAutoAdd(false);
           }
@@ -270,7 +236,7 @@ public class InventoryItemScreen extends OpenELISScreenForm<InventoryItemForm, Q
           }
     };
 	
-	protected AsyncCallback afterCommitAdd = new AsyncCallback() {
+	protected SyncCallback afterCommitAdd = new SyncCallback() {
         public void onFailure(Throwable caught) {
             
         }
@@ -549,16 +515,21 @@ public class InventoryItemScreen extends OpenELISScreenForm<InventoryItemForm, Q
             }
         });
     }
-
-    public void setCategoriesModel(TableDataModel<TableDataRow<Integer>> categoriesModel) {
-        category.setModel(categoriesModel);
-    }
     
-    public void setDispensedUnitsModel(TableDataModel<TableDataRow<Integer>> dispensedUnitsModel) {
-        dispensedUnit.setModel(dispensedUnitsModel);
-    }
-    
-    public void setStoresModel(TableDataModel<TableDataRow<Integer>> storesModel) {
-        store.setModel(storesModel);
+    private TableDataModel<TableDataRow> getDictionaryIdEntryList(ArrayList list){
+        if(list == null)
+            return null;
+        
+        TableDataModel<TableDataRow> m = new TableDataModel<TableDataRow>();
+        
+        for(int i=0; i<list.size(); i++){
+            TableDataRow<Integer> row = new TableDataRow<Integer>(1);
+            DictionaryDO dictDO = (DictionaryDO)list.get(i);
+            row.key = dictDO.getId();
+            row.cells[0] = new StringObject(dictDO.getEntry());
+            m.add(row);
+        }
+        
+        return m;
     }
 }

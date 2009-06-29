@@ -69,9 +69,6 @@ import org.openelis.modules.inventoryItem.client.InventoryManufacturingForm;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.InventoryItemRemote;
 import org.openelis.server.constants.Constants;
-import org.openelis.server.handlers.InventoryItemCategoriesCacheHandler;
-import org.openelis.server.handlers.InventoryItemDispensedUnitsCacheHandler;
-import org.openelis.server.handlers.InventoryItemStoresCacheHandler;
 import org.openelis.util.Datetime;
 import org.openelis.util.FormUtil;
 import org.openelis.util.SessionManager;
@@ -297,11 +294,6 @@ public class InventoryItemService implements AppScreenFormServiceInt<InventoryIt
     }
 
     public InventoryItemForm fetch(InventoryItemForm rpc) throws RPCException {
-        /*
-         * Call checkModels to make screen has most recent versions of dropdowns
-         */
-        checkModels(rpc);
-        
         //remote interface to call the inventory bean
         InventoryItemRemote remote = (InventoryItemRemote)EJBFactory.lookup("openelis/InventoryItemBean/remote");
         
@@ -331,11 +323,6 @@ public class InventoryItemService implements AppScreenFormServiceInt<InventoryIt
     }
 
     public InventoryItemForm fetchForUpdate(InventoryItemForm rpc) throws RPCException {
-        /*
-         * Call checkModels to make screen has most recent versions of dropdowns
-         */
-        checkModels(rpc);
-        
         //remote interface to call the inventory bean
         InventoryItemRemote remote = (InventoryItemRemote)EJBFactory.lookup("openelis/InventoryItemBean/remote");
         
@@ -441,41 +428,8 @@ public class InventoryItemService implements AppScreenFormServiceInt<InventoryIt
     
     public InventoryItemForm getScreen(InventoryItemForm rpc) throws RPCException {
         rpc.xml = ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/inventoryItem.xsl");
-        /*
-         * Load initial  models to RPC and store cache verison of models into Session for 
-         * comparisons for later fetches
-         */
-        rpc.categories = InventoryItemCategoriesCacheHandler.getCategories();
-        SessionManager.getSession().setAttribute("invItemCategoriesVersion",InventoryItemCategoriesCacheHandler.version);
-        rpc.dispensedUnits = InventoryItemDispensedUnitsCacheHandler.getDispensedUnits();
-        SessionManager.getSession().setAttribute("invItemDispensedUnitsVersion",InventoryItemDispensedUnitsCacheHandler.version);
-        rpc.stores = InventoryItemStoresCacheHandler.getStores();
-        SessionManager.getSession().setAttribute("invItemStoresVersion",InventoryItemStoresCacheHandler.version);
+        
         return rpc;
-    }
-    
-    public void checkModels(InventoryItemForm rpc) {
-        /*
-         * Retrieve current version of models from session.
-         */
-        int categories = (Integer)SessionManager.getSession().getAttribute("invItemCategoriesVersion");
-        int dispensedUnits = (Integer)SessionManager.getSession().getAttribute("invItemDispensedUnitsVersion");
-        int stores = (Integer)SessionManager.getSession().getAttribute("invItemStoresVersion");
-        /*
-         * Compare stored version to current cache versions and update if necessary. 
-         */
-        if(categories != InventoryItemCategoriesCacheHandler.version){
-            rpc.categories = InventoryItemCategoriesCacheHandler.getCategories();
-            SessionManager.getSession().setAttribute("invItemCategoriesVersion", InventoryItemCategoriesCacheHandler.version);
-        }
-        if(dispensedUnits != InventoryItemDispensedUnitsCacheHandler.version){
-            rpc.dispensedUnits = InventoryItemDispensedUnitsCacheHandler.getDispensedUnits();
-            SessionManager.getSession().setAttribute("invItemDispensedUnitsVersion", InventoryItemDispensedUnitsCacheHandler.version);
-        }
-        if(stores != InventoryItemStoresCacheHandler.version){
-            rpc.stores = InventoryItemStoresCacheHandler.getStores();
-            SessionManager.getSession().setAttribute("invItemStoresVersion", InventoryItemStoresCacheHandler.version);
-        }
     }
     
     public TableField getComponentsModel(Integer itemId, boolean forDuplicate, TableField<TableDataRow<Integer>> model){

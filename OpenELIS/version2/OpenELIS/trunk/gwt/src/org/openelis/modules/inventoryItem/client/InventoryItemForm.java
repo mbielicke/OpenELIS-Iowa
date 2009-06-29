@@ -25,8 +25,6 @@
 */
 package org.openelis.modules.inventoryItem.client;
 
-import com.google.gwt.xml.client.Node;
-
 import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.CheckField;
@@ -34,9 +32,9 @@ import org.openelis.gwt.common.data.DoubleField;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.IntegerField;
 import org.openelis.gwt.common.data.StringField;
-import org.openelis.gwt.common.data.TableDataModel;
-import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.metamap.InventoryItemMetaMap;
+
+import com.google.gwt.xml.client.Node;
 
 public class InventoryItemForm extends Form<Integer> {
     private static final long serialVersionUID = 1L;
@@ -72,10 +70,6 @@ public class InventoryItemForm extends Form<Integer> {
     public InventoryManufacturingForm manufacturing;
     
     public String itemTabPanel = "componentsTab";
-    
-    public TableDataModel<TableDataRow<Integer>> stores;
-    public TableDataModel<TableDataRow<Integer>> categories;
-    public TableDataModel<TableDataRow<Integer>> dispensedUnits;
     
     public Integer componentId;
     public String descText;
