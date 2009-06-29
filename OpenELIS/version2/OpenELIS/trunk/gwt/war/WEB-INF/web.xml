@@ -34,7 +34,7 @@ UIRF Software License are applicable instead of those above.
         <filter-class>org.openelis.server.JUnitFilter</filter-class>
         <init-param>
             <param-name>AppRoot</param-name>
-            <param-value>/home/USERNAME/workspace/OpenELIS-GWT/war/openelis</param-value>
+            <param-value>/home/tbrady/workspace/OpenELIS-GWT/war/openelis</param-value>
         </init-param>
         <init-param>
             <param-name>User</param-name>
@@ -69,9 +69,15 @@ UIRF Software License are applicable instead of those above.
   </servlet>
   
   <servlet>
+    <servlet-name>ScreenCacheService</servlet-name>
+    <servlet-class>org.openelis.modules.main.server.ScreenCacheService</servlet-class>
+    <load-on-startup>4</load-on-startup>
+  </servlet>
+  
+  <servlet>
     <servlet-name>PreferencesServlet</servlet-name>
     <servlet-class>org.openelis.server.PreferencesServlet</servlet-class>
-    <load-on-startup>3</load-on-startup>
+    <load-on-startup>5</load-on-startup>
   </servlet>
   
   <servlet>
@@ -81,7 +87,7 @@ UIRF Software License are applicable instead of those above.
         <param-name>app.root</param-name>
         <param-value>war/openelis/</param-value>
     </init-param>
-    <load-on-startup>4</load-on-startup>
+    <load-on-startup>6</load-on-startup>
   </servlet>
   
 
@@ -93,6 +99,11 @@ UIRF Software License are applicable instead of those above.
   <servlet-mapping>
     <servlet-name>OpenELISScreenServlet</servlet-name>
     <url-pattern>/openelis/OpenELISScreenServlet</url-pattern>
+  </servlet-mapping>
+  
+  <servlet-mapping>
+    <servlet-name>ScreenCacheService</servlet-name>
+    <url-pattern>/openelis/ScreenCacheService</url-pattern>
   </servlet-mapping>
   
   <servlet-mapping>
@@ -113,9 +124,7 @@ UIRF Software License are applicable instead of those above.
   <error-page>
     <error-code>404</error-code>
     <location>/.no_file.html</location>
-  </error-page>     
- 
-
+  </error-page>  
   
   <resource-ref>
     <res-ref-name>openELISJNDI</res-ref-name>
