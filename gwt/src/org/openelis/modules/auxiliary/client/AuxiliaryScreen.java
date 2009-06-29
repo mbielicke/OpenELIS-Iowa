@@ -29,16 +29,18 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.openelis.cache.DictionaryCache;
+import org.openelis.domain.DictionaryDO;
 import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.Query;
 import org.openelis.gwt.common.data.DateField;
 import org.openelis.gwt.common.data.DropDownField;
+import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.common.data.QueryStringField;
 import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.common.data.TableDataModel;
 import org.openelis.gwt.common.data.TableDataRow;
-import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.screen.CommandChain;
 import org.openelis.gwt.screen.ScreenTableWidget;
 import org.openelis.gwt.screen.ScreenWindow;
@@ -59,7 +61,6 @@ import org.openelis.modules.dictionaryentrypicker.client.DictionaryEntryPickerSc
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.SyncCallback;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -85,29 +86,12 @@ public class AuxiliaryScreen extends OpenELISScreenForm<AuxiliaryForm, Query<Tab
     
     private ArrayList<TableDataRow<Integer>> selectedRows; 
     
-    private TableDataModel<TableDataRow<Integer>>         // the model that's used to represent the default structure of    
+    private TableDataModel<TableDataRow>         // the model that's used to represent the default structure of    
                                                                          // the data in auxFieldValueTableWidget
                                                   auxFieldValueTypeModel; // the model that acts as a reference to auxFieldValueTableWidget's
                                                                          // type dropdown's TableDataModel           
     private TextBox grpName;       
-    
-    AsyncCallback<AuxiliaryForm> checkModels = new AsyncCallback<AuxiliaryForm>() {     
-      public void onSuccess(AuxiliaryForm rpc) {
-            if(rpc.units != null) {
-                setUnitsOfMeasureModel(rpc.units);
-                rpc.units = null;
-            }
-            if(rpc.auxFieldValueTypes != null) {
-                setAuxFieldValueTypesModel(rpc.auxFieldValueTypes);
-                rpc.auxFieldValueTypes = null;
-            }
-      }
 
-        public void onFailure(Throwable caught) {
-            
-        }
-    };
-    
     public AuxiliaryScreen() {
         super("org.openelis.modules.auxiliary.server.AuxiliaryService");
         query = new Query<TableDataRow<Integer>>();
@@ -149,28 +133,25 @@ public class AuxiliaryScreen extends OpenELISScreenForm<AuxiliaryForm, Query<Tab
          
         grpName = (TextBox)getWidget(AuxFGMeta.getName());
          
-        auxFieldValueTypeModel = form.auxFieldValueTypes;
-            
-        setUnitsOfMeasureModel(form.units);
-        setAuxFieldValueTypesModel(form.auxFieldValueTypes);
-        setScriptletsModel(form.scriptlets);           
-        
-        form.units = null;
-        form.auxFieldValueTypes = null;
-        form.scriptlets = null;
-        
         updateChain.add(afterUpdate);
         commitUpdateChain.add(commitUpdateCallback);
         commitAddChain.add(commitAddCallback);
         
-        updateChain.add(0,checkModels);
-        fetchChain.add(0,checkModels);
-        abortChain.add(0,checkModels);
-        commitUpdateChain.add(0,checkModels);
-        commitAddChain.add(0,checkModels);                                     
+        super.afterDraw(success); 
         
-        super.afterDraw(success);                      
+        ArrayList cache;
+        TableDataModel<TableDataRow> model;
+        cache = DictionaryCache.getListByCategorySystemName("unit_of_measure");
+        model = getDictionaryIdEntryList(cache);
+        ((TableDropdown)auxFieldTableWidget.columns.get(2).getColumnWidget()).setModel(model);
         
+        cache = DictionaryCache.getListByCategorySystemName("aux_field_value_type");
+        model = getDictionaryIdEntryList(cache);
+        ((TableDropdown)auxFieldValueTableWidget.columns.get(0).getColumnWidget()).setModel(model);
+        auxFieldValueTypeModel = model;
+        
+        ((TableDropdown)auxFieldTableWidget.columns.get(7).getColumnWidget()).setModel(form.scriptlets);
+        form.scriptlets = null;
     }
     
     public void performCommand(Enum action, Object obj) {
@@ -219,7 +200,7 @@ public class AuxiliaryScreen extends OpenELISScreenForm<AuxiliaryForm, Query<Tab
         super.abort();                
     }
     
-    protected AsyncCallback afterUpdate = new AsyncCallback() {
+    protected SyncCallback afterUpdate = new SyncCallback() {
         public void onFailure(Throwable caught) {
             Window.alert(caught.getMessage());
         }
@@ -232,7 +213,7 @@ public class AuxiliaryScreen extends OpenELISScreenForm<AuxiliaryForm, Query<Tab
         }
     };  
     
-    protected AsyncCallback<AuxiliaryForm> commitUpdateCallback = new AsyncCallback<AuxiliaryForm>() {
+    protected SyncCallback<AuxiliaryForm> commitUpdateCallback = new SyncCallback<AuxiliaryForm>() {
         public void onSuccess(AuxiliaryForm result) {
             if (form.status == Form.Status.valid) {               
                 auxFieldValueTableWidget.model.enableAutoAdd(false); 
@@ -245,7 +226,7 @@ public class AuxiliaryScreen extends OpenELISScreenForm<AuxiliaryForm, Query<Tab
         }
     };
 
-    protected AsyncCallback<AuxiliaryForm> commitAddCallback = new AsyncCallback<AuxiliaryForm>() {
+    protected SyncCallback<AuxiliaryForm> commitAddCallback = new SyncCallback<AuxiliaryForm>() {
         public void onSuccess(AuxiliaryForm result) {
             if (form.status == Form.Status.valid) {               
                 auxFieldValueTableWidget.model.enableAutoAdd(false); 
@@ -397,18 +378,6 @@ public class AuxiliaryScreen extends OpenELISScreenForm<AuxiliaryForm, Query<Tab
              auxFieldTableWidget.model.refresh();
          }
      }
-    
-    private void setAuxFieldValueTypesModel(TableDataModel<TableDataRow<Integer>> auxFieldValueTypes) {
-        ((TableDropdown)auxFieldValueTableWidget.columns.get(0).getColumnWidget()).setModel(auxFieldValueTypes);
-    }
-
-    private void setUnitsOfMeasureModel(TableDataModel<TableDataRow<Integer>> units) {
-        ((TableDropdown)auxFieldTableWidget.columns.get(2).getColumnWidget()).setModel(units);
-    }
-    
-    private void setScriptletsModel(TableDataModel<TableDataRow<Integer>> scriptlets) {
-        ((TableDropdown)auxFieldTableWidget.columns.get(7).getColumnWidget()).setModel(scriptlets);
-    }
     
     private void onRemoveAuxFieldRowButtonClick() {
         if(auxFieldTableWidget.modelIndexList.length > 0) {
@@ -765,5 +734,22 @@ public class AuxiliaryScreen extends OpenELISScreenForm<AuxiliaryForm, Query<Tab
             }
         }
         return null;
+    }
+    
+    private TableDataModel<TableDataRow> getDictionaryIdEntryList(ArrayList list){
+        if(list == null)
+            return null;
+        
+        TableDataModel<TableDataRow> m = new TableDataModel<TableDataRow>();
+        
+        for(int i=0; i<list.size(); i++){
+            TableDataRow<Integer> row = new TableDataRow<Integer>(1);
+            DictionaryDO dictDO = (DictionaryDO)list.get(i);
+            row.key = dictDO.getId();
+            row.cells[0] = new StringObject(dictDO.getEntry());
+            m.add(row);
+        }
+        
+        return m;
     }
   }      

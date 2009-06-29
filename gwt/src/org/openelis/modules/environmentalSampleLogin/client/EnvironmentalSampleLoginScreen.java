@@ -28,6 +28,7 @@ package org.openelis.modules.environmentalSampleLogin.client;
 import java.util.ArrayList;
 
 import org.openelis.cache.DictionaryCache;
+import org.openelis.domain.DictionaryDO;
 import org.openelis.gwt.common.Query;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.KeyListManager;
@@ -67,6 +68,7 @@ import org.openelis.utilgwt.ProjectEntryManager;
 
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.SyncCallback;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.SourcesTabEvents;
@@ -99,36 +101,6 @@ public class EnvironmentalSampleLoginScreen extends OpenELISScreenForm<Environme
     private OrganizationEntryManager orgManager;
     
     private SampleEnvironmentalMetaMap Meta = new SampleEnvironmentalMetaMap();
-    
-    AsyncCallback<EnvironmentalSampleLoginForm> checkModels = new AsyncCallback<EnvironmentalSampleLoginForm>() {
-        public void onSuccess(EnvironmentalSampleLoginForm rpc) {
-            
-            if(rpc.analysisStatuses != null) {
-                setAnalysisStatusModel(rpc.analysisStatuses);
-                rpc.analysisStatuses = null;
-            }
-            if(rpc.sampleContainers != null) {
-                setSampleContainerModel(rpc.sampleContainers);
-                rpc.sampleContainers = null;
-            }
-            if(rpc.sampleStatuses != null) {
-                setSampleStatusModel(rpc.sampleStatuses);
-                rpc.sampleStatuses = null;
-            }
-            if(rpc.sampleTypes != null) {
-                setSampleTypeModel(rpc.sampleTypes);
-                rpc.sampleTypes = null;
-            }
-            if(rpc.units != null) {
-                setUnitModel(rpc.units);
-                rpc.units = null;
-            }
-        }
-        
-        public void onFailure(Throwable caught) {
-            
-        }
-    };
     
     public EnvironmentalSampleLoginScreen() {
         super("org.openelis.modules.environmentalSampleLogin.server.EnvironmentalSampleLoginService");
@@ -282,34 +254,37 @@ public class EnvironmentalSampleLoginScreen extends OpenELISScreenForm<Environme
         completedDate = (ScreenCalendar) widgets.get(Meta.SAMPLE.SAMPLE_ITEM.ANALYSIS.getCompletedDate());
         releasedDate = (ScreenCalendar) widgets.get(Meta.SAMPLE.SAMPLE_ITEM.ANALYSIS.getReleasedDate());
         printedDate = (ScreenCalendar) widgets.get(Meta.SAMPLE.SAMPLE_ITEM.ANALYSIS.getPrintedDate());
-        
-        setSampleTypeModel(form.sampleTypes);
-        setAnalysisStatusModel(form.analysisStatuses);
-        setSampleStatusModel(form.sampleStatuses);
-        setSampleContainerModel(form.sampleContainers);
-        setUnitModel(form.units);
-        
-        /*
-         * Null out the rpc models so they are not sent with future rpc calls
-         */
-        form.analysisStatuses = null;
-        form.sampleStatuses = null;
-        form.sampleTypes = null;
-        form.sampleContainers = null;
-        form.units = null;
-        
+    
         form.sampleItemAndAnalysisForm.itemsTestsTree.setValue(itemsTestsTree.model.getData());
         
-        updateChain.add(0,checkModels);
         updateChain.add(afterFetch);
-        fetchChain.add(0,checkModels);
         fetchChain.add(afterFetch);
-        abortChain.add(0,checkModels);
-        deleteChain.add(0,checkModels);
-        commitUpdateChain.add(0,checkModels);
-        commitAddChain.add(0,checkModels);
         
         super.afterDraw(sucess);
+        
+        ArrayList cache;
+        TableDataModel<TableDataRow> model;
+        cache = DictionaryCache.getListByCategorySystemName("type_of_sample");
+        model = getDictionaryIdEntryList(cache);
+        ((Dropdown)sampleType.getWidget()).setModel(model);
+        
+        cache = DictionaryCache.getListByCategorySystemName("analysis_status");
+        model = getDictionaryIdEntryList(cache);
+        ((TableDropdown)itemsTestsTree.columns.get(1).getColumnWidget("analysis")).setModel(model);
+        ((Dropdown)analysisStatus.getWidget()).setModel(model);
+        
+        cache = DictionaryCache.getListByCategorySystemName("sample_status");
+        model = getDictionaryIdEntryList(cache);
+        ((Dropdown)sampleStatus.getWidget()).setModel(model);
+        
+        cache = DictionaryCache.getListByCategorySystemName("sample_container");
+        model = getDictionaryIdEntryList(cache);
+        ((Dropdown)container.getWidget()).setModel(model);
+        
+        cache = DictionaryCache.getListByCategorySystemName("unit_of_measure");
+        model = getDictionaryIdEntryList(cache);
+        ((Dropdown)unit.getWidget()).setModel(model);
+        
     }
     
     public void add() {
@@ -328,7 +303,7 @@ public class EnvironmentalSampleLoginScreen extends OpenELISScreenForm<Environme
         addTestButton.changeState(ButtonState.DISABLED);
     }
     
-    protected AsyncCallback<EnvironmentalSampleLoginForm> afterFetch = new AsyncCallback<EnvironmentalSampleLoginForm>() {
+    protected SyncCallback<EnvironmentalSampleLoginForm> afterFetch = new SyncCallback<EnvironmentalSampleLoginForm>() {
         public void onFailure(Throwable caught) {   
         }
         public void onSuccess(EnvironmentalSampleLoginForm result) {
@@ -466,27 +441,6 @@ public class EnvironmentalSampleLoginScreen extends OpenELISScreenForm<Environme
     //
     //end table manager methods
     //
-    
-    public void setAnalysisStatusModel(TableDataModel<TableDataRow<Integer>> analysisStatusesModel) {
-        ((TableDropdown)itemsTestsTree.columns.get(1).getColumnWidget("analysis")).setModel(analysisStatusesModel);
-        ((Dropdown)analysisStatus.getWidget()).setModel(analysisStatusesModel);
-    }
-    
-    public void setSampleContainerModel(TableDataModel<TableDataRow<Integer>> containersModel) {
-        ((Dropdown)container.getWidget()).setModel(containersModel);
-    }
-    
-    public void setSampleStatusModel(TableDataModel<TableDataRow<Integer>> statusesModel) {
-        ((Dropdown)sampleStatus.getWidget()).setModel(statusesModel);
-    }
-    
-    public void setSampleTypeModel(TableDataModel<TableDataRow<Integer>> typesModel) {
-        ((Dropdown)sampleType.getWidget()).setModel(typesModel);
-    }
-    
-    public void setUnitModel(TableDataModel<TableDataRow<Integer>> unitsModel) {
-        ((Dropdown)unit.getWidget()).setModel(unitsModel);
-    }
 
     /*
     public void getChildNodes(final TreeModel model, final int row) {
@@ -849,5 +803,22 @@ public class EnvironmentalSampleLoginScreen extends OpenELISScreenForm<Environme
     
     private void enableStorageTab(boolean enable){
         //FIXME add this code when we have widgets on that tab
+    }
+    
+    private TableDataModel<TableDataRow> getDictionaryIdEntryList(ArrayList list){
+        if(list == null)
+            return null;
+        
+        TableDataModel<TableDataRow> m = new TableDataModel<TableDataRow>();
+        
+        for(int i=0; i<list.size(); i++){
+            TableDataRow<Integer> row = new TableDataRow<Integer>(1);
+            DictionaryDO dictDO = (DictionaryDO)list.get(i);
+            row.key = dictDO.getId();
+            row.cells[0] = new StringObject(dictDO.getEntry());
+            m.add(row);
+        }
+        
+        return m;
     }
 }

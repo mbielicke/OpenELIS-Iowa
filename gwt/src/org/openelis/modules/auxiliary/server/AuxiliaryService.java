@@ -45,13 +45,13 @@ import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.AbstractField;
-import org.openelis.gwt.common.data.TableDataModel;
-import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.FieldType;
 import org.openelis.gwt.common.data.IntegerField;
 import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.StringObject;
+import org.openelis.gwt.common.data.TableDataModel;
+import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.common.data.TableField;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
@@ -62,8 +62,6 @@ import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.AuxiliaryRemote;
 import org.openelis.remote.CategoryRemote;
 import org.openelis.server.constants.Constants;
-import org.openelis.server.handlers.AuxFieldValueTypeCacheHandler;
-import org.openelis.server.handlers.UnitOfMeasureCacheHandler;
 import org.openelis.util.Datetime;
 import org.openelis.util.FormUtil;
 import org.openelis.util.SessionManager;
@@ -188,47 +186,15 @@ public class AuxiliaryService implements
     }       
     
     public AuxiliaryForm getScreen(AuxiliaryForm rpc) throws RPCException {
-        try {
-         AuxiliaryRemote remote = (AuxiliaryRemote)EJBFactory.lookup("openelis/AuxiliaryBean/remote");
-         List<IdNameDO> scriptletList = remote.getScriptletDropDownValues();   
+        AuxiliaryRemote remote = (AuxiliaryRemote)EJBFactory.lookup("openelis/AuxiliaryBean/remote");
+        List<IdNameDO> scriptletList = remote.getScriptletDropDownValues();   
          
-         rpc.xml = ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/auxiliary.xsl");         
+        rpc.xml = ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/auxiliary.xsl");         
+        rpc.scriptlets = loadDropDown(scriptletList);
          
-         rpc.units = UnitOfMeasureCacheHandler.getUnitsOfMeasure();
-         SessionManager.getSession().setAttribute("unitsOfMeasureVersion", UnitOfMeasureCacheHandler.version);
-         rpc.auxFieldValueTypes = AuxFieldValueTypeCacheHandler.getAuxFieldValueTypes();
-         SessionManager.getSession().setAttribute("auxFieldValueTypesVersion", AuxFieldValueTypeCacheHandler.version);         
-         rpc.scriptlets = loadDropDown(scriptletList);
-        }catch(Exception ex) {
-            ex.printStackTrace();
-            throw new RPCException(ex.getMessage());
-        } 
         return rpc;
     }
     
-    public void checkModels(AuxiliaryForm rpc) {
-        
-        AuxiliaryRemote remote = (AuxiliaryRemote)EJBFactory.lookup("openelis/AuxiliaryBean/remote");
-        List<IdNameDO> scriptletList = remote.getScriptletDropDownValues();
-        /*
-         * Retrieve current version of models from session.
-         */
-        int units = (Integer)SessionManager.getSession().getAttribute("unitsOfMeasureVersion");        
-        int auxFieldValueTypes = (Integer)SessionManager.getSession().getAttribute("auxFieldValueTypesVersion");
-        /*
-         * Compare stored version to current cache versions and update if necessary. 
-         */
-        if(units != UnitOfMeasureCacheHandler.version){
-            rpc.units = UnitOfMeasureCacheHandler.getUnitsOfMeasure();
-            SessionManager.getSession().setAttribute("unitsOfMeasureVersion", UnitOfMeasureCacheHandler.version);
-        }
-        if(auxFieldValueTypes != AuxFieldValueTypeCacheHandler.version){
-            rpc.auxFieldValueTypes = AuxFieldValueTypeCacheHandler.getAuxFieldValueTypes();
-            SessionManager.getSession().setAttribute("auxFieldValueTypesVersion", AuxFieldValueTypeCacheHandler.version);
-        }
-        rpc.scriptlets = loadDropDown(scriptletList);
-    }
-
     public HashMap<String, FieldType> getXMLData() throws RPCException {
         StringObject xml = new StringObject();
         xml.setValue(ServiceUtils.getXML(Constants.APP_ROOT + "/Forms/auxiliary.xsl"));       

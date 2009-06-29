@@ -30,33 +30,20 @@ import org.openelis.gwt.screen.AppModule;
 import org.openelis.gwt.screen.ClassFactory;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.RunAsyncCallback;
-
 public class AuxiliaryEntry implements AppModule {
-
     public String getModuleName() {
         return "Auxiliary";
     }
 
     public void onModuleLoad() {
         OpenELIS.modules.add(getModuleName());
-        ClassFactory.addScreen("AuxiliaryScreen", 
-                new ClassFactory.ShowScreen() {
-                    public void showScreen(Object[] args) {
-                 	   GWT.runAsync(new RunAsyncCallback() {
-                 		   public void onSuccess() {
-                 			   OpenELIS.browser.addScreen(new AuxiliaryScreen());
-                 		   }
-                 		   
-                 		   public void onFailure(Throwable caught) {
-                 			   
-                 		   }
-                 	   }); 
-                        
-                    }
-                 }
-);
+        ClassFactory.addClassFactory(new String[] {"AuxiliaryScreen"}, 
+                              new ClassFactory.Factory() {
+                                  public Object newInstance(Object[] args) {
+                                      return new AuxiliaryScreen();
+                                  }
+           }
+       );
 
     }
 

@@ -33,7 +33,6 @@ import java.util.List;
 import org.openelis.domain.AddressDO;
 import org.openelis.domain.AnalysisTestDO;
 import org.openelis.domain.IdNameDO;
-import org.openelis.domain.OrganizationAutoDO;
 import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleEnvironmentalDO;
 import org.openelis.domain.SampleItemDO;
@@ -45,8 +44,6 @@ import org.openelis.gwt.common.DatetimeRPC;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.Query;
 import org.openelis.gwt.common.RPCException;
-import org.openelis.gwt.common.data.CheckField;
-import org.openelis.gwt.common.data.DateField;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.FieldType;
 import org.openelis.gwt.common.data.IntegerField;
@@ -60,7 +57,6 @@ import org.openelis.gwt.common.data.TreeDataModel;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
 import org.openelis.gwt.services.AutoCompleteServiceInt;
-import org.openelis.gwt.widget.table.TableModel;
 import org.openelis.manager.AnalysesManager;
 import org.openelis.manager.SampleEnvironmentalManager;
 import org.openelis.manager.SampleItemsManager;
@@ -75,21 +71,11 @@ import org.openelis.modules.environmentalSampleLogin.client.SampleItemAndAnalysi
 import org.openelis.modules.environmentalSampleLogin.client.SampleItemForm;
 import org.openelis.modules.environmentalSampleLogin.client.SampleLocationForm;
 import org.openelis.modules.environmentalSampleLogin.client.SampleOrgProjectForm;
-import org.openelis.modules.environmentalSampleLogin.client.SampleTreeForm;
-import org.openelis.modules.environmentalSampleLogin.client.TreeDataItemSampleItem;
-import org.openelis.modules.environmentalSampleLogin.client.TreeDataItemTest;
-import org.openelis.modules.organization.client.NotesForm;
 import org.openelis.persistence.EJBFactory;
-import org.openelis.remote.OrganizationRemote;
 import org.openelis.remote.SampleEnvironmentalRemote;
 import org.openelis.remote.SectionRemote;
 import org.openelis.remote.TestRemote;
 import org.openelis.server.constants.Constants;
-import org.openelis.server.handlers.AnalysisStatusCacheHandler;
-import org.openelis.server.handlers.SampleContainerCacheHandler;
-import org.openelis.server.handlers.SampleStatusCacheHandler;
-import org.openelis.server.handlers.SampleTypeCacheHandler;
-import org.openelis.server.handlers.UnitOfMeasureCacheHandler;
 import org.openelis.util.Datetime;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
@@ -194,11 +180,6 @@ public class EnvironmentalSampleLoginService implements AppScreenFormServiceInt<
     }
 
     public EnvironmentalSampleLoginForm fetch(EnvironmentalSampleLoginForm rpc) throws RPCException {
-        /*
-         * Call checkModels to make screen has most recent versions of dropdowns
-         */
-        checkModels(rpc);
-        
         SampleManager manager = SampleManager.findById(rpc.entityKey);
         SampleDO sampleDO = manager.getSample();
         
@@ -214,11 +195,6 @@ public class EnvironmentalSampleLoginService implements AppScreenFormServiceInt<
     }
 
     public EnvironmentalSampleLoginForm fetchForUpdate(EnvironmentalSampleLoginForm rpc) throws RPCException {
-        /*
-         * Call checkModels to make screen has most recent versions of dropdowns
-         */
-        checkModels(rpc);
-        
         //get the current manager in the session
         SampleManager manager = (SampleManager)SessionManager.getSession().getAttribute("envScreenSampleManager");
         
@@ -268,57 +244,7 @@ public class EnvironmentalSampleLoginService implements AppScreenFormServiceInt<
     public EnvironmentalSampleLoginForm getScreen(EnvironmentalSampleLoginForm rpc) throws RPCException {
         rpc.xml = ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/environmentalSampleLogin.xsl");
         
-        /*
-         * Load initial  models to RPC and store cache verison of models into Session for 
-         * comparisons for later fetches
-         */
-        rpc.analysisStatuses = AnalysisStatusCacheHandler.getAnalysisStatuses();
-        SessionManager.getSession().setAttribute("analysisStatusesVersion",AnalysisStatusCacheHandler.version);
-        rpc.sampleContainers = SampleContainerCacheHandler.getSampleContainers();
-        SessionManager.getSession().setAttribute("sampleContainerVersion",SampleContainerCacheHandler.version);
-        rpc.sampleTypes = SampleTypeCacheHandler.getSampleTypes();
-        SessionManager.getSession().setAttribute("sampleTypeVersion",SampleTypeCacheHandler.version);
-        rpc.sampleStatuses = SampleStatusCacheHandler.getSampleStatuses();
-        SessionManager.getSession().setAttribute("sampleStatusVersion",SampleStatusCacheHandler.version);
-        rpc.units = UnitOfMeasureCacheHandler.getUnitsOfMeasure();
-        SessionManager.getSession().setAttribute("unitsOfMeasureVersion",UnitOfMeasureCacheHandler.version);
-        
         return rpc;
-    }
-    
-    public void checkModels(EnvironmentalSampleLoginForm rpc) {
-        /*
-         * Retrieve current version of models from session.
-         */
-        int analysisStatuses = (Integer)SessionManager.getSession().getAttribute("analysisStatusesVersion");
-        int sampleContainers = (Integer)SessionManager.getSession().getAttribute("sampleContainerVersion");
-        int sampleStatuses = (Integer)SessionManager.getSession().getAttribute("sampleStatusVersion");
-        int sampleTypes = (Integer)SessionManager.getSession().getAttribute("sampleTypeVersion");
-        int units = (Integer)SessionManager.getSession().getAttribute("unitsOfMeasureVersion");        
-        
-        /*
-         * Compare stored version to current cache versions and update if necessary. 
-         */
-        if(analysisStatuses != AnalysisStatusCacheHandler.version){
-            rpc.analysisStatuses = AnalysisStatusCacheHandler.getAnalysisStatuses();
-            SessionManager.getSession().setAttribute("analysisStatusesVersion",AnalysisStatusCacheHandler.version);
-        }
-        if(sampleContainers != SampleContainerCacheHandler.version){
-            rpc.sampleContainers = SampleContainerCacheHandler.getSampleContainers();
-            SessionManager.getSession().setAttribute("sampleContainerVersion",SampleContainerCacheHandler.version);
-        }
-        if(sampleStatuses != SampleStatusCacheHandler.version){
-            rpc.sampleStatuses = SampleStatusCacheHandler.getSampleStatuses();
-            SessionManager.getSession().setAttribute("sampleStatusVersion",SampleStatusCacheHandler.version);
-        }
-        if(sampleTypes != SampleTypeCacheHandler.version){
-            rpc.sampleTypes = SampleTypeCacheHandler.getSampleTypes();
-            SessionManager.getSession().setAttribute("sampleTypeVersion",SampleTypeCacheHandler.version);
-        }
-        if(units != UnitOfMeasureCacheHandler.version){
-            rpc.units = UnitOfMeasureCacheHandler.getUnitsOfMeasure();
-            SessionManager.getSession().setAttribute("unitsOfMeasureVersion",UnitOfMeasureCacheHandler.version);
-        }
     }
     
     private void setFieldsInRPC(EnvironmentalSampleLoginForm form, SampleDO sampleDO){
