@@ -49,8 +49,6 @@ public class InventoryAdjustmentForm extends Form<Integer>{
     public TableField<TableDataRow<Integer>> adjustmentsTable;
     public Integer systemUserId;
     
-    public TableDataModel<TableDataRow<Integer>> stores;
-    
     public Integer storeIdKey;
     public Integer locId;
     public TableDataModel<TableDataRow<Integer>> invItemModel;

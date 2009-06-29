@@ -27,6 +27,8 @@ package org.openelis.modules.inventoryAdjustment.client;
 
 import java.util.ArrayList;
 
+import org.openelis.cache.DictionaryCache;
+import org.openelis.domain.DictionaryDO;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.Query;
 import org.openelis.gwt.common.data.DropDownField;
@@ -58,6 +60,7 @@ import org.openelis.modules.main.client.OpenELISScreenForm;
 
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.SyncCallback;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -74,20 +77,6 @@ public class InventoryAdjustmentScreen extends OpenELISScreenForm<InventoryAdjus
     
     private InventoryAdjustmentMetaMap InventoryAdjustmentMeta = new InventoryAdjustmentMetaMap();
     private static String storeIdKey;
-    
-    
-    AsyncCallback<InventoryAdjustmentForm> checkModels = new AsyncCallback<InventoryAdjustmentForm>() {
-        public void onSuccess(InventoryAdjustmentForm rpc) {
-            if(rpc.stores != null) {
-                setStoresModel(rpc.stores);
-                rpc.stores = null;
-            }
-        }
-        
-        public void onFailure(Throwable caught) {
-            
-        }
-    };
     
     public InventoryAdjustmentScreen() {
         super("org.openelis.modules.inventoryAdjustment.server.InventoryAdjustmentService");
@@ -121,21 +110,17 @@ public class InventoryAdjustmentScreen extends OpenELISScreenForm<InventoryAdjus
         chain.addCommand(keyList);
         chain.addCommand(bpanel);
         
-        setStoresModel(form.stores);
-        form.stores = null;
-        
         updateChain.add(afterUpdate);
         commitAddChain.add(afterCommitAdd);
         commitUpdateChain.add(afterCommitUpdate);
         
-        updateChain.add(0,checkModels);
-        fetchChain.add(0,checkModels);
-        abortChain.add(0,checkModels);
-        deleteChain.add(0,checkModels);
-        commitUpdateChain.add(0,checkModels);
-        commitAddChain.add(0,checkModels);
-        
         super.afterDraw(sucess);
+        
+        ArrayList cache;
+        TableDataModel<TableDataRow> model;
+        cache = DictionaryCache.getListByCategorySystemName("inventory_item_stores");
+        model = getDictionaryIdEntryList(cache);
+        store.setModel(model);
     }
     
     public void add() {
@@ -174,7 +159,7 @@ public class InventoryAdjustmentScreen extends OpenELISScreenForm<InventoryAdjus
         }); 
     }
     
-    protected AsyncCallback afterUpdate = new AsyncCallback() {
+    protected SyncCallback afterUpdate = new SyncCallback() {
         public void onSuccess(Object result){
             idText.enable(false);
             adjustmentDateText.enable(false);
@@ -222,7 +207,7 @@ public class InventoryAdjustmentScreen extends OpenELISScreenForm<InventoryAdjus
         idText.setFocus(true);
     }
     
-    protected AsyncCallback afterCommitUpdate = new AsyncCallback() {
+    protected SyncCallback afterCommitUpdate = new SyncCallback() {
         public void onSuccess(Object result){
             adjustmentsTable.model.enableAutoAdd(false);
         }
@@ -232,7 +217,7 @@ public class InventoryAdjustmentScreen extends OpenELISScreenForm<InventoryAdjus
         }
   };
     
-    protected AsyncCallback afterCommitAdd = new AsyncCallback() {
+    protected SyncCallback afterCommitAdd = new SyncCallback() {
       public void onFailure(Throwable caught) {
           
       }
@@ -485,10 +470,6 @@ public class InventoryAdjustmentScreen extends OpenELISScreenForm<InventoryAdjus
         });        
     }
     
-    public void setStoresModel(TableDataModel<TableDataRow<Integer>> storesModel) {
-        store.setModel(storesModel);
-    }
-    
     private TableDataModel<TableDataRow<Integer>> getLockedSetsFromTable(){
         TableDataModel<TableDataRow<Integer>> returnModel = new TableDataModel<TableDataRow<Integer>>();
 
@@ -496,5 +477,22 @@ public class InventoryAdjustmentScreen extends OpenELISScreenForm<InventoryAdjus
             returnModel.add(new TableDataRow<Integer>((Integer)adjustmentsTable.model.getCell(i, 0)));
             
         return returnModel;
+    }
+    
+    private TableDataModel<TableDataRow> getDictionaryIdEntryList(ArrayList list){
+        if(list == null)
+            return null;
+        
+        TableDataModel<TableDataRow> m = new TableDataModel<TableDataRow>();
+        
+        for(int i=0; i<list.size(); i++){
+            TableDataRow<Integer> row = new TableDataRow<Integer>(1);
+            DictionaryDO dictDO = (DictionaryDO)list.get(i);
+            row.key = dictDO.getId();
+            row.cells[0] = new StringObject(dictDO.getEntry());
+            m.add(row);
+        }
+        
+        return m;
     }
 }

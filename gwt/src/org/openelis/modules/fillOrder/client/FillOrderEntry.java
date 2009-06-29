@@ -29,29 +29,17 @@ import org.openelis.gwt.screen.AppModule;
 import org.openelis.gwt.screen.ClassFactory;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.RunAsyncCallback;
-
 public class FillOrderEntry implements AppModule{
+    
     public void onModuleLoad() {
         OpenELIS.modules.add(getModuleName());
-
-        ClassFactory.addScreen("FillOrderScreen", 
-                new ClassFactory.ShowScreen() {
-                    public void showScreen(Object[] args) {
-                 	   GWT.runAsync(new RunAsyncCallback() {
-                 		   public void onSuccess() {
-                 			   OpenELIS.browser.addScreen(new FillOrderScreen());
-                 		   }
-                 		   
-                 		   public void onFailure(Throwable caught) {
-                 			   
-                 		   }
-                 	   }); 
-                        
-                    }
-                 }
-);
+        ClassFactory.addClassFactory(new String[] {"FillOrderScreen"}, 
+                               new ClassFactory.Factory() {
+                                   public Object newInstance(Object[] args) {
+                                       return new FillOrderScreen();
+                                   }
+                                }
+        );
     }
 
     public String getModuleName() {

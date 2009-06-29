@@ -38,7 +38,6 @@ import org.openelis.domain.InventoryAdjustmentDO;
 import org.openelis.domain.InventoryItemAutoDO;
 import org.openelis.domain.InventoryLocationDO;
 import org.openelis.gwt.common.DatetimeRPC;
-import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.FormErrorException;
@@ -62,15 +61,12 @@ import org.openelis.gwt.services.AutoCompleteServiceInt;
 import org.openelis.metamap.InventoryAdjustmentMetaMap;
 import org.openelis.modules.inventoryAdjustment.client.InventoryAdjustmentForm;
 import org.openelis.modules.inventoryAdjustment.client.InventoryAdjustmentItemAutoRPC;
-import org.openelis.modules.inventoryReceipt.client.InvReceiptItemInfoForm;
-import org.openelis.modules.inventoryReceipt.client.TransferLocationRPC;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.CategoryRemote;
 import org.openelis.remote.InventoryAdjustmentRemote;
 import org.openelis.remote.InventoryItemRemote;
 import org.openelis.remote.InventoryReceiptRemote;
 import org.openelis.server.constants.Constants;
-import org.openelis.server.handlers.InventoryItemStoresCacheHandler;
 import org.openelis.util.Datetime;
 import org.openelis.util.FormUtil;
 import org.openelis.util.SessionManager;
@@ -229,11 +225,6 @@ public class InventoryAdjustmentService implements AppScreenFormServiceInt<Inven
     }
 
     public InventoryAdjustmentForm fetch(InventoryAdjustmentForm rpc) throws RPCException {
-        /*
-         * Call checkModels to make screen has most recent versions of dropdowns
-         */
-        checkModels(rpc);
-        
         //remote interface to call the organization bean
         InventoryAdjustmentRemote remote = (InventoryAdjustmentRemote)EJBFactory.lookup("openelis/InventoryAdjustmentBean/remote");
         
@@ -250,11 +241,6 @@ public class InventoryAdjustmentService implements AppScreenFormServiceInt<Inven
     }
 
     public InventoryAdjustmentForm fetchForUpdate(InventoryAdjustmentForm rpc) throws RPCException {
-        /*
-         * Call checkModels to make screen has most recent versions of dropdowns
-         */
-        checkModels(rpc);
-        
         //remote interface to call the inventory adjustment bean
         InventoryAdjustmentRemote remote = (InventoryAdjustmentRemote)EJBFactory.lookup("openelis/InventoryAdjustmentBean/remote");
         
@@ -279,27 +265,8 @@ public class InventoryAdjustmentService implements AppScreenFormServiceInt<Inven
     
     public InventoryAdjustmentForm getScreen(InventoryAdjustmentForm rpc) throws RPCException{
         rpc.xml = ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/inventoryAdjustment.xsl");
-        /*
-         * Load initial  models to RPC and store cache verison of models into Session for 
-         * comparisons for later fetches
-         */
-        rpc.stores = InventoryItemStoresCacheHandler.getStores();
-        SessionManager.getSession().setAttribute("invItemStoresVersion",InventoryItemStoresCacheHandler.version);
-        return rpc;
-    }
     
-    public void checkModels(InventoryAdjustmentForm rpc) {
-        /*
-         * Retrieve current version of models from session.
-         */
-        int stores = (Integer)SessionManager.getSession().getAttribute("invItemStoresVersion");
-        /*
-         * Compare stored version to current cache versions and update if necessary. 
-         */
-         if(stores != InventoryItemStoresCacheHandler.version){
-            rpc.stores = InventoryItemStoresCacheHandler.getStores();
-            SessionManager.getSession().setAttribute("invItemStoresVersion", InventoryItemStoresCacheHandler.version);
-        }
+        return rpc;
     }
     
     public InventoryAdjustmentForm getAddAutoFillValues(InventoryAdjustmentForm rpc) throws Exception {
