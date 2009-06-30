@@ -25,6 +25,10 @@
 */
 package org.openelis.modules.qaevent.server;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 import org.openelis.domain.IdNameDO;
 import org.openelis.domain.IdNameTestMethodDO;
 import org.openelis.domain.QaEventDO;
@@ -35,7 +39,6 @@ import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.Query;
-import org.openelis.gwt.common.QueryException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.FieldType;
@@ -52,14 +55,9 @@ import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.CategoryRemote;
 import org.openelis.remote.QaEventRemote;
 import org.openelis.server.constants.Constants;
-import org.openelis.server.handlers.QAEventTypeCacheHandler;
 import org.openelis.util.FormUtil;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 
 
 public class QAEventService implements AppScreenFormServiceInt<QAEventForm, Query<TableDataRow<Integer>>>{
@@ -238,16 +236,11 @@ public class QAEventService implements AppScreenFormServiceInt<QAEventForm, Quer
     public QAEventForm getScreen(QAEventForm rpc) throws RPCException{       
        rpc.xml = ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/qaEvent.xsl");    
         
-        //DataModel qaTypeDropDownField = (DataModel)CachingManager.getElement("InitialData", "qaTypeDropDown");
        TableDataModel<TableDataRow<Integer>> testDropDownField = (TableDataModel<TableDataRow<Integer>>)CachingManager.getElement("InitialData", "testDropDown");
-        
-       rpc.qaeventTypes = QAEventTypeCacheHandler.getQAEventTypes();
-        
-        //if(qaTypeDropDownField ==null)
-          //  qaTypeDropDownField = getInitialModel("qaEventType");
         
         if(testDropDownField ==null)
             rpc.tests = getInitialModel("test");            
+
         return rpc;
     }
 

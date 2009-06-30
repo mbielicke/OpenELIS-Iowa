@@ -59,13 +59,7 @@ public class ShippingForm extends Form<Integer>{
     
     public String shippingTabPanel = "itemsTab";
     public Integer systemUserId;
-    
-    public TableDataModel<TableDataRow<Integer>> shippedStatus;
-    public TableDataModel<TableDataRow<Integer>> shippedFrom;
-    public TableDataModel<TableDataRow<Integer>> shippedMethod;
-    
-    //public Integer systemUserId;
-    //public DataModel unlockModel;
+
     public TableDataModel<TableDataRow<Integer>> checkedOrderIds;
     
     //sub forms

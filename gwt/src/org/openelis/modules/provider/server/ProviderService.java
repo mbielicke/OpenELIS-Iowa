@@ -54,7 +54,6 @@ import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.common.data.TableField;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
-import org.openelis.metamap.ProviderMetaMap;
 import org.openelis.modules.provider.client.AddressesForm;
 import org.openelis.modules.provider.client.NotesForm;
 import org.openelis.modules.provider.client.ProviderForm;
@@ -62,9 +61,6 @@ import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.CategoryRemote;
 import org.openelis.remote.ProviderRemote;
 import org.openelis.server.constants.Constants;
-import org.openelis.server.handlers.CountryCacheHandler;
-import org.openelis.server.handlers.ProviderTypeCacheHandler;
-import org.openelis.server.handlers.StatesCacheHandler;
 import org.openelis.util.FormUtil;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
@@ -237,7 +233,6 @@ public class ProviderService implements AppScreenFormServiceInt<ProviderForm, Qu
         }
 
     public ProviderForm fetch(ProviderForm rpc) throws RPCException {
-            checkModels(rpc);
             ProviderRemote remote = (ProviderRemote)EJBFactory.lookup("openelis/ProviderBean/remote");
             Integer providerId = rpc.entityKey;
                     
@@ -272,7 +267,6 @@ public class ProviderService implements AppScreenFormServiceInt<ProviderForm, Qu
     }
 
     public ProviderForm fetchForUpdate(ProviderForm rpc) throws RPCException {
-       checkModels(rpc);
        ProviderRemote remote = (ProviderRemote)EJBFactory.lookup("openelis/ProviderBean/remote");
        Integer providerId = rpc.entityKey;
                       
@@ -300,43 +294,10 @@ public class ProviderService implements AppScreenFormServiceInt<ProviderForm, Qu
     
     public ProviderForm getScreen(ProviderForm rpc) throws RPCException{
         rpc.xml = ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/provider.xsl");
-        /*
-         * Load initial  models to RPC and store cache verison of models into Session for 
-         * comparisons for later fetches
-         */
-        rpc.states = StatesCacheHandler.getStates();
-        SessionManager.getSession().setAttribute("statesVersion",StatesCacheHandler.version);
-        rpc.countries = CountryCacheHandler.getCountries();
-        SessionManager.getSession().setAttribute("countriesVersion",CountryCacheHandler.version);
-        rpc.providerTypes = ProviderTypeCacheHandler.getProviderTypes();
-        SessionManager.getSession().setAttribute("providerTypesVersion",ProviderTypeCacheHandler.version);
+        
         return rpc;
     }
     
-    public void checkModels(ProviderForm rpc) {
-        /*
-         * Retrieve current version of models from session.
-         */
-        int states = (Integer)SessionManager.getSession().getAttribute("statesVersion");
-        int countries = (Integer)SessionManager.getSession().getAttribute("countriesVersion");
-        int types = (Integer)SessionManager.getSession().getAttribute("providerTypesVersion");
-        /*
-         * Compare stored version to current cache versions and update if necessary. 
-         */
-        if(states != StatesCacheHandler.version){
-            rpc.states = StatesCacheHandler.getStates();
-            SessionManager.getSession().setAttribute("statesVersion", StatesCacheHandler.version);
-        }
-        if(countries != CountryCacheHandler.version){
-            rpc.countries = CountryCacheHandler.getCountries();
-            SessionManager.getSession().setAttribute("countriesVersion", CountryCacheHandler.version);
-        }
-        if(types != ProviderTypeCacheHandler.version){
-            rpc.providerTypes = ProviderTypeCacheHandler.getProviderTypes();
-            SessionManager.getSession().setAttribute("providerTypesVersion", ProviderTypeCacheHandler.version);
-        }
-    }
-
     public TableDataModel<TableDataRow<Integer>> fillAddressTable(TableDataModel<TableDataRow<Integer>> addressModel, List contactsList){       
         try{
             addressModel.clear();
