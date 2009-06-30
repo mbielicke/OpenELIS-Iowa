@@ -13,10 +13,6 @@ public class FillOrderForm extends Form<Integer> {
 
     public TableField<TableDataRow<FillOrderItemInfoForm>> fillItemsTable;
     public FillOrderItemInfoForm itemInformation;
-    
-    public TableDataModel<TableDataRow<Integer>> costCenters;
-    public TableDataModel<TableDataRow<Integer>> shipFroms;
-    public TableDataModel<TableDataRow<Integer>> statuses;
     public Integer orderPendingValue;
     
     public FillOrderForm() {

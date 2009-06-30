@@ -49,8 +49,7 @@ public class LabelForm extends Form<Integer> {
     public StringField description;
     public DropDownField<Integer> printerTypeId;
     public DropDownField<Integer> scriptletId;
-    
-    public TableDataModel<TableDataRow<Integer>> printerType;
+
     public TableDataModel<TableDataRow<Integer>> scriptlet;      
  
 

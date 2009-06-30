@@ -25,14 +25,15 @@
 */
 package org.openelis.modules.label.client;
 
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.Widget;
+import java.util.ArrayList;
 
+import org.openelis.cache.DictionaryCache;
+import org.openelis.domain.DictionaryDO;
 import org.openelis.gwt.common.Query;
-import org.openelis.gwt.common.data.TableDataModel;
 import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.common.data.QueryStringField;
+import org.openelis.gwt.common.data.StringObject;
+import org.openelis.gwt.common.data.TableDataModel;
 import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.screen.CommandChain;
 import org.openelis.gwt.screen.ScreenInputWidget;
@@ -44,6 +45,9 @@ import org.openelis.gwt.widget.ResultsTable;
 import org.openelis.metamap.LabelMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
+import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.Widget;
+
 public class LabelScreen extends OpenELISScreenForm<LabelForm,Query<TableDataRow<Integer>>> implements ClickListener {
     
     private Dropdown displayPType = null;
@@ -52,18 +56,6 @@ public class LabelScreen extends OpenELISScreenForm<LabelForm,Query<TableDataRow
     private KeyListManager keyList = new KeyListManager();
     
     private LabelMetaMap Meta = new LabelMetaMap(); 
-    
-    AsyncCallback<LabelForm> checkModels = new AsyncCallback<LabelForm>() {
-        public void onSuccess(LabelForm rpc) {
-            if(rpc.printerType != null) {
-                setPrinterTypesModel(rpc.printerType);
-            }
-        }
-      
-        public void onFailure(Throwable caught) {
-            
-        }
-    };
     
     public LabelScreen() {
         super("org.openelis.modules.label.server.LabelService");
@@ -109,21 +101,17 @@ public class LabelScreen extends OpenELISScreenForm<LabelForm,Query<TableDataRow
         displayPType = (Dropdown)getWidget(Meta.getPrinterTypeId());
         displayScript = (Dropdown)getWidget(Meta.getScriptletId());
         
-        //load dropdowns
-        setPrinterTypesModel(form.printerType);
         setScriptletModel(form.scriptlet);
-                  
-       
-        form.printerType = null;
+        
         form.scriptlet = null;
         
-        updateChain.add(0,checkModels);
-        fetchChain.add(0,checkModels);
-        abortChain.add(0,checkModels);
-        commitUpdateChain.add(0,checkModels);
-        commitAddChain.add(0,checkModels);
-        
         super.afterDraw(success);
+        
+        ArrayList cache;
+        TableDataModel<TableDataRow> model;
+        cache = DictionaryCache.getListByCategorySystemName("printer_type");
+        model = getDictionaryIdEntryList(cache);
+        displayPType.setModel(model);
     }
     
     private void getLabels(String query) {
@@ -137,12 +125,24 @@ public class LabelScreen extends OpenELISScreenForm<LabelForm,Query<TableDataRow
       }
     }  
     
-    private void setPrinterTypesModel(TableDataModel<TableDataRow<Integer>> typesModel) {
-        displayPType.setModel(typesModel);
-    }
-    
     private void setScriptletModel(TableDataModel<TableDataRow<Integer>> model) {
         displayScript.setModel(model);
     }
     
+    private TableDataModel<TableDataRow> getDictionaryIdEntryList(ArrayList list){
+        if(list == null)
+            return null;
+        
+        TableDataModel<TableDataRow> m = new TableDataModel<TableDataRow>();
+        
+        for(int i=0; i<list.size(); i++){
+            TableDataRow<Integer> row = new TableDataRow<Integer>(1);
+            DictionaryDO dictDO = (DictionaryDO)list.get(i);
+            row.key = dictDO.getId();
+            row.cells[0] = new StringObject(dictDO.getEntry());
+            m.add(row);
+        }
+        
+        return m;
+    }
 }

@@ -234,8 +234,9 @@ public class InventoryReceiptScreen extends OpenELISScreenForm<InventoryReceiptF
     };
     
     public void add() {
-        receiptsTable.model.enableAutoAdd(true);
         super.add();
+        
+        receiptsTable.model.enableAutoAdd(true);
         
         
         if("receipt".equals(screenType)){
@@ -261,7 +262,7 @@ public class InventoryReceiptScreen extends OpenELISScreenForm<InventoryReceiptF
         itemLocation.enable(false);
         }
         removeReceiptButton.changeState(AppButton.ButtonState.DISABLED);
-        receiptsQueryTable.select(0,0);
+        //receiptsQueryTable.select(0,0);
         
     }
     

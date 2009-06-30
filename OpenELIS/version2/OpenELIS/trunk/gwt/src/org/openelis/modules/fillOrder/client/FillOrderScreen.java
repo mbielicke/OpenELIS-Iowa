@@ -18,12 +18,15 @@ package org.openelis.modules.fillOrder.client;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.openelis.cache.DictionaryCache;
+import org.openelis.domain.DictionaryDO;
 import org.openelis.gwt.common.DataSorter;
 import org.openelis.gwt.common.DataSorterInt;
 import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.Query;
 import org.openelis.gwt.common.data.CheckField;
+import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.common.data.TableDataModel;
 import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.TableDataRow;
@@ -110,27 +113,6 @@ public class FillOrderScreen extends OpenELISScreenForm<FillOrderForm, Query<Tab
 
     private KeyListManager      keyList         = new KeyListManager();
 
-    AsyncCallback<FillOrderForm> checkModels     = new AsyncCallback<FillOrderForm>() {
-                                                    public void onSuccess(FillOrderForm form) {
-                                                        if (form.statuses != null) {
-                                                            setStatusIdModel(form.statuses);
-                                                            form.statuses = null;
-                                                        }
-                                                        if (form.costCenters != null) {
-                                                            setCostCentersModel(form.costCenters);
-                                                            form.costCenters = null;
-                                                        }
-                                                        if (form.shipFroms != null) {
-                                                            setShipFromModel(form.shipFroms);
-                                                            form.shipFroms = null;
-                                                        }
-                                                    }
-
-                                                    public void onFailure(Throwable caught) {
-
-                                                    }
-                                                };
-
     public FillOrderScreen() {
         super("org.openelis.modules.fillOrder.server.FillOrderService");
         query = new Query<TableDataRow<Integer>>();
@@ -191,33 +173,29 @@ public class FillOrderScreen extends OpenELISScreenForm<FillOrderForm, Query<Tab
 
         costCenter = (Dropdown)getWidget(OrderMeta.getCostCenterId());
 
-        setCostCentersModel(form.costCenters);
-        setStatusIdModel(form.statuses);
-        setShipFromModel(form.shipFroms);
-        
-        orderPendingValue = form.orderPendingValue;
-
-        /*
-         * Null out the form models so they are not sent with future form calls
-         */
-        form.costCenters = null;
-        form.statuses = null;
-        form.shipFroms = null;
-
         combinedTree = (TreeDataModel)orderItemsTree.model.getData().clone();
         combinedTreeIds = new ArrayList<Integer>();
-        
-        updateChain.add(0, checkModels);
-        fetchChain.add(0, checkModels);
-        abortChain.add(0, checkModels);
-        deleteChain.add(0, checkModels);
-        commitUpdateChain.add(0, checkModels);
-        commitAddChain.add(0, checkModels);
 
         emptyTreeModel = orderItemsTree.model.getData();
         form.itemInformation.originalOrderItemsTree.setValue(emptyTreeModel);
         
         super.afterDraw(success);
+        
+        ArrayList cache;
+        TableDataModel<TableDataRow> model;
+        cache = DictionaryCache.getListByCategorySystemName("cost_centers");
+        model = getDictionaryIdEntryList(cache);
+        costCenter.setModel(model);
+        
+        cache = DictionaryCache.getListByCategorySystemName("order_status");
+        model = getDictionaryIdEntryList(cache);
+        ((TableDropdown)fillItemsTable.table.columns.get(2).getColumnWidget()).setModel(model);
+        
+        cache = DictionaryCache.getListByCategorySystemName("shipFrom");
+        model = getDictionaryIdEntryList(cache);
+        ((TableDropdown)fillItemsTable.table.columns.get(4).getColumnWidget()).setModel(model);
+        
+        orderPendingValue = DictionaryCache.getIdFromSystemName("order_status_pending");
     }
 
     public void add() {
@@ -1065,20 +1043,6 @@ public class FillOrderScreen extends OpenELISScreenForm<FillOrderForm, Query<Tab
         return valid;
     }
 
-    public void setStatusIdModel(TableDataModel<TableDataRow<Integer>> statusIdsModel) {
-        ((TableDropdown)fillItemsTable.table.columns.get(2).getColumnWidget()).setModel(statusIdsModel);
-      //  ((TableDropdown)fillItemsQueryTable.columns.get(2).getColumnWidget()).setModel(statusIdsModel);
-    }
-
-    public void setCostCentersModel(TableDataModel<TableDataRow<Integer>> costCentersModel) {
-        costCenter.setModel(costCentersModel);
-    }
-
-    public void setShipFromModel(TableDataModel<TableDataRow<Integer>> shipFromsModel) {
-        ((TableDropdown)fillItemsTable.table.columns.get(4).getColumnWidget()).setModel(shipFromsModel);
-      //  ((TableDropdown)fillItemsQueryTable.columns.get(4).getColumnWidget()).setModel(shipFromsModel);
-    }
-    
     public boolean ifDifferent(Object arg1, Object arg2){
         return (arg1 == null && arg2 != null) || (arg1 != null && !arg1.equals(arg2));
         
@@ -1105,5 +1069,22 @@ public class FillOrderScreen extends OpenELISScreenForm<FillOrderForm, Query<Tab
             sorter.sort(data, col, direction);
         else
             window.setStatus("cant sort", "ErrorPanel");
+    }
+    
+    private TableDataModel<TableDataRow> getDictionaryIdEntryList(ArrayList list){
+        if(list == null)
+            return null;
+        
+        TableDataModel<TableDataRow> m = new TableDataModel<TableDataRow>();
+        
+        for(int i=0; i<list.size(); i++){
+            TableDataRow<Integer> row = new TableDataRow<Integer>(1);
+            DictionaryDO dictDO = (DictionaryDO)list.get(i);
+            row.key = dictDO.getId();
+            row.cells[0] = new StringObject(dictDO.getEntry());
+            m.add(row);
+        }
+        
+        return m;
     }
 }
