@@ -52,7 +52,6 @@ import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.CategoryRemote;
 import org.openelis.remote.StandardNoteRemote;
 import org.openelis.server.constants.Constants;
-import org.openelis.server.handlers.StandardNoteTypeCacheHandler;
 import org.openelis.util.FormUtil;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
@@ -207,12 +206,7 @@ public class StandardNoteService implements AppScreenFormServiceInt<StandardNote
     	}
 
     public StandardNoteForm fetch(StandardNoteForm rpc) throws RPCException {
-    	/*
-         * Call checkModels to make screen has most recent versions of dropdowns
-         */
-        checkModels(rpc);
-        
-//		remote interface to call the standard note bean
+    	//		remote interface to call the standard note bean
 		StandardNoteRemote remote = (StandardNoteRemote)EJBFactory.lookup("openelis/StandardNoteBean/remote");
 		
 		StandardNoteDO standardNoteDO = remote.getStandardNote(rpc.entityKey);
@@ -224,11 +218,6 @@ public class StandardNoteService implements AppScreenFormServiceInt<StandardNote
 	}
 
 	public StandardNoteForm fetchForUpdate(StandardNoteForm rpc) throws RPCException {
-		/*
-         * Call checkModels to make screen has most recent versions of dropdowns
-         */
-        checkModels(rpc);
-        
 //		remote interface to call the standard note bean
 		StandardNoteRemote remote = (StandardNoteRemote)EJBFactory.lookup("openelis/StandardNoteBean/remote");
 		StandardNoteDO standardNoteDO = new StandardNoteDO();
@@ -252,30 +241,8 @@ public class StandardNoteService implements AppScreenFormServiceInt<StandardNote
     public StandardNoteForm getScreen(StandardNoteForm rpc) throws RPCException {
         rpc.xml = ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/standardNote.xsl");
 	    
-	    /*
-	     * Load initial  models to RPC and store cache verison of models into Session for 
-	     * comparisons for later fetches
-	     */
-	    rpc.noteTypes = StandardNoteTypeCacheHandler.getNoteTypes();
-	    SessionManager.getSession().setAttribute("standardNoteTypeVersion",StandardNoteTypeCacheHandler.version);
-	    
 	    return rpc;
     }
-
-	public void checkModels(StandardNoteForm rpc) {
-	    /*
-	     * Retrieve current version of models from session.
-	     */
-	    int noteTypes = (Integer)SessionManager.getSession().getAttribute("standardNoteTypeVersion");
-	    
-	    /*
-	     * Compare stored version to current cache versions and update if necessary. 
-	     */
-	    if(noteTypes != StandardNoteTypeCacheHandler.version){
-	        rpc.noteTypes = StandardNoteTypeCacheHandler.getNoteTypes();
-	        SessionManager.getSession().setAttribute("standardNoteTypeVersion",StandardNoteTypeCacheHandler.version);
-	    }
-	}
 
 	public TableDataModel getMatches(String cat, TableDataModel model, String match, HashMap<String,FieldType> params) {
 		return null;

@@ -25,11 +25,14 @@
 */
 package org.openelis.modules.storageunit.client;
 
-import com.google.gwt.user.client.rpc.AsyncCallback;
+import java.util.ArrayList;
 
+import org.openelis.cache.DictionaryCache;
+import org.openelis.domain.DictionaryDO;
 import org.openelis.gwt.common.Query;
 import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.common.data.QueryStringField;
+import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.common.data.TableDataModel;
 import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.screen.CommandChain;
@@ -48,19 +51,6 @@ public class StorageUnitScreen extends OpenELISScreenForm<StorageUnitForm,Query<
     private KeyListManager keyList = new KeyListManager();
 	
     private StorageUnitMetaMap StorageUnitMeta = new StorageUnitMetaMap();
-    
-    AsyncCallback<StorageUnitForm> checkModels = new AsyncCallback<StorageUnitForm>() {
-        public void onSuccess(StorageUnitForm rpc) {
-            if(rpc.categories != null) {
-                setCategoriesModel(rpc.categories);
-                rpc.categories = null;
-            }
-        }
-        
-        public void onFailure(Throwable caught) {
-            
-        }
-    };
     
 	public StorageUnitScreen() {                
 	    super("org.openelis.modules.storageunit.server.StorageUnitService");
@@ -96,22 +86,14 @@ public class StorageUnitScreen extends OpenELISScreenForm<StorageUnitForm,Query<
         
         category = (Dropdown)getWidget(StorageUnitMeta.getCategory());
         startWidget = (ScreenInputWidget)widgets.get(StorageUnitMeta.getCategory());
-
-        setCategoriesModel(form.categories);
-        
-        /*
-         * Null out the rpc models so they are not sent with future rpc calls
-         */
-        form.categories = null;
-        
-        updateChain.add(0,checkModels);
-        fetchChain.add(0,checkModels);
-        abortChain.add(0,checkModels);
-        deleteChain.add(0,checkModels);
-        commitUpdateChain.add(0,checkModels);
-        commitAddChain.add(0,checkModels);
         
 		super.afterDraw(success);
+		
+		ArrayList cache;
+        TableDataModel<TableDataRow> model;
+        cache = DictionaryCache.getListByCategorySystemName("storage_unit_category");
+        model = getDictionaryIdEntryList(cache);
+		category.setModel(model);
 	}
 	
 	private void getStorageUnits(String query) {
@@ -122,7 +104,20 @@ public class StorageUnitScreen extends OpenELISScreenForm<StorageUnitForm,Query<
 		}
 	}
 	
-	public void setCategoriesModel(TableDataModel<TableDataRow<String>> categoriesModel) {
-        category.setModel(categoriesModel);
+	private TableDataModel<TableDataRow> getDictionaryIdEntryList(ArrayList list){
+        if(list == null)
+            return null;
+        
+        TableDataModel<TableDataRow> m = new TableDataModel<TableDataRow>();
+        
+        for(int i=0; i<list.size(); i++){
+            TableDataRow<Integer> row = new TableDataRow<Integer>(1);
+            DictionaryDO dictDO = (DictionaryDO)list.get(i);
+            row.key = dictDO.getId();
+            row.cells[0] = new StringObject(dictDO.getEntry());
+            m.add(row);
+        }
+        
+        return m;
     }
 }

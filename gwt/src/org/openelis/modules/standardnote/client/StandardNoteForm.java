@@ -45,8 +45,6 @@ public class StandardNoteForm extends Form<Integer>{
     public DropDownField<Integer> typeId;
     public StringField text;
     
-    public TableDataModel<TableDataRow<Integer>> noteTypes;
-    
     public StandardNoteForm() {
        StandardNoteMetaMap meta = new StandardNoteMetaMap();
        id = new IntegerField(meta.getId());

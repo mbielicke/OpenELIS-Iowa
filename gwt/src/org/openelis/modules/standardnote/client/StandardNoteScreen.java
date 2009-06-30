@@ -25,12 +25,14 @@
 */
 package org.openelis.modules.standardnote.client;
 
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.TextBox;
+import java.util.ArrayList;
 
+import org.openelis.cache.DictionaryCache;
+import org.openelis.domain.DictionaryDO;
 import org.openelis.gwt.common.Query;
 import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.common.data.QueryStringField;
+import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.common.data.TableDataModel;
 import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.screen.CommandChain;
@@ -44,6 +46,8 @@ import org.openelis.gwt.widget.ResultsTable;
 import org.openelis.metamap.StandardNoteMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
+import com.google.gwt.user.client.ui.TextBox;
+
 public class StandardNoteScreen extends OpenELISScreenForm<StandardNoteForm,Query<TableDataRow<Integer>>> {
 
 	private ScreenTextArea textArea;
@@ -52,19 +56,6 @@ public class StandardNoteScreen extends OpenELISScreenForm<StandardNoteForm,Quer
     private Dropdown noteType;
 	
     private StandardNoteMetaMap StandardNoteMeta = new StandardNoteMetaMap();
-
-    AsyncCallback<StandardNoteForm> checkModels = new AsyncCallback<StandardNoteForm>() {
-        public void onSuccess(StandardNoteForm rpc) {
-            if(rpc.noteTypes != null) {
-            	setNoteTypesModel(rpc.noteTypes);
-                rpc.noteTypes = null;
-            }
-        }
-        
-        public void onFailure(Throwable caught) {
-            
-        }
-    };
     
 	public StandardNoteScreen() {                
         super("org.openelis.modules.standardnote.server.StandardNoteService");
@@ -104,21 +95,13 @@ public class StandardNoteScreen extends OpenELISScreenForm<StandardNoteForm,Quer
         
         startWidget = (ScreenInputWidget)widgets.get(StandardNoteMeta.getName());
         
-        setNoteTypesModel(form.noteTypes);
-        
-        /*
-         * Null out the rpc models so they are not sent with future rpc calls
-         */
-        form.noteTypes = null;
-        
-       updateChain.add(0,checkModels);
-       fetchChain.add(0,checkModels);
-       abortChain.add(0,checkModels);
-       deleteChain.add(0,checkModels);
-       commitUpdateChain.add(0,checkModels);
-       commitAddChain.add(0,checkModels);
-       
-		super.afterDraw(success);
+        super.afterDraw(success);
+		
+		ArrayList cache;
+        TableDataModel<TableDataRow> model;
+        cache = DictionaryCache.getListByCategorySystemName("standard_note_type");
+        model = getDictionaryIdEntryList(cache);
+        noteType.setModel(model);
 	}
 	
 	public void query() {
@@ -138,7 +121,20 @@ public class StandardNoteScreen extends OpenELISScreenForm<StandardNoteForm,Quer
     	}
     }
 	
-	public void setNoteTypesModel(TableDataModel<TableDataRow<Integer>> noteTypesModel) {
-		noteType.setModel(noteTypesModel);
+	private TableDataModel<TableDataRow> getDictionaryIdEntryList(ArrayList list){
+        if(list == null)
+            return null;
+        
+        TableDataModel<TableDataRow> m = new TableDataModel<TableDataRow>();
+        
+        for(int i=0; i<list.size(); i++){
+            TableDataRow<Integer> row = new TableDataRow<Integer>(1);
+            DictionaryDO dictDO = (DictionaryDO)list.get(i);
+            row.key = dictDO.getId();
+            row.cells[0] = new StringObject(dictDO.getEntry());
+            m.add(row);
+        }
+        
+        return m;
     }
 }

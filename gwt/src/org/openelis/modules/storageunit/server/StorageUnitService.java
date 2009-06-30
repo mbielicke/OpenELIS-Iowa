@@ -25,9 +25,12 @@
 */
 package org.openelis.modules.storageunit.server;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 import org.openelis.domain.IdNameDO;
 import org.openelis.domain.StorageUnitDO;
-import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.FormErrorException;
@@ -46,14 +49,9 @@ import org.openelis.modules.storageunit.client.StorageUnitForm;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.StorageUnitRemote;
 import org.openelis.server.constants.Constants;
-import org.openelis.server.handlers.StorageUnitCategoriesCacheHandler;
 import org.openelis.util.FormUtil;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 
 public class StorageUnitService implements AppScreenFormServiceInt<StorageUnitForm,Query<TableDataRow<Integer>>> {
 
@@ -213,11 +211,6 @@ public class StorageUnitService implements AppScreenFormServiceInt<StorageUnitFo
     }
 
     public StorageUnitForm fetch(StorageUnitForm rpc) throws RPCException {
-        /*
-         * Call checkModels to make screen has most recent versions of dropdowns
-         */
-        checkModels(rpc);
-        
 		// remote interface to call the storage unit bean
 		StorageUnitRemote remote = (StorageUnitRemote) EJBFactory
 				.lookup("openelis/StorageUnitBean/remote");
@@ -232,11 +225,6 @@ public class StorageUnitService implements AppScreenFormServiceInt<StorageUnitFo
 
 	public StorageUnitForm fetchForUpdate(StorageUnitForm rpc)
 			throws RPCException {
-        /*
-         * Call checkModels to make screen has most recent versions of dropdowns
-         */
-        checkModels(rpc);
-        
 		// remote interface to call the storage unit bean
 		StorageUnitRemote remote = (StorageUnitRemote) EJBFactory
 				.lookup("openelis/StorageUnitBean/remote");
@@ -257,30 +245,9 @@ public class StorageUnitService implements AppScreenFormServiceInt<StorageUnitFo
     public StorageUnitForm getScreen(StorageUnitForm rpc) throws RPCException {
         rpc.xml = ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/storageUnit.xsl");
         
-        /*
-         * Load initial  models to RPC and store cache verison of models into Session for 
-         * comparisons for later fetches
-         */
-        rpc.categories = StorageUnitCategoriesCacheHandler.getCategories();
-        SessionManager.getSession().setAttribute("storageUnitCategoriesVersion",StorageUnitCategoriesCacheHandler.version);
-        
         return rpc;
     }
     
-    public void checkModels(StorageUnitForm rpc) {
-        /*
-         * Retrieve current version of models from session.
-         */
-        int categories = (Integer)SessionManager.getSession().getAttribute("storageUnitCategoriesVersion");
-        /*
-         * Compare stored version to current cache versions and update if necessary. 
-         */
-        if(categories != StorageUnitCategoriesCacheHandler.version){
-            rpc.categories = StorageUnitCategoriesCacheHandler.getCategories();
-            SessionManager.getSession().setAttribute("storageUnitCategoriesVersion",StorageUnitCategoriesCacheHandler.version);
-        }
-    }
-
 	private void setRpcErrors(List exceptionList, StorageUnitForm form){
         HashMap<String,AbstractField> map = null;
         if(exceptionList.size() > 0)
