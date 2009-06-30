@@ -25,14 +25,14 @@
 */
 package org.openelis.modules.qaevent.client;
 
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.Widget;
+import java.util.ArrayList;
 
+import org.openelis.cache.DictionaryCache;
+import org.openelis.domain.DictionaryDO;
 import org.openelis.gwt.common.Query;
 import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.common.data.QueryStringField;
+import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.common.data.TableDataModel;
 import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.screen.CommandChain;
@@ -45,6 +45,11 @@ import org.openelis.gwt.widget.ResultsTable;
 import org.openelis.metamap.QaEventMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
+import com.google.gwt.user.client.rpc.SyncCallback;
+import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.Widget;
+
  public class QAEventScreen extends OpenELISScreenForm<QAEventForm,Query<TableDataRow<Integer>>> implements ClickListener{
    
      private TextBox tname = null;
@@ -54,23 +59,6 @@ import org.openelis.modules.main.client.OpenELISScreenForm;
      private KeyListManager keyList = new KeyListManager();    
      
      private QaEventMetaMap QAEMeta = new QaEventMetaMap();  
-     
-     AsyncCallback<QAEventForm> checkModels = new AsyncCallback<QAEventForm>() {
-         public void onSuccess(QAEventForm rpc) {
-             if(rpc.tests != null) {
-                 setTests(rpc.tests);
-                 rpc.tests = null;
-             }
-             if(rpc.qaeventTypes != null) {
-                 setQAEventTypes(rpc.qaeventTypes);
-                 rpc.qaeventTypes = null;
-             }             
-         }
-         
-         public void onFailure(Throwable caught) {
-             
-         }
-     };
      
      public QAEventScreen(){
          super("org.openelis.modules.qaevent.server.QAEventService"); 
@@ -115,30 +103,23 @@ import org.openelis.modules.main.client.OpenELISScreenForm;
 
              reportingText = (ScreenTextArea)widgets.get(QAEMeta.getReportingText());       
          
-            //load type and test dropdowns    
-
-                                        
-           // ((Dropdown)displayType.getWidget()).setModel(qaEventTypeDropDown);
-           // ((Dropdown)displayTest.getWidget()).setModel(testDropDown);
-              
-            setQAEventTypes(form.qaeventTypes);             
             setTests(form.tests);
            
-            form.qaeventTypes = null;
             form.tests = null;
-            
-            updateChain.add(0,checkModels);
-            fetchChain.add(0,checkModels);
-            abortChain.add(0,checkModels);
-            commitUpdateChain.add(0,checkModels);
-            commitAddChain.add(0,checkModels);
             
             updateChain.add(afterUpdate);
             
             super.afterDraw(success); 
+            
+            ArrayList cache;
+            TableDataModel<TableDataRow> model;
+            cache = DictionaryCache.getListByCategorySystemName("qaevent_type");
+            model = getDictionaryIdEntryList(cache);
+            displayType.setModel(model);
+            
         }           
         
-        protected AsyncCallback afterUpdate = new AsyncCallback() {
+        protected SyncCallback afterUpdate = new SyncCallback() {
             public void onFailure(Throwable caught) {   
             }
             public void onSuccess(Object result) {
@@ -176,12 +157,24 @@ import org.openelis.modules.main.client.OpenELISScreenForm;
              }
          }
          
-         private void setQAEventTypes(TableDataModel<TableDataRow<Integer>> model) {
-             displayType.setModel(model);
-         }
-         
          private void setTests(TableDataModel<TableDataRow<Integer>> model) {
              displayTest.setModel(model);
          }
          
+         private TableDataModel<TableDataRow> getDictionaryIdEntryList(ArrayList list){
+             if(list == null)
+                 return null;
+             
+             TableDataModel<TableDataRow> m = new TableDataModel<TableDataRow>();
+             
+             for(int i=0; i<list.size(); i++){
+                 TableDataRow<Integer> row = new TableDataRow<Integer>(1);
+                 DictionaryDO dictDO = (DictionaryDO)list.get(i);
+                 row.key = dictDO.getId();
+                 row.cells[0] = new StringObject(dictDO.getEntry());
+                 m.add(row);
+             }
+             
+             return m;
+         }
  }

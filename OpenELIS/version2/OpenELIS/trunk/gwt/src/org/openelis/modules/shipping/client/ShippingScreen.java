@@ -25,6 +25,10 @@
 */
 package org.openelis.modules.shipping.client;
 
+import java.util.ArrayList;
+
+import org.openelis.cache.DictionaryCache;
+import org.openelis.domain.DictionaryDO;
 import org.openelis.gwt.common.Query;
 import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.DropDownField;
@@ -48,6 +52,7 @@ import org.openelis.modules.main.client.OpenELISScreenForm;
 
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.SyncCallback;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.SourcesTabEvents;
@@ -74,27 +79,6 @@ public class ShippingScreen extends OpenELISScreenForm<ShippingForm, Query<Table
     private ShippingMetaMap ShippingMeta = new ShippingMetaMap();
     private CommandListener listener;
     private KeyListManager keyList = new KeyListManager();
-    
-    AsyncCallback<ShippingForm> checkModels = new AsyncCallback<ShippingForm>() {
-        public void onSuccess(ShippingForm rpc) {
-            if(rpc.shippedStatus != null) {
-                setStatusIdModel(rpc.shippedStatus);
-                rpc.shippedStatus = null;
-            }
-            if(rpc.shippedFrom != null) {
-                setShippedFromModel(rpc.shippedFrom);
-                rpc.shippedFrom = null;
-            }
-            if(rpc.shippedMethod != null) {
-                setShippedMethodModel(rpc.shippedMethod);
-                rpc.shippedMethod = null;
-            }
-        }
-        
-        public void onFailure(Throwable caught) {
-            
-        }
-    };
     
     public ShippingScreen() {                
         super("org.openelis.modules.shipping.server.ShippingService");
@@ -207,32 +191,29 @@ public class ShippingScreen extends OpenELISScreenForm<ShippingForm, Query<Table
         shippedFrom = (Dropdown)getWidget(ShippingMeta.getShippedFromId());
         shippedMethod = (Dropdown)getWidget(ShippingMeta.getShippedMethodId());
         
-        setStatusIdModel(form.shippedStatus);
-        setShippedFromModel(form.shippedFrom);
-        setShippedMethodModel(form.shippedMethod);
-        
-        /*
-         * Null out the rpc models so they are not sent with future rpc calls
-         */
-        form.shippedStatus = null;
-        form.shippedFrom = null;
-        form.shippedMethod = null;
-        
-        updateChain.add(0,checkModels);
-        fetchChain.add(0,checkModels);
-        abortChain.add(0,checkModels);
-        deleteChain.add(0,checkModels);
-        commitUpdateChain.add(0,checkModels);
-        commitAddChain.add(0,checkModels);
         commitAddChain.add(afterCommit);
         
         super.afterDraw(success);
+        
+        ArrayList cache;
+        TableDataModel<TableDataRow> model;
+        cache = DictionaryCache.getListByCategorySystemName("shippingStatus");
+        model = getDictionaryIdEntryList(cache);
+        status.setModel(model);
+        
+        cache = DictionaryCache.getListByCategorySystemName("shipFrom");
+        model = getDictionaryIdEntryList(cache);
+        shippedFrom.setModel(model);
+        
+        cache = DictionaryCache.getListByCategorySystemName("shippingMethod");
+        model = getDictionaryIdEntryList(cache);
+        shippedMethod.setModel(model);
         
         if(data != null)
             add();
     }
     
-    protected AsyncCallback afterCommit = new AsyncCallback() {
+    protected SyncCallback afterCommit = new SyncCallback() {
         public void onFailure(Throwable caught) {   
         }
         public void onSuccess(Object result) {
@@ -462,15 +443,20 @@ public class ShippingScreen extends OpenELISScreenForm<ShippingForm, Query<Table
         });
     }
 
-    public void setStatusIdModel(TableDataModel<TableDataRow<Integer>> statusIdsModel) {
-        status.setModel(statusIdsModel);
-    }
-    
-    public void setShippedFromModel(TableDataModel<TableDataRow<Integer>> shippedFromsModel) {
-        shippedFrom.setModel(shippedFromsModel);
-    }
-    
-    public void setShippedMethodModel(TableDataModel<TableDataRow<Integer>> shippedMethodsModel) {
-        shippedMethod.setModel(shippedMethodsModel);
+    private TableDataModel<TableDataRow> getDictionaryIdEntryList(ArrayList list){
+        if(list == null)
+            return null;
+        
+        TableDataModel<TableDataRow> m = new TableDataModel<TableDataRow>();
+        
+        for(int i=0; i<list.size(); i++){
+            TableDataRow<Integer> row = new TableDataRow<Integer>(1);
+            DictionaryDO dictDO = (DictionaryDO)list.get(i);
+            row.key = dictDO.getId();
+            row.cells[0] = new StringObject(dictDO.getEntry());
+            m.add(row);
+        }
+        
+        return m;
     }
 }

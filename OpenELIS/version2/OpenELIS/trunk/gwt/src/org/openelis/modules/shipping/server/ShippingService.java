@@ -55,7 +55,6 @@ import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
 import org.openelis.gwt.services.AutoCompleteServiceInt;
 import org.openelis.metamap.ShippingMetaMap;
-import org.openelis.modules.inventoryItem.client.InventoryManufacturingForm;
 import org.openelis.modules.shipping.client.ShippingForm;
 import org.openelis.modules.shipping.client.ShippingItemsData;
 import org.openelis.modules.shipping.client.ShippingItemsForm;
@@ -66,9 +65,6 @@ import org.openelis.remote.CategoryRemote;
 import org.openelis.remote.OrganizationRemote;
 import org.openelis.remote.ShippingRemote;
 import org.openelis.server.constants.Constants;
-import org.openelis.server.handlers.ShipFromCacheHandler;
-import org.openelis.server.handlers.ShippedMethodCacheHandler;
-import org.openelis.server.handlers.ShippingStatusCacheHandler;
 import org.openelis.util.Datetime;
 import org.openelis.util.FormUtil;
 import org.openelis.util.SessionManager;
@@ -275,12 +271,7 @@ System.out.println("after shipping items");
 	}
 
 	public ShippingForm fetch(ShippingForm rpc) throws RPCException {
-		/*
-         * Call checkModels to make screen has most recent versions of dropdowns
-         */
-        checkModels(rpc);
-        
-		// remote interface to call the shipping bean
+	    // remote interface to call the shipping bean
 		ShippingRemote remote = (ShippingRemote) EJBFactory
 				.lookup("openelis/ShippingBean/remote");
 
@@ -303,11 +294,6 @@ System.out.println("after shipping items");
 	}
 
 	public ShippingForm fetchForUpdate(ShippingForm rpc) throws RPCException {
-		/*
-         * Call checkModels to make screen has most recent versions of dropdowns
-         */
-        checkModels(rpc);
-        
 		// remote interface to call the shipping bean
 		ShippingRemote remote = (ShippingRemote) EJBFactory
 				.lookup("openelis/ShippingBean/remote");
@@ -337,44 +323,9 @@ System.out.println("after shipping items");
 	public ShippingForm getScreen(ShippingForm rpc) throws RPCException{
         rpc.xml = ServiceUtils.getXML(Constants.APP_ROOT + "/Forms/shipping.xsl");
 
-        /*
-         * Load initial  models to RPC and store cache verison of models into Session for 
-         * comparisons for later fetches
-         */
-        rpc.shippedStatus = ShippingStatusCacheHandler.getShippingStatuses();
-        SessionManager.getSession().setAttribute("shippingStatusVersion",ShippingStatusCacheHandler.version);
-        rpc.shippedFrom = ShipFromCacheHandler.getShipFroms();
-        SessionManager.getSession().setAttribute("shipFromVersion",ShipFromCacheHandler.version);
-        rpc.shippedMethod = ShippedMethodCacheHandler.getShippedMethods();
-        SessionManager.getSession().setAttribute("shippedMethodVersion",ShippedMethodCacheHandler.version);
-
         return rpc;
 	}
 	
-	public void checkModels(ShippingForm rpc) {
-        /*
-         * Retrieve current version of models from session.
-         */
-        int statuses = (Integer)SessionManager.getSession().getAttribute("shippingStatusVersion");
-        int shippedFroms = (Integer)SessionManager.getSession().getAttribute("shipFromVersion");
-        int shippedMethods = (Integer)SessionManager.getSession().getAttribute("shippedMethodVersion");
-        /*
-         * Compare stored version to current cache versions and update if necessary. 
-         */
-        if(statuses != ShippingStatusCacheHandler.version){
-            rpc.shippedStatus = ShippingStatusCacheHandler.getShippingStatuses();
-            SessionManager.getSession().setAttribute("shippingStatusVersion",ShippingStatusCacheHandler.version);
-        }
-        if(shippedFroms != ShipFromCacheHandler.version){
-            rpc.shippedFrom = ShipFromCacheHandler.getShipFroms();
-            SessionManager.getSession().setAttribute("shipFromVersion",ShipFromCacheHandler.version);
-        }
-        if(shippedMethods != ShippedMethodCacheHandler.version){
-            rpc.shippedMethod = ShippedMethodCacheHandler.getShippedMethods();
-            SessionManager.getSession().setAttribute("shippedMethodVersion",ShippedMethodCacheHandler.version);
-        }
-    }
-
 	public ShippingItemsForm loadShippingItems(ShippingItemsForm rpc) throws RPCException {
 		loadShippingItemsForm(rpc.entityKey, rpc);
 		return rpc;

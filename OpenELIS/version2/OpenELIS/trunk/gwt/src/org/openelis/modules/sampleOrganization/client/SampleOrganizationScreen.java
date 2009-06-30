@@ -27,10 +27,11 @@ package org.openelis.modules.sampleOrganization.client;
 
 import java.util.ArrayList;
 
+import org.openelis.cache.DictionaryCache;
+import org.openelis.domain.DictionaryDO;
 import org.openelis.gwt.common.Query;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.KeyListManager;
-import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.common.data.TableDataModel;
 import org.openelis.gwt.common.data.TableDataRow;
@@ -40,23 +41,11 @@ import org.openelis.gwt.screen.ScreenTableWidget;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.table.TableDropdown;
 import org.openelis.gwt.widget.table.TableManager;
-import org.openelis.gwt.widget.table.TableModel;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.gwt.widget.table.event.SourcesTableWidgetEvents;
 import org.openelis.gwt.widget.table.event.TableWidgetListener;
 import org.openelis.modules.environmentalSampleLogin.client.SampleOrganizationForm;
-import org.openelis.modules.environmentalSampleLogin.client.SampleProjectForm;
-import org.openelis.modules.inventoryReceipt.client.InvReceiptItemInfoForm;
 import org.openelis.modules.main.client.OpenELISScreenForm;
-import org.openelis.modules.order.client.OrderOrgKey;
-import org.openelis.modules.organization.client.OrganizationForm;
-import org.openelis.modules.sampleProject.client.SampleProjectScreen.Action;
-
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.SourcesTableEvents;
-import com.google.gwt.user.client.ui.TableListener;
-import com.google.gwt.user.client.ui.TextArea;
 
 public class SampleOrganizationScreen extends OpenELISScreenForm<SampleOrganizationForm,Query<TableDataRow<Integer>>> implements TableManager, TableWidgetListener {
 
@@ -65,19 +54,6 @@ public class SampleOrganizationScreen extends OpenELISScreenForm<SampleOrganizat
     private ScreenTableWidget            sampleOrgTable;
     
     private KeyListManager keyList = new KeyListManager();
-
-    AsyncCallback<SampleOrganizationForm> checkModels = new AsyncCallback<SampleOrganizationForm>() {
-        public void onSuccess(SampleOrganizationForm rpc) {
-            if(rpc.types != null) {
-                setOrgTypesModel(rpc.types);
-                rpc.types = null;
-            }
-        }
-        
-        public void onFailure(Throwable caught) {
-            
-        }
-    };
     
     public SampleOrganizationScreen() {                
         this(new SampleOrganizationForm());
@@ -116,16 +92,13 @@ public class SampleOrganizationScreen extends OpenELISScreenForm<SampleOrganizat
         sampleOrgTable = (ScreenTableWidget)widgets.get("sampleOrganizationTable");
         ((TableWidget)sampleOrgTable.getWidget()).addTableWidgetListener(this);
         
-        setOrgTypesModel(form.types);
-        form.types = null;
-        
         super.afterDraw(success);
         
-        //if the default set is null we can assume the rpc hasnt been loaded        
-        if(form.sampleOrganizationTable.getValue().getDefaultSet() != null)
-            load(form);
-        else
-            form.sampleOrganizationTable.setValue(((TableWidget)sampleOrgTable.getWidget()).model.getData());
+        ArrayList cache;
+        TableDataModel<TableDataRow> model;
+        cache = DictionaryCache.getListByCategorySystemName("organization_type");
+        model = getDictionaryIdEntryList(cache);
+        ((TableDropdown)((TableWidget)sampleOrgTable.getWidget()).columns.get(0).getColumnWidget()).setModel(model);
         
         //enable auto add and put the cursor in the first cell
         sampleOrgTable.enable(true);
@@ -220,7 +193,20 @@ public class SampleOrganizationScreen extends OpenELISScreenForm<SampleOrganizat
         return empty;
     }
     
-    public void setOrgTypesModel(TableDataModel<TableDataRow<Integer>> typesModel) {
-        ((TableDropdown)((TableWidget)sampleOrgTable.getWidget()).columns.get(0).getColumnWidget()).setModel(typesModel);
+    private TableDataModel<TableDataRow> getDictionaryIdEntryList(ArrayList list){
+        if(list == null)
+            return null;
+        
+        TableDataModel<TableDataRow> m = new TableDataModel<TableDataRow>();
+        
+        for(int i=0; i<list.size(); i++){
+            TableDataRow<Integer> row = new TableDataRow<Integer>(1);
+            DictionaryDO dictDO = (DictionaryDO)list.get(i);
+            row.key = dictDO.getId();
+            row.cells[0] = new StringObject(dictDO.getEntry());
+            m.add(row);
+        }
+        
+        return m;
     }
 }

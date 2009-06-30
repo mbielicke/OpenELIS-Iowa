@@ -32,9 +32,6 @@ import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
 import org.openelis.modules.environmentalSampleLogin.client.SampleLocationForm;
 import org.openelis.server.constants.Constants;
-import org.openelis.server.handlers.CountryCacheHandler;
-import org.openelis.server.handlers.StatesCacheHandler;
-import org.openelis.util.SessionManager;
 
 public class SampleLocationService implements AppScreenFormServiceInt<SampleLocationForm,Query<TableDataRow<Integer>>>{
 
@@ -81,9 +78,9 @@ public class SampleLocationService implements AppScreenFormServiceInt<SampleLoca
          * comparisons for later fetches
          */
         rpc.states = null;//StatesCacheHandler.getStates();
-        SessionManager.getSession().setAttribute("statesVersion",StatesCacheHandler.version);
+      //  SessionManager.getSession().setAttribute("statesVersion",StatesCacheHandler.version);
         rpc.countries = null;//CountryCacheHandler.getCountries();
-        SessionManager.getSession().setAttribute("countriesVersion",CountryCacheHandler.version);
+      //  SessionManager.getSession().setAttribute("countriesVersion",CountryCacheHandler.version);
         return rpc;
     }
 }

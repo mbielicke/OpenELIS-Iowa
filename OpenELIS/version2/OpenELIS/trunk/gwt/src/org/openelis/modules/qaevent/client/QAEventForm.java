@@ -54,7 +54,6 @@ public class QAEventForm extends Form<Integer> {
     public DropDownField<Integer> testId;
     public DropDownField<Integer> typeId; 
     
-    public TableDataModel<TableDataRow<Integer>> qaeventTypes;
     public TableDataModel<TableDataRow<Integer>> tests;
 
     
