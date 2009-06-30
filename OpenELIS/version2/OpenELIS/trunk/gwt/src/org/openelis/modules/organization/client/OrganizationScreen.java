@@ -25,12 +25,15 @@
 */
 package org.openelis.modules.organization.client;
 
+import org.openelis.cache.DictionaryCache;
+import org.openelis.domain.DictionaryDO;
 import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.Query;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.FieldType;
 import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.common.data.QueryStringField;
+import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.common.data.TableDataModel;
 import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.screen.CommandChain;
@@ -52,10 +55,12 @@ import org.openelis.metamap.OrganizationMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 import org.openelis.modules.standardnotepicker.client.StandardNotePickerScreen;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.SyncCallback;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.SourcesTabEvents;
@@ -85,35 +90,7 @@ public class OrganizationScreen extends OpenELISScreenForm<OrganizationForm,Quer
     private HashMap<String,FieldType> fields;
     
     private OrganizationMetaMap OrgMeta = new OrganizationMetaMap();
-    
-    /*
-     * This callback is used to check the returned RPC for updated DataModels for the dropdown
-     * widgets on the screen.  It is inserted at the front of the call chain.
-     * 
-     * if model is returned set it to the widgets and make sure to null the rpc field 
-     * so it is not sent back with future RPC calls
-     */
-    AsyncCallback<OrganizationForm> checkModels = new AsyncCallback<OrganizationForm>() {
-        public void onSuccess(OrganizationForm rpc) {
-            if(rpc.contactTypes != null) {
-                setContactTypesModel(rpc.contactTypes);
-                rpc.contactTypes = null;
-            }
-            if(rpc.countries != null) {
-                setCountriesModel(rpc.countries);
-                rpc.countries = null;
-            }
-            if(rpc.states != null) {
-                setStatesModel(rpc.states);
-                rpc.states = null;
-            }
-        }
-        
-        public void onFailure(Throwable caught) {
-            
-        }
-    };
-
+   
     public OrganizationScreen() {
         super("org.openelis.modules.organization.server.OrganizationService");
         /*
@@ -190,42 +167,26 @@ public class OrganizationScreen extends OpenELISScreenForm<OrganizationForm,Quer
         noteText = (ScreenTextArea)widgets.get(OrgMeta.getNote().getText());
         orgId = (ScreenTextBox)widgets.get(OrgMeta.getId());
         tabPanel = (ScreenTabPanel)widgets.get("orgTabPanel");
-   
-        //queryContactsTable = (QueryTable)((ScreenTableWidget)widgets.get("contactsTable")).getQueryWidget().getWidget();
-   
-        /*
-         * Setting of the models has been split to three methods so that they can be individually updated when needed.
-         * 
-         * Models are now pulled directly from RPC rather than initData.
-         */
-        setContactTypesModel(form.contactTypes);
-        setCountriesModel(form.countries);
-        setStatesModel(form.states);
-        
-        /*
-         * Null out the rpc models so they are not sent with future rpc calls
-         */
-        form.contactTypes = null;
-        form.countries = null;
-        form.states = null;
-
-        //override the callbacks
+  
         updateChain.add(afterUpdate);
         
-        /*
-         * Set the CheckModels to the first call back in all chains
-         * 
-         * It is debatable if the checkmodels needs to be in all call chains
-         * at a minimum though it should be in fetchChain and updateChain 
-         */
-        updateChain.add(0,checkModels);
-        fetchChain.add(0,checkModels);
-        abortChain.add(0,checkModels);
-        deleteChain.add(0,checkModels);
-        commitUpdateChain.add(0,checkModels);
-        commitAddChain.add(0,checkModels);
-
         super.afterDraw(success);
+        
+        ArrayList cache;
+        TableDataModel<TableDataRow> model;
+        cache = DictionaryCache.getListByCategorySystemName("state");
+        model = getDictionaryEntryKeyList(cache);
+        states.setModel(model);
+        ((TableDropdown)contactsTable.columns.get(5).getColumnWidget()).setModel(model);
+        
+        cache = DictionaryCache.getListByCategorySystemName("country");
+        model = getDictionaryEntryKeyList(cache);
+        countries.setModel(model);
+        ((TableDropdown)contactsTable.columns.get(7).getColumnWidget()).setModel(model);
+        
+        cache = DictionaryCache.getListByCategorySystemName("contact_type");
+        model = getDictionaryEntryKeyList(cache);
+        ((TableDropdown)contactsTable.columns.get(0).getColumnWidget()).setModel(model);
     }
     
     public void loadScreen(OrganizationForm rpc) {
@@ -266,24 +227,6 @@ public class OrganizationScreen extends OpenELISScreenForm<OrganizationForm,Quer
            
    }
    */
-    
-    public void setContactTypesModel(TableDataModel<TableDataRow<Integer>> typesModel) {
-        ((TableDropdown)contactsTable.columns.get(0).getColumnWidget()).setModel(typesModel);
-        //((TableDropdown)queryContactsTable.columns.get(0).getColumnWidget()).setModel(typesModel);
-    }
-    
-    public void setCountriesModel(TableDataModel<TableDataRow<String>> countriesModel) {
-        countries.setModel(countriesModel);
-        ((TableDropdown)contactsTable.columns.get(7).getColumnWidget()).setModel(countriesModel);
-        //((TableDropdown)queryContactsTable.columns.get(7).getColumnWidget()).setModel(countriesModel);
-    }
-    
-    public void setStatesModel(TableDataModel<TableDataRow<String>> statesModel) {
-        states.setModel(statesModel);
-        ((TableDropdown)contactsTable.columns.get(5).getColumnWidget()).setModel(statesModel);
-        //((TableDropdown)queryContactsTable.columns.get(5).getColumnWidget()).setModel(statesModel);
-    }
-    
  
     public void query() {
         super.query();
@@ -309,7 +252,7 @@ public class OrganizationScreen extends OpenELISScreenForm<OrganizationForm,Quer
         orgName.setFocus(true);
     }
     
-    protected AsyncCallback<OrganizationForm> afterUpdate = new AsyncCallback<OrganizationForm>() {
+    protected SyncCallback<OrganizationForm> afterUpdate = new SyncCallback<OrganizationForm>() {
         public void onFailure(Throwable caught) {   
         }
         public void onSuccess(OrganizationForm result) {
@@ -408,4 +351,37 @@ public class OrganizationScreen extends OpenELISScreenForm<OrganizationForm,Quer
         }
     }
 
+    private TableDataModel<TableDataRow> getDictionaryIdEntryList(ArrayList list){
+        if(list == null)
+            return null;
+        
+        TableDataModel<TableDataRow> m = new TableDataModel<TableDataRow>();
+        
+        for(int i=0; i<list.size(); i++){
+            TableDataRow<Integer> row = new TableDataRow<Integer>(1);
+            DictionaryDO dictDO = (DictionaryDO)list.get(i);
+            row.key = dictDO.getId();
+            row.cells[0] = new StringObject(dictDO.getEntry());
+            m.add(row);
+        }
+        
+        return m;
+    }
+    
+    private TableDataModel<TableDataRow> getDictionaryEntryKeyList(ArrayList list){
+        if(list == null)
+            return null;
+        
+        TableDataModel<TableDataRow> m = new TableDataModel<TableDataRow>();
+        
+        for(int i=0; i<list.size(); i++){
+            TableDataRow<String> row = new TableDataRow<String>(1);
+            DictionaryDO dictDO = (DictionaryDO)list.get(i);
+            row.key = dictDO.getEntry();
+            row.cells[0] = new StringObject(dictDO.getEntry());
+            m.add(row);
+        }
+        
+        return m;
+    }
 }

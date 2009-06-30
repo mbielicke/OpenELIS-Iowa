@@ -25,12 +25,17 @@
 */
 package org.openelis.modules.project.client;
 
+import java.util.ArrayList;
+
+import org.openelis.cache.DictionaryCache;
+import org.openelis.domain.DictionaryDO;
 import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.Query;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.common.data.QueryStringField;
 import org.openelis.gwt.common.data.StringField;
+import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.common.data.TableDataModel;
 import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.screen.CommandChain;
@@ -49,6 +54,7 @@ import org.openelis.modules.main.client.OpenELISScreenForm;
 
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.SyncCallback;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
@@ -69,21 +75,7 @@ public class ProjectScreen extends OpenELISScreenForm<ProjectForm, Query<TableDa
     private TextBox projName;
     
     private Dropdown scriptlet;
-    
-    AsyncCallback<ProjectForm> checkModels = new AsyncCallback<ProjectForm>(){
-        public void onSuccess(ProjectForm rpc) {
-            if(rpc.parameterOperations != null) {
-                setParameterOperations(rpc.parameterOperations);
-                rpc.parameterOperations = null;
-            }          
-        }       
-
-        public void onFailure(Throwable caught) {            
-            
-        }
         
-    };
-    
     public ProjectScreen() {
         super("org.openelis.modules.project.server.ProjectService");
         query = new Query<TableDataRow<Integer>>();
@@ -118,22 +110,21 @@ public class ProjectScreen extends OpenELISScreenForm<ProjectForm, Query<TableDa
         projId = (ScreenTextBox)widgets.get(projMeta.getId());
         projName = (TextBox)getWidget(projMeta.getName());
         
-        setParameterOperations(form.parameterOperations);
         setScriptlets(form.scriptlets);
         
-        form.parameterOperations = null;
         form.scriptlets = null;
         
         updateChain.add(afterUpdate);
         commitUpdateChain.add(commitUpdateCallback);
         commitAddChain.add(commitAddCallback);
-        updateChain.add(0,checkModels);
-        fetchChain.add(0,checkModels);
-        abortChain.add(0,checkModels);
-        commitUpdateChain.add(0,checkModels);
-        commitAddChain.add(0,checkModels);
-                       
+                      
         super.afterDraw(success);
+        
+        ArrayList cache;
+        TableDataModel<TableDataRow> model;
+        cache = DictionaryCache.getListByCategorySystemName("project_parameter_operations");
+        model = getDictionaryIdEntryList(cache);
+        ((TableDropdown)projParamTableWidget.columns.get(1).getColumnWidget()).setModel(model);
     }
     
 
@@ -169,7 +160,7 @@ public class ProjectScreen extends OpenELISScreenForm<ProjectForm, Query<TableDa
         super.abort();
     }
     
-    protected AsyncCallback afterUpdate = new AsyncCallback() {
+    protected SyncCallback afterUpdate = new SyncCallback() {
         public void onFailure(Throwable caught) {
             Window.alert(caught.getMessage());
         }
@@ -182,7 +173,7 @@ public class ProjectScreen extends OpenELISScreenForm<ProjectForm, Query<TableDa
         }
     };   
     
-    protected AsyncCallback<ProjectForm> commitUpdateCallback = new AsyncCallback<ProjectForm>() {
+    protected SyncCallback<ProjectForm> commitUpdateCallback = new SyncCallback<ProjectForm>() {
         public void onSuccess(ProjectForm result) {
             if (form.status != Form.Status.invalid)                                
                 projParamTableWidget.model.enableAutoAdd(false); 
@@ -193,7 +184,7 @@ public class ProjectScreen extends OpenELISScreenForm<ProjectForm, Query<TableDa
         }
     };
 
-    protected AsyncCallback<ProjectForm> commitAddCallback = new AsyncCallback<ProjectForm>() {
+    protected SyncCallback<ProjectForm> commitAddCallback = new SyncCallback<ProjectForm>() {
         public void onSuccess(ProjectForm result) {
             if (form.status != Form.Status.invalid)                                
                 projParamTableWidget.model.enableAutoAdd(false); 
@@ -247,10 +238,6 @@ public class ProjectScreen extends OpenELISScreenForm<ProjectForm, Query<TableDa
         
     }        
     
-    private void setParameterOperations(TableDataModel<TableDataRow<Integer>> parameterOperations) {
-        ((TableDropdown)projParamTableWidget.columns.get(1).getColumnWidget()).setModel(parameterOperations);        
-    }
-    
     private void setScriptlets(TableDataModel<TableDataRow<Integer>> scriptlets) {
        scriptlet.setModel(scriptlets);        
     }
@@ -287,5 +274,22 @@ public class ProjectScreen extends OpenELISScreenForm<ProjectForm, Query<TableDa
             return true;
         
         return false;
+    }
+    
+    private TableDataModel<TableDataRow> getDictionaryIdEntryList(ArrayList list){
+        if(list == null)
+            return null;
+        
+        TableDataModel<TableDataRow> m = new TableDataModel<TableDataRow>();
+        
+        for(int i=0; i<list.size(); i++){
+            TableDataRow<Integer> row = new TableDataRow<Integer>(1);
+            DictionaryDO dictDO = (DictionaryDO)list.get(i);
+            row.key = dictDO.getId();
+            row.cells[0] = new StringObject(dictDO.getEntry());
+            m.add(row);
+        }
+        
+        return m;
     }
 }

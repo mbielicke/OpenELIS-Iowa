@@ -25,17 +25,10 @@
 */
 package org.openelis.modules.order.client;
 
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.ChangeListener;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.PopupPanel;
-import com.google.gwt.user.client.ui.SourcesTabEvents;
-import com.google.gwt.user.client.ui.TabListener;
-import com.google.gwt.user.client.ui.TextArea;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.Widget;
+import java.util.ArrayList;
 
+import org.openelis.cache.DictionaryCache;
+import org.openelis.domain.DictionaryDO;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.common.data.StringField;
@@ -44,13 +37,10 @@ import org.openelis.gwt.common.data.TableDataModel;
 import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.screen.CommandChain;
 import org.openelis.gwt.screen.ScreenDropDownWidget;
-import org.openelis.gwt.screen.ScreenMenuPanel;
 import org.openelis.gwt.screen.ScreenTabPanel;
 import org.openelis.gwt.screen.ScreenTextArea;
 import org.openelis.gwt.screen.ScreenTextBox;
 import org.openelis.gwt.screen.ScreenWindow;
-import org.openelis.gwt.screen.AppScreenForm.State;
-import org.openelis.gwt.widget.AToZTable;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.ButtonPanel;
@@ -61,11 +51,20 @@ import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.gwt.widget.table.event.SourcesTableWidgetEvents;
 import org.openelis.gwt.widget.table.event.TableWidgetListener;
 import org.openelis.metamap.OrderMetaMap;
-import org.openelis.modules.inventoryItem.client.InventoryItemForm;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 import org.openelis.modules.standardnotepicker.client.StandardNotePickerScreen;
 
-import java.util.ArrayList;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.SyncCallback;
+import com.google.gwt.user.client.ui.ChangeListener;
+import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.SourcesTabEvents;
+import com.google.gwt.user.client.ui.TabListener;
+import com.google.gwt.user.client.ui.TextArea;
+import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.Widget;
 
 public class OrderScreen extends OpenELISScreenForm<OrderForm,OrderQuery> implements TableManager, TableWidgetListener, ClickListener, TabListener, ChangeListener {
     
@@ -89,27 +88,6 @@ public class OrderScreen extends OpenELISScreenForm<OrderForm,OrderQuery> implem
     private String orderType;
     
     private OrderMetaMap OrderMeta = new OrderMetaMap();
-    
-    AsyncCallback<OrderForm> checkModels = new AsyncCallback<OrderForm>() {
-        public void onSuccess(OrderForm rpc) {
-            if(rpc.status != null) {
-                setStatusIdModel(rpc.status);
-                rpc.status = null;
-            }
-            if(rpc.costCenters != null) {
-                setCostCentersModel(rpc.costCenters);
-                rpc.costCenters = null;
-            }
-            if(rpc.shipFrom != null) {
-                setShipFromModel(rpc.shipFrom);
-                rpc.shipFrom = null;
-            }
-        }
-        
-        public void onFailure(Throwable caught) {
-            
-        }
-    };
     
     public OrderScreen(Object[] args) {                
         super("org.openelis.modules.order.server.OrderService");
@@ -273,34 +251,30 @@ public class OrderScreen extends OpenELISScreenForm<OrderForm,OrderQuery> implem
         orgDropdown = (AutoComplete)getWidget(OrderMeta.ORDER_ORGANIZATION_META.getName()); 
         billToDropdown = (AutoComplete)getWidget(OrderMeta.ORDER_BILL_TO_META.getName());
         reportToDropdown = (AutoComplete)getWidget(OrderMeta.ORDER_REPORT_TO_META.getName());
-               
-        setStatusIdModel(form.status);
-        setCostCentersModel(form.costCenters);
-        setShipFromModel(form.shipFrom);
-        
-        /*
-         * Null out the rpc models so they are not sent with future rpc calls
-         */
-        form.status = null;
-        form.costCenters = null;
-        form.shipFrom = null;
-        
         
         //set order type in display and query rpcs
         form.type = orderType;
-        //((Form)forms.get("query")).setFieldValue("orderType", orderType);
         
         updateChain.add(afterUpdate);
-        //commitQueryChain.add(afterCommitQuery);
-        
-        updateChain.add(0,checkModels);
-        fetchChain.add(0,checkModels);
-        abortChain.add(0,checkModels);
-        deleteChain.add(0,checkModels);
-        commitUpdateChain.add(0,checkModels);
-        commitAddChain.add(0,checkModels);
         
         super.afterDraw(sucess);
+        
+        ArrayList cache;
+        TableDataModel<TableDataRow> model;
+        cache = DictionaryCache.getListByCategorySystemName("cost_centers");
+        model = getDictionaryIdEntryList(cache);
+        costCenter.setModel(model);
+        
+        cache = DictionaryCache.getListByCategorySystemName("order_status");
+        model = getDictionaryIdEntryList(cache);
+        status.setModel(model);
+        
+        if(shipFrom != null){
+            cache = DictionaryCache.getListByCategorySystemName("shipFrom");
+            model = getDictionaryIdEntryList(cache);
+            shipFrom.setModel(model);
+        }
+        
     }
     
     public void update() {
@@ -370,7 +344,7 @@ public class OrderScreen extends OpenELISScreenForm<OrderForm,OrderQuery> implem
         neededInDays.setFocus(true);
     }
         
-    protected AsyncCallback afterUpdate = new AsyncCallback() {
+    protected SyncCallback afterUpdate = new SyncCallback() {
         public void onFailure(Throwable caught) {   
         }
         
@@ -712,16 +686,20 @@ public class OrderScreen extends OpenELISScreenForm<OrderForm,OrderQuery> implem
         return empty;
     }
 
-    public void setStatusIdModel(TableDataModel<TableDataRow<Integer>> statusIdsModel) {
-        status.setModel(statusIdsModel);
-    }
-    
-    public void setCostCentersModel(TableDataModel<TableDataRow<Integer>> costCentersModel) {
-        costCenter.setModel(costCentersModel);
-    }
-    
-    public void setShipFromModel(TableDataModel<TableDataRow<Integer>> shipFromsModel) {
-        if(shipFrom != null)
-            shipFrom.setModel(shipFromsModel);
+    private TableDataModel<TableDataRow> getDictionaryIdEntryList(ArrayList list){
+        if(list == null)
+            return null;
+        
+        TableDataModel<TableDataRow> m = new TableDataModel<TableDataRow>();
+        
+        for(int i=0; i<list.size(); i++){
+            TableDataRow<Integer> row = new TableDataRow<Integer>(1);
+            DictionaryDO dictDO = (DictionaryDO)list.get(i);
+            row.key = dictDO.getId();
+            row.cells[0] = new StringObject(dictDO.getEntry());
+            m.add(row);
+        }
+        
+        return m;
     }
 }

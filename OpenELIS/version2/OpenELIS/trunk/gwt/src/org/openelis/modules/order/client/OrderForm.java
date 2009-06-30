@@ -66,13 +66,8 @@ public class OrderForm extends Form<Integer> {
     public ReceiptForm receipts;
     public ReportToBillToForm reportToBillTo;
     
-    public TableDataModel<TableDataRow<Integer>> status;
-    public TableDataModel<TableDataRow<Integer>> costCenters;
-    public TableDataModel<TableDataRow<Integer>> shipFrom;
-    
     public String orderType;
     public Integer originalStatus;
-
     
     public OrderForm() {
        OrderMetaMap meta = new OrderMetaMap();

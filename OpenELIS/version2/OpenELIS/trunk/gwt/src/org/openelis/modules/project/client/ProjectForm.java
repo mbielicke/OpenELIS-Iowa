@@ -49,7 +49,7 @@ public class ProjectForm extends Form<Integer> {
     public CheckField isActive;
     public DateField completedDate,startedDate;
     public DropDownField<Integer> scripletId,ownerId;
-    public TableDataModel<TableDataRow<Integer>> parameterOperations,scriptlets;
+    public TableDataModel<TableDataRow<Integer>> scriptlets;
     public TableField<TableDataRow<Integer>> parameterTable;
         
     public ProjectForm() {

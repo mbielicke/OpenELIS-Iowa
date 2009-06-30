@@ -45,10 +45,6 @@ public class OrganizationForm extends Form<Integer> {
     
     public OrganizationAddressDO data;
     
-    public TableDataModel<TableDataRow<String>> countries;
-    public TableDataModel<TableDataRow<String>> states;
-    public TableDataModel<TableDataRow<Integer>> contactTypes;
-    
     public OrganizationForm() {
         OrganizationMetaMap meta = new OrganizationMetaMap();
         id = new IntegerField(meta.getId());
