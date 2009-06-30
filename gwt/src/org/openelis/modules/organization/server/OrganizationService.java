@@ -61,9 +61,6 @@ import org.openelis.modules.organization.client.OrganizationForm;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.OrganizationRemote;
 import org.openelis.server.constants.Constants;
-import org.openelis.server.handlers.ContactTypeCacheHandler;
-import org.openelis.server.handlers.CountryCacheHandler;
-import org.openelis.server.handlers.StatesCacheHandler;
 import org.openelis.util.FormUtil;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
@@ -276,11 +273,7 @@ public class OrganizationService implements AppScreenFormServiceInt<Organization
     	}
 
     public OrganizationForm fetch(OrganizationForm rpc) throws RPCException {
-        /*
-         * Call checkModels to make screen has most recent versions of dropdowns
-         */
-        checkModels(rpc);
-		//remote interface to call the organization bean
+       //remote interface to call the organization bean
         OrganizationRemote remote = (OrganizationRemote)EJBFactory.lookup("openelis/OrganizationBean/remote");
 		
         OrganizationAddressDO organizationDO = remote.getOrganizationAddress(rpc.entityKey);
@@ -323,12 +316,7 @@ public class OrganizationService implements AppScreenFormServiceInt<Organization
     }
 	
     public OrganizationForm fetchForUpdate(OrganizationForm rpc) throws RPCException {
-            /*
-             * Call checkModels to make screen has most recent versions of dropdowns
-             */
-            checkModels(rpc);
-   
-        //		remote interface to call the organization bean 
+            //		remote interface to call the organization bean 
     		OrganizationRemote remote = (OrganizationRemote)EJBFactory.lookup("openelis/OrganizationBean/remote");
     		
     		OrganizationAddressDO organizationDO = new OrganizationAddressDO();
@@ -355,41 +343,8 @@ public class OrganizationService implements AppScreenFormServiceInt<Organization
     
     public OrganizationForm getScreen(OrganizationForm rpc) throws RPCException {
         rpc.xml = ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/organization.xsl");
-        /*
-         * Load initial  models to RPC and store cache verison of models into Session for 
-         * comparisons for later fetches
-         */
-        rpc.states = StatesCacheHandler.getStates();
-        SessionManager.getSession().setAttribute("statesVersion",StatesCacheHandler.version);
-        rpc.countries = CountryCacheHandler.getCountries();
-        SessionManager.getSession().setAttribute("countriesVersion",CountryCacheHandler.version);
-        rpc.contactTypes = ContactTypeCacheHandler.getContactTypes();
-        SessionManager.getSession().setAttribute("contactTypesVersion",ContactTypeCacheHandler.version);
+       
         return rpc;
-    }
-    
-    public void checkModels(OrganizationForm rpc) {
-        /*
-         * Retrieve current version of models from session.
-         */
-        int states = (Integer)SessionManager.getSession().getAttribute("statesVersion");
-        int countries = (Integer)SessionManager.getSession().getAttribute("countriesVersion");
-        int contactTypes = (Integer)SessionManager.getSession().getAttribute("contactTypesVersion");
-        /*
-         * Compare stored version to current cache versions and update if necessary. 
-         */
-        if(states != StatesCacheHandler.version){
-            rpc.states = StatesCacheHandler.getStates();
-            SessionManager.getSession().setAttribute("statesVersion", StatesCacheHandler.version);
-        }
-        if(countries != CountryCacheHandler.version){
-            rpc.countries = CountryCacheHandler.getCountries();
-            SessionManager.getSession().setAttribute("countriesVersion", CountryCacheHandler.version);
-        }
-        if(contactTypes != ContactTypeCacheHandler.version){
-            rpc.contactTypes = ContactTypeCacheHandler.getContactTypes();
-            SessionManager.getSession().setAttribute("contactTypesVersion", ContactTypeCacheHandler.version);
-        }
     }
     
     public TableDataModel<TableDataRow<Contact>> fillContactsTable(TableDataModel<TableDataRow<Contact>> contactsModel, List contactsList){

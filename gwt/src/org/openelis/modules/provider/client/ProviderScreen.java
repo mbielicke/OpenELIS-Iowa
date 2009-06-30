@@ -26,8 +26,11 @@
 package org.openelis.modules.provider.client;
 
 
+import java.util.ArrayList;
+
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.SyncCallback;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.SourcesTabEvents;
@@ -36,11 +39,14 @@ import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
+import org.openelis.cache.DictionaryCache;
+import org.openelis.domain.DictionaryDO;
 import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.Query;
 import org.openelis.gwt.common.data.DataObject;
 import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.common.data.QueryStringField;
+import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.common.data.TableDataModel;
 import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.screen.CommandChain;
@@ -77,34 +83,6 @@ public class ProviderScreen extends OpenELISScreenForm<ProviderForm,Query<TableD
     private KeyListManager keyList = new KeyListManager();       
     
     private ProviderMetaMap ProvMeta = new ProviderMetaMap(); 
-    
-    /*
-     * This callback is used to check the returned RPC for updated DataModels for the dropdown
-     * widgets on the screen.  It is inserted at the front of the call chain.
-     * 
-     * if model is returned set it to the widgets and make sure to null the rpc field 
-     * so it is not sent back with future RPC calls
-     */
-    AsyncCallback<ProviderForm> checkModels = new AsyncCallback<ProviderForm>() {
-        public void onSuccess(ProviderForm rpc) {
-            if(rpc.providerTypes != null) {
-                setProviderTypesModel(rpc.providerTypes);
-                rpc.providerTypes = null;
-            }
-            if(rpc.countries != null) {
-                setCountriesModel(rpc.countries);
-                rpc.countries = null;
-            }
-            if(rpc.states != null) {
-                setStatesModel(rpc.states);
-                rpc.states = null;
-            }
-        }
-        
-        public void onFailure(Throwable caught) {
-            
-        }
-    };
     
     public ProviderScreen(){
         super("org.openelis.modules.provider.server.ProviderService");      
@@ -164,40 +142,25 @@ public class ProviderScreen extends OpenELISScreenForm<ProviderForm,Query<TableD
         ScreenTableWidget displayAddressTable = (ScreenTableWidget)widgets.get("providerAddressTable");
         provAddController = (TableWidget)displayAddressTable.getWidget();
 
-        /*
-         * Setting of the models has been split to three methods so that they
-         * can be individually updated when needed.
-         * 
-         * Models are now pulled directly from RPC rather than initData.
-         */
-        setProviderTypesModel(form.providerTypes);
-        setCountriesModel(form.countries);
-        setStatesModel(form.states);
-
-        /*
-         * Null out the rpc models so they are not sent with future rpc calls
-         */
-        form.providerTypes = null;
-        form.countries = null;
-        form.states = null;
-
         updateChain.add(afterUpdate);
         commitUpdateChain.add(commitUpdateCallback);
         commitAddChain.add(commitAddCallback);
 
-        /*
-         * Set the CheckModels to the first call back in all chains
-         * 
-         * It is debatable if the checkmodels needs to be in all call chains at
-         * a minimum though it should be in fetchChain and updateChain
-         */
-        updateChain.add(0, checkModels);
-        fetchChain.add(0, checkModels);
-        abortChain.add(0, checkModels);
-        commitUpdateChain.add(0, checkModels);
-        commitAddChain.add(0, checkModels);
-
         super.afterDraw(success);
+        
+        ArrayList cache;
+        TableDataModel<TableDataRow> model;
+        cache = DictionaryCache.getListByCategorySystemName("state");
+        model = getDictionaryEntryKeyList(cache);
+        ((TableDropdown)provAddController.columns.get(5).getColumnWidget()).setModel(model);
+        
+        cache = DictionaryCache.getListByCategorySystemName("country");
+        model = getDictionaryEntryKeyList(cache);
+        ((TableDropdown)provAddController.columns.get(6).getColumnWidget()).setModel(model);
+        
+        cache = DictionaryCache.getListByCategorySystemName("provider_type");
+        model = getDictionaryIdEntryList(cache);
+        displayType.setModel(model);
     }
     
     public void query(){
@@ -230,7 +193,7 @@ public class ProviderScreen extends OpenELISScreenForm<ProviderForm,Query<TableD
         super.abort();
     }
     
-    protected AsyncCallback afterUpdate = new AsyncCallback() {
+    protected SyncCallback afterUpdate = new SyncCallback() {
         public void onFailure(Throwable caught) {
         }
         public void onSuccess(Object result) {            
@@ -244,7 +207,7 @@ public class ProviderScreen extends OpenELISScreenForm<ProviderForm,Query<TableD
            
     };    
     
-    protected AsyncCallback<ProviderForm> commitUpdateCallback = new AsyncCallback<ProviderForm>() {
+    protected SyncCallback<ProviderForm> commitUpdateCallback = new SyncCallback<ProviderForm>() {
         public void onSuccess(ProviderForm result) {
             if (form.status != Form.Status.invalid)                                
                 provAddController.model.enableAutoAdd(false);
@@ -255,7 +218,7 @@ public class ProviderScreen extends OpenELISScreenForm<ProviderForm,Query<TableD
         }
     };
 
-    protected AsyncCallback<ProviderForm> commitAddCallback = new AsyncCallback<ProviderForm>() {
+    protected SyncCallback<ProviderForm> commitAddCallback = new SyncCallback<ProviderForm>() {
         public void onSuccess(ProviderForm result) {
             if (form.status != Form.Status.invalid)                                
                 provAddController.model.enableAutoAdd(false); 
@@ -383,15 +346,37 @@ public class ProviderScreen extends OpenELISScreenForm<ProviderForm,Query<TableD
         provAddController.model.deleteRow(provAddController.model.getData().getSelectedIndex());          
     }
 
-    private void setProviderTypesModel(TableDataModel<TableDataRow<Integer>> typesModel) {
-        displayType.setModel(typesModel);
+    private TableDataModel<TableDataRow> getDictionaryIdEntryList(ArrayList list){
+        if(list == null)
+            return null;
+        
+        TableDataModel<TableDataRow> m = new TableDataModel<TableDataRow>();
+        
+        for(int i=0; i<list.size(); i++){
+            TableDataRow<Integer> row = new TableDataRow<Integer>(1);
+            DictionaryDO dictDO = (DictionaryDO)list.get(i);
+            row.key = dictDO.getId();
+            row.cells[0] = new StringObject(dictDO.getEntry());
+            m.add(row);
+        }
+        
+        return m;
     }
     
-    private void setCountriesModel(TableDataModel<TableDataRow<String>> countriesModel) {
-        ((TableDropdown)provAddController.columns.get(6).getColumnWidget()).setModel(countriesModel);        
-    }
-    
-    private void setStatesModel(TableDataModel<TableDataRow<String>> statesModel) {
-        ((TableDropdown)provAddController.columns.get(5).getColumnWidget()).setModel(statesModel);
+    private TableDataModel<TableDataRow> getDictionaryEntryKeyList(ArrayList list){
+        if(list == null)
+            return null;
+        
+        TableDataModel<TableDataRow> m = new TableDataModel<TableDataRow>();
+        
+        for(int i=0; i<list.size(); i++){
+            TableDataRow<String> row = new TableDataRow<String>(1);
+            DictionaryDO dictDO = (DictionaryDO)list.get(i);
+            row.key = dictDO.getEntry();
+            row.cells[0] = new StringObject(dictDO.getEntry());
+            m.add(row);
+        }
+        
+        return m;
     }
 }

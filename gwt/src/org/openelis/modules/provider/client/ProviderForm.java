@@ -54,10 +54,6 @@ public class ProviderForm extends Form<Integer> {
     public AddressesForm addresses;
     public String provTabPanel = "addressesTab";
     
-    public TableDataModel<TableDataRow<String>> countries;
-    public TableDataModel<TableDataRow<String>> states;
-    public TableDataModel<TableDataRow<Integer>> providerTypes;
-    
     public ProviderForm() {
       ProviderMetaMap meta = new ProviderMetaMap();
       id = new IntegerField(meta.getId());

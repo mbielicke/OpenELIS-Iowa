@@ -49,7 +49,6 @@ import org.openelis.gwt.common.data.FieldType;
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.common.data.TableDataModel;
 import org.openelis.gwt.common.data.TableDataRow;
-import org.openelis.gwt.common.data.TableField;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
 import org.openelis.gwt.services.AutoCompleteServiceInt;
@@ -57,7 +56,6 @@ import org.openelis.modules.project.client.ProjectForm;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.ProjectRemote;
 import org.openelis.server.constants.Constants;
-import org.openelis.server.handlers.ProjectParameterOperationCacheHandler;
 import org.openelis.util.Datetime;
 import org.openelis.util.FormUtil;
 import org.openelis.util.SessionManager;
@@ -176,7 +174,6 @@ public class ProjectService implements AppScreenFormServiceInt<ProjectForm, Quer
         ProjectDO projectDO;
         List<ProjectParameterDO> paramDOList;
                 
-        checkModels(rpc);
         remote = (ProjectRemote)EJBFactory.lookup("openelis/ProjectBean/remote");
         projectDO = remote.getProject(rpc.entityKey);
         paramDOList = remote.getProjectParameters(rpc.entityKey);
@@ -190,7 +187,6 @@ public class ProjectService implements AppScreenFormServiceInt<ProjectForm, Quer
         ProjectDO projectDO;
         List<ProjectParameterDO> paramDOList;
                 
-        checkModels(rpc);
         remote = (ProjectRemote)EJBFactory.lookup("openelis/ProjectBean/remote");
         try {
             projectDO = remote.getProjectAndLock(rpc.entityKey,
@@ -209,27 +205,13 @@ public class ProjectService implements AppScreenFormServiceInt<ProjectForm, Quer
         ProjectRemote remote;
                 
         rpc.xml = ServiceUtils.getXML(Constants.APP_ROOT + "/Forms/project.xsl");        
-        rpc.parameterOperations = ProjectParameterOperationCacheHandler.getParameterOperations();
-        SessionManager.getSession().setAttribute("projectParameterOperationVersion",
-                                                 ProjectParameterOperationCacheHandler.version);
+        
         remote = (ProjectRemote)EJBFactory.lookup("openelis/ProjectBean/remote");
         rpc.scriptlets = new TableDataModel<TableDataRow<Integer>>();
         loadDropDown(remote.getScriptletDropDownValues(),rpc.scriptlets);
         return rpc;
     }
     
-    public void checkModels(ProjectForm rpc){
-        int operations = (Integer)SessionManager.getSession()
-                                                .getAttribute("projectParameterOperationVersion");
-        
-        if (operations != ProjectParameterOperationCacheHandler.version) {
-            rpc.parameterOperations = ProjectParameterOperationCacheHandler.getParameterOperations();
-            SessionManager.getSession()
-                          .setAttribute("projectParameterOperationVersion",
-                                        ProjectParameterOperationCacheHandler.version);
-        }
-    }
-
     public TableDataModel getMatches(String cat,
                                      TableDataModel model,
                                      String match,

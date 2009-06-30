@@ -72,9 +72,6 @@ import org.openelis.remote.InventoryItemRemote;
 import org.openelis.remote.OrderRemote;
 import org.openelis.remote.OrganizationRemote;
 import org.openelis.server.constants.Constants;
-import org.openelis.server.handlers.CostCentersCacheHandler;
-import org.openelis.server.handlers.OrderStatusCacheHandler;
-import org.openelis.server.handlers.ShipFromCacheHandler;
 import org.openelis.util.Datetime;
 import org.openelis.util.FormUtil;
 import org.openelis.util.SessionManager;
@@ -300,11 +297,6 @@ public class OrderService implements AppScreenFormServiceInt<OrderForm, OrderQue
     }
 
     public OrderForm fetch(OrderForm rpc) throws RPCException {
-        /*
-         * Call checkModels to make screen has most recent versions of dropdowns
-         */
-        checkModels(rpc);
-        
         //remote interface to call the order bean
         OrderRemote remote = (OrderRemote)EJBFactory.lookup("openelis/OrderBean/remote");
         
@@ -336,11 +328,6 @@ public class OrderService implements AppScreenFormServiceInt<OrderForm, OrderQue
     }
 
     public OrderForm fetchForUpdate(OrderForm rpc) throws RPCException {
-        /*
-         * Call checkModels to make screen has most recent versions of dropdowns
-         */
-        checkModels(rpc);
-        
         //remote interface to call the order bean
         OrderRemote remote = (OrderRemote)EJBFactory.lookup("openelis/OrderBean/remote");
         
@@ -419,42 +406,7 @@ public class OrderService implements AppScreenFormServiceInt<OrderForm, OrderQue
         else if(OrderRemote.KITS.equals(action))
             rpc.xml = ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/kitOrder.xsl");
 
-        /*
-         * Load initial  models to RPC and store cache verison of models into Session for 
-         * comparisons for later fetches
-         */
-        rpc.status = OrderStatusCacheHandler.getStatuses();
-        SessionManager.getSession().setAttribute("orderStatusVersion",OrderStatusCacheHandler.version);
-        rpc.costCenters = CostCentersCacheHandler.getCostCenters();
-        SessionManager.getSession().setAttribute("costCenterVersion",CostCentersCacheHandler.version);
-        rpc.shipFrom = ShipFromCacheHandler.getShipFroms();
-        SessionManager.getSession().setAttribute("shipFromVersion",ShipFromCacheHandler.version);
-
         return rpc;
-    }
-    
-    public void checkModels(OrderForm rpc) {
-        /*
-         * Retrieve current version of models from session.
-         */
-        int statuses = (Integer)SessionManager.getSession().getAttribute("orderStatusVersion");
-        int costCenters = (Integer)SessionManager.getSession().getAttribute("costCenterVersion");
-        int shipFroms = (Integer)SessionManager.getSession().getAttribute("shipFromVersion");
-        /*
-         * Compare stored version to current cache versions and update if necessary. 
-         */
-        if(statuses != OrderStatusCacheHandler.version){
-            rpc.status = OrderStatusCacheHandler.getStatuses();
-            SessionManager.getSession().setAttribute("orderStatusVersion",OrderStatusCacheHandler.version);
-        }
-        if(costCenters != CostCentersCacheHandler.version){
-            rpc.costCenters = CostCentersCacheHandler.getCostCenters();
-            SessionManager.getSession().setAttribute("costCenterVersion",CostCentersCacheHandler.version);
-        }
-        if(shipFroms != ShipFromCacheHandler.version){
-            rpc.shipFrom = ShipFromCacheHandler.getShipFroms();
-            SessionManager.getSession().setAttribute("shipFromVersion",ShipFromCacheHandler.version);
-        }
     }
     
     public ItemsForm loadItems(ItemsForm rpc) throws RPCException {
