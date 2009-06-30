@@ -168,8 +168,8 @@ UIRF Software License are applicable instead of those above.
 				<VerticalPanel height="10px"/>
 					<VerticalPanel spacing="3">
 						<widget>
-							<table width="auto" key="childStorageLocsTable" maxRows="11" title="" showError="false" showScroll="ALWAYS">
-										<headers><xsl:value-of select='resource:getString($constants,"storageUnit")'/>,<xsl:value-of select='resource:getString($constants,"location")'/>,
+							<table width="auto" key="childStorageLocsTable" manager="this" maxRows="11" title="" showError="false" showScroll="ALWAYS">
+										<headers><xsl:value-of select='resource:getString($constants,"storageSubUnit")'/>,<xsl:value-of select='resource:getString($constants,"location")'/>,
 										<xsl:value-of select='resource:getString($constants,"isAvailable")'/></headers>
 										<widths>225,275,80</widths>
 										<editors>

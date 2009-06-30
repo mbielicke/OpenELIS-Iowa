@@ -25,10 +25,6 @@
 */
 package org.openelis.modules.storage.client;
 
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.Widget;
-
 import org.openelis.gwt.common.Query;
 import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.common.data.QueryStringField;
@@ -39,11 +35,16 @@ import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.CollapsePanel;
 import org.openelis.gwt.widget.ResultsTable;
+import org.openelis.gwt.widget.table.TableManager;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.metamap.StorageLocationMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
-public class StorageLocationScreen extends OpenELISScreenForm<StorageLocationForm,Query<TableDataRow<Integer>>> implements ClickListener {
+import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.Widget;
+
+public class StorageLocationScreen extends OpenELISScreenForm<StorageLocationForm,Query<TableDataRow<Integer>>> implements ClickListener, TableManager {
 	
 	private TextBox nameTextbox;
 	private TableWidget childTable;
@@ -113,18 +114,18 @@ public class StorageLocationScreen extends OpenELISScreenForm<StorageLocationFor
 	}
     
     public void add() {
-        childTable.model.enableAutoAdd(true);
         super.add();
+        childTable.model.enableAutoAdd(true);
     }
     
     public void update() {
-        childTable.model.enableAutoAdd(true);
         super.update();
+        childTable.model.enableAutoAdd(true);
     }
     
     public void abort() {
-        childTable.model.enableAutoAdd(false);
         super.abort();
+        childTable.model.enableAutoAdd(false);
     }
 	
 	private void onRemoveRowButtonClick(){
@@ -142,4 +143,36 @@ public class StorageLocationScreen extends OpenELISScreenForm<StorageLocationFor
     		commitQuery(qField);
     	}
     }
+
+    //
+    //start table manager methods
+    //
+    public boolean canAdd(TableWidget widget, TableDataRow set, int row) {
+        return false;
+    }
+
+    public boolean canAutoAdd(TableWidget widget, TableDataRow addRow) {
+        return addRow.cells[0].getValue() != null;
+    }
+
+    public boolean canDelete(TableWidget widget, TableDataRow set, int row) {
+        return false;
+    }
+
+    public boolean canEdit(TableWidget widget, TableDataRow set, int row, int col) {
+        if(state == State.ADD || state == State.UPDATE || state == state.QUERY)
+            return true;
+        
+        return false;
+    }
+
+    public boolean canSelect(TableWidget widget, TableDataRow set, int row) {
+        if(state == State.ADD || state == State.UPDATE || state == state.QUERY)
+            return true;
+        
+        return false;
+    }
+    //
+    //end table manager methods
+    //
 }
