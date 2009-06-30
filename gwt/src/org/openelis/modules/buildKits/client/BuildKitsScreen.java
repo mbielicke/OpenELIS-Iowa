@@ -417,7 +417,7 @@ public class BuildKitsScreen extends OpenELISScreenForm<BuildKitsForm,Query<Tabl
         for(int i=0; i<subItemsTable.model.numRows(); i++){
             ArrayList<TableDataRow<Integer>> selections = ((DropDownField<Integer>)subItemsTable.model.getObject(i, 1)).getValue();
             
-            if(selections.size() == 1){
+            if(selections != null && selections.size() == 1){
                 returnModel.add(new TableDataRow<Integer>(selections.get(0).key));
             }
         }

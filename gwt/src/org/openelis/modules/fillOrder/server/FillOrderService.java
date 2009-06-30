@@ -44,8 +44,6 @@ import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.CheckField;
-import org.openelis.gwt.common.data.TableDataModel;
-import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.common.data.DateField;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.FieldType;
@@ -53,6 +51,8 @@ import org.openelis.gwt.common.data.IntegerField;
 import org.openelis.gwt.common.data.IntegerObject;
 import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.StringObject;
+import org.openelis.gwt.common.data.TableDataModel;
+import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.common.data.TreeDataItem;
 import org.openelis.gwt.common.data.TreeDataModel;
 import org.openelis.gwt.server.ServiceUtils;
@@ -63,16 +63,11 @@ import org.openelis.modules.fillOrder.client.FillOrderForm;
 import org.openelis.modules.fillOrder.client.FillOrderItemInfoForm;
 import org.openelis.modules.fillOrder.client.FillOrderLocationAutoRPC;
 import org.openelis.modules.fillOrder.client.FillOrderOrderItemsKey;
-import org.openelis.modules.fillOrder.client.FillOrderForm;
 import org.openelis.persistence.CachingManager;
 import org.openelis.persistence.EJBFactory;
-import org.openelis.remote.CategoryRemote;
 import org.openelis.remote.FillOrderRemote;
 import org.openelis.remote.InventoryReceiptRemote;
 import org.openelis.server.constants.Constants;
-import org.openelis.server.handlers.CostCentersCacheHandler;
-import org.openelis.server.handlers.OrderStatusCacheHandler;
-import org.openelis.server.handlers.ShipFromCacheHandler;
 import org.openelis.util.Datetime;
 import org.openelis.util.FormUtil;
 import org.openelis.util.SessionManager;
@@ -173,25 +168,6 @@ public class FillOrderService implements AppScreenFormServiceInt<FillOrderForm, 
     public FillOrderForm getScreen(FillOrderForm rpc) throws RPCException {
         rpc.xml = ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/fillOrder.xsl");
 
-        /*
-         * Load initial  models to RPC and store cache verison of models into Session for 
-         * comparisons for later fetches
-         */
-        rpc.statuses = OrderStatusCacheHandler.getStatuses();
-        SessionManager.getSession().setAttribute("orderStatusVersion",OrderStatusCacheHandler.version);
-        rpc.costCenters = CostCentersCacheHandler.getCostCenters();
-        SessionManager.getSession().setAttribute("costCenterVersion",CostCentersCacheHandler.version);
-        rpc.shipFroms = ShipFromCacheHandler.getShipFroms();
-        SessionManager.getSession().setAttribute("shipFromVersion",ShipFromCacheHandler.version);
-
-        CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
-        Integer pendingValue = null;
-        try{
-            pendingValue = remote.getEntryIdForSystemName("order_status_pending");    
-        }catch(Exception e){}
-        
-        rpc.orderPendingValue = pendingValue;
-        
         if(subRpcNode == null){
             try{
                 Document xml = XMLUtil.parse(rpc.xml);
@@ -209,30 +185,6 @@ public class FillOrderService implements AppScreenFormServiceInt<FillOrderForm, 
         }
         
         return rpc;
-    }
-    
-    public void checkModels(FillOrderForm rpc) {
-        /*
-         * Retrieve current version of models from session.
-         */
-        int statuses = (Integer)SessionManager.getSession().getAttribute("orderStatusVersion");
-        int costCenters = (Integer)SessionManager.getSession().getAttribute("costCenterVersion");
-        int shipFroms = (Integer)SessionManager.getSession().getAttribute("shipFromVersion");
-        /*
-         * Compare stored version to current cache versions and update if necessary. 
-         */
-        if(statuses != OrderStatusCacheHandler.version){
-            rpc.statuses = OrderStatusCacheHandler.getStatuses();
-            SessionManager.getSession().setAttribute("orderStatusVersion",OrderStatusCacheHandler.version);
-        }
-        if(costCenters != CostCentersCacheHandler.version){
-            rpc.costCenters = CostCentersCacheHandler.getCostCenters();
-            SessionManager.getSession().setAttribute("costCenterVersion",CostCentersCacheHandler.version);
-        }
-        if(shipFroms != ShipFromCacheHandler.version){
-            rpc.shipFroms = ShipFromCacheHandler.getShipFroms();
-            SessionManager.getSession().setAttribute("shipFromVersion",ShipFromCacheHandler.version);
-        }
     }
     
     public List getListOfOrdersFromTree(TreeDataModel model){

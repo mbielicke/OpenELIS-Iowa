@@ -25,6 +25,11 @@
 */
 package org.openelis.modules.label.server;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+
 import org.openelis.domain.IdNameDO;
 import org.openelis.domain.LabelDO;
 import org.openelis.gwt.common.EntityLockedException;
@@ -33,12 +38,11 @@ import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.Query;
-import org.openelis.gwt.common.QueryException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.data.AbstractField;
+import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.common.data.TableDataModel;
 import org.openelis.gwt.common.data.TableDataRow;
-import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
 import org.openelis.metamap.LabelMetaMap;
@@ -48,15 +52,9 @@ import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.CategoryRemote;
 import org.openelis.remote.LabelRemote;
 import org.openelis.server.constants.Constants;
-import org.openelis.server.handlers.PrinterTypeCacheHandler;
 import org.openelis.util.FormUtil;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 
 public class LabelService implements AppScreenFormServiceInt<LabelForm,Query<TableDataRow<Integer>>> {   
     
@@ -250,23 +248,10 @@ public class LabelService implements AppScreenFormServiceInt<LabelForm,Query<Tab
      rpc.xml  = ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/label.xsl");    
         
      TableDataModel<TableDataRow<Integer>> scriptletDropDownField = (TableDataModel<TableDataRow<Integer>>)CachingManager.getElement("InitialData", "scriptletDropDown");
-        
-     rpc.printerType = PrinterTypeCacheHandler.getPrinterTypes();
-     SessionManager.getSession().setAttribute("printerTypesVersion",PrinterTypeCacheHandler.version);
-        
      if(scriptletDropDownField ==null)
          rpc.scriptlet = getInitialModel("scriptlet");
 
      return rpc;
-    }
-    
-    public void checkModels(LabelForm rpc) {
-        int printerTypes = (Integer)SessionManager.getSession().getAttribute("printerTypesVersion");
-        
-        if(printerTypes != PrinterTypeCacheHandler.version) {
-            rpc.printerType = PrinterTypeCacheHandler.getPrinterTypes();
-            SessionManager.getSession().setAttribute("printerTypesVersion",PrinterTypeCacheHandler.version);
-        } 
     }
     
     public TableDataModel<TableDataRow<Integer>> getInitialModel(String cat) {

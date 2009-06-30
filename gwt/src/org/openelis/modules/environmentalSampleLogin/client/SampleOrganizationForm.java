@@ -38,7 +38,6 @@ public class SampleOrganizationForm extends Form<Integer> {
     private static final long serialVersionUID = 1L;
     
     public TableField<TableDataRow<Integer>> sampleOrganizationTable;
-    public TableDataModel<TableDataRow<Integer>> types;
     
     public SampleOrganizationForm() {
         sampleOrganizationTable = new TableField<TableDataRow<Integer>>("sampleOrganizationTable");
