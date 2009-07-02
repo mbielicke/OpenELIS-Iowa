@@ -7,7 +7,7 @@ import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.QueryField;
 import org.openelis.gwt.common.rewrite.Query;
-import org.openelis.gwt.common.rewrite.data.TableDataRow;
+import org.openelis.gwt.widget.table.rewrite.TableDataRow;
 
 public class OrgQuery extends Query<IdNameDO> {
 	

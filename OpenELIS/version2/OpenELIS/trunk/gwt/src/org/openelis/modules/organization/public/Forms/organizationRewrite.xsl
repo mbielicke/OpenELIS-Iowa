@@ -80,14 +80,6 @@ UIRF Software License are applicable instead of those above.
         <HorizontalPanel padding="0" spacing="0">
           <!--left table goes here -->
           <CollapsePanel key="collapsePanel" height="440px" style="LeftSidePanel">
-              <!--
-            <azTable colwidths="175" height="425px" key="azTable" maxRows="18" tablewidth="auto" headers="{resource:getString($constants,'name')}" width="100%">
-              <buttonPanel key="atozButtons">
-                <xsl:call-template name="aToZLeftPanelButtons"/>
-
-              </buttonPanel>
-            </azTable>
-              -->
               <resultsTable height="425px" width="100%" key="azTable" showError="false">
                  <buttonPanel key="atozButtons">
                 <xsl:call-template name="aToZLeftPanelButtons"/>
@@ -184,7 +176,7 @@ UIRF Software License are applicable instead of those above.
                 </row>
                 <row>
                   <text style="Prompt"><xsl:value-of select="resource:getString($constants,'parentOrganization')"/>:</text>
-                  <autoComplete case="upper" cat="parentOrg" key="{parent:getName($parent)}" field="Integer" tab="{meta:getIsActive($org)},{addr:getCountry($addr)}" width="241px" popWidth="241px">
+                  <autoComplete case="upper" cat="parentOrg" key="{parent:getName($parent)}" field="Integer" tab="{meta:getIsActive($org)},{addr:getCountry($addr)}" width="241px" popWidth="auto">
                       <col header="Name" width="180"/>
                       <col header="Street" width="110"/>
                       <col header="City" width="100"/>
@@ -202,45 +194,45 @@ UIRF Software License are applicable instead of those above.
                 <tab key="contactsTab" text="{resource:getString($constants,'contact')}">
                   <VerticalPanel  width="610px" padding="0" spacing="0">
                     <widget valign="top">
-                      <table key="contactsTable" maxRows="9" showError="false" showScroll="ALWAYS" title="" width="574px" tab="{meta:getId($org)},{meta:getIsActive($org)}">
-                          <col name="contactType" header="{resource:getString($constants,'type')}" width="106" sort="true" filter="false" align="left">
-                              <dropdown cellKey="{contact:getContactTypeId($cont)}" case="mixed" width="90" field="Integer"/>
-                                                </col>
-                          <col name="name" header="{resource:getString($constants,'contactName')}" width="130" sort="true" filter="false" align="left">   
-                            <textbox cellKey="{contact:getName($cont)}" case="upper" field="String" max="40"/>
+                      <table key="contactsTable" maxRows="9" showScroll="ALWAYS" title="" width="574px" tab="{meta:getId($org)},{meta:getIsActive($org)}">
+                          <col key="{contact:getContactTypeId($cont)}" header="{resource:getString($constants,'type')}" width="106" sort="true">
+                              <dropdown case="mixed" width="90" field="Integer" required="true"/>
                           </col>
-                          <col name="multipleUnit" header="{resource:getString($constants,'aptSuite')}" width="130" sort="true" filter="true" align="left">
-                              <textbox cellKey="{addr:getMultipleUnit($contAddr)}" case="upper" field="String" max="30"/>
+                          <col key="{contact:getName($cont)}" header="{resource:getString($constants,'contactName')}" width="130" sort="true">   
+                            <textbox  case="upper" field="String" max="40" required="true"/>
                           </col>
-                          <col name="street" header="{resource:getString($constants,'address')}" width="130" sort="true" filter="false" align="left">
-                            <textbox cellKey="{addr:getStreetAddress($contAddr)}" case="upper" field="String" max="40"/>
+                          <col key="{addr:getMultipleUnit($contAddr)}" header="{resource:getString($constants,'aptSuite')}" width="130" sort="true">
+                              <textbox  case="upper" field="String" max="30"/>
                           </col>
-                          <col name="city" header="{resource:getString($constants,'city')}" width="130" sort="true" filter="false" align="left">
-                              <textbox cellKey="{addr:getCity($contAddr)}" case="upper" field="String" max="30"/>
+                          <col key="{addr:getStreetAddress($contAddr)}" header="{resource:getString($constants,'address')}" width="130" sort="true">
+                            <textbox  case="upper" field="String" max="40"/>
                           </col>
-                          <col name="state" header="{resource:getString($constants,'state')}" width="56" sort="true" filter="false" align="left">
-                             <dropdown cellKey="{addr:getState($contAddr)}" case="upper" width="40px" field="String"/>
+                          <col key="{addr:getCity($contAddr)}" header="{resource:getString($constants,'city')}" width="130" sort="true">
+                              <textbox  case="upper" field="String" max="30"/>
                           </col>
-                          <col name="zipCode" header="{resource:getString($constants,'zipcode')}" width="68" sort="true" filter="false" align="left">
-                              <textbox mask="99999-9999" cellKey="{addr:getZipCode($contAddr)}" case="mixed" field="String"/>
+                          <col key="{addr:getState($contAddr)}" header="{resource:getString($constants,'state')}" width="56" sort="true">
+                             <dropdown case="upper" width="40px" field="String"/>
                           </col>
-                          <col name="country" header="{resource:getString($constants,'country')}" width="126" sort="true" filter="false" align="left">
-                              <dropdown cellKey="{addr:getCountry($contAddr)}" case="mixed" width="110px" field="String"/>
+                          <col key="{addr:getZipCode($contAddr)}" header="{resource:getString($constants,'zipcode')}" width="68" sort="true">
+                              <textbox mask="99999-9999"  case="mixed" field="String"/>
                           </col>
-                          <col name="workPhone" header="{resource:getString($constants,'workNumber')}" width="100" sort="true" filter="false" align="left">
-                              <textbox cellKey="{addr:getWorkPhone($contAddr)}" case="mixed" field="String"/>
+                          <col key="{addr:getCountry($contAddr)}" header="{resource:getString($constants,'country')}" width="126" sort="true">
+                              <dropdown  case="mixed" width="110px" field="String"/>
                           </col>
-                          <col name="homePhone" header="{resource:getString($constants,'homeNumber')}" width="90" sort="true" filter="false" align="left">
-                              <textbox cellKey="{addr:getHomePhone($contAddr)}" case="mixed" field="String"/>
+                          <col key="{addr:getWorkPhone($contAddr)}" header="{resource:getString($constants,'workNumber')}" width="100" sort="true">
+                              <textbox case="mixed" field="String"/>
                           </col>
-                          <col name="cellPhone" header="{resource:getString($constants,'cellNumber')}" width="90" sort="true" filter="false" align="left">
-                            <textbox cellKey="{addr:getCellPhone($contAddr)}" case="mixed" field="String"/>
+                          <col key="{addr:getHomePhone($contAddr)}" header="{resource:getString($constants,'homeNumber')}" width="90" sort="true">
+                              <textbox case="mixed" field="String"/>
                           </col>
-                          <col name="faxNumber" header="{resource:getString($constants,'faxNumber')}" width="90" sort="true" filter="false" align="left">
-                            <textbox cellKey="{addr:getFaxPhone($contAddr)}" case="mixed" field="String"/>
+                          <col key="{addr:getCellPhone($contAddr)}" header="{resource:getString($constants,'cellNumber')}" width="90" sort="true">
+                            <textbox  case="mixed" field="String"/>
                           </col>
-                          <col name="email" header="{resource:getString($constants,'email')}" width="150" sort="true" filter="false" align="left">
-                            <textbox cellKey="{addr:getEmail($contAddr)}" case="mixed" field="String"/>
+                          <col key="{addr:getFaxPhone($contAddr)}" header="{resource:getString($constants,'faxNumber')}" width="90" sort="true">
+                            <textbox case="mixed" field="String"/>
+                          </col>
+                          <col key="{addr:getEmail($contAddr)}" header="{resource:getString($constants,'email')}" width="150" sort="true">
+                            <textbox case="mixed" field="String"/>
                           </col>
                       </table>
                     </widget>
@@ -261,11 +253,11 @@ UIRF Software License are applicable instead of those above.
                   <VerticalPanel padding="0" spacing="0">
                   <widget valign="top">
                     <table key="identifierstsTable" maxRows="9" showError="false" showScroll="ALWAYS" title="" width="auto">
-                        <col name="id" header="{resource:getString($constants,'identifier')}" width="267" sort="true" filter="false" align="left">
-                          <textbox case="mixed"  key="{contact:getName($cont)}" required="true" field="String"/>
+                        <col key="{contact:getName($cont)}" header="{resource:getString($constants,'identifier')}" width="267" sort="true" filter="false" align="left">
+                          <textbox case="mixed" required="true" field="String"/>
                         </col>
-                        <col name="value" header="{resource:getString($constants,'value')}" width="298" sort="true" filter="false" align="left"> 
-                            <textbox case="mixed" key="{addr:getMultipleUnit($contAddr)}" required="true" field="String"/>
+                        <col key="{addr:getMultipleUnit($contAddr)}" header="{resource:getString($constants,'value')}" width="298" sort="true" filter="false" align="left"> 
+                           <textbox case="mixed" required="true" field="String"/>
                         </col>
                      </table>
                     </widget>
@@ -275,7 +267,6 @@ UIRF Software License are applicable instead of those above.
                           <AbsolutePanel style="RemoveRowButtonImage"/>
                           <text><xsl:value-of select="resource:getString($constants,'removeRow')"/></text>
                         </HorizontalPanel>
-
                       </appButton>
                     </widget>
                     <HorizontalPanel height="18px"/>
@@ -295,7 +286,6 @@ UIRF Software License are applicable instead of those above.
                             <AbsolutePanel style="StandardNoteButtonImage"/>
                             <text><xsl:value-of select="resource:getString($constants,'standardNote')"/></text>
                           </HorizontalPanel>
-
                         </appButton>
                       </row>
                       <row>
@@ -306,7 +296,7 @@ UIRF Software License are applicable instead of those above.
                       </row>
                       <row>
                           <widget>
-                          <html key="spacer" xml:space="preserve"> </html>
+                            <html key="spacer" xml:space="preserve"> </html>
                           </widget>
                         <widget colspan="2">
                           <HorizontalPanel style="notesPanelContainer">

@@ -2,30 +2,21 @@ package org.openelis.modules.organization.client;
 
 import java.util.ArrayList;
 
-import org.openelis.domain.IdNameDO;
+import org.openelis.cache.DictionaryCache;
+import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.OrganizationContactDO;
-import org.openelis.gwt.common.rewrite.data.TableDataRow;
-import org.openelis.gwt.event.CommandListenerCollection;
 import org.openelis.gwt.event.DataChangeEvent;
-import org.openelis.gwt.event.DataChangeHandler;
-import org.openelis.gwt.event.HasDataChangeHandlers;
-import org.openelis.gwt.event.HasStateChangeHandlers;
 import org.openelis.gwt.event.StateChangeEvent;
-import org.openelis.gwt.event.StateChangeHandler;
 import org.openelis.gwt.screen.rewrite.Screen;
 import org.openelis.gwt.screen.rewrite.ScreenDef;
 import org.openelis.gwt.screen.rewrite.ScreenEventHandler;
-import org.openelis.gwt.screen.rewrite.Screen.State;
 import org.openelis.gwt.widget.rewrite.AppButton;
-import org.openelis.gwt.widget.HandlesEvents;
 import org.openelis.gwt.widget.rewrite.Dropdown;
-import org.openelis.gwt.widget.table.rewrite.TableModel;
+import org.openelis.gwt.widget.table.rewrite.TableDataRow;
 import org.openelis.gwt.widget.table.rewrite.TableWidget;
 
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.Widget;
 
 public class ContactsTab extends Screen {
@@ -33,6 +24,7 @@ public class ContactsTab extends Screen {
 	private ScreenDef def;
 	private ContactsRPC rpc;
 	private TableWidget table;
+	private boolean dropdownsInited;
 
 	public ContactsTab(ScreenDef def) {
 		this.def = def;
@@ -43,7 +35,7 @@ public class ContactsTab extends Screen {
 		table = (TableWidget)def.getWidget("contactsTable");
 		addScreenHandler(table,new ScreenEventHandler<ArrayList<TableDataRow>>() {
 			public void onDataChange(DataChangeEvent event) {
-				table.model.load(getTableModel());
+				table.load(getTableModel());
 			}
 			public void onValueChange(ValueChangeEvent<ArrayList<TableDataRow>> event) {
 				rpc.orgContacts = getContacts();
@@ -51,12 +43,12 @@ public class ContactsTab extends Screen {
 			public void onStateChange(StateChangeEvent<State> event) {
 				if(event.getState() == State.ADD || event.getState() == State.UPDATE) {
 					table.enabled(true);
-					table.model.enableAutoAdd(true);
+					table.enableAutoAdd(true);
 				}else if(event.getState() == State.QUERY) {
 					table.enabled(true);
 				}else{
 					table.enabled(false);
-					table.model.enableAutoAdd(false);
+					table.enableAutoAdd(false);
 				}
 			}
 		});
@@ -70,9 +62,9 @@ public class ContactsTab extends Screen {
     	});
     	removeContact.addClickListener(new ClickListener() {
     		public void onClick(Widget sender) {
-    	        int selectedRow = table.model.getSelectedIndex();
-    	        if (selectedRow > -1 && table.model.numRows() > 0) {
-    	            table.model.deleteRow(selectedRow);
+    	        int selectedRow = table.getSelectedIndex();
+    	        if (selectedRow > -1 && table.numRows() > 0) {
+    	            table.deleteRow(selectedRow);
     	        }
     		}
     	});
@@ -108,19 +100,19 @@ public class ContactsTab extends Screen {
                row.faxPhone.setValue(contactRow.getAddressDO().getFaxPhone());
                row.email.setValue(contactRow.getAddressDO().getEmail());     
                */
-               row.cells[0] = contactRow.getContactType();
-               row.cells[1] = contactRow.getName();
-               row.cells[2] = contactRow.getAddressDO().getMultipleUnit();
-               row.cells[3] = contactRow.getAddressDO().getStreetAddress();
-               row.cells[4] = contactRow.getAddressDO().getCity();          
-               row.cells[5] = contactRow.getAddressDO().getState();
-               row.cells[6] = contactRow.getAddressDO().getZipCode();
-               row.cells[7] = contactRow.getAddressDO().getCountry();
-               row.cells[8] = contactRow.getAddressDO().getWorkPhone();
-               row.cells[9] = contactRow.getAddressDO().getHomePhone();
-               row.cells[10] = contactRow.getAddressDO().getCellPhone();
-               row.cells[11] = contactRow.getAddressDO().getFaxPhone();
-               row.cells[12] = contactRow.getAddressDO().getEmail();
+               row.cells.get(0).value = contactRow.getContactType();
+               row.cells.get(1).value = contactRow.getName();
+               row.cells.get(2).value = contactRow.getAddressDO().getMultipleUnit();
+               row.cells.get(3).value = contactRow.getAddressDO().getStreetAddress();
+               row.cells.get(4).value = contactRow.getAddressDO().getCity();          
+               row.cells.get(5).value = contactRow.getAddressDO().getState();
+               row.cells.get(6).value = contactRow.getAddressDO().getZipCode();
+               row.cells.get(7).value = contactRow.getAddressDO().getCountry();
+               row.cells.get(8).value = contactRow.getAddressDO().getWorkPhone();
+               row.cells.get(9).value = contactRow.getAddressDO().getHomePhone();
+               row.cells.get(10).value = contactRow.getAddressDO().getCellPhone();
+               row.cells.get(11).value = contactRow.getAddressDO().getFaxPhone();
+               row.cells.get(12).value = contactRow.getAddressDO().getEmail();
                model.add(row);
                 }
     		
@@ -135,12 +127,12 @@ public class ContactsTab extends Screen {
 	
 	private ArrayList<OrganizationContactDO> getContacts() {
 		ArrayList<OrganizationContactDO> organizationContacts = new ArrayList<OrganizationContactDO>();
-        ArrayList<TableDataRow> deletedRows = ((TableModel)table.model).deleted;
+        ArrayList<TableDataRow> deletedRows = table.deleted;
         
-		for(int i=0; i < table.model.getData().size(); i++){
+		for(int i=0; i < table.getData().size(); i++){
 			OrganizationContactDO contactDO = new OrganizationContactDO();
 			//DataSet<Contact> row = contactsTable.get(i);
-            TableDataRow row = (TableDataRow)table.model.getRow(i);
+            TableDataRow row = table.getRow(i);
 			if(row.key != null)
 				contactDO.setId(((Contact)row.key).orgId);
             /*
@@ -161,20 +153,20 @@ public class ContactsTab extends Screen {
             contactDO.getAddressDO().setEmail(row.email.getValue());
             */
             contactDO.setOrganization(rpc.orgId);
-            contactDO.setName((String)row.cells[1]);
+            contactDO.setName((String)row.cells.get(1).value);
             contactDO.getAddressDO().setId(((Contact)row.key).addId);
-            contactDO.setContactType((Integer)row.cells[0]);
-            contactDO.getAddressDO().setMultipleUnit((String)row.cells[2]);
-            contactDO.getAddressDO().setStreetAddress((String)row.cells[3]);
-            contactDO.getAddressDO().setCity((String)row.cells[4]);
-            contactDO.getAddressDO().setState((String)row.cells[5]);
-            contactDO.getAddressDO().setZipCode((String)row.cells[6]);
-            contactDO.getAddressDO().setCountry((String)row.cells[7]);
-            contactDO.getAddressDO().setWorkPhone((String)row.cells[8]);
-            contactDO.getAddressDO().setHomePhone((String)row.cells[9]);
-            contactDO.getAddressDO().setCellPhone((String)row.cells[10]);
-            contactDO.getAddressDO().setFaxPhone((String)row.cells[11]);
-            contactDO.getAddressDO().setEmail((String)row.cells[12]);
+            contactDO.setContactType((Integer)row.cells.get(0).value);
+            contactDO.getAddressDO().setMultipleUnit((String)row.cells.get(2).value);
+            contactDO.getAddressDO().setStreetAddress((String)row.cells.get(3).value);
+            contactDO.getAddressDO().setCity((String)row.cells.get(4).value);
+            contactDO.getAddressDO().setState((String)row.cells.get(5).value);
+            contactDO.getAddressDO().setZipCode((String)row.cells.get(6).value);
+            contactDO.getAddressDO().setCountry((String)row.cells.get(7).value);
+            contactDO.getAddressDO().setWorkPhone((String)row.cells.get(8).value);
+            contactDO.getAddressDO().setHomePhone((String)row.cells.get(9).value);
+            contactDO.getAddressDO().setCellPhone((String)row.cells.get(10).value);
+            contactDO.getAddressDO().setFaxPhone((String)row.cells.get(11).value);
+            contactDO.getAddressDO().setEmail((String)row.cells.get(12).value);
 			organizationContacts.add(contactDO);	
 		}
         
@@ -195,28 +187,43 @@ public class ContactsTab extends Screen {
 		return organizationContacts;
 	}
 	
-	private void setContactTypes() {
+	private void setContactTypes(ArrayList<DictionaryDO> list) {
         ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        for(IdNameDO resultDO :  rpc.contactTypes){
-            model.add(new TableDataRow(resultDO.getId(),resultDO.getName()));
+        for(DictionaryDO resultDO :  list){
+            model.add(new TableDataRow(resultDO.getId(),resultDO.getEntry()));
         } 
-        ((Dropdown)table.columns.get(0).getColumnWidget()).setModel(model);
-        rpc.contactTypes = null;
+        ((Dropdown<Integer>)table.columns.get(0).getColumnWidget()).setModel(model);
 	}
+	
+    public void setCountriesModel(ArrayList<DictionaryDO> list) {
+        ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
+        model.add(new TableDataRow(null, ""));
+        for(DictionaryDO resultDO :  list){
+            model.add(new TableDataRow(resultDO.getEntry(),resultDO.getEntry()));
+        } 
+        ((Dropdown<String>)table.columns.get(7).getColumnWidget()).setModel(model);
+    }
+    
+    public void setStatesModel(ArrayList<DictionaryDO> list) {
+        ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
+        model.add(new TableDataRow(null, ""));
+        for(DictionaryDO resultDO :  list){
+            model.add(new TableDataRow(resultDO.getEntry(),resultDO.getEntry()));
+        } 
+        ((Dropdown<String>)table.columns.get(5).getColumnWidget()).setModel(model);
+    }
 	
 	public void setRPC(ContactsRPC rpc) {
 		if(rpc == null) {
 			rpc = new ContactsRPC();
 		}
 		this.rpc = rpc;
-		if(rpc.contactTypes != null) {
-		    ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
-		    model.add(new TableDataRow(null,""));
-		    for(IdNameDO cdo : rpc.contactTypes) {
-		        model.add(new TableDataRow(cdo.getId(),cdo.getName()));
-		    }
-		    ((Dropdown)table.columns.get(0).getColumnWidget()).setModel(model);
+		if(!dropdownsInited) {
+			setContactTypes(DictionaryCache.getListByCategorySystemName("contact_type"));
+			setCountriesModel(DictionaryCache.getListByCategorySystemName("country"));
+			setStatesModel(DictionaryCache.getListByCategorySystemName("state"));
+			dropdownsInited = true;
 		}                
 		DataChangeEvent.fire(this);
 	}
