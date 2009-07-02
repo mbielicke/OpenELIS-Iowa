@@ -53,6 +53,7 @@ import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.SecurityModule.ModuleFlags;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.QueryField;
+import org.openelis.gwt.common.rewrite.QueryData;
 import org.openelis.local.AddressLocal;
 import org.openelis.local.LockLocal;
 import org.openelis.metamap.OrganizationMetaMap;
@@ -333,32 +334,65 @@ public class OrganizationBean implements OrganizationRemote {
 	private void validateContactAndAddress(OrganizationContactDO orgContactDO, int rowIndex, ValidationErrorsList exceptionList){
 		//contact type required
 		if(orgContactDO.getContactType() == null || "".equals(orgContactDO.getContactType())){
-			exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex, OrgMeta.ORGANIZATION_CONTACT.getContactTypeId()));
+			exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex, OrgMeta.ORGANIZATION_CONTACT.getContactTypeId(),"contactsTable"));
 		}
 
 		//name required
 		if(orgContactDO.getName() == null || "".equals(orgContactDO.getName())){
-			exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex, OrgMeta.ORGANIZATION_CONTACT.getName()));
+			exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex, OrgMeta.ORGANIZATION_CONTACT.getName(),"contactsTable"));
 		}
 		
 		//street address required
 		if(orgContactDO.getAddressDO().getStreetAddress() == null || "".equals(orgContactDO.getAddressDO().getStreetAddress())){
-			exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex, OrgMeta.ORGANIZATION_CONTACT.ADDRESS.getStreetAddress()));
+			exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex, OrgMeta.ORGANIZATION_CONTACT.ADDRESS.getStreetAddress(),"contactsTable"));
 		}
 		
 		//city required
 		if(orgContactDO.getAddressDO().getCity() == null || "".equals(orgContactDO.getAddressDO().getCity())){
-			exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex, OrgMeta.ORGANIZATION_CONTACT.ADDRESS.getCity()));	
+			exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex, OrgMeta.ORGANIZATION_CONTACT.ADDRESS.getCity(),"contactsTable"));	
 		}
 		
 		//zipcode required
 		if(orgContactDO.getAddressDO().getZipCode() == null || "".equals(orgContactDO.getAddressDO().getZipCode())){
-			exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex, OrgMeta.ORGANIZATION_CONTACT.ADDRESS.getZipCode()));
+			exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex, OrgMeta.ORGANIZATION_CONTACT.ADDRESS.getZipCode(),"contactsTable"));
 		}
 		
 		//country required
 		if(orgContactDO.getAddressDO().getCountry() == null || "".equals(orgContactDO.getAddressDO().getCountry())){
-			exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex, OrgMeta.ORGANIZATION_CONTACT.ADDRESS.getCountry()));
+			exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex, OrgMeta.ORGANIZATION_CONTACT.ADDRESS.getCountry(),"contactsTable"));
 		}		
+	}
+
+	public ArrayList<IdNameDO> newQuery(ArrayList<QueryData> fields, int first,
+			int max) throws Exception {
+        StringBuffer sb = new StringBuffer();
+        QueryBuilder qb = new QueryBuilder();
+
+        qb.setMeta(OrgMeta);
+      
+        qb.setSelect("distinct new org.openelis.domain.IdNameDO("+OrgMeta.getId()+", "+OrgMeta.getName()+") ");
+       
+        //this method is going to throw an exception if a column doesnt match
+       
+        qb.addNewWhere(fields);      
+
+        qb.setOrderBy(OrgMeta.getName());
+       
+        sb.append(qb.getEJBQL());
+
+        Query query = manager.createQuery(sb.toString());
+        
+        if(first > -1 && max > -1)
+         query.setMaxResults(first+max);
+        
+//      ***set the parameters in the query
+        qb.setNewQueryParams(query,fields);
+        
+        ArrayList<IdNameDO> returnList = (ArrayList<IdNameDO>)GetPage.getPage(query.getResultList(), first, max);
+        
+        if(returnList == null)
+         throw new LastPageException();
+        else
+         return returnList;
 	}
 }
