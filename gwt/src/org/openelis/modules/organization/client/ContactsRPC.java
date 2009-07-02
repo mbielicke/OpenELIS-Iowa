@@ -9,7 +9,7 @@ import org.openelis.gwt.common.RPC;
 public class ContactsRPC implements RPC {
 
 	private static final long serialVersionUID = 1L;
+	
 	public Integer orgId;
-    public ArrayList<IdNameDO> contactTypes;
 	public ArrayList<OrganizationContactDO> orgContacts;
 }

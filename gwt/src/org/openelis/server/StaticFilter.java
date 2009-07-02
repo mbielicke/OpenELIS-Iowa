@@ -127,9 +127,9 @@ public class StaticFilter implements Filter {
                     is = new FileInputStream(propFile);
                
                     props.load(is);
-                    props.setProperty(Context.INITIAL_CONTEXT_FACTORY,
+                    props.setProperty(InitialContext.INITIAL_CONTEXT_FACTORY,
                     "org.jboss.security.jndi.LoginInitialContextFactory");
-                    props.setProperty(Context.SECURITY_PROTOCOL, "other");
+                    props.setProperty(InitialContext.SECURITY_PROTOCOL, "other");
                     props.setProperty(InitialContext.SECURITY_CREDENTIALS,password);
                     props.setProperty(Context.SECURITY_PRINCIPAL, username);
                     InitialContext ctx = new InitialContext(props);
