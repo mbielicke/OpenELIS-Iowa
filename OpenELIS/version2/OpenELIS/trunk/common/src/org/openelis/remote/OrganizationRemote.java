@@ -24,10 +24,12 @@
 * UIRF Software License are applicable instead of those above. 
 */
 package org.openelis.remote;
+import org.openelis.domain.IdNameDO;
 import org.openelis.domain.NoteDO;
 import org.openelis.domain.OrganizationAddressDO;
 import org.openelis.domain.OrganizationContactDO;
 import org.openelis.gwt.common.data.AbstractField;
+import org.openelis.gwt.common.rewrite.QueryData;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,6 +58,8 @@ public interface OrganizationRemote {
 	
 	//method to query for organizations
 	 public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception;
+	 
+	 public ArrayList<IdNameDO> newQuery(ArrayList<QueryData> fields, int first, int max) throws Exception;
 	 
 	 //auto complete lookup
 	 public List autoCompleteLookupByName(String orgName, int maxResults);
