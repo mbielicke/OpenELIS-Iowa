@@ -51,4 +51,6 @@ public interface TestTrailerRemote {
 	 public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception;
 	 
 	 public void deleteTestTrailer(Integer testTrailerId) throws Exception;
+	 
+	 public List getTestTrailerAutoCompleteByName(String match, int maxResults);
 }

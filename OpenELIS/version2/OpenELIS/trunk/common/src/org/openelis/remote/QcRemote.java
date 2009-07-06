@@ -30,26 +30,29 @@ import java.util.List;
 
 import javax.ejb.Remote;
 
-import org.openelis.domain.QaEventDO;
+import org.openelis.domain.IdNameDO;
+import org.openelis.domain.IdNameLotNumberDO;
+import org.openelis.domain.QcAnalyteDO;
+import org.openelis.domain.QcDO;
+import org.openelis.domain.SecuritySystemUserDO;
 import org.openelis.gwt.common.data.AbstractField;
 
 @Remote
-public interface QaEventRemote {
-   
-    // method to return QaEvent 
-    public QaEventDO getQaEvent(Integer qaEventId);
+public interface QcRemote {
     
-    public QaEventDO getQaEventAndUnlock(Integer qaEventId, String session);
+    public QcDO getQc(Integer qcId);
     
-    public QaEventDO getQaEventAndLock(Integer qaEventId, String session)throws Exception;    
-     
-    //  commit a change to QaEvent, or insert a new provider
-    public Integer updateQaEvent(QaEventDO qaEventDO)throws Exception;
+    public QcDO getQcAndUnlock(Integer qcId, String session);
     
-    //  method to query for QaEvent
-    public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception;
-        
-    //method to get all the tests for a given QaEvent
-    public List getTestNames();  
-        
+    public QcDO getQcAndLock(Integer qcId, String session)throws Exception;
+    
+    public Integer updateQc(QcDO qcDO, List<QcAnalyteDO> qcAnaDOList)throws Exception;
+    
+    public List<QcAnalyteDO> getQcAnalytes(Integer qcId);
+    
+    public List<IdNameLotNumberDO> query(ArrayList<AbstractField> fields, int first, int max) throws Exception;
+    
+    public List<SecuritySystemUserDO> preparedByAutocompleteByName(String loginName, int numResult);
+    
+    public List<IdNameDO> qcAutocompleteByName(String name, int numResult);
 }

@@ -43,18 +43,12 @@ public interface LabelRemote {
     public LabelDO getLabelAndLock(Integer labelId, String session)throws Exception;    
      
     //  commit a change to Label or insert a new Label
-    public Integer updateLabel(LabelDO sysVarDO)throws Exception;
+    public Integer updateLabel(LabelDO labelDO)throws Exception;
     
     //  method to query for Label
     public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception;
     
-    public List<Object[]> getScriptlets();
+    public void deleteLabel(LabelDO labelDO) throws Exception;
     
-    public List<Exception> validateForAdd(LabelDO labelDO);
-    
-    public List<Exception> validateForUpdate(LabelDO labelDO);
-    
-    public List<Exception> validateForDelete(Integer labelId);
-    
-    public void deleteLabel(Integer labelId) throws Exception;
+    public List getLabelAutoCompleteByName(String match,int maxResults);
 }

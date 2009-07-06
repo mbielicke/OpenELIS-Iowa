@@ -29,7 +29,6 @@ package org.openelis.remote;
 import org.openelis.domain.AuxFieldDO;
 import org.openelis.domain.AuxFieldGroupDO;
 import org.openelis.domain.AuxFieldValueDO;
-import org.openelis.domain.IdNameDO;
 import org.openelis.gwt.common.data.AbstractField;
 
 import java.util.ArrayList;
@@ -58,5 +57,4 @@ public interface AuxiliaryRemote {
 
   public List getMatchingEntries(String name,int maxResults,String cat);
 
-  public List<IdNameDO> getScriptletDropDownValues();
 }

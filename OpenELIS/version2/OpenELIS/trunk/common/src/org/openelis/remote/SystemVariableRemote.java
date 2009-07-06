@@ -48,12 +48,7 @@ public interface SystemVariableRemote {
     
     //  method to query for SystemVariable
     public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception;
-    
-    
+        
     public void deleteSystemVariable(Integer sysVarId) throws Exception;
-    
-    public List<Exception> validateforAdd(SystemVariableDO sysVarDO);
-    
-    public List<Exception> validateforUpdate(SystemVariableDO sysVarDO);
        
 }

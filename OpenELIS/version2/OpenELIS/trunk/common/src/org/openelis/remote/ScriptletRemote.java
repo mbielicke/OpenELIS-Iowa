@@ -25,31 +25,12 @@
 */
 package org.openelis.remote;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.ejb.Remote;
 
-import org.openelis.domain.QaEventDO;
-import org.openelis.gwt.common.data.AbstractField;
-
-@Remote
-public interface QaEventRemote {
-   
-    // method to return QaEvent 
-    public QaEventDO getQaEvent(Integer qaEventId);
+@Remote  
+public interface ScriptletRemote {
     
-    public QaEventDO getQaEventAndUnlock(Integer qaEventId, String session);
-    
-    public QaEventDO getQaEventAndLock(Integer qaEventId, String session)throws Exception;    
-     
-    //  commit a change to QaEvent, or insert a new provider
-    public Integer updateQaEvent(QaEventDO qaEventDO)throws Exception;
-    
-    //  method to query for QaEvent
-    public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception;
-        
-    //method to get all the tests for a given QaEvent
-    public List getTestNames();  
-        
+    public List getScriptletAutoCompleteByName(String match, int maxResults);
 }

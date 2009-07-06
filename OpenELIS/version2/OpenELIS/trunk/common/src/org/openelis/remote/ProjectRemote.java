@@ -52,8 +52,6 @@ public interface ProjectRemote {
     
     public List<ProjectParameterDO> getProjectParameters(Integer projectId);
     
-    public List<SecuritySystemUserDO> ownerAutocompleteByName(String loginName, int numResult);
-    
-    public List getScriptletDropDownValues();
+    public List<SecuritySystemUserDO> ownerAutocompleteByName(String loginName, int numResult);   
     
 }
