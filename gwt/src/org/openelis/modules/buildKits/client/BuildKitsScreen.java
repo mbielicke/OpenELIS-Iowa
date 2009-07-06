@@ -59,6 +59,7 @@ import org.openelis.modules.main.client.OpenELISScreenForm;
 
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.SyncCallback;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.TextBox;
@@ -203,7 +204,7 @@ public class BuildKitsScreen extends OpenELISScreenForm<BuildKitsForm,Query<Tabl
         currentKitDropdownValue = null;
     }
     
-    protected AsyncCallback afterCommitUpdate = new AsyncCallback() {
+    protected SyncCallback afterCommitUpdate = new SyncCallback() {
         public void onSuccess(Object result){
             subItemsTable.model.enableAutoAdd(false);
         }
@@ -213,7 +214,7 @@ public class BuildKitsScreen extends OpenELISScreenForm<BuildKitsForm,Query<Tabl
         }
   };
     
-    protected AsyncCallback afterCommitAdd = new AsyncCallback() {
+    protected SyncCallback afterCommitAdd = new SyncCallback() {
       public void onFailure(Throwable caught) {
           
       }

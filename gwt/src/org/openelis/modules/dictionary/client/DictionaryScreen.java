@@ -26,18 +26,13 @@
 package org.openelis.modules.dictionary.client;
 
 
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.Widget;
-
 import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.Query;
+import org.openelis.gwt.common.data.KeyListManager;
+import org.openelis.gwt.common.data.QueryStringField;
 import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.TableDataModel;
 import org.openelis.gwt.common.data.TableDataRow;
-import org.openelis.gwt.common.data.KeyListManager;
-import org.openelis.gwt.common.data.QueryStringField;
 import org.openelis.gwt.screen.CommandChain;
 import org.openelis.gwt.screen.ScreenInputWidget;
 import org.openelis.gwt.widget.AppButton;
@@ -52,6 +47,12 @@ import org.openelis.gwt.widget.table.event.SourcesTableWidgetEvents;
 import org.openelis.gwt.widget.table.event.TableWidgetListener;
 import org.openelis.metamap.CategoryMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
+
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.SyncCallback;
+import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.Widget;
 
 public class DictionaryScreen extends OpenELISScreenForm<DictionaryForm,Query<TableDataRow<Integer>>> implements ClickListener,
                                                                     TableManager,
@@ -136,7 +137,7 @@ public class DictionaryScreen extends OpenELISScreenForm<DictionaryForm,Query<Ta
         super.abort();
     }
     
-    protected AsyncCallback afterUpdate = new AsyncCallback() {
+    protected SyncCallback afterUpdate = new SyncCallback() {
         public void onFailure(Throwable caught) {
             Window.alert(caught.getMessage());
         }
@@ -146,7 +147,7 @@ public class DictionaryScreen extends OpenELISScreenForm<DictionaryForm,Query<Ta
         }
     };   
 
-    protected AsyncCallback<DictionaryForm> commitUpdateCallback = new AsyncCallback<DictionaryForm>() {
+    protected SyncCallback<DictionaryForm> commitUpdateCallback = new SyncCallback<DictionaryForm>() {
         public void onSuccess(DictionaryForm result) {
             if (form.status != Form.Status.invalid)                                
                 dictEntryController.model.enableAutoAdd(false); 
@@ -157,7 +158,7 @@ public class DictionaryScreen extends OpenELISScreenForm<DictionaryForm,Query<Ta
         }
     };
 
-    protected AsyncCallback<DictionaryForm> commitAddCallback = new AsyncCallback<DictionaryForm>() {
+    protected SyncCallback<DictionaryForm> commitAddCallback = new SyncCallback<DictionaryForm>() {
         public void onSuccess(DictionaryForm result) {
             if (form.status != Form.Status.invalid)                                
                 dictEntryController.model.enableAutoAdd(false); 

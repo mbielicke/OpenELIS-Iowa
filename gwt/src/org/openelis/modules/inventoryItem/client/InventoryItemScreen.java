@@ -446,6 +446,9 @@ public class InventoryItemScreen extends OpenELISScreenForm<InventoryItemForm, Q
     //start table listener methods
     //
     public void finishedEditing(SourcesTableWidgetEvents sender, final int row, final int col) {
+        if(state == State.QUERY)
+            return;
+        
         DropDownField componentField;
         if(sender == componentsTable){
  

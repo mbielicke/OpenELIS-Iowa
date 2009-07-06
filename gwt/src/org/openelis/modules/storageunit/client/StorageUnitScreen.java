@@ -92,7 +92,7 @@ public class StorageUnitScreen extends OpenELISScreenForm<StorageUnitForm,Query<
 		ArrayList cache;
         TableDataModel<TableDataRow> model;
         cache = DictionaryCache.getListByCategorySystemName("storage_unit_category");
-        model = getDictionaryIdEntryList(cache);
+        model = getDictionaryEntryKeyList(cache);
 		category.setModel(model);
 	}
 	
@@ -104,16 +104,16 @@ public class StorageUnitScreen extends OpenELISScreenForm<StorageUnitForm,Query<
 		}
 	}
 	
-	private TableDataModel<TableDataRow> getDictionaryIdEntryList(ArrayList list){
+	private TableDataModel<TableDataRow> getDictionaryEntryKeyList(ArrayList list){
         if(list == null)
             return null;
         
         TableDataModel<TableDataRow> m = new TableDataModel<TableDataRow>();
         
         for(int i=0; i<list.size(); i++){
-            TableDataRow<Integer> row = new TableDataRow<Integer>(1);
+            TableDataRow<String> row = new TableDataRow<String>(1);
             DictionaryDO dictDO = (DictionaryDO)list.get(i);
-            row.key = dictDO.getId();
+            row.key = dictDO.getEntry();
             row.cells[0] = new StringObject(dictDO.getEntry());
             m.add(row);
         }

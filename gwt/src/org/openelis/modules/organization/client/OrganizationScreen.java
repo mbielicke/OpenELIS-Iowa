@@ -25,19 +25,17 @@
 */
 package org.openelis.modules.organization.client;
 
+import java.util.ArrayList;
+
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.DictionaryDO;
-import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.Query;
-import org.openelis.gwt.common.data.AbstractField;
-import org.openelis.gwt.common.data.FieldType;
 import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.common.data.QueryStringField;
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.common.data.TableDataModel;
 import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.screen.CommandChain;
-import org.openelis.gwt.screen.ScreenBase;
 import org.openelis.gwt.screen.ScreenTabPanel;
 import org.openelis.gwt.screen.ScreenTextArea;
 import org.openelis.gwt.screen.ScreenTextBox;
@@ -48,30 +46,21 @@ import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.CollapsePanel;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.ResultsTable;
-import org.openelis.gwt.widget.table.QueryTable;
 import org.openelis.gwt.widget.table.TableDropdown;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.metamap.OrganizationMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 import org.openelis.modules.standardnotepicker.client.StandardNotePickerScreen;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.SyncCallback;
 import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.SourcesTabEvents;
 import com.google.gwt.user.client.ui.TabListener;
-import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.xml.client.Node;
-import com.google.gwt.xml.client.NodeList;
-import com.google.gwt.xml.client.XMLParser;
 
 public class OrganizationScreen extends OpenELISScreenForm<OrganizationForm,Query<TableDataRow<Integer>>> implements
                                                           ClickListener,
@@ -87,7 +76,6 @@ public class OrganizationScreen extends OpenELISScreenForm<OrganizationForm,Quer
     private Dropdown               states;
     private Dropdown               countries;
     private ScreenTabPanel         tabPanel;
-    private HashMap<String,FieldType> fields;
     
     private OrganizationMetaMap OrgMeta = new OrganizationMetaMap();
    
@@ -185,49 +173,11 @@ public class OrganizationScreen extends OpenELISScreenForm<OrganizationForm,Quer
         ((TableDropdown)contactsTable.columns.get(7).getColumnWidget()).setModel(model);
         
         cache = DictionaryCache.getListByCategorySystemName("contact_type");
-        model = getDictionaryEntryKeyList(cache);
+        model = getDictionaryIdEntryList(cache);
         ((TableDropdown)contactsTable.columns.get(0).getColumnWidget()).setModel(model);
     }
     
-    public void loadScreen(OrganizationForm rpc) {
-        form.load(rpc);
-        load();
-        if (form.status == Form.Status.invalid) {
-            drawErrors();
-        }
-        if(form.getErrors() != null && form.getErrors().size() > 0){
-            if(form.getErrors().size() > 1){
-                window.setMessagePopup((String[])form.getErrors().toArray(new String[form.getErrors().size()]), "ErrorPanel");
-                window.setError("(Error 1 of "+form.getErrors().size()+") "+(String)form.getErrors().get(0));
-            }else
-                window.setError((String)form.getErrors().get(0));
-        }            
-    }
-    /*
-    public void drawScreen(String xmlDef) {
-        xml = XMLParser.parse(xmlDef);
-        draw();
-        this.fields = new HashMap<String,FieldType>();
-            NodeList rpcList = xml.getDocumentElement().getElementsByTagName("rpc");
-            for(int i = 0; i < rpcList.getLength(); i++){
-                if(rpcList.item(i).getNodeType() == Node.ELEMENT_NODE && rpcList.item(i).getNodeName().equals("rpc")){
-                    String key = rpcList.item(i).getAttributes().getNamedItem("key").getNodeValue();
-                    NodeList fields = rpcList.item(i).getChildNodes();
-                    for(int j = 0; j < fields.getLength(); j++){
-                        if(fields.item(j).getNodeType() == Node.ELEMENT_NODE && !fields.item(j).getNodeName().equals("rpc")){
-                            String fkey = fields.item(j).getAttributes().getNamedItem("key").getNodeValue();
-                            FieldType field = (FieldType)ScreenBase.createField(fields.item(j));
-                            if(widgets.get(fkey) != null)
-                                widgets.get(fkey).load((AbstractField)field);
-                            this.fields.put(fkey,field);
-                        }
-                    }
-                }
-            }
-           
-   }
-   */
- 
+    
     public void query() {
         super.query();
         orgId.setFocus(true);
@@ -264,7 +214,7 @@ public class OrganizationScreen extends OpenELISScreenForm<OrganizationForm,Quer
 
 
     public void onTabSelected(SourcesTabEvents sender, int tabIndex) {
-        //form.orgTabPanel = tabPanel.getSelectedTabKey();
+        form.orgTabPanel = tabPanel.getSelectedTabKey();
     }
 
     /*
@@ -303,7 +253,6 @@ public class OrganizationScreen extends OpenELISScreenForm<OrganizationForm,Quer
         screenService.call("loadNotes", form.notes, new AsyncCallback<NotesForm>(){
             public void onSuccess(NotesForm result){    
                 form.notes = result;
-                form.notes.load(form.notes.data);
                 load(form.notes);
                 window.setStatus("","");
             }

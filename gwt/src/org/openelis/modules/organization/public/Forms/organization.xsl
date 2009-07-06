@@ -209,7 +209,7 @@ UIRF Software License are applicable instead of those above.
 							<!-- TAB PANEL -->
 							<TabPanel key="orgTabPanel">
 								<!-- TAB 1 -->
-								<tab key="contacts" text="{resource:getString($constants,'contact')}">
+								<tab key="contactsTab" text="{resource:getString($constants,'contact')}">
 									<VerticalPanel  width="610px" padding="0" spacing="0">
 										<widget valign="top">
 											<table key="contactsTable" maxRows="9" showError="false" showScroll="ALWAYS" title="" width="574px" tab="{meta:getId($org)},{meta:getIsActive($org)}">
@@ -233,21 +233,6 @@ UIRF Software License are applicable instead of those above.
 													<textbox cellKey="{addr:getFaxPhone($contAddr)}" case="mixed"/>
 													<textbox cellKey="{addr:getEmail($contAddr)}" case="mixed"/>
 												</editors>
-                                                <fields>
-                                                    <dropdown key="{contact:getContactTypeId($cont)}" required="true"/>
-                                                    <string key="{contact:getName($cont)}" required="true"/>
-                                                    <string key="{addr:getMultipleUnit($contAddr)}"/>
-                                                    <string key="{addr:getStreetAddress($contAddr)}" required="true"/>
-                                                    <string key="{addr:getCity($contAddr)}" required="true"/>
-                                                    <dropdown key="{addr:getState($contAddr)}" required="false"/>
-                                                    <string key="{addr:getZipCode($contAddr)}" required="true"/>
-                                                    <dropdown key="{addr:getCountry($contAddr)}" required="true"/>
-                                                    <string key="{addr:getWorkPhone($contAddr)}" required="false"/>
-                                                    <string key="{addr:getHomePhone($contAddr)}" required="false"/>
-                                                    <string key="{addr:getCellPhone($contAddr)}" required="false"/>
-                                                    <string key="{addr:getFaxPhone($contAddr)}" required="false"/>
-                                                    <string key="{addr:getEmail($contAddr)}" required="false"/>
-                                                </fields>
 												<sorts>true,true,true,true,true,true,true,true,true,true,true,true,true</sorts>
 												<filters>false,false ,false,false,false,false ,false,false,false,false ,false,false,false</filters>
 
@@ -267,7 +252,7 @@ UIRF Software License are applicable instead of those above.
 									<!-- END TAB 1 -->
 								</tab>
 								<!-- START TAB 2 -->
-								<tab key="identifier" text="{resource:getString($constants,'identifier')}">
+								<tab key="identifierTab" text="{resource:getString($constants,'identifier')}">
 									<VerticalPanel padding="0" spacing="0">
 									<widget valign="top">
 										<table key="identifierstsTable" maxRows="9" showError="false" showScroll="ALWAYS" title="" width="auto">
@@ -340,7 +325,7 @@ UIRF Software License are applicable instead of those above.
 								</tab>
 								<!-- END TAB 2 -->
 								<!-- start TAB 3 -->
-								<tab key="notes" text="{resource:getString($constants,'note')}">
+								<tab key="notesTab" text="{resource:getString($constants,'note')}">
 									<VerticalPanel height="164px" key="secMod3" padding="0" spacing="0" width="100%">
 
 										<TablePanel key="noteFormPanel" layout="table" padding="0" spacing="0" style="Form" xsi:type="Table">
@@ -396,7 +381,21 @@ UIRF Software License are applicable instead of those above.
 				<dropdown key="{addr:getState($addr)}" required="false"/>
 				<dropdown key="{addr:getCountry($addr)}" required="true"/>
 				<rpc key="contacts">
-				  <table key="contactsTable"/>
+				  <table key="contactsTable">
+				  	<dropdown key="{contact:getContactTypeId($cont)}" required="true"/>
+					<string key="{contact:getName($cont)}" required="true"/>
+					<string key="{addr:getMultipleUnit($contAddr)}"/>
+					<string key="{addr:getStreetAddress($contAddr)}" required="true"/>
+					<string key="{addr:getCity($contAddr)}" required="true"/>
+					<dropdown key="{addr:getState($contAddr)}" required="false"/>
+					<string key="{addr:getZipCode($contAddr)}" required="true"/>
+					<dropdown key="{addr:getCountry($contAddr)}" required="true"/>
+					<string key="{addr:getWorkPhone($contAddr)}" required="false"/>
+					<string key="{addr:getHomePhone($contAddr)}" required="false"/>
+					<string key="{addr:getCellPhone($contAddr)}" required="false"/>
+					<string key="{addr:getFaxPhone($contAddr)}" required="false"/>
+					<string key="{addr:getEmail($contAddr)}" required="false"/>
+				  </table>
 				</rpc>
 				<rpc key="notes">
 				  <string key="{note:getSubject($note)}" max="60" required="false"/>

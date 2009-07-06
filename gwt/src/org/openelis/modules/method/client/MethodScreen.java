@@ -26,6 +26,7 @@
 package org.openelis.modules.method.client;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.SyncCallback;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.TextBox;
 
@@ -112,7 +113,7 @@ public class MethodScreen extends OpenELISScreenForm<MethodForm,Query<TableDataR
     }
   
     
-    protected AsyncCallback afterUpdate = new AsyncCallback() {
+    protected SyncCallback afterUpdate = new SyncCallback() {
         public void onFailure(Throwable caught) {   
         }
         public void onSuccess(Object result) {

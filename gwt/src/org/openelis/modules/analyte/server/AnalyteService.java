@@ -138,7 +138,7 @@ public class AnalyteService implements AppScreenFormServiceInt<AnalyteForm,Query
 		// send the changes to the database
 		Integer analyteId;
 		try{
-			analyteId = (Integer) remote.updateAnalyte(newAnalyteDO);
+			analyteId = (Integer) remote.updateAnalyte(newAnalyteDO, SessionManager.getSession().getId());
 		}catch(Exception e){
             if(e instanceof ValidationErrorsList){
                 setRpcErrors(((ValidationErrorsList)e).getErrorList(), rpc);
@@ -165,7 +165,7 @@ public class AnalyteService implements AppScreenFormServiceInt<AnalyteForm,Query
     		
     		//send the changes to the database
     		try{
-    			remote.updateAnalyte(newAnalyteDO);
+    			remote.updateAnalyte(newAnalyteDO, SessionManager.getSession().getId());
     		}catch(Exception e){
                 if(e instanceof ValidationErrorsList){
                     setRpcErrors(((ValidationErrorsList)e).getErrorList(), rpc);
@@ -185,7 +185,7 @@ public class AnalyteService implements AppScreenFormServiceInt<AnalyteForm,Query
 		AnalyteRemote remote = (AnalyteRemote)EJBFactory.lookup("openelis/AnalyteBean/remote");
 		
 		try {
-			remote.deleteAnalyte(rpc.entityKey);
+			remote.deleteAnalyte(rpc.entityKey, SessionManager.getSession().getId());
 			
 		} catch (Exception e) {
             if(e instanceof ValidationErrorsList){
