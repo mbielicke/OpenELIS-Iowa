@@ -25,13 +25,28 @@
 */
 package org.openelis.remote;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.ejb.Remote;
+
+import org.openelis.domain.SectionDO;
+import org.openelis.gwt.common.data.AbstractField;
 
 @Remote
 public interface SectionRemote {
 
     public List getAutoCompleteSectionByName(String name, int maxResults);
     
+    public SectionDO getSection(Integer sectionId);
+    
+    public SectionDO getSectionAndUnlock(Integer sectionId, String session);
+    
+    public SectionDO getSectionAndLock(Integer sectionId, String session)throws Exception;
+    
+    public Integer updateSection(SectionDO sectionDO)throws Exception;
+    
+    public List query(ArrayList<AbstractField> fields, int first, int max)throws Exception;
+    
+    public List<SectionDO> getSectionDOList();    
 }

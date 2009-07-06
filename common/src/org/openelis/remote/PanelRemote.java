@@ -51,10 +51,6 @@ public interface PanelRemote {
     
     public void deletePanel(Integer panelId)throws Exception;
     
-    public List validateForUpdate(PanelDO panelDO, List<PanelItemDO> panelItemDOList);
-    
-    public List validateForAdd(PanelDO panelDO, List<PanelItemDO> panelItemDOList);
-    
     public List getTestMethodNames();
     
 }

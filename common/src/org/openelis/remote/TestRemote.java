@@ -86,20 +86,8 @@ public interface TestRemote {
                               List<TestResultDO> resultDOList) throws Exception;
     
     public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception;
-
-    public List getLabelDropDownValues();
-
-    public List getTestTrailerDropDownValues();
-
-    public List getScriptletDropDownValues();
-
-    public List getPrepTestDropDownValues();
     
-    public List getSectionDropDownValues();
-    
-    public List getTestAnalyteDropDownValues(Integer testId);
-    
-    public List getTestWSItemTypeDropDownValues();
+    public List getTestAnalyteDropDownValues(Integer testId);    
     
     public List getTestResultsForTestAnalyte(Integer testId,Integer analyteId);
     
