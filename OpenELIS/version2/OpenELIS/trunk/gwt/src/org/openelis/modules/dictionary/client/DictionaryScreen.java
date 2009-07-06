@@ -26,13 +26,24 @@
 package org.openelis.modules.dictionary.client;
 
 
+import java.util.ArrayList;
+
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.SyncCallback;
+import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.Widget;
+
+import org.openelis.cache.SectionCache;
+import org.openelis.domain.SectionDO;
 import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.Query;
-import org.openelis.gwt.common.data.KeyListManager;
-import org.openelis.gwt.common.data.QueryStringField;
 import org.openelis.gwt.common.data.StringField;
+import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.common.data.TableDataModel;
 import org.openelis.gwt.common.data.TableDataRow;
+import org.openelis.gwt.common.data.KeyListManager;
+import org.openelis.gwt.common.data.QueryStringField;
 import org.openelis.gwt.screen.CommandChain;
 import org.openelis.gwt.screen.ScreenInputWidget;
 import org.openelis.gwt.widget.AppButton;
@@ -41,18 +52,13 @@ import org.openelis.gwt.widget.CollapsePanel;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.ResultsTable;
 import org.openelis.gwt.widget.AppButton.ButtonState;
+import org.openelis.gwt.widget.table.TableDropdown;
 import org.openelis.gwt.widget.table.TableManager;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.gwt.widget.table.event.SourcesTableWidgetEvents;
 import org.openelis.gwt.widget.table.event.TableWidgetListener;
 import org.openelis.metamap.CategoryMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
-
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.rpc.SyncCallback;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.Widget;
 
 public class DictionaryScreen extends OpenELISScreenForm<DictionaryForm,Query<TableDataRow<Integer>>> implements ClickListener,
                                                                     TableManager,
@@ -72,11 +78,18 @@ public class DictionaryScreen extends OpenELISScreenForm<DictionaryForm,Query<Ta
     }
     
     public void afterDraw(boolean success) {       
-        ResultsTable atozTable = (ResultsTable) getWidget("azTable");
-        ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
-        ButtonPanel bpanel = (ButtonPanel)getWidget("buttons");
+        ResultsTable atozTable;
+        ButtonPanel atozButtons;
+        ButtonPanel bpanel;
+        ArrayList cache;
+        TableDataModel<TableDataRow> model;
+        CommandChain chain;
         
-        CommandChain chain = new CommandChain();
+        atozTable = (ResultsTable) getWidget("azTable");
+        atozButtons = (ButtonPanel)getWidget("atozButtons");
+        bpanel = (ButtonPanel)getWidget("buttons");
+        chain = new CommandChain();
+        
         chain.addCommand(this);
         chain.addCommand(keyList);
         chain.addCommand(bpanel);
@@ -94,10 +107,11 @@ public class DictionaryScreen extends OpenELISScreenForm<DictionaryForm,Query<Ta
                 
         displaySection = (Dropdown)getWidget(CatMap.getSectionId());       
                      
-        setSectionsModel(form.sections);
-        form.sections = null;
+        cache = SectionCache.getSectionList();
+        model = getSectionList(cache);
+        displaySection.setModel(model);
         
-        // override the callbacks
+        //override the callbacks
         updateChain.add(afterUpdate);
         commitUpdateChain.add(commitUpdateCallback);
         commitAddChain.add(commitAddCallback);
@@ -137,12 +151,12 @@ public class DictionaryScreen extends OpenELISScreenForm<DictionaryForm,Query<Ta
         super.abort();
     }
     
-    protected SyncCallback afterUpdate = new SyncCallback() {
+    protected SyncCallback<DictionaryForm> afterUpdate = new SyncCallback<DictionaryForm>() {
         public void onFailure(Throwable caught) {
             Window.alert(caught.getMessage());
         }
 
-        public void onSuccess(Object result) {
+        public void onSuccess(DictionaryForm result) {
             dictEntryController.model.enableAutoAdd(true);             
         }
     };   
@@ -268,8 +282,26 @@ public class DictionaryScreen extends OpenELISScreenForm<DictionaryForm,Query<Ta
         
     }
     
-    private void setSectionsModel(TableDataModel model) {
-        displaySection.setModel(model);   
+    private TableDataModel<TableDataRow> getSectionList(ArrayList list){
+        TableDataModel<TableDataRow> m;
+        TableDataRow<Integer> row;
+        SectionDO sectDO;
+        
+        if(list == null)
+            return null;
+        
+        m = new TableDataModel<TableDataRow>();
+        m.add(new TableDataRow<Integer>(null,new StringObject("")));
+        
+        for(int i=0; i<list.size(); i++){
+            row = new TableDataRow<Integer>(1);
+            sectDO = (SectionDO)list.get(i);
+            row.key = sectDO.getId();
+            row.cells[0] = new StringObject(sectDO.getName());
+            m.add(row);
+        }
+        
+        return m;
     }
     
 }
