@@ -17,6 +17,7 @@ public class QcMeta implements Meta {
               ID					="id",
               NAME					="name",
               TYPE_ID					="typeId",
+              INVENTORY_ITEM_ID         = "inventoryItemId", 
               SOURCE					="source",
               LOT_NUMBER					="lotNumber",
               PREPARED_DATE					="preparedDate",
@@ -28,7 +29,7 @@ public class QcMeta implements Meta {
               IS_SINGLE_USE					="isSingleUse";
 
   	private static final String[] columnNames = {
-  	  ID,NAME,TYPE_ID,SOURCE,LOT_NUMBER,PREPARED_DATE,PREPARED_VOLUME,PREPARED_UNIT_ID,PREPARED_BY_ID,USABLE_DATE,EXPIRE_DATE,IS_SINGLE_USE};
+  	  ID,NAME,TYPE_ID,INVENTORY_ITEM_ID,SOURCE,LOT_NUMBER,PREPARED_DATE,PREPARED_VOLUME,PREPARED_UNIT_ID,PREPARED_BY_ID,USABLE_DATE,EXPIRE_DATE,IS_SINGLE_USE};
   	  
 	private HashSet<String> columnHashList;
     
@@ -72,6 +73,10 @@ public class QcMeta implements Meta {
     public String getTypeId() {
         return path + TYPE_ID;
     } 
+    
+    public String getInventoryItemId() {
+        return path + INVENTORY_ITEM_ID;
+    }
 
     public String getSource() {
         return path + SOURCE;
