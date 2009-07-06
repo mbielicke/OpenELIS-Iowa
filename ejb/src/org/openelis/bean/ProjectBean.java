@@ -171,8 +171,7 @@ public class ProjectBean implements ProjectRemote {
         
         if(projectId == null) {
             project = new Project();
-        } else {
-            lockBean.getLock(projectReferenceId, projectId);
+        } else {            
             project = manager.find(Project.class,projectId);
         } 
         
@@ -253,11 +252,6 @@ public class ProjectBean implements ProjectRemote {
             return returnList;
     }
     
-    public List getScriptletDropDownValues() {
-        Query query = manager.createNamedQuery("Scriptlet.Scriptlet");
-        List scriptletList = query.getResultList();
-        return scriptletList;
-    }
         
     private void validateProject(ProjectDO projectDO, 
                                  List<ProjectParameterDO> paramDOList) throws Exception{
@@ -324,8 +318,8 @@ public class ProjectBean implements ProjectRemote {
                         }
                         
                         qcompleteDate = project.getCompletedDate();
-                        qstartDate = project.getStartedDate();                                    
-                        if(qstartDate !=null && qcompleteDate != null) {
+                        qstartDate = project.getStartedDate();                           
+                        if(qstartDate != null && qcompleteDate != null) {
                             if (qstartDate.before(dcompleteDate) && (qcompleteDate.after(dstartDate))) {
                                 overlap = true;
                             } else if (qstartDate.before(dstartDate) && (qcompleteDate.after(dcompleteDate))) {

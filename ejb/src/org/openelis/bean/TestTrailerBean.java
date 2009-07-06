@@ -82,7 +82,7 @@ public class TestTrailerBean implements TestTrailerRemote{
     	Query lockQuery = manager.createNamedQuery("getTableId");
 		lockQuery.setParameter("name", "test_trailer");
 		Integer testTrailerTableId = (Integer)lockQuery.getSingleResult();
-        lockBean.getLock(testTrailerTableId, testTrailerId);
+        lockBean.validateLock(testTrailerTableId, testTrailerId);
         
         validateForDelete(testTrailerId);
         
@@ -247,4 +247,13 @@ public class TestTrailerBean implements TestTrailerRemote{
 		if(list.size() > 0)
             throw list;
 	}
+
+    public List getTestTrailerAutoCompleteByName(String match, int maxResults) {
+        Query query = null;
+        query = manager.createNamedQuery("TestTrailer.AutocompleteByName");
+        query.setParameter("name", match);
+        query.setMaxResults(maxResults);
+        
+        return query.getResultList();
+    }
 }

@@ -188,7 +188,6 @@ public class ProviderBean implements ProviderRemote, ProviderLocal {
             provider = new Provider();
         } 
         else{
-            lockBean.getLock(providerReferenceId, providerId);
             provider = manager.find(Provider.class, providerDO.getId());
         }            
             

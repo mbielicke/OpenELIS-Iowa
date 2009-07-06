@@ -31,7 +31,7 @@ import org.openelis.entity.Label;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.RPCException;
+import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.local.LockLocal;
 import org.openelis.metamap.LabelMetaMap;
@@ -107,11 +107,8 @@ public class LabelBean implements LabelRemote {
         StringBuffer sb = new StringBuffer();
         QueryBuilder qb = new QueryBuilder();    
         
-        //LabelMeta labelMeta = LabelMeta.getInstance();
-        //qb.addMeta(new Meta[]{labelMeta});
         qb.setMeta(Meta);
         qb.setSelect("distinct new org.openelis.domain.IdNameDO("+ Meta.getId() + " , "+ Meta.getName() + ") ");
-        //qb.addTable(labelMeta);
         
         //this method is going to throw an exception if a column doesnt match
         qb.addWhere(fields);
@@ -136,38 +133,34 @@ public class LabelBean implements LabelRemote {
 
     @RolesAllowed("label-update")
     public Integer updateLabel(LabelDO labelDO) throws Exception {
-        Query query = manager.createNamedQuery("getTableId");
+        Query query;
+        Integer labelReferenceId,labelId;
+        Label label;
+                
+        query = manager.createNamedQuery("getTableId");
         query.setParameter("name", "label");
-        Integer labelReferenceId = (Integer)query.getSingleResult();
+        labelReferenceId = (Integer)query.getSingleResult();
         
-        if(labelDO.getId() != null){
-            try {
-                lockBean.validateLock(labelReferenceId,labelDO.getId());
-              } catch(Exception ex) {
-                 throw ex;
-            }
-            lockBean.getLock(labelReferenceId,labelDO.getId());
+        labelId = labelDO.getId();
+        if(labelId != null){
+            lockBean.validateLock(labelReferenceId,labelId);                       
         }
         
         manager.setFlushMode(FlushModeType.COMMIT);
         
-        Label label = null;
-        List<Exception> exceptionList = new ArrayList<Exception>();
-        validateLabel(labelDO,exceptionList);
-        if(exceptionList.size() > 0){
-            throw (RPCException)exceptionList.get(0);
-        } 
-        
-        if(labelDO.getId()==null){
+        label = null;        
+        validateLabel(labelDO);
+                 
+        if(labelId == null){
             label = new Label();            
         }else{
-            label = manager.find(Label.class, labelDO.getId());
+            label = manager.find(Label.class, labelId);
         }                       
         
         label.setName(labelDO.getName());
         label.setDescription(labelDO.getDescription());
         label.setPrinterTypeId(labelDO.getPrinterType());
-        label.setScriptletId(labelDO.getScriptlet());
+        label.setScriptletId(labelDO.getScriptletId());
         
         if(label.getId() == null){
             manager.persist(label);
@@ -183,83 +176,86 @@ public class LabelBean implements LabelRemote {
         return scriptlets;
     }
     
-    public void validateLabel(LabelDO labelDO, List<Exception> exceptionList){
-
-         if("".equals(labelDO.getName())){          
-             exceptionList.add(new FieldErrorException("fieldRequiredException",Meta.getName()));                 
-
-          }                       
-                                
-          if(labelDO.getPrinterType()==null){              
-              exceptionList.add(new FieldErrorException("fieldRequiredException",Meta.getPrinterTypeId()));          
-          } 
-          
-          if(labelDO.getScriptlet()==null){              
-              exceptionList.add(new FieldErrorException("fieldRequiredException",Meta.getScriptletId()));
-         }
-                   
-          
-          
+    public void validateLabel(LabelDO labelDO) throws Exception{
+        ValidationErrorsList exceptionList;
+        List <Object[]> tests;
+        Query query;
+         
+        exceptionList = new ValidationErrorsList();
+        
+        if(!labelDO.getDelete()) {
+            if("".equals(labelDO.getName())){          
+                exceptionList.add(new FieldErrorException("fieldRequiredException",Meta.getName()));                 
+    
+            }                       
+                                    
+            if(labelDO.getPrinterType()==null){              
+                exceptionList.add(new FieldErrorException("fieldRequiredException",Meta.getPrinterTypeId()));          
+            } 
+              
+            if(labelDO.getScriptletId()==null){              
+                exceptionList.add(new FieldErrorException("fieldRequiredException",Meta.getScriptletId()));
+            }
+        } else {
+            tests = null;
+            try{               
+                query = manager.createNamedQuery("Test.IdByLabel");
+                query.setParameter("id", labelDO.getId());
+                tests = query.getResultList();
+            }catch(NoResultException nrex){
+                nrex.printStackTrace();
+            }
+            
+           
+            if(tests != null){ //done to make sure that if an exception was thrown during the execution of the above query 
+                               //then the call tests.size() doesn't make a NullPointerException be thrown            
+                if(tests.size() > 0){ 
+                    exceptionList.add(new FormErrorException("labelDeleteException"));
+                }
+             }
+        }  
+        
+        if(exceptionList.size() > 0)
+            throw exceptionList;
+                                       
     }    
 
     @RolesAllowed("label-delete")
-    public void deleteLabel(Integer labelId) throws Exception {
-        Query lockQuery = manager.createNamedQuery("getTableId");
+    public void deleteLabel(LabelDO labelDO) throws Exception {
+        Integer labelId;
+        Integer labelTableId;
+        Query lockQuery;
+        Label label;
+        
+        labelId = labelDO.getId();                
+        validateLabel(labelDO);
+        
+        lockQuery = manager.createNamedQuery("getTableId");
         lockQuery.setParameter("name", "label");
-        Integer labelTableId = (Integer)lockQuery.getSingleResult();
+        labelTableId = (Integer)lockQuery.getSingleResult();
         lockBean.getLock(labelTableId, labelId);
         
         manager.setFlushMode(FlushModeType.COMMIT);
-        List<Exception> exceptionList = new ArrayList<Exception>();
-        validateForDelete(labelId);
-        if(exceptionList.size() > 0){
-            throw (RPCException)exceptionList.get(0);
-        }
-        Label label = null;
+        label = null;
         
-             label = manager.find(Label.class, labelId);
-             try{
-                 manager.remove(label);
-             }catch (Exception e) {
-                 e.printStackTrace();
-                 throw e;
-             }
+        label = manager.find(Label.class, labelId);
+        try{
+            manager.remove(label);
+        }catch (Exception e) {
+            throw e;
+        }
              
-             lockBean.giveUpLock(labelTableId, labelId); 
-         }
-
-
-    public List<Exception> validateForAdd(LabelDO labelDO) {
-        List<Exception> exceptionList = new ArrayList<Exception>();
-        validateLabel(labelDO,exceptionList);
-        return exceptionList;
+        lockBean.giveUpLock(labelTableId, labelId); 
     }
 
-    public List<Exception> validateForUpdate(LabelDO labelDO) {
-        List<Exception> exceptionList = new ArrayList<Exception>();
-        validateLabel(labelDO,exceptionList);
-        return exceptionList;
-    }
-    
-    public List<Exception> validateForDelete(Integer labelId){
-        List<Exception> exceptionList = new ArrayList<Exception>();        
-        List <Object[]> tests  = null;
-        try{               
-            Query query = manager.createNamedQuery("Test.IdByLabel");
-            query.setParameter("id", labelId);
-            tests = query.getResultList();
-        }catch(NoResultException nrex){
-            nrex.printStackTrace();
-        }
+    public List getLabelAutoCompleteByName(String match, int maxResults) {
+        Query query;
         
-       
-        if(tests!=null){  //done to make sure that if an exception was thrown during the execution of the above query 
-                          //then the call tests.size() doesn't make a NullPointerException be thrown            
-            if(tests.size() > 0){ 
-                exceptionList.add(new FormErrorException("labelDeleteException"));
-            }
-         }
-        return exceptionList;
-     }
+        query = manager.createNamedQuery("Label.AutocompleteByName");
+        query.setParameter("name", match);
+        query.setMaxResults(maxResults);
+        
+        return query.getResultList();
+    }    
     
 }

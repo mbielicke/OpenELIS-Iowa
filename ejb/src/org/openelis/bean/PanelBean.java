@@ -32,7 +32,7 @@ import org.openelis.entity.Panel;
 import org.openelis.entity.PanelItem;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.RPCException;
+import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.local.LockLocal;
 import org.openelis.metamap.PanelMetaMap;
@@ -154,13 +154,8 @@ public class PanelBean implements PanelRemote {
         Integer panelReferenceId = (Integer)query.getSingleResult();
         if (panelDO.getId() != null) {
             // we need to call lock one more time to make sure their lock
-            // didn't expire and someone else grabbed the record
-            try {
-                lockBean.validateLock(panelReferenceId,panelDO.getId());
-              } catch(Exception ex) {
-                 throw ex;
-            }
-            lockBean.getLock(panelReferenceId, panelDO.getId());
+            // didn't expire and someone else grabbed the record            
+            lockBean.validateLock(panelReferenceId,panelDO.getId());                        
         }
         
         manager.setFlushMode(FlushModeType.COMMIT);
@@ -170,50 +165,38 @@ public class PanelBean implements PanelRemote {
             panel = new Panel();
         }else {
             panel = manager.find(Panel.class,panelDO.getId());
-        }
+        }                             
         
-        List<Exception> exceptionList = new ArrayList<Exception>();                        
-        
-        validatePanel(exceptionList,panelDO);
-        if(exceptionList.size() > 0){
-            throw (RPCException)exceptionList.get(0);
-        }
+        validatePanel(panelDO,panelItemDOList);
         
         panel.setDescription(panelDO.getDescription());
         panel.setName(panelDO.getName());
         
         if(panel.getId()==null){
             manager.persist(panel);
-        }
-        
-        exceptionList = new ArrayList<Exception>();
-        validatePanelItems(exceptionList,panelItemDOList);
-        if(exceptionList.size() > 0){
-            throw (RPCException)exceptionList.get(0);
-        }
+        }       
         
         for(int i=0; i < panelItemDOList.size();i++){
             PanelItemDO itemDO = panelItemDOList.get(i);
-            if(itemDO!=null){
-                PanelItem item = null;
-                if(itemDO.getId()==null){
-                    item =  new PanelItem();
-                }else{
-                    item = manager.find(PanelItem.class,itemDO.getId());
-                }
-                if(itemDO.getDelete() && itemDO.getId() != null){                    
-                    manager.remove(item);                                                     
-                }else{
-                    item.setTestName(itemDO.getTestName());
-                    item.setMethodName(itemDO.getMethodName());
-                    item.setPanelId(panel.getId());
-                    item.setSortOrder(itemDO.getSortOrder());                   
+            PanelItem item = null;
+            if(itemDO.getId()==null){
+                item =  new PanelItem();
+            }else{
+                item = manager.find(PanelItem.class,itemDO.getId());
+            }
+            if(itemDO.getDelete() && itemDO.getId() != null){                    
+                manager.remove(item);                                                     
+            }else if(!itemDO.getDelete()){
+                item.setTestName(itemDO.getTestName());
+                item.setMethodName(itemDO.getMethodName());
+                item.setPanelId(panel.getId());
+                item.setSortOrder(itemDO.getSortOrder());                   
                    
                 if(item.getId() == null){
-                        manager.persist(item);
-                    }  
-                }
+                    manager.persist(item);
+                }  
             }
+            
          }
 
         lockBean.giveUpLock(panelReferenceId, panel.getId());
@@ -225,51 +208,51 @@ public class PanelBean implements PanelRemote {
     }
     
     public void deletePanel(Integer panelId)throws Exception{
-       try{ 
-        Query lockQuery = manager.createNamedQuery("getTableId");
-        lockQuery.setParameter("name", "panel");
-        Integer panelTableId = (Integer)lockQuery.getSingleResult();
-        lockBean.getLock(panelTableId, panelId);
+        PanelItem item; 
+        PanelItemDO itemDO;
+        Query query;
+        Integer panelTableId;
+        Panel panel;
+        List<PanelItemDO> list;
+        try{ 
+            query = manager.createNamedQuery("getTableId");
+            query.setParameter("name", "panel");
+            panelTableId = (Integer)query.getSingleResult();
+            lockBean.getLock(panelTableId, panelId);
         
-        manager.setFlushMode(FlushModeType.COMMIT);
+            manager.setFlushMode(FlushModeType.COMMIT);
         
-        Panel panel = manager.find(Panel.class, panelId);
+            panel = manager.find(Panel.class, panelId);
         
-        Query query = manager.createNamedQuery("PanelItem.PanelItemsByPanelId");
-        query.setParameter("id",panelId);
-        List<PanelItemDO> list = query.getResultList();
-        for(int iter = 0; iter < list.size(); iter++){
-          PanelItemDO itemDO = list.get(iter);
-          PanelItem item = manager.find(PanelItem.class, itemDO.getId());
-           manager.remove(item);
-        }
-         manager.remove(panel);
-        lockBean.giveUpLock(panelTableId, panelId);
-       }catch(Exception ex){
-           ex.printStackTrace();
-           throw ex;
-       } 
+            query = manager.createNamedQuery("PanelItem.PanelItemsByPanelId");
+            query.setParameter("id",panelId);
+            list = query.getResultList();
+            for(int iter = 0; iter < list.size(); iter++){
+                itemDO = list.get(iter);
+                item = manager.find(PanelItem.class, itemDO.getId());
+                manager.remove(item);
+            }
+            manager.remove(panel);
+            lockBean.giveUpLock(panelTableId, panelId);
+        }catch(Exception ex){
+            ex.printStackTrace();
+            throw ex;
+        } 
        
     }
-
-    public List validateForAdd(PanelDO panelDO,
-                               List<PanelItemDO> panelItemDOList) {
+    
+    private void validatePanel(PanelDO panelDO,
+                                  List<PanelItemDO> panelItemDOList) throws Exception{
+        ValidationErrorsList exceptionList;
         
-        List<Exception> exceptionList = new ArrayList<Exception>();
+        exceptionList = new ValidationErrorsList();
         validatePanel(exceptionList, panelDO);
         validatePanelItems(exceptionList, panelItemDOList);
-        return exceptionList;
-    }
-
-    public List validateForUpdate(PanelDO panelDO,
-                                  List<PanelItemDO> panelItemDOList) {
-        List<Exception> exceptionList = new ArrayList<Exception>();
-        validatePanel(exceptionList, panelDO);
-        validatePanelItems(exceptionList, panelItemDOList);
-        return exceptionList;
+        if(exceptionList.size() > 0)
+            throw exceptionList;
     }
     
-    private void validatePanel(List<Exception> exceptionList, PanelDO panelDO){
+    private void validatePanel(ValidationErrorsList exceptionList, PanelDO panelDO){
         boolean checkUnique = true;
         if (panelDO.getName() == null || "".equals(panelDO.getName())) {
             exceptionList.add(new FieldErrorException("fieldRequiredException",
@@ -296,7 +279,7 @@ public class PanelBean implements PanelRemote {
         
     }
     
-    private void validatePanelItems(List<Exception> exceptionList,List<PanelItemDO> panelItemDOList){
+    private void validatePanelItems(ValidationErrorsList exceptionList,List<PanelItemDO> panelItemDOList){
         
     }
 
