@@ -36,7 +36,7 @@ import javax.ejb.Remote;
 @Remote
 public interface AnalyteRemote {
 	//commit a change to analyte, or insert a new analyte
-	public Integer updateAnalyte(AnalyteDO analyteDO) throws Exception;
+	public Integer updateAnalyte(AnalyteDO analyteDO, String session) throws Exception;
 	
 	//method to return a whole analyte
 	public AnalyteDO getAnalyte(Integer analyteId);
@@ -53,5 +53,5 @@ public interface AnalyteRemote {
 	 //auto complete lookup
 	 public List autoCompleteLookupByName(String name, int maxResults);
 	 
-	 public void deleteAnalyte(Integer analyteId) throws Exception;
+	 public void deleteAnalyte(Integer analyteId, String session) throws Exception;
 }

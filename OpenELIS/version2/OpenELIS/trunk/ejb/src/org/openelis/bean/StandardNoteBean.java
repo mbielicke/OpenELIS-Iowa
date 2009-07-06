@@ -84,7 +84,7 @@ public class StandardNoteBean implements StandardNoteRemote{
     	Query lockQuery = manager.createNamedQuery("getTableId");
 		lockQuery.setParameter("name", "standard_note");
 		Integer standardNoteTableId = (Integer)lockQuery.getSingleResult();
-        lockBean.validateLock(standardNoteTableId, standardNoteId);
+        lockBean.getLock(standardNoteTableId, standardNoteId);
         
 		manager.setFlushMode(FlushModeType.COMMIT);
 		StandardNote standardNote = null;
