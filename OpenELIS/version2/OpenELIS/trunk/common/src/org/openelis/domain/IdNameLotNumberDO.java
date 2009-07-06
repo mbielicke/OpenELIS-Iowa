@@ -23,37 +23,31 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-
 package org.openelis.domain;
 
 import java.io.Serializable;
 
 import org.openelis.utilcommon.DataBaseUtil;
 
-public class AuxFieldValueDO implements Serializable {
 
-    /**
-     * 
-     */
+
+public class IdNameLotNumberDO implements Serializable{
+
     private static final long serialVersionUID = 1L;
+    protected Integer id;
+    protected String name;
+    protected String lotNumber;
     
-    protected Integer id;             
-    protected Integer auxFieldId;             
-    protected Integer typeId;             
-    protected String value;     
-    private boolean delete = false;
-    
-    public AuxFieldValueDO() {
-      
+    public IdNameLotNumberDO(){
+        
     }
     
-    public AuxFieldValueDO(Integer id,Integer auxFieldId,
-                           Integer typeId,String value) {
+    public IdNameLotNumberDO(Integer id, String name, String lotNumber){
         setId(id);
-        setAuxFieldId(auxFieldId);
-        setTypeId(typeId);
-        setValue(value);
+        setName(name);
+        setLotNumber(lotNumber);
     }
+
 
     public Integer getId() {
         return id;
@@ -63,36 +57,20 @@ public class AuxFieldValueDO implements Serializable {
         this.id = id;
     }
 
-    public Integer getAuxFieldId() {
-        return auxFieldId;
+    public String getName() {
+        return name;
     }
 
-    public void setAuxFieldId(Integer auxFieldId) {
-        this.auxFieldId = auxFieldId;
+    public void setName(String name) {
+        this.name = DataBaseUtil.trim(name);
     }
 
-    public Integer getTypeId() {
-        return typeId;
+    public String getLotNumber() {
+        return lotNumber;
     }
 
-    public void setTypeId(Integer typeId) {
-        this.typeId = typeId;
-    }
-
-    public String getValue() {
-        return value;
-    }
-
-    public void setValue(String value) {
-        this.value = DataBaseUtil.trim(value);
-    }
-
-    public boolean getDelete() {
-        return delete;
-    }
-
-    public void setDelete(boolean delete) {
-        this.delete = delete;
+    public void setLotNumber(String lotNumber) {
+        this.lotNumber = DataBaseUtil.trim(lotNumber);
     }
 
 }

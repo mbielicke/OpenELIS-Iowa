@@ -34,16 +34,19 @@ public class SectionDO implements Serializable {
     private static final long serialVersionUID = 1L;
 
     protected Integer id; 
-    protected Integer applicationId; 
+    protected Integer organizationId; 
+    protected String organizationName; 
+    protected Integer parentSectionId;
     protected String name;
     protected String description;
-    protected Boolean delete;
+    protected String isExternal;
+    protected boolean delete;
     
-    public Boolean getDelete() {
+    public boolean getDelete() {
         return delete;
     }
 
-    public void setDelete(Boolean delete) {
+    public void setDelete(boolean delete) {
         this.delete = delete;
     }
 
@@ -51,15 +54,17 @@ public class SectionDO implements Serializable {
 
     }
 
-    public SectionDO(Integer id,
-                     Integer applicationId,
-                     String name,
-                     String description) {
+    public SectionDO(Integer id,Integer organizationId,String organizationName,
+                     String name,String description,Integer parentSectionId,
+                     String isExternal) {
 
         setId(id);
-        setApplicationId(applicationId);
+        setOrganizationId(organizationId);
+        setOrganizationName(organizationName);
         setName(name);
         setDescription(description);
+        setParentSectionId(parentSectionId);
+        setIsExternal(isExternal);        
     }
     
     public SectionDO(Integer id, String name) {
@@ -67,12 +72,12 @@ public class SectionDO implements Serializable {
         setName(name);
     }
 
-    public Integer getApplicationId() {
-        return applicationId;
+    public Integer getOrganizationId() {
+        return organizationId;
     }
 
-    public void setApplicationId(Integer applicationId) {
-        this.applicationId = applicationId;
+    public void setOrganizationId(Integer organizationId) {
+        this.organizationId = organizationId;
     }
 
     public String getDescription() {
@@ -97,5 +102,29 @@ public class SectionDO implements Serializable {
 
     public void setName(String name) {
         this.name = DataBaseUtil.trim(name);
+    }
+
+    public Integer getParentSectionId() {
+        return parentSectionId;
+    }
+
+    public void setParentSectionId(Integer parentSectionId) {
+        this.parentSectionId = parentSectionId;
+    }
+
+    public String getIsExternal() {
+        return isExternal;
+    }
+
+    public void setIsExternal(String isExternal) {
+        this.isExternal = DataBaseUtil.trim(isExternal);
+    }
+
+    public String getOrganizationName() {
+        return organizationName;
+    }
+
+    public void setOrganizationName(String organizationName) {
+        this.organizationName = DataBaseUtil.trim(organizationName);
     }
 }

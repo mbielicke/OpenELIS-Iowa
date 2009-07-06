@@ -27,6 +27,8 @@ package org.openelis.domain;
 
 import java.io.Serializable;
 
+import org.openelis.utilcommon.DataBaseUtil;
+
 
 public class TestAnalyteDO implements Serializable {
 
@@ -36,27 +38,17 @@ public class TestAnalyteDO implements Serializable {
     private static final long serialVersionUID = 1L;
     
     protected Integer id;             
-
-    protected Integer testId;   
-    
+    protected Integer testId;      
     protected Integer analyteGroup;
-
     protected Integer resultGroup;             
-
     protected Integer sortOrder;             
-
     protected Integer typeId;             
-
-    protected Integer analyteId; 
-    
+    protected Integer analyteId;     
     protected String analyteName;
-
     protected String isReportable;             
-
-    protected Integer scriptletId;
-    
-    private Boolean delete = false;
-    
+    protected Integer scriptletId;    
+    protected String scriptletName;
+    private Boolean delete = false;    
     private Boolean grouped = false;
     
     public TestAnalyteDO() {
@@ -66,18 +58,19 @@ public class TestAnalyteDO implements Serializable {
     public TestAnalyteDO(Integer id,Integer testId,Integer analyteGroup,
                          Integer resultGroup,Integer sortOrder,Integer typeId,
                          Integer analyteId,String analyteName, String isReportable,
-                         Integer scriptletId) {
+                         Integer scriptletId,String scriptletName) {
               
-        this.id = id;
-        this.testId = testId;
-        this.analyteGroup = analyteGroup;
-        this.resultGroup = resultGroup;
-        this.sortOrder = sortOrder;
-        this.typeId = typeId;
-        this.analyteId = analyteId;
-        this.isReportable = isReportable;
-        this.scriptletId = scriptletId;        
-        this.analyteName = analyteName;
+        setId(id);
+        setTestId(testId);
+        setAnalyteGroup(analyteGroup);
+        setResultGroup(resultGroup);
+        setSortOrder(sortOrder);
+        setTypeId(typeId);
+        setAnalyteId(analyteId);
+        setIsReportable(isReportable);
+        setScriptletId(scriptletId);
+        setScriptletName(scriptletName);
+        setAnalyteName(analyteName);        
     }
 
     public Integer getAnalyteGroup() {
@@ -109,7 +102,7 @@ public class TestAnalyteDO implements Serializable {
     }
 
     public void setIsReportable(String isReportable) {
-        this.isReportable = isReportable;
+        this.isReportable = DataBaseUtil.trim(isReportable);
     }
 
     public Integer getResultGroup() {
@@ -173,7 +166,15 @@ public class TestAnalyteDO implements Serializable {
     }
 
     public void setAnalyteName(String analyteName) {
-        this.analyteName = analyteName;
+        this.analyteName = DataBaseUtil.trim(analyteName);
+    }
+
+    public String getScriptletName() {
+        return scriptletName;
+    }
+
+    public void setScriptletName(String scriptletName) {
+        this.scriptletName = DataBaseUtil.trim(scriptletName);
     }
 
 }

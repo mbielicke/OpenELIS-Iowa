@@ -27,22 +27,19 @@ package org.openelis.domain;
 
 import java.io.Serializable;
 
+import org.openelis.utilcommon.DataBaseUtil;
+
 
 public class TestPrepDO implements Serializable {
 
-    /**
-     * 
-     */
-    private static final long serialVersionUID = -6296795961699696776L;
+    private static final long serialVersionUID = 1L;
     
     protected Integer id;             
-
     protected Integer testId;             
-
     protected Integer prepTestId;             
-
-    protected String isOptional;
-    
+    protected String prepTestName;             
+    protected String methodName;
+    protected String isOptional;           
     protected Boolean delete = false;
     
     public TestPrepDO(){
@@ -50,11 +47,14 @@ public class TestPrepDO implements Serializable {
     }
     
     public TestPrepDO(Integer id,Integer testId,
-                      Integer prepTestId,String isOptional){        
-        this.id = id;
-        this.testId = testId;
-        this.prepTestId = prepTestId;
-        this.isOptional = isOptional;        
+                      Integer prepTestId,String prepTestName,
+                      String methodName,String isOptional){        
+        setId(id);
+        setTestId(testId);
+        setPrepTestId(prepTestId);
+        setPrepTestName(prepTestName);
+        setMethodName(methodName);
+        setIsOptional(isOptional);              
     }
 
     public Integer getId() {
@@ -70,7 +70,7 @@ public class TestPrepDO implements Serializable {
     }
 
     public void setIsOptional(String isOptional) {
-        this.isOptional = isOptional;
+        this.isOptional = DataBaseUtil.trim(isOptional);
     }
 
     public Integer getPrepTestId() {
@@ -95,6 +95,22 @@ public class TestPrepDO implements Serializable {
 
     public void setDelete(Boolean delete) {
         this.delete = delete;
+    }
+
+    public String getPrepTestName() {
+        return prepTestName;
+    }
+
+    public void setPrepTestName(String prepTestName) {
+        this.prepTestName = DataBaseUtil.trim(prepTestName);
+    }
+
+    public String getMethodName() {
+        return methodName;
+    }
+
+    public void setMethodName(String methodName) {
+        this.methodName = DataBaseUtil.trim(methodName);
     }         
 
 }

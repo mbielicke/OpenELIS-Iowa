@@ -34,7 +34,7 @@ public class TestResultDO implements Serializable {
     /**
      * 
      */
-    private static final long serialVersionUID = 8348989200199215217L;
+    private static final long serialVersionUID = 1L;
     
     protected Integer id;             
     protected Integer testId;             
@@ -48,7 +48,6 @@ public class TestResultDO implements Serializable {
     protected String quantLimit;             
     protected String contLevel;      
     protected String hazardLevel;
-    protected String dictEntry;
     protected Integer unitOfMeasureId;   
     private boolean delete;
     
@@ -179,14 +178,6 @@ public class TestResultDO implements Serializable {
 
     public void setDelete(boolean delete) {
         this.delete = delete;
-    }
-
-    public String getDictEntry() {
-        return dictEntry;
-    }
-
-    public void setDictEntry(String dictEntry) {
-        this.dictEntry = DataBaseUtil.trim(dictEntry);
     }
 
     public Integer getUnitOfMeasureId() {

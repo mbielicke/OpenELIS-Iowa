@@ -37,8 +37,10 @@ public class QaEventDO implements Serializable {
     protected Integer id;    
     protected String name;       
     protected String description;        
-    protected Integer test;            
-    protected Integer type;            
+    protected Integer testId;     
+    protected String testName;
+    protected String methodName;
+    protected Integer typeId;            
     protected String isBillable;       
     protected Integer reportingSequence;
     protected String reportingText;
@@ -47,12 +49,17 @@ public class QaEventDO implements Serializable {
         
     }        
 
-    public QaEventDO(Integer id, String name, String description, Integer test, Integer type, String isBillable, Integer reportingSequence, String reportingText) {
+    public QaEventDO(Integer id, String name, String description, Integer testId,
+                     String testName, String methodName, Integer typeId, 
+                     String isBillable, Integer reportingSequence,
+                     String reportingText) {
         setId(id);
         setName(name);
         setDescription(description);
-        setTest(test);
-        setType(type);
+        setTestId(testId);
+        setTestName(testName);
+        setMethodName(methodName);
+        setTypeId(typeId);
         setIsBillable(isBillable);
         setReportingSequence(reportingSequence);
         setReportingText(reportingText);
@@ -108,19 +115,35 @@ public class QaEventDO implements Serializable {
         this.reportingText = DataBaseUtil.trim(reportingText);
     }
 
-    public Integer getTest() {
-        return test;
+    public Integer getTestId() {
+        return testId;
     }
 
-    public void setTest(Integer test) {
-        this.test = test;
+    public void setTestId(Integer testId) {
+        this.testId = testId;
     }
 
-    public Integer getType() {
-        return type;
+    public Integer getTypeId() {
+        return typeId;
     }
 
-    public void setType(Integer type) {
-        this.type = type;
+    public void setTypeId(Integer typeId) {
+        this.typeId = typeId;
+    }
+
+    public String getTestName() {
+        return testName;
+    }
+
+    public void setTestName(String testName) {
+        this.testName = DataBaseUtil.trim(testName);
+    }
+
+    public String getMethodName() {
+        return methodName;
+    }
+
+    public void setMethodName(String methodName) {
+        this.methodName = DataBaseUtil.trim(methodName);
     }
 }

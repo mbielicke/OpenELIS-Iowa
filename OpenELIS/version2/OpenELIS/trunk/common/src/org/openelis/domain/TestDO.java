@@ -51,9 +51,12 @@ public class TestDO implements Serializable {
     protected Integer         timeTaWarning;
     protected Integer         timeTaMax;
     protected Integer         labelId;
+    protected String          labelName;
     protected Integer         labelQty;
     protected Integer         testTrailerId;
+    protected String          testTrailerName;
     protected Integer         scriptletId;
+    protected String          scriptletName;
     protected Integer         testFormatId;
     protected Integer         revisionMethodId;
     protected Integer         reportingMethodId;
@@ -66,11 +69,16 @@ public class TestDO implements Serializable {
 
     }
 
-    public TestDO(Integer id, String name, Integer methodId, String methodName, String description, String reportingDescription,
-                  String isActive, Date activeBegin, Date activeEnd, String isReportable, Integer timeTransit, Integer timeHolding,
-                  Integer timeTaAverage, Integer timeTaWarning, Integer timeTaMax, Integer labelId, Integer labelQty, Integer testTrailerId,
-                  Integer scriptletId, Integer testFormatId, Integer revisionMethodId, Integer reportingMethodId, Integer sortingMethodId,
-                  Integer reportingSequence) {
+    public TestDO(Integer id, String name, Integer methodId, String methodName,
+                  String description, String reportingDescription,
+                  String isActive, Date activeBegin, Date activeEnd, 
+                  String isReportable, Integer timeTransit, Integer timeHolding,
+                  Integer timeTaAverage, Integer timeTaWarning, Integer timeTaMax,
+                  Integer labelId,String labelName, Integer labelQty, 
+                  Integer testTrailerId,String testTrailerName,
+                  Integer scriptletId,String scriptletName,Integer testFormatId,
+                  Integer revisionMethodId,Integer reportingMethodId,
+                  Integer sortingMethodId,Integer reportingSequence) {
         setId(id);
         setName(name);
         setMethodId(methodId);
@@ -87,9 +95,12 @@ public class TestDO implements Serializable {
         setTimeTaWarning(timeTaWarning);
         setTimeTaMax(timeTaMax);
         setLabelId(labelId);
+        setLabelName(labelName);
         setLabelQty(labelQty);
         setTestTrailerId(testTrailerId);
+        setTestTrailerName(testTrailerName);
         setScriptletId(scriptletId);
+        setScriptletName(scriptletName);
         setTestFormatId(testFormatId);
         setRevisionMethodId(revisionMethodId);
         setReportingMethodId(reportingMethodId);
@@ -297,6 +308,30 @@ public class TestDO implements Serializable {
 
     public void setSortingMethodId(Integer sortingMethodId) {
         this.sortingMethodId = sortingMethodId;
+    }
+
+    public String getScriptletName() {
+        return scriptletName;
+    }
+
+    public void setScriptletName(String scriptletName) {
+        this.scriptletName = DataBaseUtil.trim(scriptletName);
+    }
+
+    public String getTestTrailerName() {
+        return testTrailerName;
+    }
+
+    public void setTestTrailerName(String testTrailerName) {
+        this.testTrailerName = DataBaseUtil.trim(testTrailerName);
+    }
+
+    public String getLabelName() {
+        return labelName;
+    }
+
+    public void setLabelName(String labelName) {
+        this.labelName = DataBaseUtil.trim(labelName);
     }
 
 }

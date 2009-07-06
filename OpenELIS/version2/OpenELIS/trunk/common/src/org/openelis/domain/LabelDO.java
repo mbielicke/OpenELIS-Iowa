@@ -38,18 +38,22 @@ public class LabelDO implements Serializable {
     protected String name; 
     protected String description;  
     protected Integer printerType; 
-    protected Integer scriptlet;
+    protected Integer scriptletId;
+    protected String scriptletName;
+    private boolean delete;
     
     public LabelDO(){
         
     }
     
-    public LabelDO( Integer id,String name,String description,Integer printerType,Integer scriptlet){
-     setId(id);
-     setName(name);
-     setDescription(description);
-     setPrinterType(printerType);
-     setScriptlet(scriptlet);     
+    public LabelDO(Integer id,String name,String description,Integer printerType,
+                   Integer scriptletId,String scriptleName){
+         setId(id);
+         setName(name);
+         setDescription(description);
+         setPrinterType(printerType);
+         setScriptletId(scriptletId);     
+         setScriptletName(scriptleName);
     }
 
     public Integer getId() {
@@ -76,12 +80,12 @@ public class LabelDO implements Serializable {
         this.printerType = printerType;
     }
 
-    public Integer getScriptlet() {
-        return scriptlet;
+    public Integer getScriptletId() {
+        return scriptletId;
     }
 
-    public void setScriptlet(Integer scriptlet) {
-        this.scriptlet = scriptlet;
+    public void setScriptletId(Integer scriptletId) {
+        this.scriptletId = scriptletId;
     }
 
     public String getDescription() {
@@ -90,5 +94,22 @@ public class LabelDO implements Serializable {
 
     public void setDescription(String description) {
         this.description = DataBaseUtil.trim(description);
-    }    
+    }
+
+    public boolean getDelete() {
+        return delete;
+    }
+
+    public void setDelete(boolean delete) {
+        this.delete = delete;
+    }
+
+    public String getScriptletName() {
+        return scriptletName;
+    }
+
+    public void setScriptletName(String scriptleName) {
+        this.scriptletName = DataBaseUtil.trim(scriptleName);
+    }
+    
 }

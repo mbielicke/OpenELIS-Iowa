@@ -27,26 +27,21 @@ package org.openelis.domain;
 
 import java.io.Serializable;
 
+import org.openelis.utilcommon.DataBaseUtil;
+
 
 public class TestReflexDO implements Serializable {
 
-    /**
-     * 
-     */
-    private static final long serialVersionUID = -8538938922444920188L;
+    private static final long serialVersionUID = 1L;
     
     protected Integer id;             
-
     protected Integer testId;             
-
     protected Integer testAnalyteId;             
-
-    protected Integer testResultId;             
-    
+    protected Integer testResultId;                 
     protected Integer flagsId;             
-
     protected Integer addTestId;
-    
+    protected String addTestName;
+    protected String methodName;
     protected Boolean delete = false;    
     
     
@@ -56,14 +51,16 @@ public class TestReflexDO implements Serializable {
 
     public TestReflexDO(Integer id,Integer testId,Integer testAnalyteId,
                         Integer testResultId,Integer flagsId,
-                        Integer addTestId,String resultValue) {
-        this.id =  id;
-        this.testId = testId;
-        this.testAnalyteId = testAnalyteId;
-        this.testResultId = testResultId;
-        this.flagsId = flagsId;
-        this.addTestId = addTestId;        
-        
+                        Integer addTestId,String addTestName,
+                        String methodName) {
+        setId(id);
+        setTestId(testId);
+        setTestAnalyteId(testAnalyteId);
+        setTestResultId(testResultId);
+        setFlagsId(flagsId);
+        setAddTestId(addTestId);
+        setAddTestName(addTestName);
+        setMethodName(methodName);        
     }
                         
     public Integer getAddTestId() {
@@ -122,6 +119,20 @@ public class TestReflexDO implements Serializable {
         this.testResultId = testResultId;
     }
 
-    
+    public String getAddTestName() {
+        return addTestName;
+    }
+
+    public void setAddTestName(String addTestName) {
+        this.addTestName = DataBaseUtil.trim(addTestName);
+    }
+
+    public String getMethodName() {
+        return methodName;
+    }
+
+    public void setMethodName(String methodName) {
+        this.methodName = DataBaseUtil.trim(methodName);
+    }    
 
 }
