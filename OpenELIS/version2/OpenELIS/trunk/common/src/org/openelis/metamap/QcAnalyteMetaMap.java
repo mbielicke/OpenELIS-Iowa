@@ -26,25 +26,24 @@
 package org.openelis.metamap;
 
 import org.openelis.gwt.common.MetaMap;
-import org.openelis.meta.TestWorksheetMeta;
+import org.openelis.meta.QcAnalyteMeta;
 
-public class TestWorksheetMetaMap extends TestWorksheetMeta implements MetaMap {
+public class QcAnalyteMetaMap extends QcAnalyteMeta implements MetaMap {
 
-    public String buildFrom(String name) {               
-        return "TestWorksheet ";       
-    }       
-    
-    public TestWorksheetMetaMap(){
+    public QcAnalyteMetaMap() {
         super();
     }
     
-    public TestWorksheetMetaMap(String path){
-        super(path);           
+    public QcAnalyteMetaMap(String path){
+        super(path);
     }
     
-    public boolean hasColumn(String name){     
-        return super.hasColumn(name);
-    }    
-        
+    public String buildFrom(String where) {
+        return "QcAnalyte ";
+    }
 
+    public boolean hasColumn(String name){
+        return super.hasColumn(name);
+    }
+        
 }

@@ -26,37 +26,56 @@
 package org.openelis.metamap;
 
 import org.openelis.gwt.common.MetaMap;
+import org.openelis.meta.LabelMeta;
 import org.openelis.meta.MethodMeta;
+import org.openelis.meta.ScriptletMeta;
 import org.openelis.meta.TestMeta;
 
 public class TestMetaMap extends TestMeta implements MetaMap {
 
-private TestPrepMetaMap TEST_PREP = new TestPrepMetaMap("testPrep.");
-    
-    private TestTypeOfSampleMetaMap TEST_TYPE_OF_SAMPLE = new TestTypeOfSampleMetaMap("testTypeOfSample."); 
-    
-    private TestReflexMetaMap TEST_REFLEX = new TestReflexMetaMap("testReflex."); 
-    
-    private TestAnalyteMetaMap TEST_ANALYTE = new TestAnalyteMetaMap("testAnalyte."); 
-    
-    private TestWorksheetMetaMap TEST_WORKSHEET = new TestWorksheetMetaMap("testWorksheet.");
-    
-    private MethodMeta METHOD = new MethodMeta("t.method.");
-           
-    private TestWorksheetItemMetaMap TEST_WORKSHEET_ITEM = new TestWorksheetItemMetaMap("testWorksheetItem.");  
-    
-    private TestSectionMetaMap TEST_SECTION = new TestSectionMetaMap("testSection.");
-    
-    private TestResultMetaMap TEST_RESULT = new TestResultMetaMap("testResult.");
-    
-    private TestWorksheetAnalyteMetaMap TEST_WORKSHEET_ANALYTE = new TestWorksheetAnalyteMetaMap("testWorksheetAnalyte.");
+    private TestPrepMetaMap TEST_PREP;    
+    private TestTypeOfSampleMetaMap TEST_TYPE_OF_SAMPLE;     
+    private TestReflexMetaMap TEST_REFLEX;     
+    private TestAnalyteMetaMap TEST_ANALYTE;     
+    private TestWorksheetMetaMap TEST_WORKSHEET;    
+    private MethodMeta METHOD;    
+    private ScriptletMeta SCRIPTLET;      
+    private LabelMeta LABEL; 
+    private TestWorksheetItemMetaMap TEST_WORKSHEET_ITEM;      
+    private TestSectionMetaMap TEST_SECTION;    
+    private TestResultMetaMap TEST_RESULT;    
+    private TestWorksheetAnalyteMetaMap TEST_WORKSHEET_ANALYTE;
     
     public TestMetaMap(){
         super("t.");
+        TEST_PREP = new TestPrepMetaMap("testPrep.");    
+        TEST_TYPE_OF_SAMPLE = new TestTypeOfSampleMetaMap("testTypeOfSample.");     
+        TEST_REFLEX = new TestReflexMetaMap("testReflex.");     
+        TEST_ANALYTE = new TestAnalyteMetaMap("testAnalyte.");     
+        TEST_WORKSHEET = new TestWorksheetMetaMap("testWorksheet.");    
+        METHOD = new MethodMeta("t.method.");    
+        SCRIPTLET = new ScriptletMeta("t.scriptlet.");      
+        LABEL = new LabelMeta("t.label."); 
+        TEST_WORKSHEET_ITEM = new TestWorksheetItemMetaMap("testWorksheetItem.");      
+        TEST_SECTION = new TestSectionMetaMap("testSection.");    
+        TEST_RESULT = new TestResultMetaMap("testResult.");    
+        TEST_WORKSHEET_ANALYTE = new TestWorksheetAnalyteMetaMap("testWorksheetAnalyte.");
     }
             
     public TestMetaMap(String path){
-        super(path);               
+        super(path);    
+        TEST_PREP = new TestPrepMetaMap(path+"testPrep.");    
+        TEST_TYPE_OF_SAMPLE = new TestTypeOfSampleMetaMap(path+"testTypeOfSample.");     
+        TEST_REFLEX = new TestReflexMetaMap(path+"testReflex.");     
+        TEST_ANALYTE = new TestAnalyteMetaMap(path+"testAnalyte.");     
+        TEST_WORKSHEET = new TestWorksheetMetaMap(path+"testWorksheet.");    
+        METHOD = new MethodMeta(path+"t.method.");    
+        SCRIPTLET = new ScriptletMeta(path+"t.scriptlet.");      
+        LABEL = new LabelMeta(path+"t.label."); 
+        TEST_WORKSHEET_ITEM = new TestWorksheetItemMetaMap(path+"testWorksheetItem.");      
+        TEST_SECTION = new TestSectionMetaMap(path+"testSection.");    
+        TEST_RESULT = new TestResultMetaMap(path+"testResult.");    
+        TEST_WORKSHEET_ANALYTE = new TestWorksheetAnalyteMetaMap(path+"testWorksheetAnalyte.");
     }       
     
     public TestWorksheetItemMetaMap getTestWorksheetItem(){
@@ -69,6 +88,14 @@ private TestPrepMetaMap TEST_PREP = new TestPrepMetaMap("testPrep.");
     
     public MethodMeta getMethod(){
         return METHOD;
+    }
+    
+    public ScriptletMeta getScriptlet (){
+        return SCRIPTLET;
+    }
+    
+    public LabelMeta getLabel() {
+        return LABEL;
     }
     
     public static TestMetaMap getInstance(){
@@ -125,6 +152,10 @@ private TestPrepMetaMap TEST_PREP = new TestPrepMetaMap("testPrep.");
             return TEST_RESULT.hasColumn(name);
         if(name.startsWith(path+"method."))
             return METHOD.hasColumn(name);
+        if(name.startsWith(path+"scriptlet."))
+            return SCRIPTLET.hasColumn(name);
+        if(name.startsWith(path+"label."))
+            return LABEL.hasColumn(name);
         return super.hasColumn(name);
     }
     
