@@ -82,7 +82,7 @@ public class TestTrailerBean implements TestTrailerRemote{
     	Query lockQuery = manager.createNamedQuery("getTableId");
 		lockQuery.setParameter("name", "test_trailer");
 		Integer testTrailerTableId = (Integer)lockQuery.getSingleResult();
-        lockBean.validateLock(testTrailerTableId, testTrailerId);
+        lockBean.getLock(testTrailerTableId, testTrailerId);
         
         validateForDelete(testTrailerId);
         

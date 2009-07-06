@@ -94,7 +94,7 @@ public class StorageLocationBean implements StorageLocationRemote{
     	Query lockQuery = manager.createNamedQuery("getTableId");
 		lockQuery.setParameter("name", "storage_location");
 		Integer storageLocTableId = (Integer)lockQuery.getSingleResult();
-        lockBean.validateLock(storageLocTableId, StorageLocId);
+        lockBean.getLock(storageLocTableId, StorageLocId);
         
         validateForDelete(StorageLocId);
 		

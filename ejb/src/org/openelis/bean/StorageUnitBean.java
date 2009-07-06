@@ -174,7 +174,7 @@ public class StorageUnitBean implements StorageUnitRemote{
     	Query lockQuery = manager.createNamedQuery("getTableId");
 		lockQuery.setParameter("name", "storage_unit");
 		Integer storageUnitTableId = (Integer)lockQuery.getSingleResult();
-        lockBean.validateLock(storageUnitTableId, storageUnitId);
+        lockBean.getLock(storageUnitTableId, storageUnitId);
         
         validateForDelete(storageUnitId);
         

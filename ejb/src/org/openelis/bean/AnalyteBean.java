@@ -87,11 +87,11 @@ public class AnalyteBean implements AnalyteRemote{
 	}
 
     @RolesAllowed("analyte-delete")
-	public void deleteAnalyte(Integer analyteId) throws Exception {
+	public void deleteAnalyte(Integer analyteId, String session) throws Exception {
 		Query lockQuery = manager.createNamedQuery("getTableId");
 		lockQuery.setParameter("name", "analyte");
 		Integer analyteTableId = (Integer)lockQuery.getSingleResult();
-        lockBean.getLock(analyteTableId, analyteId);
+        lockBean.getLock(analyteTableId, analyteId, session);
         
 		manager.setFlushMode(FlushModeType.COMMIT);
 		Analyte analyte = null;
@@ -109,7 +109,7 @@ public class AnalyteBean implements AnalyteRemote{
             e.printStackTrace();
         }
 		
-		lockBean.giveUpLock(analyteTableId, analyteId);
+		lockBean.giveUpLock(analyteTableId, analyteId, session);
 	}
 
 	public AnalyteDO getAnalyte(Integer analyteId) {
@@ -170,7 +170,7 @@ public class AnalyteBean implements AnalyteRemote{
 	}
 
     @RolesAllowed("analyte-update")
-	public Integer updateAnalyte(AnalyteDO analyteDO) throws Exception{
+	public Integer updateAnalyte(AnalyteDO analyteDO, String session) throws Exception{
         
         validateAnalyte(analyteDO);
 
@@ -179,7 +179,7 @@ public class AnalyteBean implements AnalyteRemote{
         Integer analyteReferenceId = (Integer)query.getSingleResult();
         
         if(analyteDO.getId() != null){
-            lockBean.validateLock(analyteReferenceId, analyteDO.getId());
+            lockBean.validateLock(analyteReferenceId, analyteDO.getId(),session);
         }
         
 		manager.setFlushMode(FlushModeType.COMMIT);
