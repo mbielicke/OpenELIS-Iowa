@@ -31,6 +31,7 @@ UIRF Software License are applicable instead of those above.
                 xmlns:locale="xalan://java.util.Locale"
                 xmlns:meta="xalan://org.openelis.metamap.ProjectMetaMap"   
                 xmlns:prmtrMeta="xalan://org.openelis.metamap.ProjectParameterMetaMap"          
+                xmlns:script="xalan://org.openelis.meta.ScriptletMeta"
                 extension-element-prefixes="resource"
                 version="1.0">
 	<xsl:import href="aToZOneColumn.xsl"/>
@@ -46,9 +47,13 @@ UIRF Software License are applicable instead of those above.
 	<xalan:component prefix="prmtrMeta">
 		<xalan:script lang="javaclass" src="xalan://org.openelis.metamap.ProjectParameterMetaMap"/>
 	</xalan:component>
+	<xalan:component prefix="script">
+		<xalan:script lang="javaclass" src="xalan://org.openelis.meta.ScriptletMeta"/>
+    </xalan:component>
 	
 	<xsl:template match="doc">	
 	   <xsl:variable name="proj" select="meta:new()"/>
+	   <xsl:variable name="scpt" select="meta:getScriptlet($proj)"/>
 	   <xsl:variable name="prm" select="meta:getProjectParameter($proj)"/>
 		<xsl:variable name="language">
 		<xsl:value-of select="locale"/>
@@ -155,14 +160,16 @@ UIRF Software License are applicable instead of those above.
 									
 									<text style="Prompt"><xsl:value-of select="resource:getString($constants,'referenceTo')"/>:</text>
 									<widget>
-										<textbox  key="{meta:getReferenceTo($proj)}" tab = "{meta:getScriptletId($proj)},{meta:getCompletedDate($proj)}" case = "mixed" max="20" width="145px"/>
+										<textbox  key="{meta:getReferenceTo($proj)}" tab = "{script:getName($scpt)},{meta:getCompletedDate($proj)}" case = "mixed" max="20" width="145px"/>
 									</widget>									
 								</row>		
 								<row>
 								 <text style="Prompt"><xsl:value-of select='resource:getString($constants,"beginDate")'/>:</text>
 								 <calendar key="{meta:getStartedDate($proj)}" begin="0" end="2" width = "90px" tab = "{meta:getCompletedDate($proj)},{meta:getIsActive($proj)}"/>
-								 <text style="Prompt"><xsl:value-of select="resource:getString($constants,'scriptlet')"/>:</text>
-								 <dropdown key="{meta:getScriptletId($proj)}" tab = "parameterTable,{meta:getId($proj)}" width="180px" />																									 								 
+								 <text style="Prompt"><xsl:value-of select="resource:getString($constants,'scriptlet')"/>:</text>								 																									 								
+								 <autoComplete cat="scriptlet" key="{script:getName($scpt)}" tab = "parameterTable,{meta:getId($proj)}" serviceUrl="OpenELISServlet?service=org.openelis.modules.project.server.ProjectService" case="lower" width="180px">												
+									<widths>180</widths>
+								  </autoComplete>
 								</row>	
 								<row>
 								 <text style="Prompt"><xsl:value-of select='resource:getString($constants,"endDate")'/>:</text>
@@ -172,7 +179,7 @@ UIRF Software License are applicable instead of those above.
 						     <VerticalPanel height = "5px"/>			 
 							  <HorizontalPanel width = "635px">							 
 							   <widget valign="top">
-							    <table key="parameterTable" manager="this" maxRows="8" showError="false" showScroll="ALWAYS" title="" width = "605px" >
+							    <table key="parameterTable" manager="this" maxRows="8" showError="false" showScroll="ALWAYS" title="" width = "605px" tab = "{meta:getId($proj)},{script:getName($scpt)}">
 												<headers>
 												    <xsl:value-of select="resource:getString($constants,'parameter')"/>,
 													<xsl:value-of select="resource:getString($constants,'operation')"/>,													
@@ -190,7 +197,7 @@ UIRF Software License are applicable instead of those above.
 								</table>						
 						       </widget>							     						     
                             </HorizontalPanel>                                                       
-						           <TablePanel width = "565px" spacing="0" padding="0" style="TableFooter">
+						           <TablePanel width = "635px" spacing="0" padding="0" style="TableFooter">
                                       <row>
                                         <widget  align="center" >
 									     <appButton action="removeRow" onclick="this" style="Button" key="removeParameterButton" >
@@ -217,7 +224,7 @@ UIRF Software License are applicable instead of those above.
 			 <string key="{meta:getDescription($proj)}" max="60" required="false"/>
 			 <string key="{meta:getReferenceTo($proj)}" max = "20" required="false" />
 			 <dropdown key="{meta:getOwnerId($proj)}" case="lower" required="true" type="integer"/>
-			 <dropdown key="{meta:getScriptletId($proj)}" required="false" type="integer"/> 		 								 
+			 <dropdown key="{script:getName($scpt)}" required="false" type="integer"/> 		 								 
 		     <table key="parameterTable">
 		     	<string key="{prmtrMeta:getParameter($prm)}" required="true"/>
 				<dropdown key="{prmtrMeta:getOperationId($prm)}" case="mixed" required="true" type="integer"/>

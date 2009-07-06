@@ -34,8 +34,6 @@ import org.openelis.gwt.common.data.CheckField;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.IntegerField;
 import org.openelis.gwt.common.data.StringField;
-import org.openelis.gwt.common.data.TableDataModel;
-import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.metamap.QaEventMetaMap;
 
 public class QAEventForm extends Form<Integer> {
@@ -52,10 +50,7 @@ public class QAEventForm extends Form<Integer> {
     public CheckField isBillable;
     public StringField reportingText;
     public DropDownField<Integer> testId;
-    public DropDownField<Integer> typeId; 
-    
-    public TableDataModel<TableDataRow<Integer>> tests;
-
+    public DropDownField<Integer> typeId;     
     
     public QAEventForm() {
         QaEventMetaMap meta = new QaEventMetaMap();

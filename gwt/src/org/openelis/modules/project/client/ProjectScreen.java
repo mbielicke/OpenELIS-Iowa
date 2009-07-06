@@ -41,9 +41,9 @@ import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.screen.CommandChain;
 import org.openelis.gwt.screen.ScreenTextBox;
 import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.CollapsePanel;
-import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.ResultsTable;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDropdown;
@@ -53,7 +53,6 @@ import org.openelis.metamap.ProjectMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.SyncCallback;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.TextBox;
@@ -72,9 +71,9 @@ public class ProjectScreen extends OpenELISScreenForm<ProjectForm, Query<TableDa
     
     private ScreenTextBox projId;
     
-    private TextBox projName;
+    private TextBox projName;  
     
-    private Dropdown scriptlet;
+    private AutoComplete owner;
         
     public ProjectScreen() {
         super("org.openelis.modules.project.server.ProjectService");
@@ -86,6 +85,8 @@ public class ProjectScreen extends OpenELISScreenForm<ProjectForm, Query<TableDa
         ButtonPanel bpanel, atozButtons;
         CommandChain chain;       
         ResultsTable atozTable;
+        ArrayList cache;
+        TableDataModel<TableDataRow> model;
         
         atozTable = (ResultsTable)getWidget("azTable");
         atozButtons = (ButtonPanel)getWidget("atozButtons");
@@ -104,24 +105,18 @@ public class ProjectScreen extends OpenELISScreenForm<ProjectForm, Query<TableDa
         chain.addCommand(atozButtons);       
         
         projParamTableWidget = (TableWidget)getWidget("parameterTable");       
-        removeParamButton = (AppButton)getWidget("removeParameterButton");
-        scriptlet = (Dropdown)getWidget(projMeta.getScriptletId());
+        removeParamButton = (AppButton)getWidget("removeParameterButton");       
         
         projId = (ScreenTextBox)widgets.get(projMeta.getId());
         projName = (TextBox)getWidget(projMeta.getName());
         
-        setScriptlets(form.scriptlets);
-        
-        form.scriptlets = null;
-        
+        owner = (AutoComplete)getWidget(projMeta.getOwnerId());
         updateChain.add(afterUpdate);
         commitUpdateChain.add(commitUpdateCallback);
         commitAddChain.add(commitAddCallback);
-                      
+                       
         super.afterDraw(success);
-        
-        ArrayList cache;
-        TableDataModel<TableDataRow> model;
+               
         cache = DictionaryCache.getListByCategorySystemName("project_parameter_operations");
         model = getDictionaryIdEntryList(cache);
         ((TableDropdown)projParamTableWidget.columns.get(1).getColumnWidget()).setModel(model);
@@ -144,7 +139,8 @@ public class ProjectScreen extends OpenELISScreenForm<ProjectForm, Query<TableDa
         super.query();
         projId.setFocus(true);
         removeParamButton.changeState(ButtonState.DISABLED);
-        projParamTableWidget.model.enableAutoAdd(false);         
+        projParamTableWidget.model.enableAutoAdd(false);  
+        owner.enabled(false);
     }
     
     public void add() {
@@ -153,6 +149,7 @@ public class ProjectScreen extends OpenELISScreenForm<ProjectForm, Query<TableDa
         projName.setFocus(true);
         projParamTableWidget.model.enableAutoAdd(true); 
         projParamTableWidget.activeRow = -1;
+        owner.enabled(true);
     }
     
     public void abort() {
@@ -160,16 +157,17 @@ public class ProjectScreen extends OpenELISScreenForm<ProjectForm, Query<TableDa
         super.abort();
     }
     
-    protected SyncCallback afterUpdate = new SyncCallback() {
+    protected SyncCallback<ProjectForm> afterUpdate = new SyncCallback<ProjectForm>() {
         public void onFailure(Throwable caught) {
             Window.alert(caught.getMessage());
         }
 
-        public void onSuccess(Object result) {
+        public void onSuccess(ProjectForm result) {
             projId.enable(false);
             projName.setFocus(true);
             projParamTableWidget.model.enableAutoAdd(true);  
             projParamTableWidget.activeRow = -1;
+            owner.enabled(true);
         }
     };   
     
@@ -234,13 +232,8 @@ public class ProjectScreen extends OpenELISScreenForm<ProjectForm, Query<TableDa
     public void onClick(Widget sender) {
         int index = projParamTableWidget.modelIndexList[projParamTableWidget.activeRow];  
         if(index > -1)
-            projParamTableWidget.model.deleteRow(index);
-        
+            projParamTableWidget.model.deleteRow(index);        
     }        
-    
-    private void setScriptlets(TableDataModel<TableDataRow<Integer>> scriptlets) {
-       scriptlet.setModel(scriptlets);        
-    }
     
     /**
       * This method finds out whether no value has been set to any fields in the 
@@ -277,14 +270,19 @@ public class ProjectScreen extends OpenELISScreenForm<ProjectForm, Query<TableDa
     }
     
     private TableDataModel<TableDataRow> getDictionaryIdEntryList(ArrayList list){
+        TableDataModel<TableDataRow> m;
+        TableDataRow<Integer> row;
+        DictionaryDO dictDO;
+        
         if(list == null)
             return null;
         
-        TableDataModel<TableDataRow> m = new TableDataModel<TableDataRow>();
+        m = new TableDataModel<TableDataRow>();
+        m.add(new TableDataRow<Integer>(null,new StringObject("")));
         
         for(int i=0; i<list.size(); i++){
-            TableDataRow<Integer> row = new TableDataRow<Integer>(1);
-            DictionaryDO dictDO = (DictionaryDO)list.get(i);
+            row = new TableDataRow<Integer>(1);
+            dictDO = (DictionaryDO)list.get(i);
             row.key = dictDO.getId();
             row.cells[0] = new StringObject(dictDO.getEntry());
             m.add(row);

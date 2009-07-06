@@ -48,6 +48,7 @@ import org.openelis.modules.main.client.OpenELISScreenForm;
 import com.google.gwt.http.client.Request;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.SyncCallback;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.TextBox;
@@ -139,11 +140,11 @@ public class PanelScreen extends OpenELISScreenForm<PanelForm,Query<TableDataRow
   }
     
     public void query() {        
-        super.query();  
-        
-        removeTestButton.changeState(ButtonState.DISABLED) ;
-        moveUpButton.changeState(ButtonState.DISABLED) ;
-        moveDownButton.changeState(ButtonState.DISABLED) ; 
+        super.query();          
+        removeTestButton.changeState(ButtonState.DISABLED);
+        moveUpButton.changeState(ButtonState.DISABLED);
+        moveDownButton.changeState(ButtonState.DISABLED); 
+        addTestButton.changeState(ButtonState.DISABLED);
         allTestsWidget.enabled(false);
     }
     
@@ -164,7 +165,7 @@ public class PanelScreen extends OpenELISScreenForm<PanelForm,Query<TableDataRow
         super.abort();                              
     }
     
-    protected AsyncCallback<PanelForm> afterUpdate = new AsyncCallback<PanelForm>() {
+    protected SyncCallback<PanelForm> afterUpdate = new SyncCallback<PanelForm>() {
         public void onFailure(Throwable caught) {   
         }
         public void onSuccess(PanelForm result) {            
@@ -226,34 +227,43 @@ public class PanelScreen extends OpenELISScreenForm<PanelForm,Query<TableDataRow
     } 
     
     private void onMoveUpButtonClick(){
-        int selIndex = addedTestsWidget.modelIndexList[addedTestsWidget.activeRow];
+        int selIndex;
+        TableDataRow<Integer> moveUpRow,movedownRow;
+        
+        selIndex = addedTestsWidget.modelIndexList[addedTestsWidget.activeRow];
         if(selIndex > 0){         
-         TableDataRow moveUpRow = addTestModel.getRow(selIndex);
-         TableDataRow movedownRow = addTestModel.getRow(selIndex-1);
-         addTestModel.setRow(selIndex, movedownRow);
-         addTestModel.setRow(selIndex-1, moveUpRow);
-         addTestModel.selectRow(selIndex-1);
-         addTestModel.refresh();
+             moveUpRow = addTestModel.getRow(selIndex);
+             movedownRow = addTestModel.getRow(selIndex-1);
+             addTestModel.setRow(selIndex, movedownRow);
+             addTestModel.setRow(selIndex-1, moveUpRow);  
+             addTestModel.selectRow(selIndex-1);
+             addedTestsWidget.activeRow = selIndex-1;
+             addTestModel.refresh();         
       }  
     }
     
       private void onMoveDownButtonClick(){
-          int selIndex = addedTestsWidget.modelIndexList[addedTestsWidget.activeRow];
+          int selIndex;
+          TableDataRow<Integer> moveUpRow,movedownRow;
+          
+          selIndex = addedTestsWidget.modelIndexList[addedTestsWidget.activeRow];
           if(selIndex < addTestModel.getData().size()-1){         
-           TableDataRow moveUpRow = addTestModel.getRow(selIndex+1);
-           TableDataRow movedownRow = addTestModel.getRow(selIndex);
-           addTestModel.setRow(selIndex+1, movedownRow);
-           addTestModel.setRow(selIndex, moveUpRow);
-           addTestModel.selectRow(selIndex+1);
-           addTestModel.refresh();
+               moveUpRow = addTestModel.getRow(selIndex+1);
+               movedownRow = addTestModel.getRow(selIndex);
+               addTestModel.setRow(selIndex+1, movedownRow);
+               addTestModel.setRow(selIndex, moveUpRow);   
+               addTestModel.selectRow(selIndex+1);
+               addedTestsWidget.activeRow = selIndex+1;
+               addTestModel.refresh();
+           
         }
       } 
       
       /**
        * This method goes through the list of selected tests from allTestsWidget
        * and adds them to addedTestsWidget sequentially.If a selected test 
-       * has already been  to addedTestsWidget then user is asked through an alert
-       * as to whether  they want to add this test to the panel or not. If they 
+       * has already been added to addedTestsWidget then the user is asked through an alert
+       * as to whether they want to add this test to the panel or not. If they 
        * respond affirmatively then the test is added otherwise not.  
        */
        private void addTestButtonClick(){

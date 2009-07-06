@@ -51,9 +51,7 @@ public class DictionaryForm extends Form<Integer> {
     public StringField name;
     public TableField<TableDataRow<Integer>> dictEntTable;
     public DropDownField<Integer> sectionId;
-    public StringField description;
-    
-    public TableDataModel<TableDataRow<Integer>> sections;
+    public StringField description;   
     
     public DictionaryForm() {
         CategoryMetaMap meta = new CategoryMetaMap();

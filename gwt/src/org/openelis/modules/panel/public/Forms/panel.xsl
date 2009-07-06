@@ -68,7 +68,7 @@ UIRF Software License are applicable instead of those above.
 					       <buttonPanel key="atozButtons">
 								<xsl:call-template name="aToZLeftPanelButtons"/>
 						   </buttonPanel>
-						   <table maxRows="10" width="auto">
+						   <table maxRows="13" width="auto">
 						     <headers><xsl:value-of select="resource:getString($constants,'panel')"/></headers>
 						     <widths>175</widths>
 						     <editors>
@@ -78,8 +78,7 @@ UIRF Software License are applicable instead of those above.
 						       <string/>
 						     </fields>
 						   </table>
-					   </resultsTable>
-						<VerticalPanel height = "80px"/>
+					   </resultsTable>						
 					  </VerticalPanel>	
 					</CollapsePanel>					
 					<VerticalPanel spacing="0" padding="0">
@@ -140,7 +139,7 @@ UIRF Software License are applicable instead of those above.
 								</row>
 								<row>
 								    <text style="Prompt"><xsl:value-of select="resource:getString($constants,'description')"/>:</text>									
-									<textbox  key="{meta:getDescription($panel)}" tab="{meta:getName($panel)},{meta:getName($panel)}" case = "mixed" max="60" width="425px"/>									
+									<textbox  key="{meta:getDescription($panel)}" tab="addedTestTable,{meta:getName($panel)}" case = "mixed" max="60" width="425px"/>									
 								</row>														
 						     </TablePanel>	
 						  <VerticalPanel height = "10px"/>   
@@ -148,7 +147,7 @@ UIRF Software License are applicable instead of those above.
 						      						                                    
                               <VerticalPanel style="Form">                                
                                <widget valign="top"> 
-                                <table key="addedTestTable" manager="this" maxRows="8" showError="false" showScroll="ALWAYS" title="" width="auto">												
+                                <table key="addedTestTable" manager="this" maxRows="8" tab="{meta:getName($panel)},{meta:getDescription($panel)}"  showError="false" showScroll="ALWAYS" title="" width="auto">												
 												<headers> 
 												 <xsl:value-of select="resource:getString($constants,'test')"/>,
 												 <xsl:value-of select="resource:getString($constants,'method')"/>												 
@@ -199,6 +198,7 @@ UIRF Software License are applicable instead of those above.
                               </VerticalPanel> 
 						   </HorizontalPanel>	
 						   <HorizontalPanel>	
+						   <HorizontalPanel width = "5px"/>
 						   <widget style="WhiteContentPanel" valign="middle">
 									       <appButton action="removeTest" onclick="this" style="Button" key="removeTestButton">									        
 						                    <HorizontalPanel>

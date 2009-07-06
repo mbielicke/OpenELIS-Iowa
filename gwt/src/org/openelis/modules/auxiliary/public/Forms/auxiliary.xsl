@@ -183,8 +183,10 @@ UIRF Software License are applicable instead of those above.
 									<check cellKey = "{auxField:getIsActive($auxf)}"/>
                                     <check cellKey = "{auxField:getIsRequired($auxf)}"/> 
                                     <check cellKey = "{auxField:getIsReportable($auxf)}"/>									                                   
-                                    <textbox cellKey="{auxField:getDescription($auxf)}" max="60" />
-                                    <dropdown cellKey="{auxField:getScriptletId($auxf)}" case="mixed" required = "true" width = "150px" type = "integer"/>   
+                                    <textbox cellKey="{auxField:getDescription($auxf)}" max="60" />                                    
+                                    <autoComplete cellKey="{auxField:getScriptletId($auxf)}" cat="scriptlet" type = "integer" serviceUrl="OpenELISServlet?service=org.openelis.modules.auxiliary.server.AuxiliaryService" case="lower" width="150px">												
+										 <widths>150</widths>
+									</autoComplete> 
                                    </editors>
                                    <sorts>false,false,false,false,false,false,false,false</sorts>
 								   <filters>false,false,false,false,false,false,false,false</filters>

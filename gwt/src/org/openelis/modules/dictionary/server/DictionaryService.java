@@ -51,7 +51,7 @@ import org.openelis.modules.dictionary.client.DictionaryForm;
 import org.openelis.persistence.CachingManager;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.CategoryRemote;
-import org.openelis.remote.TestRemote;
+import org.openelis.remote.SectionRemote;
 import org.openelis.server.constants.Constants;
 import org.openelis.util.FormUtil;
 import org.openelis.util.SessionManager;
@@ -209,12 +209,7 @@ public class DictionaryService implements AppScreenFormServiceInt<DictionaryForm
     }
     
     public DictionaryForm getScreen(DictionaryForm rpc) throws RPCException {        
-        rpc.xml = ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/dictionary.xsl");        
-        TableDataModel<TableDataRow<Integer>> sectionDropDownField = (TableDataModel<TableDataRow<Integer>>)CachingManager.getElement("InitialData", "sectionDropDown");             
-        
-        if(sectionDropDownField == null) 
-           rpc.sections = getInitialModel("section");                            
-                      
+        rpc.xml = ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/dictionary.xsl");                                                                
         return rpc;
     }
     
@@ -290,28 +285,6 @@ public class DictionaryService implements AppScreenFormServiceInt<DictionaryForm
         return dictEntryModel;  
     }                         
 
-   /**
-    * The method called to load the dropdowns on the screen
-    */
-   private TableDataModel<TableDataRow<Integer>> getInitialModel(String cat) { 
-       TableDataModel<TableDataRow<Integer>> model = new TableDataModel<TableDataRow<Integer>>();             
-       
-       TestRemote remote = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");        
-       List<IdNameDO> values = remote.getSectionDropDownValues();
-                                                     
-        if(values!=null){
-         TableDataRow<Integer> blankset = new TableDataRow<Integer>(null,new StringObject(""));                                                            
-         model.add(blankset);
-            
-         for (Iterator iter = values.iterator(); iter.hasNext();) {
-             IdNameDO sectionDO = (IdNameDO)iter.next();                           
-             TableDataRow<Integer> set = new TableDataRow<Integer>(sectionDO.getId(),new StringObject(sectionDO.getName()));         
-             model.add(set);                          
-          }                           
-       }        
-       return model;
-       
-   }
 
     private void setFieldsInRPC(DictionaryForm form, CategoryDO catDO){
         form.id.setValue(catDO.getId());

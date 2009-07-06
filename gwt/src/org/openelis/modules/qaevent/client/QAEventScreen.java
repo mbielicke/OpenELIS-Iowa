@@ -53,8 +53,7 @@ import com.google.gwt.user.client.ui.Widget;
  public class QAEventScreen extends OpenELISScreenForm<QAEventForm,Query<TableDataRow<Integer>>> implements ClickListener{
    
      private TextBox tname = null;
-     private Dropdown displayType = null;
-     private Dropdown displayTest = null;
+     private Dropdown displayType;
      private ScreenTextArea reportingText = null;
      private KeyListManager keyList = new KeyListManager();    
      
@@ -78,75 +77,74 @@ import com.google.gwt.user.client.ui.Widget;
          }
      }
 
-        public void onClick(Widget arg0) {
-            // TODO Auto-generated method stub
-            
-        }
-
-        public void afterDraw(boolean success) {             
-             ResultsTable atozTable = (ResultsTable) getWidget("azTable");
-             ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
-             ButtonPanel bpanel = (ButtonPanel)getWidget("buttons");
-             
-             CommandChain chain = new CommandChain();
-             chain.addCommand(bpanel);
-             chain.addCommand(keyList);
-             chain.addCommand(this);
-             chain.addCommand(atozTable);
-             chain.addCommand(atozButtons);
-             
-             ((CollapsePanel)getWidget("collapsePanel")).addChangeListener(atozTable);
-                          
-             tname = (TextBox)getWidget(QAEMeta.getName());
-             displayType = (Dropdown)getWidget(QAEMeta.getTypeId());
-             displayTest = (Dropdown)getWidget(QAEMeta.getTestId());
-
-             reportingText = (ScreenTextArea)widgets.get(QAEMeta.getReportingText());       
-         
-            setTests(form.tests);
-           
-            form.tests = null;
-            
-            updateChain.add(afterUpdate);
-            
-            super.afterDraw(success); 
-            
+        public void afterDraw(boolean success) {     
             ArrayList cache;
             TableDataModel<TableDataRow> model;
+            ResultsTable atozTable;
+            ButtonPanel atozButtons;
+            ButtonPanel bpanel;    
+            CommandChain chain;
+            
+            atozTable = (ResultsTable)getWidget("azTable");
+            atozButtons = (ButtonPanel)getWidget("atozButtons");
+            bpanel = (ButtonPanel)getWidget("buttons");
+            chain = new CommandChain();            
+            chain.addCommand(bpanel);
+            chain.addCommand(keyList);
+            chain.addCommand(this);
+            chain.addCommand(atozTable);
+            chain.addCommand(atozButtons);
+    
+            ((CollapsePanel)getWidget("collapsePanel")).addChangeListener(atozTable);
+    
+            tname = (TextBox)getWidget(QAEMeta.getName());
+            displayType = (Dropdown)getWidget(QAEMeta.getTypeId());            
+    
+            reportingText = (ScreenTextArea)widgets.get(QAEMeta.getReportingText());
+    
+            updateChain.add(afterUpdate);
+    
+            super.afterDraw(success);
+    
             cache = DictionaryCache.getListByCategorySystemName("qaevent_type");
             model = getDictionaryIdEntryList(cache);
             displayType.setModel(model);
             
         }           
         
-        protected SyncCallback afterUpdate = new SyncCallback() {
+        protected SyncCallback<QAEventForm> afterUpdate = new SyncCallback<QAEventForm>() {
             public void onFailure(Throwable caught) {   
             }
-            public void onSuccess(Object result) {
+            public void onSuccess(QAEventForm result) {
                 tname.setFocus(true);
                 reportingText.enable(true);
             }
         };    
          
          public void query() {
-            
+
             super.query();
-            
-         //set focus to the name field            
+    
+            // set focus to the name field
             tname.setFocus(true);
-           
-         // disable the text area so that it doesn't get included in the query, this is done because most 
-         // databases don't support querying by BLOBs
+    
+            // disable the text area so that it doesn't get included in the query,
+            // this is done because most
+            // databases don't support querying by BLOBs
             reportingText.enable(false);
-            
-        }                 
+         }                 
                       
          
          public void add(){                                  
              super.add();       
              
              reportingText.enable(true);
-            tname.setFocus(true);            
+             tname.setFocus(true);            
+         }
+         
+         public void onClick(Widget sender) {
+             // TODO Auto-generated method stub
+             
          }
          
          private void getQAEvents(String query) {
@@ -156,25 +154,27 @@ import com.google.gwt.user.client.ui.Widget;
                  commitQuery(qField);
              }
          }
+        
+        private TableDataModel<TableDataRow> getDictionaryIdEntryList(ArrayList list){
+            TableDataRow<Integer> row;
+            DictionaryDO dictDO;
+            TableDataModel<TableDataRow> m;
+            
+            if(list == null)
+                return null;
+            
+            m = new TableDataModel<TableDataRow>();
+            m.add(new TableDataRow<Integer>(null,new StringObject("")));
+            
+            for(int i=0; i<list.size(); i++){
+                row = new TableDataRow<Integer>(1);
+                dictDO = (DictionaryDO)list.get(i);
+                row.key = dictDO.getId();
+                row.cells[0] = new StringObject(dictDO.getEntry());
+                m.add(row);
+            }
+            
+            return m;
+        }
          
-         private void setTests(TableDataModel<TableDataRow<Integer>> model) {
-             displayTest.setModel(model);
-         }
-         
-         private TableDataModel<TableDataRow> getDictionaryIdEntryList(ArrayList list){
-             if(list == null)
-                 return null;
-             
-             TableDataModel<TableDataRow> m = new TableDataModel<TableDataRow>();
-             
-             for(int i=0; i<list.size(); i++){
-                 TableDataRow<Integer> row = new TableDataRow<Integer>(1);
-                 DictionaryDO dictDO = (DictionaryDO)list.get(i);
-                 row.key = dictDO.getId();
-                 row.cells[0] = new StringObject(dictDO.getEntry());
-                 m.add(row);
-             }
-             
-             return m;
-         }
  }

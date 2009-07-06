@@ -30,6 +30,8 @@ UIRF Software License are applicable instead of those above.
                 xmlns:locale="xalan://java.util.Locale"
                 xmlns:meta="xalan://org.openelis.metamap.TestMetaMap"
                 xmlns:method="xalan://org.openelis.meta.MethodMeta"
+                xmlns:script="xalan://org.openelis.meta.ScriptletMeta"
+                xmlns:label="xalan://org.openelis.meta.LabelMeta"
                 xmlns:testPrep="xalan://org.openelis.metamap.TestPrepMetaMap"
                 xmlns:testTOS="xalan://org.openelis.metamap.TestTypeOfSampleMetaMap"
                 xmlns:testRef="xalan://org.openelis.metamap.TestReflexMetaMap" 
@@ -54,6 +56,12 @@ UIRF Software License are applicable instead of those above.
 	<xalan:component prefix="method">
 		<xalan:script lang="javaclass" src="xalan://org.openelis.meta.MethodMeta"/>
 	</xalan:component>
+	<xalan:component prefix="script">
+		<xalan:script lang="javaclass" src="xalan://org.openelis.meta.ScriptletMeta"/>
+    </xalan:component>
+    <xalan:component prefix="label">
+		<xalan:script lang="javaclass" src="xalan://org.openelis.meta.LabelMeta"/>
+    </xalan:component>
 	<xalan:component prefix="testPrep">
 		<xalan:script lang="javaclass" src="xalan://org.openelis.metamap.TestPrepMetaMap"/>
 	</xalan:component>	
@@ -85,6 +93,8 @@ UIRF Software License are applicable instead of those above.
 	<xsl:template match="doc">	
 	   <xsl:variable name="test" select="meta:new()"/>
 	   <xsl:variable name="mt" select="meta:getMethod($test)"/>
+	   <xsl:variable name="scpt" select="meta:getScriptlet($test)"/>
+	   <xsl:variable name="lbl" select="meta:getLabel($test)"/>
 	   <xsl:variable name="tp" select="meta:getTestPrep($test)"/>
 	   <xsl:variable name="tos" select="meta:getTestTypeOfSample($test)"/>	 
 	   <xsl:variable name="tref" select="meta:getTestReflex($test)"/>
@@ -106,13 +116,6 @@ UIRF Software License are applicable instead of those above.
 				<HorizontalPanel padding="0" spacing="0">
 					<!--left table goes here -->
 					<CollapsePanel key="collapsePanel" height="530px" style="LeftSidePanel">
-					  <!--
-						<azTable colwidths="175"  key="azTable" maxRows="27" tablewidth="auto" headers="{resource:getString($constants,'nameMethod')}" width="100%">
-							<buttonPanel key="atozButtons">
-								<xsl:call-template name="aToZLeftPanelButtons"/>
-							</buttonPanel>
-						</azTable>
-					-->
 						 <resultsTable width="100%" key="azTable" showError="false">
 					       <buttonPanel key="atozButtons">
 								<xsl:call-template name="aToZLeftPanelButtons"/>
@@ -205,7 +208,7 @@ UIRF Software License are applicable instead of those above.
 								 <row>
 								  <text style="Prompt"><xsl:value-of select="resource:getString($constants,'description')"/>:</text>
 									<widget colspan = "2">
-										<textbox  key="{meta:getDescription($test)}" tab="{meta:getReportingDescription($test)},{meta:getScriptletId($test)}" max="60" width="425px"/>
+										<textbox  key="{meta:getDescription($test)}" tab="{meta:getReportingDescription($test)},{script:getName($scpt)}" max="60" width="425px"/>
 									</widget>
 								</row>
 								<row>
@@ -250,7 +253,7 @@ UIRF Software License are applicable instead of those above.
 								 </row>
 								 <row>
 								 <text style="Prompt"><xsl:value-of select='resource:getString($constants,"endDate")'/>:</text>
-								 <calendar key="{meta:getActiveEnd($test)}" tab="{meta:getLabelId($test)},{meta:getActiveBegin($test)}" begin="0" end="2" width = "90px"/>
+								 <calendar key="{meta:getActiveEnd($test)}" tab="{label:getName($lbl)},{meta:getActiveBegin($test)}" begin="0" end="2" width = "90px"/>
 								</row>																						
 								</TablePanel>								
 								</VerticalPanel>							
@@ -261,13 +264,15 @@ UIRF Software License are applicable instead of those above.
 								<TablePanel style="Form">
 								<row>
 									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"type")'/>:</text>
-									<widget>
-										<dropdown key="{meta:getLabelId($test)}" tab="{meta:getLabelQty($test)},{meta:getActiveEnd($test)}"  case="mixed" width="224px" />
+									<widget>										
+									    <autoComplete cat="label" key="{label:getName($lbl)}" tab="{meta:getLabelQty($test)},{meta:getActiveEnd($test)}" serviceUrl="OpenELISServlet?service=org.openelis.modules.test.server.TestService" case="lower" width="224px">												
+										  <widths>180</widths>
+								        </autoComplete>
 									</widget>
 								</row>
 								<row>
 									<text style="Prompt"><xsl:value-of select='resource:getString($constants,"quantity")'/>:</text>
-									<textbox key="{meta:getLabelQty($test)}" width = "50px" tab="{meta:getIsReportable($test)},{meta:getLabelId($test)}"/>		
+									<textbox key="{meta:getLabelQty($test)}" width = "50px" tab="{meta:getIsReportable($test)},{label:getName($lbl)}"/>		
 								</row>				
 								<row>
 									<widget><VerticalPanel height = "30px"/></widget>
@@ -319,20 +324,24 @@ UIRF Software License are applicable instead of those above.
 								  <row>
 								   <text style="Prompt"><xsl:value-of select="resource:getString($constants,'revisionMethod')"/>:</text>
 								   <dropdown  key="{meta:getRevisionMethodId($test)}" width="190px" tab="{meta:getSortingMethodId($test)},removeTestSectionButton"/>									   
-								   <text style="Prompt" halign="left"><xsl:value-of select="resource:getString($constants,'testTrailer')"/>:</text>								   
-								   <dropdown key="{meta:getTestTrailerId($test)}" width="180px" tab="{meta:getTestFormatId($test)},{meta:getReportingSequence($test)}"/>								   
+								   <text style="Prompt" halign="left"><xsl:value-of select="resource:getString($constants,'testTrailer')"/>:</text>								   								   
+								   <autoComplete cat="trailer" key="{meta:getTestTrailerId($test)}" tab="{meta:getTestFormatId($test)},{meta:getReportingSequence($test)}" serviceUrl="OpenELISServlet?service=org.openelis.modules.test.server.TestService" case="lower" width="180px">												
+										 <widths>180</widths>
+								   </autoComplete>								   
 								  </row>	
 								  <row>	
 								   <text style="Prompt"><xsl:value-of select="resource:getString($constants,'sortingMethod')"/>:</text>
 								   <dropdown key="{meta:getSortingMethodId($test)}" tab="{meta:getReportingMethodId($test)},{meta:getRevisionMethodId($test)}" width="190px"/>									   						  								   							   								  								  																   
 								   <text style="Prompt"><xsl:value-of select="resource:getString($constants,'testFormat')"/>:</text>								   
-								   <dropdown  key="{meta:getTestFormatId($test)}"  width="180px" tab="{meta:getScriptletId($test)},{meta:getTestTrailerId($test)}"/>								   
+								   <dropdown  key="{meta:getTestFormatId($test)}"  width="180px" tab="{script:getName($scpt)},{meta:getTestTrailerId($test)}"/>								   
 								  </row>													 
 		                          <row>
 		                           <text style="Prompt"><xsl:value-of select="resource:getString($constants,'reportingMethod')"/>:</text>
 								   <dropdown key="{meta:getReportingMethodId($test)}" tab="{meta:getReportingSequence($test)},{meta:getSortingMethodId($test)}" width="190px"/>								  								    		                           								   								   								     								   							   								  								  																   
-								   <text style="Prompt"><xsl:value-of select="resource:getString($constants,'scriptlet')"/>:</text>
-								   <dropdown key="{meta:getScriptletId($test)}"  width="180px" tab="{meta:getDescription($test)},{meta:getTestFormatId($test)}"/>								   
+								   <text style="Prompt"><xsl:value-of select="resource:getString($constants,'scriptlet')"/>:</text>								   								  
+                                   <autoComplete cat="scriptlet" key="{script:getName($scpt)}" tab="{meta:getDescription($test)},{meta:getTestFormatId($test)}" serviceUrl="OpenELISServlet?service=org.openelis.modules.test.server.TestService" case="lower" width="180px">												
+										 <widths>180</widths>
+								   </autoComplete> 								  
 								  </row> 
 								  <row>
 								   <text style="Prompt"><xsl:value-of select="resource:getString($constants,'reportingSequence')"/>:</text>								  
@@ -410,8 +419,10 @@ UIRF Software License are applicable instead of those above.
 										 <widths>300</widths>
 									</autoComplete>
                                     <dropdown case="mixed" width = "80px" type = "integer"/> 
-                                    <check/>  
-                                    <dropdown case="mixed" width = "165px" type = "integer"/>
+                                    <check/>                                      
+                                    <autoComplete cat="scriptlet" serviceUrl="OpenELISServlet?service=org.openelis.modules.test.server.TestService" case="lower" width="165px">												
+										 <widths>165</widths>
+								    </autoComplete>
                                     <dropdown case="mixed" width = "40px" type = "integer" />
                                    </editors>
                                    <fields>
@@ -523,8 +534,7 @@ UIRF Software License are applicable instead of those above.
 												<filters>false,false,false,false,false,false,false,false,false</filters>
 												<colAligns>left,left,left,left,left,left,left,left,left</colAligns>
 								 </table>
-							  </widget>
-							 <!-- <HorizontalPanel width = "10px"/> -->                             
+							  </widget>							                             
 							</HorizontalPanel>     
                                      <HorizontalPanel>    
                                        <widget>
@@ -563,7 +573,9 @@ UIRF Software License are applicable instead of those above.
 												</headers>
 												<widths>489,92</widths>
 												<editors>
-													<dropdown cellKey="{testPrep:getPrepTestId($tp)}" case="mixed" width="470px"/>
+													<autoComplete cellKey="{testPrep:getPrepTestId($tp)}" cat="testMethod" serviceUrl="OpenELISServlet?service=org.openelis.modules.test.server.TestService" case="mixed" width="470px">												
+										 				<widths>470</widths>
+													</autoComplete>													
 													<check cellKey="{testPrep:getIsOptional($tp)}" />													
 												</editors>																																															
 												<sorts>false,false</sorts>
@@ -599,7 +611,9 @@ UIRF Software License are applicable instead of those above.
 												</headers>
 												<widths>150,181,140,104</widths>
 												<editors>
-													<dropdown cellKey="{testRef:getAddTestId($tref)}" case="mixed" width="160px"/>
+													<autoComplete cellKey="{testRef:getAddTestId($tref)}" cat="testMethod" serviceUrl="OpenELISServlet?service=org.openelis.modules.test.server.TestService" case="mixed" width="150px">												
+										 				<widths>160</widths>
+													</autoComplete>													
 													<dropdown cellKey="{testRef:getTestAnalyteId($tref)}" case="mixed" width="181px" onchange = "this"/>
 													<dropdown cellKey="{testRef:getTestResultId($tref)}" case="mixed" width="140px"/>
 													<dropdown cellKey="{testRef:getFlagsId($tref)}" case="mixed" width="104px"/>													
@@ -608,8 +622,7 @@ UIRF Software License are applicable instead of those above.
 												<filters>false,false,false,false</filters>
 												<colAligns>left,left,left,left</colAligns>
 								</table>
-						      </widget>
-						     <!-- <HorizontalPanel width = "10px"/> -->
+						      </widget>						     
                             </HorizontalPanel> 
 						        <TablePanel width = "565px" spacing="0" padding="0" style="TableFooter">
                                       <row>
@@ -653,8 +666,10 @@ UIRF Software License are applicable instead of those above.
 								</row>	
 								<row>
 							     <text style="Prompt"><xsl:value-of select="resource:getString($constants,'scriptlet')"/>:</text>
-								 <widget colspan = "3">
-								  <dropdown case="mixed" key="{testWrksht:getScriptletId($tws)}" tab="worksheetTable, {testWrksht:getTotalCapacity($tws)}" width="235px"/>
+								 <widget colspan = "3">								  
+								  <autoComplete cat="scriptlet" key="{testWrksht:getScriptletId($tws)}" serviceUrl="OpenELISServlet?service=org.openelis.modules.test.server.TestService" case="lower" width="235px">												
+									<widths>235</widths>
+								  </autoComplete>
 								 </widget>
 								</row>															    
 							  </TablePanel>
@@ -673,7 +688,9 @@ UIRF Software License are applicable instead of those above.
 												<editors>
 													<textbox cellKey="{testWrkshtItm:getPosition($twsi)}"/>
 													<dropdown cellKey="{testWrkshtItm:getTypeId($twsi)}" case="mixed" width="140px"/>
-													<textbox cellKey="{testWrkshtItm:getQcName($twsi)}"/>																						
+													<autoComplete cellKey = "{testWrkshtItm:getQcName($twsi)}" cat="qcName" serviceUrl="OpenELISServlet?service=org.openelis.modules.test.server.TestService" case="mixed" width="340px">												
+										 				<widths>350</widths>
+													</autoComplete>																					
 												</editors>												
 												<sorts>false,false,false</sorts>
 												<filters>false,false,false</filters>
@@ -747,11 +764,11 @@ UIRF Software License are applicable instead of those above.
 			<date key="{meta:getActiveBegin($test)}" begin="0" end="2" required="true"/>
 			<date key="{meta:getActiveEnd($test)}" begin="0" end="2" required="true"/>
 			<integer key="{meta:getTimeHolding($test)}" type="integer" required="false"/> 			
-			<dropdown key="{meta:getLabelId($test)}" required="false" type="integer"/>
+			<dropdown key="{label:getName($lbl)}" required="false" type="integer"/>
 			<integer key="{meta:getLabelQty($test)}" required="false" type="integer"/>
 			<dropdown key="{meta:getTestTrailerId($test)}" required="false" type="integer"/>
 			<dropdown key="{meta:getTestFormatId($test)}" required="false" type="integer"/>				
-			<dropdown key="{meta:getScriptletId($test)}" required="false" type="integer"/>
+			<dropdown key="{script:getName($scpt)}" required="false" type="integer"/>
 			<dropdown key="{meta:getRevisionMethodId($test)}" required="false" type="integer"/>				
 			<dropdown key="{meta:getReportingMethodId($test)}" required="false" type="integer"/>
 			<integer key="{meta:getReportingSequence($test)}" required="false" type="integer"/>
@@ -787,7 +804,7 @@ UIRF Software License are applicable instead of those above.
 		 	 <table key="worksheetTable">
 		 	 	<integer key="{testWrkshtItm:getPosition($twsi)}" required="false"/>
 			  	<dropdown key="{testWrkshtItm:getTypeId($twsi)}" type="integer" required="true"/>													
-			  	<string key="{testWrkshtItm:getQcName($twsi)}" required="true"/>
+			  	<dropdown key="{testWrkshtItm:getQcName($twsi)}" type="string" required="true"/>
 		 	 </table>
 		 	 <table key="worksheetAnalyteTable">
 		 	 	<string key="analyteName"/>

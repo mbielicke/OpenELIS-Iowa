@@ -143,7 +143,10 @@ UIRF Software License are applicable instead of those above.
     </row>
     <row>
        <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"scriptlet")'/>:</text>
-       <dropdown key="{labelMeta:getScriptletId($lbl)}" width = "180px" case="mixed" tab="{labelMeta:getName($lbl)},{labelMeta:getPrinterTypeId($lbl)}"/>
+       <!-- <dropdown key="{labelMeta:getScriptletId($lbl)}" width = "180px" case="mixed" tab="{labelMeta:getName($lbl)},{labelMeta:getPrinterTypeId($lbl)}"/>-->
+	   <autoComplete cat="scriptlet" key="{labelMeta:getScriptletId($lbl)}" tab="{labelMeta:getName($lbl)},{labelMeta:getPrinterTypeId($lbl)}" serviceUrl="OpenELISServlet?service=org.openelis.modules.label.server.LabelService" case="lower" width="180px">												
+		<widths>180</widths>
+	   </autoComplete>
 	  </row>			  												                                           					                         
    </TablePanel>            
                
@@ -161,18 +164,6 @@ UIRF Software License are applicable instead of those above.
  <dropdown key="{labelMeta:getPrinterTypeId($lbl)}" type="integer" required = "true"/>
  <dropdown key="{labelMeta:getScriptletId($lbl)}" type="integer" required = "true"/>
 </rpc>
-<!--					   
-<rpc key= "query">     
- <queryString key="{labelMeta:getName($lbl)}"/>
- <queryString key="{labelMeta:getDescription($lbl)}"  /> 	
- <dropdown key="{labelMeta:getPrinterTypeId($lbl)}" type="integer"/> 
- <dropdown key="{labelMeta:getScriptletId($lbl)}" type="integer"/>
-</rpc>
-
-<rpc key= "queryByLetter">     
- <queryString key="{labelMeta:getName($lbl)}"/>
-</rpc>
- -->
 </screen>
 </xsl:template>
 </xsl:stylesheet> 
