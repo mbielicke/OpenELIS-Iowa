@@ -31,10 +31,8 @@ package org.openelis.entity;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.openelis.util.Datetime;
 import org.openelis.util.XMLUtil;
 
-import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -56,7 +54,7 @@ import org.openelis.utils.Auditable;
 @NamedQuery(name = "Analyte.UpdateNameCompare", query = "select a.id from Analyte a where a.name = :name and a.id != :id"),
 @NamedQuery(name = "Analyte.AddNameCompare", query = "select a.id from Analyte a where a.name = :name"),
 @NamedQuery(name = "Analyte.AutoCompleteByName", query = "select new org.openelis.domain.IdNameDO(a.id, a.name) " +
-     " from Analyte a where a.name like :name order by a.name")})
+     " from Analyte a where a.name like :name and a.isActive = 'Y' order by a.name")})
      
 @Entity
 @Table(name="analyte")

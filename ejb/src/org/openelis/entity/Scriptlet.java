@@ -31,23 +31,24 @@ package org.openelis.entity;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.openelis.util.Datetime;
 import org.openelis.util.XMLUtil;
 
-import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
-@NamedQuery(name = "Scriptlet.Scriptlet", query = "select distinct new org.openelis.domain.IdNameDO(script.id, script.name) from Scriptlet script  " +
-"order by script.name ")
+@NamedQueries({@NamedQuery(name = "Scriptlet.Scriptlet", query = "select distinct new org.openelis.domain.IdNameDO(script.id, script.name) from Scriptlet script  " +
+               "order by script.name "),
+               @NamedQuery(name = "Scriptlet.ScriptletAutoCompleteByName", query = "select distinct new org.openelis.domain.IdNameDO(script.id, script.name) from Scriptlet script  " +
+               "where script.name like :name order by script.name ")})
 
 @Entity
 @Table(name="scriptlet")

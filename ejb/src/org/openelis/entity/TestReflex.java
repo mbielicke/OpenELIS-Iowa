@@ -49,13 +49,18 @@ import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 @NamedQueries({@NamedQuery(name = "TestReflex.TestReflexDOList", 
-                 query = "select new org.openelis.domain.TestReflexDO(tr.id, tr.testId,tr.testAnalyteId," +
-                         " tr.testResultId, tr.flagsId, tr.addTestId, r.value) " +
-                         " from TestReflex tr left join tr.testResult r where tr.testId = :testId"),
+                 query = " select new org.openelis.domain.TestReflexDO(tr.id, tr.testId,tr.testAnalyteId," +
+                         " tr.testResultId, tr.flagsId, t.id, t.name, m.name) " +
+                         " from TestReflex tr left join tr.addTest t left join t.method m where tr.testId = :testId"),
                @NamedQuery(name = "TestReflex.TestReflexesByTestAndTestResult", 
                  query = " from TestReflex tr where tr.testId = :testId and tr.testResultId = :testResultId  "), 
                @NamedQuery(name = "TestReflex.TestReflexesByTestAndTestAnalyte", 
-                 query = " from TestReflex tr where tr.testId = :testId and tr.testAnalyteId = :testAnalyteId  ")  })
+                 query = " from TestReflex tr where tr.testId = :testId and tr.testAnalyteId = :testAnalyteId  "),
+               @NamedQuery(name = "TestReflex.TestReflexesByAddTestId", 
+                 query = " select new org.openelis.domain.TestReflexDO(tr.id, tr.testId,tr.testAnalyteId," +
+                         " tr.testResultId, tr.flagsId, t.id, t.name, m.name) " +
+                         " from TestReflex tr left join tr.test t left join t.method m" +
+                         " where tr.addTestId = :testId and t.isActive = 'Y' ")  })
 
 @Entity
 @Table(name="test_reflex")
@@ -89,6 +94,14 @@ public class TestReflex implements Auditable, Cloneable {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "test_result_id",insertable = false, updatable = false)
   private TestResult testResult;
+  
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "add_test_id",insertable = false, updatable = false)
+  private Test addTest;
+  
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "test_id",insertable = false, updatable = false)
+  private Test test;
 
   @Transient
   private TestReflex original;
@@ -194,6 +207,18 @@ public TestResult getTestResult() {
 }
 public void setTestResult(TestResult testResult) {
     this.testResult = testResult;
+}
+public Test getAddTest() {
+    return addTest;
+}
+public void setAddTest(Test addTest) {
+    this.addTest = addTest;
+}
+public Test getTest() {
+    return test;
+}
+public void setTest(Test test) {
+    this.test = test;
 }
   
 }   

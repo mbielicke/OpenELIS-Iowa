@@ -50,12 +50,12 @@ import org.openelis.utils.Auditable;
 @NamedQueries({@NamedQuery(name = "TestAnalyte.TestAnalyteByAnalyteId", query = "select t.id from TestAnalyte t where t.analyteId = :id"),
                @NamedQuery(name = "TestAnalyte.TestAnalyteByTestId", query = "from TestAnalyte ta where ta.testId = :testId"),
                @NamedQuery(name = "TestAnalyte.IdName", query = "select distinct new org.openelis.domain.IdNameDO(ta.id, a.name) from TestAnalyte ta left join ta.analyte a where ta.testId = :testId order by a.name"),
-               @NamedQuery(name = "TestAnalyte.TestAnalyteDOListByTestId", query = "select distinct new org.openelis.domain.TestAnalyteDO(ta.id,ta.testId,ta.analyteGroup,ta.resultGroup,ta.sortOrder,ta.typeId,ta.analyteId,a.name,ta.isReportable,ta.scriptletId)" +
-                    "                  from TestAnalyte ta, Analyte a where ta.testId = :testId and a.id = ta.analyteId order by ta.sortOrder"),
+               @NamedQuery(name = "TestAnalyte.TestAnalyteDOListByTestId", query = "select distinct new org.openelis.domain.TestAnalyteDO(ta.id,ta.testId,ta.analyteGroup,ta.resultGroup,ta.sortOrder,ta.typeId,ta.analyteId,a.name,ta.isReportable,s.id,s.name)" +
+                    "                  from TestAnalyte ta left join ta.scriptlet s left join ta.analyte a where ta.testId = :testId order by ta.sortOrder"),
                @NamedQuery(name = "TestAnalyte.TestAnalytesByResultGroupAndTestId", query = "select ta.resultGroup, ta.id from TestAnalyte ta  where ta.testId = :testId " +
                     " group by ta.resultGroup, ta.id order by ta.resultGroup, ta.id"),
                @NamedQuery(name = "TestAnalyte.TestAnalytesNotAddedToWorksheet", query = "select distinct new org.openelis.domain.IdNameDO(ta.analyteId,a.name)" +
-                    " from TestAnalyte ta, Analyte a where ta.testId = :testId and a.id = ta.analyteId " +
+                    " from TestAnalyte ta left join ta.analyte a where ta.testId = :testId " +
                     " and ta.analyteId not in (select distinct twa.analyteId from TestWorksheetAnalyte twa where twa.testId = :testId)" +
                     " order by a.name")})
 @Entity
@@ -95,6 +95,14 @@ public class TestAnalyte implements Auditable, Cloneable {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "analyte_id",insertable = false, updatable = false)
   private Analyte analyte;
+  
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "scriptlet_id",insertable = false, updatable = false)
+  private Scriptlet scriptlet;
+  
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "test_id",insertable = false, updatable = false)
+  private Test test;
   
   @Transient
   private TestAnalyte original;
@@ -227,6 +235,18 @@ public Analyte getAnalyte() {
 }
 public void setAnalyte(Analyte analyte) {
     this.analyte = analyte;
+}
+public Scriptlet getScriptlet() {
+    return scriptlet;
+}
+public void setScriptlet(Scriptlet scriptlet) {
+    this.scriptlet = scriptlet;
+}
+public Test getTest() {
+    return test;
+}
+public void setTest(Test test) {
+    this.test = test;
 }
   
 }   

@@ -1,4 +1,28 @@
-
+/** Exhibit A - UIRF Open-source Based Public Software License.
+* 
+* The contents of this file are subject to the UIRF Open-source Based
+* Public Software License(the "License"); you may not use this file except
+* in compliance with the License. You may obtain a copy of the License at
+* openelis.uhl.uiowa.edu
+* 
+* Software distributed under the License is distributed on an "AS IS"
+* basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+* License for the specific language governing rights and limitations
+* under the License.
+* 
+* The Original Code is OpenELIS code.
+* 
+* The Initial Developer of the Original Code is The University of Iowa.
+* Portions created by The University of Iowa are Copyright 2006-2008. All
+* Rights Reserved.
+* 
+* Contributor(s): ______________________________________.
+* 
+* Alternatively, the contents of this file marked
+* "Separately-Licensed" may be used under the terms of a UIRF Software
+* license ("UIRF Software License"), in which case the provisions of a
+* UIRF Software License are applicable instead of those above. 
+*/
 package org.openelis.entity;
 
 /**
@@ -10,16 +34,29 @@ import org.w3c.dom.Element;
 import org.openelis.util.Datetime;
 import org.openelis.util.XMLUtil;
 
+import java.util.Collection;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
+
+@NamedQueries({@NamedQuery(name = "Qc.QcDOById", query = "select new org.openelis.domain.QcDO(qc.id,qc.name,qc.typeId,qc.inventoryItemId,inv.name,"+
+                "qc.source,qc.lotNumber,qc.preparedDate,qc.preparedVolume,qc.preparedUnitId,qc.preparedById,qc.usableDate,"+
+                "qc.expireDate,qc.isSingleUse) from Qc qc left join qc.inventoryItem inv where qc.id = :id " ),
+               @NamedQuery(name = "Qc.QcByLotNumber", query = "from Qc qc where qc.lotNumber = :lotNumber "),
+               @NamedQuery(name = "Qc.QcAutoCompleteByName", query = "select new org.openelis.domain.IdNameDO(qc.id,qc.name) from Qc qc where qc.name like :name ")})
 
 @Entity
 @Table(name="qc")
@@ -35,7 +72,10 @@ public class Qc implements Auditable, Cloneable {
   private String name;             
 
   @Column(name="type_id")
-  private Integer typeId;             
+  private Integer typeId;         
+  
+  @Column(name="inventory_item_id")
+  private Integer inventoryItemId;
 
   @Column(name="source")
   private String source;             
@@ -64,10 +104,16 @@ public class Qc implements Auditable, Cloneable {
   @Column(name="is_single_use")
   private String isSingleUse;             
 
-
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "inventory_item_id",insertable = false, updatable = false)
+  private InventoryItem inventoryItem;
+  
   @Transient
   private Qc original;
 
+  @OneToMany(fetch = FetchType.LAZY)
+  @JoinColumn(name = "qc_id")
+  private Collection<QcAnalyte> qcAnalyte;
   
   public Integer getId() {
     return id;
@@ -95,6 +141,13 @@ public class Qc implements Auditable, Cloneable {
        (typeId != null && !typeId.equals(this.typeId)))
       this.typeId = typeId;
   }
+  
+  public Integer getInventoryItemId() {
+      return inventoryItemId;
+  }
+  public void setInventoryItemId(Integer inventoryItemId) {
+      this.inventoryItemId = inventoryItemId;
+  }
 
   public String getSource() {
     return source;
@@ -119,10 +172,10 @@ public class Qc implements Auditable, Cloneable {
       return null;
     return new Datetime(Datetime.YEAR,Datetime.SECOND,preparedDate);
   }
-  public void setPreparedDate (Datetime prepared_date){
-    if((preparedDate == null && this.preparedDate != null) || 
-       (preparedDate != null && !preparedDate.equals(this.preparedDate)))
-      this.preparedDate = prepared_date.getDate();
+  public void setPreparedDate (Datetime prepared_date){    
+    if((prepared_date == null && this.preparedDate != null) || (prepared_date != null && this.preparedDate == null) ||
+       (prepared_date != null && !prepared_date.equals(new Datetime(Datetime.YEAR, Datetime.SECOND, this.preparedDate))))                
+        this.preparedDate = prepared_date.getDate();                                     
   }
 
   public Double getPreparedVolume() {
@@ -157,10 +210,10 @@ public class Qc implements Auditable, Cloneable {
       return null;
     return new Datetime(Datetime.YEAR,Datetime.SECOND,usableDate);
   }
-  public void setUsableDate (Datetime usable_date){
-    if((usableDate == null && this.usableDate != null) || 
-       (usableDate != null && !usableDate.equals(this.usableDate)))
-      this.usableDate = usable_date.getDate();
+  public void setUsableDate (Datetime usable_date){    
+    if((usable_date == null && this.usableDate != null) || (usable_date != null && this.usableDate == null) ||
+       (usable_date != null && !usable_date.equals(new Datetime(Datetime.YEAR, Datetime.SECOND, this.usableDate))))                
+        this.usableDate = usable_date.getDate();     
   }
 
   public Datetime getExpireDate() {
@@ -168,10 +221,10 @@ public class Qc implements Auditable, Cloneable {
       return null;
     return new Datetime(Datetime.YEAR,Datetime.SECOND,expireDate);
   }
-  public void setExpireDate (Datetime expire_date){
-    if((expireDate == null && this.expireDate != null) || 
-       (expireDate != null && !expireDate.equals(this.expireDate)))
-      this.expireDate = expire_date.getDate();
+  public void setExpireDate (Datetime expire_date){    
+    if((expire_date == null && this.expireDate != null) || (expire_date != null && this.expireDate == null) ||
+       (expire_date != null && !expire_date.equals(new Datetime(Datetime.YEAR, Datetime.SECOND, this.expireDate))))                
+        this.expireDate = expire_date.getDate();
   }
 
   public String getIsSingleUse() {
@@ -183,6 +236,19 @@ public class Qc implements Auditable, Cloneable {
       this.isSingleUse = isSingleUse;
   }
 
+  public Collection<QcAnalyte> getQcAnalyte() {
+      return qcAnalyte;
+  }
+  public void setQcAnalyte(Collection<QcAnalyte> qcAnalyte) {
+      this.qcAnalyte = qcAnalyte;
+  }
+  
+  public InventoryItem getInventoryItem() {
+      return inventoryItem;
+  }
+  public void setInventoryItem(InventoryItem inventoryItem) {
+      this.inventoryItem = inventoryItem;
+  }
   
   public void setClone() {
     try {
@@ -200,6 +266,8 @@ public class Qc implements Auditable, Cloneable {
       AuditUtil.getChangeXML(name,original.name,doc,"name");
 
       AuditUtil.getChangeXML(typeId,original.typeId,doc,"type_id");
+      
+      AuditUtil.getChangeXML(inventoryItemId,original.inventoryItemId,doc,"inventory_item_id");
 
       AuditUtil.getChangeXML(source,original.source,doc,"source");
 

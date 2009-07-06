@@ -43,6 +43,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -55,8 +56,8 @@ import org.openelis.utils.Auditable;
 
 @NamedQueries({@NamedQuery(name = "AuxField.AuxFieldDOList", query = "select distinct new org.openelis.domain.AuxFieldDO(af.id, af.sortOrder,"+
                        " af.analyteId,a.name,af.description,af.auxFieldGroupId,af.methodId,m.name,af.unitOfMeasureId,af.isRequired,"+
-                       " af.isActive,af.isReportable,af.scriptletId) " +
-                       " from AuxField af left join af.analyte a left join af.method m where af.auxFieldGroupId = :auxFieldGroupId order by af.sortOrder "),
+                       " af.isActive,af.isReportable,s.id,s.name) " +
+                       " from AuxField af left join af.scriptlet s left join af.analyte a left join af.method m where af.auxFieldGroupId = :auxFieldGroupId order by af.sortOrder "),
                 @NamedQuery(name = "AuxField.AuxFieldByAnalyteId", query = "select a.id from AuxField a where a.analyteId = :id ")       })
         
 @Entity
@@ -111,6 +112,9 @@ public class AuxField implements Auditable, Cloneable {
   @JoinColumn(name = "method_id",insertable = false, updatable = false)
   private Method method;
   
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "scriptlet_id",insertable = false, updatable = false)
+  private Scriptlet scriptlet;
 
   @Transient
   private AuxField original;
@@ -278,6 +282,12 @@ public void setAuxFieldGroupId(Integer auxFieldGroupId) {
     if((auxFieldGroupId == null && this.auxFieldGroupId != null) || 
       (auxFieldGroupId != null && !auxFieldGroupId.equals(this.auxFieldGroupId)))
       this.auxFieldGroupId = auxFieldGroupId;
+}
+public Scriptlet getScriptlet() {
+    return scriptlet;
+}
+public void setScriptlet(Scriptlet scriptlet) {
+    this.scriptlet = scriptlet;
 }
   
 }   
