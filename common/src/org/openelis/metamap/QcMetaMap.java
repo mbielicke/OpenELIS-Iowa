@@ -26,51 +26,38 @@
 package org.openelis.metamap;
 
 import org.openelis.gwt.common.MetaMap;
-import org.openelis.meta.ProjectMeta;
-import org.openelis.meta.ScriptletMeta;
+import org.openelis.meta.QcMeta;
 
-public class ProjectMetaMap extends ProjectMeta implements MetaMap {
-
-    private ProjectParameterMetaMap PROJECT_PARAMETER;
-    private ScriptletMeta SCRIPTLET;
+public class QcMetaMap extends QcMeta implements MetaMap {
+ 
+    private QcAnalyteMetaMap QC_ANALYTE;
     
-    public ProjectMetaMap() {
-        super("proj.");
-        PROJECT_PARAMETER = new ProjectParameterMetaMap("projectParameter");
-        SCRIPTLET = new ScriptletMeta("proj.scriptlet.");
+    public QcMetaMap() {
+        super("qc.");
+        QC_ANALYTE = new QcAnalyteMetaMap("qcAnalyte");
     }
     
-    public ProjectMetaMap(String path){
+    public QcMetaMap(String path){
         super(path);  
-        PROJECT_PARAMETER = new ProjectParameterMetaMap("projectParameter");
-        SCRIPTLET = new ScriptletMeta(path+"proj.scriptlet.");
+        QC_ANALYTE = new QcAnalyteMetaMap("qcAnalyte");
     }
     
-    public ProjectParameterMetaMap getProjectParameter(){
-        return PROJECT_PARAMETER;
-    }
-
-    public ScriptletMeta getScriptlet (){
-        return SCRIPTLET;
+    public QcAnalyteMetaMap getQcAnalyte() {
+        return QC_ANALYTE; 
     }
     
-    public String buildFrom(String name) {        
-        String from = "Project proj ";
-        if(name.indexOf("projectParameter.") > -1)
-            from += ", IN (proj.projectParameter) projectParameter "; 
+    public String buildFrom(String name) {
+        String from = "Qc qc ";
+        if(name.indexOf("qcAnalyte.") > -1)
+            from += ", IN (qc.qcAnalyte) qcAnalyte "; 
         return from;
-    }
-    
-    public static ProjectMetaMap getInstance() {
-        return new ProjectMetaMap();
-    }
+    }   
     
     public boolean hasColumn(String name){ 
         if(name.startsWith("projectParameter."))
-            return PROJECT_PARAMETER.hasColumn(name);
-        if(name.startsWith(path+"scriptlet."))
-            return SCRIPTLET.hasColumn(name);
+            return QC_ANALYTE.hasColumn(name);
         return super.hasColumn(name);
-    }
-        
+    }    
+    
+
 }

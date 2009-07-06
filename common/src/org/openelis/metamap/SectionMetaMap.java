@@ -26,25 +26,35 @@
 package org.openelis.metamap;
 
 import org.openelis.gwt.common.MetaMap;
-import org.openelis.meta.TestWorksheetMeta;
+import org.openelis.meta.OrganizationMeta;
+import org.openelis.meta.SectionMeta;
 
-public class TestWorksheetMetaMap extends TestWorksheetMeta implements MetaMap {
+public class SectionMetaMap extends SectionMeta implements MetaMap {
 
-    public String buildFrom(String name) {               
-        return "TestWorksheet ";       
-    }       
+   private OrganizationMeta ORGANIZATION;
     
-    public TestWorksheetMetaMap(){
-        super();
-    }
+   public SectionMetaMap() {
+       super("s.");
+       ORGANIZATION = new OrganizationMeta("s.organization.");
+   } 
     
-    public TestWorksheetMetaMap(String path){
-        super(path);           
-    }
-    
-    public boolean hasColumn(String name){     
-        return super.hasColumn(name);
-    }    
-        
+   public SectionMetaMap(String path){
+       super(path);
+       ORGANIZATION = new OrganizationMeta(path+"s.organization.");
+   }
+   
+   public String buildFrom(String where) {
+       return "Section s ";                 
+   }
+  
+   public boolean hasColumn(String name){        
+       if(name.startsWith(path+"organization."))
+           return ORGANIZATION.hasColumn(name);
+       return super.hasColumn(name);
+   }  
+   
+   public OrganizationMeta getOrganization() {
+       return ORGANIZATION;
+   }
 
 }
