@@ -131,7 +131,7 @@ public class AnalysisQaEventsManager implements Serializable {
         int i;
         
         for (i = 0; i < count(); i++) {
-            if ("R".equals(getQaEventAt(i).getType()))
+            if ("R".equals(getQaEventAt(i).getTypeId()))
                 return true;
         }
         return false;
