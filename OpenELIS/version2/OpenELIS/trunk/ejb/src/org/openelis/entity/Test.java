@@ -41,10 +41,10 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -60,14 +60,16 @@ import org.openelis.utils.Auditable;
     @NamedQuery(name = "Test.Names", query = "select distinct new org.openelis.domain.QaEventTestDropdownDO(t.id, t.name, m.name) " + 
                 "  from Test t, Method m where t.methodId  = m.id and t.isActive = :isActive order by t.name, m.name"),    
     @NamedQuery(name = "Test.Test", query = "select distinct new org.openelis.domain.TestDO(t.id, t.name, t.methodId,m.name,t.description,t.reportingDescription,t.isActive,t.activeBegin,t.activeEnd,t.isReportable," +
-                                            "t.timeTransit,t.timeHolding,"+"t.timeTaAverage,t.timeTaWarning,t.timeTaMax,t.labelId,t.labelQty,t.testTrailerId,t.scriptletId," +
-                                            "t.testFormatId,t.revisionMethodId,t.reportingMethodId,t.sortingMethodId,t.reportingSequence) " + "  from Test t left join t.method m where t.id = :id"),                                                    
+                                            "t.timeTransit,t.timeHolding,"+"t.timeTaAverage,t.timeTaWarning,t.timeTaMax,l.id,l.name,t.labelQty,tt.id,tt.name,s.id,s.name," +
+                                            "t.testFormatId,t.revisionMethodId,t.reportingMethodId,t.sortingMethodId,t.reportingSequence) " +
+                                            "  from Test t left join t.scriptlet s left join t.testTrailer tt left join t.label l left join t.method m where t.id = :id"),                                                    
     @NamedQuery(name = "Test.IdName", query = "select distinct new org.openelis.domain.IdNameDO(t.id, t.name) " + "  from Test t left join t.method order by t.name "),
     @NamedQuery(name = "Test.TestByName", query = "from Test t where t.name = :name order by t.name"),
     @NamedQuery(name = "Test.TestIdNameMethodSectionNames", query = "select distinct new org.openelis.domain.TestMethodSectionNamesDO(t.id,t.name,m.name,s.name)" 
              + "  from Test t left join t.method m left join t.testSection ts left join ts.section s where t.isActive = :isActive order by t.name,m.name,s.name "),
-   @NamedQuery(name = "Test.TestMethodAutoByName", query = "select new org.openelis.domain.TestMethodAutoDO(t.id, t.name, m.id, m.name)from Test t LEFT JOIN t.method m " +
-   		                " where t.name like :name and t.isActive='Y' order by t.name")})
+    @NamedQuery(name = "Test.TestMethodAutoByName", query = "select new org.openelis.domain.TestMethodAutoDO(t.id, t.name, m.id, m.name)from Test t LEFT JOIN t.method m " +
+   		                " where t.name like :name and t.isActive='Y' order by t.name"),
+    @NamedQuery(name = "Test.TestListByMethodId", query = "from Test t where t.methodId = :id and t.isActive = 'Y'")})
     
 
 @Entity
@@ -146,9 +148,21 @@ public class Test implements Auditable, Cloneable {
   @Column(name="reporting_sequence")
   private Integer reportingSequence;
 
-  @OneToOne(fetch = FetchType.LAZY)
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "method_id",insertable = false, updatable = false)
   private Method method;
+  
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "scriptlet_id",insertable = false, updatable = false)
+  private Scriptlet scriptlet;
+  
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "test_trailer_id",insertable = false, updatable = false)
+  private TestTrailer testTrailer;
+  
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "label_id",insertable = false, updatable = false)
+  private Label label;
   
   @OneToMany(fetch = FetchType.LAZY)
   @JoinColumn(name = "test_id",insertable = false, updatable = false)
@@ -519,6 +533,24 @@ public Collection<TestWorksheetAnalyte> getTestWorksheetAnalyte() {
 }
 public void setTestWorksheetAnalyte(Collection<TestWorksheetAnalyte> testWorksheetAnalyte) {
     this.testWorksheetAnalyte = testWorksheetAnalyte;
+}
+public Scriptlet getScriptlet() {
+    return scriptlet;
+}
+public void setScriptlet(Scriptlet scriptlet) {
+    this.scriptlet = scriptlet;
+}
+public TestTrailer getTestTrailer() {
+    return testTrailer;
+}
+public void setTestTrailer(TestTrailer testTrailer) {
+    this.testTrailer = testTrailer;
+}
+public Label getLabel() {
+    return label;
+}
+public void setLabel(Label label) {
+    this.label = label;
 }
 
   

@@ -48,9 +48,11 @@ import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
-@NamedQueries({@NamedQuery(name = "TestPrep.TestPrep", query = "select distinct new org.openelis.domain.TestPrepDO(tp.id, tp.testId, tp.prepTestId,tp.isOptional) " 
-                                                       + "  from TestPrep tp where tp.testId = :id "),
-               @NamedQuery(name = "TestPrep.TestPrepByTestId", query = "from TestPrep tp where tp.testId = :testId")})
+@NamedQueries({@NamedQuery(name = "TestPrep.TestPrep", query = "select distinct new org.openelis.domain.TestPrepDO(tp.id, tp.testId, tp.prepTestId,t.name,t.method.name,tp.isOptional) " 
+                                                       + "  from TestPrep tp left join tp.prepTest t where tp.testId = :id "),
+               @NamedQuery(name = "TestPrep.TestPrepByTestId", query = "from TestPrep tp where tp.testId = :testId"),
+               @NamedQuery(name = "TestPrep.TestPrepByPrepTestId", query = " select distinct new org.openelis.domain.TestPrepDO(tp.id, tp.testId, tp.prepTestId,t.name,t.method.name,tp.isOptional) " 
+                                                       + " from TestPrep tp left join tp.test t where tp.prepTestId = :testId and t.isActive = 'Y' ")})
     
 @Entity
 @Table(name="test_prep")
@@ -74,6 +76,10 @@ public class TestPrep implements Auditable, Cloneable {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "test_id",insertable = false, updatable = false)
   private Test test;
+  
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "prep_test_id",insertable = false, updatable = false)
+  private Test prepTest;
   
   @Transient
   private TestPrep original;
@@ -151,6 +157,12 @@ public Test getTest() {
 }
 public void setTest(Test test) {
     this.test = test;
+}
+public Test getPrepTest() {
+    return prepTest;
+}
+public void setPrepTest(Test prepTest) {
+    this.prepTest = prepTest;
 }
   
 }   

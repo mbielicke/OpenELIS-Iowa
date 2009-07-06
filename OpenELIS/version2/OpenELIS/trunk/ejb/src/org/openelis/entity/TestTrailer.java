@@ -49,7 +49,8 @@ import org.openelis.utils.Auditable;
 " TestTrailer t where t.id = :id"),
 @NamedQuery(name = "TestTrailer.UpdateNameCompare", query = "select t.id from TestTrailer t where t.name = :name and t.id != :id"),
 @NamedQuery(name = "TestTrailer.AddNameCompare", query = "select t.id from TestTrailer t where t.name = :name"),
-@NamedQuery(name = "TestTrailer.TestTrailerIdName", query = "select distinct new org.openelis.domain.IdNameDO(tt.id, tt.name) " + "  from TestTrailer tt order by tt.name")})
+@NamedQuery(name = "TestTrailer.TestTrailerIdName", query = "select distinct new org.openelis.domain.IdNameDO(tt.id, tt.name) " + "  from TestTrailer tt order by tt.name"),
+@NamedQuery(name = "TestTrailer.AutocompleteByName", query = "select distinct new org.openelis.domain.IdNameDO(tt.id, tt.name) " + "  from TestTrailer tt where tt.name like :name order by tt.name")})
 
 @Entity
 @Table(name="test_trailer")

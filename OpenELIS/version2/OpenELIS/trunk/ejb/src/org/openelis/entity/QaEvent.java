@@ -40,9 +40,9 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
@@ -51,8 +51,8 @@ import org.openelis.utils.Auditable;
 @Entity
 @Table(name="qaevent")
 @EntityListeners({AuditUtil.class})
-@NamedQueries({@NamedQuery(name = "QaEvent.QaEvent", query = "select new org.openelis.domain.QaEventDO(q.id, q.name, q.description, q.testId,  q.typeId,  q.isBillable, q.reportingSequence, q.reportingText)" +                                                                                                  
-                                                             "  from QaEvent q where q.id = :id"),
+@NamedQueries({@NamedQuery(name = "QaEvent.QaEvent", query = "select new org.openelis.domain.QaEventDO(q.id, q.name, q.description,t.id,t.name,m.name,q.typeId,q.isBillable,q.reportingSequence, q.reportingText)" +                                                                                                  
+                                                             "  from QaEvent q left join q.test t left join t.method m where q.id = :id"),
                @NamedQuery(name = "QaEvent.IdByTestId", query = "select q.id from QaEvent q where q.testId = :testId")})
                
 public class QaEvent implements Auditable, Cloneable {
@@ -83,7 +83,7 @@ public class QaEvent implements Auditable, Cloneable {
   @Column(name="reporting_text")
   private String reportingText;             
 
-  @OneToOne(fetch = FetchType.LAZY)
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "test_id",insertable = false, updatable = false)
   private Test test; 
   

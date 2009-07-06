@@ -36,18 +36,23 @@ import org.openelis.util.XMLUtil;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
-@NamedQueries({ @NamedQuery(name = "Section.IdName", query = "select distinct new org.openelis.domain.IdNameDO(s.id, s.name) " + "  from Section s order by s.name"),
-                @NamedQuery(name = "Section.AutoByName", query = "select distinct new org.openelis.domain.SectionDO(s.id, s.name) from Section s where s.name like :name order by s.name")})
-
+@NamedQueries({ @NamedQuery(name = "Section.SectionDOList", query = "select distinct new org.openelis.domain.SectionDO(s.id,o.id,o.name,s.name,s.description,s.parentSectionId,s.isExternal) from Section s left join s.organization o order by s.name"),
+                @NamedQuery(name = "Section.AutoByName", query = "select distinct new org.openelis.domain.SectionDO(s.id, s.name) from Section s where s.name like :name order by s.name"),
+                @NamedQuery(name = "Section.SectionDOById", query = "select distinct new org.openelis.domain.SectionDO(s.id,o.id,o.name,s.name,s.description,s.parentSectionId,s.isExternal) from Section s left join s.organization o where s.id = :id"),
+                @NamedQuery(name = "Section.SectionsByName", query = "from Section s where s.name = :name" )})
+                
 @Entity
 @Table(name="section")
 @EntityListeners({AuditUtil.class})
@@ -71,12 +76,14 @@ public class Section implements Auditable, Cloneable {
   private String isExternal;             
 
   @Column(name="organization_id")
-  private Integer organizationId;             
-
-
+  private Integer organizationId;  
+    
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "organization_id",insertable = false, updatable = false)
+  private Organization organization;
+  
   @Transient
   private Section original;
-
   
   public Integer getId() {
     return id;
@@ -131,7 +138,14 @@ public class Section implements Auditable, Cloneable {
        (organizationId != null && !organizationId.equals(this.organizationId)))
       this.organizationId = organizationId;
   }
-
+  
+  public Organization getOrganization() {
+      return organization;
+  }
+  
+  public void setOrganization(Organization organization) {
+      this.organization = organization;
+  }
   
   public void setClone() {
     try {

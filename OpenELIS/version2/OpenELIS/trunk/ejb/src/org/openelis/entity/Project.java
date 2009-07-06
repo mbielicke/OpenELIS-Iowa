@@ -43,6 +43,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -53,11 +54,11 @@ import org.openelis.utils.Auditable;
 
 @NamedQueries( {
     @NamedQuery(name = "Project.ProjectByName", query = "select new org.openelis.domain.ProjectDO(p.id, p.name, " + 
-                " p.description, p.startedDate, p.completedDate, p.isActive, p.referenceTo, p.ownerId, p.scriptletId) " + 
-                " from Project p where p.name like :name"),
+                " p.description, p.startedDate, p.completedDate, p.isActive, p.referenceTo, p.ownerId, s.id,s.name) " + 
+                " from Project p left join p.scriptlet s where p.name like :name"),
     @NamedQuery(name = "Project.ProjectById", query = "select new org.openelis.domain.ProjectDO(p.id, p.name, " + 
-                " p.description, p.startedDate, p.completedDate, p.isActive, p.referenceTo, p.ownerId, p.scriptletId) " + 
-                " from Project p where p.id = :id "),
+                " p.description, p.startedDate, p.completedDate, p.isActive, p.referenceTo, p.ownerId, s.id,s.name) " + 
+                " from Project p left join p.scriptlet s where p.id = :id "),
     @NamedQuery(name = "Project.ProjectListByName", query = "from Project p where p.name = :name order by p.name")            })
                 
 @Entity
@@ -97,6 +98,10 @@ public class Project implements Auditable, Cloneable {
   @OneToMany(fetch = FetchType.LAZY)
   @JoinColumn(name = "project_id")
   private Collection<ProjectParameter> projectParameter;
+  
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "scriptlet_id",insertable = false, updatable = false)
+  private Scriptlet scriptlet;
 
   @Transient
   private Project original;
@@ -242,6 +247,12 @@ public class Project implements Auditable, Cloneable {
   public String getTableName() {
     return "project";
   }
+public Scriptlet getScriptlet() {
+    return scriptlet;
+}
+public void setScriptlet(Scriptlet scriptlet) {
+    this.scriptlet = scriptlet;
+}
 
   
 }   

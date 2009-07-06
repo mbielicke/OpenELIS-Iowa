@@ -42,6 +42,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -52,7 +53,7 @@ import org.openelis.utils.Auditable;
 
 @NamedQueries({@NamedQuery(name = "TestWorksheet.TestWorksheetByTestId",query = "from TestWorksheet tw where tw.testId = :testId"),
                @NamedQuery(name = "TestWorksheet.TestWorksheetDOByTestId",query = "select distinct new org.openelis.domain.TestWorksheetDO(tw.id,tw.testId,tw.batchCapacity," +
-                "tw.totalCapacity, tw.formatId, tw.scriptletId) from TestWorksheet tw where tw.testId = :testId")})
+                "tw.totalCapacity,tw.formatId,s.id,s.name) from TestWorksheet tw left join tw.scriptlet s where tw.testId = :testId")})
 
 
 @Entity
@@ -83,7 +84,10 @@ public class TestWorksheet implements Auditable, Cloneable {
   @OneToMany(fetch = FetchType.LAZY)
   @JoinColumn(name = "test_worksheet_id",insertable = false, updatable = false)
   private Collection<TestWorksheetItem> testWorksheetItem;
-
+  
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "scriptlet_id",insertable = false, updatable = false)
+  private Scriptlet scriptlet; 
 
   @Transient
   private TestWorksheet original;
@@ -183,6 +187,12 @@ public Collection<TestWorksheetItem> getTestWorksheetItem() {
 }
 public void setTestWorksheetItem(Collection<TestWorksheetItem> testWorksheetItem) {
     this.testWorksheetItem = testWorksheetItem;
+}
+public Scriptlet getScriptlet() {
+    return scriptlet;
+}
+public void setScriptlet(Scriptlet scriptlet) {
+    this.scriptlet = scriptlet;
 }
   
 }   

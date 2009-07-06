@@ -31,23 +31,27 @@ package org.openelis.entity;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.openelis.util.Datetime;
 import org.openelis.util.XMLUtil;
 
-import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
-@NamedQueries({@NamedQuery(name = "QCAnalyte.QCAnalyteByAnalyteId", query = "select q.id from QcAnalyte q where q.analyteId = :id")})
+@NamedQueries({@NamedQuery(name = "QCAnalyte.QCAnalyteByAnalyteId", query = "select q.id from QcAnalyte q where q.analyteId = :id"),
+               @NamedQuery(name = "QcAnalyte.QcAnalyteDOsByQcId", query = " select distinct new org.openelis.domain.QcAnalyteDO(qca.id,qca.qcId," +
+               		                                                      " qca.analyteId,a.name,qca.typeId,qca.value,qca.isTrendable) " +
+               		                                                      " from QcAnalyte qca left join qca.analyte a where qca.qcId = :id ")})
 
 @Entity
 @Table(name="qc_analyte")
@@ -72,7 +76,11 @@ public class QcAnalyte implements Auditable, Cloneable {
   private String value;             
 
   @Column(name="is_trendable")
-  private String isTrendable;             
+  private String isTrendable;           
+  
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "analyte_id",insertable = false, updatable = false)
+  private Analyte analyte;
 
 
   @Transient
@@ -133,6 +141,13 @@ public class QcAnalyte implements Auditable, Cloneable {
       this.isTrendable = isTrendable;
   }
 
+  public Analyte getAnalyte() {
+      return analyte;
+  }
+  
+  public void setAnalyte(Analyte analyte) {
+      this.analyte = analyte;
+  }
   
   public void setClone() {
     try {
