@@ -105,8 +105,7 @@ public class MethodBean implements MethodRemote {
     public List autoCompleteLookupByName(String name, int maxResults) {
         Query query = null;
         List entryList = null;
-        query = manager.createNamedQuery("Method.AutoCompleteByName");
-        query.setParameter("isActive", "Y");
+        query = manager.createNamedQuery("Method.AutoCompleteByName");        
         query.setParameter("name", name);
         query.setMaxResults(maxResults);
         try {
@@ -169,7 +168,6 @@ public class MethodBean implements MethodRemote {
             if (methodId == null) {
                 method = new Method();
             } else {
-                lockBean.getLock(methodReferenceId, methodId);
                 method = manager.find(Method.class, methodId);
             }
 
@@ -200,6 +198,8 @@ public class MethodBean implements MethodRemote {
         String active;
         Method method;
         int iter;
+        List list;
+        Query query;
 
         checkDuplicate = true;
         activeBegin = methodDO.getActiveBegin();
@@ -213,11 +213,21 @@ public class MethodBean implements MethodRemote {
                                                       MethodMeta.getName()));
             checkDuplicate = false;
         }
-        if (methodDO.getIsActive() == null) {
+        
+        if (active == null) {
             exceptionList.add(new FieldErrorException("fieldRequiredException",
                                                       MethodMeta.getIsActive()));
             checkDuplicate = false;
-        }
+        } else if("N".equals(active)) {
+            query = manager.createNamedQuery("Test.TestListByMethodId");
+            query.setParameter("id", methodDO.getId());
+            list = query.getResultList();
+            if(list.size() > 0) {
+                exceptionList.add(new FormErrorException("methodAssignedToActiveTestException"));
+                checkDuplicate = false;
+            }
+        } 
+        
         if (activeBegin == null) {
             exceptionList.add(new FieldErrorException("fieldRequiredException",
                                                       MethodMeta.getActiveBegin()));
@@ -228,18 +238,20 @@ public class MethodBean implements MethodRemote {
                                                       MethodMeta.getActiveEnd()));
             checkDuplicate = false;
         }
-
+        
+        
+        
         if (checkDuplicate) {
             if (activeEnd.before(activeBegin)) {
                 exceptionList.add(new FormErrorException("endDateAfterBeginDateException"));
                 checkDuplicate = false;
             }
-        }
+        }               
 
         if (checkDuplicate) {
-            Query query = manager.createNamedQuery("Method.MethodByName");
+            query = manager.createNamedQuery("Method.MethodByName");
             query.setParameter("name", methodDO.getName());
-            List<Method> list = query.getResultList();
+            list = query.getResultList();
 
             for (iter = 0; iter < list.size(); iter++) {
                 overlap = false;

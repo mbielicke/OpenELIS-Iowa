@@ -30,7 +30,7 @@ import org.openelis.domain.QaEventDO;
 import org.openelis.entity.QaEvent;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.RPCException;
+import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.SecurityModule.ModuleFlags;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.local.LockLocal;
@@ -126,34 +126,29 @@ public class QaEventBean implements QaEventRemote{
     @RolesAllowed("qaevent-update")
     public Integer updateQaEvent(QaEventDO qaEventDO)throws Exception{ 
         SecurityInterceptor.applySecurity(ctx.getCallerPrincipal().getName(), "qaevent", ModuleFlags.UPDATE);
-        Query query = manager.createNamedQuery("getTableId");
-        query.setParameter("name", "qaevent");
-        Integer qaEventReferenceId = (Integer)query.getSingleResult();
+        QaEvent qaEvent;
+        Query query;
+        Integer qaEventReferenceId,qaEventId;
         
-        if(qaEventDO.getId() != null){
+        query = manager.createNamedQuery("getTableId");
+        query.setParameter("name", "qaevent");
+        qaEventReferenceId = (Integer)query.getSingleResult();
+        qaEventId = qaEventDO.getId();
+            
+        if(qaEventId != null){
             //we need to call lock one more time to make sure their lock didnt expire and someone else grabbed the record
-            try {
-                lockBean.validateLock(qaEventReferenceId,qaEventDO.getId());
-              } catch(Exception ex) {
-                 throw ex;
-             }    
-            lockBean.getLock(qaEventReferenceId, qaEventDO.getId());
-        }
+            lockBean.validateLock(qaEventReferenceId,qaEventId);                        
+        }               
+        
+        validateQaEvent(qaEventDO);  
         
         manager.setFlushMode(FlushModeType.COMMIT);
+        qaEvent = null;
         
-        List<Exception> exceptionList = new ArrayList<Exception>();
-        validateQaEvent(qaEventDO,exceptionList);  
-        if(exceptionList.size() > 0){
-            throw (RPCException)exceptionList.get(0);
-        }
-        
-        QaEvent qaEvent = null;
-        
-        if(qaEventDO.getId()==null){
+        if(qaEventId == null){
             qaEvent = new QaEvent();            
         }else{
-            qaEvent = manager.find(QaEvent.class, qaEventDO.getId());
+            qaEvent = manager.find(QaEvent.class, qaEventId);
         }
         
         qaEvent.setDescription(qaEventDO.getDescription());
@@ -161,8 +156,8 @@ public class QaEventBean implements QaEventRemote{
         qaEvent.setName(qaEventDO.getName());
         qaEvent.setReportingSequence(qaEventDO.getReportingSequence());
         qaEvent.setReportingText(qaEventDO.getReportingText());
-        qaEvent.setTestId(qaEventDO.getTest());
-        qaEvent.setTypeId(qaEventDO.getType());
+        qaEvent.setTestId(qaEventDO.getTestId());
+        qaEvent.setTypeId(qaEventDO.getTypeId());
         
         if(qaEvent.getId() == null){
             manager.persist(qaEvent);
@@ -190,32 +185,19 @@ public class QaEventBean implements QaEventRemote{
         return getQaEvent(qaEventId);
     }
     
-    public List validateForAdd(QaEventDO qaeDO){
-        List<Exception> exceptionList = new ArrayList<Exception>();
+    private void validateQaEvent(QaEventDO qaEventDO) throws Exception{
+        ValidationErrorsList exceptionList;
         
-        validateQaEvent(qaeDO, exceptionList);
-        
-        return exceptionList;
-    }
-    
-    public List validateForUpdate(QaEventDO qaeDO){
-        List<Exception> exceptionList = new ArrayList<Exception>();
-        
-        validateQaEvent(qaeDO, exceptionList);
-        
-        return exceptionList;
-    }
-    
-    private void validateQaEvent(QaEventDO qaEventDO,List<Exception> exceptionList){
-        if(qaEventDO.getType()==null){                       
+        exceptionList = new ValidationErrorsList(); 
+        if(qaEventDO.getTypeId()==null){                       
             exceptionList.add(new FieldErrorException("fieldRequiredException",QaeMeta.getTypeId()));
-           } 
+        } 
         if("".equals(qaEventDO.getName())){                       
             exceptionList.add(new FieldErrorException("fieldRequiredException",QaeMeta.getName()));
-           } 
+        } 
         if("".equals(qaEventDO.getReportingText())){                       
             exceptionList.add(new FieldErrorException("fieldRequiredException",QaeMeta.getReportingText()));
-           } 
+        } 
     } 
  
 }

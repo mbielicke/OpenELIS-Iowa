@@ -46,7 +46,6 @@ import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.AuxFieldDO;
 import org.openelis.domain.AuxFieldGroupDO;
 import org.openelis.domain.AuxFieldValueDO;
-import org.openelis.domain.IdNameDO;
 import org.openelis.entity.AuxField;
 import org.openelis.entity.AuxFieldGroup;
 import org.openelis.entity.AuxFieldValue;
@@ -57,6 +56,7 @@ import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.AbstractField;
+import org.openelis.local.CategoryLocal;
 import org.openelis.local.LockLocal;
 import org.openelis.metamap.AuxFieldGroupMetaMap;
 import org.openelis.metamap.AuxFieldMetaMap;
@@ -84,6 +84,9 @@ public class AuxiliaryBean implements AuxiliaryRemote {
 
     @Resource
     private SessionContext ctx;
+    
+    @EJB
+    private CategoryLocal categoryBean;
 
     private LockLocal lockBean;
     
@@ -110,16 +113,14 @@ public class AuxiliaryBean implements AuxiliaryRemote {
                  query = manager.createNamedQuery("Dictionary.SystemNameById");             
                  query.setParameter("id", typeId);
                  try {
-                 sysName = (String)query.getSingleResult();
-                 if("aux_dictionary".equals(sysName)) {
-                     val = Integer.parseInt(valueDO.getValue());
-                     query = manager.createNamedQuery("Dictionary.EntryById");
-                     query.setParameter("id", val);
-                     entry = (String)query.getSingleResult();
-                     valueDO.setDictEntry(entry);  
-                   } else {
-                     valueDO.setDictEntry(null);  
-                  } 
+                     sysName = (String)query.getSingleResult();
+                     if("aux_dictionary".equals(sysName)) {
+                         val = Integer.parseInt(valueDO.getValue());
+                         query = manager.createNamedQuery("Dictionary.EntryById");
+                         query.setParameter("id", val);
+                         entry = (String)query.getSingleResult();
+                         valueDO.setValue(entry);  
+                     } 
                  } catch(Exception ex) {
                      ex.printStackTrace();
                  } 
@@ -185,7 +186,6 @@ public class AuxiliaryBean implements AuxiliaryRemote {
         if(auxFieldGroupDO.getId() == null) {
           auxFieldGroup = new AuxFieldGroup();  
         } else {
-            lockBean.getLock(afgReferenceId, auxFieldGroupDO.getId());
             auxFieldGroup = manager.find(AuxFieldGroup.class,auxFieldGroupDO.getId()); 
         } 
         
@@ -415,14 +415,7 @@ public class AuxiliaryBean implements AuxiliaryRemote {
             throw new LastPageException();
         else
             return returnList;
-    }
-    
-    public List<IdNameDO> getScriptletDropDownValues() {
-        Query query = manager.createNamedQuery("Scriptlet.Scriptlet");
-        List<IdNameDO> scriptletList = query.getResultList();         
-        return scriptletList;
-          
-    }
+    }   
     
     private void validateAuxiliary(AuxFieldGroupDO auxFieldGroupDO,
                                              List<AuxFieldDO> auxFields) throws Exception{
@@ -435,11 +428,11 @@ public class AuxiliaryBean implements AuxiliaryRemote {
     
     private List<RPCException> validateAuxFieldValue(List<AuxFieldValueDO> auxFieldValueDOList) {        
         AuxFieldValueDO valueDO;
-        Integer numId, dictId, typeId, yesNoId, dateId, dtId, timeId, alcId, amcId, aucId;
-        ArrayList<String> dvl;
+        Integer numId, dictId, typeId, yesNoId, dateId, dtId, timeId, alcId, 
+                amcId, aucId,entryId;;
+        ArrayList<Integer> dvl;
         List<RPCException> exList;
         List<NumericRange> nrList;
-        Query query;
         String value, fieldName,typeName,valueName;
         NumericRange nr;
         boolean hasDateType,hasYesNoType,hasAlphaType;
@@ -451,38 +444,19 @@ public class AuxiliaryBean implements AuxiliaryRemote {
         if (auxFieldValueDOList == null)
             return null;
 
-        dvl = new ArrayList<String>();
+        dvl = new ArrayList<Integer>();
         nrList = new ArrayList<NumericRange>();
-        exList = new ArrayList<RPCException>();
-
-        query = manager.createNamedQuery("Dictionary.IdBySystemName");
-
-        query.setParameter("systemName", "aux_dictionary");
-        dictId = (Integer)query.getResultList().get(0);
-
-        query.setParameter("systemName", "aux_numeric");
-        numId = (Integer)query.getResultList().get(0);
-
-        query.setParameter("systemName", "aux_yes_no");
-        yesNoId = (Integer)query.getResultList().get(0);
-
-        query.setParameter("systemName", "aux_date");
-        dateId = (Integer)query.getResultList().get(0);
-
-        query.setParameter("systemName", "aux_date_time");
-        dtId = (Integer)query.getResultList().get(0);
-
-        query.setParameter("systemName", "aux_time");
-        timeId = (Integer)query.getResultList().get(0);
-
-        query.setParameter("systemName", "aux_alpha_lower");
-        alcId = (Integer)query.getResultList().get(0);
-
-        query.setParameter("systemName", "aux_alpha_mixed");
-        amcId = (Integer)query.getResultList().get(0);
-
-        query.setParameter("systemName", "aux_alpha_upper");
-        aucId = (Integer)query.getResultList().get(0);
+        exList = new ArrayList<RPCException>();        
+        
+        dictId = categoryBean.getEntryIdForSystemName("aux_dictionary");        
+        numId = categoryBean.getEntryIdForSystemName("aux_numeric");        
+        yesNoId = categoryBean.getEntryIdForSystemName("aux_yes_no");        
+        dateId = categoryBean.getEntryIdForSystemName("aux_date");        
+        dtId = categoryBean.getEntryIdForSystemName("aux_date_time");        
+        timeId = categoryBean.getEntryIdForSystemName("aux_time");        
+        alcId = categoryBean.getEntryIdForSystemName("aux_alpha_lower");        
+        amcId = categoryBean.getEntryIdForSystemName("aux_alpha_mixed");;        
+        aucId = categoryBean.getEntryIdForSystemName("aux_alpha_upper");
          
         typeName = AuxFieldGroupMeta.getAuxField().getAuxFieldValue().getTypeId();
         valueName = AuxFieldGroupMeta.getAuxField().getAuxFieldValue().getValue();
@@ -542,13 +516,12 @@ public class AuxiliaryBean implements AuxiliaryRemote {
                     }
                     hasDateType = true;
                 } else if (dictId.equals(typeId)) {
-                    query = manager.createNamedQuery("Dictionary.EntryById");
-                    query.setParameter("id", Integer.valueOf(value));
-                    if (query.getResultList().size() == 0)
+                    entryId = categoryBean.getEntryIdForEntry(value);                    
+                    if (entryId == null)
                         throw new ParseException("illegalDictEntryException");
 
-                    if (!dvl.contains(value))
-                        dvl.add(value);
+                    if (!dvl.contains(entryId))
+                        dvl.add(entryId);
                     else
                         throw new InconsistentException("auxDictEntryNotUniqueException");
                 } else if (alcId.equals(typeId)) {

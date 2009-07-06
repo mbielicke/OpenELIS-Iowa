@@ -54,6 +54,7 @@ import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.SecurityModule.ModuleFlags;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.QueryStringField;
+import org.openelis.local.CategoryLocal;
 import org.openelis.local.JMSMessageProducerLocal;
 import org.openelis.local.LockLocal;
 import org.openelis.messages.DictionaryCacheMessage;
@@ -70,7 +71,7 @@ import org.openelis.utils.SecurityInterceptor;
 })
 @SecurityDomain("openelis")
 @RolesAllowed("dictionary-select")
-public class CategoryBean implements CategoryRemote {
+public class CategoryBean implements CategoryRemote,CategoryLocal {
     
     @PersistenceContext(name = "openelis")
     private EntityManager manager;
@@ -97,11 +98,7 @@ public class CategoryBean implements CategoryRemote {
         Query query = manager.createNamedQuery("Category.Category");
         query.setParameter("id", categoryId);
         CategoryDO category = (CategoryDO)query.getSingleResult();// getting
-                                                                    // category
-                                                                    // with
-                                                                    // address
-                                                                    // and
-                                                                    // contacts
+                                                                    // category                                                                                                                                        
 
         return category;
     }
@@ -173,7 +170,6 @@ public class CategoryBean implements CategoryRemote {
         if (categoryDO.getId() == null) {
             category = new Category();
         } else {
-            lockBean.getLock(categoryReferenceId, categoryId);
             category = manager.find(Category.class, categoryId);
         }
 

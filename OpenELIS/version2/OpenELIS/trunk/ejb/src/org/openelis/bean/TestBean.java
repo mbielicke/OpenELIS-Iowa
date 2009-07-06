@@ -55,6 +55,7 @@ import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.SecurityModule.ModuleFlags;
 import org.openelis.gwt.common.data.AbstractField;
+import org.openelis.local.CategoryLocal;
 import org.openelis.local.LockLocal;
 import org.openelis.metamap.TestMetaMap;
 import org.openelis.metamap.TestPrepMetaMap;
@@ -95,7 +96,7 @@ import javax.persistence.Query;
 
 @Stateless
 @EJBs( {@EJB(name = "ejb/SystemUser", beanInterface = SystemUserUtilLocal.class),
-        @EJB(name = "ejb/Lock", beanInterface = LockLocal.class),})
+        @EJB(name = "ejb/Lock", beanInterface = LockLocal.class)})
 
 @SecurityDomain("openelis")
 @RolesAllowed("test-select")
@@ -108,18 +109,20 @@ public class TestBean implements TestRemote {
     private SystemUserUtilLocal sysUser;
 
     @Resource
-    private SessionContext ctx;
+    private SessionContext ctx;       
 
     private LockLocal lockBean;
+    
+    @EJB
+    private CategoryLocal categoryBean;
 
     private static final TestMetaMap TestMeta = new TestMetaMap();
     
     
-
     @PostConstruct
     private void init() {
         lockBean = (LockLocal)ctx.lookup("ejb/Lock");
-        sysUser = (SystemUserUtilLocal)ctx.lookup("ejb/SystemUser");
+        sysUser = (SystemUserUtilLocal)ctx.lookup("ejb/SystemUser");        
     }        
     
     public TestDO getTestAndUnlock(Integer testId,String session) {
@@ -183,7 +186,6 @@ public class TestBean implements TestRemote {
         if (testDO.getId() == null) {
             test = new Test();
         } else {
-            lockBean.getLock(testReferenceId, testDO.getId());
             test = manager.find(Test.class, testDO.getId());
         }
 
@@ -256,7 +258,7 @@ public class TestBean implements TestRemote {
             }
         }
 
-        if (itemDOList != null && itemDOList.size() > 0) {
+        if (itemDOList != null) {
             for (int iter = 0; iter < itemDOList.size(); iter++) {
                 TestWorksheetItemDO itemDO = itemDOList.get(iter);
                 TestWorksheetItem testWorksheetItem = null;
@@ -472,9 +474,7 @@ public class TestBean implements TestRemote {
 
                                 if (!resultDO.getDelete()) {
                                     found = true;
-                                    updateTestResult(resultDO,
-                                                     result,
-                                                     test.getId());
+                                    updateTestResult(resultDO,result,test.getId());
                                     manager.persist(result);
                                     refDO.setTestResultId(result.getId());
                                     tempRealResIdMap.put(resultDO.getId(),
@@ -721,10 +721,8 @@ public class TestBean implements TestRemote {
                     query = manager.createNamedQuery("Dictionary.EntryById");
                     query.setParameter("id", val);
                     entry = (String)query.getSingleResult();
-                    resDO.setDictEntry(entry);  
-                } else {
-                    resDO.setDictEntry(null);  
-                }
+                    resDO.setValue(entry);  
+                } 
             
             }
         } catch(Exception ex) {
@@ -748,14 +746,13 @@ public class TestBean implements TestRemote {
         Iterator iter;
                
         list = null;
-        listCollection = null;
+        listCollection = new ArrayList<List<TestResultDO>>();   
         resultGroup = 1;
-        while(resultGroup != null) {            
+        while(resultGroup != null) {               
             query = manager.createNamedQuery("TestResult.TestResultDOList");        
             query.setParameter("testId", testId);
-            query.setParameter("resultGroup", resultGroup);
-            if(listCollection == null)
-                listCollection = new ArrayList<List<TestResultDO>>();            
+            query.setParameter("resultGroup", resultGroup);            
+                                        
             try {
                 list = query.getResultList();
                 if(list.size() == 0) { 
@@ -773,16 +770,15 @@ public class TestBean implements TestRemote {
                         query = manager.createNamedQuery("Dictionary.EntryById");
                         query.setParameter("id", val);
                         entry = (String)query.getResultList().get(0);
-                        resDO.setDictEntry(entry);  
-                    } else {
-                        resDO.setDictEntry(null);  
-                    }            
-                }
-                listCollection.add(list);                
+                        resDO.setValue(entry);  
+                    }           
+                }                                      
+                
             } catch(Exception ex) {
                 ex.printStackTrace();
-            }   
-            resultGroup++;
+            } 
+            listCollection.add(list);
+            resultGroup++;   
         }
         return listCollection;
     }
@@ -814,38 +810,7 @@ public class TestBean implements TestRemote {
             throw new LastPageException();
         else
             return returnList;
-    }
-
-    public List getLabelDropDownValues() {
-        Query query = manager.createNamedQuery("Label.LabelIdName");
-        List labelList = query.getResultList();
-        return labelList;
-    }
-
-    public List getTestTrailerDropDownValues() {
-        Query query = manager.createNamedQuery("TestTrailer.TestTrailerIdName");
-        List testTrailerList = query.getResultList();
-        return testTrailerList;
-    }
-
-    public List getScriptletDropDownValues() {
-        Query query = manager.createNamedQuery("Scriptlet.Scriptlet");
-        List scriptletList = query.getResultList();
-        return scriptletList;
-    }
-    
-    public List getSectionDropDownValues() {
-        Query query = manager.createNamedQuery("Section.IdName");        
-        List<IdNameDO> sections = query.getResultList();         
-        return sections;
-    }
-
-    public List getPrepTestDropDownValues() {        
-        Query query = manager.createNamedQuery("Test.Names");
-        query.setParameter("isActive", "Y");
-        List preptestList = query.getResultList();
-        return preptestList;
-    }    
+    }   
     
     public List getTestAnalyteDropDownValues(Integer testId) {        
         Query query = manager.createNamedQuery("TestAnalyte.IdName");
@@ -951,7 +916,7 @@ public class TestBean implements TestRemote {
             validateTestPrep(exceptionList,prepTestDOList);        
         if(worksheetDO!=null)
             validateTestWorksheet(exceptionList,worksheetDO);
-        if(itemDOList!=null && itemDOList.size() > 0)
+        if(itemDOList!=null)
             validateTestWorksheetItems(exceptionList,itemDOList,worksheetDO);
         if(twsaDOList!=null) 
             validateTestWorksheetAnalytes(exceptionList, twsaDOList);
@@ -979,6 +944,10 @@ public class TestBean implements TestRemote {
 
     private void validateTestDO(ValidationErrorsList exceptionList,TestDO testDO) {
         boolean checkDuplicate = true;
+        List list;        
+        Query query;
+        Test test;
+        
         if (testDO.getName() == null || "".equals(testDO.getName())) {
             exceptionList.add(new FieldErrorException("fieldRequiredException",
                                                       TestMeta.getName()));
@@ -1002,6 +971,23 @@ public class TestBean implements TestRemote {
                 exceptionList.add(new FieldErrorException("fieldRequiredException",
                                                           TestMeta.getIsActive()));
                 checkDuplicate = false;
+            } else if("N".equals(testDO.getIsActive())) {
+                
+                query = manager.createNamedQuery("TestPrep.TestPrepByPrepTestId");
+                query.setParameter("testId", testDO.getId());
+                list = query.getResultList();
+                if(list.size() > 0) {
+                    exceptionList.add(new FormErrorException("testUsedAsPrepTestException"));
+                    checkDuplicate = false;
+                }
+                
+                query = manager.createNamedQuery("TestReflex.TestReflexesByAddTestId");
+                query.setParameter("testId", testDO.getId());
+                list = query.getResultList();
+                if(list.size() > 0) {
+                    exceptionList.add(new FormErrorException("testUsedAsReflexTestException"));
+                    checkDuplicate = false;
+                }
             }
             
             if (testDO.getActiveBegin() == null) {
@@ -1024,39 +1010,39 @@ public class TestBean implements TestRemote {
             }
             
           if(checkDuplicate){
-             Query query = manager.createNamedQuery("Test.TestByName");
+             query = manager.createNamedQuery("Test.TestByName");
              query.setParameter("name", testDO.getName());
-             List<Test> list = query.getResultList();
+             list = query.getResultList();
              for(int iter = 0; iter < list.size(); iter++){
                  boolean overlap = false;
-                 Test test = (Test)list.get(iter);
+                 test = (Test)list.get(iter);
                  if(!test.getId().equals(testDO.getId())){
-                  if(test.getMethodId().equals(testDO.getMethodId())){                  
-                      if(test.getIsActive().equals(testDO.getIsActive())){
-                          if("Y".equals(testDO.getIsActive())){
-                              exceptionList.add(new FormErrorException("testActiveException"));                                   
-                              break; 
-                           }                            
-                     }
-                      if(test.getActiveBegin().before(testDO.getActiveEnd())&&
-                                      (test.getActiveEnd().after(testDO.getActiveBegin()))){
-                          overlap = true;  
-                      } else if(test.getActiveBegin().before(testDO.getActiveBegin())&&
-                                      (test.getActiveEnd().after(testDO.getActiveEnd()))){
-                          overlap = true;  
-                      } else if(test.getActiveBegin().equals(testDO.getActiveEnd())||
-                                   (test.getActiveEnd().equals(testDO.getActiveBegin()))){
-                          overlap = true;                  
-                      } else if(test.getActiveBegin().equals(testDO.getActiveBegin())||
-                                      (test.getActiveEnd().equals(testDO.getActiveEnd()))){
-                          overlap = true;
-                      }
+                     if(test.getMethodId().equals(testDO.getMethodId())){                  
+                         if(test.getIsActive().equals(testDO.getIsActive())){
+                             if("Y".equals(testDO.getIsActive())){
+                                 exceptionList.add(new FormErrorException("testActiveException"));                                   
+                                 break; 
+                             }                            
+                         }
+                         if(test.getActiveBegin().before(testDO.getActiveEnd())&&
+                                         (test.getActiveEnd().after(testDO.getActiveBegin()))){
+                             overlap = true;  
+                         } else if(test.getActiveBegin().before(testDO.getActiveBegin())&&
+                                         (test.getActiveEnd().after(testDO.getActiveEnd()))){
+                             overlap = true;  
+                         } else if(test.getActiveBegin().equals(testDO.getActiveEnd())||
+                                         (test.getActiveEnd().equals(testDO.getActiveBegin()))){
+                             overlap = true;                  
+                         } else if(test.getActiveBegin().equals(testDO.getActiveBegin())||
+                                         (test.getActiveEnd().equals(testDO.getActiveEnd()))){
+                             overlap = true;
+                         }
                       
-                     if(overlap){
-                         exceptionList.add(new FormErrorException("testTimeOverlapException"));
-                     } 
-                 }
-               } 
+                         if(overlap){
+                             exceptionList.add(new FormErrorException("testTimeOverlapException"));
+                         } 
+                     }
+                 } 
              }
           }
         }                
@@ -1216,120 +1202,158 @@ public class TestBean implements TestRemote {
     private void validateTestWorksheetItems(ValidationErrorsList exceptionList,
                                            List<TestWorksheetItemDO> itemDOList,
                                            TestWorksheetDO worksheetDO) {        
-        Integer bc = null;
-        if (worksheetDO != null)
+        Integer bc,tc,position,batchId,totalId, formatId,fixedId,duplId;
+        ArrayList<Integer> posList;
+        int i, size;
+        TestWorksheetItemDO currDO,prevDO;
+        boolean checkPosition;
+        Query query;
+        String sysName,name;
+        
+        if(itemDOList == null)
+            return;
+        
+        bc = null;
+        tc = null;
+        formatId = null;
+        
+        size = itemDOList.size();
+        
+        if (worksheetDO != null) {
             bc = worksheetDO.getBatchCapacity();
-        Integer position = null;
-        ArrayList<Integer> posList = new ArrayList<Integer>();
+            tc = worksheetDO.getTotalCapacity();
+            formatId = worksheetDO.getNumberFormatId(); 
+        } else if(size > 0) {
+            // 
+            // if there's no data in worksheetDO it means that the user didn't 
+            // specify any details about the kind of worksheet it will be and so 
+            // if there are qcs present then this is an erroneous situation and
+            // the errors related to the worksheet information must be added to 
+            // the list of errors
+            //
+            worksheetDO = new TestWorksheetDO();
+            validateTestWorksheet(exceptionList, worksheetDO);        
+        }
+        
+        posList = new ArrayList<Integer>();
+        checkPosition = false;
 
-        TestWorksheetItemDO itemDO = null;
-        boolean checkPosition = false;
+        batchId =  categoryBean.getEntryIdForSystemName("batch");
+        totalId = categoryBean.getEntryIdForSystemName("total");
+        fixedId = categoryBean.getEntryIdForSystemName("pos_fixed");
+        duplId = categoryBean.getEntryIdForSystemName("pos_duplicate");
+                
+        prevDO = null;
+        
+        for (i = 0; i < size; i++) {
+            currDO = itemDOList.get(i);
+            
+            if(i > 0)
+                prevDO = itemDOList.get(i-1);
+            
+            if (currDO.getDelete()) 
+                continue;
+                                        
+            position = currDO.getPosition();
+            checkPosition = true;
+            name = currDO.getQcName();
+            
+            if (name == null || "".equals(name)) {
+                exceptionList.add(new TableFieldErrorException("fieldRequiredException",i,
+                                                               TestMeta.getTestWorksheetItem().getQcName(),
+                                                               TestWorksheetItemMetaMap.getTableName()));
+            }
+            if (currDO.getTypeId() == null) {
+                exceptionList.add(new TableFieldErrorException("fieldRequiredException",i,
+                                                               TestMeta.getTestWorksheetItem().getTypeId(),
+                                                               TestWorksheetItemMetaMap.getTableName()));
+                checkPosition = false;
+            }
 
-        Query query = null;
-
-        String sysName = null;
-
-        for (int i = 0; i < itemDOList.size(); i++) {
-            itemDO = itemDOList.get(i);
-            if (!itemDO.getDelete()) {
-                position = itemDO.getPosition();
-                checkPosition = true;
-
-                if (itemDO.getQcName() == null || ("").equals(itemDO.getQcName())) {
-                    exceptionList.add(new TableFieldErrorException("fieldRequiredException",
-                                                                   i,
-                                                                   TestWorksheetItemMetaMap.getTableName() + ":"
-                                                                                   + TestMeta.getTestWorksheetItem()
-                                                                                             .getQcName()));
-                }
-                if (itemDO.getTypeId() == null) {
-                    exceptionList.add(new TableFieldErrorException("fieldRequiredException",
-                                                                   i,
-                                                                   TestWorksheetItemMetaMap.getTableName() + ":"
-                                                                                   + TestMeta.getTestWorksheetItem()
-                                                                                             .getTypeId()));
+            if (position != null) {
+                if (position <= 0) {
+                    exceptionList.add(new TableFieldErrorException("posMoreThanZeroException",i,
+                                                                   TestMeta.getTestWorksheetItem().getPosition(),
+                                                                   TestWorksheetItemMetaMap.getTableName()));
                     checkPosition = false;
-                }
-
-                if (position != null) {
-                    if (position <= 0) {
-                        exceptionList.add(new TableFieldErrorException("posMoreThanZeroException",
-                                                                       i,
-                                                                       TestWorksheetItemMetaMap.getTableName() + ":"
-                                                                                       + TestMeta.getTestWorksheetItem()
-                                                                                                 .getPosition()));
-                        checkPosition = false;
-                    } else if (bc != null && position > bc) {
-                        exceptionList.add(new TableFieldErrorException("posExcBatchCapacityException",
-                                                                       i,
-                                                                       TestWorksheetItemMetaMap.getTableName() + ":"
-                                                                                       + TestMeta.getTestWorksheetItem()
-                                                                                                 .getPosition()));
-                        checkPosition = false;
+                } else if (bc != null && batchId.equals(formatId) && position > bc ) {
+                    exceptionList.add(new TableFieldErrorException("posExcBatchCapacityException",i,
+                                                                   TestMeta.getTestWorksheetItem().getPosition(),
+                                                                   TestWorksheetItemMetaMap.getTableName()));
+                    checkPosition = false;
+                } else if(tc != null && totalId.equals(formatId) && position > tc){
+                    exceptionList.add(new TableFieldErrorException("posExcTotalCapacityException",i,
+                                                                   TestMeta.getTestWorksheetItem().getPosition(),
+                                                                   TestWorksheetItemMetaMap.getTableName()));
+                    checkPosition = false;
+                }else {
+                    if (!posList.contains(position)) {
+                        posList.add(position);
                     } else {
-                        if (!posList.contains(position)) {
-                            posList.add(position);
-                        } else {
-                            exceptionList.add(new TableFieldErrorException("duplicatePosForQCsException",
-                                                                           i,
-                                                                           TestWorksheetItemMetaMap.getTableName() + ":"
-                                                                                           + TestMeta.getTestWorksheetItem()
-                                                                                                     .getPosition()));
-                            checkPosition = false;
-                        }
-                    }
-                }
-
-                if (checkPosition) {
-                    query = manager.createNamedQuery("Dictionary.SystemNameById");
-                    query.setParameter("id", itemDO.getTypeId());
-                    sysName = (String)query.getSingleResult();
-
-                    if (position == null) {
-                        if ("pos_duplicate".equals(sysName) || "pos_fixed".equals(sysName)) {
-                            exceptionList.add(new TableFieldErrorException("fixedDuplicatePosException",
-                                                                           i,
-                                                                           TestWorksheetItemMetaMap.getTableName() + ":"
-                                                                                           + TestMeta.getTestWorksheetItem()
-                                                                                                     .getPosition()));
-                        }
-                    } else {
-                        if (position == 1 && "pos_duplicate".equals(sysName)) {
-                            exceptionList.add(new TableFieldErrorException("posOneDuplicateException",
-                                                                           i,
-                                                                           TestWorksheetItemMetaMap.getTableName() + ":"
-                                                                                           + TestMeta.getTestWorksheetItem()
-                                                                                                     .getTypeId()));
-                        } else if (!"pos_duplicate".equals(sysName) && !"pos_fixed".equals(sysName)) {
-                            exceptionList.add(new TableFieldErrorException("posSpecifiedException",
-                                                                           i,
-                                                                           TestWorksheetItemMetaMap.getTableName() + ":"
-                                                                                           + TestMeta.getTestWorksheetItem()
-                                                                                                     .getPosition()));
-                        }
+                        exceptionList.add(new TableFieldErrorException("duplicatePosForQCsException",i,
+                                                                       TestMeta.getTestWorksheetItem().getPosition(),
+                                                                       TestWorksheetItemMetaMap.getTableName()));
+                        checkPosition = false;
                     }
                 }
             }
+
+            if (checkPosition) {
+                query = manager.createNamedQuery("Dictionary.SystemNameById");
+                query.setParameter("id", currDO.getTypeId());                 
+                sysName = (String)query.getSingleResult();
+
+                if (position == null) {
+                    if ("pos_duplicate".equals(sysName) || "".equals(sysName)) {
+                        exceptionList.add(new TableFieldErrorException("fixedDuplicatePosException",i,
+                                                                       TestMeta.getTestWorksheetItem().getPosition(),
+                                                                       TestWorksheetItemMetaMap.getTableName()));
+                    }
+                } else {
+                    if (position == 1 && "pos_duplicate".equals(sysName)) {
+                        exceptionList.add(new TableFieldErrorException("posOneDuplicateException",i,
+                                                                       TestMeta.getTestWorksheetItem().getTypeId(),
+                                                                       TestWorksheetItemMetaMap.getTableName()));
+                    } else if (!"pos_duplicate".equals(sysName) && !"pos_fixed".equals(sysName)) {
+                        exceptionList.add(new TableFieldErrorException("posSpecifiedException",i,
+                                                                       TestMeta.getTestWorksheetItem().getPosition(),
+                                                                       TestWorksheetItemMetaMap.getTableName()));
+                    }
+                }
+                
+                if(duplicateAfterFixedOrDuplicate(currDO,prevDO,fixedId,duplId)){
+                    exceptionList.add(new TableFieldErrorException("duplPosAfterFixedOrDuplPosException",i,
+                                                                   TestMeta.getTestWorksheetItem().getPosition(),
+                                                                   TestWorksheetItemMetaMap.getTableName()));
+                }
+            }
+                           
         }       
     }
     
     private void validateTestWorksheetAnalytes(ValidationErrorsList exceptionList,
                                                List<TestWorksheetAnalyteDO> twsaDOList) {
-      TestWorksheetAnalyteDO twsaDO = null;
-        
+      TestWorksheetAnalyteDO twsaDO;
+      Integer repeat;  
+      
       for(int i = 0; i < twsaDOList.size();i++) {
          twsaDO =  twsaDOList.get(i);  
-         if(!twsaDO.getDelete()) {
-          if(twsaDO.getRepeat() != null) {            
-            if(twsaDO.getRepeat() < 1) {
-                exceptionList.add(new TableFieldErrorException("repeatNullForAnalyteException", i,
-                   TestWorksheetAnalyteMetaMap.getTableName()+":"+TestMeta.getTestWorksheetAnalyte().getRepeat())); 
-            } 
-          }else {
+         if(twsaDO.getDelete()) 
+             continue;
+         
+         repeat = twsaDO.getRepeat();
+         if(repeat != null) {            
+             if(repeat < 1) {
+                 exceptionList.add(new TableFieldErrorException("repeatNullForAnalyteException", i,
+                                                                TestMeta.getTestWorksheetAnalyte().getRepeat(),
+                                                                TestWorksheetAnalyteMetaMap.getTableName())); 
+             } 
+         }else {
              exceptionList.add(new TableFieldErrorException("repeatNullForAnalyteException", i,
-                 TestWorksheetAnalyteMetaMap.getTableName()+":"+TestMeta.getTestWorksheetAnalyte().getRepeat()));
-          }
-        }
+                                                            TestMeta.getTestWorksheetAnalyte().getRepeat(),
+                                                            TestWorksheetAnalyteMetaMap.getTableName()));
+         }
+        
       }  
         
     }
@@ -1375,44 +1399,30 @@ public class TestBean implements TestRemote {
                                        List<TestTypeOfSampleDO> sampleTypeDOList,
                                        HashMap<Integer, List<Integer>> resGrpRsltMap) {
        TestResultDO resDO;
-       Integer numId,dictId,titerId,typeId,dateId,dtId,timeId,unitId;             
+       Integer numId,dictId,titerId,typeId,dateId,dtId,timeId,unitId,entryId;             
        int i;                   
        String value, fieldName;       
        boolean hasDateType,resListValid;        
-       Query query;
        NumericRange nr;
        TiterRange tr;
        HashMap<Integer,List<TiterRange>> trMap;
        HashMap<Integer,List<NumericRange>> nrMap;
-       List<String> dictList;
+       List<Integer> dictList;
        List<Integer> resIdList;
-       Integer resultGroup;       
-              
-       query = manager.createNamedQuery("Dictionary.IdBySystemName");              
+       Integer resultGroup;                                      
        
-       value = null;             
-        
-       query.setParameter("systemName", "test_res_type_dictionary");
-       dictId = (Integer)query.getSingleResult();
-        
-       query.setParameter("systemName", "test_res_type_numeric");
-       numId = (Integer)query.getSingleResult();
-        
-       query.setParameter("systemName", "test_res_type_titer");
-       titerId = (Integer)query.getSingleResult();
+       value = null;                     
        
-       query.setParameter("systemName", "test_res_type_date");
-       dateId = (Integer)query.getSingleResult(); 
-       
-       query.setParameter("systemName", "test_res_type_date_time");
-       dtId = (Integer)query.getSingleResult();
-       
-       query.setParameter("systemName", "test_res_type_time");
-       timeId = (Integer)query.getSingleResult();
+       dictId = categoryBean.getEntryIdForSystemName("test_res_type_dictionary");               
+       numId = categoryBean.getEntryIdForSystemName("test_res_type_numeric");              
+       titerId = categoryBean.getEntryIdForSystemName("test_res_type_titer");              
+       dateId = categoryBean.getEntryIdForSystemName("test_res_type_date");               
+       dtId = categoryBean.getEntryIdForSystemName("test_res_type_date_time");              
+       timeId = categoryBean.getEntryIdForSystemName("test_res_type_time");
                     
        trMap = new HashMap<Integer, List<TiterRange>>();
        nrMap = new HashMap<Integer, List<NumericRange>>();       
-       dictList = new ArrayList<String>();
+       dictList = new ArrayList<Integer>();
        resultGroup = new Integer(-1);
        hasDateType = false;       
        resListValid = true;
@@ -1454,7 +1464,7 @@ public class TestBean implements TestRemote {
            //
            // dictionary, titers, numeric require a value
            //
-           if (value == null && (numId.equals(typeId) || titerId.equals(typeId) ||
+           if ((value == null || "".equals(value)) && (numId.equals(typeId) || titerId.equals(typeId) ||
                                dictId.equals(typeId))) {
                    addErrorToTableField("fieldRequiredException",
                                         TestResultMetaMap.getTableName(),
@@ -1499,13 +1509,12 @@ public class TestBean implements TestRemote {
                    }                   
                    hasDateType = true;                   
                } else if (dictId.equals(typeId)) {
-                   query = manager.createNamedQuery("Dictionary.EntryById");
-                   query.setParameter("id", Integer.valueOf(value));
-                   if (query.getResultList().size() == 0)
+                   entryId = categoryBean.getEntryIdForEntry(value);
+                   if (entryId == null)
                        throw new ParseException("illegalDictEntryException");
 
-                   if (!dictList.contains(value))
-                       dictList.add(value);
+                   if (!dictList.contains(entryId))
+                       dictList.add(entryId);
                    else
                        throw new InconsistentException("testDictEntryNotUniqueException");                                              
                } else {
@@ -1531,21 +1540,13 @@ public class TestBean implements TestRemote {
         Integer defId,askId,matchId,flagId,sectId;        
         List<Integer> idList;                  
         int size,numDef,numAsk,numMatch,numBlank, iter;
-        Query query;
         TestSectionDO secDO;
         
         size = sectionDOList.size();
-                
-        query = manager.createNamedQuery("Dictionary.IdBySystemName");          
-                
-        query.setParameter("systemName", "test_section_default");   
-        defId = (Integer)query.getSingleResult();
-        
-        query.setParameter("systemName", "test_section_ask");   
-        askId = (Integer)query.getSingleResult();
-        
-        query.setParameter("systemName", "test_section_match");   
-        matchId = (Integer)query.getSingleResult();
+                                                  
+        defId = categoryBean.getEntryIdForSystemName("test_section_default");                   
+        askId = categoryBean.getEntryIdForSystemName("test_section_ask");                  
+        matchId = categoryBean.getEntryIdForSystemName("test_section_match");
                                
         numDef = 0 ;
         numAsk = 0;
@@ -1789,6 +1790,35 @@ public class TestBean implements TestRemote {
             } else if(!resIdList.contains(resId)) 
                 throw new InconsistentException("resultDoesntBelongToAnalyteException");                            
         }                            
+    }
+    
+    /**
+     * This method will return true if the type specified in currDO is duplicate 
+     * and if the type specified in prevDO is either fixed or duplicate and,
+     * such that the position specified in prevDO is one less than the
+     * position in currDO. The two integers, fixedId and duplId, are the ids of
+     * the dictionary records that contain the entries for the fixed and duplicate
+     * types respectively
+     */
+    private boolean duplicateAfterFixedOrDuplicate(TestWorksheetItemDO currDO,
+                                                   TestWorksheetItemDO prevDO,
+                                                   Integer fixedId, Integer duplId) {
+        Integer ptId, ctId,ppos,cpos;
+        
+        if(prevDO == null || currDO == null)
+            return false;
+        
+        ptId = prevDO.getTypeId();
+        ctId = currDO.getTypeId();
+        cpos = currDO.getPosition();
+        ppos = prevDO.getPosition();
+        
+        if(ppos !=null && cpos !=null && ppos == cpos-1) { 
+            if (duplId.equals(ctId) && (duplId.equals(ptId) || fixedId.equals(ptId))) 
+                return true;        
+        }
+        
+        return false;
     }
     
 }

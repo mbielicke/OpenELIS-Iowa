@@ -31,6 +31,7 @@ import org.openelis.entity.SystemVariable;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.RPCException;
+import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.local.LockLocal;
 import org.openelis.metamap.SystemVariableMetaMap;
@@ -134,88 +135,77 @@ public class SystemVariableBean implements SystemVariableRemote{
 
    @RolesAllowed("systemvariable-update")
     public Integer updateSystemVariable(SystemVariableDO sysVarDO) throws Exception {
-        Query query = manager.createNamedQuery("getTableId");
-        query.setParameter("name", "system_variable");
-        Integer sysVarReferenceId = (Integer)query.getSingleResult();
+       Integer sysVarId;
+       SystemVariable sysVar;
+       Query query = manager.createNamedQuery("getTableId");
+       query.setParameter("name", "system_variable");
+       Integer sysVarReferenceId = (Integer)query.getSingleResult();
         
-        if(sysVarDO.getId() != null){
-         // we need to call lock one more time to make sure their lock
-         // didn't expire and someone else grabbed the record
-         try {
-              lockBean.validateLock(sysVarReferenceId,sysVarDO.getId());
-              } catch(Exception ex) {
-                 throw ex;
-            }
-            lockBean.getLock(sysVarReferenceId, sysVarDO.getId());   
-        }
-        manager.setFlushMode(FlushModeType.COMMIT);
+       sysVarId = sysVarDO.getId();
+       if(sysVarId != null){
+           // we need to call lock one more time to make sure their lock
+           // didn't expire and someone else grabbed the record
+           lockBean.validateLock(sysVarReferenceId,sysVarId);
+       }      
         
-        SystemVariable sysVar = null;
-        List<Exception> exceptionList = new ArrayList<Exception>();
-        validate(sysVarDO,exceptionList);
-        if(exceptionList.size() > 0){
-            throw (RPCException)exceptionList.get(0);
-        }
-        
-        if(sysVarDO.getId()==null){
-            sysVar = new SystemVariable();            
-        }else{
-            sysVar = manager.find(SystemVariable.class, sysVarDO.getId());
-        }
-                    
-        sysVar.setName(sysVarDO.getName());            
-        sysVar.setValue(sysVarDO.getValue());
-       
-        if(sysVar.getId() == null){
-            manager.persist(sysVar);
-        }
                 
-        lockBean.giveUpLock(sysVarReferenceId,sysVar.getId()); 
+       sysVar = null;
         
-        return sysVar.getId();
+       validateSystemVariable(sysVarDO);
+       manager.setFlushMode(FlushModeType.COMMIT);
+        
+       if(sysVarDO.getId()==null){
+           sysVar = new SystemVariable();            
+       }else{
+           sysVar = manager.find(SystemVariable.class, sysVarId);
+       }
+                    
+       sysVar.setName(sysVarDO.getName());            
+       sysVar.setValue(sysVarDO.getValue());
+       
+       if(sysVar.getId() == null){
+           manager.persist(sysVar);
+       }
+                
+       lockBean.giveUpLock(sysVarReferenceId,sysVar.getId()); 
+        
+       return sysVar.getId();
     }  
     
    @RolesAllowed("systemvariable-delete")    
     public void deleteSystemVariable(Integer sysVarId) throws Exception {
-     Query lockQuery = manager.createNamedQuery("getTableId");
+     Integer sysvarTableId;
+     Query lockQuery;
+     SystemVariable sysVar;
+     
+     lockQuery = manager.createNamedQuery("getTableId");
      lockQuery.setParameter("name", "system_variable");
-     Integer sysvarTableId = (Integer)lockQuery.getSingleResult();
+     sysvarTableId = (Integer)lockQuery.getSingleResult();
      lockBean.getLock(sysvarTableId, sysVarId);  
      
      manager.setFlushMode(FlushModeType.COMMIT);
-      SystemVariable sysVar = null;
-      try{
-          sysVar = manager.find(SystemVariable.class, sysVarId);
-          if(sysVar !=null){
-              manager.remove(sysVar);
-          }
-       }catch (Exception e) {
-          e.printStackTrace();
-          throw e;
-      } 
+     sysVar = null;
+     sysVar = manager.find(SystemVariable.class, sysVarId);
+     if(sysVar !=null){
+         manager.remove(sysVar);
+     }             
        
-       lockBean.giveUpLock(sysvarTableId, sysVarId);
-    }
+     lockBean.giveUpLock(sysvarTableId, sysVarId);
+   }
     
-    public List<Exception> validateforAdd(SystemVariableDO sysVarDO){
-       List<Exception> exceptionList = new ArrayList<Exception>(); 
-       validate(sysVarDO,exceptionList);        
-       return exceptionList; 
-    }
-
-    public List<Exception> validateforUpdate(SystemVariableDO sysVarDO) {
-        List<Exception> exceptionList = new ArrayList<Exception>(); 
-        validate(sysVarDO,exceptionList);        
-        return exceptionList; 
-    }
-    
-    private void validate(SystemVariableDO sysVarDO,List<Exception> exceptionList){
-        if(sysVarDO.getName()==null || "".equals(sysVarDO.getName())){
+    private void validateSystemVariable(SystemVariableDO sysVarDO) throws Exception{
+        ValidationErrorsList exceptionList;
+        
+        exceptionList = new ValidationErrorsList();
+        if(sysVarDO.getName() == null || "".equals(sysVarDO.getName())){
             exceptionList.add(new FieldErrorException("fieldRequiredException",Meta.getName()));
         }
-        if(sysVarDO.getValue()==null|| "".equals(sysVarDO.getValue())){
+        if(sysVarDO.getValue() == null|| "".equals(sysVarDO.getValue())){
             exceptionList.add(new FieldErrorException("fieldRequiredException",Meta.getValue()));
         }
+        
+        if(exceptionList.size() > 0)
+            throw exceptionList;
     }
     
    
