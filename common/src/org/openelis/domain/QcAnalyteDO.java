@@ -23,36 +23,39 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-
 package org.openelis.domain;
 
 import java.io.Serializable;
 
 import org.openelis.utilcommon.DataBaseUtil;
 
-public class AuxFieldValueDO implements Serializable {
+public class QcAnalyteDO implements Serializable {
 
-    /**
-     * 
-     */
     private static final long serialVersionUID = 1L;
     
     protected Integer id;             
-    protected Integer auxFieldId;             
+    protected Integer qcId;             
+    protected Integer analyteId;   
+    protected String analyteName;
     protected Integer typeId;             
-    protected String value;     
-    private boolean delete = false;
+    protected String value;            
+    protected String isTrendable;     
     
-    public AuxFieldValueDO() {
-      
+    private boolean delete;
+    
+    public QcAnalyteDO() {
+        
     }
     
-    public AuxFieldValueDO(Integer id,Integer auxFieldId,
-                           Integer typeId,String value) {
+    public QcAnalyteDO(Integer id,Integer qcId,Integer analyteId,String analyteName,
+                       Integer typeId,String value,String isTrendable) {
         setId(id);
-        setAuxFieldId(auxFieldId);
+        setQcId(qcId);
+        setAnalyteId(analyteId);
+        setAnalyteName(analyteName);
         setTypeId(typeId);
         setValue(value);
+        setIsTrendable(isTrendable);        
     }
 
     public Integer getId() {
@@ -63,12 +66,20 @@ public class AuxFieldValueDO implements Serializable {
         this.id = id;
     }
 
-    public Integer getAuxFieldId() {
-        return auxFieldId;
+    public Integer getQcId() {
+        return qcId;
     }
 
-    public void setAuxFieldId(Integer auxFieldId) {
-        this.auxFieldId = auxFieldId;
+    public void setQcId(Integer qcId) {
+        this.qcId = qcId;
+    }
+
+    public Integer getAnalyteId() {
+        return analyteId;
+    }
+
+    public void setAnalyteId(Integer analyteId) {
+        this.analyteId = analyteId;
     }
 
     public Integer getTypeId() {
@@ -87,6 +98,14 @@ public class AuxFieldValueDO implements Serializable {
         this.value = DataBaseUtil.trim(value);
     }
 
+    public String getIsTrendable() {
+        return isTrendable;
+    }
+
+    public void setIsTrendable(String isTrendable) {
+        this.isTrendable = DataBaseUtil.trim(isTrendable);
+    }
+
     public boolean getDelete() {
         return delete;
     }
@@ -94,5 +113,14 @@ public class AuxFieldValueDO implements Serializable {
     public void setDelete(boolean delete) {
         this.delete = delete;
     }
+
+    public String getAnalyteName() {
+        return analyteName;
+    }
+
+    public void setAnalyteName(String analyteName) {
+        this.analyteName = analyteName;
+    }
+   
 
 }

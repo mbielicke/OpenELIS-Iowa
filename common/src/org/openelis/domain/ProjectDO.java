@@ -45,6 +45,7 @@ public class ProjectDO implements Serializable {
     protected Integer ownerId;
     protected String ownerName;
     protected Integer scriptletId;
+    protected String scriptletName;
     
     public ProjectDO(){
         
@@ -52,7 +53,7 @@ public class ProjectDO implements Serializable {
     
     public ProjectDO(Integer id, String name, String description, Date startedDate,
                      Date completedDate, String isActive, String referenceTo,
-                     Integer ownerId, Integer scriptletId){
+                     Integer ownerId, Integer scriptletId,String scriptletName){
         setId(id);
         setName(name);
         setDescription(description);
@@ -62,7 +63,7 @@ public class ProjectDO implements Serializable {
         setReferenceTo(referenceTo);
         setOwnerId(ownerId);
         setScriptletId(scriptletId);
-        
+        setScriptletName(scriptletName);
     }
     
     public Integer getId() {
@@ -126,5 +127,13 @@ public class ProjectDO implements Serializable {
 
     public void setOwnerName(String ownerName) {
         this.ownerName = DataBaseUtil.trim(ownerName);
+    }
+
+    public String getScriptletName() {
+        return scriptletName;
+    }
+
+    public void setScriptletName(String scriptletName) {
+        this.scriptletName = DataBaseUtil.trim(scriptletName);
     }
 }

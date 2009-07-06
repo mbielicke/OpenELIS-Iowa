@@ -27,25 +27,23 @@ package org.openelis.domain;
 
 import java.io.Serializable;
 
+import org.openelis.utilcommon.DataBaseUtil;
+
 
 public class TestWorksheetDO implements Serializable {
 
     /**
      * 
      */
-    private static final long serialVersionUID = -1157892814197581707L;
+    private static final long serialVersionUID = 1L;
     
-    protected Integer id;             
-   
-    protected Integer testId;             
-    
-    protected Integer batchCapacity;             
-    
-    protected Integer totalCapacity;             
-    
-    protected Integer numberFormatId;             
-    
+    protected Integer id;                
+    protected Integer testId;                 
+    protected Integer batchCapacity;                 
+    protected Integer totalCapacity;                 
+    protected Integer numberFormatId;                 
     protected Integer scriptletId;  
+    protected String  scriptletName;
     
     public TestWorksheetDO() {
         
@@ -53,13 +51,14 @@ public class TestWorksheetDO implements Serializable {
     
     public TestWorksheetDO(Integer id,Integer testId,Integer batchCapacity,
                            Integer totalCapacity,Integer numberFormatId,
-                           Integer scriptletId) {
-      this.id = id;
-      this.testId = testId;
-      this.batchCapacity = batchCapacity;
-      this.totalCapacity = totalCapacity;
-      this.numberFormatId = numberFormatId;
-      this.scriptletId = scriptletId;      
+                           Integer scriptletId,String scriptletName) {
+          setId(id);
+          setTestId(testId);
+          setBatchCapacity(batchCapacity);
+          setTotalCapacity(totalCapacity);
+          setNumberFormatId(numberFormatId);
+          setScriptletId(scriptletId);      
+          setScriptletName(scriptletName);
     }
 
     public Integer getId() {
@@ -108,6 +107,14 @@ public class TestWorksheetDO implements Serializable {
 
     public void setBatchCapacity(Integer batchCapacity) {
         this.batchCapacity = batchCapacity;
+    }
+
+    public String getScriptletName() {
+        return scriptletName;
+    }
+
+    public void setScriptletName(String scriptletName) {
+        this.scriptletName = DataBaseUtil.trim(scriptletName);
     }
 
 }

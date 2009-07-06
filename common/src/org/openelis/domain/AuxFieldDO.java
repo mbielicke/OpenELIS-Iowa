@@ -29,6 +29,8 @@ package org.openelis.domain;
 import java.io.Serializable;
 import java.util.List;
 
+import org.openelis.utilcommon.DataBaseUtil;
+
 public class AuxFieldDO implements Serializable {
 
     /**
@@ -49,6 +51,7 @@ public class AuxFieldDO implements Serializable {
     protected String isActive;             
     protected String isReportable;             
     protected Integer scriptletId;
+    protected String scriptletName;
     private boolean delete = false;
     private List<AuxFieldValueDO> auxFieldValues;
     
@@ -61,20 +64,21 @@ public class AuxFieldDO implements Serializable {
                        Integer auxFieldGroupId,Integer methodId, String methodName,
                        Integer unitOfMeasureId,String isRequired,
                        String isActive,String isReportable,
-                       Integer scriptletId) {        
-        this.id = id;
-        this.sortOrder = sortOrder;
-        this.analyteId = analyteId;
-        this.analyteName = analyteName;
-        this.description = description;
-        this.auxFieldGroupId = auxFieldGroupId; 
-        this.methodId = methodId;
-        this.methodName = methodName;
-        this.unitOfMeasureId = unitOfMeasureId;
-        this.isRequired = isRequired;
-        this.isActive = isActive;
-        this.isReportable = isReportable;
-        this.scriptletId = scriptletId;       
+                       Integer scriptletId,String scriptletName) {        
+        setId(id);
+        setSortOrder(sortOrder);
+        setAnalyteId(analyteId);
+        setAnalyteName(analyteName);
+        setDescription(description);
+        setAuxFieldGroupId(auxFieldGroupId); 
+        setMethodId(methodId);
+        setMethodName(methodName);
+        setUnitOfMeasureId(unitOfMeasureId);
+        setIsRequired(isRequired);
+        setIsActive(isActive);
+        setIsReportable(isReportable);
+        setScriptletId(scriptletId);   
+        setScriptletName(scriptletName);
     }
     
     public Integer getId() {
@@ -159,7 +163,7 @@ public class AuxFieldDO implements Serializable {
     }
 
     public void setAnalyteName(String analyteName) {
-        this.analyteName = analyteName;
+        this.analyteName = DataBaseUtil.trim(analyteName);
     }
 
     public String getMethodName() {
@@ -167,7 +171,7 @@ public class AuxFieldDO implements Serializable {
     }
 
     public void setMethodName(String methodName) {
-        this.methodName = methodName;
+        this.methodName = DataBaseUtil.trim(methodName);
     }
 
     public List<AuxFieldValueDO> getAuxFieldValues() {
@@ -176,6 +180,14 @@ public class AuxFieldDO implements Serializable {
 
     public void setAuxFieldValues(List<AuxFieldValueDO> auxFieldValues) {
         this.auxFieldValues = auxFieldValues;
+    }
+
+    public String getScriptletName() {
+        return scriptletName;
+    }
+
+    public void setScriptletName(String scriptletName) {
+        this.scriptletName = DataBaseUtil.trim(scriptletName);
     } 
 
 }
