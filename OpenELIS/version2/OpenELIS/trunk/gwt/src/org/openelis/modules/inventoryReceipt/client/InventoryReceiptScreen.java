@@ -221,7 +221,7 @@ public class InventoryReceiptScreen extends OpenELISScreenForm<InventoryReceiptF
         super.afterDraw(sucess);
     }
     
-    protected AsyncCallback afterUpdate = new AsyncCallback() {
+    protected SyncCallback afterUpdate = new SyncCallback() {
         public void onSuccess(Object result){
             if("transfer".equals(screenType)){
                 removeReceiptButton.changeState(ButtonState.DISABLED);
@@ -360,7 +360,7 @@ public class InventoryReceiptScreen extends OpenELISScreenForm<InventoryReceiptF
         super.abort();
     }
     
-    protected AsyncCallback afterCommitUpdate = new AsyncCallback() {
+    protected SyncCallback afterCommitUpdate = new SyncCallback() {
         public void onFailure(Throwable caught) {   
         }
         public void onSuccess(Object result) {
@@ -369,7 +369,7 @@ public class InventoryReceiptScreen extends OpenELISScreenForm<InventoryReceiptF
         }
     };
     
-    protected AsyncCallback afterCommitAdd = new AsyncCallback() {
+    protected SyncCallback afterCommitAdd = new SyncCallback() {
         public void onFailure(Throwable caught) {   
         }
         public void onSuccess(Object result) {
@@ -747,6 +747,9 @@ public class InventoryReceiptScreen extends OpenELISScreenForm<InventoryReceiptF
     }
 
     public void startEditing(SourcesTableWidgetEvents sender, int row, int col) {
+        if(state == State.QUERY)
+            return;
+        
         if(!"receipt".equals(screenType)){
             //we need to try and lookup the order using the order number that they have entered
             if(col == 0 && row < receiptsTable.model.numRows()){

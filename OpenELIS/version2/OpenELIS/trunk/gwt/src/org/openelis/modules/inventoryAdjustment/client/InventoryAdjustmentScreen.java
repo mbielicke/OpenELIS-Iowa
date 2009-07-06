@@ -42,6 +42,7 @@ import org.openelis.gwt.screen.CommandChain;
 import org.openelis.gwt.screen.ScreenCalendar;
 import org.openelis.gwt.screen.ScreenDropDownWidget;
 import org.openelis.gwt.screen.ScreenTextBox;
+import org.openelis.gwt.screen.AppScreenForm.State;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.AutoCompleteCallInt;
@@ -124,11 +125,8 @@ public class InventoryAdjustmentScreen extends OpenELISScreenForm<InventoryAdjus
     }
     
     public void add() {
-        //
-        // make sure the contact table gets set before the main add
-        //
-        adjustmentsTable.model.enableAutoAdd(true);
         super.add();
+        adjustmentsTable.model.enableAutoAdd(true);
         
         idText.enable(false);
         adjustmentDateText.enable(false);
@@ -167,6 +165,7 @@ public class InventoryAdjustmentScreen extends OpenELISScreenForm<InventoryAdjus
             ((ScreenDropDownWidget)widgets.get(storeIdKey)).enable(false);
             descText.setFocus(true);
             removeRowButton.changeState(AppButton.ButtonState.DISABLED);
+            
         }
         
         public void onFailure(Throwable caught){
@@ -230,7 +229,7 @@ public class InventoryAdjustmentScreen extends OpenELISScreenForm<InventoryAdjus
     //start table manager methods
     //
     public boolean canAdd(TableWidget widget, TableDataRow set, int row) {
-        return true;
+        return false;
     }
 
     public boolean canAutoAdd(TableWidget widget, TableDataRow addRow) {
@@ -238,7 +237,7 @@ public class InventoryAdjustmentScreen extends OpenELISScreenForm<InventoryAdjus
     }
 
     public boolean canDelete(TableWidget widget, TableDataRow set, int row) {
-        return true;
+        return false;
     }
 
     public boolean canEdit(TableWidget widget, TableDataRow set, int row, int col) {
@@ -249,7 +248,7 @@ public class InventoryAdjustmentScreen extends OpenELISScreenForm<InventoryAdjus
     }
 
     public boolean canSelect(TableWidget widget, TableDataRow set, int row) {
-        if(state == State.ADD || state == State.UPDATE)           
+        if(state == State.ADD || state == State.UPDATE || state == State.QUERY)           
             return true;
         return false;
     }
@@ -261,7 +260,7 @@ public class InventoryAdjustmentScreen extends OpenELISScreenForm<InventoryAdjus
     //start table listener methods
     //
     public void finishedEditing(SourcesTableWidgetEvents sender, final int row, int col) {
-        if(row >= adjustmentsTable.model.numRows())
+        if(state == State.QUERY || row >= adjustmentsTable.model.numRows())
             return;
         final TableDataRow<Integer> tableRow = adjustmentsTable.model.getRow(row);
         final DropDownField<Integer> invItemField = (DropDownField<Integer>)tableRow.cells[1];
@@ -393,6 +392,9 @@ public class InventoryAdjustmentScreen extends OpenELISScreenForm<InventoryAdjus
     }
 
     public void startEditing(SourcesTableWidgetEvents sender, int row, int col) {
+        if(state == State.QUERY)
+            return;
+        
         if(col == 0 && row < adjustmentsTable.model.numRows()){
             lastLocValue = (Integer)adjustmentsTable.model.getCell(row, col);
 

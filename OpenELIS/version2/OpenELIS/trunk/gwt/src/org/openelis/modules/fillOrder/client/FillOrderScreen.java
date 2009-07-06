@@ -178,6 +178,7 @@ public class FillOrderScreen extends OpenELISScreenForm<FillOrderForm, Query<Tab
 
         emptyTreeModel = orderItemsTree.model.getData();
         form.itemInformation.originalOrderItemsTree.setValue(emptyTreeModel);
+        form.itemInformation.displayOrderItemsTree.setValue(emptyTreeModel);
         
         super.afterDraw(success);
         
@@ -640,13 +641,14 @@ public class FillOrderScreen extends OpenELISScreenForm<FillOrderForm, Query<Tab
             screenService.call("unlockOrders", foiirpc, new AsyncCallback<FillOrderItemInfoForm>() {
                 public void onSuccess(FillOrderItemInfoForm result) {
                     for(int i=0; i<lockedRowIndexes.size(); i++){
+                        int key=lockedRowIndexes.get(i).key.intValue();
                         //uncheck the row
                         fillItemsTable.model.setCell(lockedRowIndexes.get(i).key.intValue(), 0, CheckBox.UNCHECKED);
                         
-                        lockedIndexes.delete(ModelUtil.getRowByKey(lockedIndexes,lockedRowIndexes.get(i).key));
+                        lockedIndexes.delete(ModelUtil.getRowByKey(lockedIndexes, key));
                         
                         //rebuild tree for selected row
-                        rebuildOrderItemsTree(lockedRowIndexes.get(i).key.intValue());
+                        rebuildOrderItemsTree(key);
                     }
                     
                     //load sub form for selected table row
