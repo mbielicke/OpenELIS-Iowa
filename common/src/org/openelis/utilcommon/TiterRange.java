@@ -47,10 +47,12 @@ public class TiterRange {
         st = value.split(separator);
         if (st.length != 2)
             throw new ParseException("illegalTiterFormatException");
-
+        
         try {
             min = Integer.parseInt(st[0]);
             max = Integer.parseInt(st[1]);
+            if(min <= 0 || max <= 0)
+                throw new ParseException("illegalTiterFormatException");
             if(min > max)
                 throw new ParseException("illegalTiterRangeException");
         } catch (NumberFormatException ex) {
