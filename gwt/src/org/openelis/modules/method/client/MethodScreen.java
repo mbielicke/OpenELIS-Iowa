@@ -25,7 +25,6 @@
 */
 package org.openelis.modules.method.client;
 
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.SyncCallback;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.TextBox;
@@ -81,8 +80,7 @@ public class MethodScreen extends OpenELISScreenForm<MethodForm,Query<TableDataR
         atozTable = (ResultsTable)getWidget("azTable");
         ButtonPanel bpanel = (ButtonPanel)getWidget("buttons");
         atozButtons = (ButtonPanel)getWidget("atozButtons");
-        
-        //methodId = (ScreenTextBox)widgets.get(MethodMeta.getId());
+                
         methodName = (TextBox)getWidget(MethodMeta.getName());
         
         CommandChain formChain = new CommandChain();
@@ -91,8 +89,7 @@ public class MethodScreen extends OpenELISScreenForm<MethodForm,Query<TableDataR
         formChain.addCommand(keyList);
         formChain.addCommand(atozTable);
         formChain.addCommand(atozButtons);
-
-        bpanel.enableButton("delete", false);
+        
         ((CollapsePanel)getWidget("collapsePanel")).addChangeListener(atozTable);           
          
         updateChain.add(afterUpdate);               
@@ -101,29 +98,28 @@ public class MethodScreen extends OpenELISScreenForm<MethodForm,Query<TableDataR
     
     public void query() {        
         super.query();
-        //methodId.setFocus(true);
         methodName.setFocus(true);
     }
     
     public void add() {
         super.add();
-        //methodId.enable(false);
         methodName.setFocus(true);      
         
     }
   
     
-    protected SyncCallback afterUpdate = new SyncCallback() {
+    protected SyncCallback<MethodForm> afterUpdate = new SyncCallback<MethodForm>() {
         public void onFailure(Throwable caught) {   
         }
-        public void onSuccess(Object result) {
-            //methodId.enable(false);
+        public void onSuccess(MethodForm result) {
             methodName.setFocus(true);            
         }
     };
+    
     private void getMethods(String query){
+       QueryStringField qField; 
        if (state == State.DISPLAY || state == State.DEFAULT) {    
-            QueryStringField qField = new QueryStringField(MethodMeta.getName());
+            qField = new QueryStringField(MethodMeta.getName());
             qField.setValue(query);
             commitQuery(qField);
         }
