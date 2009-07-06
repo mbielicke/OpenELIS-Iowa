@@ -31,7 +31,9 @@ import java.util.Date;
 import java.util.List;
 
 import org.openelis.cache.DictionaryCache;
+import org.openelis.cache.SectionCache;
 import org.openelis.domain.DictionaryDO;
+import org.openelis.domain.SectionDO;
 import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.Query;
 import org.openelis.gwt.common.data.AbstractField;
@@ -102,8 +104,7 @@ public class TestScreen extends OpenELISScreenForm<TestForm, Query<TableDataRow<
 
     private TableDataModel<TableDataRow<Integer>> testAnalyteModel, sampleTypeUnitModel,
                                                   resultUnitModel, resultGroupModel,
-                                                  testResultDefaultModel, resultTypeModel,
-                                                  sectionFlagModel,wsItemTypeModel;
+                                                  testResultDefaultModel;
 
     private AppButton removeSampleTypeButton, removePrepTestButton,
                       addRowButton, deleteButton, groupAnalytesButton,
@@ -135,18 +136,16 @@ public class TestScreen extends OpenELISScreenForm<TestForm, Query<TableDataRow<
     private TabPanel resultPanel,testTabPanel;    
     
     private ScreenTabPanel screenTestTab;
-    
-    private MenuItem dupItem;    
 
     private ArrayList<TableDataModel<TableDataRow<Integer>>> resultTableModelCollection,
                                                              resultDropdownModelCollection;
 
-    private int tempAnaId = -1, tempResId = -1;
+    private int tempAnaId,tempResId; 
 
     private static String panelString = "<VerticalPanel/>";
     
-    private Dropdown revisionMethod, sortingMethod, reportingMethod, trailer,
-                     testFormat, testScriptlet, label, wsFormat,wsScriptlet;  
+    private Dropdown revisionMethod, sortingMethod, reportingMethod, 
+                     testFormat, wsFormat;  
     
     private boolean unitListChanged, analyteListChanged;        
 
@@ -159,10 +158,11 @@ public class TestScreen extends OpenELISScreenForm<TestForm, Query<TableDataRow<
     public void afterDraw(boolean success) {
         ButtonPanel bpanel, atozButtons;
         CommandChain chain;       
-        ResultsTable atozTable;
-        
+        ResultsTable atozTable;        
         ScreenTableWidget s;
-        ScreenTreeWidget analyteTree;
+        ScreenTreeWidget analyteTree;        
+        ArrayList cache;
+        TableDataModel<TableDataRow> model;
 
         atozTable = (ResultsTable)getWidget("azTable");
         atozButtons = (ButtonPanel)getWidget("atozButtons");
@@ -231,13 +231,9 @@ public class TestScreen extends OpenELISScreenForm<TestForm, Query<TableDataRow<
         // initializing all the dropdown widgets
         revisionMethod = (Dropdown)getWidget(TestMeta.getRevisionMethodId());
         sortingMethod = (Dropdown)getWidget(TestMeta.getSortingMethodId());
-        reportingMethod = (Dropdown)getWidget(TestMeta.getReportingMethodId());
-        trailer = (Dropdown)getWidget(TestMeta.getTestTrailerId());
-        testFormat = (Dropdown)getWidget(TestMeta.getTestFormatId());
-        testScriptlet = (Dropdown)getWidget(TestMeta.getScriptletId());
-        label = (Dropdown)getWidget(TestMeta.getLabelId());
-        wsFormat = (Dropdown)getWidget(TestMeta.getTestWorksheet().getFormatId());
-        wsScriptlet = (Dropdown)getWidget(TestMeta.getTestWorksheet().getScriptletId());
+        reportingMethod = (Dropdown)getWidget(TestMeta.getReportingMethodId());        
+        testFormat = (Dropdown)getWidget(TestMeta.getTestFormatId());                
+        wsFormat = (Dropdown)getWidget(TestMeta.getTestWorksheet().getFormatId());        
 
         //
         // set the model for each column. Note that we have to do it twice:
@@ -265,8 +261,6 @@ public class TestScreen extends OpenELISScreenForm<TestForm, Query<TableDataRow<
         s = (ScreenTableWidget)widgets.get("sectionTable");
         sectionTableWidget = (TableWidget)s.getWidget();
         sectionTableWidget.addTableWidgetListener(this);
-        
-        setSectionsModel(form.sections);
 
         s = (ScreenTableWidget)widgets.get("testResultsTable");
         resultTableWidget = (TableWidget)s.getWidget();
@@ -288,9 +282,12 @@ public class TestScreen extends OpenELISScreenForm<TestForm, Query<TableDataRow<
         analyteTreeWidget.addTreeWidgetListener(this);
 
         // override the callbacks
+        fetchChain.add(0, beforeFetch);
+        updateChain.add(0, beforeFetch);
         updateChain.add(afterUpdate);
         commitUpdateChain.add(commitUpdateCallback);
-        commitAddChain.add(commitAddCallback);
+        commitAddChain.add(commitAddCallback);        
+        abortChain.add(0, beforeFetch);
 
         form.testAnalyte.analyteTree.setValue(analyteTreeWidget.model.getData());
         
@@ -305,9 +302,7 @@ public class TestScreen extends OpenELISScreenForm<TestForm, Query<TableDataRow<
         super.afterDraw(success);
 
         analyteTree.enable(true);     
-        
-        ArrayList cache;
-        TableDataModel<TableDataRow> model;
+                
         cache = DictionaryCache.getListByCategorySystemName("test_revision_method");
         model = getDictionaryIdEntryList(cache);
         revisionMethod.setModel(model);
@@ -330,8 +325,7 @@ public class TestScreen extends OpenELISScreenForm<TestForm, Query<TableDataRow<
         
         cache = DictionaryCache.getListByCategorySystemName("test_result_type");
         model = getDictionaryIdEntryList(cache);
-        ((TableDropdown)resultTableWidget.columns.get(1).getColumnWidget()).setModel(model);  
-        resultTypeModel = (TableDataModel<TableDataRow<Integer>>)model.clone();
+        ((TableDropdown)resultTableWidget.columns.get(1).getColumnWidget()).setModel(model);          
         
         cache = DictionaryCache.getListByCategorySystemName("rounding_method");
         model = getDictionaryIdEntryList(cache);
@@ -344,13 +338,13 @@ public class TestScreen extends OpenELISScreenForm<TestForm, Query<TableDataRow<
         cache = DictionaryCache.getListByCategorySystemName("type_of_sample");
         model = getDictionaryIdEntryList(cache);
         ((TableDropdown)sampleTypeTableWidget.columns.get(0).getColumnWidget()).setModel(model);
+        sampleTypeUnitModel.clone();
         
         cache = DictionaryCache.getListByCategorySystemName("test_section_flags");
         model = getDictionaryIdEntryList(cache);
-        ((TableDropdown)sectionTableWidget.columns.get(1).getColumnWidget()).setModel(model);
-        sectionFlagModel = (TableDataModel<TableDataRow<Integer>>)model.clone();
+        ((TableDropdown)sectionTableWidget.columns.get(1).getColumnWidget()).setModel(model);        
         
-        cache = DictionaryCache.getListByCategorySystemName("test_section_flags");
+        cache = DictionaryCache.getListByCategorySystemName("test_format");
         model = getDictionaryIdEntryList(cache);
         testFormat.setModel(model);
         
@@ -365,17 +359,14 @@ public class TestScreen extends OpenELISScreenForm<TestForm, Query<TableDataRow<
         cache = DictionaryCache.getListByCategorySystemName("test_worksheet_format");
         model = getDictionaryIdEntryList(cache);
         wsFormat.setModel(model);
-        
-        //FIXME may need to create cache handlers for these...or make them autocomplete
-        ((TableDropdown)reflexTestTableWidget.columns.get(0).getColumnWidget()).setModel(form.testMethods);
-        label.setModel(form.labels); 
-        trailer.setModel(form.trailers);  
-        testScriptlet.setModel(form.scriptlets);
-        wsScriptlet.setModel(form.scriptlets);
-        ((TableDropdown)prepTestTableWidget.columns.get(0).getColumnWidget()).setModel(form.testMethods);
-        ((TableDropdown)sectionTableWidget.columns.get(0).getColumnWidget()).setModel(form.sections);
-        ((TableDropdown)wsItemTableWidget.columns.get(1).getColumnWidget()).setModel(form.wsItemTypes); 
-        wsItemTypeModel = (TableDataModel<TableDataRow<Integer>>)form.wsItemTypes.clone();
+
+        cache = SectionCache.getSectionList();
+        model = getSectionList(cache);
+        ((TableDropdown)sectionTableWidget.columns.get(0).getColumnWidget()).setModel(model);
+                              
+        cache = DictionaryCache.getListByCategorySystemName("test_worksheet_item_type");
+        model = getDictionaryIdEntryList(cache);
+        ((TableDropdown)wsItemTableWidget.columns.get(1).getColumnWidget()).setModel(model); 
     }
     
     
@@ -484,6 +475,15 @@ public class TestScreen extends OpenELISScreenForm<TestForm, Query<TableDataRow<
 
     }
 
+    private SyncCallback<TestForm> beforeFetch = new SyncCallback<TestForm>() {
+        public void onSuccess(TestForm result) {            
+            loadListsAndModels(result);
+        }        
+        public void onFailure(Throwable caught) {
+            Window.alert(caught.getMessage());
+        }
+    };
+    
     public void query() {
         super.query();        
         enableTableAutoAdd(false);
@@ -553,12 +553,12 @@ public class TestScreen extends OpenELISScreenForm<TestForm, Query<TableDataRow<
         super.abort();       
     }
 
-    protected AsyncCallback afterUpdate = new AsyncCallback() {
+    protected SyncCallback<TestForm> afterUpdate = new SyncCallback<TestForm>() {
         public void onFailure(Throwable caught) {
             Window.alert(caught.getMessage());
         }
 
-        public void onSuccess(Object result) {            
+        public void onSuccess(TestForm result) {            
             //
             // disable anything that is not editable and set focus to the widget
             // which should get the first focus for editing
@@ -580,7 +580,7 @@ public class TestScreen extends OpenELISScreenForm<TestForm, Query<TableDataRow<
         }
     };   
 
-    protected AsyncCallback<TestForm> commitUpdateCallback = new AsyncCallback<TestForm>() {
+    protected SyncCallback<TestForm> commitUpdateCallback = new SyncCallback<TestForm>() {
         public void onSuccess(TestForm result) {
             if (form.status == Form.Status.invalid) {               
                 if (form.testAnalyte.resultTableModelCollection != null)
@@ -595,7 +595,7 @@ public class TestScreen extends OpenELISScreenForm<TestForm, Query<TableDataRow<
         }
     };
 
-    protected AsyncCallback<TestForm> commitAddCallback = new AsyncCallback<TestForm>() {
+    protected SyncCallback<TestForm> commitAddCallback = new SyncCallback<TestForm>() {
         public void onSuccess(TestForm result) {
             if (form.status == Form.Status.invalid) {                
                 if (form.testAnalyte.resultTableModelCollection != null)
@@ -682,9 +682,7 @@ public class TestScreen extends OpenELISScreenForm<TestForm, Query<TableDataRow<
      * Overriden to allow lazy loading various tabs of the various tab panels on
      * the screen
      */
-    public boolean onBeforeTabSelected(SourcesTabEvents sender, int tabIndex) {
-        //if(sender == resultPanel)
-         //   prevSelTabIndex = resultPanel.getTabBar().getSelectedTab();
+    public boolean onBeforeTabSelected(SourcesTabEvents sender, int tabIndex) {        
         return true;
     }
 
@@ -813,7 +811,7 @@ public class TestScreen extends OpenELISScreenForm<TestForm, Query<TableDataRow<
             // column of the Test Section table in the Test Details tab, so that
             // the values for the other rows can be changed accordingly
             //
-            systemName = getSelectedSystemName(row,1,sectionTableWidget,sectionFlagModel);            
+            systemName = getSelectedSystemName(row,1,sectionTableWidget);            
             if(systemName != null) {
                 if ("test_section_default".equals(systemName)) {
                     for (int iter = 0; iter < sectionTableWidget.model.numRows(); iter++) {
@@ -849,7 +847,7 @@ public class TestScreen extends OpenELISScreenForm<TestForm, Query<TableDataRow<
             final String value = ((StringField)resultTableWidget.model.getRow(row).cells[2]).getValue();
             if (col == 2 && !"".equals(value.trim())) {
                 final int currRow = row;
-                systemName = getSelectedSystemName(row,1,resultTableWidget,resultTypeModel);
+                systemName = getSelectedSystemName(row,1,resultTableWidget);
                 //              
                 // This code is for finding out which option was chosen in the 
                 // "Type" column of the Test Results table in the "Analyte" tab, 
@@ -867,14 +865,14 @@ public class TestScreen extends OpenELISScreenForm<TestForm, Query<TableDataRow<
                         TestGeneralPurposeRPC tsrpc = new TestGeneralPurposeRPC();
                         tsrpc.stringValue = value;
                         screenService.call("getEntryIdForEntryText",tsrpc,
-                                           new SyncCallback() {
-                                               public void onSuccess(Object result) {
+                                           new SyncCallback<TestGeneralPurposeRPC>() {
+                                               public void onSuccess(TestGeneralPurposeRPC result) {
                                                    //
                                                    // If this value is not stored in the
                                                    // database then add error to this
                                                    // cell in the "Value" column
                                                    //
-                                                   if (((TestGeneralPurposeRPC)result).key == null) {
+                                                   if (result.key == null) {
                                                        resultTableWidget.model.setCellError(currRow,2,
                                                                                             consts.get("illegalDictEntryException"));
                                                    } else {
@@ -883,7 +881,7 @@ public class TestScreen extends OpenELISScreenForm<TestForm, Query<TableDataRow<
                                                            set.key = getNextTempResId();
                                                        }
                                                        resultTableWidget.model.setCell(currRow,2,
-                                                                                       ((TestGeneralPurposeRPC)result).stringValue);
+                                                                                       (result.stringValue));
 
                                                        checkAndAddNewResultValue(value,set);
                                                    }
@@ -1066,7 +1064,7 @@ public class TestScreen extends OpenELISScreenForm<TestForm, Query<TableDataRow<
         } else if (sender == wsItemTableWidget && row < wsItemTableWidget.model.getData()
                                                                      .size()) {            
             if (col == 0 && row < wsItemTableWidget.model.getData().size()) {                      
-                systemName = getSelectedSystemName(row,1,wsItemTableWidget,wsItemTypeModel);                
+                systemName = getSelectedSystemName(row,1,wsItemTableWidget);                
                 if(systemName!=null) {
                     Integer value = (Integer)(wsItemTableWidget.model.getRow(row).cells[0]).getValue();
                     if ("pos_duplicate".equals(systemName) || "pos_fixed".equals(systemName)) {
@@ -1278,7 +1276,7 @@ public class TestScreen extends OpenELISScreenForm<TestForm, Query<TableDataRow<
         String entry;    
         Integer key;
                   
-        key = getIdForSystemName("test_res_type_dictionary", resultTypeModel);
+        key = DictionaryCache.getIdFromSystemName("test_res_type_dictionary");
         if (selectedRows != null) {
           if (resultPanel.getTabBar().getTabCount() == 0) {
                 Window.alert(consts.get("atleastOneResGrp"));
@@ -1993,21 +1991,13 @@ public class TestScreen extends OpenELISScreenForm<TestForm, Query<TableDataRow<
     private boolean setErrorToItem(TreeDataItem item) {
         boolean someError = false;
         DropDownField field = (DropDownField)item.cells[0];
-        //TreeDataItem parent;
         String error = consts.get("fieldRequiredException");
-        //parent = item.parent;
         if (field.getSelectedKey() == null && !field.getErrors().contains(error)) {
-            //field.addError(error);
-            //analyteTreeWidget.model.setCellError(item.childIndex, 0, error);                               
-            //field.valid = false;
             someError = true;                        
         }
 
         field = (DropDownField)item.cells[1];
-        if (field.getSelectedKey() == null && !field.getErrors().contains(error)) {
-            //field.addError(error);
-            //analyteTreeWidget.model.setCellError(item.childIndex, 1, error);
-            //field.valid = false;
+        if (field.getSelectedKey() == null && !field.getErrors().contains(error)) {;
             someError = true;
         }
 
@@ -2332,17 +2322,14 @@ public class TestScreen extends OpenELISScreenForm<TestForm, Query<TableDataRow<
      * method returns true otherwise it returns false   
      */
     private boolean canAutoAddAfterWsItemRow(TableDataRow<Integer> row) {
-        DropDownField<Integer> ddField;
-        String value;
+        DropDownField<Integer> tField;
+        DropDownField<String> qField;       
         
-        ddField = (DropDownField<Integer>)row.cells[1];
-        value = ((StringField)row.cells[2]).getValue();
-                
-        if(ddField.getSelectedKey() == null) {
-            if(value == null)
-                return false;
-            else if(value != null && "".equals(value.trim()))
-                return false;
+        tField = (DropDownField<Integer>)row.cells[1];
+        qField = (DropDownField<String>)row.cells[2];
+                    
+        if(tField.getSelectedKey() == null && qField.getSelectedKey() == null) {            
+                return false;            
         }
         
         return true;
@@ -2463,49 +2450,18 @@ public class TestScreen extends OpenELISScreenForm<TestForm, Query<TableDataRow<
      * in a given row, represented by the argument "row", from the dropdown in
      * column col in the TableWidget tableWidget, it returns null if no option was selected   
      */
-    private String getSelectedSystemName(int row,int col, TableWidget tableWidget,TableDataModel model){
-        TableDataRow<Integer> trow,ddRow;
-        ArrayList<TableDataRow<Integer>> list;
-        StringObject data;
+    private String getSelectedSystemName(int row,int col, TableWidget tableWidget){
+        TableDataRow<Integer> trow,ddRow;        
+        String sysname;
         Integer key;
         if(row > -1) {
             trow = tableWidget.model.getRow(row);
-            list = (ArrayList<TableDataRow<Integer>>)trow.cells[col].getValue();
-            key = list.get(0).key;
-            if(list == null) {
-                return null;
-            } else  {
-                if(key == null) { 
-                   return null;
-                } else {
-                   ddRow = ModelUtil.getRowByKey(model,key); 
-                   data = (StringObject)ddRow.getData();
-                   return data.getValue();
-                }   
-            }                      
+            key = (Integer)(((DropDownField<Integer>)trow.cells[col]).getSelectedKey());            
+            sysname = DictionaryCache.getSystemNameFromId(key);
+            return sysname;                                                   
         }    
         return null;
-    }
-    
-    /**
-     * This function iterates through the TableDataModel of a dropdown  
-     * and returns the key of the TableDataRow that has the value of its data
-     * set to the argument "systemName" 
-     */
-    private Integer getIdForSystemName(String systemName, TableDataModel model) {
-        TableDataRow<Integer> row;
-        StringObject data;
-        if(model != null) {
-            for(int i = 0; i < model.size(); i++) {
-                row = model.get(i);
-                data = (StringObject)row.getData();                
-                if(row.key!= null && systemName.equals(data.getValue())) {                    
-                    return row.key;
-                }
-            }
-        }
-        return null;
-    }
+    }        
     
     private void setActiveRow() {
         sectionTableWidget.activeRow = -1;
@@ -2573,16 +2529,43 @@ public class TestScreen extends OpenELISScreenForm<TestForm, Query<TableDataRow<
     }
     
     private TableDataModel<TableDataRow> getDictionaryIdEntryList(ArrayList list){
+        TableDataRow<Integer> row;
+        DictionaryDO dictDO;
+        TableDataModel<TableDataRow> m;
+        
         if(list == null)
             return null;
         
-        TableDataModel<TableDataRow> m = new TableDataModel<TableDataRow>();
+        m = new TableDataModel<TableDataRow>();
+        m.add(new TableDataRow<Integer>(null,new StringObject("")));
         
         for(int i=0; i<list.size(); i++){
-            TableDataRow<Integer> row = new TableDataRow<Integer>(1);
-            DictionaryDO dictDO = (DictionaryDO)list.get(i);
+            row = new TableDataRow<Integer>(1);
+            dictDO = (DictionaryDO)list.get(i);
             row.key = dictDO.getId();
             row.cells[0] = new StringObject(dictDO.getEntry());
+            m.add(row);
+        }
+        
+        return m;
+    }
+    
+    private TableDataModel<TableDataRow> getSectionList(ArrayList list){
+        TableDataModel<TableDataRow> m;
+        TableDataRow<Integer> row;
+        SectionDO sectDO;
+        
+        if(list == null)
+            return null;
+        
+        m = new TableDataModel<TableDataRow>();
+        m.add(new TableDataRow<Integer>(null,new StringObject("")));
+        
+        for(int i=0; i<list.size(); i++){
+            row = new TableDataRow<Integer>(1);
+            sectDO = (SectionDO)list.get(i);
+            row.key = sectDO.getId();
+            row.cells[0] = new StringObject(sectDO.getName());
             m.add(row);
         }
         

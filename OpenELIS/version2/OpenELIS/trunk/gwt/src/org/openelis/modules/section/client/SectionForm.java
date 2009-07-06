@@ -22,55 +22,47 @@
 * "Separately-Licensed" may be used under the terms of a UIRF Software
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
-*/  
-
-package org.openelis.modules.label.client;
-
-import com.google.gwt.xml.client.Node;
+*/
+package org.openelis.modules.section.client;
 
 import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.data.AbstractField;
+import org.openelis.gwt.common.data.CheckField;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.IntegerField;
 import org.openelis.gwt.common.data.StringField;
-import org.openelis.gwt.common.data.TableDataModel;
-import org.openelis.gwt.common.data.TableDataRow;
-import org.openelis.metamap.LabelMetaMap;
+import org.openelis.metamap.SectionMetaMap;
 
-public class LabelForm extends Form<Integer> {
+public class SectionForm extends Form<Integer> {
 
-    /**
-     * 
-     */
+
     private static final long serialVersionUID = 1L;
-
+ 
     public IntegerField id;
     public StringField name;
-    public StringField description;
-    public DropDownField<Integer> printerTypeId;
-    public DropDownField<Integer> scriptletId;    
-
-    public LabelForm() {
-        LabelMetaMap meta = new LabelMetaMap();
-        id = new IntegerField(meta.getId());
-        name = new StringField(meta.getName());
-        description = new StringField(meta.getDescription());
-        printerTypeId = new DropDownField<Integer>(meta.getPrinterTypeId());
-        scriptletId = new DropDownField<Integer>(meta.getScriptletId());
-    }
-
-    public LabelForm(Node node) {
-        this();
-        createFields(node);
-    }
+    public StringField description; 
+    public CheckField isExternal;
+    public DropDownField<Integer> parentSectionId;
+    public DropDownField<Integer> organizationId;
     
+    public SectionForm() {
+        SectionMetaMap meta = new SectionMetaMap();
+        id = new IntegerField(meta.getId());
+        name = new StringField(meta.getName());                                    
+        description = new StringField(meta.getDescription());
+        isExternal = new CheckField(meta.getIsExternal());
+        parentSectionId = new DropDownField<Integer>(meta.getParentSectionId());
+        organizationId = new DropDownField<Integer>(meta.getOrganization().getName());
+    }
+
     public AbstractField[] getFields() {
         return new AbstractField[] {
                                     id,
-                                    name,
+                                    name,                                    
                                     description,
-                                    printerTypeId,
-                                    scriptletId
+                                    isExternal,
+                                    parentSectionId,
+                                    organizationId
         };
     }
 

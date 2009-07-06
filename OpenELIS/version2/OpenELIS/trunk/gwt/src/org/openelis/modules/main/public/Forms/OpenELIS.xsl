@@ -308,10 +308,10 @@ sampleManagementDescription = Description...
 				      <xsl:with-param name="args"></xsl:with-param>
 				    </xsl:call-template>
 				    <xsl:call-template name="menuItem">
-				      <xsl:with-param name="key"></xsl:with-param>
+				      <xsl:with-param name="key">QC</xsl:with-param>
 				      <xsl:with-param name="label">QC</xsl:with-param>
-				      <xsl:with-param name="enabled">false</xsl:with-param>
-				      <xsl:with-param name="class"></xsl:with-param>
+				      <xsl:with-param name="enabled">true</xsl:with-param>
+				      <xsl:with-param name="class">QCScreen</xsl:with-param>
 				      <xsl:with-param name="args"></xsl:with-param>
 				    </xsl:call-template>
 				</menuPanel>
@@ -448,10 +448,10 @@ sampleManagementDescription = Description...
 				      </xsl:call-template>
 				    </xsl:if>
 				    <xsl:call-template name="menuItem">
-				      <xsl:with-param name="key"></xsl:with-param>
+				      <xsl:with-param name="key">Section</xsl:with-param>
 				      <xsl:with-param name="label">labSection</xsl:with-param>
-				      <xsl:with-param name="enabled">false</xsl:with-param>
-				      <xsl:with-param name="class"></xsl:with-param>
+				      <xsl:with-param name="enabled">true</xsl:with-param>
+				      <xsl:with-param name="class">SectionScreen</xsl:with-param>
 				      <xsl:with-param name="args"></xsl:with-param>
 				    </xsl:call-template>
 				   <html panelWidth="100%" showError="false">&lt;hr/&gt;</html>

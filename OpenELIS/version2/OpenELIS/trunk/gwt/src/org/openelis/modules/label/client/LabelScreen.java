@@ -51,7 +51,6 @@ import com.google.gwt.user.client.ui.Widget;
 public class LabelScreen extends OpenELISScreenForm<LabelForm,Query<TableDataRow<Integer>>> implements ClickListener {
     
     private Dropdown displayPType = null;
-    private Dropdown displayScript = null;
 
     private KeyListManager keyList = new KeyListManager();
     
@@ -82,11 +81,18 @@ public class LabelScreen extends OpenELISScreenForm<LabelForm,Query<TableDataRow
     }
 
     public void afterDraw(boolean success) {
-        ResultsTable atozTable = (ResultsTable) getWidget("azTable");
-        ButtonPanel atozButtons = (ButtonPanel)getWidget("atozButtons");
-        ButtonPanel bpanel = (ButtonPanel)getWidget("buttons");
+        ArrayList cache;
+        TableDataModel<TableDataRow> model;
+        ResultsTable atozTable;
+        ButtonPanel atozButtons;
+        ButtonPanel bpanel;
+        CommandChain chain;
         
-        CommandChain chain = new CommandChain();
+        atozTable = (ResultsTable) getWidget("azTable");
+        atozButtons = (ButtonPanel)getWidget("atozButtons");
+        bpanel = (ButtonPanel)getWidget("buttons");
+        
+        chain = new CommandChain();
         chain.addCommand(this);
         chain.addCommand(bpanel);
         chain.addCommand(keyList);
@@ -94,40 +100,29 @@ public class LabelScreen extends OpenELISScreenForm<LabelForm,Query<TableDataRow
         chain.addCommand(atozButtons);
         
         ((CollapsePanel)getWidget("collapsePanel")).addChangeListener(atozTable);
-       
-        
+               
         startWidget = (ScreenInputWidget)widgets.get(Meta.getName());
         
-        displayPType = (Dropdown)getWidget(Meta.getPrinterTypeId());
-        displayScript = (Dropdown)getWidget(Meta.getScriptletId());
-        
-        setScriptletModel(form.scriptlet);
-        
-        form.scriptlet = null;
+        displayPType = (Dropdown)getWidget(Meta.getPrinterTypeId());        
         
         super.afterDraw(success);
-        
-        ArrayList cache;
-        TableDataModel<TableDataRow> model;
+                
         cache = DictionaryCache.getListByCategorySystemName("printer_type");
         model = getDictionaryIdEntryList(cache);
         displayPType.setModel(model);
     }
     
     private void getLabels(String query) {
+      QueryStringField qField;  
       // we only want to allow them to select a letter if they are in display
       // mode..
       if (state == State.DISPLAY || state == State.DEFAULT) {
-          QueryStringField qField = new QueryStringField(Meta.getName());
+          qField = new QueryStringField(Meta.getName());
           qField.setValue(query);
           commitQuery(qField);
                    
       }
-    }  
-    
-    private void setScriptletModel(TableDataModel<TableDataRow<Integer>> model) {
-        displayScript.setModel(model);
-    }
+    }     
     
     private TableDataModel<TableDataRow> getDictionaryIdEntryList(ArrayList list){
         if(list == null)

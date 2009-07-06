@@ -153,8 +153,11 @@ UIRF Software License are applicable instead of those above.
      </row>
      <row>
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"test")'/>:</text>
-	  <dropdown key="{meta:getTestId($qae)}" width = "140px"  case="mixed" tab="{meta:getIsBillable($qae)},{meta:getTypeId($qae)}"/>
-	  </row>		
+	  <!--<dropdown key="{meta:getTestId($qae)}" width = "140px"  case="mixed" tab="{meta:getIsBillable($qae)},{meta:getTypeId($qae)}"/>-->
+	  <autoComplete case="lower" cat="testMethod" key="{meta:getTestId($qae)}" serviceUrl="OpenELISServlet?service=org.openelis.modules.qaevent.server.QAEventService" tab="{meta:getIsBillable($qae)},{meta:getTypeId($qae)}" width="140px">
+		<widths>140</widths>
+	  </autoComplete>
+	 </row>		
 	  						
       <row>           
         <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"billable")'/>:</text>
@@ -170,7 +173,7 @@ UIRF Software License are applicable instead of those above.
 		   <text style="Prompt"><xsl:value-of select='resource:getString($constants,"text")'/>:</text>
 		</widget>
 	    <widget halign = "center">
-		  <textarea width="425px" height="250px" case="mixed" key="{meta:getReportingText($qae)}" tab="{meta:getName($qae)},{meta:getReportingSequence($qae)}"/>
+		  <textarea width="425px" height="255px" case="mixed" key="{meta:getReportingText($qae)}" tab="{meta:getName($qae)},{meta:getReportingSequence($qae)}"/>
 	    </widget> 
 	   </row>								          
                                  					                         
@@ -192,21 +195,6 @@ UIRF Software License are applicable instead of those above.
  <dropdown key="{meta:getTestId($qae)}" type="integer" required = "false" />
  <dropdown key="{meta:getTypeId($qae)}" type="integer" required = "true"/>
 </rpc>
-<!--					   
-<rpc key= "query">     
- <queryString key="{meta:getName($qae)}" />
- <queryInteger key="{meta:getReportingSequence($qae)}" type="integer" />
- <queryString key="{meta:getDescription($qae)}"  /> 	
- <dropdown key="{meta:getTypeId($qae)}" type="integer"/> 
- <dropdown key="{meta:getTestId($qae)}" type="integer"/>
- <queryCheck key="{meta:getIsBillable($qae)}"/>
- <queryString key="{meta:getReportingText($qae)}"/>
-</rpc>
-
-<rpc key= "queryByLetter">     
- <queryString key="{meta:getName($qae)}"/>
-</rpc>
- -->
 </screen>
 </xsl:template>
 </xsl:stylesheet> 

@@ -33,10 +33,8 @@ UIRF Software License are applicable instead of those above.
     <inherits name="org.openelis.gwt.Widget"/>
     <inherits name="org.openelis.gwt.Common"/>
     <inherits name="org.openelis.gwt.Screen"/>
-     
     <inherits name="org.openelis.Cache"/>
     <inherits name="org.openelis.Util"/>
-    
     <inherits name='com.google.gwt.widgetideas.GWTCanvas'/>
     <inherits name='com.allen_sauer.gwt.dnd.gwt-dnd'/> 
     <inherits name="org.openelis.modules.main.Main"/>
@@ -63,12 +61,14 @@ UIRF Software License are applicable instead of those above.
     <inherits name="org.openelis.modules.panel.Panel"/>
     <inherits name="org.openelis.modules.PTSampleLogin.PTSampleLogin"/>
     <inherits name="org.openelis.modules.qaevent.QAEvent"/>
+    <inherits name="org.openelis.modules.qc.QC"/>
     <inherits name="org.openelis.modules.richTextPopup.RichTextPopup"/>
     <inherits name="org.openelis.modules.sampleManagement.SampleManagement"/>
     <inherits name="org.openelis.modules.sampleLocation.SampleLocation"/>
     <inherits name="org.openelis.modules.sampleOrganization.SampleOrganization"/>
     <inherits name="org.openelis.modules.sampleProject.SampleProject"/>
     <inherits name="org.openelis.modules.SDWISSampleLogin.SDWISSampleLogin"/>
+    <inherits name="org.openelis.modules.section.Section"/>
     <inherits name="org.openelis.modules.shipping.Shipping"/>
     <inherits name="org.openelis.modules.standardnote.StandardNote"/>
     <inherits name="org.openelis.modules.standardnotepicker.StandardNotePicker"/>       
@@ -83,9 +83,8 @@ UIRF Software License are applicable instead of those above.
 	<!-- Specify the app entry point class.                   -->
 	<entry-point class='org.openelis.modules.main.client.OpenELIS'/>
 	
-	<!--  
 	<set-property name="user.agent" value="gecko1_8" />
-    -->
+    
    <!-- <extend-property name="locale" values="cn"/>
     <extend-property name="locale" values="fa"/>
     <extend-property name="locale" values="sp"/> -->

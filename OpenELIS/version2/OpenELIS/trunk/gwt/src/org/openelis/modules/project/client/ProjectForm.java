@@ -49,7 +49,6 @@ public class ProjectForm extends Form<Integer> {
     public CheckField isActive;
     public DateField completedDate,startedDate;
     public DropDownField<Integer> scripletId,ownerId;
-    public TableDataModel<TableDataRow<Integer>> scriptlets;
     public TableField<TableDataRow<Integer>> parameterTable;
         
     public ProjectForm() {
@@ -61,7 +60,7 @@ public class ProjectForm extends Form<Integer> {
         isActive = new CheckField(meta.getIsActive());
         completedDate = new DateField(meta.getCompletedDate());
         startedDate = new DateField(meta.getStartedDate());
-        scripletId = new DropDownField<Integer>(meta.getScriptletId()); 
+        scripletId = new DropDownField<Integer>(meta.getScriptlet().getName());
         ownerId = new DropDownField<Integer>(meta.getOwnerId());
         parameterTable = new TableField<TableDataRow<Integer>>("parameterTable");
     }    

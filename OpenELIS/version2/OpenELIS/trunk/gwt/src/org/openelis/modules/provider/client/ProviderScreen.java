@@ -193,10 +193,10 @@ public class ProviderScreen extends OpenELISScreenForm<ProviderForm,Query<TableD
         super.abort();
     }
     
-    protected SyncCallback afterUpdate = new SyncCallback() {
+    protected SyncCallback<ProviderForm> afterUpdate = new SyncCallback<ProviderForm>() {
         public void onFailure(Throwable caught) {
         }
-        public void onSuccess(Object result) {            
+        public void onSuccess(ProviderForm result) {            
             provId.enable(false);                                      
             noteArea.enable(true);
             
@@ -331,30 +331,35 @@ public class ProviderScreen extends OpenELISScreenForm<ProviderForm,Query<TableD
       
    
    private void onStandardNoteButtonClick(){
-	   PopupPanel standardNotePopupPanel = new PopupPanel(false,true);
-	   ScreenWindow pickerWindow = new ScreenWindow(standardNotePopupPanel, "Choose Standard Note", "standardNotePicker", "Loading...");
-	   pickerWindow.setContent(new StandardNotePickerScreen((TextArea)getWidget("note.text")));
-			
-	   standardNotePopupPanel.add(pickerWindow);
-	   int left = this.getAbsoluteLeft();
-	   int top = this.getAbsoluteTop();
-	   standardNotePopupPanel.setPopupPosition(left,top);
-	   standardNotePopupPanel.show();
+       ScreenWindow modal = new ScreenWindow(null,"Standard Note Screen",
+                                             "standardNoteScreen","",true,false);
+       modal.setName(consts.get("standardNote"));
+       modal.setContent(new StandardNotePickerScreen((TextBox)getWidget(ProvMeta.getNote()
+                                                                                 .getSubject()),
+                                                      (TextArea)getWidget(ProvMeta.getNote()
+                                                                                  .getText())));
     }
     
     private void onRemoveRowButtonClick(){
-        provAddController.model.deleteRow(provAddController.model.getData().getSelectedIndex());          
+        int index = provAddController.modelIndexList[provAddController.activeRow];
+        if (index > -1) 
+            provAddController.model.deleteRow(index);                  
     }
 
     private TableDataModel<TableDataRow> getDictionaryIdEntryList(ArrayList list){
+        TableDataModel<TableDataRow> m;
+        TableDataRow<Integer> row;
+        DictionaryDO dictDO;
+        
         if(list == null)
             return null;
-        
-        TableDataModel<TableDataRow> m = new TableDataModel<TableDataRow>();
+                       
+        m = new TableDataModel<TableDataRow>();
+        m.add(new TableDataRow<Integer>(null,new StringObject("")));
         
         for(int i=0; i<list.size(); i++){
-            TableDataRow<Integer> row = new TableDataRow<Integer>(1);
-            DictionaryDO dictDO = (DictionaryDO)list.get(i);
+            row = new TableDataRow<Integer>(1);
+            dictDO = (DictionaryDO)list.get(i);
             row.key = dictDO.getId();
             row.cells[0] = new StringObject(dictDO.getEntry());
             m.add(row);
@@ -364,14 +369,19 @@ public class ProviderScreen extends OpenELISScreenForm<ProviderForm,Query<TableD
     }
     
     private TableDataModel<TableDataRow> getDictionaryEntryKeyList(ArrayList list){
+        TableDataModel<TableDataRow> m;
+        TableDataRow<String> row;
+        DictionaryDO dictDO;
+        
         if(list == null)
             return null;
-        
-        TableDataModel<TableDataRow> m = new TableDataModel<TableDataRow>();
+                
+        m = new TableDataModel<TableDataRow>();
+        m.add(new TableDataRow<Integer>(null,new StringObject("")));
         
         for(int i=0; i<list.size(); i++){
-            TableDataRow<String> row = new TableDataRow<String>(1);
-            DictionaryDO dictDO = (DictionaryDO)list.get(i);
+            row = new TableDataRow<String>(1);
+            dictDO = (DictionaryDO)list.get(i);
             row.key = dictDO.getEntry();
             row.cells[0] = new StringObject(dictDO.getEntry());
             m.add(row);

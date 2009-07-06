@@ -55,6 +55,7 @@ import org.openelis.gwt.services.AutoCompleteServiceInt;
 import org.openelis.modules.project.client.ProjectForm;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.ProjectRemote;
+import org.openelis.remote.ScriptletRemote;
 import org.openelis.server.constants.Constants;
 import org.openelis.util.Datetime;
 import org.openelis.util.FormUtil;
@@ -109,7 +110,7 @@ public class ProjectService implements AppScreenFormServiceInt<ProjectForm, Quer
         
         remote = (ProjectRemote)EJBFactory.lookup("openelis/ProjectBean/remote");
         projectDO = getProjectDOFromRPC(rpc);
-        list = getParameterList(rpc);
+        list = getParameterListFromRPC(rpc);
         try {
             projId = remote.updateProject(projectDO, list); 
             projectDO = remote.getProject(projId);
@@ -131,7 +132,7 @@ public class ProjectService implements AppScreenFormServiceInt<ProjectForm, Quer
         
         remote = (ProjectRemote)EJBFactory.lookup("openelis/ProjectBean/remote");
         projectDO = getProjectDOFromRPC(rpc);
-        list = getParameterList(rpc);
+        list = getParameterListFromRPC(rpc);
         try {
             remote.updateProject(projectDO, list);    
             projectDO = remote.getProject(rpc.entityKey);
@@ -140,6 +141,7 @@ public class ProjectService implements AppScreenFormServiceInt<ProjectForm, Quer
             setRpcErrors(e.getErrorList(), rpc);
             return rpc;
         } catch (Exception e) {
+            e.printStackTrace();
             throw new RPCException(e.getMessage());            
         }
         return rpc;
@@ -202,13 +204,8 @@ public class ProjectService implements AppScreenFormServiceInt<ProjectForm, Quer
     }
 
     public ProjectForm getScreen(ProjectForm rpc) throws RPCException {
-        ProjectRemote remote;
-                
         rpc.xml = ServiceUtils.getXML(Constants.APP_ROOT + "/Forms/project.xsl");        
         
-        remote = (ProjectRemote)EJBFactory.lookup("openelis/ProjectBean/remote");
-        rpc.scriptlets = new TableDataModel<TableDataRow<Integer>>();
-        loadDropDown(remote.getScriptletDropDownValues(),rpc.scriptlets);
         return rpc;
     }
     
@@ -218,16 +215,25 @@ public class ProjectService implements AppScreenFormServiceInt<ProjectForm, Quer
                                      HashMap<String, FieldType> params) throws RPCException {
         TableDataModel<TableDataRow<Integer>> dataModel;
         List<SecuritySystemUserDO> list;
+        List<IdNameDO> entries;
         ProjectRemote remote;
+        ScriptletRemote sremote;
         
-        remote = (ProjectRemote)EJBFactory.lookup("openelis/ProjectBean/remote");
-        list = remote.ownerAutocompleteByName(match.trim() + "%", 10);
-        dataModel = getAutocompleteModel(list);
+        dataModel = null;
+        if(("owner").equals(cat)) {
+            remote = (ProjectRemote)EJBFactory.lookup("openelis/ProjectBean/remote");
+            list = remote.ownerAutocompleteByName(match.trim() + "%", 10);
+            dataModel = getOwnerAutocompleteModel(list);
+        } else if(("scriptlet").equals(cat)) {
+            sremote = (ScriptletRemote)EJBFactory.lookup("openelis/ScriptletBean/remote");
+            entries = sremote.getScriptletAutoCompleteByName(match.trim() + "%", 10);
+            dataModel = getAutocompleteModel(entries);
+        }
         return dataModel;
     }
     
     
-    private TableDataModel<TableDataRow<Integer>> getAutocompleteModel(List<SecuritySystemUserDO> entries){
+    private TableDataModel<TableDataRow<Integer>> getOwnerAutocompleteModel(List<SecuritySystemUserDO> entries){
         TableDataModel<TableDataRow<Integer>> dataModel;
         SecuritySystemUserDO element;
         Integer entryId;
@@ -240,6 +246,22 @@ public class ProjectService implements AppScreenFormServiceInt<ProjectForm, Quer
             entryId = element.getId();
             entryText = element.getLoginName();
             data = new TableDataRow<Integer>(entryId,new StringObject(entryText));
+            dataModel.add(data);
+        }
+        
+        return dataModel;
+    }
+    
+    private TableDataModel<TableDataRow<Integer>> getAutocompleteModel(List<IdNameDO> entries){
+        TableDataModel<TableDataRow<Integer>> dataModel = new TableDataModel<TableDataRow<Integer>>();
+        for (Iterator iter = entries.iterator(); iter.hasNext();) {
+
+            IdNameDO element = (IdNameDO)iter.next();
+            Integer entryId = element.getId();
+            String entryText = element.getName();
+
+            TableDataRow<Integer> data = new TableDataRow<Integer>(entryId,
+                                                                   new StringObject(entryText));
             dataModel.add(data);
         }
         
@@ -267,26 +289,19 @@ public class ProjectService implements AppScreenFormServiceInt<ProjectForm, Quer
                                                              date.getDate()));
         }
         
-        rpc.scripletId.setValue(new TableDataRow<Integer>(projectDO.getScriptletId()));
+        model = new TableDataModel();
+        if(projectDO.getScriptletId() != null) {
+            model.add(new TableDataRow<Integer>(projectDO.getScriptletId(),
+                            new StringObject(projectDO.getScriptletName())));
+            rpc.scripletId.setValue(model.get(0));
+        }
+        rpc.scripletId.setModel(model);
      
         model = new TableDataModel<TableDataRow<Integer>>();
         model.add(new TableDataRow<Integer>(projectDO.getOwnerId(),
                             new StringObject(projectDO.getOwnerName())));
         rpc.ownerId.setModel(model);
         rpc.ownerId.setValue(model.get(0));
-    }
-    
-    private void loadDropDown(List<IdNameDO> list, TableDataModel model) {
-        TableDataRow<Integer> blankset = new TableDataRow<Integer>(null,
-                                                                   new StringObject(""));
-        model.add(blankset);
-
-        for (Iterator iter = list.iterator(); iter.hasNext();) {
-            IdNameDO methodDO = (IdNameDO)iter.next();
-            TableDataRow<Integer> set = new TableDataRow<Integer>(methodDO.getId(),
-                                                                  new StringObject(methodDO.getName()));
-            model.add(set);
-        }
     }
     
     private ProjectDO getProjectDOFromRPC(ProjectForm rpc) {
@@ -334,7 +349,7 @@ public class ProjectService implements AppScreenFormServiceInt<ProjectForm, Quer
         
     } 
     
-    private List<ProjectParameterDO> getParameterList(ProjectForm rpc) {
+    private List<ProjectParameterDO> getParameterListFromRPC(ProjectForm rpc) {
         ProjectParameterDO paramDO;
         TableDataRow<Integer> row;
         TableDataModel<TableDataRow<Integer>> model;

@@ -32,7 +32,6 @@ import org.openelis.gwt.common.data.CheckField;
 import org.openelis.gwt.common.data.DateField;
 import org.openelis.gwt.common.data.IntegerField;
 import org.openelis.gwt.common.data.StringField;
-import org.openelis.gwt.common.data.TableDataModel;
 import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.common.data.TableField;
 import org.openelis.metamap.AuxFieldGroupMetaMap;
@@ -50,20 +49,18 @@ public class AuxiliaryForm extends Form<Integer> {
     public CheckField isActive;
     public StringField description,name; 
     public DateField activeBegin,activeEnd;    
-    public TableField<TableDataRow<Integer>> auxFieldValueTable, auxFieldTable;
-    
-    public TableDataModel<TableDataRow<Integer>> scriptlets;
+    public TableField<TableDataRow<Integer>> auxFieldValueTable, auxFieldTable;   
         
     public AuxiliaryForm() {
-     AuxFieldGroupMetaMap meta = new AuxFieldGroupMetaMap();   
-     id = new IntegerField(meta.getId());
-     activeBegin = new DateField(meta.getActiveBegin());
-     activeEnd = new DateField(meta.getActiveEnd());
-     description = new StringField(meta.getDescription());
-     name = new StringField(meta.getName());
-     isActive = new CheckField(meta.getIsActive());
-     auxFieldTable = new TableField<TableDataRow<Integer>>("auxFieldTable");   
-     auxFieldValueTable = new TableField<TableDataRow<Integer>>("auxFieldValueTable");
+         AuxFieldGroupMetaMap meta = new AuxFieldGroupMetaMap();   
+         id = new IntegerField(meta.getId());
+         activeBegin = new DateField(meta.getActiveBegin());
+         activeEnd = new DateField(meta.getActiveEnd());
+         description = new StringField(meta.getDescription());
+         name = new StringField(meta.getName());
+         isActive = new CheckField(meta.getIsActive());
+         auxFieldTable = new TableField<TableDataRow<Integer>>("auxFieldTable");   
+         auxFieldValueTable = new TableField<TableDataRow<Integer>>("auxFieldValueTable");
     }
 
     public AuxiliaryForm(Node node) {

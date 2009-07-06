@@ -37,7 +37,6 @@ import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.TableDataModel;
 import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.common.data.TableField;
-import org.openelis.gwt.widget.table.TableDropdown;
 import org.openelis.metamap.TestMetaMap;
 
 public class TestForm extends Form<Integer> {
@@ -75,7 +74,7 @@ public class TestForm extends Form<Integer> {
     public TestAnalyteForm testAnalyte;
     public WorksheetForm worksheet;
     
-    public TableDataModel<TableDataRow<Integer>> testMethods, labels, trailers, scriptlets, wsItemTypes, sections, resultTableModel;
+    public TableDataModel<TableDataRow<Integer>> resultTableModel;
     
     public Integer numGroups;
     
@@ -95,11 +94,11 @@ public class TestForm extends Form<Integer> {
         activeBegin = new DateField(meta.getActiveBegin());
         activeEnd = new DateField(meta.getActiveEnd());
         timeHolding = new IntegerField(meta.getTimeHolding());
-        labelId = new DropDownField<Integer>(meta.getLabelId());
+        labelId = new DropDownField<Integer>(meta.getLabel().getName());
         labelQty = new IntegerField(meta.getLabelQty());
         testTrailerId = new DropDownField<Integer>(meta.getTestTrailerId());
         testFormatId = new DropDownField<Integer>(meta.getTestFormatId());
-        scriptletId = new DropDownField<Integer>(meta.getScriptletId());
+        scriptletId = new DropDownField<Integer>(meta.getScriptlet().getName());
         revisionMethodId = new DropDownField<Integer>(meta.getRevisionMethodId());
         reportingMethodId = new DropDownField<Integer>(meta.getReportingMethodId());
         reportingSequence = new IntegerField(meta.getReportingSequence());
