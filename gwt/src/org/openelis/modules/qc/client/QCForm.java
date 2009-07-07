@@ -33,7 +33,6 @@ import org.openelis.gwt.common.data.DoubleField;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.IntegerField;
 import org.openelis.gwt.common.data.StringField;
-import org.openelis.gwt.common.data.TableDataModel;
 import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.common.data.TableField;
 import org.openelis.metamap.QcMetaMap;
@@ -59,7 +58,7 @@ public class QCForm extends Form<Integer> {
         source = new StringField(meta.getSource());
         lotNumber = new StringField(meta.getLotNumber());
         typeId = new DropDownField<Integer>(meta.getTypeId());
-        inventoryItemId = new DropDownField<Integer>(meta.getInventoryItemId());
+        inventoryItemId = new DropDownField<Integer>(meta.getInventoryItem().getName());
         preparedUnitId = new DropDownField<Integer>(meta.getPreparedUnitId());
         preparedById = new DropDownField<Integer>(meta.getPreparedById());
         preparedDate = new DateField(meta.getPreparedDate());

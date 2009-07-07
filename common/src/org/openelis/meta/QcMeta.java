@@ -10,7 +10,7 @@ import org.openelis.gwt.common.Meta;
 import java.util.HashSet;
 
 public class QcMeta implements Meta {
-  	private String path = "";
+  	public String path = "";
 	private static final String entityName = "Qc";
 	
 	private static final String

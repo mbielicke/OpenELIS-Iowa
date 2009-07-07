@@ -36,13 +36,13 @@ public class ProjectMetaMap extends ProjectMeta implements MetaMap {
     
     public ProjectMetaMap() {
         super("proj.");
-        PROJECT_PARAMETER = new ProjectParameterMetaMap("projectParameter");
+        PROJECT_PARAMETER = new ProjectParameterMetaMap("projectParameter.");
         SCRIPTLET = new ScriptletMeta("proj.scriptlet.");
     }
     
     public ProjectMetaMap(String path){
         super(path);  
-        PROJECT_PARAMETER = new ProjectParameterMetaMap("projectParameter");
+        PROJECT_PARAMETER = new ProjectParameterMetaMap(path+"projectParameter.");
         SCRIPTLET = new ScriptletMeta(path+"proj.scriptlet.");
     }
     

@@ -105,17 +105,17 @@ public class DictionaryScreen extends OpenELISScreenForm<DictionaryForm,Query<Ta
         startWidget = (ScreenInputWidget)widgets.get(CatMap.getName());
         removeEntryButton = (AppButton)getWidget("removeEntryButton");
                 
-        displaySection = (Dropdown)getWidget(CatMap.getSectionId());       
-                     
-        cache = SectionCache.getSectionList();
-        model = getSectionList(cache);
-        displaySection.setModel(model);
+        displaySection = (Dropdown)getWidget(CatMap.getSectionId());                           
         
         //override the callbacks
         updateChain.add(afterUpdate);
         commitUpdateChain.add(commitUpdateCallback);
         commitAddChain.add(commitAddCallback);
         super.afterDraw(success);        
+        
+        cache = SectionCache.getSectionList();
+        model = getSectionList(cache);
+        displaySection.setModel(model);
     }
     
     public void performCommand(Enum action, Object obj) {        

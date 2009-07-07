@@ -26,20 +26,24 @@
 package org.openelis.metamap;
 
 import org.openelis.gwt.common.MetaMap;
+import org.openelis.meta.InventoryItemMeta;
 import org.openelis.meta.QcMeta;
 
 public class QcMetaMap extends QcMeta implements MetaMap {
  
     private QcAnalyteMetaMap QC_ANALYTE;
+    private InventoryItemMeta INVENTORY_ITEM;
     
     public QcMetaMap() {
         super("qc.");
-        QC_ANALYTE = new QcAnalyteMetaMap("qcAnalyte");
+        QC_ANALYTE = new QcAnalyteMetaMap("qcAnalyte.");
+        INVENTORY_ITEM = new InventoryItemMeta("qc.inventoryItem.");
     }
     
     public QcMetaMap(String path){
         super(path);  
-        QC_ANALYTE = new QcAnalyteMetaMap("qcAnalyte");
+        QC_ANALYTE = new QcAnalyteMetaMap(path+"qcAnalyte.");
+        INVENTORY_ITEM = new InventoryItemMeta(path+"qc.inventoryItem.");
     }
     
     public QcAnalyteMetaMap getQcAnalyte() {
@@ -54,10 +58,16 @@ public class QcMetaMap extends QcMeta implements MetaMap {
     }   
     
     public boolean hasColumn(String name){ 
-        if(name.startsWith("projectParameter."))
+        if(name.startsWith("qcAnalyte."))
             return QC_ANALYTE.hasColumn(name);
+        if(name.startsWith(path+"inventoryItem."))
+            return INVENTORY_ITEM.hasColumn(name);
         return super.hasColumn(name);
-    }    
+    }  
+    
+    public InventoryItemMeta getInventoryItem() {
+        return INVENTORY_ITEM;
+    } 
     
 
 }

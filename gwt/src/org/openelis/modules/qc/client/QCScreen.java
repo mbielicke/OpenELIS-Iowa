@@ -265,8 +265,11 @@ public class QCScreen extends OpenELISScreenForm<QCForm, Query<TableDataRow<Inte
     }
 
     public <T> boolean canEdit(TableWidget widget,TableDataRow<T> set,int row,int col) {
-        if(state == State.ADD || state == State.UPDATE || state == State.QUERY)
+        if(state == State.ADD || state == State.UPDATE)
             return true;
+        else if (state == State.QUERY && col != 3)
+            return true;
+            
         return false;
     }
 

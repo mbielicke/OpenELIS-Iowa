@@ -26,16 +26,21 @@
 package org.openelis.metamap;
 
 import org.openelis.gwt.common.MetaMap;
+import org.openelis.meta.AnalyteMeta;
 import org.openelis.meta.QcAnalyteMeta;
 
 public class QcAnalyteMetaMap extends QcAnalyteMeta implements MetaMap {
+    
+    private AnalyteMeta ANALYTE;
 
     public QcAnalyteMetaMap() {
         super();
+        ANALYTE = new AnalyteMeta(path+"analyte.");
     }
     
     public QcAnalyteMetaMap(String path){
         super(path);
+        ANALYTE = new AnalyteMeta(path+"analyte.");
     }
     
     public String buildFrom(String where) {
@@ -43,7 +48,14 @@ public class QcAnalyteMetaMap extends QcAnalyteMeta implements MetaMap {
     }
 
     public boolean hasColumn(String name){
+        if(name.startsWith(path+"analyte."))
+            return ANALYTE.hasColumn(name);
         return super.hasColumn(name);
+        
+    }
+    
+    public AnalyteMeta getAnalyte() {
+        return ANALYTE;
     }
         
 }
