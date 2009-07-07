@@ -81,23 +81,22 @@ UIRF Software License are applicable instead of those above.
           <!--left table goes here -->
           <CollapsePanel key="collapsePanel" height="440px" style="LeftSidePanel">
               <resultsTable height="425px" width="100%" key="azTable" showError="false">
-                 <buttonPanel key="atozButtons">
-                <xsl:call-template name="aToZLeftPanelButtons"/>
-               </buttonPanel>
-               <table maxRows="18" width="auto">
-                 <col header="{resource:getString($constants,'name')}" width="175"> 
-                   <label/>
-                 </col>
-               </table>
-             </resultsTable>
+                 <buttonGroup key="atozButtons">
+                   <xsl:call-template name="aToZLeftPanelButtons"/>
+                 </buttonGroup>
+                 <table maxRows="18" width="auto">
+                   <col header="{resource:getString($constants,'name')}" width="175"> 
+                     <label/>
+                   </col>
+                 </table>
+              </resultsTable>
           </CollapsePanel>
           <VerticalPanel spacing="0" padding="0">
             <!--button panel code-->
             <AbsolutePanel spacing="0" style="ButtonPanelContainer">
-              <buttonPanel key="buttons">
+              <HorizontalPanel>
                 <xsl:call-template name="queryButton">
                   <xsl:with-param name="language">
-
                     <xsl:value-of select="language"/>
                   </xsl:with-param>
                 </xsl:call-template>
@@ -107,7 +106,6 @@ UIRF Software License are applicable instead of those above.
                   </xsl:with-param>
                 </xsl:call-template>
                 <xsl:call-template name="nextButton">
-
                   <xsl:with-param name="language">
                     <xsl:value-of select="language"/>
                   </xsl:with-param>
@@ -117,7 +115,6 @@ UIRF Software License are applicable instead of those above.
                   <xsl:with-param name="language">
                     <xsl:value-of select="language"/>
                   </xsl:with-param>
-
                 </xsl:call-template>
                 <xsl:call-template name="updateButton">
                   <xsl:with-param name="language">
@@ -127,7 +124,6 @@ UIRF Software License are applicable instead of those above.
                 <xsl:call-template name="buttonPanelDivider"/>
                 <xsl:call-template name="commitButton">
                   <xsl:with-param name="language">
-
                     <xsl:value-of select="language"/>
                   </xsl:with-param>
                 </xsl:call-template>
@@ -136,8 +132,7 @@ UIRF Software License are applicable instead of those above.
                     <xsl:value-of select="language"/>
                   </xsl:with-param>
                 </xsl:call-template>
-              </buttonPanel>
-
+              </HorizontalPanel>
             </AbsolutePanel>
             <!--end button panel-->
             <VerticalPanel spacing="0" padding="0" style="WhiteContentPanel">
