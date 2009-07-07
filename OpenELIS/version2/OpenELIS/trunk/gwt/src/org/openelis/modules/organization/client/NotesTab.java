@@ -1,7 +1,14 @@
 package org.openelis.modules.organization.client;
 
-import java.util.EnumSet;
-import java.util.Iterator;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.ScrollPanel;
+import com.google.gwt.user.client.ui.TextArea;
+import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.xml.client.Document;
+import com.google.gwt.xml.client.Element;
+import com.google.gwt.xml.client.XMLParser;
 
 import org.openelis.domain.NoteDO;
 import org.openelis.gwt.event.CommandListenerCollection;
@@ -15,22 +22,16 @@ import org.openelis.gwt.screen.rewrite.ScreenEventHandler;
 import org.openelis.gwt.screen.rewrite.UIUtil;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.rewrite.AppButton;
+import org.openelis.gwt.widget.rewrite.AppButton.ButtonState;
 import org.openelis.metamap.OrganizationMetaMap;
 import org.openelis.modules.standardnotepicker.client.StandardNotePickerScreen;
 
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.ScrollPanel;
-import com.google.gwt.user.client.ui.TextArea;
-import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.xml.client.Document;
-import com.google.gwt.xml.client.Element;
-import com.google.gwt.xml.client.XMLParser;
+import java.util.EnumSet;
+import java.util.Iterator;
 
 
 public class NotesTab extends Screen {
 	
-	private ScreenDef def;
 	private NotesRPC rpc;
     private OrganizationMetaMap OrgMeta = new OrganizationMetaMap();
     private CommandListenerCollection commandListeners;
@@ -80,11 +81,17 @@ public class NotesTab extends Screen {
 			}
 		});
 		final AppButton standardNote = (AppButton)def.getWidget("standardNoteButton");
-		standardNote.addClickListener(new ClickListener() {
-			public void onClick(Widget sender) {
+		addScreenHandler(standardNote, new ScreenEventHandler<Object>() {
+			public void onClick(ClickEvent event) {
 		        ScreenWindow modal = new ScreenWindow(null,"Standard Note Screen","standardNoteScreen","",true,false);
 		        modal.setName(AppScreen.consts.get("standardNote"));
 		        modal.setContent(new StandardNotePickerScreen(subject, text));
+			}
+			public void stateChange(StateChangeEvent<State> event) {
+			    if(event.getState() == State.ADD || event.getState() == State.UPDATE)
+			        standardNote.changeState(ButtonState.UNPRESSED);
+			    else 
+			        standardNote.changeState(ButtonState.DISABLED);
 			}
 		});
 	}

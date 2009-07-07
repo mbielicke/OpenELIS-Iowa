@@ -1,6 +1,9 @@
 package org.openelis.modules.organization.client;
 
-import java.util.ArrayList;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.Widget;
 
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.DictionaryDO;
@@ -12,16 +15,14 @@ import org.openelis.gwt.screen.rewrite.ScreenDef;
 import org.openelis.gwt.screen.rewrite.ScreenEventHandler;
 import org.openelis.gwt.widget.rewrite.AppButton;
 import org.openelis.gwt.widget.rewrite.Dropdown;
+import org.openelis.gwt.widget.rewrite.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.rewrite.TableDataRow;
 import org.openelis.gwt.widget.table.rewrite.TableWidget;
 
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.Widget;
+import java.util.ArrayList;
 
 public class ContactsTab extends Screen {
-	
-	private ScreenDef def;
+
 	private ContactsRPC rpc;
 	private TableWidget table;
 	private boolean dropdownsInited;
@@ -54,19 +55,19 @@ public class ContactsTab extends Screen {
 		});
     	final AppButton removeContact = (AppButton)def.getWidget("removeContactButton");
     	addScreenHandler(removeContact,new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                int selectedRow = table.getSelectedIndex();
+                if (selectedRow > -1 && table.numRows() > 0) {
+                    table.deleteRow(selectedRow);
+                }
+            }
     		public void onStateChange(StateChangeEvent<State> event) {
-    			if(event.getState() == State.QUERY)
+    			if(event.getState() == State.ADD || event.getState() == State.UPDATE)
+    			    removeContact.changeState(ButtonState.UNPRESSED);
+    			else
     				removeContact.changeState(AppButton.ButtonState.DISABLED);
     		}
     		
-    	});
-    	removeContact.addClickListener(new ClickListener() {
-    		public void onClick(Widget sender) {
-    	        int selectedRow = table.getSelectedIndex();
-    	        if (selectedRow > -1 && table.numRows() > 0) {
-    	            table.deleteRow(selectedRow);
-    	        }
-    		}
     	});
 	}
 	
