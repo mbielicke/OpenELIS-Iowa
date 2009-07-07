@@ -31,6 +31,8 @@ UIRF Software License are applicable instead of those above.
                 xmlns:locale="xalan://java.util.Locale"
                 xmlns:meta="xalan://org.openelis.metamap.QcMetaMap"   
                 xmlns:qcaMeta="xalan://org.openelis.metamap.QcAnalyteParameterMetaMap"          
+                xmlns:invItem="xalan://org.openelis.meta.InventoryItemMeta"
+                xmlns:analyte="xalan://org.openelis.meta.AnalyteMeta"
                 extension-element-prefixes="resource"
                 version="1.0">
 	<xsl:import href="aToZOneColumn.xsl"/>
@@ -46,10 +48,18 @@ UIRF Software License are applicable instead of those above.
 	<xalan:component prefix="qcaMeta">
 		<xalan:script lang="javaclass" src="xalan://org.openelis.metamap.QcAnalyteParameterMetaMap"/>
 	</xalan:component>
+	<xalan:component prefix="invItem">
+		<xalan:script lang="javaclass" src="xalan://org.openelis.metamap.InventoryItemMeta"/>
+	</xalan:component>
+	<xalan:component prefix="analyte">
+		<xalan:script lang="javaclass" src="xalan://org.openelis.meta.AnalyteMeta"/>
+	</xalan:component>
 	
 	<xsl:template match="doc">	
 	   <xsl:variable name="qc" select="meta:new()"/>
 	   <xsl:variable name="qca" select="meta:getQcAnalyte($qc)"/>
+	   <xsl:variable name="item" select="meta:getInventoryItem($qc)"/>
+	   <xsl:variable name="ana" select="qcaMeta:getAnalyte($qca)"/>
 		<xsl:variable name="language">
 		<xsl:value-of select="locale"/>
 		</xsl:variable>
@@ -136,12 +146,12 @@ UIRF Software License are applicable instead of those above.
 								</row>
 								<row>
 								 <text style="Prompt"><xsl:value-of select="resource:getString($constants,'type')"/>:</text>
-								 <dropdown key="{meta:getTypeId($qc)}" tab="{meta:getInventoryItemId($qc)},{meta:getName($qc)}" width="100px" />																																	 								 							
+								 <dropdown key="{meta:getTypeId($qc)}" tab="{invItem:getName($item)},{meta:getName($qc)}" width="100px" />																																	 								 							
 								</row>
 								<row>
 									<text style="Prompt"><xsl:value-of select="resource:getString($constants,'inventoryItem')"/>:</text>
 									<widget>
-										<autoComplete case="mixed" cat="inventoryItem" key="{meta:getInventoryItemId($qc)}" tab="{meta:getSource($qc)},{meta:getTypeId($qc)}" serviceUrl="OpenELISServlet?service=org.openelis.modules.qc.server.QCService" width="145px">
+										<autoComplete case="mixed" cat="inventoryItem" key="{invItem:getName($item)}" tab="{meta:getSource($qc)},{meta:getTypeId($qc)}" serviceUrl="OpenELISServlet?service=org.openelis.modules.qc.server.QCService" width="145px">
 								       		<headers><xsl:value-of select="resource:getString($constants,'name')"/>,<xsl:value-of select="resource:getString($constants,'store')"/></headers>
 											<widths>135,110</widths>
 									  	</autoComplete>
@@ -150,7 +160,7 @@ UIRF Software License are applicable instead of those above.
 								<row>
 								    <text style="Prompt"><xsl:value-of select="resource:getString($constants,'source')"/>:</text>
 									<widget colspan = "6">
-										<textbox  key="{meta:getSource($qc)}" tab="{meta:getLotNumber($qc)},{meta:getInventoryItemId($qc)}" case = "mixed" max="30" width="215px" />
+										<textbox  key="{meta:getSource($qc)}" tab="{meta:getLotNumber($qc)},{invItem:getName($item)}" case = "mixed" max="30" width="215px" />
 									</widget>									
 								</row>
 								<row>
@@ -209,7 +219,7 @@ UIRF Software License are applicable instead of those above.
 												</headers>
 												<widths>270,55,55,400</widths>
 												<editors>
-													<autoComplete cellKey = "{qcaMeta:getAnalyteId($qca)}" cat="analyte" serviceUrl="OpenELISServlet?service=org.openelis.modules.qc.server.QCService" case="mixed" width="300px">												
+													<autoComplete cellKey = "{analyte:getName($ana)}" cat="analyte" serviceUrl="OpenELISServlet?service=org.openelis.modules.qc.server.QCService" case="mixed" width="300px">												
 										 				<widths>300</widths>
 													</autoComplete> 
 													<dropdown cellKey ="{qcaMeta:getTypeId($qca)}" case="mixed" width="75px"/>
@@ -252,7 +262,7 @@ UIRF Software License are applicable instead of those above.
 			 <integer key="{meta:getId($qc)}" required="false"/>
 			 <string key="{meta:getName($qc)}" max = "30" required="true" />
 			 <dropdown key="{meta:getTypeId($qc)}" required="false" type="integer"/> 				 
-			 <dropdown key="{meta:getInventoryItemId($qc)}" required="false" type="integer"/>	
+			 <dropdown key="{invItem:getName($item)}" required="false" type="integer"/>	
 			 <string key="{meta:getSource($qc)}" max="30" required="true"/>	 
 			 <string key="{meta:getLotNumber($qc)}" max = "30" required="true" />
 			 <date key="{meta:getPreparedDate($qc)}" begin="0" end="4" required="true"/>
@@ -263,7 +273,7 @@ UIRF Software License are applicable instead of those above.
 			 <date key="{meta:getExpireDate($qc)}" begin="0" end="4" required="true"/>	 			 			 
 			 <check key="{meta:getIsSingleUse($qc)}" />		 								 
 		     <table key="qcAnalyteTable">
-		     	<dropdown key="{qcaMeta:getAnalyteId($qca)}" type="integer" required="true"/>
+		     	<dropdown key="{analyte:getName($ana)}" type="integer" required="true"/>
 				<dropdown key="{qcaMeta:getTypeId($qca)}"  required="true" type="integer"/>
 				<check key="{qcaMeta:getIsTrendable($qca)}" />
 				<string key="{qcaMeta:getValue($qca)}" case="mixed" required="true"/>				

@@ -94,6 +94,7 @@ public class SectionScreen extends OpenELISScreenForm<SectionForm, Query<TableDa
                      
         updateChain.add(afterUpdate);
         super.afterDraw(success);
+        
         cache = SectionCache.getSectionList();
         model = getSectionList(cache);
         section.setModel(model);
