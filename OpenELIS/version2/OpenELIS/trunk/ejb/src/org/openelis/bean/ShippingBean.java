@@ -56,16 +56,15 @@ import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.AbstractField;
-import org.openelis.gwt.common.data.TableDataModel;
 import org.openelis.local.LockLocal;
 import org.openelis.metamap.ShippingMetaMap;
-import org.openelis.persistence.JBossCachingManager;
 import org.openelis.remote.ShippingRemote;
 import org.openelis.security.domain.SystemUserDO;
 import org.openelis.security.local.SystemUserUtilLocal;
 import org.openelis.util.Datetime;
 import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
+import org.openelis.utils.ReferenceTableCache;
 
 @Stateless
 @EJBs({
@@ -85,8 +84,15 @@ public class ShippingBean implements ShippingRemote{
     private LockLocal lockBean;
     private SystemUserUtilLocal sysUser;
     
+    private static int shippingRefTableId, orderItemRefTableId, sampleItemRefTableId;
     private static final ShippingMetaMap ShippingMeta = new ShippingMetaMap();
 
+    public ShippingBean(){
+        shippingRefTableId = ReferenceTableCache.getReferenceTable("shipping");
+        orderItemRefTableId = ReferenceTableCache.getReferenceTable("order_item");
+        sampleItemRefTableId = ReferenceTableCache.getReferenceTable("sample_item");
+    }
+    
     @PostConstruct
     private void init()
     {
@@ -149,15 +155,9 @@ public class ShippingBean implements ShippingRemote{
     @RolesAllowed("shipping-update")
  public Integer updateShipment(ShippingDO shippingDO, List<ShippingItemDO> shippingItems, List<ShippingTrackingDO> trackingNumbers, NoteDO shippingNote) throws Exception {
         validateShipping(shippingDO, shippingItems);
-        //shipping reference table id
-        Query query = manager.createNamedQuery("getTableId");
-        query.setParameter("name", "shipping");
-        Integer shippingReferenceId = (Integer)query.getSingleResult();
         
-        if(shippingDO.getId() != null){
-            //we need to call lock one more time to make sure their lock didnt expire and someone else grabbed the record
-            lockBean.validateLock(shippingReferenceId,shippingDO.getId());
-        }
+        if(shippingDO.getId() != null)
+            lockBean.validateLock(shippingRefTableId,shippingDO.getId());
         
          manager.setFlushMode(FlushModeType.COMMIT);
          Shipping shipping = null;
@@ -191,7 +191,7 @@ public class ShippingBean implements ShippingRemote{
         
         note.setIsExternal(shippingNote.getIsExternal());
         note.setReferenceId(shipping.getId());
-        note.setReferenceTableId(shippingReferenceId);
+        note.setReferenceTableId(shippingRefTableId);
         note.setText(shippingNote.getText());
         
         if(note.getId() == null)
@@ -252,8 +252,8 @@ public class ShippingBean implements ShippingRemote{
         }
        
        if(shippingDO.getId() != null)
-           lockBean.giveUpLock(shippingReferenceId,shippingDO.getId());
-       
+           lockBean.giveUpLock(shippingRefTableId, shippingDO.getId());
+        
         return shipping.getId();
     }
 
@@ -270,29 +270,21 @@ public class ShippingBean implements ShippingRemote{
 
     @RolesAllowed("shipping-update")
     public ShippingDO getShipmentAndLock(Integer shippingId) throws Exception {
-        Query query = manager.createNamedQuery("getTableId");
-        query.setParameter("name", "shipping");
-        lockBean.getLock((Integer)query.getSingleResult(),shippingId);
+        lockBean.getLock(shippingRefTableId, shippingId);
         
         return getShipment(shippingId);
     }
 
     public ShippingDO getShipmentAndUnlock(Integer shippingId) {
         //unlock the entity
-        Query unlockQuery = manager.createNamedQuery("getTableId");
-        unlockQuery.setParameter("name", "shipping");
-        lockBean.giveUpLock((Integer)unlockQuery.getSingleResult(),shippingId);
+        lockBean.giveUpLock(shippingRefTableId, shippingId);
         
         return getShipment(shippingId);
     }
     
     public NoteDO getShippingNote(Integer shippingId) {
-        Query query = manager.createNamedQuery("getTableId");
-        query.setParameter("name", "shipping");
-        Integer shippingReferenceId = (Integer)query.getSingleResult();
-        
-        query = manager.createNamedQuery("Note.Notes");
-        query.setParameter("referenceTable",shippingReferenceId);
+        Query query = manager.createNamedQuery("Note.Notes");
+        query.setParameter("referenceTable", shippingRefTableId);
         query.setParameter("id", shippingId);
         
         List results = query.getResultList();
@@ -316,32 +308,15 @@ public class ShippingBean implements ShippingRemote{
         
         List resultList = query.getResultList();
         
-        Integer orderItemReferenceTableId = (Integer)JBossCachingManager.getElement("openelis","beans", "referenceTableOrderItemId"); 
-        Integer sampleItemReferenceTableId = (Integer)JBossCachingManager.getElement("openelis","beans", "referenceTableSampleItemId");
-        
-        if(orderItemReferenceTableId == null){
-            query = manager.createNamedQuery("getTableId");
-            query.setParameter("name", "order_item");
-            orderItemReferenceTableId = (Integer)query.getSingleResult();
-            JBossCachingManager.putElement("openelis", "beans", "referenceTableOrderItemId", orderItemReferenceTableId);
-        }
-        
-        if(sampleItemReferenceTableId == null){
-            query = manager.createNamedQuery("getTableId");
-            query.setParameter("name", "sample_item");
-            sampleItemReferenceTableId = (Integer)query.getSingleResult();
-            JBossCachingManager.putElement("openelis", "beans", "referenceTableSampleItemId", sampleItemReferenceTableId);
-        }        
-        
         for(int i=0; i<resultList.size(); i++){
             ShippingItemDO itemDO = (ShippingItemDO)resultList.get(i);
 
-            if(itemDO.getReferenceTableId().equals(orderItemReferenceTableId)){
+            if(itemDO.getReferenceTableId().equals(orderItemRefTableId)){
                 query = manager.createNamedQuery("OrderItem.OrderItemName");
                 query.setParameter("id", itemDO.getReferenceId());
                 itemDO.setItemDescription((String)query.getSingleResult());
             
-            }else if(itemDO.getReferenceTableId().equals(sampleItemReferenceTableId)){
+            }else if(itemDO.getReferenceTableId().equals(sampleItemRefTableId)){
                 
             }
         }

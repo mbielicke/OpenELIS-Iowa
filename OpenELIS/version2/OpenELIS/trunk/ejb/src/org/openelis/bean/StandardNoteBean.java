@@ -55,6 +55,7 @@ import org.openelis.metamap.StandardNoteMetaMap;
 import org.openelis.remote.StandardNoteRemote;
 import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
+import org.openelis.utils.ReferenceTableCache;
 
 @Stateless
 @EJBs({
@@ -71,7 +72,12 @@ public class StandardNoteBean implements StandardNoteRemote{
 	private SessionContext ctx;
 	
     private LockLocal lockBean;
+    private static int standardNoteRefTableId;
     private static final StandardNoteMetaMap StandardNoteMap = new StandardNoteMetaMap();
+    
+    public StandardNoteBean(){
+        standardNoteRefTableId = ReferenceTableCache.getReferenceTable("standard_note");
+    }
     
     @PostConstruct
     private void init()
@@ -81,10 +87,7 @@ public class StandardNoteBean implements StandardNoteRemote{
 
     @RolesAllowed("standardnote-delete")
 	public void deleteStandardNote(Integer standardNoteId) throws Exception {
-    	Query lockQuery = manager.createNamedQuery("getTableId");
-		lockQuery.setParameter("name", "standard_note");
-		Integer standardNoteTableId = (Integer)lockQuery.getSingleResult();
-        lockBean.getLock(standardNoteTableId, standardNoteId);
+    	lockBean.getLock(standardNoteRefTableId, standardNoteId);
         
 		manager.setFlushMode(FlushModeType.COMMIT);
 		StandardNote standardNote = null;
@@ -99,7 +102,7 @@ public class StandardNoteBean implements StandardNoteRemote{
             e.printStackTrace();
         }	
 		
-		lockBean.giveUpLock(standardNoteTableId, standardNoteId);
+		lockBean.giveUpLock(standardNoteRefTableId, standardNoteId);
 	}
 
 	public StandardNoteDO getStandardNote(Integer standardNoteId) {		
@@ -112,17 +115,13 @@ public class StandardNoteBean implements StandardNoteRemote{
 	
     @RolesAllowed("standardnote-update")
 	public StandardNoteDO getStandardNoteAndLock(Integer standardNoteId, String session) throws Exception{
-		Query query = manager.createNamedQuery("getTableId");
-        query.setParameter("name", "standard_note");
-        lockBean.getLock((Integer)query.getSingleResult(),standardNoteId);
+		lockBean.getLock(standardNoteRefTableId, standardNoteId);
         
         return getStandardNote(standardNoteId);
 	}
 	
 	public StandardNoteDO getStandardNoteAndUnlock(Integer standardNoteId, String session) {
-        Query query = manager.createNamedQuery("getTableId");
-        query.setParameter("name", "standard_note");
-        lockBean.giveUpLock((Integer)query.getSingleResult(),standardNoteId);
+        lockBean.giveUpLock(standardNoteRefTableId, standardNoteId);
 		
 		return getStandardNote(standardNoteId);
 	}
@@ -160,13 +159,8 @@ public class StandardNoteBean implements StandardNoteRemote{
 
     @RolesAllowed("standardnote-update")
 	public Integer updateStandardNote(StandardNoteDO standardNoteDO) throws Exception{
-        Query query = manager.createNamedQuery("getTableId");
-        query.setParameter("name", "standard_note");
-        Integer standardNoteReferenceId = (Integer)query.getSingleResult();
-        
-        if(standardNoteDO.getId() != null){
-            lockBean.validateLock(standardNoteReferenceId, standardNoteDO.getId());
-        }
+        if(standardNoteDO.getId() != null)
+            lockBean.validateLock(standardNoteRefTableId, standardNoteDO.getId());
         
         validateStandardNote(standardNoteDO);
         
@@ -187,7 +181,7 @@ public class StandardNoteBean implements StandardNoteRemote{
 	       	manager.persist(standardNote);
         }
          
-        lockBean.giveUpLock(standardNoteReferenceId,standardNote.getId()); 
+        lockBean.giveUpLock(standardNoteRefTableId, standardNote.getId()); 
 		    
 		return standardNote.getId();
 	}

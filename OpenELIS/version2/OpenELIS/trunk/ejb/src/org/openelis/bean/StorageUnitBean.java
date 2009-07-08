@@ -53,6 +53,7 @@ import org.openelis.metamap.StorageUnitMetaMap;
 import org.openelis.remote.StorageUnitRemote;
 import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
+import org.openelis.utils.ReferenceTableCache;
 
 @Stateless
 @EJBs({
@@ -72,7 +73,12 @@ public class StorageUnitBean implements StorageUnitRemote{
 	private SessionContext ctx;
 	
     private LockLocal lockBean;
+    private static int storageUnitRefTableId;
     private static final StorageUnitMetaMap StorageUnitMeta = new StorageUnitMetaMap();
+    
+    public StorageUnitBean(){
+        storageUnitRefTableId = ReferenceTableCache.getReferenceTable("storage_unit");
+    }
     
     @PostConstruct
     private void init()
@@ -113,12 +119,8 @@ public class StorageUnitBean implements StorageUnitRemote{
 
     @RolesAllowed("storageunit-update")
 	public Integer updateStorageUnit(StorageUnitDO unitDO) throws Exception{
-        Query query = manager.createNamedQuery("getTableId");
-        query.setParameter("name", "storage_unit");
-        Integer storageUnitReferenceId = (Integer)query.getSingleResult();
-        
         if(unitDO.getId() != null)
-            lockBean.validateLock(storageUnitReferenceId,unitDO.getId());
+            lockBean.validateLock(storageUnitRefTableId, unitDO.getId());
         
         validateStorageUnit(unitDO);
         
@@ -138,7 +140,7 @@ public class StorageUnitBean implements StorageUnitRemote{
 	       	manager.persist(storageUnit);
         }
          
-        lockBean.giveUpLock(storageUnitReferenceId,storageUnit.getId()); 
+        lockBean.giveUpLock(storageUnitRefTableId, storageUnit.getId()); 
 		    
 		return storageUnit.getId();
 	}
@@ -153,28 +155,21 @@ public class StorageUnitBean implements StorageUnitRemote{
 	
     @RolesAllowed("storageunit-update")
 	public StorageUnitDO getStorageUnitAndLock(Integer StorageUnitId, String session) throws Exception{
-		Query query = manager.createNamedQuery("getTableId");
-        query.setParameter("name", "storage_unit");
-        lockBean.getLock((Integer)query.getSingleResult(),StorageUnitId);
+		lockBean.getLock(storageUnitRefTableId, StorageUnitId);
         
         return getStorageUnit(StorageUnitId);
 		
 	}
 	
 	public StorageUnitDO getStorageUnitAndUnlock(Integer StorageUnitId, String session) {
-        Query unlockQuery = manager.createNamedQuery("getTableId");
-        unlockQuery.setParameter("name", "storage_unit");
-        lockBean.giveUpLock((Integer)unlockQuery.getSingleResult(),StorageUnitId);
+        lockBean.giveUpLock(storageUnitRefTableId, StorageUnitId);
 		
         return getStorageUnit(StorageUnitId);
 	}
 
     @RolesAllowed("storageunit-delete")
 	public void deleteStorageUnit(Integer storageUnitId) throws Exception {
-    	Query lockQuery = manager.createNamedQuery("getTableId");
-		lockQuery.setParameter("name", "storage_unit");
-		Integer storageUnitTableId = (Integer)lockQuery.getSingleResult();
-        lockBean.getLock(storageUnitTableId, storageUnitId);
+    	lockBean.getLock(storageUnitRefTableId, storageUnitId);
         
         validateForDelete(storageUnitId);
         
@@ -192,7 +187,7 @@ public class StorageUnitBean implements StorageUnitRemote{
             e.printStackTrace();
         }		
 		
-		lockBean.giveUpLock(storageUnitTableId, storageUnitId);
+		lockBean.giveUpLock(storageUnitRefTableId, storageUnitId);
 	}
 
 	public List autoCompleteLookupByDescription(String desc, int maxResults) {

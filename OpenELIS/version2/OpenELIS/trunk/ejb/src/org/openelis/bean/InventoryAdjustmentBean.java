@@ -25,27 +25,6 @@
 */
 package org.openelis.bean;
 
-import org.jboss.annotation.security.SecurityDomain;
-import org.openelis.domain.InventoryAdjustmentAddAutoFillDO;
-import org.openelis.domain.InventoryAdjustmentChildDO;
-import org.openelis.domain.InventoryAdjustmentDO;
-import org.openelis.domain.InventoryReceiptDO;
-import org.openelis.entity.InventoryAdjustment;
-import org.openelis.entity.InventoryLocation;
-import org.openelis.entity.InventoryXAdjust;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.TableFieldErrorException;
-import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.data.AbstractField;
-import org.openelis.local.LockLocal;
-import org.openelis.metamap.InventoryAdjustmentMetaMap;
-import org.openelis.remote.InventoryAdjustmentRemote;
-import org.openelis.security.domain.SystemUserDO;
-import org.openelis.security.local.SystemUserUtilLocal;
-import org.openelis.util.QueryBuilder;
-import org.openelis.utils.GetPage;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -61,6 +40,27 @@ import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+
+import org.jboss.annotation.security.SecurityDomain;
+import org.openelis.domain.InventoryAdjustmentAddAutoFillDO;
+import org.openelis.domain.InventoryAdjustmentChildDO;
+import org.openelis.domain.InventoryAdjustmentDO;
+import org.openelis.entity.InventoryAdjustment;
+import org.openelis.entity.InventoryLocation;
+import org.openelis.entity.InventoryXAdjust;
+import org.openelis.gwt.common.FieldErrorException;
+import org.openelis.gwt.common.LastPageException;
+import org.openelis.gwt.common.TableFieldErrorException;
+import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.gwt.common.data.AbstractField;
+import org.openelis.local.LockLocal;
+import org.openelis.metamap.InventoryAdjustmentMetaMap;
+import org.openelis.remote.InventoryAdjustmentRemote;
+import org.openelis.security.domain.SystemUserDO;
+import org.openelis.security.local.SystemUserUtilLocal;
+import org.openelis.util.QueryBuilder;
+import org.openelis.utils.GetPage;
+import org.openelis.utils.ReferenceTableCache;
 
 @Stateless
 @EJBs({
@@ -80,7 +80,12 @@ public class InventoryAdjustmentBean implements InventoryAdjustmentRemote{
     private SessionContext ctx;
     
     private LockLocal lockBean;
+    private static int invLocRefTableId;
     private static final InventoryAdjustmentMetaMap InventoryAdjustmentMetaMap = new InventoryAdjustmentMetaMap();
+    
+    public InventoryAdjustmentBean(){
+        invLocRefTableId = ReferenceTableCache.getReferenceTable("inventory_location");
+    }
     
     @PostConstruct
     private void init()
@@ -271,15 +276,11 @@ public class InventoryAdjustmentBean implements InventoryAdjustmentRemote{
     }
     
     public List getInventoryitemDataAndLockLoc(Integer inventoryLocationId, Integer oldLocId, Integer storeId) throws Exception{
-        Query query = manager.createNamedQuery("getTableId");
-        query.setParameter("name", "inventory_location");
-        Integer inventoryLocId = (Integer)query.getSingleResult();
-        
         //if there is an old lock we need to unlock this record
         if(oldLocId != null)
-            lockBean.giveUpLock(inventoryLocId, oldLocId);
+            lockBean.giveUpLock(invLocRefTableId, oldLocId);
         
-        query = manager.createNamedQuery("InventoryLocation.LocationInfoForAdjustmentFromId");
+        Query query = manager.createNamedQuery("InventoryLocation.LocationInfoForAdjustmentFromId");
         query.setParameter("id", inventoryLocationId);
         query.setParameter("store", storeId);
         List resultList = query.getResultList();
@@ -287,7 +288,7 @@ public class InventoryAdjustmentBean implements InventoryAdjustmentRemote{
         //we need to only get the lock if we bring something back in the query.
         //if they dont get anything back we can assume they entered an invalid loc id
         if(resultList != null && resultList.size() > 0)
-            lockBean.getLock(inventoryLocId, inventoryLocationId);
+            lockBean.getLock(invLocRefTableId, inventoryLocationId);
         
         return resultList;
     }
@@ -296,20 +297,15 @@ public class InventoryAdjustmentBean implements InventoryAdjustmentRemote{
         if(childRows.size() == 0)
             return;
         
-        Integer inventoryLocationTableId = null;
-        Query query = manager.createNamedQuery("getTableId");
-        query.setParameter("name", "inventory_location");
-        inventoryLocationTableId = (Integer)query.getSingleResult();
-        
         for(int i=0; i<childRows.size(); i++){
         
             InventoryAdjustmentChildDO childDO = (InventoryAdjustmentChildDO)childRows.get(i);
         
             if(childDO.getLocationId() != null){
                 if(validate)
-                    lockBean.validateLock(inventoryLocationTableId, childDO.getLocationId());
+                    lockBean.validateLock(invLocRefTableId, childDO.getLocationId());
                 else
-                    lockBean.getLock(inventoryLocationTableId, childDO.getLocationId());
+                    lockBean.getLock(invLocRefTableId, childDO.getLocationId());
             }
         }
     }
@@ -318,17 +314,12 @@ public class InventoryAdjustmentBean implements InventoryAdjustmentRemote{
         if(childRows.size() == 0)
             return;
         
-        Integer inventoryLocationTableId = null;
-        Query query = manager.createNamedQuery("getTableId");
-        query.setParameter("name", "inventory_location");
-        inventoryLocationTableId = (Integer)query.getSingleResult();
-        
         for(int i=0; i<childRows.size(); i++){
         
             InventoryAdjustmentChildDO childDO = (InventoryAdjustmentChildDO)childRows.get(i);
         
             if(childDO.getLocationId() != null)
-                lockBean.giveUpLock(inventoryLocationTableId, childDO.getLocationId());
+                lockBean.giveUpLock(invLocRefTableId, childDO.getLocationId());
         }
     }
 }

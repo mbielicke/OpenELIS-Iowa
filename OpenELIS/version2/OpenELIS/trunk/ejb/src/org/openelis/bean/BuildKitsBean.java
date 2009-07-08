@@ -25,7 +25,6 @@
 */
 package org.openelis.bean;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -43,7 +42,6 @@ import javax.persistence.Query;
 import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.BuildKitComponentDO;
 import org.openelis.domain.BuildKitDO;
-import org.openelis.domain.InventoryReceiptDO;
 import org.openelis.entity.InventoryLocation;
 import org.openelis.entity.InventoryReceipt;
 import org.openelis.entity.InventoryReceiptOrderItem;
@@ -58,6 +56,7 @@ import org.openelis.local.LockLocal;
 import org.openelis.metamap.InventoryItemMetaMap;
 import org.openelis.remote.BuildKitsRemote;
 import org.openelis.util.Datetime;
+import org.openelis.utils.ReferenceTableCache;
 
 @Stateless
 @EJBs({
@@ -81,7 +80,12 @@ public class BuildKitsBean implements BuildKitsRemote{
         lockBean =  (LockLocal)ctx.lookup("ejb/Lock");
     }
 
+    private static int invLocRefTableId;
     private static final InventoryItemMetaMap InventoryItemMeta = new InventoryItemMetaMap();
+    
+    public BuildKitsBean(){
+        invLocRefTableId = ReferenceTableCache.getReferenceTable("inventory_location");
+    }
     
     @RolesAllowed("buildkits-update")
     public Integer updateBuildKits(BuildKitDO kitDO, List<BuildKitComponentDO> kitComponents) throws Exception {
@@ -324,34 +328,23 @@ public class BuildKitsBean implements BuildKitsRemote{
         if(components.size() == 0)
             return;
         
-        Query query = manager.createNamedQuery("getTableId");
-        query.setParameter("name", "inventory_location");
-        Integer inventoryLocationId = (Integer)query.getSingleResult();
-        
         for(int i=0; i<components.size(); i++){
-        
             BuildKitComponentDO componentDO = (BuildKitComponentDO)components.get(i);
         
             if(componentDO.getLocationId() != null)
-                lockBean.validateLock(inventoryLocationId, componentDO.getLocationId());
+                lockBean.validateLock(invLocRefTableId, componentDO.getLocationId());
         }
     }
     
     private void unlockRecords(List components) throws Exception{
         if(components.size() == 0)
             return;
-        Integer inventoryLocationId = null;
-        
-        Query query = manager.createNamedQuery("getTableId");
-        query.setParameter("name", "inventory_location");
-        inventoryLocationId = (Integer)query.getSingleResult();
         
         for(int i=0; i<components.size(); i++){
-        
             BuildKitComponentDO componentDO = (BuildKitComponentDO)components.get(i);
         
             if(componentDO.getLocationId() != null)
-                lockBean.giveUpLock(inventoryLocationId, componentDO.getLocationId());
+                lockBean.giveUpLock(invLocRefTableId, componentDO.getLocationId());
         }
     }
 }

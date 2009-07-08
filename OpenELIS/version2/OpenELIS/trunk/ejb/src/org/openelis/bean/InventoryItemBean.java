@@ -60,6 +60,7 @@ import org.openelis.security.local.SystemUserLocal;
 import org.openelis.util.Datetime;
 import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
+import org.openelis.utils.ReferenceTableCache;
 
 @Stateless
 @EJBs({
@@ -78,12 +79,19 @@ public class InventoryItemBean implements InventoryItemRemote{
 	private SessionContext ctx;
 	
     private LockLocal lockBean;
+    private static int invItemRefTableId, invItemManufacRefTableId;
     private static final InventoryItemMetaMap invItemMap = new InventoryItemMetaMap();
    
     @PostConstruct
     private void init()
     {
         lockBean =  (LockLocal)ctx.lookup("ejb/Lock");
+    }
+    
+    public InventoryItemBean(){
+        invItemRefTableId = ReferenceTableCache.getReferenceTable("inventory_item_manufacturing");
+        invItemManufacRefTableId = ReferenceTableCache.getReferenceTable("inventory_item");
+        
     }
 
 	public List getInventoryComponents(Integer inventoryItemId) {
@@ -105,18 +113,14 @@ public class InventoryItemBean implements InventoryItemRemote{
 
 	@RolesAllowed("inventory-update")
 	public InventoryItemDO getInventoryItemAndLock(Integer inventoryItemId, String session) throws Exception {
-		Query query = manager.createNamedQuery("getTableId");
-        query.setParameter("name", "inventory_item");
-        lockBean.getLock((Integer)query.getSingleResult(),inventoryItemId);
+        lockBean.getLock(invItemRefTableId, inventoryItemId);
         
         return getInventoryItem(inventoryItemId);
 	}
 
 	public InventoryItemDO getInventoryItemAndUnlock(Integer inventoryItemId, String session) {
 		//unlock the entity
-        Query unlockQuery = manager.createNamedQuery("getTableId");
-        unlockQuery.setParameter("name", "inventory_item");
-        lockBean.giveUpLock((Integer)unlockQuery.getSingleResult(),inventoryItemId);
+        lockBean.giveUpLock(invItemRefTableId, inventoryItemId);
        		
         return getInventoryItem(inventoryItemId);
 	}
@@ -197,19 +201,9 @@ public class InventoryItemBean implements InventoryItemRemote{
 
     @RolesAllowed("inventory-update")
 	public Integer updateInventory(InventoryItemDO inventoryItemDO, List components, NoteDO noteDO, NoteDO manufacturingNote) throws Exception {
-        //inventory item reference table id
-        Query query = manager.createNamedQuery("getTableId");
-        query.setParameter("name", "inventory_item");
-        Integer inventoryItemReferenceId = (Integer)query.getSingleResult();
-        
-      //inventory item manufacturing reference table id
-        query = manager.createNamedQuery("getTableId");
-        query.setParameter("name", "inventory_item_manufacturing");
-        Integer inventoryItemManRefId = (Integer)query.getSingleResult();
-        
         if(inventoryItemDO.getId() != null){
             //we need to call lock one more time to make sure their lock didnt expire and someone else grabbed the record
-            lockBean.validateLock(inventoryItemReferenceId,inventoryItemDO.getId());
+            lockBean.validateLock(invItemRefTableId,inventoryItemDO.getId());
         }
         
         //validate inventory item
@@ -280,14 +274,13 @@ public class InventoryItemBean implements InventoryItemRemote{
          }
          
          //update note
-         System.out.println("update note");
          Note note = null;
          //we need to make sure the note is filled out...
          if(noteDO.getText() != null || noteDO.getSubject() != null){
             note = new Note();
              note.setIsExternal(noteDO.getIsExternal());
              note.setReferenceId(inventoryItem.getId());
-             note.setReferenceTableId(inventoryItemReferenceId);
+             note.setReferenceTableId(invItemRefTableId);
              note.setSubject(noteDO.getSubject());
              note.setSystemUserId(lockBean.getSystemUserId());
              note.setText(noteDO.getText());
@@ -299,32 +292,21 @@ public class InventoryItemBean implements InventoryItemRemote{
             manager.persist(note);
          }
          
-         System.out.println("update manu");
          //update manufacturing note
          Note manNote = null;
          //we need to make sure the note is filled out...
          if(manufacturingNote.getText() != null){
-             System.out.println("1");
-             if (manufacturingNote.getId() == null){
-              System.out.println("2a");   
+             if (manufacturingNote.getId() == null)
                  manNote = new Note();
-             }else{
+             else
                  manNote = manager.find(Note.class, manufacturingNote.getId());
-                 System.out.println("2b");
-             }
-             System.out.println("3");
+             
              manNote.setIsExternal(manufacturingNote.getIsExternal());
-             System.out.println("4");
              manNote.setReferenceId(inventoryItem.getId());
-             System.out.println("5");
-             manNote.setReferenceTableId(inventoryItemManRefId);
-             System.out.println("6");
+             manNote.setReferenceTableId(invItemManufacRefTableId);
              manNote.setSystemUserId(lockBean.getSystemUserId());
-             System.out.println("7");
              manNote.setText(manufacturingNote.getText());
-             System.out.println("8");
              manNote.setTimestamp(Datetime.getInstance());
-             System.out.println("9");
         }
          
          //insert into note table if necessary
@@ -332,7 +314,7 @@ public class InventoryItemBean implements InventoryItemRemote{
             manager.persist(manNote);
          }
 
-         lockBean.giveUpLock(inventoryItemReferenceId,inventoryItem.getId()); 
+         lockBean.giveUpLock(invItemRefTableId, inventoryItem.getId()); 
          
 		return inventoryItem.getId();
 	}

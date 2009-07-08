@@ -61,6 +61,7 @@ import org.openelis.remote.OrderRemote;
 import org.openelis.util.Datetime;
 import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
+import org.openelis.utils.ReferenceTableCache;
 
 @Stateless
 @EJBs({
@@ -77,7 +78,14 @@ public class OrderBean implements OrderRemote{
     private SessionContext ctx;
     
     private LockLocal lockBean;
+    private static int orderRefTable, orderShippingNoteRefTableId, orderCustNoteRefTableId;
     private static final OrderMetaMap OrderMetaMap = new OrderMetaMap();
+    
+    public OrderBean(){
+        orderRefTable = ReferenceTableCache.getReferenceTable("order");
+        orderShippingNoteRefTableId = ReferenceTableCache.getReferenceTable("order_shipping_note");
+        orderCustNoteRefTableId = ReferenceTableCache.getReferenceTable("order_customer_note");
+    }
     
     @PostConstruct
     private void init()
@@ -102,18 +110,14 @@ public class OrderBean implements OrderRemote{
 
     @RolesAllowed("order-update")
     public OrderDO getOrderAndLock(Integer orderId, String orderType, String session) throws Exception {
-        Query query = manager.createNamedQuery("getTableId");
-        query.setParameter("name", "order");
-        lockBean.getLock((Integer)query.getSingleResult(),orderId);
+        lockBean.getLock(orderRefTable, orderId);
         
         return getOrder(orderId, orderType);
     }
 
     public OrderDO getOrderAndUnlock(Integer orderId , String orderType, String session) {
         //unlock the entity
-        Query unlockQuery = manager.createNamedQuery("getTableId");
-        unlockQuery.setParameter("name", "order");
-        lockBean.giveUpLock((Integer)unlockQuery.getSingleResult(),orderId);
+        lockBean.giveUpLock(orderRefTable, orderId);
             
         return getOrder(orderId, orderType);
     }
@@ -153,12 +157,8 @@ public class OrderBean implements OrderRemote{
     }
 
     public NoteDO getOrderShippingNote(Integer orderId) {
-        Query query = manager.createNamedQuery("getTableId");
-        query.setParameter("name", "order_shipping_note");
-        Integer orderShipNoteReferenceId = (Integer)query.getSingleResult();
-        
-        query = manager.createNamedQuery("Note.Notes");
-        query.setParameter("referenceTable",orderShipNoteReferenceId);
+        Query query = manager.createNamedQuery("Note.Notes");
+        query.setParameter("referenceTable", orderShippingNoteRefTableId);
         query.setParameter("id", orderId);
         
         List results = query.getResultList();
@@ -170,12 +170,8 @@ public class OrderBean implements OrderRemote{
     }
 
     public NoteDO getCustomerNote(Integer orderId) {
-        Query query = manager.createNamedQuery("getTableId");
-        query.setParameter("name", "order_customer_note");
-        Integer orderCustNoteReferenceId = (Integer)query.getSingleResult();
-        
-        query = manager.createNamedQuery("Note.Notes");
-        query.setParameter("referenceTable",orderCustNoteReferenceId);
+        Query query = manager.createNamedQuery("Note.Notes");
+        query.setParameter("referenceTable", orderCustNoteRefTableId);
         query.setParameter("id", orderId);
         
         List results = query.getResultList();
@@ -201,11 +197,9 @@ public class OrderBean implements OrderRemote{
     public List query(ArrayList<AbstractField> fields, int first, int max, String orderType) throws Exception {       
         StringBuffer sb = new StringBuffer();
         QueryBuilder qb = new QueryBuilder();
-        System.out.println("1");
         qb.setMeta(OrderMetaMap);
-System.out.println("2");
         qb.setSelect("distinct new org.openelis.domain.IdNameDO("+OrderMetaMap.getId()+") ");
-       System.out.println("3");
+
         //this method is going to throw an exception if a column doesnt match
         qb.addWhere(fields);      
 
@@ -271,19 +265,8 @@ System.out.println("2");
 
     @RolesAllowed("order-update")
     public Integer updateOrder(OrderDO orderDO, String orderType, List items, NoteDO customerNoteDO, NoteDO orderShippingNotes) throws Exception {
-        //order reference table id
-        Query query = manager.createNamedQuery("getTableId");
-        query.setParameter("name", "order");
-        Integer orderReferenceId = (Integer)query.getSingleResult();
-        
-        query.setParameter("name", "order_customer_note");
-        Integer orderCustNoteReferenceId = (Integer)query.getSingleResult();
-        
-        query.setParameter("name", "order_shipping_note");
-        Integer orderShipNoteReferenceId = (Integer)query.getSingleResult();
-        
         if(orderDO.getId() != null)
-            lockBean.validateLock(orderReferenceId,orderDO.getId());
+            lockBean.validateLock(orderRefTable, orderDO.getId());
         
         validateOrder(orderDO, orderType, items);
         
@@ -352,7 +335,7 @@ System.out.println("2");
             
             custNote.setIsExternal(customerNoteDO.getIsExternal());
             custNote.setReferenceId(order.getId());
-            custNote.setReferenceTableId(orderCustNoteReferenceId);
+            custNote.setReferenceTableId(orderCustNoteRefTableId);
             custNote.setText(customerNoteDO.getText());
             if(custNote.getId() == null){
                 systemUserId = lockBean.getSystemUserId();
@@ -376,7 +359,7 @@ System.out.println("2");
             
             shippingNote.setIsExternal(orderShippingNotes.getIsExternal());
             shippingNote.setReferenceId(order.getId());
-            shippingNote.setReferenceTableId(orderShipNoteReferenceId);
+            shippingNote.setReferenceTableId(orderShippingNoteRefTableId);
             shippingNote.setText(orderShippingNotes.getText());
             if(shippingNote.getId() == null){
                 if(systemUserId == null)
@@ -390,7 +373,7 @@ System.out.println("2");
             }
         }
 
-        lockBean.giveUpLock(orderReferenceId, order.getId()); 
+        lockBean.giveUpLock(orderRefTable, order.getId()); 
    
         return order.getId();        
     }

@@ -25,20 +25,6 @@
 */
 package org.openelis.bean;
 
-import org.jboss.annotation.security.SecurityDomain;
-import org.openelis.domain.AnalyteDO;
-import org.openelis.entity.Analyte;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.data.AbstractField;
-import org.openelis.local.LockLocal;
-import org.openelis.metamap.AnalyteMetaMap;
-import org.openelis.remote.AnalyteRemote;
-import org.openelis.util.QueryBuilder;
-import org.openelis.utils.GetPage;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,6 +39,21 @@ import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+
+import org.jboss.annotation.security.SecurityDomain;
+import org.openelis.domain.AnalyteDO;
+import org.openelis.entity.Analyte;
+import org.openelis.gwt.common.FieldErrorException;
+import org.openelis.gwt.common.FormErrorException;
+import org.openelis.gwt.common.LastPageException;
+import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.gwt.common.data.AbstractField;
+import org.openelis.local.LockLocal;
+import org.openelis.metamap.AnalyteMetaMap;
+import org.openelis.remote.AnalyteRemote;
+import org.openelis.util.QueryBuilder;
+import org.openelis.utils.GetPage;
+import org.openelis.utils.ReferenceTableCache;
 
 @Stateless
 @EJBs({
@@ -69,9 +70,13 @@ public class AnalyteBean implements AnalyteRemote{
 	private SessionContext ctx;
     
     private static final AnalyteMetaMap Meta = new AnalyteMetaMap();
-	
+	private static int analyteRefTableId;
     private LockLocal lockBean;
    
+    public AnalyteBean(){
+        analyteRefTableId = ReferenceTableCache.getReferenceTable("analyte");
+    }
+    
     @PostConstruct
     private void init()
     {
@@ -88,10 +93,7 @@ public class AnalyteBean implements AnalyteRemote{
 
     @RolesAllowed("analyte-delete")
 	public void deleteAnalyte(Integer analyteId, String session) throws Exception {
-		Query lockQuery = manager.createNamedQuery("getTableId");
-		lockQuery.setParameter("name", "analyte");
-		Integer analyteTableId = (Integer)lockQuery.getSingleResult();
-        lockBean.getLock(analyteTableId, analyteId, session);
+		lockBean.getLock(analyteRefTableId, analyteId, session);
         
 		manager.setFlushMode(FlushModeType.COMMIT);
 		Analyte analyte = null;
@@ -109,7 +111,7 @@ public class AnalyteBean implements AnalyteRemote{
             e.printStackTrace();
         }
 		
-		lockBean.giveUpLock(analyteTableId, analyteId, session);
+		lockBean.giveUpLock(analyteRefTableId, analyteId, session);
 	}
 
 	public AnalyteDO getAnalyte(Integer analyteId) {
@@ -122,17 +124,13 @@ public class AnalyteBean implements AnalyteRemote{
 
    @RolesAllowed("analyte-update")
 	public AnalyteDO getAnalyteAndLock(Integer analyteId, String session) throws Exception {
-		Query query = manager.createNamedQuery("getTableId");
-        query.setParameter("name", "analyte");
-        lockBean.getLock((Integer)query.getSingleResult(),analyteId,session);
+		lockBean.getLock(analyteRefTableId, analyteId, session);
         
         return getAnalyte(analyteId);
 	}
 
 	public AnalyteDO getAnalyteAndUnlock(Integer analyteId, String session) {
-		Query unlockQuery = manager.createNamedQuery("getTableId");
-        unlockQuery.setParameter("name", "analyte");
-        lockBean.giveUpLock((Integer)unlockQuery.getSingleResult(),analyteId,session);
+		lockBean.giveUpLock(analyteRefTableId, analyteId, session);
 		
         return getAnalyte(analyteId);
 	}
@@ -173,13 +171,9 @@ public class AnalyteBean implements AnalyteRemote{
 	public Integer updateAnalyte(AnalyteDO analyteDO, String session) throws Exception{
         
         validateAnalyte(analyteDO);
-
-        Query query = manager.createNamedQuery("getTableId");
-        query.setParameter("name", "analyte");
-        Integer analyteReferenceId = (Integer)query.getSingleResult();
         
         if(analyteDO.getId() != null){
-            lockBean.validateLock(analyteReferenceId, analyteDO.getId(),session);
+            lockBean.validateLock(analyteRefTableId, analyteDO.getId(),session);
         }
         
 		manager.setFlushMode(FlushModeType.COMMIT);
@@ -199,7 +193,7 @@ public class AnalyteBean implements AnalyteRemote{
 	      	manager.persist(analyte);
         }
          
-        lockBean.giveUpLock(analyteReferenceId,analyte.getId()); 
+        lockBean.giveUpLock(analyteRefTableId,analyte.getId()); 
 		    
 		return analyte.getId();
 	}
