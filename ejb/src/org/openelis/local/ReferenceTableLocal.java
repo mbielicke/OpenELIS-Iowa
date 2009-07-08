@@ -23,35 +23,13 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.bean;
+package org.openelis.local;
 
 import java.util.List;
 
-import javax.annotation.Resource;
-import javax.ejb.SessionContext;
-import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
+import javax.ejb.Local;
 
-import org.jboss.annotation.security.SecurityDomain;
-import org.openelis.local.ReferenceTableLocal;
-import org.openelis.remote.ReferenceTableRemote;
-
-@Stateless
-
-@SecurityDomain("openelis")
-public class ReferenceTableBean implements ReferenceTableRemote, ReferenceTableLocal {
-
-    @PersistenceContext(name = "openelis")
-    private EntityManager manager;
-   
-    @Resource
-    private SessionContext ctx;
-    
-    public List GetAllReferenceTables() {
-        Query query = manager.createNamedQuery("ReferenceTable.getAll");
- 
-        return query.getResultList();
-    }
+@Local
+public interface ReferenceTableLocal {
+    public List GetAllReferenceTables(); 
 }

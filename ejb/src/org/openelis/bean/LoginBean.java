@@ -32,6 +32,7 @@ import org.openelis.remote.LoginRemote;
 import org.openelis.security.domain.SystemUserDO;
 import org.openelis.security.local.SecurityLocal;
 import org.openelis.security.local.SystemUserUtilLocal;
+import org.openelis.utils.ReferenceTableCache;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
@@ -59,6 +60,9 @@ public class LoginBean implements LoginRemote, LoginLocal {
             JBossCachingManager.init("openelis",LoginBean.class.getClassLoader().getResourceAsStream("META-INF/ehcache.xml"));
         security =  (SecurityLocal)ctx.lookup("ejb/Security");
         sysUser = (SystemUserUtilLocal)ctx.lookup("ejb/SystemUser");
+        
+        //initialize the reference table cache
+        ReferenceTableCache cache = new ReferenceTableCache();
     }
         
     public SecurityUtil login() {
