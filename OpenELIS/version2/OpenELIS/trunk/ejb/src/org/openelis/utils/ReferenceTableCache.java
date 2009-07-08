@@ -23,35 +23,41 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.bean;
+package org.openelis.utils;
 
+import java.util.HashMap;
 import java.util.List;
 
-import javax.annotation.Resource;
-import javax.ejb.SessionContext;
-import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
+import javax.naming.InitialContext;
 
-import org.jboss.annotation.security.SecurityDomain;
+import org.openelis.domain.IdNameDO;
 import org.openelis.local.ReferenceTableLocal;
-import org.openelis.remote.ReferenceTableRemote;
 
-@Stateless
-
-@SecurityDomain("openelis")
-public class ReferenceTableBean implements ReferenceTableRemote, ReferenceTableLocal {
-
-    @PersistenceContext(name = "openelis")
-    private EntityManager manager;
-   
-    @Resource
-    private SessionContext ctx;
+public class ReferenceTableCache {
+    protected static HashMap<String, Integer> hash;
     
-    public List GetAllReferenceTables() {
-        Query query = manager.createNamedQuery("ReferenceTable.getAll");
- 
-        return query.getResultList();
+    public ReferenceTableCache(){
+        hash = new HashMap<String, Integer>();
+        
+        try{
+            InitialContext ctx = new InitialContext();
+            ReferenceTableLocal local = (ReferenceTableLocal)ctx.lookup("openelis/ReferenceTableBean/local");
+            List refTables = local.GetAllReferenceTables();
+    
+            //lookup all the reference tables and put them in the hash
+            if(refTables != null){
+                for(int i=0; i<refTables.size();i++){
+                    IdNameDO rtDO = (IdNameDO)refTables.get(i);
+                    hash.put(rtDO.getName(), rtDO.getId());
+                }
+            }
+        }catch(Exception e){
+            System.out.println(e.getMessage());
+        }
+            
+    }
+    
+    public static Integer getReferenceTable(String tableName){
+        return hash.get(tableName);
     }
 }

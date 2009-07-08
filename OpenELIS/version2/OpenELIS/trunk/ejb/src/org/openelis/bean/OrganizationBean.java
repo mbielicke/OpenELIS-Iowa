@@ -52,18 +52,17 @@ import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.SecurityModule.ModuleFlags;
 import org.openelis.gwt.common.data.AbstractField;
-import org.openelis.gwt.common.data.QueryField;
 import org.openelis.gwt.common.rewrite.QueryData;
 import org.openelis.local.AddressLocal;
 import org.openelis.local.LockLocal;
 import org.openelis.metamap.OrganizationMetaMap;
-import org.openelis.persistence.CachingManager;
 import org.openelis.remote.OrganizationRemote;
 import org.openelis.security.domain.SystemUserDO;
 import org.openelis.security.local.SystemUserLocal;
 import org.openelis.util.Datetime;
 import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
+import org.openelis.utils.ReferenceTableCache;
 import org.openelis.utils.SecurityInterceptor;
 
 @Stateless
@@ -86,15 +85,14 @@ public class OrganizationBean implements OrganizationRemote {
 	@EJB private AddressLocal addressBean;
     @EJB private LockLocal lockBean;
     
+    private static int orgRefTableId, orgContactRefTableId;
     private static final OrganizationMetaMap OrgMeta = new OrganizationMetaMap();
     
- /*   @PostConstruct
-    private void init() 
-    {
-        lockBean =  (LockLocal)ctx.lookup("ejb/Lock");
-        addressBean =  (AddressLocal)ctx.lookup("ejb/Address");
+    public OrganizationBean(){
+        orgRefTableId = ReferenceTableCache.getReferenceTable("organization");
+        orgContactRefTableId = ReferenceTableCache.getReferenceTable("organization_contact");
     }
-*/    
+    
 	public OrganizationAddressDO getOrganizationAddress(Integer organizationId) {		
 		Query query = manager.createNamedQuery("Organization.OrganizationAndAddress");
 		query.setParameter("id", organizationId);
@@ -105,9 +103,7 @@ public class OrganizationBean implements OrganizationRemote {
 	
 	public OrganizationAddressDO getOrganizationAddressAndUnlock(Integer organizationId, String session) {
 		//unlock the entity
-        Query unlockQuery = manager.createNamedQuery("getTableId");
-        unlockQuery.setParameter("name", "organization");
-        lockBean.giveUpLock((Integer)unlockQuery.getSingleResult(),organizationId);
+        lockBean.giveUpLock(orgRefTableId, organizationId);
        		
         return getOrganizationAddress(organizationId);
 	}
@@ -115,11 +111,8 @@ public class OrganizationBean implements OrganizationRemote {
 	@RolesAllowed("organization-update")
     //@Interceptors(SecurityInterceptor.class)
     public OrganizationAddressDO getOrganizationAddressAndLock(Integer organizationId, String session) throws Exception{
-        System.out.println("local cache alive "+CachingManager.isAlive("security"));
         SecurityInterceptor.applySecurity(ctx.getCallerPrincipal().getName(), "organization", ModuleFlags.UPDATE);
-        Query query = manager.createNamedQuery("getTableId");
-        query.setParameter("name", "organization");
-        lockBean.getLock((Integer)query.getSingleResult(),organizationId);
+        lockBean.getLock(orgRefTableId, organizationId);
         
         return getOrganizationAddress(organizationId);
     }
@@ -129,16 +122,9 @@ public class OrganizationBean implements OrganizationRemote {
     public Integer updateOrganization(OrganizationAddressDO organizationDO, NoteDO noteDO, List<OrganizationContactDO> contacts) throws Exception{
         SecurityInterceptor.applySecurity(ctx.getCallerPrincipal().getName(),"organization", ModuleFlags.UPDATE);
 	    //organization reference table id
-        Query query = manager.createNamedQuery("getTableId");
-        query.setParameter("name", "organization");
-        Integer organizationReferenceId = (Integer)query.getSingleResult();
-        
-        //organization contact reference table id
-        query.setParameter("name", "organization_contact");
-        Integer organizationContactReferenceId = (Integer)query.getSingleResult();
-        
+
         if(organizationDO.getOrganizationId() != null)
-            lockBean.validateLock(organizationReferenceId,organizationDO.getOrganizationId());
+            lockBean.validateLock(orgRefTableId, organizationDO.getOrganizationId());
         
         //validate organization record and its contacts
         validateOrganization(organizationDO, contacts);
@@ -206,7 +192,7 @@ public class OrganizationBean implements OrganizationRemote {
                 note = new Note();
                 note.setIsExternal(noteDO.getIsExternal());
                 note.setReferenceId(organization.getId());
-                note.setReferenceTableId(organizationReferenceId);
+                note.setReferenceTableId(orgRefTableId);
                 note.setSubject(noteDO.getSubject());
                 note.setSystemUserId(lockBean.getSystemUserId());
                 note.setText(noteDO.getText());
@@ -219,7 +205,7 @@ public class OrganizationBean implements OrganizationRemote {
             }
         }
 
-        lockBean.giveUpLock(organizationReferenceId,organization.getId()); 
+        lockBean.giveUpLock(orgRefTableId, organization.getId()); 
    
         return organization.getId();        
     }
