@@ -44,6 +44,7 @@ import org.openelis.remote.FillOrderRemote;
 import org.openelis.security.domain.SystemUserDO;
 import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
+import org.openelis.utils.ReferenceTableCache;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,7 +76,14 @@ public class FillOrderBean implements FillOrderRemote {
     private SessionContext ctx;
     
     private LockLocal lockBean;
+    private static int orderRefTableId, orderShippingNoteRefTableId, orderItemRefTableId;
     private static final OrderMetaMap OrderMap = new OrderMetaMap();
+    
+    public FillOrderBean(){
+        orderRefTableId = ReferenceTableCache.getReferenceTable("order");
+        orderItemRefTableId = ReferenceTableCache.getReferenceTable("order_item");
+        orderShippingNoteRefTableId = ReferenceTableCache.getReferenceTable("order_shipping_note");
+    }
     
     @PostConstruct
     private void init()
@@ -145,9 +153,7 @@ public class FillOrderBean implements FillOrderRemote {
     
     @RolesAllowed("fillorder-update")
     public List getOrderAndLock(Integer orderId) throws Exception {
-        Query query = manager.createNamedQuery("getTableId");
-        query.setParameter("name", "order");
-        lockBean.getLock((Integer)query.getSingleResult(), orderId);
+        lockBean.getLock(orderRefTableId, orderId);
 
         List<Integer> orderIds = new ArrayList<Integer>();
         orderIds.add(orderId);
@@ -156,7 +162,6 @@ public class FillOrderBean implements FillOrderRemote {
     }
     
     public List getOrdersById(List orderIds){
-        System.out.println("order ids size["+orderIds.size()+"]");
         String queryString ="SELECT distinct new org.openelis.domain.FillOrderDO(ordr.id, ordr.statusId, ordr.orderedDate, ordr.shipFromId, organization.id, " +
                             " organization.name, ordr.description, ordr.neededInDays) FROM Order ordr, IN (ordr.orderItem) order_item LEFT JOIN ordr.organization organization LEFT JOIN " +
                             " organization.address organizationAddress WHERE order_item.orderId = ordr.id  and ordr.isExternal='N'  and ordr.id in ";
@@ -183,11 +188,8 @@ public class FillOrderBean implements FillOrderRemote {
     }
     
     public void unlockOrders(List orderIds) throws Exception {
-        Query query = manager.createNamedQuery("getTableId");
-        query.setParameter("name", "order");
-        
         for(int i=0; i<orderIds.size(); i++)
-            lockBean.giveUpLock((Integer)query.getSingleResult(), (Integer)orderIds.get(i));
+            lockBean.giveUpLock(orderRefTableId, (Integer)orderIds.get(i));
     }
     
     public void setOrderToProcessed(List orders) throws Exception{
@@ -195,15 +197,10 @@ public class FillOrderBean implements FillOrderRemote {
         
         ArrayList<Integer> orderIds = new ArrayList<Integer>();
         //shipping reference table id
-        Query query = manager.createNamedQuery("getTableId");
-        query = manager.createNamedQuery("Dictionary.IdBySystemName");
+        Query query = manager.createNamedQuery("Dictionary.IdBySystemName");
         query.setParameter("systemName","order_status_processed");
         Integer processedStatusValue = (Integer)query.getResultList().get(0);
         
-        query = manager.createNamedQuery("getTableId");
-        query.setParameter("name", "order");
-        Integer orderTableId = (Integer)query.getSingleResult();
-
         manager.setFlushMode(FlushModeType.COMMIT);
         
         for(int i=0; i<orders.size(); i++){
@@ -234,7 +231,7 @@ public class FillOrderBean implements FillOrderRemote {
             order.setStatusId(processedStatusValue);
             
             //unlock the orders as they are set to processed
-            lockBean.giveUpLock(orderTableId, orderIds.get(j));
+            lockBean.giveUpLock(orderRefTableId, orderIds.get(j));
         }
     }
     
@@ -244,32 +241,21 @@ public class FillOrderBean implements FillOrderRemote {
         
         Integer orderTableId = null;
         
-        Query query = manager.createNamedQuery("getTableId");
-        query.setParameter("name", "order");
-        orderTableId = (Integer)query.getSingleResult();
-        
         for(int i=0; i<orders.size(); i++){
             Integer orderId = orders.get(i).key;
         
             if(orderId != null)
-                lockBean.giveUpLock(orderTableId, orderId);
+                lockBean.giveUpLock(orderRefTableId, orderId);
         }
     }
-
+    
     public Integer getOrderItemReferenceTableId() {
-        Query query = manager.createNamedQuery("getTableId");
-        query.setParameter("name", "order_item");
-        
-        return (Integer)query.getSingleResult();
+        return orderItemRefTableId;
     }
 
     public FillOrderDO getOrderItemInfoAndOrderNote(Integer orderId) {
-        Query query = manager.createNamedQuery("getTableId");
-        query.setParameter("name", "order_shipping_note");
-        Integer orderShipNoteReferenceId = (Integer)query.getSingleResult();
-        
-        query = manager.createNamedQuery("Note.Notes");
-        query.setParameter("referenceTable",orderShipNoteReferenceId);
+        Query query = manager.createNamedQuery("Note.Notes");
+        query.setParameter("referenceTable", orderShippingNoteRefTableId);
         query.setParameter("id", orderId);
         
         List noteResults = query.getResultList();

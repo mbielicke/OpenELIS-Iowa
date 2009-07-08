@@ -55,6 +55,7 @@ import org.openelis.metamap.StorageLocationMetaMap;
 import org.openelis.remote.StorageLocationRemote;
 import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
+import org.openelis.utils.ReferenceTableCache;
 
 @Stateless
 @EJBs({
@@ -71,8 +72,13 @@ public class StorageLocationBean implements StorageLocationRemote{
 	private SessionContext ctx;
 	
     private LockLocal lockBean;
+    private static int storageLocationRefTableId;
     private static final StorageLocationMetaMap StorageLocationMeta = new StorageLocationMetaMap();
 
+    public StorageLocationBean(){
+        storageLocationRefTableId = ReferenceTableCache.getReferenceTable("storage_location");
+    }
+    
     @PostConstruct
     private void init()
     {
@@ -91,10 +97,7 @@ public class StorageLocationBean implements StorageLocationRemote{
 
     @RolesAllowed("storagelocation-delete")
 	public void deleteStorageLoc(Integer StorageLocId) throws Exception {
-    	Query lockQuery = manager.createNamedQuery("getTableId");
-		lockQuery.setParameter("name", "storage_location");
-		Integer storageLocTableId = (Integer)lockQuery.getSingleResult();
-        lockBean.getLock(storageLocTableId, StorageLocId);
+    	lockBean.getLock(storageLocationRefTableId, StorageLocId);
         
         validateForDelete(StorageLocId);
 		
@@ -121,7 +124,7 @@ public class StorageLocationBean implements StorageLocationRemote{
         		manager.remove(child);           		
         }
            
-        lockBean.giveUpLock(storageLocTableId, StorageLocId);
+        lockBean.giveUpLock(storageLocationRefTableId, StorageLocId);
 	}
 
 	public StorageLocationDO getStorageLoc(Integer StorageId) {
@@ -134,17 +137,13 @@ public class StorageLocationBean implements StorageLocationRemote{
 	
     @RolesAllowed("storagelocation-update")
 	public StorageLocationDO getStorageLocAndLock(Integer StorageId, String session) throws Exception{
-		Query query = manager.createNamedQuery("getTableId");
-        query.setParameter("name", "storage_location");
-        lockBean.getLock((Integer)query.getSingleResult(),StorageId);
+		lockBean.getLock(storageLocationRefTableId, StorageId);
         
         return getStorageLoc(StorageId);       
 	}
 	
 	public StorageLocationDO getStorageLocAndUnlock(Integer StorageId, String session) {
-        Query query = manager.createNamedQuery("getTableId");
-        query.setParameter("name", "storage_location");
-        lockBean.giveUpLock((Integer)query.getSingleResult(),StorageId);
+        lockBean.giveUpLock(storageLocationRefTableId, StorageId);
         
         return getStorageLoc(StorageId);
 	}
@@ -169,9 +168,8 @@ public class StorageLocationBean implements StorageLocationRemote{
         qb.setOrderBy(StorageLocationMeta.getName());
         
         qb.addWhere(StorageLocationMeta.getParentStorageLocationId() + " is null");    
-        System.out.println("before get EJBQL");
         sb.append(qb.getEJBQL());
-System.out.println(sb.toString());
+
         Query query = manager.createQuery(sb.toString());
        
         if(first > -1 && max > -1)
@@ -190,12 +188,8 @@ System.out.println(sb.toString());
 
     @RolesAllowed("storagelocation-update")
 	public Integer updateStorageLoc(StorageLocationDO storageDO, List storageLocationChildren) throws Exception{
-        Query query = manager.createNamedQuery("getTableId");
-        query.setParameter("name", "storage_location");
-        Integer storageLocationReferenceId = (Integer)query.getSingleResult();
-        
         if(storageDO.getId() != null)
-            lockBean.validateLock(storageLocationReferenceId,storageDO.getId());
+            lockBean.validateLock(storageLocationRefTableId,storageDO.getId());
         
         validateStorageLocation(storageDO, storageLocationChildren);
         
@@ -245,7 +239,7 @@ System.out.println(sb.toString());
 		    }
 		}
             
-        lockBean.giveUpLock(storageLocationReferenceId, storageLocation.getId()); 
+        lockBean.giveUpLock(storageLocationRefTableId, storageLocation.getId()); 
         
 		return storageLocation.getId();
 	}

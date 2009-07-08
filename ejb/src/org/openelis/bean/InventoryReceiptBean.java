@@ -50,6 +50,7 @@ import org.openelis.security.domain.SystemUserDO;
 import org.openelis.util.Datetime;
 import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
+import org.openelis.utils.ReferenceTableCache;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -81,7 +82,13 @@ public class InventoryReceiptBean implements InventoryReceiptRemote{
     private SessionContext ctx;
     
     private LockLocal lockBean;
+    private static int orderRefTableId, invLocRefTableId;
     private static final InventoryReceiptMetaMap InventoryReceiptMap = new InventoryReceiptMetaMap();
+    
+    public InventoryReceiptBean(){
+        invLocRefTableId = ReferenceTableCache.getReferenceTable("inventory_location");
+        orderRefTableId = ReferenceTableCache.getReferenceTable("order");
+    }
     
     @PostConstruct
     private void init()
@@ -115,14 +122,9 @@ public class InventoryReceiptBean implements InventoryReceiptRemote{
         }
         
         //if we have records we need to lock the order
-        if(inventoryReceiptList.size() > 0){
-            query = manager.createNamedQuery("getTableId");
-            query.setParameter("name", "order");
-            Integer orderRefId = (Integer)query.getSingleResult();
-            
-            lockBean.getLock(orderRefId, orderId);
-        }
-        
+        if(inventoryReceiptList.size() > 0)
+            lockBean.getLock(orderRefTableId, orderId);
+       
         return inventoryReceiptList;
     }
 
@@ -138,17 +140,14 @@ public class InventoryReceiptBean implements InventoryReceiptRemote{
     }
     
     public InventoryLocationDO lockLocationAndFetch(Integer oldLocId, Integer newLocId) throws Exception {
-        Query query = manager.createNamedQuery("getTableId");
-        query.setParameter("name", "inventory_location");
-        Integer inventoryLocationId = (Integer)query.getSingleResult();
-        lockBean.getLock(inventoryLocationId, newLocId);
+        lockBean.getLock(invLocRefTableId, newLocId);
 
         //if there is an old lock we need to unlock this record
         if(oldLocId != null)
-            lockBean.giveUpLock(inventoryLocationId, oldLocId);
+            lockBean.giveUpLock(invLocRefTableId, oldLocId);
 
         //get the current qty on hand
-        query = manager.createNamedQuery("InventoryLocation.InventoryLocation");
+        Query query = manager.createNamedQuery("InventoryLocation.InventoryLocation");
         query.setParameter("id", newLocId);
         
         List resultList = query.getResultList();
@@ -169,21 +168,13 @@ public class InventoryReceiptBean implements InventoryReceiptRemote{
     }
     
     public void unlockLocations(TableDataModel<TableDataRow<Integer>> locIds) {
-        Query query = manager.createNamedQuery("getTableId");
-        query.setParameter("name", "inventory_location");
-        Integer inventoryLocationId = (Integer)query.getSingleResult();
-        
         for(int i=0; i<locIds.size(); i++)
-            lockBean.giveUpLock(inventoryLocationId, locIds.get(i).key);
+            lockBean.giveUpLock(invLocRefTableId, locIds.get(i).key);
     }
     
     public void unlockOrders(TableDataModel<TableDataRow<Integer>> orderIds) {
-        Query query = manager.createNamedQuery("getTableId");
-        query.setParameter("name", "order");
-        Integer orderRefId = (Integer)query.getSingleResult();
-        
         for(int i=0; i<orderIds.size(); i++)
-            lockBean.giveUpLock(orderRefId, orderIds.get(i).key);
+            lockBean.giveUpLock(orderRefTableId, orderIds.get(i).key);
     }
     
     public List query(ArrayList<AbstractField> fields, int first, int max, boolean receipt) throws Exception {
@@ -796,15 +787,7 @@ public class InventoryReceiptBean implements InventoryReceiptRemote{
         if(receipts.size() == 0)
             return;
         
-        Integer inventoryLocationId = null;
-        Integer orderId = null;
         List orderIds = new ArrayList();
-        
-        Query query = manager.createNamedQuery("getTableId");
-        query.setParameter("name", "inventory_location");
-        inventoryLocationId = (Integer)query.getSingleResult();
-        query.setParameter("name", "order");
-        orderId = (Integer)query.getSingleResult();
         
         for(int i=0; i<receipts.size(); i++){
         
@@ -815,25 +798,25 @@ public class InventoryReceiptBean implements InventoryReceiptRemote{
                 orderIds.add(receiptDO.getOrderNumber());
                 
             //get a list of all the locations
-            query = manager.createNamedQuery("InventoryReceipt.LocationIdsByReceiptId");
+            Query query = manager.createNamedQuery("InventoryReceipt.LocationIdsByReceiptId");
             query.setParameter("id", receiptDO.getId());
             List locationIds = query.getResultList();
                 
             //lock all the location records
             for(int j=0; j < locationIds.size(); j++){
                 if(validate)
-                    lockBean.validateLock(inventoryLocationId, (Integer)locationIds.get(j));
+                    lockBean.validateLock(invLocRefTableId, (Integer)locationIds.get(j));
                 else
-                    lockBean.getLock(inventoryLocationId, (Integer)locationIds.get(j));
+                    lockBean.getLock(invLocRefTableId, (Integer)locationIds.get(j));
             }
         }
         
         //we need to lock the orders
         for(int j=0; j<orderIds.size(); j++){
             if(validate)
-                lockBean.validateLock(orderId, (Integer)orderIds.get(j));
+                lockBean.validateLock(orderRefTableId, (Integer)orderIds.get(j));
             else
-                lockBean.getLock(orderId, (Integer)orderIds.get(j));
+                lockBean.getLock(orderRefTableId, (Integer)orderIds.get(j));
         }
     }
     
@@ -841,15 +824,7 @@ public class InventoryReceiptBean implements InventoryReceiptRemote{
         if(receipts.size() == 0)
             return;
         
-        Integer inventoryLocationId = null;
-        Integer orderId = null;
         List orderIds = new ArrayList();
-        
-        Query query = manager.createNamedQuery("getTableId");
-        query.setParameter("name", "inventory_location");
-        inventoryLocationId = (Integer)query.getSingleResult();
-        query.setParameter("name", "order");
-        orderId = (Integer)query.getSingleResult();
         
         for(int i=0; i<receipts.size(); i++){
         
@@ -860,33 +835,28 @@ public class InventoryReceiptBean implements InventoryReceiptRemote{
                 orderIds.add(receiptDO.getOrderNumber());
                 
             //get a list of all the locations
-            query = manager.createNamedQuery("InventoryReceipt.LocationIdsByReceiptId");
+            Query query = manager.createNamedQuery("InventoryReceipt.LocationIdsByReceiptId");
             query.setParameter("id", receiptDO.getId());
             List locationIds = query.getResultList();
                 
             //lock all the location records
             for(int j=0; j < locationIds.size(); j++)
-                lockBean.giveUpLock(inventoryLocationId, (Integer)locationIds.get(j));
+                lockBean.giveUpLock(invLocRefTableId, (Integer)locationIds.get(j));
         }
         
         //we need to unlock the orders
         for(int j=0; j<orderIds.size(); j++)
-            lockBean.giveUpLock(orderId, (Integer)orderIds.get(j));
+            lockBean.giveUpLock(orderRefTableId, (Integer)orderIds.get(j));
     }
     
     private void lockTransfers(List transfers) throws Exception{
         if(transfers.size() == 0)
             return;
         
-        Integer inventoryLocationId = null;
-        
-        Query query = manager.createNamedQuery("getTableId");
-        query.setParameter("name", "inventory_location");
-        
         for(int i=0; i<transfers.size(); i++){
         
             InventoryReceiptDO receiptDO = (InventoryReceiptDO)transfers.get(i);
-            lockBean.validateLock(inventoryLocationId, receiptDO.getFromStorageLocationId());
+            lockBean.validateLock(invLocRefTableId, receiptDO.getFromStorageLocationId());
         }
     }
     
@@ -894,17 +864,11 @@ public class InventoryReceiptBean implements InventoryReceiptRemote{
         if(transfers.size() == 0)
             return;
         
-        Integer inventoryLocationId = null;
-        
-        Query query = manager.createNamedQuery("getTableId");
-        query.setParameter("name", "inventory_location");
-        inventoryLocationId = (Integer)query.getSingleResult();
-        
         for(int i=0; i<transfers.size(); i++){
         
             InventoryReceiptDO receiptDO = (InventoryReceiptDO)transfers.get(i);
           
-            lockBean.giveUpLock(inventoryLocationId, receiptDO.getFromStorageLocationId());
+            lockBean.giveUpLock(invLocRefTableId, receiptDO.getFromStorageLocationId());
         }
     }
 }

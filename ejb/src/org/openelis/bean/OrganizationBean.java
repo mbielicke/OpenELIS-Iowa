@@ -85,12 +85,11 @@ public class OrganizationBean implements OrganizationRemote {
 	@EJB private AddressLocal addressBean;
     @EJB private LockLocal lockBean;
     
-    private static int orgRefTableId, orgContactRefTableId;
+    private static int orgRefTableId;
     private static final OrganizationMetaMap OrgMeta = new OrganizationMetaMap();
     
     public OrganizationBean(){
         orgRefTableId = ReferenceTableCache.getReferenceTable("organization");
-        orgContactRefTableId = ReferenceTableCache.getReferenceTable("organization_contact");
     }
     
 	public OrganizationAddressDO getOrganizationAddress(Integer organizationId) {		

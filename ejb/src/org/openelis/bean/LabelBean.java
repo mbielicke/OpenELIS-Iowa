@@ -38,6 +38,7 @@ import org.openelis.metamap.LabelMetaMap;
 import org.openelis.remote.LabelRemote;
 import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
+import org.openelis.utils.ReferenceTableCache;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -70,9 +71,13 @@ public class LabelBean implements LabelRemote {
     private SessionContext ctx;
     
     private LockLocal lockBean;
-    
+    private static int labelRefTableId;
     private static final LabelMetaMap Meta = new LabelMetaMap();
 
+    public LabelBean(){
+        labelRefTableId = ReferenceTableCache.getReferenceTable("label");
+    }
+    
     @PostConstruct
     private void init()
     {
@@ -88,17 +93,13 @@ public class LabelBean implements LabelRemote {
 
     @RolesAllowed("label-update")
     public LabelDO getLabelAndLock(Integer labelId, String session) throws Exception {
-        Query query = manager.createNamedQuery("getTableId");
-        query.setParameter("name", "label");
-        lockBean.getLock((Integer)query.getSingleResult(),labelId);
+        lockBean.getLock(labelRefTableId, labelId);
         
         return getLabel(labelId);
     }
 
     public LabelDO getLabelAndUnlock(Integer labelId, String session) {
-        Query query = manager.createNamedQuery("getTableId");
-        query.setParameter("name", "label");
-        lockBean.giveUpLock((Integer)query.getSingleResult(),labelId);
+        lockBean.giveUpLock(labelRefTableId, labelId);
         
         return getLabel(labelId);
     }   
@@ -134,16 +135,12 @@ public class LabelBean implements LabelRemote {
     @RolesAllowed("label-update")
     public Integer updateLabel(LabelDO labelDO) throws Exception {
         Query query;
-        Integer labelReferenceId,labelId;
+        Integer labelId;
         Label label;
                 
-        query = manager.createNamedQuery("getTableId");
-        query.setParameter("name", "label");
-        labelReferenceId = (Integer)query.getSingleResult();
-        
         labelId = labelDO.getId();
         if(labelId != null){
-            lockBean.validateLock(labelReferenceId,labelId);                       
+            lockBean.validateLock(labelRefTableId, labelId);                       
         }
         
         manager.setFlushMode(FlushModeType.COMMIT);
@@ -166,7 +163,7 @@ public class LabelBean implements LabelRemote {
             manager.persist(label);
         }
                 
-        lockBean.giveUpLock(labelReferenceId,label.getId()); 
+        lockBean.giveUpLock(labelRefTableId, label.getId()); 
         return label.getId();          
     }
     
@@ -223,17 +220,13 @@ public class LabelBean implements LabelRemote {
     @RolesAllowed("label-delete")
     public void deleteLabel(LabelDO labelDO) throws Exception {
         Integer labelId;
-        Integer labelTableId;
         Query lockQuery;
         Label label;
         
         labelId = labelDO.getId();                
         validateLabel(labelDO);
         
-        lockQuery = manager.createNamedQuery("getTableId");
-        lockQuery.setParameter("name", "label");
-        labelTableId = (Integer)lockQuery.getSingleResult();
-        lockBean.getLock(labelTableId, labelId);
+        lockBean.getLock(labelRefTableId, labelId);
         
         manager.setFlushMode(FlushModeType.COMMIT);
         label = null;
@@ -245,7 +238,7 @@ public class LabelBean implements LabelRemote {
             throw e;
         }
              
-        lockBean.giveUpLock(labelTableId, labelId); 
+        lockBean.giveUpLock(labelRefTableId, labelId); 
     }
 
     public List getLabelAutoCompleteByName(String match, int maxResults) {

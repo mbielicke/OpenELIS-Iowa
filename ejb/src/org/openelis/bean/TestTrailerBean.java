@@ -53,6 +53,7 @@ import org.openelis.metamap.TestTrailerMetaMap;
 import org.openelis.remote.TestTrailerRemote;
 import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
+import org.openelis.utils.ReferenceTableCache;
 
 @Stateless
 @EJBs({
@@ -69,8 +70,13 @@ public class TestTrailerBean implements TestTrailerRemote{
 	private SessionContext ctx;
 	
     private LockLocal lockBean;
+    private static int testTrailerRefTableId;
     private static final TestTrailerMetaMap TestTrailerMap = new TestTrailerMetaMap();
 
+    public TestTrailerBean(){
+        testTrailerRefTableId = ReferenceTableCache.getReferenceTable("test_trailer");
+    }
+    
     @PostConstruct
     private void init()
     {
@@ -79,10 +85,7 @@ public class TestTrailerBean implements TestTrailerRemote{
     
     @RolesAllowed("testtrailer-delete")
 	public void deleteTestTrailer(Integer testTrailerId) throws Exception {
-    	Query lockQuery = manager.createNamedQuery("getTableId");
-		lockQuery.setParameter("name", "test_trailer");
-		Integer testTrailerTableId = (Integer)lockQuery.getSingleResult();
-        lockBean.validateLock(testTrailerTableId, testTrailerId);
+    	lockBean.validateLock(testTrailerRefTableId, testTrailerId);
         
         validateForDelete(testTrailerId);
         
@@ -99,7 +102,7 @@ public class TestTrailerBean implements TestTrailerRemote{
             e.printStackTrace();
         }	
 		
-		lockBean.giveUpLock(testTrailerTableId, testTrailerId);
+		lockBean.giveUpLock(testTrailerRefTableId, testTrailerId);
     }
 
 	public TestTrailerDO getTestTrailer(Integer testTrailerId) {
@@ -112,17 +115,13 @@ public class TestTrailerBean implements TestTrailerRemote{
 
     @RolesAllowed("testtrailer-update")
 	public TestTrailerDO getTestTrailerAndLock(Integer testTrailerId, String session) throws Exception {
-		Query query = manager.createNamedQuery("getTableId");
-        query.setParameter("name", "test_trailer");
-        lockBean.getLock((Integer)query.getSingleResult(),testTrailerId);
+		lockBean.getLock(testTrailerRefTableId, testTrailerId);
         
         return getTestTrailer(testTrailerId);
 	}
 
 	public TestTrailerDO getTestTrailerAndUnlock(Integer testTrailerId, String session) {
-		Query unlockQuery = manager.createNamedQuery("getTableId");
-        unlockQuery.setParameter("name", "test_trailer");
-        lockBean.giveUpLock((Integer)unlockQuery.getSingleResult(),testTrailerId);
+		lockBean.giveUpLock(testTrailerRefTableId, testTrailerId);
 		
         return getTestTrailer(testTrailerId);
 	}
@@ -160,13 +159,8 @@ public class TestTrailerBean implements TestTrailerRemote{
 
    @RolesAllowed("testtrailer-update")
 	public Integer updateTestTrailer(TestTrailerDO testTrailerDO) throws Exception{
-        Query query = manager.createNamedQuery("getTableId");
-        query.setParameter("name", "test_trailer");
-        Integer testTrailerReferenceId = (Integer)query.getSingleResult();
-        
-        if(testTrailerDO.getId() != null){
-            lockBean.validateLock(testTrailerReferenceId, testTrailerDO.getId());
-        }
+        if(testTrailerDO.getId() != null)
+            lockBean.validateLock(testTrailerRefTableId, testTrailerDO.getId());
         
         validateTestTrailer(testTrailerDO);
         
@@ -186,7 +180,7 @@ public class TestTrailerBean implements TestTrailerRemote{
         	manager.persist(testTrailer);
         }
      
-        lockBean.giveUpLock(testTrailerReferenceId,testTrailer.getId()); 
+        lockBean.giveUpLock(testTrailerRefTableId, testTrailer.getId()); 
 		    
 		return testTrailer.getId();
 	}

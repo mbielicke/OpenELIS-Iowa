@@ -36,7 +36,7 @@ import org.openelis.local.ReferenceTableLocal;
 public class ReferenceTableCache {
     protected static HashMap<String, Integer> hash;
     
-    public ReferenceTableCache(){
+    static {
         hash = new HashMap<String, Integer>();
         
         try{

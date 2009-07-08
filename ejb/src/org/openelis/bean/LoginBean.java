@@ -61,8 +61,6 @@ public class LoginBean implements LoginRemote, LoginLocal {
         security =  (SecurityLocal)ctx.lookup("ejb/Security");
         sysUser = (SystemUserUtilLocal)ctx.lookup("ejb/SystemUser");
         
-        //initialize the reference table cache
-        ReferenceTableCache cache = new ReferenceTableCache();
     }
         
     public SecurityUtil login() {
