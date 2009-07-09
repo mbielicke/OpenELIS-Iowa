@@ -39,7 +39,6 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.rpc.SyncCallback;
 import com.google.gwt.user.client.ui.TabPanel;
-import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
 import org.openelis.cache.DictionaryCache;
@@ -61,6 +60,7 @@ import org.openelis.gwt.screen.rewrite.ScreenEventHandler;
 import org.openelis.gwt.services.ScreenServiceInt;
 import org.openelis.gwt.services.ScreenServiceIntAsync;
 import org.openelis.gwt.widget.HasField;
+import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.rewrite.AppButton;
 import org.openelis.gwt.widget.rewrite.AutoComplete;
 import org.openelis.gwt.widget.rewrite.AutoCompleteCallInt;
@@ -156,7 +156,7 @@ public class Organization extends Screen implements AutoCompleteCallInt {
     			rpc.orgAddressDO.setName(event.getValue());
     		}
     		public void onStateChange(StateChangeEvent<State> event) {
-    			name.setReadOnly(!enabledStates.contains(event.getState()));
+    			name.enable(enabledStates.contains(event.getState()));
     			if(event.getState() == State.ADD || event.getState() == State.UPDATE)
     				name.setFocus(true);
     		}
@@ -171,7 +171,7 @@ public class Organization extends Screen implements AutoCompleteCallInt {
 				rpc.orgAddressDO.getAddressDO().setStreetAddress(event.getValue());
 			}
 			public void onStateChange(StateChangeEvent<State> event) {
-				street.setReadOnly(!enabledStates.contains(event.getState()));
+				street.enable(enabledStates.contains(event.getState()));
 			}
     	});
     	
@@ -188,10 +188,10 @@ public class Organization extends Screen implements AutoCompleteCallInt {
     		}
     		public void onStateChange(StateChangeEvent<State> event) {
     			if(event.getState() == State.QUERY){
-    				id.setReadOnly(false);
+    				id.enable(true);
     				id.setFocus(true);
     			}else
-    				id.setReadOnly(true);
+    				id.enable(false);
     		}
     	});
     	
@@ -204,7 +204,7 @@ public class Organization extends Screen implements AutoCompleteCallInt {
     			rpc.orgAddressDO.getAddressDO().setMultipleUnit(event.getValue());
     		}
     		public void onStateChange(StateChangeEvent<State> event) {
-    			multipleUnit.setReadOnly(!enabledStates.contains(event.getState()));
+    			multipleUnit.enable(enabledStates.contains(event.getState()));
     		}
     	});
     	
@@ -217,7 +217,7 @@ public class Organization extends Screen implements AutoCompleteCallInt {
     			rpc.orgAddressDO.getAddressDO().setCity(event.getValue());
     		}
     		public void onStateChange(StateChangeEvent<State> event) {
-    			city.setReadOnly(!enabledStates.contains(event.getState()));
+    			city.enable(enabledStates.contains(event.getState()));
     		}
     	});
     	
@@ -230,7 +230,7 @@ public class Organization extends Screen implements AutoCompleteCallInt {
     			rpc.orgAddressDO.getAddressDO().setZipCode(event.getValue());
     		}
     		public void onStateChange(StateChangeEvent<State> event){
-    			zipCode.setReadOnly(!enabledStates.contains(event.getState()));
+    			zipCode.enable(enabledStates.contains(event.getState()));
     		}
     	});
     	
@@ -243,7 +243,7 @@ public class Organization extends Screen implements AutoCompleteCallInt {
     			rpc.orgAddressDO.getAddressDO().setState(event.getValue());
     		}
     		public void onStateChange(StateChangeEvent<State> event) {
-    			state.enabled(enabledStates.contains(event.getState()));
+    			state.enable(enabledStates.contains(event.getState()));
     		}
     	});
     	
@@ -256,7 +256,7 @@ public class Organization extends Screen implements AutoCompleteCallInt {
     			rpc.orgAddressDO.getAddressDO().setCountry(event.getValue());
     		}
     		public void onStateChange(StateChangeEvent<State> event) {
-    			country.enabled(enabledStates.contains(event.getState()));
+    			country.enable(enabledStates.contains(event.getState()));
     		}
     	});
     	
@@ -296,7 +296,7 @@ public class Organization extends Screen implements AutoCompleteCallInt {
     			rpc.orgAddressDO.setParentOrganizationId(event.getValue());
     		}
     		public void onStateChange(StateChangeEvent<State> event) {
-    			parentOrg.enabled(enabledStates.contains(event.getState()));
+    			parentOrg.enable(enabledStates.contains(event.getState()));
     		}
     	});
     	
@@ -315,12 +315,12 @@ public class Organization extends Screen implements AutoCompleteCallInt {
     	       query();
     	   }
     	   public void onStateChange(StateChangeEvent<State> event){
-    	       if(event.getState() == State.DEFAULT || event.getState() == State.DISPLAY){
-    	           queryButton.changeState(ButtonState.UNPRESSED);
-    	       }else if(event.getState() == State.QUERY) {
+    	       if(event.getState() == State.DEFAULT || event.getState() == State.DISPLAY)
+    	           queryButton.enable(true);
+    	       else if(event.getState() == State.QUERY) 
     	           queryButton.changeState(ButtonState.LOCK_PRESSED);
-    	       }else
-    	           queryButton.changeState(ButtonState.DISABLED);
+    	       else
+    	           queryButton.enable(false);
     	   }
     	});
     	
@@ -330,12 +330,12 @@ public class Organization extends Screen implements AutoCompleteCallInt {
     	       add();
     	   }
     	   public void onStateChange(StateChangeEvent<State> event) {
-               if(event.getState() == State.DEFAULT || event.getState() == State.DISPLAY){
-                   addButton.changeState(ButtonState.UNPRESSED);
-               }else if(event.getState() == State.ADD) {
+               if(event.getState() == State.DEFAULT || event.getState() == State.DISPLAY)
+                   addButton.enable(true);
+               else if(event.getState() == State.ADD) 
                    addButton.changeState(ButtonState.LOCK_PRESSED);
-               }else
-                   addButton.changeState(ButtonState.DISABLED);
+               else
+                   addButton.enable(false);
     	   }
     	});
     	
@@ -345,13 +345,13 @@ public class Organization extends Screen implements AutoCompleteCallInt {
     	       update();
     	   }
     	   public void onStateChange(StateChangeEvent<State> event) {
-    	       if(event.getState() == State.DISPLAY) {
-    	           updateButton.changeState(ButtonState.UNPRESSED);
-    	       }else if(event.getState() == State.UPDATE){
+    	       if(event.getState() == State.DISPLAY) 
+    	           updateButton.enable(true);
+    	       else if(event.getState() == State.UPDATE)
     	           updateButton.changeState(ButtonState.LOCK_PRESSED);
-    	       }else {
-    	           updateButton.changeState(ButtonState.DISABLED);
-    	       }   
+    	       else
+    	           updateButton.enable(false);
+    	         
     	   }
     	});
     	
@@ -362,9 +362,9 @@ public class Organization extends Screen implements AutoCompleteCallInt {
     	   }
     	   public void onStateChange(StateChangeEvent<State> event) {
     	       if(event.getState() == State.DISPLAY) {
-    	           nextButton.changeState(ButtonState.UNPRESSED);
+    	           nextButton.enable(true);
     	       }else{
-    	           nextButton.changeState(ButtonState.DISABLED);
+    	           nextButton.enable(false);
     	       }
     	   }
     	});
@@ -376,9 +376,9 @@ public class Organization extends Screen implements AutoCompleteCallInt {
            }
            public void onStateChange(StateChangeEvent<State> event) {
                if(event.getState() == State.DISPLAY) {
-                   prevButton.changeState(ButtonState.UNPRESSED);
+                   prevButton.enable(true);
                }else{
-                   prevButton.changeState(ButtonState.DISABLED);
+                   prevButton.enable(false);
                }
            }
         });
@@ -389,11 +389,10 @@ public class Organization extends Screen implements AutoCompleteCallInt {
                commit();
            }
            public void onStateChange(StateChangeEvent<State> event) {
-               if(event.getState() == State.ADD || event.getState() == State.QUERY || event.getState() == State.UPDATE) {
-                   commitButton.changeState(ButtonState.UNPRESSED);
-               }else{
-                   commitButton.changeState(ButtonState.DISABLED);
-               }
+               if(event.getState() == State.ADD || event.getState() == State.QUERY || event.getState() == State.UPDATE) 
+                   commitButton.enable(true);
+               else
+                   commitButton.enable(false);
            }
         });
         
@@ -403,11 +402,11 @@ public class Organization extends Screen implements AutoCompleteCallInt {
                 abort();
             }
             public void onStateChange(StateChangeEvent<State> event) {
-                if(event.getState() == State.ADD || event.getState() == State.QUERY || event.getState() == State.UPDATE) {
-                    abortButton.changeState(ButtonState.UNPRESSED);
-                }else {
-                    abortButton.changeState(ButtonState.DISABLED);
-                }
+                if(event.getState() == State.ADD || event.getState() == State.QUERY || event.getState() == State.UPDATE) 
+                    abortButton.enable(true);
+                else 
+                    abortButton.enable(false);
+                
             }
         });
     	

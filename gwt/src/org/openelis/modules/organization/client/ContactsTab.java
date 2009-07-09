@@ -1,9 +1,6 @@
 package org.openelis.modules.organization.client;
 
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.Widget;
+import java.util.ArrayList;
 
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.DictionaryDO;
@@ -15,11 +12,11 @@ import org.openelis.gwt.screen.rewrite.ScreenDef;
 import org.openelis.gwt.screen.rewrite.ScreenEventHandler;
 import org.openelis.gwt.widget.rewrite.AppButton;
 import org.openelis.gwt.widget.rewrite.Dropdown;
-import org.openelis.gwt.widget.rewrite.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.rewrite.TableDataRow;
 import org.openelis.gwt.widget.table.rewrite.TableWidget;
 
-import java.util.ArrayList;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
 
 public class ContactsTab extends Screen {
 
@@ -43,12 +40,12 @@ public class ContactsTab extends Screen {
 			}
 			public void onStateChange(StateChangeEvent<State> event) {
 				if(event.getState() == State.ADD || event.getState() == State.UPDATE) {
-					table.enabled(true);
+					table.enable(true);
 					table.enableAutoAdd(true);
 				}else if(event.getState() == State.QUERY) {
-					table.enabled(true);
+					table.enable(true);
 				}else{
-					table.enabled(false);
+					table.enable(false);
 					table.enableAutoAdd(false);
 				}
 			}
@@ -63,9 +60,9 @@ public class ContactsTab extends Screen {
             }
     		public void onStateChange(StateChangeEvent<State> event) {
     			if(event.getState() == State.ADD || event.getState() == State.UPDATE)
-    			    removeContact.changeState(ButtonState.UNPRESSED);
+    			    removeContact.enable(true);
     			else
-    				removeContact.changeState(AppButton.ButtonState.DISABLED);
+    				removeContact.enable(false);
     		}
     		
     	});

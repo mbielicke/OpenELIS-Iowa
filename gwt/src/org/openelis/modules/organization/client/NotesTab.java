@@ -1,14 +1,7 @@
 package org.openelis.modules.organization.client;
 
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.ScrollPanel;
-import com.google.gwt.user.client.ui.TextArea;
-import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.xml.client.Document;
-import com.google.gwt.xml.client.Element;
-import com.google.gwt.xml.client.XMLParser;
+import java.util.EnumSet;
+import java.util.Iterator;
 
 import org.openelis.domain.NoteDO;
 import org.openelis.gwt.event.CommandListenerCollection;
@@ -22,12 +15,17 @@ import org.openelis.gwt.screen.rewrite.ScreenEventHandler;
 import org.openelis.gwt.screen.rewrite.UIUtil;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.rewrite.AppButton;
-import org.openelis.gwt.widget.rewrite.AppButton.ButtonState;
 import org.openelis.metamap.OrganizationMetaMap;
 import org.openelis.modules.standardnotepicker.client.StandardNotePickerScreen;
 
-import java.util.EnumSet;
-import java.util.Iterator;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.user.client.ui.ScrollPanel;
+import com.google.gwt.user.client.ui.TextArea;
+import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.xml.client.Document;
+import com.google.gwt.xml.client.Element;
+import com.google.gwt.xml.client.XMLParser;
 
 
 public class NotesTab extends Screen {
@@ -89,9 +87,9 @@ public class NotesTab extends Screen {
 			}
 			public void stateChange(StateChangeEvent<State> event) {
 			    if(event.getState() == State.ADD || event.getState() == State.UPDATE)
-			        standardNote.changeState(ButtonState.UNPRESSED);
+			        standardNote.enable(true);
 			    else 
-			        standardNote.changeState(ButtonState.DISABLED);
+			        standardNote.enable(false);
 			}
 		});
 	}
