@@ -27,17 +27,14 @@ package org.openelis.messages;
 
 import org.openelis.persistence.Message;
 
-public class TestWorksheetItemTypeCacheMessage implements Message {
-
+public class ReferenceTableCacheMessage implements Message {
     private static final long serialVersionUID = 1L;
 
-
-    private String handler = "org.openelis.server.handlers.TestWorksheetItemTypeCacheHandler";
-    public enum Action {ADDED,UPDATED,DELETED}
+    public String handler = "org.openelis.server.handlers.ReferenceTableCacheHandler";
+    public enum Action {UPDATED,DELETED}
     public Action action;
     
     public String getHandler() {
         return handler;
     }
-
 }
