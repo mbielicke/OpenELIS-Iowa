@@ -104,7 +104,7 @@ public class DictionaryCache extends ScreenCache {
                 }
                 
                 public void onFailure(Throwable caught){
-                    Window.alert("FAIL");
+                    Window.alert("DictionaryCache getIdFromSystemName error: "+caught.getMessage());
                 }
             });
         }
@@ -131,6 +131,7 @@ public class DictionaryCache extends ScreenCache {
                     }
                 }
                 public void onFailure(Throwable caught){
+                    Window.alert("DictionaryCache getSystemNameFromId error: "+caught.getMessage());
                 }
             });
         }
@@ -162,7 +163,7 @@ public class DictionaryCache extends ScreenCache {
                     }
                 }
                 public void onFailure(Throwable caught){
-                    Window.alert("cache error: "+caught.getMessage());
+                    Window.alert("DictionaryCache getListFromCategorySystemName error: "+caught.getMessage());
                 }
             });
         }

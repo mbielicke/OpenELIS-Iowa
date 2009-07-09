@@ -60,7 +60,7 @@ public class SectionCache extends ScreenCache {
                 }
             
                 public void onFailure(Throwable caught){
-                    Window.alert("cache error: "+caught.getMessage());
+                    Window.alert("SectionCache getSectionList error: "+caught.getMessage());
                 }
             }); 
         }       
