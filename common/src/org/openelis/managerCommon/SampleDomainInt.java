@@ -1,4 +1,4 @@
-package org.openelis.manager;
+package org.openelis.managerCommon;
 
 public interface SampleDomainInt {
     public void setSampleId(Integer id);
