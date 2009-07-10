@@ -23,12 +23,11 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.manager;
+package org.openelis.managerCommon;
 
 import java.util.List;
 
-public interface SampleOrganizationsManagerIOInt {
-    public void update(SampleOrganizationsManager sampleOrganizations);
+public interface SampleProjectsManagerIOInt {
+    public void update(SampleProjectsManager sampleProjects);
     public List fetch(Integer sampleId);
-    public Integer getIdFromSystemName(String systemName);
 }

@@ -23,7 +23,7 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.manager;
+package org.openelis.managerCommon;
 
 import org.openelis.domain.SampleDO;
 import org.openelis.gwt.common.RPC;

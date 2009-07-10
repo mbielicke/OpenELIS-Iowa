@@ -23,7 +23,7 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.manager;
+package org.openelis.managerCommon;
 
 public class ManagerFactory {
     public static boolean isClient = false;
@@ -76,7 +76,7 @@ public class ManagerFactory {
         else
             return (AnalysesManagerIOInt)getManager("org.openelis.bean.AnalysesManagerIOEJB");
     }
-
+    
     private static Object getManager(String className) {
         Class cls;
         Object obj;

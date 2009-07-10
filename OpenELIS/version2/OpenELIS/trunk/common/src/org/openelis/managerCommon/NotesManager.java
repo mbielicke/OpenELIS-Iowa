@@ -23,13 +23,11 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.manager;
+package org.openelis.managerCommon;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.persistence.Transient;
 
 import org.openelis.domain.NoteDO;
 
@@ -38,13 +36,14 @@ public class NotesManager implements Serializable{
 
     private static final long serialVersionUID = 1L;
      
-    protected boolean external, loaded;
+    protected boolean external;
     protected Integer referenceId;
     protected Integer referenceTableId;
     protected ArrayList<NoteDO> notes;
+    public boolean load = false;
+    public boolean cached = false;
     
-    @Transient
-    protected NotesManagerIOInt manager;
+    protected transient NotesManagerIOInt manager;
     
     /**
      * Creates a new instance of this object.
