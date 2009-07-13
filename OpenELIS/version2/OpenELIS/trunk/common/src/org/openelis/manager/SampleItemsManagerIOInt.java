@@ -1,4 +1,4 @@
-package org.openelis.managerCommon;
+package org.openelis.manager;
 
 import java.util.List;
 

@@ -23,7 +23,7 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.managerCommon;
+package org.openelis.manager;
 
 import org.openelis.domain.PatientDO;
 import org.openelis.domain.ProviderDO;

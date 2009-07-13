@@ -23,15 +23,33 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.managerCommon;
+package org.openelis.manager;
 
-/**
- * @author akampoow
- *
- */
-public interface NotesManagerIOInt {
-  
-    public void fetch();
+import org.openelis.gwt.common.RPC;
+
+public class SampleQaEventsManager implements RPC {
     
-    public Integer update();
+    private static final long serialVersionUID = 1L;
+    
+    Integer  sampleId;
+
+    /**
+     * Creates a new instance of this object.
+     */
+    public static SampleQaEventsManager getInstance() {
+        SampleQaEventsManager qem;
+
+        qem = new SampleQaEventsManager();
+
+        return qem;
+    }
+    
+    public Integer getSampleId() {
+        return sampleId;
+    }
+
+    public void setSampleId(Integer sampleId) {
+        this.sampleId = sampleId;
+    }
+
 }

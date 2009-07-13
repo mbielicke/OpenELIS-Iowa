@@ -23,16 +23,15 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
+package org.openelis.manager;
 
-package org.openelis.managerCommon;
-
-public interface AnalysisQaEventsManagerIOInt {
-
-    public void validate();
-    
+/**
+ * @author akampoow
+ *
+ */
+public interface NotesManagerIOInt {
+  
     public void fetch();
-    
-    public void fetchForUpdate();
     
     public Integer update();
 }

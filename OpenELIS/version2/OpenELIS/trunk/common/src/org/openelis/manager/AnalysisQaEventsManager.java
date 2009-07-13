@@ -24,7 +24,7 @@
 * UIRF Software License are applicable instead of those above. 
 */
 
-package org.openelis.managerCommon;
+package org.openelis.manager;
 
 import java.io.Serializable;
 import java.util.ArrayList;
