@@ -23,12 +23,35 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.managerCommon;
+package org.openelis.manager;
 
-import java.util.List;
+import java.util.ArrayList;
 
-public interface AnalysesManagerIOInt {
-   
-    public List fetch(Integer sampleItemId);
-    public void update(AnalysesManager analyses);
+import org.openelis.domain.OrganizationContactDO;
+
+public class OrganizationContactsManager {
+    protected Integer                           organizationId;
+    protected ArrayList<OrganizationContactDO>  contacts;
+    public boolean load = false;
+    public boolean cached = false;
+    
+    /**
+     * Creates a new instance of this object.
+     */
+    public static OrganizationContactsManager getInstance() {
+        OrganizationContactsManager ocm;
+
+        ocm = new OrganizationContactsManager();
+        ocm.contacts = new ArrayList<OrganizationContactDO>();
+
+        return ocm;
+    }
+
+    public Integer getOrganizationId() {
+        return organizationId;
+    }
+
+    public void setOrganizationId(Integer organizationId) {
+        this.organizationId = organizationId;
+    }
 }

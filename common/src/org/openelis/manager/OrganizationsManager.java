@@ -23,10 +23,12 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.managerCommon;
+package org.openelis.manager;
 
 import org.openelis.domain.OrganizationAddressDO;
 import org.openelis.gwt.common.RPC;
+import org.openelis.manager.NotesManager;
+import org.openelis.manager.OrganizationContactsManager;
 import org.openelis.manager.io.OrganizationsManagerIO;
 
 public class OrganizationsManager implements RPC {

@@ -6,5 +6,6 @@
 	<classpathentry kind="lib" path="/usr/local/java/jboss/server/all/lib/jboss-j2ee.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/OpenELIS-Lib"/>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="lib" path="/OpenELIS-GWT/war/WEB-INF/classes"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
