@@ -66,7 +66,7 @@ UIRF Software License are applicable instead of those above.
 	<display>
 		<HorizontalPanel spacing="0" padding="0">
 			<!--left table goes here -->
-			 		<CollapsePanel key="collapsePanel" height="450px" style="LeftSidePanel">			 	
+			 		<CollapsePanel key="collapsePanel" style="LeftSidePanel">			 	
 					<resultsTable key="azTable" height="425px" width="100%" showError="false">
 				   	 <buttonPanel key="atozButtons">
 	    			   <xsl:call-template name="aToZLeftPanelButtons"/>		
@@ -156,7 +156,7 @@ UIRF Software License are applicable instead of those above.
 								         <xsl:value-of select='resource:getString($constants,"relEntry")'/></headers>
 								<widths>47,95,87,155,130</widths>
 								<editors>
-									<check cellKey="{dictionary:getIsActive($dictNew)}"/>									
+									<check cellKey="{dictionary:getIsActive($dictNew)}">Y</check>									
 									<textbox cellKey="{dictionary:getSystemName($dictNew)}" max = "30"/>									
 									<textbox cellKey="{dictionary:getLocalAbbrev($dictNew)}" max = "10"/>									
 									<textbox cellKey="{dictionary:getEntry($dictNew)}"/>																			

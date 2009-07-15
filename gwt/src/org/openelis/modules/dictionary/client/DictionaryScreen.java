@@ -105,13 +105,13 @@ public class DictionaryScreen extends OpenELISScreenForm<DictionaryForm,Query<Ta
         startWidget = (ScreenInputWidget)widgets.get(CatMap.getName());
         removeEntryButton = (AppButton)getWidget("removeEntryButton");
                 
-        displaySection = (Dropdown)getWidget(CatMap.getSectionId());                           
-        
+        displaySection = (Dropdown)getWidget(CatMap.getSectionId());       
+                     
         //override the callbacks
         updateChain.add(afterUpdate);
         commitUpdateChain.add(commitUpdateCallback);
         commitAddChain.add(commitAddCallback);
-        super.afterDraw(success);        
+        super.afterDraw(success);
         
         cache = SectionCache.getSectionList();
         model = getSectionList(cache);
@@ -283,12 +283,12 @@ public class DictionaryScreen extends OpenELISScreenForm<DictionaryForm,Query<Ta
     }
     
     private TableDataModel<TableDataRow> getSectionList(ArrayList list){
-        TableDataModel<TableDataRow> m;
+        TableDataModel<TableDataRow> m = new TableDataModel<TableDataRow>();
         TableDataRow<Integer> row;
         SectionDO sectDO;
         
         if(list == null)
-            return null;
+            return m;
         
         m = new TableDataModel<TableDataRow>();
         m.add(new TableDataRow<Integer>(null,new StringObject("")));
