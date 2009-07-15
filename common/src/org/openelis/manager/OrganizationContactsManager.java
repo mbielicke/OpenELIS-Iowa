@@ -28,12 +28,18 @@ package org.openelis.manager;
 import java.util.ArrayList;
 
 import org.openelis.domain.OrganizationContactDO;
+import org.openelis.gwt.common.RPC;
+import org.openelis.manager.proxy.OrganizationContactsManagerProxy;
 
-public class OrganizationContactsManager {
+public class OrganizationContactsManager implements RPC {
+    
+    private static final long serialVersionUID = 1L;
     protected Integer                           organizationId;
     protected ArrayList<OrganizationContactDO>  contacts;
     public boolean load = false;
     public boolean cached = false;
+    
+    protected transient OrganizationContactsManagerProxy proxy;
     
     /**
      * Creates a new instance of this object.
@@ -53,5 +59,42 @@ public class OrganizationContactsManager {
 
     public void setOrganizationId(Integer organizationId) {
         this.organizationId = organizationId;
+    }
+    
+    //service methods
+    public OrganizationContactsManager add() throws Exception {
+        return proxy().commitAdd(this);
+    }
+    
+    public OrganizationContactsManager update() throws Exception {
+        return proxy().commitUpdate(this);
+    }
+    
+    public OrganizationContactsManager fetch() throws Exception {
+        if (cached || !load)
+            return this;
+
+        cached = true;
+        load = false;
+        
+        if(organizationId == null)
+            return null;
+        
+        return proxy().fetch(this);
+    }
+    
+    private OrganizationContactsManagerProxy proxy(){
+        if(proxy == null)
+            proxy = new OrganizationContactsManagerProxy();
+        
+        return proxy;
+    }
+
+    public ArrayList<OrganizationContactDO> getContacts() {
+        return contacts;
+    }
+
+    public void setContacts(ArrayList<OrganizationContactDO> contacts) {
+        this.contacts = contacts;
     }
 }
