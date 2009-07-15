@@ -30,6 +30,7 @@ import java.util.List;
 
 import javax.annotation.Resource;
 import javax.annotation.security.RolesAllowed;
+import javax.ejb.ApplicationException;
 import javax.ejb.EJB;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
@@ -55,6 +56,9 @@ import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.rewrite.QueryData;
 import org.openelis.local.AddressLocal;
 import org.openelis.local.LockLocal;
+import org.openelis.local.OrganizationLocal;
+import org.openelis.manager.OrganizationContactsManager;
+import org.openelis.manager.OrganizationsManager;
 import org.openelis.metamap.OrganizationMetaMap;
 import org.openelis.remote.OrganizationRemote;
 import org.openelis.security.domain.SystemUserDO;
@@ -72,7 +76,7 @@ import org.openelis.utils.SecurityInterceptor;
 })*/
 @SecurityDomain("openelis")
 @RolesAllowed("organization-select")
-public class OrganizationBean implements OrganizationRemote {
+public class OrganizationBean implements OrganizationRemote, OrganizationLocal {
 
 	@PersistenceContext(name = "openelis")
     private EntityManager manager;
@@ -100,7 +104,7 @@ public class OrganizationBean implements OrganizationRemote {
         return orgAddressContacts;
 	}
 	
-	public OrganizationAddressDO getOrganizationAddressAndUnlock(Integer organizationId, String session) {
+	public OrganizationAddressDO getOrganizationAddressAndUnlock(Integer organizationId) {
 		//unlock the entity
         lockBean.giveUpLock(orgRefTableId, organizationId);
        		
@@ -109,7 +113,7 @@ public class OrganizationBean implements OrganizationRemote {
 	
 	@RolesAllowed("organization-update")
     //@Interceptors(SecurityInterceptor.class)
-    public OrganizationAddressDO getOrganizationAddressAndLock(Integer organizationId, String session) throws Exception{
+    public OrganizationAddressDO getOrganizationAddressAndLock(Integer organizationId) throws Exception{
         SecurityInterceptor.applySecurity(ctx.getCallerPrincipal().getName(), "organization", ModuleFlags.UPDATE);
         lockBean.getLock(orgRefTableId, organizationId);
         
@@ -207,6 +211,42 @@ public class OrganizationBean implements OrganizationRemote {
         lockBean.giveUpLock(orgRefTableId, organization.getId()); 
    
         return organization.getId();        
+    }
+    
+    public void add(OrganizationAddressDO organizationDO){
+         manager.setFlushMode(FlushModeType.COMMIT);
+         Organization organization = new Organization();
+        
+        //send the address to the update address bean
+        Integer orgAddressId = addressBean.updateAddress(organizationDO.getAddressDO());
+        
+        //update organization
+        organization.setAddressId(orgAddressId);
+        
+        organization.setIsActive(organizationDO.getIsActive());
+        organization.setName(organizationDO.getName());
+        organization.setParentOrganizationId(organizationDO.getParentOrganizationId());
+                
+        manager.persist(organization);
+        
+        organizationDO.setOrganizationId(organization.getId());
+    }
+    
+    public void update(OrganizationAddressDO organizationDO) throws Exception {
+        lockBean.validateLock(orgRefTableId, organizationDO.getOrganizationId());
+        
+         manager.setFlushMode(FlushModeType.COMMIT);
+         Organization organization = manager.find(Organization.class, organizationDO.getOrganizationId());
+
+        //send the address to the update address bean
+        addressBean.updateAddress(organizationDO.getAddressDO());
+        
+        //update organization
+        organization.setIsActive(organizationDO.getIsActive());
+        organization.setName(organizationDO.getName());
+        organization.setParentOrganizationId(organizationDO.getParentOrganizationId());
+        
+        lockBean.giveUpLock(orgRefTableId, organization.getId());                                  
     }
 
 	public List<OrganizationContactDO> getOrganizationContacts(Integer organizationId) {
@@ -380,4 +420,48 @@ public class OrganizationBean implements OrganizationRemote {
         else
          return returnList;
 	}
+	
+	//
+	//NEW METHODS FOR ORG MANAGER SCREEN
+	//
+	//fetch methods
+	public OrganizationsManager fetch(Integer orgId) throws Exception {
+	    OrganizationsManager man = OrganizationsManager.findById(orgId);
+	    
+	    return man;
+	}
+	
+	public OrganizationsManager add(OrganizationsManager man) throws Exception {
+	    man.validate();
+	    man.add();
+	    
+	    return man;
+	    
+	}
+	
+	public OrganizationsManager fetchWithContacts(Integer orgId) {
+	    return null;
+	}
+	
+    public OrganizationsManager fetchWithIdentifiers(Integer orgId) {
+        return null;
+    }
+    
+    public OrganizationsManager fetchWithNotes(Integer orgId) { 
+       return null;
+    }
+    
+    public OrganizationsManager fetchForUpdate(Integer orgId) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+    
+    public OrganizationsManager abortUpdate(Integer orgId){
+        return null;
+    }
+ 
+    @ApplicationException(rollback=true)
+    public class TestException extends Exception{
+        
+    }
 }
