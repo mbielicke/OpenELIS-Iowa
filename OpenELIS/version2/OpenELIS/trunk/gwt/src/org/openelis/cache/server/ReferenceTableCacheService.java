@@ -27,7 +27,7 @@ package org.openelis.cache.server;
 
 import java.util.ArrayList;
 
-import org.openelis.gwt.common.data.StringObject;
+import org.openelis.domain.IdNameDO;
 import org.openelis.gwt.server.AppServlet;
 import org.openelis.server.handlers.ReferenceTableCacheHandler;
 
@@ -35,14 +35,22 @@ public class ReferenceTableCacheService  extends AppServlet {
 
     private static final long serialVersionUID = 1L;
     
-    public ArrayList getIdByTableName(StringObject tableName){
-        ArrayList returnList = new ArrayList();
-        returnList.add(ReferenceTableCacheHandler.getIdFromTableName(tableName.getValue()));
+    public ReferenceTableCacheRPC getIdByTableName(String tableName){
+        ReferenceTableCacheRPC rpc = new ReferenceTableCacheRPC();
+        IdNameDO tmpDO = ReferenceTableCacheHandler.getDOFromTableName(tableName);
         
-        return returnList;
+        if(tmpDO != null){
+            rpc.list = new ArrayList<IdNameDO>();
+            rpc.list.add(tmpDO);
+        }
+        
+        return rpc;
     }
     
-    public ArrayList getReferenceTableList(StringObject obj){
-        return ReferenceTableCacheHandler.getTableList();
+    public ReferenceTableCacheRPC getReferenceTableList(String obj){
+        ReferenceTableCacheRPC rpc = new ReferenceTableCacheRPC();
+        rpc.list = ReferenceTableCacheHandler.getTableList();
+        
+        return rpc;
     }
 }

@@ -3,6 +3,8 @@ package org.openelis.manager;
 import org.openelis.domain.PatientDO;
 import org.openelis.domain.ProviderDO;
 import org.openelis.domain.SampleHumanDO;
+import org.openelis.manager.SampleDomainInt;
+import org.openelis.manager.SampleHumanManagerIOInt;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.PatientRemote;
 import org.openelis.remote.ProviderRemote;

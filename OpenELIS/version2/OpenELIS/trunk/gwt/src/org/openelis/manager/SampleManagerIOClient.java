@@ -26,6 +26,8 @@
 package org.openelis.manager;
 
 import org.openelis.domain.SampleDO;
+import org.openelis.manager.SampleManager;
+import org.openelis.manager.SampleManagerIOInt;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.SampleRemote;
 

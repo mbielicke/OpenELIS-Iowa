@@ -25,9 +25,6 @@
 */
 package org.openelis.cache.server;
 
-import java.util.List;
-
-import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.server.AppServlet;
 import org.openelis.server.handlers.SectionCacheHandler;
 
@@ -35,8 +32,11 @@ public class SectionCacheService extends AppServlet {
 
     private static final long serialVersionUID = 1L;
     
-    public List getSectionList(StringObject name) {
-        return SectionCacheHandler.getSectionList();
+    public SectionCacheRPC getSectionList(String name) {
+        SectionCacheRPC rpc = new SectionCacheRPC();
+        rpc.list = SectionCacheHandler.getSectionList();
+        
+        return rpc;
     }
 
 }

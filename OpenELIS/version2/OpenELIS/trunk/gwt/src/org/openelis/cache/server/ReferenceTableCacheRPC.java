@@ -23,30 +23,13 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.manager;
+package org.openelis.cache.server;
 
-import java.util.List;
+import java.util.ArrayList;
 
-import org.openelis.manager.SampleItemsManager;
-import org.openelis.manager.SampleItemsManagerIOInt;
-import org.openelis.persistence.EJBFactory;
-import org.openelis.remote.SampleItemRemote;
+import org.openelis.domain.IdNameDO;
+import org.openelis.gwt.common.RPC;
 
-public class SampleItemsManagerIOClient implements SampleItemsManagerIOInt {
-
-    public List fetch(Integer sampleId) {
-        SampleItemRemote remote = getSampleItemRemote();
-
-        return remote.getItemsBySampleId(sampleId);
-    }
-
-    public Integer update(SampleItemsManager sampleItems) {
-        SampleItemRemote remote = getSampleItemRemote();
-
-        return remote.update(sampleItems);
-    }
-    
-    private SampleItemRemote getSampleItemRemote(){
-        return (SampleItemRemote)EJBFactory.lookup("openelis/SampleItemBean/remote");
-    }
+public class ReferenceTableCacheRPC implements RPC {
+    public ArrayList<IdNameDO> list;
 }

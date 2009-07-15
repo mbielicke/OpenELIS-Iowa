@@ -26,46 +26,55 @@
 package org.openelis.cache;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
-import org.openelis.gwt.common.data.StringObject;
-import org.openelis.modules.main.client.ScreenCache;
+import org.openelis.cache.server.SectionCacheRPC;
+import org.openelis.domain.SectionDO;
+import org.openelis.modules.main.client.ScreenService;
+import org.openelis.modules.main.client.openelis.OpenELIS;
 
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.SyncCallback;
 
-
-public class SectionCache extends ScreenCache {
-
-    private ArrayList returnObj;
+public class SectionCache {
+    protected static final String SECTION_CACHE_SERVICE_URL = "org.openelis.cache.server.SectionCacheService";
+    protected ScreenService service;
+    HashMap<String, ArrayList<SectionDO>> sectionList;
     private static SectionCache instance;
     
     public SectionCache() {
-        super("org.openelis.cache.server.SectionCacheService");         
+        service = new ScreenService("?service="+SECTION_CACHE_SERVICE_URL);
+        
+        sectionList = (HashMap<String, ArrayList<SectionDO>>)OpenELIS.getCacheList().get("SectionsCache");
+        
+        if(sectionList == null){
+            sectionList = new HashMap<String, ArrayList<SectionDO>>();
+            OpenELIS.getCacheList().put("SectionsCache", sectionList);
+        }
     }
     
-    public static ArrayList getSectionList() {
+    public static ArrayList<SectionDO> getSectionList() {
         if(instance == null)
             instance = new SectionCache();
         
         return instance.getSectionListInt();
     }
     
-    protected ArrayList getSectionListInt() {
-        if(returnObj == null) {                    
-            screenService.call("getSectionList",new StringObject(""), new SyncCallback<ArrayList>(){
-                public void onSuccess(ArrayList result) {
-                    if(result != null && result.size() > 0){
-                        returnObj = result;                    
-                    }
+    protected ArrayList<SectionDO> getSectionListInt() {
+        ArrayList<SectionDO> returnList = sectionList.get("sections");
+        
+        if(returnList == null){
+            try{
+                SectionCacheRPC rpc = service.call("getSectionList", "");
+                
+                if(rpc.list != null){
+                    sectionList.put("sections", rpc.list);
+                    returnList = rpc.list;
                 }
-            
-                public void onFailure(Throwable caught){
-                    Window.alert("SectionCache getSectionList error: "+caught.getMessage());
-                }
-            }); 
-        }       
-        return returnObj;   
+            }catch(Exception e){
+                Window.alert("SectionCache getSectionList error: "+e.getMessage());   
+            }
+        }
+        
+        return returnList;   
     }
-    
-
 }

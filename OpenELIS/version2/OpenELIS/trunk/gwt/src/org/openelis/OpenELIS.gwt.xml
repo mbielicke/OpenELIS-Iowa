@@ -82,6 +82,8 @@ UIRF Software License are applicable instead of those above.
     <inherits name="org.openelis.modules.dictionaryentrypicker.DictionaryEntryPicker"/>
     <inherits name="org.openelis.ELISCommon"/>     
     
+    <source path="manager"/>
+    
 	<!-- Specify the app entry point class.                   -->
 	<entry-point class='org.openelis.modules.main.client.OpenELIS'/>
 	

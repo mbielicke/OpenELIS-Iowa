@@ -2,6 +2,8 @@ package org.openelis.manager;
 
 import org.openelis.domain.AddressDO;
 import org.openelis.domain.SampleEnvironmentalDO;
+import org.openelis.manager.SampleDomainInt;
+import org.openelis.manager.SampleEnvironmentalManagerIOInt;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.AddressRemote;
 import org.openelis.remote.SampleEnvironmentalRemote;
