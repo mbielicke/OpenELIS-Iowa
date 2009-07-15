@@ -27,6 +27,8 @@ package org.openelis.manager;
 
 import java.util.List;
 
+import org.openelis.manager.AnalysesManager;
+import org.openelis.manager.AnalysesManagerIOInt;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.AnalysisRemote;
 

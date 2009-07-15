@@ -28,8 +28,6 @@ package org.openelis.cache.server;
 import java.util.ArrayList;
 
 import org.openelis.domain.DictionaryDO;
-import org.openelis.gwt.common.data.IntegerObject;
-import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.server.AppServlet;
 import org.openelis.server.handlers.DictionaryCacheHandler;
 
@@ -37,33 +35,38 @@ public class DictionaryCacheService extends AppServlet {
 
     private static final long serialVersionUID = 1L;
 
-    public ArrayList getIdBySystemName(StringObject systemName) {
-        DictionaryDO dictDO = DictionaryCacheHandler.getDictionaryDOFromSystemName(systemName.getValue());
+    public DictionaryCacheRPC getIdBySystemName(String systemName) {
+        DictionaryCacheRPC rpc = new DictionaryCacheRPC();
+        DictionaryDO dictDO = DictionaryCacheHandler.getDictionaryDOFromSystemName(systemName);
         
         if(dictDO != null){
-            ArrayList returnList = new ArrayList();
-            returnList.add(dictDO);
-            return returnList;
+            ArrayList list = new ArrayList();
+            list.add(dictDO);
+            rpc.dictionaryList = list;
+            return rpc;
             
         }else
             return null;
     }
 
-    public ArrayList getSystemNameById(IntegerObject id) {
-        DictionaryDO dictDO = DictionaryCacheHandler.getDictionaryDOFromId(id.getValue());
+    public DictionaryCacheRPC getSystemNameById(Integer id) {
+        DictionaryCacheRPC rpc = new DictionaryCacheRPC();
+        DictionaryDO dictDO = DictionaryCacheHandler.getDictionaryDOFromId(id);
         
         if(dictDO != null){
-            ArrayList returnList = new ArrayList();
-            returnList.add(dictDO);
-            return returnList;
+            ArrayList list = new ArrayList();
+            list.add(dictDO);
+            rpc.dictionaryList = list;
+            return rpc;
             
         }else
             return null;
     }
     
-    public ArrayList getListByCategorySystemName(StringObject systemName) {
-        
-        return DictionaryCacheHandler.getListByCategorySystemName(systemName.getValue());
+    public DictionaryCacheRPC getListByCategorySystemName(String systemName) {
+        DictionaryCacheRPC rpc = new DictionaryCacheRPC();
+        rpc.dictionaryList = DictionaryCacheHandler.getListByCategorySystemName(systemName);
+        return rpc;
     }
 }
 

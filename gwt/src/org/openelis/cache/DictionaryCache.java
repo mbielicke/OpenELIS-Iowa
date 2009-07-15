@@ -28,20 +28,20 @@ package org.openelis.cache;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.openelis.cache.server.DictionaryCacheRPC;
 import org.openelis.domain.DictionaryDO;
-import org.openelis.gwt.common.data.IntegerObject;
-import org.openelis.gwt.common.data.StringObject;
-import org.openelis.modules.main.client.ScreenCache;
+import org.openelis.modules.main.client.ScreenService;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.SyncCallback;
 
-public class DictionaryCache extends ScreenCache {
+public class DictionaryCache {
+    protected static final String DICTIONARY_CACHE_SERVICE_URL = "org.openelis.cache.server.DictionaryCacheService";
+    protected ScreenService service;
+    
     HashMap<String, DictionaryDO> systemNameList;
     HashMap<Integer, DictionaryDO> idList;
     HashMap<String, ArrayList<DictionaryDO>> categoryNameList;
-    private Object returnObj = null;
     private static DictionaryCache instance;
     
     public static Integer getIdFromSystemName(String systemName){
@@ -67,7 +67,8 @@ public class DictionaryCache extends ScreenCache {
     }
     
     public DictionaryCache(){
-        super("org.openelis.cache.server.DictionaryCacheService");
+        service = new ScreenService("?service="+DICTIONARY_CACHE_SERVICE_URL);
+        
         systemNameList = (HashMap<String, DictionaryDO>)OpenELIS.getCacheList().get("DictSystemNameCache-systemName");
         idList = (HashMap<Integer, DictionaryDO>)OpenELIS.getCacheList().get("DictSystemNameCache-id");
         categoryNameList = (HashMap<String, ArrayList<DictionaryDO>>)OpenELIS.getCacheList().get("DictSystemNameCache-categoryName");
@@ -89,85 +90,66 @@ public class DictionaryCache extends ScreenCache {
     }
     
     protected Integer getIdFromSystemNameInt(final String systemName){
-        returnObj = systemNameList.get(systemName);
-        
-        if(returnObj == null){
-            screenService.call("getIdBySystemName", new StringObject(systemName), new SyncCallback<ArrayList>() {
-                public void onSuccess(ArrayList result) {
-                    if(result != null && result.size() == 1){
-                        DictionaryDO dictDO = (DictionaryDO)result.get(0);
-                        returnObj = dictDO;
-                        
-                        systemNameList.put(dictDO.getSystemName(), dictDO);
-                        idList.put(dictDO.getId(), dictDO);
-                    }
-                }
+        DictionaryDO dictDO = new DictionaryDO();
+        try{
+            DictionaryCacheRPC rpc = (DictionaryCacheRPC)service.call("getIdBySystemName", systemName);
+            ArrayList<DictionaryDO> list = rpc.dictionaryList;
+            
+            if(list != null && list.size() == 1){
+                dictDO = (DictionaryDO)list.get(0);
                 
-                public void onFailure(Throwable caught){
-                    Window.alert("DictionaryCache getIdFromSystemName error: "+caught.getMessage());
-                }
-            });
+                systemNameList.put(dictDO.getSystemName(), dictDO);
+                idList.put(dictDO.getId(), dictDO);
+            }
+        }catch(Exception e){
+            Window.alert("DictionaryCache getIdFromSystemName error: "+e.getMessage());    
         }
         
-        if(returnObj != null)
-            return ((DictionaryDO)returnObj).getId();
-        else
-            return null;
+        return dictDO.getId();
     }
     
     
     protected String getSystemNameFromIdInt(final Integer id){
-        returnObj = idList.get(id);
-        
-        if(returnObj == null){
-            screenService.call("getSystemNameById", new IntegerObject(id), new SyncCallback<ArrayList>() {
-                public void onSuccess(ArrayList result) {
-                    if(result != null && result.size() == 1){
-                        DictionaryDO dictDO = (DictionaryDO)result.get(0);
-                        returnObj = dictDO;
-                        
-                        systemNameList.put(dictDO.getSystemName(), dictDO);
-                        idList.put(dictDO.getId(), dictDO);
-                    }
-                }
-                public void onFailure(Throwable caught){
-                    Window.alert("DictionaryCache getSystemNameFromId error: "+caught.getMessage());
-                }
-            });
+        DictionaryDO dictDO = new DictionaryDO();
+        try{
+            DictionaryCacheRPC rpc = (DictionaryCacheRPC)service.call("getSystemNameById", id);
+            ArrayList<DictionaryDO> list = rpc.dictionaryList;
+            
+            if(list != null && list.size() == 1){
+                dictDO = (DictionaryDO)list.get(0);
+                
+                systemNameList.put(dictDO.getSystemName(), dictDO);
+                idList.put(dictDO.getId(), dictDO);
+            }
+        }catch(Exception e){
+            Window.alert("DictionaryCache getSystemNameFromId error: "+e.getMessage());    
         }
         
-        if(returnObj != null)
-            return ((DictionaryDO)returnObj).getSystemName();
-        else 
-            return null;
+        return dictDO.getSystemName();
     }
     
     
     protected ArrayList getListFromCategorySystemName(final String systemName) {
-        returnObj = categoryNameList.get(systemName);
-        
-        if(returnObj == null){
-             screenService.call("getListByCategorySystemName", new StringObject(systemName), new SyncCallback<ArrayList>() {
-                public void onSuccess(ArrayList result) {
-                    if(result != null && result.size() > 0){
-                        returnObj = result;
-                        categoryNameList.put(systemName, result);
-                        
-                        //iterate through the results and insert them into the other lists
-                        for(int i=0; i<result.size(); i++){
-                            DictionaryDO dictDO = (DictionaryDO)result.get(i);
-                            
-                            systemNameList.put(dictDO.getSystemName(), dictDO);
-                            idList.put(dictDO.getId(), dictDO);
-                        }
-                    }
+        ArrayList<DictionaryDO> list = null;
+        try{
+            DictionaryCacheRPC rpc = (DictionaryCacheRPC)service.call("getListByCategorySystemName", systemName);
+            list = rpc.dictionaryList;
+            
+            if(list != null){
+                categoryNameList.put(systemName, list);
+            
+                //iterate through the results and insert them into the other lists
+                for(int i=0; i<list.size(); i++){
+                    DictionaryDO dictDO = (DictionaryDO)list.get(i);
+                    
+                    systemNameList.put(dictDO.getSystemName(), dictDO);
+                    idList.put(dictDO.getId(), dictDO);
                 }
-                public void onFailure(Throwable caught){
-                    Window.alert("DictionaryCache getListFromCategorySystemName error: "+caught.getMessage());
-                }
-            });
+            }
+        }catch(Exception e){
+            Window.alert("DictionaryCache getListFromCategorySystemName error: "+e.getMessage());    
         }
         
-        return (ArrayList)returnObj;
+        return list;
     }
 }

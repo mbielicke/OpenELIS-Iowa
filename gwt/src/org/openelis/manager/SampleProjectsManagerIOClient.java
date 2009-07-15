@@ -27,6 +27,8 @@ package org.openelis.manager;
 
 import java.util.List;
 
+import org.openelis.manager.SampleProjectsManager;
+import org.openelis.manager.SampleProjectsManagerIOInt;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.SampleItemRemote;
 import org.openelis.remote.SampleProjectRemote;

@@ -25,20 +25,19 @@
 */
 package org.openelis.cache;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.openelis.cache.server.ReferenceTableCacheRPC;
 import org.openelis.domain.IdNameDO;
-import org.openelis.gwt.common.data.StringObject;
-import org.openelis.modules.main.client.ScreenCache;
+import org.openelis.modules.main.client.ScreenService;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.SyncCallback;
 
-public class ReferenceTableCache extends ScreenCache {
+public class ReferenceTableCache {
+    protected static final String REFERENCETABLE_CACHE_SERVICE_URL = "org.openelis.cache.server.ReferenceTableCacheService";
+    protected ScreenService service;
     HashMap<String, Integer> tableList;
-    private Integer returnObj = null;
     private static ReferenceTableCache instance;
     
     public static Integer getIdFromTableName(String tableName){
@@ -49,7 +48,8 @@ public class ReferenceTableCache extends ScreenCache {
     }
     
     public ReferenceTableCache(){
-        super("org.openelis.cache.server.ReferenceTableCacheService");
+        service = new ScreenService("?service="+REFERENCETABLE_CACHE_SERVICE_URL);
+        
         tableList = (HashMap<String, Integer>)OpenELIS.getCacheList().get("ReferenceTableCache");
         
         if(tableList == null){
@@ -59,25 +59,24 @@ public class ReferenceTableCache extends ScreenCache {
     }
     
     protected Integer getIdFromTableNameInt(final String tableName){
-        returnObj = tableList.get(tableName);
-        
-        if(returnObj == null){
-            screenService.call("getReferenceTableList", new StringObject(), new SyncCallback<ArrayList>() {
-                public void onSuccess(ArrayList result) {
-                    if(result != null){
-                        for(int i=0; i<result.size(); i++){
-                            IdNameDO tableDO = (IdNameDO)result.get(i);
-                            tableList.put(tableDO.getName(), tableDO.getId());
-                        }
-                    }
-                }
+        Integer tableId = tableList.get(tableName);
+        if(tableId == null){
+            try{
+                ReferenceTableCacheRPC rpc = service.call("getReferenceTableList", "");
                 
-                public void onFailure(Throwable caught){
-                    Window.alert("ReferenceTableCache getIdFromTableName error: "+caught.getMessage());
+                if(rpc.list != null){
+                    for(int i=0; i<rpc.list.size(); i++){
+                        IdNameDO tableDO = (IdNameDO)rpc.list.get(i);
+                        tableList.put(tableName, tableDO.getId());
+                    }
+                    
+                    tableId = tableList.get(tableName);
                 }
-            });
+            }catch(Exception e){
+                Window.alert("ReferenceTableCache getIdFromTableName error: "+e.getMessage());    
+            }
         }
         
-        return tableList.get(tableName);
+        return tableId;
     }
 }
