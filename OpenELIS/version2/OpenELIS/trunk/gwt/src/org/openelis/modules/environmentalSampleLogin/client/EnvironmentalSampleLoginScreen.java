@@ -208,8 +208,8 @@ public class EnvironmentalSampleLoginScreen extends OpenELISScreenForm<Environme
         ButtonPanel bpanel = (ButtonPanel)getWidget("buttons");
         
         //disable the buttons for the demo for now
-       // bpanel.enableButton("query", false);
-       // bpanel.enableButton("add", false);
+        bpanel.enableButton("query", false);
+        bpanel.enableButton("add", false);
         
         CommandChain formChain = new CommandChain();
         formChain.addCommand(this);
@@ -806,13 +806,17 @@ public class EnvironmentalSampleLoginScreen extends OpenELISScreenForm<Environme
     }
     
     private TableDataModel<TableDataRow> getDictionaryIdEntryList(ArrayList list){
-        if(list == null)
-            return null;
-        
         TableDataModel<TableDataRow> m = new TableDataModel<TableDataRow>();
+        TableDataRow<Integer> row;
+        
+        if(list == null)
+            return m;
+        
+        m = new TableDataModel<TableDataRow>();
+        m.add(new TableDataRow<Integer>(null,new StringObject("")));
         
         for(int i=0; i<list.size(); i++){
-            TableDataRow<Integer> row = new TableDataRow<Integer>(1);
+            row = new TableDataRow<Integer>(1);
             DictionaryDO dictDO = (DictionaryDO)list.get(i);
             row.key = dictDO.getId();
             row.cells[0] = new StringObject(dictDO.getEntry());
