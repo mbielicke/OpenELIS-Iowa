@@ -69,15 +69,9 @@ UIRF Software License are applicable instead of those above.
   </servlet>
   
   <servlet>
-    <servlet-name>ScreenCacheService</servlet-name>
-    <servlet-class>org.openelis.modules.main.server.ScreenCacheService</servlet-class>
-    <load-on-startup>4</load-on-startup>
-  </servlet>
-  
-  <servlet>
     <servlet-name>PreferencesServlet</servlet-name>
     <servlet-class>org.openelis.server.PreferencesServlet</servlet-class>
-    <load-on-startup>5</load-on-startup>
+    <load-on-startup>4</load-on-startup>
   </servlet>
   
   <servlet>
@@ -87,7 +81,7 @@ UIRF Software License are applicable instead of those above.
         <param-name>app.root</param-name>
         <param-value>war/openelis/</param-value>
     </init-param>
-    <load-on-startup>6</load-on-startup>
+    <load-on-startup>5</load-on-startup>
   </servlet>
   
 
@@ -99,11 +93,6 @@ UIRF Software License are applicable instead of those above.
   <servlet-mapping>
     <servlet-name>OpenELISScreenServlet</servlet-name>
     <url-pattern>/openelis/OpenELISScreenServlet</url-pattern>
-  </servlet-mapping>
-  
-  <servlet-mapping>
-    <servlet-name>ScreenCacheService</servlet-name>
-    <url-pattern>/openelis/ScreenCacheService</url-pattern>
   </servlet-mapping>
   
   <servlet-mapping>
