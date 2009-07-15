@@ -301,13 +301,16 @@ public class OrganizationScreen extends OpenELISScreenForm<OrganizationForm,Quer
     }
 
     private TableDataModel<TableDataRow> getDictionaryIdEntryList(ArrayList list){
-        if(list == null)
-            return null;
-        
         TableDataModel<TableDataRow> m = new TableDataModel<TableDataRow>();
+        TableDataRow<Integer> row;
+        
+        if(list == null)
+            return m;
+        
+        m.add(new TableDataRow<Integer>(null,new StringObject("")));
         
         for(int i=0; i<list.size(); i++){
-            TableDataRow<Integer> row = new TableDataRow<Integer>(1);
+            row = new TableDataRow<Integer>(1);
             DictionaryDO dictDO = (DictionaryDO)list.get(i);
             row.key = dictDO.getId();
             row.cells[0] = new StringObject(dictDO.getEntry());
@@ -318,13 +321,16 @@ public class OrganizationScreen extends OpenELISScreenForm<OrganizationForm,Quer
     }
     
     private TableDataModel<TableDataRow> getDictionaryEntryKeyList(ArrayList list){
-        if(list == null)
-            return null;
-        
         TableDataModel<TableDataRow> m = new TableDataModel<TableDataRow>();
+        TableDataRow<String> row;
+        
+        if(list == null)
+            return m;
+        
+        m.add(new TableDataRow<String>(null,new StringObject("")));
         
         for(int i=0; i<list.size(); i++){
-            TableDataRow<String> row = new TableDataRow<String>(1);
+            row = new TableDataRow<String>(1);
             DictionaryDO dictDO = (DictionaryDO)list.get(i);
             row.key = dictDO.getEntry();
             row.cells[0] = new StringObject(dictDO.getEntry());

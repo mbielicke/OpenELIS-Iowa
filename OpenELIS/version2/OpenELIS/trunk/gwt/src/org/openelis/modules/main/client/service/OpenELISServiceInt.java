@@ -34,7 +34,7 @@ import org.openelis.gwt.services.AppScreenFormServiceInt;
 @RemoteServiceRelativePath("OpenELISServlet")
 public interface OpenELISServiceInt<ScreenRPC extends RPC,QueryRPC extends RPC> extends AppScreenFormServiceInt<ScreenRPC,QueryRPC> {
    
-    public <T extends RPC> T call(String method, T rpc) throws Exception;
+    public <T extends RPC> T call(String method, RPC rpc) throws Exception;
     
     public void logout();
 	 

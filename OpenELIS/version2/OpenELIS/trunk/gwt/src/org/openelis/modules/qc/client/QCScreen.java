@@ -503,19 +503,18 @@ public class QCScreen extends OpenELISScreenForm<QCForm, Query<TableDataRow<Inte
     }
 
     private TableDataModel<TableDataRow> getDictionaryIdEntryList(ArrayList list){
-        TableDataModel<TableDataRow> m;
+        TableDataModel<TableDataRow> m = new TableDataModel<TableDataRow>();
         TableDataRow<Integer> row;
-        DictionaryDO dictDO;
         
         if(list == null)
-            return null;
+            return m;
         
         m = new TableDataModel<TableDataRow>();
         m.add(new TableDataRow<Integer>(null,new StringObject("")));
         
         for(int i=0; i<list.size(); i++){
             row = new TableDataRow<Integer>(1);
-            dictDO = (DictionaryDO)list.get(i);
+            DictionaryDO dictDO = (DictionaryDO)list.get(i);
             row.key = dictDO.getId();
             row.cells[0] = new StringObject(dictDO.getEntry());
             m.add(row);

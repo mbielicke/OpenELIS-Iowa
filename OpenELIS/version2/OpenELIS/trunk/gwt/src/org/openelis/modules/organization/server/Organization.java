@@ -25,6 +25,8 @@
 */
 package org.openelis.modules.organization.server;
 
+import java.util.ArrayList;
+
 import org.openelis.domain.IdNameDO;
 import org.openelis.domain.NoteDO;
 import org.openelis.domain.OrganizationAddressDO;
@@ -37,20 +39,20 @@ import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.ScreenServiceInt;
 import org.openelis.gwt.services.rewrite.AutoCompleteServiceInt;
+import org.openelis.manager.OrganizationContactsManager;
+import org.openelis.manager.OrganizationsManager;
 import org.openelis.metamap.OrganizationMetaMap;
 import org.openelis.modules.organization.client.ContactsRPC;
 import org.openelis.modules.organization.client.NotesRPC;
 import org.openelis.modules.organization.client.OrgQuery;
 import org.openelis.modules.organization.client.OrganizationRPC;
 import org.openelis.modules.organization.client.ParentOrgRPC;
-import org.openelis.modules.organization.client.OrganizationRPC.Tabs;
+import org.openelis.modules.organization.client.Organization.Tabs;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.OrganizationRemote;
 import org.openelis.server.constants.Constants;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
-
-import java.util.ArrayList;
 
 public class Organization implements ScreenServiceInt, AutoCompleteServiceInt<ParentOrgRPC> {
 
@@ -131,7 +133,7 @@ public class Organization implements ScreenServiceInt, AutoCompleteServiceInt<Pa
         //		remote interface to call the organization bean
         OrganizationRemote remote = (OrganizationRemote)EJBFactory.lookup("openelis/OrganizationBean/remote");
 
-        rpc.orgAddressDO = remote.getOrganizationAddressAndUnlock(rpc.orgAddressDO.getOrganizationId(), SessionManager.getSession().getId());
+        rpc.orgAddressDO = remote.getOrganizationAddressAndUnlock(rpc.orgAddressDO.getOrganizationId());
         
         setRPC(rpc);
         
@@ -139,9 +141,74 @@ public class Organization implements ScreenServiceInt, AutoCompleteServiceInt<Pa
 
     }
 
+    public OrganizationsManager fetch(Integer orgId) throws Exception {
+        //remote interface to call the organization bean
+        OrganizationRemote remote = (OrganizationRemote)EJBFactory.lookup("openelis/OrganizationBean/remote");
+        
+        return remote.fetch(orgId);
+    }
+    
+    public OrganizationsManager add(OrganizationsManager man) throws RPCException {
+        OrganizationRemote remote = (OrganizationRemote)EJBFactory.lookup("openelis/OrganizationBean/remote");
+        
+        try{
+            return remote.add(man);
+        }catch(Exception e){
+            
+        }
+        
+        return null;
+        
+    }
+    
+    public OrganizationsManager fetchWithContacts(Integer orgId) throws RPCException {
+        //remote interface to call the organization bean
+        OrganizationRemote remote = (OrganizationRemote)EJBFactory.lookup("openelis/OrganizationBean/remote");
+        
+        OrganizationsManager man = remote.fetchWithContacts(orgId);
+        
+        return man;
+    }
+    
+    public OrganizationsManager fetchWithNotes(Integer orgId) throws RPCException {
+        //remote interface to call the organization bean
+        OrganizationRemote remote = (OrganizationRemote)EJBFactory.lookup("openelis/OrganizationBean/remote");
+        
+        OrganizationsManager man = remote.fetchWithNotes(orgId);
+        
+        return man;
+    }
+    
+    public OrganizationsManager fetchForUpdate(Integer orgId) throws Exception {
+        //remote interface to call the organization bean
+        OrganizationRemote remote = (OrganizationRemote)EJBFactory.lookup("openelis/OrganizationBean/remote");
+        
+        OrganizationsManager man = remote.fetch(orgId);
+        
+        return man;
+    }
+    
+    public OrganizationsManager fetchForUpdateWithContacts(Integer orgId) throws RPCException {
+        //remote interface to call the organization bean
+        OrganizationRemote remote = (OrganizationRemote)EJBFactory.lookup("openelis/OrganizationBean/remote");
+        
+        OrganizationsManager man = remote.fetchWithContacts(orgId);
+        
+        return man;
+    }
+    
+    public OrganizationsManager fetchForUpdateWithNotes(Integer orgId) throws RPCException {
+        //remote interface to call the organization bean
+        OrganizationRemote remote = (OrganizationRemote)EJBFactory.lookup("openelis/OrganizationBean/remote");
+        
+        OrganizationsManager man = remote.fetchWithNotes(orgId);
+        
+        return man;
+    }
+    
     public OrganizationRPC fetch(OrganizationRPC rpc) throws RPCException {
-
-		//remote interface to call the organization bean
+        return null;
+/*		//remote interface to call the organization bean
         OrganizationRemote remote = (OrganizationRemote)EJBFactory.lookup("openelis/OrganizationBean/remote");
 		
         rpc.orgAddressDO = remote.getOrganizationAddress(rpc.orgAddressDO.getOrganizationId());
@@ -149,6 +216,7 @@ public class Organization implements ScreenServiceInt, AutoCompleteServiceInt<Pa
         setRPC(rpc);
         
         return rpc;
+        */
     }
     
     public OrganizationRPC fetchForUpdate(OrganizationRPC rpc) throws RPCException {
@@ -158,7 +226,7 @@ public class Organization implements ScreenServiceInt, AutoCompleteServiceInt<Pa
 
         OrganizationAddressDO organizationDO = new OrganizationAddressDO();
         try{
-            rpc.orgAddressDO = remote.getOrganizationAddressAndLock(rpc.orgAddressDO.getOrganizationId(), SessionManager.getSession().getId());
+            rpc.orgAddressDO = remote.getOrganizationAddressAndLock(rpc.orgAddressDO.getOrganizationId());
         }catch(Exception e){
             throw new RPCException(e.getMessage());
         }
@@ -177,7 +245,7 @@ public class Organization implements ScreenServiceInt, AutoCompleteServiceInt<Pa
         	rpc.parentOrgRPC = getMatches(rpc.parentOrgRPC);
         }
  
-        if(rpc.tab == Tabs.CONTACTS){
+      /*  if(rpc.tab == Tabs.CONTACTS){
             rpc.orgContacts = new ContactsRPC();
             getContacts(rpc.orgAddressDO.getOrganizationId(),rpc.orgContacts);
         }else
@@ -188,6 +256,7 @@ public class Organization implements ScreenServiceInt, AutoCompleteServiceInt<Pa
             getNotes(rpc.orgAddressDO.getOrganizationId(), rpc.notes);
         }else
             rpc.notes = null;
+            */
      
 	}
     
@@ -213,7 +282,7 @@ public class Organization implements ScreenServiceInt, AutoCompleteServiceInt<Pa
         //gets the whole notes list now
         rpc.notes = (ArrayList<NoteDO>)remote.getOrganizationNotes(key);   
     }
-
+    
     public void getContacts(Integer orgId, ContactsRPC rpc){
         OrganizationRemote remote = (OrganizationRemote)EJBFactory.lookup("openelis/OrganizationBean/remote");
         rpc.orgContacts = (ArrayList<OrganizationContactDO>)remote.getOrganizationContacts(orgId);
@@ -243,5 +312,20 @@ public class Organization implements ScreenServiceInt, AutoCompleteServiceInt<Pa
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+    public <T extends RPC> T call(String method, Integer param) throws Exception {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public <T extends RPC> T call(String method, RPC param) throws Exception {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public <T extends RPC> T call(String method, String param) throws Exception {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
 }

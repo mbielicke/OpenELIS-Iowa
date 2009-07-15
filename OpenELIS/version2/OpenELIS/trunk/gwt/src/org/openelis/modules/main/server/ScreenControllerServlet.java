@@ -25,6 +25,11 @@
 */
 package org.openelis.modules.main.server;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
+
+import javax.servlet.http.HttpSession;
+
 import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.Preferences;
@@ -42,11 +47,6 @@ import org.openelis.modules.favorites.client.FavoritesServiceInt;
 import org.openelis.modules.favorites.server.FavoritesService;
 import org.openelis.modules.main.client.service.OpenELISServiceInt;
 import org.openelis.util.SessionManager;
-
-import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
-
-import javax.servlet.http.HttpSession;
 
 public class ScreenControllerServlet extends AppServlet implements OpenELISServiceInt<RPC,RPC>, AutoCompleteServiceInt, FavoritesServiceInt, ScreenServiceInt {
 
@@ -171,25 +171,7 @@ public class ScreenControllerServlet extends AppServlet implements OpenELISServi
         return new FavoritesService().saveFavorites(form);
     }
 
-    public <T extends RPC> T call(String method, T rpc) throws Exception {
-        AppScreenFormServiceInt service = (AppScreenFormServiceInt) getService();
-        try {
-            return (T)service.getClass().getMethod(method,new Class[] {rpc.getClass()}).invoke(service, new Object[]{rpc});
-            //return (T)Class.forName(getThreadLocalRequest().getParameter("service")).newInstance().getClass().
-            //getMethod(method,new Class[] {rpc.getClass()}).invoke(Class.forName(getThreadLocalRequest().getParameter("service")).newInstance(), new Object[]{rpc});
-        }catch(Exception e){
-            if(e instanceof InvocationTargetException){
-                InvocationTargetException er = (InvocationTargetException)e;
-                if(er.getCause() != null)
-                    throw (RPCException)er.getCause();
-            }
-
-            e.printStackTrace();
-            throw new RPCException(e.getMessage());
-        }
-    }
-
-	public String getScreen() throws RPCException {
+    public String getScreen() throws RPCException {
 		 return ((ScreenServiceInt)getScreenService()).getScreen();
 	}
 
@@ -209,4 +191,50 @@ public class ScreenControllerServlet extends AppServlet implements OpenELISServi
 		}
 	}
 
+	public <T extends RPC> T call(String method, Object param) throws Exception {
+        try {
+            return (T)Class.forName(getThreadLocalRequest().getParameter("service")).newInstance().getClass().
+                getMethod(method,new Class[] {param.getClass()}).invoke(Class.forName(getThreadLocalRequest().getParameter("service")).newInstance(), new Object[]{param});
+        }catch(Exception e){
+            if(e instanceof InvocationTargetException){
+                InvocationTargetException er = (InvocationTargetException)e;
+                if(er.getCause() != null)
+                    throw (RPCException)er.getCause();
+            }
+
+            e.printStackTrace();
+            throw new RPCException(e.getMessage());
+        }
+    }
+
+	/*
+	public <T extends RPC> T call(String method, Object param) throws Exception {
+        AppScreenFormServiceInt service = (AppScreenFormServiceInt) getService();
+        try {
+            return (T)service.getClass().getMethod(method,new Class[] {param.getClass()}).invoke(service, new Object[]{param});
+            //return (T)Class.forName(getThreadLocalRequest().getParameter("service")).newInstance().getClass().
+            //getMethod(method,new Class[] {rpc.getClass()}).invoke(Class.forName(getThreadLocalRequest().getParameter("service")).newInstance(), new Object[]{rpc});
+        }catch(Exception e){
+            if(e instanceof InvocationTargetException){
+                InvocationTargetException er = (InvocationTargetException)e;
+                if(er.getCause() != null)
+                    throw (RPCException)er.getCause();
+            }
+
+            e.printStackTrace();
+            throw new RPCException(e.getMessage());
+        }
+    }*/
+	
+    public <T extends RPC> T call(String method, Integer param) throws Exception {
+        return call(method, (Object)param);
+    }
+
+    public <T extends RPC> T call(String method, String param) throws Exception{
+        return call(method, (Object)param);
+    }
+    
+    public <T extends RPC> T call(String method, RPC param) throws Exception {
+        return call(method, (Object)param);
+    }
 }

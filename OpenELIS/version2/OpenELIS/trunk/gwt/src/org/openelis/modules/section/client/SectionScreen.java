@@ -94,7 +94,6 @@ public class SectionScreen extends OpenELISScreenForm<SectionForm, Query<TableDa
                      
         updateChain.add(afterUpdate);
         super.afterDraw(success);
-        
         cache = SectionCache.getSectionList();
         model = getSectionList(cache);
         section.setModel(model);
@@ -142,12 +141,12 @@ public class SectionScreen extends OpenELISScreenForm<SectionForm, Query<TableDa
     };
     
     private TableDataModel<TableDataRow> getSectionList(ArrayList list){
-        TableDataModel<TableDataRow> m;
+        TableDataModel<TableDataRow> m = new TableDataModel<TableDataRow>();
         TableDataRow<Integer> row;
         SectionDO sectDO;
         
         if(list == null)
-            return null;
+            return m;
         
         m = new TableDataModel<TableDataRow>();
         m.add(new TableDataRow<Integer>(null,new StringObject("")));

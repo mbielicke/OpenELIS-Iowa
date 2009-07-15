@@ -105,13 +105,17 @@ public class StorageUnitScreen extends OpenELISScreenForm<StorageUnitForm,Query<
 	}
 	
 	private TableDataModel<TableDataRow> getDictionaryEntryKeyList(ArrayList list){
-        if(list == null)
-            return null;
+	    TableDataModel<TableDataRow> m = new TableDataModel<TableDataRow>();
+        TableDataRow<String> row;
         
-        TableDataModel<TableDataRow> m = new TableDataModel<TableDataRow>();
+        if(list == null)
+            return m;
+        
+        m = new TableDataModel<TableDataRow>();
+        m.add(new TableDataRow<String>(null,new StringObject("")));
         
         for(int i=0; i<list.size(); i++){
-            TableDataRow<String> row = new TableDataRow<String>(1);
+            row = new TableDataRow<String>(1);
             DictionaryDO dictDO = (DictionaryDO)list.get(i);
             row.key = dictDO.getEntry();
             row.cells[0] = new StringObject(dictDO.getEntry());

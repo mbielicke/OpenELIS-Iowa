@@ -155,26 +155,24 @@ import com.google.gwt.user.client.ui.Widget;
              }
          }
         
-        private TableDataModel<TableDataRow> getDictionaryIdEntryList(ArrayList list){
-            TableDataRow<Integer> row;
-            DictionaryDO dictDO;
-            TableDataModel<TableDataRow> m;
-            
-            if(list == null)
-                return null;
-            
-            m = new TableDataModel<TableDataRow>();
-            m.add(new TableDataRow<Integer>(null,new StringObject("")));
-            
-            for(int i=0; i<list.size(); i++){
-                row = new TableDataRow<Integer>(1);
-                dictDO = (DictionaryDO)list.get(i);
-                row.key = dictDO.getId();
-                row.cells[0] = new StringObject(dictDO.getEntry());
-                m.add(row);
-            }
-            
-            return m;
-        }
-         
+         private TableDataModel<TableDataRow> getDictionaryIdEntryList(ArrayList list){
+             TableDataModel<TableDataRow> m = new TableDataModel<TableDataRow>();
+             TableDataRow<Integer> row;
+             
+             if(list == null)
+                 return m;
+             
+             m = new TableDataModel<TableDataRow>();
+             m.add(new TableDataRow<Integer>(null,new StringObject("")));
+             
+             for(int i=0; i<list.size(); i++){
+                 row = new TableDataRow<Integer>(1);
+                 DictionaryDO dictDO = (DictionaryDO)list.get(i);
+                 row.key = dictDO.getId();
+                 row.cells[0] = new StringObject(dictDO.getEntry());
+                 m.add(row);
+             }
+             
+             return m;
+         }
  }

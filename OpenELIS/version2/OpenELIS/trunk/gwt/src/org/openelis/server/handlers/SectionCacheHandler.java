@@ -49,7 +49,7 @@ public class SectionCacheHandler implements MessageHandler<SectionCacheMessage> 
         
     }
     
-    public static List  getSectionList() {
+    public static ArrayList  getSectionList() {
         SectionRemote remote;
         ArrayList<SectionDO> sectList; 
         
