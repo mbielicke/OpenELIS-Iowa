@@ -25,17 +25,16 @@
 */
 package org.openelis.manager;
 
-import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.List;
 
 import org.openelis.domain.NoteDO;
+import org.openelis.gwt.common.RPC;
+import org.openelis.manager.proxy.NotesManagerProxy;
 
 
-public class NotesManager implements Serializable{
+public class NotesManager implements RPC {
 
     private static final long serialVersionUID = 1L;
-     
     protected boolean external;
     protected Integer referenceId;
     protected Integer referenceTableId;
@@ -43,7 +42,7 @@ public class NotesManager implements Serializable{
     public boolean load = false;
     public boolean cached = false;
     
-    protected transient NotesManagerIOInt manager;
+    protected transient NotesManagerProxy proxy;
     
     /**
      * Creates a new instance of this object.
@@ -58,6 +57,7 @@ public class NotesManager implements Serializable{
     }
     
     //FIXME cleanup this code...
+    /*
     public NoteDO add(){
          boolean needOne = false;
          NoteDO noteDO = null;
@@ -76,7 +76,7 @@ public class NotesManager implements Serializable{
          }
 
          return noteDO; 
-     }    
+     }*/    
     
     public void setReferenceTableId(Integer referenceTableId) {
         this.referenceTableId = referenceTableId;
@@ -108,14 +108,47 @@ public class NotesManager implements Serializable{
         return external;
     }
     
+    /*
     public List<NoteDO> getNotes() {
        manager().fetch();
        return notes; 
     }
+    */
     
-   
-     private NotesManagerIOInt manager() {
-         //manager = ManagerFactory.getNotesManager();
-         return manager;
-     }     
+  //service methods
+    public NotesManager add(){
+        return proxy().commitAdd(this);
+    }
+    
+    public NotesManager update(){
+        return proxy().commitUpdate(this);
+    }
+    
+    public NotesManager fetch(){
+        if (cached || !load)
+            return this;
+
+        cached = true;
+        load = false;
+        
+        if(referenceId == null || referenceTableId == null)
+            return null;
+        
+        return proxy().fetch(this);
+    }
+    
+    private NotesManagerProxy proxy(){
+        if(proxy == null)
+            proxy = new NotesManagerProxy();
+        
+        return proxy;
+    }
+
+    public ArrayList<NoteDO> getNotes() {
+        return notes;
+    }
+
+    public void setNotes(ArrayList<NoteDO> notes) {
+        this.notes = notes;
+    }     
 }

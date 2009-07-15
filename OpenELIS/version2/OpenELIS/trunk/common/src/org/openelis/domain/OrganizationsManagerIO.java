@@ -23,14 +23,30 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.manager;
+package org.openelis.domain;
+
+import org.openelis.manager.OrganizationsManager;
 
 
-public interface OrganizationsManagerIOInt {
-    public OrganizationsManager commitAdd(OrganizationsManager man);
-    public OrganizationsManager commitUpdate(OrganizationsManager man);
-    public OrganizationsManager fetch(OrganizationsManager man);
-    public OrganizationsManager fetchForUpdate(OrganizationsManager man);
-    public OrganizationsManager abort(OrganizationsManager man);
+public class OrganizationsManagerIO {
+    
+    public OrganizationsManager commitAdd(OrganizationsManager man) {
+        return null;
+    }
 
+    public OrganizationsManager commitUpdate(OrganizationsManager man) {
+        return null;
+    }
+
+    public OrganizationsManager fetch(OrganizationsManager man) {
+        return null;
+    }
+
+    public OrganizationsManager fetchForUpdate(OrganizationsManager man) throws Exception {
+        return null;
+    }
+    
+    public OrganizationsManager abort(OrganizationsManager man) {
+        return null;
+    }
 }

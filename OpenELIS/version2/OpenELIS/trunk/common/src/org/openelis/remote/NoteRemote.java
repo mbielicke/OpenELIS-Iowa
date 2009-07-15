@@ -23,15 +23,13 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.manager;
+package org.openelis.remote;
 
-/**
- * @author akampoow
- *
- */
-public interface NotesManagerIOInt {
-  
-    public void fetch();
-    
-    public Integer update();
+import java.util.List;
+
+import javax.ejb.Remote;
+
+@Remote
+public interface NoteRemote {
+    public List getNotes(Integer refTableId, Integer refId);
 }

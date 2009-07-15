@@ -28,8 +28,11 @@ import org.openelis.domain.IdNameDO;
 import org.openelis.domain.NoteDO;
 import org.openelis.domain.OrganizationAddressDO;
 import org.openelis.domain.OrganizationContactDO;
+import org.openelis.domain.OrganizationsManagerIO;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.rewrite.QueryData;
+import org.openelis.manager.OrganizationContactsManager;
+import org.openelis.manager.OrganizationsManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,10 +45,10 @@ public interface OrganizationRemote {
 	public OrganizationAddressDO getOrganizationAddress(Integer organizationId);
 	
 	//method to unlock entity and return org name, address
-	public OrganizationAddressDO getOrganizationAddressAndUnlock(Integer organizationId, String session);
+	public OrganizationAddressDO getOrganizationAddressAndUnlock(Integer organizationId);
 	
 	//update initial call for org
-	public OrganizationAddressDO getOrganizationAddressAndLock(Integer organizationId, String session) throws Exception;
+	public OrganizationAddressDO getOrganizationAddressAndLock(Integer organizationId) throws Exception;
 	
 	//commit a change to org, or insert a new org
 	public Integer updateOrganization(OrganizationAddressDO organizationDO, NoteDO noteDO, List<OrganizationContactDO> contacts) throws Exception;
@@ -66,4 +69,18 @@ public interface OrganizationRemote {
 	 
 	 //auto complete lookup
 	 public List autoCompleteLookupById(Integer id);
+	 
+	 //
+	 //NEW METHODS FOR THE MANAGER ORG SCREEN
+	 //
+	 //fetch methods
+	 public OrganizationsManager fetch(Integer orgId) throws Exception;
+	 public OrganizationsManager fetchWithContacts(Integer orgId);
+	 public OrganizationsManager fetchWithIdentifiers(Integer orgId);
+	 public OrganizationsManager fetchWithNotes(Integer orgId);
+	 
+	 public OrganizationsManager fetchForUpdate(Integer orgId);
+     public OrganizationsManager abortUpdate(Integer orgId);
+     
+     public OrganizationsManager add(OrganizationsManager man) throws Exception;
 }

@@ -29,7 +29,7 @@ import org.openelis.domain.OrganizationAddressDO;
 import org.openelis.gwt.common.RPC;
 import org.openelis.manager.NotesManager;
 import org.openelis.manager.OrganizationContactsManager;
-import org.openelis.manager.io.OrganizationsManagerIO;
+import org.openelis.manager.proxy.OrganizationsManagerProxy;
 
 public class OrganizationsManager implements RPC {
 
@@ -41,7 +41,7 @@ public class OrganizationsManager implements RPC {
     public boolean load = false;
     public boolean cached = false;
     
-    protected transient OrganizationsManagerIOInt io;
+    protected transient static OrganizationsManagerProxy proxy;
     
     /**
      * This is a protected constructor. See the three static methods for allocation.
@@ -64,14 +64,34 @@ public class OrganizationsManager implements RPC {
         return om;
     }
     
+    public static OrganizationsManager findById(Integer id) throws Exception {
+        return proxy().fetch(id);
+    }
+    
+    /*
+    public static OrganizationsManager findByIdWithContacts(Integer id){
+        return io().fe
+    }
+    
+    public static OrganizationsManager findByIdWithNotes(Integer id){
+        
+    }
+    
+    public static OrganizationsManager findByIdWithIdentifiers(Integer id){
+        
+    }
+    */
+    
     //getters/setters
     public void setNotesManager(NotesManager notesManager){
         notes = notesManager;
     }
     
     public NotesManager getNotesManager(){
-        if (notes == null) {
+        if (notes == null) 
             notes = NotesManager.getInstance();
+        
+        if(notes.getReferenceId() == null){
             notes.setExternal(false);
             notes.setReferenceId(organizationAddress.getOrganizationId());
             notes.setReferenceTableId(organizationReferenceTable);
@@ -85,10 +105,11 @@ public class OrganizationsManager implements RPC {
     }
     
     public OrganizationContactsManager getContactsManager(){
-        if (contacts == null) {
+        if (contacts == null) 
             contacts = OrganizationContactsManager.getInstance();
+        
+        if(organizationAddress.getOrganizationId() == null)
             contacts.setOrganizationId(organizationAddress.getOrganizationId());
-        }
 
         return contacts;
     }
@@ -99,6 +120,7 @@ public class OrganizationsManager implements RPC {
 
     public void setOrganizationAddress(OrganizationAddressDO organizationAddress) {
         this.organizationAddress = organizationAddress;
+        cached = true;
     }
     
     public Integer getOrganizationReferenceTable() {
@@ -110,36 +132,34 @@ public class OrganizationsManager implements RPC {
     }
     
     //service methods
-    public OrganizationsManager add(){
-        return manager().commitAdd(this);
+    public OrganizationsManager add() throws Exception {
+        return proxy().add(this);
         
     }
     
-    public OrganizationsManager update(){
-        return manager().commitUpdate(this);
+    public OrganizationsManager update() throws Exception {
+        return proxy().update(this);
         
     }
     
-    public OrganizationsManager fetch(Integer id){
+    public OrganizationsManager fetchForUpdate(Integer id) throws Exception {
         organizationAddress.setOrganizationId(id);
-        return manager().fetch(this);
+        return proxy().fetchForUpdate(id);
         
     }
     
-    public OrganizationsManager fetchForUpdate(Integer id){
-        organizationAddress.setOrganizationId(id);
-        return manager().fetchForUpdate(this);
-        
+    public OrganizationsManager abort() throws Exception {
+        return proxy().abort(this);
     }
     
-    public OrganizationsManager abort(){
-        return manager().abort(this);
+    public void validate() throws Exception {
+        proxy().validate(this);
     }
     
-    private OrganizationsManagerIOInt manager(){
-        if(io == null)
-            io = new OrganizationsManagerIO();
+    private static OrganizationsManagerProxy proxy(){
+        if(proxy == null)
+            proxy = new OrganizationsManagerProxy();
         
-        return io;
+        return proxy;
     }
 }
