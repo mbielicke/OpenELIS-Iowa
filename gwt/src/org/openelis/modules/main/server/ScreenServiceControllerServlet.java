@@ -73,4 +73,22 @@ public class ScreenServiceControllerServlet extends AppServlet implements Screen
 		}
 	}
 
+
+    public <T extends RPC> T call(String method, Integer param) throws Exception {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+
+    public <T extends RPC> T call(String method, RPC param) throws Exception {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+
+    public <T extends RPC> T call(String method, String param) throws Exception {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
 }

@@ -25,21 +25,9 @@
 */
 package org.openelis.modules.organization.client;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
-import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
-import com.google.gwt.event.logical.shared.SelectionEvent;
-import com.google.gwt.event.logical.shared.SelectionHandler;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.rpc.ServiceDefTarget;
-import com.google.gwt.user.client.rpc.SyncCallback;
-import com.google.gwt.user.client.ui.TabPanel;
-import com.google.gwt.user.client.ui.Widget;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.Set;
 
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.DictionaryDO;
@@ -72,17 +60,32 @@ import org.openelis.gwt.widget.rewrite.ResultsTable;
 import org.openelis.gwt.widget.rewrite.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.rewrite.TableDataRow;
 import org.openelis.gwt.widget.table.rewrite.TableWidget;
+import org.openelis.manager.OrganizationsManager;
 import org.openelis.metamap.OrganizationMetaMap;
-import org.openelis.modules.organization.client.OrganizationRPC.Tabs;
 
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.Set;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
+import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.ServiceDefTarget;
+import com.google.gwt.user.client.rpc.SyncCallback;
+import com.google.gwt.user.client.ui.TabPanel;
+import com.google.gwt.user.client.ui.Widget;
 
 public class Organization extends Screen implements AutoCompleteCallInt {
 
     private KeyListManager<org.openelis.gwt.common.rewrite.Query<Object>>    keyList; 
+    public enum Tabs {CONTACTS,IDENTIFIERS,NOTES};
+    protected Tabs tab = Tabs.CONTACTS;
     private ScreenServiceIntAsync          service;
+    private OrganizationsManager           manager;
     private OrganizationRPC        	       rpc;
     private ContactsTab 		           contactsTab;
     private NotesTab 		  	           notesTab;
@@ -93,6 +96,7 @@ public class Organization extends Screen implements AutoCompleteCallInt {
     public Organization() {
         // Call base to get ScreenDef and draw screen
         super("OpenELISScreenServlet?service=org.openelis.modules.organization.server.Organization");
+        manager = OrganizationsManager.getInstance();
         
         keyList = new KeyListManager<org.openelis.gwt.common.rewrite.Query<Object>>();
         OrgMeta = new OrganizationMetaMap();
@@ -150,7 +154,7 @@ public class Organization extends Screen implements AutoCompleteCallInt {
     	final TextBox name = (TextBox)def.getWidget(OrgMeta.getName());
     	addScreenHandler(name,new ScreenEventHandler<String>() {
     		public void onDataChange(DataChangeEvent event) {
-    		    name.setValue(rpc.orgAddressDO.getName());
+    		    name.setValue(manager.getOrganizationAddress().getName());
     		}
     		public void onValueChange(ValueChangeEvent<String> event) {
     			rpc.orgAddressDO.setName(event.getValue());
@@ -165,7 +169,7 @@ public class Organization extends Screen implements AutoCompleteCallInt {
     	final TextBox street = (TextBox)def.getWidget(OrgMeta.ADDRESS.getStreetAddress());
     	addScreenHandler(street, new ScreenEventHandler<String>() {
 			public void onDataChange(DataChangeEvent event) {
-				street.setValue(rpc.orgAddressDO.getAddressDO().getStreetAddress());
+				street.setValue(manager.getOrganizationAddress().getAddressDO().getStreetAddress());
 			}
 			public void onValueChange(ValueChangeEvent<String> event) {
 				rpc.orgAddressDO.getAddressDO().setStreetAddress(event.getValue());
@@ -179,7 +183,7 @@ public class Organization extends Screen implements AutoCompleteCallInt {
     	addScreenHandler(id,new ScreenEventHandler<Integer>() {
     		public void onDataChange(DataChangeEvent event) {
     		    if(rpc.orgAddressDO.getOrganizationId() != null)
-    		        id.setValue(rpc.orgAddressDO.getOrganizationId().toString());
+    		        id.setValue(manager.getOrganizationAddress().getOrganizationId().toString());
     		    else
     		        id.setValue("");
     		}
@@ -198,7 +202,7 @@ public class Organization extends Screen implements AutoCompleteCallInt {
     	final TextBox multipleUnit = (TextBox)def.getWidget(OrgMeta.getAddress().getMultipleUnit());
     	addScreenHandler(multipleUnit,new ScreenEventHandler<String>() {
     		public void onDataChange(DataChangeEvent event) {
-    			multipleUnit.setValue(rpc.orgAddressDO.getAddressDO().getMultipleUnit());
+    			multipleUnit.setValue(manager.getOrganizationAddress().getAddressDO().getMultipleUnit());
     		}
     		public void onValueChange(ValueChangeEvent<String> event) {
     			rpc.orgAddressDO.getAddressDO().setMultipleUnit(event.getValue());
@@ -211,7 +215,7 @@ public class Organization extends Screen implements AutoCompleteCallInt {
     	final TextBox city = (TextBox)def.getWidget(OrgMeta.getAddress().getCity());
     	addScreenHandler(city, new ScreenEventHandler<String>() {
     		public void onDataChange(DataChangeEvent event) {
-    			city.setValue(rpc.orgAddressDO.getAddressDO().getCity());
+    			city.setValue(manager.getOrganizationAddress().getAddressDO().getCity());
     		}
     		public void onValueChange(ValueChangeEvent<String> event) {
     			rpc.orgAddressDO.getAddressDO().setCity(event.getValue());
@@ -224,7 +228,7 @@ public class Organization extends Screen implements AutoCompleteCallInt {
     	final TextBox zipCode = (TextBox)def.getWidget(OrgMeta.getAddress().getZipCode());
     	addScreenHandler(zipCode,new ScreenEventHandler<String>() {
     		public void onDataChange(DataChangeEvent event) {
-    			zipCode.setValue(rpc.orgAddressDO.getAddressDO().getZipCode());
+    			zipCode.setValue(manager.getOrganizationAddress().getAddressDO().getZipCode());
     		}
     		public void onValueChange(ValueChangeEvent<String> event) {
     			rpc.orgAddressDO.getAddressDO().setZipCode(event.getValue());
@@ -237,7 +241,7 @@ public class Organization extends Screen implements AutoCompleteCallInt {
     	final Dropdown<String> state = (Dropdown<String>)def.getWidget(OrgMeta.getAddress().getState());
     	addScreenHandler(state,new ScreenEventHandler<String>() {
     		public void onDataChange(DataChangeEvent event) {
-    			state.setSelection(rpc.orgAddressDO.getAddressDO().getState());
+    			state.setSelection(manager.getOrganizationAddress().getAddressDO().getState());
     		}
     		public void onValueChange(ValueChangeEvent<String> event) {
     			rpc.orgAddressDO.getAddressDO().setState(event.getValue());
@@ -250,7 +254,7 @@ public class Organization extends Screen implements AutoCompleteCallInt {
     	final Dropdown<String> country = (Dropdown<String>)def.getWidget(OrgMeta.getAddress().getCountry());
     	addScreenHandler(country,new ScreenEventHandler<String>() {
     		public void onDataChange(DataChangeEvent event) {
-    			country.setSelection(rpc.orgAddressDO.getAddressDO().getCountry());
+    			country.setSelection(manager.getOrganizationAddress().getAddressDO().getCountry());
     		}
     		public void onValueChange(ValueChangeEvent<String> event) {
     			rpc.orgAddressDO.getAddressDO().setCountry(event.getValue());
@@ -263,7 +267,7 @@ public class Organization extends Screen implements AutoCompleteCallInt {
     	final CheckBox isActive = (CheckBox)def.getWidget(OrgMeta.getIsActive());
     	addScreenHandler(isActive,new ScreenEventHandler<String>() {
     		public void onDataChange(DataChangeEvent event) {
-    			isActive.setValue(rpc.orgAddressDO.getIsActive());
+    			isActive.setValue(manager.getOrganizationAddress().getIsActive());
     		}
     		public void onValueChange(ValueChangeEvent<String> event) {
     			rpc.orgAddressDO.setIsActive(event.getValue());
@@ -290,7 +294,7 @@ public class Organization extends Screen implements AutoCompleteCallInt {
     					}
     				}
     			}
-    			parentOrg.setSelection(rpc.orgAddressDO.getParentOrganizationId());
+    			parentOrg.setSelection(manager.getOrganizationAddress().getParentOrganizationId());
     		}
     		public void onValueChangeEvent(ValueChangeEvent<Integer> event) {
     			rpc.orgAddressDO.setParentOrganizationId(event.getValue());
@@ -415,26 +419,47 @@ public class Organization extends Screen implements AutoCompleteCallInt {
     	keyList.addActionHandler(new ActionHandler<KeyListManager.Action>() {
     		public void onAction(ActionEvent<KeyListManager.Action> event) {
     	        if(event.getAction() == KeyListManager.Action.FETCH){
-    	        	Tabs tab = rpc.tab;
     	        	rpc = new OrganizationRPC();
-    	        	contactsTab.setRPC(new ContactsRPC());
-    	        	notesTab.setRPC(new NotesRPC());
-    	        	rpc.tab = tab;
-    	            rpc.orgAddressDO.setOrganizationId((Integer)((Object[])event.getData())[0]);
-    	            final AsyncCallback call = ((AsyncCallback)((Object[])event.getData())[1]);
+    	        	contactsTab.setRPC(rpc.orgContacts);
+                    notesTab.setRPC(new NotesRPC());
+                    
+    	        	rpc.orgAddressDO.setOrganizationId((Integer)((Object[])event.getData())[0]);
     	            window.setBusy("Fetching ...");
+    	            try{
+    	            manager = OrganizationsManager.findById(rpc.orgAddressDO.getOrganizationId());
+    	            }catch(Exception e){
+    	                
+    	            }
+    	            
+    	            /*
+    	            if(tab == Tabs.CONTACTS){
+    	                //contactsTab.setManager();
+    	                manager.getContactsManager().fetch();
+                    }else if(tab == Tabs.IDENTIFIERS){
+                        //empty for now
+                    }else if(tab == Tabs.NOTES){
+                        manager.getNotesManager().fetch();
+                    }
+*/
+
+    	            load();
+    	            setState(Screen.State.DISPLAY);
+                    //call.onSuccess(result);
+                    window.clearStatus();
+    	            
+                    /*
+    	            final AsyncCallback call = ((AsyncCallback)((Object[])event.getData())[1]);
+    	            
     	        	service.callScreen("fetch",rpc,new AsyncCallback<OrganizationRPC>() {
     	        		public void onSuccess(OrganizationRPC result) {
     	        			load(result);
-    	        			setState(Screen.State.DISPLAY);
-    	        			call.onSuccess(result);
-    	        			window.clearStatus();
+    	        			
     	        		}
     	        		public void onFailure(Throwable caught) {
     	        			Window.alert(caught.getMessage());
     	        			call.onFailure(caught);
     	        		}
-    	        	});
+    	        	});*/
     	        }else if(event.getAction() == KeyListManager.Action.GETPAGE){
     	            final OrgQuery query = (OrgQuery)((Object[])event.getData())[0];
     	            final AsyncCallback callback = (AsyncCallback)((Object[])event.getData())[1];
@@ -489,9 +514,9 @@ public class Organization extends Screen implements AutoCompleteCallInt {
 			public void onSelection(SelectionEvent<Integer> event) {
 				int tabIndex = event.getSelectedItem().intValue();
 				if(tabIndex == Tabs.CONTACTS.ordinal())
-					rpc.tab = Tabs.CONTACTS;
+					tab = Tabs.CONTACTS;
 				else if(tabIndex == Tabs.NOTES.ordinal())
-					rpc.tab = Tabs.NOTES;
+					tab = Tabs.NOTES;
 			}
     	});
     	tabs.addBeforeSelectionHandler(new BeforeSelectionHandler<Integer>() {
@@ -560,25 +585,18 @@ public class Organization extends Screen implements AutoCompleteCallInt {
     }
     
     public void fetch() {
-    	window.setBusy("Loading...");
-    	service.callScreen("fectch",rpc,new AsyncCallback<OrganizationRPC>() {
-    		public void onSuccess(OrganizationRPC result) {
-    			load(result);
-    			setState(Screen.State.DISPLAY);
-    		}
-    		public void onFailure(Throwable caught) {
-    			Window.alert(caught.getMessage());
-    		}
-    	});
+    	
     }
     
-    
-    public void load(OrganizationRPC rpc) {
-    	this.rpc = rpc;
+    public void load() {
     	DataChangeEvent.fire(this);
     }
 
-
+    public void load(OrganizationRPC rpc) {
+        this.rpc = rpc;
+        DataChangeEvent.fire(this);
+    }
+    
     private void getOrganizations(String query) {
         if (state == State.DISPLAY || state == State.DEFAULT) {
             QueryData qField = new QueryData();

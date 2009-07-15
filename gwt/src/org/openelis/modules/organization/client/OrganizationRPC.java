@@ -21,14 +21,8 @@ public class OrganizationRPC implements RPC {
 	// AutoComplete RPC for Parent Organization when loaded with fetch
     public ParentOrgRPC parentOrgRPC;
 
-    //Ordinal order of enums must match order in tab panel
-    public enum Tabs {CONTACTS,IDENTIFIERS,NOTES};
-    
-    //The Tab that is selected on screen;
-    public Tabs tab = Tabs.CONTACTS;
-    
     //List of tabs that should be loaded on fetch
-    public ArrayList<Tabs> loadTabs;
+    //public ArrayList<Tabs> loadTabs;
 	
 
 }
