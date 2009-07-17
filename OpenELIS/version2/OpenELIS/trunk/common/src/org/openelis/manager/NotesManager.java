@@ -39,10 +39,15 @@ public class NotesManager implements RPC {
     protected Integer referenceId;
     protected Integer referenceTableId;
     protected ArrayList<NoteDO> notes;
-    public boolean load = false;
     public boolean cached = false;
     
-    protected transient NotesManagerProxy proxy;
+    protected transient static NotesManagerProxy proxy;
+    
+    protected NotesManager() {
+        referenceId = null;
+        referenceTableId = null;
+        notes = null;
+    }
     
     /**
      * Creates a new instance of this object.
@@ -56,28 +61,10 @@ public class NotesManager implements RPC {
         return nm;
     }
     
-    //FIXME cleanup this code...
-    /*
-    public NoteDO add(){
-         boolean needOne = false;
-         NoteDO noteDO = null;
-
-         manager().fetch();
-         if (notes.size() == 0) {
-             needOne = true;
-         } else {
-             noteDO = notes.get(0);
-             if (!external && noteDO.getId() != null)
-                 needOne = true;
-         }
-         if (needOne) {
-             noteDO = new NoteDO();
-             notes.add(0,noteDO);
-         }
-
-         return noteDO; 
-     }*/    
-    
+    public static NotesManager findByRefTableRefId(Integer tableId, Integer id) throws Exception {
+        return proxy().fetch(tableId, id);
+    }
+        
     public void setReferenceTableId(Integer referenceTableId) {
         this.referenceTableId = referenceTableId;
     }
@@ -124,6 +111,7 @@ public class NotesManager implements RPC {
         return proxy().commitUpdate(this);
     }
     
+    /*
     public NotesManager fetch(){
         if (cached || !load)
             return this;
@@ -135,9 +123,9 @@ public class NotesManager implements RPC {
             return null;
         
         return proxy().fetch(this);
-    }
+    }*/
     
-    private NotesManagerProxy proxy(){
+    private static NotesManagerProxy proxy(){
         if(proxy == null)
             proxy = new NotesManagerProxy();
         
@@ -150,5 +138,6 @@ public class NotesManager implements RPC {
 
     public void setNotes(ArrayList<NoteDO> notes) {
         this.notes = notes;
+        cached = true;
     }     
 }

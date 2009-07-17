@@ -3,7 +3,7 @@ package org.openelis.remote;
 import javax.ejb.Remote;
 
 import org.openelis.domain.SampleHumanDO;
-import org.openelis.manager.SampleDomainInt;
+import org.openelis.managerOld.SampleDomainInt;
 
 @Remote
 public interface SampleHumanRemote {

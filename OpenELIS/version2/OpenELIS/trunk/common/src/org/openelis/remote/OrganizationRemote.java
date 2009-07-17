@@ -24,28 +24,26 @@
 * UIRF Software License are applicable instead of those above. 
 */
 package org.openelis.remote;
-import org.openelis.domain.IdNameDO;
-import org.openelis.domain.NoteDO;
-import org.openelis.domain.OrganizationAddressDO;
-import org.openelis.domain.OrganizationContactDO;
-import org.openelis.domain.OrganizationsManagerIO;
-import org.openelis.gwt.common.data.AbstractField;
-import org.openelis.gwt.common.rewrite.QueryData;
-import org.openelis.manager.OrganizationContactsManager;
-import org.openelis.manager.OrganizationsManager;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.ejb.Remote;
 
+import org.openelis.domain.IdNameDO;
+import org.openelis.domain.NoteDO;
+import org.openelis.domain.OrganizationAddressDO;
+import org.openelis.domain.OrganizationContactDO;
+import org.openelis.gwt.common.data.AbstractField;
+import org.openelis.gwt.common.rewrite.QueryData;
+import org.openelis.manager.OrganizationsManager;
+
 @Remote
 public interface OrganizationRemote {
 	//method to return org name, address
-	public OrganizationAddressDO getOrganizationAddress(Integer organizationId);
+    public OrganizationAddressDO getOrganizationAddress(Integer organizationId) throws Exception;
 	
 	//method to unlock entity and return org name, address
-	public OrganizationAddressDO getOrganizationAddressAndUnlock(Integer organizationId);
+	public OrganizationAddressDO getOrganizationAddressAndUnlock(Integer organizationId) throws Exception;
 	
 	//update initial call for org
 	public OrganizationAddressDO getOrganizationAddressAndLock(Integer organizationId) throws Exception;
@@ -57,7 +55,7 @@ public interface OrganizationRemote {
 	public List getOrganizationNotes(Integer organizationId);
 	
 	//method to return just contacts
-	public List getOrganizationContacts(Integer organizationId);
+	public List getOrganizationContacts(Integer organizationId) throws Exception;
 	
 	//method to query for organizations
 	 public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception;
@@ -69,18 +67,4 @@ public interface OrganizationRemote {
 	 
 	 //auto complete lookup
 	 public List autoCompleteLookupById(Integer id);
-	 
-	 //
-	 //NEW METHODS FOR THE MANAGER ORG SCREEN
-	 //
-	 //fetch methods
-	 public OrganizationsManager fetch(Integer orgId) throws Exception;
-	 public OrganizationsManager fetchWithContacts(Integer orgId);
-	 public OrganizationsManager fetchWithIdentifiers(Integer orgId);
-	 public OrganizationsManager fetchWithNotes(Integer orgId);
-	 
-	 public OrganizationsManager fetchForUpdate(Integer orgId);
-     public OrganizationsManager abortUpdate(Integer orgId);
-     
-     public OrganizationsManager add(OrganizationsManager man) throws Exception;
 }

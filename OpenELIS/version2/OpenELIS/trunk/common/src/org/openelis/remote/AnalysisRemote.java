@@ -29,7 +29,7 @@ import java.util.List;
 
 import javax.ejb.Remote;
 
-import org.openelis.manager.AnalysesManager;
+import org.openelis.managerOld.AnalysesManager;
 
 @Remote
 public interface AnalysisRemote {

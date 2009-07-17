@@ -27,8 +27,6 @@ package org.openelis.manager;
 
 import org.openelis.domain.OrganizationAddressDO;
 import org.openelis.gwt.common.RPC;
-import org.openelis.manager.NotesManager;
-import org.openelis.manager.OrganizationContactsManager;
 import org.openelis.manager.proxy.OrganizationsManagerProxy;
 
 public class OrganizationsManager implements RPC {
@@ -38,8 +36,6 @@ public class OrganizationsManager implements RPC {
     protected NotesManager                              notes;
     protected OrganizationAddressDO                     organizationAddress;
     protected Integer organizationReferenceTable;
-    public boolean load = false;
-    public boolean cached = false;
     
     protected transient static OrganizationsManagerProxy proxy;
     
@@ -68,49 +64,55 @@ public class OrganizationsManager implements RPC {
         return proxy().fetch(id);
     }
     
-    /*
+    
     public static OrganizationsManager findByIdWithContacts(Integer id){
-        return io().fe
+        return null;
     }
     
     public static OrganizationsManager findByIdWithNotes(Integer id){
-        
+        return null;    
     }
     
     public static OrganizationsManager findByIdWithIdentifiers(Integer id){
-        
+        return null;
     }
-    */
+    
+    public static OrganizationsManager fetchForUpdate(Integer id) throws Exception {
+        return proxy().fetchForUpdate(id);
+    }
+    
     
     //getters/setters
-    public void setNotesManager(NotesManager notesManager){
-        notes = notesManager;
-    }
-    
-    public NotesManager getNotesManager(){
-        if (notes == null) 
-            notes = NotesManager.getInstance();
-        
-        if(notes.getReferenceId() == null){
-            notes.setExternal(false);
-            notes.setReferenceId(organizationAddress.getOrganizationId());
-            notes.setReferenceTableId(organizationReferenceTable);
+    public NotesManager getNotes(){
+        if(notes == null){
+            if(organizationAddress.getOrganizationId() != null){
+                try{
+                    notes = NotesManager.findByRefTableRefId(organizationReferenceTable, organizationAddress.getOrganizationId());
+                    
+                }catch(Exception e){
+                    return null;
+                }
+            }else{
+                notes = NotesManager.getInstance();
+                notes.setExternal(false);
+            }
         }
 
         return notes;
-    }
-    
-    public void setContactsManager(OrganizationContactsManager contactsManager){
-        contacts = contactsManager;
-    }
-    
-    public OrganizationContactsManager getContactsManager(){
-        if (contacts == null) 
-            contacts = OrganizationContactsManager.getInstance();
-        
-        if(organizationAddress.getOrganizationId() == null)
-            contacts.setOrganizationId(organizationAddress.getOrganizationId());
-
+    }  
+    public OrganizationContactsManager getContacts(){
+        if(contacts == null){
+            if(organizationAddress.getOrganizationId() != null){
+                try{
+                    contacts = OrganizationContactsManager.findByOrganizationId(organizationAddress.getOrganizationId());
+                    
+                }catch(Exception e){
+                    return null;
+                }
+            }else{
+                contacts = OrganizationContactsManager.getInstance();
+            }
+        }
         return contacts;
     }
     
@@ -120,7 +122,6 @@ public class OrganizationsManager implements RPC {
 
     public void setOrganizationAddress(OrganizationAddressDO organizationAddress) {
         this.organizationAddress = organizationAddress;
-        cached = true;
     }
     
     public Integer getOrganizationReferenceTable() {
@@ -139,12 +140,6 @@ public class OrganizationsManager implements RPC {
     
     public OrganizationsManager update() throws Exception {
         return proxy().update(this);
-        
-    }
-    
-    public OrganizationsManager fetchForUpdate(Integer id) throws Exception {
-        organizationAddress.setOrganizationId(id);
-        return proxy().fetchForUpdate(id);
         
     }
     

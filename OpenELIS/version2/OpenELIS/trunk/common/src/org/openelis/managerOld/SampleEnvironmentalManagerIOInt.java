@@ -1,4 +1,4 @@
-package org.openelis.manager;
+package org.openelis.managerOld;
 
 import org.openelis.domain.AddressDO;
 import org.openelis.domain.SampleEnvironmentalDO;
