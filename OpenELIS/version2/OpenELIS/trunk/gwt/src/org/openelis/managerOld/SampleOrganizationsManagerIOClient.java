@@ -23,12 +23,12 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.manager;
+package org.openelis.managerOld;
 
 import java.util.List;
 
-import org.openelis.manager.SampleOrganizationsManager;
-import org.openelis.manager.SampleOrganizationsManagerIOInt;
+import org.openelis.managerOld.SampleOrganizationsManager;
+import org.openelis.managerOld.SampleOrganizationsManagerIOInt;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.CategoryRemote;
 import org.openelis.remote.SampleOrganizationRemote;

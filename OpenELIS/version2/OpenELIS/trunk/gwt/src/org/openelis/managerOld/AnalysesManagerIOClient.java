@@ -23,35 +23,30 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.manager;
+package org.openelis.managerOld;
 
 import java.util.List;
 
-import org.openelis.manager.SampleProjectsManager;
-import org.openelis.manager.SampleProjectsManagerIOInt;
+import org.openelis.managerOld.AnalysesManager;
+import org.openelis.managerOld.AnalysesManagerIOInt;
 import org.openelis.persistence.EJBFactory;
-import org.openelis.remote.SampleItemRemote;
-import org.openelis.remote.SampleProjectRemote;
+import org.openelis.remote.AnalysisRemote;
 
-public class SampleProjectsManagerIOClient implements SampleProjectsManagerIOInt {
+public class AnalysesManagerIOClient implements AnalysesManagerIOInt {
+    
+    public List fetch(Integer sampleItemId) {
+        AnalysisRemote remote = getAnalysisRemote();
 
-    public List fetch(Integer sampleId) {
-        
-        SampleProjectRemote remote = getSampleProjectRemote();
-
-        return remote.getProjectsBySampleId(sampleId);
-        
+        return remote.getAnalysisTestsBySampleItemId(sampleItemId);
     }
 
-    public void update(SampleProjectsManager sampleProjects) {
-        
-        SampleProjectRemote remote = getSampleProjectRemote();
+    public void update(AnalysesManager analyses) {
+        AnalysisRemote remote = getAnalysisRemote();
 
-        remote.update(sampleProjects);
-        
+        remote.update(analyses);
     }
     
-    private SampleProjectRemote getSampleProjectRemote(){
-        return (SampleProjectRemote)EJBFactory.lookup("openelis/SampleProjectBean/remote");
+    private AnalysisRemote getAnalysisRemote(){
+        return (AnalysisRemote)EJBFactory.lookup("openelis/AnalysisBean/remote");
     }
 }

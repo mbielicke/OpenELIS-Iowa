@@ -14,6 +14,7 @@ import org.openelis.gwt.widget.rewrite.AppButton;
 import org.openelis.gwt.widget.rewrite.Dropdown;
 import org.openelis.gwt.widget.table.rewrite.TableDataRow;
 import org.openelis.gwt.widget.table.rewrite.TableWidget;
+import org.openelis.manager.OrganizationsManager;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -21,6 +22,7 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 public class ContactsTab extends Screen {
 
 	private ContactsRPC rpc;
+	private OrganizationsManager manager;
 	private TableWidget table;
 	private boolean dropdownsInited;
 
@@ -31,12 +33,13 @@ public class ContactsTab extends Screen {
 	
 	private void setHandlers() {
 		table = (TableWidget)def.getWidget("contactsTable");
+//		table.manager = this;
 		addScreenHandler(table,new ScreenEventHandler<ArrayList<TableDataRow>>() {
 			public void onDataChange(DataChangeEvent event) {
 				table.load(getTableModel());
 			}
 			public void onValueChange(ValueChangeEvent<ArrayList<TableDataRow>> event) {
-				rpc.orgContacts = getContacts();
+				manager.getContacts().setContacts(getContacts());
 			}
 			public void onStateChange(StateChangeEvent<State> event) {
 				if(event.getState() == State.ADD || event.getState() == State.UPDATE) {
@@ -225,5 +228,97 @@ public class ContactsTab extends Screen {
 		}                
 		DataChangeEvent.fire(this);
 	}
+	
+	public void setManager(OrganizationsManager manager) {
+       this.manager = manager;
+        
+        if(!dropdownsInited) {
+            setContactTypes(DictionaryCache.getListByCategorySystemName("contact_type"));
+            setCountriesModel(DictionaryCache.getListByCategorySystemName("country"));
+            setStatesModel(DictionaryCache.getListByCategorySystemName("state"));
+            dropdownsInited = true;
+        }                
+        DataChangeEvent.fire(this);
+	}
 
+	//
+	//start table manager methods
+	//
+    public boolean canAdd(TableWidget widget, TableDataRow set, int row) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    public boolean canAutoAdd(TableWidget widget, TableDataRow addRow) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    public boolean canDelete(TableWidget widget, TableDataRow set, int row) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    public boolean canEdit(TableWidget widget,
+                           TableDataRow set,
+                           int row,
+                           int col) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    public boolean canSelect(TableWidget widget, TableDataRow set, int row) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+    //
+    //end table manager methods
+    //
+    
+    //FIXME doesnt exist in the code right now
+    /*
+    public void finishedEditing(SourcesTableWidgetEvents sender, final int row, final int col) {
+        TableDataRow tableRow = table.getRow(row);
+        switch (col){
+            case 0:
+                    manager.getContacts().getContactAt(row).setContactType((Integer)tableRow.cells.get(0).value);
+                    break;
+            case 1:
+                    manager.getContacts().getContactAt(row).setName((String)tableRow.cells.get(1).value);
+                    break;
+            case 2:
+                    manager.getContacts().getContactAt(row).getAddressDO().setMultipleUnit((String)tableRow.cells.get(2).value);
+                    break;
+            case 3:
+                    manager.getContacts().getContactAt(row).getAddressDO().setStreetAddress((String)tableRow.cells.get(3).value);
+                    break;
+            case 4:
+                    manager.getContacts().getContactAt(row).getAddressDO().setCity((String)tableRow.cells.get(4).value);
+                    break;
+            case 5:
+                    manager.getContacts().getContactAt(row).getAddressDO().setState((String)tableRow.cells.get(5).value);
+                    break;
+            case 6:
+                    manager.getContacts().getContactAt(row).getAddressDO().setZipCode((String)tableRow.cells.get(6).value);
+                    break;
+            case 7:
+                    manager.getContacts().getContactAt(row).getAddressDO().setCountry((String)tableRow.cells.get(7).value);
+                    break;
+            case 8:
+                    manager.getContacts().getContactAt(row).getAddressDO().setWorkPhone((String)tableRow.cells.get(8).value);
+                    break;
+            case 9:
+                    manager.getContacts().getContactAt(row).getAddressDO().setHomePhone((String)tableRow.cells.get(9).value);
+                    break;
+            case 10:
+                    manager.getContacts().getContactAt(row).getAddressDO().setCellPhone((String)tableRow.cells.get(10).value);
+                    break;
+            case 11:
+                manager.getContacts().getContactAt(row).getAddressDO().setFaxPhone((String)tableRow.cells.get(11).value);
+                    break;
+            case 12:
+                    manager.getContacts().getContactAt(row).getAddressDO().setEmail((String)tableRow.cells.get(12).value);
+                    break;
+        }
+    }*/
 }

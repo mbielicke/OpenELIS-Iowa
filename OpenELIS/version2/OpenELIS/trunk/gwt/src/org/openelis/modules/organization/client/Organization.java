@@ -45,6 +45,7 @@ import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.rewrite.Screen;
 import org.openelis.gwt.screen.rewrite.ScreenEventHandler;
+import org.openelis.gwt.screen.rewrite.Screen.State;
 import org.openelis.gwt.services.ScreenServiceInt;
 import org.openelis.gwt.services.ScreenServiceIntAsync;
 import org.openelis.gwt.widget.HasField;
@@ -89,10 +90,11 @@ public class Organization extends Screen implements AutoCompleteCallInt {
     private OrganizationRPC        	       rpc;
     private ContactsTab 		           contactsTab;
     private NotesTab 		  	           notesTab;
-   
     
     private OrganizationMetaMap OrgMeta = new OrganizationMetaMap();
     
+    EnumSet<State> enabledStates = EnumSet.of(State.ADD,State.UPDATE,State.QUERY);
+
     public Organization() {
         // Call base to get ScreenDef and draw screen
         super("OpenELISScreenServlet?service=org.openelis.modules.organization.server.Organization");
@@ -102,7 +104,7 @@ public class Organization extends Screen implements AutoCompleteCallInt {
         OrgMeta = new OrganizationMetaMap();
         
         //Setup link between Screen and widget Handlers
-        setHandlers();
+        initialize();
         
         //Create the Handler for the Contacts tab passing in the ScreenDef
         contactsTab = new ContactsTab(def);
@@ -147,9 +149,7 @@ public class Organization extends Screen implements AutoCompleteCallInt {
 
 
     
-    EnumSet<State> enabledStates = EnumSet.of(State.ADD,State.UPDATE,State.QUERY); 
-    
-    private void setHandlers() {
+    private void initialize() {
         
     	final TextBox name = (TextBox)def.getWidget(OrgMeta.getName());
     	addScreenHandler(name,new ScreenEventHandler<String>() {
@@ -157,10 +157,12 @@ public class Organization extends Screen implements AutoCompleteCallInt {
     		    name.setValue(manager.getOrganizationAddress().getName());
     		}
     		public void onValueChange(ValueChangeEvent<String> event) {
-    			rpc.orgAddressDO.setName(event.getValue());
+    			manager.getOrganizationAddress().setName(event.getValue());
     		}
     		public void onStateChange(StateChangeEvent<State> event) {
-    			name.enable(enabledStates.contains(event.getState()));
+    		    name.enable(EnumSet.of(State.ADD,State.UPDATE,State.QUERY).contains(event.getState()));
+    		    name.setQueryMode(event.getState() == State.QUERY);
+    		    
     			if(event.getState() == State.ADD || event.getState() == State.UPDATE)
     				name.setFocus(true);
     		}
@@ -172,7 +174,7 @@ public class Organization extends Screen implements AutoCompleteCallInt {
 				street.setValue(manager.getOrganizationAddress().getAddressDO().getStreetAddress());
 			}
 			public void onValueChange(ValueChangeEvent<String> event) {
-				rpc.orgAddressDO.getAddressDO().setStreetAddress(event.getValue());
+			    manager.getOrganizationAddress().getAddressDO().setStreetAddress(event.getValue());
 			}
 			public void onStateChange(StateChangeEvent<State> event) {
 				street.enable(enabledStates.contains(event.getState()));
@@ -188,14 +190,14 @@ public class Organization extends Screen implements AutoCompleteCallInt {
     		        id.setValue("");
     		}
     		public void onValueChange(ValueChangeEvent<Integer> event) {
-    			rpc.orgAddressDO.setOrganizationId(event.getValue());
+    		    manager.getOrganizationAddress().setOrganizationId(event.getValue());
     		}
     		public void onStateChange(StateChangeEvent<State> event) {
-    			if(event.getState() == State.QUERY){
-    				id.enable(true);
+    		    id.enable(EnumSet.of(State.QUERY).contains(event.getState()));
+                id.setQueryMode(event.getState() == State.QUERY);
+                
+    			if(event.getState() == State.QUERY)
     				id.setFocus(true);
-    			}else
-    				id.enable(false);
     		}
     	});
     	
@@ -205,7 +207,7 @@ public class Organization extends Screen implements AutoCompleteCallInt {
     			multipleUnit.setValue(manager.getOrganizationAddress().getAddressDO().getMultipleUnit());
     		}
     		public void onValueChange(ValueChangeEvent<String> event) {
-    			rpc.orgAddressDO.getAddressDO().setMultipleUnit(event.getValue());
+    		    manager.getOrganizationAddress().getAddressDO().setMultipleUnit(event.getValue());
     		}
     		public void onStateChange(StateChangeEvent<State> event) {
     			multipleUnit.enable(enabledStates.contains(event.getState()));
@@ -218,7 +220,7 @@ public class Organization extends Screen implements AutoCompleteCallInt {
     			city.setValue(manager.getOrganizationAddress().getAddressDO().getCity());
     		}
     		public void onValueChange(ValueChangeEvent<String> event) {
-    			rpc.orgAddressDO.getAddressDO().setCity(event.getValue());
+    		    manager.getOrganizationAddress().getAddressDO().setCity(event.getValue());
     		}
     		public void onStateChange(StateChangeEvent<State> event) {
     			city.enable(enabledStates.contains(event.getState()));
@@ -231,7 +233,7 @@ public class Organization extends Screen implements AutoCompleteCallInt {
     			zipCode.setValue(manager.getOrganizationAddress().getAddressDO().getZipCode());
     		}
     		public void onValueChange(ValueChangeEvent<String> event) {
-    			rpc.orgAddressDO.getAddressDO().setZipCode(event.getValue());
+    		    manager.getOrganizationAddress().getAddressDO().setZipCode(event.getValue());
     		}
     		public void onStateChange(StateChangeEvent<State> event){
     			zipCode.enable(enabledStates.contains(event.getState()));
@@ -244,7 +246,7 @@ public class Organization extends Screen implements AutoCompleteCallInt {
     			state.setSelection(manager.getOrganizationAddress().getAddressDO().getState());
     		}
     		public void onValueChange(ValueChangeEvent<String> event) {
-    			rpc.orgAddressDO.getAddressDO().setState(event.getValue());
+    		    manager.getOrganizationAddress().getAddressDO().setState(event.getValue());
     		}
     		public void onStateChange(StateChangeEvent<State> event) {
     			state.enable(enabledStates.contains(event.getState()));
@@ -257,7 +259,7 @@ public class Organization extends Screen implements AutoCompleteCallInt {
     			country.setSelection(manager.getOrganizationAddress().getAddressDO().getCountry());
     		}
     		public void onValueChange(ValueChangeEvent<String> event) {
-    			rpc.orgAddressDO.getAddressDO().setCountry(event.getValue());
+    		    manager.getOrganizationAddress().getAddressDO().setCountry(event.getValue());
     		}
     		public void onStateChange(StateChangeEvent<State> event) {
     			country.enable(enabledStates.contains(event.getState()));
@@ -270,7 +272,7 @@ public class Organization extends Screen implements AutoCompleteCallInt {
     			isActive.setValue(manager.getOrganizationAddress().getIsActive());
     		}
     		public void onValueChange(ValueChangeEvent<String> event) {
-    			rpc.orgAddressDO.setIsActive(event.getValue());
+    		    manager.getOrganizationAddress().setIsActive(event.getValue());
     		}
     		public void onStateChange(StateChangeEvent<State> event){
     			isActive.enable(enabledStates.contains(event.getState()));
@@ -297,7 +299,7 @@ public class Organization extends Screen implements AutoCompleteCallInt {
     			parentOrg.setSelection(manager.getOrganizationAddress().getParentOrganizationId());
     		}
     		public void onValueChangeEvent(ValueChangeEvent<Integer> event) {
-    			rpc.orgAddressDO.setParentOrganizationId(event.getValue());
+    		    manager.getOrganizationAddress().setParentOrganizationId(event.getValue());
     		}
     		public void onStateChange(StateChangeEvent<State> event) {
     			parentOrg.enable(enabledStates.contains(event.getState()));
@@ -346,6 +348,7 @@ public class Organization extends Screen implements AutoCompleteCallInt {
     	final AppButton updateButton = (AppButton)def.getWidget("update");
     	addScreenHandler(updateButton, new ScreenEventHandler<Object>() {
     	   public void onClick(ClickEvent event) {
+    	       Window.alert("name was ["+manager.getOrganizationAddress().getName()+"]");
     	       update();
     	   }
     	   public void onStateChange(StateChangeEvent<State> event) {
@@ -362,7 +365,7 @@ public class Organization extends Screen implements AutoCompleteCallInt {
     	final AppButton nextButton = (AppButton)def.getWidget("next");
     	addScreenHandler(nextButton, new ScreenEventHandler<Object>() {
     	   public void onClick(ClickEvent event) {
-    	       keyList.next();
+    	       next();
     	   }
     	   public void onStateChange(StateChangeEvent<State> event) {
     	       if(event.getState() == State.DISPLAY) {
@@ -376,6 +379,7 @@ public class Organization extends Screen implements AutoCompleteCallInt {
         final AppButton prevButton = (AppButton)def.getWidget("previous");
         addScreenHandler(prevButton, new ScreenEventHandler<Object>() {
            public void onClick(ClickEvent event) {
+               previous();
                keyList.next();
            }
            public void onStateChange(StateChangeEvent<State> event) {
@@ -419,34 +423,8 @@ public class Organization extends Screen implements AutoCompleteCallInt {
     	keyList.addActionHandler(new ActionHandler<KeyListManager.Action>() {
     		public void onAction(ActionEvent<KeyListManager.Action> event) {
     	        if(event.getAction() == KeyListManager.Action.FETCH){
-    	        	rpc = new OrganizationRPC();
-    	        	contactsTab.setRPC(rpc.orgContacts);
-                    notesTab.setRPC(new NotesRPC());
-                    
-    	        	rpc.orgAddressDO.setOrganizationId((Integer)((Object[])event.getData())[0]);
-    	            window.setBusy("Fetching ...");
-    	            try{
-    	            manager = OrganizationsManager.findById(rpc.orgAddressDO.getOrganizationId());
-    	            }catch(Exception e){
-    	                
-    	            }
-    	            
-    	            /*
-    	            if(tab == Tabs.CONTACTS){
-    	                //contactsTab.setManager();
-    	                manager.getContactsManager().fetch();
-                    }else if(tab == Tabs.IDENTIFIERS){
-                        //empty for now
-                    }else if(tab == Tabs.NOTES){
-                        manager.getNotesManager().fetch();
-                    }
-*/
-
-    	            load();
-    	            setState(Screen.State.DISPLAY);
-                    //call.onSuccess(result);
-                    window.clearStatus();
-    	            
+    	        	fetch((Integer)((Object[])event.getData())[0]);
+    	        	
                     /*
     	            final AsyncCallback call = ((AsyncCallback)((Object[])event.getData())[1]);
     	            
@@ -535,41 +513,40 @@ public class Organization extends Screen implements AutoCompleteCallInt {
     	
     }
     
-    public void setCountriesModel() {
-        ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
-        model.add(new TableDataRow(null, ""));
-        for(DictionaryDO resultDO :  (ArrayList<DictionaryDO>)DictionaryCache.getListByCategorySystemName("country")){
-            model.add(new TableDataRow(resultDO.getEntry(),resultDO.getEntry()));
-        } 
-        ((Dropdown<String>)def.getWidget(OrgMeta.ADDRESS.getCountry())).setModel(model);
-    }
-    
-    public void setStatesModel() {
-        ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
-        model.add(new TableDataRow(null, ""));
-        for(DictionaryDO resultDO :  (ArrayList<DictionaryDO>)DictionaryCache.getListByCategorySystemName("state")){
-            model.add(new TableDataRow(resultDO.getEntry(),resultDO.getEntry()));
-        } 
-        ((Dropdown<String>)def.getWidget(OrgMeta.ADDRESS.getState())).setModel(model);
-    }
-    
-    public void query() {
+    protected void query() {
     	rpc = new OrganizationRPC();
     	load(rpc);
     	switchQuery(true);
         setState(Screen.State.QUERY);
         window.setDone(consts.get("enterFieldsToQuery"));
     }
+    
+    protected void previous(){
+        
+    }
+    
+    protected void next(){
+        
+    }
 
-    public void add() {
+    protected void add() {
     	rpc = new OrganizationRPC();
     	load(rpc);
         setState(Screen.State.ADD);
         window.setDone(consts.get("enterInformationPressCommit"));
     }
     
-    public void update() {
-    	window.setBusy("Locking Record for update...");
+    protected void update() {
+    	/*window.setBusy("Locking Record for update...");
+    	try{
+    	    manager = manager.update();
+    	    
+    	    load();
+    	    window.clearStatus();
+    	    
+    	}catch(Exception e){
+    	    Window.alert("update(): "+e.getMessage()); 
+    	}
     	service.callScreen("fetchForUpdate",rpc, new SyncCallback<OrganizationRPC>() {
     		
     	    public void onFailure(Throwable caught) {   
@@ -581,16 +558,92 @@ public class Organization extends Screen implements AutoCompleteCallInt {
                 window.clearStatus();
     		}
     	});
+    	*/
         setState(State.UPDATE);
     }
-    
-    public void fetch() {
-    	
+
+    public void commit() {
+        if (state == State.UPDATE) {
+            if (validate()) {
+                window.setBusy(consts.get("updating"));
+                commitUpdate();
+            } else {
+                window.setBusy(consts.get("correctErrors"));
+            }
+        }
+        if (state == State.ADD) {
+            if (validate()) {
+                window.setBusy(consts.get("adding"));
+                commitAdd();
+            } else {
+                window.setError(consts.get("correctErrors"));
+            }
+        }
+        if (state == State.QUERY) {
+        	if(validate()){
+        		ArrayList<QueryData> qFields = getQueryFields();
+        		commitQuery(qFields);
+        	}else {
+        		window.setError(consts.get("correctErrors"));
+        	}
+        }
     }
-    
-    public void load() {
-    	DataChangeEvent.fire(this);
+
+
+
+    public void abort() {
+        if (state == State.UPDATE) {
+        	window.setBusy("Canceling changes ...");
+            service.callScreen("abort", rpc, new AsyncCallback<OrganizationRPC>() {
+            	public void onSuccess(OrganizationRPC rpc) {
+            		load(rpc);
+            		setState(State.DISPLAY);
+            		window.clearStatus();
+            	}
+            	public void onFailure(Throwable caught) {
+            		Window.alert(caught.getMessage());
+            	}
+            });
+        }
+        else if (state == State.ADD) {
+            load(new OrganizationRPC());
+            setState(State.DEFAULT);
+            window.setDone(consts.get("addAborted"));
+        }
+        else if (state == State.QUERY) {
+            load(new OrganizationRPC());
+            setState(State.DEFAULT);
+            window.setDone(consts.get("queryAborted"));
+        }
     }
+
+
+
+    protected void fetch(Integer id) {
+        window.setBusy("Fetching ...");
+        try{
+            if(tab == Tabs.CONTACTS){
+                manager = OrganizationsManager.findByIdWithContacts(id);
+            }else if(tab == Tabs.IDENTIFIERS){
+                //empty for now
+            }else if(tab == Tabs.NOTES){
+                manager = OrganizationsManager.findByIdWithNotes(id);
+            }
+        }catch(Exception e){
+            setState(Screen.State.DEFAULT);
+            Window.alert(consts.get("fetchFailed") + e.getMessage());
+            window.clearStatus();
+            
+            return;
+        }
+        
+        DataChangeEvent.fire(this);
+        setState(Screen.State.DISPLAY);
+        //call.onSuccess(result);
+        window.clearStatus();
+    }
+
+
 
     public void load(OrganizationRPC rpc) {
         this.rpc = rpc;
@@ -606,7 +659,7 @@ public class Organization extends Screen implements AutoCompleteCallInt {
             commitQuery(qField);
         }
     }
-
+    
     /*
      * Get all notes for organization (key)
      */
@@ -652,12 +705,13 @@ public class Organization extends Screen implements AutoCompleteCallInt {
         });
     }
     
-    public void setState(Screen.State state){
+    //FIXME base class
+    protected void setState(Screen.State state){
         this.state = state;
         StateChangeEvent.fire(this, state);
     }
     
-
+    //FIXME
     public boolean validate() {
     	boolean valid = true;
     	for(Widget wid : def.getWidgets().values()){
@@ -671,12 +725,14 @@ public class Organization extends Screen implements AutoCompleteCallInt {
     	return valid;
     }
     
+    
     public void switchQuery(boolean query) {
     	for(Widget wid : def.getWidgets().values()){
     	    if(wid instanceof HasField)
     	        ((HasField)wid).setQueryMode(true);
     	}
     }
+    
     
     public ArrayList<QueryData> getQueryFields() {
     	ArrayList<QueryData> list = new ArrayList<QueryData>();
@@ -687,63 +743,6 @@ public class Organization extends Screen implements AutoCompleteCallInt {
        	    }
     	}
        	return list;
-    }
-    
-    public void commit() {
-        if (state == State.UPDATE) {
-            if (validate()) {
-                window.setBusy(consts.get("updating"));
-                commitUpdate();
-            } else {
-                window.setBusy(consts.get("correctErrors"));
-            }
-        }
-        if (state == State.ADD) {
-            if (validate()) {
-                window.setBusy(consts.get("adding"));
-                commitAdd();
-            } else {
-                window.setError(consts.get("correctErrors"));
-            }
-        }
-        if (state == State.QUERY) {
-        	if(validate()){
-        		ArrayList<QueryData> qFields = getQueryFields();
-        		commitQuery(qFields);
-        	}else {
-        		window.setError(consts.get("correctErrors"));
-        	}
-        }
-    }
-    
-    public void commitUpdate() {
-    	window.setBusy("Committing ....");
-    	service.callScreen("update", rpc, new AsyncCallback<OrganizationRPC>() {
-    		public void onSuccess(OrganizationRPC result) {
-    			load(result);
-    			setState(Screen.State.DISPLAY);
-    			window.clearStatus();
-    		}
-    		public void onFailure(Throwable caught) {
-    			if(caught instanceof ValidationErrorsList)
-    				showErrors((ValidationErrorsList)caught);
-    			else
-    				Window.alert(caught.getMessage());
-    		}
-    	});
-    }
-    
-    public void showErrors(ValidationErrorsList errors) {
-    	for(RPCException ex : errors.getErrorList()){
-    		if(ex instanceof TableFieldErrorException){
-    			TableFieldErrorException tfe = (TableFieldErrorException)ex;
-    			((TableWidget)def.getWidget(tfe.getTableKey())).setCellError(tfe.getRowIndex(), tfe.getFieldName(), consts.get(tfe.getMessage()));
-    		}else{
-    			FieldErrorException fe = (FieldErrorException)ex;
-    			((HasField)def.getWidget(fe.getFieldName())).addError(consts.get(fe.getMessage()));
-    		}
-    	}
-    	window.setError("Please fix errors");
     }
     
     public void commitAdd() {
@@ -762,31 +761,28 @@ public class Organization extends Screen implements AutoCompleteCallInt {
     		}
     	});
     }
-    
-    public void abort() {
-        if (state == State.UPDATE) {
-        	window.setBusy("Canceling changes ...");
-            service.callScreen("abort", rpc, new AsyncCallback<OrganizationRPC>() {
-            	public void onSuccess(OrganizationRPC rpc) {
-            		load(rpc);
-            		setState(State.DISPLAY);
-            		window.clearStatus();
-            	}
-            	public void onFailure(Throwable caught) {
-            		Window.alert(caught.getMessage());
-            	}
-            });
+
+
+
+    public void commitUpdate() {
+    	window.setBusy("Committing ....");
+    	try{
+            manager = manager.update();
+            
+        }catch(Exception e){
+            if(e instanceof ValidationErrorsList)
+                showErrors((ValidationErrorsList)e);
+            else{
+                Window.alert("update(): "+e.getMessage());
+                window.clearStatus();
+            }
+            
+            return;
         }
-        else if (state == State.ADD) {
-            load(new OrganizationRPC());
-            setState(State.DEFAULT);
-            window.setDone(consts.get("addAborted"));
-        }
-        else if (state == State.QUERY) {
-            load(new OrganizationRPC());
-            setState(State.DEFAULT);
-            window.setDone(consts.get("queryAborted"));
-        }
+        
+        DataChangeEvent.fire(this);;
+        setState(Screen.State.DISPLAY);
+        window.clearStatus();            
     }
     
     public void commitQuery(QueryData qField){
@@ -832,7 +828,45 @@ public class Organization extends Screen implements AutoCompleteCallInt {
         ActionEvent.fire(this, Action.NEW_PAGE, query);
     }
 
-	public void callForMatches(final AutoComplete widget,	String text) {
+	//FIXME in base class
+    protected void showErrors(ValidationErrorsList errors) {
+    	for(RPCException ex : errors.getErrorList()){
+    		if(ex instanceof TableFieldErrorException){
+    			TableFieldErrorException tfe = (TableFieldErrorException)ex;
+    			((TableWidget)def.getWidget(tfe.getTableKey())).setCellError(tfe.getRowIndex(), tfe.getFieldName(), consts.get(tfe.getMessage()));
+    		}else{
+    			FieldErrorException fe = (FieldErrorException)ex;
+    			((HasField)def.getWidget(fe.getFieldName())).addError(consts.get(fe.getMessage()));
+    		}
+    	}
+    	window.setError(consts.get("correctErrors"));
+    }
+
+
+
+    private void setCountriesModel() {
+        ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
+        model.add(new TableDataRow(null, ""));
+        for(DictionaryDO resultDO :  (ArrayList<DictionaryDO>)DictionaryCache.getListByCategorySystemName("country")){
+            model.add(new TableDataRow(resultDO.getEntry(),resultDO.getEntry()));
+        } 
+        ((Dropdown<String>)def.getWidget(OrgMeta.ADDRESS.getCountry())).setModel(model);
+    }
+
+
+
+    private void setStatesModel() {
+        ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
+        model.add(new TableDataRow(null, ""));
+        for(DictionaryDO resultDO :  (ArrayList<DictionaryDO>)DictionaryCache.getListByCategorySystemName("state")){
+            model.add(new TableDataRow(resultDO.getEntry(),resultDO.getEntry()));
+        } 
+        ((Dropdown<String>)def.getWidget(OrgMeta.ADDRESS.getState())).setModel(model);
+    }
+
+
+
+    public void callForMatches(final AutoComplete widget,	String text) {
 		ParentOrgRPC prpc = new ParentOrgRPC();
 		prpc.match = text;
 		service.callScreen("getMatches",prpc,new AsyncCallback<ParentOrgRPC>() {

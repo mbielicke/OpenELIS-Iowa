@@ -252,6 +252,8 @@ public class OrganizationService implements AppScreenFormServiceInt<Organization
     }
 
     public OrganizationForm abort(OrganizationForm rpc) throws RPCException {
+        return null;
+        /*
     //		remote interface to call the organization bean
     		OrganizationRemote remote = (OrganizationRemote)EJBFactory.lookup("openelis/OrganizationBean/remote");
     		
@@ -269,14 +271,15 @@ public class OrganizationService implements AppScreenFormServiceInt<Organization
                 rpc.notes.notesPanel.setValue(getNotesModel(rpc.entityKey));
             }
     		
-            return rpc;  
+            return rpc;*/  
     	}
 
     public OrganizationForm fetch(OrganizationForm rpc) throws RPCException {
-       //remote interface to call the organization bean
+        return null;
+       /*//remote interface to call the organization bean
         OrganizationRemote remote = (OrganizationRemote)EJBFactory.lookup("openelis/OrganizationBean/remote");
 		
-        OrganizationAddressDO organizationDO = remote.getOrganizationAddress(rpc.entityKey);
+        //OrganizationAddressDO organizationDO = remote.getOrganizationAddress(rpc.entityKey);
 
             //		set the fields in the RPC
         setFieldsInRPC(rpc, organizationDO);
@@ -291,7 +294,7 @@ public class OrganizationService implements AppScreenFormServiceInt<Organization
             loadNotesForm(rpc.entityKey, rpc.notes);
         }
         
-        return rpc;  
+        return rpc;*/  
 	}
     
     public ContactsForm loadContacts(ContactsForm rpc) throws RPCException {
@@ -487,10 +490,11 @@ public class OrganizationService implements AppScreenFormServiceInt<Organization
     }
 
     public void getContactsModel(Integer orgId,TableField<TableDataRow<Contact>> model){
+        /*
         OrganizationRemote remote = (OrganizationRemote)EJBFactory.lookup("openelis/OrganizationBean/remote");
         List contactsList = remote.getOrganizationContacts(orgId);
         fillContactsTable((TableDataModel<TableDataRow<Contact>>)model.getValue(),contactsList);
-
+*/
     }
 
     //autocomplete textbox method
