@@ -29,7 +29,7 @@ import java.util.List;
 
 import javax.ejb.Remote;
 
-import org.openelis.manager.SampleOrganizationsManager;
+import org.openelis.managerOld.SampleOrganizationsManager;
 
 @Remote
 public interface SampleOrganizationRemote {

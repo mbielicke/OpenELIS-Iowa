@@ -23,30 +23,33 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.domain;
+package org.openelis.managerOld;
 
-import org.openelis.manager.OrganizationsManager;
+import org.openelis.gwt.common.RPC;
 
-
-public class OrganizationsManagerIO {
+public class SampleQaEventsManager implements RPC {
     
-    public OrganizationsManager commitAdd(OrganizationsManager man) {
-        return null;
-    }
+    private static final long serialVersionUID = 1L;
+    
+    Integer  sampleId;
 
-    public OrganizationsManager commitUpdate(OrganizationsManager man) {
-        return null;
-    }
+    /**
+     * Creates a new instance of this object.
+     */
+    public static SampleQaEventsManager getInstance() {
+        SampleQaEventsManager qem;
 
-    public OrganizationsManager fetch(OrganizationsManager man) {
-        return null;
-    }
+        qem = new SampleQaEventsManager();
 
-    public OrganizationsManager fetchForUpdate(OrganizationsManager man) throws Exception {
-        return null;
+        return qem;
     }
     
-    public OrganizationsManager abort(OrganizationsManager man) {
-        return null;
+    public Integer getSampleId() {
+        return sampleId;
     }
+
+    public void setSampleId(Integer sampleId) {
+        this.sampleId = sampleId;
+    }
+
 }

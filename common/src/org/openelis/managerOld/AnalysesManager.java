@@ -23,7 +23,7 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.manager;
+package org.openelis.managerOld;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -31,6 +31,7 @@ import java.util.List;
 
 import org.openelis.domain.AnalysisTestDO;
 import org.openelis.gwt.common.RPC;
+import org.openelis.manager.NotesManager;
 
 public class AnalysesManager implements RPC {
     private static final long serialVersionUID = 1L;

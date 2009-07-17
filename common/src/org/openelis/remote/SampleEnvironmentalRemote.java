@@ -32,7 +32,7 @@ import javax.ejb.Remote;
 
 import org.openelis.domain.SampleEnvironmentalDO;
 import org.openelis.gwt.common.data.AbstractField;
-import org.openelis.manager.SampleDomainInt;
+import org.openelis.managerOld.SampleDomainInt;
 
 @Remote
 public interface SampleEnvironmentalRemote {

@@ -4,7 +4,7 @@ import java.util.List;
 
 import javax.ejb.Remote;
 
-import org.openelis.manager.SampleItemsManager;
+import org.openelis.managerOld.SampleItemsManager;
 
 @Remote
 public interface SampleItemRemote {

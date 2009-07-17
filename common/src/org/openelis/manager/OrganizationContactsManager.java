@@ -36,10 +36,13 @@ public class OrganizationContactsManager implements RPC {
     private static final long serialVersionUID = 1L;
     protected Integer                           organizationId;
     protected ArrayList<OrganizationContactDO>  contacts;
-    public boolean load = false;
-    public boolean cached = false;
+    //protected ArrayList<OrganizationContactDO>  deletedContacts;
     
-    protected transient OrganizationContactsManagerProxy proxy;
+    protected transient static OrganizationContactsManagerProxy proxy;
+    
+    protected OrganizationContactsManager() {
+        contacts = null;
+    }
     
     /**
      * Creates a new instance of this object.
@@ -52,6 +55,10 @@ public class OrganizationContactsManager implements RPC {
 
         return ocm;
     }
+    
+    public static OrganizationContactsManager findByOrganizationId(Integer orgId) throws Exception {
+        return proxy().fetchByOrgId(orgId);
+    }
 
     public Integer getOrganizationId() {
         return organizationId;
@@ -60,7 +67,48 @@ public class OrganizationContactsManager implements RPC {
     public void setOrganizationId(Integer organizationId) {
         this.organizationId = organizationId;
     }
+    /*
+    public int count(){
+        if(contacts == null)
+            return 0;
+        
+        return contacts.size();
+    }
     
+    public OrganizationContactDO getContactAt(int i) {
+        return contacts.get(i);
+    }
+    
+    public void setContactAt(OrganizationContactDO contact, int i) {
+        contacts.set(i, contact);
+    }
+    
+    public void addContact(OrganizationContactDO contact){
+        if(contacts == null)
+            contacts = new ArrayList<OrganizationContactDO>();
+        
+        contacts.add(contact);
+    }
+    
+    public void addContactAt(OrganizationContactDO contact, int i){
+        if(contacts == null)
+            contacts = new ArrayList<OrganizationContactDO>();
+        
+        contacts.add(i, contact);
+    }
+    
+    public void removeContactAt(int i){
+        if(contacts == null || i >= contacts.size())
+            return;
+        
+        OrganizationContactDO tmpDO = contacts.remove(i);
+        
+        if(deletedContacts == null)
+            deletedContacts = new ArrayList<OrganizationContactDO>();
+        
+        deletedContacts.add(tmpDO);
+    }
+    */
     //service methods
     public OrganizationContactsManager add() throws Exception {
         return proxy().commitAdd(this);
@@ -69,21 +117,8 @@ public class OrganizationContactsManager implements RPC {
     public OrganizationContactsManager update() throws Exception {
         return proxy().commitUpdate(this);
     }
-    
-    public OrganizationContactsManager fetch() throws Exception {
-        if (cached || !load)
-            return this;
-
-        cached = true;
-        load = false;
-        
-        if(organizationId == null)
-            return null;
-        
-        return proxy().fetch(this);
-    }
-    
-    private OrganizationContactsManagerProxy proxy(){
+       
+    private static OrganizationContactsManagerProxy proxy(){
         if(proxy == null)
             proxy = new OrganizationContactsManagerProxy();
         
