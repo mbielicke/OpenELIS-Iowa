@@ -39,7 +39,7 @@ import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.SampleProjectDO;
 import org.openelis.entity.SampleProject;
 import org.openelis.local.SampleProjectLocal;
-import org.openelis.manager.SampleProjectsManager;
+import org.openelis.managerOld.SampleProjectsManager;
 import org.openelis.remote.SampleProjectRemote;
 
 @Stateless

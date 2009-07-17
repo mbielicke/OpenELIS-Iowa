@@ -30,6 +30,7 @@ import java.util.ArrayList;
 
 import javax.naming.InitialContext;
 
+import org.openelis.domain.OrganizationContactDO;
 import org.openelis.local.OrganizationLocal;
 import org.openelis.manager.OrganizationContactsManager;
 
@@ -43,13 +44,22 @@ public class OrganizationContactsManagerProxy {
         return null;
     }
 
-    public OrganizationContactsManager fetch(OrganizationContactsManager man) {
+    public OrganizationContactsManager fetch(Integer id) throws Exception {
         OrganizationLocal ol = getOrganizationLocal();
-        man.setContacts((ArrayList)ol.getOrganizationContacts(man.getOrganizationId()));
-        man.cached = true;
-        man.load = false;
+     //   man.setContacts((ArrayList)ol.getOrganizationContacts(man.getOrganizationId()));
         
-        return man;
+        return null;
+    }
+    
+    public OrganizationContactsManager fetchByOrgId(Integer orgId) throws Exception {
+        OrganizationLocal ol = getOrganizationLocal();
+        ArrayList<OrganizationContactDO> contacts = (ArrayList<OrganizationContactDO>)ol.getOrganizationContacts(orgId);
+        
+        OrganizationContactsManager cm = OrganizationContactsManager.getInstance();
+        cm.setContacts(contacts);
+        cm.setOrganizationId(orgId);
+        
+        return cm;
     }
     
     private OrganizationLocal getOrganizationLocal(){

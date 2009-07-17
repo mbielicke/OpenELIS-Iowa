@@ -4,7 +4,7 @@ import java.util.List;
 
 import javax.ejb.Local;
 
-import org.openelis.manager.SampleItemsManager;
+import org.openelis.managerOld.SampleItemsManager;
 
 @Local
 public interface SampleItemLocal {

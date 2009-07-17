@@ -23,37 +23,60 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.bean;
+package org.openelis.managerOld;
 
 import java.util.List;
 
 import javax.naming.InitialContext;
 
-import org.openelis.local.AnalysisLocal;
-import org.openelis.manager.AnalysesManager;
-import org.openelis.manager.AnalysesManagerIOInt;
+import org.openelis.local.CategoryLocal;
+import org.openelis.local.SampleOrganizationLocal;
+import org.openelis.managerOld.SampleOrganizationsManager;
+import org.openelis.managerOld.SampleOrganizationsManagerIOInt;
 
-public class AnalysesManagerIOEJB implements AnalysesManagerIOInt {
+public class SampleOrganizationsManagerIOEJB implements SampleOrganizationsManagerIOInt {
 
-    public List fetch(Integer sampleItemId) {
-        AnalysisLocal al = getAnalysisItemLocal();
+public List fetch(Integer sampleId) {
         
-        return al.getAnalysisTestsBySampleItemId(sampleItemId);
+    SampleOrganizationLocal local = getSampleOrganizationLocal();
+
+        return local.getOrganizationsBySampleId(sampleId);
+        
     }
 
-    public void update(AnalysesManager analyses) {
-        AnalysisLocal al = getAnalysisItemLocal();
+    public void update(SampleOrganizationsManager sampleOrgs) {
         
-        al.update(analyses);
+        SampleOrganizationLocal local = getSampleOrganizationLocal();
+
+        local.update(sampleOrgs);
+        
     }
     
-    private AnalysisLocal getAnalysisItemLocal(){
+    public Integer getIdFromSystemName(String systemName) {
+        CategoryLocal local = getCategoryLocal();
+
+        return local.getEntryIdForSystemName(systemName);
+    }
+    
+    private SampleOrganizationLocal getSampleOrganizationLocal(){
+        
         try{
             InitialContext ctx = new InitialContext();
-            return (AnalysisLocal)ctx.lookup("openelis/AnalysisBean/local");
+            return (SampleOrganizationLocal)ctx.lookup("openelis/SampleOrganizationBean/local");
         }catch(Exception e){
              System.out.println(e.getMessage());
              return null;
         }
     }
+    
+    private CategoryLocal getCategoryLocal(){
+        
+        try{
+            InitialContext ctx = new InitialContext();
+            return (CategoryLocal)ctx.lookup("openelis/CategoryBean/local");
+        }catch(Exception e){
+             System.out.println(e.getMessage());
+             return null;
+        }
+    }    
 }

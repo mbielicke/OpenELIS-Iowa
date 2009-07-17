@@ -1,12 +1,12 @@
-package org.openelis.bean;
+package org.openelis.managerOld;
 
 import java.util.List;
 
 import javax.naming.InitialContext;
 
 import org.openelis.local.SampleItemLocal;
-import org.openelis.manager.SampleItemsManager;
-import org.openelis.manager.SampleItemsManagerIOInt;
+import org.openelis.managerOld.SampleItemsManager;
+import org.openelis.managerOld.SampleItemsManagerIOInt;
 
 public class SampleItemsManagerIOEJB implements SampleItemsManagerIOInt {
     

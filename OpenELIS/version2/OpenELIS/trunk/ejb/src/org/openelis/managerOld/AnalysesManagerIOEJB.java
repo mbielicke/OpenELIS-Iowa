@@ -23,38 +23,34 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.bean;
+package org.openelis.managerOld;
 
 import java.util.List;
 
 import javax.naming.InitialContext;
 
-import org.openelis.local.SampleProjectLocal;
-import org.openelis.manager.SampleProjectsManager;
-import org.openelis.manager.SampleProjectsManagerIOInt;
+import org.openelis.local.AnalysisLocal;
+import org.openelis.managerOld.AnalysesManager;
+import org.openelis.managerOld.AnalysesManagerIOInt;
 
-public class SampleProjectsManagerIOEJB implements SampleProjectsManagerIOInt {
+public class AnalysesManagerIOEJB implements AnalysesManagerIOInt {
 
-public List fetch(Integer sampleId) {
+    public List fetch(Integer sampleItemId) {
+        AnalysisLocal al = getAnalysisItemLocal();
         
-        SampleProjectLocal local = getSampleProjectLocal();
-
-        return local.getProjectsBySampleId(sampleId);
-        
+        return al.getAnalysisTestsBySampleItemId(sampleItemId);
     }
 
-    public void update(SampleProjectsManager sampleProjects) {
+    public void update(AnalysesManager analyses) {
+        AnalysisLocal al = getAnalysisItemLocal();
         
-        SampleProjectLocal local = getSampleProjectLocal();
-
-        local.update(sampleProjects);
-        
+        al.update(analyses);
     }
     
-    private SampleProjectLocal getSampleProjectLocal(){
+    private AnalysisLocal getAnalysisItemLocal(){
         try{
             InitialContext ctx = new InitialContext();
-            return (SampleProjectLocal)ctx.lookup("openelis/SampleProjectBean/local");
+            return (AnalysisLocal)ctx.lookup("openelis/AnalysisBean/local");
         }catch(Exception e){
              System.out.println(e.getMessage());
              return null;

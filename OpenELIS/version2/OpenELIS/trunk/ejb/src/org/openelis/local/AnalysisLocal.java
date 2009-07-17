@@ -29,7 +29,7 @@ import java.util.List;
 
 import javax.ejb.Local;
 
-import org.openelis.manager.AnalysesManager;
+import org.openelis.managerOld.AnalysesManager;
 
 @Local
 public interface AnalysisLocal {

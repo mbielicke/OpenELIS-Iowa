@@ -44,7 +44,7 @@ import org.openelis.entity.Sample;
 import org.openelis.entity.SampleItem;
 import org.openelis.local.LockLocal;
 import org.openelis.local.SampleItemLocal;
-import org.openelis.manager.SampleItemsManager;
+import org.openelis.managerOld.SampleItemsManager;
 import org.openelis.metamap.InventoryItemMetaMap;
 import org.openelis.remote.SampleItemRemote;
 
