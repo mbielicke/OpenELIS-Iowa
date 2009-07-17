@@ -33,8 +33,8 @@ import org.openelis.gwt.common.data.FieldType;
 import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
-import org.openelis.manager.SampleManager;
-import org.openelis.manager.SampleManagerIOClient;
+import org.openelis.managerOld.SampleManager;
+import org.openelis.managerOld.SampleManagerIOClient;
 import org.openelis.modules.clinicalSampleLogin.client.ClinicalSampleLoginForm;
 import org.openelis.server.constants.Constants;
 

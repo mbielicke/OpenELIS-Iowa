@@ -43,7 +43,11 @@ public class OrganizationContactsManagerProxy {
         return null;
     }
 
-    public OrganizationContactsManager fetch(OrganizationContactsManager man) throws Exception {
-        return service.call("fetch", man);
+    public OrganizationContactsManager fetch(Integer id) throws Exception {
+        return service.call("fetchContactById", id);
+    }
+    
+    public OrganizationContactsManager fetchByOrgId(Integer orgId) throws Exception {
+        return service.call("fetchContactByOrgId", orgId);
     }
 }

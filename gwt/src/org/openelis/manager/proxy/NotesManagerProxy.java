@@ -29,6 +29,7 @@ import org.openelis.manager.NotesManager;
 
 public class NotesManagerProxy {
     public NotesManagerProxy(){
+        
     }
     
     public NotesManager commitAdd(NotesManager man) {
@@ -39,7 +40,7 @@ public class NotesManagerProxy {
         return null;
     }
 
-    public NotesManager fetch(NotesManager man) {
+    public NotesManager fetch(Integer tableId, Integer id) throws Exception {
         return null;
     }
 }
