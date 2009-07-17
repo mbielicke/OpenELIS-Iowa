@@ -27,11 +27,12 @@ package org.openelis.manager.proxy;
 
 import javax.naming.InitialContext;
 
+import org.openelis.domain.OrganizationAddressDO;
 import org.openelis.local.OrganizationLocal;
 import org.openelis.manager.OrganizationsManager;
-import org.openelis.utils.ReferenceTableCache;
 
-public class OrganizationsManagerRefactor {
+public class OrganizationsManagerProxy {
+    
     public OrganizationsManager add(OrganizationsManager man) {
         OrganizationLocal ol = getOrganizationLocal();
         ol.add(man.getOrganizationAddress());
@@ -60,16 +61,25 @@ public class OrganizationsManagerRefactor {
         return man;
     }
 
-    public OrganizationsManager fetch(Integer orgId) {
+    public OrganizationsManager fetch(Integer orgId) throws Exception {
         OrganizationLocal ol = getOrganizationLocal();
+        OrganizationAddressDO orgDO = ol.getOrganizationAddress(orgId);
         OrganizationsManager m = OrganizationsManager.getInstance();
-        m.setOrganizationAddress(ol.getOrganizationAddress(orgId));
+        m.setOrganizationAddress(orgDO);
         
         return m;
     }
     
-    public OrganizationsManager fetchWithContacts(Integer orgId){
-        return null;
+    public OrganizationsManager fetchWithContacts(Integer orgId) throws Exception{
+        OrganizationsManager m = fetch(orgId);
+        try{
+            m.getContacts();
+        
+        }catch(Exception e){
+            
+        }
+        
+        return m;
     }
     
     public OrganizationsManager fetchWithNotes(Integer orgId){
@@ -84,22 +94,12 @@ public class OrganizationsManagerRefactor {
         OrganizationLocal ol = getOrganizationLocal();
         man.setOrganizationAddress(ol.getOrganizationAddressAndLock(man.getOrganizationAddress().getOrganizationId()));
         
-        //load the org reference id
-        man.setOrganizationReferenceTable(ReferenceTableCache.getReferenceTable("organization"));
-        man.load = false;
-        man.cached = true;
-        
         return man;
     }
     
-    public OrganizationsManager abort(OrganizationsManager man) {
+    public OrganizationsManager abort(OrganizationsManager man) throws Exception {
         OrganizationLocal ol = getOrganizationLocal();
         man.setOrganizationAddress(ol.getOrganizationAddressAndUnlock(man.getOrganizationAddress().getOrganizationId()));
-        
-        //load the org reference id
-        man.setOrganizationReferenceTable(ReferenceTableCache.getReferenceTable("organization"));
-        man.load = false;
-        man.cached = true;
         
         return man;
     }

@@ -33,10 +33,10 @@ import org.openelis.domain.OrganizationAddressDO;
 
 @Local
 public interface OrganizationLocal {
-    public OrganizationAddressDO getOrganizationAddress(Integer organizationId);
-    public OrganizationAddressDO getOrganizationAddressAndUnlock(Integer organizationId);
+    public OrganizationAddressDO getOrganizationAddress(Integer organizationId) throws Exception;
+    public OrganizationAddressDO getOrganizationAddressAndUnlock(Integer organizationId) throws Exception;
     public OrganizationAddressDO getOrganizationAddressAndLock(Integer organizationId) throws Exception;
-    public List getOrganizationContacts(Integer organizationId);
+    public List getOrganizationContacts(Integer organizationId) throws Exception;
     
     public void add(OrganizationAddressDO orgDO);
     public void update(OrganizationAddressDO orgDO) throws Exception;

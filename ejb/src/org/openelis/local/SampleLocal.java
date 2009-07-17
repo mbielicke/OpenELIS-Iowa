@@ -3,7 +3,7 @@ package org.openelis.local;
 import javax.ejb.Local;
 
 import org.openelis.domain.SampleDO;
-import org.openelis.manager.SampleManager;
+import org.openelis.managerOld.SampleManager;
 
 @Local
 public interface SampleLocal {

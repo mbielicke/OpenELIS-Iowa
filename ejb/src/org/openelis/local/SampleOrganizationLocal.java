@@ -29,7 +29,7 @@ import java.util.List;
 
 import javax.ejb.Local;
 
-import org.openelis.manager.SampleOrganizationsManager;
+import org.openelis.managerOld.SampleOrganizationsManager;
 
 @Local
 public interface SampleOrganizationLocal {

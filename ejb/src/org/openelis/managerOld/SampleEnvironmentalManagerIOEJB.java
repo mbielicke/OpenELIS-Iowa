@@ -1,4 +1,4 @@
-package org.openelis.bean;
+package org.openelis.managerOld;
 
 import javax.naming.InitialContext;
 
@@ -6,8 +6,8 @@ import org.openelis.domain.AddressDO;
 import org.openelis.domain.SampleEnvironmentalDO;
 import org.openelis.local.AddressLocal;
 import org.openelis.local.SampleEnvironmentalLocal;
-import org.openelis.manager.SampleDomainInt;
-import org.openelis.manager.SampleEnvironmentalManagerIOInt;
+import org.openelis.managerOld.SampleDomainInt;
+import org.openelis.managerOld.SampleEnvironmentalManagerIOInt;
 
 public class SampleEnvironmentalManagerIOEJB implements SampleEnvironmentalManagerIOInt {
 

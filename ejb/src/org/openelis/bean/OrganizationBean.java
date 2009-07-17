@@ -30,11 +30,13 @@ import java.util.List;
 
 import javax.annotation.Resource;
 import javax.annotation.security.RolesAllowed;
-import javax.ejb.ApplicationException;
 import javax.ejb.EJB;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionManagement;
+import javax.ejb.TransactionManagementType;
 import javax.persistence.EntityManager;
+import javax.persistence.EntityNotFoundException;
 import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
@@ -57,8 +59,6 @@ import org.openelis.gwt.common.rewrite.QueryData;
 import org.openelis.local.AddressLocal;
 import org.openelis.local.LockLocal;
 import org.openelis.local.OrganizationLocal;
-import org.openelis.manager.OrganizationContactsManager;
-import org.openelis.manager.OrganizationsManager;
 import org.openelis.metamap.OrganizationMetaMap;
 import org.openelis.remote.OrganizationRemote;
 import org.openelis.security.domain.SystemUserDO;
@@ -70,10 +70,8 @@ import org.openelis.utils.ReferenceTableCache;
 import org.openelis.utils.SecurityInterceptor;
 
 @Stateless
-/*@EJBs({
-    @EJB(name="ejb/Lock",beanInterface=LockLocal.class),
-    @EJB(name="ejb/Address",beanInterface=AddressLocal.class)
-})*/
+@TransactionManagement(TransactionManagementType.BEAN)
+
 @SecurityDomain("openelis")
 @RolesAllowed("organization-select")
 public class OrganizationBean implements OrganizationRemote, OrganizationLocal {
@@ -96,15 +94,15 @@ public class OrganizationBean implements OrganizationRemote, OrganizationLocal {
         orgRefTableId = ReferenceTableCache.getReferenceTable("organization");
     }
     
-	public OrganizationAddressDO getOrganizationAddress(Integer organizationId) {		
+	public OrganizationAddressDO getOrganizationAddress(Integer organizationId) throws Exception {		
 		Query query = manager.createNamedQuery("Organization.OrganizationAndAddress");
 		query.setParameter("id", organizationId);
-		OrganizationAddressDO orgAddressContacts = (OrganizationAddressDO) query.getResultList().get(0);// getting organization with address and contacts
+		OrganizationAddressDO orgAddressContacts = (OrganizationAddressDO) query.getSingleResult();
 
         return orgAddressContacts;
 	}
 	
-	public OrganizationAddressDO getOrganizationAddressAndUnlock(Integer organizationId) {
+	public OrganizationAddressDO getOrganizationAddressAndUnlock(Integer organizationId) throws Exception {
 		//unlock the entity
         lockBean.giveUpLock(orgRefTableId, organizationId);
        		
@@ -233,8 +231,7 @@ public class OrganizationBean implements OrganizationRemote, OrganizationLocal {
     }
     
     public void update(OrganizationAddressDO organizationDO) throws Exception {
-        lockBean.validateLock(orgRefTableId, organizationDO.getOrganizationId());
-        
+        //lockBean.validateLock(orgRefTableId, organizationDO.getOrganizationId());
          manager.setFlushMode(FlushModeType.COMMIT);
          Organization organization = manager.find(Organization.class, organizationDO.getOrganizationId());
 
@@ -246,16 +243,19 @@ public class OrganizationBean implements OrganizationRemote, OrganizationLocal {
         organization.setName(organizationDO.getName());
         organization.setParentOrganizationId(organizationDO.getParentOrganizationId());
         
-        lockBean.giveUpLock(orgRefTableId, organization.getId());                                  
+        //lockBean.giveUpLock(orgRefTableId, organization.getId());                                  
     }
 
-	public List<OrganizationContactDO> getOrganizationContacts(Integer organizationId) {
+	public List<OrganizationContactDO> getOrganizationContacts(Integer organizationId) throws Exception {
 		Query query = manager.createNamedQuery("Organization.Contacts");
 		query.setParameter("id", organizationId);
 		
-		List orgAddressContacts = query.getResultList();// getting list of contacts from the org id
-	
-        return orgAddressContacts;
+		List contactsList = query.getResultList();
+		
+		if(contactsList.size() == 0)
+		    throw new EntityNotFoundException("");
+		
+        return contactsList;
 	}
 	
 	public List getOrganizationNotes(Integer organizationId) {
@@ -420,48 +420,4 @@ public class OrganizationBean implements OrganizationRemote, OrganizationLocal {
         else
          return returnList;
 	}
-	
-	//
-	//NEW METHODS FOR ORG MANAGER SCREEN
-	//
-	//fetch methods
-	public OrganizationsManager fetch(Integer orgId) throws Exception {
-	    OrganizationsManager man = OrganizationsManager.findById(orgId);
-	    
-	    return man;
-	}
-	
-	public OrganizationsManager add(OrganizationsManager man) throws Exception {
-	    man.validate();
-	    man.add();
-	    
-	    return man;
-	    
-	}
-	
-	public OrganizationsManager fetchWithContacts(Integer orgId) {
-	    return null;
-	}
-	
-    public OrganizationsManager fetchWithIdentifiers(Integer orgId) {
-        return null;
-    }
-    
-    public OrganizationsManager fetchWithNotes(Integer orgId) { 
-       return null;
-    }
-    
-    public OrganizationsManager fetchForUpdate(Integer orgId) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-    
-    public OrganizationsManager abortUpdate(Integer orgId){
-        return null;
-    }
- 
-    @ApplicationException(rollback=true)
-    public class TestException extends Exception{
-        
-    }
 }

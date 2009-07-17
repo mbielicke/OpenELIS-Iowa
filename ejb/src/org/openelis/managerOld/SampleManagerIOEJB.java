@@ -1,11 +1,11 @@
-package org.openelis.bean;
+package org.openelis.managerOld;
 
 import javax.naming.InitialContext;
 
 import org.openelis.domain.SampleDO;
 import org.openelis.local.SampleLocal;
-import org.openelis.manager.SampleManager;
-import org.openelis.manager.SampleManagerIOInt;
+import org.openelis.managerOld.SampleManager;
+import org.openelis.managerOld.SampleManagerIOInt;
 
 public class SampleManagerIOEJB implements SampleManagerIOInt {
 

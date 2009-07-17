@@ -41,7 +41,7 @@ import org.openelis.domain.SampleDO;
 import org.openelis.entity.Sample;
 import org.openelis.local.LockLocal;
 import org.openelis.local.SampleLocal;
-import org.openelis.manager.SampleManager;
+import org.openelis.managerOld.SampleManager;
 import org.openelis.remote.SampleRemote;
 
 @Stateless

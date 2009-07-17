@@ -39,7 +39,7 @@ import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.SampleOrganizationDO;
 import org.openelis.entity.SampleOrganization;
 import org.openelis.local.SampleOrganizationLocal;
-import org.openelis.manager.SampleOrganizationsManager;
+import org.openelis.managerOld.SampleOrganizationsManager;
 import org.openelis.remote.SampleOrganizationRemote;
 
 @Stateless

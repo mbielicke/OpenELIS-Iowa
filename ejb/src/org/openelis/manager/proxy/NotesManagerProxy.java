@@ -33,9 +33,6 @@ import org.openelis.local.NoteLocal;
 import org.openelis.manager.NotesManager;
 
 public class NotesManagerProxy {
-    public NotesManagerProxy(){
-    }
-    
     public NotesManager commitAdd(NotesManager man) {
         return null;
     }
@@ -44,13 +41,12 @@ public class NotesManagerProxy {
         return null;
     }
 
-    public NotesManager fetch(NotesManager man) {
+    public NotesManager fetch(Integer tableId, Integer id) throws Exception {
         NoteLocal nl = getNoteLocal();
-        man.setNotes((ArrayList)nl.getNotes(man.getReferenceTableId(), man.getReferenceId()));
-        man.cached = true;
-        man.load = false;
+        NotesManager n = NotesManager.getInstance();
+        n.setNotes((ArrayList)nl.getNotes(tableId, id));
         
-        return man;
+        return n;
     }
     
     private NoteLocal getNoteLocal(){

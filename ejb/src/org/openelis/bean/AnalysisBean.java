@@ -39,7 +39,7 @@ import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.AnalysisTestDO;
 import org.openelis.entity.Analysis;
 import org.openelis.local.AnalysisLocal;
-import org.openelis.manager.AnalysesManager;
+import org.openelis.managerOld.AnalysesManager;
 import org.openelis.remote.AnalysisRemote;
 
 @Stateless
