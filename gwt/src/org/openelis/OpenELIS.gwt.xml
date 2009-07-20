@@ -55,6 +55,7 @@ UIRF Software License are applicable instead of those above.
     <inherits name="org.openelis.modules.label.Label"/> 
     <inherits name="org.openelis.modules.method.Method"/> 
     <inherits name="org.openelis.modules.newbornScreeningSampleLogin.NewbornScreeningSampleLogin"/>
+    <inherits name="org.openelis.modules.note.Note"/>
     <inherits name="org.openelis.modules.order.Order"/>
     <inherits name="org.openelis.modules.organization.Organization"/>
     <inherits name="org.openelis.modules.privateWellWaterSampleLogin.PrivateWellWaterSampleLogin"/>

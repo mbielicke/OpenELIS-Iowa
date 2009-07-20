@@ -23,24 +23,14 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.manager.proxy;
+package org.openelis.modules.note.server;
 
 import org.openelis.manager.NotesManager;
+import org.openelis.modules.note.client.NoteServiceParams;
 
-public class NotesManagerProxy {
-    public NotesManagerProxy(){
-        
-    }
-    
-    public NotesManager commitAdd(NotesManager man) {
-        return null;
-    }
+public class NoteService {
 
-    public NotesManager commitUpdate(NotesManager man) {
-        return null;
-    }
-
-    public NotesManager fetch(Integer tableId, Integer id) throws Exception {
+    public NotesManager fetch(NoteServiceParams params){
         return null;
     }
 }

@@ -28,12 +28,9 @@ package org.openelis.cache.server;
 import java.util.ArrayList;
 
 import org.openelis.domain.DictionaryDO;
-import org.openelis.gwt.server.AppServlet;
 import org.openelis.server.handlers.DictionaryCacheHandler;
 
-public class DictionaryCacheService extends AppServlet {
-
-    private static final long serialVersionUID = 1L;
+public class DictionaryCacheService {
 
     public DictionaryCacheRPC getIdBySystemName(String systemName) {
         DictionaryCacheRPC rpc = new DictionaryCacheRPC();
