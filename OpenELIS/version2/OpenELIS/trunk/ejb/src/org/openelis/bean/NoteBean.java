@@ -25,25 +25,66 @@
 */
 package org.openelis.bean;
 
-import java.util.List;
+import java.util.ArrayList;
 
 import javax.persistence.EntityManager;
+import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
+import org.openelis.domain.NoteDO;
+import org.openelis.entity.Note;
+import org.openelis.entity.Organization;
+import org.openelis.exception.NotFoundException;
 import org.openelis.local.NoteLocal;
 import org.openelis.remote.NoteRemote;
+import org.openelis.util.Datetime;
 
 public class NoteBean implements NoteRemote, NoteLocal {
 
     @PersistenceContext(name = "openelis")
     private EntityManager manager;
     
-    public List getNotes(Integer refTableId, Integer refId) {
+    public ArrayList<NoteDO> getNotes(Integer refTableId, Integer refId) throws Exception {
         Query query = manager.createNamedQuery("Note.Notes");
         query.setParameter("referenceTable", refTableId);
         query.setParameter("id", refId);
         
-        return query.getResultList();
+        ArrayList<NoteDO> list = (ArrayList<NoteDO>)query.getResultList();
+        
+        if(list.size() == 0)
+            throw new NotFoundException();
+        
+        return list;
+    }
+    
+    public void update(NoteDO noteDO) throws Exception {
+        manager.setFlushMode(FlushModeType.COMMIT);
+        
+        Note note = manager.find(Note.class, noteDO.getId());
+
+        note.setIsExternal(noteDO.getIsExternal());
+        note.setReferenceId(noteDO.getId());
+        note.setReferenceTableId(noteDO.getReferenceTable());
+        note.setSubject(noteDO.getSubject());
+        note.setSystemUserId(noteDO.getSystemUserId());
+        note.setText(noteDO.getText());
+        note.setTimestamp(Datetime.getInstance());
+    }
+    
+    public void add(NoteDO noteDO) throws Exception {
+        manager.setFlushMode(FlushModeType.COMMIT);
+        
+        Note note = new Note();
+
+        note.setIsExternal(noteDO.getIsExternal());
+        note.setReferenceId(noteDO.getId());
+        note.setReferenceTableId(noteDO.getReferenceTable());
+        note.setSubject(noteDO.getSubject());
+        note.setSystemUserId(noteDO.getSystemUserId());
+        note.setText(noteDO.getText());
+        note.setTimestamp(Datetime.getInstance());
+        
+        manager.persist(note);
     }
 }

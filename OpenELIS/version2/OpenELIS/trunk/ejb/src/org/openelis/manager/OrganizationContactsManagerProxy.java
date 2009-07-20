@@ -24,7 +24,7 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.manager.proxy;
+package org.openelis.manager;
 
 import java.util.ArrayList;
 
@@ -36,12 +36,39 @@ import org.openelis.manager.OrganizationContactsManager;
 
 public class OrganizationContactsManagerProxy {
     
-    public OrganizationContactsManager commitAdd(OrganizationContactsManager man) {
-        return null;
+    public OrganizationContactsManager add(OrganizationContactsManager man) throws Exception {
+        OrganizationLocal ol = getOrganizationLocal();
+        OrganizationContactDO contact;
+        
+        for(int i=0; i<man.count(); i++){
+            contact = man.getContactAt(i);
+            contact.setOrganization(man.getOrganizationId());
+            
+            ol.addContact(contact);
+        }
+        
+        return man;
     }
 
-    public OrganizationContactsManager commitUpdate(OrganizationContactsManager man) {
-        return null;
+    public OrganizationContactsManager update(OrganizationContactsManager man) throws Exception {
+        OrganizationLocal ol = getOrganizationLocal();
+        OrganizationContactDO contact;
+        
+        for(int j=0; j<man.deleteCount(); j++){
+            ol.deleteContact(man.getDeletedAt(j));
+        }
+        
+        for(int i=0; i<man.count(); i++){
+            contact = man.getContactAt(i);
+            
+            if(contact.getId() == null){
+                contact.setOrganization(man.getOrganizationId());
+                ol.addContact(contact);
+            }else
+                ol.updateContact(contact);
+        }
+        
+        return man;
     }
 
     public OrganizationContactsManager fetch(Integer id) throws Exception {

@@ -23,28 +23,56 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.manager.proxy;
+package org.openelis.manager;
 
 import java.util.ArrayList;
 
 import javax.naming.InitialContext;
 
+import org.openelis.domain.NoteDO;
 import org.openelis.local.NoteLocal;
-import org.openelis.manager.NotesManager;
 
 public class NotesManagerProxy {
-    public NotesManager commitAdd(NotesManager man) {
-        return null;
+    public NotesManager add(NotesManager man) throws Exception {
+        NoteDO note;
+        NoteLocal nl = getNoteLocal();
+        
+        if(man.count() >0){
+            note = man.getNoteAt(0);
+            note.setReferenceId(man.getReferenceId());
+            note.setReferenceTable(man.getReferenceTableId());
+            
+            nl.add(note);
+        }
+        
+        return man;
     }
 
-    public NotesManager commitUpdate(NotesManager man) {
-        return null;
+    public NotesManager update(NotesManager man) throws Exception {
+        NoteDO note;
+        NoteLocal nl = getNoteLocal();
+        
+        if(man.count() >0){
+            note = man.getNoteAt(0);
+            if(note.getId() == null){
+                note.setReferenceId(man.getReferenceId());
+                note.setReferenceTable(man.getReferenceTableId());
+                nl.add(note);
+            }else
+                nl.update(note);
+        }
+        
+        return man;
     }
 
     public NotesManager fetch(Integer tableId, Integer id) throws Exception {
         NoteLocal nl = getNoteLocal();
+        ArrayList<NoteDO> notes = nl.getNotes(tableId, id);
+        
         NotesManager n = NotesManager.getInstance();
-        n.setNotes((ArrayList)nl.getNotes(tableId, id));
+        n.setNotes(notes);
+        n.setReferenceId(id);
+        n.setReferenceTableId(tableId);
         
         return n;
     }

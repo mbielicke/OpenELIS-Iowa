@@ -37,7 +37,6 @@ import javax.transaction.UserTransaction;
 import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.manager.OrganizationContactsManager;
 import org.openelis.manager.OrganizationsManager;
-import org.openelis.metamap.OrganizationMetaMap;
 import org.openelis.remote.OrganizationManagerRemote;
 import org.openelis.utils.ReferenceTableCache;
 
