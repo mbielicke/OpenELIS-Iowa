@@ -14,6 +14,12 @@ import org.openelis.gwt.widget.rewrite.AppButton;
 import org.openelis.gwt.widget.rewrite.Dropdown;
 import org.openelis.gwt.widget.table.rewrite.TableDataRow;
 import org.openelis.gwt.widget.table.rewrite.TableWidget;
+import org.openelis.gwt.widget.table.rewrite.event.CellEditedEvent;
+import org.openelis.gwt.widget.table.rewrite.event.CellEditedHandler;
+import org.openelis.gwt.widget.table.rewrite.event.RowAddedEvent;
+import org.openelis.gwt.widget.table.rewrite.event.RowAddedHandler;
+import org.openelis.gwt.widget.table.rewrite.event.RowDeletedEvent;
+import org.openelis.gwt.widget.table.rewrite.event.RowDeletedHandler;
 import org.openelis.manager.OrganizationsManager;
 
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -32,13 +38,12 @@ public class ContactsTab extends Screen {
 	
 	private void initialize() {
 		table = (TableWidget)def.getWidget("contactsTable");
-//		table.manager = this;
 		addScreenHandler(table,new ScreenEventHandler<ArrayList<TableDataRow>>() {
 			public void onDataChange(DataChangeEvent event) {
 				table.load(getTableModel());
 			}
 			public void onValueChange(ValueChangeEvent<ArrayList<TableDataRow>> event) {
-				manager.getContacts().setContacts(getContacts());
+			//	manager.getContacts().setContacts(getContacts());
 			}
 			public void onStateChange(StateChangeEvent<State> event) {
 				if(event.getState() == State.ADD || event.getState() == State.UPDATE) {
@@ -52,7 +57,75 @@ public class ContactsTab extends Screen {
 				}
 			}
 		});
-    	final AppButton removeContact = (AppButton)def.getWidget("removeContactButton");
+		
+		table.addCellEditedHandler(new CellEditedHandler(){
+            public void onCellUpdated(CellEditedEvent event) {
+                int row,col;
+                row = event.getRow();
+                col = event.getCell();
+                TableDataRow tableRow = table.getRow(row);
+                OrganizationContactDO contactDO = manager.getContacts().getContactAt(row);
+                Object val = tableRow.cells.get(col).value;
+                
+                switch (col){
+                    case 0:
+                            contactDO.setContactType((Integer)val);
+                            break;
+                    case 1:
+                            contactDO.setName((String)val);
+                            break;
+                    case 2:
+                            contactDO.getAddressDO().setMultipleUnit((String)val);
+                            break;
+                    case 3:
+                            contactDO.getAddressDO().setStreetAddress((String)val);
+                            break;
+                    case 4:
+                            contactDO.getAddressDO().setCity((String)val);
+                            break;
+                    case 5:
+                            contactDO.getAddressDO().setState((String)val);
+                            break;
+                    case 6:
+                            contactDO.getAddressDO().setZipCode((String)val);
+                            break;
+                    case 7:
+                            contactDO.getAddressDO().setCountry((String)val);
+                            break;
+                    case 8:
+                            contactDO.getAddressDO().setWorkPhone((String)val);
+                            break;
+                    case 9:
+                            contactDO.getAddressDO().setHomePhone((String)val);
+                            break;
+                    case 10:
+                            contactDO.getAddressDO().setCellPhone((String)val);
+                            break;
+                    case 11:
+                        contactDO.getAddressDO().setFaxPhone((String)val);
+                            break;
+                    case 12:
+                            contactDO.getAddressDO().setEmail((String)val);
+                            break;
+                }
+            }
+		});
+		
+		table.addRowAddedHandler(new RowAddedHandler(){
+            public void onRowAdded(RowAddedEvent event) {
+                manager.getContacts().addContact(new OrganizationContactDO());
+                
+            }
+		});
+		
+		table.addRowDeletedHandler(new RowDeletedHandler(){
+            public void onRowDeleted(RowDeletedEvent event) {
+                manager.getContacts().removeContactAt(event.getIndex());
+                
+            }
+		});
+		
+		final AppButton removeContact = (AppButton)def.getWidget("removeContactButton");
     	addScreenHandler(removeContact,new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 int selectedRow = table.getSelectedIndex();
@@ -111,7 +184,6 @@ public class ContactsTab extends Screen {
 	
 	private ArrayList<OrganizationContactDO> getContacts() {
 		ArrayList<OrganizationContactDO> organizationContacts = new ArrayList<OrganizationContactDO>();
-        ArrayList<TableDataRow> deletedRows = table.deleted;
         
 		for(int i=0; i < table.getData().size(); i++){
 			OrganizationContactDO contactDO = new OrganizationContactDO();
@@ -154,20 +226,6 @@ public class ContactsTab extends Screen {
 			organizationContacts.add(contactDO);	
 		}
         
-		if(deletedRows != null){
-            for(int j=0; j<deletedRows.size(); j++){
-                TableDataRow deletedRow = deletedRows.get(j);
-                if(deletedRow.key != null){
-                    OrganizationContactDO contactDO = new OrganizationContactDO();
-                    contactDO.setDelete(true);
-                    contactDO.setId(((Contact)deletedRow.key).orgId);
-                    contactDO.getAddressDO().setId(((Contact)deletedRow.key).addId);
-                    
-                    organizationContacts.add(contactDO);
-                }
-            }
-		}
-		
 		return organizationContacts;
 	}
 	
@@ -213,6 +271,7 @@ public class ContactsTab extends Screen {
 	//
 	//start table manager methods
 	//
+	/*
     public boolean canAdd(TableWidget widget, TableDataRow set, int row) {
         // TODO Auto-generated method stub
         return false;
@@ -240,54 +299,8 @@ public class ContactsTab extends Screen {
         // TODO Auto-generated method stub
         return false;
     }
+    */
     //
     //end table manager methods
     //
-    
-    //FIXME doesnt exist in the code right now
-    /*
-    public void finishedEditing(SourcesTableWidgetEvents sender, final int row, final int col) {
-        TableDataRow tableRow = table.getRow(row);
-        switch (col){
-            case 0:
-                    manager.getContacts().getContactAt(row).setContactType((Integer)tableRow.cells.get(0).value);
-                    break;
-            case 1:
-                    manager.getContacts().getContactAt(row).setName((String)tableRow.cells.get(1).value);
-                    break;
-            case 2:
-                    manager.getContacts().getContactAt(row).getAddressDO().setMultipleUnit((String)tableRow.cells.get(2).value);
-                    break;
-            case 3:
-                    manager.getContacts().getContactAt(row).getAddressDO().setStreetAddress((String)tableRow.cells.get(3).value);
-                    break;
-            case 4:
-                    manager.getContacts().getContactAt(row).getAddressDO().setCity((String)tableRow.cells.get(4).value);
-                    break;
-            case 5:
-                    manager.getContacts().getContactAt(row).getAddressDO().setState((String)tableRow.cells.get(5).value);
-                    break;
-            case 6:
-                    manager.getContacts().getContactAt(row).getAddressDO().setZipCode((String)tableRow.cells.get(6).value);
-                    break;
-            case 7:
-                    manager.getContacts().getContactAt(row).getAddressDO().setCountry((String)tableRow.cells.get(7).value);
-                    break;
-            case 8:
-                    manager.getContacts().getContactAt(row).getAddressDO().setWorkPhone((String)tableRow.cells.get(8).value);
-                    break;
-            case 9:
-                    manager.getContacts().getContactAt(row).getAddressDO().setHomePhone((String)tableRow.cells.get(9).value);
-                    break;
-            case 10:
-                    manager.getContacts().getContactAt(row).getAddressDO().setCellPhone((String)tableRow.cells.get(10).value);
-                    break;
-            case 11:
-                manager.getContacts().getContactAt(row).getAddressDO().setFaxPhone((String)tableRow.cells.get(11).value);
-                    break;
-            case 12:
-                    manager.getContacts().getContactAt(row).getAddressDO().setEmail((String)tableRow.cells.get(12).value);
-                    break;
-        }
-    }*/
 }

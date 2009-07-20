@@ -23,7 +23,7 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.manager.proxy;
+package org.openelis.manager;
 
 import org.openelis.manager.OrganizationContactsManager;
 import org.openelis.modules.main.client.ScreenService;

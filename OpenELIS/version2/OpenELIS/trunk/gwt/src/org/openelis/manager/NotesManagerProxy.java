@@ -23,17 +23,33 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.cache.server;
+package org.openelis.manager;
 
-import org.openelis.server.handlers.SectionCacheHandler;
+import org.openelis.manager.NotesManager;
+import org.openelis.modules.main.client.ScreenService;
+import org.openelis.modules.note.client.NoteServiceParams;
 
-public class SectionCacheService {
+public class NotesManagerProxy {
+    protected static final String NOTE_SERVICE_URL = "org.openelis.modules.note.server.NoteService";
+    protected ScreenService service;
     
-    public SectionCacheRPC getSectionList(String name) {
-        SectionCacheRPC rpc = new SectionCacheRPC();
-        rpc.list = SectionCacheHandler.getSectionList();
-        
-        return rpc;
+    public NotesManagerProxy(){
+        service = new ScreenService("?service="+NOTE_SERVICE_URL);
+    }
+    
+    public NotesManager add(NotesManager man) throws Exception {
+        return null;
     }
 
+    public NotesManager update(NotesManager man) throws Exception {
+        return null;
+    }
+
+    public NotesManager fetch(Integer tableId, Integer id) throws Exception {
+        NoteServiceParams p = new NoteServiceParams();
+        p.referenceId = id;
+        p.referenceTableId = tableId;
+        
+        return service.call("fetch", p);
+    }
 }

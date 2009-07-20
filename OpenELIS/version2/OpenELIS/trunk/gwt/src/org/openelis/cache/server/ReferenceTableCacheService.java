@@ -28,12 +28,9 @@ package org.openelis.cache.server;
 import java.util.ArrayList;
 
 import org.openelis.domain.IdNameDO;
-import org.openelis.gwt.server.AppServlet;
 import org.openelis.server.handlers.ReferenceTableCacheHandler;
 
-public class ReferenceTableCacheService  extends AppServlet {
-
-    private static final long serialVersionUID = 1L;
+public class ReferenceTableCacheService {
     
     public ReferenceTableCacheRPC getIdByTableName(String tableName){
         ReferenceTableCacheRPC rpc = new ReferenceTableCacheRPC();

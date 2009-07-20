@@ -117,7 +117,7 @@ public class NotesTab extends Screen {
                 body = "";
             
             //date
-            String date = noteRow.getTimestamp().toString();
+           // String date = noteRow.getTimestamp().toString();
             //subject
             String subject = noteRow.getSubject();
             
@@ -149,7 +149,7 @@ public class NotesTab extends Screen {
         	 titleText.appendChild(doc.createTextNode(subject));
         	 authorWidgetTag.setAttribute("halign", "right");
         	 dateText.setAttribute("key", "note"+i+"Date");
-        	 dateText.appendChild(doc.createTextNode(date));
+        	// dateText.appendChild(doc.createTextNode(date));
         	 authorText.setAttribute("key", "note"+i+"Author");
         	 authorText.appendChild(doc.createTextNode("by "+userName));
         	 bodytextTag.setAttribute("key", "note"+i+"Body");
