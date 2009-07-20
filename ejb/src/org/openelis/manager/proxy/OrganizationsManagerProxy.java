@@ -26,6 +26,7 @@
 package org.openelis.manager.proxy;
 
 import javax.naming.InitialContext;
+import javax.persistence.EntityNotFoundException;
 
 import org.openelis.domain.OrganizationAddressDO;
 import org.openelis.local.OrganizationLocal;
@@ -70,14 +71,11 @@ public class OrganizationsManagerProxy {
         return m;
     }
     
-    public OrganizationsManager fetchWithContacts(Integer orgId) throws Exception{
+    public OrganizationsManager fetchWithContacts(Integer orgId) throws Exception {
         OrganizationsManager m = fetch(orgId);
         try{
             m.getContacts();
-        
-        }catch(Exception e){
-            
-        }
+        }catch(EntityNotFoundException ignE){}
         
         return m;
     }

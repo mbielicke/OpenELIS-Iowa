@@ -113,24 +113,18 @@ public class Organization extends Screen implements AutoCompleteCallInt {
         notesTab = new NotesTab(def);
         
         // Set up tabs to recieve State Change events from the main Screen.
-        addScreenHandler(contactsTab, new ScreenEventHandler<ContactsRPC>() {
+        addScreenHandler(contactsTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
-                contactsTab.setRPC(rpc.orgContacts);
-            }
-            public void onValueChange(ValueChangeEvent<ContactsRPC> event) {
-                rpc.orgContacts = event.getValue();
+                contactsTab.setManager(manager);
             }
             public void onStateChange(StateChangeEvent<State> event) {
                 StateChangeEvent.fire(contactsTab, event.getState());
             }
         });
         
-        addScreenHandler(contactsTab, new ScreenEventHandler<NotesRPC>() {
+        addScreenHandler(notesTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                 notesTab.setRPC(rpc.notes);
-            }
-            public void onValueChange(ValueChangeEvent<NotesRPC> event) {
-                rpc.notes = event.getValue();
             }
             public void onStateChange(StateChangeEvent<State> event) {
                 StateChangeEvent.fire(notesTab, event.getState());
@@ -177,20 +171,18 @@ public class Organization extends Screen implements AutoCompleteCallInt {
 			    manager.getOrganizationAddress().getAddressDO().setStreetAddress(event.getValue());
 			}
 			public void onStateChange(StateChangeEvent<State> event) {
-				street.enable(enabledStates.contains(event.getState()));
+			    street.enable(EnumSet.of(State.ADD,State.UPDATE,State.QUERY).contains(event.getState()));
+                street.setQueryMode(event.getState() == State.QUERY);
 			}
     	});
     	
     	final TextBox id = (TextBox)def.getWidget(OrgMeta.getId());
-    	addScreenHandler(id,new ScreenEventHandler<Integer>() {
+    	addScreenHandler(id,new ScreenEventHandler<String>() {
     		public void onDataChange(DataChangeEvent event) {
-    		    if(rpc.orgAddressDO.getOrganizationId() != null)
-    		        id.setValue(manager.getOrganizationAddress().getOrganizationId().toString());
-    		    else
-    		        id.setValue("");
+		        id.setValue(getString(manager.getOrganizationAddress().getOrganizationId()));
     		}
-    		public void onValueChange(ValueChangeEvent<Integer> event) {
-    		    manager.getOrganizationAddress().setOrganizationId(event.getValue());
+    		public void onValueChange(ValueChangeEvent<String> event) {
+    		    manager.getOrganizationAddress().setOrganizationId(Integer.valueOf(event.getValue()));
     		}
     		public void onStateChange(StateChangeEvent<State> event) {
     		    id.enable(EnumSet.of(State.QUERY).contains(event.getState()));
@@ -210,7 +202,8 @@ public class Organization extends Screen implements AutoCompleteCallInt {
     		    manager.getOrganizationAddress().getAddressDO().setMultipleUnit(event.getValue());
     		}
     		public void onStateChange(StateChangeEvent<State> event) {
-    			multipleUnit.enable(enabledStates.contains(event.getState()));
+    		    multipleUnit.enable(EnumSet.of(State.ADD,State.UPDATE,State.QUERY).contains(event.getState()));
+    		    multipleUnit.setQueryMode(event.getState() == State.QUERY);
     		}
     	});
     	
@@ -223,7 +216,8 @@ public class Organization extends Screen implements AutoCompleteCallInt {
     		    manager.getOrganizationAddress().getAddressDO().setCity(event.getValue());
     		}
     		public void onStateChange(StateChangeEvent<State> event) {
-    			city.enable(enabledStates.contains(event.getState()));
+                city.enable(EnumSet.of(State.ADD,State.UPDATE,State.QUERY).contains(event.getState()));
+                city.setQueryMode(event.getState() == State.QUERY);
     		}
     	});
     	
@@ -236,7 +230,8 @@ public class Organization extends Screen implements AutoCompleteCallInt {
     		    manager.getOrganizationAddress().getAddressDO().setZipCode(event.getValue());
     		}
     		public void onStateChange(StateChangeEvent<State> event){
-    			zipCode.enable(enabledStates.contains(event.getState()));
+                zipCode.enable(EnumSet.of(State.ADD,State.UPDATE,State.QUERY).contains(event.getState()));
+                zipCode.setQueryMode(event.getState() == State.QUERY);
     		}
     	});
     	
@@ -249,7 +244,8 @@ public class Organization extends Screen implements AutoCompleteCallInt {
     		    manager.getOrganizationAddress().getAddressDO().setState(event.getValue());
     		}
     		public void onStateChange(StateChangeEvent<State> event) {
-    			state.enable(enabledStates.contains(event.getState()));
+                state.enable(EnumSet.of(State.ADD,State.UPDATE,State.QUERY).contains(event.getState()));
+                state.setQueryMode(event.getState() == State.QUERY);
     		}
     	});
     	
@@ -262,7 +258,8 @@ public class Organization extends Screen implements AutoCompleteCallInt {
     		    manager.getOrganizationAddress().getAddressDO().setCountry(event.getValue());
     		}
     		public void onStateChange(StateChangeEvent<State> event) {
-    			country.enable(enabledStates.contains(event.getState()));
+                country.enable(EnumSet.of(State.ADD,State.UPDATE,State.QUERY).contains(event.getState()));
+                country.setQueryMode(event.getState() == State.QUERY);
     		}
     	});
     	
@@ -275,7 +272,8 @@ public class Organization extends Screen implements AutoCompleteCallInt {
     		    manager.getOrganizationAddress().setIsActive(event.getValue());
     		}
     		public void onStateChange(StateChangeEvent<State> event){
-    			isActive.enable(enabledStates.contains(event.getState()));
+                isActive.enable(EnumSet.of(State.ADD,State.UPDATE,State.QUERY).contains(event.getState()));
+                isActive.setQueryMode(event.getState() == State.QUERY);
     		}
     	});
     	
@@ -302,7 +300,8 @@ public class Organization extends Screen implements AutoCompleteCallInt {
     		    manager.getOrganizationAddress().setParentOrganizationId(event.getValue());
     		}
     		public void onStateChange(StateChangeEvent<State> event) {
-    			parentOrg.enable(enabledStates.contains(event.getState()));
+    		    parentOrg.enable(EnumSet.of(State.ADD,State.UPDATE,State.QUERY).contains(event.getState()));
+    		    parentOrg.setQueryMode(event.getState() == State.QUERY);
     		}
     	});
     	
@@ -516,7 +515,6 @@ public class Organization extends Screen implements AutoCompleteCallInt {
     protected void query() {
     	rpc = new OrganizationRPC();
     	load(rpc);
-    	switchQuery(true);
         setState(Screen.State.QUERY);
         window.setDone(consts.get("enterFieldsToQuery"));
     }
@@ -694,7 +692,7 @@ public class Organization extends Screen implements AutoCompleteCallInt {
         service.callScreen("loadContacts", rpc.orgContacts, new AsyncCallback<ContactsRPC>() {
             public void onSuccess(ContactsRPC result) {
                 rpc.orgContacts = result;
-                contactsTab.setRPC(rpc.orgContacts);
+                contactsTab.setManager(manager);
                 window.clearStatus();
 
             }
@@ -724,15 +722,6 @@ public class Organization extends Screen implements AutoCompleteCallInt {
     	}
     	return valid;
     }
-    
-    
-    public void switchQuery(boolean query) {
-    	for(Widget wid : def.getWidgets().values()){
-    	    if(wid instanceof HasField)
-    	        ((HasField)wid).setQueryMode(true);
-    	}
-    }
-    
     
     public ArrayList<QueryData> getQueryFields() {
     	ArrayList<QueryData> list = new ArrayList<QueryData>();
@@ -819,7 +808,6 @@ public class Organization extends Screen implements AutoCompleteCallInt {
         for(IdNameDO entry : query.results) {
             query.model.add(new TableDataRow(entry.getId(),entry.getName()));
         }
-        switchQuery(false);
         ActionEvent.fire(this,Action.NEW_MODEL, query);
     }
     
@@ -890,5 +878,11 @@ public class Organization extends Screen implements AutoCompleteCallInt {
 		});
 		
 	}
+    
+    public String getString(Object obj){
+        if(obj == null)
+            return "";
 
+        return obj.toString();
+    }
 }
