@@ -65,8 +65,8 @@ public class OrganizationsManager implements RPC {
     }
     
     
-    public static OrganizationsManager findByIdWithContacts(Integer id){
-        return null;
+    public static OrganizationsManager findByIdWithContacts(Integer id) throws Exception {
+        return proxy().fetchWithContacts(id);
     }
     
     public static OrganizationsManager findByIdWithNotes(Integer id){
@@ -106,13 +106,19 @@ public class OrganizationsManager implements RPC {
                 try{
                     contacts = OrganizationContactsManager.findByOrganizationId(organizationAddress.getOrganizationId());
                     
+                //}
+                //catch(EntityNotFoundException e){
+                    //ignore
                 }catch(Exception e){
+                    System.out.println(e.getMessage());
                     return null;
                 }
-            }else{
-                contacts = OrganizationContactsManager.getInstance();
             }
         }
+            
+         if(contacts == null)
+            contacts = OrganizationContactsManager.getInstance();
+     
         return contacts;
     }
     

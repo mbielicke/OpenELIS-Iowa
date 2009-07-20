@@ -45,12 +45,12 @@ public class OrganizationsManagerProxy {
         return service.call("update", man);
     }
 
-    public OrganizationsManager fetch(Integer orgId) throws Exception{
+    public OrganizationsManager fetch(Integer orgId) throws Exception {
         return service.call("fetch", orgId);
     }
     
-    public OrganizationsManager fetchWithContacts(Integer orgId){
-        return null;
+    public OrganizationsManager fetchWithContacts(Integer orgId) throws Exception {
+        return service.call("fetchWithContacts", orgId);
     }
     
     public OrganizationsManager fetchWithNotes(Integer orgId){

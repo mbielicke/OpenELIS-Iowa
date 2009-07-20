@@ -36,7 +36,7 @@ public class OrganizationContactsManager implements RPC {
     private static final long serialVersionUID = 1L;
     protected Integer                           organizationId;
     protected ArrayList<OrganizationContactDO>  contacts;
-    //protected ArrayList<OrganizationContactDO>  deletedContacts;
+    protected ArrayList<OrganizationContactDO>  deletedContacts;
     
     protected transient static OrganizationContactsManagerProxy proxy;
     
@@ -67,7 +67,7 @@ public class OrganizationContactsManager implements RPC {
     public void setOrganizationId(Integer organizationId) {
         this.organizationId = organizationId;
     }
-    /*
+    
     public int count(){
         if(contacts == null)
             return 0;
@@ -108,7 +108,7 @@ public class OrganizationContactsManager implements RPC {
         
         deletedContacts.add(tmpDO);
     }
-    */
+    
     //service methods
     public OrganizationContactsManager add() throws Exception {
         return proxy().commitAdd(this);

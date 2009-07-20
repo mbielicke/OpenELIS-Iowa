@@ -21,17 +21,16 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 
 public class ContactsTab extends Screen {
 
-	private ContactsRPC rpc;
 	private OrganizationsManager manager;
 	private TableWidget table;
 	private boolean dropdownsInited;
 
 	public ContactsTab(ScreenDef def) {
 		this.def = def;
-		setHandlers();
+		initialize();
 	}
 	
-	private void setHandlers() {
+	private void initialize() {
 		table = (TableWidget)def.getWidget("contactsTable");
 //		table.manager = this;
 		addScreenHandler(table,new ScreenEventHandler<ArrayList<TableDataRow>>() {
@@ -73,34 +72,18 @@ public class ContactsTab extends Screen {
 	
 	private ArrayList<TableDataRow> getTableModel() {
 		ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
-		if(rpc.orgContacts == null)
-			return model;
-    	try 
+		
+		try 
         {	
-    		for(int iter = 0;iter < rpc.orgContacts.size();iter++) {
-    			OrganizationContactDO contactRow = (OrganizationContactDO)rpc.orgContacts.get(iter);
+    		for(int iter = 0;iter < manager.getContacts().count();iter++) {
+    			OrganizationContactDO contactRow = (OrganizationContactDO)manager.getContacts().getContactAt(iter);
     		
-               //TableDataRow<Contact> row = (TableDataRow<Contact>)table.model.createRow();
     		   TableDataRow row = new TableDataRow(13);
                Contact key = new Contact();
                key.orgId = contactRow.getId();
                key.addId = contactRow.getAddressDO().getId();
                row.key = key;
-               /*
-               row.contactType.setValue(new DataSet<Integer>(contactRow.getContactType()));
-               row.name.setValue(contactRow.getName());
-               row.multipleUnit.setValue(contactRow.getAddressDO().getMultipleUnit());
-               row.streetAddress.setValue(contactRow.getAddressDO().getStreetAddress());
-               row.city.setValue(contactRow.getAddressDO().getCity());          
-               row.state.setValue(new DataSet<String>(contactRow.getAddressDO().getState()));
-               row.zipCode.setValue(contactRow.getAddressDO().getZipCode());
-               row.country.setValue(new DataSet<String>(contactRow.getAddressDO().getCountry()));
-               row.workPhone.setValue(contactRow.getAddressDO().getWorkPhone());
-               row.homePhone.setValue(contactRow.getAddressDO().getHomePhone());
-               row.cellPhone.setValue(contactRow.getAddressDO().getCellPhone());
-               row.faxPhone.setValue(contactRow.getAddressDO().getFaxPhone());
-               row.email.setValue(contactRow.getAddressDO().getEmail());     
-               */
+
                row.cells.get(0).value = contactRow.getContactType();
                row.cells.get(1).value = contactRow.getName();
                row.cells.get(2).value = contactRow.getAddressDO().getMultipleUnit();
@@ -153,7 +136,7 @@ public class ContactsTab extends Screen {
             contactDO.getAddressDO().setFaxPhone(row.faxPhone.getValue());
             contactDO.getAddressDO().setEmail(row.email.getValue());
             */
-            contactDO.setOrganization(rpc.orgId);
+            contactDO.setOrganization(contactDO.getOrganization());
             contactDO.setName((String)row.cells.get(1).value);
             contactDO.getAddressDO().setId(((Contact)row.key).addId);
             contactDO.setContactType((Integer)row.cells.get(0).value);
@@ -214,20 +197,6 @@ public class ContactsTab extends Screen {
         } 
         ((Dropdown<String>)table.columns.get(5).getColumnWidget()).setModel(model);
     }
-	
-	public void setRPC(ContactsRPC rpc) {
-		if(rpc == null) {
-			rpc = new ContactsRPC();
-		}
-		this.rpc = rpc;
-		if(!dropdownsInited) {
-			setContactTypes(DictionaryCache.getListByCategorySystemName("contact_type"));
-			setCountriesModel(DictionaryCache.getListByCategorySystemName("country"));
-			setStatesModel(DictionaryCache.getListByCategorySystemName("state"));
-			dropdownsInited = true;
-		}                
-		DataChangeEvent.fire(this);
-	}
 	
 	public void setManager(OrganizationsManager manager) {
        this.manager = manager;

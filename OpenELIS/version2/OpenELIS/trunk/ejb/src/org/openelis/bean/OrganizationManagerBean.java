@@ -94,9 +94,8 @@ public class OrganizationManagerBean implements OrganizationManagerRemote {
     }
     
     public OrganizationsManager fetchWithContacts(Integer orgId) throws Exception {
-        OrganizationsManager man = OrganizationsManager.findById(orgId);
+        OrganizationsManager man = OrganizationsManager.findByIdWithContacts(orgId);
         man.setOrganizationReferenceTable(orgRefTableId);
-        //man.setContactsManager(OrganizationContactsManager.findByOrganizationId(orgId));
         
         return man;
     }
