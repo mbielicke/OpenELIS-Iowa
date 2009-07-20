@@ -23,15 +23,17 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.remote;
+package org.openelis.exception;
 
-import java.util.ArrayList;
+public class MultipleNoteException extends Exception {
 
-import javax.ejb.Remote;
+    private static final long serialVersionUID = 1L;
 
-import org.openelis.domain.NoteDO;
-
-@Remote
-public interface NoteRemote {
-    public ArrayList<NoteDO> getNotes(Integer refTableId, Integer refId) throws Exception;
+    public MultipleNoteException(){
+        super();
+    }
+    
+    public MultipleNoteException(String msg){
+        super(msg);
+    }
 }

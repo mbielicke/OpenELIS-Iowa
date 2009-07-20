@@ -26,8 +26,8 @@
 package org.openelis.manager;
 
 import org.openelis.domain.OrganizationAddressDO;
+import org.openelis.exception.NotFoundException;
 import org.openelis.gwt.common.RPC;
-import org.openelis.manager.proxy.OrganizationsManagerProxy;
 
 public class OrganizationsManager implements RPC {
 
@@ -94,7 +94,6 @@ public class OrganizationsManager implements RPC {
                 }
             }else{
                 notes = NotesManager.getInstance();
-                notes.setExternal(false);
             }
         }
 
@@ -106,8 +105,8 @@ public class OrganizationsManager implements RPC {
                 try{
                     contacts = OrganizationContactsManager.findByOrganizationId(organizationAddress.getOrganizationId());
                     
-                //}
-                //catch(EntityNotFoundException e){
+                }
+                catch(NotFoundException e){
                     //ignore
                 }catch(Exception e){
                     System.out.println(e.getMessage());

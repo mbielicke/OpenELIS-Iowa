@@ -29,7 +29,6 @@ import java.util.ArrayList;
 
 import org.openelis.domain.OrganizationContactDO;
 import org.openelis.gwt.common.RPC;
-import org.openelis.manager.proxy.OrganizationContactsManagerProxy;
 
 public class OrganizationContactsManager implements RPC {
     
@@ -125,11 +124,23 @@ public class OrganizationContactsManager implements RPC {
         return proxy;
     }
 
-    public ArrayList<OrganizationContactDO> getContacts() {
+    //these are friendly methods so only managers and proxies can call this method
+    ArrayList<OrganizationContactDO> getContacts() {
         return contacts;
     }
 
-    public void setContacts(ArrayList<OrganizationContactDO> contacts) {
+    void setContacts(ArrayList<OrganizationContactDO> contacts) {
         this.contacts = contacts;
+    }
+    
+    int deleteCount(){
+        if(deletedContacts == null)
+            return 0;
+        
+        return deletedContacts.size();
+    }
+    
+    OrganizationContactDO getDeletedAt(int i){
+        return deletedContacts.get(i);
     }
 }
