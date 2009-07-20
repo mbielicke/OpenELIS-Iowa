@@ -36,7 +36,6 @@ import javax.ejb.Stateless;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityNotFoundException;
 import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
@@ -49,6 +48,7 @@ import org.openelis.domain.OrganizationContactDO;
 import org.openelis.entity.Note;
 import org.openelis.entity.Organization;
 import org.openelis.entity.OrganizationContact;
+import org.openelis.exception.NotFoundException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.TableFieldErrorException;
@@ -245,6 +245,47 @@ public class OrganizationBean implements OrganizationRemote, OrganizationLocal {
         
         //lockBean.giveUpLock(orgRefTableId, organization.getId());                                  
     }
+    
+    public void addContact(OrganizationContactDO contactDO) throws Exception{
+        manager.setFlushMode(FlushModeType.COMMIT);
+        
+        OrganizationContact orgContact = new OrganizationContact();
+    
+        //send the contact address to the address bean
+        Integer contactAddressId = addressBean.updateAddress(contactDO.getAddressDO());
+            
+        orgContact.setContactTypeId(contactDO.getContactType());
+        orgContact.setName(contactDO.getName());
+        orgContact.setOrganizationId(contactDO.getOrganization());
+        orgContact.setAddressId(contactAddressId);
+        
+        manager.persist(orgContact);
+        contactDO.setId(orgContact.getId());
+    }
+
+    public void updateContact(OrganizationContactDO contactDO) throws Exception{
+        manager.setFlushMode(FlushModeType.COMMIT);
+        
+        OrganizationContact orgContact = manager.find(OrganizationContact.class, contactDO.getId());
+
+        //send the contact address to the address bean
+        Integer contactAddressId = addressBean.updateAddress(contactDO.getAddressDO());
+            
+        orgContact.setContactTypeId(contactDO.getContactType());
+        orgContact.setName(contactDO.getName());
+        orgContact.setOrganizationId(contactDO.getOrganization());
+        orgContact.setAddressId(contactAddressId);
+        
+    }
+    
+    public void deleteContact(OrganizationContactDO contactDO) throws Exception{
+        manager.setFlushMode(FlushModeType.COMMIT);
+        
+        OrganizationContact orgContact = manager.find(OrganizationContact.class, contactDO.getId());
+        
+        if(orgContact != null)
+            manager.remove(orgContact);
+    }
 
 	public List<OrganizationContactDO> getOrganizationContacts(Integer organizationId) throws Exception {
 		Query query = manager.createNamedQuery("Organization.Contacts");
@@ -253,7 +294,7 @@ public class OrganizationBean implements OrganizationRemote, OrganizationLocal {
 		List contactsList = query.getResultList();
 		
 		if(contactsList.size() == 0)
-		    throw new EntityNotFoundException("");
+		    throw new NotFoundException();
 		
         return contactsList;
 	}

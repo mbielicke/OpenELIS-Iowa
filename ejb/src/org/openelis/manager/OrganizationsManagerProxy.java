@@ -23,7 +23,7 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.manager.proxy;
+package org.openelis.manager;
 
 import javax.naming.InitialContext;
 import javax.persistence.EntityNotFoundException;
@@ -34,30 +34,38 @@ import org.openelis.manager.OrganizationsManager;
 
 public class OrganizationsManagerProxy {
     
-    public OrganizationsManager add(OrganizationsManager man) {
+    public OrganizationsManager add(OrganizationsManager man) throws Exception {
+        Integer orgId, orgRefId;
         OrganizationLocal ol = getOrganizationLocal();
         ol.add(man.getOrganizationAddress());
         
-        //fill in the org ids
+        orgId = man.getOrganizationAddress().getOrganizationId();
+        orgRefId = man.getOrganizationReferenceTable();
         
+        man.getContacts().setOrganizationId(orgId);
+        man.getContacts().add();
         
-        //man.getNotesManager().setReferenceId(organ)
-        //man.getNotesManager().add();
-        //man.getContactsManager().add();
+        man.getNotes().setReferenceId(orgId);
+        man.getNotes().setReferenceTableId(orgRefId);
+        man.getNotes().add();
         
         return man;
     }
 
     public OrganizationsManager update(OrganizationsManager man) throws Exception {
+        Integer orgId, orgRefId;
         OrganizationLocal ol = getOrganizationLocal();
         ol.update(man.getOrganizationAddress());
         
-        //fill in the org ids
+        orgId = man.getOrganizationAddress().getOrganizationId();
+        orgRefId = man.getOrganizationReferenceTable();
         
+        man.getContacts().setOrganizationId(orgId);
+        man.getContacts().update();
         
-        //man.getNotesManager().setReferenceId(organ)
-        //man.getNotesManager().add();
-        //man.getContactsManager().add();
+        man.getNotes().setReferenceId(orgId);
+        man.getNotes().setReferenceTableId(orgRefId);
+        man.getNotes().update();
         
         return man;
     }
@@ -80,8 +88,14 @@ public class OrganizationsManagerProxy {
         return m;
     }
     
-    public OrganizationsManager fetchWithNotes(Integer orgId){
-        return null;
+    public OrganizationsManager fetchWithNotes(Integer orgId) throws Exception {
+        OrganizationsManager m = fetch(orgId);
+
+        try{
+            m.getNotes();
+        }catch(EntityNotFoundException ignE){}
+        
+        return m;
     }
     
     public OrganizationsManager fetchWithIdentifiers(Integer orgId){

@@ -25,11 +25,15 @@
 */
 package org.openelis.local;
 
-import java.util.List;
+import java.util.ArrayList;
 
 import javax.ejb.Local;
 
+import org.openelis.domain.NoteDO;
+
 @Local
 public interface NoteLocal {
-    public List getNotes(Integer refTableId, Integer refId);
+    public ArrayList<NoteDO> getNotes(Integer refTableId, Integer refId) throws Exception;
+    public void update(NoteDO note) throws Exception;
+    public void add(NoteDO note) throws Exception;
 }
