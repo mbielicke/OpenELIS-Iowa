@@ -28,18 +28,15 @@ package org.openelis.manager;
 import java.util.ArrayList;
 
 import org.openelis.domain.NoteDO;
+import org.openelis.exception.MultipleNoteException;
 import org.openelis.gwt.common.RPC;
-import org.openelis.manager.proxy.NotesManagerProxy;
-
 
 public class NotesManager implements RPC {
 
     private static final long serialVersionUID = 1L;
-    protected boolean external;
     protected Integer referenceId;
     protected Integer referenceTableId;
     protected ArrayList<NoteDO> notes;
-    public boolean cached = false;
     
     protected transient static NotesManagerProxy proxy;
     
@@ -59,6 +56,38 @@ public class NotesManager implements RPC {
         nm.notes = new ArrayList<NoteDO>();
 
         return nm;
+    }
+    
+    public int count(){
+        if(notes == null)
+            return 0;
+        
+        return notes.size();
+    }
+    
+    public NoteDO getNoteAt(int i) {
+        return notes.get(i);
+    }
+    
+    public void addNote(NoteDO note) throws Exception {
+        //we are only going to allow 1 external note.  External notes can be modified
+        //so there is no reason to have more than 1.
+        if("Y".equals(note.getIsExternal()) && count() > 0)
+            throw new MultipleNoteException();
+        
+        //you can only add 1 internal note at a time.  This checks to see if we 
+        //already have an uncommited internal note.
+        for(int i=0; i<count(); i++){
+            NoteDO noteDO = getNoteAt(i);
+            
+            if(noteDO.getId() == null)
+                throw new MultipleNoteException();
+        }
+        
+        if(notes == null)
+            notes = new ArrayList<NoteDO>();
+        
+        notes.add(0, note);
     }
     
     public static NotesManager findByRefTableRefId(Integer tableId, Integer id) throws Exception {
@@ -81,50 +110,19 @@ public class NotesManager implements RPC {
         return referenceTableId;
     }
 
-    /**
-      * Sets the behavior for allocating and storing notes.
-      */
-    public void setExternal(boolean flag) {
-        external = flag;
-    }
-
-    /**
-      * Returns the flag describing the behavior for allocating and storing notes.
-      */
-    public boolean getExternal() {
-        return external;
+    //service methods
+    public NotesManager add() throws Exception {
+        return proxy().add(this);
     }
     
-    /*
-    public List<NoteDO> getNotes() {
-       manager().fetch();
-       return notes; 
-    }
-    */
-    
-  //service methods
-    public NotesManager add(){
-        return proxy().commitAdd(this);
+    public NotesManager update() throws Exception {
+        return proxy().update(this);
     }
     
-    public NotesManager update(){
-        return proxy().commitUpdate(this);
-    }
-    
-    /*
-    public NotesManager fetch(){
-        if (cached || !load)
-            return this;
-
-        cached = true;
-        load = false;
+    public void validate() throws Exception {
         
-        if(referenceId == null || referenceTableId == null)
-            return null;
+    }
         
-        return proxy().fetch(this);
-    }*/
-    
     private static NotesManagerProxy proxy(){
         if(proxy == null)
             proxy = new NotesManagerProxy();
@@ -132,12 +130,12 @@ public class NotesManager implements RPC {
         return proxy;
     }
 
-    public ArrayList<NoteDO> getNotes() {
+    //these are friendly methods so only managers and proxies can call this method
+    ArrayList<NoteDO> getNotes() {
         return notes;
     }
 
-    public void setNotes(ArrayList<NoteDO> notes) {
+    void setNotes(ArrayList<NoteDO> notes) {
         this.notes = notes;
-        cached = true;
-    }     
+    }
 }

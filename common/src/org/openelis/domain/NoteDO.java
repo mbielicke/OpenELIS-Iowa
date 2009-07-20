@@ -28,21 +28,15 @@ package org.openelis.domain;
 import java.io.Serializable;
 import java.util.Date;
 
-import org.openelis.gwt.common.DatetimeRPC;
-//import org.openelis.util.Datetime;
 import org.openelis.utilcommon.DataBaseUtil;
 
 public class NoteDO implements Serializable{
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 8290691816263621343L;
-	
-	protected Integer id;
+    private static final long serialVersionUID = 1L;
+    protected Integer id;
 	protected Integer referenceId;  
 	protected Integer referenceTable;   
-	protected DatetimeRPC timestamp;    
+	//protected DatetimeRPC timestamp;    
 	protected String isExternal;  
 	protected Integer systemUserId;
 	protected String systemUser;
@@ -57,7 +51,7 @@ public class NoteDO implements Serializable{
     	setId(id);
     	setReferenceId(referenceId);
     	setReferenceTable(referenceTable);
-    	setTimestamp(DatetimeRPC.getInstance(DatetimeRPC.YEAR,DatetimeRPC.MINUTE,timestamp));
+  //  	setTimestamp(DatetimeRPC.getInstance(DatetimeRPC.YEAR,DatetimeRPC.MINUTE,timestamp));
     	setIsExternal(isExternal);
     	setSystemUserId(systemUser);
     	setSubject(subject);
@@ -66,7 +60,7 @@ public class NoteDO implements Serializable{
     
     public NoteDO(Integer id, Integer systemUser, String text, Date timestamp, String subject){
     	setId(id);
-    	setTimestamp(DatetimeRPC.getInstance(DatetimeRPC.YEAR,DatetimeRPC.MINUTE,timestamp));
+    //	setTimestamp(DatetimeRPC.getInstance(DatetimeRPC.YEAR,DatetimeRPC.MINUTE,timestamp));
     	setSystemUserId(systemUser);
     	setSubject(subject);
     	setText(text);
@@ -114,13 +108,14 @@ public class NoteDO implements Serializable{
 	public void setText(String text) {
 		this.text = DataBaseUtil.trim(text);
 	}
+	/*
 	public DatetimeRPC getTimestamp() {
 		return timestamp;
 	}
 	public void setTimestamp(DatetimeRPC timestamp) {
 		this.timestamp = timestamp;
 	}
-
+*/
     public String getSystemUser() {
         return systemUser;
     }
