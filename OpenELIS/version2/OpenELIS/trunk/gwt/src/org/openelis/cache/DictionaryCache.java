@@ -30,7 +30,7 @@ import java.util.HashMap;
 
 import org.openelis.cache.server.DictionaryCacheRPC;
 import org.openelis.domain.DictionaryDO;
-import org.openelis.modules.main.client.ScreenService;
+import org.openelis.gwt.services.ScreenService;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 
 import com.google.gwt.user.client.Window;
@@ -67,7 +67,7 @@ public class DictionaryCache {
     }
     
     public DictionaryCache(){
-        service = new ScreenService("?service="+DICTIONARY_CACHE_SERVICE_URL);
+        service = new ScreenService("OpenELISServlet?service="+DICTIONARY_CACHE_SERVICE_URL);
         
         systemNameList = (HashMap<String, DictionaryDO>)OpenELIS.getCacheList().get("DictSystemNameCache-systemName");
         idList = (HashMap<Integer, DictionaryDO>)OpenELIS.getCacheList().get("DictSystemNameCache-id");

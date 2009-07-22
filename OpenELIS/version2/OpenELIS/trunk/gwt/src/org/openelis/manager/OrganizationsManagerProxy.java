@@ -25,7 +25,8 @@
 */
 package org.openelis.manager;
 
-import org.openelis.modules.main.client.ScreenService;
+import org.openelis.gwt.services.ScreenService;
+
 
 public class OrganizationsManagerProxy {
 
@@ -33,7 +34,7 @@ public class OrganizationsManagerProxy {
     protected ScreenService service;
     
     public OrganizationsManagerProxy(){
-        service = new ScreenService("?service="+ORG_MANAGER_SERVICE_URL);
+        service = new ScreenService("OpenELISServlet?service="+ORG_MANAGER_SERVICE_URL);
     }
     
     public OrganizationsManager add(OrganizationsManager man) throws Exception {

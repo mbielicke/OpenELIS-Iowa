@@ -1050,8 +1050,8 @@ public class TestService implements
 
             form.isActive.setValue(testDO.getIsActive());
         } else {
-            form.activeBegin.setValue(null);
-            form.activeEnd.setValue(null);
+            form.activeBegin.setValue("");
+            form.activeEnd.setValue("");
             form.isActive.setValue("N");
         }
         

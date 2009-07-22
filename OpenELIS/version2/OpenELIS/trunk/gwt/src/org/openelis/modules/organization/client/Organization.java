@@ -40,8 +40,6 @@ import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.data.StringObject;
-import org.openelis.gwt.common.data.TableDataModel;
 import org.openelis.gwt.common.rewrite.QueryData;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
@@ -49,8 +47,7 @@ import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.rewrite.Screen;
 import org.openelis.gwt.screen.rewrite.ScreenEventHandler;
-import org.openelis.gwt.services.ScreenServiceInt;
-import org.openelis.gwt.services.ScreenServiceIntAsync;
+import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.HasField;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.rewrite.AppButton;
@@ -67,10 +64,7 @@ import org.openelis.gwt.widget.table.rewrite.TableWidget;
 import org.openelis.manager.OrganizationsManager;
 import org.openelis.metamap.OrganizationMetaMap;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
-import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -78,7 +72,6 @@ import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.rpc.SyncCallback;
 import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -88,7 +81,7 @@ public class Organization extends Screen implements AutoCompleteCallInt {
     private KeyListManager<org.openelis.gwt.common.rewrite.Query<Object>>    keyList; 
     public enum Tabs {CONTACTS,IDENTIFIERS,NOTES};
     protected Tabs tab = Tabs.CONTACTS;
-    private ScreenServiceIntAsync          service;
+    private ScreenService                service;
     private OrganizationsManager           manager;
     //private OrganizationRPC        	       rpc;
     private ContactsTab 		           contactsTab;
@@ -98,9 +91,10 @@ public class Organization extends Screen implements AutoCompleteCallInt {
     
     EnumSet<State> enabledStates = EnumSet.of(State.ADD,State.UPDATE,State.QUERY);
 
-    public Organization() {
+    public Organization() throws Exception {
         // Call base to get ScreenDef and draw screen
-        super("OpenELISScreenServlet?service=org.openelis.modules.organization.server.Organization");
+        super("OpenELISServlet?service=org.openelis.modules.organization.server.Organization");
+        service = new ScreenService("OpenELISServlet?service=org.openelis.modules.organization.server.Organization");
         manager = OrganizationsManager.getInstance();
         
         keyList = new KeyListManager<org.openelis.gwt.common.rewrite.Query<Object>>();
@@ -142,9 +136,6 @@ public class Organization extends Screen implements AutoCompleteCallInt {
             }
         });
         //Setup service used by screen
-        service = (ScreenServiceIntAsync)GWT.create(ScreenServiceInt.class);
-        ServiceDefTarget target = (ServiceDefTarget)service;
-        target.setServiceEntryPoint(GWT.getModuleBaseURL()+"OpenELISScreenServlet?service=org.openelis.modules.organization.server.Organization");
         
         //Initialize Screen
    		setState(State.DEFAULT);
@@ -759,10 +750,11 @@ public class Organization extends Screen implements AutoCompleteCallInt {
     	commitQuery(qList);
     }
     
-    public void commitQuery(ArrayList<QueryData> qFields) {
+    public void commitQuery(ArrayList<QueryData> qFields)  {
     	OrgQuery query = new OrgQuery();
     	query.fields = qFields;
     	window.setBusy("Querying...");
+    	
     	service.callScreen("query",query,new AsyncCallback<OrgQuery>() {
     		public void onSuccess(OrgQuery query){
                 loadQuery(query);

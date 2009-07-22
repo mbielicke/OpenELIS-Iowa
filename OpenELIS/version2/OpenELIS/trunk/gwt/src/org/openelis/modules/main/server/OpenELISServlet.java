@@ -38,7 +38,7 @@ import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.data.FieldType;
 import org.openelis.gwt.common.data.TableDataModel;
 import org.openelis.gwt.common.data.TableDataRow;
-import org.openelis.gwt.server.AppServlet;
+import org.openelis.gwt.server.ScreenControllerServlet;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
 import org.openelis.gwt.services.AppScreenServiceInt;
 import org.openelis.gwt.services.AutoCompleteServiceInt;
@@ -48,7 +48,7 @@ import org.openelis.modules.favorites.server.FavoritesService;
 import org.openelis.modules.main.client.service.OpenELISServiceInt;
 import org.openelis.util.SessionManager;
 
-public class ScreenControllerServlet extends AppServlet implements OpenELISServiceInt<RPC,RPC>, AutoCompleteServiceInt, FavoritesServiceInt, ScreenServiceInt {
+public class OpenELISServlet extends ScreenControllerServlet implements OpenELISServiceInt<RPC,RPC>, AutoCompleteServiceInt, FavoritesServiceInt {
 
     private static final long serialVersionUID = 1L; 
 
@@ -120,19 +120,6 @@ public class ScreenControllerServlet extends AppServlet implements OpenELISServi
         }
     }
     
-    private ScreenServiceInt getScreenService() throws RPCException {
-        try {
-            return (ScreenServiceInt)Class.forName(getThreadLocalRequest().getParameter("service")).newInstance();
-        }catch(Exception e){
-            if(e instanceof FormErrorException)
-                throw new FormErrorException(e.getMessage());
-            else{
-                e.printStackTrace();
-                throw new RPCException(e.getMessage());
-            }
-        }
-    }
-    
     public void logout() {
         HttpSession session;
         try {
@@ -169,42 +156,5 @@ public class ScreenControllerServlet extends AppServlet implements OpenELISServi
     public String saveFavorites(Form form) {
         // TODO Auto-generated method stub
         return new FavoritesService().saveFavorites(form);
-    }
-
-    public String getScreen() throws RPCException {
-		 return ((ScreenServiceInt)getScreenService()).getScreen();
-	}
-
-	public <T extends RPC> T callScreen(String method, T rpc) throws Exception {
-		ScreenServiceInt service = getScreenService();
-		try{
-			return (T)service.getClass().getMethod(method,new Class[] {rpc.getClass()}).invoke(service, new Object[]{rpc});
-		}catch(Exception e){
-			if(e instanceof InvocationTargetException){
-				InvocationTargetException er = (InvocationTargetException)e;
-				if(er.getCause() != null)
-					throw (RPCException)er.getCause();
-			}
-
-			e.printStackTrace();
-			throw new RPCException(e.getMessage());
-		}
-	}
-
-	public <T extends RPC> T call(String method, Object param) throws Exception {
-        return (T)Class.forName(getThreadLocalRequest().getParameter("service")).newInstance().getClass().
-            getMethod(method,new Class[] {param.getClass()}).invoke(Class.forName(getThreadLocalRequest().getParameter("service")).newInstance(), new Object[]{param});
-   }
-	
-    public <T extends RPC> T call(String method, Integer param) throws Exception {
-        return call(method, (Object)param);
-    }
-
-    public <T extends RPC> T call(String method, String param) throws Exception{
-        return call(method, (Object)param);
-    }
-    
-    public <T extends RPC> T call(String method, RPC param) throws Exception {
-        return call(method, (Object)param);
     }
 }

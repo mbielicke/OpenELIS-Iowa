@@ -29,7 +29,7 @@ import java.util.HashMap;
 
 import org.openelis.cache.server.ReferenceTableCacheRPC;
 import org.openelis.domain.IdNameDO;
-import org.openelis.modules.main.client.ScreenService;
+import org.openelis.gwt.services.ScreenService;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 
 import com.google.gwt.user.client.Window;
@@ -48,7 +48,7 @@ public class ReferenceTableCache {
     }
     
     public ReferenceTableCache(){
-        service = new ScreenService("?service="+REFERENCETABLE_CACHE_SERVICE_URL);
+        service = new ScreenService("OpenELISServlet?service="+REFERENCETABLE_CACHE_SERVICE_URL);
         
         tableList = (HashMap<String, Integer>)OpenELIS.getCacheList().get("ReferenceTableCache");
         

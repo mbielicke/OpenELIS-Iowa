@@ -54,13 +54,8 @@ UIRF Software License are applicable instead of those above.
 
   <servlet>
     <servlet-name>OpenELISServlet</servlet-name>
-    <servlet-class>org.openelis.modules.main.server.ScreenControllerServlet</servlet-class>
+    <servlet-class>org.openelis.modules.main.server.OpenELISServlet</servlet-class>
     <load-on-startup>2</load-on-startup>
-  </servlet>
-  <servlet>
-    <servlet-name>OpenELISScreenServlet</servlet-name>
-    <servlet-class>org.openelis.modules.main.server.ScreenServiceControllerServlet</servlet-class>
-    <load-on-startup>3</load-on-startup>
   </servlet>
   <servlet>
     <servlet-name>PreferencesServlet</servlet-name>
@@ -83,11 +78,6 @@ UIRF Software License are applicable instead of those above.
     <url-pattern>/OpenELISServlet</url-pattern>
   </servlet-mapping>
   
-   <servlet-mapping>
-    <servlet-name>OpenELISScreenServlet</servlet-name>
-    <url-pattern>/OpenELISScreenServlet</url-pattern>
-  </servlet-mapping>
-
   <servlet-mapping>
     <servlet-name>PreferencesServlet</servlet-name>
     <url-pattern>/PreferencesServlet</url-pattern>
