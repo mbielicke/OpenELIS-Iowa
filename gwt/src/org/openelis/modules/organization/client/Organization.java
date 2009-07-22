@@ -32,12 +32,16 @@ import java.util.Set;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameDO;
+import org.openelis.domain.OrganizationAddressDO;
 import org.openelis.domain.OrganizationAutoDO;
+import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.gwt.common.data.StringObject;
+import org.openelis.gwt.common.data.TableDataModel;
 import org.openelis.gwt.common.rewrite.QueryData;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
@@ -45,7 +49,6 @@ import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.rewrite.Screen;
 import org.openelis.gwt.screen.rewrite.ScreenEventHandler;
-import org.openelis.gwt.screen.rewrite.Screen.State;
 import org.openelis.gwt.services.ScreenServiceInt;
 import org.openelis.gwt.services.ScreenServiceIntAsync;
 import org.openelis.gwt.widget.HasField;
@@ -87,7 +90,7 @@ public class Organization extends Screen implements AutoCompleteCallInt {
     protected Tabs tab = Tabs.CONTACTS;
     private ScreenServiceIntAsync          service;
     private OrganizationsManager           manager;
-    private OrganizationRPC        	       rpc;
+    //private OrganizationRPC        	       rpc;
     private ContactsTab 		           contactsTab;
     private NotesTab 		  	           notesTab;
     
@@ -116,7 +119,11 @@ public class Organization extends Screen implements AutoCompleteCallInt {
         addScreenHandler(contactsTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                 contactsTab.setManager(manager);
+                
+                if(tab == Tabs.CONTACTS)
+                    drawTabs();
             }
+            
             public void onStateChange(StateChangeEvent<State> event) {
                 StateChangeEvent.fire(contactsTab, event.getState());
             }
@@ -124,8 +131,12 @@ public class Organization extends Screen implements AutoCompleteCallInt {
         
         addScreenHandler(notesTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
-                notesTab.setRPC(rpc.notes);
+                notesTab.setManager(manager);
+                
+                if(tab == Tabs.NOTES)
+                    drawTabs();
             }
+            
             public void onStateChange(StateChangeEvent<State> event) {
                 StateChangeEvent.fire(notesTab, event.getState());
             }
@@ -280,20 +291,14 @@ public class Organization extends Screen implements AutoCompleteCallInt {
     	final AutoComplete<Integer> parentOrg = (AutoComplete)def.getWidget(OrgMeta.getParentOrganization().getName());
     	addScreenHandler(parentOrg,new ScreenEventHandler<Integer>() {
     		public void onDataChange(DataChangeEvent event){
-    			if(rpc.parentOrgRPC != null){
-    				if(rpc.parentOrgRPC.model != null){
-    					ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();	
-    					for(OrganizationAutoDO autoDO : rpc.parentOrgRPC.model){
-    						TableDataRow row = new TableDataRow(4);
-    						row.key = autoDO.getId();
-    						row.cells.get(0).value = autoDO.getName();
-    						row.cells.get(1).value = autoDO.getAddress();
-    						row.cells.get(2).value = autoDO.getCity();
-    						row.cells.get(3).value = autoDO.getState();
-    						model.add(row);
-    					}
-    				}
-    			}
+    		    OrganizationAddressDO orgDO = manager.getOrganizationAddress();
+    		    if(orgDO.getParentOrganizationId() == null){
+    	            parentOrg.clear();
+    	        }else{
+    	            ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
+    	            model.add(new TableDataRow(orgDO.getParentOrganizationId(), orgDO.getParentOrganization()));
+    	            parentOrg.setModel(model);
+    	        }
     			parentOrg.setSelection(manager.getOrganizationAddress().getParentOrganizationId());
     		}
     		public void onValueChangeEvent(ValueChangeEvent<Integer> event) {
@@ -492,73 +497,90 @@ public class Organization extends Screen implements AutoCompleteCallInt {
 				int tabIndex = event.getSelectedItem().intValue();
 				if(tabIndex == Tabs.CONTACTS.ordinal())
 					tab = Tabs.CONTACTS;
+				else if(tabIndex == Tabs.IDENTIFIERS.ordinal())
+                    tab = Tabs.IDENTIFIERS;
 				else if(tabIndex == Tabs.NOTES.ordinal())
 					tab = Tabs.NOTES;
-			}
-    	});
-    	tabs.addBeforeSelectionHandler(new BeforeSelectionHandler<Integer>() {
-			public void onBeforeSelection(BeforeSelectionEvent<Integer> event) {
-				int tabIndex = event.getItem().intValue();
-				if(tabIndex == Tabs.CONTACTS.ordinal()){
-					if(rpc.orgContacts == null)
-						fillContactsModel();
-				}
-				if(tabIndex == Tabs.NOTES.ordinal()){
-					if(rpc.notes == null)
-						fillNotesModel();
-				}
+				
+				window.setBusy("Loading...");
+                drawTabs();
+                window.clearStatus();
 			}
     	});
     	
+    	/*
+    	tabs.addBeforeSelectionHandler(new BeforeSelectionHandler<Integer>() {
+			public void onBeforeSelection(BeforeSelectionEvent<Integer> event) {
+			    
+			}
+    	});*/
     }
     
     protected void query() {
-    	rpc = new OrganizationRPC();
-    	load(rpc);
+        manager = OrganizationsManager.getInstance();
+        DataChangeEvent.fire(this);
         setState(Screen.State.QUERY);
         window.setDone(consts.get("enterFieldsToQuery"));
     }
     
     protected void previous(){
-        
+        keyList.previous();
     }
     
     protected void next(){
-        
+        keyList.next();
     }
 
     protected void add() {
-    	rpc = new OrganizationRPC();
-    	load(rpc);
-        setState(Screen.State.ADD);
+        manager = OrganizationsManager.getInstance();
+        DataChangeEvent.fire(this);
+    	setState(Screen.State.ADD);
         window.setDone(consts.get("enterInformationPressCommit"));
     }
     
     protected void update() {
-    	/*window.setBusy("Locking Record for update...");
-    	try{
-    	    manager = manager.update();
-    	    
-    	    load();
-    	    window.clearStatus();
-    	    
-    	}catch(Exception e){
-    	    Window.alert("update(): "+e.getMessage()); 
-    	}
-    	service.callScreen("fetchForUpdate",rpc, new SyncCallback<OrganizationRPC>() {
-    		
-    	    public void onFailure(Throwable caught) {   
-    		    Window.alert(caught.getMessage());
-    		}
+        window.setBusy("Locking Record for update...");
+        
+        try{
+            manager = manager.fetchForUpdate();
+            
+            if(tab == Tabs.CONTACTS){
+                manager.getContacts();
+            }else if(tab == Tabs.IDENTIFIERS){
+                 //empty for now
+            }else if(tab == Tabs.NOTES){
+                manager.getNotes();
+            }
+            
+            DataChangeEvent.fire(this);
+            window.clearStatus();
+            setState(State.UPDATE);
+        
+        }catch(EntityLockedException e){
+            window.clearStatus();
+            Window.alert(e.getMessage());
+        }catch(Exception e){
+            Window.alert(e.getMessage());
+        }
+    }
+    
+    /*
+    public void update() {
+        window.setBusy("Locking Record for update...");
+        service.callScreen("fetchForUpdate",rpc, new SyncCallback<OrganizationRPC>() {
+            
+            public void onFailure(Throwable caught) {   
+                Window.alert(caught.getMessage());
+            }
 
-    		public void onSuccess(OrganizationRPC result) {
-    		    load(result);
+            public void onSuccess(OrganizationRPC result) {
+                load(result);
                 window.clearStatus();
-    		}
-    	});
-    	*/
+            }
+        });
         setState(State.UPDATE);
     }
+    */
 
     public void commit() {
         if (state == State.UPDATE) {
@@ -592,25 +614,36 @@ public class Organization extends Screen implements AutoCompleteCallInt {
     public void abort() {
         if (state == State.UPDATE) {
         	window.setBusy("Canceling changes ...");
-            service.callScreen("abort", rpc, new AsyncCallback<OrganizationRPC>() {
-            	public void onSuccess(OrganizationRPC rpc) {
-            		load(rpc);
-            		setState(State.DISPLAY);
-            		window.clearStatus();
-            	}
-            	public void onFailure(Throwable caught) {
-            		Window.alert(caught.getMessage());
-            	}
-            });
+        	
+        	try{
+            	manager = manager.abort();
+            	
+            	if(tab == Tabs.CONTACTS){
+                    manager.getContacts();
+                }else if(tab == Tabs.IDENTIFIERS){
+                     //empty for now
+                }else if(tab == Tabs.NOTES){
+                    manager.getNotes();
+                }
+            	
+            	DataChangeEvent.fire(this);
+            	setState(State.DISPLAY);
+                window.clearStatus();
+        	}catch(Exception e){
+        	    Window.alert(e.getMessage());
+        	    window.clearStatus();
+        	}
+            
         }
         else if (state == State.ADD) {
-            load(new OrganizationRPC());
+            manager = OrganizationsManager.getInstance();
+            DataChangeEvent.fire(this);
             setState(State.DEFAULT);
             window.setDone(consts.get("addAborted"));
         }
         else if (state == State.QUERY) {
-            load(new OrganizationRPC());
-            setState(State.DEFAULT);
+            manager = OrganizationsManager.getInstance();
+            DataChangeEvent.fire(this);
             window.setDone(consts.get("queryAborted"));
         }
     }
@@ -623,10 +656,11 @@ public class Organization extends Screen implements AutoCompleteCallInt {
             if(tab == Tabs.CONTACTS){
                 manager = OrganizationsManager.findByIdWithContacts(id);
             }else if(tab == Tabs.IDENTIFIERS){
-                //empty for now
+                manager = OrganizationsManager.findByIdWithIdentifiers(id);
             }else if(tab == Tabs.NOTES){
                 manager = OrganizationsManager.findByIdWithNotes(id);
             }
+            
         }catch(Exception e){
             setState(Screen.State.DEFAULT);
             Window.alert(consts.get("fetchFailed") + e.getMessage());
@@ -636,18 +670,13 @@ public class Organization extends Screen implements AutoCompleteCallInt {
         }
         
         DataChangeEvent.fire(this);
+        
         setState(Screen.State.DISPLAY);
-        //call.onSuccess(result);
         window.clearStatus();
     }
 
 
 
-    public void load(OrganizationRPC rpc) {
-        this.rpc = rpc;
-        DataChangeEvent.fire(this);
-    }
-    
     private void getOrganizations(String query) {
         if (state == State.DISPLAY || state == State.DEFAULT) {
             QueryData qField = new QueryData();
@@ -656,51 +685,6 @@ public class Organization extends Screen implements AutoCompleteCallInt {
             qField.type = QueryData.Type.STRING;
             commitQuery(qField);
         }
-    }
-    
-    /*
-     * Get all notes for organization (key)
-     */
-    private void fillNotesModel(){  
-        if(rpc.orgAddressDO.getOrganizationId() == null)
-            return;
-        
-        window.setBusy("Loading notes...");
-        rpc.notes = new NotesRPC();
-        rpc.notes.key = rpc.orgAddressDO.getOrganizationId();
-        service.callScreen("loadNotes", rpc.notes, new AsyncCallback<NotesRPC>(){
-            public void onSuccess(NotesRPC result){    
-                rpc.notes = result;
-                notesTab.setRPC(result);
-                window.clearStatus();
-            }
-                   
-            public void onFailure(Throwable caught){
-                Window.alert(caught.getMessage());
-                window.clearStatus();
-            }
-        });        
-    }
-
-    private void fillContactsModel() {
-        if(rpc.orgAddressDO.getOrganizationId() == null)
-            return;
-        
-        window.setBusy("Loading contacts...");
-        rpc.orgContacts = new ContactsRPC();
-        rpc.orgContacts.orgId = rpc.orgAddressDO.getOrganizationId();
-        service.callScreen("loadContacts", rpc.orgContacts, new AsyncCallback<ContactsRPC>() {
-            public void onSuccess(ContactsRPC result) {
-                rpc.orgContacts = result;
-                contactsTab.setManager(manager);
-                window.clearStatus();
-
-            }
-            public void onFailure(Throwable caught) {
-                Window.alert(caught.getMessage());
-                window.clearStatus();
-            }
-        });
     }
     
     //FIXME base class
@@ -736,42 +720,37 @@ public class Organization extends Screen implements AutoCompleteCallInt {
     
     public void commitAdd() {
     	window.setBusy("Committing ....");
-    	service.callScreen("add", rpc, new AsyncCallback<OrganizationRPC>() {
-    		public void onSuccess(OrganizationRPC result) {
-    			load(result);
-    			setState(Screen.State.DISPLAY);
-    			window.clearStatus();
-    		}
-    		public void onFailure(Throwable caught) {
-                if(caught instanceof ValidationErrorsList)
-                    showErrors((ValidationErrorsList)caught);
-                else
-                    Window.alert(caught.getMessage());
-    		}
-    	});
+    	try{
+    	    manager = manager.add();
+    	    
+    	    DataChangeEvent.fire(this);
+    	    setState(Screen.State.DISPLAY);
+            window.clearStatus();
+    	}catch(ValidationErrorsList e){
+    	       showErrors(e);
+    	       
+    	}catch(Exception e){
+    	    Window.alert("commitAdd(): "+e.getMessage());
+            window.clearStatus();
+    	}
     }
-
-
 
     public void commitUpdate() {
     	window.setBusy("Committing ....");
     	try{
             manager = manager.update();
             
-        }catch(Exception e){
-            if(e instanceof ValidationErrorsList)
-                showErrors((ValidationErrorsList)e);
-            else{
-                Window.alert("update(): "+e.getMessage());
-                window.clearStatus();
-            }
+            DataChangeEvent.fire(this);
+            setState(Screen.State.DISPLAY);
+            window.clearStatus();
+        }catch(ValidationErrorsList e){
+            showErrors(e);
             
-            return;
-        }
-        
-        DataChangeEvent.fire(this);;
-        setState(Screen.State.DISPLAY);
-        window.clearStatus();            
+        }catch(Exception e){
+            Window.alert("commitUpdate(): "+e.getMessage());
+            window.clearStatus();
+
+        }            
     }
     
     public void commitQuery(QueryData qField){
@@ -798,8 +777,9 @@ public class Organization extends Screen implements AutoCompleteCallInt {
     }
     
     public void loadQuery(OrgQuery query) {
-        rpc = new OrganizationRPC();
-        load(rpc);
+        manager = OrganizationsManager.getInstance();
+        DataChangeEvent.fire(this);
+        
         if(query.results == null || query.results.size() == 0) {
             window.setDone("No records found");
         }else
@@ -884,5 +864,15 @@ public class Organization extends Screen implements AutoCompleteCallInt {
             return "";
 
         return obj.toString();
+    }
+    
+    private void drawTabs() {
+        if(tab == Tabs.CONTACTS){
+            contactsTab.draw();
+        }else if(tab == Tabs.IDENTIFIERS){
+//            manager = OrganizationsManager.findByIdWithIdentifiers(id);
+        }else if(tab == Tabs.NOTES){
+            notesTab.draw();
+        }
     }
 }

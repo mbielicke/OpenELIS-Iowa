@@ -192,39 +192,9 @@ public class ScreenControllerServlet extends AppServlet implements OpenELISServi
 	}
 
 	public <T extends RPC> T call(String method, Object param) throws Exception {
-        try {
-            return (T)Class.forName(getThreadLocalRequest().getParameter("service")).newInstance().getClass().
-                getMethod(method,new Class[] {param.getClass()}).invoke(Class.forName(getThreadLocalRequest().getParameter("service")).newInstance(), new Object[]{param});
-        }catch(Exception e){
-            if(e instanceof InvocationTargetException){
-                InvocationTargetException er = (InvocationTargetException)e;
-                if(er.getCause() != null)
-                    throw (RPCException)er.getCause();
-            }
-
-            e.printStackTrace();
-            throw new RPCException(e.getMessage());
-        }
-    }
-
-	/*
-	public <T extends RPC> T call(String method, Object param) throws Exception {
-        AppScreenFormServiceInt service = (AppScreenFormServiceInt) getService();
-        try {
-            return (T)service.getClass().getMethod(method,new Class[] {param.getClass()}).invoke(service, new Object[]{param});
-            //return (T)Class.forName(getThreadLocalRequest().getParameter("service")).newInstance().getClass().
-            //getMethod(method,new Class[] {rpc.getClass()}).invoke(Class.forName(getThreadLocalRequest().getParameter("service")).newInstance(), new Object[]{rpc});
-        }catch(Exception e){
-            if(e instanceof InvocationTargetException){
-                InvocationTargetException er = (InvocationTargetException)e;
-                if(er.getCause() != null)
-                    throw (RPCException)er.getCause();
-            }
-
-            e.printStackTrace();
-            throw new RPCException(e.getMessage());
-        }
-    }*/
+        return (T)Class.forName(getThreadLocalRequest().getParameter("service")).newInstance().getClass().
+            getMethod(method,new Class[] {param.getClass()}).invoke(Class.forName(getThreadLocalRequest().getParameter("service")).newInstance(), new Object[]{param});
+   }
 	
     public <T extends RPC> T call(String method, Integer param) throws Exception {
         return call(method, (Object)param);

@@ -1,10 +1,8 @@
 package org.openelis.modules.organization.client;
 
 import java.util.EnumSet;
-import java.util.Iterator;
 
 import org.openelis.domain.NoteDO;
-import org.openelis.gwt.event.CommandListenerCollection;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.AppScreen;
@@ -15,6 +13,8 @@ import org.openelis.gwt.screen.rewrite.ScreenEventHandler;
 import org.openelis.gwt.screen.rewrite.UIUtil;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.rewrite.AppButton;
+import org.openelis.manager.HasNotesInt;
+import org.openelis.manager.NotesManager;
 import org.openelis.metamap.OrganizationMetaMap;
 import org.openelis.modules.standardnotepicker.client.StandardNotePickerScreen;
 
@@ -30,42 +30,50 @@ import com.google.gwt.xml.client.XMLParser;
 
 public class NotesTab extends Screen {
 	
-	private NotesRPC rpc;
+    private HasNotesInt parentManager;
+	private NotesManager manager;
     private OrganizationMetaMap OrgMeta = new OrganizationMetaMap();
-    private CommandListenerCollection commandListeners;
     private TextBox subject;
     private TextArea text;
+    private boolean loaded = false;
 	
 	public NotesTab(ScreenDef def) {
 		this.def = def;
 		setHandlers();
 	}
 	
-	EnumSet<State> enabledStates = EnumSet.of(State.ADD,State.QUERY,State.UPDATE);
-	
 	public void setHandlers() {
 		subject = (TextBox) def.getWidget(OrgMeta.NOTE.getSubject());
 		addScreenHandler(subject, new ScreenEventHandler<String>() {
 			public void onDataChange(DataChangeEvent evet) {
-				subject.setValue(rpc.subject);
+			    if(manager != null && manager.count() > 0)
+			        subject.setValue(manager.getNoteAt(0).getSubject());
+			    else
+			        subject.setValue(null);
 			}
 			public void onValueChange(ValueChangeEvent<String> event) {
-				rpc.subject = event.getValue();
+			    if(manager != null && manager.count() > 0)
+			        manager.getNoteAt(0).setSubject(event.getValue());
+			    
 			}
 			public void onStateChange(StateChangeEvent<State> event) {
-				subject.setReadOnly(!enabledStates.contains(event.getState()));
+			    subject.enable(EnumSet.of(State.ADD,State.UPDATE,State.QUERY).contains(event.getState()));
 			}
 		});
 		text = (TextArea) def.getWidget(OrgMeta.NOTE.getText());
 		addScreenHandler(text,new ScreenEventHandler<String>() {
 			public void onDataChange(DataChangeEvent event) {
-				text.setValue(rpc.text);
+			    if(manager != null && manager.count() > 0)
+			        text.setValue(manager.getNoteAt(0).getText());
+			    else
+			        text.setValue(null);
 			}
 			public void onValueChange(ValueChangeEvent<String> event) {
-				rpc.text = event.getValue();
+			    if(manager != null && manager.count() > 0)
+			        manager.getNoteAt(0).setText(event.getValue());
 			}
 			public void onStateChange(StateChangeEvent<State> event) {
-				text.setReadOnly(!enabledStates.contains(event.getState()));
+			    text.setReadOnly(!EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));
 			}
 		});
 		final ScrollPanel notesPanel = (ScrollPanel)def.getWidget("notesPanel");
@@ -100,13 +108,12 @@ public class NotesTab extends Screen {
         Document doc = XMLParser.parse("<VerticalPanel/>");
     	Element root = (Element) doc.getDocumentElement();
     	root.setAttribute("key", "notePanel");
-    	if(rpc.notes == null) {
+    	if(manager == null || manager.count() == 0) {
 			return UIUtil.createWidget(root);
 		}
-    	int i=0;
-    	Iterator itr = rpc.notes.iterator();
-    	while(itr.hasNext()){
-    	    NoteDO noteRow = (NoteDO)itr.next();
+    	
+    	for(int i=0; i<manager.count(); i++){
+    	    NoteDO noteRow = manager.getNoteAt(i);
             
             //user id
             String userName = noteRow.getSystemUser();
@@ -178,12 +185,16 @@ public class NotesTab extends Screen {
         return null;
 	}
 	
-	public void setRPC(NotesRPC rpc) {
-		if(rpc == null)
-			rpc = new NotesRPC();
-		this.rpc = rpc;
-		DataChangeEvent.fire(this);
+	public void setManager(HasNotesInt parentManager){
+	    this.parentManager = parentManager;
+	    loaded = false;
 	}
 	
-
+	public void draw(){
+	    if(parentManager != null && !loaded){
+	        manager = parentManager.getNotes();
+            DataChangeEvent.fire(this);
+            loaded = true;
+	    }
+	}
 }
