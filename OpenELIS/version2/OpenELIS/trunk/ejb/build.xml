@@ -16,7 +16,7 @@
     <jar jarfile="build/openelis.jar">
         <fileset dir="bin">
       	    <include name="org/openelis/bean/*.class"/>
-        	<include name="org/openelis/manager/proxy/*.class"/>
+        	<include name="org/openelis/manager/*.class"/>
       	    <include name="org/openelis/entity/*.class"/>
       	    <include name="org/openelis/local/*.class"/>
       	    <include name="org/openelis/utils/*.class"/>
@@ -29,6 +29,7 @@
   	<jar jarfile="build/openelis-common.jar">
   	    <fileset dir="../OpenELIS-Common/bin">
   	       <include name="org/openelis/domain/*.class"/>
+  	    	<include name="org/openelis/exception/*.class"/>
   	       <include name="org/openelis/remote/*.class"/>
   	       <include name="org/openelis/utilcommon/*.class"/>
   	    	<include name="org/openelis/manager/*.class"/>
