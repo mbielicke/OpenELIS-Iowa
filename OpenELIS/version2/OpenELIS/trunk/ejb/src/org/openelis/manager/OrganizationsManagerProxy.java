@@ -30,7 +30,7 @@ import javax.persistence.EntityNotFoundException;
 
 import org.openelis.domain.OrganizationAddressDO;
 import org.openelis.local.OrganizationLocal;
-import org.openelis.manager.OrganizationsManager;
+import org.openelis.utils.ReferenceTableCache;
 
 public class OrganizationsManagerProxy {
     
@@ -75,12 +75,14 @@ public class OrganizationsManagerProxy {
         OrganizationAddressDO orgDO = ol.getOrganizationAddress(orgId);
         OrganizationsManager m = OrganizationsManager.getInstance();
         m.setOrganizationAddress(orgDO);
+        m.setOrganizationReferenceTable(ReferenceTableCache.getReferenceTable("organization"));
         
         return m;
     }
     
     public OrganizationsManager fetchWithContacts(Integer orgId) throws Exception {
         OrganizationsManager m = fetch(orgId);
+        m.setOrganizationReferenceTable(ReferenceTableCache.getReferenceTable("organization"));
         try{
             m.getContacts();
         }catch(EntityNotFoundException ignE){}
@@ -90,7 +92,8 @@ public class OrganizationsManagerProxy {
     
     public OrganizationsManager fetchWithNotes(Integer orgId) throws Exception {
         OrganizationsManager m = fetch(orgId);
-
+        m.setOrganizationReferenceTable(ReferenceTableCache.getReferenceTable("organization"));
+        System.out.println("in notes fetch ["+m.getOrganizationAddress().getOrganizationId()+"] ["+m.getOrganizationReferenceTable()+"]");
         try{
             m.getNotes();
         }catch(EntityNotFoundException ignE){}
@@ -98,7 +101,7 @@ public class OrganizationsManagerProxy {
         return m;
     }
     
-    public OrganizationsManager fetchWithIdentifiers(Integer orgId){
+    public OrganizationsManager fetchWithIdentifiers(Integer orgId) throws Exception {
         return null;
     }
 

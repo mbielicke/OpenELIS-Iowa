@@ -27,19 +27,23 @@ package org.openelis.bean;
 
 import java.util.ArrayList;
 
+import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
+import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.NoteDO;
 import org.openelis.entity.Note;
-import org.openelis.entity.Organization;
 import org.openelis.exception.NotFoundException;
 import org.openelis.local.NoteLocal;
 import org.openelis.remote.NoteRemote;
 import org.openelis.util.Datetime;
 
+@Stateless
+
+@SecurityDomain("openelis")
 public class NoteBean implements NoteRemote, NoteLocal {
 
     @PersistenceContext(name = "openelis")
