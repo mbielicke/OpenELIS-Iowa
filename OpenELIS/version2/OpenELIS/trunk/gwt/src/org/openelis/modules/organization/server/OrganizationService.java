@@ -85,6 +85,7 @@ public class OrganizationService implements AppScreenFormServiceInt<Organization
 
             qList = (ArrayList<AbstractField>)SessionManager.getSession().getAttribute("OrganizationQuery");
     
+    
             if(qList == null)
             	throw new RPCException(openElisConstants.getString("queryExpiredException"));
 

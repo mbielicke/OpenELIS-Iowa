@@ -27,10 +27,14 @@ package org.openelis.modules.note.server;
 
 import org.openelis.manager.NotesManager;
 import org.openelis.modules.note.client.NoteServiceParams;
+import org.openelis.persistence.EJBFactory;
+import org.openelis.remote.NoteManagerRemote;
 
 public class NoteService {
 
-    public NotesManager fetch(NoteServiceParams params){
-        return null;
+    public NotesManager fetch(NoteServiceParams params) throws Exception {
+        NoteManagerRemote remote = (NoteManagerRemote)EJBFactory.lookup("openelis/NoteManagerBean/remote");
+        
+        return remote.fetch(params.referenceTableId, params.referenceId);
     }
 }

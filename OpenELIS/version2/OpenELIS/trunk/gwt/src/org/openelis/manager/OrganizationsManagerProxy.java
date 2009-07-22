@@ -25,7 +25,6 @@
 */
 package org.openelis.manager;
 
-import org.openelis.manager.OrganizationsManager;
 import org.openelis.modules.main.client.ScreenService;
 
 public class OrganizationsManagerProxy {
@@ -57,8 +56,8 @@ public class OrganizationsManagerProxy {
         return service.call("fetchWithNotes", orgId);
     }
     
-    public OrganizationsManager fetchWithIdentifiers(Integer orgId){
-        return null;
+    public OrganizationsManager fetchWithIdentifiers(Integer orgId) throws Exception {
+        return service.call("fetchWithIdentifiers", orgId);
     }
 
     public OrganizationsManager fetchForUpdate(Integer orgId) throws Exception {

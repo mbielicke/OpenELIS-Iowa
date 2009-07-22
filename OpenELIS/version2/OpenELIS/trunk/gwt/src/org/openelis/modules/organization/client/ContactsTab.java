@@ -29,7 +29,7 @@ public class ContactsTab extends Screen {
 
 	private OrganizationsManager manager;
 	private TableWidget table;
-	private boolean dropdownsInited;
+	private boolean dropdownsInited, loaded;
 
 	public ContactsTab(ScreenDef def) {
 		this.def = def;
@@ -146,6 +146,9 @@ public class ContactsTab extends Screen {
 	private ArrayList<TableDataRow> getTableModel() {
 		ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
 		
+		if(manager == null)
+		    return model;
+		
 		try 
         {	
     		for(int iter = 0;iter < manager.getContacts().count();iter++) {
@@ -258,6 +261,7 @@ public class ContactsTab extends Screen {
 	
 	public void setManager(OrganizationsManager manager) {
        this.manager = manager;
+        loaded = false;
         
         if(!dropdownsInited) {
             setContactTypes(DictionaryCache.getListByCategorySystemName("contact_type"));
@@ -265,7 +269,13 @@ public class ContactsTab extends Screen {
             setStatesModel(DictionaryCache.getListByCategorySystemName("state"));
             dropdownsInited = true;
         }                
-        DataChangeEvent.fire(this);
+	}
+	
+	public void draw(){
+	    if(!loaded)
+	        DataChangeEvent.fire(this);
+	    
+	    loaded = true;
 	}
 
 	//
