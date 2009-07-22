@@ -25,15 +25,15 @@
 */
 package org.openelis.manager;
 
+import org.openelis.gwt.services.ScreenService;
 import org.openelis.manager.OrganizationContactsManager;
-import org.openelis.modules.main.client.ScreenService;
 
 public class OrganizationContactsManagerProxy {
     protected static final String ORG_MANAGER_SERVICE_URL = "org.openelis.modules.organization.server.Organization";
     protected ScreenService service;
     
     public OrganizationContactsManagerProxy(){
-        service = new ScreenService("?service="+ORG_MANAGER_SERVICE_URL);
+        service = new ScreenService("OpenELISServlet?service="+ORG_MANAGER_SERVICE_URL);
     }
     public OrganizationContactsManager commitAdd(OrganizationContactsManager man) throws Exception {
         return null;

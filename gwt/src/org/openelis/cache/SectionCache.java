@@ -30,7 +30,7 @@ import java.util.HashMap;
 
 import org.openelis.cache.server.SectionCacheRPC;
 import org.openelis.domain.SectionDO;
-import org.openelis.modules.main.client.ScreenService;
+import org.openelis.gwt.services.ScreenService;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 
 import com.google.gwt.user.client.Window;
@@ -42,7 +42,7 @@ public class SectionCache {
     private static SectionCache instance;
     
     public SectionCache() {
-        service = new ScreenService("?service="+SECTION_CACHE_SERVICE_URL);
+        service = new ScreenService("OpenELISServlet?service="+SECTION_CACHE_SERVICE_URL);
         
         sectionList = (HashMap<String, ArrayList<SectionDO>>)OpenELIS.getCacheList().get("SectionsCache");
         

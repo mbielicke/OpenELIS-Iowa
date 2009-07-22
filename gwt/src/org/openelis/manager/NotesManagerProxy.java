@@ -25,8 +25,8 @@
 */
 package org.openelis.manager;
 
+import org.openelis.gwt.services.ScreenService;
 import org.openelis.manager.NotesManager;
-import org.openelis.modules.main.client.ScreenService;
 import org.openelis.modules.note.client.NoteServiceParams;
 
 public class NotesManagerProxy {
@@ -34,7 +34,7 @@ public class NotesManagerProxy {
     protected ScreenService service;
     
     public NotesManagerProxy(){
-        service = new ScreenService("?service="+NOTE_SERVICE_URL);
+        service = new ScreenService("OpenELISServlet?service="+NOTE_SERVICE_URL);
     }
     
     public NotesManager add(NotesManager man) throws Exception {

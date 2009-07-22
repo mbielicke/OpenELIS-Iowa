@@ -30,10 +30,8 @@ import java.util.ArrayList;
 import org.openelis.domain.IdNameDO;
 import org.openelis.domain.OrganizationAutoDO;
 import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.server.ServiceUtils;
-import org.openelis.gwt.services.ScreenServiceInt;
 import org.openelis.gwt.services.rewrite.AutoCompleteServiceInt;
 import org.openelis.manager.OrganizationContactsManager;
 import org.openelis.manager.OrganizationsManager;
@@ -47,7 +45,7 @@ import org.openelis.server.constants.Constants;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
 
-public class Organization implements ScreenServiceInt, AutoCompleteServiceInt<ParentOrgRPC> {
+public class Organization implements AutoCompleteServiceInt<ParentOrgRPC> {
 
 	private static final int leftTableRowsPerPage = 18;
     
@@ -154,25 +152,5 @@ public class Organization implements ScreenServiceInt, AutoCompleteServiceInt<Pa
     	}
         
     	return rpc;		
-    }
-    
-	public <T extends RPC> T callScreen(String method, T rpc) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-    public <T extends RPC> T call(String method, Integer param) throws Exception {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public <T extends RPC> T call(String method, RPC param) throws Exception {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public <T extends RPC> T call(String method, String param) throws Exception {
-        // TODO Auto-generated method stub
-        return null;
     }
 }

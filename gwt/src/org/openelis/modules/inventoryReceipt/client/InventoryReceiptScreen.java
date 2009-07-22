@@ -680,7 +680,7 @@ public class InventoryReceiptScreen extends OpenELISScreenForm<InventoryReceiptF
                             InvReceiptItemInfoForm rowSubForm = (InvReceiptItemInfoForm)tableRow.key;
                             if(rowSubForm != null){
                                 rowSubForm.description.setValue(null);
-                                rowSubForm.expirationDate.setValue(null);
+                                rowSubForm.expirationDate.setValue("");
                                 rowSubForm.itemIsBulk = null;
                                 rowSubForm.itemIsLotMaintained = null;
                                 rowSubForm.itemIsSerialMaintained = null;
