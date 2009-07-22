@@ -44,6 +44,7 @@ import org.openelis.gwt.common.rewrite.QueryData;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
+import org.openelis.gwt.event.HasActionHandlers;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.rewrite.Screen;
 import org.openelis.gwt.screen.rewrite.ScreenEventHandler;
@@ -415,24 +416,13 @@ public class Organization extends Screen implements AutoCompleteCallInt {
     	
     	
     	//Set Up Key listeners
+        final HasActionHandlers<Screen.Action> orgScreen = this;
     	keyList.addActionHandler(new ActionHandler<KeyListManager.Action>() {
     		public void onAction(ActionEvent<KeyListManager.Action> event) {
     	        if(event.getAction() == KeyListManager.Action.FETCH){
-    	        	fetch((Integer)((Object[])event.getData())[0]);
-    	        	
-                    /*
-    	            final AsyncCallback call = ((AsyncCallback)((Object[])event.getData())[1]);
-    	            
-    	        	service.callScreen("fetch",rpc,new AsyncCallback<OrganizationRPC>() {
-    	        		public void onSuccess(OrganizationRPC result) {
-    	        			load(result);
-    	        			
-    	        		}
-    	        		public void onFailure(Throwable caught) {
-    	        			Window.alert(caught.getMessage());
-    	        			call.onFailure(caught);
-    	        		}
-    	        	});*/
+    	        	Integer selection = (Integer)event.getData();
+    	        	fetch(selection);
+                    ActionEvent.fire(orgScreen, Action.SELECTION_FETCHED, selection);
     	        }else if(event.getAction() == KeyListManager.Action.GETPAGE){
     	            final OrgQuery query = (OrgQuery)((Object[])event.getData())[0];
     	            final AsyncCallback callback = (AsyncCallback)((Object[])event.getData())[1];
