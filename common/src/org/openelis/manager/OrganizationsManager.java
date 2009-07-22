@@ -29,7 +29,7 @@ import org.openelis.domain.OrganizationAddressDO;
 import org.openelis.exception.NotFoundException;
 import org.openelis.gwt.common.RPC;
 
-public class OrganizationsManager implements RPC {
+public class OrganizationsManager implements RPC, HasNotesInt {
 
     private static final long                           serialVersionUID = 1L;
     protected OrganizationContactsManager               contacts;
@@ -69,18 +69,20 @@ public class OrganizationsManager implements RPC {
         return proxy().fetchWithContacts(id);
     }
     
-    public static OrganizationsManager findByIdWithNotes(Integer id){
-        return null;    
+    public static OrganizationsManager findByIdWithNotes(Integer id) throws Exception {
+        return proxy().fetchWithNotes(id);
     }
     
-    public static OrganizationsManager findByIdWithIdentifiers(Integer id){
-        return null;
+    public static OrganizationsManager findByIdWithIdentifiers(Integer id) throws Exception { 
+        return proxy().fetchWithIdentifiers(id);
     }
     
-    public static OrganizationsManager fetchForUpdate(Integer id) throws Exception {
-        return proxy().fetchForUpdate(id);
+    public OrganizationsManager fetchForUpdate() throws Exception {
+        if(organizationAddress.getOrganizationId() == null)
+            throw new Exception("org id is null");
+        
+        return proxy().fetchForUpdate(organizationAddress.getOrganizationId());
     }
-    
     
     //getters/setters
     public NotesManager getNotes(){
@@ -136,7 +138,7 @@ public class OrganizationsManager implements RPC {
     public void setOrganizationReferenceTable(Integer organizationReferenceTable) {
         this.organizationReferenceTable = organizationReferenceTable;
     }
-    
+     
     //service methods
     public OrganizationsManager add() throws Exception {
         return proxy().add(this);

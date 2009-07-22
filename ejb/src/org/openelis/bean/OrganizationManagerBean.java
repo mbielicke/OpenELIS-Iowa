@@ -38,7 +38,6 @@ import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.manager.OrganizationContactsManager;
 import org.openelis.manager.OrganizationsManager;
 import org.openelis.remote.OrganizationManagerRemote;
-import org.openelis.utils.ReferenceTableCache;
 
 @Stateless
 @TransactionManagement(TransactionManagementType.BEAN)
@@ -52,11 +51,13 @@ public class OrganizationManagerBean implements OrganizationManagerRemote {
     @Resource
     private SessionContext ctx;
     
+    /*
     private static int orgRefTableId;
     
     public OrganizationManagerBean(){
         orgRefTableId = ReferenceTableCache.getReferenceTable("organization");
     }
+    */
     
     public OrganizationsManager add(OrganizationsManager man) throws Exception {
         man.validate();
@@ -87,24 +88,30 @@ public class OrganizationManagerBean implements OrganizationManagerRemote {
     
     public OrganizationsManager fetch(Integer orgId) throws Exception {
         OrganizationsManager man = OrganizationsManager.findById(orgId);
-        man.setOrganizationReferenceTable(orgRefTableId);
+        //man.setOrganizationReferenceTable(orgRefTableId);
         
         return man;
     }
     
     public OrganizationsManager fetchWithContacts(Integer orgId) throws Exception {
         OrganizationsManager man = OrganizationsManager.findByIdWithContacts(orgId);
-        man.setOrganizationReferenceTable(orgRefTableId);
+        //man.setOrganizationReferenceTable(orgRefTableId);
         
         return man;
     }
     
     public OrganizationsManager fetchWithIdentifiers(Integer orgId) throws Exception {
-        return null;
+        OrganizationsManager man = OrganizationsManager.findByIdWithIdentifiers(orgId);
+        //man.setOrganizationReferenceTable(orgRefTableId);
+        
+        return man;
     }
     
     public OrganizationsManager fetchWithNotes(Integer orgId) throws Exception { 
-       return null;
+        OrganizationsManager man = OrganizationsManager.findByIdWithNotes(orgId);
+        //man.setOrganizationReferenceTable(orgRefTableId);
+        
+        return man;
     }
     
     public OrganizationsManager fetchForUpdate(Integer orgId) {
