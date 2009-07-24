@@ -34,7 +34,7 @@ import org.w3c.dom.Element;
 import org.openelis.entity.InventoryLocation;
 import org.openelis.entity.InventoryReceipt;
 import org.openelis.entity.OrderItem;
-import org.openelis.util.Datetime;
+import org.openelis.gwt.common.Datetime;
 import org.openelis.util.XMLUtil;
 
 import java.util.Date;

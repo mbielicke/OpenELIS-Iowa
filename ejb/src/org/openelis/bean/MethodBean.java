@@ -28,6 +28,7 @@ package org.openelis.bean;
 import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.MethodDO;
 import org.openelis.entity.Method;
+import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
@@ -36,7 +37,6 @@ import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.local.LockLocal;
 import org.openelis.metamap.MethodMetaMap;
 import org.openelis.remote.MethodRemote;
-import org.openelis.util.Datetime;
 import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
 

@@ -27,12 +27,12 @@ package org.openelis.bean;
 
 import org.apache.log4j.Logger;
 import org.openelis.entity.Lock;
+import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.local.LockLocal;
 import org.openelis.local.LoginLocal;
 import org.openelis.security.domain.SystemUserDO;
 import org.openelis.security.local.SystemUserUtilLocal;
-import org.openelis.util.Datetime;
 
 import java.util.Calendar;
 import java.util.Date;

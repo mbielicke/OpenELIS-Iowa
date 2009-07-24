@@ -33,7 +33,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.openelis.entity.Note;
 import org.openelis.entity.ProviderAddress;
-import org.openelis.util.Datetime;
+import org.openelis.gwt.common.Datetime;
 import org.openelis.util.XMLUtil;
 
 import java.util.Collection;
