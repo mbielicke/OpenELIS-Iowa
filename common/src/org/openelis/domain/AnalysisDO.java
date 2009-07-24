@@ -28,7 +28,7 @@ package org.openelis.domain;
 import java.io.Serializable;
 import java.util.Date;
 
-import org.openelis.util.Datetime;
+import org.openelis.gwt.common.Datetime;
 
 public class AnalysisDO implements Serializable {
 
@@ -203,6 +203,10 @@ public class AnalysisDO implements Serializable {
 
     public void setStartedDate(Date startedDate) {
         this.startedDate = new Datetime(Datetime.YEAR,Datetime.DAY,startedDate);
+    }
+    
+    public void setStartedDate(Datetime startedDate) {
+    	setStartedDate(startedDate.getDate());
     }
 
     public Datetime getCompletedDate() {

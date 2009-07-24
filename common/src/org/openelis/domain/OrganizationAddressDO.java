@@ -29,7 +29,6 @@ import java.io.Serializable;
 
 import org.openelis.utilcommon.DataBaseUtil;
 
-
 public class OrganizationAddressDO implements Serializable{
 
 	private static final long serialVersionUID = -4603524512208169740L;

@@ -3,8 +3,8 @@ package org.openelis.domain;
 import java.io.Serializable;
 import java.util.Date;
 
+import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.RPC;
-import org.openelis.util.Datetime;
 import org.openelis.utilcommon.DataBaseUtil;
 
 public class PatientDO implements Serializable {
