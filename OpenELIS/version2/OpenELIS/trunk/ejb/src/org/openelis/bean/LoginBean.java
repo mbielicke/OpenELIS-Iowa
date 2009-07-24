@@ -51,6 +51,8 @@ public class LoginBean implements LoginRemote, LoginLocal {
     private SecurityLocal security;
     private SystemUserUtilLocal sysUser;
     
+    @EJB SessionManagerInt session;
+    
     @Resource
     private SessionContext ctx;
     
@@ -67,8 +69,12 @@ public class LoginBean implements LoginRemote, LoginLocal {
         SecurityUtil securityUtil = security.getSecurity("openelis");
         SystemUserDO sysUserDO = sysUser.getSystemUser(ctx.getCallerPrincipal().getName());
         securityUtil.setSystemUserId(sysUserDO.getId());
+        session.setAttribute("security",securityUtil);
+        session.setAttribute("userdo",sysUserDO);
+        session.setAttribute("test", "*************** This Worked!!!!!! *************");
         JBossCachingManager.putElement("openelis","security", ctx.getCallerPrincipal().getName()+"util",securityUtil);
         JBossCachingManager.putElement("openelis","security", ctx.getCallerPrincipal().getName()+"userdo", sysUserDO);
+       
         return securityUtil;
     }
 

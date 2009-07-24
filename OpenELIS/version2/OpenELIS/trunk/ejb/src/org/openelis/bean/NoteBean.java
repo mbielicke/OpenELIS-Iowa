@@ -37,9 +37,9 @@ import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.NoteDO;
 import org.openelis.entity.Note;
 import org.openelis.exception.NotFoundException;
+import org.openelis.gwt.common.Datetime;
 import org.openelis.local.NoteLocal;
 import org.openelis.remote.NoteRemote;
-import org.openelis.util.Datetime;
 
 @Stateless
 

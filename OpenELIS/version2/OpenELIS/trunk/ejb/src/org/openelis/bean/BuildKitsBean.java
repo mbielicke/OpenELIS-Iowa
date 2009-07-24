@@ -49,13 +49,13 @@ import org.openelis.entity.InventoryXPut;
 import org.openelis.entity.InventoryXUse;
 import org.openelis.entity.Order;
 import org.openelis.entity.OrderItem;
+import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.LockLocal;
 import org.openelis.metamap.InventoryItemMetaMap;
 import org.openelis.remote.BuildKitsRemote;
-import org.openelis.util.Datetime;
 import org.openelis.utils.ReferenceTableCache;
 
 @Stateless
