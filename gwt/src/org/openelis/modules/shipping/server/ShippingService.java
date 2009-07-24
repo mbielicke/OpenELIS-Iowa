@@ -36,7 +36,7 @@ import org.openelis.domain.ShippingAddAutoFillDO;
 import org.openelis.domain.ShippingDO;
 import org.openelis.domain.ShippingItemDO;
 import org.openelis.domain.ShippingTrackingDO;
-import org.openelis.gwt.common.DatetimeRPC;
+import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.FormErrorException;
@@ -65,7 +65,6 @@ import org.openelis.remote.CategoryRemote;
 import org.openelis.remote.OrganizationRemote;
 import org.openelis.remote.ShippingRemote;
 import org.openelis.server.constants.Constants;
-import org.openelis.util.Datetime;
 import org.openelis.util.FormUtil;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
@@ -446,7 +445,7 @@ System.out.println("after shipping items");
 		autoDO = remote.getAddAutoFillValues();
 		
 		rpc.statusId.setValue(new TableDataRow<Integer>(autoDO.getStatus()));
-		rpc.processedDate.setValue(DatetimeRPC.getInstance(Datetime.YEAR, Datetime.DAY, autoDO.getProcessedDate().getDate()));
+		rpc.processedDate.setValue(Datetime.getInstance(Datetime.YEAR, Datetime.DAY, autoDO.getProcessedDate().getDate()));
 		rpc.processedBy.setValue(autoDO.getProcessedBy());
 		rpc.systemUserId = autoDO.getSystemUserId();
 
@@ -596,11 +595,11 @@ System.out.println("after shipping items");
 		form.systemUserId = shippingDO.getProcessedById();
 		if (shippingDO.getProcessedDate() != null
 				&& shippingDO.getProcessedDate().getDate() != null)
-			form.processedDate.setValue(DatetimeRPC.getInstance(Datetime.YEAR, Datetime.DAY, shippingDO.getProcessedDate().getDate()));
+			form.processedDate.setValue(Datetime.getInstance(Datetime.YEAR, Datetime.DAY, shippingDO.getProcessedDate().getDate()));
 
 		if (shippingDO.getShippedDate() != null
 				&& shippingDO.getShippedDate().getDate() != null)
-			form.shippedDate.setValue(DatetimeRPC.getInstance(Datetime.YEAR, Datetime.DAY, shippingDO.getShippedDate().getDate()));
+			form.shippedDate.setValue(Datetime.getInstance(Datetime.YEAR, Datetime.DAY, shippingDO.getShippedDate().getDate()));
 		if (shippingDO.getShippedFromId() != null)
 			form.shippedFromId.setValue(new TableDataRow<Integer>(shippingDO.getShippedFromId()));
 		if (shippingDO.getShippedMethodId() != null)

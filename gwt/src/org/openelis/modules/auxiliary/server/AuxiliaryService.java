@@ -35,7 +35,7 @@ import org.openelis.domain.AuxFieldDO;
 import org.openelis.domain.AuxFieldGroupDO;
 import org.openelis.domain.AuxFieldValueDO;
 import org.openelis.domain.IdNameDO;
-import org.openelis.gwt.common.DatetimeRPC;
+import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.FormErrorException;
@@ -65,7 +65,6 @@ import org.openelis.remote.CategoryRemote;
 import org.openelis.remote.MethodRemote;
 import org.openelis.remote.ScriptletRemote;
 import org.openelis.server.constants.Constants;
-import org.openelis.util.Datetime;
 import org.openelis.util.FormUtil;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
@@ -288,11 +287,11 @@ public class AuxiliaryService implements
         if(form.id!=null)
          auxFieldGroupDO.setId(form.id.getValue());
         auxFieldGroupDO.setName(((String)form.name.getValue()));   
-        DatetimeRPC activeBegin = form.activeBegin.getValue();
+        Datetime activeBegin = form.activeBegin.getValue();
         if (activeBegin != null)
             auxFieldGroupDO.setActiveBegin(activeBegin.getDate());
 
-        DatetimeRPC activeEnd = form.activeEnd.getValue();
+        Datetime activeEnd = form.activeEnd.getValue();
         if (activeEnd != null)
             auxFieldGroupDO.setActiveEnd(activeEnd.getDate());
 
@@ -305,10 +304,10 @@ public class AuxiliaryService implements
     
     private void setFieldsInRPC(AuxiliaryForm form,AuxFieldGroupDO axfgDO) {
         form.id.setValue(axfgDO.getId());
-        form.activeBegin.setValue(DatetimeRPC.getInstance(Datetime.YEAR,Datetime.DAY,
+        form.activeBegin.setValue(Datetime.getInstance(Datetime.YEAR,Datetime.DAY,
                                                           axfgDO.getActiveBegin()
                                                                        .getDate()));
-        form.activeEnd.setValue(DatetimeRPC.getInstance(Datetime.YEAR,Datetime.DAY,
+        form.activeEnd.setValue(Datetime.getInstance(Datetime.YEAR,Datetime.DAY,
                                                           axfgDO.getActiveEnd()
                                                                        .getDate()));
         form.isActive.setValue(axfgDO.getIsActive());         

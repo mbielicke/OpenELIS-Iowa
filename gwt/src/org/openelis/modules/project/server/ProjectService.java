@@ -34,7 +34,7 @@ import org.openelis.domain.IdNameDO;
 import org.openelis.domain.ProjectDO;
 import org.openelis.domain.ProjectParameterDO;
 import org.openelis.domain.SecuritySystemUserDO;
-import org.openelis.gwt.common.DatetimeRPC;
+import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.FormErrorException;
@@ -57,7 +57,6 @@ import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.ProjectRemote;
 import org.openelis.remote.ScriptletRemote;
 import org.openelis.server.constants.Constants;
-import org.openelis.util.Datetime;
 import org.openelis.util.FormUtil;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
@@ -279,13 +278,13 @@ public class ProjectService implements AppScreenFormServiceInt<ProjectForm, Quer
       
         date = projectDO.getCompletedDate();
         if(date != null && date.getDate() != null) {
-            rpc.completedDate.setValue(DatetimeRPC.getInstance(Datetime.YEAR,Datetime.DAY,
+            rpc.completedDate.setValue(Datetime.getInstance(Datetime.YEAR,Datetime.DAY,
                                                                date.getDate()));
         }
         
         date = projectDO.getStartedDate();
         if(date != null && date.getDate() != null) {
-            rpc.startedDate.setValue(DatetimeRPC.getInstance(Datetime.YEAR,Datetime.DAY,
+            rpc.startedDate.setValue(Datetime.getInstance(Datetime.YEAR,Datetime.DAY,
                                                              date.getDate()));
         }
         
@@ -306,7 +305,7 @@ public class ProjectService implements AppScreenFormServiceInt<ProjectForm, Quer
     
     private ProjectDO getProjectDOFromRPC(ProjectForm rpc) {
         ProjectDO projectDO;
-        DatetimeRPC complDate,startDate;
+        Datetime complDate,startDate;
         
         projectDO = new ProjectDO();
         

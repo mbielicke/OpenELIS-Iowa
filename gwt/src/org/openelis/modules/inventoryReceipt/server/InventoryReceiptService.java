@@ -36,7 +36,7 @@ import org.openelis.domain.InventoryLocationDO;
 import org.openelis.domain.InventoryReceiptDO;
 import org.openelis.domain.OrganizationAutoDO;
 import org.openelis.domain.StorageLocationAutoDO;
-import org.openelis.gwt.common.DatetimeRPC;
+import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.FormErrorException;
@@ -76,7 +76,6 @@ import org.openelis.remote.InventoryReceiptRemote;
 import org.openelis.remote.OrganizationRemote;
 import org.openelis.remote.StorageLocationRemote;
 import org.openelis.server.constants.Constants;
-import org.openelis.util.Datetime;
 import org.openelis.util.FormUtil;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
@@ -454,7 +453,7 @@ public class InventoryReceiptService implements AppScreenFormServiceInt<Inventor
                 setData.locId = locationId;
                 setData.lotNum = resultDO.getLotNum();
                 if(resultDO.getExpDate() != null && resultDO.getExpDate().getDate() != null)
-                    setData.expDate = DatetimeRPC.getInstance(Datetime.YEAR, Datetime.DAY, resultDO.getExpDate().getDate());
+                    setData.expDate = Datetime.getInstance(Datetime.YEAR, Datetime.DAY, resultDO.getExpDate().getDate());
             }
             
             setData.parentInvItemId = resultDO.getParentInventoryItemId();
@@ -577,7 +576,7 @@ public class InventoryReceiptService implements AppScreenFormServiceInt<Inventor
                 
             }else{
                 receiptDO.setOrderNumber(((IntegerField)row.cells[0]).getValue());
-                receiptDO.setReceivedDate(((DatetimeRPC)((DateField)row.cells[1]).getValue()).getDate());
+                receiptDO.setReceivedDate(((Datetime)((DateField)row.cells[1]).getValue()).getDate());
                 receiptDO.setUpc((String)((StringField)row.cells[2]).getValue());
                 receiptDO.setInventoryItemId((Integer)((DropDownField<Integer>)row.cells[3]).getSelectedKey());
                 receiptDO.setOrganizationId((Integer)((DropDownField<Integer>)row.cells[4]).getSelectedKey());
@@ -592,7 +591,7 @@ public class InventoryReceiptService implements AppScreenFormServiceInt<Inventor
                 //if(lotNum != null && !"".equals(lotNum.getValue()))
                 receiptDO.setLotNumber(hiddenRpc.lotNumber.getValue());
                 if(hiddenRpc.expirationDate != null && hiddenRpc.expirationDate.getValue() != null)
-                    receiptDO.setExpDate(((DatetimeRPC)hiddenRpc.expirationDate.getValue()).getDate());
+                    receiptDO.setExpDate(((Datetime)hiddenRpc.expirationDate.getValue()).getDate());
                 receiptDO.setIsBulk(hiddenRpc.itemIsBulk);
                 receiptDO.setIsLotMaintained(hiddenRpc.itemIsLotMaintained);
                 receiptDO.setIsSerialMaintained(hiddenRpc.itemIsSerialMaintained);
@@ -680,7 +679,7 @@ public class InventoryReceiptService implements AppScreenFormServiceInt<Inventor
         
         int i=0;
         model.clear();
-        DatetimeRPC todaysDate = DatetimeRPC.getInstance(Datetime.YEAR,Datetime.DAY,new Date());
+        Datetime todaysDate = Datetime.getInstance(Datetime.YEAR,Datetime.DAY,new Date());
         while(i < receipts.size() && i < leftTableRowsPerPage) {
             InventoryReceiptDO resultDO = (InventoryReceiptDO)receipts.get(i);
             
@@ -691,7 +690,7 @@ public class InventoryReceiptService implements AppScreenFormServiceInt<Inventor
                 //date rec
                 DateField dateRec = new DateField();
                 if(resultDO.getReceivedDate() != null)
-                    dateRec.setValue(DatetimeRPC.getInstance(Datetime.YEAR, Datetime.DAY, resultDO.getReceivedDate().getDate()));
+                    dateRec.setValue(Datetime.getInstance(Datetime.YEAR, Datetime.DAY, resultDO.getReceivedDate().getDate()));
                 else
                     dateRec.setValue(todaysDate);
                 set.cells[1] = (dateRec);
@@ -748,7 +747,7 @@ public class InventoryReceiptService implements AppScreenFormServiceInt<Inventor
                 keyRPC.lotNumber.setValue(resultDO.getLotNumber());
                 
                 if(resultDO.getExpDate() != null && resultDO.getExpDate().getDate() != null)
-                    keyRPC.expirationDate.setValue(DatetimeRPC.getInstance(Datetime.YEAR, Datetime.DAY, resultDO.getExpDate().getDate()));
+                    keyRPC.expirationDate.setValue(Datetime.getInstance(Datetime.YEAR, Datetime.DAY, resultDO.getExpDate().getDate()));
                 
                 if(resultDO.getStorageLocationId() != null){
                     TableDataModel<TableDataRow<Integer>> locModel = new TableDataModel<TableDataRow<Integer>>();
@@ -822,8 +821,8 @@ public class InventoryReceiptService implements AppScreenFormServiceInt<Inventor
                 keyRPC.toLotNumber.setValue(resultDO.getLotNumber());
                 
                 if(resultDO.getExpDate() != null && resultDO.getExpDate().getDate() != null){
-                    keyRPC.expirationDate.setValue(DatetimeRPC.getInstance(Datetime.YEAR, Datetime.DAY, resultDO.getExpDate().getDate()));
-                    keyRPC.toExpDate.setValue(DatetimeRPC.getInstance(Datetime.YEAR, Datetime.DAY, resultDO.getExpDate().getDate()));
+                    keyRPC.expirationDate.setValue(Datetime.getInstance(Datetime.YEAR, Datetime.DAY, resultDO.getExpDate().getDate()));
+                    keyRPC.toExpDate.setValue(Datetime.getInstance(Datetime.YEAR, Datetime.DAY, resultDO.getExpDate().getDate()));
                 }
 
                 set.key = keyRPC;

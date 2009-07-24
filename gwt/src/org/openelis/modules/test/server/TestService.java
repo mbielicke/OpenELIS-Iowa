@@ -38,7 +38,7 @@ import org.openelis.domain.TestTypeOfSampleDO;
 import org.openelis.domain.TestWorksheetAnalyteDO;
 import org.openelis.domain.TestWorksheetDO;
 import org.openelis.domain.TestWorksheetItemDO;
-import org.openelis.gwt.common.DatetimeRPC;
+import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.FormErrorException;
@@ -84,7 +84,6 @@ import org.openelis.remote.ScriptletRemote;
 import org.openelis.remote.TestRemote;
 import org.openelis.remote.TestTrailerRemote;
 import org.openelis.server.constants.Constants;
-import org.openelis.util.Datetime;
 import org.openelis.util.FormUtil;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
@@ -1039,11 +1038,11 @@ public class TestService implements
         form.reportingDescription.setValue(testDO.getReportingDescription());
 
         if (!form.duplicate) {
-            form.activeBegin.setValue(DatetimeRPC.getInstance(Datetime.YEAR,
+            form.activeBegin.setValue(Datetime.getInstance(Datetime.YEAR,
                                                               Datetime.DAY,
                                                               testDO.getActiveBegin()
                                                                     .getDate()));
-            form.activeEnd.setValue(DatetimeRPC.getInstance(Datetime.YEAR,
+            form.activeEnd.setValue(Datetime.getInstance(Datetime.YEAR,
                                                             Datetime.DAY,
                                                             testDO.getActiveEnd()
                                                                   .getDate()));
@@ -1534,11 +1533,11 @@ public class TestService implements
         testDO.setId(form.id.getValue());
         testDO.setName(((String)form.name.getValue()));
         testDO.setMethodId((Integer)(form.methodId.getSelectedKey()));
-        DatetimeRPC activeBegin = form.activeBegin.getValue();
+        Datetime activeBegin = form.activeBegin.getValue();
         if (activeBegin != null)
             testDO.setActiveBegin(activeBegin.getDate());
 
-        DatetimeRPC activeEnd = form.activeEnd.getValue();
+        Datetime activeEnd = form.activeEnd.getValue();
         if (activeEnd != null)
             testDO.setActiveEnd(activeEnd.getDate());
         testDO.setDescription(form.description.getValue());

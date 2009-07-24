@@ -37,7 +37,7 @@ import org.openelis.domain.InventoryAdjustmentChildDO;
 import org.openelis.domain.InventoryAdjustmentDO;
 import org.openelis.domain.InventoryItemAutoDO;
 import org.openelis.domain.InventoryLocationDO;
-import org.openelis.gwt.common.DatetimeRPC;
+import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.FormErrorException;
@@ -67,7 +67,6 @@ import org.openelis.remote.InventoryAdjustmentRemote;
 import org.openelis.remote.InventoryItemRemote;
 import org.openelis.remote.InventoryReceiptRemote;
 import org.openelis.server.constants.Constants;
-import org.openelis.util.Datetime;
 import org.openelis.util.FormUtil;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
@@ -277,7 +276,7 @@ public class InventoryAdjustmentService implements AppScreenFormServiceInt<Inven
         
         rpc.systemUser.setValue(autoDO.getSystemUser());
         rpc.systemUserId = autoDO.getSystemUserId();
-        rpc.adjustmentDate.setValue(DatetimeRPC.getInstance(Datetime.YEAR, Datetime.DAY, autoDO.getAdjustmentDate().getDate()));
+        rpc.adjustmentDate.setValue(Datetime.getInstance(Datetime.YEAR, Datetime.DAY, autoDO.getAdjustmentDate().getDate()));
         
         return rpc;
     }
@@ -404,7 +403,7 @@ public class InventoryAdjustmentService implements AppScreenFormServiceInt<Inven
         form.description.setValue(adjustmentDO.getDescription());
         form.systemUser.setValue(adjustmentDO.getSystemUser());
         form.systemUserId = adjustmentDO.getSystemUserId();
-        form.adjustmentDate.setValue(DatetimeRPC.getInstance(Datetime.YEAR, Datetime.DAY, adjustmentDO.getAdjustmentDate().getDate()));
+        form.adjustmentDate.setValue(Datetime.getInstance(Datetime.YEAR, Datetime.DAY, adjustmentDO.getAdjustmentDate().getDate()));
         form.storeId.setValue(new TableDataRow<Integer>(adjustmentDO.getStoreId()));        
     }
     

@@ -31,7 +31,7 @@ import org.openelis.domain.InventoryComponentDO;
 import org.openelis.domain.InventoryItemAutoDO;
 import org.openelis.domain.InventoryLocationDO;
 import org.openelis.domain.StorageLocationAutoDO;
-import org.openelis.gwt.common.DatetimeRPC;
+import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.FormErrorException;
@@ -63,7 +63,6 @@ import org.openelis.remote.InventoryItemRemote;
 import org.openelis.remote.InventoryReceiptRemote;
 import org.openelis.remote.StorageLocationRemote;
 import org.openelis.server.constants.Constants;
-import org.openelis.util.Datetime;
 import org.openelis.util.FormUtil;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
@@ -164,8 +163,8 @@ public class BuildKitsService implements AppScreenFormServiceInt<BuildKitsForm, 
         buildKitDO.setLocationId((Integer) form.storageLocation.getSelectedKey());
         buildKitDO.setLocation((String)form.storageLocation.getTextValue());
         buildKitDO.setLotNumber(form.lotNumber.getValue());
-        if(form.expirationDate.getValue() != null && ((DatetimeRPC)form.expirationDate.getValue()).getDate() != null)
-            buildKitDO.setExpDate(((DatetimeRPC)form.expirationDate.getValue()).getDate());
+        if(form.expirationDate.getValue() != null && ((Datetime)form.expirationDate.getValue()).getDate() != null)
+            buildKitDO.setExpDate(((Datetime)form.expirationDate.getValue()).getDate());
         
         return buildKitDO;
     }
@@ -217,7 +216,7 @@ public class BuildKitsService implements AppScreenFormServiceInt<BuildKitsForm, 
         form.lotNumber.setValue(kitDO.getLotNumber());
         
         if(kitDO.getExpDate() != null && kitDO.getExpDate().getDate() != null)
-            form.expirationDate.setValue(DatetimeRPC.getInstance(Datetime.YEAR, Datetime.DAY, kitDO.getExpDate().getDate()));
+            form.expirationDate.setValue(Datetime.getInstance(Datetime.YEAR, Datetime.DAY, kitDO.getExpDate().getDate()));
     }
     
     public SubLocationAutoRPC getMatchesObj(SubLocationAutoRPC rpc) throws RPCException {
