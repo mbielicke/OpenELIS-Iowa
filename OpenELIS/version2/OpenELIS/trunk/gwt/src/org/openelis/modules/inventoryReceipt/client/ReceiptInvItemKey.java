@@ -25,7 +25,7 @@
 */
 package org.openelis.modules.inventoryReceipt.client;
 
-import org.openelis.gwt.common.DatetimeRPC;
+import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.data.FieldType;
 
 public class ReceiptInvItemKey implements FieldType {
@@ -40,7 +40,7 @@ public class ReceiptInvItemKey implements FieldType {
     
     public Integer locId;
     public String lotNum;
-    public DatetimeRPC expDate;
+    public Datetime expDate;
     public Integer parentRatio;
     public Integer parentInvItemId;
     

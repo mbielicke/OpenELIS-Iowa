@@ -40,7 +40,7 @@ import org.openelis.domain.SampleOrganizationDO;
 import org.openelis.domain.SampleProjectDO;
 import org.openelis.domain.SectionDO;
 import org.openelis.domain.TestMethodAutoDO;
-import org.openelis.gwt.common.DatetimeRPC;
+import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.Query;
 import org.openelis.gwt.common.RPCException;
@@ -76,7 +76,6 @@ import org.openelis.remote.SampleEnvironmentalRemote;
 import org.openelis.remote.SectionRemote;
 import org.openelis.remote.TestRemote;
 import org.openelis.server.constants.Constants;
-import org.openelis.util.Datetime;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
 
@@ -252,16 +251,16 @@ public class EnvironmentalSampleLoginService implements AppScreenFormServiceInt<
         form.clientReference.setValue(sampleDO.getClientReference());
         
         if(sampleDO.getCollectionDate() != null && sampleDO.getCollectionDate().getDate() != null)
-            form.collectionDate.setValue(DatetimeRPC.getInstance(Datetime.YEAR, Datetime.DAY, sampleDO.getCollectionDate().getDate()));
+            form.collectionDate.setValue(Datetime.getInstance(Datetime.YEAR, Datetime.DAY, sampleDO.getCollectionDate().getDate()));
         
         if(sampleDO.getCollectionTime() != null && sampleDO.getCollectionTime().getDate() != null)
-            form.collectionTime.setValue(DatetimeRPC.getInstance(Datetime.HOUR, Datetime.MINUTE, sampleDO.getCollectionTime().getDate()));
+            form.collectionTime.setValue(Datetime.getInstance(Datetime.HOUR, Datetime.MINUTE, sampleDO.getCollectionTime().getDate()));
         
         form.id.setValue(sampleDO.getId());
         //form.orderNumber.setValue(sampleDO.getor);
         
         if(sampleDO.getReceivedDate() != null && sampleDO.getReceivedDate().getDate() != null)
-            form.receivedDate.setValue(DatetimeRPC.getInstance(Datetime.YEAR, Datetime.DAY, sampleDO.getReceivedDate().getDate()));
+            form.receivedDate.setValue(Datetime.getInstance(Datetime.YEAR, Datetime.DAY, sampleDO.getReceivedDate().getDate()));
         
         form.statusId.setValue(new TableDataRow<Integer>(sampleDO.getStatusId()));
         form.nextItemSequence = sampleDO.getNextItemSequence();
@@ -395,16 +394,16 @@ public class EnvironmentalSampleLoginService implements AppScreenFormServiceInt<
                 analysisSubForm.isReportable.setValue(aDO.getIsReportable());
                 
                 if (aDO.getStartedDate() != null && aDO.getStartedDate().getDate() != null)
-                    analysisSubForm.startedDate.setValue(DatetimeRPC.getInstance(Datetime.YEAR, Datetime.DAY, aDO.getStartedDate().getDate()));
+                    analysisSubForm.startedDate.setValue(Datetime.getInstance(Datetime.YEAR, Datetime.DAY, aDO.getStartedDate().getDate()));
                 
                 if (aDO.getCompletedDate() != null && aDO.getCompletedDate().getDate() != null)
-                    analysisSubForm.completedDate.setValue(DatetimeRPC.getInstance(Datetime.YEAR, Datetime.DAY, aDO.getCompletedDate().getDate()));
+                    analysisSubForm.completedDate.setValue(Datetime.getInstance(Datetime.YEAR, Datetime.DAY, aDO.getCompletedDate().getDate()));
                 
                 if (aDO.getReleasedDate() != null && aDO.getReleasedDate().getDate() != null)
-                    analysisSubForm.releasedDate.setValue(DatetimeRPC.getInstance(Datetime.YEAR, Datetime.DAY, aDO.getReleasedDate().getDate()));
+                    analysisSubForm.releasedDate.setValue(Datetime.getInstance(Datetime.YEAR, Datetime.DAY, aDO.getReleasedDate().getDate()));
                 
                 if (aDO.getPrintedDate() != null && aDO.getPrintedDate().getDate() != null)
-                    analysisSubForm.printedDate.setValue(DatetimeRPC.getInstance(Datetime.YEAR, Datetime.DAY, aDO.getPrintedDate().getDate()));
+                    analysisSubForm.printedDate.setValue(Datetime.getInstance(Datetime.YEAR, Datetime.DAY, aDO.getPrintedDate().getDate()));
                 
                 treeModelItem.setData(analysisSubForm);
                 

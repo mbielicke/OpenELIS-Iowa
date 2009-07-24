@@ -36,7 +36,7 @@ import org.openelis.domain.InventoryItemAutoDO;
 import org.openelis.domain.QcAnalyteDO;
 import org.openelis.domain.QcDO;
 import org.openelis.domain.SecuritySystemUserDO;
-import org.openelis.gwt.common.DatetimeRPC;
+import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.FormErrorException;
@@ -62,7 +62,6 @@ import org.openelis.remote.CategoryRemote;
 import org.openelis.remote.InventoryItemRemote;
 import org.openelis.remote.QcRemote;
 import org.openelis.server.constants.Constants;
-import org.openelis.util.Datetime;
 import org.openelis.util.FormUtil;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
@@ -320,7 +319,7 @@ public class QCService implements
     
     private QcDO getQcDOFromRPC(QCForm rpc) {
         QcDO qcDO;
-        DatetimeRPC prepDate,expDate,usbDate;
+        Datetime prepDate,expDate,usbDate;
         
         qcDO = new QcDO();
         
@@ -410,19 +409,19 @@ public class QCService implements
         
         date = qcDO.getPreparedDate();
         if(date != null && date.getDate() != null) {
-            rpc.preparedDate.setValue(DatetimeRPC.getInstance(Datetime.YEAR,Datetime.MINUTE,
+            rpc.preparedDate.setValue(Datetime.getInstance(Datetime.YEAR,Datetime.MINUTE,
                                                                date.getDate()));
         }
         
         date = qcDO.getUsableDate();
         if(date != null && date.getDate() != null) {
-            rpc.usableDate.setValue(DatetimeRPC.getInstance(Datetime.YEAR,Datetime.MINUTE,
+            rpc.usableDate.setValue(Datetime.getInstance(Datetime.YEAR,Datetime.MINUTE,
                                                              date.getDate()));
         }
         
         date = qcDO.getExpireDate();
         if(date != null && date.getDate() != null) {
-            rpc.expireDate.setValue(DatetimeRPC.getInstance(Datetime.YEAR,Datetime.MINUTE,
+            rpc.expireDate.setValue(Datetime.getInstance(Datetime.YEAR,Datetime.MINUTE,
                                                              date.getDate()));
         }
         

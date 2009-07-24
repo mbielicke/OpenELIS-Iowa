@@ -27,6 +27,7 @@
 package org.openelis.modules.order.server;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -40,6 +41,7 @@ import org.openelis.domain.OrderAddAutoFillDO;
 import org.openelis.domain.OrderDO;
 import org.openelis.domain.OrderItemDO;
 import org.openelis.domain.OrganizationAutoDO;
+import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.FormErrorException;
@@ -72,7 +74,6 @@ import org.openelis.remote.InventoryItemRemote;
 import org.openelis.remote.OrderRemote;
 import org.openelis.remote.OrganizationRemote;
 import org.openelis.server.constants.Constants;
-import org.openelis.util.Datetime;
 import org.openelis.util.FormUtil;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
@@ -681,7 +682,7 @@ public class OrderService implements AppScreenFormServiceInt<OrderForm, OrderQue
         orderDO.setId(form.id.getValue());
         orderDO.setNeededInDays(form.neededInDays.getValue());
         orderDO.setStatusId((Integer)form.statusId.getSelectedKey());
-        orderDO.setOrderedDate(new Datetime(Datetime.YEAR, Datetime.DAY, form.orderedDate.getValue()).getDate());
+        orderDO.setOrderedDate(new Datetime(Datetime.YEAR, Datetime.DAY, new Date(form.orderedDate.getValue())).getDate());
         orderDO.setRequestedBy(form.requestedBy.getValue());
         orderDO.setCostCenter((Integer)form.costCenterId.getSelectedKey());
         orderDO.setShipFromId((Integer)form.shipFromId.getSelectedKey());

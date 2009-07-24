@@ -27,7 +27,7 @@ package org.openelis.modules.inventoryReceipt.client;
 
 import java.util.ArrayList;
 
-import org.openelis.gwt.common.DatetimeRPC;
+import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.KeyListManager;
@@ -833,7 +833,7 @@ public class InventoryReceiptScreen extends OpenELISScreenForm<InventoryReceiptF
            String isSerialMaintainedObj = dropdownData.isSerialMaintained;
            String dispensedUnits = dropdownData.dispensedUnits;
            String lotNum = dropdownData.lotNum;
-           DatetimeRPC expDate = dropdownData.expDate;
+           Datetime expDate = dropdownData.expDate;
            
            tableRow.cells[1].setValue(set.cells[2].getValue());
            tableRow.cells[2].setValue(set.cells[3].getValue());

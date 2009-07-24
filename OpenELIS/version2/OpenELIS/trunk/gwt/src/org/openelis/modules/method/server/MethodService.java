@@ -27,7 +27,7 @@ package org.openelis.modules.method.server;
 
 import org.openelis.domain.IdNameDO;
 import org.openelis.domain.MethodDO;
-import org.openelis.gwt.common.DatetimeRPC;
+import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.FormErrorException;
@@ -47,7 +47,6 @@ import org.openelis.modules.method.client.MethodForm;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.MethodRemote;
 import org.openelis.server.constants.Constants;
-import org.openelis.util.Datetime;
 import org.openelis.util.FormUtil;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
@@ -189,11 +188,11 @@ public class MethodService implements AppScreenFormServiceInt<MethodForm, Query<
         form.description.setValue(methodDO.getDescription());
         form.reportingDescription.setValue(methodDO.getReportingDescription());
         form.isActive.setValue(methodDO.getIsActive());        
-        form.activeBegin.setValue(DatetimeRPC.getInstance(Datetime.YEAR,
+        form.activeBegin.setValue(Datetime.getInstance(Datetime.YEAR,
                                                         Datetime.DAY,
                                                         methodDO.getActiveBegin()
                                                                      .getDate()));
-        form.activeEnd.setValue(DatetimeRPC.getInstance(Datetime.YEAR,
+        form.activeEnd.setValue(Datetime.getInstance(Datetime.YEAR,
                                                         Datetime.DAY,
                                                         methodDO.getActiveEnd()
                                                                      .getDate()));        
@@ -204,11 +203,11 @@ public class MethodService implements AppScreenFormServiceInt<MethodForm, Query<
       MethodDO methodDO = new MethodDO();
       methodDO.setId(methodId.getValue());
       methodDO.setName(form.name.getValue());
-      DatetimeRPC activeBegin = (DatetimeRPC)form.activeBegin.getValue();
+      Datetime activeBegin = (Datetime)form.activeBegin.getValue();
       if (activeBegin != null)
           methodDO.setActiveBegin(activeBegin.getDate());
 
-      DatetimeRPC activeEnd = (DatetimeRPC)form.activeEnd.getValue();
+      Datetime activeEnd = (Datetime)form.activeEnd.getValue();
       if (activeEnd != null)
           methodDO.setActiveEnd(activeEnd.getDate());
 
