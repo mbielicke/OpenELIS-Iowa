@@ -3,7 +3,7 @@ package org.openelis.domain;
 import java.io.Serializable;
 import java.util.Date;
 
-import org.openelis.util.Datetime;
+import org.openelis.gwt.common.Datetime;
 
 
 public class AuxFieldGroupDO implements Serializable {
