@@ -43,12 +43,25 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
+@NamedQueries( {
+    @NamedQuery(name = "OrganizationContact.ContactsId", query = "select new org.openelis.domain.OrganizationContactDO(contact.id,contact.organizationId,contact.contactTypeId,contact.name,addr.id,"
+        + "addr.multipleUnit,addr.streetAddress,addr.city,addr.state,addr.zipCode,addr.workPhone,addr.homePhone,addr.cellPhone,addr.faxPhone,addr.email,addr.country)"
+        + "  from OrganizationContact contact, Address addr where addr.id = contact.addressId and "
+        + " contact.id = :id"),
+    @NamedQuery(name = "OrganizationContact.ContactsByOrgId", query = "select new org.openelis.domain.OrganizationContactDO(contact.id,contact.organizationId,contact.contactTypeId,contact.name,addr.id,"
+            + "addr.multipleUnit,addr.streetAddress,addr.city,addr.state,addr.zipCode,addr.workPhone,addr.homePhone,addr.cellPhone,addr.faxPhone,addr.email,addr.country)"
+            + "  from OrganizationContact contact, Organization orgz, Address addr where addr.id = contact.addressId and "
+            + " orgz.id = contact.organizationId and orgz.id = :id")
+    })
+              
 @Entity
 @Table(name="organization_contact")
 @EntityListeners({AuditUtil.class})

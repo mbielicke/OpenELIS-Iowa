@@ -50,6 +50,7 @@ public class NoteBean implements NoteRemote, NoteLocal {
     private EntityManager manager;
     
     public ArrayList<NoteDO> getNotes(Integer refTableId, Integer refId) throws Exception {
+        
         Query query = manager.createNamedQuery("Note.Notes");
         query.setParameter("referenceTable", refTableId);
         query.setParameter("id", refId);

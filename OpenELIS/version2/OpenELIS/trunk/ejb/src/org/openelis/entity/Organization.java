@@ -56,12 +56,6 @@ import org.w3c.dom.Element;
     @NamedQuery(name = "Organization.OrganizationAndAddress", query = "select new org.openelis.domain.OrganizationAddressDO(orgz.id,orgz.parentOrganizationId,parentOrg.name,orgz.name,orgz.isActive,orgz.address.id,"
             + "orgz.address.multipleUnit,orgz.address.streetAddress,orgz.address.city,orgz.address.state,orgz.address.zipCode,orgz.address.country)"
             + "  from Organization orgz left join orgz.parentOrganization parentOrg where orgz.id = :id"),
-    @NamedQuery(name = "Organization.Contacts", query = "select new org.openelis.domain.OrganizationContactDO(contact.id,contact.organizationId,contact.contactTypeId,contact.name,addr.id,"
-            + "addr.multipleUnit,addr.streetAddress,addr.city,addr.state,addr.zipCode,addr.workPhone,addr.homePhone,addr.cellPhone,addr.faxPhone,addr.email,addr.country)"
-            + "  from OrganizationContact contact, Organization orgz, Address addr where addr.id = contact.addressId and "
-            + " orgz.id = contact.organizationId and orgz.id = :id"),
-    @NamedQuery(name = "Organization.Notes", query = "select new org.openelis.domain.NoteDO(n.id, n.systemUserId, n.text, n.timestamp, n.subject) "
-            + "  from Note n where n.referenceTableId = (select id from ReferenceTable where name='organization') and n.referenceId = :id ORDER BY n.timestamp DESC"),
     @NamedQuery(name = "Organization.AutoCompleteById", query = "select new org.openelis.domain.OrganizationAutoDO(o.id, o.name, o.address.multipleUnit, o.address.streetAddress, o.address.city, o.address.state, " +
               " o.address.zipCode) from Organization o where o.id = :id and o.isActive = 'Y'"),
     @NamedQuery(name = "Organization.AutoCompleteByName", query = "select new org.openelis.domain.OrganizationAutoDO(o.id, o.name, o.address.multipleUnit, o.address.streetAddress, o.address.city, o.address.state, " +

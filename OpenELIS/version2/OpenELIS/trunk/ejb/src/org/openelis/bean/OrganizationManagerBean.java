@@ -27,6 +27,7 @@ package org.openelis.bean;
 
 import javax.annotation.Resource;
 import javax.annotation.security.RolesAllowed;
+import javax.ejb.EJB;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionManagement;
@@ -35,9 +36,11 @@ import javax.persistence.PersistenceContext;
 import javax.transaction.UserTransaction;
 
 import org.jboss.annotation.security.SecurityDomain;
+import org.openelis.local.LockLocal;
 import org.openelis.manager.OrganizationContactsManager;
 import org.openelis.manager.OrganizationsManager;
 import org.openelis.remote.OrganizationManagerRemote;
+import org.openelis.utils.ReferenceTableCache;
 
 @Stateless
 @TransactionManagement(TransactionManagementType.BEAN)
@@ -51,23 +54,22 @@ public class OrganizationManagerBean implements OrganizationManagerRemote {
     @Resource
     private SessionContext ctx;
     
-    /*
+    @EJB private LockLocal lockBean;
+    
     private static int orgRefTableId;
     
     public OrganizationManagerBean(){
         orgRefTableId = ReferenceTableCache.getReferenceTable("organization");
     }
-    */
     
     public OrganizationsManager add(OrganizationsManager man) throws Exception {
         man.validate();
         
         UserTransaction ut = ctx.getUserTransaction();
         ut.begin();
-        
         man.add();
-        
         ut.commit();
+        
         return man;
     }
     
@@ -76,51 +78,46 @@ public class OrganizationManagerBean implements OrganizationManagerRemote {
         
         UserTransaction ut = ctx.getUserTransaction();
         ut.begin();
-        
         man.update();
-        
-        if(true)
-            throw new Exception("test");
-        
         ut.commit();
-        return man;     
+        
+        return man;
     }
     
     public OrganizationsManager fetch(Integer orgId) throws Exception {
         OrganizationsManager man = OrganizationsManager.findById(orgId);
-        //man.setOrganizationReferenceTable(orgRefTableId);
         
         return man;
     }
     
     public OrganizationsManager fetchWithContacts(Integer orgId) throws Exception {
         OrganizationsManager man = OrganizationsManager.findByIdWithContacts(orgId);
-        //man.setOrganizationReferenceTable(orgRefTableId);
         
         return man;
     }
     
     public OrganizationsManager fetchWithIdentifiers(Integer orgId) throws Exception {
         OrganizationsManager man = OrganizationsManager.findByIdWithIdentifiers(orgId);
-        //man.setOrganizationReferenceTable(orgRefTableId);
         
         return man;
     }
     
     public OrganizationsManager fetchWithNotes(Integer orgId) throws Exception { 
         OrganizationsManager man = OrganizationsManager.findByIdWithNotes(orgId);
-        //man.setOrganizationReferenceTable(orgRefTableId);
         
         return man;
     }
     
-    public OrganizationsManager fetchForUpdate(Integer orgId) {
-        // TODO Auto-generated method stub
-        return null;
+    public OrganizationsManager fetchForUpdate(Integer orgId) throws Exception {
+        lockBean.getLock(orgRefTableId, orgId);
+        
+        return fetch(orgId);
     }
     
-    public OrganizationsManager abortUpdate(Integer orgId){
-        return null;
+    public OrganizationsManager abortUpdate(Integer orgId) throws Exception {
+        lockBean.giveUpLock(orgRefTableId, orgId);
+        
+        return fetch(orgId);
     }
     
     public OrganizationContactsManager fetchContactById(Integer id) throws Exception {
