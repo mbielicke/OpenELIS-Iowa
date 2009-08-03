@@ -67,7 +67,7 @@ public class OrganizationContactsManagerProxy {
             }else
                 ol.updateContact(contact);
         }
-        
+
         return man;
     }
 

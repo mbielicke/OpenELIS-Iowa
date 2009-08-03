@@ -55,8 +55,8 @@ public class OrganizationsManagerProxy {
     public OrganizationsManager update(OrganizationsManager man) throws Exception {
         Integer orgId, orgRefId;
         OrganizationLocal ol = getOrganizationLocal();
+
         ol.update(man.getOrganizationAddress());
-        
         orgId = man.getOrganizationAddress().getOrganizationId();
         orgRefId = man.getOrganizationReferenceTable();
         
@@ -83,9 +83,8 @@ public class OrganizationsManagerProxy {
     public OrganizationsManager fetchWithContacts(Integer orgId) throws Exception {
         OrganizationsManager m = fetch(orgId);
         m.setOrganizationReferenceTable(ReferenceTableCache.getReferenceTable("organization"));
-        try{
-            m.getContacts();
-        }catch(EntityNotFoundException ignE){}
+        
+        m.getContacts();
         
         return m;
     }
@@ -93,10 +92,8 @@ public class OrganizationsManagerProxy {
     public OrganizationsManager fetchWithNotes(Integer orgId) throws Exception {
         OrganizationsManager m = fetch(orgId);
         m.setOrganizationReferenceTable(ReferenceTableCache.getReferenceTable("organization"));
-        System.out.println("in notes fetch ["+m.getOrganizationAddress().getOrganizationId()+"] ["+m.getOrganizationReferenceTable()+"]");
-        try{
-            m.getNotes();
-        }catch(EntityNotFoundException ignE){}
+
+        m.getNotes();
         
         return m;
     }
@@ -106,17 +103,13 @@ public class OrganizationsManagerProxy {
     }
 
     public OrganizationsManager fetchForUpdate(OrganizationsManager man) throws Exception {
-        OrganizationLocal ol = getOrganizationLocal();
-        man.setOrganizationAddress(ol.getOrganizationAddressAndLock(man.getOrganizationAddress().getOrganizationId()));
-        
-        return man;
+        //do nothing
+        return null;
     }
     
-    public OrganizationsManager abort(OrganizationsManager man) throws Exception {
-        OrganizationLocal ol = getOrganizationLocal();
-        man.setOrganizationAddress(ol.getOrganizationAddressAndUnlock(man.getOrganizationAddress().getOrganizationId()));
-        
-        return man;
+    public OrganizationsManager abort(Integer orgId) throws Exception {
+        //do nothing
+        return null;
     }
     
     private OrganizationLocal getOrganizationLocal(){

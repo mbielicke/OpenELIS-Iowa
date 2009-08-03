@@ -53,7 +53,7 @@ import org.openelis.utils.Auditable;
 @NamedQueries({@NamedQuery(name = "StandardNote.StandardNote", query = "select new org.openelis.domain.StandardNoteDO(s.id,s.name,s.description,s.typeId,s.text) from StandardNote s where s.id = :id"),
     @NamedQuery(name = "StandardNote.StandardNoteByType", query = "select new org.openelis.domain.StandardNoteDO(s.id,s.name,s.description,s.typeId,s.text) from StandardNote s where "+
                       " (s.name like :name OR s.description like :desc) and s.typeId = :type order by s.name"),
-    @NamedQuery(name = "StandardNote.TypeByNameDesc", query="SELECT distinct d.id, d.entry " + "FROM StandardNote s LEFT JOIN s.dictionary d WHERE (s.name like :name OR s.description like :desc) ORDER BY d.entry")})
+    @NamedQuery(name = "StandardNote.TypeByNameDesc", query="SELECT distinct new org.openelis.domain.IdNameDO(d.id, d.entry) " + "FROM StandardNote s LEFT JOIN s.dictionary d WHERE (s.name like :name OR s.description like :desc) ORDER BY d.entry")})
             
     
 @Entity

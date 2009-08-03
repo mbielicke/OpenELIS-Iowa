@@ -42,14 +42,17 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
+import org.openelis.domain.IdNameDO;
 import org.openelis.domain.StandardNoteDO;
 import org.openelis.entity.StandardNote;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.AbstractField;
+import org.openelis.gwt.common.data.QueryField;
 import org.openelis.gwt.common.data.QueryIntegerField;
 import org.openelis.gwt.common.data.QueryStringField;
+import org.openelis.gwt.common.rewrite.QueryData;
 import org.openelis.local.LockLocal;
 import org.openelis.metamap.StandardNoteMetaMap;
 import org.openelis.remote.StandardNoteRemote;
@@ -185,6 +188,46 @@ public class StandardNoteBean implements StandardNoteRemote{
 		    
 		return standardNote.getId();
 	}
+    
+    public List<StandardNoteDO> newQuery(ArrayList<QueryData> fields) throws Exception {
+        StringBuffer sb = new StringBuffer();
+        QueryBuilder qb = new QueryBuilder();
+
+        qb.setMeta(StandardNoteMap);
+
+        qb.setSelect("new org.openelis.domain.StandardNoteDO(" + StandardNoteMap.getId()+", "+
+                     StandardNoteMap.getName()+", "+
+                     StandardNoteMap.getDescription()+", "+
+                     StandardNoteMap.getTypeId()+", "+
+                     StandardNoteMap.getText()+") ");
+        
+        String whereClause = " WHERE ";
+        if(fields.size() == 2){
+            QueryField f = new QueryField();
+            f.setValue(fields.get(0).query);
+            whereClause += " (" + QueryBuilder.getQueryNoOperand(f, StandardNoteMap.getName()) + " OR " + 
+            QueryBuilder.getQueryNoOperand(f, StandardNoteMap.getDescription())+")";
+        }else{
+            QueryField f = new QueryField();
+            f.setValue(fields.get(0).query);
+            whereClause += QueryBuilder.getQueryNoOperand(f, StandardNoteMap.getTypeId());
+        }
+                    
+        qb.setOrderBy(StandardNoteMap.getTypeId()+", "+StandardNoteMap.getName());
+
+        sb.append(qb.getSelectClause()).append(qb.getFromClause(whereClause)).append(whereClause).append(qb.getOrderBy());
+
+        System.out.println(sb.toString());
+        Query query = manager.createQuery(sb.toString());
+        
+        qb.setNewQueryParams(query, fields);
+        List<StandardNoteDO> returnList = query.getResultList();
+
+        if (returnList == null)
+            return new ArrayList<StandardNoteDO>();
+        else
+            return returnList;
+    }
     
     public List queryForType(HashMap fields) throws Exception {
         Query query = manager.createNamedQuery("StandardNote.TypeByNameDesc");

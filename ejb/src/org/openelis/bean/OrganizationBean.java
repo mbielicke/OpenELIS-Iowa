@@ -33,8 +33,6 @@ import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
-import javax.ejb.TransactionManagement;
-import javax.ejb.TransactionManagementType;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
@@ -42,10 +40,8 @@ import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.IdNameDO;
-import org.openelis.domain.NoteDO;
 import org.openelis.domain.OrganizationAddressDO;
 import org.openelis.domain.OrganizationContactDO;
-import org.openelis.entity.Note;
 import org.openelis.entity.Organization;
 import org.openelis.entity.OrganizationContact;
 import org.openelis.exception.NotFoundException;
@@ -54,7 +50,6 @@ import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.SecurityModule.ModuleFlags;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.rewrite.QueryData;
 import org.openelis.local.AddressLocal;
@@ -62,15 +57,12 @@ import org.openelis.local.LockLocal;
 import org.openelis.local.OrganizationLocal;
 import org.openelis.metamap.OrganizationMetaMap;
 import org.openelis.remote.OrganizationRemote;
-import org.openelis.security.domain.SystemUserDO;
 import org.openelis.security.local.SystemUserLocal;
 import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
 import org.openelis.utils.ReferenceTableCache;
-import org.openelis.utils.SecurityInterceptor;
 
 @Stateless
-@TransactionManagement(TransactionManagementType.BEAN)
 
 @SecurityDomain("openelis")
 @RolesAllowed("organization-select")
@@ -102,116 +94,7 @@ public class OrganizationBean implements OrganizationRemote, OrganizationLocal {
         return orgAddressContacts;
 	}
 	
-	public OrganizationAddressDO getOrganizationAddressAndUnlock(Integer organizationId) throws Exception {
-		//unlock the entity
-        lockBean.giveUpLock(orgRefTableId, organizationId);
-       		
-        return getOrganizationAddress(organizationId);
-	}
-	
-	@RolesAllowed("organization-update")
-    //@Interceptors(SecurityInterceptor.class)
-    public OrganizationAddressDO getOrganizationAddressAndLock(Integer organizationId) throws Exception{
-        SecurityInterceptor.applySecurity(ctx.getCallerPrincipal().getName(), "organization", ModuleFlags.UPDATE);
-        lockBean.getLock(orgRefTableId, organizationId);
-        
-        return getOrganizationAddress(organizationId);
-    }
-	
-	//@RolesAllowed("organization-update")
-    //@Interceptors(SecurityInterceptor.class)
-    public Integer updateOrganization(OrganizationAddressDO organizationDO, NoteDO noteDO, List<OrganizationContactDO> contacts) throws Exception{
-        SecurityInterceptor.applySecurity(ctx.getCallerPrincipal().getName(),"organization", ModuleFlags.UPDATE);
-	    //organization reference table id
-
-        if(organizationDO.getOrganizationId() != null)
-            lockBean.validateLock(orgRefTableId, organizationDO.getOrganizationId());
-        
-        //validate organization record and its contacts
-        validateOrganization(organizationDO, contacts);
-
-		 manager.setFlushMode(FlushModeType.COMMIT);
-		 Organization organization = null;
-    
-         if (organizationDO.getOrganizationId() == null)
-        	organization = new Organization();
-        else
-            organization = manager.find(Organization.class, organizationDO.getOrganizationId());
-
-         //send the address to the update address bean
-        Integer orgAddressId = addressBean.updateAddress(organizationDO.getAddressDO());
-        
-        //update organization
-        organization.setAddressId(orgAddressId);
-        
-        organization.setIsActive(organizationDO.getIsActive());
-        organization.setName(organizationDO.getName());
-        organization.setParentOrganizationId(organizationDO.getParentOrganizationId());
-                
-        if (organization.getId() == null) {
-        	manager.persist(organization);
-        }
-        
-        //update contacts
-        if(contacts != null) {
-            for (OrganizationContactDO contactDO : contacts) {
-                OrganizationContact orgContact = null;
-            
-                if (contactDO.getId() == null)
-                    orgContact = new OrganizationContact();
-                else
-                    orgContact = manager.find(OrganizationContact.class, contactDO.getId());
-
-                if(contactDO.getDelete() && orgContact.getId() != null){
-                    //delete the contact record and the address record from the database
-                    manager.remove(orgContact);
-                    addressBean.deleteAddress(contactDO.getAddressDO());
-            	
-                }else{
-//	            	send the contact address to the address bean
-                    Integer contactAddressId = addressBean.updateAddress(contactDO.getAddressDO());
-		                
-                    orgContact.setContactTypeId(contactDO.getContactType());
-                    orgContact.setName(contactDO.getName());
-                    orgContact.setOrganizationId(organization.getId());
-                    orgContact.setAddressId(contactAddressId);
-		            
-                    if (orgContact.getId() == null) {
-                        manager.persist(orgContact);
-                    }
-                }
-            }
-        }
-        
-        
-        
-//          update note
-        if(noteDO != null) {
-            Note note = null;
-            //  we need to make sure the note is filled out...
-            if(noteDO.getText() != null || noteDO.getSubject() != null){
-                note = new Note();
-                note.setIsExternal(noteDO.getIsExternal());
-                note.setReferenceId(organization.getId());
-                note.setReferenceTableId(orgRefTableId);
-                note.setSubject(noteDO.getSubject());
-                note.setSystemUserId(lockBean.getSystemUserId());
-                note.setText(noteDO.getText());
-                note.setTimestamp(Datetime.getInstance());
-            }
-        
-//         insert into note table if necessary
-            if(note != null && note.getId() == null){
-                manager.persist(note);
-            }
-        }
-
-        lockBean.giveUpLock(orgRefTableId, organization.getId()); 
-   
-        return organization.getId();        
-    }
-    
-    public void add(OrganizationAddressDO organizationDO){
+	public void add(OrganizationAddressDO organizationDO){
          manager.setFlushMode(FlushModeType.COMMIT);
          Organization organization = new Organization();
         
@@ -231,7 +114,8 @@ public class OrganizationBean implements OrganizationRemote, OrganizationLocal {
     }
     
     public void update(OrganizationAddressDO organizationDO) throws Exception {
-        //lockBean.validateLock(orgRefTableId, organizationDO.getOrganizationId());
+        lockBean.validateLock(orgRefTableId, organizationDO.getOrganizationId());
+        
          manager.setFlushMode(FlushModeType.COMMIT);
          Organization organization = manager.find(Organization.class, organizationDO.getOrganizationId());
 
@@ -243,10 +127,11 @@ public class OrganizationBean implements OrganizationRemote, OrganizationLocal {
         organization.setName(organizationDO.getName());
         organization.setParentOrganizationId(organizationDO.getParentOrganizationId());
         
-        //lockBean.giveUpLock(orgRefTableId, organization.getId());                                  
+        lockBean.giveUpLock(orgRefTableId, organization.getId());                                  
     }
     
     public void addContact(OrganizationContactDO contactDO) throws Exception{
+        System.out.println("inside add contact!!");
         manager.setFlushMode(FlushModeType.COMMIT);
         
         OrganizationContact orgContact = new OrganizationContact();
@@ -264,6 +149,7 @@ public class OrganizationBean implements OrganizationRemote, OrganizationLocal {
     }
 
     public void updateContact(OrganizationContactDO contactDO) throws Exception{
+        System.out.println("inside org bean updateContact");
         manager.setFlushMode(FlushModeType.COMMIT);
         
         OrganizationContact orgContact = manager.find(OrganizationContact.class, contactDO.getId());
@@ -288,7 +174,7 @@ public class OrganizationBean implements OrganizationRemote, OrganizationLocal {
     }
 
 	public List<OrganizationContactDO> getOrganizationContacts(Integer organizationId) throws Exception {
-		Query query = manager.createNamedQuery("Organization.Contacts");
+		Query query = manager.createNamedQuery("OrganizationContact.ContactsByOrgId");
 		query.setParameter("id", organizationId);
 		
 		List contactsList = query.getResultList();
@@ -299,23 +185,6 @@ public class OrganizationBean implements OrganizationRemote, OrganizationLocal {
         return contactsList;
 	}
 	
-	public List getOrganizationNotes(Integer organizationId) {
-		Query query = null;
-		
-		query = manager.createNamedQuery("Organization.Notes");	
-		query.setParameter("id", organizationId);
-		
-		List orgNotes = query.getResultList();// getting list of noteDOs from the org id
-
-		for(int i=0; i<orgNotes.size(); i++){
-	           NoteDO noteDO = (NoteDO)orgNotes.get(i);
-	           SystemUserDO userDO = userLocal.getSystemUser(noteDO.getSystemUserId());
-	           noteDO.setSystemUser(userDO.getLoginName());
-	       }
-		
-        return orgNotes;
-	}
-
 	public ArrayList<IdNameDO> query(ArrayList<AbstractField> fields, int first, int max) throws Exception{
         StringBuffer sb = new StringBuffer();
         QueryBuilder qb = new QueryBuilder();

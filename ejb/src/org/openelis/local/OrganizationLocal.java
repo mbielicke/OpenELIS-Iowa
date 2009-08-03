@@ -25,7 +25,6 @@
 */
 package org.openelis.local;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.ejb.Local;
@@ -36,8 +35,6 @@ import org.openelis.domain.OrganizationContactDO;
 @Local
 public interface OrganizationLocal {
     public OrganizationAddressDO getOrganizationAddress(Integer organizationId) throws Exception;
-    public OrganizationAddressDO getOrganizationAddressAndUnlock(Integer organizationId) throws Exception;
-    public OrganizationAddressDO getOrganizationAddressAndLock(Integer organizationId) throws Exception;
     public List getOrganizationContacts(Integer organizationId) throws Exception;
     
     public void add(OrganizationAddressDO orgDO);
