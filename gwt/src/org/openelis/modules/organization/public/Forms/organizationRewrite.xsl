@@ -1,4 +1,4 @@
-<!--
+ <!--
 Exhibit A - UIRF Open-source Based Public Software License.
 
 The contents of this file are subject to the UIRF Open-source Based
@@ -231,15 +231,25 @@ UIRF Software License are applicable instead of those above.
                           </col>
                       </table>
                     </widget>
-                    <widget halign="center" style="WhiteContentPanel">
-                      <appButton action="removeRow" key="removeContactButton" onclick="this" style="Button">
+                    <HorizontalPanel style="WhiteContentPanel">
+                      <widget halign="center" style="WhiteContentPanel">
+                      <appButton action="addContact" key="addContactButton" onclick="this" style="Button">
+                        <HorizontalPanel>
+                          <AbsolutePanel style="AddRowButtonImage"/>
+                          <text><xsl:value-of select="resource:getString($constants,'addRow')"/></text>
+                        </HorizontalPanel>
+                      </appButton>
+                      </widget>
+                      <widget halign="center" style="WhiteContentPanel">
+                      <appButton action="removeContact" key="removeContactButton" onclick="this" style="Button">
                         <HorizontalPanel>
                           <AbsolutePanel style="RemoveRowButtonImage"/>
                           <text><xsl:value-of select="resource:getString($constants,'removeRow')"/></text>
                         </HorizontalPanel>
 
                       </appButton>
-                    </widget>
+                      </widget>
+                    </HorizontalPanel>
                   </VerticalPanel>
                   <!-- END TAB 1 -->
                 </tab>
@@ -274,30 +284,17 @@ UIRF Software License are applicable instead of those above.
 
                     <TablePanel key="noteFormPanel" padding="0" spacing="0" style="Form">
                       <row>
-                        <text style="Prompt"><xsl:value-of select="resource:getString($constants,'subject')"/>:</text>
-                        <textbox case="mixed" key="{note:getSubject($note)}" max="60" showError="false" enabledStates="" tab="{note:getText($note)},{note:getText($note)}" width="429px" field="String"/>
-                        <appButton action="standardNote" key="standardNoteButton" style="Button">
-                          <HorizontalPanel>
-                            <AbsolutePanel style="StandardNoteButtonImage"/>
-                            <text><xsl:value-of select="resource:getString($constants,'standardNote')"/></text>
-                          </HorizontalPanel>
-                        </appButton>
-                      </row>
-                      <row>
-                        <text style="Prompt"><xsl:value-of select="resource:getString($constants,'note')"/>:</text>
-                        <widget colspan="2">
-                          <textarea case="mixed" height="48px" key="{note:getText($note)}" showError="false" enabledStates="" tab="{note:getSubject($note)},{note:getSubject($note)}" width="545px"/>
-                        </widget>
-                      </row>
-                      <row>
-                          <widget>
-                            <html key="spacer" xml:space="preserve"> </html>
-                          </widget>
-                        <widget colspan="2">
                           <HorizontalPanel style="notesPanelContainer">
                             <ScrollPanel height="178px" key="notesPanel" overflowX="auto" overflowY="scroll" style="NotesPanel" valign="top" width="545px"/>
                           </HorizontalPanel>
-                        </widget>
+                      </row>
+                       <row>
+                        <appButton action="standardNote" key="standardNoteButton" style="Button">
+                          <HorizontalPanel>
+                            <AbsolutePanel style="StandardNoteButtonImage"/>
+                            <text><xsl:value-of select="resource:getString($constants,'addNote')"/></text>
+                          </HorizontalPanel>
+                        </appButton>
                       </row>
                     </TablePanel>
                   </VerticalPanel>

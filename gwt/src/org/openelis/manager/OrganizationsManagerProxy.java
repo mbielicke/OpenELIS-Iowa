@@ -65,8 +65,8 @@ public class OrganizationsManagerProxy {
         return service.call("fetchForUpdate", orgId);
     }
     
-    public OrganizationsManager abort(OrganizationsManager man) throws Exception {
-        return service.call("abort", man);
+    public OrganizationsManager abort(Integer orgId) throws Exception {
+        return service.call("abort", orgId);
     }
     
     public void validate(OrganizationsManager man) throws Exception {

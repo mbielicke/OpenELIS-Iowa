@@ -219,7 +219,7 @@ public class OrganizationService implements AppScreenFormServiceInt<Organization
     		
     //		send the changes to the database
     		try{
-    			remote.updateOrganization(newOrganizationDO, organizationNote, organizationContacts);
+    		//	remote.updateOrganization(newOrganizationDO, organizationNote, organizationContacts);
     			
     		}catch(Exception e){
                 if(e instanceof ValidationErrorsList){
@@ -325,7 +325,8 @@ public class OrganizationService implements AppScreenFormServiceInt<Organization
     		
     		OrganizationAddressDO organizationDO = new OrganizationAddressDO();
     		try{
-    			organizationDO = remote.getOrganizationAddressAndLock(rpc.entityKey);
+    			organizationDO = null;
+    			//remote.getOrganizationAddressAndLock(rpc.entityKey);
     		}catch(Exception e){
     			throw new RPCException(e.getMessage());
     		}
@@ -409,7 +410,8 @@ public class OrganizationService implements AppScreenFormServiceInt<Organization
         OrganizationRemote remote = (OrganizationRemote)EJBFactory.lookup("openelis/OrganizationBean/remote");
     
         //gets the whole notes list now
-        List notesList = remote.getOrganizationNotes(key);
+        List notesList = null;
+        //remote.getOrganizationNotes(key);
         
         Iterator itr = notesList.iterator();
         try{

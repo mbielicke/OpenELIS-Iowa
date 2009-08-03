@@ -52,34 +52,48 @@
 			serviceUrl="ElisService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 			<display>
 				<VerticalPanel spacing="0" padding="0">
-					<HorizontalPanel style="WhiteContentPanel" spacing="0" padding="0">
+					<VerticalPanel style="WhiteContentPanel" spacing="0" padding="0">
 					<TablePanel style="Form">
 				<row>
 					<text style="Prompt">Subject:</text>
-					<textbox case="mixed" key="subject" width="250px" enabledStates="default"/>
+					<textbox case="mixed" key="subject" width="500px" enabledStates="default"/>
 				</row>
 				<row>
 					<text style="Prompt">Text:</text>
-					<textarea case="mixed" key="text" width="250px" height="415px" enabledStates="default"/>
+					<textarea case="mixed" key="text" width="500px" height="150px" enabledStates="default"/>
 				</row>
 				<row>
 				</row>
 				</TablePanel>
-					<VerticalPanel spacing="0" padding="0" width="250px">
-						<HorizontalPanel spacing="0">
-							<HorizontalPanel spacing="3">
-								<textbox key="findTextBox" width="190px" showError="false" enabledStates="default" />
-							</HorizontalPanel>
-							<appButton action="find" onclick="this" style="Button" key="findButton" enabledStates="default">
-								<HorizontalPanel>
-									<AbsolutePanel style="FindButtonImage" />
-									<text>
-										<xsl:value-of select='resource:getString($constants,"find")' />
-									</text>
-								</HorizontalPanel>
-							</appButton>
+				<TablePanel style="Form" width="500px">
+				<row>
+					<HorizontalPanel spacing="0">
+						<HorizontalPanel spacing="3">
+							<textbox key="findTextBox" width="190px" showError="false" enabledStates="default" />
 						</HorizontalPanel>
-							<tree-table key="noteTree" width="auto" showScroll="ALWAYS" manager="this" treeCall="this" maxRows="10" enable="true" showError="false">
+						<appButton action="find" onclick="this" style="Button" key="findButton" enabledStates="default">
+							<HorizontalPanel>
+								<AbsolutePanel style="FindButtonImage" />
+								<text>
+									<xsl:value-of select='resource:getString($constants,"find")' />
+								</text>
+							</HorizontalPanel>
+						</appButton>
+					</HorizontalPanel>
+					<widget align="right"> 
+					<appButton action="move" onclick="this" style="Button" key="moveButton" enabledStates="default">
+						<HorizontalPanel>
+							<AbsolutePanel style="pasteIcon" />
+							<text>
+								<xsl:value-of select='resource:getString($constants,"paste")' />
+							</text>
+						</HorizontalPanel>
+					</appButton>
+					</widget>
+				</row>
+				<row>
+				<widget align="left" valign="top">
+				<tree-table key="noteTree" width="auto" showScroll="ALWAYS" manager="this" treeCall="this" maxRows="10" enable="true" showError="false">
 								<headers>Category/Name</headers>
 								<widths>230</widths>
 								<leaves>
@@ -101,14 +115,13 @@
 									</leaf>
 								</leaves>
 							</tree-table>
-						<appButton action="move" onclick="this" style="Button" key="moveButton" enabledStates="default">
-								<widget>
-                					<text><xsl:value-of select='resource:getString($constants,"moveLeft")'/> </text>
-							    </widget>			
-							</appButton>
-							<textarea key="moveText" width="255px" height="150px" showError="false" />
-					</VerticalPanel>
-					</HorizontalPanel>
+							</widget>
+							<widget align="right" valign="top">
+							<textarea key="moveText" width="286px" height="230px" showError="false" style="ScreenTable"/>
+							</widget>
+				</row>
+				</TablePanel>
+				</VerticalPanel>
 					<!--button panel code-->
 					<AbsolutePanel spacing="0" style="BottomButtonPanelContainer"
 						align="center">
@@ -130,6 +143,8 @@
 			</display>
 			<rpc key="display">
 				<tree key="noteTree" />
+				<string key="subject"/>
+				<string key="text"/>
 			</rpc>
 			<!--
 			<rpc key="queryByNameDescription">

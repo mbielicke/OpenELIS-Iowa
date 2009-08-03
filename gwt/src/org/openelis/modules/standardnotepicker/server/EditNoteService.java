@@ -25,79 +25,59 @@
 */
 package org.openelis.modules.standardnotepicker.server;
 
-import org.openelis.domain.StandardNoteDO;
-import org.openelis.gwt.common.Query;
-import org.openelis.gwt.common.RPCException;
-import org.openelis.gwt.common.data.AbstractField;
-import org.openelis.gwt.common.data.QueryIntegerField;
-import org.openelis.gwt.common.data.QueryStringField;
-import org.openelis.gwt.common.data.StringObject;
-import org.openelis.gwt.common.data.TableDataRow;
-import org.openelis.gwt.common.data.TreeDataItem;
-import org.openelis.gwt.common.data.TreeDataModel;
-import org.openelis.gwt.server.ServiceUtils;
-import org.openelis.gwt.services.AppScreenFormServiceInt;
-import org.openelis.metamap.StandardNoteMetaMap;
-import org.openelis.modules.standardnotepicker.client.StandardNotePickerForm;
-import org.openelis.persistence.EJBFactory;
-import org.openelis.remote.StandardNoteRemote;
-import org.openelis.server.constants.Constants;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-public class StandardNotePickerService implements AppScreenFormServiceInt<StandardNotePickerForm,Query<TableDataRow<Integer>>> {
+import org.openelis.domain.StandardNoteDO;
+import org.openelis.gwt.common.RPCException;
+import org.openelis.gwt.common.data.AbstractField;
+import org.openelis.gwt.common.data.QueryIntegerField;
+import org.openelis.gwt.common.data.QueryStringField;
+import org.openelis.gwt.common.data.StringObject;
+import org.openelis.gwt.common.data.TreeDataItem;
+import org.openelis.gwt.common.data.TreeDataModel;
+import org.openelis.gwt.common.rewrite.Query;
+import org.openelis.gwt.server.ServiceUtils;
+import org.openelis.metamap.StandardNoteMetaMap;
+import org.openelis.modules.standardnotepicker.client.StandardNotePickerForm;
+import org.openelis.persistence.EJBFactory;
+import org.openelis.remote.StandardNoteRemote;
+import org.openelis.server.constants.Constants;
+import org.openelis.util.SessionManager;
+import org.openelis.util.UTFResource;
 
-	private static final long serialVersionUID = 1L;
-
+public class EditNoteService {
     private static final StandardNoteMetaMap StandardNoteMeta = new StandardNoteMetaMap();
     
-	public Query<TableDataRow<Integer>> commitQuery(Query<TableDataRow<Integer>> query) throws RPCException {
-    	return null;
-    }
-
-    public StandardNotePickerForm commitAdd(StandardNotePickerForm rpc) throws RPCException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public StandardNotePickerForm commitUpdate(StandardNotePickerForm rpc) throws RPCException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public StandardNotePickerForm commitDelete(StandardNotePickerForm rpc) throws RPCException {
-    	// TODO Auto-generated method stub
-    	return null;
-    }
-
-    public StandardNotePickerForm abort(StandardNotePickerForm rpc) throws RPCException {
-    	// TODO Auto-generated method stub
-    	return null;
-    }
-
-    public StandardNotePickerForm fetch(StandardNotePickerForm rpc) throws RPCException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public StandardNotePickerForm fetchForUpdate(StandardNotePickerForm rpc) throws RPCException {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    private UTFResource openElisConstants= UTFResource.getBundle((String)SessionManager.getSession().getAttribute("locale"));
     
-    public StandardNotePickerForm getScreen(StandardNotePickerForm rpc) throws RPCException {
-        rpc.xml = ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/standardNotePicker.xsl");
+    
+    
+    public Query<StandardNoteDO> query(Query<StandardNoteDO> query) throws RPCException {
 
-        return rpc;
+        StandardNoteRemote remote = (StandardNoteRemote)EJBFactory.lookup("openelis/StandardNoteBean/remote");
+
+        try{    
+            query.results = new ArrayList<StandardNoteDO>();
+            ArrayList<StandardNoteDO> results = (ArrayList<StandardNoteDO>)remote.newQuery(query.fields);
+            for(StandardNoteDO result : results) {
+                query.results.add(result);
+            }
+        }catch(Exception e){
+            throw new RPCException(e.getMessage());
+        }
+        return query;
     }
-
-    public StandardNotePickerForm getTreeModel(StandardNotePickerForm rpc) throws RPCException{
+    
+    public String getScreen() throws RPCException {
+        return ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/editNote.xsl");      
+    }
+    
+    /*
+    public ArrayList<IdNameDO> getTreeModel(StandardNotePickerForm rpc) throws RPCException{
 		StandardNoteRemote remote = (StandardNoteRemote)EJBFactory.lookup("openelis/StandardNoteBean/remote");
-		TreeDataModel returnTree = new TreeDataModel();
-		//TreeModel treeModel = new TreeModel();
 		
 		QueryStringField nameField = new QueryStringField();
 		QueryStringField descField = new QueryStringField();
@@ -116,29 +96,9 @@ public class StandardNotePickerService implements AppScreenFormServiceInt<Standa
 			throw new RPCException(e.getMessage());
 		}
 		
-		Iterator catItr = standardNoteCategories.iterator();
-		
-		int i=0;
-		while(catItr.hasNext()){
-			Object[] result = (Object[])catItr.next();
-			//standard note category id
-			Integer idParam = (Integer)result[0];
-			//standard note category name
-			String nameParam = (String)result[1];
-			
-			TreeDataItem treeModelItem = new TreeDataItem(1);
-			treeModelItem.leafType = "top";
-			treeModelItem.lazy = true;
-			treeModelItem.key = idParam;
-			treeModelItem.cells[0] = (new StringObject(nameParam));
-			
-			returnTree.add(treeModelItem);
-			
-			i++;
-		}	
-		rpc.treeModel = returnTree;
-	    return rpc;
+		return standardNoteCategories
 	}
+	*/
 
     public StandardNotePickerForm getTreeModelSecondLevel(StandardNotePickerForm rpc) throws RPCException{
 		StandardNoteRemote remote = (StandardNoteRemote)EJBFactory.lookup("openelis/StandardNoteBean/remote");
