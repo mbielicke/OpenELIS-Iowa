@@ -1,6 +1,7 @@
 package org.openelis.modules.organization.client;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.DictionaryDO;
@@ -23,7 +24,7 @@ import org.openelis.gwt.widget.table.rewrite.event.RowDeletedHandler;
 import org.openelis.manager.OrganizationsManager;
 
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.user.client.Window;
 
 public class ContactsTab extends Screen {
 
@@ -32,7 +33,7 @@ public class ContactsTab extends Screen {
 	private boolean dropdownsInited, loaded;
 
 	public ContactsTab(ScreenDef def) {
-		this.def = def;
+	    setDef(def);
 		initialize();
 	}
 	
@@ -42,19 +43,8 @@ public class ContactsTab extends Screen {
 			public void onDataChange(DataChangeEvent event) {
 				table.load(getTableModel());
 			}
-			public void onValueChange(ValueChangeEvent<ArrayList<TableDataRow>> event) {
-			//	manager.getContacts().setContacts(getContacts());
-			}
 			public void onStateChange(StateChangeEvent<State> event) {
-				if(event.getState() == State.ADD || event.getState() == State.UPDATE) {
-					table.enable(true);
-					table.enableAutoAdd(true);
-				}else if(event.getState() == State.QUERY) {
-					table.enable(true);
-				}else{
-					table.enable(false);
-					table.enableAutoAdd(false);
-				}
+			    table.enable(EnumSet.of(State.ADD,State.UPDATE,State.QUERY).contains(event.getState()));
 			}
 		});
 		
@@ -63,8 +53,15 @@ public class ContactsTab extends Screen {
                 int row,col;
                 row = event.getRow();
                 col = event.getCell();
+                OrganizationContactDO contactDO;
                 TableDataRow tableRow = table.getRow(row);
-                OrganizationContactDO contactDO = manager.getContacts().getContactAt(row);
+                try{
+                    contactDO = manager.getContacts().getContactAt(row);
+                }catch(Exception e){
+                    Window.alert(e.getMessage());
+                    return;
+                }
+                    
                 Object val = tableRow.cells.get(col).value;
                 
                 switch (col){
@@ -113,14 +110,22 @@ public class ContactsTab extends Screen {
 		
 		table.addRowAddedHandler(new RowAddedHandler(){
             public void onRowAdded(RowAddedEvent event) {
-                manager.getContacts().addContact(new OrganizationContactDO());
+                try{
+                    manager.getContacts().addContact(new OrganizationContactDO());
+                }catch(Exception e){
+                    Window.alert(e.getMessage());
+                }
                 
             }
 		});
 		
 		table.addRowDeletedHandler(new RowDeletedHandler(){
             public void onRowDeleted(RowDeletedEvent event) {
-                manager.getContacts().removeContactAt(event.getIndex());
+                try{
+                    manager.getContacts().removeContactAt(event.getIndex());
+                }catch(Exception e){
+                    Window.alert(e.getMessage());
+                }
                 
             }
 		});
@@ -141,6 +146,24 @@ public class ContactsTab extends Screen {
     		}
     		
     	});
+    	
+    	final AppButton addContact = (AppButton)def.getWidget("addContactButton");
+        addScreenHandler(addContact,new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                table.addRow();
+                table.selectRow(table.numRows()-1);
+                table.scrollToSelection();
+                table.startEditing(table.numRows()-1, 0);
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                if(event.getState() == State.ADD || event.getState() == State.UPDATE)
+                    addContact.enable(true);
+                else
+                    addContact.enable(false);
+            }
+            
+        });
 	}
 	
 	private ArrayList<TableDataRow> getTableModel() {

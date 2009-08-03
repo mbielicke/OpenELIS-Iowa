@@ -27,6 +27,7 @@ package org.openelis.modules.standardnotepicker.client;
 
 import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.data.AbstractField;
+import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.TreeDataModel;
 import org.openelis.gwt.common.data.TreeField;
 
@@ -38,11 +39,16 @@ public class StandardNotePickerForm extends Form<Integer>{
     public TreeField noteTree;
     
     public TreeDataModel treeModel;
+    public StringField subject;
+    public StringField text;
+    
     public Integer id;
     public String queryString;
     
     public StandardNotePickerForm() {
        noteTree = new TreeField("noteTree");
+       subject = new StringField("subject");
+       text = new StringField("text");
    }
    
    public StandardNotePickerForm(Node node) {
@@ -52,7 +58,10 @@ public class StandardNotePickerForm extends Form<Integer>{
    
    public AbstractField[] getFields() {
        return new AbstractField[] {
-                                   noteTree
+                                   noteTree,
+                                   subject,
+                                   text
+                                   
        };
    }
 }

@@ -35,11 +35,13 @@ public class OrganizationContactsManagerProxy {
     public OrganizationContactsManagerProxy(){
         service = new ScreenService("OpenELISServlet?service="+ORG_MANAGER_SERVICE_URL);
     }
-    public OrganizationContactsManager commitAdd(OrganizationContactsManager man) throws Exception {
+    public OrganizationContactsManager add(OrganizationContactsManager man) throws Exception {
+        //do nothing
         return null;
     }
 
-    public OrganizationContactsManager commitUpdate(OrganizationContactsManager man) throws Exception {
+    public OrganizationContactsManager update(OrganizationContactsManager man) throws Exception {
+        //do nothing
         return null;
     }
 

@@ -38,11 +38,11 @@ public class NotesManagerProxy {
     }
     
     public NotesManager add(NotesManager man) throws Exception {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     public NotesManager update(NotesManager man) throws Exception {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     public NotesManager fetch(Integer tableId, Integer id) throws Exception {
