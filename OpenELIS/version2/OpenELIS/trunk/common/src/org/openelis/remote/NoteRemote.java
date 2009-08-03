@@ -34,4 +34,6 @@ import org.openelis.domain.NoteDO;
 @Remote
 public interface NoteRemote {
     public ArrayList<NoteDO> getNotes(Integer refTableId, Integer refId) throws Exception;
+    public void add(NoteDO noteDO) throws Exception;
+    public void update(NoteDO noteDO) throws Exception;
 }

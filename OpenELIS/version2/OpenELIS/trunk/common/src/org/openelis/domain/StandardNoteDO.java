@@ -25,15 +25,13 @@
 */
 package org.openelis.domain;
 
-import java.io.Serializable;
-
+import org.openelis.gwt.common.RPC;
 import org.openelis.utilcommon.DataBaseUtil;
 
-public class StandardNoteDO  implements Serializable{
+public class StandardNoteDO  implements RPC {
 
-	private static final long serialVersionUID = -1135423604704945867L;
-	
-	Integer id;
+    private static final long serialVersionUID = 1L;
+    Integer id;
 	String name;
 	String description;
 	Integer type;

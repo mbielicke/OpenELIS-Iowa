@@ -14,8 +14,8 @@ public interface OrganizationManagerRemote {
     public OrganizationsManager fetchWithIdentifiers(Integer orgId) throws Exception;
     public OrganizationsManager fetchWithNotes(Integer orgId) throws Exception;
     
-    public OrganizationsManager fetchForUpdate(Integer orgId);
-    public OrganizationsManager abortUpdate(Integer orgId);
+    public OrganizationsManager fetchForUpdate(Integer orgId) throws Exception;
+    public OrganizationsManager abortUpdate(Integer orgId) throws Exception;
     
     public OrganizationContactsManager fetchContactById(Integer id) throws Exception;
     public OrganizationContactsManager fetchContactByOrgId(Integer orgId) throws Exception;

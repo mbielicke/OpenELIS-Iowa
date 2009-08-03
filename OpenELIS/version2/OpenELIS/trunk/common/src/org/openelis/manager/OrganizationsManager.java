@@ -85,23 +85,27 @@ public class OrganizationsManager implements RPC, HasNotesInt {
     }
     
     //getters/setters
-    public NotesManager getNotes(){
+    public NotesManager getNotes() throws Exception {
         if(notes == null){
             if(organizationAddress.getOrganizationId() != null){
                 try{
                     notes = NotesManager.findByRefTableRefId(organizationReferenceTable, organizationAddress.getOrganizationId());
                     
+                }catch(NotFoundException e){
+                    //ignore
                 }catch(Exception e){
-                    return null;
+                    throw e;
                 }
-            }else{
-                notes = NotesManager.getInstance();
             }
+        }
+        
+        if(notes == null){
+            notes = NotesManager.getInstance();
         }
 
         return notes;
     }  
-    public OrganizationContactsManager getContacts(){
+    public OrganizationContactsManager getContacts() throws Exception {
         if(contacts == null){
             if(organizationAddress.getOrganizationId() != null){
                 try{
@@ -111,8 +115,7 @@ public class OrganizationsManager implements RPC, HasNotesInt {
                 catch(NotFoundException e){
                     //ignore
                 }catch(Exception e){
-                    System.out.println(e.getMessage());
-                    return null;
+                    throw e;
                 }
             }
         }
@@ -151,7 +154,7 @@ public class OrganizationsManager implements RPC, HasNotesInt {
     }
     
     public OrganizationsManager abort() throws Exception {
-        return proxy().abort(this);
+        return proxy().abort(organizationAddress.getOrganizationId());
     }
     
     public void validate() throws Exception {

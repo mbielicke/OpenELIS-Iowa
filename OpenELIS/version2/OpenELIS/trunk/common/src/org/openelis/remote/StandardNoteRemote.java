@@ -33,6 +33,7 @@ import javax.ejb.Remote;
 
 import org.openelis.domain.StandardNoteDO;
 import org.openelis.gwt.common.data.AbstractField;
+import org.openelis.gwt.common.rewrite.QueryData;
 
 @Remote
 public interface StandardNoteRemote {
@@ -54,6 +55,8 @@ public interface StandardNoteRemote {
 	 //method to query for standard notes
 	 public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception;
      
+	 public List<StandardNoteDO> newQuery(ArrayList<QueryData> fields) throws Exception;
+	 
      //method to query for standard notes
      public List queryForType(HashMap fields) throws Exception;
 	 
