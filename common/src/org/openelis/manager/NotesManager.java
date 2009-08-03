@@ -69,6 +69,36 @@ public class NotesManager implements RPC {
         return notes.get(i);
     }
     
+    public NoteDO getInternalEditingNote() {
+        if(count() == 0 || notes.get(0).getId() != null){
+            NoteDO note = new NoteDO();
+            note.setIsExternal("N");
+            
+            try{
+                addNote(note);
+            }catch(Exception e){
+                e.printStackTrace();
+            }
+        }
+        
+        return getNoteAt(0);
+    }
+    
+    public NoteDO getExternalEditingNote() {
+        if(count() == 0){
+            NoteDO note = new NoteDO();
+            note.setIsExternal("Y");
+            
+            try{
+                addNote(note);
+            }catch(Exception e){
+                e.printStackTrace();
+            }
+        }
+        
+        return getNoteAt(0);
+    }
+    
     public void addNote(NoteDO note) throws Exception {
         //we are only going to allow 1 external note.  External notes can be modified
         //so there is no reason to have more than 1.

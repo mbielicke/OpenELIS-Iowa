@@ -110,11 +110,11 @@ public class OrganizationContactsManager implements RPC {
     
     //service methods
     public OrganizationContactsManager add() throws Exception {
-        return proxy().commitAdd(this);
+        return proxy().add(this);
     }
     
     public OrganizationContactsManager update() throws Exception {
-        return proxy().commitUpdate(this);
+        return proxy().update(this);
     }
        
     private static OrganizationContactsManagerProxy proxy(){
