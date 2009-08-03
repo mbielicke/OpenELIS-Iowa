@@ -44,6 +44,7 @@ public class OrganizationEntry implements AppModule {
                                 	   	try {
                                 			   return new Organization();
                                 	   	}catch(Exception e) {
+                                	   		e.printStackTrace();
                                 	   		Window.alert("Unable to create Organization Screen : "+e.getMessage());
                                 	   	}
                                 	   	return null;

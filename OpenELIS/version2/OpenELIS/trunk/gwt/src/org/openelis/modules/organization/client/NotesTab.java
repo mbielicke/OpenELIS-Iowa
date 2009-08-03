@@ -1,7 +1,6 @@
 package org.openelis.modules.organization.client;
 
 import org.openelis.domain.NoteDO;
-import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -12,23 +11,15 @@ import org.openelis.gwt.screen.rewrite.Screen;
 import org.openelis.gwt.screen.rewrite.ScreenDef;
 import org.openelis.gwt.screen.rewrite.ScreenEventHandler;
 import org.openelis.gwt.screen.rewrite.UIUtil;
-import org.openelis.gwt.screen.rewrite.Screen.Action;
-import org.openelis.gwt.screen.rewrite.Screen.State;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.rewrite.AppButton;
-import org.openelis.gwt.widget.rewrite.KeyListManager;
 import org.openelis.manager.HasNotesInt;
 import org.openelis.manager.NotesManager;
 import org.openelis.metamap.OrganizationMetaMap;
 import org.openelis.modules.standardnotepicker.client.EditNoteScreen;
-import org.openelis.modules.standardnotepicker.client.StandardNotePickerScreen;
 
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.rpc.SyncCallback;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.Widget;
