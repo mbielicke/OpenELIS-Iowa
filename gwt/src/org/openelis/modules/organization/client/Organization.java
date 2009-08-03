@@ -26,19 +26,18 @@ import org.openelis.domain.OrganizationAddressDO;
 import org.openelis.domain.OrganizationAutoDO;
 import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.LastPageException;
+import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.SecurityModule;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.gwt.common.rewrite.Query;
 import org.openelis.gwt.common.rewrite.QueryData;
-import org.openelis.gwt.event.ActionEvent;
-import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
-import org.openelis.gwt.event.HasActionHandlers;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.rewrite.Screen;
 import org.openelis.gwt.screen.rewrite.ScreenEventHandler;
+import org.openelis.gwt.screen.rewrite.ScreenNavigator;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.HasField;
 import org.openelis.gwt.widget.TextBox;
@@ -48,8 +47,6 @@ import org.openelis.gwt.widget.rewrite.AutoCompleteCallInt;
 import org.openelis.gwt.widget.rewrite.ButtonGroup;
 import org.openelis.gwt.widget.rewrite.CheckBox;
 import org.openelis.gwt.widget.rewrite.Dropdown;
-import org.openelis.gwt.widget.rewrite.KeyListManager;
-import org.openelis.gwt.widget.rewrite.ResultsTable;
 import org.openelis.gwt.widget.rewrite.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.rewrite.TableDataRow;
 import org.openelis.gwt.widget.table.rewrite.TableWidget;
@@ -61,21 +58,12 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.i18n.rebind.ClearStaticData;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.rpc.SyncCallback;
 import com.google.gwt.user.client.ui.TabPanel;
-import com.google.gwt.user.client.ui.Widget;
 
-public class Organization extends Screen implements
-                                        AutoCompleteCallInt,
-                                        HasActionHandlers<Screen.Action> {
+public class Organization extends Screen implements AutoCompleteCallInt {
 
-    private KeyListManager<org.openelis.gwt.common.rewrite.Query<Object>> keyList;
 
     public enum Tabs {
         CONTACTS, IDENTIFIERS, NOTES
@@ -96,13 +84,23 @@ public class Organization extends Screen implements
                                                             State.UPDATE,
                                                             State.QUERY);
 
+    ScreenNavigator nav;
+    
     public Organization() throws Exception {
         // Call base to get ScreenDef and draw screen
         super("OpenELISServlet?service=org.openelis.modules.organization.server.Organization");
         service = new ScreenService("OpenELISServlet?service=org.openelis.modules.organization.server.Organization");
         manager = OrganizationsManager.getInstance();
 
-        keyList = new KeyListManager<org.openelis.gwt.common.rewrite.Query<Object>>();
+        //keyList = new KeyListManager<org.openelis.gwt.common.rewrite.Query<Object>>();
+        nav = new ScreenNavigator(this) {
+        	public void getSelection(RPC entry) {
+        		fetch(((IdNameDO)entry).getId());
+        	}
+        	public void loadPage(Query<? extends RPC> query) {
+        		loadQueryPage((OrgQuery)query);
+        	}
+        };
         OrgMeta = new OrganizationMetaMap();
         security = OpenELIS.security.getModule("organization");
 
@@ -449,7 +447,6 @@ public class Organization extends Screen implements
         addScreenHandler(prevButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 previous();
-                keyList.next();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -478,51 +475,6 @@ public class Organization extends Screen implements
                 abortButton.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE).contains(event.getState()));
             }
         });
-
-        // Set Up Key listeners
-        final HasActionHandlers<Screen.Action> orgScreen = this;
-        keyList.addActionHandler(new ActionHandler<KeyListManager.Action>() {
-            public void onAction(ActionEvent<KeyListManager.Action> event) {
-                if (event.getAction() == KeyListManager.Action.FETCH) {
-                    Integer selection = (Integer)event.getData();
-                    fetch(selection);
-                    ActionEvent.fire(orgScreen,
-                                     Action.SELECTION_FETCHED,
-                                     selection);
-                } else if (event.getAction() == KeyListManager.Action.GETPAGE) {
-                    final OrgQuery query = (OrgQuery)((Object[])event.getData())[0];
-                    final AsyncCallback callback = (AsyncCallback)((Object[])event.getData())[1];
-                    window.setBusy(consts.get("querying"));
-                    DeferredCommand.addCommand(new Command() {
-                        public void execute() {
-                            service.callScreen("query",
-                                               query,
-                                               new SyncCallback<OrgQuery>() {
-                                                   public void onSuccess(OrgQuery result) {
-                                                       loadPage(result);
-                                                       callback.onSuccess(result);
-                                                   }
-
-                                                   public void onFailure(Throwable caught) {
-                                                       if (caught instanceof LastPageException) {
-                                                           window.setError(caught.getMessage());
-                                                       } else
-                                                           Window.alert(caught.getMessage());
-                                                       callback.onFailure(caught);
-                                                   }
-                                               });
-
-                        }
-                    });
-                }
-            }
-        });
-
-        addActionHandler(keyList.screenActions);
-        final ResultsTable results = (ResultsTable)def.getWidget("azTable");
-        addActionHandler(results.screenActions);
-        keyList.addActionHandler(results.keyListActions);
-        results.addActionHandler(keyList.resultsActions);
 
         // Get AZ buttons and setup Screen listeners and call to for query
         final ButtonGroup azButtons = (ButtonGroup)def.getWidget("atozButtons");
@@ -574,11 +526,11 @@ public class Organization extends Screen implements
     }
 
     protected void previous() {
-        keyList.previous();
+        nav.previous();
     }
 
     protected void next() {
-        keyList.next();
+        nav.next();
     }
 
     protected void add() {
@@ -785,6 +737,13 @@ public class Organization extends Screen implements
         manager = OrganizationsManager.getInstance();
         DataChangeEvent.fire(this);
 
+        loadQueryPage(query);
+
+        //ActionEvent.fire(this, Action.NEW_MODEL, query);
+    }
+
+    private void loadQueryPage(OrgQuery query) {
+        window.setDone(consts.get("queryingComplete"));
         if (query.results == null || query.results.size() == 0) {
             window.setDone("No records found");
         } else
@@ -793,12 +752,8 @@ public class Organization extends Screen implements
         for (IdNameDO entry : query.results) {
             query.model.add(new TableDataRow(entry.getId(), entry.getName()));
         }
-        ActionEvent.fire(this, Action.NEW_MODEL, query);
-    }
-
-    private void loadPage(OrgQuery query) {
-        window.setDone(consts.get("queryingComplete"));
-        ActionEvent.fire(this, Action.NEW_PAGE, query);
+        nav.setQuery(query);
+        //ActionEvent.fire(this, Action.NEW_PAGE, query);
     }
 
     // FIXME in base class
@@ -877,9 +832,5 @@ public class Organization extends Screen implements
         } else if (tab == Tabs.NOTES) {
             notesTab.draw();
         }
-    }
-
-    public HandlerRegistration addActionHandler(ActionHandler<Screen.Action> handler) {
-        return addHandler(handler, ActionEvent.getType());
     }
 }
