@@ -31,9 +31,12 @@ import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.SecurityModule;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.rewrite.Query;
 import org.openelis.gwt.common.rewrite.QueryData;
+import org.openelis.gwt.event.BeforeGetMatchesEvent;
+import org.openelis.gwt.event.BeforeGetMatchesHandler;
 import org.openelis.gwt.event.DataChangeEvent;
+import org.openelis.gwt.event.GetMatchesEvent;
+import org.openelis.gwt.event.GetMatchesHandler;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.rewrite.Screen;
 import org.openelis.gwt.screen.rewrite.ScreenEventHandler;
@@ -43,7 +46,6 @@ import org.openelis.gwt.widget.HasField;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.rewrite.AppButton;
 import org.openelis.gwt.widget.rewrite.AutoComplete;
-import org.openelis.gwt.widget.rewrite.AutoCompleteCallInt;
 import org.openelis.gwt.widget.rewrite.ButtonGroup;
 import org.openelis.gwt.widget.rewrite.CheckBox;
 import org.openelis.gwt.widget.rewrite.Dropdown;
@@ -62,7 +64,7 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.TabPanel;
 
-public class Organization extends Screen implements AutoCompleteCallInt {
+public class Organization extends Screen implements BeforeGetMatchesHandler, GetMatchesHandler {
 
 
     public enum Tabs {
@@ -93,12 +95,12 @@ public class Organization extends Screen implements AutoCompleteCallInt {
         manager = OrganizationsManager.getInstance();
 
         //keyList = new KeyListManager<org.openelis.gwt.common.rewrite.Query<Object>>();
-        nav = new ScreenNavigator(this) {
+        nav = new ScreenNavigator<OrgQuery>(this) {
         	public void getSelection(RPC entry) {
         		fetch(((IdNameDO)entry).getId());
         	}
-        	public void loadPage(Query<? extends RPC> query) {
-        		loadQueryPage((OrgQuery)query);
+        	public void loadPage(OrgQuery query) {
+        		loadQueryPage(query);
         	}
         };
         OrgMeta = new OrganizationMetaMap();
@@ -379,7 +381,8 @@ public class Organization extends Screen implements AutoCompleteCallInt {
         parentOrg.setModel(model);
 
         // Screens now must implement AutoCompleteCallInt and set themselves as the calling interface
-        parentOrg.setAutoCall(this);
+        parentOrg.addBeforeGetMatchesHandler(this);
+        parentOrg.addGetMatchesHandler(this);
 
         final AppButton queryButton = (AppButton)def.getWidget("query");
         addScreenHandler(queryButton, new ScreenEventHandler<Object>() {
@@ -790,32 +793,6 @@ public class Organization extends Screen implements AutoCompleteCallInt {
         ((Dropdown<String>)def.getWidget(OrgMeta.ADDRESS.getState())).setModel(model);
     }
 
-    public void callForMatches(final AutoComplete widget, String text) {
-        ParentOrgRPC prpc = new ParentOrgRPC();
-        prpc.match = text;
-        service.callScreen("getMatches",
-                           prpc,
-                           new AsyncCallback<ParentOrgRPC>() {
-                               public void onSuccess(ParentOrgRPC rpc) {
-                                   ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
-                                   for (OrganizationAutoDO autoDO : rpc.model) {
-                                       TableDataRow row = new TableDataRow(4);
-                                       row.key = autoDO.getId();
-                                       row.cells.get(0).value = autoDO.getName();
-                                       row.cells.get(1).value = autoDO.getAddress();
-                                       row.cells.get(2).value = autoDO.getCity();
-                                       row.cells.get(3).value = autoDO.getState();
-                                       model.add(row);
-                                   }
-                                   widget.showAutoMatches(model);
-                               }
-
-                               public void onFailure(Throwable caught) {
-                                   Window.alert(caught.getMessage());
-                               }
-                           });
-
-    }
 
     public String getString(Object obj) {
         if (obj == null)
@@ -833,4 +810,30 @@ public class Organization extends Screen implements AutoCompleteCallInt {
             notesTab.draw();
         }
     }
+
+	public void onBeforeGetMatches(BeforeGetMatchesEvent event) {
+		
+		
+	}
+
+	public void onGetMatches(GetMatchesEvent event) {
+        ParentOrgRPC prpc = new ParentOrgRPC();
+        prpc.match = event.getMatch();
+        try {
+        	prpc = service.call("getMatches",prpc);
+            ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
+            for (OrganizationAutoDO autoDO : prpc.model) {
+            	TableDataRow row = new TableDataRow(4);
+                row.key = autoDO.getId();
+                row.cells.get(0).value = autoDO.getName();
+                row.cells.get(1).value = autoDO.getAddress();
+                row.cells.get(2).value = autoDO.getCity();
+                row.cells.get(3).value = autoDO.getState();
+                model.add(row);
+            }
+            ((AutoComplete)event.getSource()).showAutoMatches(model);
+       }catch(Exception e) {
+           Window.alert(e.getMessage());                     
+       }
+	}
 }
