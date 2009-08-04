@@ -60,17 +60,7 @@ UIRF Software License are applicable instead of those above.
   <servlet>
     <servlet-name>PreferencesServlet</servlet-name>
     <servlet-class>org.openelis.server.PreferencesServlet</servlet-class>
-    <load-on-startup>4</load-on-startup>
-  </servlet>
-  
-  <servlet>
-    <servlet-name>CalendarServlet</servlet-name>
-    <servlet-class>org.openelis.gwt.server.CalendarServlet</servlet-class>
-    <init-param>
-        <param-name>app.root</param-name>
-        <param-value>${catalina.home}/apps/OpenELIS/</param-value>
-    </init-param>
-    <load-on-startup>5</load-on-startup>
+    <load-on-startup>3</load-on-startup>
   </servlet>
   
   <servlet-mapping>
@@ -78,16 +68,16 @@ UIRF Software License are applicable instead of those above.
     <url-pattern>/OpenELISServlet</url-pattern>
   </servlet-mapping>
   
+   <servlet-mapping>
+    <servlet-name>OpenELISServlet</servlet-name>
+    <url-pattern>/controller</url-pattern>
+  </servlet-mapping>
+  
   <servlet-mapping>
     <servlet-name>PreferencesServlet</servlet-name>
     <url-pattern>/PreferencesServlet</url-pattern>
   </servlet-mapping>
   
-  <servlet-mapping>
-    <servlet-name>CalendarServlet</servlet-name>
-    <url-pattern>/CalendarServlet</url-pattern>
-  </servlet-mapping>
-      
   <session-config>
     <session-timeout>300</session-timeout>
   </session-config>
