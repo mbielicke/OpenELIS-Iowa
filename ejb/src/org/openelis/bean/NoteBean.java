@@ -27,6 +27,7 @@ package org.openelis.bean;
 
 import java.util.ArrayList;
 
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
@@ -38,6 +39,7 @@ import org.openelis.domain.NoteDO;
 import org.openelis.entity.Note;
 import org.openelis.exception.NotFoundException;
 import org.openelis.gwt.common.Datetime;
+import org.openelis.local.LoginLocal;
 import org.openelis.local.NoteLocal;
 import org.openelis.remote.NoteRemote;
 
@@ -48,6 +50,8 @@ public class NoteBean implements NoteRemote, NoteLocal {
 
     @PersistenceContext(name = "openelis")
     private EntityManager manager;
+    
+    @EJB LoginLocal login;
     
     public ArrayList<NoteDO> getNotes(Integer refTableId, Integer refId) throws Exception {
         
@@ -69,10 +73,10 @@ public class NoteBean implements NoteRemote, NoteLocal {
         Note note = manager.find(Note.class, noteDO.getId());
 
         note.setIsExternal(noteDO.getIsExternal());
-        note.setReferenceId(noteDO.getId());
+        note.setReferenceId(noteDO.getReferenceId());
         note.setReferenceTableId(noteDO.getReferenceTable());
         note.setSubject(noteDO.getSubject());
-        note.setSystemUserId(noteDO.getSystemUserId());
+        note.setSystemUserId(login.getSystemUserId());
         note.setText(noteDO.getText());
         note.setTimestamp(Datetime.getInstance());
     }
@@ -81,12 +85,12 @@ public class NoteBean implements NoteRemote, NoteLocal {
         manager.setFlushMode(FlushModeType.COMMIT);
         
         Note note = new Note();
-
+        
         note.setIsExternal(noteDO.getIsExternal());
-        note.setReferenceId(noteDO.getId());
+        note.setReferenceId(noteDO.getReferenceId());
         note.setReferenceTableId(noteDO.getReferenceTable());
         note.setSubject(noteDO.getSubject());
-        note.setSystemUserId(noteDO.getSystemUserId());
+        note.setSystemUserId(login.getSystemUserId());
         note.setText(noteDO.getText());
         note.setTimestamp(Datetime.getInstance());
         
