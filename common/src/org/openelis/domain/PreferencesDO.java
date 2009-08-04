@@ -25,26 +25,25 @@
 */
 package org.openelis.domain;
 
-import java.io.Serializable;
-
+import org.openelis.gwt.common.RPC;
 import org.openelis.utilcommon.DataBaseUtil;
 
-public class PreferencesDO implements Serializable {
-    
+public class PreferencesDO implements RPC {
+
     private static final long serialVersionUID = 1L;
-    private Integer id;
-    private Integer system_user;
-    private String key;
-    private String text;
-    
+    private Integer           id;
+    private Integer           system_user;
+    private String            key;
+    private String            text;
+
     public PreferencesDO() {
-        
+
     }
-    
+
     public PreferencesDO(Integer id,
                          Integer system_user,
-                         String  key,
-                         String  text) {
+                         String key,
+                         String text) {
         setId(id);
         setSystem_user(system_user);
         setKey(key);
@@ -82,6 +81,5 @@ public class PreferencesDO implements Serializable {
     public void setText(String text) {
         this.text = DataBaseUtil.trim(text);
     }
-    
 
 }

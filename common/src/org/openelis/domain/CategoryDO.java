@@ -25,33 +25,35 @@
 */
 package org.openelis.domain;
 
-import java.io.Serializable;
-
+import org.openelis.gwt.common.RPC;
 import org.openelis.utilcommon.DataBaseUtil;
 
-
-public class CategoryDO implements Serializable {
+public class CategoryDO implements RPC {
 
     private static final long serialVersionUID = 1L;
-    
-    protected Integer id;                 
-    protected String systemName;             
-    protected String name;             
-    protected String description;             
-    protected Integer section;
-    
-    public CategoryDO(){
-        
-    } 
 
-    public CategoryDO(Integer id,String systemName,String name,String description,Integer section){
+    protected Integer         id;
+    protected String          systemName;
+    protected String          name;
+    protected String          description;
+    protected Integer         section;
+
+    public CategoryDO() {
+
+    }
+
+    public CategoryDO(Integer id,
+                      String systemName,
+                      String name,
+                      String description,
+                      Integer section) {
         setId(id);
         setSystemName(systemName);
         setName(name);
         setDescription(description);
         setSection(section);
-    } 
-    
+    }
+
     public String getDescription() {
         return description;
     }
@@ -90,6 +92,6 @@ public class CategoryDO implements Serializable {
 
     public void setSystemName(String systemName) {
         this.systemName = DataBaseUtil.trim(systemName);
-    } 
+    }
 
 }

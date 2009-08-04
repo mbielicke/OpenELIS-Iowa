@@ -25,29 +25,25 @@
 */
 package org.openelis.domain;
 
-import java.io.Serializable;
-
+import org.openelis.gwt.common.RPC;
 import org.openelis.utilcommon.DataBaseUtil;
 
-
-
-public class IdNameLotNumberDO implements Serializable{
+public class IdNameLotNumberDO implements RPC {
 
     private static final long serialVersionUID = 1L;
-    protected Integer id;
-    protected String name;
-    protected String lotNumber;
-    
-    public IdNameLotNumberDO(){
-        
+    protected Integer         id;
+    protected String          name;
+    protected String          lotNumber;
+
+    public IdNameLotNumberDO() {
+
     }
-    
-    public IdNameLotNumberDO(Integer id, String name, String lotNumber){
+
+    public IdNameLotNumberDO(Integer id, String name, String lotNumber) {
         setId(id);
         setName(name);
         setLotNumber(lotNumber);
     }
-
 
     public Integer getId() {
         return id;

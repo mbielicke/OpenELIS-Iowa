@@ -25,22 +25,21 @@
 */
 package org.openelis.domain;
 
-import java.io.Serializable;
-
+import org.openelis.gwt.common.RPC;
 import org.openelis.utilcommon.DataBaseUtil;
 
-public class IdNameStoreDO implements Serializable{
+public class IdNameStoreDO implements RPC {
 
     private static final long serialVersionUID = 1L;
-    protected Integer id;
-    protected String name;
-    protected String store;
-    
-    public IdNameStoreDO(){
-        
+    protected Integer         id;
+    protected String          name;
+    protected String          store;
+
+    public IdNameStoreDO() {
+
     }
-    
-    public IdNameStoreDO(Integer id, String name, String store){
+
+    public IdNameStoreDO(Integer id, String name, String store) {
         setId(id);
         setName(name);
         setStore(store);

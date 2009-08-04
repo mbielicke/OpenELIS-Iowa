@@ -25,31 +25,31 @@
 */
 package org.openelis.domain;
 
-import java.io.Serializable;
 import java.util.Date;
 
 import org.openelis.gwt.common.Datetime;
+import org.openelis.gwt.common.RPC;
 import org.openelis.utilcommon.DataBaseUtil;
 
-public class BuildKitDO implements Serializable {
+public class BuildKitDO implements RPC {
     private static final long serialVersionUID = 1L;
-    
-    protected Integer id;
-    protected Integer inventoryItemId;
-    protected String inventoryItem;
-    protected Integer numberRequested;
-    protected Integer storageLocationId;
-    protected Integer locationId;
-    protected String location;
-    protected String lotNumber;
-    protected Datetime expDate;
-    protected Integer orderId;
-    protected boolean bulk = false;
-    protected boolean addToExisting = false;
-    protected boolean serialized = false;
-    
-    public BuildKitDO(){
-        
+
+    protected Integer         id;
+    protected Integer         inventoryItemId;
+    protected String          inventoryItem;
+    protected Integer         numberRequested;
+    protected Integer         storageLocationId;
+    protected Integer         locationId;
+    protected String          location;
+    protected String          lotNumber;
+    protected Datetime        expDate;
+    protected Integer         orderId;
+    protected boolean         bulk             = false;
+    protected boolean         addToExisting    = false;
+    protected boolean         serialized       = false;
+
+    public BuildKitDO() {
+
     }
 
     public Datetime getExpDate() {
@@ -57,7 +57,9 @@ public class BuildKitDO implements Serializable {
     }
 
     public void setExpDate(Date expDate) {
-        this.expDate = new Datetime(Datetime.YEAR, Datetime.DAY, expDate);
+        this.expDate = Datetime.getInstance(Datetime.YEAR,
+                                            Datetime.DAY,
+                                            expDate);
     }
 
     public String getInventoryItem() {
@@ -131,7 +133,7 @@ public class BuildKitDO implements Serializable {
     public void setStorageLocationId(Integer storageLocationId) {
         this.storageLocationId = storageLocationId;
     }
-    
+
     public boolean isBulk() {
         return bulk;
     }
@@ -139,7 +141,7 @@ public class BuildKitDO implements Serializable {
     public void setBulk(boolean bulk) {
         this.bulk = bulk;
     }
-    
+
     public boolean isAddToExisting() {
         return addToExisting;
     }
@@ -147,6 +149,7 @@ public class BuildKitDO implements Serializable {
     public void setAddToExisting(boolean addToExisting) {
         this.addToExisting = addToExisting;
     }
+
     public boolean isSerialized() {
         return serialized;
     }

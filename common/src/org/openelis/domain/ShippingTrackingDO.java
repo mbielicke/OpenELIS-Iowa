@@ -25,20 +25,19 @@
 */
 package org.openelis.domain;
 
-import java.io.Serializable;
-
+import org.openelis.gwt.common.RPC;
 import org.openelis.utilcommon.DataBaseUtil;
 
-public class ShippingTrackingDO implements Serializable{
+public class ShippingTrackingDO implements RPC {
 
     private static final long serialVersionUID = 1L;
-    
-    protected Integer id;
-    protected Integer shippingId;
-    protected String trackingNumber;
-    
-    protected boolean delete = false;
-    
+
+    protected Integer         id;
+    protected Integer         shippingId;
+    protected String          trackingNumber;
+
+    protected boolean         delete           = false;
+
     public boolean isDelete() {
         return delete;
     }
@@ -47,11 +46,13 @@ public class ShippingTrackingDO implements Serializable{
         this.delete = delete;
     }
 
-    public ShippingTrackingDO(){
-        
+    public ShippingTrackingDO() {
+
     }
-    
-    public ShippingTrackingDO(Integer id, Integer shippingId, String trackingNumber){
+
+    public ShippingTrackingDO(Integer id,
+                              Integer shippingId,
+                              String trackingNumber) {
         setId(id);
         setShippingId(shippingId);
         setTrackingNumber(trackingNumber);

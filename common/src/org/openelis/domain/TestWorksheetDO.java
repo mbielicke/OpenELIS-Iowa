@@ -25,40 +25,38 @@
 */
 package org.openelis.domain;
 
-import java.io.Serializable;
-
+import org.openelis.gwt.common.RPC;
 import org.openelis.utilcommon.DataBaseUtil;
 
-
-public class TestWorksheetDO implements Serializable {
-
-    /**
-     * 
-     */
+public class TestWorksheetDO implements RPC {
     private static final long serialVersionUID = 1L;
-    
-    protected Integer id;                
-    protected Integer testId;                 
-    protected Integer batchCapacity;                 
-    protected Integer totalCapacity;                 
-    protected Integer numberFormatId;                 
-    protected Integer scriptletId;  
-    protected String  scriptletName;
-    
+
+    protected Integer         id;
+    protected Integer         testId;
+    protected Integer         batchCapacity;
+    protected Integer         totalCapacity;
+    protected Integer         numberFormatId;
+    protected Integer         scriptletId;
+    protected String          scriptletName;
+
     public TestWorksheetDO() {
-        
+
     }
-    
-    public TestWorksheetDO(Integer id,Integer testId,Integer batchCapacity,
-                           Integer totalCapacity,Integer numberFormatId,
-                           Integer scriptletId,String scriptletName) {
-          setId(id);
-          setTestId(testId);
-          setBatchCapacity(batchCapacity);
-          setTotalCapacity(totalCapacity);
-          setNumberFormatId(numberFormatId);
-          setScriptletId(scriptletId);      
-          setScriptletName(scriptletName);
+
+    public TestWorksheetDO(Integer id,
+                           Integer testId,
+                           Integer batchCapacity,
+                           Integer totalCapacity,
+                           Integer numberFormatId,
+                           Integer scriptletId,
+                           String scriptletName) {
+        setId(id);
+        setTestId(testId);
+        setBatchCapacity(batchCapacity);
+        setTotalCapacity(totalCapacity);
+        setNumberFormatId(numberFormatId);
+        setScriptletId(scriptletId);
+        setScriptletName(scriptletName);
     }
 
     public Integer getId() {

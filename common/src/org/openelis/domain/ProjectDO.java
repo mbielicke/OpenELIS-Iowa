@@ -25,35 +25,42 @@
 */
 package org.openelis.domain;
 
-import java.io.Serializable;
 import java.util.Date;
 
 import org.openelis.gwt.common.Datetime;
+import org.openelis.gwt.common.RPC;
 import org.openelis.utilcommon.DataBaseUtil;
 
-public class ProjectDO implements Serializable {
+public class ProjectDO implements RPC {
 
     private static final long serialVersionUID = 1L;
-    
-    protected Integer id;
-    protected String name;
-    protected String description;
-    protected Datetime startedDate;
-    protected Datetime completedDate;
-    protected String isActive;
-    protected String referenceTo;
-    protected Integer ownerId;
-    protected String ownerName;
-    protected Integer scriptletId;
-    protected String scriptletName;
-    
-    public ProjectDO(){
-        
+
+    protected Integer         id;
+    protected String          name;
+    protected String          description;
+    protected Datetime        startedDate;
+    protected Datetime        completedDate;
+    protected String          isActive;
+    protected String          referenceTo;
+    protected Integer         ownerId;
+    protected String          ownerName;
+    protected Integer         scriptletId;
+    protected String          scriptletName;
+
+    public ProjectDO() {
+
     }
-    
-    public ProjectDO(Integer id, String name, String description, Date startedDate,
-                     Date completedDate, String isActive, String referenceTo,
-                     Integer ownerId, Integer scriptletId,String scriptletName){
+
+    public ProjectDO(Integer id,
+                     String name,
+                     String description,
+                     Date startedDate,
+                     Date completedDate,
+                     String isActive,
+                     String referenceTo,
+                     Integer ownerId,
+                     Integer scriptletId,
+                     String scriptletName) {
         setId(id);
         setName(name);
         setDescription(description);
@@ -65,58 +72,79 @@ public class ProjectDO implements Serializable {
         setScriptletId(scriptletId);
         setScriptletName(scriptletName);
     }
-    
+
     public Integer getId() {
         return id;
     }
+
     public void setId(Integer id) {
         this.id = id;
     }
+
     public String getName() {
         return name;
     }
+
     public void setName(String name) {
         this.name = DataBaseUtil.trim(name);
     }
+
     public String getDescription() {
         return description;
     }
+
     public void setDescription(String description) {
         this.description = DataBaseUtil.trim(description);
     }
+
     public Datetime getStartedDate() {
         return startedDate;
     }
+
     public void setStartedDate(Date startedDate) {
-        this.startedDate = new Datetime(Datetime.YEAR, Datetime.DAY, startedDate);
+        this.startedDate = new Datetime(Datetime.YEAR,
+                                        Datetime.DAY,
+                                        startedDate);
     }
+
     public Datetime getCompletedDate() {
         return completedDate;
     }
+
     public void setCompletedDate(Date completedDate) {
-        this.completedDate = new Datetime(Datetime.YEAR, Datetime.DAY, completedDate);
+        this.completedDate = new Datetime(Datetime.YEAR,
+                                          Datetime.DAY,
+                                          completedDate);
     }
+
     public String getIsActive() {
         return isActive;
     }
+
     public void setIsActive(String isActive) {
         this.isActive = DataBaseUtil.trim(isActive);
     }
+
     public String getReferenceTo() {
         return referenceTo;
     }
+
     public void setReferenceTo(String referenceTo) {
         this.referenceTo = DataBaseUtil.trim(referenceTo);
     }
+
     public Integer getOwnerId() {
         return ownerId;
     }
+
     public void setOwnerId(Integer ownerId) {
         this.ownerId = ownerId;
     }
+
     public Integer getScriptletId() {
         return scriptletId;
     }
+
     public void setScriptletId(Integer scriptletId) {
         this.scriptletId = scriptletId;
     }

@@ -25,59 +25,61 @@
 */
 package org.openelis.domain;
 
-import java.io.Serializable;
-
+import org.openelis.gwt.common.RPC;
 import org.openelis.utilcommon.DataBaseUtil;
 
-public class TestTrailerDO implements Serializable{
+public class TestTrailerDO implements RPC {
 
-	private static final long serialVersionUID = 1L;
-	
-	protected Integer id;
-	protected String name;
-	protected String description;
-	protected String text;
-	
-	public TestTrailerDO(){
-		
-	}
+    private static final long serialVersionUID = 1L;
 
-	public TestTrailerDO(Integer id, String name, String description, String text){
-		setId(id);
-		setName(name);
-		setDescription(description);
-		setText(text);
-	}
+    protected Integer         id;
+    protected String          name;
+    protected String          description;
+    protected String          text;
 
-	public String getDescription() {
-		return description;
-	}
+    public TestTrailerDO() {
 
-	public void setDescription(String description) {
-		this.description = DataBaseUtil.trim(description);
-	}
+    }
 
-	public Integer getId() {
-		return id;
-	}
+    public TestTrailerDO(Integer id,
+                         String name,
+                         String description,
+                         String text) {
+        setId(id);
+        setName(name);
+        setDescription(description);
+        setText(text);
+    }
 
-	public void setId(Integer id) {
-		this.id = id;
-	}
+    public String getDescription() {
+        return description;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public void setDescription(String description) {
+        this.description = DataBaseUtil.trim(description);
+    }
 
-	public void setName(String name) {
-		this.name = DataBaseUtil.trim(name);
-	}
+    public Integer getId() {
+        return id;
+    }
 
-	public String getText() {
-		return text;
-	}
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
-	public void setText(String text) {
-		this.text = DataBaseUtil.trim(text);
-	}
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = DataBaseUtil.trim(name);
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public void setText(String text) {
+        this.text = DataBaseUtil.trim(text);
+    }
 }

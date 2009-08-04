@@ -25,19 +25,18 @@
 */
 package org.openelis.domain;
 
-import java.io.Serializable;
-
+import org.openelis.gwt.common.RPC;
 import org.openelis.utilcommon.DataBaseUtil;
 
-public class IdLastNameFirstNameDO implements Serializable{
+public class IdLastNameFirstNameDO implements RPC {
 
     private static final long serialVersionUID = 1L;
-    
-    protected Integer id;
-    protected String lastName;
-    protected String firstName;
-    
-    public IdLastNameFirstNameDO(Integer id, String lastName, String firstName){
+
+    protected Integer         id;
+    protected String          lastName;
+    protected String          firstName;
+
+    public IdLastNameFirstNameDO(Integer id, String lastName, String firstName) {
         setId(id);
         setLastName(lastName);
         setFirstName(firstName);

@@ -99,9 +99,8 @@ public class OrganizationsManager implements RPC, HasNotesInt {
             }
         }
         
-        if(notes == null){
+        if(notes == null)
             notes = NotesManager.getInstance();
-        }
 
         return notes;
     }  

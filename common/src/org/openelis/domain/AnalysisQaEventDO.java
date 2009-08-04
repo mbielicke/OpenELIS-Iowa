@@ -25,27 +25,21 @@
 */
 package org.openelis.domain;
 
-import java.io.Serializable;
+import org.openelis.gwt.common.RPC;
 
+public class AnalysisQaEventDO implements RPC {
 
-public class AnalysisQaEventDO implements Serializable {
-
-    /**
-     * 
-     */
     private static final long serialVersionUID = 1L;
 
-    protected Integer id;             
+    protected Integer         id;
+    protected Integer         analysisId;
+    protected Integer         qaeventId;
 
-    protected Integer analysisId;             
-
-    protected Integer qaeventId;
-    
     public AnalysisQaEventDO() {
-     
+
     }
-    
-    public AnalysisQaEventDO(Integer id,Integer analysisId,Integer qaeventId) {
+
+    public AnalysisQaEventDO(Integer id, Integer analysisId, Integer qaeventId) {
         this.id = id;
         this.analysisId = analysisId;
         this.qaeventId = qaeventId;

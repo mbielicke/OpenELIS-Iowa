@@ -25,32 +25,40 @@
 */
 package org.openelis.domain;
 
-import java.io.Serializable;
-
+import org.openelis.gwt.common.RPC;
 import org.openelis.utilcommon.DataBaseUtil;
 
-public class InventoryAdjLocationAutoDO implements Serializable{
+public class InventoryAdjLocationAutoDO implements RPC {
 
     private static final long serialVersionUID = 1L;
-    protected Integer inventoryLocationId;
-    protected Integer inventoryItemId;
-    protected String inventoryItem;
-    protected String store;
-    protected String storageLocation;
-    protected Integer quantityOnHand;
-    
-    public InventoryAdjLocationAutoDO(){
-        
+    protected Integer         inventoryLocationId;
+    protected Integer         inventoryItemId;
+    protected String          inventoryItem;
+    protected String          store;
+    protected String          storageLocation;
+    protected Integer         quantityOnHand;
+
+    public InventoryAdjLocationAutoDO() {
+
     }
-    
-    public InventoryAdjLocationAutoDO(Integer inventoryLocationId, Integer inventoryItemId, String inventoryItem, String store, String storageLocationName, String storageLocation, 
-                                      String storageUnitDescription, Integer quantityOnHand){
-        
+
+    public InventoryAdjLocationAutoDO(Integer inventoryLocationId,
+                                      Integer inventoryItemId,
+                                      String inventoryItem,
+                                      String store,
+                                      String storageLocationName,
+                                      String storageLocation,
+                                      String storageUnitDescription,
+                                      Integer quantityOnHand) {
+
         setInventoryLocationId(inventoryLocationId);
         setInventoryItemId(inventoryItemId);
         setInventoryItem(inventoryItem);
         setStore(store);
-        setStorageLocation(storageLocationName.trim()+", "+storageUnitDescription.trim()+" "+storageLocation.trim());
+        setStorageLocation(storageLocationName.trim() + ", "
+                           + storageUnitDescription.trim()
+                           + " "
+                           + storageLocation.trim());
         setQuantityOnHand(quantityOnHand);
     }
 

@@ -25,44 +25,52 @@
 */
 package org.openelis.domain;
 
-import java.io.Serializable;
 import java.util.Date;
 
 import org.openelis.gwt.common.Datetime;
+import org.openelis.gwt.common.RPC;
 import org.openelis.utilcommon.DataBaseUtil;
 
-public class OrderDO implements Serializable{
+public class OrderDO implements RPC {
 
-    private static final long serialVersionUID = 1L;
-    
-    protected Integer id;
-    protected Integer statusId;
-    protected Datetime orderedDate;
-    protected Integer neededInDays;
-    protected String requestedBy;
-    protected Integer costCenter;
-    protected Integer organizationId;
-    protected String organization;
-    public AddressDO organizationAddressDO = new AddressDO();
-    protected String isExternal;
-    protected String externalOrderNumber;
-    protected Integer reportToId;
-    protected String reportTo;
-    public AddressDO reportToAddressDO = new AddressDO();
-    protected Integer billToId;
-    protected String billTo;
-    public AddressDO billToAddressDO = new AddressDO();
-    protected Integer shipFromId;
-    protected String description;
-    
-    public OrderDO(){
-        
+    private static final long serialVersionUID      = 1L;
+
+    protected Integer         id;
+    protected Integer         statusId;
+    protected Datetime        orderedDate;
+    protected Integer         neededInDays;
+    protected String          requestedBy;
+    protected Integer         costCenter;
+    protected Integer         organizationId;
+    protected String          organization;
+    public AddressDO          organizationAddressDO = new AddressDO();
+    protected String          isExternal;
+    protected String          externalOrderNumber;
+    protected Integer         reportToId;
+    protected String          reportTo;
+    public AddressDO          reportToAddressDO     = new AddressDO();
+    protected Integer         billToId;
+    protected String          billTo;
+    public AddressDO          billToAddressDO       = new AddressDO();
+    protected Integer         shipFromId;
+    protected String          description;
+
+    public OrderDO() {
+
     }
 
-    //constructor without address values
-    public OrderDO(Integer id, Integer status, Date orderedDate, Integer neededInDays, String requestedBy,
-                   Integer costCenter, Integer organizationId, String isExternal, String externalOrderNumber, 
-                   Integer reportToId, Integer billToId){
+    // constructor without address values
+    public OrderDO(Integer id,
+                   Integer status,
+                   Date orderedDate,
+                   Integer neededInDays,
+                   String requestedBy,
+                   Integer costCenter,
+                   Integer organizationId,
+                   String isExternal,
+                   String externalOrderNumber,
+                   Integer reportToId,
+                   Integer billToId) {
         setId(id);
         setStatusId(status);
         setOrderedDate(orderedDate);
@@ -78,11 +86,26 @@ public class OrderDO implements Serializable{
 
     }
 
-    //constructor with org address values
-    public OrderDO(Integer id, Integer status, Date orderedDate, Integer neededInDays, String requestedBy,
-                   Integer costCenter, Integer organizationId, String organization, String orgMultUnit, String orgStreetAddress, String orgCity, 
-                   String orgState, String orgZipCode, String isExternal, String externalOrderNumber, 
-                   Integer reportToId, Integer billToId, Integer shipFromId, String description){
+    // constructor with org address values
+    public OrderDO(Integer id,
+                   Integer status,
+                   Date orderedDate,
+                   Integer neededInDays,
+                   String requestedBy,
+                   Integer costCenter,
+                   Integer organizationId,
+                   String organization,
+                   String orgMultUnit,
+                   String orgStreetAddress,
+                   String orgCity,
+                   String orgState,
+                   String orgZipCode,
+                   String isExternal,
+                   String externalOrderNumber,
+                   Integer reportToId,
+                   Integer billToId,
+                   Integer shipFromId,
+                   String description) {
         setId(id);
         setStatusId(status);
         setOrderedDate(orderedDate);
@@ -97,23 +120,45 @@ public class OrderDO implements Serializable{
         setBillToId(billToId);
         setShipFromId(shipFromId);
         setDescription(description);
-        
-        //set org address values
+
+        // set org address values
         organizationAddressDO.setMultipleUnit(orgMultUnit);
         organizationAddressDO.setStreetAddress(orgStreetAddress);
         organizationAddressDO.setCity(orgCity);
         organizationAddressDO.setState(orgState);
         organizationAddressDO.setZipCode(orgZipCode);
     }
-    
-    
-    //constructor with address values
-    public OrderDO(Integer id, Integer status, Date orderedDate, Integer neededInDays, String requestedBy,
-                   Integer costCenter, Integer organizationId, String organization, String orgMultUnit, String orgStreetAddress, String orgCity, 
-                   String orgState, String orgZipCode, String isExternal, String externalOrderNumber, Integer reportToId, String reportTo, 
-                   String reportToMultUnit, String reportToStreetAddress, String reportToCity, String reportToState, String reportToZipCode,
-                   Integer billToId, String billTo, String billToMultUnit, String billToStreetAddress, String billToCity, String billToState,
-                   String billToZipCode){
+
+    // constructor with address values
+    public OrderDO(Integer id,
+                   Integer status,
+                   Date orderedDate,
+                   Integer neededInDays,
+                   String requestedBy,
+                   Integer costCenter,
+                   Integer organizationId,
+                   String organization,
+                   String orgMultUnit,
+                   String orgStreetAddress,
+                   String orgCity,
+                   String orgState,
+                   String orgZipCode,
+                   String isExternal,
+                   String externalOrderNumber,
+                   Integer reportToId,
+                   String reportTo,
+                   String reportToMultUnit,
+                   String reportToStreetAddress,
+                   String reportToCity,
+                   String reportToState,
+                   String reportToZipCode,
+                   Integer billToId,
+                   String billTo,
+                   String billToMultUnit,
+                   String billToStreetAddress,
+                   String billToCity,
+                   String billToState,
+                   String billToZipCode) {
         setId(id);
         setStatusId(status);
         setOrderedDate(orderedDate);
@@ -127,23 +172,23 @@ public class OrderDO implements Serializable{
         setReportToId(reportToId);
         setReportTo(reportTo);
         setBillToId(billToId);
-        setBillTo(billTo);   
-        
-        //set org address values
+        setBillTo(billTo);
+
+        // set org address values
         organizationAddressDO.setMultipleUnit(orgMultUnit);
         organizationAddressDO.setStreetAddress(orgStreetAddress);
         organizationAddressDO.setCity(orgCity);
         organizationAddressDO.setState(orgState);
         organizationAddressDO.setZipCode(orgZipCode);
-        
-        //set report to address values
+
+        // set report to address values
         reportToAddressDO.setMultipleUnit(reportToMultUnit);
         reportToAddressDO.setStreetAddress(reportToStreetAddress);
         reportToAddressDO.setCity(reportToCity);
         reportToAddressDO.setState(reportToState);
         reportToAddressDO.setZipCode(reportToZipCode);
-        
-        //set bill to address values
+
+        // set bill to address values
         billToAddressDO.setMultipleUnit(billToMultUnit);
         billToAddressDO.setStreetAddress(billToStreetAddress);
         billToAddressDO.setCity(billToCity);
@@ -158,7 +203,7 @@ public class OrderDO implements Serializable{
     public void setBillToId(Integer billToId) {
         this.billToId = billToId;
     }
-    
+
     public String getBillTo() {
         return billTo;
     }
@@ -212,7 +257,9 @@ public class OrderDO implements Serializable{
     }
 
     public void setOrderedDate(Date orderedDate) {
-        this.orderedDate = new Datetime(Datetime.YEAR,Datetime.DAY,orderedDate);
+        this.orderedDate = new Datetime(Datetime.YEAR,
+                                        Datetime.DAY,
+                                        orderedDate);
     }
 
     public Integer getOrganizationId() {
@@ -222,7 +269,7 @@ public class OrderDO implements Serializable{
     public void setOrganizationId(Integer organizationId) {
         this.organizationId = organizationId;
     }
-    
+
     public String getOrganization() {
         return organization;
     }
@@ -238,7 +285,7 @@ public class OrderDO implements Serializable{
     public void setReportToId(Integer reportToId) {
         this.reportToId = reportToId;
     }
-    
+
     public String getReportTo() {
         return reportTo;
     }
@@ -262,7 +309,7 @@ public class OrderDO implements Serializable{
     public void setStatusId(Integer status) {
         this.statusId = status;
     }
-    
+
     public Integer getShipFromId() {
         return shipFromId;
     }
@@ -270,7 +317,7 @@ public class OrderDO implements Serializable{
     public void setShipFromId(Integer shipFromId) {
         this.shipFromId = shipFromId;
     }
-    
+
     public String getDescription() {
         return description;
     }

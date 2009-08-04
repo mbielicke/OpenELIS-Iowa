@@ -25,41 +25,42 @@
 */
 package org.openelis.domain;
 
-import java.io.Serializable;
-
+import org.openelis.gwt.common.RPC;
 import org.openelis.utilcommon.DataBaseUtil;
 
-
-public class TestAnalyteDO implements Serializable {
-
-    /**
-     * 
-     */
+public class TestAnalyteDO implements RPC {
     private static final long serialVersionUID = 1L;
-    
-    protected Integer id;             
-    protected Integer testId;      
-    protected Integer analyteGroup;
-    protected Integer resultGroup;             
-    protected Integer sortOrder;             
-    protected Integer typeId;             
-    protected Integer analyteId;     
-    protected String analyteName;
-    protected String isReportable;             
-    protected Integer scriptletId;    
-    protected String scriptletName;
-    private Boolean delete = false;    
-    private Boolean grouped = false;
-    
+
+    protected Integer         id;
+    protected Integer         testId;
+    protected Integer         analyteGroup;
+    protected Integer         resultGroup;
+    protected Integer         sortOrder;
+    protected Integer         typeId;
+    protected Integer         analyteId;
+    protected String          analyteName;
+    protected String          isReportable;
+    protected Integer         scriptletId;
+    protected String          scriptletName;
+    private Boolean           delete           = false;
+    private Boolean           grouped          = false;
+
     public TestAnalyteDO() {
-        
+
     }
-    
-    public TestAnalyteDO(Integer id,Integer testId,Integer analyteGroup,
-                         Integer resultGroup,Integer sortOrder,Integer typeId,
-                         Integer analyteId,String analyteName, String isReportable,
-                         Integer scriptletId,String scriptletName) {
-              
+
+    public TestAnalyteDO(Integer id,
+                         Integer testId,
+                         Integer analyteGroup,
+                         Integer resultGroup,
+                         Integer sortOrder,
+                         Integer typeId,
+                         Integer analyteId,
+                         String analyteName,
+                         String isReportable,
+                         Integer scriptletId,
+                         String scriptletName) {
+
         setId(id);
         setTestId(testId);
         setAnalyteGroup(analyteGroup);
@@ -70,7 +71,7 @@ public class TestAnalyteDO implements Serializable {
         setIsReportable(isReportable);
         setScriptletId(scriptletId);
         setScriptletName(scriptletName);
-        setAnalyteName(analyteName);        
+        setAnalyteName(analyteName);
     }
 
     public Integer getAnalyteGroup() {

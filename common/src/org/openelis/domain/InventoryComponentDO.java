@@ -25,86 +25,90 @@
 */
 package org.openelis.domain;
 
-import java.io.Serializable;
-
+import org.openelis.gwt.common.RPC;
 import org.openelis.utilcommon.DataBaseUtil;
 
-public class InventoryComponentDO implements Serializable{
+public class InventoryComponentDO implements RPC {
 
-	private static final long serialVersionUID = 1L;
-	
-	protected Integer id;
-	protected Integer parentInventoryItemId;
-    protected Integer componentInventoryItemId;
-	protected Integer componentNameId;
-	protected String componentName;
-	protected String componentDesc;	
-	protected Double quantity;
-    
-    protected boolean delete = false;
-	
-    public InventoryComponentDO(){
-        
+    private static final long serialVersionUID = 1L;
+
+    protected Integer         id;
+    protected Integer         parentInventoryItemId;
+    protected Integer         componentInventoryItemId;
+    protected Integer         componentNameId;
+    protected String          componentName;
+    protected String          componentDesc;
+    protected Double          quantity;
+
+    protected boolean         delete           = false;
+
+    public InventoryComponentDO() {
+
     }
 
-	public InventoryComponentDO(Integer id, Integer parentInventoryItemId, Integer componentNameId, String componentName, String componentDesc, 
-                                Double quantity, Integer componentInventoryItemId){
-		setId(id);
-		setParentInventoryItemId(parentInventoryItemId);
-		setComponentNameId(componentNameId);
-		setComponentName(componentName);
-		setComponentDesc(componentDesc);
-		setQuantity(quantity);
+    public InventoryComponentDO(Integer id,
+                                Integer parentInventoryItemId,
+                                Integer componentNameId,
+                                String componentName,
+                                String componentDesc,
+                                Double quantity,
+                                Integer componentInventoryItemId) {
+        setId(id);
+        setParentInventoryItemId(parentInventoryItemId);
+        setComponentNameId(componentNameId);
+        setComponentName(componentName);
+        setComponentDesc(componentDesc);
+        setQuantity(quantity);
         setComponentInventoryItemId(componentInventoryItemId);
-	}
+    }
 
-	public String getComponentDesc() {
-		return componentDesc;
-	}
+    public String getComponentDesc() {
+        return componentDesc;
+    }
 
-	public void setComponentDesc(String componentDesc) {
-		this.componentDesc = DataBaseUtil.trim(componentDesc);
-	}
+    public void setComponentDesc(String componentDesc) {
+        this.componentDesc = DataBaseUtil.trim(componentDesc);
+    }
 
-	public Integer getComponentNameId() {
-		return componentNameId;
-	}
+    public Integer getComponentNameId() {
+        return componentNameId;
+    }
 
-	public void setComponentNameId(Integer componentNameId) {
-		this.componentNameId = componentNameId;
-	}
+    public void setComponentNameId(Integer componentNameId) {
+        this.componentNameId = componentNameId;
+    }
 
-	public Integer getId() {
-		return id;
-	}
+    public Integer getId() {
+        return id;
+    }
 
-	public void setId(Integer id) {
-		this.id = id;
-	}
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
-	public Integer getParentInventoryItemId() {
-		return parentInventoryItemId;
-	}
+    public Integer getParentInventoryItemId() {
+        return parentInventoryItemId;
+    }
 
-	public void setParentInventoryItemId(Integer parentInventoryItemId) {
-		this.parentInventoryItemId = parentInventoryItemId;
-	}
+    public void setParentInventoryItemId(Integer parentInventoryItemId) {
+        this.parentInventoryItemId = parentInventoryItemId;
+    }
 
-	public double getQuantity() {
-		return quantity;
-	}
+    public double getQuantity() {
+        return quantity;
+    }
 
-	public void setQuantity(Double quantity) {
-		this.quantity = quantity;
-	}
+    public void setQuantity(Double quantity) {
+        this.quantity = quantity;
+    }
 
-	public String getComponentName() {
-		return componentName;
-	}
+    public String getComponentName() {
+        return componentName;
+    }
 
-	public void setComponentName(String componentName) {
-		this.componentName = DataBaseUtil.trim(componentName);
-	}
+    public void setComponentName(String componentName) {
+        this.componentName = DataBaseUtil.trim(componentName);
+    }
 
     public boolean getDelete() {
         return delete;

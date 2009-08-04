@@ -25,26 +25,24 @@
 */
 package org.openelis.domain;
 
-import java.io.Serializable;
 import java.util.Date;
 
 import org.openelis.gwt.common.Datetime;
+import org.openelis.gwt.common.RPC;
 import org.openelis.utilcommon.DataBaseUtil;
 
-
-
-public class IdNameDateDO implements Serializable{
+public class IdNameDateDO implements RPC {
 
     private static final long serialVersionUID = 1L;
-    protected Integer id;
-    protected String name;
-    protected Datetime date;
-    
-    public IdNameDateDO(){
-        
+    protected Integer         id;
+    protected String          name;
+    protected Datetime        date;
+
+    public IdNameDateDO() {
+
     }
-    
-    public IdNameDateDO(Integer id, String name, Date date){
+
+    public IdNameDateDO(Integer id, String name, Date date) {
         setId(id);
         setName(name);
         setDate(date);

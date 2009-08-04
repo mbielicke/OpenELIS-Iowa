@@ -25,52 +25,70 @@
 */
 package org.openelis.domain;
 
-import java.io.Serializable;
-
+import org.openelis.gwt.common.RPC;
 import org.openelis.utilcommon.DataBaseUtil;
 
-public class InventoryItemDO implements Serializable{
+public class InventoryItemDO implements RPC {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	protected Integer id;
-	protected String name;
-	protected String description;
-    protected Integer category;
-    protected Integer store;
-	protected Integer quantityMinLevel;
-	protected Integer quantityMaxLevel;
-	protected Integer quantityToReorder;
-    protected Integer dispensedUnits;
-	protected String isReorderAuto;
-	protected String isLotMaintained;
-    protected String isSerialMaintained;
-	protected String isActive;
-    protected String isBulk;
-    protected String isNotForSale;
-    protected String isSubAssembly;
-    protected String isLabor;
-    protected String isNoInventory;
-    protected String productUri;
-    protected Integer aveLeadTime;
-	protected double aveCost;
-	protected Integer aveDailyUse;
-    protected String parentInventoryItem;
-    protected Integer parentInventoryItemId;
-    protected Integer parentRatio;
-    protected String manufacturingText;
-	
-    public InventoryItemDO(){
-        
+    protected Integer         id;
+    protected String          name;
+    protected String          description;
+    protected Integer         category;
+    protected Integer         store;
+    protected Integer         quantityMinLevel;
+    protected Integer         quantityMaxLevel;
+    protected Integer         quantityToReorder;
+    protected Integer         dispensedUnits;
+    protected String          isReorderAuto;
+    protected String          isLotMaintained;
+    protected String          isSerialMaintained;
+    protected String          isActive;
+    protected String          isBulk;
+    protected String          isNotForSale;
+    protected String          isSubAssembly;
+    protected String          isLabor;
+    protected String          isNoInventory;
+    protected String          productUri;
+    protected Integer         aveLeadTime;
+    protected double          aveCost;
+    protected Integer         aveDailyUse;
+    protected String          parentInventoryItem;
+    protected Integer         parentInventoryItemId;
+    protected Integer         parentRatio;
+    protected String          manufacturingText;
+
+    public InventoryItemDO() {
+
     }
-    
-	public InventoryItemDO(Integer id, String name, String description, Integer category, Integer store,
-                           Integer quantityMinLevel, Integer quantityMaxLevel, Integer quantityToReorder, 
-                           Integer dispensedUnits, String isReorderAuto, String isLotMaintained, String isSerialMaintained,
-                           String isActive, String isBulk, String isNotForSale, String isSubAssembly, String isLabor, String isNoInventory,
-                           String productUri, Integer aveLeadTime, double aveCost, Integer aveDailyUse, Integer parentInventoryItemId, 
-                           String parentInventoryItem, Integer parentRatio){
-        
+
+    public InventoryItemDO(Integer id,
+                           String name,
+                           String description,
+                           Integer category,
+                           Integer store,
+                           Integer quantityMinLevel,
+                           Integer quantityMaxLevel,
+                           Integer quantityToReorder,
+                           Integer dispensedUnits,
+                           String isReorderAuto,
+                           String isLotMaintained,
+                           String isSerialMaintained,
+                           String isActive,
+                           String isBulk,
+                           String isNotForSale,
+                           String isSubAssembly,
+                           String isLabor,
+                           String isNoInventory,
+                           String productUri,
+                           Integer aveLeadTime,
+                           double aveCost,
+                           Integer aveDailyUse,
+                           Integer parentInventoryItemId,
+                           String parentInventoryItem,
+                           Integer parentRatio) {
+
         setId(id);
         setName(name);
         setDescription(description);
@@ -96,8 +114,8 @@ public class InventoryItemDO implements Serializable{
         setParentInventoryItemId(parentInventoryItemId);
         setParentInventoryItem(parentInventoryItem);
         setParentRatio(parentRatio);
-	}
-    
+    }
+
     public double getAveCost() {
         return aveCost;
     }
@@ -272,8 +290,8 @@ public class InventoryItemDO implements Serializable{
 
     public void setStore(Integer store) {
         this.store = store;
-    }   
-    
+    }
+
     public Integer getParentInventoryItemId() {
         return parentInventoryItemId;
     }

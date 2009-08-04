@@ -25,22 +25,21 @@
 */
 package org.openelis.domain;
 
-import java.io.Serializable;
-
+import org.openelis.gwt.common.RPC;
 import org.openelis.utilcommon.DataBaseUtil;
 
-public class StorageUnitAutoDO implements Serializable{
+public class StorageUnitAutoDO implements RPC {
 
     private static final long serialVersionUID = 1L;
-    
-    protected Integer id;
-    protected String description;
-    protected String category;
-    
-    public StorageUnitAutoDO(Integer id, String description, String category){
+
+    protected Integer         id;
+    protected String          description;
+    protected String          category;
+
+    public StorageUnitAutoDO(Integer id, String description, String category) {
         setId(id);
         setDescription(description);
-        setCategory(category);        
+        setCategory(category);
     }
 
     public String getCategory() {

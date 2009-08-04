@@ -25,30 +25,34 @@
 */
 package org.openelis.domain;
 
-import java.io.Serializable;
-
+import org.openelis.gwt.common.RPC;
 import org.openelis.utilcommon.DataBaseUtil;
 
-public class ShippingItemDO implements Serializable{
+public class ShippingItemDO implements RPC {
 
     private static final long serialVersionUID = 1L;
-    
-    protected Integer id;
-    protected Integer shippingId;
-    protected Integer referenceTableId;
-    protected Integer referenceId;
-    protected String itemDescription;
-    protected Integer quantity;
-    protected String description;
-    protected Integer inventoryLocationId;
-    protected Integer transId;
-    
-    public ShippingItemDO(){
-        
+
+    protected Integer         id;
+    protected Integer         shippingId;
+    protected Integer         referenceTableId;
+    protected Integer         referenceId;
+    protected String          itemDescription;
+    protected Integer         quantity;
+    protected String          description;
+    protected Integer         inventoryLocationId;
+    protected Integer         transId;
+
+    public ShippingItemDO() {
+
     }
-    
-    public ShippingItemDO(Integer id, Integer shippingId, Integer referenceTableId,
-                          Integer referenceId, Integer quantity, Integer inventoryLocationId, Integer transId){
+
+    public ShippingItemDO(Integer id,
+                          Integer shippingId,
+                          Integer referenceTableId,
+                          Integer referenceId,
+                          Integer quantity,
+                          Integer inventoryLocationId,
+                          Integer transId) {
         setId(id);
         setShippingId(shippingId);
         setReferenceTableId(referenceTableId);
@@ -89,7 +93,7 @@ public class ShippingItemDO implements Serializable{
     public void setShippingId(Integer shippingId) {
         this.shippingId = shippingId;
     }
-    
+
     public String getItemDescription() {
         return itemDescription;
     }
@@ -97,7 +101,7 @@ public class ShippingItemDO implements Serializable{
     public void setItemDescription(String itemDescription) {
         this.itemDescription = DataBaseUtil.trim(itemDescription);
     }
-    
+
     public Integer getQuantity() {
         return quantity;
     }
@@ -105,7 +109,7 @@ public class ShippingItemDO implements Serializable{
     public void setQuantity(Integer quantity) {
         this.quantity = quantity;
     }
-    
+
     public Integer getInventoryLocationId() {
         return inventoryLocationId;
     }

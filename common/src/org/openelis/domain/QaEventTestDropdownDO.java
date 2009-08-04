@@ -25,19 +25,18 @@
 */
 package org.openelis.domain;
 
-import java.io.Serializable;
-
+import org.openelis.gwt.common.RPC;
 import org.openelis.utilcommon.DataBaseUtil;
 
-public class QaEventTestDropdownDO implements Serializable{
+public class QaEventTestDropdownDO implements RPC {
 
     private static final long serialVersionUID = 1L;
-    
-    protected Integer id;
-    protected String test;
-    protected String method;
 
-    public QaEventTestDropdownDO(Integer id, String test, String method){
+    protected Integer         id;
+    protected String          test;
+    protected String          method;
+
+    public QaEventTestDropdownDO(Integer id, String test, String method) {
         setId(id);
         setTest(test);
         setMethod(method);

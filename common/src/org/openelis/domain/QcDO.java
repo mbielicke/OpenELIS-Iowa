@@ -25,126 +25,149 @@
 */
 package org.openelis.domain;
 
-import java.io.Serializable;
 import java.util.Date;
 
 import org.openelis.gwt.common.Datetime;
+import org.openelis.gwt.common.RPC;
 import org.openelis.utilcommon.DataBaseUtil;
 
-
-public class QcDO implements Serializable {
-
-    /**
-     * 
-     */
+public class QcDO implements RPC {
     private static final long serialVersionUID = 1L;
-    
-    protected Integer id;             
-    protected String name;             
-    protected Integer typeId;            
-    protected Integer inventoryItemId;
-    protected String inventoryItemName;
-    protected String source;             
-    protected String lotNumber;             
-    protected Datetime preparedDate;             
-    protected Double preparedVolume;             
-    protected Integer preparedUnitId;             
-    protected Integer preparedById; 
-    protected String preparedByName;
-    protected Datetime usableDate;             
-    protected Datetime expireDate;             
-    protected String isSingleUse;   
-    
+
+    protected Integer         id;
+    protected String          name;
+    protected Integer         typeId;
+    protected Integer         inventoryItemId;
+    protected String          inventoryItemName;
+    protected String          source;
+    protected String          lotNumber;
+    protected Datetime        preparedDate;
+    protected Double          preparedVolume;
+    protected Integer         preparedUnitId;
+    protected Integer         preparedById;
+    protected String          preparedByName;
+    protected Datetime        usableDate;
+    protected Datetime        expireDate;
+    protected String          isSingleUse;
+
     public QcDO() {
-        
+
     }
-    
-    public QcDO(Integer id,String name,Integer typeId,Integer inventoryItemId,String inventoryItemName,
-                String source,String lotNumber,Date preparedDate,Double preparedVolume,
-                Integer preparedUnitId,Integer preparedById,Date usableDate,
-                Date expireDate,String isSingleUse) {
-        setId(id);             
-        setName(name);             
-        setTypeId(typeId);            
+
+    public QcDO(Integer id,
+                String name,
+                Integer typeId,
+                Integer inventoryItemId,
+                String inventoryItemName,
+                String source,
+                String lotNumber,
+                Date preparedDate,
+                Double preparedVolume,
+                Integer preparedUnitId,
+                Integer preparedById,
+                Date usableDate,
+                Date expireDate,
+                String isSingleUse) {
+        setId(id);
+        setName(name);
+        setTypeId(typeId);
         setInventoryItemId(inventoryItemId);
         setInventoryItemName(inventoryItemName);
-        setSource(source);             
-        setLotNumber(lotNumber);             
-        setPreparedDate(preparedDate);             
-        setPreparedVolume(preparedVolume);             
-        setPreparedUnitId(preparedUnitId);             
-        setPreparedById(preparedById);             
-        setUsableDate(usableDate);             
-        setExpireDate(expireDate);             
-        setIsSingleUse(isSingleUse);        
+        setSource(source);
+        setLotNumber(lotNumber);
+        setPreparedDate(preparedDate);
+        setPreparedVolume(preparedVolume);
+        setPreparedUnitId(preparedUnitId);
+        setPreparedById(preparedById);
+        setUsableDate(usableDate);
+        setExpireDate(expireDate);
+        setIsSingleUse(isSingleUse);
     }
-    
+
     public Integer getId() {
         return id;
     }
+
     public void setId(Integer id) {
         this.id = id;
     }
+
     public String getName() {
         return name;
     }
+
     public void setName(String name) {
         this.name = DataBaseUtil.trim(name);
     }
+
     public Integer getTypeId() {
         return typeId;
     }
+
     public void setTypeId(Integer typeId) {
         this.typeId = typeId;
     }
+
     public Integer getInventoryItemId() {
         return inventoryItemId;
     }
+
     public void setInventoryItemId(Integer inventoryItemId) {
         this.inventoryItemId = inventoryItemId;
     }
-    
+
     public String getInventoryItemName() {
         return inventoryItemName;
     }
 
     public void setInventoryItemName(String inventoryItemName) {
         this.inventoryItemName = DataBaseUtil.trim(inventoryItemName);
-    } 
-    
+    }
+
     public String getSource() {
         return source;
     }
+
     public void setSource(String source) {
         this.source = DataBaseUtil.trim(source);
     }
+
     public String getLotNumber() {
         return lotNumber;
     }
+
     public void setLotNumber(String lotNumber) {
         this.lotNumber = DataBaseUtil.trim(lotNumber);
     }
+
     public Double getPreparedVolume() {
         return preparedVolume;
     }
+
     public void setPreparedVolume(Double preparedVolume) {
         this.preparedVolume = preparedVolume;
     }
+
     public Integer getPreparedUnitId() {
         return preparedUnitId;
     }
+
     public void setPreparedUnitId(Integer preparedUnitId) {
         this.preparedUnitId = preparedUnitId;
     }
+
     public Integer getPreparedById() {
         return preparedById;
     }
+
     public void setPreparedById(Integer preparedById) {
         this.preparedById = preparedById;
     }
+
     public String getIsSingleUse() {
         return isSingleUse;
     }
+
     public void setIsSingleUse(String isSingleUse) {
         this.isSingleUse = DataBaseUtil.trim(isSingleUse);
     }
@@ -154,7 +177,9 @@ public class QcDO implements Serializable {
     }
 
     public void setPreparedDate(Date preparedDate) {
-        this.preparedDate = new Datetime(Datetime.YEAR, Datetime.SECOND, preparedDate);
+        this.preparedDate = new Datetime(Datetime.YEAR,
+                                         Datetime.SECOND,
+                                         preparedDate);
     }
 
     public Datetime getUsableDate() {
@@ -162,7 +187,9 @@ public class QcDO implements Serializable {
     }
 
     public void setUsableDate(Date usableDate) {
-        this.usableDate = new Datetime(Datetime.YEAR, Datetime.SECOND, usableDate);
+        this.usableDate = new Datetime(Datetime.YEAR,
+                                       Datetime.SECOND,
+                                       usableDate);
     }
 
     public Datetime getExpireDate() {
@@ -170,7 +197,9 @@ public class QcDO implements Serializable {
     }
 
     public void setExpireDate(Date expireDate) {
-        this.expireDate = new Datetime(Datetime.YEAR, Datetime.SECOND, expireDate);
+        this.expireDate = new Datetime(Datetime.YEAR,
+                                       Datetime.SECOND,
+                                       expireDate);
     }
 
     public String getPreparedByName() {
@@ -180,5 +209,5 @@ public class QcDO implements Serializable {
     public void setPreparedByName(String preparedByName) {
         this.preparedByName = preparedByName;
     }
-   
+
 }

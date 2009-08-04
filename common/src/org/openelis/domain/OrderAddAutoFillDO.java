@@ -25,25 +25,27 @@
 */
 package org.openelis.domain;
 
-import java.io.Serializable;
 import java.util.Date;
 
 import org.openelis.gwt.common.Datetime;
+import org.openelis.gwt.common.RPC;
 import org.openelis.utilcommon.DataBaseUtil;
 
-public class OrderAddAutoFillDO implements Serializable{
+public class OrderAddAutoFillDO implements RPC {
 
     private static final long serialVersionUID = 1L;
-    
-    protected Integer status;
-    protected Datetime orderedDate;
-    protected String requestedBy;
-    
-    public OrderAddAutoFillDO(){
-        
+
+    protected Integer         status;
+    protected Datetime        orderedDate;
+    protected String          requestedBy;
+
+    public OrderAddAutoFillDO() {
+
     }
-    
-    public OrderAddAutoFillDO(Integer status, Date orderedDate, String requestedBy){
+
+    public OrderAddAutoFillDO(Integer status,
+                              Date orderedDate,
+                              String requestedBy) {
         setStatus(status);
         setOrderedDate(orderedDate);
         setRequestedBy(requestedBy);
@@ -54,7 +56,9 @@ public class OrderAddAutoFillDO implements Serializable{
     }
 
     public void setOrderedDate(Date orderedDate) {
-        this.orderedDate = new Datetime(Datetime.YEAR,Datetime.DAY, orderedDate);
+        this.orderedDate = new Datetime(Datetime.YEAR,
+                                        Datetime.DAY,
+                                        orderedDate);
     }
 
     public String getRequestedBy() {

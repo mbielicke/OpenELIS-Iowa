@@ -25,41 +25,36 @@
 */
 package org.openelis.domain;
 
-import java.io.Serializable;
 import java.util.Date;
 
 import org.openelis.gwt.common.Datetime;
+import org.openelis.gwt.common.RPC;
 import org.openelis.utilcommon.DataBaseUtil;
 
-public class MethodDO implements Serializable {
+public class MethodDO implements RPC {
 
-    /**
-     * 
-     */
-    private static final long serialVersionUID = -5267208279869865540L;
-    
-    protected Integer id;             
+    private static final long serialVersionUID = 1L;
 
-    protected String name;
-    
-    protected String description;             
+    protected Integer         id;
+    protected String          name;
+    protected String          description;
+    protected String          reportingDescription;
+    protected String          isActive;
+    protected Datetime        activeBegin;
+    protected Datetime        activeEnd;
 
-    protected String reportingDescription;   
-    
-    protected String isActive;             
-
-    protected Datetime activeBegin;             
-
-    protected Datetime activeEnd;
-    
     public MethodDO() {
-        
+
     }
-    
-    public MethodDO(Integer id,String name,String description,
-                    String reportingDescription,String isActive,
-                    Date activeBegin, Date activeEnd){
-        
+
+    public MethodDO(Integer id,
+                    String name,
+                    String description,
+                    String reportingDescription,
+                    String isActive,
+                    Date activeBegin,
+                    Date activeEnd) {
+
         setId(id);
         setName(name);
         setDescription(description);
@@ -74,7 +69,9 @@ public class MethodDO implements Serializable {
     }
 
     public void setActiveBegin(Date activeBegin) {
-        this.activeBegin = new Datetime(Datetime.YEAR,Datetime.DAY,activeBegin);
+        this.activeBegin = new Datetime(Datetime.YEAR,
+                                        Datetime.DAY,
+                                        activeBegin);
     }
 
     public Datetime getActiveEnd() {
@@ -82,7 +79,7 @@ public class MethodDO implements Serializable {
     }
 
     public void setActiveEnd(Date activeEnd) {
-        this.activeEnd = new Datetime(Datetime.YEAR,Datetime.DAY,activeEnd);
+        this.activeEnd = new Datetime(Datetime.YEAR, Datetime.DAY, activeEnd);
     }
 
     public String getDescription() {
@@ -123,7 +120,6 @@ public class MethodDO implements Serializable {
 
     public void setReportingDescription(String reportingDescription) {
         this.reportingDescription = DataBaseUtil.trim(reportingDescription);
-    }   
-    
+    }
 
 }

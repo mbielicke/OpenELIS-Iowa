@@ -25,33 +25,37 @@
 */
 package org.openelis.domain;
 
-import java.io.Serializable;
-
+import org.openelis.gwt.common.RPC;
 import org.openelis.utilcommon.DataBaseUtil;
 
-
-public class QaEventDO implements Serializable {
+public class QaEventDO implements RPC {
 
     private static final long serialVersionUID = 1L;
-    
-    protected Integer id;    
-    protected String name;       
-    protected String description;        
-    protected Integer testId;     
-    protected String testName;
-    protected String methodName;
-    protected Integer typeId;            
-    protected String isBillable;       
-    protected Integer reportingSequence;
-    protected String reportingText;
-    
-    public QaEventDO(){
-        
-    }        
 
-    public QaEventDO(Integer id, String name, String description, Integer testId,
-                     String testName, String methodName, Integer typeId, 
-                     String isBillable, Integer reportingSequence,
+    protected Integer         id;
+    protected String          name;
+    protected String          description;
+    protected Integer         testId;
+    protected String          testName;
+    protected String          methodName;
+    protected Integer         typeId;
+    protected String          isBillable;
+    protected Integer         reportingSequence;
+    protected String          reportingText;
+
+    public QaEventDO() {
+
+    }
+
+    public QaEventDO(Integer id,
+                     String name,
+                     String description,
+                     Integer testId,
+                     String testName,
+                     String methodName,
+                     Integer typeId,
+                     String isBillable,
+                     Integer reportingSequence,
                      String reportingText) {
         setId(id);
         setName(name);
@@ -64,8 +68,6 @@ public class QaEventDO implements Serializable {
         setReportingSequence(reportingSequence);
         setReportingText(reportingText);
     }
-
-
 
     public String getDescription() {
         return description;

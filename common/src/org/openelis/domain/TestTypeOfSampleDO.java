@@ -25,36 +25,29 @@
 */
 package org.openelis.domain;
 
-import java.io.Serializable;
+import org.openelis.gwt.common.RPC;
 
+public class TestTypeOfSampleDO implements RPC {
+    private static final long serialVersionUID = 1L;
 
-public class TestTypeOfSampleDO implements Serializable {
+    protected Integer         id;
+    protected Integer         testId;
+    protected Integer         typeOfSampleId;
+    protected Integer         unitOfMeasureId;
+    protected Boolean         delete           = false;
 
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 3892726107965925790L;
-    
-    protected Integer id;             
+    public TestTypeOfSampleDO() {
 
-    protected Integer testId;             
-
-    protected Integer typeOfSampleId;             
-
-    protected Integer unitOfMeasureId;
-    
-    protected Boolean delete = false;
-    
-    public TestTypeOfSampleDO(){
-        
     }
-    
-    public TestTypeOfSampleDO(Integer id,Integer testId,
-                              Integer typeOfSampleId, Integer unitOfMeasureId){
-     this.id = id;
-     this.testId = testId;
-     this.typeOfSampleId = typeOfSampleId;
-     this.unitOfMeasureId = unitOfMeasureId;
+
+    public TestTypeOfSampleDO(Integer id,
+                              Integer testId,
+                              Integer typeOfSampleId,
+                              Integer unitOfMeasureId) {
+        this.id = id;
+        this.testId = testId;
+        this.typeOfSampleId = typeOfSampleId;
+        this.unitOfMeasureId = unitOfMeasureId;
     }
 
     public Integer getId() {
@@ -96,7 +89,5 @@ public class TestTypeOfSampleDO implements Serializable {
     public void setDelete(Boolean delete) {
         this.delete = delete;
     }
-    
-    
 
 }

@@ -25,35 +25,37 @@
 */
 package org.openelis.domain;
 
-import java.io.Serializable;
-
+import org.openelis.gwt.common.RPC;
 import org.openelis.utilcommon.DataBaseUtil;
 
-
-public class LabelDO implements Serializable {
+public class LabelDO implements RPC {
 
     private static final long serialVersionUID = 1L;
 
-    protected Integer id;
-    protected String name; 
-    protected String description;  
-    protected Integer printerType; 
-    protected Integer scriptletId;
-    protected String scriptletName;
-    private boolean delete;
-    
-    public LabelDO(){
-        
+    protected Integer         id;
+    protected String          name;
+    protected String          description;
+    protected Integer         printerType;
+    protected Integer         scriptletId;
+    protected String          scriptletName;
+    private boolean           delete;
+
+    public LabelDO() {
+
     }
-    
-    public LabelDO(Integer id,String name,String description,Integer printerType,
-                   Integer scriptletId,String scriptleName){
-         setId(id);
-         setName(name);
-         setDescription(description);
-         setPrinterType(printerType);
-         setScriptletId(scriptletId);     
-         setScriptletName(scriptleName);
+
+    public LabelDO(Integer id,
+                   String name,
+                   String description,
+                   Integer printerType,
+                   Integer scriptletId,
+                   String scriptleName) {
+        setId(id);
+        setName(name);
+        setDescription(description);
+        setPrinterType(printerType);
+        setScriptletId(scriptletId);
+        setScriptletName(scriptleName);
     }
 
     public Integer getId() {
@@ -111,5 +113,5 @@ public class LabelDO implements Serializable {
     public void setScriptletName(String scriptleName) {
         this.scriptletName = DataBaseUtil.trim(scriptleName);
     }
-    
+
 }

@@ -25,24 +25,23 @@
 */
 package org.openelis.domain;
 
-import java.io.Serializable;
-
+import org.openelis.gwt.common.RPC;
 import org.openelis.utilcommon.DataBaseUtil;
 
-public class DictionaryDO implements Serializable {
+public class DictionaryDO implements RPC {
 
     private static final long serialVersionUID = 1L;
-    
-    protected Integer id;        
-    protected Integer category; 
-    protected Integer relatedEntryId;   
-    protected String systemName;        
-    protected String isActive;         
-    protected String localAbbrev;      
-    protected String entry;
-    protected Boolean delete = false;
-    protected String relatedEntryText;
-    
+
+    protected Integer         id;
+    protected Integer         category;
+    protected Integer         relatedEntryId;
+    protected String          systemName;
+    protected String          isActive;
+    protected String          localAbbrev;
+    protected String          entry;
+    protected Boolean         delete           = false;
+    protected String          relatedEntryText;
+
     public Boolean getDelete() {
         return delete;
     }
@@ -50,13 +49,19 @@ public class DictionaryDO implements Serializable {
     public void setDelete(Boolean delete) {
         this.delete = delete;
     }
-    
-    public DictionaryDO(){
-        
+
+    public DictionaryDO() {
+
     }
 
-    public DictionaryDO(Integer id, Integer category, Integer relatedEntryId,String relatedEntryText,
-          String systemName,String isActive,  String localAbbrev, String entry){
+    public DictionaryDO(Integer id,
+                        Integer category,
+                        Integer relatedEntryId,
+                        String relatedEntryText,
+                        String systemName,
+                        String isActive,
+                        String localAbbrev,
+                        String entry) {
         setId(id);
         setRelatedEntryId(relatedEntryId);
         setRelatedEntryText(relatedEntryText);
@@ -65,7 +70,7 @@ public class DictionaryDO implements Serializable {
         setLocalAbbrev(localAbbrev);
         setEntry(entry);
     }
-    
+
     public Integer getCategory() {
         return category;
     }
@@ -104,7 +109,7 @@ public class DictionaryDO implements Serializable {
 
     public void setLocalAbbrev(String localAbbrev) {
         this.localAbbrev = DataBaseUtil.trim(localAbbrev);
-    }  
+    }
 
     public String getSystemName() {
         return systemName;

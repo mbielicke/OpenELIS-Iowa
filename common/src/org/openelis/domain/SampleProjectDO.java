@@ -25,44 +25,55 @@
 */
 package org.openelis.domain;
 
-import java.io.Serializable;
 import java.util.Date;
 
+import org.openelis.gwt.common.RPC;
 import org.openelis.utilcommon.DataBaseUtil;
 
-public class SampleProjectDO implements Serializable {
+public class SampleProjectDO implements RPC {
 
     private static final long serialVersionUID = 1L;
-    
-    protected Integer id;
-    protected Integer sampleId;
-    protected Integer projectId;
-    protected String isPermanent;
-    
-    protected ProjectDO projectDO = new ProjectDO();
-    
-    public SampleProjectDO(){
-        
+
+    protected Integer         id;
+    protected Integer         sampleId;
+    protected Integer         projectId;
+    protected String          isPermanent;
+
+    protected ProjectDO       projectDO        = new ProjectDO();
+
+    public SampleProjectDO() {
+
     }
-    
-    public SampleProjectDO(Integer id, Integer sampleId, Integer projectId, String isPermanent){
+
+    public SampleProjectDO(Integer id,
+                           Integer sampleId,
+                           Integer projectId,
+                           String isPermanent) {
         setId(id);
         setSampleId(sampleId);
         setProjectId(projectId);
         setIsPermanent(isPermanent);
-        
+
     }
-    
-    public SampleProjectDO(Integer id, Integer sampleId, Integer projectId, String isPermanent,
-                           String name, String description, Date startedDate,
-                           Date completedDate, String isActive, String referenceTo,
-                           Integer ownerId, Integer scriptletId){
+
+    public SampleProjectDO(Integer id,
+                           Integer sampleId,
+                           Integer projectId,
+                           String isPermanent,
+                           String name,
+                           String description,
+                           Date startedDate,
+                           Date completedDate,
+                           String isActive,
+                           String referenceTo,
+                           Integer ownerId,
+                           Integer scriptletId) {
         setId(id);
         setSampleId(sampleId);
         setProjectId(projectId);
         setIsPermanent(isPermanent);
-        
-        //project params
+
+        // project params
         projectDO.setId(projectId);
         projectDO.setName(name);
         projectDO.setDescription(description);

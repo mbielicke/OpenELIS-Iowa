@@ -25,26 +25,21 @@
 */
 package org.openelis.domain;
 
-import java.io.Serializable;
+import org.openelis.gwt.common.RPC;
 
-public class PanelDO implements Serializable {
+public class PanelDO implements RPC {
 
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 6632140266502500275L;
-    
-    protected Integer id;             
+    private static final long serialVersionUID = 1L;
 
-    protected String name;             
+    protected Integer         id;
+    protected String          name;
+    protected String          description;
 
-    protected String description;
-    
     public PanelDO() {
-        
-    }    
 
-    public PanelDO(Integer id,String name, String description) {
+    }
+
+    public PanelDO(Integer id, String name, String description) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -74,5 +69,4 @@ public class PanelDO implements Serializable {
         this.name = name;
     }
 
-    
 }

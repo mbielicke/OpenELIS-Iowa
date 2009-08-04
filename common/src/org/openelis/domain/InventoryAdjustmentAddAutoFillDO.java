@@ -25,24 +25,26 @@
 */
 package org.openelis.domain;
 
-import java.io.Serializable;
 import java.util.Date;
 
 import org.openelis.gwt.common.Datetime;
+import org.openelis.gwt.common.RPC;
 import org.openelis.utilcommon.DataBaseUtil;
 
-public class InventoryAdjustmentAddAutoFillDO implements Serializable{
+public class InventoryAdjustmentAddAutoFillDO implements RPC {
 
     private static final long serialVersionUID = 1L;
-    protected Integer systemUserId;
-    protected String systemUser;
-    protected Datetime adjustmentDate;
-    
-    public InventoryAdjustmentAddAutoFillDO(){
-        
+    protected Integer         systemUserId;
+    protected String          systemUser;
+    protected Datetime        adjustmentDate;
+
+    public InventoryAdjustmentAddAutoFillDO() {
+
     }
-    
-    public InventoryAdjustmentAddAutoFillDO(Integer systemUserId, String systemUser, Date adjustmentDate){
+
+    public InventoryAdjustmentAddAutoFillDO(Integer systemUserId,
+                                            String systemUser,
+                                            Date adjustmentDate) {
         setSystemUserId(systemUserId);
         setSystemUser(systemUser);
         setAdjustmentDate(adjustmentDate);
@@ -53,7 +55,9 @@ public class InventoryAdjustmentAddAutoFillDO implements Serializable{
     }
 
     public void setAdjustmentDate(Date adjustmentDate) {
-        this.adjustmentDate = new Datetime(Datetime.YEAR,Datetime.DAY,adjustmentDate);
+        this.adjustmentDate = new Datetime(Datetime.YEAR,
+                                           Datetime.DAY,
+                                           adjustmentDate);
     }
 
     public String getSystemUser() {
@@ -70,5 +74,5 @@ public class InventoryAdjustmentAddAutoFillDO implements Serializable{
 
     public void setSystemUserId(Integer systemUserId) {
         this.systemUserId = systemUserId;
-    }    
+    }
 }

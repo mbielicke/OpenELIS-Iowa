@@ -25,24 +25,26 @@
 */
 package org.openelis.domain;
 
-import java.io.Serializable;
-
+import org.openelis.gwt.common.RPC;
 import org.openelis.utilcommon.DataBaseUtil;
 
-public class TestMethodAutoDO implements Serializable {
+public class TestMethodAutoDO implements RPC {
 
     private static final long serialVersionUID = 1L;
-    
-    protected Integer testId;
-    protected String testName;
-    protected Integer methodId;
-    protected String methodName;
-    
-    public TestMethodAutoDO(){
-        
+
+    protected Integer         testId;
+    protected String          testName;
+    protected Integer         methodId;
+    protected String          methodName;
+
+    public TestMethodAutoDO() {
+
     }
-    
-    public TestMethodAutoDO(Integer testId, String testName, Integer methodId, String methodName){
+
+    public TestMethodAutoDO(Integer testId,
+                            String testName,
+                            Integer methodId,
+                            String methodName) {
         setTestId(testId);
         setTestName(testName);
         setMethodId(methodId);

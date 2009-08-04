@@ -25,34 +25,26 @@
 */
 package org.openelis.domain;
 
-import java.io.Serializable;
+import org.openelis.gwt.common.RPC;
 
+public class TestWorksheetItemDO implements RPC {
+    private static final long serialVersionUID = 1L;
 
-public class TestWorksheetItemDO implements Serializable{
+    protected Integer         id;
+    protected Integer         testWorksheetId;
+    protected Integer         position;
+    protected Integer         typeId;
+    protected String          qcName;
+    private boolean           delete           = false;
 
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 298904701466586041L;
-    
-    protected Integer id;             
-
-    protected Integer testWorksheetId;             
-
-    protected Integer position;             
-
-    protected Integer typeId;             
-
-    protected String qcName;
-    
-    private boolean delete = false;
-    
     public TestWorksheetItemDO() {
-        
+
     }
-    
-    public TestWorksheetItemDO(Integer id,Integer testWorksheetId,
-                               Integer position, Integer typeId,
+
+    public TestWorksheetItemDO(Integer id,
+                               Integer testWorksheetId,
+                               Integer position,
+                               Integer typeId,
                                String qcName) {
         this.id = id;
         this.testWorksheetId = testWorksheetId;

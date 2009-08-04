@@ -25,28 +25,29 @@
 */
 package org.openelis.domain;
 
-import java.io.Serializable;
-
+import org.openelis.gwt.common.RPC;
 import org.openelis.utilcommon.DataBaseUtil;
 
-public class ProjectParameterDO implements Serializable {
+public class ProjectParameterDO implements RPC {
 
     private static final long serialVersionUID = 1L;
 
-    protected Integer id;             
-    protected Integer projectId;             
-    protected String parameter;             
-    protected Integer operationId;             
-    protected String value;
-    
-    private boolean delete;
-    
+    protected Integer         id;
+    protected Integer         projectId;
+    protected String          parameter;
+    protected Integer         operationId;
+    protected String          value;
+
+    private boolean           delete;
+
     public ProjectParameterDO() {
-        
+
     }
-    
-    public ProjectParameterDO(Integer id,Integer projectId,
-                              String parameter,Integer operationId,
+
+    public ProjectParameterDO(Integer id,
+                              Integer projectId,
+                              String parameter,
+                              Integer operationId,
                               String value) {
         setId(id);
         setProjectId(projectId);
@@ -102,6 +103,5 @@ public class ProjectParameterDO implements Serializable {
     public void setDelete(boolean delete) {
         this.delete = delete;
     }
-    
-    
+
 }

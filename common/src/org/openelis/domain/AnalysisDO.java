@@ -25,64 +25,55 @@
 */
 package org.openelis.domain;
 
-import java.io.Serializable;
 import java.util.Date;
 
 import org.openelis.gwt.common.Datetime;
+import org.openelis.gwt.common.RPC;
 
-public class AnalysisDO implements Serializable {
+public class AnalysisDO implements RPC {
 
-    /**
-     * 
-     */
     private static final long serialVersionUID = 1L;
 
-    protected Integer id;             
+    protected Integer         id;
+    protected Integer         sampleItemId;
+    protected Integer         revision;
+    protected Integer         testId;
+    protected Integer         sectionId;
+    protected Integer         preAnalysisId;
+    protected Integer         parentAnalysisId;
+    protected Integer         parentResultId;
+    protected String          isReportable;
+    protected Integer         unitOfMeasureId;
+    protected Integer         statusId;
+    protected Datetime        availableDate;
+    protected Datetime        startedDate;
+    protected Datetime        completedDate;
+    protected Datetime        releasedDate;
+    protected Datetime        printedDate;
 
-    protected Integer sampleItemId;             
+    private Boolean           delete           = false;
 
-    protected Integer revision;             
-
-    protected Integer testId;             
-
-    protected Integer sectionId;             
-
-    protected Integer preAnalysisId;             
-
-    protected Integer parentAnalysisId;             
-
-    protected Integer parentResultId;             
-
-    protected String isReportable;             
-
-    protected Integer unitOfMeasureId;             
-
-    protected Integer statusId;             
-
-    protected Datetime availableDate;             
-
-    protected Datetime startedDate;             
-
-    protected Datetime completedDate;             
-
-    protected Datetime releasedDate;             
-
-    protected Datetime printedDate;  
-    
-    private Boolean delete = false;
-    
     public AnalysisDO() {
-        
+
     }
 
-    public AnalysisDO(Integer id,Integer sampleItemId,Integer revision,
-                      Integer testId,Integer sectionId,Integer preAnalysisId,
-                      Integer parentAnalysisId,Integer parentResultId,
-                      String isReportable,Integer unitOfMeasureId,
-                      Integer statusId,Date availableDate,
-                      Date startedDate,Date completedDate,
-                      Date releasedDate,Date printedDate) {
-                                                                                
+    public AnalysisDO(Integer id,
+                      Integer sampleItemId,
+                      Integer revision,
+                      Integer testId,
+                      Integer sectionId,
+                      Integer preAnalysisId,
+                      Integer parentAnalysisId,
+                      Integer parentResultId,
+                      String isReportable,
+                      Integer unitOfMeasureId,
+                      Integer statusId,
+                      Date availableDate,
+                      Date startedDate,
+                      Date completedDate,
+                      Date releasedDate,
+                      Date printedDate) {
+
         this.id = id;
         this.sampleItemId = sampleItemId;
         this.revision = revision;
@@ -194,7 +185,9 @@ public class AnalysisDO implements Serializable {
     }
 
     public void setAvailableDate(Date availableDate) {
-        this.availableDate = new Datetime(Datetime.YEAR,Datetime.DAY,availableDate);
+        this.availableDate = new Datetime(Datetime.YEAR,
+                                          Datetime.DAY,
+                                          availableDate);
     }
 
     public Datetime getStartedDate() {
@@ -202,11 +195,13 @@ public class AnalysisDO implements Serializable {
     }
 
     public void setStartedDate(Date startedDate) {
-        this.startedDate = new Datetime(Datetime.YEAR,Datetime.DAY,startedDate);
+        this.startedDate = new Datetime(Datetime.YEAR,
+                                        Datetime.DAY,
+                                        startedDate);
     }
-    
+
     public void setStartedDate(Datetime startedDate) {
-    	setStartedDate(startedDate.getDate());
+        setStartedDate(startedDate.getDate());
     }
 
     public Datetime getCompletedDate() {
@@ -214,7 +209,9 @@ public class AnalysisDO implements Serializable {
     }
 
     public void setCompletedDate(Date completedDate) {
-        this.completedDate = new Datetime(Datetime.YEAR,Datetime.DAY,completedDate);
+        this.completedDate = new Datetime(Datetime.YEAR,
+                                          Datetime.DAY,
+                                          completedDate);
     }
 
     public Datetime getReleasedDate() {
@@ -222,7 +219,9 @@ public class AnalysisDO implements Serializable {
     }
 
     public void setReleasedDate(Date releasedDate) {
-        this.releasedDate = new Datetime(Datetime.YEAR,Datetime.DAY,releasedDate);
+        this.releasedDate = new Datetime(Datetime.YEAR,
+                                         Datetime.DAY,
+                                         releasedDate);
     }
 
     public Datetime getPrintedDate() {
@@ -230,7 +229,9 @@ public class AnalysisDO implements Serializable {
     }
 
     public void setPrintedDate(Date printedDate) {
-        this.printedDate = new Datetime(Datetime.YEAR,Datetime.DAY,printedDate);
+        this.printedDate = new Datetime(Datetime.YEAR,
+                                        Datetime.DAY,
+                                        printedDate);
     }
 
     public Boolean getDelete() {
@@ -240,6 +241,5 @@ public class AnalysisDO implements Serializable {
     public void setDelete(Boolean delete) {
         this.delete = delete;
     }
-    
-    
+
 }

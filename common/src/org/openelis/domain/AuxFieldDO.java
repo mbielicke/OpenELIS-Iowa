@@ -23,121 +23,144 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-
 package org.openelis.domain;
 
-import java.io.Serializable;
 import java.util.List;
 
+import org.openelis.gwt.common.RPC;
 import org.openelis.utilcommon.DataBaseUtil;
 
-public class AuxFieldDO implements Serializable {
+public class AuxFieldDO implements RPC {
 
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 1L;
-    
-    protected Integer id;  
-    protected Integer auxFieldGroupId; 
-    protected Integer sortOrder;             
-    protected Integer analyteId;    
-    protected String analyteName;
-    protected String description;                         
-    protected Integer methodId;     
-    protected String methodName;
-    protected Integer unitOfMeasureId;             
-    protected String isRequired;             
-    protected String isActive;             
-    protected String isReportable;             
-    protected Integer scriptletId;
-    protected String scriptletName;
-    private boolean delete = false;
+    private static final long     serialVersionUID = 1L;
+
+    protected Integer             id;
+    protected Integer             auxFieldGroupId;
+    protected Integer             sortOrder;
+    protected Integer             analyteId;
+    protected String              analyteName;
+    protected String              description;
+    protected Integer             methodId;
+    protected String              methodName;
+    protected Integer             unitOfMeasureId;
+    protected String              isRequired;
+    protected String              isActive;
+    protected String              isReportable;
+    protected Integer             scriptletId;
+    protected String              scriptletName;
+    private boolean               delete           = false;
     private List<AuxFieldValueDO> auxFieldValues;
-    
+
     public AuxFieldDO() {
-        
+
     }
-    
-    public AuxFieldDO( Integer id, Integer sortOrder,
-                       Integer analyteId,String analyteName,String description,
-                       Integer auxFieldGroupId,Integer methodId, String methodName,
-                       Integer unitOfMeasureId,String isRequired,
-                       String isActive,String isReportable,
-                       Integer scriptletId,String scriptletName) {        
+
+    public AuxFieldDO(Integer id,
+                      Integer sortOrder,
+                      Integer analyteId,
+                      String analyteName,
+                      String description,
+                      Integer auxFieldGroupId,
+                      Integer methodId,
+                      String methodName,
+                      Integer unitOfMeasureId,
+                      String isRequired,
+                      String isActive,
+                      String isReportable,
+                      Integer scriptletId,
+                      String scriptletName) {
         setId(id);
         setSortOrder(sortOrder);
         setAnalyteId(analyteId);
         setAnalyteName(analyteName);
         setDescription(description);
-        setAuxFieldGroupId(auxFieldGroupId); 
+        setAuxFieldGroupId(auxFieldGroupId);
         setMethodId(methodId);
         setMethodName(methodName);
         setUnitOfMeasureId(unitOfMeasureId);
         setIsRequired(isRequired);
         setIsActive(isActive);
         setIsReportable(isReportable);
-        setScriptletId(scriptletId);   
+        setScriptletId(scriptletId);
         setScriptletName(scriptletName);
     }
-    
+
     public Integer getId() {
         return id;
     }
+
     public void setId(Integer id) {
         this.id = id;
     }
+
     public Integer getSortOrder() {
         return sortOrder;
     }
+
     public void setSortOrder(Integer sortOrder) {
         this.sortOrder = sortOrder;
     }
+
     public Integer getAnalyteId() {
         return analyteId;
     }
+
     public void setAnalyteId(Integer analyteId) {
         this.analyteId = analyteId;
     }
+
     public String getDescription() {
         return description;
     }
+
     public void setDescription(String description) {
         this.description = description;
     }
+
     public Integer getMethodId() {
         return methodId;
     }
+
     public void setMethodId(Integer methodId) {
         this.methodId = methodId;
     }
+
     public Integer getUnitOfMeasureId() {
         return unitOfMeasureId;
     }
+
     public void setUnitOfMeasureId(Integer unitOfMeasureId) {
         this.unitOfMeasureId = unitOfMeasureId;
     }
+
     public String getIsRequired() {
         return isRequired;
     }
+
     public void setIsRequired(String isRequired) {
         this.isRequired = isRequired;
     }
+
     public String getIsActive() {
         return isActive;
     }
+
     public void setIsActive(String isActive) {
         this.isActive = isActive;
     }
+
     public String getIsReportable() {
         return isReportable;
     }
+
     public void setIsReportable(String isReportable) {
         this.isReportable = isReportable;
     }
+
     public Integer getScriptletId() {
         return scriptletId;
     }
+
     public void setScriptletId(Integer scriptletId) {
         this.scriptletId = scriptletId;
     }
@@ -188,6 +211,6 @@ public class AuxFieldDO implements Serializable {
 
     public void setScriptletName(String scriptletName) {
         this.scriptletName = DataBaseUtil.trim(scriptletName);
-    } 
+    }
 
 }
