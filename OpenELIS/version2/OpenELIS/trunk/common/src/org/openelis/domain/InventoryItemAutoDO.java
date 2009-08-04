@@ -25,32 +25,32 @@
 */
 package org.openelis.domain;
 
-import java.io.Serializable;
 import java.util.Date;
 
 import org.openelis.gwt.common.Datetime;
+import org.openelis.gwt.common.RPC;
 import org.openelis.utilcommon.DataBaseUtil;
 
-public class InventoryItemAutoDO implements Serializable{
+public class InventoryItemAutoDO implements RPC {
 
     private static final long serialVersionUID = 1L;
-    
-    protected Integer id;
-    protected String name;
-    protected String store;
-    protected Integer locationId;
-    protected String location;
-    protected Integer quantityOnHand;
-    protected String description;
-    protected String dispensedUnits;
-    protected String lotNum;
-    protected Datetime expDate;
-    protected String isBulk;
-    protected String isLotMaintained;
-    protected String isSerialMaintained;
-    protected Integer parentInventoryItemId;
-    protected Integer parentRatio;
-    
+
+    protected Integer         id;
+    protected String          name;
+    protected String          store;
+    protected Integer         locationId;
+    protected String          location;
+    protected Integer         quantityOnHand;
+    protected String          description;
+    protected String          dispensedUnits;
+    protected String          lotNum;
+    protected Datetime        expDate;
+    protected String          isBulk;
+    protected String          isLotMaintained;
+    protected String          isSerialMaintained;
+    protected Integer         parentInventoryItemId;
+    protected Integer         parentRatio;
+
     public Integer getParentRatio() {
         return parentRatio;
     }
@@ -59,22 +59,28 @@ public class InventoryItemAutoDO implements Serializable{
         this.parentRatio = parentRatio;
     }
 
-    public InventoryItemAutoDO(){
-        
+    public InventoryItemAutoDO() {
+
     }
-    
-    public InventoryItemAutoDO(Integer id, String name){
+
+    public InventoryItemAutoDO(Integer id, String name) {
         setId(id);
         setName(name);
     }
-    
-    public InventoryItemAutoDO(Integer id, String name, String store){
+
+    public InventoryItemAutoDO(Integer id, String name, String store) {
         setId(id);
         setName(name);
         setStore(store);
     }
-    
-    public InventoryItemAutoDO(Integer id, String name, String store, String description, String dispensedUnits, String isBulk, String isSerialMaintained){
+
+    public InventoryItemAutoDO(Integer id,
+                               String name,
+                               String store,
+                               String description,
+                               String dispensedUnits,
+                               String isBulk,
+                               String isSerialMaintained) {
         setId(id);
         setName(name);
         setStore(store);
@@ -83,43 +89,75 @@ public class InventoryItemAutoDO implements Serializable{
         setIsBulk(isBulk);
         setIsSerialMaintained(isSerialMaintained);
     }
-    
-    public InventoryItemAutoDO(Integer id, String name, String store, Integer locationId, String childStorageLocName, String childStorageLocLocation,  
-                               String parentStorageLocName, String childStorageUnit, String lotNum, Date expDate, Integer quantityOnHand){
+
+    public InventoryItemAutoDO(Integer id,
+                               String name,
+                               String store,
+                               Integer locationId,
+                               String childStorageLocName,
+                               String childStorageLocLocation,
+                               String parentStorageLocName,
+                               String childStorageUnit,
+                               String lotNum,
+                               Date expDate,
+                               Integer quantityOnHand) {
         setId(id);
         setName(name);
         setStore(store);
         setLocationId(locationId);
-        
-        //build the storage location string
+
+        // build the storage location string
         String storageLocation = "";
-        if(parentStorageLocName != null)
-            storageLocation += parentStorageLocName.trim()+", "+childStorageUnit.trim()+" "+childStorageLocLocation.trim();
+        if (parentStorageLocName != null)
+            storageLocation += parentStorageLocName.trim() + ", "
+                               + childStorageUnit.trim()
+                               + " "
+                               + childStorageLocLocation.trim();
         else
-            storageLocation += childStorageUnit.trim()+" "+childStorageLocLocation.trim();
-        
+            storageLocation += childStorageUnit.trim() + " "
+                               + childStorageLocLocation.trim();
+
         setLocation(storageLocation);
         setLotNum(lotNum);
         setExpDate(expDate);
         setQuantityOnHand(quantityOnHand);
     }
-    
-    public InventoryItemAutoDO(Integer id, String name, String description, String store, Integer locationId, String childStorageLocName, String childStorageLocLocation,  
-                               String parentStorageLocName, String childStorageUnit, String lotNum, Date expDate, Integer quantityOnHand, String dispensedUnits,
-                               String isBulk, String isLotMaintained, String isSerialMaintained, Integer parentRatio, Integer parentInventoryItemId){
+
+    public InventoryItemAutoDO(Integer id,
+                               String name,
+                               String description,
+                               String store,
+                               Integer locationId,
+                               String childStorageLocName,
+                               String childStorageLocLocation,
+                               String parentStorageLocName,
+                               String childStorageUnit,
+                               String lotNum,
+                               Date expDate,
+                               Integer quantityOnHand,
+                               String dispensedUnits,
+                               String isBulk,
+                               String isLotMaintained,
+                               String isSerialMaintained,
+                               Integer parentRatio,
+                               Integer parentInventoryItemId) {
         setId(id);
         setName(name);
         setDescription(description);
         setStore(store);
         setLocationId(locationId);
-        
-        //build the storage location string
+
+        // build the storage location string
         String storageLocation = "";
-        if(parentStorageLocName != null)
-            storageLocation += parentStorageLocName.trim()+", "+childStorageUnit.trim()+" "+childStorageLocLocation.trim();
+        if (parentStorageLocName != null)
+            storageLocation += parentStorageLocName.trim() + ", "
+                               + childStorageUnit.trim()
+                               + " "
+                               + childStorageLocLocation.trim();
         else
-            storageLocation += childStorageUnit.trim()+" "+childStorageLocLocation.trim();
-        
+            storageLocation += childStorageUnit.trim() + " "
+                               + childStorageLocLocation.trim();
+
         setLocation(storageLocation);
         setLotNum(lotNum);
         setExpDate(expDate);
@@ -128,33 +166,48 @@ public class InventoryItemAutoDO implements Serializable{
         setIsBulk(isBulk);
         setIsLotMaintained(isLotMaintained);
         setIsSerialMaintained(isSerialMaintained);
-        
+
         setParentInventoryItemId(parentInventoryItemId);
         setParentRatio(parentRatio);
     }
-     
-    public InventoryItemAutoDO(Integer id, String name, String store, String description, String dispensedUnits, String isBulk, String isLotMaintained, 
-                               String isSerialMaintained, Integer parentRatio, Integer parentInventoryItemId){
+
+    public InventoryItemAutoDO(Integer id,
+                               String name,
+                               String store,
+                               String description,
+                               String dispensedUnits,
+                               String isBulk,
+                               String isLotMaintained,
+                               String isSerialMaintained,
+                               Integer parentRatio,
+                               Integer parentInventoryItemId) {
         setId(id);
         setName(name);
         setStore(store);
         setDescription(description);
         setDispensedUnits(dispensedUnits);
-        
+
         setIsBulk(isBulk);
         setIsLotMaintained(isLotMaintained);
         setIsSerialMaintained(isSerialMaintained);
         setParentInventoryItemId(parentInventoryItemId);
         setParentRatio(parentRatio);
     }
-    
-    public InventoryItemAutoDO(Integer id, String name, String store, String description, String dispensedUnits, String isBulk, String isLotMaintained, String isSerialMaintained){
+
+    public InventoryItemAutoDO(Integer id,
+                               String name,
+                               String store,
+                               String description,
+                               String dispensedUnits,
+                               String isBulk,
+                               String isLotMaintained,
+                               String isSerialMaintained) {
         setId(id);
         setName(name);
         setStore(store);
         setDescription(description);
         setDispensedUnits(dispensedUnits);
-        
+
         setIsBulk(isBulk);
         setIsLotMaintained(isLotMaintained);
         setIsSerialMaintained(isSerialMaintained);
@@ -207,7 +260,7 @@ public class InventoryItemAutoDO implements Serializable{
     public void setLocationId(Integer locationId) {
         this.locationId = locationId;
     }
-    
+
     public String getDescription() {
         return description;
     }
@@ -239,7 +292,7 @@ public class InventoryItemAutoDO implements Serializable{
     public void setLotNum(String lotNum) {
         this.lotNum = lotNum;
     }
-    
+
     public String getIsBulk() {
         return isBulk;
     }

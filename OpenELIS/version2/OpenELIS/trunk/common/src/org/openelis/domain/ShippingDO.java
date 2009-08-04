@@ -25,39 +25,47 @@
 */
 package org.openelis.domain;
 
-import java.io.Serializable;
 import java.util.Date;
 
 import org.openelis.gwt.common.Datetime;
+import org.openelis.gwt.common.RPC;
 import org.openelis.utilcommon.DataBaseUtil;
 
-public class ShippingDO implements Serializable{
+public class ShippingDO implements RPC {
 
     private static final long serialVersionUID = 1L;
-    
-    protected Integer id;
-    protected Integer statusId;
-    protected Integer shippedFromId;
-    protected Integer shippedToId;
-    protected String shippedTo;
-    protected Integer processedById;
-    protected String processedBy;
-    protected Datetime processedDate;
-    protected Integer shippedMethodId;
-    protected Datetime shippedDate;
-    protected Integer numberOfPackages;
-    protected Double cost;
-    
-    public AddressDO addressDO = new AddressDO();
-    
-    public ShippingDO(){
-        
+
+    protected Integer         id;
+    protected Integer         statusId;
+    protected Integer         shippedFromId;
+    protected Integer         shippedToId;
+    protected String          shippedTo;
+    protected Integer         processedById;
+    protected String          processedBy;
+    protected Datetime        processedDate;
+    protected Integer         shippedMethodId;
+    protected Datetime        shippedDate;
+    protected Integer         numberOfPackages;
+    protected Double          cost;
+
+    public AddressDO          addressDO        = new AddressDO();
+
+    public ShippingDO() {
+
     }
-    
-    //without address info
-    public ShippingDO(Integer id, Integer statusId, Integer shippedFromId, Integer shippedToId, String shippedTo,
-                      Integer processedById, Date processedDate, Integer shippedMethodId,
-                      Date shippedDate, Integer numberOfPackages, Double cost){
+
+    // without address info
+    public ShippingDO(Integer id,
+                      Integer statusId,
+                      Integer shippedFromId,
+                      Integer shippedToId,
+                      String shippedTo,
+                      Integer processedById,
+                      Date processedDate,
+                      Integer shippedMethodId,
+                      Date shippedDate,
+                      Integer numberOfPackages,
+                      Double cost) {
         setId(id);
         setStatusId(statusId);
         setShippedFromId(shippedFromId);
@@ -70,12 +78,24 @@ public class ShippingDO implements Serializable{
         setNumberOfPackages(numberOfPackages);
         setCost(cost);
     }
-    
-    //with address info
-    public ShippingDO(Integer id, Integer statusId, Integer shippedFromId, Integer shippedToId, String shippedTo,
-                      Integer processedById, Date processedDate, Integer shippedMethodId,
-                      Date shippedDate, Integer numberOfPackages, Double cost,
-                      String multUnit, String streetAddress, String city, String state, String zipCode){
+
+    // with address info
+    public ShippingDO(Integer id,
+                      Integer statusId,
+                      Integer shippedFromId,
+                      Integer shippedToId,
+                      String shippedTo,
+                      Integer processedById,
+                      Date processedDate,
+                      Integer shippedMethodId,
+                      Date shippedDate,
+                      Integer numberOfPackages,
+                      Double cost,
+                      String multUnit,
+                      String streetAddress,
+                      String city,
+                      String state,
+                      String zipCode) {
         setId(id);
         setStatusId(statusId);
         setShippedFromId(shippedFromId);
@@ -87,8 +107,8 @@ public class ShippingDO implements Serializable{
         setShippedDate(shippedDate);
         setNumberOfPackages(numberOfPackages);
         setCost(cost);
-        
-        //address info
+
+        // address info
         addressDO.setMultipleUnit(multUnit);
         addressDO.setStreetAddress(streetAddress);
         addressDO.setCity(city);
@@ -133,7 +153,9 @@ public class ShippingDO implements Serializable{
     }
 
     public void setProcessedDate(Date processedDate) {
-        this.processedDate = new Datetime(Datetime.YEAR, Datetime.DAY, processedDate);
+        this.processedDate = new Datetime(Datetime.YEAR,
+                                          Datetime.DAY,
+                                          processedDate);
     }
 
     public Datetime getShippedDate() {
@@ -141,7 +163,9 @@ public class ShippingDO implements Serializable{
     }
 
     public void setShippedDate(Date shippedDate) {
-        this.shippedDate = new Datetime(Datetime.YEAR, Datetime.DAY, shippedDate);
+        this.shippedDate = new Datetime(Datetime.YEAR,
+                                        Datetime.DAY,
+                                        shippedDate);
     }
 
     public Integer getShippedFromId() {
@@ -167,7 +191,7 @@ public class ShippingDO implements Serializable{
     public void setShippedToId(Integer shippedToId) {
         this.shippedToId = shippedToId;
     }
-    
+
     public String getShippedTo() {
         return shippedTo;
     }

@@ -25,26 +25,30 @@
 */
 package org.openelis.domain;
 
-import java.io.Serializable;
-
+import org.openelis.gwt.common.Datetime;
+import org.openelis.gwt.common.RPC;
 import org.openelis.utilcommon.DataBaseUtil;
 
-public class BuildKitComponentDO implements Serializable{
+public class BuildKitComponentDO implements RPC {
 
     private static final long serialVersionUID = 1L;
-    protected Integer inventoryItemId;
-    protected String component;
-    protected Integer locationId;
-    protected String location;
-    protected String lotNum;
-    //protected DateTime expDate;
-    protected Double unit;
-    protected Integer total;
-    protected Integer qtyOnHand;
-    protected Integer orderItemId;
-    protected Integer inventoryXUseId;
-    protected Integer inventoryReceiptOrderItemId;
-    
+    protected Integer         inventoryItemId;
+    protected String          component;
+    protected Integer         locationId;
+    protected String          location;
+    protected String          lotNum;
+    protected Datetime        expDate;
+    protected Double          unit;
+    protected Integer         total;
+    protected Integer         qtyOnHand;
+    protected Integer         orderItemId;
+    protected Integer         inventoryXUseId;
+    protected Integer         inventoryReceiptOrderItemId;
+
+    public BuildKitComponentDO() {
+
+    }
+
     public Integer getInventoryReceiptOrderItemId() {
         return inventoryReceiptOrderItemId;
     }
@@ -61,10 +65,6 @@ public class BuildKitComponentDO implements Serializable{
         this.inventoryXUseId = inventoryXUseId;
     }
 
-    public BuildKitComponentDO(){
-        
-    }
-
     public String getComponent() {
         return component;
     }
@@ -73,14 +73,6 @@ public class BuildKitComponentDO implements Serializable{
         this.component = DataBaseUtil.trim(component);
     }
 
-   /* public Integer getComponentId() {
-        return componentId;
-    }
-
-    public void setComponentId(Integer componentId) {
-        this.componentId = componentId;
-    }
-*/
     public String getLocation() {
         return location;
     }
@@ -143,5 +135,13 @@ public class BuildKitComponentDO implements Serializable{
 
     public void setInventoryItemId(Integer inventoryItemId) {
         this.inventoryItemId = inventoryItemId;
+    }
+
+    public Datetime getExpDate() {
+        return expDate;
+    }
+
+    public void setExpDate(Datetime expDate) {
+        this.expDate = expDate;
     }
 }

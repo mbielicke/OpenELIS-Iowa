@@ -25,24 +25,21 @@
 */
 package org.openelis.domain;
 
-import java.io.Serializable;
-
+import org.openelis.gwt.common.RPC;
 import org.openelis.utilcommon.DataBaseUtil;
 
+public class ProviderAddressDO implements RPC {
 
+    private static final long serialVersionUID = 1L;
 
-public class ProviderAddressDO implements Serializable {
+    protected Integer         id;
+    protected String          location;
+    protected String          externalId;
+    protected Integer         provider;
+    protected AddressDO       addressDO        = new AddressDO();
 
-    private static final long serialVersionUID = -1754500573676617534L;
-    
-    protected Integer id;             
-    protected String location;      
-    protected String externalId;   
-    protected Integer provider;    
-    protected AddressDO addressDO = new AddressDO();
-    
-    protected Boolean delete;
-    
+    protected Boolean         delete;
+
     public Boolean getDelete() {
         return delete;
     }
@@ -51,18 +48,31 @@ public class ProviderAddressDO implements Serializable {
         this.delete = delete;
     }
 
-    public ProviderAddressDO(){
-        
+    public ProviderAddressDO() {
+
     }
-    
-    public ProviderAddressDO(Integer id, String location, String externalId, Integer provider, Integer addressId, String multipleUnit, 
-                            String streetAddress, String city, String state, String zipCode, String workPhone, String homePhone, String cellPhone, String faxPhone,
-                             String email, String country){
-        
+
+    public ProviderAddressDO(Integer id,
+                             String location,
+                             String externalId,
+                             Integer provider,
+                             Integer addressId,
+                             String multipleUnit,
+                             String streetAddress,
+                             String city,
+                             String state,
+                             String zipCode,
+                             String workPhone,
+                             String homePhone,
+                             String cellPhone,
+                             String faxPhone,
+                             String email,
+                             String country) {
+
         setId(id);
         setLocation(location);
         setExternalId(externalId);
-        setProvider(provider);       
+        setProvider(provider);
         addressDO.setId(addressId);
         addressDO.setMultipleUnit(multipleUnit);
         addressDO.setStreetAddress(streetAddress);
@@ -75,7 +85,7 @@ public class ProviderAddressDO implements Serializable {
         addressDO.setFaxPhone(faxPhone);
         addressDO.setEmail(email);
         addressDO.setCountry(country);
-        
+
     }
 
     public AddressDO getAddressDO() {
@@ -117,6 +127,5 @@ public class ProviderAddressDO implements Serializable {
     public void setProvider(Integer provider) {
         this.provider = provider;
     }
-    
 
 }

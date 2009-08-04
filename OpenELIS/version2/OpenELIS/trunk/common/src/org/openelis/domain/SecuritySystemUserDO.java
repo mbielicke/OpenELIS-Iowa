@@ -25,48 +25,56 @@
 */
 package org.openelis.domain;
 
-import java.io.Serializable;
+import org.openelis.gwt.common.RPC;
 
-public class SecuritySystemUserDO implements Serializable {
-    
-    /**
-     * 
-     */
+public class SecuritySystemUserDO implements RPC {
+
     private static final long serialVersionUID = 1L;
-    protected Integer id; 
-    protected String loginName,lastName,firstName,initials;
-    protected boolean isEmployee,isActive;
+
+    protected Integer         id;
+    protected String          loginName, lastName, firstName, initials;
+    protected boolean         isEmployee, isActive;
 
     public SecuritySystemUserDO() {
 
     }
 
-    public SecuritySystemUserDO(Integer id,String loginName,String lastName,
-                              String firstName,String initials,String isEmployee,String isActive) {
+    public SecuritySystemUserDO(Integer id,
+                                String loginName,
+                                String lastName,
+                                String firstName,
+                                String initials,
+                                String isEmployee,
+                                String isActive) {
         this.id = id;
         this.loginName = loginName;
         this.lastName = lastName;
         this.firstName = firstName;
         this.initials = initials;
-        if("Y".equals(isEmployee))
+        if ("Y".equals(isEmployee))
             this.isEmployee = true;
-        if("Y".equals(isActive))
+        if ("Y".equals(isActive))
             this.isActive = true;
     }
 
-    public SecuritySystemUserDO(Integer id,String loginName,String lastName,
-                              String firstName,String initials,boolean isEmployee,boolean isActive) {
+    public SecuritySystemUserDO(Integer id,
+                                String loginName,
+                                String lastName,
+                                String firstName,
+                                String initials,
+                                boolean isEmployee,
+                                boolean isActive) {
         this.id = id;
         this.loginName = loginName;
         this.lastName = lastName;
         this.firstName = firstName;
         this.initials = initials;
-        if("Y".equals(isEmployee))
+        if ("Y".equals(isEmployee))
             this.isEmployee = true;
-        if("Y".equals(isActive))
+        if ("Y".equals(isActive))
             this.isActive = true;
     }
-    
+
     public String getFirstName() {
         return firstName;
     }
@@ -90,7 +98,7 @@ public class SecuritySystemUserDO implements Serializable {
     public String getLoginName() {
         return loginName;
     }
-    
+
     public String getInitials() {
         return initials;
     }

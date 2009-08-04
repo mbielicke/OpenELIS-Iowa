@@ -25,43 +25,49 @@
 */
 package org.openelis.domain;
 
-import org.openelis.gwt.common.Datetime;
-import org.openelis.utilcommon.DataBaseUtil;
-
-import java.io.Serializable;
 import java.util.Date;
 
-public class FillOrderDO implements Serializable{
+import org.openelis.gwt.common.Datetime;
+import org.openelis.gwt.common.RPC;
+import org.openelis.utilcommon.DataBaseUtil;
+
+public class FillOrderDO implements RPC {
 
     private static final long serialVersionUID = 1L;
-    
-    protected Integer orderId;
-    protected Integer statusId;
-    protected Datetime orderedDate;
-    protected Integer shipFromId;
-    protected Integer shipToId;
-    protected String shipTo;
-    protected String description;
-    protected Integer numberOfDays;
-    protected Integer daysLeft;
-    protected String requestedBy;
-    protected Integer costCenterId;
-    protected String orderNote;
-    //protected String isExternal;
 
-    protected Integer inventoryLocationId;
-    protected Integer orderItemId;
-    protected Integer quantity;
-    protected Integer inventoryXUseId;
-    
-    public AddressDO addressDO = new AddressDO();
+    protected Integer         orderId;
+    protected Integer         statusId;
+    protected Datetime        orderedDate;
+    protected Integer         shipFromId;
+    protected Integer         shipToId;
+    protected String          shipTo;
+    protected String          description;
+    protected Integer         numberOfDays;
+    protected Integer         daysLeft;
+    protected String          requestedBy;
+    protected Integer         costCenterId;
+    protected String          orderNote;
+    // protected String isExternal;
 
-    public FillOrderDO(){
-        
+    protected Integer         inventoryLocationId;
+    protected Integer         orderItemId;
+    protected Integer         quantity;
+    protected Integer         inventoryXUseId;
+
+    public AddressDO          addressDO        = new AddressDO();
+
+    public FillOrderDO() {
+
     }
-    
-    public FillOrderDO(Integer orderId, Integer statusId, Date orderedDate, Integer shipFromId, Integer shipToId, 
-                       String shipTo, String description, Integer numberOfDays) {
+
+    public FillOrderDO(Integer orderId,
+                       Integer statusId,
+                       Date orderedDate,
+                       Integer shipFromId,
+                       Integer shipToId,
+                       String shipTo,
+                       String description,
+                       Integer numberOfDays) {
         setOrderId(orderId);
         setStatusId(statusId);
         setOrderedDate(orderedDate);
@@ -71,9 +77,14 @@ public class FillOrderDO implements Serializable{
         setDescription(description);
         setNumberOfDays(numberOfDays);
     }
-    
-    public FillOrderDO(String requestedBy, Integer costCenterId, String multUnit, String streetAddress, String city, 
-                       String state, String zipCode) {
+
+    public FillOrderDO(String requestedBy,
+                       Integer costCenterId,
+                       String multUnit,
+                       String streetAddress,
+                       String city,
+                       String state,
+                       String zipCode) {
         setRequestedBy(requestedBy);
         setCostCenterId(costCenterId);
         addressDO.setMultipleUnit(multUnit);
@@ -81,34 +92,16 @@ public class FillOrderDO implements Serializable{
         addressDO.setCity(city);
         addressDO.setState(state);
         addressDO.setZipCode(zipCode);
-        
+
     }
 
     /*
-    public FillOrderDO(Integer orderId, Integer statusId, Date orderedDate, Integer shipFromId,
-                       Integer shipToId, String shipTo, String description, Integer numberOfDays, String requestedBy,
-                       Integer costCenterId, String isExternal, String multUnit, String streetAddress, String city,
-                       String state, String zipCode){
-        setOrderId(orderId);
-        setStatusId(statusId);
-        setOrderedDate(orderedDate);
-        setShipFromId(shipFromId);
-        setShipToId(shipToId);
-        setShipTo(shipTo);
-        setDescription(description);
-        setNumberOfDays(numberOfDays);
-        setRequestedBy(requestedBy);
-        setCostCenterId(costCenterId);
+     * public FillOrderDO(Integer orderId, Integer statusId, Date orderedDate, Integer shipFromId, Integer shipToId, String shipTo, String description, Integer numberOfDays, String requestedBy, Integer costCenterId, String isExternal, String multUnit, String streetAddress, String city, String state, String zipCode){ setOrderId(orderId); setStatusId(statusId); setOrderedDate(orderedDate); setShipFromId(shipFromId); setShipToId(shipToId); setShipTo(shipTo); setDescription(description); setNumberOfDays(numberOfDays); setRequestedBy(requestedBy); setCostCenterId(costCenterId);
+     * 
+     * 
+     * //address values addressDO.setMultipleUnit(multUnit); addressDO.setStreetAddress(streetAddress); addressDO.setCity(city); addressDO.setState(state); addressDO.setZipCode(zipCode); }
+     */
 
-        
-        //address values
-        addressDO.setMultipleUnit(multUnit);
-        addressDO.setStreetAddress(streetAddress);
-        addressDO.setCity(city);
-        addressDO.setState(state);
-        addressDO.setZipCode(zipCode);
-    }*/
-    
     public Integer getDaysLeft() {
         return daysLeft;
     }
@@ -138,7 +131,9 @@ public class FillOrderDO implements Serializable{
     }
 
     public void setOrderedDate(Date orderedDate) {
-        this.orderedDate = new Datetime(Datetime.YEAR, Datetime.DAY, orderedDate);
+        this.orderedDate = new Datetime(Datetime.YEAR,
+                                        Datetime.DAY,
+                                        orderedDate);
     }
 
     public Integer getOrderId() {

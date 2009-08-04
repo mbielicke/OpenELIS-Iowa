@@ -25,33 +25,34 @@
 */
 package org.openelis.domain;
 
-import java.io.Serializable;
-
+import org.openelis.gwt.common.RPC;
 import org.openelis.utilcommon.DataBaseUtil;
 
-
-public class TestReflexDO implements Serializable {
+public class TestReflexDO implements RPC {
 
     private static final long serialVersionUID = 1L;
-    
-    protected Integer id;             
-    protected Integer testId;             
-    protected Integer testAnalyteId;             
-    protected Integer testResultId;                 
-    protected Integer flagsId;             
-    protected Integer addTestId;
-    protected String addTestName;
-    protected String methodName;
-    protected Boolean delete = false;    
-    
-    
+
+    protected Integer         id;
+    protected Integer         testId;
+    protected Integer         testAnalyteId;
+    protected Integer         testResultId;
+    protected Integer         flagsId;
+    protected Integer         addTestId;
+    protected String          addTestName;
+    protected String          methodName;
+    protected Boolean         delete           = false;
+
     public TestReflexDO() {
-        
+
     }
 
-    public TestReflexDO(Integer id,Integer testId,Integer testAnalyteId,
-                        Integer testResultId,Integer flagsId,
-                        Integer addTestId,String addTestName,
+    public TestReflexDO(Integer id,
+                        Integer testId,
+                        Integer testAnalyteId,
+                        Integer testResultId,
+                        Integer flagsId,
+                        Integer addTestId,
+                        String addTestName,
                         String methodName) {
         setId(id);
         setTestId(testId);
@@ -60,9 +61,9 @@ public class TestReflexDO implements Serializable {
         setFlagsId(flagsId);
         setAddTestId(addTestId);
         setAddTestName(addTestName);
-        setMethodName(methodName);        
+        setMethodName(methodName);
     }
-                        
+
     public Integer getAddTestId() {
         return addTestId;
     }
@@ -133,6 +134,6 @@ public class TestReflexDO implements Serializable {
 
     public void setMethodName(String methodName) {
         this.methodName = DataBaseUtil.trim(methodName);
-    }    
+    }
 
 }

@@ -25,32 +25,35 @@
 */
 package org.openelis.domain;
 
-import java.io.Serializable;
-
+import org.openelis.gwt.common.RPC;
 import org.openelis.utilcommon.DataBaseUtil;
 
-public class InventoryAdjustmentChildDO implements Serializable {
+public class InventoryAdjustmentChildDO implements RPC {
 
     private static final long serialVersionUID = 1L;
-    protected Integer id;  //<--this is the TRANS_ADJUSTMENT_LOCATION id
-    protected Integer adjustmentId;
-    protected Integer locationId;
-    protected Integer inventoryItemId;
-    protected String inventoryItem;
-    protected String storageLocation;
-    protected Integer quantityOnHand;
-    protected Integer physicalCount;
-    protected Integer adjustedQuantity;
-    protected Boolean delete = false;
+    protected Integer         id;                      // <--this is the TRANS_ADJUSTMENT_LOCATION id
+    protected Integer         adjustmentId;
+    protected Integer         locationId;
+    protected Integer         inventoryItemId;
+    protected String          inventoryItem;
+    protected String          storageLocation;
+    protected Integer         quantityOnHand;
+    protected Integer         physicalCount;
+    protected Integer         adjustedQuantity;
+    protected Boolean         delete           = false;
 
-    public InventoryAdjustmentChildDO(){
-        
+    public InventoryAdjustmentChildDO() {
+
     }
-    
-    public InventoryAdjustmentChildDO(Integer locationId, Integer inventoryItemId, String inventoryItem,
-                                      String storageLocation, Integer quantityOnHand, Integer physicalCount, 
-                                      Integer adjustedQuantity){
-        
+
+    public InventoryAdjustmentChildDO(Integer locationId,
+                                      Integer inventoryItemId,
+                                      String inventoryItem,
+                                      String storageLocation,
+                                      Integer quantityOnHand,
+                                      Integer physicalCount,
+                                      Integer adjustedQuantity) {
+
         setLocationId(locationId);
         setInventoryItemId(inventoryItemId);
         setInventoryItem(inventoryItem);
@@ -60,15 +63,24 @@ public class InventoryAdjustmentChildDO implements Serializable {
         setAdjustedQuantity(adjustedQuantity);
     }
 
-    public InventoryAdjustmentChildDO(Integer id, Integer locationId, Integer inventoryItemId, String inventoryItem,
-                                      String storageLocName, String storageUnitDescription, String storageLocLocation, 
-                                      Integer physicalCount, Integer adjustedQuantity){
+    public InventoryAdjustmentChildDO(Integer id,
+                                      Integer locationId,
+                                      Integer inventoryItemId,
+                                      String inventoryItem,
+                                      String storageLocName,
+                                      String storageUnitDescription,
+                                      String storageLocLocation,
+                                      Integer physicalCount,
+                                      Integer adjustedQuantity) {
 
         setId(id);
         setLocationId(locationId);
         setInventoryItemId(inventoryItemId);
         setInventoryItem(inventoryItem);
-        setStorageLocation(storageLocName.trim()+", "+storageUnitDescription.trim()+" "+storageLocLocation.trim());
+        setStorageLocation(storageLocName.trim() + ", "
+                           + storageUnitDescription.trim()
+                           + " "
+                           + storageLocLocation.trim());
         setPhysicalCount(physicalCount);
         setAdjustedQuantity(adjustedQuantity);
     }

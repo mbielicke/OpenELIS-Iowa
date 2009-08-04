@@ -25,27 +25,32 @@
 */
 package org.openelis.domain;
 
-import java.io.Serializable;
-
+import org.openelis.gwt.common.RPC;
 import org.openelis.utilcommon.DataBaseUtil;
 
-public class OrganizationAutoDO implements Serializable{
+public class OrganizationAutoDO implements RPC {
 
     private static final long serialVersionUID = 1L;
-    
-    protected Integer id;
-    protected String name;
-    protected String aptSuite;
-    protected String address;
-    protected String city;
-    protected String state;
-    protected String zipCode;
-    
+
+    protected Integer         id;
+    protected String          name;
+    protected String          aptSuite;
+    protected String          address;
+    protected String          city;
+    protected String          state;
+    protected String          zipCode;
+
     public OrganizationAutoDO() {
-    	
+
     }
-    
-    public OrganizationAutoDO(Integer id, String name, String aptSuite, String address, String city, String state, String zipCode){
+
+    public OrganizationAutoDO(Integer id,
+                              String name,
+                              String aptSuite,
+                              String address,
+                              String city,
+                              String state,
+                              String zipCode) {
         setId(id);
         setName(name);
         setAptSuite(aptSuite);
@@ -102,7 +107,7 @@ public class OrganizationAutoDO implements Serializable{
     public void setAptSuite(String aptSuite) {
         this.aptSuite = DataBaseUtil.trim(aptSuite);
     }
-    
+
     public String getZipCode() {
         return zipCode;
     }

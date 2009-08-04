@@ -25,26 +25,29 @@
 */
 package org.openelis.domain;
 
-import java.io.Serializable;
 import java.util.Date;
 
 import org.openelis.gwt.common.Datetime;
+import org.openelis.gwt.common.RPC;
 import org.openelis.utilcommon.DataBaseUtil;
 
-public class ShippingAddAutoFillDO implements Serializable{
-    
+public class ShippingAddAutoFillDO implements RPC {
+
     private static final long serialVersionUID = 1L;
-    
-    protected Integer status;
-    protected Datetime processedDate;
-    protected String processedBy;
-    protected Integer systemUserId;
-    
-    public ShippingAddAutoFillDO(){
-        
+
+    protected Integer         status;
+    protected Datetime        processedDate;
+    protected String          processedBy;
+    protected Integer         systemUserId;
+
+    public ShippingAddAutoFillDO() {
+
     }
-    
-    public ShippingAddAutoFillDO(Integer status, Date processedDate, String processedBy, Integer systemUserId){
+
+    public ShippingAddAutoFillDO(Integer status,
+                                 Date processedDate,
+                                 String processedBy,
+                                 Integer systemUserId) {
         setStatus(status);
         setProcessedDate(processedDate);
         setProcessedBy(processedBy);
@@ -64,7 +67,9 @@ public class ShippingAddAutoFillDO implements Serializable{
     }
 
     public void setProcessedDate(Date processedDate) {
-        this.processedDate = new Datetime(Datetime.YEAR, Datetime.DAY, processedDate);
+        this.processedDate = new Datetime(Datetime.YEAR,
+                                          Datetime.DAY,
+                                          processedDate);
     }
 
     public Integer getStatus() {

@@ -25,36 +25,37 @@
 */
 package org.openelis.domain;
 
-import java.io.Serializable;
-
+import org.openelis.gwt.common.RPC;
 import org.openelis.utilcommon.DataBaseUtil;
 
-
-public class TestPrepDO implements Serializable {
+public class TestPrepDO implements RPC {
 
     private static final long serialVersionUID = 1L;
-    
-    protected Integer id;             
-    protected Integer testId;             
-    protected Integer prepTestId;             
-    protected String prepTestName;             
-    protected String methodName;
-    protected String isOptional;           
-    protected Boolean delete = false;
-    
-    public TestPrepDO(){
-        
+
+    protected Integer         id;
+    protected Integer         testId;
+    protected Integer         prepTestId;
+    protected String          prepTestName;
+    protected String          methodName;
+    protected String          isOptional;
+    protected Boolean         delete           = false;
+
+    public TestPrepDO() {
+
     }
-    
-    public TestPrepDO(Integer id,Integer testId,
-                      Integer prepTestId,String prepTestName,
-                      String methodName,String isOptional){        
+
+    public TestPrepDO(Integer id,
+                      Integer testId,
+                      Integer prepTestId,
+                      String prepTestName,
+                      String methodName,
+                      String isOptional) {
         setId(id);
         setTestId(testId);
         setPrepTestId(prepTestId);
         setPrepTestName(prepTestName);
         setMethodName(methodName);
-        setIsOptional(isOptional);              
+        setIsOptional(isOptional);
     }
 
     public Integer getId() {
@@ -111,6 +112,6 @@ public class TestPrepDO implements Serializable {
 
     public void setMethodName(String methodName) {
         this.methodName = DataBaseUtil.trim(methodName);
-    }         
+    }
 
 }

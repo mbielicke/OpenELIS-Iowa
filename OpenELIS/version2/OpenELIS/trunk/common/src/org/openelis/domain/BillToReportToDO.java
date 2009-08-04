@@ -25,27 +25,38 @@
 */
 package org.openelis.domain;
 
-import java.io.Serializable;
-
+import org.openelis.gwt.common.RPC;
 import org.openelis.utilcommon.DataBaseUtil;
 
-public class BillToReportToDO implements Serializable{
+public class BillToReportToDO implements RPC {
 
     private static final long serialVersionUID = 1L;
-    protected Integer billToId;
-    protected String billTo;
-    public AddressDO billToAddress = new AddressDO();
-    
-    protected Integer reportToId;
-    protected String reportTo;
-    public AddressDO reportToAddress = new AddressDO();
-    
-    public BillToReportToDO(){
-        
+    protected Integer         billToId;
+    protected String          billTo;
+    public AddressDO          billToAddress    = new AddressDO();
+
+    protected Integer         reportToId;
+    protected String          reportTo;
+    public AddressDO          reportToAddress  = new AddressDO();
+
+    public BillToReportToDO() {
+
     }
-    
-    public BillToReportToDO(Integer billToId, String billTo, String billToMultUnit, String billToStreetAddress, String billToCity, String billToState, String billToZipcode, 
-                            Integer reportToId, String reportTo, String reportToMultUnit, String reportToStreetAddress, String reportToCity, String reportToState, String reportToZipcode){
+
+    public BillToReportToDO(Integer billToId,
+                            String billTo,
+                            String billToMultUnit,
+                            String billToStreetAddress,
+                            String billToCity,
+                            String billToState,
+                            String billToZipcode,
+                            Integer reportToId,
+                            String reportTo,
+                            String reportToMultUnit,
+                            String reportToStreetAddress,
+                            String reportToCity,
+                            String reportToState,
+                            String reportToZipcode) {
         setBillToId(billToId);
         setBillTo(billTo);
         billToAddress.setMultipleUnit(billToMultUnit);
@@ -53,7 +64,7 @@ public class BillToReportToDO implements Serializable{
         billToAddress.setCity(billToCity);
         billToAddress.setState(billToState);
         billToAddress.setZipCode(billToZipcode);
-        
+
         setReportToId(reportToId);
         setReportTo(reportTo);
         reportToAddress.setMultipleUnit(reportToMultUnit);
@@ -62,19 +73,19 @@ public class BillToReportToDO implements Serializable{
         reportToAddress.setState(reportToState);
         reportToAddress.setZipCode(reportToZipcode);
     }
-    
+
     public Integer getBillToId() {
         return billToId;
     }
-    
+
     public void setBillToId(Integer billToId) {
         this.billToId = billToId;
     }
-    
+
     public Integer getReportToId() {
         return reportToId;
     }
-    
+
     public void setReportToId(Integer reportToId) {
         this.reportToId = reportToId;
     }

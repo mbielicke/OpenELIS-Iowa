@@ -25,40 +25,35 @@
 */
 package org.openelis.domain;
 
-import java.io.Serializable;
+import org.openelis.gwt.common.RPC;
 
-public class PanelItemDO implements Serializable {
+public class PanelItemDO implements RPC {
 
-    /**
-     * 
-     */
-    private static final long serialVersionUID = -6926371503818571675L;
-    
-    protected Integer id;             
+    private static final long serialVersionUID = 1L;
 
-    protected Integer panelId;             
-
-    protected Integer sortOrder;             
-
-    protected String testName;             
-
-    protected String methodName;
-    
-    private Boolean delete = false;    
+    protected Integer         id;
+    protected Integer         panelId;
+    protected Integer         sortOrder;
+    protected String          testName;
+    protected String          methodName;
+    private Boolean           delete           = false;
 
     public PanelItemDO() {
-        
+
     }
-    
-    public PanelItemDO(Integer id,Integer panelId,Integer sortOrder,
-                       String testName,String methodName) {
-         this.id = id;
-         this.panelId = panelId;
-         this.sortOrder = sortOrder;
-         this.testName = testName;
-         this.methodName = methodName;      
+
+    public PanelItemDO(Integer id,
+                       Integer panelId,
+                       Integer sortOrder,
+                       String testName,
+                       String methodName) {
+        this.id = id;
+        this.panelId = panelId;
+        this.sortOrder = sortOrder;
+        this.testName = testName;
+        this.methodName = methodName;
     }
-    
+
     public Integer getId() {
         return id;
     }

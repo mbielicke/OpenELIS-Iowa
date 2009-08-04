@@ -1,56 +1,73 @@
+/** Exhibit A - UIRF Open-source Based Public Software License.
+* 
+* The contents of this file are subject to the UIRF Open-source Based
+* Public Software License(the "License"); you may not use this file except
+* in compliance with the License. You may obtain a copy of the License at
+* openelis.uhl.uiowa.edu
+* 
+* Software distributed under the License is distributed on an "AS IS"
+* basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+* License for the specific language governing rights and limitations
+* under the License.
+* 
+* The Original Code is OpenELIS code.
+* 
+* The Initial Developer of the Original Code is The University of Iowa.
+* Portions created by The University of Iowa are Copyright 2006-2008. All
+* Rights Reserved.
+* 
+* Contributor(s): ______________________________________.
+* 
+* Alternatively, the contents of this file marked
+* "Separately-Licensed" may be used under the terms of a UIRF Software
+* license ("UIRF Software License"), in which case the provisions of a
+* UIRF Software License are applicable instead of those above. 
+*/
 package org.openelis.domain;
 
-import java.io.Serializable;
+import org.openelis.gwt.common.RPC;
 
+public class MethodAnalyteDO implements RPC {
 
-public class MethodAnalyteDO implements Serializable {
+    private static final long serialVersionUID = 1L;
 
-    /**
-     * 
-     */
-    private static final long serialVersionUID = -2709654963250649961L;
-    
-    protected Integer id;             
+    protected Integer         id;
+    protected Integer         methodId;
+    protected Integer         analyteGroup;
+    protected Integer         resultGroup;
+    protected Integer         sortOrder;
+    protected String          type;
+    protected Integer         analyteId;
+    private Boolean           delete           = false;
+    private Boolean           grouped          = false;
 
-    protected Integer methodId;             
-
-    protected Integer analyteGroup;             
-
-    protected Integer resultGroup;             
-
-    protected Integer sortOrder;             
-
-    protected String type;             
-
-    protected Integer analyteId;
-    
-    private Boolean delete = false;
-    
-    private Boolean grouped = false;
-    
     public MethodAnalyteDO() {
-        
+
     }
-    
-    public MethodAnalyteDO(Integer id,Integer methodId, Integer analyteGroup,
-                           Integer resultGroup,Integer sortOrder,String type,
+
+    public MethodAnalyteDO(Integer id,
+                           Integer methodId,
+                           Integer analyteGroup,
+                           Integer resultGroup,
+                           Integer sortOrder,
+                           String type,
                            Integer analyteId) {
-        
-        this.id= id;
+
+        this.id = id;
         this.methodId = methodId;
         this.analyteGroup = analyteGroup;
         this.resultGroup = resultGroup;
         this.sortOrder = sortOrder;
-        this.type = type;        
+        this.type = type;
     }
-    
+
     public Boolean getDelete() {
         return delete;
     }
 
     public void setDelete(Boolean delete) {
         this.delete = delete;
-    }    
+    }
 
     public Integer getAnalyteGroup() {
         return analyteGroup;

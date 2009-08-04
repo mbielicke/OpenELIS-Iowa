@@ -25,106 +25,127 @@
 */
 package org.openelis.domain;
 
-import java.io.Serializable;
 import java.util.Date;
 
 import org.openelis.gwt.common.Datetime;
+import org.openelis.gwt.common.RPC;
 import org.openelis.utilcommon.DataBaseUtil;
 
-public class InventoryLocationDO implements Serializable{
+public class InventoryLocationDO implements RPC {
 
-	private static final long serialVersionUID = 1L;
-	
-	protected Integer id;
-	protected Integer inventoryItemId;
-    protected String inventoryItem;
-	protected String lotNumber;
-	//protected Integer storageLocationId;
-	protected String storageLocation;
-	protected Integer quantityOnHand;
-	protected Datetime expirationDate;
-	
-    public InventoryLocationDO(){
-        
+    private static final long serialVersionUID = 1L;
+
+    protected Integer         id;
+    protected Integer         inventoryItemId;
+    protected String          inventoryItem;
+    protected String          lotNumber;
+    // protected Integer storageLocationId;
+    protected String          storageLocation;
+    protected Integer         quantityOnHand;
+    protected Datetime        expirationDate;
+
+    public InventoryLocationDO() {
+
     }
-    
-	public InventoryLocationDO(Integer id, Integer inventoryItemId, String inventoryItem, String lotNumber, String storageLocation,
-									Integer quantityOnHand, Date expirationDate){
-		setId(id);
-		setInventoryItemId(inventoryItemId);
+
+    public InventoryLocationDO(Integer id,
+                               Integer inventoryItemId,
+                               String inventoryItem,
+                               String lotNumber,
+                               String storageLocation,
+                               Integer quantityOnHand,
+                               Date expirationDate) {
+        setId(id);
+        setInventoryItemId(inventoryItemId);
         setInventoryItem(inventoryItem);
-		setLotNumber(lotNumber);
-		setStorageLocation(storageLocation);
-		setQuantityOnHand(quantityOnHand);
-		setExpirationDate(new Datetime(Datetime.YEAR,Datetime.DAY,expirationDate));		
-	}
+        setLotNumber(lotNumber);
+        setStorageLocation(storageLocation);
+        setQuantityOnHand(quantityOnHand);
+        setExpirationDate(new Datetime(Datetime.YEAR,
+                                       Datetime.DAY,
+                                       expirationDate));
+    }
 
-    public InventoryLocationDO(Integer id, Integer inventoryItemId, String inventoryItem, String lotNumber, String childStorageLocName, String childStorageLocLocation,  
-                               String parentStorageLocName, String childStorageUnit, Integer quantityOnHand, Date expirationDate){
-    setId(id);
-    setInventoryItemId(inventoryItemId);
-    setInventoryItem(inventoryItem);
-    setLotNumber(lotNumber);
-    setQuantityOnHand(quantityOnHand);
-    setExpirationDate(new Datetime(Datetime.YEAR,Datetime.DAY,expirationDate));
-    
-    //build the storage location string
-    String storageLocation = "";
-    if(parentStorageLocName != null)
-        storageLocation += parentStorageLocName.trim()+", "+childStorageUnit.trim()+" "+childStorageLocLocation.trim();
-    else
-        storageLocation += childStorageUnit.trim()+" "+childStorageLocLocation.trim();
-    
-    setStorageLocation(storageLocation);
-}
-    
-	public Datetime getExpirationDate() {
-		return expirationDate;
-	}
+    public InventoryLocationDO(Integer id,
+                               Integer inventoryItemId,
+                               String inventoryItem,
+                               String lotNumber,
+                               String childStorageLocName,
+                               String childStorageLocLocation,
+                               String parentStorageLocName,
+                               String childStorageUnit,
+                               Integer quantityOnHand,
+                               Date expirationDate) {
+        setId(id);
+        setInventoryItemId(inventoryItemId);
+        setInventoryItem(inventoryItem);
+        setLotNumber(lotNumber);
+        setQuantityOnHand(quantityOnHand);
+        setExpirationDate(new Datetime(Datetime.YEAR,
+                                       Datetime.DAY,
+                                       expirationDate));
 
-	public void setExpirationDate(Datetime expirationDate) {
-		this.expirationDate = expirationDate;
-	}
+        // build the storage location string
+        String storageLocation = "";
+        if (parentStorageLocName != null)
+            storageLocation += parentStorageLocName.trim() + ", "
+                               + childStorageUnit.trim()
+                               + " "
+                               + childStorageLocLocation.trim();
+        else
+            storageLocation += childStorageUnit.trim() + " "
+                               + childStorageLocLocation.trim();
 
-	public Integer getId() {
-		return id;
-	}
+        setStorageLocation(storageLocation);
+    }
 
-	public void setId(Integer id) {
-		this.id = id;
-	}
+    public Datetime getExpirationDate() {
+        return expirationDate;
+    }
 
-	public Integer getInventoryItemId() {
-		return inventoryItemId;
-	}
+    public void setExpirationDate(Datetime expirationDate) {
+        this.expirationDate = expirationDate;
+    }
 
-	public void setInventoryItemId(Integer inventoryItemId) {
-		this.inventoryItemId = inventoryItemId;
-	}
+    public Integer getId() {
+        return id;
+    }
 
-	public String getLotNumber() {
-		return lotNumber;
-	}
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
-	public void setLotNumber(String lotNumber) {
-		this.lotNumber = DataBaseUtil.trim(lotNumber);
-	}
+    public Integer getInventoryItemId() {
+        return inventoryItemId;
+    }
 
-	public Integer getQuantityOnHand() {
-		return quantityOnHand;
-	}
+    public void setInventoryItemId(Integer inventoryItemId) {
+        this.inventoryItemId = inventoryItemId;
+    }
 
-	public void setQuantityOnHand(Integer quantityOnHand) {
-		this.quantityOnHand = quantityOnHand;
-	}
+    public String getLotNumber() {
+        return lotNumber;
+    }
 
-	public String getStorageLocation() {
-		return storageLocation;
-	}
+    public void setLotNumber(String lotNumber) {
+        this.lotNumber = DataBaseUtil.trim(lotNumber);
+    }
 
-	public void setStorageLocation(String storageLocation) {
-		this.storageLocation = DataBaseUtil.trim(storageLocation);
-	}
+    public Integer getQuantityOnHand() {
+        return quantityOnHand;
+    }
+
+    public void setQuantityOnHand(Integer quantityOnHand) {
+        this.quantityOnHand = quantityOnHand;
+    }
+
+    public String getStorageLocation() {
+        return storageLocation;
+    }
+
+    public void setStorageLocation(String storageLocation) {
+        this.storageLocation = DataBaseUtil.trim(storageLocation);
+    }
 
     public String getInventoryItem() {
         return inventoryItem;
@@ -134,11 +155,9 @@ public class InventoryLocationDO implements Serializable{
         this.inventoryItem = DataBaseUtil.trim(inventoryItem);
     }
 
-	/*public Integer getChildStorageLocationId() {
-		return childStorageLocationId;
-	}
-
-	public void setChildStorageLocationId(Integer childStorageLocationId) {
-		this.childStorageLocationId = childStorageLocationId;
-	}*/
+    /*
+     * public Integer getChildStorageLocationId() { return childStorageLocationId; }
+     * 
+     * public void setChildStorageLocationId(Integer childStorageLocationId) { this.childStorageLocationId = childStorageLocationId; }
+     */
 }

@@ -25,44 +25,57 @@
 */
 package org.openelis.domain;
 
-import java.io.Serializable;
-
+import org.openelis.gwt.common.RPC;
 import org.openelis.utilcommon.DataBaseUtil;
 
-public class OrderItemDO implements Serializable{
+public class OrderItemDO implements RPC {
 
     private static final long serialVersionUID = 1L;
-    
-    protected Integer id;
-    protected Integer order;
-    protected Integer inventoryItemId;
-    protected Integer quantity;
-    protected String inventoryItem;
-    protected String store;
-    protected Integer locationId;
-    protected String location;
-    protected Integer transactionId;
-    protected String catalogNumber;
-    protected Double unitCost;
-    protected Integer quantityOnHand;
-    protected String lotNumber;
-    
-    protected Boolean delete = false;
-    
-    public OrderItemDO(){
-        
+
+    protected Integer         id;
+    protected Integer         order;
+    protected Integer         inventoryItemId;
+    protected Integer         quantity;
+    protected String          inventoryItem;
+    protected String          store;
+    protected Integer         locationId;
+    protected String          location;
+    protected Integer         transactionId;
+    protected String          catalogNumber;
+    protected Double          unitCost;
+    protected Integer         quantityOnHand;
+    protected String          lotNumber;
+
+    protected Boolean         delete           = false;
+
+    public OrderItemDO() {
+
     }
 
-    public OrderItemDO(Integer id, Integer order, Integer inventoryItemId, Integer quantity){
+    public OrderItemDO(Integer id,
+                       Integer order,
+                       Integer inventoryItemId,
+                       Integer quantity) {
         setId(id);
         setOrder(order);
         setInventoryItemId(inventoryItemId);
         setQuantity(quantity);
-     }
-    
-    public OrderItemDO(Integer id, Integer order, Integer inventoryItemId, String inventoryItem, Integer quantity, String store, Integer locationId,
-                       String childStorageLocName, String childStorageLocLocation, String parentStorageLocName, String childStorageUnit, Integer transactionId, 
-                       Integer quantityOnHand, String lotNumber){
+    }
+
+    public OrderItemDO(Integer id,
+                       Integer order,
+                       Integer inventoryItemId,
+                       String inventoryItem,
+                       Integer quantity,
+                       String store,
+                       Integer locationId,
+                       String childStorageLocName,
+                       String childStorageLocLocation,
+                       String parentStorageLocName,
+                       String childStorageUnit,
+                       Integer transactionId,
+                       Integer quantityOnHand,
+                       String lotNumber) {
         setId(id);
         setOrder(order);
         setInventoryItemId(inventoryItemId);
@@ -73,18 +86,29 @@ public class OrderItemDO implements Serializable{
         setTransactionId(transactionId);
         setQuantityOnHand(quantityOnHand);
         setLotNumber(lotNumber);
-        
-        //build the storage location string
+
+        // build the storage location string
         String storageLocation = "";
-        if(parentStorageLocName != null)
-            storageLocation += parentStorageLocName.trim()+", "+childStorageUnit.trim()+" "+childStorageLocLocation.trim();
+        if (parentStorageLocName != null)
+            storageLocation += parentStorageLocName.trim() + ", "
+                               + childStorageUnit.trim()
+                               + " "
+                               + childStorageLocLocation.trim();
         else
-            storageLocation += childStorageUnit.trim()+" "+childStorageLocLocation.trim();
-        
+            storageLocation += childStorageUnit.trim() + " "
+                               + childStorageLocLocation.trim();
+
         setLocation(storageLocation);
-     }
-    
-    public OrderItemDO(Integer id, Integer order, Integer inventoryItemId, String inventoryItem, Integer quantity, String store, String catalogNumber, Double unitCost){
+    }
+
+    public OrderItemDO(Integer id,
+                       Integer order,
+                       Integer inventoryItemId,
+                       String inventoryItem,
+                       Integer quantity,
+                       String store,
+                       String catalogNumber,
+                       Double unitCost) {
         setId(id);
         setOrder(order);
         setInventoryItemId(inventoryItemId);
@@ -93,7 +117,7 @@ public class OrderItemDO implements Serializable{
         setStore(store);
         setCatalogNumber(catalogNumber);
         setUnitCost(unitCost);
-     }
+    }
 
     public Integer getId() {
         return id;

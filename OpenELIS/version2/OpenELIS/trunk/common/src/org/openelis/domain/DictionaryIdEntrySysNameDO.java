@@ -25,49 +25,50 @@
 */
 package org.openelis.domain;
 
-import java.io.Serializable;
-
+import org.openelis.gwt.common.RPC;
 import org.openelis.utilcommon.DataBaseUtil;
 
-
-public class DictionaryIdEntrySysNameDO implements Serializable {
-
-    /**
-     * 
-     */
+public class DictionaryIdEntrySysNameDO implements RPC {
     private static final long serialVersionUID = 1L;
-    
-    protected Integer id;
-    protected String entry;
-    protected String systemName;
-    
+
+    protected Integer         id;
+    protected String          entry;
+    protected String          systemName;
+
     public DictionaryIdEntrySysNameDO() {
-        
+
     }
-    
-    public DictionaryIdEntrySysNameDO(Integer id, String entry, String systemName) {
-      setId(id);
-      setEntry(entry);
-      setSystemName(systemName);
+
+    public DictionaryIdEntrySysNameDO(Integer id,
+                                      String entry,
+                                      String systemName) {
+        setId(id);
+        setEntry(entry);
+        setSystemName(systemName);
     }
 
     public Integer getId() {
         return id;
     }
+
     public void setId(Integer id) {
         this.id = id;
     }
+
     public String getEntry() {
         return entry;
     }
+
     public void setEntry(String entry) {
         this.entry = DataBaseUtil.trim(entry);
     }
+
     public String getSystemName() {
         return systemName;
     }
+
     public void setSystemName(String systemName) {
         this.systemName = DataBaseUtil.trim(systemName);
     }
-       
+
 }

@@ -25,16 +25,12 @@
 */
 package org.openelis.domain;
 
-import java.io.Serializable;
-
+import org.openelis.gwt.common.RPC;
 import org.openelis.utilcommon.DataBaseUtil;
 
-public class OrganizationContactDO implements Serializable {
+public class OrganizationContactDO implements RPC {
 
-    /**
-     * 
-     */
-    private static final long serialVersionUID = -3193069940053803677L;
+    private static final long serialVersionUID = 1L;
 
     // contact fields
     protected Integer         id;

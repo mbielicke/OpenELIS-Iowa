@@ -26,29 +26,26 @@
 
 package org.openelis.domain;
 
-import java.io.Serializable;
-
+import org.openelis.gwt.common.RPC;
 import org.openelis.utilcommon.DataBaseUtil;
 
-public class AuxFieldValueDO implements Serializable {
-
-    /**
-     * 
-     */
+public class AuxFieldValueDO implements RPC {
     private static final long serialVersionUID = 1L;
-    
-    protected Integer id;             
-    protected Integer auxFieldId;             
-    protected Integer typeId;             
-    protected String value;     
-    private boolean delete = false;
-    
+
+    protected Integer         id;
+    protected Integer         auxFieldId;
+    protected Integer         typeId;
+    protected String          value;
+    private boolean           delete           = false;
+
     public AuxFieldValueDO() {
-      
+
     }
-    
-    public AuxFieldValueDO(Integer id,Integer auxFieldId,
-                           Integer typeId,String value) {
+
+    public AuxFieldValueDO(Integer id,
+                           Integer auxFieldId,
+                           Integer typeId,
+                           String value) {
         setId(id);
         setAuxFieldId(auxFieldId);
         setTypeId(typeId);

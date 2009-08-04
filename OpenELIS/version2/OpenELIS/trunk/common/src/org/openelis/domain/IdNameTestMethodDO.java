@@ -25,24 +25,26 @@
 */
 package org.openelis.domain;
 
-import java.io.Serializable;
-
+import org.openelis.gwt.common.RPC;
 import org.openelis.utilcommon.DataBaseUtil;
 
-public class IdNameTestMethodDO implements Serializable{
+public class IdNameTestMethodDO implements RPC {
 
     private static final long serialVersionUID = 1L;
-    
-    protected Integer id;
-    protected String name;
-    protected String test;
-    protected String method;
-    
-    public IdNameTestMethodDO(Integer id, String name, String test, String method){
+
+    protected Integer         id;
+    protected String          name;
+    protected String          test;
+    protected String          method;
+
+    public IdNameTestMethodDO(Integer id,
+                              String name,
+                              String test,
+                              String method) {
         setId(id);
         setName(name);
         setTest(test);
-        setMethod(method);        
+        setMethod(method);
     }
 
     public Integer getId() {

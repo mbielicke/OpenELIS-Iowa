@@ -23,50 +23,45 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-
 package org.openelis.domain;
 
-import java.io.Serializable;
+import org.openelis.gwt.common.RPC;
 
-public class TestWorksheetAnalyteDO implements Serializable {
-
-    /**
-     * 
-     */
+public class TestWorksheetAnalyteDO implements RPC {
     private static final long serialVersionUID = 1L;
-    
-    protected Integer id;             
 
-    protected Integer testId;             
+    protected Integer         id;
+    protected Integer         testId;
+    protected Integer         analyteId;
+    protected String          analyteName;
+    protected Integer         repeat;
+    protected Integer         flagId;
+    protected Boolean         delete           = false;
 
-    protected Integer analyteId;         
-    
-    protected String analyteName;
-
-    protected Integer repeat;             
-
-    protected Integer flagId;
-    
-    protected Boolean delete = false;
-    
     public TestWorksheetAnalyteDO() {
-        
+
     }
-    
-    public TestWorksheetAnalyteDO(Integer id,Integer testId,Integer analyteId,
-                                  String analyteName,Integer repeat,Integer flagId) {        
+
+    public TestWorksheetAnalyteDO(Integer id,
+                                  Integer testId,
+                                  Integer analyteId,
+                                  String analyteName,
+                                  Integer repeat,
+                                  Integer flagId) {
         this.id = id;
         this.testId = testId;
         this.analyteId = analyteId;
         this.analyteName = analyteName;
         this.repeat = repeat;
-        this.flagId = flagId;                
+        this.flagId = flagId;
     }
-    
-    public TestWorksheetAnalyteDO(Integer testId,Integer analyteId,String analyteName) {        
+
+    public TestWorksheetAnalyteDO(Integer testId,
+                                  Integer analyteId,
+                                  String analyteName) {
         this.testId = testId;
         this.analyteId = analyteId;
-        this.analyteName = analyteName;                       
+        this.analyteName = analyteName;
     }
 
     public Integer getId() {

@@ -30,31 +30,11 @@ import java.util.List;
 import javax.ejb.Remote;
 
 import org.openelis.domain.IdNameDO;
-import org.openelis.domain.OrganizationAddressDO;
-import org.openelis.domain.OrganizationContactDO;
-import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.rewrite.QueryData;
 
 @Remote
 public interface OrganizationRemote {
-	//method to query for organizations
-	 public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception;
-	 
-	 public ArrayList<IdNameDO> newQuery(ArrayList<QueryData> fields, int first, int max) throws Exception;
-	 
-	 //auto complete lookup
+	 public ArrayList<IdNameDO> query(ArrayList<QueryData> fields, int first, int max) throws Exception;
 	 public List autoCompleteLookupByName(String orgName, int maxResults);
-	 
-	 //auto complete lookup
 	 public List autoCompleteLookupById(Integer id);
-	 
-    public OrganizationAddressDO getOrganizationAddress(Integer organizationId) throws Exception;
-    public List getOrganizationContacts(Integer organizationId) throws Exception;
-    
-    public void add(OrganizationAddressDO orgDO);
-    public void update(OrganizationAddressDO orgDO) throws Exception;
-    
-    public void updateContact(OrganizationContactDO contactDO) throws Exception;
-    public void addContact(OrganizationContactDO contactDO) throws Exception;
-    public void deleteContact(OrganizationContactDO contactDO) throws Exception;
 }

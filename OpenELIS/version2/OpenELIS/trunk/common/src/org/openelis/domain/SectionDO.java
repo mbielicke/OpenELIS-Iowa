@@ -25,23 +25,22 @@
 */
 package org.openelis.domain;
 
-import java.io.Serializable;
-
+import org.openelis.gwt.common.RPC;
 import org.openelis.utilcommon.DataBaseUtil;
 
-public class SectionDO implements Serializable {
+public class SectionDO implements RPC {
 
     private static final long serialVersionUID = 1L;
 
-    protected Integer id; 
-    protected Integer organizationId; 
-    protected String organizationName; 
-    protected Integer parentSectionId;
-    protected String name;
-    protected String description;
-    protected String isExternal;
-    protected boolean delete;
-    
+    protected Integer         id;
+    protected Integer         organizationId;
+    protected String          organizationName;
+    protected Integer         parentSectionId;
+    protected String          name;
+    protected String          description;
+    protected String          isExternal;
+    protected boolean         delete;
+
     public boolean getDelete() {
         return delete;
     }
@@ -54,8 +53,12 @@ public class SectionDO implements Serializable {
 
     }
 
-    public SectionDO(Integer id,Integer organizationId,String organizationName,
-                     String name,String description,Integer parentSectionId,
+    public SectionDO(Integer id,
+                     Integer organizationId,
+                     String organizationName,
+                     String name,
+                     String description,
+                     Integer parentSectionId,
                      String isExternal) {
 
         setId(id);
@@ -64,9 +67,9 @@ public class SectionDO implements Serializable {
         setName(name);
         setDescription(description);
         setParentSectionId(parentSectionId);
-        setIsExternal(isExternal);        
+        setIsExternal(isExternal);
     }
-    
+
     public SectionDO(Integer id, String name) {
         setId(id);
         setName(name);

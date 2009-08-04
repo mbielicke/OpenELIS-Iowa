@@ -25,24 +25,22 @@
 */
 package org.openelis.domain;
 
-import java.io.Serializable;
 import java.util.Date;
 
 import org.openelis.gwt.common.Datetime;
+import org.openelis.gwt.common.RPC;
 import org.openelis.utilcommon.DataBaseUtil;
 
-
-
-public class InventoryAdjustmentDO implements Serializable{
+public class InventoryAdjustmentDO implements RPC {
 
     private static final long serialVersionUID = 1L;
-    protected Integer id;
-    protected String description;
-    protected Integer systemUserId;
-    protected String systemUser;
-    protected Datetime adjustmentDate;
-    protected Integer storeId;
-    
+    protected Integer         id;
+    protected String          description;
+    protected Integer         systemUserId;
+    protected String          systemUser;
+    protected Datetime        adjustmentDate;
+    protected Integer         storeId;
+
     public Integer getStoreId() {
         return storeId;
     }
@@ -51,20 +49,27 @@ public class InventoryAdjustmentDO implements Serializable{
         this.storeId = storeId;
     }
 
-    public InventoryAdjustmentDO(){
-        
+    public InventoryAdjustmentDO() {
+
     }
-    
-    public InventoryAdjustmentDO(Integer id, String description, Integer systemUserId, String systemUser, 
-                                 Date adjustmentDate){
+
+    public InventoryAdjustmentDO(Integer id,
+                                 String description,
+                                 Integer systemUserId,
+                                 String systemUser,
+                                 Date adjustmentDate) {
         setId(id);
         setDescription(description);
         setSystemUserId(systemUserId);
         setSystemUser(systemUser);
         setAdjustmentDate(adjustmentDate);
     }
-    
-    public InventoryAdjustmentDO(Integer id, String description, Integer systemUserId, Date adjustmentDate, Integer storeId){
+
+    public InventoryAdjustmentDO(Integer id,
+                                 String description,
+                                 Integer systemUserId,
+                                 Date adjustmentDate,
+                                 Integer storeId) {
         setId(id);
         setDescription(description);
         setSystemUserId(systemUserId);
@@ -77,7 +82,9 @@ public class InventoryAdjustmentDO implements Serializable{
     }
 
     public void setAdjustmentDate(Date adjustmentDate) {
-        this.adjustmentDate = new Datetime(Datetime.YEAR,Datetime.DAY,adjustmentDate);
+        this.adjustmentDate = new Datetime(Datetime.YEAR,
+                                           Datetime.DAY,
+                                           adjustmentDate);
     }
 
     public String getDescription() {

@@ -25,37 +25,41 @@
 */
 package org.openelis.domain;
 
-import java.io.Serializable;
-
+import org.openelis.gwt.common.RPC;
 import org.openelis.utilcommon.DataBaseUtil;
 
-public class QcAnalyteDO implements Serializable {
+public class QcAnalyteDO implements RPC {
 
     private static final long serialVersionUID = 1L;
-    
-    protected Integer id;             
-    protected Integer qcId;             
-    protected Integer analyteId;   
-    protected String analyteName;
-    protected Integer typeId;             
-    protected String value;            
-    protected String isTrendable;     
-    
-    private boolean delete;
-    
+
+    protected Integer         id;
+    protected Integer         qcId;
+    protected Integer         analyteId;
+    protected String          analyteName;
+    protected Integer         typeId;
+    protected String          value;
+    protected String          isTrendable;
+
+    private boolean           delete;
+
     public QcAnalyteDO() {
-        
+
     }
-    
-    public QcAnalyteDO(Integer id,Integer qcId,Integer analyteId,String analyteName,
-                       Integer typeId,String value,String isTrendable) {
+
+    public QcAnalyteDO(Integer id,
+                       Integer qcId,
+                       Integer analyteId,
+                       String analyteName,
+                       Integer typeId,
+                       String value,
+                       String isTrendable) {
         setId(id);
         setQcId(qcId);
         setAnalyteId(analyteId);
         setAnalyteName(analyteName);
         setTypeId(typeId);
         setValue(value);
-        setIsTrendable(isTrendable);        
+        setIsTrendable(isTrendable);
     }
 
     public Integer getId() {
@@ -121,6 +125,5 @@ public class QcAnalyteDO implements Serializable {
     public void setAnalyteName(String analyteName) {
         this.analyteName = analyteName;
     }
-   
 
 }

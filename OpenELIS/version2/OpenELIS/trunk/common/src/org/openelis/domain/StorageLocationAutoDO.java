@@ -25,80 +25,116 @@
 */
 package org.openelis.domain;
 
-import java.io.Serializable;
-
+import org.openelis.gwt.common.RPC;
 import org.openelis.utilcommon.DataBaseUtil;
 
-public class StorageLocationAutoDO implements Serializable{
+public class StorageLocationAutoDO implements RPC {
 
     private static final long serialVersionUID = 1L;
-    protected Integer id;
-    protected String name;
-    protected Integer locationId;
-    protected String location;
-    protected Integer qtyOnHand;
-    protected String lotNum;
-    
-    public StorageLocationAutoDO(){
+    protected Integer         id;
+    protected String          name;
+    protected Integer         locationId;
+    protected String          location;
+    protected Integer         qtyOnHand;
+    protected String          lotNum;
+
+    public StorageLocationAutoDO() {
     }
-    
-    public StorageLocationAutoDO(Integer id, String name, Integer locationId, String location, String parentStorageLocName, String storageUnitDescription){
+
+    public StorageLocationAutoDO(Integer id,
+                                 String name,
+                                 Integer locationId,
+                                 String location,
+                                 String parentStorageLocName,
+                                 String storageUnitDescription) {
         setId(id);
         setName(name);
-        
-        //build the storage location string
+
+        // build the storage location string
         String storageLocation = "";
-        if(parentStorageLocName != null)
-            storageLocation += parentStorageLocName.trim()+", "+storageUnitDescription.trim()+" "+location.trim();
+        if (parentStorageLocName != null)
+            storageLocation += parentStorageLocName.trim() + ", "
+                               + storageUnitDescription.trim()
+                               + " "
+                               + location.trim();
         else
-            storageLocation += storageUnitDescription.trim()+" "+location.trim();
-        
+            storageLocation += storageUnitDescription.trim() + " "
+                               + location.trim();
+
         setLocationId(locationId);
         setLocation(storageLocation);
     }
-    
-    public StorageLocationAutoDO(Integer id, String name, String location, String parentStorageLocName, String storageUnitDescription){
+
+    public StorageLocationAutoDO(Integer id,
+                                 String name,
+                                 String location,
+                                 String parentStorageLocName,
+                                 String storageUnitDescription) {
         setId(id);
         setName(name);
-        
-        //build the storage location string
+
+        // build the storage location string
         String storageLocation = "";
-        if(parentStorageLocName != null)
-            storageLocation += parentStorageLocName.trim()+", "+storageUnitDescription.trim()+" "+location.trim();
+        if (parentStorageLocName != null)
+            storageLocation += parentStorageLocName.trim() + ", "
+                               + storageUnitDescription.trim()
+                               + " "
+                               + location.trim();
         else
-            storageLocation += storageUnitDescription.trim()+" "+location.trim();
-        
+            storageLocation += storageUnitDescription.trim() + " "
+                               + location.trim();
+
         setLocation(storageLocation);
     }
-    
-    //with qty on hand
-    public StorageLocationAutoDO(Integer id, String name, String location, String parentStorageLocName, String storageUnitDescription, Integer qtyOnHand){
+
+    // with qty on hand
+    public StorageLocationAutoDO(Integer id,
+                                 String name,
+                                 String location,
+                                 String parentStorageLocName,
+                                 String storageUnitDescription,
+                                 Integer qtyOnHand) {
         setId(id);
         setName(name);
-        
-        //build the storage location string
+
+        // build the storage location string
         String storageLocation = "";
-        if(parentStorageLocName != null)
-            storageLocation += parentStorageLocName.trim()+", "+storageUnitDescription.trim()+" "+location.trim();
+        if (parentStorageLocName != null)
+            storageLocation += parentStorageLocName.trim() + ", "
+                               + storageUnitDescription.trim()
+                               + " "
+                               + location.trim();
         else
-            storageLocation += storageUnitDescription.trim()+" "+location.trim();
-        
+            storageLocation += storageUnitDescription.trim() + " "
+                               + location.trim();
+
         setLocation(storageLocation);
         setQtyOnHand(qtyOnHand);
     }
-    
-    //with qty on hand and lot number
-    public StorageLocationAutoDO(Integer id, String name, String location, String parentStorageLocName, String storageUnitDescription, Integer locationId, Integer qtyOnHand, String lotNum){
+
+    // with qty on hand and lot number
+    public StorageLocationAutoDO(Integer id,
+                                 String name,
+                                 String location,
+                                 String parentStorageLocName,
+                                 String storageUnitDescription,
+                                 Integer locationId,
+                                 Integer qtyOnHand,
+                                 String lotNum) {
         setId(id);
         setName(name);
-        
-        //build the storage location string
+
+        // build the storage location string
         String storageLocation = "";
-        if(parentStorageLocName != null)
-            storageLocation += parentStorageLocName.trim()+", "+storageUnitDescription.trim()+" "+location.trim();
+        if (parentStorageLocName != null)
+            storageLocation += parentStorageLocName.trim() + ", "
+                               + storageUnitDescription.trim()
+                               + " "
+                               + location.trim();
         else
-            storageLocation += storageUnitDescription.trim()+" "+location.trim(); 
-        
+            storageLocation += storageUnitDescription.trim() + " "
+                               + location.trim();
+
         setLocationId(locationId);
         setLocation(storageLocation);
         setQtyOnHand(qtyOnHand);
@@ -128,7 +164,7 @@ public class StorageLocationAutoDO implements Serializable{
     public void setName(String name) {
         this.name = DataBaseUtil.trim(name);
     }
-    
+
     public String getLotNum() {
         return lotNum;
     }
@@ -144,6 +180,7 @@ public class StorageLocationAutoDO implements Serializable{
     public void setQtyOnHand(Integer qtyOnHand) {
         this.qtyOnHand = qtyOnHand;
     }
+
     public Integer getLocationId() {
         return locationId;
     }

@@ -25,70 +25,88 @@
 */
 package org.openelis.domain;
 
-import java.io.Serializable;
+import org.openelis.gwt.common.RPC;
 
-public class SampleOrganizationDO implements Serializable {
+public class SampleOrganizationDO implements RPC {
 
-    private static final long serialVersionUID = 1L;
-     protected Integer id;
-     protected Integer sampleId;
-     protected Integer organizationId;
-     protected Integer typeId;
-     
-     protected OrganizationAddressDO orgDO = new OrganizationAddressDO();
-     
-     public SampleOrganizationDO(){
-         
-     }
-     
-     // sample org values
-     public SampleOrganizationDO(Integer id, Integer sampleId, Integer organizationId, Integer typeId){
-         setId(id);
-         setSampleId(sampleId);
-         setOrganizationId(organizationId);
-         setTypeId(typeId);
-     }
+    private static final long       serialVersionUID = 1L;
+    protected Integer               id;
+    protected Integer               sampleId;
+    protected Integer               organizationId;
+    protected Integer               typeId;
 
-     //sample org and org values
-     public SampleOrganizationDO(Integer id, Integer sampleId, Integer organizationId, Integer typeId,
-                                 Integer parentOrganizationId, String name, String isActive){
-         setId(id);
-         setSampleId(sampleId);
-         setOrganizationId(organizationId);
-         setTypeId(typeId);
-         
-         //org params
-         orgDO.setOrganizationId(organizationId);
-         orgDO.setParentOrganizationId(parentOrganizationId);
-         orgDO.setName(name);
-         orgDO.setIsActive(isActive);
-     }
-    
-     //sample org, org, and org address values
-     public SampleOrganizationDO(Integer id, Integer sampleId, Integer organizationId, Integer typeId,
-                                 Integer parentOrganizationId, String name, String isActive,
-                                 Integer addressId, String multipleUnit, String streetAddress, String city, String state, String zipCode,
-                                 String country){
-         setId(id);
-         setSampleId(sampleId);
-         setOrganizationId(organizationId);
-         setTypeId(typeId);
-         
-         //org params
-         orgDO.setOrganizationId(organizationId);
-         orgDO.setParentOrganizationId(parentOrganizationId);
-         orgDO.setName(name);
-         orgDO.setIsActive(isActive);
-         
-         //org address params
-         orgDO.addressDO.setId(addressId);
-         orgDO.addressDO.setMultipleUnit(multipleUnit);
-         orgDO.addressDO.setStreetAddress(streetAddress);
-         orgDO.addressDO.setCity(city);
-         orgDO.addressDO.setState(state);
-         orgDO.addressDO.setZipCode(zipCode);
-         orgDO.addressDO.setCountry(country);
-     }
+    protected OrganizationAddressDO orgDO            = new OrganizationAddressDO();
+
+    public SampleOrganizationDO() {
+
+    }
+
+    // sample org values
+    public SampleOrganizationDO(Integer id,
+                                Integer sampleId,
+                                Integer organizationId,
+                                Integer typeId) {
+        setId(id);
+        setSampleId(sampleId);
+        setOrganizationId(organizationId);
+        setTypeId(typeId);
+    }
+
+    // sample org and org values
+    public SampleOrganizationDO(Integer id,
+                                Integer sampleId,
+                                Integer organizationId,
+                                Integer typeId,
+                                Integer parentOrganizationId,
+                                String name,
+                                String isActive) {
+        setId(id);
+        setSampleId(sampleId);
+        setOrganizationId(organizationId);
+        setTypeId(typeId);
+
+        // org params
+        orgDO.setOrganizationId(organizationId);
+        orgDO.setParentOrganizationId(parentOrganizationId);
+        orgDO.setName(name);
+        orgDO.setIsActive(isActive);
+    }
+
+    // sample org, org, and org address values
+    public SampleOrganizationDO(Integer id,
+                                Integer sampleId,
+                                Integer organizationId,
+                                Integer typeId,
+                                Integer parentOrganizationId,
+                                String name,
+                                String isActive,
+                                Integer addressId,
+                                String multipleUnit,
+                                String streetAddress,
+                                String city,
+                                String state,
+                                String zipCode,
+                                String country) {
+        setId(id);
+        setSampleId(sampleId);
+        setOrganizationId(organizationId);
+        setTypeId(typeId);
+
+        // org params
+        orgDO.setOrganizationId(organizationId);
+        orgDO.setParentOrganizationId(parentOrganizationId);
+        orgDO.setName(name);
+        orgDO.setIsActive(isActive);
+
+        // org address params
+        orgDO.addressDO.setId(addressId);
+        orgDO.addressDO.setMultipleUnit(multipleUnit);
+        orgDO.addressDO.setStreetAddress(streetAddress);
+        orgDO.addressDO.setCity(city);
+        orgDO.addressDO.setState(state);
+        orgDO.addressDO.setZipCode(zipCode);
+        orgDO.addressDO.setCountry(country);
+    }
 
     public Integer getId() {
         return id;

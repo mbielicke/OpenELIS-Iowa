@@ -25,71 +25,84 @@
 */
 package org.openelis.domain;
 
-import java.io.Serializable;
-
+import org.openelis.gwt.common.RPC;
 import org.openelis.utilcommon.DataBaseUtil;
 
-public class AnalyteDO implements Serializable{
-	
-	private static final long serialVersionUID = 1L;
-	
-	protected Integer id;
-	protected String name;
-	protected String isActive;
-	protected Integer parentAnalyteId;
-	protected String parentAnalyte;
-	protected String externalId;
-	
-	public AnalyteDO(){
-		
-	}
+public class AnalyteDO implements RPC {
 
-	public AnalyteDO(Integer id, String name, String isActive, Integer parentAnalyteId, String parentAnalyte,
-						String externalId){
-		setId(id);
-		setName(name);
-		setIsActive(isActive);
-		setParentAnalyteId(parentAnalyteId);
-		setParentAnalyte(parentAnalyte);
-		setExternalId(externalId);		
-	}
+    private static final long serialVersionUID = 1L;
 
-	public String getExternalId() {
-		return externalId;
-	}
-	public void setExternalId(String externalId) {
-		this.externalId = DataBaseUtil.trim(externalId);
-	}
-	public Integer getId() {
-		return id;
-	}
-	public void setId(Integer id) {
-		this.id = id;
-	}
-	public String getIsActive() {
-		return isActive;
-	}
-	public void setIsActive(String isActive) {
-		this.isActive = DataBaseUtil.trim(isActive);
-	}
-	public String getName() {
-		return name;
-	}
-	public void setName(String name) {
-		this.name = DataBaseUtil.trim(name);
-	}
-	public String getParentAnalyte() {
-		return parentAnalyte;
-	}
-	public void setParentAnalyte(String parentAnalyte) {
-		this.parentAnalyte = DataBaseUtil.trim(parentAnalyte);
-	}
-	public Integer getParentAnalyteId() {
-		return parentAnalyteId;
-	}
-	public void setParentAnalyteId(Integer parentAnalyteId) {
-		this.parentAnalyteId = parentAnalyteId;
-	}
-	
-	
+    protected Integer         id;
+    protected String          name;
+    protected String          isActive;
+    protected Integer         parentAnalyteId;
+    protected String          parentAnalyte;
+    protected String          externalId;
+
+    public AnalyteDO() {
+
+    }
+
+    public AnalyteDO(Integer id,
+                     String name,
+                     String isActive,
+                     Integer parentAnalyteId,
+                     String parentAnalyte,
+                     String externalId) {
+        setId(id);
+        setName(name);
+        setIsActive(isActive);
+        setParentAnalyteId(parentAnalyteId);
+        setParentAnalyte(parentAnalyte);
+        setExternalId(externalId);
+    }
+
+    public String getExternalId() {
+        return externalId;
+    }
+
+    public void setExternalId(String externalId) {
+        this.externalId = DataBaseUtil.trim(externalId);
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getIsActive() {
+        return isActive;
+    }
+
+    public void setIsActive(String isActive) {
+        this.isActive = DataBaseUtil.trim(isActive);
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = DataBaseUtil.trim(name);
+    }
+
+    public String getParentAnalyte() {
+        return parentAnalyte;
+    }
+
+    public void setParentAnalyte(String parentAnalyte) {
+        this.parentAnalyte = DataBaseUtil.trim(parentAnalyte);
+    }
+
+    public Integer getParentAnalyteId() {
+        return parentAnalyteId;
+    }
+
+    public void setParentAnalyteId(Integer parentAnalyteId) {
+        this.parentAnalyteId = parentAnalyteId;
+    }
+
 }

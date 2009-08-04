@@ -25,13 +25,13 @@
 */
 package org.openelis.domain;
 
-import java.io.Serializable;
 import java.util.Date;
 
 import org.openelis.gwt.common.Datetime;
+import org.openelis.gwt.common.RPC;
 import org.openelis.utilcommon.DataBaseUtil;
 
-public class AnalysisTestDO implements Serializable {
+public class AnalysisTestDO implements RPC {
     private static final long serialVersionUID = 1L;
 
     protected Integer         id;
@@ -51,17 +51,29 @@ public class AnalysisTestDO implements Serializable {
     protected Datetime        completedDate;
     protected Datetime        releasedDate;
     protected Datetime        printedDate;
-    public TestDO          test             = new TestDO();
-    
-    public AnalysisTestDO(){
-        
+    public TestDO             test             = new TestDO();
+
+    public AnalysisTestDO() {
+
     }
-    
-    //just analysis values
-    public AnalysisTestDO(Integer id, Integer sampleItemId, Integer revision, Integer testId,
-                          Integer sectionId, Integer preAnalysisId, Integer parentAnalysisId, Integer parentResultId,
-                          String isReportable, Integer unitOfMeasureId, Integer statusId, Date availableDate,
-                          Date startedDate, Date completedDate, Date releasedDate, Date printedDate){
+
+    // just analysis values
+    public AnalysisTestDO(Integer id,
+                          Integer sampleItemId,
+                          Integer revision,
+                          Integer testId,
+                          Integer sectionId,
+                          Integer preAnalysisId,
+                          Integer parentAnalysisId,
+                          Integer parentResultId,
+                          String isReportable,
+                          Integer unitOfMeasureId,
+                          Integer statusId,
+                          Date availableDate,
+                          Date startedDate,
+                          Date completedDate,
+                          Date releasedDate,
+                          Date printedDate) {
         setId(id);
         setSampleItemId(sampleItemId);
         setRevision(revision);
@@ -80,13 +92,28 @@ public class AnalysisTestDO implements Serializable {
         setPrintedDate(printedDate);
     }
 
-    //analysis and test name,method name, and status
-    public AnalysisTestDO(Integer id, Integer sampleItemId, Integer revision, Integer testId,
-                          Integer sectionId, String section, Integer preAnalysisId, Integer parentAnalysisId, Integer parentResultId,
-                          String isReportable, Integer unitOfMeasureId, Integer statusId, Date availableDate,
-                          Date startedDate, Date completedDate, Date releasedDate, Date printedDate, String testName, Integer testMethodId, 
-                          String testMethodName){
-        
+    // analysis and test name,method name, and status
+    public AnalysisTestDO(Integer id,
+                          Integer sampleItemId,
+                          Integer revision,
+                          Integer testId,
+                          Integer sectionId,
+                          String section,
+                          Integer preAnalysisId,
+                          Integer parentAnalysisId,
+                          Integer parentResultId,
+                          String isReportable,
+                          Integer unitOfMeasureId,
+                          Integer statusId,
+                          Date availableDate,
+                          Date startedDate,
+                          Date completedDate,
+                          Date releasedDate,
+                          Date printedDate,
+                          String testName,
+                          Integer testMethodId,
+                          String testMethodName) {
+
         setId(id);
         setSampleItemId(sampleItemId);
         setRevision(revision);
@@ -104,8 +131,8 @@ public class AnalysisTestDO implements Serializable {
         setCompletedDate(completedDate);
         setReleasedDate(releasedDate);
         setPrintedDate(printedDate);
-        
-        //test params
+
+        // test params
         test.setId(testId);
         test.setName(testName);
         test.setMethodId(testMethodId);
@@ -205,7 +232,9 @@ public class AnalysisTestDO implements Serializable {
     }
 
     public void setAvailableDate(Date availableDate) {
-        this.availableDate = new Datetime(Datetime.YEAR, Datetime.DAY, availableDate);
+        this.availableDate = new Datetime(Datetime.YEAR,
+                                          Datetime.DAY,
+                                          availableDate);
     }
 
     public Datetime getStartedDate() {
@@ -213,7 +242,9 @@ public class AnalysisTestDO implements Serializable {
     }
 
     public void setStartedDate(Date startedDate) {
-        this.startedDate = new Datetime(Datetime.YEAR, Datetime.DAY, startedDate);
+        this.startedDate = new Datetime(Datetime.YEAR,
+                                        Datetime.DAY,
+                                        startedDate);
     }
 
     public Datetime getCompletedDate() {
@@ -221,7 +252,9 @@ public class AnalysisTestDO implements Serializable {
     }
 
     public void setCompletedDate(Date completedDate) {
-        this.completedDate = new Datetime(Datetime.YEAR, Datetime.DAY, completedDate);
+        this.completedDate = new Datetime(Datetime.YEAR,
+                                          Datetime.DAY,
+                                          completedDate);
     }
 
     public Datetime getReleasedDate() {
@@ -229,7 +262,9 @@ public class AnalysisTestDO implements Serializable {
     }
 
     public void setReleasedDate(Date releasedDate) {
-        this.releasedDate = new Datetime(Datetime.YEAR, Datetime.DAY, releasedDate);
+        this.releasedDate = new Datetime(Datetime.YEAR,
+                                         Datetime.DAY,
+                                         releasedDate);
     }
 
     public Datetime getPrintedDate() {
@@ -237,7 +272,9 @@ public class AnalysisTestDO implements Serializable {
     }
 
     public void setPrintedDate(Date printedDate) {
-        this.printedDate = new Datetime(Datetime.YEAR, Datetime.DAY, printedDate);
+        this.printedDate = new Datetime(Datetime.YEAR,
+                                        Datetime.DAY,
+                                        printedDate);
     }
 
     public String getSection() {

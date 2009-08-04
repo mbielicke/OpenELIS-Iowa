@@ -25,13 +25,13 @@
 */
 package org.openelis.domain;
 
-import java.io.Serializable;
 import java.util.Date;
 
 import org.openelis.gwt.common.Datetime;
+import org.openelis.gwt.common.RPC;
 import org.openelis.utilcommon.DataBaseUtil;
 
-public class TestDO implements Serializable {
+public class TestDO implements RPC {
 
     private static final long serialVersionUID = 1L;
 
@@ -69,16 +69,33 @@ public class TestDO implements Serializable {
 
     }
 
-    public TestDO(Integer id, String name, Integer methodId, String methodName,
-                  String description, String reportingDescription,
-                  String isActive, Date activeBegin, Date activeEnd, 
-                  String isReportable, Integer timeTransit, Integer timeHolding,
-                  Integer timeTaAverage, Integer timeTaWarning, Integer timeTaMax,
-                  Integer labelId,String labelName, Integer labelQty, 
-                  Integer testTrailerId,String testTrailerName,
-                  Integer scriptletId,String scriptletName,Integer testFormatId,
-                  Integer revisionMethodId,Integer reportingMethodId,
-                  Integer sortingMethodId,Integer reportingSequence) {
+    public TestDO(Integer id,
+                  String name,
+                  Integer methodId,
+                  String methodName,
+                  String description,
+                  String reportingDescription,
+                  String isActive,
+                  Date activeBegin,
+                  Date activeEnd,
+                  String isReportable,
+                  Integer timeTransit,
+                  Integer timeHolding,
+                  Integer timeTaAverage,
+                  Integer timeTaWarning,
+                  Integer timeTaMax,
+                  Integer labelId,
+                  String labelName,
+                  Integer labelQty,
+                  Integer testTrailerId,
+                  String testTrailerName,
+                  Integer scriptletId,
+                  String scriptletName,
+                  Integer testFormatId,
+                  Integer revisionMethodId,
+                  Integer reportingMethodId,
+                  Integer sortingMethodId,
+                  Integer reportingSequence) {
         setId(id);
         setName(name);
         setMethodId(methodId);

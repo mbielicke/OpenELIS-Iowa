@@ -25,35 +25,38 @@
 */
 package org.openelis.domain;
 
-import java.io.Serializable;
-
+import org.openelis.gwt.common.RPC;
 import org.openelis.utilcommon.DataBaseUtil;
 
+public class ProviderDO implements RPC {
 
-public class ProviderDO implements Serializable{
+    private static final long serialVersionUID = 1L;
 
-    private static final long serialVersionUID = 3704651414103685347L;
+    protected Integer         id;
+    protected String          lastName;
+    protected String          firstName;
+    protected String          middleName;
+    protected String          npi;
+    protected Integer         typeId;
 
-    protected Integer id;   
-    protected String lastName;       
-    protected String firstName;   
-    protected String middleName;  
-    protected String npi;
-    protected Integer typeId;
+    public ProviderDO() {
 
-    public ProviderDO(){
-        
     }
-    
-    public ProviderDO(Integer id,String lastName, String firstName, String middleName, Integer typeId,String npi){
+
+    public ProviderDO(Integer id,
+                      String lastName,
+                      String firstName,
+                      String middleName,
+                      Integer typeId,
+                      String npi) {
         setId(id);
         setLastName(lastName);
         setFirstName(firstName);
-        setMiddleName(middleName);        
-        setNpi(npi);   
+        setMiddleName(middleName);
+        setNpi(npi);
         setTypeId(typeId);
     }
-    
+
     public String getFirstName() {
         return firstName;
     }
@@ -92,7 +95,7 @@ public class ProviderDO implements Serializable{
 
     public void setNpi(String npi) {
         this.npi = DataBaseUtil.trim(npi);
-    }    
+    }
 
     public Integer getTypeId() {
         return typeId;
@@ -101,5 +104,5 @@ public class ProviderDO implements Serializable{
     public void setTypeId(Integer typeId) {
         this.typeId = typeId;
     }
-   
+
 }

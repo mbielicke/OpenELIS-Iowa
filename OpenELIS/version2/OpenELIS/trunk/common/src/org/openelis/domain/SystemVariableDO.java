@@ -25,26 +25,25 @@
 */
 package org.openelis.domain;
 
-import java.io.Serializable;
-
+import org.openelis.gwt.common.RPC;
 import org.openelis.utilcommon.DataBaseUtil;
 
-public class SystemVariableDO implements Serializable {
+public class SystemVariableDO implements RPC {
 
     private static final long serialVersionUID = 1L;
-    
-    protected Integer id;
-    protected String name;
-    protected String value;
-    
-    public SystemVariableDO(){
-        
+
+    protected Integer         id;
+    protected String          name;
+    protected String          value;
+
+    public SystemVariableDO() {
+
     }
-    
-    public SystemVariableDO(Integer id, String name, String value){       
-       setId(id);
-       setName(name);
-       setValue(value);
+
+    public SystemVariableDO(Integer id, String name, String value) {
+        setId(id);
+        setName(name);
+        setValue(value);
     }
 
     public Integer getId() {
@@ -71,6 +70,4 @@ public class SystemVariableDO implements Serializable {
         this.value = DataBaseUtil.trim(value);
     }
 
-    
-     
 }

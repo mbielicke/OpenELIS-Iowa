@@ -25,42 +25,46 @@
 */
 package org.openelis.domain;
 
-import java.io.Serializable;
-
+import org.openelis.gwt.common.RPC;
 import org.openelis.utilcommon.DataBaseUtil;
 
-public class TestResultDO implements Serializable {
+public class TestResultDO implements RPC {
 
-    /**
-     * 
-     */
     private static final long serialVersionUID = 1L;
-    
-    protected Integer id;             
-    protected Integer testId;             
-    protected Integer resultGroup;             
-    protected Integer sortOrder;
-    protected Integer flagsId;             
-    protected Integer typeId;             
-    protected String value;             
-    protected Integer significantDigits;             
-    protected Integer roundingMethodId;
-    protected String quantLimit;             
-    protected String contLevel;      
-    protected String hazardLevel;
-    protected Integer unitOfMeasureId;   
-    private boolean delete;
-    
+
+    protected Integer         id;
+    protected Integer         testId;
+    protected Integer         resultGroup;
+    protected Integer         sortOrder;
+    protected Integer         flagsId;
+    protected Integer         typeId;
+    protected String          value;
+    protected Integer         significantDigits;
+    protected Integer         roundingMethodId;
+    protected String          quantLimit;
+    protected String          contLevel;
+    protected String          hazardLevel;
+    protected Integer         unitOfMeasureId;
+    private boolean           delete;
+
     public TestResultDO() {
-        
+
     }
-    
-    public TestResultDO(Integer id,Integer testId,Integer resultGroup,
-                        Integer sortOrder,Integer flagsId,Integer typeId,
-                        String value,Integer significantDigits,
-                        Integer roundingMethodId,String quantLimit,
-                        String contLevel,String hazardLevel,Integer unitOfMeasureId) {
-        
+
+    public TestResultDO(Integer id,
+                        Integer testId,
+                        Integer resultGroup,
+                        Integer sortOrder,
+                        Integer flagsId,
+                        Integer typeId,
+                        String value,
+                        Integer significantDigits,
+                        Integer roundingMethodId,
+                        String quantLimit,
+                        String contLevel,
+                        String hazardLevel,
+                        Integer unitOfMeasureId) {
+
         setId(id);
         setTestId(testId);
         setResultGroup(resultGroup);
@@ -72,10 +76,10 @@ public class TestResultDO implements Serializable {
         setRoundingMethodId(roundingMethodId);
         setQuantLimit(quantLimit);
         setContLevel(contLevel);
-        setHazardLevel(hazardLevel);        
+        setHazardLevel(hazardLevel);
         setUnitOfMeasureId(unitOfMeasureId);
-    }   
-    
+    }
+
     public String getContLevel() {
         return contLevel;
     }
