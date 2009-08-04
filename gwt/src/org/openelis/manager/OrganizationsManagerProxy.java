@@ -30,7 +30,7 @@ import org.openelis.gwt.services.ScreenService;
 
 public class OrganizationsManagerProxy {
 
-    protected static final String ORG_MANAGER_SERVICE_URL = "org.openelis.modules.organization.server.Organization";
+    protected static final String ORG_MANAGER_SERVICE_URL = "org.openelis.modules.organization.server.OrganizationService";
     protected ScreenService service;
     
     public OrganizationsManagerProxy(){

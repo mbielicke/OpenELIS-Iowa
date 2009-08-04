@@ -40,7 +40,6 @@ import org.openelis.gwt.screen.ScreenDropDownWidget;
 import org.openelis.gwt.screen.ScreenTabPanel;
 import org.openelis.gwt.screen.ScreenTextArea;
 import org.openelis.gwt.screen.ScreenTextBox;
-import org.openelis.gwt.screen.ScreenWindow;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.ButtonPanel;
@@ -52,17 +51,14 @@ import org.openelis.gwt.widget.table.event.SourcesTableWidgetEvents;
 import org.openelis.gwt.widget.table.event.TableWidgetListener;
 import org.openelis.metamap.OrderMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
-import org.openelis.modules.standardnotepicker.client.StandardNotePickerScreen;
 
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.SyncCallback;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.SourcesTabEvents;
 import com.google.gwt.user.client.ui.TabListener;
-import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -498,6 +494,7 @@ public class OrderScreen extends OpenELISScreenForm<OrderForm,OrderQuery> implem
     }
     
     private void onStandardNoteCustomerButtonClick() {
+        /*
         PopupPanel standardNotePopupPanel = new PopupPanel(false, true);
         ScreenWindow pickerWindow = new ScreenWindow(standardNotePopupPanel, "Choose Standard Note", "standardNotePicker", "Loading...");
         pickerWindow.setContent(new StandardNotePickerScreen((TextArea)customerNoteText.getWidget()));
@@ -507,9 +504,11 @@ public class OrderScreen extends OpenELISScreenForm<OrderForm,OrderQuery> implem
         int top = this.getAbsoluteTop();
         standardNotePopupPanel.setPopupPosition(left, top);
         standardNotePopupPanel.show();
+        */
     }
     
     private void onStandardNoteShippingButtonClick() {
+        /*
         PopupPanel standardNotePopupPanel = new PopupPanel(false, true);
         ScreenWindow pickerWindow = new ScreenWindow(standardNotePopupPanel, "Choose Standard Note", "standardNotePicker", "Loading...");
         pickerWindow.setContent(new StandardNotePickerScreen((TextArea)shippingNoteText.getWidget()));
@@ -519,6 +518,7 @@ public class OrderScreen extends OpenELISScreenForm<OrderForm,OrderQuery> implem
         int top = this.getAbsoluteTop();
         standardNotePopupPanel.setPopupPosition(left, top);
         standardNotePopupPanel.show();
+        */
     }
     
     private void onDuplicateRecordClick(){

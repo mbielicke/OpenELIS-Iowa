@@ -60,17 +60,14 @@ import org.openelis.gwt.widget.table.event.TableWidgetListener;
 import org.openelis.metamap.InventoryItemMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 import org.openelis.modules.richTextPopup.client.RichTextPopupScreen;
-import org.openelis.modules.standardnotepicker.client.StandardNotePickerScreen;
 
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.SyncCallback;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.SourcesTabEvents;
 import com.google.gwt.user.client.ui.TabListener;
-import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -399,6 +396,7 @@ public class InventoryItemScreen extends OpenELISScreenForm<InventoryItemForm, Q
     }
     
 	private void onStandardNoteButtonClick(){
+	    /*
    	 	PopupPanel standardNotePopupPanel = new PopupPanel(false,true);
 		ScreenWindow pickerWindow = new ScreenWindow(standardNotePopupPanel, "Choose Standard Note", "standardNotePicker", "Loading...");
 		pickerWindow.setContent(new StandardNotePickerScreen((TextArea)noteText.getWidget()));
@@ -408,6 +406,7 @@ public class InventoryItemScreen extends OpenELISScreenForm<InventoryItemForm, Q
 		int top = this.getAbsoluteTop();
 		standardNotePopupPanel.setPopupPosition(left,top);
 		standardNotePopupPanel.show();
+		*/
      }
 
     private void onRemoveComponentRowButtonClick() {
