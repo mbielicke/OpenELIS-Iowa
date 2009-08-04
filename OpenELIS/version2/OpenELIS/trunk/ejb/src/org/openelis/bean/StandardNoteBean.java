@@ -212,17 +212,17 @@ public class StandardNoteBean implements StandardNoteRemote{
             f.setValue(fields.get(0).query);
             whereClause += QueryBuilder.getQueryNoOperand(f, StandardNoteMap.getTypeId());
         }
-                    
+        
         qb.setOrderBy(StandardNoteMap.getTypeId()+", "+StandardNoteMap.getName());
 
         sb.append(qb.getSelectClause()).append(qb.getFromClause(whereClause)).append(whereClause).append(qb.getOrderBy());
 
-        System.out.println(sb.toString());
         Query query = manager.createQuery(sb.toString());
         
         qb.setNewQueryParams(query, fields);
+        
         List<StandardNoteDO> returnList = query.getResultList();
-
+        
         if (returnList == null)
             return new ArrayList<StandardNoteDO>();
         else

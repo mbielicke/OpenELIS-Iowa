@@ -26,7 +26,6 @@
 package org.openelis.manager;
 
 import javax.naming.InitialContext;
-import javax.persistence.EntityNotFoundException;
 
 import org.openelis.domain.OrganizationAddressDO;
 import org.openelis.local.OrganizationLocal;
@@ -62,7 +61,7 @@ public class OrganizationsManagerProxy {
         
         man.getContacts().setOrganizationId(orgId);
         man.getContacts().update();
-        
+      
         man.getNotes().setReferenceId(orgId);
         man.getNotes().setReferenceTableId(orgRefId);
         man.getNotes().update();
@@ -123,6 +122,8 @@ public class OrganizationsManagerProxy {
     }
     
     public void validate(OrganizationsManager man) throws Exception {
+        OrganizationLocal ol = getOrganizationLocal();
         
+        ol.validateOrganization(man.getOrganizationAddress(), man.getContacts().getContacts());
     }
 }

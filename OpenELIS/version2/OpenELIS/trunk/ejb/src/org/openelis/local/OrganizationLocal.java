@@ -31,6 +31,7 @@ import javax.ejb.Local;
 
 import org.openelis.domain.OrganizationAddressDO;
 import org.openelis.domain.OrganizationContactDO;
+import org.openelis.gwt.common.ValidationErrorsList;
 
 @Local
 public interface OrganizationLocal {
@@ -43,4 +44,6 @@ public interface OrganizationLocal {
     public void updateContact(OrganizationContactDO contactDO) throws Exception;
     public void addContact(OrganizationContactDO contactDO) throws Exception;
     public void deleteContact(OrganizationContactDO contactDO) throws Exception;
+    
+    public void validateOrganization(OrganizationAddressDO organizationDO, List contacts) throws Exception;
 }

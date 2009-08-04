@@ -94,6 +94,45 @@ public class OrganizationBean implements OrganizationRemote, OrganizationLocal {
         return orgAddressContacts;
 	}
 	
+	public ArrayList<IdNameDO> query(ArrayList<QueryData> fields,
+                                     int first,
+                                     int max) throws Exception {
+        StringBuffer sb = new StringBuffer();
+        QueryBuilder qb = new QueryBuilder();
+
+        qb.setMeta(OrgMeta);
+
+        qb.setSelect("distinct new org.openelis.domain.IdNameDO(" + OrgMeta.getId()
+                     + ", "
+                     + OrgMeta.getName()
+                     + ") ");
+
+        // this method is going to throw an exception if a column doesnt match
+
+        qb.addNewWhere(fields);
+
+        qb.setOrderBy(OrgMeta.getName());
+
+        sb.append(qb.getEJBQL());
+
+        Query query = manager.createQuery(sb.toString());
+
+        if (first > -1 && max > -1)
+            query.setMaxResults(first + max);
+
+        // ***set the parameters in the query
+        qb.setNewQueryParams(query, fields);
+
+        ArrayList<IdNameDO> returnList = (ArrayList<IdNameDO>)GetPage.getPage(query.getResultList(),
+                                                                              first,
+                                                                              max);
+
+        if (returnList == null)
+            throw new LastPageException();
+        else
+            return returnList;
+    }
+	
 	public void add(OrganizationAddressDO organizationDO){
          manager.setFlushMode(FlushModeType.COMMIT);
          Organization organization = new Organization();
@@ -185,38 +224,6 @@ public class OrganizationBean implements OrganizationRemote, OrganizationLocal {
         return contactsList;
 	}
 	
-	public ArrayList<IdNameDO> query(ArrayList<AbstractField> fields, int first, int max) throws Exception{
-        StringBuffer sb = new StringBuffer();
-        QueryBuilder qb = new QueryBuilder();
-
-        qb.setMeta(OrgMeta);
-      
-        qb.setSelect("distinct new org.openelis.domain.IdNameDO("+OrgMeta.getId()+", "+OrgMeta.getName()+") ");
-       
-        //this method is going to throw an exception if a column doesnt match
-       
-        qb.addWhere(fields);      
-
-        qb.setOrderBy(OrgMeta.getName());
-       
-        sb.append(qb.getEJBQL());
-
-        Query query = manager.createQuery(sb.toString());
-        
-        if(first > -1 && max > -1)
-         query.setMaxResults(first+max);
-        
-//      ***set the parameters in the query
-        qb.setQueryParams(query);
-        
-        ArrayList<IdNameDO> returnList = (ArrayList<IdNameDO>)GetPage.getPage(query.getResultList(), first, max);
-        
-        if(returnList == null)
-         throw new LastPageException();
-        else
-         return returnList;
-	}
-	
 	public List autoCompleteLookupById(Integer id){
 		Query query = null;
 		query = manager.createNamedQuery("Organization.AutoCompleteById");
@@ -232,7 +239,7 @@ public class OrganizationBean implements OrganizationRemote, OrganizationLocal {
 		return query.getResultList();
 	}
 	
-	private void validateOrganization(OrganizationAddressDO organizationDO, List contacts) throws Exception {
+	public void validateOrganization(OrganizationAddressDO organizationDO, List contacts) throws Exception {
 	    ValidationErrorsList list = new ValidationErrorsList();
 		//name required
 		if(organizationDO.getName() == null || "".equals(organizationDO.getName())){
@@ -296,38 +303,5 @@ public class OrganizationBean implements OrganizationRemote, OrganizationLocal {
 		if(orgContactDO.getAddressDO().getCountry() == null || "".equals(orgContactDO.getAddressDO().getCountry())){
 			exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex, OrgMeta.ORGANIZATION_CONTACT.ADDRESS.getCountry(),"contactsTable"));
 		}		
-	}
-
-	public ArrayList<IdNameDO> newQuery(ArrayList<QueryData> fields, int first,
-			int max) throws Exception {
-        StringBuffer sb = new StringBuffer();
-        QueryBuilder qb = new QueryBuilder();
-
-        qb.setMeta(OrgMeta);
-      
-        qb.setSelect("distinct new org.openelis.domain.IdNameDO("+OrgMeta.getId()+", "+OrgMeta.getName()+") ");
-       
-        //this method is going to throw an exception if a column doesnt match
-       
-        qb.addNewWhere(fields);      
-
-        qb.setOrderBy(OrgMeta.getName());
-       
-        sb.append(qb.getEJBQL());
-
-        Query query = manager.createQuery(sb.toString());
-        
-        if(first > -1 && max > -1)
-         query.setMaxResults(first+max);
-        
-//      ***set the parameters in the query
-        qb.setNewQueryParams(query,fields);
-        
-        ArrayList<IdNameDO> returnList = (ArrayList<IdNameDO>)GetPage.getPage(query.getResultList(), first, max);
-        
-        if(returnList == null)
-         throw new LastPageException();
-        else
-         return returnList;
-	}
+	}	
 }
