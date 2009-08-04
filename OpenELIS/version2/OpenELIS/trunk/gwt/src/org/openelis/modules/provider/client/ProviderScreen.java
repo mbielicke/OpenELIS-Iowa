@@ -28,17 +28,6 @@ package org.openelis.modules.provider.client;
 
 import java.util.ArrayList;
 
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.rpc.SyncCallback;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.PopupPanel;
-import com.google.gwt.user.client.ui.SourcesTabEvents;
-import com.google.gwt.user.client.ui.TabListener;
-import com.google.gwt.user.client.ui.TextArea;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.Widget;
-
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.gwt.common.Form;
@@ -55,7 +44,6 @@ import org.openelis.gwt.screen.ScreenTableWidget;
 import org.openelis.gwt.screen.ScreenTextArea;
 import org.openelis.gwt.screen.ScreenTextBox;
 import org.openelis.gwt.screen.ScreenVertical;
-import org.openelis.gwt.screen.ScreenWindow;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.CollapsePanel;
@@ -66,7 +54,15 @@ import org.openelis.gwt.widget.table.TableManager;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.metamap.ProviderMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
-import org.openelis.modules.standardnotepicker.client.StandardNotePickerScreen;
+
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.SyncCallback;
+import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.SourcesTabEvents;
+import com.google.gwt.user.client.ui.TabListener;
+import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.Widget;
 
 public class ProviderScreen extends OpenELISScreenForm<ProviderForm,Query<TableDataRow<Integer>>> implements ClickListener, 
                                                                   TabListener,
@@ -331,13 +327,15 @@ public class ProviderScreen extends OpenELISScreenForm<ProviderForm,Query<TableD
       
    
    private void onStandardNoteButtonClick(){
+       /*
        ScreenWindow modal = new ScreenWindow(null,"Standard Note Screen",
                                              "standardNoteScreen","",true,false);
        modal.setName(consts.get("standardNote"));
-       modal.setContent(new StandardNotePickerScreen((TextBox)getWidget(ProvMeta.getNote()
+       modal.setContent(new EditNoteScreen((TextBox)getWidget(ProvMeta.getNote()
                                                                                  .getSubject()),
                                                       (TextArea)getWidget(ProvMeta.getNote()
                                                                                   .getText())));
+                                                                                  */
     }
     
     private void onRemoveRowButtonClick(){

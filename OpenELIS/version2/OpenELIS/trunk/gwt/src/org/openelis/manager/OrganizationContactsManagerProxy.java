@@ -29,7 +29,7 @@ import org.openelis.gwt.services.ScreenService;
 import org.openelis.manager.OrganizationContactsManager;
 
 public class OrganizationContactsManagerProxy {
-    protected static final String ORG_MANAGER_SERVICE_URL = "org.openelis.modules.organization.server.Organization";
+    protected static final String ORG_MANAGER_SERVICE_URL = "org.openelis.modules.organization.server.OrganizationService";
     protected ScreenService service;
     
     public OrganizationContactsManagerProxy(){

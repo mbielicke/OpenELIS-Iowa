@@ -29,8 +29,6 @@ import org.openelis.gwt.screen.AppModule;
 import org.openelis.gwt.screen.ClassFactory;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 
 public class OrganizationEntry implements AppModule {
@@ -42,7 +40,7 @@ public class OrganizationEntry implements AppModule {
                                new ClassFactory.Factory() {
                                    public Object newInstance(Object[] args) {
                                 	   	try {
-                                			   return new Organization();
+                                			   return new OrganizationScreen();
                                 	   	}catch(Exception e) {
                                 	   		e.printStackTrace();
                                 	   		Window.alert("Unable to create Organization Screen : "+e.getMessage());
