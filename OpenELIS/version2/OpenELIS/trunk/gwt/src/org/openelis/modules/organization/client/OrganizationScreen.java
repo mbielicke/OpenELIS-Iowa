@@ -66,14 +66,12 @@ import com.google.gwt.user.client.ui.TabPanel;
 
 public class OrganizationScreen extends Screen implements BeforeGetMatchesHandler, GetMatchesHandler {
 
-
     public enum Tabs {
         CONTACTS, IDENTIFIERS, NOTES
     };
 
     protected Tabs               tab           = Tabs.CONTACTS;
 
-    private ScreenService        service;
     private OrganizationsManager manager;
     private ContactsTab          contactsTab;
     private NotesTab             notesTab;
@@ -82,19 +80,13 @@ public class OrganizationScreen extends Screen implements BeforeGetMatchesHandle
 
     private OrganizationMetaMap  OrgMeta       = new OrganizationMetaMap();
 
-    EnumSet<State>               enabledStates = EnumSet.of(State.ADD,
-                                                            State.UPDATE,
-                                                            State.QUERY);
-
     ScreenNavigator nav;
     
     public OrganizationScreen() throws Exception {
         // Call base to get ScreenDef and draw screen
         super("OpenELISServlet?service=org.openelis.modules.organization.server.OrganizationService");
-        service = new ScreenService("OpenELISServlet?service=org.openelis.modules.organization.server.OrganizationService");
         manager = OrganizationsManager.getInstance();
 
-        //keyList = new KeyListManager<org.openelis.gwt.common.rewrite.Query<Object>>();
         nav = new ScreenNavigator<OrgQuery>(this) {
             public void getSelection(RPC entry) {
                 fetch(((IdNameDO)entry).getId());
@@ -361,7 +353,7 @@ public class OrganizationScreen extends Screen implements BeforeGetMatchesHandle
                                               .getParentOrganizationId());
             }
 
-            public void onValueChangeEvent(ValueChangeEvent<Integer> event) {
+            public void onValueChange(ValueChangeEvent<Integer> event) {
                 manager.getOrganizationAddress()
                        .setParentOrganizationId(event.getValue());
             }
@@ -373,6 +365,8 @@ public class OrganizationScreen extends Screen implements BeforeGetMatchesHandle
                                         .contains(event.getState()));
                 parentOrg.setQueryMode(event.getState() == State.QUERY);
             }
+            
+            
         });
 
         // Create Default blank model for AutoComplete field Parent Org
@@ -409,7 +403,8 @@ public class OrganizationScreen extends Screen implements BeforeGetMatchesHandle
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                if (EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState()))
+                if (EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState()) && 
+                                security.hasAddPermission())
                     addButton.enable(true);
                 else if (EnumSet.of(State.ADD).contains(event.getState()))
                     addButton.changeState(ButtonState.LOCK_PRESSED);
@@ -514,12 +509,6 @@ public class OrganizationScreen extends Screen implements BeforeGetMatchesHandle
                 window.clearStatus();
             }
         });
-
-        /*
-         * tabs.addBeforeSelectionHandler(new BeforeSelectionHandler<Integer>() { public void onBeforeSelection(BeforeSelectionEvent<Integer> event) {
-         * 
-         * } });
-         */
     }
 
     protected void query() {
@@ -597,14 +586,6 @@ public class OrganizationScreen extends Screen implements BeforeGetMatchesHandle
 
             try {
                 manager = manager.abort();
-
-                if (tab == Tabs.CONTACTS) {
-                    manager.getContacts();
-                } else if (tab == Tabs.IDENTIFIERS) {
-                    // empty for now
-                } else if (tab == Tabs.NOTES) {
-                    manager.getNotes();
-                }
 
                 DataChangeEvent.fire(this);
                 clearErrors();
@@ -707,7 +688,6 @@ public class OrganizationScreen extends Screen implements BeforeGetMatchesHandle
 
         } catch (Exception e) {
             Window.alert("commitUpdate(): " + e.getMessage());
-            window.clearStatus();
 
         }
     }

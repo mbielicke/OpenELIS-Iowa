@@ -81,12 +81,8 @@ public class OrganizationService implements AutoCompleteServiceInt<ParentOrgRPC>
     
     public OrganizationContactsManager fetchContactByOrgId(Integer orgId) throws Exception {
         OrganizationManagerRemote remote = (OrganizationManagerRemote)EJBFactory.lookup("openelis/OrganizationManagerBean/remote");
-        try{
+        
         return remote.fetchContactByOrgId(orgId);
-        }catch(Exception e){
-            System.out.println(e.getMessage());
-            throw e;
-        }
     }
     
     public OrganizationsManager add(OrganizationsManager man) throws Exception {
