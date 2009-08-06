@@ -36,13 +36,11 @@ public class OrganizationContactsManagerProxy {
         service = new ScreenService("OpenELISServlet?service="+ORG_MANAGER_SERVICE_URL);
     }
     public OrganizationContactsManager add(OrganizationContactsManager man) throws Exception {
-        //do nothing
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     public OrganizationContactsManager update(OrganizationContactsManager man) throws Exception {
-        //do nothing
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     public OrganizationContactsManager fetch(Integer id) throws Exception {
