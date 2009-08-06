@@ -28,10 +28,8 @@ package org.openelis.bean;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.Resource;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
-import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
@@ -45,19 +43,16 @@ import org.openelis.domain.OrganizationContactDO;
 import org.openelis.entity.Organization;
 import org.openelis.entity.OrganizationContact;
 import org.openelis.exception.NotFoundException;
-import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.rewrite.QueryData;
 import org.openelis.local.AddressLocal;
 import org.openelis.local.LockLocal;
 import org.openelis.local.OrganizationLocal;
 import org.openelis.metamap.OrganizationMetaMap;
 import org.openelis.remote.OrganizationRemote;
-import org.openelis.security.local.SystemUserLocal;
 import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
 import org.openelis.utils.ReferenceTableCache;
@@ -71,11 +66,6 @@ public class OrganizationBean implements OrganizationRemote, OrganizationLocal {
 	@PersistenceContext(name = "openelis")
     private EntityManager manager;
 	
-	@EJB private SystemUserLocal userLocal;
-	
-	@Resource
-	private SessionContext ctx;
-	
 	@EJB private AddressLocal addressBean;
     @EJB private LockLocal lockBean;
     
@@ -86,12 +76,12 @@ public class OrganizationBean implements OrganizationRemote, OrganizationLocal {
         orgRefTableId = ReferenceTableCache.getReferenceTable("organization");
     }
     
-	public OrganizationAddressDO getOrganizationAddress(Integer organizationId) throws Exception {		
+	public OrganizationAddressDO fetchById(Integer organizationId) throws Exception {		
 		Query query = manager.createNamedQuery("Organization.OrganizationAndAddress");
 		query.setParameter("id", organizationId);
-		OrganizationAddressDO orgAddressContacts = (OrganizationAddressDO) query.getSingleResult();
+		OrganizationAddressDO orgAddressDO = (OrganizationAddressDO) query.getSingleResult();
 
-        return orgAddressContacts;
+        return orgAddressDO;
 	}
 	
 	public ArrayList<IdNameDO> query(ArrayList<QueryData> fields,
@@ -212,7 +202,7 @@ public class OrganizationBean implements OrganizationRemote, OrganizationLocal {
             manager.remove(orgContact);
     }
 
-	public List<OrganizationContactDO> getOrganizationContacts(Integer organizationId) throws Exception {
+	public List<OrganizationContactDO> fetchContactsById(Integer organizationId) throws Exception {
 		Query query = manager.createNamedQuery("OrganizationContact.ContactsByOrgId");
 		query.setParameter("id", organizationId);
 		

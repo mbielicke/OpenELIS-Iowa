@@ -31,12 +31,11 @@ import javax.ejb.Local;
 
 import org.openelis.domain.OrganizationAddressDO;
 import org.openelis.domain.OrganizationContactDO;
-import org.openelis.gwt.common.ValidationErrorsList;
 
 @Local
 public interface OrganizationLocal {
-    public OrganizationAddressDO getOrganizationAddress(Integer organizationId) throws Exception;
-    public List getOrganizationContacts(Integer organizationId) throws Exception;
+    public OrganizationAddressDO fetchById(Integer organizationId) throws Exception;
+    public List fetchContactsById(Integer organizationId) throws Exception;
     
     public void add(OrganizationAddressDO orgDO);
     public void update(OrganizationAddressDO orgDO) throws Exception;
