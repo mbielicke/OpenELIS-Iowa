@@ -26,6 +26,7 @@
 package org.openelis.manager;
 
 import org.openelis.domain.OrganizationAddressDO;
+import org.openelis.exception.InconsistencyException;
 import org.openelis.exception.NotFoundException;
 import org.openelis.gwt.common.RPC;
 
@@ -79,7 +80,7 @@ public class OrganizationsManager implements RPC, HasNotesInt {
     
     public OrganizationsManager fetchForUpdate() throws Exception {
         if(organizationAddress.getOrganizationId() == null)
-            throw new Exception("org id is null");
+            throw new InconsistencyException("org id is null");
         
         return proxy().fetchForUpdate(organizationAddress.getOrganizationId());
     }
