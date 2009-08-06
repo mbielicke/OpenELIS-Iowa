@@ -71,7 +71,7 @@ public class OrganizationsManagerProxy {
 
     public OrganizationsManager fetch(Integer orgId) throws Exception {
         OrganizationLocal ol = getOrganizationLocal();
-        OrganizationAddressDO orgDO = ol.getOrganizationAddress(orgId);
+        OrganizationAddressDO orgDO = ol.fetchById(orgId);
         OrganizationsManager m = OrganizationsManager.getInstance();
         m.setOrganizationAddress(orgDO);
         m.setOrganizationReferenceTable(ReferenceTableCache.getReferenceTable("organization"));
@@ -111,6 +111,12 @@ public class OrganizationsManagerProxy {
         return null;
     }
     
+    public void validate(OrganizationsManager man) throws Exception {
+        OrganizationLocal ol = getOrganizationLocal();
+        
+        ol.validateOrganization(man.getOrganizationAddress(), man.getContacts().getContacts());
+    }
+    
     private OrganizationLocal getOrganizationLocal(){
         try{
             InitialContext ctx = new InitialContext();
@@ -119,11 +125,5 @@ public class OrganizationsManagerProxy {
              System.out.println(e.getMessage());
              return null;
         }
-    }
-    
-    public void validate(OrganizationsManager man) throws Exception {
-        OrganizationLocal ol = getOrganizationLocal();
-        
-        ol.validateOrganization(man.getOrganizationAddress(), man.getContacts().getContacts());
     }
 }

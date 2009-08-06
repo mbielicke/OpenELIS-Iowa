@@ -80,7 +80,7 @@ public class OrganizationContactsManagerProxy {
     
     public OrganizationContactsManager fetchByOrgId(Integer orgId) throws Exception {
         OrganizationLocal ol = getOrganizationLocal();
-        ArrayList<OrganizationContactDO> contacts = (ArrayList<OrganizationContactDO>)ol.getOrganizationContacts(orgId);
+        ArrayList<OrganizationContactDO> contacts = (ArrayList<OrganizationContactDO>)ol.fetchContactsById(orgId);
         
         OrganizationContactsManager cm = OrganizationContactsManager.getInstance();
         cm.setContacts(contacts);
