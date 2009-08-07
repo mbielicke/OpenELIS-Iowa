@@ -40,7 +40,6 @@ import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.common.data.TableField;
 import org.openelis.gwt.common.data.TreeField;
-import org.openelis.gwt.screen.AppScreen;
 import org.openelis.gwt.screen.ClassFactory;
 import org.openelis.gwt.screen.ScreenAToZTable;
 import org.openelis.gwt.screen.ScreenAbsolute;
@@ -94,8 +93,6 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.EventListener;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.WindowCloseListener;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.xml.client.Node;
 
@@ -108,35 +105,17 @@ public class OpenELIS implements EntryPoint, EventListener {
    */
   public void onModuleLoad() {
 	  setWidgetMap();
-      Window.addWindowCloseListener(new WindowCloseListener() {
-          public String onWindowClosing() {
-               org.openelis.modules.main.client.openelis.OpenELIS.screenService.logout(new AsyncCallback() {
-                    public void onSuccess(Object result) {
-                    }
-                          
-                    public void onFailure(Throwable caught) {
-                    }
-                });
-                return null;
-         }
-                 
-        public void onWindowClosed() {
-                
-        }
-    });
-	  RootPanel.get("main").add((AppScreen)ClassFactory.forName("org.openelis.modules.main.client.openelis.OpenELIS"));
+     
+      try {
+	  RootPanel.get("main").add(new org.openelis.modules.main.client.openelis.OpenELIS());
+      }catch(Throwable e){
+    	  e.printStackTrace();
+    	  Window.alert("Unable to start app : "+e.getMessage());
+      }
   }
   
   public void setWidgetMap() {
-	  ClassFactory.addClassFactory(new String[] {org.openelis.modules.main.client.openelis.OpenELIS.class.getName()},
-			                new ClassFactory.Factory() {
-		  	                   private org.openelis.modules.main.client.openelis.OpenELIS mainScreen;
-		  	                   public Object newInstance(Object[] args){
-		  	                	   if(mainScreen == null)
-		  	                		   mainScreen = new org.openelis.modules.main.client.openelis.OpenELIS();
-		  	                	   return mainScreen;
-		  	                   }
-	  });
+
       ClassFactory.addClassFactory(new String[] {ScreenVertical.class.getName(),ScreenVertical.TAG_NAME},
                             new ClassFactory.Factory() {
                                   public Object newInstance(Object[] args) {
