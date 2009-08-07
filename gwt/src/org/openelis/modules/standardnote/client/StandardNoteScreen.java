@@ -55,6 +55,7 @@ public class StandardNoteScreen extends OpenELISScreenForm<StandardNoteForm,Quer
     private KeyListManager keyList = new KeyListManager();
     private Dropdown noteType;
 	
+    
     private StandardNoteMetaMap StandardNoteMeta = new StandardNoteMetaMap();
     
 	public StandardNoteScreen() {                

@@ -26,8 +26,6 @@
 package org.openelis.modules.label.client;
 
 import org.openelis.gwt.screen.AppModule;
-import org.openelis.gwt.screen.ClassFactory;
-import org.openelis.modules.main.client.openelis.OpenELIS;
 
 
 public class LabelEntry implements AppModule {
@@ -36,6 +34,7 @@ public class LabelEntry implements AppModule {
     }
 
     public void onModuleLoad() {
+    	/*
     	OpenELIS.modules.add(getModuleName());
         ClassFactory.addClassFactory(new String[] {"LabelScreen"}, 
                               new ClassFactory.Factory() {
@@ -43,7 +42,8 @@ public class LabelEntry implements AppModule {
                                       return new LabelScreen();
                                   }
                               }
-        );    
+        );
+        */    
 
     }
         

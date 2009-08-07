@@ -25,101 +25,714 @@
 */
 package org.openelis.modules.main.client.openelis;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
+import org.openelis.gwt.common.SecurityUtil;
+import org.openelis.gwt.screen.AppScreen;
+import org.openelis.gwt.screen.ScreenMenuPanel;
+import org.openelis.gwt.screen.ScreenWidget;
+import org.openelis.gwt.screen.rewrite.Screen;
+import org.openelis.gwt.widget.WindowBrowser;
+import org.openelis.gwt.widget.rewrite.AppButton;
+import org.openelis.gwt.widget.rewrite.MenuItem;
+import org.openelis.modules.PTSampleLogin.client.PTSampleLoginScreen;
+import org.openelis.modules.SDWISSampleLogin.client.SDWISSampleLoginScreen;
+import org.openelis.modules.analyte.client.AnalyteScreen;
+import org.openelis.modules.animalSampleLogin.client.AnimalSampleLoginScreen;
+import org.openelis.modules.auxiliary.client.AuxiliaryScreen;
+import org.openelis.modules.buildKits.client.BuildKitsScreen;
+import org.openelis.modules.clinicalSampleLogin.client.ClinicalSampleLoginScreen;
+import org.openelis.modules.dictionary.client.DictionaryScreen;
+import org.openelis.modules.environmentalSampleLogin.client.EnvironmentalSampleLoginScreen;
+import org.openelis.modules.favorites.client.FavoritesScreen;
+import org.openelis.modules.fillOrder.client.FillOrderScreen;
+import org.openelis.modules.inventoryAdjustment.client.InventoryAdjustmentScreen;
+import org.openelis.modules.inventoryItem.client.InventoryItemScreen;
+import org.openelis.modules.inventoryReceipt.client.InventoryReceiptScreen;
+import org.openelis.modules.label.client.LabelScreen;
+import org.openelis.modules.method.client.MethodScreen;
+import org.openelis.modules.newbornScreeningSampleLogin.client.NewbornScreeningSampleLoginScreen;
+import org.openelis.modules.order.client.OrderScreen;
+import org.openelis.modules.organization.client.OrganizationScreen;
+import org.openelis.modules.panel.client.PanelScreen;
+import org.openelis.modules.privateWellWaterSampleLogin.client.PrivateWellWaterSampleLoginScreen;
+import org.openelis.modules.project.client.ProjectScreen;
+import org.openelis.modules.provider.client.ProviderScreen;
+import org.openelis.modules.qaevent.client.QAEventScreen;
+import org.openelis.modules.qc.client.QCScreen;
+import org.openelis.modules.section.client.SectionScreen;
+import org.openelis.modules.shipping.client.ShippingScreen;
+import org.openelis.modules.standardnote.client.StandardNoteScreen;
+import org.openelis.modules.storage.client.StorageLocationScreen;
+import org.openelis.modules.storageunit.client.StorageUnitScreen;
+import org.openelis.modules.systemvariable.client.SystemVariableScreen;
+import org.openelis.modules.test.client.TestScreen;
+import org.openelis.modules.testTrailer.client.TestTrailerScreen;
+
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.RunAsyncCallback;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.rpc.ServiceDefTarget;
-import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-import org.openelis.gwt.common.RPC;
-import org.openelis.gwt.common.SecurityUtil;
-import org.openelis.gwt.screen.AppScreen;
-import org.openelis.gwt.screen.ClassFactory;
-import org.openelis.gwt.screen.ScreenMenuPanel;
-import org.openelis.gwt.screen.ScreenWidget;
-import org.openelis.gwt.screen.rewrite.Screen;
-import org.openelis.gwt.widget.MenuItem;
-import org.openelis.gwt.widget.WindowBrowser;
-import org.openelis.modules.favorites.client.FavoritesScreen;
-import org.openelis.modules.main.client.service.OpenELISServiceInt;
-import org.openelis.modules.main.client.service.OpenELISServiceIntAsync;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-
-public class OpenELIS extends AppScreen<OpenELISForm> implements ClickListener {
+public class OpenELIS extends Screen implements ClickHandler {
     
-    public static OpenELISServiceIntAsync<OpenELISForm, RPC> screenService = (OpenELISServiceIntAsync)GWT.create(OpenELISServiceInt.class);
-    public static ServiceDefTarget target = (ServiceDefTarget)screenService;
-    
-    public static ArrayList<String> modules = new ArrayList<String>();
     public static WindowBrowser browser;
     public static SecurityUtil security;
     private FavoritesScreen fv;
     private static HashMap<String, HashMap> cacheList;
+    public static ArrayList<String> modules = new ArrayList<String>();
     
-	public OpenELIS() {	    
-        super();              
-        target.setServiceEntryPoint(target.getServiceEntryPoint()+"?service=org.openelis.modules.main.server.OpenELISService");
-        service = screenService;
-        OpenELISForm form = new OpenELISForm();
-        form.modules = modules;
-        getScreen(form);
+	public OpenELIS() throws Throwable {	    
+        super("OpenELISServlet?service=org.openelis.modules.main.server.OpenELISScreenService");   
+    	browser = (WindowBrowser)def.getWidget("browser");
+    	browser.setBrowserHeight();
+    	OpenELISRPC rpc = service.call("initialData");
+        AppScreen.consts = rpc.appConstants;
+        Screen.consts = rpc.appConstants;
+        security = rpc.security;
+        setHandlers();
     }
 
-   public void afterDraw(boolean Success) {
-        	browser = (WindowBrowser)getWidget("browser");
-        	browser.setBrowserHeight();
-            AppScreen.consts = form.appConstants;
-            Screen.consts = form.appConstants;
-            security = form.security;
-    }
+	public void setHandlers() {
+		((MenuItem)def.getWidget("preference")).addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				//browser.addScreen(new )
+			}
+		});
+		((MenuItem)def.getWidget("FavoritesMenu")).addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+                VerticalPanel fmp = (VerticalPanel)def.getWidget("favoritesPanel");
+                if(fmp.getWidgetCount() == 1){
+                	try {
+                		fv = new FavoritesScreen(def);
+                		fmp.add(fv);
+                	}catch(Throwable e){
+                		e.printStackTrace();
+                		Window.alert(e.getMessage());
+                	}
+                }
+                fmp.setVisible(!fmp.isVisible());
+                browser.setBrowserHeight();
+			}
+		});
+		((AppButton)def.getWidget("EditFavorites")).addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				if(fv.editing)
+					fv.stopEditing();
+				else
+					fv.edit();
+			}
+		});
+		((MenuItem)def.getWidget("Logout")).addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				try {
+					service.callVoid("logout");
+                    Window.open("http://www.uhl.uiowa.edu", "_self", null);
+				}catch(Throwable e){
+					e.printStackTrace();
+                    Window.alert(e.getMessage());
+                }
+			}
+		});
+		((MenuItem)def.getWidget("cut")).addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				//browser.addScreen(new )
+			}
+		});
+		((MenuItem)def.getWidget("copy")).addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				//browser.addScreen(new )
+			}
+		});
+		((MenuItem)def.getWidget("paste")).addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				//browser.addScreen(new )
+			}
+		});
+		((MenuItem)def.getWidget("quickEntry")).addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				//browser.addScreen(new )
+			}
+		});
+		((MenuItem)def.getWidget("tracking")).addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				//browser.addScreen(new )
+			}
+		});
+		((MenuItem)def.getWidget("environmentalSampleLogin")).addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				GWT.runAsync(new RunAsyncCallback() {
+					public void onSuccess() {
+						browser.addScreen(new EnvironmentalSampleLoginScreen());
+					}
+					public void onFailure(Throwable caught) {
+						caught.printStackTrace();
+						Window.alert(caught.getMessage());
+					}
+				});
+			}
+		});
+		((MenuItem)def.getWidget("clinicalSampleLogin")).addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				GWT.runAsync(new RunAsyncCallback() {
+					public void onSuccess() {
+						browser.addScreen(new ClinicalSampleLoginScreen());
+					}
+					public void onFailure(Throwable caught) {
+						caught.printStackTrace();
+						Window.alert(caught.getMessage());
+					}
+				});
+				
+			}
+		});
+		((MenuItem)def.getWidget("animalSampleLogin")).addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				GWT.runAsync(new RunAsyncCallback() {
+					public void onSuccess() {
+						browser.addScreen(new AnimalSampleLoginScreen());
+					}
+					public void onFailure(Throwable caught) {
+						caught.printStackTrace();
+						Window.alert(caught.getMessage());
+					}
+				});
+				
+			}
+		});
+		((MenuItem)def.getWidget("newbornScreeningSampleLogin")).addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				GWT.runAsync(new RunAsyncCallback() {
+					public void onSuccess() {
+						browser.addScreen(new NewbornScreeningSampleLoginScreen());
+					}
+					public void onFailure(Throwable caught) {
+						caught.printStackTrace();
+						Window.alert(caught.getMessage());
+					}
+				});
+				
+			}
+		});
+		((MenuItem)def.getWidget("ptSampleLogin")).addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				GWT.runAsync(new RunAsyncCallback() {
+					public void onSuccess() {
+						browser.addScreen(new PTSampleLoginScreen());
+					}
+					public void onFailure(Throwable caught) {
+						caught.printStackTrace();
+						Window.alert(caught.getMessage());
+					}
+				});
+				
+			}
+		});
+		((MenuItem)def.getWidget("sdwisSampleLogin")).addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				GWT.runAsync(new RunAsyncCallback() {
+					public void onSuccess() {
+						browser.addScreen(new SDWISSampleLoginScreen());
+					}
+					public void onFailure(Throwable caught) {
+						caught.printStackTrace();
+						Window.alert(caught.getMessage());
+					}
+				});
+				
+			}
+		});
+		((MenuItem)def.getWidget("privateWellWaterSampleLogin")).addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				GWT.runAsync(new RunAsyncCallback() {
+					public void onSuccess() {
+						browser.addScreen(new PrivateWellWaterSampleLoginScreen());
+					}
+					public void onFailure(Throwable caught) {
+						caught.printStackTrace();
+						Window.alert(caught.getMessage());
+					}
+				});
+				
+			}
+		});
+		((MenuItem)def.getWidget("project")).addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				GWT.runAsync(new RunAsyncCallback() {
+					public void onSuccess() {
+						browser.addScreen(new ProjectScreen());
+					}
+					public void onFailure(Throwable caught) {
+						caught.printStackTrace();
+						Window.alert(caught.getMessage());
+					}
+				});
+				
+			}
+		});
+		((MenuItem)def.getWidget("provider")).addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				GWT.runAsync(new RunAsyncCallback() {
+					public void onSuccess() {
+						browser.addScreen(new ProviderScreen());
+					}
+					public void onFailure(Throwable caught) {
+						caught.printStackTrace();
+						Window.alert(caught.getMessage());
+					}
+				});
+				
+			}
+		});
+		
+		((MenuItem)def.getWidget("organization")).addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+					
+					GWT.runAsync(new RunAsyncCallback() {
+						public void onSuccess() {
+							try {
+								browser.addScreen(new OrganizationScreen());
+							}catch(Exception e){
+								e.printStackTrace();
+								Window.alert(e.getMessage());
+							}
+						}
+						public void onFailure(Throwable caught) {
+							caught.printStackTrace();
+							Window.alert(caught.getMessage());
+						}
+					});
+				
+			}
+		});
+		((MenuItem)def.getWidget("worksheetCreation")).addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				//browser.addScreen(n )
+			}
+		});
+		((MenuItem)def.getWidget("worksheetCompletion")).addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				//browser.addScreen(new )
+			}
+		});
+		((MenuItem)def.getWidget("addOrCancel")).addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				//browser.addScreen(new )
+			}
+		});
+		((MenuItem)def.getWidget("reviewAndRelease")).addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				//browser.addScreen(new )
+			}
+		});
+		((MenuItem)def.getWidget("toDo")).addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				//browser.addScreen(new )
+			}
+		});
+		((MenuItem)def.getWidget("labelFor")).addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				//browser.addScreen(new )
+			}
+		});
+		((MenuItem)def.getWidget("storage")).addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				GWT.runAsync(new RunAsyncCallback() {
+					public void onSuccess() {
+						browser.addScreen(new StorageLocationScreen());
+					}
+					public void onFailure(Throwable caught) {
+						caught.printStackTrace();
+						Window.alert(caught.getMessage());
+					}
+				});
+				
+			}
+		});
+		((MenuItem)def.getWidget("QC")).addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				GWT.runAsync(new RunAsyncCallback() {
+					public void onSuccess() {
+						browser.addScreen(new QCScreen());
+					}
+					public void onFailure(Throwable caught) {
+						caught.printStackTrace();
+						Window.alert(caught.getMessage());
+					}
+				});
+				
+			}
+		});
+		((MenuItem)def.getWidget("internalOrder")).addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				GWT.runAsync(new RunAsyncCallback() {
+					public void onSuccess() {
+						browser.addScreen(new OrderScreen(new String[]{"internal"}));
+					}
+					public void onFailure(Throwable caught) {
+						caught.printStackTrace();
+						Window.alert(caught.getMessage());
+					}
+				});
+				
+			}
+		});
+		((MenuItem)def.getWidget("vendorOrder")).addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				GWT.runAsync(new RunAsyncCallback() {
+					public void onSuccess() {
+						browser.addScreen(new OrderScreen(new String[]{"external"}));
+					}
+					public void onFailure(Throwable caught) {
+						caught.printStackTrace();
+						Window.alert(caught.getMessage());
+					}
+				});
+				
+			}
+		});
+		((MenuItem)def.getWidget("kitOrder")).addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				GWT.runAsync(new RunAsyncCallback() {
+					public void onSuccess() {
+						browser.addScreen(new OrderScreen(new String[]{"kits"}));
+					}
+					public void onFailure(Throwable caught) {
+						caught.printStackTrace();
+						Window.alert(caught.getMessage());
+					}
+				});
+				
+			}
+		});
+		((MenuItem)def.getWidget("fillOrder")).addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				GWT.runAsync(new RunAsyncCallback() {
+					public void onSuccess() {
+						browser.addScreen(new FillOrderScreen());
+					}
+					public void onFailure(Throwable caught) {
+						caught.printStackTrace();
+						Window.alert(caught.getMessage());
+					}
+				});
+				
+			}
+		});
+		((MenuItem)def.getWidget("shipping")).addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				GWT.runAsync(new RunAsyncCallback() {
+					public void onSuccess() {
+						browser.addScreen(new ShippingScreen());
+					}
+					public void onFailure(Throwable caught) {
+						caught.printStackTrace();
+						Window.alert(caught.getMessage());
+					}
+				});
+				
+			}
+		});
+		((MenuItem)def.getWidget("buildKits")).addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				GWT.runAsync(new RunAsyncCallback() {
+					public void onSuccess() {
+						browser.addScreen(new BuildKitsScreen());
+					}
+					public void onFailure(Throwable caught) {
+						caught.printStackTrace();
+						Window.alert(caught.getMessage());
+					}
+				});
+				
+			}
+		});
+		((MenuItem)def.getWidget("inventoryTransfer")).addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				GWT.runAsync(new RunAsyncCallback() {
+					public void onSuccess() {
+						browser.addScreen(new InventoryReceiptScreen());
+					}
+					public void onFailure(Throwable caught) {
+						caught.printStackTrace();
+						Window.alert(caught.getMessage());
+					}
+				});
+				
+			}
+		});
+		((MenuItem)def.getWidget("inventoryAdjustment")).addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				GWT.runAsync(new RunAsyncCallback() {
+					public void onSuccess() {
+						browser.addScreen(new InventoryAdjustmentScreen());
+					}
+					public void onFailure(Throwable caught) {
+						caught.printStackTrace();
+						Window.alert(caught.getMessage());
+					}
+				});
+				
+			}
+		});
+		((MenuItem)def.getWidget("inventoryItem")).addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				GWT.runAsync(new RunAsyncCallback() {
+					public void onSuccess() {
+						browser.addScreen(new InventoryItemScreen());
+					}
+					public void onFailure(Throwable caught) {
+						caught.printStackTrace();
+						Window.alert(caught.getMessage());
+					}
+				});
+				
+			}
+		});
+		((MenuItem)def.getWidget("instrument")).addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				//browser.addScreen(new Instrument());
+			}
+		});
+		((MenuItem)def.getWidget("test")).addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				GWT.runAsync(new RunAsyncCallback() {
+					public void onSuccess() {
+						browser.addScreen(new TestScreen());
+					}
+					public void onFailure(Throwable caught) {
+						caught.printStackTrace();
+						Window.alert(caught.getMessage());
+					}
+				});
+				
+			}
+		});
+		((MenuItem)def.getWidget("method")).addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				GWT.runAsync(new RunAsyncCallback() {
+					public void onSuccess() {
+						browser.addScreen(new MethodScreen());
+					}
+					public void onFailure(Throwable caught) {
+						caught.printStackTrace();
+						Window.alert(caught.getMessage());
+					}
+				});
+				
+			}
+		});
+		((MenuItem)def.getWidget("panel")).addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				GWT.runAsync(new RunAsyncCallback() {
+					public void onSuccess() {
+						browser.addScreen(new PanelScreen());
+					}
+					public void onFailure(Throwable caught) {
+						caught.printStackTrace();
+						Window.alert(caught.getMessage());
+					}
+				});
+				
+			}
+		});
+		((MenuItem)def.getWidget("QAEvent")).addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				GWT.runAsync(new RunAsyncCallback() {
+					public void onSuccess() {
+						browser.addScreen(new QAEventScreen());
+					}
+					public void onFailure(Throwable caught) {
+						caught.printStackTrace();
+						Window.alert(caught.getMessage());
+					}
+				});
+				
+			}
+		});
+		((MenuItem)def.getWidget("labSection")).addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				GWT.runAsync(new RunAsyncCallback() {
+					public void onSuccess() {
+						browser.addScreen(new SectionScreen());
+					}
+					public void onFailure(Throwable caught) {
+						caught.printStackTrace();
+						Window.alert(caught.getMessage());
+					}
+				});
+				
+			}
+		});
+		((MenuItem)def.getWidget("analyte")).addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				GWT.runAsync(new RunAsyncCallback() {
+					public void onSuccess() {
+						browser.addScreen(new AnalyteScreen());
+					}
+					public void onFailure(Throwable caught) {
+						caught.printStackTrace();
+						Window.alert(caught.getMessage());
+					}
+				});
+				
+			}
+		});
+		((MenuItem)def.getWidget("dictionary")).addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				GWT.runAsync(new RunAsyncCallback() {
+				public void onSuccess() {
+					browser.addScreen(new DictionaryScreen());
+				}
+				public void onFailure(Throwable caught) {
+					caught.printStackTrace();
+					Window.alert(caught.getMessage());
+				}
+			});
+				
+			}
+		});
+		((MenuItem)def.getWidget("auxiliaryPrompt")).addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				GWT.runAsync(new RunAsyncCallback() {
+					public void onSuccess() {
+						browser.addScreen(new AuxiliaryScreen());
+					}
+					public void onFailure(Throwable caught) {
+						caught.printStackTrace();
+						Window.alert(caught.getMessage());
+					}
+				});
+				
+			}
+		});
+		((MenuItem)def.getWidget("label")).addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				GWT.runAsync(new RunAsyncCallback() {
+					public void onSuccess() {
+						browser.addScreen(new LabelScreen());
+					}
+					public void onFailure(Throwable caught) {
+						caught.printStackTrace();
+						Window.alert(caught.getMessage());
+					}
+				});
+				
+			}
+		});
+		((MenuItem)def.getWidget("standardNote")).addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				GWT.runAsync(new RunAsyncCallback() {
+					public void onSuccess() {
+						browser.addScreen(new StandardNoteScreen());
+					}
+					public void onFailure(Throwable caught) {
+						caught.printStackTrace();
+						Window.alert(caught.getMessage());
+					}
+				});
+				
+			}
+		});
+		((MenuItem)def.getWidget("trailerForTest")).addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				GWT.runAsync(new RunAsyncCallback() {
+					public void onSuccess() {
+						browser.addScreen(new TestTrailerScreen());
+					}
+					public void onFailure(Throwable caught) {
+						caught.printStackTrace();
+						Window.alert(caught.getMessage());
+					}
+				});
+				
+			}
+		});
+		((MenuItem)def.getWidget("storageUnit")).addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				GWT.runAsync(new RunAsyncCallback() {
+					public void onSuccess() {
+						browser.addScreen(new StorageUnitScreen());
+					}
+					public void onFailure(Throwable caught) {
+						caught.printStackTrace();
+						Window.alert(caught.getMessage());
+					}
+				});
+				
+			}
+		});
+		((MenuItem)def.getWidget("storageLocation")).addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				GWT.runAsync(new RunAsyncCallback() {
+					public void onSuccess() {
+						browser.addScreen(new StorageLocationScreen());
+					}
+					public void onFailure(Throwable caught) {
+						caught.printStackTrace();
+						Window.alert(caught.getMessage());
+					}
+				});
+				
+			}
+		});
+		((MenuItem)def.getWidget("instrument")).addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				//browser.addScreen(new )
+			}
+		});
+		((MenuItem)def.getWidget("scriptlet")).addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				//browser.addScreen(new )
+			}
+		});
+		((MenuItem)def.getWidget("systemVariable")).addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				GWT.runAsync(new RunAsyncCallback() {
+					public void onSuccess() {
+						browser.addScreen(new SystemVariableScreen());
+					}
+					public void onFailure(Throwable caught) {
+						caught.printStackTrace();
+						Window.alert(caught.getMessage());
+					}
+				});
+				
+			}
+		});
+		((MenuItem)def.getWidget("finalReport")).addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				//browser.addScreen(new )
+			}
+		});
+		((MenuItem)def.getWidget("sampleDataExport")).addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				//browser.addScreen(new )
+			}
+		});
+		((MenuItem)def.getWidget("loginLabel")).addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				//browser.addScreen(new )
+			}
+		});		
+		
+	}
 
-    public void onClick(Widget item) {
-    	if(item == getWidget("EditFavorites")){
+    public void onClick(ClickEvent item) {
+    	/*
+    	if(item.getSource() == def.getWidget("EditFavorites")){
     	    if(fv.editing)
                 fv.saveFavorites();
             else
                 fv.getEditFavorites();
             return;
     	}
-        if(item instanceof MenuItem){
-        	if(((String)((MenuItem)item).objClass).equals("FavoritesMenu")){
-                VerticalPanel fmp = (VerticalPanel)getWidget("favoritesPanel");
-                if(fmp.getWidgetCount() == 1){
-                	fv = new FavoritesScreen();
-                	fmp.add(fv);
-                }
-                fmp.setVisible(!fmp.isVisible());
-                browser.setBrowserHeight();
-                return;
-        	}else if(((String)((MenuItem)item).objClass).equals("Logout")){
-        	    screenService.logout(new AsyncCallback() {
-                   public void onSuccess(Object result){
-                       Window.open("http://www.uhl.uiowa.edu", "_self", null);
-                   }
-                   public void onFailure(Throwable caught){
-                       Window.alert(caught.getMessage());
-                   }
-                });
-        		return;
-        	}
-            MenuItem menuItem = (MenuItem)item;
-            Object screen = null;
-            if(menuItem.args != null){
-                screen = ClassFactory.forName(menuItem.objClass,menuItem.args);
-            }else{    
-                screen = ClassFactory.forName(menuItem.objClass);
-            }
-            if(screen instanceof AppScreen){
-                OpenELIS.browser.addScreen((AppScreen)screen,menuItem.key);
-            }else{    
-                OpenELIS.browser.addScreen((Screen)screen,menuItem.key);
-            }
-        }
+    	*/
     }
     
     public void setStyleToAllCellsInCol(FlexTable table, int col,String style){

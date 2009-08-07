@@ -30,9 +30,7 @@ import java.util.HashMap;
 
 import javax.servlet.http.HttpSession;
 
-import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.Preferences;
 import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.data.FieldType;
@@ -42,13 +40,10 @@ import org.openelis.gwt.server.ScreenControllerServlet;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
 import org.openelis.gwt.services.AppScreenServiceInt;
 import org.openelis.gwt.services.AutoCompleteServiceInt;
-import org.openelis.gwt.services.ScreenServiceInt;
-import org.openelis.modules.favorites.client.FavoritesServiceInt;
-import org.openelis.modules.favorites.server.FavoritesService;
 import org.openelis.modules.main.client.service.OpenELISServiceInt;
 import org.openelis.util.SessionManager;
 
-public class OpenELISServlet extends ScreenControllerServlet implements OpenELISServiceInt<RPC,RPC>, AutoCompleteServiceInt, FavoritesServiceInt {
+public class OpenELISServlet extends ScreenControllerServlet implements OpenELISServiceInt<RPC,RPC>, AutoCompleteServiceInt {
 
     private static final long serialVersionUID = 1L; 
 
@@ -144,17 +139,4 @@ public class OpenELISServlet extends ScreenControllerServlet implements OpenELIS
 		return ((AutoCompleteServiceInt)getService()).getMatches(cat,model,match,params);
 	}
 
-    public String getEditFavorites() {
-        return new FavoritesService().getEditFavorites();
-    }
-
-    public String getFavorites(Preferences prefs) {
-        // TODO Auto-generated method stub
-        return new FavoritesService().getFavorites(prefs);
-    }
-
-    public String saveFavorites(Form form) {
-        // TODO Auto-generated method stub
-        return new FavoritesService().saveFavorites(form);
-    }
 }

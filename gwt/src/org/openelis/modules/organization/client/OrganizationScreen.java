@@ -41,7 +41,6 @@ import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.rewrite.Screen;
 import org.openelis.gwt.screen.rewrite.ScreenEventHandler;
 import org.openelis.gwt.screen.rewrite.ScreenNavigator;
-import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.HasField;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.rewrite.AppButton;
@@ -703,7 +702,7 @@ public class OrganizationScreen extends Screen implements BeforeGetMatchesHandle
         query.fields = qFields;
         window.setBusy("Querying...");
 
-        service.callScreen("query", query, new AsyncCallback<OrgQuery>() {
+        service.call("query", query, new AsyncCallback<OrgQuery>() {
             public void onSuccess(OrgQuery query) {
                 loadQuery(query);
             }

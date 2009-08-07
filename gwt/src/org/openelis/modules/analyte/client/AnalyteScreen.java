@@ -25,6 +25,8 @@
 */
 package org.openelis.modules.analyte.client;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.user.client.ui.TextBox;
 
 import org.openelis.gwt.common.Query;
@@ -46,7 +48,7 @@ public class AnalyteScreen extends OpenELISScreenForm<AnalyteForm,Query<TableDat
 	private TextBox nameTextBox;
     private KeyListManager keyList = new KeyListManager();
     private static final AnalyteMetaMap Meta = new AnalyteMetaMap();
-
+    
 	public AnalyteScreen() {                
         super("org.openelis.modules.analyte.server.AnalyteService");
         query = new Query<TableDataRow<Integer>>();
