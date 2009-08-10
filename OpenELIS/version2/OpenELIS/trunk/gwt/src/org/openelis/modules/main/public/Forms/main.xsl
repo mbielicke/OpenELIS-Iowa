@@ -61,7 +61,6 @@ UIRF Software License are applicable instead of those above.
   <xsl:template match="doc">
    <xsl:variable name="security" select="service:getSecurity()"/>
 <screen id="main" serviceUrl="OpenELISService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-	<display  constants="OpenELISConstants">
 		<VerticalPanel style="AppBackground" sizeToWindow="true">
 		<AbsolutePanel style="topMenuBar">
 		<menuPanel layout="horizontal" xsi:type="Panel" style="topBarItemHolder" spacing="0" padding="0">
@@ -256,9 +255,6 @@ UIRF Software License are applicable instead of those above.
     	<winbrowser key="browser" sizeToWindow="true"/>
 		</HorizontalPanel>
 	</VerticalPanel>
-	</display>
-	<rpc key="display"/>
-	<rpc key="query"/>
 </screen>
   </xsl:template> 				      
    				      
