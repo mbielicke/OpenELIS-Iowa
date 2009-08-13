@@ -50,7 +50,6 @@
 		<screen id="StandardNotePicker"
 			name="{resource:getString($constants,'standardNoteSelection')}"
 			serviceUrl="ElisService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-			<display>
 				<VerticalPanel spacing="0" padding="0">
 					<VerticalPanel style="WhiteContentPanel" spacing="0"
 						padding="0">
@@ -101,7 +100,7 @@
 								<widget align="left" valign="top">
 									<tree key="noteTree" width="auto" showScroll="ALWAYS" maxRows="10">
 									<header>
-										<col header="Category/Name" width="230"/>
+										<col header="Category/Name" width="230" sort="model,category"/>
 									</header>
 										<leaf key="category">
 											<col>
@@ -139,7 +138,6 @@
 		            </AbsolutePanel>
 					<!--end button panel-->
 				</VerticalPanel>
-			</display>
 		</screen>
 	</xsl:template>
 </xsl:stylesheet>
