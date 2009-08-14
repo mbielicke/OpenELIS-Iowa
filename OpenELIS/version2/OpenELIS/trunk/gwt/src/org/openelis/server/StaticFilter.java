@@ -25,20 +25,6 @@
 */
 package org.openelis.server;
 
-import org.apache.log4j.Logger;
-import org.openelis.gwt.common.SecurityUtil;
-import org.openelis.gwt.common.SecurityModule.ModuleFlags;
-import org.openelis.gwt.server.ServiceUtils;
-import org.openelis.managerOld.ManagerFactory;
-import org.openelis.persistence.CachingManager;
-import org.openelis.persistence.JMSMessageConsumer;
-import org.openelis.remote.LoginRemote;
-import org.openelis.server.constants.Constants;
-import org.openelis.util.SessionManager;
-import org.openelis.util.XMLUtil;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -56,6 +42,19 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.apache.log4j.Logger;
+import org.openelis.gwt.common.SecurityUtil;
+import org.openelis.gwt.common.SecurityModule.ModuleFlags;
+import org.openelis.gwt.server.ServiceUtils;
+import org.openelis.persistence.CachingManager;
+import org.openelis.persistence.JMSMessageConsumer;
+import org.openelis.remote.LoginRemote;
+import org.openelis.server.constants.Constants;
+import org.openelis.util.SessionManager;
+import org.openelis.util.XMLUtil;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 //import edu.uiowa.uhl.security.remote.SecurityRemote;
 
@@ -91,8 +90,6 @@ public class StaticFilter implements Filter {
         CachingManager.init(Constants.APP_ROOT);
         JMSMessageConsumer.startListener("topic/openelisTopic");
         servletCtx = config.getServletContext();
-        //set sample manager context to client
-        ManagerFactory.isClient = true;
         log.debug("getting out");
     }
 

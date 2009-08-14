@@ -25,100 +25,224 @@
 */
 package org.openelis.modules.sampleLocation.client;
 
-import org.openelis.gwt.common.Query;
-import org.openelis.gwt.common.data.KeyListManager;
-import org.openelis.gwt.common.data.TableDataModel;
-import org.openelis.gwt.common.data.TableDataRow;
-import org.openelis.gwt.screen.CommandChain;
-import org.openelis.gwt.widget.ButtonPanel;
-import org.openelis.gwt.widget.Dropdown;
+import java.util.ArrayList;
+
+import org.openelis.cache.DictionaryCache;
+import org.openelis.domain.DictionaryDO;
+import org.openelis.domain.SampleEnvironmentalDO;
+import org.openelis.gwt.event.ActionEvent;
+import org.openelis.gwt.event.ActionHandler;
+import org.openelis.gwt.event.DataChangeEvent;
+import org.openelis.gwt.event.HasActionHandlers;
+import org.openelis.gwt.event.StateChangeEvent;
+import org.openelis.gwt.screen.rewrite.Screen;
+import org.openelis.gwt.screen.rewrite.ScreenEventHandler;
+import org.openelis.gwt.widget.TextBox;
+import org.openelis.gwt.widget.rewrite.AppButton;
+import org.openelis.gwt.widget.rewrite.Dropdown;
+import org.openelis.gwt.widget.table.rewrite.TableDataRow;
 import org.openelis.metamap.SampleEnvironmentalMetaMap;
-import org.openelis.modules.environmentalSampleLogin.client.SampleLocationForm;
-import org.openelis.modules.environmentalSampleLogin.client.SampleProjectForm;
-import org.openelis.modules.main.client.OpenELISScreenForm;
 
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.shared.HandlerRegistration;
 
-public class SampleLocationScreen extends OpenELISScreenForm<SampleLocationForm,Query<TableDataRow<Integer>>> {
+public class SampleLocationScreen extends Screen implements HasActionHandlers<SampleLocationScreen.Action> {
 
-    private Dropdown               states, countries;
-    private TextBox                 location;
-    
-    private KeyListManager keyList = new KeyListManager();
-    
-    private SampleEnvironmentalMetaMap Meta = new SampleEnvironmentalMetaMap();
+    protected Dropdown<String> state, country;
+    private boolean dropdownsInited;
+    private SampleEnvironmentalDO        envDO;
 
-    AsyncCallback<SampleLocationForm> checkModels = new AsyncCallback<SampleLocationForm>() {
-        public void onSuccess(SampleLocationForm rpc) {
-            if(rpc.countries != null) {
-                setCountriesModel(rpc.countries);
-                rpc.countries = null;
-            }
-            if(rpc.states != null) {
-                setStatesModel(rpc.states);
-                rpc.states = null;
-            }
-        }
-        
-        public void onFailure(Throwable caught) {
-            
-        }
+    public enum Action {
+        COMMIT, ABORT
     };
 
-    public SampleLocationScreen() {          
-        this(new SampleLocationForm());
-    }
-    
-    public SampleLocationScreen(SampleLocationForm form) {                
-        super("org.openelis.modules.sampleLocation.server.SampleLocationService");
-        query = new Query<TableDataRow<Integer>>();
+    private SampleEnvironmentalMetaMap       meta = new SampleEnvironmentalMetaMap();
 
-        getScreen(form);
+    public SampleLocationScreen() throws Exception {
+        // Call base to get ScreenDef and draw screen
+        super("OpenELISServlet?service=org.openelis.modules.sampleLocation.server.SampleLocationService");
+        
+        // Setup link between Screen and widget Handlers
+        initialize();
+
+        // Initialize Screen
+        setState(State.DEFAULT);
+
     }
     
-    public void setForm(SampleLocationForm form){
-        this.form = form;
-        load(form);
+    private void initialize() {
+        final TextBox samplingLocation = (TextBox)def.getWidget(meta.getSamplingLocation());
+        addScreenHandler(samplingLocation, new ScreenEventHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                samplingLocation.setValue(envDO.getSamplingLocation());
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                envDO.setSamplingLocation(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                samplingLocation.enable(true);
+            }
+        });
+
+        final TextBox multipleUnit = (TextBox)def.getWidget(meta.ADDRESS.getMultipleUnit());
+        addScreenHandler(multipleUnit, new ScreenEventHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                multipleUnit.setValue(envDO.getAddressDO().getMultipleUnit());
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                envDO.getAddressDO().setMultipleUnit(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                multipleUnit.enable(true);
+            }
+        });
+
+        final TextBox streetAddress = (TextBox)def.getWidget(meta.ADDRESS.getStreetAddress());
+        addScreenHandler(streetAddress, new ScreenEventHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                streetAddress.setValue(envDO.getAddressDO().getStreetAddress());
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                envDO.getAddressDO().setStreetAddress(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                streetAddress.enable(true);
+            }
+        });
+
+        final TextBox city = (TextBox)def.getWidget(meta.ADDRESS.getCity());
+        addScreenHandler(city, new ScreenEventHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                city.setValue(envDO.getAddressDO().getCity());
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                envDO.getAddressDO().setCity(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                city.enable(true);
+            }
+        });
+
+        state = (Dropdown)def.getWidget(meta.ADDRESS.getState());
+        addScreenHandler(state, new ScreenEventHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                state.setSelection(envDO.getAddressDO().getState());
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                envDO.getAddressDO().setState(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                state.enable(true);
+            }
+        });
+
+        final TextBox zipCode = (TextBox)def.getWidget(meta.ADDRESS.getZipCode());
+        addScreenHandler(zipCode, new ScreenEventHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                zipCode.setValue(envDO.getAddressDO().getZipCode());
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                envDO.getAddressDO().setZipCode(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                zipCode.enable(true);
+            }
+        });
+
+        country = (Dropdown)def.getWidget(meta.ADDRESS.getCountry());
+        addScreenHandler(country, new ScreenEventHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                country.setSelection(envDO.getAddressDO().getCountry());
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                envDO.getAddressDO().setCountry(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                country.enable(true);
+            }
+        });
+        
+        final AppButton commitButton = (AppButton)def.getWidget("popupSelect");
+        addScreenHandler(commitButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                commit();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                commitButton.enable(true);
+            }
+        });
+
+        final AppButton abortButton = (AppButton)def.getWidget("popupCancel");
+        addScreenHandler(abortButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                abort();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                abortButton.enable(true);
+            }
+        });
+        
     }
-    
-    public void afterDraw(boolean success) {
-        ButtonPanel bpanel = (ButtonPanel) getWidget("buttons");
         
-        states = (Dropdown)getWidget(Meta.ADDRESS.getState());
-        countries = (Dropdown)getWidget(Meta.ADDRESS.getCountry());
-        location = (TextBox)getWidget(Meta.getSamplingLocation());
-        
-        CommandChain chain = new CommandChain();
-        chain.addCommand(this);
-        chain.addCommand(keyList);
-        chain.addCommand(bpanel);
-        
-        setCountriesModel(form.countries);
-        setStatesModel(form.states);
-        
-        form.countries = null;
-        form.states = null;
-        
-        super.afterDraw(success);
-        
-        load(form);
-        location.setFocus(true);
-    }
-    
     public void commit() {
+        ActionEvent.fire(this, Action.COMMIT, null);
         window.close();
     }
 
     public void abort() {
+        ActionEvent.fire(this, Action.ABORT, null);
         window.close();
     }
     
-    public void setCountriesModel(TableDataModel<TableDataRow<String>> countriesModel) {
-        countries.setModel(countriesModel);
+    public void setCountriesModel(ArrayList<DictionaryDO> list) {
+        ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
+        model.add(new TableDataRow(null, ""));
+        for(DictionaryDO resultDO :  list){
+            model.add(new TableDataRow(resultDO.getEntry(),resultDO.getEntry()));
+        } 
+        
+        country.setModel(model);
     }
     
-    public void setStatesModel(TableDataModel<TableDataRow<String>> statesModel) {
-        states.setModel(statesModel);
+    public void setStatesModel(ArrayList<DictionaryDO> list) {
+        ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
+        model.add(new TableDataRow(null, ""));
+        for(DictionaryDO resultDO :  list){
+            model.add(new TableDataRow(resultDO.getEntry(),resultDO.getEntry()));
+        }
+        state.setModel(model);
+    }
+    
+    public void setEnvDO(SampleEnvironmentalDO envDO) {
+        this.envDO = envDO;
+        
+        if(!dropdownsInited) {
+            setCountriesModel(DictionaryCache.getListByCategorySystemName("country"));
+            setStatesModel(DictionaryCache.getListByCategorySystemName("state"));
+            dropdownsInited = true;
+        }
+        
+        DataChangeEvent.fire(this);
+    }
+
+    public HandlerRegistration addActionHandler(ActionHandler<Action> handler) {
+        return addHandler(handler, ActionEvent.getType());
     }
 }

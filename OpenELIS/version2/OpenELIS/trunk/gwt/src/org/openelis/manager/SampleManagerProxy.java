@@ -26,28 +26,40 @@
 package org.openelis.manager;
 
 import org.openelis.gwt.services.ScreenService;
-import org.openelis.manager.OrganizationContactsManager;
 
-public class OrganizationContactsManagerProxy {
-    protected static final String ORG_MANAGER_SERVICE_URL = "org.openelis.modules.organization.server.OrganizationService";
+public class SampleManagerProxy {
+    protected static final String SAMPLE_SERVICE_URL = "org.openelis.modules.sample.server.SampleService";
     protected ScreenService service;
     
-    public OrganizationContactsManagerProxy(){
-        service = new ScreenService("OpenELISServlet?service="+ORG_MANAGER_SERVICE_URL);
-    }
-    public OrganizationContactsManager add(OrganizationContactsManager man) throws Exception {
-        throw new UnsupportedOperationException();
-    }
-
-    public OrganizationContactsManager update(OrganizationContactsManager man) throws Exception {
-        throw new UnsupportedOperationException();
-    }
-
-    public OrganizationContactsManager fetch(Integer id) throws Exception {
-        return service.call("fetchContactById", id);
+    public SampleManagerProxy(){
+        service = new ScreenService("OpenELISServlet?service="+SAMPLE_SERVICE_URL);
     }
     
-    public OrganizationContactsManager fetchByOrgId(Integer orgId) throws Exception {
-        return service.call("fetchContactByOrgId", orgId);
+    public SampleManager add(SampleManager man) throws Exception {
+        return service.call("add", man);
+    }
+
+    public SampleManager update(SampleManager man) throws Exception {
+        return service.call("update", man);
+    }
+    
+    public SampleManager fetch(Integer sampleId) throws Exception {
+        return service.call("fetch", sampleId);
+    }
+    
+    public SampleManager fetchByAccessionNumber(Integer accessionNumber) throws Exception {
+        return service.call("fetchByAccessionNumber", accessionNumber);
+    }
+    
+    public SampleManager fetchForUpdate(Integer sampleId) throws Exception {
+        return service.call("fetchForUpdate", sampleId);
+    }
+    
+    public SampleManager abort(Integer sampleId) throws Exception {
+        return service.call("abort", sampleId);
+    }
+    
+    public void validate(SampleManager man) throws Exception {
+        
     }
 }

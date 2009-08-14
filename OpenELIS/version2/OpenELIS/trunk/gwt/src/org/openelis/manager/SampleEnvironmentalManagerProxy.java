@@ -23,35 +23,19 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.managerOld;
+package org.openelis.manager;
 
-import java.util.List;
 
-import org.openelis.managerOld.SampleProjectsManager;
-import org.openelis.managerOld.SampleProjectsManagerIOInt;
-import org.openelis.persistence.EJBFactory;
-import org.openelis.remote.SampleItemRemote;
-import org.openelis.remote.SampleProjectRemote;
-
-public class SampleProjectsManagerIOClient implements SampleProjectsManagerIOInt {
-
-    public List fetch(Integer sampleId) {
-        
-        SampleProjectRemote remote = getSampleProjectRemote();
-
-        return remote.getProjectsBySampleId(sampleId);
-        
+public class SampleEnvironmentalManagerProxy {
+    public SampleEnvironmentalManager add(SampleEnvironmentalManager man) throws Exception {
+        throw new UnsupportedOperationException();
     }
 
-    public void update(SampleProjectsManager sampleProjects) {
-        
-        SampleProjectRemote remote = getSampleProjectRemote();
-
-        remote.update(sampleProjects);
-        
+    public SampleEnvironmentalManager update(SampleEnvironmentalManager man) throws Exception {
+        throw new UnsupportedOperationException();
     }
     
-    private SampleProjectRemote getSampleProjectRemote(){
-        return (SampleProjectRemote)EJBFactory.lookup("openelis/SampleProjectBean/remote");
+    public SampleEnvironmentalManager fetch(Integer sampleId) throws Exception {
+        throw new UnsupportedOperationException();
     }
 }

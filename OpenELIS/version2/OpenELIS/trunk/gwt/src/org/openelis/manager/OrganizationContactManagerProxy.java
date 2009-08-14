@@ -26,50 +26,28 @@
 package org.openelis.manager;
 
 import org.openelis.gwt.services.ScreenService;
+import org.openelis.manager.OrganizationContactManager;
 
-
-public class OrganizationsManagerProxy {
-
+public class OrganizationContactManagerProxy {
     protected static final String ORG_MANAGER_SERVICE_URL = "org.openelis.modules.organization.server.OrganizationService";
     protected ScreenService service;
     
-    public OrganizationsManagerProxy(){
+    public OrganizationContactManagerProxy(){
         service = new ScreenService("OpenELISServlet?service="+ORG_MANAGER_SERVICE_URL);
     }
-    
-    public OrganizationsManager add(OrganizationsManager man) throws Exception {
-        return service.call("add",man);
+    public OrganizationContactManager add(OrganizationContactManager man) throws Exception {
+        throw new UnsupportedOperationException();
     }
 
-    public OrganizationsManager update(OrganizationsManager man) throws Exception {
-        return service.call("update", man);
+    public OrganizationContactManager update(OrganizationContactManager man) throws Exception {
+        throw new UnsupportedOperationException();
     }
 
-    public OrganizationsManager fetch(Integer orgId) throws Exception {
-        return service.call("fetch", orgId);
+    public OrganizationContactManager fetch(Integer id) throws Exception {
+        return service.call("fetchContactById", id);
     }
     
-    public OrganizationsManager fetchWithContacts(Integer orgId) throws Exception {
-        return service.call("fetchWithContacts", orgId);
-    }
-    
-    public OrganizationsManager fetchWithNotes(Integer orgId) throws Exception {
-        return service.call("fetchWithNotes", orgId);
-    }
-    
-    public OrganizationsManager fetchWithIdentifiers(Integer orgId) throws Exception {
-        return service.call("fetchWithIdentifiers", orgId);
-    }
-
-    public OrganizationsManager fetchForUpdate(Integer orgId) throws Exception {
-        return service.call("fetchForUpdate", orgId);
-    }
-    
-    public OrganizationsManager abort(Integer orgId) throws Exception {
-        return service.call("abort", orgId);
-    }
-    
-    public void validate(OrganizationsManager man) throws Exception {
-        
+    public OrganizationContactManager fetchByOrgId(Integer orgId) throws Exception {
+        return service.call("fetchContactByOrgId", orgId);
     }
 }

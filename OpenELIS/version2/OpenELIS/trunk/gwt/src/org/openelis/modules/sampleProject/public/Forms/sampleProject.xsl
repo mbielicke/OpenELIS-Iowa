@@ -42,34 +42,27 @@
 		<xsl:variable name="constants"
 			select="resource:getBundle(string($props),locale:new(string($language)))" />
 		<screen id="SampleProjectPicker" name="{resource:getString($constants,'sampleProject')}" serviceUrl="ElisService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-			<display>
 				<VerticalPanel spacing="0" padding="0">
 					<VerticalPanel style="WhiteContentPanel" spacing="0" padding="0" width="300px">
-						<table key="sampleProjectTable" manager="this" width="auto" maxRows="10" title="" showError="false" showScroll="ALWAYS">
-							<headers>Name, Description, Is Perm</headers>
-							<widths>120,160,60</widths>										
-							<editors>
-								<autoComplete cat="project" case="upper" serviceUrl="OpenELISServlet?service=org.openelis.modules.sampleProject.server.SampleProjectService" width="100px">				
-									<headers>Name, Desc</headers>
-									<widths>100,170</widths>												
+						<table key="sampleProjectTable" width="auto" maxRows="10" title="" showScroll="ALWAYS">
+							<col header="Name" width="120">
+								<autoComplete cat="project" case="upper" width="100px">		
+									<col header="Name" width="115"/>
+									<col header="Desc" width="190"/>		
 								</autoComplete>
-								<textbox case="mixed"/>
+							</col>
+							<col header="Description" width="160">
+								<label/>
+							</col>
+							<col header="Is Perm" width="60">
 								<check/>
-							</editors>
-							<!-- <fields>
-								<dropdown/>
-								<string/>
-								<check/>
-							</fields>-->
-							<sorts>false,false,false</sorts>
-							<filters>false,false,false</filters>
-							<colAligns>left,left,left</colAligns>
+							</col>
 						</table>
 					</VerticalPanel>
 					<!--button panel code-->
 					<AbsolutePanel spacing="0" style="BottomButtonPanelContainer"
 						align="center">
-						<buttonPanel key="buttons">
+						<HorizontalPanel>
 							<xsl:call-template name="popupSelectButton">
 								<xsl:with-param name="language">
 									<xsl:value-of select="language" />
@@ -80,18 +73,10 @@
 									<xsl:value-of select="language" />
 								</xsl:with-param>
 							</xsl:call-template>
-						</buttonPanel>
+						</HorizontalPanel>
 					</AbsolutePanel>
 					<!--end button panel-->
 				</VerticalPanel>
-			</display>
-			<rpc key="display">
-				<table key="sampleProjectTable">
-					<dropdown/>
-					<string/>
-					<check/>
-				</table>
-			</rpc>
 		</screen>
 	</xsl:template>
 </xsl:stylesheet>

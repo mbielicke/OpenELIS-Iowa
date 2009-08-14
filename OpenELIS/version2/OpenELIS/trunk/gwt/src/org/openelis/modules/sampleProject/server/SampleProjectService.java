@@ -25,101 +25,23 @@
 */
 package org.openelis.modules.sampleProject.server;
 
-import java.util.HashMap;
-import java.util.List;
+import java.util.ArrayList;
 
-import org.openelis.domain.ProjectDO;
-import org.openelis.gwt.common.Query;
 import org.openelis.gwt.common.RPCException;
-import org.openelis.gwt.common.data.FieldType;
-import org.openelis.gwt.common.data.StringObject;
-import org.openelis.gwt.common.data.TableDataModel;
-import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.server.ServiceUtils;
-import org.openelis.gwt.services.AppScreenFormServiceInt;
-import org.openelis.gwt.services.AutoCompleteServiceInt;
-import org.openelis.modules.environmentalSampleLogin.client.SampleProjectForm;
+import org.openelis.modules.environmentalSampleLogin.client.AutocompleteRPC;
 import org.openelis.persistence.EJBFactory;
-import org.openelis.remote.SampleProjectRemote;
+import org.openelis.remote.ProjectRemote;
 import org.openelis.server.constants.Constants;
 
-public class SampleProjectService implements AppScreenFormServiceInt<SampleProjectForm,Query<TableDataRow<Integer>>>, AutoCompleteServiceInt {
-
-    public SampleProjectForm abort(SampleProjectForm rpcReturn) throws RPCException {
-        // TODO Auto-generated method stub
-        return null;
+public class SampleProjectService {
+    public String getScreen() throws RPCException {
+        return ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/sampleProject.xsl");      
     }
 
-    public SampleProjectForm commitAdd(SampleProjectForm rpc) throws RPCException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public SampleProjectForm commitDelete(SampleProjectForm rpc) throws RPCException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public Query<TableDataRow<Integer>> commitQuery(Query<TableDataRow<Integer>> data) throws RPCException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public SampleProjectForm commitUpdate(SampleProjectForm rpc) throws RPCException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public SampleProjectForm fetch(SampleProjectForm rpc) throws RPCException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public SampleProjectForm fetchForUpdate(SampleProjectForm rpc) throws RPCException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public SampleProjectForm getScreen(SampleProjectForm rpc) throws RPCException {
-        rpc.xml = ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/sampleProject.xsl");
+    public AutocompleteRPC getProjectMatches(AutocompleteRPC rpc) throws Exception {
+        ProjectRemote remote = (ProjectRemote)EJBFactory.lookup("openelis/ProjectBean/remote");
+        rpc.model = (ArrayList)remote.autoCompleteLookupByName(rpc.match+"%", 10);
         return rpc;
-    }
-
-    public TableDataModel getMatches(String cat, TableDataModel model, String match, HashMap<String, FieldType> params) throws RPCException {
-        if(cat.equals("project"))
-            return getProjectMatches(match);
-        
-        return null;
-    }
-    
-    private TableDataModel<TableDataRow<Integer>> getProjectMatches(String match){
-        SampleProjectRemote remote = (SampleProjectRemote)EJBFactory.lookup("openelis/SampleProjectBean/remote");
-        TableDataModel<TableDataRow<Integer>> dataModel = new TableDataModel<TableDataRow<Integer>>();
-        List autoCompleteList;
-    
-        //lookup by name
-        autoCompleteList = remote.autoCompleteLookupByName(match+"%", 10);
-        
-        for(int i=0; i < autoCompleteList.size(); i++){
-            ProjectDO resultDO = (ProjectDO) autoCompleteList.get(i);
-            //org id
-            Integer id = resultDO.getId();
-            //org name
-            String name = resultDO.getName();
-            //org street address
-            String desc = resultDO.getDescription();
-            
-            TableDataRow<Integer> data = new TableDataRow<Integer>(id,
-                                                                   new FieldType[] {
-                                                                                    new StringObject(name),
-                                                                                    new StringObject(desc),
-                                                                   }
-                                         );
-            
-            //add the dataset to the datamodel
-            dataModel.add(data);                            
-        }       
-        
-        return dataModel;       
     }
 }

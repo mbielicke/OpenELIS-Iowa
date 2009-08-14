@@ -14,7 +14,7 @@ import org.openelis.gwt.screen.rewrite.ScreenEventHandler;
 import org.openelis.gwt.widget.NotesPanel;
 import org.openelis.gwt.widget.rewrite.AppButton;
 import org.openelis.manager.HasNotesInt;
-import org.openelis.manager.NotesManager;
+import org.openelis.manager.NoteManager;
 import org.openelis.modules.editNote.client.EditNoteScreen;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 
@@ -24,7 +24,7 @@ import com.google.gwt.user.client.Window;
 public class NotesTab extends Screen {
 
     private HasNotesInt      parentManager;
-    private NotesManager     manager;
+    private NoteManager     manager;
     private NotesPanel       notesPanel;
     protected EditNoteScreen editNote;
     private String           userName;
