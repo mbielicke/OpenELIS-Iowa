@@ -2,11 +2,11 @@ package org.openelis.remote;
 
 import javax.ejb.Remote;
 
-import org.openelis.manager.NotesManager;
+import org.openelis.manager.NoteManager;
 
 @Remote
 public interface NoteManagerRemote {
-    public NotesManager update(NotesManager man) throws Exception;
-    public NotesManager add(NotesManager man) throws Exception;
-    public NotesManager fetch(Integer referenceTableId, Integer referenceId) throws Exception;
+    public NoteManager update(NoteManager man) throws Exception;
+    public NoteManager add(NoteManager man) throws Exception;
+    public NoteManager fetch(Integer referenceTableId, Integer referenceId) throws Exception;
 }

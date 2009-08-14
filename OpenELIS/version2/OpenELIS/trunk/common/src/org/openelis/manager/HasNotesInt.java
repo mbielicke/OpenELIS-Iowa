@@ -2,6 +2,6 @@ package org.openelis.manager;
 
 public interface HasNotesInt {
 
-    public NotesManager getNotes() throws Exception;
+    public NoteManager getNotes() throws Exception;
 
 }

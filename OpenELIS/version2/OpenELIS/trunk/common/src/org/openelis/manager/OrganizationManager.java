@@ -30,20 +30,20 @@ import org.openelis.exception.InconsistencyException;
 import org.openelis.exception.NotFoundException;
 import org.openelis.gwt.common.RPC;
 
-public class OrganizationsManager implements RPC, HasNotesInt {
+public class OrganizationManager implements RPC, HasNotesInt {
 
     private static final long                           serialVersionUID = 1L;
-    protected OrganizationContactsManager               contacts;
-    protected NotesManager                              notes;
+    protected OrganizationContactManager               contacts;
+    protected NoteManager                              notes;
     protected OrganizationAddressDO                     organizationAddress;
     protected Integer organizationReferenceTable;
     
-    protected transient static OrganizationsManagerProxy proxy;
+    protected transient static OrganizationManagerProxy proxy;
     
     /**
      * This is a protected constructor. See the three static methods for allocation.
      */
-    protected OrganizationsManager() {
+    protected OrganizationManager() {
         contacts = null;
         notes = null;
         organizationAddress = null;
@@ -52,33 +52,33 @@ public class OrganizationsManager implements RPC, HasNotesInt {
     /**
      * Creates a new instance of this object. A default organization object is also created.
      */
-    public static OrganizationsManager getInstance() {
-        OrganizationsManager om;
+    public static OrganizationManager getInstance() {
+        OrganizationManager om;
 
-        om = new OrganizationsManager();
+        om = new OrganizationManager();
         om.organizationAddress = new OrganizationAddressDO();
 
         return om;
     }
     
-    public static OrganizationsManager findById(Integer id) throws Exception {
+    public static OrganizationManager findById(Integer id) throws Exception {
         return proxy().fetch(id);
     }
     
     
-    public static OrganizationsManager findByIdWithContacts(Integer id) throws Exception {
+    public static OrganizationManager findByIdWithContacts(Integer id) throws Exception {
         return proxy().fetchWithContacts(id);
     }
     
-    public static OrganizationsManager findByIdWithNotes(Integer id) throws Exception {
+    public static OrganizationManager findByIdWithNotes(Integer id) throws Exception {
         return proxy().fetchWithNotes(id);
     }
     
-    public static OrganizationsManager findByIdWithIdentifiers(Integer id) throws Exception { 
+    public static OrganizationManager findByIdWithIdentifiers(Integer id) throws Exception { 
         return proxy().fetchWithIdentifiers(id);
     }
     
-    public OrganizationsManager fetchForUpdate() throws Exception {
+    public OrganizationManager fetchForUpdate() throws Exception {
         if(organizationAddress.getOrganizationId() == null)
             throw new InconsistencyException("org id is null");
         
@@ -86,11 +86,11 @@ public class OrganizationsManager implements RPC, HasNotesInt {
     }
     
     //getters/setters
-    public NotesManager getNotes() throws Exception {
+    public NoteManager getNotes() throws Exception {
         if(notes == null){
             if(organizationAddress.getOrganizationId() != null){
                 try{
-                    notes = NotesManager.findByRefTableRefId(organizationReferenceTable, organizationAddress.getOrganizationId());
+                    notes = NoteManager.findByRefTableRefId(organizationReferenceTable, organizationAddress.getOrganizationId());
                     
                 }catch(NotFoundException e){
                     //ignore
@@ -101,15 +101,15 @@ public class OrganizationsManager implements RPC, HasNotesInt {
         }
         
         if(notes == null)
-            notes = NotesManager.getInstance();
+            notes = NoteManager.getInstance();
 
         return notes;
     }  
-    public OrganizationContactsManager getContacts() throws Exception {
+    public OrganizationContactManager getContacts() throws Exception {
         if(contacts == null){
             if(organizationAddress.getOrganizationId() != null){
                 try{
-                    contacts = OrganizationContactsManager.findByOrganizationId(organizationAddress.getOrganizationId());
+                    contacts = OrganizationContactManager.findByOrganizationId(organizationAddress.getOrganizationId());
                     
                 }
                 catch(NotFoundException e){
@@ -121,7 +121,7 @@ public class OrganizationsManager implements RPC, HasNotesInt {
         }
             
          if(contacts == null)
-            contacts = OrganizationContactsManager.getInstance();
+            contacts = OrganizationContactManager.getInstance();
      
         return contacts;
     }
@@ -143,17 +143,17 @@ public class OrganizationsManager implements RPC, HasNotesInt {
     }
      
     //service methods
-    public OrganizationsManager add() throws Exception {
+    public OrganizationManager add() throws Exception {
         return proxy().add(this);
         
     }
     
-    public OrganizationsManager update() throws Exception {
+    public OrganizationManager update() throws Exception {
         return proxy().update(this);
         
     }
     
-    public OrganizationsManager abort() throws Exception {
+    public OrganizationManager abort() throws Exception {
         return proxy().abort(organizationAddress.getOrganizationId());
     }
     
@@ -161,9 +161,9 @@ public class OrganizationsManager implements RPC, HasNotesInt {
         proxy().validate(this);
     }
     
-    private static OrganizationsManagerProxy proxy(){
+    private static OrganizationManagerProxy proxy(){
         if(proxy == null)
-            proxy = new OrganizationsManagerProxy();
+            proxy = new OrganizationManagerProxy();
         
         return proxy;
     }

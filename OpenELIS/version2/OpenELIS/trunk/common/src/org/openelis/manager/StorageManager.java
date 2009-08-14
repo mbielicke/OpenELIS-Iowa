@@ -23,11 +23,12 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.managerOld;
+package org.openelis.manager;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import org.openelis.domain.StorageDO;
 import org.openelis.gwt.common.RPC;
 
 public class StorageManager implements RPC {
@@ -35,9 +36,9 @@ public class StorageManager implements RPC {
     private static final long serialVersionUID = 1L;
     
     protected Integer  referenceId, referenceTableId;
-    protected ArrayList<Item>  storageList;
-    protected boolean cached;
-    protected transient StorageManagerIOInt manager;
+    protected ArrayList<StorageDO>  storageList;
+    //protected boolean cached;
+    //protected transient StorageManagerIOInt manager;
     
     class Item implements Serializable {
         private static final long serialVersionUID = 1L;
@@ -55,6 +56,14 @@ public class StorageManager implements RPC {
         return sm;
     }
     
+    /**
+     * Creates a new instance of this object with the specified sample id. Use this function to load an instance of this object from database.
+     */
+    public static StorageManager findBySampleItemId(Integer sampleItemId) throws Exception {
+        return null;
+    }
+    
+   /* 
     public StorageManagerIOInt getManager() {
         return manager;
     }
@@ -62,7 +71,7 @@ public class StorageManager implements RPC {
     public void setManager(StorageManagerIOInt manager) {
         this.manager = manager;
     }
-
+*/
     public Integer getReferenceId() {
         return referenceId;
     }
@@ -77,5 +86,13 @@ public class StorageManager implements RPC {
 
     public void setReferenceTableId(Integer referenceTableId) {
         this.referenceTableId = referenceTableId;
+    }
+    
+    public StorageManager add(){
+        return this;
+    }
+    
+    public StorageManager update(){
+        return this;
     }
 }

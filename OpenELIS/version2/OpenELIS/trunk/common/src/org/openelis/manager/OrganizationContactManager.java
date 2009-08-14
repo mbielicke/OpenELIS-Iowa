@@ -30,32 +30,32 @@ import java.util.ArrayList;
 import org.openelis.domain.OrganizationContactDO;
 import org.openelis.gwt.common.RPC;
 
-public class OrganizationContactsManager implements RPC {
+public class OrganizationContactManager implements RPC {
     
     private static final long serialVersionUID = 1L;
     protected Integer                           organizationId;
     protected ArrayList<OrganizationContactDO>  contacts;
     protected ArrayList<OrganizationContactDO>  deletedContacts;
     
-    protected transient static OrganizationContactsManagerProxy proxy;
+    protected transient static OrganizationContactManagerProxy proxy;
     
-    protected OrganizationContactsManager() {
+    protected OrganizationContactManager() {
         contacts = null;
     }
     
     /**
      * Creates a new instance of this object.
      */
-    public static OrganizationContactsManager getInstance() {
-        OrganizationContactsManager ocm;
+    public static OrganizationContactManager getInstance() {
+        OrganizationContactManager ocm;
 
-        ocm = new OrganizationContactsManager();
+        ocm = new OrganizationContactManager();
         ocm.contacts = new ArrayList<OrganizationContactDO>();
 
         return ocm;
     }
     
-    public static OrganizationContactsManager findByOrganizationId(Integer orgId) throws Exception {
+    public static OrganizationContactManager findByOrganizationId(Integer orgId) throws Exception {
         return proxy().fetchByOrgId(orgId);
     }
 
@@ -109,17 +109,17 @@ public class OrganizationContactsManager implements RPC {
     }
     
     //service methods
-    public OrganizationContactsManager add() throws Exception {
+    public OrganizationContactManager add() throws Exception {
         return proxy().add(this);
     }
     
-    public OrganizationContactsManager update() throws Exception {
+    public OrganizationContactManager update() throws Exception {
         return proxy().update(this);
     }
        
-    private static OrganizationContactsManagerProxy proxy(){
+    private static OrganizationContactManagerProxy proxy(){
         if(proxy == null)
-            proxy = new OrganizationContactsManagerProxy();
+            proxy = new OrganizationContactManagerProxy();
         
         return proxy;
     }

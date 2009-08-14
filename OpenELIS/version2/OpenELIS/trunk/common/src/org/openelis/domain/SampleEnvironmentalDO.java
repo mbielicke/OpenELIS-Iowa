@@ -40,6 +40,8 @@ public class SampleEnvironmentalDO implements RPC {
     protected String          collectorPhone;
     protected String          samplingLocation;
     protected Integer         addressId;
+    
+    protected AddressDO addressDO = new AddressDO();
 
     public SampleEnvironmentalDO() {
 
@@ -52,7 +54,13 @@ public class SampleEnvironmentalDO implements RPC {
                                  String collector,
                                  String collectorPhone,
                                  String samplingLocation,
-                                 Integer addressId) {
+                                 Integer addressId,
+                                 String multipleUnit,
+                                 String streetAddress,
+                                 String city,
+                                 String state,
+                                 String zipCode,
+                                 String country) {
         setId(id);
         setSampleId(sampleId);
         setIsHazardous(isHazardous);
@@ -61,6 +69,14 @@ public class SampleEnvironmentalDO implements RPC {
         setCollectorPhone(collectorPhone);
         setSamplingLocation(samplingLocation);
         setAddressId(addressId);
+        
+        addressDO.setId(addressId);
+        addressDO.setMultipleUnit(multipleUnit);
+        addressDO.setStreetAddress(streetAddress);
+        addressDO.setCity(city);
+        addressDO.setState(state);
+        addressDO.setZipCode(zipCode);
+        addressDO.setCountry(country);
     }
 
     public Integer getId() {
@@ -125,5 +141,9 @@ public class SampleEnvironmentalDO implements RPC {
 
     public void setAddressId(Integer addressId) {
         this.addressId = addressId;
+    }
+    
+    public AddressDO getAddressDO() {
+        return addressDO;
     }
 }

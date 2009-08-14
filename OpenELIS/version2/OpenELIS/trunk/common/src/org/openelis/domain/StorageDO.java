@@ -23,20 +23,8 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.remote;
+package org.openelis.domain;
 
-import java.util.List;
+public class StorageDO {
 
-import javax.ejb.Remote;
-
-import org.openelis.managerOld.SampleProjectsManager;
-
-@Remote
-public interface SampleProjectRemote {
-    
-    public List getProjectsBySampleId(Integer sampleId);   
-    
-    public void update(SampleProjectsManager sampleProjects);
-
-    public List autoCompleteLookupByName(String projectName, Integer maxResults);
 }

@@ -54,4 +54,6 @@ public interface ProjectRemote {
     
     public List<SecuritySystemUserDO> ownerAutocompleteByName(String loginName, int numResult);   
     
+    public List autoCompleteLookupByName(String projectName, Integer maxResults);
+    
 }

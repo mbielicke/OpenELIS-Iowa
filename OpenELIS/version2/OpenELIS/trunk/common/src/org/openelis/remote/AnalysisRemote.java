@@ -29,12 +29,12 @@ import java.util.List;
 
 import javax.ejb.Remote;
 
-import org.openelis.managerOld.AnalysesManager;
+import org.openelis.manager.AnalysisManager;
 
 @Remote
 public interface AnalysisRemote {
 
     public List getAnalysisTestsBySampleItemId(Integer sampleItemId);
     
-    public void update(AnalysesManager analyses);
+    public void update(AnalysisManager analyses);
 }
