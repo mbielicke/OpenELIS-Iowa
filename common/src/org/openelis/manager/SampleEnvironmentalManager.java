@@ -23,21 +23,18 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.managerOld;
+package org.openelis.manager;
 
-import org.openelis.domain.AddressDO;
 import org.openelis.domain.SampleEnvironmentalDO;
 import org.openelis.gwt.common.RPC;
 
 public class SampleEnvironmentalManager implements RPC, SampleDomainInt {
 
     private static final long                           serialVersionUID = 1L;
-    protected boolean                                   cached;
-    protected Integer                                   sampleId;
+    protected Integer sampleId;
     protected SampleEnvironmentalDO                     environmental;
-    protected AddressDO                                 address;
 
-    protected transient SampleEnvironmentalManagerIOInt manager;
+    protected transient static SampleEnvironmentalManagerProxy proxy;
 
     /**
      * Creates a new instance of this object.
@@ -51,67 +48,40 @@ public class SampleEnvironmentalManager implements RPC, SampleDomainInt {
         return sem;
     }
 
-    public static SampleEnvironmentalManager findBySampleId(Integer sampleId) {
-        SampleEnvironmentalManager sem;
-
-        sem = new SampleEnvironmentalManager();
-        sem.environmental = new SampleEnvironmentalDO();
-        sem.setSampleId(sampleId);
-
-        sem.fetch();
-
-        return sem;
+    public static SampleEnvironmentalManager findBySampleId(Integer sampleId) throws Exception {
+        return proxy().fetch(sampleId);
     }
 
     // setters/getters
-    public void setSampleId(Integer id) {
-        sampleId = id;
+    public SampleEnvironmentalDO getEnvironmental() {
+        return environmental;
     }
-
+    
+    public void setEnvironmental(SampleEnvironmentalDO envDO) {
+        environmental = envDO;
+    }
+    
     public Integer getSampleId() {
         return sampleId;
     }
 
-    public SampleEnvironmentalDO getEnvironmental() {
-        fetch();
-        
-        return environmental;
+    public void setSampleId(Integer sampleId) {
+        this.sampleId = sampleId;
     }
     
-    public AddressDO getAddress(){
-        fetch();
-        
-        if (address == null) 
-            address = manager().getAddressById(environmental.getAddressId());
-        
-        return address;
-    }
-    
-    public void setAddress(AddressDO address){
-        this.address = address;
-    }
-
     // manager methods
-    public Integer update() {
-        Integer newId = manager().update(this);
-        environmental.setId(newId);
-
-        return newId;
+    public SampleEnvironmentalManager add() throws Exception {
+        return proxy().add(this);
+    }
+    
+    public SampleEnvironmentalManager update() throws Exception {
+        return proxy().update(this);
     }
 
-    private void fetch() {
-        if (cached)
-            return;
-
-        cached = true;
+    private static SampleEnvironmentalManagerProxy proxy(){
+        if(proxy == null) 
+            proxy = new SampleEnvironmentalManagerProxy();
         
-        environmental = manager().fetch(sampleId);
-    }
-
-    private SampleEnvironmentalManagerIOInt manager() {
-        if (manager == null)
-            manager = ManagerFactory.getSampleEnvironmentalManagerIO();
-
-        return manager;
-    }
+        return proxy;
+    }    
 }

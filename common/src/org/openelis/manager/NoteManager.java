@@ -31,16 +31,16 @@ import org.openelis.domain.NoteDO;
 import org.openelis.exception.MultipleNoteException;
 import org.openelis.gwt.common.RPC;
 
-public class NotesManager implements RPC {
+public class NoteManager implements RPC {
 
     private static final long serialVersionUID = 1L;
     protected Integer referenceId;
     protected Integer referenceTableId;
     protected ArrayList<NoteDO> notes;
     
-    protected transient static NotesManagerProxy proxy;
+    protected transient static NoteManagerProxy proxy;
     
-    protected NotesManager() {
+    protected NoteManager() {
         referenceId = null;
         referenceTableId = null;
         notes = null;
@@ -49,10 +49,10 @@ public class NotesManager implements RPC {
     /**
      * Creates a new instance of this object.
      */
-    public static NotesManager getInstance() {
-        NotesManager nm;
+    public static NoteManager getInstance() {
+        NoteManager nm;
 
-        nm = new NotesManager();
+        nm = new NoteManager();
         nm.notes = new ArrayList<NoteDO>();
 
         return nm;
@@ -120,7 +120,7 @@ public class NotesManager implements RPC {
         notes.add(0, note);
     }
     
-    public static NotesManager findByRefTableRefId(Integer tableId, Integer id) throws Exception {
+    public static NoteManager findByRefTableRefId(Integer tableId, Integer id) throws Exception {
         return proxy().fetch(tableId, id);
     }
         
@@ -141,11 +141,11 @@ public class NotesManager implements RPC {
     }
 
     //service methods
-    public NotesManager add() throws Exception {
+    public NoteManager add() throws Exception {
         return proxy().add(this);
     }
     
-    public NotesManager update() throws Exception {
+    public NoteManager update() throws Exception {
         return proxy().update(this);
     }
     
@@ -153,9 +153,9 @@ public class NotesManager implements RPC {
         
     }
         
-    private static NotesManagerProxy proxy(){
+    private static NoteManagerProxy proxy(){
         if(proxy == null)
-            proxy = new NotesManagerProxy();
+            proxy = new NoteManagerProxy();
         
         return proxy;
     }

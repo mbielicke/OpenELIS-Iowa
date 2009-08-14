@@ -26,20 +26,14 @@
 package org.openelis.remote;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import javax.ejb.Remote;
 
-import org.openelis.domain.SampleEnvironmentalDO;
-import org.openelis.gwt.common.data.AbstractField;
-import org.openelis.managerOld.SampleDomainInt;
+import org.openelis.domain.IdNameDO;
+import org.openelis.gwt.common.rewrite.QueryData;
 
 @Remote
 public interface SampleEnvironmentalRemote {
-    public SampleEnvironmentalDO getEnvBySampleId(Integer sampleId);
-    
-    public Integer update(SampleDomainInt sampleDomain);
-    
-    public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception;
+    public ArrayList<IdNameDO> query(ArrayList<QueryData> fields, int first, int max) throws Exception;
 
 }

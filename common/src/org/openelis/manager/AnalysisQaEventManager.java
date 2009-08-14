@@ -24,19 +24,15 @@
 * UIRF Software License are applicable instead of those above. 
 */
 
-package org.openelis.managerOld;
+package org.openelis.manager;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import javax.persistence.Transient;
-
 import org.openelis.domain.AnalysisQaEventDO;
-import org.openelis.domain.NoteDO;
 import org.openelis.domain.QaEventDO;
 
-
-public class AnalysisQaEventsManager implements Serializable {
+public class AnalysisQaEventManager implements Serializable {
 
     /**
      * 
@@ -48,8 +44,7 @@ public class AnalysisQaEventsManager implements Serializable {
     protected ArrayList<Item> items;
     protected ArrayList<AnalysisQaEventDO> removedAnaQaEvents;
     
-    @Transient
-    protected AnalysisQaEventsManagerIOInt manager;
+    //protected AnalysisQaEventsManagerIOInt manager;
     
     class Item {
         public AnalysisQaEventDO analysisQAEvent;
@@ -59,10 +54,10 @@ public class AnalysisQaEventsManager implements Serializable {
     /**
      * Creates a new instance of this object.
      */
-    public static AnalysisQaEventsManager getInstance() {
-        AnalysisQaEventsManager aqm;
+    public static AnalysisQaEventManager getInstance() {
+        AnalysisQaEventManager aqm;
 
-        aqm = new AnalysisQaEventsManager();
+        aqm = new AnalysisQaEventManager();
         aqm.items = new ArrayList<Item>();
         aqm.removedAnaQaEvents = new ArrayList<AnalysisQaEventDO>();
 
@@ -74,14 +69,14 @@ public class AnalysisQaEventsManager implements Serializable {
     }   
     
     public int count() {
-        manager().fetch();
+ //       manager().fetch();
         return items.size();
     }
     
     public AnalysisQaEventDO add(){
         Item item;
 
-        manager().fetch();
+ //       manager().fetch();
         item = new Item();
         item.analysisQAEvent = new AnalysisQaEventDO();
         items.add(item);
@@ -93,7 +88,7 @@ public class AnalysisQaEventsManager implements Serializable {
         Item item;
         AnalysisQaEventDO aq;
 
-        manager().fetch();
+     //   manager().fetch();
         item = (Item)items.get(i);
         aq = item.analysisQAEvent;
         //
@@ -107,7 +102,7 @@ public class AnalysisQaEventsManager implements Serializable {
     }
     
     public AnalysisQaEventDO getAnalysisQaEventAt(int i) {
-        manager().fetch();
+    //    manager().fetch();
         return items.get(i).analysisQAEvent;
     }
     
@@ -148,9 +143,5 @@ public class AnalysisQaEventsManager implements Serializable {
         return buff.toString();
     }
     
-    private AnalysisQaEventsManagerIOInt manager() {
-        //manager = ManagerFactory.getAnalysisQaEventsManager();
-        return manager;
-    }
-
+  
 }

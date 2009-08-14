@@ -23,43 +23,41 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.managerOld;
+package org.openelis.manager;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.List;
 
 import org.openelis.domain.AnalysisTestDO;
 import org.openelis.gwt.common.RPC;
-import org.openelis.manager.NotesManager;
 
-public class AnalysesManager implements RPC {
+public class AnalysisManager implements RPC {
     private static final long serialVersionUID = 1L;
     
     protected Integer                           sampleItemId;
-    protected ArrayList<Item>                   items;
+    protected ArrayList<AnalysisListItem>                   items;
     protected boolean                           cached;
-    protected transient AnalysesManagerIOInt manager;
+    //protected transient AnalysesManagerIOInt manager;
 
-    class Item implements Serializable{
-        private static final long   serialVersionUID = 1L;
-        AnalysisTestDO              analysis;
-        AnalysisQaEventsManager     qaEvents;
-        NotesManager                notes;
-        StorageManager      storage;
-    }
 
-    public static AnalysesManager getInstance() {
-        AnalysesManager sm;
+    public static AnalysisManager getInstance() {
+        AnalysisManager sm;
 
-        sm = new AnalysesManager();
-        sm.items = new ArrayList<Item>();
+        sm = new AnalysisManager();
+        sm.items = new ArrayList<AnalysisListItem>();
 
         return sm;
     }
     
+    /**
+     * Creates a new instance of this object with the specified sample id. Use this function to load an instance of this object from database.
+     */
+    public static AnalysisManager findBySampleItemId(Integer sampleItemId) throws Exception {
+        return null;
+    }
+    
     public int count(){
-        fetch();
+   //     fetch();
         
         if(items == null)
             return 0;
@@ -78,7 +76,7 @@ public class AnalysesManager implements RPC {
     
     //analysis
     public AnalysisTestDO getAnalysisAt(int i) {
-        fetch();
+   //     fetch();
         
         return getItem(i).analysis;
     }
@@ -88,33 +86,33 @@ public class AnalysesManager implements RPC {
     }
     
     //qaevents
-    public AnalysisQaEventsManager getQAEventsAt(int i) {
-        Item item;
+    public AnalysisQaEventManager getQAEventsAt(int i) {
+        AnalysisListItem item;
 
-        fetch();
+  //      fetch();
         item = getItem(i);
 
         if (item.qaEvents == null) {
-            item.qaEvents = AnalysisQaEventsManager.getInstance();
+            item.qaEvents = AnalysisQaEventManager.getInstance();
             item.qaEvents.setAnalysisId(item.analysis.getId());
         }
 
         return item.qaEvents;
     }
     
-    public void setQAEventsAt(AnalysisQaEventsManager qaEvents, int i) {
+    public void setQAEventsAt(AnalysisQaEventManager qaEvents, int i) {
         getItem(i).qaEvents = qaEvents;
     }
     
     //notes
-    public NotesManager getNotesAt(int i) {
-        Item item;
+    public NoteManager getNotesAt(int i) {
+        AnalysisListItem item;
 
-        fetch();
+   //     fetch();
         item = getItem(i);
 
         if (item.notes == null) {
-            item.notes = NotesManager.getInstance();
+            item.notes = NoteManager.getInstance();
             item.notes.setReferenceId(item.analysis.getId());
             //FIXME item.notes.setReferenceTableId(referenceTableId);
         }
@@ -122,15 +120,15 @@ public class AnalysesManager implements RPC {
         return item.notes;
     }
     
-    public void setNotesAt(NotesManager notes, int i) {
+    public void setNotesAt(NoteManager notes, int i) {
         getItem(i).notes = notes;
     }
     
     //storage
     public StorageManager getStorageAt(int i) {
-        Item item;
+        AnalysisListItem item;
 
-        fetch();
+   //     fetch();
         item = getItem(i);
 
         if (item.storage == null) {
@@ -147,22 +145,26 @@ public class AnalysesManager implements RPC {
     }
     
     //item
-    private Item getItem(int i) {
-        fetch();
-        return (Item)items.get(i);
+    private AnalysisListItem getItem(int i) {
+   //     fetch();
+        return (AnalysisListItem)items.get(i);
     }
     
     //manager methods
-    public void update() {
-        manager().update(this);
+    public AnalysisManager update() {
+        return this;
     }
-
+    
+    public AnalysisManager add(){
+        return this;
+    }
+/*
     protected void fetch() {
         if (cached)
             return;
 
         cached = true;
-        List analyses = manager().fetch(sampleItemId);
+    //    List analyses = manager().fetch(sampleItemId);
 
         for (int i = 0; i < analyses.size(); i++) {
             Item item = new Item();
@@ -170,11 +172,6 @@ public class AnalysesManager implements RPC {
             items.add(item);
         }
     }
+  */  
     
-    private AnalysesManagerIOInt manager() {
-        if (manager == null)
-            manager = ManagerFactory.getAnalysesManagerIO();
-
-        return manager;
-    }
 }

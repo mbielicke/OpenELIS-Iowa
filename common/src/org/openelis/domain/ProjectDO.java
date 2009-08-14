@@ -102,7 +102,7 @@ public class ProjectDO implements RPC {
     }
 
     public void setStartedDate(Date startedDate) {
-        this.startedDate = new Datetime(Datetime.YEAR,
+        this.startedDate = Datetime.getInstance(Datetime.YEAR,
                                         Datetime.DAY,
                                         startedDate);
     }
@@ -112,7 +112,7 @@ public class ProjectDO implements RPC {
     }
 
     public void setCompletedDate(Date completedDate) {
-        this.completedDate = new Datetime(Datetime.YEAR,
+        this.completedDate = Datetime.getInstance(Datetime.YEAR,
                                           Datetime.DAY,
                                           completedDate);
     }

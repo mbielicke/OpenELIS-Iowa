@@ -68,21 +68,20 @@ public class SampleDO implements RPC {
                     Integer packageId,
                     String clientReference,
                     Date releasedDate) {
-
         setId(id);
         setNextItemSequence(nextItemSequence);
         setDomain(domain);
         setAccessionNumber(accessionNumber);
         setRevision(revision);
-        setEnteredDate(enteredDate);
-        setReceivedDate(receivedDate);
+        setEnteredDate(Datetime.getInstance(Datetime.YEAR, Datetime.SECOND, enteredDate));
+        setReceivedDate(Datetime.getInstance(Datetime.YEAR, Datetime.SECOND, receivedDate));
         setReceivedById(receivedById);
-        setCollectionDate(collectionDate);
-        setCollectionTime(collectionTime);
+        setCollectionDate(Datetime.getInstance(Datetime.YEAR, Datetime.DAY, collectionDate));
+        setCollectionTime(Datetime.getInstance(Datetime.HOUR, Datetime.SECOND, collectionTime));
         setStatusId(statusId);
         setPackageId(packageId);
         setClientReference(clientReference);
-        setReleasedDate(releasedDate);
+        setReleasedDate(Datetime.getInstance(Datetime.YEAR, Datetime.SECOND, releasedDate));
     }
 
     public Integer getId() {
@@ -129,20 +128,16 @@ public class SampleDO implements RPC {
         return enteredDate;
     }
 
-    public void setEnteredDate(Date enteredDate) {
-        this.enteredDate = new Datetime(Datetime.YEAR,
-                                        Datetime.DAY,
-                                        enteredDate);
+    public void setEnteredDate(Datetime enteredDate) {
+        this.enteredDate = enteredDate;
     }
 
     public Datetime getReceivedDate() {
         return receivedDate;
     }
 
-    public void setReceivedDate(Date receivedDate) {
-        this.receivedDate = new Datetime(Datetime.YEAR,
-                                         Datetime.DAY,
-                                         receivedDate);
+    public void setReceivedDate(Datetime receivedDate) {
+        this.receivedDate = receivedDate;
     }
 
     public Integer getReceivedById() {
@@ -157,20 +152,17 @@ public class SampleDO implements RPC {
         return collectionDate;
     }
 
-    public void setCollectionDate(Date collectionDate) {
-        this.collectionDate = new Datetime(Datetime.YEAR,
-                                           Datetime.DAY,
-                                           collectionDate);
+    public void setCollectionDate(Datetime collectionDate) {
+        
+        this.collectionDate = collectionDate;
     }
 
     public Datetime getCollectionTime() {
         return collectionTime;
     }
 
-    public void setCollectionTime(Date collectionTime) {
-        this.collectionTime = new Datetime(Datetime.HOUR,
-                                           Datetime.MINUTE,
-                                           collectionTime);
+    public void setCollectionTime(Datetime collectionTime) {
+        this.collectionTime = collectionTime;
     }
 
     public Integer getStatusId() {
@@ -201,9 +193,7 @@ public class SampleDO implements RPC {
         return releasedDate;
     }
 
-    public void setReleasedDate(Date releasedDate) {
-        this.releasedDate = new Datetime(Datetime.YEAR,
-                                         Datetime.DAY,
-                                         releasedDate);
+    public void setReleasedDate(Datetime releasedDate) {
+        this.releasedDate = releasedDate;
     }
 }

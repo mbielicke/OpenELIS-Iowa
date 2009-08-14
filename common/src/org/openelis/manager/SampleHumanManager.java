@@ -23,7 +23,7 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.managerOld;
+package org.openelis.manager;
 
 import org.openelis.domain.PatientDO;
 import org.openelis.domain.ProviderDO;
@@ -39,7 +39,7 @@ public class SampleHumanManager implements RPC, SampleDomainInt {
     protected PatientDO                          patient;
     protected SampleHumanDO                      human;
 
-    protected transient SampleHumanManagerIOInt manager;
+   // protected transient SampleHumanManagerIOInt manager;
 
     /**
      * Creates a new instance of this object.
@@ -52,7 +52,7 @@ public class SampleHumanManager implements RPC, SampleDomainInt {
         return shm;
     }
     
-    public static SampleHumanManager findBySampleId(Integer sampleId) {
+    public static SampleHumanManager findBySampleId(Integer sampleId) throws Exception  {
         SampleHumanManager shm;
 
         shm = new SampleHumanManager();
@@ -72,26 +72,26 @@ public class SampleHumanManager implements RPC, SampleDomainInt {
         return sampleId;
     }
 
-    public ProviderDO getProvider() {
-        fetch();
-        if(provider == null)
-            provider = manager().fetchProvider(human.getProviderId());
-        
-        return provider;
-    }
-
-    public void setProvider(ProviderDO provider) {
-        this.provider = provider;
-    }
-
-    public PatientDO getPatient() {
-        fetch();
-        
-        if(patient == null)
-            patient = manager().fetchPatient(human.getPatientId());
-        
-        return patient;
-    }
+//    public ProviderDO getProvider() {
+//        fetch();
+//        if(provider == null)
+//  //          provider = manager().fetchProvider(human.getProviderId());
+//        
+//        return provider;
+//    }
+//
+//    public void setProvider(ProviderDO provider) {
+//        this.provider = provider;
+//    }
+//
+//    public PatientDO getPatient() {
+//        fetch();
+//        
+//        if(patient == null)
+// //           patient = manager().fetchPatient(human.getPatientId());
+//        
+//        return patient;
+//    }
 
     public void setPatient(PatientDO patient) {
         this.patient = patient;
@@ -103,22 +103,17 @@ public class SampleHumanManager implements RPC, SampleDomainInt {
     }
 
     //manager methods
-    public Integer update() {
-        Integer newId = manager().update(this);
-        human.setId(newId);
+   // public Integer update() {
+   //     Integer newId = manager().update(this);
+  //      human.setId(newId);
         
-        return newId;
-    }
+  //      return newId;
+  //  }
     
     public SampleHumanDO fetch(){
-        human = manager().fetch(sampleId);
+  //      human = manager().fetch(sampleId);
         return human;
     }
     
-    private SampleHumanManagerIOInt manager(){
-        if(manager == null)
-            manager = ManagerFactory.getSampleHumanManagerIO();
-        
-        return manager;
-    }
+  
 }
