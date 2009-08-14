@@ -32,8 +32,8 @@ import javax.naming.InitialContext;
 import org.openelis.domain.NoteDO;
 import org.openelis.local.NoteLocal;
 
-public class NotesManagerProxy {
-    public NotesManager add(NotesManager man) throws Exception {
+public class NoteManagerProxy {
+    public NoteManager add(NoteManager man) throws Exception {
         NoteDO note;
         NoteLocal nl = getNoteLocal();
         
@@ -48,7 +48,7 @@ public class NotesManagerProxy {
         return man;
     }
 
-    public NotesManager update(NotesManager man) throws Exception {
+    public NoteManager update(NoteManager man) throws Exception {
         NoteDO note;
         NoteLocal nl = getNoteLocal();
         
@@ -65,11 +65,11 @@ public class NotesManagerProxy {
         return man;
     }
 
-    public NotesManager fetch(Integer tableId, Integer id) throws Exception {
+    public NoteManager fetch(Integer tableId, Integer id) throws Exception {
         NoteLocal nl = getNoteLocal();
         ArrayList<NoteDO> notes = nl.getNotes(tableId, id);
         
-        NotesManager n = NotesManager.getInstance();
+        NoteManager n = NoteManager.getInstance();
         n.setNotes(notes);
         n.setReferenceId(id);
         n.setReferenceTableId(tableId);

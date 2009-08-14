@@ -19,8 +19,8 @@ import org.openelis.entity.Provider;
 import org.openelis.entity.SampleHuman;
 import org.openelis.local.LockLocal;
 import org.openelis.local.SampleHumanLocal;
-import org.openelis.managerOld.SampleDomainInt;
-import org.openelis.managerOld.SampleHumanManager;
+import org.openelis.manager.SampleDomainInt;
+import org.openelis.manager.SampleHumanManager;
 import org.openelis.remote.SampleHumanRemote;
 
 @Stateless

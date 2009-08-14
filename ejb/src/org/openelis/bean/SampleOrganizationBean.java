@@ -27,8 +27,6 @@ package org.openelis.bean;
 
 import java.util.List;
 
-import javax.annotation.Resource;
-import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
@@ -38,52 +36,58 @@ import javax.persistence.Query;
 import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.SampleOrganizationDO;
 import org.openelis.entity.SampleOrganization;
+import org.openelis.exception.NotFoundException;
 import org.openelis.local.SampleOrganizationLocal;
-import org.openelis.managerOld.SampleOrganizationsManager;
-import org.openelis.remote.SampleOrganizationRemote;
 
 @Stateless
 
 @SecurityDomain("openelis")
 //@RolesAllowed("LOCKINGtest")
-public class SampleOrganizationBean implements SampleOrganizationRemote, SampleOrganizationLocal {
+public class SampleOrganizationBean implements SampleOrganizationLocal {
     @PersistenceContext(name = "openelis")
     private EntityManager manager;
    
-    @Resource
-    private SessionContext ctx;
-    
-    public List getOrganizationsBySampleId(Integer sampleId){
+    public List<SampleOrganizationDO> fetchBySampleId(Integer sampleId) throws Exception {
         Query query = manager.createNamedQuery("SampleOrg.SampleOrgBySampleId");
         query.setParameter("id", sampleId);
  
-        return query.getResultList(); 
+        List<SampleOrganizationDO> returnList = query.getResultList();
+        
+        if(returnList.size() == 0)
+            throw new NotFoundException();
+        
+        return returnList;
     }
     
-    public void update(SampleOrganizationsManager sampleOrganizations){
-        //validate orgs
-        
+    public void add(SampleOrganizationDO sampleOrgDO) {
         manager.setFlushMode(FlushModeType.COMMIT);
         
-        for(int i=0; i<sampleOrganizations.count(); i++){
-            //update the sample item
-            SampleOrganizationDO orgDO = sampleOrganizations.getSampleOrganizationAt(i);
-            SampleOrganization organization = null;
-            if (orgDO.getId() == null)
-                organization = new SampleOrganization();
-            else
-                organization = manager.find(SampleOrganization.class, orgDO.getId());
-            
-            organization.setOrganizationId(orgDO.getOrganizationId());
-            organization.setSampleId(orgDO.getSampleId());
-            organization.setTypeId(orgDO.getTypeId());
-            
-            if(organization.getId() == null)
-                manager.persist(organization);
-        }
+        SampleOrganization organization = new SampleOrganization();
+        
+        organization.setOrganizationId(sampleOrgDO.getOrganizationId());
+        organization.setSampleId(sampleOrgDO.getSampleId());
+        organization.setTypeId(sampleOrgDO.getTypeId());
+        
+        manager.persist(organization);
+        sampleOrgDO.setId(organization.getId());
+    }
+
+    public void update(SampleOrganizationDO sampleOrgDO) {
+        manager.setFlushMode(FlushModeType.COMMIT);
+        
+        SampleOrganization organization = manager.find(SampleOrganization.class, sampleOrgDO.getId());
+        
+        organization.setOrganizationId(sampleOrgDO.getOrganizationId());
+        organization.setSampleId(sampleOrgDO.getSampleId());
+        organization.setTypeId(sampleOrgDO.getTypeId());
     }
     
-    private void validateOrgs() throws Exception {
+    public void delete(SampleOrganizationDO sampleOrgDO) {
+        manager.setFlushMode(FlushModeType.COMMIT);
         
-    }
+        SampleOrganization organization = manager.find(SampleOrganization.class, sampleOrgDO.getId());
+        
+        if(organization != null)
+            manager.remove(organization);
+    }    
 }

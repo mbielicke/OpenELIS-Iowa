@@ -25,11 +25,7 @@
 */
 package org.openelis.bean;
 
-import java.util.List;
-
-import javax.annotation.Resource;
 import javax.ejb.EJB;
-import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
@@ -41,86 +37,47 @@ import org.openelis.domain.SampleDO;
 import org.openelis.entity.Sample;
 import org.openelis.local.LockLocal;
 import org.openelis.local.SampleLocal;
-import org.openelis.managerOld.SampleManager;
-import org.openelis.remote.SampleRemote;
+import org.openelis.utils.ReferenceTableCache;
 
 @Stateless
 
 @SecurityDomain("openelis")
 //@RolesAllowed("inventory-select")
-public class SampleBean implements SampleRemote, SampleLocal {
+public class SampleBean implements SampleLocal {
 
     @PersistenceContext(name = "openelis")
     private EntityManager manager;
-   
-    @Resource
-    private SessionContext ctx;
 
     //declare the locals
     @EJB private LockLocal lockBean;
     
-    public SampleDO getSampleByAccessionLabNumber(Integer accessionLabNumber) {
-        Query query = manager.createNamedQuery("Sample.SampleByAccessionNumber");
-        query.setParameter("id", accessionLabNumber);
-        List results = query.getResultList();
-        
-        if(results.size() == 0)
-            return null;
-        
-        return (SampleDO)results.get(0);
+    private static int sampleRefTableId;
+    
+    public SampleBean(){
+        sampleRefTableId = ReferenceTableCache.getReferenceTable("sample");
     }
-
-    public SampleDO getSampleById(Integer sampleId) {
+    
+    public SampleDO fetchById(Integer sampleId) throws Exception {
         Query query = manager.createNamedQuery("Sample.SampleById");
         query.setParameter("id", sampleId);
-        List results = query.getResultList();
         
-        if(results.size() == 0)
-            return null;
-        
-        return (SampleDO)results.get(0);
+        return (SampleDO)query.getSingleResult();
     }
     
-    public SampleDO getSampleByIdAndLock(Integer sampleId) throws Exception{
-        Query query = manager.createNamedQuery("getTableId");
-        query.setParameter("name", "sample");
-        lockBean.getLock((Integer)query.getSingleResult(),sampleId);
+    public SampleDO fetchByAccessionNumber(Integer accessionNumber) throws Exception {
+        Query query = manager.createNamedQuery("Sample.SampleByAccessionNumber");
+        query.setParameter("id", accessionNumber);
         
-        return getSampleById(sampleId);
+        return (SampleDO)query.getSingleResult();
     }
     
-    public SampleDO getSampleByIdAndUnlock(Integer sampleId) {
-      //unlock the entity
-        Query unlockQuery = manager.createNamedQuery("getTableId");
-        unlockQuery.setParameter("name", "sample");
-        lockBean.giveUpLock((Integer)unlockQuery.getSingleResult(),sampleId);
-        
-        return getSampleById(sampleId);
-    }
-    
-    public Integer update(SampleManager sm){
-        System.out.println("start sample up method");
-        SampleDO sampleDO = sm.getSample();
-        if(sampleDO == null)
-            return null;
-        
-        //validate lock
-        
-        //validate entire sample structure
-        //  validateSample();
-        
+    public void add(SampleDO sampleDO) {
         manager.setFlushMode(FlushModeType.COMMIT);
         
-        //update the sample
-        Sample sample = null;
+        Sample sample = new Sample();
         
-        if (sampleDO.getId() == null)
-            sample = new Sample();
-        else
-           sample = manager.find(Sample.class, sampleDO.getId());
-        System.out.println("["+sampleDO.getAccessionNumber()+"]");
+
         sample.setAccessionNumber(sampleDO.getAccessionNumber());
-        System.out.println("["+sampleDO.getEnteredDate()+"]");
         sample.setClientReference(sampleDO.getClientReference());
         sample.setCollectionDate(sampleDO.getCollectionDate());
         sample.setCollectionTime(sampleDO.getCollectionTime());
@@ -134,25 +91,33 @@ public class SampleBean implements SampleRemote, SampleLocal {
         sample.setRevision(sampleDO.getRevision());
         sample.setStatusId(sampleDO.getStatusId());
         
-        if(sample.getId() == null)
-            manager.persist(sample);
+        manager.persist(sample);
         
-        //set the new parent id to children
-        sm.getSampleItemsManager().setSampleId(sample.getId());
-        sm.getAdditionalDomainManager().setSampleId(sample.getId());
-        sm.getOrganizationsManager().setSampleId(sample.getId());
-        sm.getProjectsManager().setSampleId(sample.getId());
-        sm.getQaEventsManager().setSampleId(sample.getId());
-        
-        //call the children update methods
-        sm.getSampleItemsManager().update();
-        sm.getAdditionalDomainManager().update();
-        //sample.getOrganizations().update();
-        //sample.getProjects().update();
-        //sample.getQaEvents().update();
+        sampleDO.setId(sample.getId());
+    }
 
-        //return the sample id
-        return sample.getId();
+    public void update(SampleDO sampleDO) throws Exception {
+        lockBean.validateLock(sampleRefTableId, sampleDO.getId());
+        
+        manager.setFlushMode(FlushModeType.COMMIT);
+        
+        Sample sample = manager.find(Sample.class, sampleDO.getId());
+
+        sample.setAccessionNumber(sampleDO.getAccessionNumber());
+        sample.setClientReference(sampleDO.getClientReference());
+        sample.setCollectionDate(sampleDO.getCollectionDate());
+        sample.setCollectionTime(sampleDO.getCollectionTime());
+        sample.setDomain(sampleDO.getDomain());
+        sample.setEnteredDate(sampleDO.getEnteredDate());
+        sample.setNextItemSequence(sampleDO.getNextItemSequence());
+        sample.setPackageId(sampleDO.getPackageId());
+        sample.setReceivedById(sampleDO.getReceivedById());
+        sample.setReceivedDate(sampleDO.getReceivedDate());
+        sample.setReleasedDate(sampleDO.getReleasedDate());
+        sample.setRevision(sampleDO.getRevision());
+        sample.setStatusId(sampleDO.getStatusId());
+        
+        lockBean.giveUpLock(sampleRefTableId, sampleDO.getId());
     }
     
     private void validateSample() throws Exception {

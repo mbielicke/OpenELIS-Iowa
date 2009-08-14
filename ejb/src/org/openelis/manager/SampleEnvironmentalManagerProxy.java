@@ -23,34 +23,39 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.managerOld;
-
-import java.util.List;
+package org.openelis.manager;
 
 import javax.naming.InitialContext;
 
-import org.openelis.local.AnalysisLocal;
-import org.openelis.managerOld.AnalysesManager;
-import org.openelis.managerOld.AnalysesManagerIOInt;
+import org.openelis.domain.SampleEnvironmentalDO;
+import org.openelis.local.SampleEnvironmentalLocal;
 
-public class AnalysesManagerIOEJB implements AnalysesManagerIOInt {
-
-    public List fetch(Integer sampleItemId) {
-        AnalysisLocal al = getAnalysisItemLocal();
-        
-        return al.getAnalysisTestsBySampleItemId(sampleItemId);
+public class SampleEnvironmentalManagerProxy {
+    public SampleEnvironmentalManager add(SampleEnvironmentalManager man) throws Exception {
+        SampleEnvironmentalLocal el = getSampleEnvLocal();
+        return null;
     }
 
-    public void update(AnalysesManager analyses) {
-        AnalysisLocal al = getAnalysisItemLocal();
-        
-        al.update(analyses);
+    public SampleEnvironmentalManager update(SampleEnvironmentalManager man) throws Exception {
+        SampleEnvironmentalLocal el = getSampleEnvLocal();
+        return null;
     }
     
-    private AnalysisLocal getAnalysisItemLocal(){
+    public SampleEnvironmentalManager fetch(Integer sampleId) throws Exception {
+        SampleEnvironmentalLocal el = getSampleEnvLocal();
+        
+        SampleEnvironmentalDO envDO = el.fetchBySampleId(sampleId);
+        SampleEnvironmentalManager em = SampleEnvironmentalManager.getInstance();
+        
+        em.setEnvironmental(envDO);
+        
+        return em;
+    }
+    
+    private SampleEnvironmentalLocal getSampleEnvLocal(){
         try{
             InitialContext ctx = new InitialContext();
-            return (AnalysisLocal)ctx.lookup("openelis/AnalysisBean/local");
+            return (SampleEnvironmentalLocal)ctx.lookup("openelis/SampleEnvironmentalBean/local");
         }catch(Exception e){
              System.out.println(e.getMessage());
              return null;
