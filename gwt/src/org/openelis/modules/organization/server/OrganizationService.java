@@ -32,9 +32,8 @@ import org.openelis.domain.OrganizationAutoDO;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.server.ServiceUtils;
-import org.openelis.gwt.services.rewrite.AutoCompleteServiceInt;
-import org.openelis.manager.OrganizationContactsManager;
-import org.openelis.manager.OrganizationsManager;
+import org.openelis.manager.OrganizationContactManager;
+import org.openelis.manager.OrganizationManager;
 import org.openelis.modules.organization.client.OrgQuery;
 import org.openelis.modules.organization.client.ParentOrgRPC;
 import org.openelis.persistence.EJBFactory;
@@ -44,7 +43,7 @@ import org.openelis.server.constants.Constants;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
 
-public class OrganizationService implements AutoCompleteServiceInt<ParentOrgRPC> {
+public class OrganizationService {
 
 	private static final int leftTableRowsPerPage = 18;
     
@@ -68,71 +67,71 @@ public class OrganizationService implements AutoCompleteServiceInt<ParentOrgRPC>
 	    return query;
     }
 
-    public OrganizationsManager fetch(Integer orgId) throws Exception {
+    public OrganizationManager fetch(Integer orgId) throws Exception {
         OrganizationManagerRemote remote = (OrganizationManagerRemote)EJBFactory.lookup("openelis/OrganizationManagerBean/remote");
         
         return remote.fetch(orgId);
     }
     
-    public OrganizationContactsManager fetchContactById(Integer id) throws Exception{
+    public OrganizationContactManager fetchContactById(Integer id) throws Exception{
         OrganizationManagerRemote remote = (OrganizationManagerRemote)EJBFactory.lookup("openelis/OrganizationManagerBean/remote");
         return null;
     }
     
-    public OrganizationContactsManager fetchContactByOrgId(Integer orgId) throws Exception {
+    public OrganizationContactManager fetchContactByOrgId(Integer orgId) throws Exception {
         OrganizationManagerRemote remote = (OrganizationManagerRemote)EJBFactory.lookup("openelis/OrganizationManagerBean/remote");
         
         return remote.fetchContactByOrgId(orgId);
     }
     
-    public OrganizationsManager add(OrganizationsManager man) throws Exception {
+    public OrganizationManager add(OrganizationManager man) throws Exception {
         OrganizationManagerRemote remote = (OrganizationManagerRemote)EJBFactory.lookup("openelis/OrganizationManagerBean/remote");
 
         return remote.add(man);
     }
     
-    public OrganizationsManager update(OrganizationsManager man) throws Exception {
+    public OrganizationManager update(OrganizationManager man) throws Exception {
         OrganizationManagerRemote remote = (OrganizationManagerRemote)EJBFactory.lookup("openelis/OrganizationManagerBean/remote");
         
         return remote.update(man);
         
     }
     
-    public OrganizationsManager fetchWithContacts(Integer orgId) throws Exception {
+    public OrganizationManager fetchWithContacts(Integer orgId) throws Exception {
         OrganizationManagerRemote remote = (OrganizationManagerRemote)EJBFactory.lookup("openelis/OrganizationManagerBean/remote");
-        OrganizationsManager man = remote.fetchWithContacts(orgId);
+        OrganizationManager man = remote.fetchWithContacts(orgId);
         
         return man;
     }
     
-    public OrganizationsManager fetchWithNotes(Integer orgId) throws Exception {
+    public OrganizationManager fetchWithNotes(Integer orgId) throws Exception {
         OrganizationManagerRemote remote = (OrganizationManagerRemote)EJBFactory.lookup("openelis/OrganizationManagerBean/remote");
-        OrganizationsManager man = remote.fetchWithNotes(orgId);
+        OrganizationManager man = remote.fetchWithNotes(orgId);
         
         return man;
     }
     
-    public OrganizationsManager fetchWithIdentifiers(Integer orgId) throws Exception {
+    public OrganizationManager fetchWithIdentifiers(Integer orgId) throws Exception {
         OrganizationManagerRemote remote = (OrganizationManagerRemote)EJBFactory.lookup("openelis/OrganizationManagerBean/remote");
-        OrganizationsManager man = remote.fetchWithIdentifiers(orgId);
+        OrganizationManager man = remote.fetchWithIdentifiers(orgId);
         
         return man;
     }
     
-    public OrganizationsManager fetchForUpdate(Integer orgId) throws Exception {
+    public OrganizationManager fetchForUpdate(Integer orgId) throws Exception {
         //remote interface to call the organization bean
         OrganizationManagerRemote remote = (OrganizationManagerRemote)EJBFactory.lookup("openelis/OrganizationManagerBean/remote");
         
-        OrganizationsManager man = remote.fetchForUpdate(orgId);
+        OrganizationManager man = remote.fetchForUpdate(orgId);
         
         return man;
     }
     
-    public OrganizationsManager abort(Integer orgId) throws Exception {
+    public OrganizationManager abort(Integer orgId) throws Exception {
         //remote interface to call the organization bean
         OrganizationManagerRemote remote = (OrganizationManagerRemote)EJBFactory.lookup("openelis/OrganizationManagerBean/remote");
         
-        OrganizationsManager man = remote.abortUpdate(orgId);
+        OrganizationManager man = remote.abortUpdate(orgId);
         
         return man;
     }

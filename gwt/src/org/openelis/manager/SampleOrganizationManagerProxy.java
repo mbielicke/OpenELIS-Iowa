@@ -23,15 +23,34 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.modules.sampleLocation.server;
+package org.openelis.manager;
 
-import org.openelis.gwt.common.RPCException;
-import org.openelis.gwt.server.ServiceUtils;
-import org.openelis.server.constants.Constants;
+import org.openelis.cache.DictionaryCache;
+import org.openelis.gwt.services.ScreenService;
 
-public class SampleLocationService {
-
-    public String getScreen() throws RPCException {
-        return ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/sampleLocation.xsl");      
+public class SampleOrganizationManagerProxy {
+    protected static final String SAMPLE_SERVICE_URL = "org.openelis.modules.sample.server.SampleService";
+    protected ScreenService service;
+    
+    public SampleOrganizationManagerProxy(){
+        service = new ScreenService("OpenELISServlet?service="+SAMPLE_SERVICE_URL);
+    }
+    
+    public Integer getIdFromSystemName(String systemName){
+        return DictionaryCache.getIdFromSystemName(systemName);
+    }
+    
+    public SampleOrganizationManager fetchBySampleId(Integer sampleId) throws Exception {
+        return service.call("fetchSampleOrganizationsBySampleId", sampleId);
+    }
+    
+    
+    public SampleOrganizationManager add(SampleOrganizationManager man) throws Exception {
+        throw new UnsupportedOperationException();
+    }
+    
+    
+    public SampleOrganizationManager update(SampleOrganizationManager man) throws Exception {
+        throw new UnsupportedOperationException();
     }
 }

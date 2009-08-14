@@ -23,15 +23,13 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.modules.sample.client;
+package org.openelis.modules.environmentalSampleLogin.client;
 
-import com.google.gwt.core.client.EntryPoint;
+import org.openelis.domain.IdNameDO;
+import org.openelis.gwt.common.rewrite.Query;
 
-public class Sample implements EntryPoint {
-
-    public void onModuleLoad() {
-        // TODO Auto-generated method stub
-
-    }
-
+public class SampleEnvQuery  extends Query<IdNameDO> {
+    
+    private static final long serialVersionUID = 1L;    
+    
 }

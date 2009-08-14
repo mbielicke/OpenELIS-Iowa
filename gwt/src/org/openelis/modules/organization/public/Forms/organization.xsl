@@ -76,7 +76,6 @@ UIRF Software License are applicable instead of those above.
 
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))"/>
     <screen id="Organization" name="{resource:getString($constants,'organization')}" serviceUrl="TestService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-      <display>
         <HorizontalPanel padding="0" spacing="0">
           <!--left table goes here -->
           <CollapsePanel key="collapsePanel" height="440px" style="LeftSidePanel">
@@ -303,7 +302,6 @@ UIRF Software License are applicable instead of those above.
             </VerticalPanel>
           </VerticalPanel>
         </HorizontalPanel>
-      </display>
     </screen>
   </xsl:template>
 </xsl:stylesheet>

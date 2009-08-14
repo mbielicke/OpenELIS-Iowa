@@ -27,180 +27,217 @@ package org.openelis.modules.sampleProject.client;
 
 import java.util.ArrayList;
 
-import org.openelis.gwt.common.Query;
-import org.openelis.gwt.common.data.DropDownField;
-import org.openelis.gwt.common.data.KeyListManager;
-import org.openelis.gwt.common.data.TableDataRow;
-import org.openelis.gwt.event.CommandListener;
-import org.openelis.gwt.screen.CommandChain;
-import org.openelis.gwt.screen.ScreenTableWidget;
-import org.openelis.gwt.widget.ButtonPanel;
-import org.openelis.gwt.widget.table.TableManager;
-import org.openelis.gwt.widget.table.TableWidget;
-import org.openelis.gwt.widget.table.event.SourcesTableWidgetEvents;
-import org.openelis.gwt.widget.table.event.TableWidgetListener;
-import org.openelis.modules.environmentalSampleLogin.client.SampleProjectForm;
-import org.openelis.modules.main.client.OpenELISScreenForm;
-import org.openelis.modules.shipping.client.ShippingScreen.Action;
+import org.openelis.domain.ProjectDO;
+import org.openelis.domain.SampleProjectDO;
+import org.openelis.gwt.event.ActionEvent;
+import org.openelis.gwt.event.ActionHandler;
+import org.openelis.gwt.event.DataChangeEvent;
+import org.openelis.gwt.event.GetMatchesEvent;
+import org.openelis.gwt.event.GetMatchesHandler;
+import org.openelis.gwt.event.HasActionHandlers;
+import org.openelis.gwt.event.StateChangeEvent;
+import org.openelis.gwt.screen.rewrite.Screen;
+import org.openelis.gwt.screen.rewrite.ScreenEventHandler;
+import org.openelis.gwt.widget.rewrite.AppButton;
+import org.openelis.gwt.widget.rewrite.AutoComplete;
+import org.openelis.gwt.widget.table.rewrite.TableDataRow;
+import org.openelis.gwt.widget.table.rewrite.TableRow;
+import org.openelis.gwt.widget.table.rewrite.TableWidget;
+import org.openelis.gwt.widget.table.rewrite.event.CellEditedEvent;
+import org.openelis.gwt.widget.table.rewrite.event.CellEditedHandler;
+import org.openelis.gwt.widget.table.rewrite.event.RowAddedEvent;
+import org.openelis.gwt.widget.table.rewrite.event.RowAddedHandler;
+import org.openelis.gwt.widget.table.rewrite.event.RowDeletedEvent;
+import org.openelis.gwt.widget.table.rewrite.event.RowDeletedHandler;
+import org.openelis.manager.SampleProjectManager;
+import org.openelis.metamap.SampleProjectMetaMap;
+import org.openelis.modules.environmentalSampleLogin.client.AutocompleteRPC;
 
-import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.Window;
 
-public class SampleProjectScreen extends OpenELISScreenForm<SampleProjectForm,Query<TableDataRow<Integer>>> implements TableManager, TableWidgetListener {
+public class SampleProjectScreen extends Screen implements HasActionHandlers<SampleProjectScreen.Action> {
 
-    public enum Action {Commited, Aborted}
-    private CommandListener commandTarget;
-    private ScreenTableWidget            sampleProjectTable;
-    
-    private KeyListManager keyList = new KeyListManager();
+    private SampleProjectManager projectManager;
 
-    public SampleProjectScreen() {
-        this(new SampleProjectForm());
+    public enum Action {
+        COMMIT, ABORT
+    };
+
+    private SampleProjectMetaMap       meta = new SampleProjectMetaMap();
+
+    public SampleProjectScreen() throws Exception {
+        // Call base to get ScreenDef and draw screen
+        super("OpenELISServlet?service=org.openelis.modules.sampleProject.server.SampleProjectService");
         
+        // Setup link between Screen and widget Handlers
+        initialize();
+
+        // Initialize Screen
+        setState(State.DEFAULT);
+
     }
     
-    public SampleProjectScreen(SampleProjectForm form) {                
-        super("org.openelis.modules.sampleProject.server.SampleProjectService");
-        query = new Query<TableDataRow<Integer>>();
+    private void initialize(){
+        final TableWidget sampleProjectTable = (TableWidget)def.getWidget("sampleProjectTable");
+        addScreenHandler(sampleProjectTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
+            public void onDataChange(DataChangeEvent event) {
+                sampleProjectTable.load(getTableModel());
+            }
 
-        getScreen(form);
-    }
-    
-    public SampleProjectScreen(SampleProjectForm form, CommandListener target) {                
-        super("org.openelis.modules.sampleProject.server.SampleProjectService");
-        query = new Query<TableDataRow<Integer>>();
-        
-        commandTarget = target;
+            public void onStateChange(StateChangeEvent<State> event) {
+                sampleProjectTable.enable(true);
+            }
+        });
 
-        getScreen(form);
-    }
+        sampleProjectTable.addCellEditedHandler(new CellEditedHandler() {
+            public void onCellUpdated(CellEditedEvent event) {
+                int row,col;
+                row = event.getRow();
+                col = event.getCell();
+                SampleProjectDO projectDO;
+                TableDataRow tableRow = sampleProjectTable.getRow(row);
+                try{
+                    projectDO = projectManager.getProjectAt(row);
+                }catch(Exception e){
+                    Window.alert(e.getMessage());
+                    return;
+                }
+                    
+                Object val = tableRow.cells.get(col).value;
+                
+                switch (col){
+                    case 0:
+                            projectDO.setProjectId((Integer)((Object[])val)[0]);    
+                            break;
+                    case 2:
+                            projectDO.setIsPermanent((String)val);
+                            break;
+                }
+            }
+        });
+        
+        final AutoComplete<Integer> project = ((AutoComplete<Integer>)sampleProjectTable.columns.get(0).colWidget);
+        project.addSelectionHandler(new SelectionHandler<TableRow>(){
+            public void onSelection(SelectionEvent<TableRow> event) {
+                TableRow autoRow = event.getSelectedItem();
+                sampleProjectTable.setCell(sampleProjectTable.getSelectedIndex(), 1, autoRow.row.cells.get(1).value);
+            }
+        });
 
-    public void setForm(SampleProjectForm form){
-        this.form = form;
-        load(form);
+        project.addGetMatchesHandler(new GetMatchesHandler(){
+            public void onGetMatches(GetMatchesEvent event) {
+                AutocompleteRPC rpc = new AutocompleteRPC();
+                rpc.match = event.getMatch();
+                try {
+                    rpc = service.call("getProjectMatches", rpc);
+                    ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
+                        
+                    for (int i=0; i<rpc.model.size(); i++){
+                        ProjectDO autoDO = (ProjectDO)rpc.model.get(i);
+                        
+                        TableDataRow row = new TableDataRow(2);
+                        row.key = autoDO.getId();
+                        row.cells.get(0).value = autoDO.getName();
+                        row.cells.get(1).value = autoDO.getDescription();
+                        model.add(row);
+                    } 
+                    
+                    project.showAutoMatches(model);
+                        
+                }catch(Exception e) {
+                    Window.alert(e.getMessage());                     
+                }
+            }
+        });
+        
+        sampleProjectTable.addRowAddedHandler(new RowAddedHandler() {
+            public void onRowAdded(RowAddedEvent event) {
+                projectManager.addProject(new SampleProjectDO());
+            }
+        });
+
+        sampleProjectTable.addRowDeletedHandler(new RowDeletedHandler() {
+            public void onRowDeleted(RowDeletedEvent event) {
+                projectManager.removeProjectAt(event.getIndex());
+            }
+        });
+        
+        final AppButton commitButton = (AppButton)def.getWidget("popupSelect");
+        addScreenHandler(commitButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                commit();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                commitButton.enable(true);
+            }
+        });
+
+        final AppButton abortButton = (AppButton)def.getWidget("popupCancel");
+        addScreenHandler(abortButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                abort();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                abortButton.enable(true);
+            }
+        });
     }
-    
-    public void afterDraw(boolean success) {
-        ButtonPanel bpanel = (ButtonPanel) getWidget("buttons");
-        
-        CommandChain chain = new CommandChain();
-        chain.addCommand(this);
-        chain.addCommand(keyList);
-        chain.addCommand(bpanel);
-        
-        sampleProjectTable = (ScreenTableWidget)widgets.get("sampleProjectTable");
-        ((TableWidget)sampleProjectTable.getWidget()).addTableWidgetListener(this);
-        
-        super.afterDraw(success);
-        
-        //if the default set is null we can assume the rpc hasnt been loaded
-        //if(form.sampleProjectTable.getValue().getDefaultSet() != null)
-        //    load(form);
-        //else
-        //    form.sampleProjectTable.setValue(((TableWidget)sampleProjectTable.getWidget()).model.getData());
-        
-        //enable auto add and put the cursor in the first cell
-        sampleProjectTable.enable(true);
-        ((TableWidget)sampleProjectTable.getWidget()).model.enableAutoAdd(true);
-        ((TableWidget)sampleProjectTable.getWidget()).select(0, 0);
-    }
-    
-    /*
-    protected AsyncCallback afterCommit = new AsyncCallback() {
-        public void onFailure(Throwable caught) {   
-        }
-        public void onSuccess(Object result) {
-            trackingNumbersTable.model.enableAutoAdd(false);
-            
-            if(target != null)
-                target.performCommand(Action.Commited, this);
-            r
-            if(closeOnCommitAbort)
-                window.close();
-        }
-    };*/
     
     public void commit() {
-        if(commandTarget != null)
-            commandTarget.performCommand(Action.Commited, form.sampleProjectTable.getValue());
-        
+        ActionEvent.fire(this, Action.COMMIT, null);
         window.close();
     }
 
     public void abort() {
-        if(commandTarget != null)
-            commandTarget.performCommand(Action.Aborted, null);
-        
+        ActionEvent.fire(this, Action.ABORT, null);
         window.close();
     }
-    
-    //
-    //start table manager methods
-    //
-    public  boolean canAdd(TableWidget widget, TableDataRow set, int row) {
-        return false;
-    }
-
-    public  boolean canAutoAdd(TableWidget widget, TableDataRow addRow) {
-        return !tableRowEmpty(addRow);
-    }
-
-    public  boolean canDelete(TableWidget widget, TableDataRow set, int row) {
-        return false;
-    }
-
-    public  boolean canEdit(TableWidget widget, TableDataRow set, int row, int col) {
-        if(col == 0 || col == 2)
-            return true;
         
-        return false;
-    }
-
-    public  boolean canSelect(TableWidget widget, TableDataRow set, int row) {
-        return true;
-    }
-    //
-    //end table manager methods
-    //
-    
-    //
-    //start table listener methods
-    //
-    public void startEditing(SourcesTableWidgetEvents sender, int row, int col) {
+    private ArrayList<TableDataRow> getTableModel() {
+        ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
         
-    }
-    
-    public void stopEditing(SourcesTableWidgetEvents sender, int row, int col) {
+        if(projectManager == null)
+            return model;
         
-    }
-    
-    public void finishedEditing(SourcesTableWidgetEvents sender, int row, int col) {
-        if(col == 0){
-            TableDataRow<Integer> tableRow = ((TableWidget)sampleProjectTable.getWidget()).model.getRow(row);
-            DropDownField<Integer> projField = (DropDownField)tableRow.cells[0];
-            ArrayList selections = projField.getValue();
-
-            if(selections.size() > 0){
-                TableWidget projTable = (TableWidget)sampleProjectTable.getWidget();
-                TableDataRow<Integer> selectedRow = (TableDataRow<Integer>)selections.get(0);
-                                
-                projTable.model.setCell(row, 1, selectedRow.cells[1].getValue());
+        try 
+        {   
+            for(int iter = 0;iter < projectManager.count();iter++) {
+                SampleProjectDO projectRow = (SampleProjectDO)projectManager.getProjectAt(iter);
+            
+               TableDataRow row = new TableDataRow(3);
+               row.key = projectRow.getId();
+               
+               row.cells.get(0).value = new Object[] {projectRow.getProjectId(),projectRow.getProject().getName()};
+               row.cells.get(1).value = projectRow.getProject().getDescription();
+               row.cells.get(2).value = projectRow.getIsPermanent();
+               model.add(row);
+               
             }
-        }
-    }
-    //
-    //end table listener methods
-    //
+        } catch (Exception e) {
     
-    private boolean tableRowEmpty(TableDataRow<Integer> row){
-        boolean empty = true;
+            e.printStackTrace();
+            return null;
+        }       
         
-        for(int i=0; i<row.cells.length; i++){
-            if(row.cells[i].getValue() != null && !"".equals(row.cells[i].getValue())){
-                empty = false;
-                break;
-            }
-        }
-
-        return empty;
+        return model;
+    }
+   
+    public void setProjectManager(SampleProjectManager man){
+        projectManager = man;
+        DataChangeEvent.fire(this);
+    }
+    
+    public SampleProjectManager getProjectManager(){
+        return projectManager;
+    }
+    
+    public HandlerRegistration addActionHandler(ActionHandler<Action> handler) {
+        return addHandler(handler, ActionEvent.getType());
     }
 }

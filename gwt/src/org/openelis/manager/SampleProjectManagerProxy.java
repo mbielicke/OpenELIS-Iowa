@@ -23,30 +23,27 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.managerOld;
+package org.openelis.manager;
 
-import java.util.List;
+import org.openelis.gwt.services.ScreenService;
 
-import org.openelis.managerOld.AnalysesManager;
-import org.openelis.managerOld.AnalysesManagerIOInt;
-import org.openelis.persistence.EJBFactory;
-import org.openelis.remote.AnalysisRemote;
+public class SampleProjectManagerProxy {
+    protected static final String SAMPLE_SERVICE_URL = "org.openelis.modules.sample.server.SampleService";
+    protected ScreenService       service;
 
-public class AnalysesManagerIOClient implements AnalysesManagerIOInt {
-    
-    public List fetch(Integer sampleItemId) {
-        AnalysisRemote remote = getAnalysisRemote();
-
-        return remote.getAnalysisTestsBySampleItemId(sampleItemId);
+    public SampleProjectManagerProxy() {
+        service = new ScreenService("OpenELISServlet?service=" + SAMPLE_SERVICE_URL);
     }
 
-    public void update(AnalysesManager analyses) {
-        AnalysisRemote remote = getAnalysisRemote();
-
-        remote.update(analyses);
+    public SampleProjectManager fetchBySampleId(Integer sampleId) throws Exception {
+        return service.call("fetchSampleprojectsBySampleId", sampleId);
     }
-    
-    private AnalysisRemote getAnalysisRemote(){
-        return (AnalysisRemote)EJBFactory.lookup("openelis/AnalysisBean/remote");
+
+    public SampleProjectManager add(SampleProjectManager man) throws Exception {
+        throw new UnsupportedOperationException();
+    }
+
+    public SampleProjectManager update(SampleProjectManager man) throws Exception {
+        throw new UnsupportedOperationException();
     }
 }

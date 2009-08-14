@@ -26,113 +26,782 @@
 package org.openelis.modules.environmentalSampleLogin.client;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.Set;
 
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.DictionaryDO;
-import org.openelis.gwt.common.Query;
-import org.openelis.gwt.common.data.DropDownField;
-import org.openelis.gwt.common.data.KeyListManager;
-import org.openelis.gwt.common.data.StringObject;
-import org.openelis.gwt.common.data.TableDataModel;
-import org.openelis.gwt.common.data.TableDataRow;
-import org.openelis.gwt.common.data.TreeDataItem;
-import org.openelis.gwt.screen.CommandChain;
-import org.openelis.gwt.screen.ScreenAutoCompleteWidget;
-import org.openelis.gwt.screen.ScreenCalendar;
-import org.openelis.gwt.screen.ScreenCheck;
-import org.openelis.gwt.screen.ScreenDropDownWidget;
-import org.openelis.gwt.screen.ScreenTab;
-import org.openelis.gwt.screen.ScreenTabPanel;
-import org.openelis.gwt.screen.ScreenTextBox;
+import org.openelis.domain.IdNameDO;
+import org.openelis.domain.OrganizationAutoDO;
+import org.openelis.domain.ProjectDO;
+import org.openelis.domain.SampleEnvironmentalDO;
+import org.openelis.domain.SampleItemDO;
+import org.openelis.domain.SampleOrganizationDO;
+import org.openelis.domain.SampleProjectDO;
+import org.openelis.gwt.common.Datetime;
+import org.openelis.gwt.common.EntityLockedException;
+import org.openelis.gwt.common.RPC;
+import org.openelis.gwt.common.SecurityModule;
+import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.gwt.common.rewrite.QueryData;
+import org.openelis.gwt.event.ActionEvent;
+import org.openelis.gwt.event.ActionHandler;
+import org.openelis.gwt.event.BeforeGetMatchesEvent;
+import org.openelis.gwt.event.BeforeGetMatchesHandler;
+import org.openelis.gwt.event.DataChangeEvent;
+import org.openelis.gwt.event.GetMatchesEvent;
+import org.openelis.gwt.event.GetMatchesHandler;
+import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.ScreenWindow;
-import org.openelis.gwt.widget.AppButton;
-import org.openelis.gwt.widget.AutoComplete;
-import org.openelis.gwt.widget.ButtonPanel;
-import org.openelis.gwt.widget.Dropdown;
-import org.openelis.gwt.widget.AppButton.ButtonState;
-import org.openelis.gwt.widget.table.TableDropdown;
-import org.openelis.gwt.widget.table.TableManager;
-import org.openelis.gwt.widget.table.TableWidget;
-import org.openelis.gwt.widget.tree.TreeManager;
-import org.openelis.gwt.widget.tree.TreeModel;
-import org.openelis.gwt.widget.tree.TreeWidget;
-import org.openelis.gwt.widget.tree.event.SourcesTreeModelEvents;
-import org.openelis.gwt.widget.tree.event.TreeModelListener;
+import org.openelis.gwt.screen.rewrite.Screen;
+import org.openelis.gwt.screen.rewrite.ScreenEventHandler;
+import org.openelis.gwt.screen.rewrite.ScreenNavigator;
+import org.openelis.gwt.widget.HasField;
+import org.openelis.gwt.widget.TextBox;
+import org.openelis.gwt.widget.rewrite.AppButton;
+import org.openelis.gwt.widget.rewrite.AutoComplete;
+import org.openelis.gwt.widget.rewrite.CalendarLookUp;
+import org.openelis.gwt.widget.rewrite.CheckBox;
+import org.openelis.gwt.widget.rewrite.Dropdown;
+import org.openelis.gwt.widget.rewrite.AppButton.ButtonState;
+import org.openelis.gwt.widget.table.rewrite.TableDataRow;
+import org.openelis.gwt.widget.tree.rewrite.TreeDataItem;
+import org.openelis.gwt.widget.tree.rewrite.TreeWidget;
+import org.openelis.manager.SampleEnvironmentalManager;
+import org.openelis.manager.SampleManager;
 import org.openelis.metamap.SampleEnvironmentalMetaMap;
-import org.openelis.modules.main.client.OpenELISScreenForm;
+import org.openelis.modules.main.client.openelis.OpenELIS;
 import org.openelis.modules.sampleLocation.client.SampleLocationScreen;
 import org.openelis.modules.sampleOrganization.client.SampleOrganizationScreen;
 import org.openelis.modules.sampleProject.client.SampleProjectScreen;
 import org.openelis.utilgwt.OrganizationEntryManager;
 import org.openelis.utilgwt.ProjectEntryManager;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.rpc.SyncCallback;
-import com.google.gwt.user.client.ui.ChangeListener;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.SourcesTabEvents;
-import com.google.gwt.user.client.ui.TabListener;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.TabPanel;
 
-public class EnvironmentalSampleLoginScreen extends OpenELISScreenForm<EnvironmentalSampleLoginForm,Query<TableDataRow<Integer>>> implements ClickListener, ChangeListener, TabListener, TreeManager, TreeModelListener, TableManager {
+public class EnvironmentalSampleLoginScreen extends Screen implements BeforeGetMatchesHandler, GetMatchesHandler {
 
-    public enum LookupType {LOCATION_VIEW, REPORT_TO_VIEW, PROJECT_VIEW};
-    
-    private TreeWidget itemsTestsTree;
-    private AppButton addItemButton, addTestButton, removeRowButton, analysisNoteInt, analysisNoteExt;
+    public enum Tabs {SAMPLE_ITEM,ANALYSIS, TEST_RESULT, AN_EXT_COMMENT, 
+                        AN_INT_COMMENTS, STORAGE, SMP_EXT_COMMENT, SMP_INT_COMMENTS};    
+    protected Tabs               tab           = Tabs.SAMPLE_ITEM;
+    protected TextBox location;
+    protected AutoComplete<Integer> project;
+    //private TreeWidget itemsTestsTree;
+    //private AppButton addItemButton, addTestButton, removeRowButton, analysisNoteInt, analysisNoteExt;
     private SampleLocationScreen locationScreen;
     private SampleOrganizationScreen organizationScreen;
     private SampleProjectScreen projectScreen;
-    private TextBox locationTextBox;
-    private ScreenTabPanel tabPanel;
+    //private TextBox locationTextBox;
+    //private ScreenTabPanel tabPanel;
     private boolean canEditTestResultsTab;
     
-    private KeyListManager keyList = new KeyListManager();
-    
-    private ScreenDropDownWidget sampleType, sampleStatus, container, unit, analysisStatus;
-    private ScreenAutoCompleteWidget projectAuto, reportToAuto, billToAuto, section, test, method;
-    private ScreenTextBox containerRef, qty, revision;
-    private ScreenCheck isReportable;
-    private ScreenCalendar startedDate, completedDate, releasedDate, printedDate;
+    //private ScreenDropDownWidget sampleType, sampleStatus, container, unit, analysisStatus;
+    //private ScreenAutoCompleteWidget projectAuto, reportToAuto, billToAuto, section, test, method;
+    //private ScreenTextBox containerRef, qty, revision;
+    //private ScreenCheck isReportable;
+    //private ScreenCalendar startedDate, completedDate, releasedDate, printedDate;
     
     private ProjectEntryManager projectManager;
     private OrganizationEntryManager orgManager;
     
-    private SampleEnvironmentalMetaMap Meta = new SampleEnvironmentalMetaMap();
+    private SampleEnvironmentalMetaMap Meta;
     
-    public EnvironmentalSampleLoginScreen() {
-        super("org.openelis.modules.environmentalSampleLogin.server.EnvironmentalSampleLoginService");
-        query = new Query<TableDataRow<Integer>>();
+    ScreenNavigator nav;
+    private SecurityModule       security;
+    
+    private SampleManager manager;
+    
+    public EnvironmentalSampleLoginScreen() throws Exception {
+        //////////////
+     // Call base to get ScreenDef and draw screen
+        super("OpenELISServlet?service=org.openelis.modules.environmentalSampleLogin.server.EnvironmentalSampleLoginService");
+        manager = SampleManager.getInstance();
+        manager.getSample().setDomain(SampleManager.ENVIRONMENTAL_DOMAIN_FLAG);
+
+        nav = new ScreenNavigator<SampleEnvQuery>(this) {
+            public void getSelection(RPC entry) {
+                fetch(((IdNameDO)entry).getId());
+            }
+            public void loadPage(SampleEnvQuery query) {
+                loadQueryPage(query);
+            }
+        };
+        Meta = new SampleEnvironmentalMetaMap();
         
-        getScreen(new EnvironmentalSampleLoginForm());
+        //FIXME change this when we can add the module
+        security = OpenELIS.security.getModule("organization");
+
+        // Setup link between Screen and widget Handlers
+        initialize();
+
+        /*
+        // Create the Handler for the Contacts tab passing in the ScreenDef
+        contactsTab = new ContactsTab(def);
+
+        // Create the Handler for the Notes tab passing in the ScreenDef;
+        notesTab = new NotesTab(def);
+
+        // Set up tabs to recieve State Change events from the main Screen.
+        addScreenHandler(contactsTab, new ScreenEventHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                contactsTab.setManager(manager);
+
+                if (tab == Tabs.CONTACTS)
+                    drawTabs();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                StateChangeEvent.fire(contactsTab, event.getState());
+            }
+        });
+*/
+  
+        // Initialize Screen
+        setState(State.DEFAULT);
+        
+        //setup the dropdowns
+        setStatusModel();
+        
+        /////////////////////////////
+        //FIXME move this
+        /*
+        cache = DictionaryCache.getListByCategorySystemName("analysis_status");
+        model = getDictionaryIdEntryList(cache);
+        ((TableDropdown)itemsTestsTree.columns.get(1).getColumnWidget("analysis")).setModel(model);
+        ((Dropdown)analysisStatus.getWidget()).setModel(model);
+        
+        cache = DictionaryCache.getListByCategorySystemName("sample_status");
+        model = getDictionaryIdEntryList(cache);
+        ((Dropdown)sampleStatus.getWidget()).setModel(model);
+        
+        cache = DictionaryCache.getListByCategorySystemName("sample_container");
+        model = getDictionaryIdEntryList(cache);
+        ((Dropdown)container.getWidget()).setModel(model);
+        
+        cache = DictionaryCache.getListByCategorySystemName("unit_of_measure");
+        model = getDictionaryIdEntryList(cache);
+        ((Dropdown)unit.getWidget()).setModel(model);
+        */
+        //////////////////////////
+    }
+    
+    private void initialize() {
+        final TextBox accessionNumber = (TextBox)def.getWidget(Meta.SAMPLE.getAccessionNumber());
+        addScreenHandler(accessionNumber, new ScreenEventHandler<Integer>() {
+            public void onDataChange(DataChangeEvent event) {
+                accessionNumber.setValue(getString(manager.getSample().getAccessionNumber()));
+            }
+
+            public void onValueChange(ValueChangeEvent<Integer> event) {
+                manager.getSample().setAccessionNumber(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                accessionNumber.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
+                                   .contains(event.getState()));
+                accessionNumber.setQueryMode(event.getState() == State.QUERY);
+
+                if (EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
+                                .contains(event.getState()))
+                    accessionNumber.setFocus(true);
+            }
+        });
+        
+        final TextBox orderNumber = (TextBox)def.getWidget("orderNumber");
+        addScreenHandler(orderNumber, new ScreenEventHandler<Integer>() {
+            public void onDataChange(DataChangeEvent event) {
+                //orderNumber.setValue(getString(manager.getSample().getorgetAccessionNumber()));
+            }
+
+            public void onValueChange(ValueChangeEvent<Integer> event) {
+                //manager.getSample().setAccessionNumber(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                orderNumber.enable(EnumSet.of(State.ADD, State.UPDATE)
+                                   .contains(event.getState()));
+            }
+        });
+        
+        final CalendarLookUp collectedDate = (CalendarLookUp)def.getWidget(Meta.SAMPLE.getCollectionDate());
+        addScreenHandler(collectedDate, new ScreenEventHandler<Datetime>() {
+            public void onDataChange(DataChangeEvent event) {
+                collectedDate.setValue(manager.getSample().getCollectionDate());
+            }
+
+            public void onValueChange(ValueChangeEvent<Datetime> event) {
+                manager.getSample().setCollectionDate(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                collectedDate.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
+                                   .contains(event.getState()));
+                collectedDate.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+        
+        final CalendarLookUp collectedTime = (CalendarLookUp)def.getWidget(Meta.SAMPLE.getCollectionTime());
+        addScreenHandler(collectedTime, new ScreenEventHandler<Datetime>() {
+            public void onDataChange(DataChangeEvent event) {
+                collectedTime.setValue(manager.getSample().getCollectionTime());
+            }
+
+            public void onValueChange(ValueChangeEvent<Datetime> event) {
+                manager.getSample().setCollectionTime(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                collectedTime.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
+                                   .contains(event.getState()));
+                collectedTime.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+        
+        final CalendarLookUp receivedDate = (CalendarLookUp)def.getWidget(Meta.SAMPLE.getReceivedDate());
+        addScreenHandler(receivedDate, new ScreenEventHandler<Datetime>() {
+            public void onDataChange(DataChangeEvent event) {
+                receivedDate.setValue(manager.getSample().getReceivedDate());
+            }
+
+            public void onValueChange(ValueChangeEvent<Datetime> event) {
+                manager.getSample().setReceivedDate(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                receivedDate.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
+                                   .contains(event.getState()));
+                receivedDate.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+        
+        final Dropdown<Integer> statusId = (Dropdown<Integer>)def.getWidget(Meta.SAMPLE.getStatusId());
+        addScreenHandler(statusId, new ScreenEventHandler<Integer>() {
+            public void onDataChange(DataChangeEvent event) {
+                statusId.setSelection(manager.getSample().getStatusId());
+            }
+
+            public void onValueChange(ValueChangeEvent<Integer> event) {
+                manager.getSample().setStatusId(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                statusId.enable(EnumSet.of(State.QUERY)
+                                   .contains(event.getState()));
+                statusId.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+        
+        final TextBox clientReference = (TextBox)def.getWidget(Meta.SAMPLE.getClientReference());
+        addScreenHandler(clientReference, new ScreenEventHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                clientReference.setValue(manager.getSample().getClientReference());
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                manager.getSample().setClientReference(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                clientReference.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
+                                   .contains(event.getState()));
+                clientReference.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+        
+        final CheckBox isHazardous = (CheckBox)def.getWidget(Meta.getIsHazardous());
+        addScreenHandler(isHazardous, new ScreenEventHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                isHazardous.setValue(getEnvManager().getEnvironmental().getIsHazardous());
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                getEnvManager().getEnvironmental().setIsHazardous(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                isHazardous.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
+                                   .contains(event.getState()));
+                isHazardous.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+        
+        final TextBox description = (TextBox)def.getWidget(Meta.getDescription());
+        addScreenHandler(description, new ScreenEventHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                description.setValue(getEnvManager().getEnvironmental().getDescription());
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                getEnvManager().getEnvironmental().setDescription(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                description.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
+                                   .contains(event.getState()));
+                description.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+        
+        final TextBox collector = (TextBox)def.getWidget(Meta.getCollector());
+        addScreenHandler(collector, new ScreenEventHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                collector.setValue(getEnvManager().getEnvironmental().getCollector());
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                getEnvManager().getEnvironmental().setCollector(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                collector.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
+                                   .contains(event.getState()));
+                collector.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+        
+        final TextBox collectorPhone = (TextBox)def.getWidget(Meta.getCollectorPhone());
+        addScreenHandler(collector, new ScreenEventHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                collectorPhone.setValue(getEnvManager().getEnvironmental().getCollectorPhone());
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                getEnvManager().getEnvironmental().setCollectorPhone(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                collectorPhone.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
+                                   .contains(event.getState()));
+                collectorPhone.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+        
+        location = (TextBox)def.getWidget(Meta.getSamplingLocation());
+        addScreenHandler(location, new ScreenEventHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                location.setValue(getEnvManager().getEnvironmental().getSamplingLocation());
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                getEnvManager().getEnvironmental().setSamplingLocation(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                location.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
+                                   .contains(event.getState()));
+                location.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+        
+        project = (AutoComplete<Integer>)def.getWidget(Meta.SAMPLE.SAMPLE_PROJECT.PROJECT.getName());
+        addScreenHandler(project, new ScreenEventHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                try{
+                    SampleProjectDO projectDO = manager.getProjects().getFirstPermanentProject();
+                    
+                    if(projectDO != null)
+                        project.setSelection(projectDO.getId(), projectDO.getProject().getName());
+                    else
+                        project.setSelection(null, "");
+                    
+                }catch(Exception e){
+                    Window.alert(e.getMessage());
+                }
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                TableDataRow selectedRow = project.getSelection();
+                SampleProjectDO projectDO = null;
+                try{
+                    if(selectedRow.key != null){
+                        projectDO = new SampleProjectDO();
+                        projectDO.setIsPermanent("Y");
+                        projectDO.setProjectId((Integer)selectedRow.key);
+                        projectDO.getProject().setName((String)selectedRow.cells.get(0).value);
+                        projectDO.getProject().setDescription((String)selectedRow.cells.get(1).value);
+                    }
+                    
+                    manager.getProjects().addFirstPermanentProject(projectDO);
+                    
+                    projectDO = manager.getProjects().getFirstPermanentProject();
+                    
+                    if(projectDO != null)
+                        project.setSelection(projectDO.getProjectId(), projectDO.getProject().getName());
+                    else
+                        project.setSelection(null, "");
+                    
+                }catch(Exception e){
+                    Window.alert(e.getMessage());
+                }
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                project.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
+                                   .contains(event.getState()));
+                project.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+        
+        project.addGetMatchesHandler(new GetMatchesHandler(){
+           public void onGetMatches(GetMatchesEvent event) {
+               AutocompleteRPC rpc = new AutocompleteRPC();
+               rpc.match = event.getMatch();
+               try {
+                   rpc = service.call("getProjectMatches", rpc);
+                   ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
+                       
+                   for (int i=0; i<rpc.model.size(); i++){
+                       ProjectDO autoDO = (ProjectDO)rpc.model.get(i);
+                       
+                       TableDataRow row = new TableDataRow(2);
+                       row.key = autoDO.getId();
+                       row.cells.get(0).value = autoDO.getName();
+                       row.cells.get(1).value = autoDO.getDescription();
+                       model.add(row);
+                   } 
+                   
+                   project.showAutoMatches(model);
+                       
+               }catch(Exception e) {
+                   Window.alert(e.getMessage());                     
+               }
+            } 
+        });
+        
+        final AutoComplete<Integer> reportTo = (AutoComplete<Integer>)def.getWidget(Meta.SAMPLE.SAMPLE_ORGANIZATION.ORGANIZATION.getName());
+        addScreenHandler(reportTo, new ScreenEventHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                try{
+                    SampleOrganizationDO reportToOrg = manager.getOrganizations().getFirstReportTo();
+                    
+                    if(reportToOrg != null)
+                        reportTo.setSelection(reportToOrg.getId(), reportToOrg.getOrganization().getName());
+                    else
+                        reportTo.setSelection(null, "");
+                    
+                }catch(Exception e){
+                    Window.alert(e.getMessage());
+                }
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                TableDataRow selectedRow = project.getSelection();
+                SampleOrganizationDO reportToOrg = null;
+                try{
+                    if(selectedRow.key != null){
+                        reportToOrg = new SampleOrganizationDO();
+                        reportToOrg.setOrganizationId((Integer)selectedRow.key);
+                        reportToOrg.getOrganization().setName((String)selectedRow.cells.get(0).value);
+                        reportToOrg.getOrganization().getAddressDO().setCity((String)selectedRow.cells.get(2).value);
+                        reportToOrg.getOrganization().getAddressDO().setState((String)selectedRow.cells.get(3).value);
+                    }
+                    
+                    manager.getOrganizations().setReportTo(reportToOrg);
+                    
+                    reportToOrg = manager.getOrganizations().getFirstReportTo();
+                    
+                    if(reportToOrg != null)
+                        reportTo.setSelection(reportToOrg.getId(), reportToOrg.getOrganization().getName());
+                    else
+                        reportTo.setSelection(null, "");
+                    
+                }catch(Exception e){
+                    Window.alert(e.getMessage());
+                }
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                reportTo.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
+                                   .contains(event.getState()));
+                reportTo.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+        
+        reportTo.addGetMatchesHandler(new GetMatchesHandler(){
+           public void onGetMatches(GetMatchesEvent event) {
+               getOrganizationMatches(event.getMatch(), reportTo);
+                
+            } 
+        });
+        
+        final AutoComplete<Integer> billTo = (AutoComplete<Integer>)def.getWidget("billTo");
+        addScreenHandler(billTo, new ScreenEventHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                try{
+                    SampleOrganizationDO billToOrg = manager.getOrganizations().getFirstBillTo();
+                    
+                    if(billToOrg != null)
+                        billTo.setSelection(billToOrg.getId(), billToOrg.getOrganization().getName());
+                    else
+                        billTo.setSelection(null, "");
+                    
+                }catch(Exception e){
+                    Window.alert(e.getMessage());
+                }
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                //((SampleEnvironmentalManager)manager.getDomainManager()).getEnvironmental().setSamplingLocation(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                billTo.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
+                                   .contains(event.getState()));
+                billTo.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+        
+        billTo.addGetMatchesHandler(new GetMatchesHandler(){
+            public void onGetMatches(GetMatchesEvent event) {
+                getOrganizationMatches(event.getMatch(), billTo);
+                 
+             } 
+         });
+        
+        final TreeWidget itemsTree = (TreeWidget)def.getWidget("itemsTestsTree");
+        addScreenHandler(itemsTree, new ScreenEventHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                itemsTree.load(getTreeModel());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                itemsTree.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
+                                   .contains(event.getState()));
+                itemsTree.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+        
+        final AppButton billToLookup = (AppButton)def.getWidget("billToLookup");
+        addScreenHandler(billToLookup, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                onOrganizationLookupClick();
+            }
+            
+            public void onStateChange(StateChangeEvent<State> event) {
+                billToLookup.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
+                                   .contains(event.getState()));
+            }
+        });
+        
+        final AppButton reportToLookup = (AppButton)def.getWidget("reportToLookup");
+        addScreenHandler(reportToLookup, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                onOrganizationLookupClick();
+            }
+            
+            public void onStateChange(StateChangeEvent<State> event) {
+                reportToLookup.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
+                                   .contains(event.getState()));
+            }
+        });
+        
+        final AppButton projectLookup = (AppButton)def.getWidget("projectLookup");
+        addScreenHandler(projectLookup, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                onProjectLookupClick();
+            }
+            
+            public void onStateChange(StateChangeEvent<State> event) {
+                projectLookup.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
+                                   .contains(event.getState()));
+            }
+        });
+        
+        final AppButton locationLookup = (AppButton)def.getWidget("locButton");
+        addScreenHandler(locationLookup, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                onLocationLookupClick();
+            }
+            
+            public void onStateChange(StateChangeEvent<State> event) {
+                locationLookup.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
+                                   .contains(event.getState()));
+            }
+        });
+        
+        final AppButton addItem = (AppButton)def.getWidget("addItemButton");
+        addScreenHandler(addItem, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                onAddItemButtonClick();
+            }
+            
+            public void onStateChange(StateChangeEvent<State> event) {
+                addItem.enable(EnumSet.of(State.ADD, State.UPDATE)
+                                   .contains(event.getState()));
+            }
+        });
+        
+        final AppButton addTest = (AppButton)def.getWidget("addTestButton");
+        addScreenHandler(addTest, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                onAddTestButtonClick();
+            }
+            
+            public void onStateChange(StateChangeEvent<State> event) {
+                addTest.enable(EnumSet.of(State.ADD, State.UPDATE)
+                                   .contains(event.getState()));
+            }
+        });
+        
+        final AppButton removeRow = (AppButton)def.getWidget("removeRowButton");
+        addScreenHandler(removeRow, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                onRemoveRowButtonClick();
+            }
+            
+            public void onStateChange(StateChangeEvent<State> event) {
+                removeRow.enable(EnumSet.of(State.ADD, State.UPDATE)
+                                   .contains(event.getState()));
+            }
+        });
+        
+        //Create Default blank model for AutoComplete fields reportto, billto, and project
+        project.setSelection(null, "");
+        reportTo.setSelection(null, "");
+        billTo.setSelection(null, "");
+        
+        // Screens now must implement AutoCompleteCallInt and set themselves as the calling interface
+        //reportTo.addBeforeGetMatchesHandler(this);
+        //reportTo.addGetMatchesHandler(this);
+        //billTo.addBeforeGetMatchesHandler(this);
+        //billTo.addGetMatchesHandler(this);
+        //project.addBeforeGetMatchesHandler(this);
+        //project.addGetMatchesHandler(this);
+        
+        final AppButton queryButton = (AppButton)def.getWidget("query");
+        addScreenHandler(queryButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                query();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                if(EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState()) && 
+                                security.hasSelectPermission())
+                    queryButton.enable(true);
+                else if (event.getState() == State.QUERY)
+                    queryButton.changeState(ButtonState.LOCK_PRESSED);
+                else
+                    queryButton.enable(false);
+            }
+        });
+
+        final AppButton addButton = (AppButton)def.getWidget("add");
+        addScreenHandler(addButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                add();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                if (EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState()) && 
+                                security.hasAddPermission())
+                    addButton.enable(true);
+                else if (EnumSet.of(State.ADD).contains(event.getState()))
+                    addButton.changeState(ButtonState.LOCK_PRESSED);
+                else
+                    addButton.enable(false);
+            }
+        });
+
+        final AppButton updateButton = (AppButton)def.getWidget("update");
+        addScreenHandler(updateButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                update();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                if (EnumSet.of(State.DISPLAY).contains(event.getState()) && 
+                                security.hasUpdatePermission())
+                    updateButton.enable(true);
+                else if (EnumSet.of(State.UPDATE).contains(event.getState()))
+                    updateButton.changeState(ButtonState.LOCK_PRESSED);
+                else
+                    updateButton.enable(false);
+
+            }
+        });
+
+        final AppButton nextButton = (AppButton)def.getWidget("next");
+        addScreenHandler(nextButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                next();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                nextButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+
+        final AppButton prevButton = (AppButton)def.getWidget("previous");
+        addScreenHandler(prevButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                previous();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                prevButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+
+        final AppButton commitButton = (AppButton)def.getWidget("commit");
+        addScreenHandler(commitButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                commit();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                commitButton.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE).contains(event.getState()));
+            }
+        });
+
+        final AppButton abortButton = (AppButton)def.getWidget("abort");
+        addScreenHandler(abortButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                abort();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                abortButton.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE).contains(event.getState()));
+            }
+        });
+
+        // Get TabPanel and set Tab Selection Handlers
+        final TabPanel tabs = (TabPanel)def.getWidget("sampleItemTabPanel");
+        tabs.addSelectionHandler(new SelectionHandler<Integer>() {
+            public void onSelection(SelectionEvent<Integer> event) {
+                int tabIndex = event.getSelectedItem().intValue();
+                if (tabIndex == Tabs.SAMPLE_ITEM.ordinal())
+                    tab = Tabs.SAMPLE_ITEM;
+                else if (tabIndex == Tabs.ANALYSIS.ordinal())
+                    tab = Tabs.ANALYSIS;
+                else if (tabIndex == Tabs.TEST_RESULT.ordinal())
+                    tab = Tabs.TEST_RESULT;
+                else if (tabIndex == Tabs.AN_EXT_COMMENT.ordinal())
+                    tab = Tabs.AN_EXT_COMMENT;
+                else if (tabIndex == Tabs.AN_INT_COMMENTS.ordinal())
+                    tab = Tabs.AN_INT_COMMENTS;
+                else if (tabIndex == Tabs.STORAGE.ordinal())
+                    tab = Tabs.STORAGE;
+                else if (tabIndex == Tabs.SMP_EXT_COMMENT.ordinal())
+                    tab = Tabs.SMP_EXT_COMMENT;
+                else if (tabIndex == Tabs.SMP_INT_COMMENTS.ordinal())
+                    tab = Tabs.SMP_INT_COMMENTS;
+                
+                window.setBusy(consts.get("loadingMessage"));
+                drawTabs();
+                window.clearStatus();
+            }
+        });
     }
 
-    public void onClick(Widget sender) {
-        if (sender == addItemButton)
-            onAddItemButtonClick();
-        else if (sender == addTestButton)
-            onAddTestButtonClick();
-        else if (sender == removeRowButton)
-            onRemoveRowButtonClick();
-    }
-    
-    public boolean canPerformCommand(Enum action, Object obj) {
-        if(action instanceof LookupType)
-            return true;
-        else
-            return super.canPerformCommand(action, obj);
-    }
-    
+    /*
     public void performCommand(Enum action, Object obj) {
-        if(action.equals(LookupType.LOCATION_VIEW))
-            onLocationLookupClick();
-        else if(action.equals(LookupType.REPORT_TO_VIEW))
-            onOrganizationLookupClick();
-        else if(action.equals(LookupType.PROJECT_VIEW))
-            onProjectLookupClick();
-        else if(action.equals(SampleProjectScreen.Action.Commited)){
+        if(action.equals(SampleProjectScreen.Action.Commited)){
             form.orgProjectForm.sampleProjectForm.sampleProjectTable.setValue(obj);
             projectManager.setList(form.orgProjectForm.sampleProjectForm.sampleProjectTable.getValue());
             TableDataRow newTableRow = projectManager.getFirstPermanentProject();
@@ -163,7 +832,9 @@ public class EnvironmentalSampleLoginScreen extends OpenELISScreenForm<Environme
         }else
             super.performCommand(action, obj);
     }
+    */
     
+    /*
     public void onChange(Widget sender) {
         if(sender == locationTextBox)
             form.envInfoForm.locationForm.samplingLocation.setValue(locationTextBox.getText());
@@ -203,7 +874,9 @@ public class EnvironmentalSampleLoginScreen extends OpenELISScreenForm<Environme
         else
             super.onChange(sender);
     }
+    */
     
+    /*
     public void afterDraw(boolean sucess) {
         ButtonPanel bpanel = (ButtonPanel)getWidget("buttons");
         
@@ -261,48 +934,235 @@ public class EnvironmentalSampleLoginScreen extends OpenELISScreenForm<Environme
         fetchChain.add(afterFetch);
         
         super.afterDraw(sucess);
+    }
+    */
+    
+    protected void query() {
+        manager = SampleManager.getInstance();
+        manager.getSample().setDomain(SampleManager.ENVIRONMENTAL_DOMAIN_FLAG);
         
-        ArrayList cache;
-        TableDataModel<TableDataRow> model;
-        cache = DictionaryCache.getListByCategorySystemName("type_of_sample");
-        model = getDictionaryIdEntryList(cache);
-        ((Dropdown)sampleType.getWidget()).setModel(model);
-        
-        cache = DictionaryCache.getListByCategorySystemName("analysis_status");
-        model = getDictionaryIdEntryList(cache);
-        ((TableDropdown)itemsTestsTree.columns.get(1).getColumnWidget("analysis")).setModel(model);
-        ((Dropdown)analysisStatus.getWidget()).setModel(model);
-        
-        cache = DictionaryCache.getListByCategorySystemName("sample_status");
-        model = getDictionaryIdEntryList(cache);
-        ((Dropdown)sampleStatus.getWidget()).setModel(model);
-        
-        cache = DictionaryCache.getListByCategorySystemName("sample_container");
-        model = getDictionaryIdEntryList(cache);
-        ((Dropdown)container.getWidget()).setModel(model);
-        
-        cache = DictionaryCache.getListByCategorySystemName("unit_of_measure");
-        model = getDictionaryIdEntryList(cache);
-        ((Dropdown)unit.getWidget()).setModel(model);
-        
+        DataChangeEvent.fire(this);
+        setState(Screen.State.QUERY);
+        window.setDone(consts.get("enterFieldsToQuery"));
+    }
+
+    protected void previous() {
+        nav.previous();
+    }
+
+    protected void next() {
+        nav.next();
     }
     
     public void add() {
-        super.add();
-        addTestButton.changeState(ButtonState.DISABLED);
+        manager = SampleManager.getInstance();
+        manager.getSample().setDomain(SampleManager.ENVIRONMENTAL_DOMAIN_FLAG);
         
-        //default the status dropdown to initiated
-        form.statusId.setValue(new TableDataRow<Integer>(DictionaryCache.getIdFromSystemName("sample_initiated")));
-        sampleStatus.load(form.statusId);
+        //default the form
+        try{
+            ((SampleEnvironmentalManager)manager.getDomainManager()).getEnvironmental().setIsHazardous("N");
+        }catch(Exception e){
+            Window.alert(e.getMessage());
+            return;
+        }
         
-        form.nextItemSequence = 0;
+        manager.getSample().setStatusId(DictionaryCache.getIdFromSystemName("sample_initiated"));
+        manager.getSample().setNextItemSequence(0);
+        
+        DataChangeEvent.fire(this);
+        setState(Screen.State.ADD);
+        window.setDone(consts.get("enterInformationPressCommit"));
     }
     
-    public void update() {
-        super.update();
-        addTestButton.changeState(ButtonState.DISABLED);
+    protected void update() {
+        window.setBusy(consts.get("lockForUpdate"));
+
+        try {
+            manager = manager.fetchForUpdate();
+
+            DataChangeEvent.fire(this);
+            window.clearStatus();
+            setState(State.UPDATE);
+
+        } catch (EntityLockedException e) {
+            window.clearStatus();
+            Window.alert(e.getMessage());
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+        }
     }
     
+    public void commit() {
+        if (state == State.UPDATE) {
+            if (validate()) {
+                window.setBusy(consts.get("updating"));
+                commitUpdate();
+            } else {
+                window.setError(consts.get("correctErrors"));
+            }
+        }
+        if (state == State.ADD) {
+            if (validate()) {
+                window.setBusy(consts.get("adding"));
+                commitAdd();
+            } else {
+                window.setError(consts.get("correctErrors"));
+            }
+        }
+        if (state == State.QUERY) {
+            if (validate()) {
+                ArrayList<QueryData> qFields = getQueryFields();
+                commitQuery(qFields);
+            } else {
+                window.setError(consts.get("correctErrors"));
+            }
+        }
+    }
+
+    public void abort() {
+        if (state == State.UPDATE) {
+            window.setBusy(consts.get("cancelChanges"));
+
+            try {
+                manager = manager.abort();
+
+                DataChangeEvent.fire(this);
+                clearErrors();
+                setState(State.DISPLAY);
+                
+                window.clearStatus();
+            } catch (Exception e) {
+                Window.alert(e.getMessage());
+                window.clearStatus();
+            }
+
+        } else if (state == State.ADD) {
+            manager = SampleManager.getInstance();
+            manager.getSample().setDomain(SampleManager.ENVIRONMENTAL_DOMAIN_FLAG);
+            
+            DataChangeEvent.fire(this);
+            clearErrors();
+            setState(State.DEFAULT);
+            window.setDone(consts.get("addAborted"));
+        } else if (state == State.QUERY) {
+            manager = SampleManager.getInstance();
+            manager.getSample().setDomain(SampleManager.ENVIRONMENTAL_DOMAIN_FLAG);
+
+            DataChangeEvent.fire(this);
+            setState(State.DEFAULT);
+            clearErrors();
+            window.setDone(consts.get("queryAborted"));
+        }
+    }
+    
+    protected void fetch(Integer id) {
+        window.setBusy(consts.get("fetching"));
+        
+        try {
+            manager = SampleManager.findById(id);
+        
+        } catch (Exception e) {
+            setState(Screen.State.DEFAULT);
+            Window.alert(consts.get("fetchFailed") + e.getMessage());
+            window.clearStatus();
+
+            return;
+        }
+
+        DataChangeEvent.fire(this);
+
+        setState(Screen.State.DISPLAY);
+        window.clearStatus();
+    }
+    
+    public ArrayList<QueryData> getQueryFields() {
+        ArrayList<QueryData> list = new ArrayList<QueryData>();
+        Set<String> keys = def.getWidgets().keySet();
+        for (String key : def.getWidgets().keySet()) {
+            if (def.getWidget(key) instanceof HasField) {
+                ((HasField)def.getWidget(key)).getQuery(list, key);
+            }
+        }
+        return list;
+    }
+    
+    public void commitAdd() {
+        window.setBusy(consts.get("commiting"));
+        try {
+            manager = manager.add();
+
+            DataChangeEvent.fire(this);
+            setState(Screen.State.DISPLAY);
+            window.clearStatus();
+        } catch (ValidationErrorsList e) {
+            showErrors(e);
+
+        } catch (Exception e) {
+            Window.alert("commitAdd(): " + e.getMessage());
+            window.clearStatus();
+        }
+    }
+
+    public void commitUpdate() {
+        window.setBusy(consts.get("commiting"));
+        try {
+            manager = manager.update();
+
+            DataChangeEvent.fire(this);
+            setState(Screen.State.DISPLAY);
+            window.clearStatus();
+        } catch (ValidationErrorsList e) {
+            showErrors(e);
+
+        } catch (Exception e) {
+            Window.alert("commitUpdate(): " + e.getMessage());
+
+        }
+    }
+
+    public void commitQuery(ArrayList<QueryData> qFields) {
+        SampleEnvQuery query = new SampleEnvQuery();
+        query.fields = qFields;
+        window.setBusy(consts.get("querying"));
+
+        service.call("query", query, new AsyncCallback<SampleEnvQuery>() {
+            public void onSuccess(SampleEnvQuery query) {
+                loadQuery(query);
+            }
+
+            public void onFailure(Throwable caught) {
+                if (caught instanceof ValidationErrorsList)
+                    showErrors((ValidationErrorsList)caught);
+                else
+                    Window.alert(caught.getMessage());
+            }
+        });
+    }
+    
+    public void loadQuery(SampleEnvQuery query) {
+        manager = SampleManager.getInstance();
+        manager.getSample().setDomain(SampleManager.ENVIRONMENTAL_DOMAIN_FLAG);
+        
+        DataChangeEvent.fire(this);
+
+        loadQueryPage(query);
+    }
+
+    private void loadQueryPage(SampleEnvQuery query) {
+        window.setDone(consts.get("queryingComplete"));
+        if (query.results == null || query.results.size() == 0) {
+            window.setDone(consts.get("noRecordsFound"));
+        } else
+            window.setDone(consts.get("queryingComplete"));
+        query.model = new ArrayList<TableDataRow>();
+        for (IdNameDO entry : query.results) {
+            query.model.add(new TableDataRow(entry.getId(), entry.getName()));
+        }
+        nav.setQuery(query);
+    }
+    
+    //FIXME rewrite this
+    /*
     protected SyncCallback<EnvironmentalSampleLoginForm> afterFetch = new SyncCallback<EnvironmentalSampleLoginForm>() {
         public void onFailure(Throwable caught) {   
         }
@@ -324,10 +1184,10 @@ public class EnvironmentalSampleLoginScreen extends OpenELISScreenForm<Environme
             if(bill != null)
                 billToAuto.load((DropDownField<Integer>)bill.cells[2]);
         }
-    };
+    };*/
     
     
-
+/*
     public boolean onBeforeTabSelected(SourcesTabEvents sender, int tabIndex) {
         return true;
     }
@@ -335,10 +1195,11 @@ public class EnvironmentalSampleLoginScreen extends OpenELISScreenForm<Environme
     public void onTabSelected(SourcesTabEvents sender, int tabIndex) {
         loadTabs();
     }
-
+*/
     //
     //start tree manager methods
     //
+    /*
     public boolean canAdd(TreeWidget widget, TreeDataItem set, int row) {
         return false;
     }
@@ -378,6 +1239,7 @@ public class EnvironmentalSampleLoginScreen extends OpenELISScreenForm<Environme
     public boolean canDrop(TreeWidget widget, Widget dragWidget, Widget dropWidget) {
         return false;
     }
+    */
     //
     //end tree manager methods
     //
@@ -385,6 +1247,7 @@ public class EnvironmentalSampleLoginScreen extends OpenELISScreenForm<Environme
     //
     //start tree model listener
     //
+    /*
     public void cellUpdated(SourcesTreeModelEvents sender, int row, int cell) {}
 
     public void dataChanged(SourcesTreeModelEvents sender) {}
@@ -412,6 +1275,7 @@ public class EnvironmentalSampleLoginScreen extends OpenELISScreenForm<Environme
     public void rowUpdated(SourcesTreeModelEvents sender, int row) {}
 
     public void unload(SourcesTreeModelEvents sender) {}
+    */
     //
     //end tree model listener
     //
@@ -419,6 +1283,7 @@ public class EnvironmentalSampleLoginScreen extends OpenELISScreenForm<Environme
     //
     //start table manager methods
     //
+    /*
     public boolean canAdd(TableWidget widget, TableDataRow set, int row) {
         return false;
     }
@@ -438,6 +1303,7 @@ public class EnvironmentalSampleLoginScreen extends OpenELISScreenForm<Environme
     public boolean canSelect(TableWidget widget, TableDataRow set, int row) {
         return true;
     }
+    */
     //
     //end table manager methods
     //
@@ -472,17 +1338,40 @@ public class EnvironmentalSampleLoginScreen extends OpenELISScreenForm<Environme
     }*/
     
     private void onProjectLookupClick(){
-        if(projectScreen == null)
-            projectScreen = new SampleProjectScreen(form.orgProjectForm.sampleProjectForm, this);
-        else
-            projectScreen.setForm(form.orgProjectForm.sampleProjectForm);
-        
-        ScreenWindow modal = new ScreenWindow(null,"Sample Project","sampleProjectScreen","Loading...",true,false);
-        modal.setName(consts.get("sampleProject"));
-        modal.setContent(projectScreen);
+        try {
+            if (projectScreen == null) {
+                final EnvironmentalSampleLoginScreen env = this;
+                projectScreen = new SampleProjectScreen();
+                projectScreen.addActionHandler(new ActionHandler<SampleProjectScreen.Action>() {
+                        public void onAction(ActionEvent<SampleProjectScreen.Action> event) {
+                            if (event.getAction() == SampleProjectScreen.Action.COMMIT) {
+                                DataChangeEvent.fire(env, project);
+
+                            }
+                        }
+                    });
+            }
+    
+            ScreenWindow modal = new ScreenWindow(null,
+                                                  "Edit Sample Project",
+                                                  "sampleProjectScreen",
+                                                  "",
+                                                  true,
+                                                  false);
+            modal.setName(consts.get("sampleProject"));
+            modal.setContent(projectScreen);
+    
+            projectScreen.setProjectManager(manager.getProjects());
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            Window.alert("error: " + e.getMessage());
+            return;
+        }
     }
     
     private void onOrganizationLookupClick(){
+        /*
         if(organizationScreen == null)
             organizationScreen = new SampleOrganizationScreen(form.orgProjectForm.sampleOrgForm, this);
         else
@@ -491,31 +1380,43 @@ public class EnvironmentalSampleLoginScreen extends OpenELISScreenForm<Environme
         ScreenWindow modal = new ScreenWindow(null,"Sample Organization","sampleOrganizationScreen","Loading...",true,false);
         modal.setName(consts.get("sampleOrganization"));
         modal.setContent(organizationScreen);
+        */
     }
     
     private void onLocationLookupClick(){
-        //we need to load the address if it isnt already loaded
-        if(form.envInfoForm.locationForm.load)
-            createSampleLocationPopup();
-        
-        else{
-            window.setBusy();
-            screenService.call("loadLocationForm", form.envInfoForm.locationForm, new AsyncCallback<SampleLocationForm>(){
-                public void onSuccess(SampleLocationForm result){
-                    form.envInfoForm.locationForm = result;
-                    window.clearStatus();
-                    createSampleLocationPopup();
-                    
-                }
+        try {
+            if (locationScreen == null) {
                 
-                public void onFailure(Throwable caught){
-                    Window.alert(caught.getMessage());
-                }
-             });  
+                    locationScreen = new SampleLocationScreen();
+                    locationScreen.addActionHandler(new ActionHandler<SampleLocationScreen.Action>() {
+                        public void onAction(ActionEvent<SampleLocationScreen.Action> event) {
+                            if (event.getAction() == SampleLocationScreen.Action.COMMIT) {
+                                fireLocationDataChanged();
+                            }
+                        }
+                    });
+            }
+    
+            ScreenWindow modal = new ScreenWindow(null,
+                                                  "Edit Sample Location",
+                                                  "sampleLocationScreen",
+                                                  "",
+                                                  true,
+                                                  false);
+            modal.setName(consts.get("sampleLocation"));
+            modal.setContent(locationScreen);
+    
+            SampleEnvironmentalDO envDO = ((SampleEnvironmentalManager)manager.getDomainManager()).getEnvironmental();
+            locationScreen.setEnvDO(envDO);
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            Window.alert("error: " + e.getMessage());
+            return;
         }
-        
     }
     
+    /*
     private void createSampleLocationPopup(){
         if(locationScreen == null)
             locationScreen = new SampleLocationScreen(form.envInfoForm.locationForm);
@@ -611,9 +1512,9 @@ public class EnvironmentalSampleLoginScreen extends OpenELISScreenForm<Environme
         else
             ((AutoComplete)billToAuto.getWidget()).setSelections(new ArrayList());
         
-    }
+    }*/
     
-    public void onAddItemButtonClick() {
+    public void onAddItemButtonClick() {/*
         int selectedIndex = itemsTestsTree.model.getSelectedIndex();
         TreeDataItem newRow = itemsTestsTree.model.createTreeItem("sampleItem");
         newRow.cells[0].setValue(form.nextItemSequence + " - ");
@@ -629,13 +1530,13 @@ public class EnvironmentalSampleLoginScreen extends OpenELISScreenForm<Environme
             if (!selectedRow.open)
                 selectedRow.toggle();
         }else
-        */
+        
         itemsTestsTree.model.addRow(newRow);
         
-        itemsTestsTree.model.refresh();
+        itemsTestsTree.model.refresh();*/
     }
     
-    public void onAddTestButtonClick() {
+    public void onAddTestButtonClick() {/*
         TreeDataItem newRow = itemsTestsTree.model.createTreeItem("analysis");
         newRow.cells[0].setValue("TEST");
         TreeDataItem selectedRow = itemsTestsTree.model.getRow(itemsTestsTree.model.getSelectedIndex());
@@ -648,16 +1549,18 @@ public class EnvironmentalSampleLoginScreen extends OpenELISScreenForm<Environme
         if (!selectedRow.open)
             selectedRow.toggle();
         
-        itemsTestsTree.model.refresh();
+        itemsTestsTree.model.refresh();*/
     }
     
-    public void onRemoveRowButtonClick() {
+    public void onRemoveRowButtonClick() {/*
         if(itemsTestsTree.model.getSelectedIndex() != -1)
             itemsTestsTree.model.deleteRow(itemsTestsTree.model.getSelectedIndex());
         
-        addTestButton.changeState(ButtonState.DISABLED);
+        addTestButton.changeState(ButtonState.DISABLED);*/
     }
     
+    
+    /*
     private void loadTabs(){
         int tabSelected = tabPanel.getSelectedIndex();
         
@@ -694,8 +1597,9 @@ public class EnvironmentalSampleLoginScreen extends OpenELISScreenForm<Environme
         }else if(tabSelected == 7){
             //
         }
-    }
+    }*/
     
+    /*
     private void redrawRow(){
         if("sampleItem".equals(itemsTestsTree.model.getSelection().leafType))
             redrawSampleItemRow();
@@ -723,20 +1627,20 @@ public class EnvironmentalSampleLoginScreen extends OpenELISScreenForm<Environme
             model.setCell(selectedRow, 0, subForm.testId.getTextValue() + " - " + subForm.methodId.getTextValue());
             model.setCell(selectedRow, 1, subForm.statusId.getValue());
         }
-    }
+    }*/
     
     //tab load methods
-    private void loadSampleItemTab(TreeDataItem itemRow){
+    private void loadSampleItemTab(TreeDataItem itemRow){/*
         SampleItemForm subForm = (SampleItemForm)itemRow.getData();
         
         if(subForm != null)
-            load(subForm);
+            load(subForm);*/
     }
     
-    private void loadAnalysisTab(TreeDataItem testRow){
+    private void loadAnalysisTab(TreeDataItem testRow){/*
         AnalysisForm subForm = (AnalysisForm)testRow.getData();
         if(subForm  != null)
-            load(subForm);  
+            load(subForm);  */
     }
     
     private void loadTestResultsTab(TreeDataItem testRow){
@@ -764,6 +1668,7 @@ public class EnvironmentalSampleLoginScreen extends OpenELISScreenForm<Environme
     }
     
     //tab enable/disable methods
+    /*
     private void enableSampleItemTab(boolean enable){
         sampleType.enable(enable);
         container.enable(enable);
@@ -804,25 +1709,151 @@ public class EnvironmentalSampleLoginScreen extends OpenELISScreenForm<Environme
     private void enableStorageTab(boolean enable){
         //FIXME add this code when we have widgets on that tab
     }
-    
-    private TableDataModel<TableDataRow> getDictionaryIdEntryList(ArrayList list){
-        TableDataModel<TableDataRow> m = new TableDataModel<TableDataRow>();
-        TableDataRow<Integer> row;
-        
+    */
+    private ArrayList<TableDataRow> getDictionaryIdEntryList(ArrayList list){
+        ArrayList<TableDataRow> m = new ArrayList<TableDataRow>();
+        TableDataRow row;
         if(list == null)
             return m;
         
-        m = new TableDataModel<TableDataRow>();
-        m.add(new TableDataRow<Integer>(null,new StringObject("")));
+        m.add(new TableDataRow(null,""));
         
         for(int i=0; i<list.size(); i++){
-            row = new TableDataRow<Integer>(1);
+            row = new TableDataRow(1);
             DictionaryDO dictDO = (DictionaryDO)list.get(i);
             row.key = dictDO.getId();
-            row.cells[0] = new StringObject(dictDO.getEntry());
+            row.cells.get(0).value = dictDO.getEntry();
             m.add(row);
         }
         
         return m;
+    }
+
+    private void setStatusModel() {
+        ArrayList cache;
+        ArrayList<TableDataRow> model;
+        cache = DictionaryCache.getListByCategorySystemName("sample_status");
+        model = getDictionaryIdEntryList(cache);
+        ((Dropdown<Integer>)def.getWidget(Meta.SAMPLE.getStatusId())).setModel(model);
+    }
+    private void drawTabs() {
+        /*
+        if (tab == Tabs.CONTACTS) {
+            contactsTab.draw();
+        } else if (tab == Tabs.IDENTIFIERS) {
+            // manager = OrganizationsManager.findByIdWithIdentifiers(id);
+        } else if (tab == Tabs.NOTES) {
+            notesTab.draw();
+        }*/
+    }
+    
+    private SampleEnvironmentalManager getEnvManager(){
+        SampleEnvironmentalManager envManager;
+        
+        try{
+            envManager = (SampleEnvironmentalManager)manager.getDomainManager();
+        }catch(Exception e){
+            e.printStackTrace();
+            Window.alert(e.getMessage());
+            envManager = SampleEnvironmentalManager.getInstance();
+            manager.getSample().setDomain(SampleManager.ENVIRONMENTAL_DOMAIN_FLAG);
+        }
+        
+        return envManager; 
+    }
+    
+    
+    //new methods
+    public void onBeforeGetMatches(BeforeGetMatchesEvent event) {
+        
+    }
+
+    public void onGetMatches(GetMatchesEvent event) {
+        /*
+        String cat = ((AutoComplete)event.getSource()).cat;
+        AutocompleteRPC rpc = new AutocompleteRPC();
+        rpc.match = event.getMatch();
+        
+        try {
+            rpc = service.call("getMatches", rpc);
+            ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
+            
+            
+            
+            
+            
+            ((AutoComplete)event.getSource()).showAutoMatches(model);
+        }catch(Exception e) {
+            Window.alert(e.getMessage());                     
+        }
+        */
+    }
+        
+    private ArrayList<TreeDataItem> getTreeModel() {
+        ArrayList<TreeDataItem> model = new ArrayList<TreeDataItem>();
+        
+        if(manager == null)
+            return model;
+        
+        try{   
+            for(int iter = 0;iter < manager.getSampleItems().count();iter++) {
+                SampleItemDO sampleItemRow = (SampleItemDO)manager.getSampleItems().getSampleItemAt(iter);
+            
+               TreeDataItem row = new TreeDataItem(2);
+               row.leafType = "sampleItem";
+               row.key = sampleItemRow.getId();
+               row.cells.get(0).value = sampleItemRow.getItemSequence()+" - "+sampleItemRow.getContainer();
+               row.open = false;
+               row.checkForChildren(true);
+               
+               model.add(row);
+            }
+            
+        } catch (Exception e) {
+    
+            e.printStackTrace();
+            return null;
+        }       
+        
+        return model;
+    }
+    
+    private void getOrganizationMatches(String match, AutoComplete widget){
+        AutocompleteRPC rpc = new AutocompleteRPC();
+        rpc.match = match;
+        try {
+            rpc = service.call("getOrganizationMatches", rpc);
+            ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
+                
+            for (int i=0; i<rpc.model.size(); i++){
+                OrganizationAutoDO autoDO = (OrganizationAutoDO)rpc.model.get(i);
+                
+                TableDataRow row = new TableDataRow(4);
+                row.key = autoDO.getId();
+                row.cells.get(0).value = autoDO.getName();
+                row.cells.get(1).value = autoDO.getAddress();
+                row.cells.get(2).value = autoDO.getCity();
+                row.cells.get(3).value = autoDO.getState();
+  
+                model.add(row);
+            } 
+            
+            widget.showAutoMatches(model);
+                
+        }catch(Exception e) {
+            Window.alert(e.getMessage());                     
+        }
+    }
+    
+    private void fireLocationDataChanged(){
+        DataChangeEvent.fire(this, location);
+    }
+    
+    private void updateReportTo(){
+        
+    }
+    
+    private void updateBillTo(){
+        
     }
 }

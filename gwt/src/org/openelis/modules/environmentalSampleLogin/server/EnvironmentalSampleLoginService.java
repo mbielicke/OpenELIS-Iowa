@@ -25,16 +25,12 @@
 */
 package org.openelis.modules.environmentalSampleLogin.server;
 
-import java.util.Date;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
-import org.openelis.domain.AddressDO;
 import org.openelis.domain.AnalysisTestDO;
 import org.openelis.domain.IdNameDO;
-import org.openelis.domain.SampleDO;
-import org.openelis.domain.SampleEnvironmentalDO;
 import org.openelis.domain.SampleItemDO;
 import org.openelis.domain.SampleOrganizationDO;
 import org.openelis.domain.SampleProjectDO;
@@ -42,36 +38,27 @@ import org.openelis.domain.SectionDO;
 import org.openelis.domain.TestMethodAutoDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.Query;
+import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.FieldType;
-import org.openelis.gwt.common.data.IntegerField;
 import org.openelis.gwt.common.data.IntegerObject;
-import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.common.data.TableDataModel;
 import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.common.data.TreeDataItem;
 import org.openelis.gwt.common.data.TreeDataModel;
 import org.openelis.gwt.server.ServiceUtils;
-import org.openelis.gwt.services.AppScreenFormServiceInt;
-import org.openelis.gwt.services.AutoCompleteServiceInt;
-import org.openelis.managerOld.AnalysesManager;
-import org.openelis.managerOld.SampleEnvironmentalManager;
-import org.openelis.managerOld.SampleItemsManager;
-import org.openelis.managerOld.SampleManager;
-import org.openelis.managerOld.SampleManagerIOClient;
-import org.openelis.managerOld.SampleOrganizationsManager;
-import org.openelis.managerOld.SampleProjectsManager;
+import org.openelis.manager.AnalysisManager;
+import org.openelis.manager.SampleItemManager;
 import org.openelis.modules.environmentalSampleLogin.client.AnalysisForm;
-import org.openelis.modules.environmentalSampleLogin.client.EnvironmentalSampleLoginForm;
-import org.openelis.modules.environmentalSampleLogin.client.EnvironmentalSubForm;
+import org.openelis.modules.environmentalSampleLogin.client.AutocompleteRPC;
+import org.openelis.modules.environmentalSampleLogin.client.SampleEnvQuery;
 import org.openelis.modules.environmentalSampleLogin.client.SampleItemAndAnalysisForm;
 import org.openelis.modules.environmentalSampleLogin.client.SampleItemForm;
-import org.openelis.modules.environmentalSampleLogin.client.SampleLocationForm;
-import org.openelis.modules.environmentalSampleLogin.client.SampleOrgProjectForm;
 import org.openelis.persistence.EJBFactory;
+import org.openelis.remote.OrganizationRemote;
+import org.openelis.remote.ProjectRemote;
 import org.openelis.remote.SampleEnvironmentalRemote;
 import org.openelis.remote.SectionRemote;
 import org.openelis.remote.TestRemote;
@@ -79,230 +66,101 @@ import org.openelis.server.constants.Constants;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
 
-public class EnvironmentalSampleLoginService implements AppScreenFormServiceInt<EnvironmentalSampleLoginForm,Query<TableDataRow<Integer>>>, AutoCompleteServiceInt {
+public class EnvironmentalSampleLoginService {
 
     private UTFResource openElisConstants= UTFResource.getBundle((String)SessionManager.getSession().getAttribute("locale"));
     private static final int leftTableRowsPerPage = 12;
     
-    public Query<TableDataRow<Integer>> commitQuery(Query<TableDataRow<Integer>> query) throws RPCException {
+    public SampleEnvQuery query(SampleEnvQuery query) throws RPCException {
         SampleEnvironmentalRemote remote = (SampleEnvironmentalRemote)EJBFactory.lookup("openelis/SampleEnvironmentalBean/remote");
-        List sampleIds = null;
+
         try{    
-            sampleIds = remote.query(query.fields,query.page*leftTableRowsPerPage,leftTableRowsPerPage);
+            query.results = new ArrayList<IdNameDO>();
+            ArrayList<IdNameDO> results = (ArrayList<IdNameDO>)remote.query(query.fields,query.page*leftTableRowsPerPage,leftTableRowsPerPage);
+            for(IdNameDO result : results) {
+                query.results.add(result);
+            }
         }catch(LastPageException e) {
             throw new LastPageException(openElisConstants.getString("lastPageException"));
         }catch(Exception e){
             throw new RPCException(e.getMessage());
         }
-
-    //fill the model with the query results
-    int i=0;
-    if(query.results == null)
-        query.results = new TableDataModel<TableDataRow<Integer>>();
-    else
-        query.results.clear();
-    while(i < sampleIds.size() && i < leftTableRowsPerPage) {
-        IdNameDO resultDO = (IdNameDO)sampleIds.get(i); 
-        query.results.add(new TableDataRow<Integer>(resultDO.getId()));
-        i++;
-    } 
-    return query;
+        return query;
     }
-
-    public EnvironmentalSampleLoginForm commitAdd(EnvironmentalSampleLoginForm rpc) throws RPCException {
-        SampleManager manager = SampleManager.getInstance();
-        manager.setManager(new SampleManagerIOClient());
-        
-        //create test sampleDO
-        SampleDO smplDO = manager.getSample();
-        smplDO.setAccessionNumber(1);
-        smplDO.setClientReference("client ref");
-        smplDO.setCollectionDate(new Date());
-        smplDO.setCollectionTime(new Date());
-        smplDO.setEnteredDate(new Date());
-        smplDO.setNextItemSequence(2);
-        smplDO.setPackageId(3);
-        smplDO.setReceivedById(1234);
-        smplDO.setReceivedDate(new Date());
-        smplDO.setReleasedDate(new Date());
-        smplDO.setRevision(12);
-        smplDO.setStatusId(344);
-        
-        //create sample domain
-        SampleEnvironmentalManager envManager = SampleEnvironmentalManager.getInstance();
-        SampleEnvironmentalDO envDO = envManager.getEnvironmental();
-        envDO.setAddressId(4);
-        envDO.setCollector("Joe Farmer");
-        envDO.setCollectorPhone("319-325-3256");
-        envDO.setDescription("test env item");
-        envDO.setIsHazardous("N");
-        envDO.setSamplingLocation("location");
-        manager.setAdditonalDomainManager(envManager);
-        
-        //create a few sample items
-        SampleItemsManager itemsManager = manager.getSampleItemsManager();
-        SampleItemDO itemDO = itemsManager.add();
-        itemDO.setContainerId(1);
-        itemDO.setContainerReference("ref");
-        itemDO.setItemSequence(2);
-        itemDO.setQuantity(new Double(3));
-        itemDO.setSourceOfSampleId(4);
-        itemDO.setSourceOther("other");
-        itemDO.setTypeOfSampleId(5);
-        itemDO.setUnitOfMeasureId(6);
-        
-        SampleItemDO item2DO = itemsManager.add();
-        item2DO.setContainerId(7);
-        item2DO.setContainerReference("ref2");
-        item2DO.setItemSequence(8);
-        item2DO.setQuantity(new Double(9));
-        item2DO.setSourceOfSampleId(10);
-        item2DO.setSourceOther("other2");
-        item2DO.setTypeOfSampleId(11);
-        item2DO.setUnitOfMeasureId(12);
-        
-        System.out.println("before update");
-        manager.update();
-        System.out.println("after update");
-        // TODO Auto-generated method stub
-        return null;
+    
+    public String getScreen() throws RPCException {
+        return ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/environmentalSampleLogin.xsl");      
     }
-
-    public EnvironmentalSampleLoginForm commitUpdate(EnvironmentalSampleLoginForm rpc) throws RPCException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public EnvironmentalSampleLoginForm commitDelete(EnvironmentalSampleLoginForm rpc) throws RPCException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public EnvironmentalSampleLoginForm fetch(EnvironmentalSampleLoginForm rpc) throws RPCException {
-        SampleManager manager = SampleManager.findById(rpc.entityKey);
-        SampleDO sampleDO = manager.getSample();
-        
-        setFieldsInRPC(rpc, sampleDO);
-        loadDomainForm(rpc.envInfoForm, (SampleEnvironmentalManager)manager.getAdditionalDomainManager());
-        loadSampleItemsForm(rpc.sampleItemAndAnalysisForm, manager.getSampleItemsManager());
-        loadOrgProjectForm(rpc.orgProjectForm, manager.getOrganizationsManager(), manager.getProjectsManager());
-        
-        //save the new manager in the session
-        SessionManager.getSession().setAttribute("envScreenSampleManager", manager);
+    
+    /*
+    public AutocompleteRPC getMatches(AutocompleteRPC rpc) throws RPCException {
+        if("project".equals(rpc.cat))
+            rpc.model = getProjectMatches(rpc.match);
+        else if("organization".equals(rpc.cat))
+            rpc.model = getOrganizationMatches(rpc.match);
+        else if("testMethod".equals(rpc.cat))
+            rpc.model = getTestMethodMatches(rpc.match);
+        else if("section".equals(rpc.cat))
+            rpc.model = getSectionMatches(rpc.match);
         
         return rpc;
-    }
-
-    public EnvironmentalSampleLoginForm fetchForUpdate(EnvironmentalSampleLoginForm rpc) throws RPCException {
-        //get the current manager in the session
-        SampleManager manager = (SampleManager)SessionManager.getSession().getAttribute("envScreenSampleManager");
-        
-        //set the id again and lock
-        SampleDO sampleDO = manager.getSample();
-        sampleDO.setId(rpc.entityKey);
-        
-        try{
-            manager.fetchForUpdate();
-            
-        }catch(Exception e){
-            throw new RPCException(e.getMessage());
-        }
-        
-        setFieldsInRPC(rpc, sampleDO);
-        loadDomainForm(rpc.envInfoForm, (SampleEnvironmentalManager)manager.getAdditionalDomainManager());
-        loadSampleItemsForm(rpc.sampleItemAndAnalysisForm, manager.getSampleItemsManager());
-        loadOrgProjectForm(rpc.orgProjectForm, manager.getOrganizationsManager(), manager.getProjectsManager());
-        
-        //save the new manager in the session
-        SessionManager.getSession().setAttribute("envScreenSampleManager", manager);
-        
+    }*/
+    
+    public AutocompleteRPC getProjectMatches(AutocompleteRPC rpc) throws Exception {
+        ProjectRemote remote = (ProjectRemote)EJBFactory.lookup("openelis/ProjectBean/remote");
+        rpc.model = (ArrayList)remote.autoCompleteLookupByName(rpc.match+"%", 10);
         return rpc;
     }
-
-    public EnvironmentalSampleLoginForm abort(EnvironmentalSampleLoginForm rpc) throws RPCException {
-        //get the current manager in the session
-        SampleManager manager = (SampleManager)SessionManager.getSession().getAttribute("envScreenSampleManager");
-        
-        //set the id again and unlock the record
-        SampleDO sampleDO = manager.getSample();
-        sampleDO.setId(rpc.entityKey);
-        
-        manager.fetchAndUnlock();
-        
-        setFieldsInRPC(rpc, sampleDO);
-        loadDomainForm(rpc.envInfoForm, (SampleEnvironmentalManager)manager.getAdditionalDomainManager());
-        loadSampleItemsForm(rpc.sampleItemAndAnalysisForm, manager.getSampleItemsManager());
-        loadOrgProjectForm(rpc.orgProjectForm, manager.getOrganizationsManager(), manager.getProjectsManager());
-        
-        //save the new manager in the session
-        SessionManager.getSession().setAttribute("envScreenSampleManager", manager);
-        
-        return rpc;
-    }
-
-    public EnvironmentalSampleLoginForm getScreen(EnvironmentalSampleLoginForm rpc) throws RPCException {
-        rpc.xml = ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/environmentalSampleLogin.xsl");
+    
+    public AutocompleteRPC getOrganizationMatches(AutocompleteRPC rpc) throws Exception {
+        OrganizationRemote remote = (OrganizationRemote)EJBFactory.lookup("openelis/OrganizationBean/remote");
+        rpc.model = (ArrayList)remote.autoCompleteLookupByName(rpc.match+"%", 10);
         
         return rpc;
     }
     
-    private void setFieldsInRPC(EnvironmentalSampleLoginForm form, SampleDO sampleDO){
-        form.accessionNumber.setValue(sampleDO.getAccessionNumber());
-        form.clientReference.setValue(sampleDO.getClientReference());
-        
-        if(sampleDO.getCollectionDate() != null && sampleDO.getCollectionDate().getDate() != null)
-            form.collectionDate.setValue(Datetime.getInstance(Datetime.YEAR, Datetime.DAY, sampleDO.getCollectionDate().getDate()));
-        
-        if(sampleDO.getCollectionTime() != null && sampleDO.getCollectionTime().getDate() != null)
-            form.collectionTime.setValue(Datetime.getInstance(Datetime.HOUR, Datetime.MINUTE, sampleDO.getCollectionTime().getDate()));
-        
-        form.id.setValue(sampleDO.getId());
-        //form.orderNumber.setValue(sampleDO.getor);
-        
-        if(sampleDO.getReceivedDate() != null && sampleDO.getReceivedDate().getDate() != null)
-            form.receivedDate.setValue(Datetime.getInstance(Datetime.YEAR, Datetime.DAY, sampleDO.getReceivedDate().getDate()));
-        
-        form.statusId.setValue(new TableDataRow<Integer>(sampleDO.getStatusId()));
-        form.nextItemSequence = sampleDO.getNextItemSequence();
-        
-        form.load = true;
-    }
-    
-    private void loadDomainForm(EnvironmentalSubForm form, SampleEnvironmentalManager envManager) {
-        SampleEnvironmentalDO envDO = envManager.getEnvironmental();
-        form.collector.setValue(envDO.getCollector());
-        form.collectorPhone.setValue(envDO.getCollectorPhone());
-        form.description.setValue(envDO.getDescription());
-        form.isHazardous.setValue(envDO.getIsHazardous());
-        
-        form.locationForm.samplingLocation.setValue(envDO.getSamplingLocation());
-    }
-    
-    public SampleLocationForm loadLocationForm(SampleLocationForm rpc) throws RPCException {
-        SampleManager manager = (SampleManager)SessionManager.getSession().getAttribute("envScreenSampleManager");
-        if(manager != null)
-            loadLocationAddress(rpc, ((SampleEnvironmentalManager)manager.getAdditionalDomainManager()).getAddress());
+    public AutocompleteRPC getTestMethodMatches(AutocompleteRPC rpc) throws Exception {
+        TestRemote remote = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
+        rpc.model = (ArrayList)remote.getTestAutoCompleteByName(rpc.match+"%", 10);
         
         return rpc;
     }
     
-    private void loadLocationAddress(SampleLocationForm form, AddressDO addressDO){
-        if(addressDO != null){
-            form.city.setValue(addressDO.getCity());
-            form.country.setValue(new TableDataRow<String>(addressDO.getCountry()));
-            form.multUnit.setValue(addressDO.getMultipleUnit());
-            form.state.setValue(new TableDataRow<String>(addressDO.getState()));
-            form.streetName.setValue(addressDO.getStreetAddress());
-            form.zipCode.setValue(addressDO.getZipCode());
-        }
+    public AutocompleteRPC getSectionMatches(AutocompleteRPC rpc) throws Exception {
+        SectionRemote remote = (SectionRemote)EJBFactory.lookup("openelis/SectionBean/remote");
+        rpc.model = (ArrayList)remote.getAutoCompleteSectionByName(rpc.match+"%", 10);
         
-        form.load = true;
-        
+        return rpc;
     }
     
-    private void loadSampleItemsForm(SampleItemAndAnalysisForm form, SampleItemsManager itemsManager) {
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    /*
+    private void loadSampleItemsForm(SampleItemAndAnalysisForm form, SampleItemManager itemsManager) {
         int i, j;
-        AnalysesManager am;
+        AnalysisManager am;
         SampleItemDO itemDO;
         TreeDataItem tmp;
         TreeDataItem treeModelItem, row;
@@ -414,54 +272,10 @@ public class EnvironmentalSampleLoginService implements AppScreenFormServiceInt<
                 row.addItem(treeModelItem);
             }
         }
-    }
-    
-    private void loadOrgProjectForm(SampleOrgProjectForm form, SampleOrganizationsManager orgManager, SampleProjectsManager projManager) {
-        if(projManager.count() > 0){
-            form.projectName.setValue(projManager.getSampleProjectAt(0).getProject().getName());
-            form.sampleProjectForm.sampleProjectTable.setValue(buildSampleProjectTable(form.sampleProjectForm.sampleProjectTable.getValue(), projManager));
-            form.sampleProjectForm.load = true;
-        }
+    }*/
         
-        if(orgManager.count() > 0){
-            SampleOrganizationDO reportToDO = orgManager.getFirstReportTo();
-            SampleOrganizationDO billToDO = orgManager.getFirstBillTo();
-            
-            if(reportToDO != null)
-                form.reportToName.setValue(reportToDO.getOrganization().getName());
-            if(billToDO != null)
-                form.billToName.setValue(billToDO.getOrganization().getName());
-            
-            form.sampleOrgForm.sampleOrganizationTable.setValue(buildSampleOrganizationTable(orgManager));
-            form.sampleOrgForm.load = true;
-        }
-    }
-    
-    private TableDataModel<TableDataRow<Integer>> buildSampleProjectTable(TableDataModel<TableDataRow<Integer>> tableModel, SampleProjectsManager projManager){
-
-        for(int i=0; i<projManager.count(); i++){
-            TableDataRow<Integer> row = tableModel.createNewSet();
-            SampleProjectDO projDO = projManager.getSampleProjectAt(i);
-            
-            if(projDO.getProject().getId() != null){
-                TableDataModel<TableDataRow<Integer>> model = new TableDataModel<TableDataRow<Integer>>();
-                model.add(new TableDataRow<Integer>(projDO.getProject().getId(), new FieldType[]{
-                                                                                                 new StringObject(projDO.getProject().getName()),
-                                                                                                 new StringObject(projDO.getProject().getDescription())}));
-                ((DropDownField<Integer>)row.cells[0]).setModel(model);
-                row.cells[0].setValue(model.get(0));
-            }
-            
-            row.cells[1].setValue(projDO.getProject().getDescription());
-            row.cells[2].setValue(projDO.getIsPermanent());
-            
-            tableModel.add(row);
-        }
-        
-        return tableModel;
-    }
-    
-    private TableDataModel<TableDataRow<Integer>> buildSampleOrganizationTable(SampleOrganizationsManager orgManager){
+    /*
+    private TableDataModel<TableDataRow<Integer>> buildSampleOrganizationTable(SampleOrganizationManager orgManager){
         TableDataModel<TableDataRow<Integer>> tableModel = new TableDataModel<TableDataRow<Integer>>();
         
         //create the default set
@@ -502,65 +316,9 @@ public class EnvironmentalSampleLoginService implements AppScreenFormServiceInt<
         }
         
         return tableModel;
-    }
+    }*/
 
-    public TableDataModel getMatches(String cat, TableDataModel model, String match, HashMap<String, FieldType> params) throws RPCException {
-        if(cat.equals("testMethod"))
-            return getTestMethodMatches(match);
-        else if(cat.equals("section"))
-            return getSectionMatches(match);
-        return null;
-    }
-    
-    private TableDataModel<TableDataRow<Integer>> getTestMethodMatches(String match){
-        TestRemote remote = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
-        TableDataModel<TableDataRow<Integer>> dataModel = new TableDataModel<TableDataRow<Integer>>();
-        List autoCompleteList;
-    
-        autoCompleteList = remote.getTestAutoCompleteByName(match+"%", 10);
-        
-        for(int i=0; i < autoCompleteList.size(); i++){
-            TestMethodAutoDO resultDO = (TestMethodAutoDO) autoCompleteList.get(i);
-            Integer testId = resultDO.getTestId();
-            String testName = resultDO.getTestName();
-            Integer methodId = resultDO.getMethodId();
-            String methodName = resultDO.getMethodName();
-
-            TableDataRow<Integer> data = new TableDataRow<Integer>(testId,
-                                                                   new FieldType[] {
-                                                                                    new StringObject(testName),
-                                                                                    new StringObject(methodName)
-                                                                   }
-                                         );
-            data.setData(new IntegerObject(methodId));
-            
-            //add the dataset to the datamodel
-            dataModel.add(data);                            
-        }       
-        
-        return dataModel;       
-    }
-    
-    private TableDataModel<TableDataRow<Integer>> getSectionMatches(String match){
-        SectionRemote remote = (SectionRemote)EJBFactory.lookup("openelis/SectionBean/remote");
-        TableDataModel<TableDataRow<Integer>> dataModel = new TableDataModel<TableDataRow<Integer>>();
-        List autoCompleteList;
-    
-        autoCompleteList = remote.getAutoCompleteSectionByName(match+"%", 10);
-        
-        for(int i=0; i < autoCompleteList.size(); i++){
-            SectionDO resultDO = (SectionDO) autoCompleteList.get(i);
-            Integer id = resultDO.getId();
-            String name = resultDO.getName();
-            
-            TableDataRow<Integer> data = new TableDataRow<Integer>(id, new StringObject(name));
-            
-            //add the dataset to the datamodel
-            dataModel.add(data);                            
-        }       
-        
-        return dataModel;       
-    }
+ 
     
     /*
     public SampleTreeForm getSampleItemAnalysesTreeModel(SampleTreeForm rpc) throws RPCException{

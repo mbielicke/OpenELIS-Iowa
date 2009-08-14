@@ -23,33 +23,18 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.manager;
+package org.openelis.modules.environmentalSampleLogin.client;
 
-import org.openelis.gwt.services.ScreenService;
-import org.openelis.manager.NotesManager;
-import org.openelis.modules.note.client.NoteServiceParams;
+import java.util.ArrayList;
 
-public class NotesManagerProxy {
-    protected static final String NOTE_SERVICE_URL = "org.openelis.modules.note.server.NoteService";
-    protected ScreenService service;
+import org.openelis.gwt.common.RPC;
+
+public class AutocompleteRPC implements RPC {
+
+    private static final long serialVersionUID = 1L;
+
+    public String match;
+    public String cat;
     
-    public NotesManagerProxy(){
-        service = new ScreenService("OpenELISServlet?service="+NOTE_SERVICE_URL);
-    }
-    
-    public NotesManager add(NotesManager man) throws Exception {
-        throw new UnsupportedOperationException();
-    }
-
-    public NotesManager update(NotesManager man) throws Exception {
-        throw new UnsupportedOperationException();
-    }
-
-    public NotesManager fetch(Integer tableId, Integer id) throws Exception {
-        NoteServiceParams p = new NoteServiceParams();
-        p.referenceId = id;
-        p.referenceTableId = tableId;
-        
-        return service.call("fetch", p);
-    }
+    public ArrayList<RPC> model;
 }

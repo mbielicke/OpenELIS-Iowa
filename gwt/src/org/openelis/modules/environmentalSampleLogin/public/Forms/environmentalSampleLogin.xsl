@@ -118,71 +118,70 @@ UIRF Software License are applicable instead of those above.
     <xsl:variable name="props"><xsl:value-of select="props"/></xsl:variable>
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))"/>
 <screen id="EnvironmentalSampleLogin" name="{resource:getString($constants,'environmentalSampleLogin')}" serviceUrl="ElisService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-	<display>
 		<VerticalPanel spacing="0" padding="0">
 		<!--button panel code-->
 				<AbsolutePanel spacing="0" style="ButtonPanelContainer">
-					<buttonPanel key="buttons">
-						<xsl:call-template name="queryButton">
-							<xsl:with-param name="language">
-								<xsl:value-of select="language"/>
-							</xsl:with-param>
-						</xsl:call-template>
-						<xsl:call-template name="previousButton">
-							<xsl:with-param name="language">
-								<xsl:value-of select="language"/>
-							</xsl:with-param>
-						</xsl:call-template>
-						<xsl:call-template name="nextButton">
-							<xsl:with-param name="language">
-								<xsl:value-of select="language"/>
-							</xsl:with-param>
-						</xsl:call-template>
-						<xsl:call-template name="buttonPanelDivider"/>
-							<xsl:call-template name="addButton">
-								<xsl:with-param name="language">
-									<xsl:value-of select="language"/>
-								</xsl:with-param>
-						</xsl:call-template>
-						<xsl:call-template name="updateButton">
-							<xsl:with-param name="language">
-								<xsl:value-of select="language"/>
-							</xsl:with-param>
-						</xsl:call-template>
-						<xsl:call-template name="buttonPanelDivider"/>
-						<xsl:call-template name="commitButton">
-							<xsl:with-param name="language">
-								<xsl:value-of select="language"/>
-							</xsl:with-param>
-						</xsl:call-template>
-						<xsl:call-template name="abortButton">
-							<xsl:with-param name="language">
-								<xsl:value-of select="language"/>
-							</xsl:with-param>
-						</xsl:call-template>
-					</buttonPanel>
-				</AbsolutePanel>
+              <HorizontalPanel>
+                <xsl:call-template name="queryButton">
+                  <xsl:with-param name="language">
+                    <xsl:value-of select="language"/>
+                  </xsl:with-param>
+                </xsl:call-template>
+                <xsl:call-template name="previousButton">
+                  <xsl:with-param name="language">
+                    <xsl:value-of select="language"/>
+                  </xsl:with-param>
+                </xsl:call-template>
+                <xsl:call-template name="nextButton">
+                  <xsl:with-param name="language">
+                    <xsl:value-of select="language"/>
+                  </xsl:with-param>
+                </xsl:call-template>
+                <xsl:call-template name="buttonPanelDivider"/>
+                <xsl:call-template name="addButton">
+                  <xsl:with-param name="language">
+                    <xsl:value-of select="language"/>
+                  </xsl:with-param>
+                </xsl:call-template>
+                <xsl:call-template name="updateButton">
+                  <xsl:with-param name="language">
+                    <xsl:value-of select="language"/>
+                  </xsl:with-param>
+                </xsl:call-template>
+                <xsl:call-template name="buttonPanelDivider"/>
+                <xsl:call-template name="commitButton">
+                  <xsl:with-param name="language">
+                    <xsl:value-of select="language"/>
+                  </xsl:with-param>
+                </xsl:call-template>
+                <xsl:call-template name="abortButton">
+                  <xsl:with-param name="language">
+                    <xsl:value-of select="language"/>
+                  </xsl:with-param>
+                </xsl:call-template>
+              </HorizontalPanel>
+            </AbsolutePanel>
 				<!--end button panel code-->
 				<VerticalPanel style="WhiteContentPanel" spacing="0" padding="0">		
 					<TablePanel style="Form">
 						<row>
 							<text style="Prompt"><xsl:value-of select="resource:getString($constants,'accessionNum')"/>:</text>
-							<textbox key="{sampleMetaMap:getAccessionNumber($sample)}"  width="75px" tab="orderNumber,billTo"/>
+							<textbox key="{sampleMetaMap:getAccessionNumber($sample)}"  width="75px" tab="orderNumber,billTo" required="true" field="Integer"/>
 							<text style="Prompt"><xsl:value-of select="resource:getString($constants,'orderNum')"/>:</text>
-							<textbox key="orderNumber"  width="75px" tab="{sampleMetaMap:getCollectionDate($sample)},{sampleMetaMap:getAccessionNumber($sample)}"/>
+							<textbox key="orderNumber"  width="75px" tab="{sampleMetaMap:getCollectionDate($sample)},{sampleMetaMap:getAccessionNumber($sample)}" field="Integer"/>
 							<text style="Prompt"><xsl:value-of select="resource:getString($constants,'collected')"/>:</text>
 							<calendar begin="0" end="2" key="{sampleMetaMap:getCollectionDate($sample)}" width="75px" tab="{sampleMetaMap:getCollectionTime($sample)},orderNumber"/>
 							<text style="Prompt"><xsl:value-of select="resource:getString($constants,'time')"/>:</text>
-							<textbox key="{sampleMetaMap:getCollectionTime($sample)}" width="40px" tab="{sampleMetaMap:getReceivedDate($sample)},{sampleMetaMap:getCollectionDate($sample)}"/>
+							<calendar begin="3" end="5" key="{sampleMetaMap:getCollectionTime($sample)}" width="60px" tab="{sampleMetaMap:getReceivedDate($sample)},{sampleMetaMap:getCollectionDate($sample)}"/>
 						</row>
 						<row>
 							<text style="Prompt"><xsl:value-of select="resource:getString($constants,'received')"/>:</text>
 							<calendar key="{sampleMetaMap:getReceivedDate($sample)}" begin="0" end="2" width="110px" tab="{sampleMetaMap:getStatusId($sample)},{sampleMetaMap:getCollectionTime($sample)}"/>
 							<text style="Prompt"><xsl:value-of select="resource:getString($constants,'status')"/>:</text>
-							<dropdown key="{sampleMetaMap:getStatusId($sample)}" case="mixed" width="110px" enabledStates="" tab="{sampleMetaMap:getClientReference($sample)},{sampleMetaMap:getReceivedDate($sample)}"/>
+							<dropdown key="{sampleMetaMap:getStatusId($sample)}" case="mixed" width="110px" tab="{sampleMetaMap:getClientReference($sample)},{sampleMetaMap:getReceivedDate($sample)}" required="true" field="Integer"/>
 							<text style="Prompt"><xsl:value-of select="resource:getString($constants,'clntRef')"/>:</text>
 							<widget colspan="3">
-								<textbox key="{sampleMetaMap:getClientReference($sample)}" width="175px" tab="{envMeta:getIsHazardous($env)},{sampleMetaMap:getStatusId($sample)}"/>					
+								<textbox key="{sampleMetaMap:getClientReference($sample)}" width="175px" tab="{envMeta:getIsHazardous($env)},{sampleMetaMap:getStatusId($sample)}" field="String"/>					
 							</widget>
 						</row>
 					</TablePanel>
@@ -193,19 +192,21 @@ UIRF Software License are applicable instead of those above.
 							<text style="Prompt"><xsl:value-of select="resource:getString($constants,'hazardous')"/>:</text>
 							<check key="{envMeta:getIsHazardous($env)}" tab="{envMeta:getDescription($env)},{sampleMetaMap:getClientReference($sample)}"/>	
 							<text style="Prompt"><xsl:value-of select="resource:getString($constants,'desc')"/>:</text>
-							<textbox key="{envMeta:getDescription($env)}" tab="{envMeta:getCollector($env)},{envMeta:getIsHazardous($env)}" width="315px"/>		
+							<textbox key="{envMeta:getDescription($env)}" tab="{envMeta:getCollector($env)},{envMeta:getIsHazardous($env)}" width="315px" field="String"/>		
 						</row>
 						<row>
 							<text style="Prompt"><xsl:value-of select="resource:getString($constants,'collector')"/>:</text>
-							<textbox key="{envMeta:getCollector($env)}" tab="{envMeta:getCollectorPhone($env)},{envMeta:getDescription($env)}" width="235px"/>		
+							<textbox key="{envMeta:getCollector($env)}" tab="{envMeta:getCollectorPhone($env)},{envMeta:getDescription($env)}" width="235px" field="String"/>		
 							<text style="Prompt"><xsl:value-of select="resource:getString($constants,'phone')"/>:</text>
-							<textbox key="{envMeta:getCollectorPhone($env)}" tab="{envMeta:getSamplingLocation($env)},{envMeta:getCollector($env)}" width="120px"/>		
+							<textbox key="{envMeta:getCollectorPhone($env)}" tab="{envMeta:getSamplingLocation($env)},{envMeta:getCollector($env)}" width="120px" field="String"/>		
 						</row>
 						<row>
 							<text style="Prompt"><xsl:value-of select="resource:getString($constants,'location')"/>:</text>
 							<HorizontalPanel> 
-							<textbox key="{envMeta:getSamplingLocation($env)}" onchange="this" width="175px"/>
-							<comButton key="locButton" style="LookupButtonImage" useDiv="true" listeners="this" enabledStates="display,query,add,update" command="EnvironmentalSampleLogin.id_button_enum.LOCATION_VIEW"/>
+							<textbox key="{envMeta:getSamplingLocation($env)}" onchange="this" width="175px" field="String"/>
+							<appButton key="locButton" style="Button">
+									<AbsolutePanel style="LookupButtonImage"/>
+							</appButton>
 							</HorizontalPanel>
 						</row>
 					</TablePanel>
@@ -214,46 +215,42 @@ UIRF Software License are applicable instead of those above.
 					<VerticalPanel style="subform">
 						<text style="FormTitle"><xsl:value-of select="resource:getString($constants,'itemsAndAnalyses')"/></text>
 						<VerticalPanel style="WhiteContentPanel">
-						<tree-table key="itemsTestsTree" width="auto" showScroll="ALWAYS" manager="this" maxRows="4" enable="true" showError="false" tab="{projectMeta:getName($project)},{envMeta:getSamplingLocation($env)}">
-	    	                <headers><xsl:value-of select="resource:getString($constants,'itemTests')"/>,<xsl:value-of select="resource:getString($constants,'typeStatus')"/></headers>
-	                        <widths>280,130</widths>					
-	                        <leaves>
-	        	                <leaf type="sampleItem">
-	            	                <editors>
-	                	                <label/>
-	                	                <label/>
-	                               	</editors>
-	                                <fields>
-	                                	<string/>
-	                                	<string/>
-	                              	</fields>
-	                        	</leaf>
-	                        	<leaf type="analysis">
-	            	                <editors>
-	                	                <label/>
-	                	                <dropdown width="110px"/>
-	                               	</editors>
-	                                <fields>
-	                                	<string/>
-	                                	<dropdown/>
-	                              	</fields>
-	                        	</leaf>
-                            </leaves> 
-	                  	</tree-table>
+						<tree key="itemsTestsTree" width="auto" showScroll="ALWAYS" maxRows="4" tab="{projectMeta:getName($project)},{envMeta:getSamplingLocation($env)}">
+							<header>
+								<col header="{resource:getString($constants,'itemTests')}" width="280"/>
+								<col header="{resource:getString($constants,'typeStatus')}" width="130"/>
+							</header>
+							<leaf key="sampleItem">
+								<col>
+									<label />
+								</col>
+								<col>
+									<label />
+								</col>
+							</leaf>
+							<leaf key="analysis">
+								<col>
+									<label />
+								</col>
+								<col>
+									<dropdown case="lower" width="110px" field="String" />
+								</col>
+							</leaf>
+	                  	</tree>
 	                  	<HorizontalPanel style="TableButtonFooter">
-	                  		<appButton action="addItem" key="addItemButton" onclick="this" style="Button" enabledStates="add,update">
+	                  		<appButton action="addItem" key="addItemButton" onclick="this" style="Button">
 								<HorizontalPanel>
 									<AbsolutePanel style="AddRowButtonImage"/>
 									<text><xsl:value-of select="resource:getString($constants,'addItem')"/></text>
 								</HorizontalPanel>
 							</appButton>
-							<appButton action="addTest" key="addTestButton" onclick="this" style="Button" enabledStates="add,update">
+							<appButton action="addTest" key="addTestButton" onclick="this" style="Button">
 								<HorizontalPanel>
 									<AbsolutePanel style="AddRowButtonImage"/>
 									<text><xsl:value-of select="resource:getString($constants,'addTest')"/></text>
 								</HorizontalPanel>
 							</appButton>
-							<appButton action="removeRow" key="removeRowButton" onclick="this" style="Button" enabledStates="add,update">
+							<appButton action="removeRow" key="removeRowButton" style="Button">
 								<HorizontalPanel>
 									<AbsolutePanel style="RemoveRowButtonImage"/>
 									<text><xsl:value-of select="resource:getString($constants,'removeRow')"/></text>
@@ -268,31 +265,41 @@ UIRF Software License are applicable instead of those above.
 						<row>
 							<text style="Prompt"><xsl:value-of select="resource:getString($constants,'project')"/>:</text>
 							<HorizontalPanel> 
-								<autoComplete key="{projectMeta:getName($project)}" width="175px" onchange="this" cat="project" case="upper" serviceUrl="OpenELISServlet?service=org.openelis.modules.sampleProject.server.SampleProjectService">				
-									<headers>Name, Desc</headers>
-									<widths>100,170</widths>												
+								<autoComplete key="{projectMeta:getName($project)}" width="175px" popWidth="auto" cat="project" case="upper" field="Integer">
+									<col header="Name" width="115"/>
+									<col header="Desc" width="190"/>				
 								</autoComplete>
-								<comButton key="projectLookupIcon" style="LookupButtonImage" useDiv="true" listeners="this" command="EnvironmentalSampleLogin.id_button_enum.PROJECT_VIEW"/>
+								<appButton key="projectLookup" style="Button">
+									<AbsolutePanel style="LookupButtonImage"/>
+								</appButton>
 							</HorizontalPanel>
 						</row>
 						<row>
 							<text style="Prompt"><xsl:value-of select="resource:getString($constants,'reportTo')"/>:</text>
 							<HorizontalPanel> 
-								<autoComplete key="{orgMeta:getName($org)}" cat="organization" width="175px" onchange="this" case="upper" serviceUrl="OpenELISServlet?service=org.openelis.modules.order.server.OrderService">												
-									<headers>Name,Street,City,St</headers>
-									<widths>180,110,100,20</widths>
+								<autoComplete key="{orgMeta:getName($org)}" cat="organization" width="175px" popWidth="auto" case="upper" field="Integer">	
+									<col header="Name" width="180"/>
+									<col header="Street" width="110"/>
+									<col header="City" width="100"/>
+									<col header="St" width="20"/>											
 								</autoComplete>
-								<comButton key="reportToLookupIcon" style="LookupButtonImage" useDiv="true" listeners="this" command="EnvironmentalSampleLogin.id_button_enum.REPORT_TO_VIEW"/>
+								<appButton key="reportToLookup" style="Button">
+									<AbsolutePanel style="LookupButtonImage"/>
+								</appButton>
 							</HorizontalPanel>
 						</row>
 						<row>
 							<text style="Prompt"><xsl:value-of select="resource:getString($constants,'billTo')"/>:</text>
 							<HorizontalPanel> 
-								<autoComplete key="billTo" cat="organization" width="175px" onchange="this" case="upper" serviceUrl="OpenELISServlet?service=org.openelis.modules.order.server.OrderService">												
-									<headers>Name,Street,City,St</headers>
-									<widths>180,110,100,20</widths>
+								<autoComplete key="billTo" cat="organization" width="175px" popWidth="auto" case="upper" field="Integer">
+									<col header="Name" width="180"/>
+									<col header="Street" width="110"/>
+									<col header="City" width="100"/>
+									<col header="St" width="20"/>												
 								</autoComplete>
-								<comButton key="billToLookupIcon" style="LookupButtonImage" useDiv="true" listeners="this" command="EnvironmentalSampleLogin.id_button_enum.REPORT_TO_VIEW"/>
+								<appButton key="billToLookup" style="Button">
+									<AbsolutePanel style="LookupButtonImage"/>
+								</appButton>
 							</HorizontalPanel>
 						</row>
 					</TablePanel>
@@ -305,20 +312,20 @@ UIRF Software License are applicable instead of those above.
 							<TablePanel style="Form" spacing="0" padding="0">
 								<row>
 									<text style="Prompt">Sample Type:</text>
-									<dropdown case="mixed" key="{sampleItemMetaMap:getTypeOfSampleId($sampleItem)}" onchange="this" width="150px"/>
+									<dropdown case="mixed" key="{sampleItemMetaMap:getTypeOfSampleId($sampleItem)}" onchange="this" width="150px" field="Integer"/>
 									
 								</row>
 								<row>
 									<text style="Prompt">Container:</text>
-									<dropdown case="mixed" key="{sampleItemMetaMap:getContainerId($sampleItem)}" onchange="this" width="225px"/>
+									<dropdown case="mixed" key="{sampleItemMetaMap:getContainerId($sampleItem)}" onchange="this" width="225px" field="Integer"/>
 									<text style="Prompt">Container Reference:</text>
-									<textbox case="mixed" key="{sampleItemMetaMap:getContainerReference($sampleItem)}" onchange="this" width="215px"/>
+									<textbox case="mixed" key="{sampleItemMetaMap:getContainerReference($sampleItem)}" onchange="this" width="215px" field="String"/>
 								</row>
 								<row>
 									<text style="Prompt">Qty:</text>
-									<textbox case="mixed" key="{sampleItemMetaMap:getQuantity($sampleItem)}" onchange="this" width="150px"/>
+									<textbox case="mixed" key="{sampleItemMetaMap:getQuantity($sampleItem)}" onchange="this" width="150px" field="Integer"/>
 									<text style="Prompt">Unit:</text>
-									<dropdown case="mixed" key="{sampleItemMetaMap:getUnitOfMeasureId($sampleItem)}" onchange="this" width="150px"/>
+									<dropdown case="mixed" key="{sampleItemMetaMap:getUnitOfMeasureId($sampleItem)}" onchange="this" width="150px" field="Integer"/>
 								</row>
 							</TablePanel>
 						</VerticalPanel>
@@ -328,29 +335,27 @@ UIRF Software License are applicable instead of those above.
 							<TablePanel style="Form" spacing="0" padding="0">
 								<row>
 									<text style="Prompt">Test:</text>
-									<autoComplete key="{sampleTestMetaMap:getName($test)}" cat="testMethod" width="150px" onchange="this" case="lower" serviceUrl="OpenELISServlet?service=org.openelis.modules.environmentalSampleLogin.server.EnvironmentalSampleLoginService">												
-										<headers>Test,Method</headers>
-										<widths>150,150</widths>
+									<autoComplete key="{sampleTestMetaMap:getName($test)}" cat="testMethod" width="150px" popWidth="auto" case="lower" field="Integer">
+										<col header="Test" width="150"/>
+										<col header="Method" width="150"/>												
 									</autoComplete>
 									<text style="Prompt">Method:</text>
-									<autoComplete key="{methodMeta:getName($method)}" cat="testMethod" width="150px" onchange="this" case="lower" enabledStates="" serviceUrl="OpenELISServlet?service=org.openelis.modules.environmentalSampleLogin.server.EnvironmentalSampleLoginService">												
-										<headers>Method</headers>
-										<widths>150</widths>
+									<autoComplete key="{methodMeta:getName($method)}" cat="testMethod" width="150px" popWidth="auto" case="lower" field="Integer">
+										<col header="Method" width="150"/>												
 									</autoComplete>
 								</row>
 								<row>
 									<text style="Prompt">Status:</text>
-									<dropdown case="mixed" key="{analysisMetaMap:getStatusId($analysis)}" enabledStates="" onchange="this" width="150px"/>
+									<dropdown case="mixed" key="{analysisMetaMap:getStatusId($analysis)}" onchange="this" width="150px" field="Integer"/>
 									<text style="Prompt">Revision:</text>
-									<textbox case="mixed" key="{analysisMetaMap:getRevision($analysis)}" onchange="this" width="60px"/>
+									<textbox case="mixed" key="{analysisMetaMap:getRevision($analysis)}" onchange="this" width="60px" field="Integer"/>
 								</row>
 								<row>
 									<text style="Prompt">Reportable:</text>
 									<check key="{analysisMetaMap:getIsReportable($analysis)}"/>
 									<text style="Prompt">Section:</text>
-									<autoComplete key="{analysisMetaMap:getSectionId($analysis)}" cat="section" width="150px" onchange="this" case="upper" serviceUrl="OpenELISServlet?service=org.openelis.modules.environmentalSampleLogin.server.EnvironmentalSampleLoginService">												
-										<headers>name</headers>
-										<widths>150</widths>
+									<autoComplete key="{analysisMetaMap:getSectionId($analysis)}" cat="section" width="150px" popWidth="auto" case="upper" field="Integer">
+										<col header="Name" width="150"/>												
 									</autoComplete>
 								</row>
 								<row>
@@ -370,25 +375,26 @@ UIRF Software License are applicable instead of those above.
 					</tab>
 					<tab key="tab2" text="{resource:getString($constants,'testResults')}">
 						<VerticalPanel height="170px" width="730px">
-							<table maxRows="6" width="auto">
-						     <headers>Analyte,Result1,Result2,Result3</headers>
-						     <widths>175,100,100,100</widths>
-						     <editors>
-						       <label/>
-						       <label/>
-						       <label/>
-						       <label/>
-						     </editors>
-						     <fields>
-						       <string/>
-						       <string/>
-						       <string/>
-						       <string/>
-						     </fields>
-						     <sorts>true,true,true,true</sorts>
-							<filters>false,false,false,false</filters>
-							<colAligns>left,left,left,left</colAligns>
-						   </table>
+<!--						-->
+<!--							<table maxRows="6" width="auto">-->
+<!--						     <headers>Analyte,Result1,Result2,Result3</headers>-->
+<!--						     <widths>175,100,100,100</widths>-->
+<!--						     <editors>-->
+<!--						       <label/>-->
+<!--						       <label/>-->
+<!--						       <label/>-->
+<!--						       <label/>-->
+<!--						     </editors>-->
+<!--						     <fields>-->
+<!--						       <string/>-->
+<!--						       <string/>-->
+<!--						       <string/>-->
+<!--						       <string/>-->
+<!--						     </fields>-->
+<!--						     <sorts>true,true,true,true</sorts>-->
+<!--							<filters>false,false,false,false</filters>-->
+<!--							<colAligns>left,left,left,left</colAligns>-->
+<!--						   </table>-->
 						</VerticalPanel>
 					</tab>
 					<tab key="tab3" text="{resource:getString($constants,'analysisExtrnlCmnts')}">
@@ -396,7 +402,7 @@ UIRF Software License are applicable instead of those above.
 						<TablePanel style="Form" padding="0" spacing="0">
 						<row>
 							<widget colspan="2" align="center">
-								<appButton action="analysisNoteExt" onclick="this" key="analysisNoteExt" style="Button" enabledStates="">
+								<appButton action="analysisNoteExt" onclick="this" key="analysisNoteExt" style="Button">
 									<HorizontalPanel>
               							<AbsolutePanel xsi:type="Absolute" layout="absolute" style="StandardNoteButtonImage"/>
 	                					<text><xsl:value-of select='resource:getString($constants,"edit")'/></text>
@@ -415,7 +421,7 @@ UIRF Software License are applicable instead of those above.
 					<tab key="tab4" text="{resource:getString($constants,'analysisIntrnlCmnts')}">
 						<VerticalPanel height="170px" width="730px">
 							<widget halign="center">
-								<appButton action="analysisNoteInt" key="analysisNoteInt" onclick="this" style="Button" enabledStates="">
+								<appButton action="analysisNoteInt" key="analysisNoteInt" onclick="this" style="Button">
 									<HorizontalPanel>
 										<AbsolutePanel style="StandardNoteButtonImage"/>
 										<text><xsl:value-of select="resource:getString($constants,'edit')"/></text>
@@ -473,107 +479,6 @@ UIRF Software License are applicable instead of those above.
 				</TabPanel>
 			</VerticalPanel>
 		</VerticalPanel>
-	</display>
-	<rpc key="display">
-		<integer key="{sampleMetaMap:getId($sample)}" required="true"/>
-		<integer key="{sampleMetaMap:getAccessionNumber($sample)}" required="true"/>
-		<integer key="orderNumber" required="false"/>
-		<date key="{sampleMetaMap:getCollectionDate($sample)}" begin="0" end="2" required="false"/>
-		<date key="{sampleMetaMap:getCollectionTime($sample)}" begin="3" end="5" required="false"/>
-		<date key="{sampleMetaMap:getReceivedDate($sample)}" begin="0" end="2" required="false"/>
-		<dropdown key="{sampleMetaMap:getStatusId($sample)}" required="true"/>
-		<string key="{sampleMetaMap:getClientReference($sample)}" required="false"/>
-		
-		<rpc key="envInfo">
-			<check key="{envMeta:getIsHazardous($env)}"/>
-			<string key="{envMeta:getDescription($env)}" required="false"/>		
-			<string key="{envMeta:getCollector($env)}" required="false"/>		
-			<string key="{envMeta:getCollectorPhone($env)}" required="false"/>	
-				
-			<rpc key="locationInfo">
-				<string key="{envMeta:getSamplingLocation($env)}" required="false"/>
-				<string key="{addressMeta:getMultipleUnit($address)}"/>
-				<string key="{addressMeta:getStreetAddress($address)}"/>
-				<string key="{addressMeta:getCity($address)}"/>
-				<dropdown key="{addressMeta:getState($address)}"/>
-				<string key="{addressMeta:getZipCode($address)}"/>
-				<dropdown key="{addressMeta:getCountry($address)}"/>
-			</rpc>   
-		</rpc>
-		
-		<rpc key="sampleItemAndAnalysis">
-			<tree key="itemsTestsTree"/>
-		</rpc>
-		
-		<rpc key="orgprojectInfo">
-			<dropdown key="{projectMeta:getName($project)}" required="false"/>
-			<dropdown key="{orgMeta:getName($org)}"/>
-			<dropdown key="billTo" required="false"/>
-			
-			<rpc key="sampleOrganization">
-				<table key="sampleOrganizationTable">
-					<dropdown/>
-					<integer/>
-					<dropdown/>
-					<string/>
-					<string/>
-				</table>
-			</rpc>
-			
-			<rpc key="sampleProject">
-				<table key="sampleProjectTable">
-					<dropdown/>
-					<string/>
-					<check/>
-				</table>
-			</rpc>
-		</rpc>
-		
-		<rpc key="sampleItemForm">
-			<dropdown key="{sampleItemMetaMap:getTypeOfSampleId($sampleItem)}"/>
-			<dropdown key="{sampleItemMetaMap:getContainerId($sampleItem)}"/>
-			<string key="{sampleItemMetaMap:getContainerReference($sampleItem)}"/>
-			<integer key="{sampleItemMetaMap:getQuantity($sampleItem)}"/>
-			<dropdown key="{sampleItemMetaMap:getUnitOfMeasureId($sampleItem)}"/>
-		</rpc>
-		
-		<rpc key="testInfoResult">
-			<!--	empty	 -->
-		</rpc>
-		
-		<rpc key="analysis">
-			<dropdown key="{sampleTestMetaMap:getName($test)}" required="false"/>
-			<dropdown key="{methodMeta:getName($method)}" required="false"/>
-			<dropdown key="{analysisMetaMap:getStatusId($analysis)}" required="false"/>
-			<integer key="{analysisMetaMap:getRevision($analysis)}" required="false"/>
-			<check key="{analysisMetaMap:getIsReportable($analysis)}"/>
-			<dropdown key="{analysisMetaMap:getSectionId($analysis)}" required="false"/>
-			<date begin="0" end="2" key="{analysisMetaMap:getStartedDate($analysis)}" required="false"/>
-			<date begin="0" end="2" key="{analysisMetaMap:getCompletedDate($analysis)}" required="false"/>
-			<date begin="0" end="2" key="{analysisMetaMap:getReleasedDate($analysis)}" required="false"/>
-			<date begin="0" end="2" key="{analysisMetaMap:getPrintedDate($analysis)}" required="false"/>
-		</rpc>
-		
-		<rpc key="analysisExternalComment">
-			<!--	empty	 -->
-		</rpc>
-		
-		<rpc key="analysisInternalComments">
-			<!--	empty	 -->
-		</rpc>
-<!--		-->
-<!--		<rpc key="storage">-->
-	 
-<!--		</rpc>-->
-<!--		-->
-<!--		<rpc key="sampleExternalComment">-->
-	 
-<!--		</rpc>-->
-<!--		-->
-<!--		<rpc key="sampleInternalComments">-->
-	 
-<!--		</rpc>-->
-	</rpc>
 </screen>
   </xsl:template>
 </xsl:stylesheet>

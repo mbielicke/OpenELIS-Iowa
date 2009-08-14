@@ -51,7 +51,7 @@ private static final long serialVersionUID = 1L;
     
     public EnvironmentalSubForm envInfoForm;
     public SampleItemAndAnalysisForm sampleItemAndAnalysisForm;
-    public SampleOrgProjectForm orgProjectForm;
+    
     public SampleItemForm sampleItemForm;
     public TestInfoForm testInfoForm;
     public AnalysisForm analysisForm;
@@ -74,7 +74,6 @@ private static final long serialVersionUID = 1L;
         //forms
         envInfoForm = new EnvironmentalSubForm("envInfo");
         sampleItemAndAnalysisForm = new SampleItemAndAnalysisForm("sampleItemAndAnalysis");
-        orgProjectForm = new SampleOrgProjectForm("orgprojectInfo");
         sampleItemForm = new SampleItemForm("sampleItemForm");
         testInfoForm = new TestInfoForm("testInfoResult");
         analysisForm = new AnalysisForm("analysis");
@@ -100,7 +99,7 @@ private static final long serialVersionUID = 1L;
                                        envInfoForm,
                                        sampleItemAndAnalysisForm,
                                        sampleItemForm,
-                                       orgProjectForm,
+                                       
                                        testInfoForm,
                                        analysisForm,
                                        externalCommentForm,

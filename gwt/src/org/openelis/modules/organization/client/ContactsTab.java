@@ -21,14 +21,14 @@ import org.openelis.gwt.widget.table.rewrite.event.RowAddedEvent;
 import org.openelis.gwt.widget.table.rewrite.event.RowAddedHandler;
 import org.openelis.gwt.widget.table.rewrite.event.RowDeletedEvent;
 import org.openelis.gwt.widget.table.rewrite.event.RowDeletedHandler;
-import org.openelis.manager.OrganizationsManager;
+import org.openelis.manager.OrganizationManager;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.Window;
 
 public class ContactsTab extends Screen {
 
-	private OrganizationsManager manager;
+	private OrganizationManager manager;
 	private TableWidget table;
 	private boolean dropdownsInited, loaded;
 
@@ -282,7 +282,7 @@ public class ContactsTab extends Screen {
         ((Dropdown<String>)table.columns.get(5).getColumnWidget()).setModel(model);
     }
 	
-	public void setManager(OrganizationsManager manager) {
+	public void setManager(OrganizationManager manager) {
        this.manager = manager;
         loaded = false;
         

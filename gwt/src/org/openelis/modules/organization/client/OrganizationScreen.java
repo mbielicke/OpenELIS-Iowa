@@ -25,11 +25,8 @@ import org.openelis.domain.IdNameDO;
 import org.openelis.domain.OrganizationAddressDO;
 import org.openelis.domain.OrganizationAutoDO;
 import org.openelis.gwt.common.EntityLockedException;
-import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.RPC;
-import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.SecurityModule;
-import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.rewrite.QueryData;
 import org.openelis.gwt.event.BeforeGetMatchesEvent;
@@ -50,8 +47,7 @@ import org.openelis.gwt.widget.rewrite.CheckBox;
 import org.openelis.gwt.widget.rewrite.Dropdown;
 import org.openelis.gwt.widget.rewrite.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.rewrite.TableDataRow;
-import org.openelis.gwt.widget.table.rewrite.TableWidget;
-import org.openelis.manager.OrganizationsManager;
+import org.openelis.manager.OrganizationManager;
 import org.openelis.metamap.OrganizationMetaMap;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 
@@ -71,7 +67,7 @@ public class OrganizationScreen extends Screen implements BeforeGetMatchesHandle
 
     protected Tabs               tab           = Tabs.CONTACTS;
 
-    private OrganizationsManager manager;
+    private OrganizationManager manager;
     private ContactsTab          contactsTab;
     private NotesTab             notesTab;
 
@@ -84,7 +80,7 @@ public class OrganizationScreen extends Screen implements BeforeGetMatchesHandle
     public OrganizationScreen() throws Exception {
         // Call base to get ScreenDef and draw screen
         super("OpenELISServlet?service=org.openelis.modules.organization.server.OrganizationService");
-        manager = OrganizationsManager.getInstance();
+        manager = OrganizationManager.getInstance();
 
         nav = new ScreenNavigator<OrgQuery>(this) {
             public void getSelection(RPC entry) {
@@ -503,7 +499,7 @@ public class OrganizationScreen extends Screen implements BeforeGetMatchesHandle
                 else if (tabIndex == Tabs.NOTES.ordinal())
                     tab = Tabs.NOTES;
 
-                window.setBusy("Loading...");
+                window.setBusy(consts.get("loadingMessage"));
                 drawTabs();
                 window.clearStatus();
             }
@@ -511,7 +507,7 @@ public class OrganizationScreen extends Screen implements BeforeGetMatchesHandle
     }
 
     protected void query() {
-        manager = OrganizationsManager.getInstance();
+        manager = OrganizationManager.getInstance();
         DataChangeEvent.fire(this);
         setState(Screen.State.QUERY);
         window.setDone(consts.get("enterFieldsToQuery"));
@@ -526,7 +522,7 @@ public class OrganizationScreen extends Screen implements BeforeGetMatchesHandle
     }
 
     protected void add() {
-        manager = OrganizationsManager.getInstance();
+        manager = OrganizationManager.getInstance();
         manager.getOrganizationAddress().setIsActive("Y");
 
         DataChangeEvent.fire(this);
@@ -535,7 +531,7 @@ public class OrganizationScreen extends Screen implements BeforeGetMatchesHandle
     }
 
     protected void update() {
-        window.setBusy("Locking Record for update...");
+        window.setBusy(consts.get("lockForUpdate"));
 
         try {
             manager = manager.fetchForUpdate();
@@ -581,7 +577,7 @@ public class OrganizationScreen extends Screen implements BeforeGetMatchesHandle
 
     public void abort() {
         if (state == State.UPDATE) {
-            window.setBusy("Canceling changes ...");
+            window.setBusy(consts.get("cancelChanges"));
 
             try {
                 manager = manager.abort();
@@ -597,13 +593,13 @@ public class OrganizationScreen extends Screen implements BeforeGetMatchesHandle
             }
 
         } else if (state == State.ADD) {
-            manager = OrganizationsManager.getInstance();
+            manager = OrganizationManager.getInstance();
             DataChangeEvent.fire(this);
             clearErrors();
             setState(State.DEFAULT);
             window.setDone(consts.get("addAborted"));
         } else if (state == State.QUERY) {
-            manager = OrganizationsManager.getInstance();
+            manager = OrganizationManager.getInstance();
             DataChangeEvent.fire(this);
             setState(State.DEFAULT);
             clearErrors();
@@ -612,14 +608,14 @@ public class OrganizationScreen extends Screen implements BeforeGetMatchesHandle
     }
 
     protected void fetch(Integer id) {
-        window.setBusy("Fetching ...");
+        window.setBusy(consts.get("fetching"));
         try {
             if (tab == Tabs.CONTACTS) {
-                manager = OrganizationsManager.findByIdWithContacts(id);
+                manager = OrganizationManager.findByIdWithContacts(id);
             } else if (tab == Tabs.IDENTIFIERS) {
-                manager = OrganizationsManager.findByIdWithIdentifiers(id);
+                manager = OrganizationManager.findByIdWithIdentifiers(id);
             } else if (tab == Tabs.NOTES) {
-                manager = OrganizationsManager.findByIdWithNotes(id);
+                manager = OrganizationManager.findByIdWithNotes(id);
             }
 
         } catch (Exception e) {
@@ -658,7 +654,7 @@ public class OrganizationScreen extends Screen implements BeforeGetMatchesHandle
     }
 
     public void commitAdd() {
-        window.setBusy("Committing ....");
+        window.setBusy(consts.get("commiting"));
         try {
             manager = manager.add();
 
@@ -675,7 +671,7 @@ public class OrganizationScreen extends Screen implements BeforeGetMatchesHandle
     }
 
     public void commitUpdate() {
-        window.setBusy("Committing ....");
+        window.setBusy(consts.get("commiting"));
         try {
             manager = manager.update();
 
@@ -700,7 +696,7 @@ public class OrganizationScreen extends Screen implements BeforeGetMatchesHandle
     public void commitQuery(ArrayList<QueryData> qFields) {
         OrgQuery query = new OrgQuery();
         query.fields = qFields;
-        window.setBusy("Querying...");
+        window.setBusy(consts.get("querying"));
 
         service.call("query", query, new AsyncCallback<OrgQuery>() {
             public void onSuccess(OrgQuery query) {
@@ -717,7 +713,7 @@ public class OrganizationScreen extends Screen implements BeforeGetMatchesHandle
     }
 
     public void loadQuery(OrgQuery query) {
-        manager = OrganizationsManager.getInstance();
+        manager = OrganizationManager.getInstance();
         DataChangeEvent.fire(this);
 
         loadQueryPage(query);
@@ -728,7 +724,7 @@ public class OrganizationScreen extends Screen implements BeforeGetMatchesHandle
     private void loadQueryPage(OrgQuery query) {
         window.setDone(consts.get("queryingComplete"));
         if (query.results == null || query.results.size() == 0) {
-            window.setDone("No records found");
+            window.setDone(consts.get("noRecordsFound"));
         } else
             window.setDone(consts.get("queryingComplete"));
         query.model = new ArrayList<TableDataRow>();
@@ -737,22 +733,6 @@ public class OrganizationScreen extends Screen implements BeforeGetMatchesHandle
         }
         nav.setQuery(query);
         //ActionEvent.fire(this, Action.NEW_PAGE, query);
-    }
-
-    // FIXME in base class
-    protected void showErrors(ValidationErrorsList errors) {
-        for (RPCException ex : errors.getErrorList()) {
-            if (ex instanceof TableFieldErrorException) {
-                TableFieldErrorException tfe = (TableFieldErrorException)ex;
-                ((TableWidget)def.getWidget(tfe.getTableKey())).setCellError(tfe.getRowIndex(),
-                                                                             tfe.getFieldName(),
-                                                                             consts.get(tfe.getMessage()));
-            } else {
-                FieldErrorException fe = (FieldErrorException)ex;
-                ((HasField)def.getWidget(fe.getFieldName())).addError(consts.get(fe.getMessage()));
-            }
-        }
-        window.setError(consts.get("correctErrors"));
     }
 
     private void setCountriesModel() {
@@ -771,14 +751,6 @@ public class OrganizationScreen extends Screen implements BeforeGetMatchesHandle
             model.add(new TableDataRow(resultDO.getEntry(), resultDO.getEntry()));
         }
         ((Dropdown<String>)def.getWidget(OrgMeta.ADDRESS.getState())).setModel(model);
-    }
-
-
-    public String getString(Object obj) {
-        if (obj == null)
-            return "";
-
-        return obj.toString();
     }
 
     private void drawTabs() {

@@ -54,57 +54,55 @@
 		<xsl:variable name="constants"
 			select="resource:getBundle(string($props),locale:new(string($language)))" />
 		<screen id="SampleLocationPicker" name="{resource:getString($constants,'sampleLocation')}" serviceUrl="ElisService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-			<display>
 				<VerticalPanel spacing="0" padding="0">
 					<VerticalPanel style="WhiteContentPanel" spacing="0" padding="0" width="300px">
 						<TablePanel style="Form">
 					<row>
 					<text style="Prompt"><xsl:value-of select='resource:getString($constants,"location")'/>:</text>
 						<widget colspan="3">
-							<textbox case="mixed" key="{envMeta:getSamplingLocation($env)}" width="214px" max="30" alwaysEnabled="true" tab="{addressMeta:getMultipleUnit($address)},{addressMeta:getCountry($address)}"/>
+							<textbox case="mixed" key="{envMeta:getSamplingLocation($env)}" width="214px" max="30" tab="{addressMeta:getMultipleUnit($address)},{addressMeta:getCountry($address)}" field="String"/>
 						</widget>
 					</row>
 					<row>
 						<text style="Prompt"><xsl:value-of select='resource:getString($constants,"aptSuite")'/>:</text>
 						<widget colspan="3">
-							<textbox case="upper" key="{addressMeta:getMultipleUnit($address)}" width="214px" max="30" alwaysEnabled="true" tab="{addressMeta:getStreetAddress($address)},{envMeta:getSamplingLocation($env)}"/>
+							<textbox case="upper" key="{addressMeta:getMultipleUnit($address)}" width="214px" max="30" tab="{addressMeta:getStreetAddress($address)},{envMeta:getSamplingLocation($env)}" field="String"/>
 						</widget>		
 					</row>
 					<row>
 						<text style="Prompt"><xsl:value-of select='resource:getString($constants,"address")'/>:</text>
 						<widget colspan="3">
-							<textbox case="upper" key="{addressMeta:getStreetAddress($address)}" width="214px" max="30" alwaysEnabled="true" tab="{addressMeta:getCity($address)},{addressMeta:getMultipleUnit($address)}"/>
+							<textbox case="upper" key="{addressMeta:getStreetAddress($address)}" width="214px" max="30" tab="{addressMeta:getCity($address)},{addressMeta:getMultipleUnit($address)}" field="String"/>
 						</widget>		
 					</row>
 					<row>
 						<text style="Prompt"><xsl:value-of select='resource:getString($constants,"city")'/>:</text>
 						<widget colspan="3">
-							<textbox case="upper" key="{addressMeta:getCity($address)}" width="214px" max="30" alwaysEnabled="true" tab="{addressMeta:getState($address)},{addressMeta:getStreetAddress($address)}"/>
+							<textbox case="upper" key="{addressMeta:getCity($address)}" width="214px" max="30" tab="{addressMeta:getState($address)},{addressMeta:getStreetAddress($address)}" field="String"/>
 						</widget>		
 					</row>
 					<row>
 						<text style="Prompt"><xsl:value-of select='resource:getString($constants,"state")'/>:</text>
 						<widget>
-							<dropdown case="upper" key="{addressMeta:getState($address)}" width="40px" alwaysEnabled="true" tab="{addressMeta:getZipCode($address)},{addressMeta:getCity($address)}"/>
+							<dropdown case="upper" key="{addressMeta:getState($address)}" width="40px" tab="{addressMeta:getZipCode($address)},{addressMeta:getCity($address)}" field="String"/>
 						</widget>
 						
 						<text style="Prompt"><xsl:value-of select='resource:getString($constants,"zipcode")'/>:</text>
 						<widget>
-							<textbox case="upper" key="{addressMeta:getZipCode($address)}" width="76px" max="30" alwaysEnabled="true" tab="{addressMeta:getCountry($address)},{addressMeta:getState($address)}"/>
+							<textbox case="upper" key="{addressMeta:getZipCode($address)}" width="76px" max="30" tab="{addressMeta:getCountry($address)},{addressMeta:getState($address)}" field="String"/>
 						</widget>
 					</row>
 					<row>
 					<text style="Prompt"><xsl:value-of select="resource:getString($constants,'country')"/>:</text>
 					<widget colspan="3">
-						<dropdown case="mixed" key="{addressMeta:getCountry($address)}" width="198px" alwaysEnabled="true" tab="{envMeta:getSamplingLocation($env)},{addressMeta:getZipCode($address)}"/>
+						<dropdown case="mixed" key="{addressMeta:getCountry($address)}" width="198px" tab="{envMeta:getSamplingLocation($env)},{addressMeta:getZipCode($address)}" field="String"/>
 					</widget>
 					</row>
 					</TablePanel>
 					</VerticalPanel>
 					<!--button panel code-->
-					<AbsolutePanel spacing="0" style="BottomButtonPanelContainer"
-						align="center">
-						<buttonPanel key="buttons">
+					<AbsolutePanel spacing="0" style="BottomButtonPanelContainer" align="center">
+						<HorizontalPanel>
 							<xsl:call-template name="popupSelectButton">
 								<xsl:with-param name="language">
 									<xsl:value-of select="language" />
@@ -115,20 +113,10 @@
 									<xsl:value-of select="language" />
 								</xsl:with-param>
 							</xsl:call-template>
-						</buttonPanel>
+						</HorizontalPanel>
 					</AbsolutePanel>
 					<!--end button panel-->
 				</VerticalPanel>
-			</display>
-			<rpc key="display">
-				<string key="{envMeta:getSamplingLocation($env)}" required="false"/>
-				<string key="{addressMeta:getMultipleUnit($address)}"/>
-				<string key="{addressMeta:getStreetAddress($address)}"/>
-				<string key="{addressMeta:getCity($address)}"/>
-				<dropdown key="{addressMeta:getState($address)}"/>
-				<string key="{addressMeta:getZipCode($address)}"/>
-				<dropdown key="{addressMeta:getCountry($address)}"/>
-			</rpc>
 		</screen>
 	</xsl:template>
 </xsl:stylesheet>

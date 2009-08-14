@@ -23,30 +23,33 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.managerOld;
+package org.openelis.manager;
 
-import java.util.List;
+import org.openelis.gwt.services.ScreenService;
+import org.openelis.manager.NoteManager;
+import org.openelis.modules.note.client.NoteServiceParams;
 
-import org.openelis.managerOld.SampleItemsManager;
-import org.openelis.managerOld.SampleItemsManagerIOInt;
-import org.openelis.persistence.EJBFactory;
-import org.openelis.remote.SampleItemRemote;
-
-public class SampleItemsManagerIOClient implements SampleItemsManagerIOInt {
-
-    public List fetch(Integer sampleId) {
-        SampleItemRemote remote = getSampleItemRemote();
-
-        return remote.getItemsBySampleId(sampleId);
-    }
-
-    public Integer update(SampleItemsManager sampleItems) {
-        SampleItemRemote remote = getSampleItemRemote();
-
-        return remote.update(sampleItems);
+public class NoteManagerProxy {
+    protected static final String NOTE_SERVICE_URL = "org.openelis.modules.note.server.NoteService";
+    protected ScreenService service;
+    
+    public NoteManagerProxy(){
+        service = new ScreenService("OpenELISServlet?service="+NOTE_SERVICE_URL);
     }
     
-    private SampleItemRemote getSampleItemRemote(){
-        return (SampleItemRemote)EJBFactory.lookup("openelis/SampleItemBean/remote");
+    public NoteManager add(NoteManager man) throws Exception {
+        throw new UnsupportedOperationException();
+    }
+
+    public NoteManager update(NoteManager man) throws Exception {
+        throw new UnsupportedOperationException();
+    }
+
+    public NoteManager fetch(Integer tableId, Integer id) throws Exception {
+        NoteServiceParams p = new NoteServiceParams();
+        p.referenceId = id;
+        p.referenceTableId = tableId;
+        
+        return service.call("fetch", p);
     }
 }

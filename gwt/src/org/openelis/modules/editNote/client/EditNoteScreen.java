@@ -77,8 +77,6 @@ public class EditNoteScreen extends Screen implements
     public EditNoteScreen() throws Exception {
         // Call base to get ScreenDef and draw screen
         super("OpenELISServlet?service=org.openelis.modules.editNote.server.EditNoteService");
-
-        service = new ScreenService("OpenELISServlet?service=org.openelis.modules.editNote.server.EditNoteService");
         
         // Setup link between Screen and widget Handlers
         initialize();
