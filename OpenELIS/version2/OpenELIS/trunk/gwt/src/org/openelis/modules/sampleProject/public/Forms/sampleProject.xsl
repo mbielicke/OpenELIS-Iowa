@@ -44,7 +44,7 @@
 		<screen id="SampleProjectPicker" name="{resource:getString($constants,'sampleProject')}" serviceUrl="ElisService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 				<VerticalPanel spacing="0" padding="0">
 					<VerticalPanel style="WhiteContentPanel" spacing="0" padding="0" width="300px">
-						<table key="sampleProjectTable" width="auto" maxRows="10" title="" showScroll="ALWAYS">
+						<table key="sampleProjectTable" width="auto" maxRows="10" title="" showScroll="ALWAYS" tab="sampleProjectTable,sampleProjectTable">
 							<col header="Name" width="120">
 								<autoComplete cat="project" case="upper" width="100px">		
 									<col header="Name" width="115"/>
