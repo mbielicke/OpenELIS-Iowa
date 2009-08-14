@@ -69,6 +69,7 @@ public class SampleProjectScreen extends Screen implements HasActionHandlers<Sam
     };
 
     private SampleProjectMetaMap       meta = new SampleProjectMetaMap();
+    private TableWidget sampleProjectTable;
 
     public SampleProjectScreen() throws Exception {
         // Call base to get ScreenDef and draw screen
@@ -83,7 +84,7 @@ public class SampleProjectScreen extends Screen implements HasActionHandlers<Sam
     }
     
     private void initialize(){
-        final TableWidget sampleProjectTable = (TableWidget)def.getWidget("sampleProjectTable");
+        sampleProjectTable = (TableWidget)def.getWidget("sampleProjectTable");
         addScreenHandler(sampleProjectTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
             public void onDataChange(DataChangeEvent event) {
                 sampleProjectTable.load(getTableModel());
@@ -218,11 +219,13 @@ public class SampleProjectScreen extends Screen implements HasActionHandlers<Sam
     }
     
     public void commit() {
+    	sampleProjectTable.finishEditing();
         ActionEvent.fire(this, Action.COMMIT, null);
         window.close();
     }
 
     public void abort() {
+    	sampleProjectTable.finishEditing();
         ActionEvent.fire(this, Action.ABORT, null);
         window.close();
     }
