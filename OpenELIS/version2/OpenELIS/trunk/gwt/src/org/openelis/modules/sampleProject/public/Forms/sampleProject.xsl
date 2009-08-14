@@ -58,6 +58,25 @@
 								<check/>
 							</col>
 						</table>
+						<HorizontalPanel style="WhiteContentPanel">
+                      <widget halign="center" style="WhiteContentPanel">
+                      <appButton action="projectAdd" key="projectAddButton" onclick="this" style="Button">
+                        <HorizontalPanel>
+                          <AbsolutePanel style="AddRowButtonImage"/>
+                          <text><xsl:value-of select="resource:getString($constants,'addRow')"/></text>
+                        </HorizontalPanel>
+                      </appButton>
+                      </widget>
+                      <widget halign="center" style="WhiteContentPanel">
+                      <appButton action="projectRemove" key="projectRemoveButton" onclick="this" style="Button">
+                        <HorizontalPanel>
+                          <AbsolutePanel style="RemoveRowButtonImage"/>
+                          <text><xsl:value-of select="resource:getString($constants,'removeRow')"/></text>
+                        </HorizontalPanel>
+
+                      </appButton>
+                      </widget>
+                    </HorizontalPanel>
 					</VerticalPanel>
 					<!--button panel code-->
 					<AbsolutePanel spacing="0" style="BottomButtonPanelContainer"

@@ -38,6 +38,7 @@ import org.openelis.gwt.event.HasActionHandlers;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.rewrite.Screen;
 import org.openelis.gwt.screen.rewrite.ScreenEventHandler;
+import org.openelis.gwt.screen.rewrite.Screen.State;
 import org.openelis.gwt.widget.rewrite.AppButton;
 import org.openelis.gwt.widget.rewrite.AutoComplete;
 import org.openelis.gwt.widget.table.rewrite.TableDataRow;
@@ -163,6 +164,33 @@ public class SampleProjectScreen extends Screen implements HasActionHandlers<Sam
         sampleProjectTable.addRowDeletedHandler(new RowDeletedHandler() {
             public void onRowDeleted(RowDeletedEvent event) {
                 projectManager.removeProjectAt(event.getIndex());
+            }
+        });
+        final AppButton projectRemoveButton = (AppButton)def.getWidget("projectRemoveButton");
+        addScreenHandler(projectRemoveButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                int selectedRow = sampleProjectTable.getSelectedIndex();
+                if (selectedRow > -1 && sampleProjectTable.numRows() > 0) {
+                    sampleProjectTable.deleteRow(selectedRow);
+                }
+            }
+            public void onStateChange(StateChangeEvent<State> event) {
+                projectRemoveButton.enable(true);
+            }
+            
+        });
+        
+        final AppButton projectAddButton = (AppButton)def.getWidget("projectAddButton");
+        addScreenHandler(projectAddButton,new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                sampleProjectTable.addRow();
+                sampleProjectTable.selectRow(sampleProjectTable.numRows()-1);
+                sampleProjectTable.scrollToSelection();
+                sampleProjectTable.startEditing(sampleProjectTable.numRows()-1, 0);
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                projectAddButton.enable(true);
             }
         });
         
