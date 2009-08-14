@@ -39,7 +39,7 @@ import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.AnalysisTestDO;
 import org.openelis.entity.Analysis;
 import org.openelis.local.AnalysisLocal;
-import org.openelis.managerOld.AnalysesManager;
+import org.openelis.manager.AnalysisManager;
 import org.openelis.remote.AnalysisRemote;
 
 @Stateless
@@ -61,7 +61,7 @@ public class AnalysisBean implements AnalysisRemote, AnalysisLocal{
         return query.getResultList();
     }
 
-    public void update(AnalysesManager analyses) {
+    public void update(AnalysisManager analyses) {
         //validate analyses
         
         manager.setFlushMode(FlushModeType.COMMIT);

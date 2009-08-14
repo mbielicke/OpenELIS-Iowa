@@ -34,7 +34,7 @@ import javax.persistence.PersistenceContext;
 import javax.transaction.UserTransaction;
 
 import org.jboss.annotation.security.SecurityDomain;
-import org.openelis.manager.NotesManager;
+import org.openelis.manager.NoteManager;
 import org.openelis.remote.NoteManagerRemote;
 
 @Stateless
@@ -49,7 +49,7 @@ public class NoteManagerBean implements NoteManagerRemote {
     @Resource
     private SessionContext ctx;
 
-    public NotesManager add(NotesManager man) throws Exception {
+    public NoteManager add(NoteManager man) throws Exception {
         man.validate();
         
         UserTransaction ut = ctx.getUserTransaction();
@@ -61,7 +61,7 @@ public class NoteManagerBean implements NoteManagerRemote {
         return man;
     }
     
-    public NotesManager update(NotesManager man) throws Exception {
+    public NoteManager update(NoteManager man) throws Exception {
         man.validate();
         
         UserTransaction ut = ctx.getUserTransaction();
@@ -73,8 +73,8 @@ public class NoteManagerBean implements NoteManagerRemote {
         return man;
     }
     
-    public NotesManager fetch(Integer referenceTableId, Integer referenceId) throws Exception {
-        return NotesManager.findByRefTableRefId(referenceTableId, referenceId);
+    public NoteManager fetch(Integer referenceTableId, Integer referenceId) throws Exception {
+        return NoteManager.findByRefTableRefId(referenceTableId, referenceId);
 
     }
 }

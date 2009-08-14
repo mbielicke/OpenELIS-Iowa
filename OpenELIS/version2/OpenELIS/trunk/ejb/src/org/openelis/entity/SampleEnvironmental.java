@@ -50,7 +50,8 @@ import org.w3c.dom.Element;
 
 @NamedQueries( {
     @NamedQuery(name = "SampleEnvironmental.SampleEnvironmentalBySampleId", query = "select new org.openelis.domain.SampleEnvironmentalDO(se.id, se.sampleId, se.isHazardous, " + 
-                " se.description, se.collector, se.collectorPhone, se.samplingLocation, se.addressId) from SampleEnvironmental se where se.sampleId = :id")})
+                " se.description, se.collector, se.collectorPhone, se.samplingLocation, se.addressId, ad.multipleUnit,ad.streetAddress, " + 
+                " ad.city,ad.state,ad.zipCode,ad.country) from SampleEnvironmental se LEFT JOIN se.address ad where se.sampleId = :id")})
                 
 @Entity
 @Table(name="sample_environmental")

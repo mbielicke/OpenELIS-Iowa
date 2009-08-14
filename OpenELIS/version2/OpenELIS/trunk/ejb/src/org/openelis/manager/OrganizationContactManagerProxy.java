@@ -32,11 +32,11 @@ import javax.naming.InitialContext;
 
 import org.openelis.domain.OrganizationContactDO;
 import org.openelis.local.OrganizationLocal;
-import org.openelis.manager.OrganizationContactsManager;
+import org.openelis.manager.OrganizationContactManager;
 
-public class OrganizationContactsManagerProxy {
+public class OrganizationContactManagerProxy {
     
-    public OrganizationContactsManager add(OrganizationContactsManager man) throws Exception {
+    public OrganizationContactManager add(OrganizationContactManager man) throws Exception {
         OrganizationLocal ol = getOrganizationLocal();
         OrganizationContactDO contact;
         
@@ -50,7 +50,7 @@ public class OrganizationContactsManagerProxy {
         return man;
     }
 
-    public OrganizationContactsManager update(OrganizationContactsManager man) throws Exception {
+    public OrganizationContactManager update(OrganizationContactManager man) throws Exception {
         OrganizationLocal ol = getOrganizationLocal();
         OrganizationContactDO contact;
         
@@ -71,18 +71,18 @@ public class OrganizationContactsManagerProxy {
         return man;
     }
 
-    public OrganizationContactsManager fetch(Integer id) throws Exception {
+    public OrganizationContactManager fetch(Integer id) throws Exception {
         OrganizationLocal ol = getOrganizationLocal();
      //   man.setContacts((ArrayList)ol.getOrganizationContacts(man.getOrganizationId()));
         
         return null;
     }
     
-    public OrganizationContactsManager fetchByOrgId(Integer orgId) throws Exception {
+    public OrganizationContactManager fetchByOrgId(Integer orgId) throws Exception {
         OrganizationLocal ol = getOrganizationLocal();
         ArrayList<OrganizationContactDO> contacts = (ArrayList<OrganizationContactDO>)ol.fetchContactsById(orgId);
         
-        OrganizationContactsManager cm = OrganizationContactsManager.getInstance();
+        OrganizationContactManager cm = OrganizationContactManager.getInstance();
         cm.setContacts(contacts);
         cm.setOrganizationId(orgId);
         

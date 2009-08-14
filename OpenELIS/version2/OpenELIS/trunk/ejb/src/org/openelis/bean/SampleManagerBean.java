@@ -26,7 +26,6 @@
 package org.openelis.bean;
 
 import javax.annotation.Resource;
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
@@ -37,17 +36,19 @@ import javax.transaction.UserTransaction;
 
 import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.local.LockLocal;
-import org.openelis.manager.OrganizationContactManager;
-import org.openelis.manager.OrganizationManager;
-import org.openelis.remote.OrganizationManagerRemote;
+import org.openelis.manager.SampleItemManager;
+import org.openelis.manager.SampleManager;
+import org.openelis.manager.SampleOrganizationManager;
+import org.openelis.manager.SampleProjectManager;
+import org.openelis.remote.SampleManagerRemote;
 import org.openelis.utils.ReferenceTableCache;
 
 @Stateless
 @TransactionManagement(TransactionManagementType.BEAN)
 
 @SecurityDomain("openelis")
-@RolesAllowed("organization-select")
-public class OrganizationManagerBean implements OrganizationManagerRemote {
+//@RolesAllowed("sample-select")
+public class SampleManagerBean  implements SampleManagerRemote {
 
     @PersistenceContext(name = "openelis")
     
@@ -55,14 +56,14 @@ public class OrganizationManagerBean implements OrganizationManagerRemote {
     private SessionContext ctx;
     
     @EJB private LockLocal lockBean;
+
+    private static int sampleRefTableId;
     
-    private static int orgRefTableId;
-    
-    public OrganizationManagerBean(){
-        orgRefTableId = ReferenceTableCache.getReferenceTable("organization");
+    public SampleManagerBean(){
+        sampleRefTableId = ReferenceTableCache.getReferenceTable("sample");
     }
     
-    public OrganizationManager add(OrganizationManager man) throws Exception {
+    public SampleManager add(SampleManager man) throws Exception {
         man.validate();
         
         UserTransaction ut = ctx.getUserTransaction();
@@ -72,8 +73,8 @@ public class OrganizationManagerBean implements OrganizationManagerRemote {
         
         return man;
     }
-    
-    public OrganizationManager update(OrganizationManager man) throws Exception {
+
+    public SampleManager update(SampleManager man) throws Exception {
         man.validate();
         
         UserTransaction ut = ctx.getUserTransaction();
@@ -83,50 +84,46 @@ public class OrganizationManagerBean implements OrganizationManagerRemote {
         
         return man;
     }
-    
-    public OrganizationManager fetch(Integer orgId) throws Exception {
-        OrganizationManager man = OrganizationManager.findById(orgId);
+
+    public SampleManager fetch(Integer sampleId) throws Exception {
+        SampleManager man = SampleManager.findById(sampleId);
+        
+        return man;
+    }
+
+    public SampleManager fetchByAccessionNumber(Integer accessionNumber) throws Exception {
+        SampleManager man = SampleManager.findByAccessionNumber(accessionNumber);
+        
+        return man;
+    }
+
+    public SampleManager fetchForUpdate(Integer sampleId) throws Exception {
+        lockBean.getLock(sampleRefTableId, sampleId);
+        
+        return fetch(sampleId);
+    }
+
+    public SampleManager abortUpdate(Integer sampleId) throws Exception {
+        lockBean.giveUpLock(sampleRefTableId, sampleId);
+        
+        return fetch(sampleId);
+    }
+
+    public SampleOrganizationManager fetchSampleOrgsBySampleId(Integer sampleId) throws Exception {
+        SampleOrganizationManager man = SampleOrganizationManager.findBySampleId(sampleId);   
+        
+        return man;
+    }
+
+    public SampleProjectManager fetchSampleProjectsBySampleId(Integer sampleId) throws Exception {
+        SampleProjectManager man = SampleProjectManager.findBySampleId(sampleId);   
         
         return man;
     }
     
-    public OrganizationManager fetchWithContacts(Integer orgId) throws Exception {
-        OrganizationManager man = OrganizationManager.findByIdWithContacts(orgId);
+    public SampleItemManager fetchSampleItemsBySampleId(Integer sampleId) throws Exception {
+        SampleItemManager man = SampleItemManager.findBySampleId(sampleId);
         
         return man;
-    }
-    
-    public OrganizationManager fetchWithIdentifiers(Integer orgId) throws Exception {
-        OrganizationManager man = OrganizationManager.findByIdWithIdentifiers(orgId);
-        
-        return man;
-    }
-    
-    public OrganizationManager fetchWithNotes(Integer orgId) throws Exception { 
-        OrganizationManager man = OrganizationManager.findByIdWithNotes(orgId);
-        
-        return man;
-    }
-    
-    public OrganizationManager fetchForUpdate(Integer orgId) throws Exception {
-        lockBean.getLock(orgRefTableId, orgId);
-        
-        return fetch(orgId);
-    }
-    
-    public OrganizationManager abortUpdate(Integer orgId) throws Exception {
-        lockBean.giveUpLock(orgRefTableId, orgId);
-        
-        return fetch(orgId);
-    }
-    
-    public OrganizationContactManager fetchContactById(Integer id) throws Exception {
-        return null;
-    }
-    
-    public OrganizationContactManager fetchContactByOrgId(Integer orgId) throws Exception {
-        OrganizationContactManager cm = OrganizationContactManager.findByOrganizationId(orgId);
-        
-        return cm;
     }
 }

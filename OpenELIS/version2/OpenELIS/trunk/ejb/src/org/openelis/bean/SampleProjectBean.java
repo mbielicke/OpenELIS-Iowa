@@ -27,8 +27,6 @@ package org.openelis.bean;
 
 import java.util.List;
 
-import javax.annotation.Resource;
-import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
@@ -38,60 +36,57 @@ import javax.persistence.Query;
 import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.SampleProjectDO;
 import org.openelis.entity.SampleProject;
+import org.openelis.exception.NotFoundException;
 import org.openelis.local.SampleProjectLocal;
-import org.openelis.managerOld.SampleProjectsManager;
-import org.openelis.remote.SampleProjectRemote;
 
 @Stateless
 
 @SecurityDomain("openelis")
 //@RolesAllowed("LOCKINGtest")
-public class SampleProjectBean implements SampleProjectRemote, SampleProjectLocal {
+public class SampleProjectBean implements SampleProjectLocal {
     @PersistenceContext(name = "openelis")
     private EntityManager manager;
    
-    @Resource
-    private SessionContext ctx;
-    
-    public List getProjectsBySampleId(Integer sampleId) {
+    public List<SampleProjectDO> fetchBySampleId(Integer sampleId) throws Exception {
         Query query = manager.createNamedQuery("SampleProject.SampleProjectBySampleId");
         query.setParameter("id", sampleId);
- 
-        return query.getResultList(); 
+        List<SampleProjectDO> returnList = query.getResultList();
+        
+        if(returnList.size() == 0)
+            throw new NotFoundException();
+        
+        return returnList;
     }
 
-    public void update(SampleProjectsManager sampleProjects) {
-        //validate projects
-        
+    public void add(SampleProjectDO sampleProjectDO) {
         manager.setFlushMode(FlushModeType.COMMIT);
         
-        for(int i=0; i<sampleProjects.count(); i++){
-            //update the sample item
-            SampleProjectDO projDO = sampleProjects.getSampleProjectAt(i);
-            SampleProject project = null;
-            if (projDO.getId() == null)
-                project = new SampleProject();
-            else
-                project = manager.find(SampleProject.class, projDO.getId());
-            
-            project.setIsPermanent(projDO.getIsPermanent());
-            project.setProjectId(projDO.getProjectId());
-            project.setSampleId(projDO.getSampleId());
-            
-            if(project.getId() == null)
-                manager.persist(project);
-        }
-    }
-    
-    public List autoCompleteLookupByName(String projectName, Integer maxResults) {
-        Query query = manager.createNamedQuery("Project.ProjectByName");
-        query.setParameter("name", projectName);
-        query.setMaxResults(maxResults);
- 
-        return query.getResultList(); 
-    }
-    
-    private void validateProjects() throws Exception {
+        SampleProject project = new SampleProject();
         
-    }    
+        project.setIsPermanent(sampleProjectDO.getIsPermanent());
+        project.setProjectId(sampleProjectDO.getProjectId());
+        project.setSampleId(sampleProjectDO.getSampleId());
+        
+        manager.persist(project);
+        sampleProjectDO.setId(project.getId());
+    }
+
+    public void update(SampleProjectDO sampleProjectDO) {
+        manager.setFlushMode(FlushModeType.COMMIT);
+        
+        SampleProject project = manager.find(SampleProject.class, sampleProjectDO.getId());
+        
+        project.setIsPermanent(sampleProjectDO.getIsPermanent());
+        project.setProjectId(sampleProjectDO.getProjectId());
+        project.setSampleId(sampleProjectDO.getSampleId());
+    }
+
+    public void delete(SampleProjectDO sampleProjectDO) {
+        manager.setFlushMode(FlushModeType.COMMIT);
+        
+        SampleProject project = manager.find(SampleProject.class, sampleProjectDO.getId());
+        
+        if(project != null)
+            manager.remove(project);
+    }
 }

@@ -29,11 +29,14 @@ import java.util.List;
 
 import javax.ejb.Local;
 
-import org.openelis.managerOld.SampleOrganizationsManager;
+import org.openelis.domain.SampleEnvironmentalDO;
+import org.openelis.domain.SampleOrganizationDO;
 
 @Local
 public interface SampleOrganizationLocal {
-    public List getOrganizationsBySampleId(Integer sampleId);   
+    public List<SampleOrganizationDO> fetchBySampleId(Integer sampleId) throws Exception;   
     
-    public void update(SampleOrganizationsManager sampleOrganizations);
+    public void add(SampleOrganizationDO sampleOrgDO);
+    public void update(SampleOrganizationDO sampleOrgDO); 
+    public void delete(SampleOrganizationDO sampleOrgDO);
 }

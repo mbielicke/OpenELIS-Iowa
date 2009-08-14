@@ -29,12 +29,14 @@ import java.util.List;
 
 import javax.ejb.Local;
 
-import org.openelis.managerOld.SampleProjectsManager;
+import org.openelis.domain.SampleProjectDO;
 
 @Local
 public interface SampleProjectLocal {
 
-    public List getProjectsBySampleId(Integer sampleId);   
+    public List<SampleProjectDO> fetchBySampleId(Integer sampleId) throws Exception;   
     
-    public void update(SampleProjectsManager sampleProjects);
+    public void add(SampleProjectDO sampleProjectDO);
+    public void update(SampleProjectDO sampleProjectDO);
+    public void delete(SampleProjectDO sampleProjectDO);
 }

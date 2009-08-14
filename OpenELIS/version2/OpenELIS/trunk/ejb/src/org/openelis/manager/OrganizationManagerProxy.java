@@ -31,9 +31,9 @@ import org.openelis.domain.OrganizationAddressDO;
 import org.openelis.local.OrganizationLocal;
 import org.openelis.utils.ReferenceTableCache;
 
-public class OrganizationsManagerProxy {
+public class OrganizationManagerProxy {
     
-    public OrganizationsManager add(OrganizationsManager man) throws Exception {
+    public OrganizationManager add(OrganizationManager man) throws Exception {
         Integer orgId, orgRefId;
         OrganizationLocal ol = getOrganizationLocal();
         ol.add(man.getOrganizationAddress());
@@ -51,7 +51,7 @@ public class OrganizationsManagerProxy {
         return man;
     }
 
-    public OrganizationsManager update(OrganizationsManager man) throws Exception {
+    public OrganizationManager update(OrganizationManager man) throws Exception {
         Integer orgId, orgRefId;
         OrganizationLocal ol = getOrganizationLocal();
 
@@ -69,18 +69,18 @@ public class OrganizationsManagerProxy {
         return man;
     }
 
-    public OrganizationsManager fetch(Integer orgId) throws Exception {
+    public OrganizationManager fetch(Integer orgId) throws Exception {
         OrganizationLocal ol = getOrganizationLocal();
         OrganizationAddressDO orgDO = ol.fetchById(orgId);
-        OrganizationsManager m = OrganizationsManager.getInstance();
+        OrganizationManager m = OrganizationManager.getInstance();
         m.setOrganizationAddress(orgDO);
         m.setOrganizationReferenceTable(ReferenceTableCache.getReferenceTable("organization"));
         
         return m;
     }
     
-    public OrganizationsManager fetchWithContacts(Integer orgId) throws Exception {
-        OrganizationsManager m = fetch(orgId);
+    public OrganizationManager fetchWithContacts(Integer orgId) throws Exception {
+        OrganizationManager m = fetch(orgId);
         m.setOrganizationReferenceTable(ReferenceTableCache.getReferenceTable("organization"));
         
         m.getContacts();
@@ -88,8 +88,8 @@ public class OrganizationsManagerProxy {
         return m;
     }
     
-    public OrganizationsManager fetchWithNotes(Integer orgId) throws Exception {
-        OrganizationsManager m = fetch(orgId);
+    public OrganizationManager fetchWithNotes(Integer orgId) throws Exception {
+        OrganizationManager m = fetch(orgId);
         m.setOrganizationReferenceTable(ReferenceTableCache.getReferenceTable("organization"));
 
         m.getNotes();
@@ -97,21 +97,21 @@ public class OrganizationsManagerProxy {
         return m;
     }
     
-    public OrganizationsManager fetchWithIdentifiers(Integer orgId) throws Exception {
+    public OrganizationManager fetchWithIdentifiers(Integer orgId) throws Exception {
         return null;
     }
 
-    public OrganizationsManager fetchForUpdate(OrganizationsManager man) throws Exception {
+    public OrganizationManager fetchForUpdate(OrganizationManager man) throws Exception {
         //do nothing
         return null;
     }
     
-    public OrganizationsManager abort(Integer orgId) throws Exception {
+    public OrganizationManager abort(Integer orgId) throws Exception {
         //do nothing
         return null;
     }
     
-    public void validate(OrganizationsManager man) throws Exception {
+    public void validate(OrganizationManager man) throws Exception {
         OrganizationLocal ol = getOrganizationLocal();
         
         ol.validateOrganization(man.getOrganizationAddress(), man.getContacts().getContacts());
