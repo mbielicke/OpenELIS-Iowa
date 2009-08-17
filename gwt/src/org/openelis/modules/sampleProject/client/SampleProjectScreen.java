@@ -38,7 +38,6 @@ import org.openelis.gwt.event.HasActionHandlers;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.rewrite.Screen;
 import org.openelis.gwt.screen.rewrite.ScreenEventHandler;
-import org.openelis.gwt.screen.rewrite.Screen.State;
 import org.openelis.gwt.widget.rewrite.AppButton;
 import org.openelis.gwt.widget.rewrite.AutoComplete;
 import org.openelis.gwt.widget.table.rewrite.TableDataRow;
@@ -62,10 +61,10 @@ import com.google.gwt.user.client.Window;
 
 public class SampleProjectScreen extends Screen implements HasActionHandlers<SampleProjectScreen.Action> {
 
-    private SampleProjectManager projectManager;
+    private SampleProjectManager manager;
 
     public enum Action {
-        COMMIT, ABORT
+        COMMIT
     };
 
     private SampleProjectMetaMap       meta = new SampleProjectMetaMap();
@@ -103,7 +102,7 @@ public class SampleProjectScreen extends Screen implements HasActionHandlers<Sam
                 SampleProjectDO projectDO;
                 TableDataRow tableRow = sampleProjectTable.getRow(row);
                 try{
-                    projectDO = projectManager.getProjectAt(row);
+                    projectDO = manager.getProjectAt(row);
                 }catch(Exception e){
                     Window.alert(e.getMessage());
                     return;
@@ -114,6 +113,7 @@ public class SampleProjectScreen extends Screen implements HasActionHandlers<Sam
                 switch (col){
                     case 0:
                             projectDO.setProjectId((Integer)((Object[])val)[0]);    
+                            projectDO.getProject().setName((String)((Object[])val)[1]);
                             break;
                     case 2:
                             projectDO.setIsPermanent((String)val);
@@ -158,13 +158,13 @@ public class SampleProjectScreen extends Screen implements HasActionHandlers<Sam
         
         sampleProjectTable.addRowAddedHandler(new RowAddedHandler() {
             public void onRowAdded(RowAddedEvent event) {
-                projectManager.addProject(new SampleProjectDO());
+                manager.addProject(new SampleProjectDO());
             }
         });
 
         sampleProjectTable.addRowDeletedHandler(new RowDeletedHandler() {
             public void onRowDeleted(RowDeletedEvent event) {
-                projectManager.removeProjectAt(event.getIndex());
+                manager.removeProjectAt(event.getIndex());
             }
         });
         final AppButton projectRemoveButton = (AppButton)def.getWidget("projectRemoveButton");
@@ -195,7 +195,7 @@ public class SampleProjectScreen extends Screen implements HasActionHandlers<Sam
             }
         });
         
-        final AppButton commitButton = (AppButton)def.getWidget("popupSelect");
+        final AppButton commitButton = (AppButton)def.getWidget("commit");
         addScreenHandler(commitButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 commit();
@@ -206,40 +206,24 @@ public class SampleProjectScreen extends Screen implements HasActionHandlers<Sam
             }
         });
 
-        final AppButton abortButton = (AppButton)def.getWidget("popupCancel");
-        addScreenHandler(abortButton, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                abort();
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                abortButton.enable(true);
-            }
-        });
     }
     
     public void commit() {
-    	sampleProjectTable.finishEditing();
+        sampleProjectTable.finishEditing();
         ActionEvent.fire(this, Action.COMMIT, null);
-        window.close();
-    }
-
-    public void abort() {
-    	sampleProjectTable.finishEditing();
-        ActionEvent.fire(this, Action.ABORT, null);
         window.close();
     }
         
     private ArrayList<TableDataRow> getTableModel() {
         ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
         
-        if(projectManager == null)
+        if(manager == null)
             return model;
         
         try 
         {   
-            for(int iter = 0;iter < projectManager.count();iter++) {
-                SampleProjectDO projectRow = (SampleProjectDO)projectManager.getProjectAt(iter);
+            for(int iter = 0;iter < manager.count();iter++) {
+                SampleProjectDO projectRow = (SampleProjectDO)manager.getProjectAt(iter);
             
                TableDataRow row = new TableDataRow(3);
                row.key = projectRow.getId();
@@ -259,13 +243,13 @@ public class SampleProjectScreen extends Screen implements HasActionHandlers<Sam
         return model;
     }
    
-    public void setProjectManager(SampleProjectManager man){
-        projectManager = man;
+    public void setManager(SampleProjectManager man){
+        manager = man;
         DataChangeEvent.fire(this);
     }
     
-    public SampleProjectManager getProjectManager(){
-        return projectManager;
+    public SampleProjectManager getManager(){
+        return manager;
     }
     
     public HandlerRegistration addActionHandler(ActionHandler<Action> handler) {

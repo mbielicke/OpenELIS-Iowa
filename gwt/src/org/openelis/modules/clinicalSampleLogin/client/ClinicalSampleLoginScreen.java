@@ -150,6 +150,6 @@ public class ClinicalSampleLoginScreen extends OpenELISScreenForm<ClinicalSample
     private void onOrganizationLookupClick(){
         ScreenWindow modal = new ScreenWindow(null,"Sample Organization","sampleOrganizationScreen","Loading...",true,false);
         modal.setName(consts.get("sampleOrganization"));
-        modal.setContent(new SampleOrganizationScreen());
+        //modal.setContent(new SampleOrganizationScreen());
     }
 }

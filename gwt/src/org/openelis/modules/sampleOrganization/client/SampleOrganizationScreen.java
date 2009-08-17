@@ -1,4 +1,4 @@
-    /** Exhibit A - UIRF Open-source Based Public Software License.
+/** Exhibit A - UIRF Open-source Based Public Software License.
 * 
 * The contents of this file are subject to the UIRF Open-source Based
 * Public Software License(the "License"); you may not use this file except
@@ -29,188 +29,250 @@ import java.util.ArrayList;
 
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.DictionaryDO;
-import org.openelis.gwt.common.Query;
-import org.openelis.gwt.common.data.DropDownField;
-import org.openelis.gwt.common.data.KeyListManager;
-import org.openelis.gwt.common.data.StringObject;
-import org.openelis.gwt.common.data.TableDataModel;
-import org.openelis.gwt.common.data.TableDataRow;
-import org.openelis.gwt.event.CommandListener;
-import org.openelis.gwt.screen.CommandChain;
-import org.openelis.gwt.screen.ScreenTableWidget;
-import org.openelis.gwt.widget.ButtonPanel;
-import org.openelis.gwt.widget.table.TableDropdown;
-import org.openelis.gwt.widget.table.TableManager;
-import org.openelis.gwt.widget.table.TableWidget;
-import org.openelis.gwt.widget.table.event.SourcesTableWidgetEvents;
-import org.openelis.gwt.widget.table.event.TableWidgetListener;
-import org.openelis.modules.environmentalSampleLogin.client.SampleOrganizationForm;
-import org.openelis.modules.main.client.OpenELISScreenForm;
+import org.openelis.domain.OrganizationAutoDO;
+import org.openelis.domain.SampleOrganizationDO;
+import org.openelis.gwt.event.ActionEvent;
+import org.openelis.gwt.event.ActionHandler;
+import org.openelis.gwt.event.DataChangeEvent;
+import org.openelis.gwt.event.GetMatchesEvent;
+import org.openelis.gwt.event.GetMatchesHandler;
+import org.openelis.gwt.event.HasActionHandlers;
+import org.openelis.gwt.event.StateChangeEvent;
+import org.openelis.gwt.screen.rewrite.Screen;
+import org.openelis.gwt.screen.rewrite.ScreenEventHandler;
+import org.openelis.gwt.widget.rewrite.AppButton;
+import org.openelis.gwt.widget.rewrite.AutoComplete;
+import org.openelis.gwt.widget.rewrite.Dropdown;
+import org.openelis.gwt.widget.table.rewrite.TableDataRow;
+import org.openelis.gwt.widget.table.rewrite.TableRow;
+import org.openelis.gwt.widget.table.rewrite.TableWidget;
+import org.openelis.gwt.widget.table.rewrite.event.CellEditedEvent;
+import org.openelis.gwt.widget.table.rewrite.event.CellEditedHandler;
+import org.openelis.gwt.widget.table.rewrite.event.RowAddedEvent;
+import org.openelis.gwt.widget.table.rewrite.event.RowAddedHandler;
+import org.openelis.gwt.widget.table.rewrite.event.RowDeletedEvent;
+import org.openelis.gwt.widget.table.rewrite.event.RowDeletedHandler;
+import org.openelis.manager.SampleOrganizationManager;
+import org.openelis.modules.environmentalSampleLogin.client.AutocompleteRPC;
 
-public class SampleOrganizationScreen extends OpenELISScreenForm<SampleOrganizationForm,Query<TableDataRow<Integer>>> implements TableManager, TableWidgetListener {
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.Window;
 
-    public enum Action {Commited, Aborted}
-    private CommandListener commandTarget;
-    private ScreenTableWidget            sampleOrgTable;
-    
-    private KeyListManager keyList = new KeyListManager();
-    
-    public SampleOrganizationScreen() {                
-        this(new SampleOrganizationForm());
+public class SampleOrganizationScreen  extends Screen implements HasActionHandlers<SampleOrganizationScreen.Action> {
+
+    private SampleOrganizationManager manager;
+
+    public enum Action {
+        COMMIT
+    };
+
+    private TableWidget sampleOrganizationTable;
+    private boolean loaded = false;
+
+    public SampleOrganizationScreen() throws Exception {
+        // Call base to get ScreenDef and draw screen
+        super("OpenELISServlet?service=org.openelis.modules.sampleOrganization.server.SampleOrganizationService");
         
+        // Setup link between Screen and widget Handlers
+        initialize();
+
+        // Initialize Screen
+        setState(State.DEFAULT);
     }
     
-    public SampleOrganizationScreen(SampleOrganizationForm form) {                
-        super("org.openelis.modules.sampleOrganization.server.SampleOrganizationService");
-        query = new Query<TableDataRow<Integer>>();
+    private void initialize(){
+        sampleOrganizationTable = (TableWidget)def.getWidget("sampleOrganizationTable");
+        addScreenHandler(sampleOrganizationTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
+            public void onDataChange(DataChangeEvent event) {
+                sampleOrganizationTable.load(getTableModel());
+            }
 
-        getScreen(form);
-    }
-    
-    public SampleOrganizationScreen(SampleOrganizationForm form, CommandListener target) {                
-        super("org.openelis.modules.sampleOrganization.server.SampleOrganizationService");
-        query = new Query<TableDataRow<Integer>>();
-        
-        commandTarget = target;
+            public void onStateChange(StateChangeEvent<State> event) {
+                sampleOrganizationTable.enable(true);
+            }
+        });
 
-        getScreen(form);
-    }
-    
-    public void setForm(SampleOrganizationForm form){
-        this.form = form;
-        load(form);
-    }
+        sampleOrganizationTable.addCellEditedHandler(new CellEditedHandler() {
+            public void onCellUpdated(CellEditedEvent event) {
+                int row,col;
+                row = event.getRow();
+                col = event.getCell();
+                SampleOrganizationDO orgDO;
+                TableDataRow tableRow = sampleOrganizationTable.getRow(row);
+                try{
+                    orgDO = manager.getOrganizationAt(row);
+                }catch(Exception e){
+                    Window.alert(e.getMessage());
+                    return;
+                }
+                    
+                Object val = tableRow.cells.get(col).value;
+                
+                switch (col){
+                    case 0:
+                            orgDO.setTypeId((Integer)val);
+                            break;
+                    case 2:
+                            orgDO.setOrganizationId((Integer)val);
+                            break;
+                }
+            }
+        });
+        
+        final AutoComplete<Integer> organization = ((AutoComplete<Integer>)sampleOrganizationTable.columns.get(2).colWidget);
+        organization.addSelectionHandler(new SelectionHandler<TableRow>(){
+            public void onSelection(SelectionEvent<TableRow> event) {
+                TableRow autoRow = event.getSelectedItem();
+                sampleOrganizationTable.setCell(sampleOrganizationTable.getSelectedIndex(), 1, autoRow.row.key);
+                sampleOrganizationTable.setCell(sampleOrganizationTable.getSelectedIndex(), 3, autoRow.row.cells.get(2).value);
+                sampleOrganizationTable.setCell(sampleOrganizationTable.getSelectedIndex(), 4, autoRow.row.cells.get(3).value);
+            }
+        });
 
-    public void afterDraw(boolean success) {
-        ButtonPanel bpanel = (ButtonPanel) getWidget("buttons");
+        organization.addGetMatchesHandler(new GetMatchesHandler(){
+            public void onGetMatches(GetMatchesEvent event) {
+                AutocompleteRPC rpc = new AutocompleteRPC();
+                rpc.match = event.getMatch();
+                try {
+                    rpc = service.call("getOrganizationMatches", rpc);
+                    ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
+                        
+                    for (int i=0; i<rpc.model.size(); i++){
+                        OrganizationAutoDO autoDO = (OrganizationAutoDO)rpc.model.get(i);
+                        
+                        TableDataRow row = new TableDataRow(4);
+                        row.key = autoDO.getId();
+                        row.cells.get(0).value = autoDO.getName();
+                        row.cells.get(1).value = autoDO.getAddress();
+                        row.cells.get(2).value = autoDO.getCity();
+                        row.cells.get(3).value = autoDO.getState();
+                        model.add(row);
+                    } 
+                    
+                    organization.showAutoMatches(model);
+                        
+                }catch(Exception e) {
+                    Window.alert(e.getMessage());                     
+                }
+            }
+        });
         
-        CommandChain chain = new CommandChain();
-        chain.addCommand(this);
-        chain.addCommand(keyList);
-        chain.addCommand(bpanel);
+        sampleOrganizationTable.addRowAddedHandler(new RowAddedHandler() {
+            public void onRowAdded(RowAddedEvent event) {
+                manager.addOrganization(new SampleOrganizationDO());
+            }
+        });
+
+        sampleOrganizationTable.addRowDeletedHandler(new RowDeletedHandler() {
+            public void onRowDeleted(RowDeletedEvent event) {
+                manager.removeOrganizationAt(event.getIndex());
+            }
+        });
+        final AppButton organizationRemoveButton = (AppButton)def.getWidget("organizationRemoveButton");
+        addScreenHandler(organizationRemoveButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                int selectedRow = sampleOrganizationTable.getSelectedIndex();
+                if (selectedRow > -1 && sampleOrganizationTable.numRows() > 0) {
+                    sampleOrganizationTable.deleteRow(selectedRow);
+                }
+            }
+            public void onStateChange(StateChangeEvent<State> event) {
+                organizationRemoveButton.enable(true);
+            }
+            
+        });
         
-        sampleOrgTable = (ScreenTableWidget)widgets.get("sampleOrganizationTable");
-        ((TableWidget)sampleOrgTable.getWidget()).addTableWidgetListener(this);
+        final AppButton organizationAddButton = (AppButton)def.getWidget("organizationAddButton");
+        addScreenHandler(organizationAddButton,new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                sampleOrganizationTable.addRow();
+                sampleOrganizationTable.selectRow(sampleOrganizationTable.numRows()-1);
+                sampleOrganizationTable.scrollToSelection();
+                sampleOrganizationTable.startEditing(sampleOrganizationTable.numRows()-1, 0);
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                organizationAddButton.enable(true);
+            }
+        });
         
-        super.afterDraw(success);
-        
-        ArrayList cache;
-        TableDataModel<TableDataRow> model;
-        cache = DictionaryCache.getListByCategorySystemName("organization_type");
-        model = getDictionaryIdEntryList(cache);
-        ((TableDropdown)((TableWidget)sampleOrgTable.getWidget()).columns.get(0).getColumnWidget()).setModel(model);
-        
-        //enable auto add and put the cursor in the first cell
-        sampleOrgTable.enable(true);
-        ((TableWidget)sampleOrgTable.getWidget()).model.enableAutoAdd(true);
-        ((TableWidget)sampleOrgTable.getWidget()).select(0, 0);
+        final AppButton commitButton = (AppButton)def.getWidget("commit");
+        addScreenHandler(commitButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                commit();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                commitButton.enable(true);
+            }
+        });
+
     }
     
     public void commit() {
-        if(commandTarget != null)
-            commandTarget.performCommand(Action.Commited, form.sampleOrganizationTable.getValue());
-        
+        sampleOrganizationTable.finishEditing();
+        ActionEvent.fire(this, Action.COMMIT, null);
         window.close();
     }
-
-    public void abort() {
-        if(commandTarget != null)
-            commandTarget.performCommand(Action.Aborted, null);
-        
-        window.close();
-    }
-
-    //
-    //start table manager methods
-    //
-    public  boolean canAdd(TableWidget widget, TableDataRow set, int row) {
-        return false;
-    }
-
-    public  boolean canAutoAdd(TableWidget widget, TableDataRow addRow) {
-        return !tableRowEmpty(addRow);
-    }
-
-    public  boolean canDelete(TableWidget widget, TableDataRow set, int row) {
-        return false;
-    }
-
-    public  boolean canEdit(TableWidget widget, TableDataRow set, int row, int col) {
-        if(col == 0 || col == 2)
-            return true;
-        
-        return false;
-    }
-
-    public  boolean canSelect(TableWidget widget, TableDataRow set, int row) {
-        return true;
-    }
-    //
-    //end table manager methods
-    //
     
-    //
-    //start table listener methods
-    //
-    public void startEditing(SourcesTableWidgetEvents sender, int row, int col) {
+    private ArrayList<TableDataRow> getTableModel() {
+        ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
         
-    }
-    
-    public void stopEditing(SourcesTableWidgetEvents sender, int row, int col) {
+        if(manager == null)
+            return model;
         
-    }
-    
-    public void finishedEditing(SourcesTableWidgetEvents sender, int row, int col) {
-        if(col == 2){
-            TableDataRow<Integer> tableRow = ((TableWidget)sampleOrgTable.getWidget()).model.getRow(row);
-            DropDownField<Integer> orgField = (DropDownField)tableRow.cells[2];
-            ArrayList selections = orgField.getValue();
-
-            if(selections.size() > 0){
-                TableWidget sampleTable = (TableWidget)sampleOrgTable.getWidget();
-                TableDataRow<Integer> selectedRow = (TableDataRow<Integer>)selections.get(0);
-                                
-                sampleTable.model.setCell(row, 1, selectedRow.key);
-                sampleTable.model.setCell(row, 3, selectedRow.cells[2].getValue());
-                sampleTable.model.setCell(row, 4, selectedRow.cells[3].getValue());
+        try 
+        {   
+            for(int iter = 0;iter < manager.count();iter++) {
+                SampleOrganizationDO orgDO = (SampleOrganizationDO)manager.getOrganizationAt(iter);
+            
+               TableDataRow row = new TableDataRow(5);
+               row.key = orgDO.getId();
+               
+               row.cells.get(0).value = orgDO.getTypeId();
+               row.cells.get(1).value = orgDO.getOrganizationId();
+               row.cells.get(2).value = new Object[] {orgDO.getOrganizationId(),orgDO.getOrganization().getName()};
+               row.cells.get(3).value = orgDO.getOrganization().getAddressDO().getCity();
+               row.cells.get(4).value = orgDO.getOrganization().getAddressDO().getState();
+               
+               model.add(row);
+               
             }
-        }
-    }
-    //
-    //end table listener methods
-    //
+        } catch (Exception e) {
     
-    private boolean tableRowEmpty(TableDataRow<Integer> row){
-        boolean empty = true;
+            e.printStackTrace();
+            return null;
+        }       
         
-        for(int i=0; i<row.cells.length; i++){
-            if(row.cells[i].getValue() != null && !"".equals(row.cells[i].getValue())){
-                empty = false;
-                break;
-            }
-        }
-
-        return empty;
+        return model;
     }
     
-    private TableDataModel<TableDataRow> getDictionaryIdEntryList(ArrayList list){
-        TableDataModel<TableDataRow> m = new TableDataModel<TableDataRow>();
-        TableDataRow<Integer> row;
+    private void setOrganizationTypes(ArrayList<DictionaryDO> list) {
+        ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
+        model.add(new TableDataRow(null, ""));
+        for(DictionaryDO resultDO :  list){
+            model.add(new TableDataRow(resultDO.getId(),resultDO.getEntry()));
+        } 
+        ((Dropdown<Integer>)sampleOrganizationTable.columns.get(0).getColumnWidget()).setModel(model);
+    }
+    
+    public void setManager(SampleOrganizationManager man){
+        manager = man;
         
-        if(list == null)
-            return m;
+        if(!loaded)
+            setOrganizationTypes(DictionaryCache.getListByCategorySystemName("organization_type"));
         
-        m = new TableDataModel<TableDataRow>();
-        m.add(new TableDataRow<Integer>(null,new StringObject("")));
-        
-        for(int i=0; i<list.size(); i++){
-            row = new TableDataRow<Integer>(1);
-            DictionaryDO dictDO = (DictionaryDO)list.get(i);
-            row.key = dictDO.getId();
-            row.cells[0] = new StringObject(dictDO.getEntry());
-            m.add(row);
-        }
-        
-        return m;
+        DataChangeEvent.fire(this);
+    }
+    
+    public SampleOrganizationManager getManager(){
+        return manager;
+    }
+    
+    public HandlerRegistration addActionHandler(ActionHandler<Action> handler) {
+        return addHandler(handler, ActionEvent.getType());
     }
 }
