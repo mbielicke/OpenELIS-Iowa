@@ -58,8 +58,7 @@ import com.google.gwt.user.client.Window;
 public class EditNoteScreen extends Screen implements
                                           HasActionHandlers<EditNoteScreen.Action> {
 
-    private ScreenService service;
-    private NoteDO        noteDO;
+    private NoteDO        managerNoteDO, screenNoteDO;
 
     public enum Action {
         COMMIT, ABORT
@@ -121,16 +120,16 @@ public class EditNoteScreen extends Screen implements
         final TextBox subject = (TextBox)def.getWidget("subject");
         addScreenHandler(subject, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                subject.setValue(noteDO.getSubject());
+                subject.setValue(screenNoteDO.getSubject());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
-                noteDO.setSubject(event.getValue());
+                screenNoteDO.setSubject(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                if (noteDO != null)
-                    subject.enable("N".equals(noteDO.getIsExternal()));
+                if (screenNoteDO != null)
+                    subject.enable("N".equals(screenNoteDO.getIsExternal()));
 
             }
         });
@@ -138,11 +137,11 @@ public class EditNoteScreen extends Screen implements
         text = (TextArea)def.getWidget("text");
         addScreenHandler(text, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                text.setValue(noteDO.getText());
+                text.setValue(screenNoteDO.getText());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
-                noteDO.setText(event.getValue());
+                screenNoteDO.setText(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -297,7 +296,8 @@ public class EditNoteScreen extends Screen implements
     }
 
     public void commit() {
-
+        managerNoteDO.copy(screenNoteDO);
+        
         ActionEvent.fire(this, Action.COMMIT, null);
         window.close();
     }
@@ -334,7 +334,7 @@ public class EditNoteScreen extends Screen implements
               
               noteNode = new TreeDataItem(1);
               noteNode.leafType = "note";
-              noteNode.key = noteDO.getId();
+              noteNode.key = screenNoteDO.getId();
               noteNode.cells.get(0).value = note.getName() + " : "
                                                  + note.getDescription();
               noteNode.data = note.getText();
@@ -398,7 +398,9 @@ public class EditNoteScreen extends Screen implements
      */
 
     public void setNote(NoteDO note) {
-        noteDO = note;
+        screenNoteDO = new NoteDO();
+        screenNoteDO.copy(note);
+        managerNoteDO = note;
         
         buildTree();
         DataChangeEvent.fire(this);
