@@ -27,6 +27,7 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
+import org.openelis.domain.OrganizationContactDO;
 import org.openelis.domain.SampleItemDO;
 import org.openelis.exception.NotFoundException;
 import org.openelis.gwt.common.RPC;
@@ -90,6 +91,19 @@ public class SampleItemManager implements RPC {
         SampleItemListItem item = new SampleItemListItem();
         item.sampleItem = sampleItem;
         items.add(item);
+    }
+    
+    public void removeSampleItemAt(int i){
+        if(items == null || i >= items.size())
+            return;
+        
+        SampleItemListItem tmpList = items.remove(i);
+        
+        if(deletedList == null)
+            deletedList = new ArrayList<SampleItemListItem>();
+        
+        if(tmpList.sampleItem.getId() != null)
+            deletedList.add(tmpList);
     }
 
     // storage

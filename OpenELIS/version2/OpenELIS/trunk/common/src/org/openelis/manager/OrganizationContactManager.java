@@ -105,7 +105,8 @@ public class OrganizationContactManager implements RPC {
         if(deletedContacts == null)
             deletedContacts = new ArrayList<OrganizationContactDO>();
         
-        deletedContacts.add(tmpDO);
+        if(tmpDO.getId() != null)
+            deletedContacts.add(tmpDO);
     }
     
     //service methods

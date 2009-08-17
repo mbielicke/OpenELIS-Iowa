@@ -159,7 +159,8 @@ public class SampleOrganizationManager implements RPC {
         if (deletedList == null)
             deletedList = new ArrayList<SampleOrganizationDO>();
 
-        deletedList.add(tmpDO);
+        if(tmpDO.getId() != null)
+            deletedList.add(tmpDO);
     }
 
     // service methods

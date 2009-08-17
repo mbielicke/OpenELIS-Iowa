@@ -108,7 +108,8 @@ public class SampleProjectManager implements RPC {
         if (deletedList == null)
             deletedList = new ArrayList<SampleProjectDO>();
 
-        deletedList.add(tmpDO);
+        if(tmpDO.getId() != null)
+            deletedList.add(tmpDO);
     }
     // service methods
     public SampleProjectManager add() throws Exception {
