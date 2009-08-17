@@ -153,4 +153,16 @@ public class NoteDO implements RPC {
     public void setSystemUser(String systemUser) {
         this.systemUser = DataBaseUtil.trim(systemUser);
     }
+    
+    public void copy(NoteDO noteDO){
+        setId(noteDO.getId());
+        setIsExternal(noteDO.getIsExternal());
+        setReferenceId(noteDO.getReferenceId());
+        setReferenceTable(noteDO.getReferenceTable());
+        setSubject(noteDO.getSubject());
+        setSystemUser(noteDO.getSystemUser());
+        setSystemUserId(noteDO.getSystemUserId());
+        setText(noteDO.getText());
+        setTimestamp(noteDO.getTimestamp());
+    }
 }
