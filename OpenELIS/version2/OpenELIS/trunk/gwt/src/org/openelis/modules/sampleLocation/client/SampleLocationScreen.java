@@ -54,7 +54,7 @@ public class SampleLocationScreen extends Screen implements HasActionHandlers<Sa
     private SampleEnvironmentalDO        envDO;
 
     public enum Action {
-        COMMIT, ABORT
+        COMMIT
     };
 
     private SampleEnvironmentalMetaMap       meta = new SampleEnvironmentalMetaMap();
@@ -177,7 +177,7 @@ public class SampleLocationScreen extends Screen implements HasActionHandlers<Sa
             }
         });
         
-        final AppButton commitButton = (AppButton)def.getWidget("popupSelect");
+        final AppButton commitButton = (AppButton)def.getWidget("commit");
         addScreenHandler(commitButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 commit();
@@ -187,18 +187,6 @@ public class SampleLocationScreen extends Screen implements HasActionHandlers<Sa
                 commitButton.enable(true);
             }
         });
-
-        final AppButton abortButton = (AppButton)def.getWidget("popupCancel");
-        addScreenHandler(abortButton, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                abort();
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                abortButton.enable(true);
-            }
-        });
-        
     }
         
     public void commit() {
@@ -206,11 +194,6 @@ public class SampleLocationScreen extends Screen implements HasActionHandlers<Sa
         window.close();
     }
 
-    public void abort() {
-        ActionEvent.fire(this, Action.ABORT, null);
-        window.close();
-    }
-    
     public void setCountriesModel(ArrayList<DictionaryDO> list) {
         ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));

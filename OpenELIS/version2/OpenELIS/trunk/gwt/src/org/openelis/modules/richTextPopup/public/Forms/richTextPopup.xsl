@@ -54,12 +54,12 @@
 					<AbsolutePanel spacing="0" style="BottomButtonPanelContainer"
 						align="center">
 						<buttonPanel key="buttons">
-							<xsl:call-template name="popupSelectButton">
+							<xsl:call-template name="commitButton">
 								<xsl:with-param name="language">
 									<xsl:value-of select="language" />
 								</xsl:with-param>
 							</xsl:call-template>
-							<xsl:call-template name="popupCancelButton">
+							<xsl:call-template name="abortButton">
 								<xsl:with-param name="language">
 									<xsl:value-of select="language" />
 								</xsl:with-param>

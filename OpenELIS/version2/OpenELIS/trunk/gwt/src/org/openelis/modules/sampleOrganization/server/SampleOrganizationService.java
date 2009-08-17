@@ -25,54 +25,24 @@
 */
 package org.openelis.modules.sampleOrganization.server;
 
-import org.openelis.gwt.common.Query;
+import java.util.ArrayList;
+
 import org.openelis.gwt.common.RPCException;
-import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.server.ServiceUtils;
-import org.openelis.gwt.services.AppScreenFormServiceInt;
-import org.openelis.modules.environmentalSampleLogin.client.SampleOrganizationForm;
+import org.openelis.modules.environmentalSampleLogin.client.AutocompleteRPC;
+import org.openelis.persistence.EJBFactory;
+import org.openelis.remote.OrganizationRemote;
 import org.openelis.server.constants.Constants;
 
-public class SampleOrganizationService implements AppScreenFormServiceInt<SampleOrganizationForm,Query<TableDataRow<Integer>>>{
-
-    public SampleOrganizationForm abort(SampleOrganizationForm rpcReturn) throws RPCException {
-        // TODO Auto-generated method stub
-        return null;
+public class SampleOrganizationService {
+    
+    public String getScreen() throws RPCException {
+        return ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/sampleOrganization.xsl");      
     }
 
-    public SampleOrganizationForm commitAdd(SampleOrganizationForm rpc) throws RPCException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public SampleOrganizationForm commitDelete(SampleOrganizationForm rpc) throws RPCException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public Query<TableDataRow<Integer>> commitQuery(Query<TableDataRow<Integer>> data) throws RPCException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public SampleOrganizationForm commitUpdate(SampleOrganizationForm rpc) throws RPCException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public SampleOrganizationForm fetch(SampleOrganizationForm rpc) throws RPCException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public SampleOrganizationForm fetchForUpdate(SampleOrganizationForm rpc) throws RPCException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public SampleOrganizationForm getScreen(SampleOrganizationForm rpc) throws RPCException {
-        rpc.xml = ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/sampleOrganization.xsl");
-        
+    public AutocompleteRPC getOrganizationMatches(AutocompleteRPC rpc) throws Exception {
+        OrganizationRemote remote = (OrganizationRemote)EJBFactory.lookup("openelis/OrganizationBean/remote");
+        rpc.model = (ArrayList)remote.autoCompleteLookupByName(rpc.match+"%", 10);
         return rpc;
     }
 }

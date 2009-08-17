@@ -71,6 +71,7 @@ import org.openelis.manager.SampleEnvironmentalManager;
 import org.openelis.manager.SampleManager;
 import org.openelis.metamap.SampleEnvironmentalMetaMap;
 import org.openelis.modules.main.client.openelis.OpenELIS;
+import org.openelis.modules.organization.client.OrganizationScreen;
 import org.openelis.modules.sampleLocation.client.SampleLocationScreen;
 import org.openelis.modules.sampleOrganization.client.SampleOrganizationScreen;
 import org.openelis.modules.sampleProject.client.SampleProjectScreen;
@@ -91,7 +92,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements BeforeGetM
                         AN_INT_COMMENTS, STORAGE, SMP_EXT_COMMENT, SMP_INT_COMMENTS};    
     protected Tabs               tab           = Tabs.SAMPLE_ITEM;
     protected TextBox location;
-    protected AutoComplete<Integer> project;
+    protected AutoComplete<Integer> project, reportTo, billTo;
     //private TreeWidget itemsTestsTree;
     //private AppButton addItemButton, addTestButton, removeRowButton, analysisNoteInt, analysisNoteExt;
     private SampleLocationScreen locationScreen;
@@ -474,7 +475,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements BeforeGetM
             } 
         });
         
-        final AutoComplete<Integer> reportTo = (AutoComplete<Integer>)def.getWidget(Meta.SAMPLE.SAMPLE_ORGANIZATION.ORGANIZATION.getName());
+        reportTo = (AutoComplete<Integer>)def.getWidget(Meta.SAMPLE.SAMPLE_ORGANIZATION.ORGANIZATION.getName());
         addScreenHandler(reportTo, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 try{
@@ -530,7 +531,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements BeforeGetM
             } 
         });
         
-        final AutoComplete<Integer> billTo = (AutoComplete<Integer>)def.getWidget("billTo");
+        billTo = (AutoComplete<Integer>)def.getWidget("billTo");
         addScreenHandler(billTo, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 try{
@@ -1361,7 +1362,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements BeforeGetM
             modal.setName(consts.get("sampleProject"));
             modal.setContent(projectScreen);
     
-            projectScreen.setProjectManager(manager.getProjects());
+            projectScreen.setManager(manager.getProjects());
             
         } catch (Exception e) {
             e.printStackTrace();
@@ -1371,16 +1372,37 @@ public class EnvironmentalSampleLoginScreen extends Screen implements BeforeGetM
     }
     
     private void onOrganizationLookupClick(){
-        /*
-        if(organizationScreen == null)
-            organizationScreen = new SampleOrganizationScreen(form.orgProjectForm.sampleOrgForm, this);
-        else
-            organizationScreen.setForm(form.orgProjectForm.sampleOrgForm);
+        try{
+            if(organizationScreen == null){
+                final EnvironmentalSampleLoginScreen env = this;
+                organizationScreen = new SampleOrganizationScreen();
+                
+                organizationScreen.addActionHandler(new ActionHandler<SampleOrganizationScreen.Action>() {
+                    public void onAction(ActionEvent<SampleOrganizationScreen.Action> event) {
+                        if (event.getAction() == SampleOrganizationScreen.Action.COMMIT) {
+                            DataChangeEvent.fire(env, reportTo);
+                            DataChangeEvent.fire(env, billTo);
+                        }
+                    }
+                });
+            }
+            
+            ScreenWindow modal = new ScreenWindow(null,
+                                                  "Edit Sample Organization",
+                                                  "sampleOrganizationScreen",
+                                                  "",
+                                                  true,
+                                                  false);
+            modal.setName(consts.get("sampleOrganization"));
+            modal.setContent(organizationScreen);
         
-        ScreenWindow modal = new ScreenWindow(null,"Sample Organization","sampleOrganizationScreen","Loading...",true,false);
-        modal.setName(consts.get("sampleOrganization"));
-        modal.setContent(organizationScreen);
-        */
+            organizationScreen.setManager(manager.getOrganizations());
+            
+        }catch(Exception e){
+            e.printStackTrace();
+            Window.alert(e.getMessage());
+            return;
+        }
     }
     
     private void onLocationLookupClick(){
@@ -1408,6 +1430,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements BeforeGetM
     
             SampleEnvironmentalDO envDO = ((SampleEnvironmentalManager)manager.getDomainManager()).getEnvironmental();
             locationScreen.setEnvDO(envDO);
+            //locationScreen.setState(state);
             
         } catch (Exception e) {
             e.printStackTrace();
