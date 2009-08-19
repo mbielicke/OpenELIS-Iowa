@@ -27,7 +27,6 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
-import org.openelis.domain.OrganizationContactDO;
 import org.openelis.domain.SampleItemDO;
 import org.openelis.exception.NotFoundException;
 import org.openelis.gwt.common.RPC;

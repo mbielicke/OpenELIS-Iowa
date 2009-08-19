@@ -25,19 +25,21 @@
 */
 package org.openelis.manager;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 
+import org.openelis.domain.AnalysisDO;
 import org.openelis.domain.AnalysisTestDO;
+import org.openelis.domain.SampleItemDO;
+import org.openelis.exception.NotFoundException;
 import org.openelis.gwt.common.RPC;
 
 public class AnalysisManager implements RPC {
     private static final long serialVersionUID = 1L;
     
-    protected Integer                           sampleItemId;
-    protected ArrayList<AnalysisListItem>                   items;
-    protected boolean                           cached;
-    //protected transient AnalysesManagerIOInt manager;
+    protected Integer                           sampleItemId, analysisReferenceId;
+    protected ArrayList<AnalysisListItem>                   items, deletedList;
+    
+    protected transient static AnalysisManagerProxy proxy;
 
 
     public static AnalysisManager getInstance() {
@@ -53,12 +55,10 @@ public class AnalysisManager implements RPC {
      * Creates a new instance of this object with the specified sample id. Use this function to load an instance of this object from database.
      */
     public static AnalysisManager findBySampleItemId(Integer sampleItemId) throws Exception {
-        return null;
+        return proxy().fetchBySampleItemId(sampleItemId);
     }
     
     public int count(){
-   //     fetch();
-        
         if(items == null)
             return 0;
         
@@ -74,48 +74,90 @@ public class AnalysisManager implements RPC {
         this.sampleItemId = sampleItemId;
     }
     
-    //analysis
-    public AnalysisTestDO getAnalysisAt(int i) {
-   //     fetch();
-        
-        return getItem(i).analysis;
+    public Integer getAnalysisReferenceId() {
+        return analysisReferenceId;
+    }
+
+    public void setAnalysisReferenceId(Integer analysisReferenceId) {
+        this.analysisReferenceId = analysisReferenceId;
     }
     
+    //analysis
+    public AnalysisTestDO getAnalysisAt(int i) {
+        return getItem(i).analysis;
+
+    }
+
     public void setAnalysisAt(AnalysisTestDO analysis, int i) {
         getItem(i).analysis = analysis;
     }
     
+    public void addAnalysis(AnalysisTestDO analysis){
+        AnalysisListItem item = new AnalysisListItem();
+        item.analysis = analysis;
+        items.add(item);
+    }
+    
+    public void removeAnalysisAt(int i){
+        if(items == null || i >= items.size())
+            return;
+        
+        AnalysisListItem tmpList = items.remove(i);
+        
+        if(deletedList == null)
+            deletedList = new ArrayList<AnalysisListItem>();
+        
+        if(tmpList.analysis.getId() != null)
+            deletedList.add(tmpList);
+    }
+    
     //qaevents
-    public AnalysisQaEventManager getQAEventsAt(int i) {
-        AnalysisListItem item;
-
-  //      fetch();
-        item = getItem(i);
+    public AnalysisQaEventManager getQAEventAt(int i) throws Exception {
+        return null;
+        /*
+        AnalysisListItem item = getItem(i);
 
         if (item.qaEvents == null) {
-            item.qaEvents = AnalysisQaEventManager.getInstance();
-            item.qaEvents.setAnalysisId(item.analysis.getId());
+            if(item.analysis != null && item.analysis.getId() != null){
+                try{
+                    item.qaEvents = qa.findBySampleItemId(item.sampleItem.getId());
+                }catch(NotFoundException e){
+                    //ignore
+                }catch(Exception e){
+                    throw e;
+                }
+            }
         }
+            
+        if(item.analysis == null)
+            item.analysis = AnalysisManager.getInstance();
+    
+        return item.analysis;*/
+    }
 
-        return item.qaEvents;
+    public void setQAEventAt(AnalysisQaEventManager qaEvent, int i) {
+        getItem(i).qaEvents = qaEvent;
     }
     
-    public void setQAEventsAt(AnalysisQaEventManager qaEvents, int i) {
-        getItem(i).qaEvents = qaEvents;
-    }
     
     //notes
-    public NoteManager getNotesAt(int i) {
-        AnalysisListItem item;
-
-   //     fetch();
-        item = getItem(i);
-
-        if (item.notes == null) {
-            item.notes = NoteManager.getInstance();
-            item.notes.setReferenceId(item.analysis.getId());
-            //FIXME item.notes.setReferenceTableId(referenceTableId);
+    public NoteManager getNotesAt(int i) throws Exception {
+        AnalysisListItem item = getItem(i);
+        if(item.notes == null){
+            if(item.analysis != null && item.analysis.getId() != null && analysisReferenceId != null){
+                try{
+                    item.notes = NoteManager.findByRefTableRefId(analysisReferenceId, item.analysis.getId());
+                    
+                }catch(NotFoundException e){
+                    //ignore
+                }catch(Exception e){
+                    throw e;
+                }
+            }
         }
+        
+        if(item.notes == null)
+            item.notes = NoteManager.getInstance();
 
         return item.notes;
     }
@@ -125,19 +167,26 @@ public class AnalysisManager implements RPC {
     }
     
     //storage
-    public StorageManager getStorageAt(int i) {
-        AnalysisListItem item;
-
-   //     fetch();
-        item = getItem(i);
-
-        if (item.storage == null) {
-            item.storage = StorageManager.getInstance();
-            item.storage.setReferenceId(item.analysis.getId());
-            //item.storage.setReferenceTableId(referenceTableId);
+    public StorageManager getStorageAt(int i) throws Exception {
+        return null;
+        /*AnalysisListItem item = getItem(i);
+        if(item.storage == null){
+            if(item.analysis != null && sampleItemId != null){
+                try{
+                    item.storage = StorageManager.findBySampleItemId(sampleItemId);
+                    
+                }catch(NotFoundException e){
+                    //ignore
+                }catch(Exception e){
+                    throw e;
+                }
+            }
         }
+        
+        if(item.storage == null)
+            item.storage = StorageManager.getInstance();
 
-        return item.storage;
+        return item.storage;*/
     }
     
     public void setStorageAt(StorageManager storage, int i) {
@@ -146,32 +195,33 @@ public class AnalysisManager implements RPC {
     
     //item
     private AnalysisListItem getItem(int i) {
-   //     fetch();
-        return (AnalysisListItem)items.get(i);
+        return items.get(i);
     }
     
-    //manager methods
-    public AnalysisManager update() {
-        return this;
+    // service methods
+    public AnalysisManager add() throws Exception {
+        return proxy().add(this);
     }
-    
-    public AnalysisManager add(){
-        return this;
-    }
-/*
-    protected void fetch() {
-        if (cached)
-            return;
 
-        cached = true;
-    //    List analyses = manager().fetch(sampleItemId);
-
-        for (int i = 0; i < analyses.size(); i++) {
-            Item item = new Item();
-            item.analysis = (AnalysisTestDO)analyses.get(i);
-            items.add(item);
-        }
+    public AnalysisManager update() throws Exception {
+        return proxy().update(this);
     }
-  */  
     
+    private static AnalysisManagerProxy proxy() {
+        if (proxy == null)
+            proxy = new AnalysisManagerProxy();
+
+        return proxy;
+    }
+    
+    int deleteCount() {
+        if (deletedList == null)
+            return 0;
+
+        return deletedList.size();
+    }
+
+    AnalysisListItem getDeletedAt(int i) {
+        return deletedList.get(i);
+    }    
 }
