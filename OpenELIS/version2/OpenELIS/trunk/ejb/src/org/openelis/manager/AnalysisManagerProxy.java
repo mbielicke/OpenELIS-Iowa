@@ -29,67 +29,70 @@ import java.util.ArrayList;
 
 import javax.naming.InitialContext;
 
-import org.openelis.domain.SampleItemDO;
-import org.openelis.local.SampleItemLocal;
+import org.openelis.domain.AnalysisTestDO;
+import org.openelis.local.AnalysisLocal;
 
-public class SampleItemManagerProxy {
-    public SampleItemManager fetchBySampleId(Integer sampleId) throws Exception {
-        SampleItemLocal sil = getSampleItemLocal();
+public class AnalysisManagerProxy {
+    public AnalysisManager fetchBySampleItemId(Integer sampleItemId) throws Exception {
+        AnalysisLocal al = getAnalysisLocal();
+        ArrayList<AnalysisTestDO> items = (ArrayList<AnalysisTestDO>)al.fetchBySampleItemId(sampleItemId);
+        AnalysisManager am = AnalysisManager.getInstance();
 
-        ArrayList<SampleItemDO> items = (ArrayList<SampleItemDO>)sil.fetchBySampleId(sampleId);
-        SampleItemManager sim = SampleItemManager.getInstance();
         for(int i=0; i<items.size(); i++)
-            sim.addSampleItem(items.get(i));
+            am.addAnalysis(items.get(i));
         
-        sim.setSampleId(sampleId);
+        am.setSampleItemId(sampleItemId);
 
-        return sim;
+        return am;
     }
     
-    public SampleItemManager add(SampleItemManager man) throws Exception {
-        SampleItemLocal sil = getSampleItemLocal();
-        SampleItemDO itemDO;
+    public AnalysisManager add(AnalysisManager man) throws Exception {
+        AnalysisLocal al = getAnalysisLocal();
+        
+        AnalysisTestDO analysisDO;
         
         for(int i=0; i<man.count(); i++){
-            itemDO = man.getSampleItemAt(i);
-            itemDO.setSampleId(man.getSampleId());
+            analysisDO = man.getAnalysisAt(i);
+            analysisDO.setSampleItemId(man.getSampleItemId());
             
-            sil.add(itemDO);
+            al.add(analysisDO);
             
+            man.getQAEventAt(i).add();
+            man.getNotesAt(i).add();
             man.getStorageAt(i).add();
-            man.getAnalysisAt(i).add();
         }
         
         return man;
     }
-
-    public SampleItemManager update(SampleItemManager man) throws Exception {
-        SampleItemLocal sil = getSampleItemLocal();
-        SampleItemDO itemDO;
+    
+    public AnalysisManager update(AnalysisManager man) throws Exception {
+        AnalysisLocal al = getAnalysisLocal();
+        AnalysisTestDO analysisDO;
         
         for(int j=0; j<man.deleteCount(); j++)
-            sil.delete(man.getDeletedAt(j).sampleItem);
+            al.delete(man.getDeletedAt(j).analysis);
         
         for(int i=0; i<man.count(); i++){
-            itemDO = man.getSampleItemAt(i);
+            analysisDO = man.getAnalysisAt(i);
             
-            if(itemDO.getId() == null){
-                itemDO.setSampleId(man.getSampleId());
-                sil.add(itemDO);
+            if(analysisDO.getId() == null){
+                analysisDO.setSampleItemId(man.getSampleItemId());
+                al.add(analysisDO);
             }else
-                sil.update(itemDO);
+                al.update(analysisDO);
             
+            man.getQAEventAt(i).update();
+            man.getNotesAt(i).update();
             man.getStorageAt(i).update();
-            man.getAnalysisAt(i).update();
         }
 
         return man;
     }
     
-    private SampleItemLocal getSampleItemLocal(){
+    private AnalysisLocal getAnalysisLocal(){
         try{
             InitialContext ctx = new InitialContext();
-            return (SampleItemLocal)ctx.lookup("openelis/SampleItemBean/local");
+            return (AnalysisLocal)ctx.lookup("openelis/AnalysisBean/local");
         }catch(Exception e){
              System.out.println(e.getMessage());
              return null;

@@ -27,9 +27,7 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
-import org.openelis.domain.AnalysisDO;
 import org.openelis.domain.AnalysisTestDO;
-import org.openelis.domain.SampleItemDO;
 import org.openelis.exception.NotFoundException;
 import org.openelis.gwt.common.RPC;
 

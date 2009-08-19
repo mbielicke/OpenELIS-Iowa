@@ -23,22 +23,37 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.local;
+package org.openelis.bean;
 
-import java.util.List;
+import javax.annotation.Resource;
+import javax.ejb.SessionContext;
+import javax.ejb.Stateless;
+import javax.persistence.PersistenceContext;
 
-import javax.ejb.Local;
-
-import org.openelis.domain.AnalysisTestDO;
+import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.manager.AnalysisManager;
+import org.openelis.remote.AnalysisManagerRemote;
+import org.openelis.utils.ReferenceTableCache;
 
-@Local
-public interface AnalysisLocal {
+@Stateless
+
+@SecurityDomain("openelis")
+//@RolesAllowed("inventory-select")
+public class AnalysisManagerBean implements AnalysisManagerRemote {
+    @PersistenceContext(name = "openelis")
+
+    @Resource
+    private SessionContext ctx;
     
-    public List fetchBySampleItemId(Integer sampleItemId) throws Exception;
+    private static int analysisRefTableId;
     
-    public void add(AnalysisTestDO analysisDO);
-    public void update(AnalysisTestDO analysisDO);
-    public void delete(AnalysisTestDO analysisDO);
+    public AnalysisManagerBean(){
+        analysisRefTableId = ReferenceTableCache.getReferenceTable("analysis");
+    }
     
+    public AnalysisManager fetchBySampleItemId(Integer sampleItemId) throws Exception {
+        AnalysisManager man = AnalysisManager.findBySampleItemId(sampleItemId);   
+        
+        return man;
+    }
 }
