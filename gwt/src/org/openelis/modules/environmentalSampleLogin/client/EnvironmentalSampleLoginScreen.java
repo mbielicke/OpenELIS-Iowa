@@ -66,17 +66,18 @@ import org.openelis.gwt.widget.rewrite.Dropdown;
 import org.openelis.gwt.widget.rewrite.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.rewrite.TableDataRow;
 import org.openelis.gwt.widget.tree.rewrite.TreeDataItem;
+import org.openelis.gwt.widget.tree.rewrite.TreeRow;
 import org.openelis.gwt.widget.tree.rewrite.TreeWidget;
+import org.openelis.gwt.widget.tree.rewrite.event.LeafOpenedEvent;
+import org.openelis.gwt.widget.tree.rewrite.event.LeafOpenedHandler;
 import org.openelis.manager.SampleEnvironmentalManager;
 import org.openelis.manager.SampleManager;
 import org.openelis.metamap.SampleEnvironmentalMetaMap;
 import org.openelis.modules.main.client.openelis.OpenELIS;
-import org.openelis.modules.organization.client.OrganizationScreen;
 import org.openelis.modules.sampleLocation.client.SampleLocationScreen;
 import org.openelis.modules.sampleOrganization.client.SampleOrganizationScreen;
 import org.openelis.modules.sampleProject.client.SampleProjectScreen;
-import org.openelis.utilgwt.OrganizationEntryManager;
-import org.openelis.utilgwt.ProjectEntryManager;
+import org.openelis.utilgwt.AutocompleteRPC;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.SelectionEvent;
@@ -108,8 +109,8 @@ public class EnvironmentalSampleLoginScreen extends Screen implements BeforeGetM
     //private ScreenCheck isReportable;
     //private ScreenCalendar startedDate, completedDate, releasedDate, printedDate;
     
-    private ProjectEntryManager projectManager;
-    private OrganizationEntryManager orgManager;
+    //private ProjectEntryManager projectManager;
+    //private OrganizationEntryManager orgManager;
     
     private SampleEnvironmentalMetaMap Meta;
     
@@ -578,6 +579,32 @@ public class EnvironmentalSampleLoginScreen extends Screen implements BeforeGetM
             }
         });
         
+        itemsTree.addLeafOpenedHandler(new LeafOpenedHandler(){
+           public void onLeafOpened(LeafOpenedEvent event) {
+               try{
+               TreeDataItem openedRow = event.getItem();
+               int selectedIndex = event.getRow();
+               if(!openedRow.isLoaded()){
+                   if("sampleItem".equals(openedRow.leafType)){
+                       manager.getSampleItems().getAnalysisAt(selectedIndex);
+                       Window.alert("["+selectedIndex+"]");
+                   }
+               }
+               }catch(Exception e){
+                   e.printStackTrace();
+                   Window.alert(e.getMessage());
+                   return;
+               }
+            } 
+        });
+        
+        itemsTree.addSelectionHandler(new SelectionHandler<TreeRow>(){
+           public void onSelection(SelectionEvent<TreeRow> event) {
+            // TODO Auto-generated method stub
+            
+           }
+        });
+        
         final AppButton billToLookup = (AppButton)def.getWidget("billToLookup");
         addScreenHandler(billToLookup, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
@@ -585,7 +612,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements BeforeGetM
             }
             
             public void onStateChange(StateChangeEvent<State> event) {
-                billToLookup.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
+                billToLookup.enable(EnumSet.of(State.ADD, State.UPDATE, State.DISPLAY)
                                    .contains(event.getState()));
             }
         });
@@ -597,7 +624,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements BeforeGetM
             }
             
             public void onStateChange(StateChangeEvent<State> event) {
-                reportToLookup.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
+                reportToLookup.enable(EnumSet.of(State.ADD, State.UPDATE, State.DISPLAY)
                                    .contains(event.getState()));
             }
         });
@@ -609,7 +636,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements BeforeGetM
             }
             
             public void onStateChange(StateChangeEvent<State> event) {
-                projectLookup.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
+                projectLookup.enable(EnumSet.of(State.ADD, State.UPDATE, State.DISPLAY)
                                    .contains(event.getState()));
             }
         });
@@ -621,7 +648,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements BeforeGetM
             }
             
             public void onStateChange(StateChangeEvent<State> event) {
-                locationLookup.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
+                locationLookup.enable(EnumSet.of(State.ADD, State.UPDATE, State.DISPLAY)
                                    .contains(event.getState()));
             }
         });
@@ -1361,7 +1388,8 @@ public class EnvironmentalSampleLoginScreen extends Screen implements BeforeGetM
                                                   false);
             modal.setName(consts.get("sampleProject"));
             modal.setContent(projectScreen);
-    
+            projectScreen.setScreenState(state);
+            
             projectScreen.setManager(manager.getProjects());
             
         } catch (Exception e) {
@@ -1396,6 +1424,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements BeforeGetM
             modal.setName(consts.get("sampleOrganization"));
             modal.setContent(organizationScreen);
         
+            organizationScreen.setScreenState(state);
             organizationScreen.setManager(manager.getOrganizations());
             
         }catch(Exception e){
@@ -1429,8 +1458,10 @@ public class EnvironmentalSampleLoginScreen extends Screen implements BeforeGetM
             modal.setContent(locationScreen);
     
             SampleEnvironmentalDO envDO = ((SampleEnvironmentalManager)manager.getDomainManager()).getEnvironmental();
+            
+            locationScreen.setScreenState(state);
             locationScreen.setEnvDO(envDO);
-            //locationScreen.setState(state);
+            
             
         } catch (Exception e) {
             e.printStackTrace();

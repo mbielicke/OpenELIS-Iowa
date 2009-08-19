@@ -26,6 +26,7 @@
 package org.openelis.modules.sampleProject.client;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 
 import org.openelis.domain.ProjectDO;
 import org.openelis.domain.SampleProjectDO;
@@ -51,7 +52,7 @@ import org.openelis.gwt.widget.table.rewrite.event.RowDeletedEvent;
 import org.openelis.gwt.widget.table.rewrite.event.RowDeletedHandler;
 import org.openelis.manager.SampleProjectManager;
 import org.openelis.metamap.SampleProjectMetaMap;
-import org.openelis.modules.environmentalSampleLogin.client.AutocompleteRPC;
+import org.openelis.utilgwt.AutocompleteRPC;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.SelectionEvent;
@@ -90,10 +91,12 @@ public class SampleProjectScreen extends Screen implements HasActionHandlers<Sam
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                sampleProjectTable.enable(true);
+                sampleProjectTable.enable(EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));
+                sampleProjectTable.setQueryMode(event.getState() == State.QUERY);
             }
         });
 
+        final AutoComplete<Integer> project = ((AutoComplete<Integer>)sampleProjectTable.columns.get(0).colWidget);
         sampleProjectTable.addCellEditedHandler(new CellEditedHandler() {
             public void onCellUpdated(CellEditedEvent event) {
                 int row,col;
@@ -110,23 +113,26 @@ public class SampleProjectScreen extends Screen implements HasActionHandlers<Sam
                     
                 Object val = tableRow.cells.get(col).value;
                 
-                switch (col){
+                switch (col) {
                     case 0:
-                            projectDO.setProjectId((Integer)((Object[])val)[0]);    
-                            projectDO.getProject().setName((String)((Object[])val)[1]);
-                            break;
+                        TableDataRow selectedRow = project.getSelection();
+                        String des = null;
+                        
+                        if(selectedRow.key != null)
+                            des = (String)selectedRow.cells.get(1).value;
+                            
+                        sampleProjectTable.setCell(sampleProjectTable.getSelectedIndex(), 1, des);
+                        
+                        projectDO.setProjectId((Integer)((Object[])val)[0]);
+                        projectDO.getProject().setName((String)((Object[])val)[1]);
+                        break;
+                    case 1:
+                        projectDO.getProject().setDescription((String)val);
+                        break;
                     case 2:
-                            projectDO.setIsPermanent((String)val);
-                            break;
+                        projectDO.setIsPermanent((String)val);
+                        break;
                 }
-            }
-        });
-        
-        final AutoComplete<Integer> project = ((AutoComplete<Integer>)sampleProjectTable.columns.get(0).colWidget);
-        project.addSelectionHandler(new SelectionHandler<TableRow>(){
-            public void onSelection(SelectionEvent<TableRow> event) {
-                TableRow autoRow = event.getSelectedItem();
-                sampleProjectTable.setCell(sampleProjectTable.getSelectedIndex(), 1, autoRow.row.cells.get(1).value);
             }
         });
 
@@ -176,7 +182,7 @@ public class SampleProjectScreen extends Screen implements HasActionHandlers<Sam
                 }
             }
             public void onStateChange(StateChangeEvent<State> event) {
-                projectRemoveButton.enable(true);
+                projectRemoveButton.enable(EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));
             }
             
         });
@@ -191,7 +197,7 @@ public class SampleProjectScreen extends Screen implements HasActionHandlers<Sam
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                projectAddButton.enable(true);
+                projectAddButton.enable(EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));
             }
         });
         
@@ -250,6 +256,10 @@ public class SampleProjectScreen extends Screen implements HasActionHandlers<Sam
     
     public SampleProjectManager getManager(){
         return manager;
+    }
+    
+    public void setScreenState(State state){
+        setState(state);
     }
     
     public HandlerRegistration addActionHandler(ActionHandler<Action> handler) {

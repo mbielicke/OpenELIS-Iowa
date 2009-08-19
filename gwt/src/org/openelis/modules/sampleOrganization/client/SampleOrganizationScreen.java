@@ -26,6 +26,7 @@
 package org.openelis.modules.sampleOrganization.client;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.DictionaryDO;
@@ -53,7 +54,7 @@ import org.openelis.gwt.widget.table.rewrite.event.RowAddedHandler;
 import org.openelis.gwt.widget.table.rewrite.event.RowDeletedEvent;
 import org.openelis.gwt.widget.table.rewrite.event.RowDeletedHandler;
 import org.openelis.manager.SampleOrganizationManager;
-import org.openelis.modules.environmentalSampleLogin.client.AutocompleteRPC;
+import org.openelis.utilgwt.AutocompleteRPC;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.SelectionEvent;
@@ -91,7 +92,8 @@ public class SampleOrganizationScreen  extends Screen implements HasActionHandle
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                sampleOrganizationTable.enable(true);
+                sampleOrganizationTable.enable(EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));
+                sampleOrganizationTable.setQueryMode(event.getState() == State.QUERY);
             }
         });
 
@@ -180,7 +182,7 @@ public class SampleOrganizationScreen  extends Screen implements HasActionHandle
                 }
             }
             public void onStateChange(StateChangeEvent<State> event) {
-                organizationRemoveButton.enable(true);
+                organizationRemoveButton.enable(EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));
             }
             
         });
@@ -195,7 +197,7 @@ public class SampleOrganizationScreen  extends Screen implements HasActionHandle
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                organizationAddButton.enable(true);
+                organizationAddButton.enable(EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));
             }
         });
         
@@ -270,6 +272,10 @@ public class SampleOrganizationScreen  extends Screen implements HasActionHandle
     
     public SampleOrganizationManager getManager(){
         return manager;
+    }
+    
+    public void setScreenState(State state){
+        setState(state);
     }
     
     public HandlerRegistration addActionHandler(ActionHandler<Action> handler) {

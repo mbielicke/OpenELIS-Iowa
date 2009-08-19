@@ -52,7 +52,6 @@ import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.SampleItemManager;
 import org.openelis.modules.environmentalSampleLogin.client.AnalysisForm;
-import org.openelis.modules.environmentalSampleLogin.client.AutocompleteRPC;
 import org.openelis.modules.environmentalSampleLogin.client.SampleEnvQuery;
 import org.openelis.modules.environmentalSampleLogin.client.SampleItemAndAnalysisForm;
 import org.openelis.modules.environmentalSampleLogin.client.SampleItemForm;
@@ -65,6 +64,7 @@ import org.openelis.remote.TestRemote;
 import org.openelis.server.constants.Constants;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
+import org.openelis.utilgwt.AutocompleteRPC;
 
 public class EnvironmentalSampleLoginService {
 
