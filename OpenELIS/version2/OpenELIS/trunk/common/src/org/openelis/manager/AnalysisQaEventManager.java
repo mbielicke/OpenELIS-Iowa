@@ -84,6 +84,10 @@ public class AnalysisQaEventManager implements Serializable {
         return item.analysisQAEvent;
     }
     
+    public void update(){
+        
+    }
+    
     public void remove(int i) {
         Item item;
         AnalysisQaEventDO aq;
