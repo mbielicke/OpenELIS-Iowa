@@ -26,6 +26,7 @@
 package org.openelis.modules.sampleLocation.client;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.DictionaryDO;
@@ -83,7 +84,8 @@ public class SampleLocationScreen extends Screen implements HasActionHandlers<Sa
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                samplingLocation.enable(true);
+                samplingLocation.enable(EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));
+                samplingLocation.setQueryMode(event.getState() == State.QUERY);
             }
         });
 
@@ -98,7 +100,8 @@ public class SampleLocationScreen extends Screen implements HasActionHandlers<Sa
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                multipleUnit.enable(true);
+                multipleUnit.enable(EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));
+                multipleUnit.setQueryMode(event.getState() == State.QUERY);
             }
         });
 
@@ -113,7 +116,8 @@ public class SampleLocationScreen extends Screen implements HasActionHandlers<Sa
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                streetAddress.enable(true);
+                streetAddress.enable(EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));
+                streetAddress.setQueryMode(event.getState() == State.QUERY);
             }
         });
 
@@ -128,7 +132,8 @@ public class SampleLocationScreen extends Screen implements HasActionHandlers<Sa
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                city.enable(true);
+                city.enable(EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));
+                city.setQueryMode(event.getState() == State.QUERY);
             }
         });
 
@@ -143,7 +148,8 @@ public class SampleLocationScreen extends Screen implements HasActionHandlers<Sa
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                state.enable(true);
+                state.enable(EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));
+                state.setQueryMode(event.getState() == State.QUERY);
             }
         });
 
@@ -158,7 +164,8 @@ public class SampleLocationScreen extends Screen implements HasActionHandlers<Sa
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                zipCode.enable(true);
+                zipCode.enable(EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));
+                zipCode.setQueryMode(event.getState() == State.QUERY);
             }
         });
 
@@ -173,7 +180,8 @@ public class SampleLocationScreen extends Screen implements HasActionHandlers<Sa
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                country.enable(true);
+                country.enable(EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));
+                country.setQueryMode(event.getState() == State.QUERY);
             }
         });
         
@@ -224,7 +232,11 @@ public class SampleLocationScreen extends Screen implements HasActionHandlers<Sa
         
         DataChangeEvent.fire(this);
     }
-
+    
+    public void setScreenState(State state){
+        setState(state);
+    }
+    
     public HandlerRegistration addActionHandler(ActionHandler<Action> handler) {
         return addHandler(handler, ActionEvent.getType());
     }

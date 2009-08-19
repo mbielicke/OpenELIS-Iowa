@@ -23,18 +23,16 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.modules.environmentalSampleLogin.client;
+package org.openelis.modules.analysis.server;
 
-import java.util.ArrayList;
+import org.openelis.manager.AnalysisManager;
+import org.openelis.persistence.EJBFactory;
+import org.openelis.remote.AnalysisManagerRemote;
 
-import org.openelis.gwt.common.RPC;
-
-public class AutocompleteRPC implements RPC {
-
-    private static final long serialVersionUID = 1L;
-
-    public String match;
-    public String cat;
-    
-    public ArrayList<RPC> model;
+public class AnalysisService {
+    public AnalysisManager fetchBySampleItemId(Integer sampleItemId) throws Exception {
+    AnalysisManagerRemote remote = (AnalysisManagerRemote)EJBFactory.lookup("openelis/AnalysisManagerBean/remote");
+        
+        return remote.fetchBySampleItemId(sampleItemId);
+    }
 }

@@ -23,26 +23,26 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.modules.sampleOrganization.server;
+package org.openelis.manager;
 
-import java.util.ArrayList;
+import org.openelis.gwt.services.ScreenService;
 
-import org.openelis.gwt.common.RPCException;
-import org.openelis.gwt.server.ServiceUtils;
-import org.openelis.persistence.EJBFactory;
-import org.openelis.remote.OrganizationRemote;
-import org.openelis.server.constants.Constants;
-import org.openelis.utilgwt.AutocompleteRPC;
-
-public class SampleOrganizationService {
+public class AnalysisManagerProxy {
+    protected static final String ANALYSIS_SERVICE_URL = "org.openelis.modules.analysis.server.AnalysisService";
+    protected ScreenService service;
     
-    public String getScreen() throws RPCException {
-        return ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/sampleOrganization.xsl");      
+    public AnalysisManagerProxy(){
+        service = new ScreenService("OpenELISServlet?service="+ANALYSIS_SERVICE_URL);
     }
-
-    public AutocompleteRPC getOrganizationMatches(AutocompleteRPC rpc) throws Exception {
-        OrganizationRemote remote = (OrganizationRemote)EJBFactory.lookup("openelis/OrganizationBean/remote");
-        rpc.model = (ArrayList)remote.autoCompleteLookupByName(rpc.match+"%", 10);
-        return rpc;
+    public AnalysisManager fetchBySampleItemId(Integer sampleItemId) throws Exception {
+        return service.call("fetchBySampleItemId", sampleItemId);
+    }
+    
+    public AnalysisManager add(AnalysisManager man) throws Exception {
+        throw new UnsupportedOperationException();
+    }
+    
+    public AnalysisManager update(AnalysisManager man) throws Exception{
+        throw new UnsupportedOperationException();
     }
 }

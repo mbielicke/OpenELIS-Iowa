@@ -25,47 +25,15 @@
 */
 package org.openelis.utilgwt;
 
-import org.openelis.gwt.common.data.TableDataRow;
+import java.util.ArrayList;
 
-import org.openelis.gwt.common.data.TableDataModel;
+import org.openelis.gwt.common.RPC;
 
-public class MultipleEntryManager<Key> {
+public class AutocompleteRPC implements RPC {
 
-    protected TableDataModel<TableDataRow<Key>> list;
+    private static final long serialVersionUID = 1L;
+
+    public String match;
     
-    public MultipleEntryManager(){
-        list = null;
-    }
-    
-    public MultipleEntryManager(TableDataModel<TableDataRow<Key>> list){
-        this.list = list;
-    }
-    
-    public void setList(TableDataModel<TableDataRow<Key>> model){
-        list = model;
-    }
-    
-    public int size(){
-        return list.size();
-    }
-    
-    public TableDataRow<Key> getRow(int i){
-        return list.get(i);
-    }
-    
-    public void setRow(int i, TableDataRow<Key> row){
-        list.set(i, row);
-    }
-    
-    public void addRow(TableDataRow<Key> row){
-        addRow(list.size(), row);
-    }
-    
-    public void addRow(int i, TableDataRow<Key> row){
-        list.add(i, row);
-    }
-    
-    public void delete(int i){
-        list.delete(i);
-    }
+    public ArrayList<RPC> model;
 }
