@@ -42,7 +42,6 @@ import org.openelis.gwt.screen.rewrite.ScreenEventHandler;
 import org.openelis.gwt.widget.rewrite.AppButton;
 import org.openelis.gwt.widget.rewrite.AutoComplete;
 import org.openelis.gwt.widget.table.rewrite.TableDataRow;
-import org.openelis.gwt.widget.table.rewrite.TableRow;
 import org.openelis.gwt.widget.table.rewrite.TableWidget;
 import org.openelis.gwt.widget.table.rewrite.event.CellEditedEvent;
 import org.openelis.gwt.widget.table.rewrite.event.CellEditedHandler;
@@ -55,8 +54,6 @@ import org.openelis.metamap.SampleProjectMetaMap;
 import org.openelis.utilgwt.AutocompleteRPC;
 
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.logical.shared.SelectionEvent;
-import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Window;
 
@@ -123,8 +120,8 @@ public class SampleProjectScreen extends Screen implements HasActionHandlers<Sam
                             
                         sampleProjectTable.setCell(sampleProjectTable.getSelectedIndex(), 1, des);
                         
-                        projectDO.setProjectId((Integer)((Object[])val)[0]);
-                        projectDO.getProject().setName((String)((Object[])val)[1]);
+                        projectDO.setProjectId((Integer)selectedRow.key);
+                        projectDO.getProject().setName((String)selectedRow.cells.get(0).value);
                         break;
                     case 1:
                         projectDO.getProject().setDescription((String)val);
@@ -234,7 +231,7 @@ public class SampleProjectScreen extends Screen implements HasActionHandlers<Sam
                TableDataRow row = new TableDataRow(3);
                row.key = projectRow.getId();
                
-               row.cells.get(0).value = new Object[] {projectRow.getProjectId(),projectRow.getProject().getName()};
+               row.cells.get(0).value = new TableDataRow(projectRow.getProjectId(),projectRow.getProject().getName());
                row.cells.get(1).value = projectRow.getProject().getDescription();
                row.cells.get(2).value = projectRow.getIsPermanent();
                model.add(row);

@@ -31,8 +31,13 @@ import org.openelis.remote.AnalysisManagerRemote;
 
 public class AnalysisService {
     public AnalysisManager fetchBySampleItemId(Integer sampleItemId) throws Exception {
+        try{
     AnalysisManagerRemote remote = (AnalysisManagerRemote)EJBFactory.lookup("openelis/AnalysisManagerBean/remote");
         
         return remote.fetchBySampleItemId(sampleItemId);
+        }catch(Exception e){
+            e.printStackTrace();
+            throw e;
+        }
     }
 }

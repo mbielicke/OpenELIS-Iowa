@@ -97,6 +97,7 @@ public class SampleOrganizationScreen  extends Screen implements HasActionHandle
             }
         });
 
+        final AutoComplete<Integer> organization = ((AutoComplete<Integer>)sampleOrganizationTable.columns.get(2).colWidget);
         sampleOrganizationTable.addCellEditedHandler(new CellEditedHandler() {
             public void onCellUpdated(CellEditedEvent event) {
                 int row,col;
@@ -113,27 +114,48 @@ public class SampleOrganizationScreen  extends Screen implements HasActionHandle
                     
                 Object val = tableRow.cells.get(col).value;
                 
-                switch (col){
+                switch (col) {
                     case 0:
-                            orgDO.setTypeId((Integer)val);
-                            break;
+                        orgDO.setTypeId((Integer)val);
+                        break;
+                    case 1:
+                        orgDO.setOrganizationId((Integer)val);
+                        orgDO.getOrganization().setOrganizationId((Integer)val);
+                        break;
                     case 2:
-                            orgDO.setOrganizationId((Integer)val);
-                            break;
+                        TableDataRow selectedRow = organization.getSelection();
+                        Integer id = null;
+                        String city = null;
+                        String state = null;
+
+                        if (selectedRow.key != null) {
+                            id = (Integer)selectedRow.key;
+                            city = (String)selectedRow.cells.get(2).value;
+                            state = (String)selectedRow.cells.get(3).value;
+                        }
+
+                        sampleOrganizationTable.setCell(sampleOrganizationTable.getSelectedIndex(),
+                                                        1,
+                                                        id);
+                        sampleOrganizationTable.setCell(sampleOrganizationTable.getSelectedIndex(),
+                                                        3,
+                                                        city);
+                        sampleOrganizationTable.setCell(sampleOrganizationTable.getSelectedIndex(),
+                                                        4,
+                                                        state);
+
+                        orgDO.getOrganization().setName((String)selectedRow.cells.get(0).value);
+                        break;
+                    case 3:
+                        orgDO.getOrganization().getAddressDO().setCity((String)val);
+                        break;
+                    case 4:
+                        orgDO.getOrganization().getAddressDO().setState((String)val);
+                        break;
                 }
             }
         });
         
-        final AutoComplete<Integer> organization = ((AutoComplete<Integer>)sampleOrganizationTable.columns.get(2).colWidget);
-        organization.addSelectionHandler(new SelectionHandler<TableRow>(){
-            public void onSelection(SelectionEvent<TableRow> event) {
-                TableRow autoRow = event.getSelectedItem();
-                sampleOrganizationTable.setCell(sampleOrganizationTable.getSelectedIndex(), 1, autoRow.row.key);
-                sampleOrganizationTable.setCell(sampleOrganizationTable.getSelectedIndex(), 3, autoRow.row.cells.get(2).value);
-                sampleOrganizationTable.setCell(sampleOrganizationTable.getSelectedIndex(), 4, autoRow.row.cells.get(3).value);
-            }
-        });
-
         organization.addGetMatchesHandler(new GetMatchesHandler(){
             public void onGetMatches(GetMatchesEvent event) {
                 AutocompleteRPC rpc = new AutocompleteRPC();
@@ -236,7 +258,7 @@ public class SampleOrganizationScreen  extends Screen implements HasActionHandle
                
                row.cells.get(0).value = orgDO.getTypeId();
                row.cells.get(1).value = orgDO.getOrganizationId();
-               row.cells.get(2).value = new Object[] {orgDO.getOrganizationId(),orgDO.getOrganization().getName()};
+               row.cells.get(2).value = new TableDataRow(orgDO.getOrganizationId(), orgDO.getOrganization().getName());
                row.cells.get(3).value = orgDO.getOrganization().getAddressDO().getCity();
                row.cells.get(4).value = orgDO.getOrganization().getAddressDO().getState();
                
