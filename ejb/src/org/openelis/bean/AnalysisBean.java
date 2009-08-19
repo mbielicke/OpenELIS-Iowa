@@ -38,15 +38,14 @@ import javax.persistence.Query;
 import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.AnalysisTestDO;
 import org.openelis.entity.Analysis;
+import org.openelis.exception.NotFoundException;
 import org.openelis.local.AnalysisLocal;
-import org.openelis.manager.AnalysisManager;
-import org.openelis.remote.AnalysisRemote;
 
 @Stateless
 
 @SecurityDomain("openelis")
 //@RolesAllowed("LOCKINGtest")
-public class AnalysisBean implements AnalysisRemote, AnalysisLocal{
+public class AnalysisBean implements AnalysisLocal{
 
     @PersistenceContext(name = "openelis")
     private EntityManager manager;
@@ -54,45 +53,73 @@ public class AnalysisBean implements AnalysisRemote, AnalysisLocal{
     @Resource
     private SessionContext ctx;
     
-    public List getAnalysisTestsBySampleItemId(Integer sampleItemId) {
+    public List fetchBySampleItemId(Integer sampleItemId) throws Exception{
         Query query = manager.createNamedQuery("Analysis.AnalysisTestBySampleItemId");
         query.setParameter("id", sampleItemId);
- 
-        return query.getResultList();
-    }
-
-    public void update(AnalysisManager analyses) {
-        //validate analyses
         
+        List returnList = query.getResultList();
+        if(returnList.size() == 0)
+            throw new NotFoundException();
+        
+        return returnList;
+    }
+    
+    public void add(AnalysisTestDO analysisDO) {
         manager.setFlushMode(FlushModeType.COMMIT);
         
-        for(int i=0; i<analyses.count(); i++){
-            //update the sample item
-            AnalysisTestDO analysisDO = analyses.getAnalysisAt(i);
-            Analysis analysis = null;
-            if (analysisDO.getId() == null)
-                analysis = new Analysis();
-            else
-                analysis = manager.find(Analysis.class, analysisDO.getId());
+        Analysis analysis = new Analysis();
+        
+        analysis.setAvailableDate(analysisDO.getAvailableDate());
+        analysis.setCompletedDate(analysisDO.getCompletedDate());
+        analysis.setIsReportable(analysisDO.getIsReportable());
+        analysis.setParentAnalysisId(analysisDO.getParentAnalysisId());
+        analysis.setParentResultId(analysisDO.getParentResultId());
+        analysis.setPreAnalysisId(analysisDO.getPreAnalysisId());
+        analysis.setPrintedDate(analysisDO.getPrintedDate());
+        analysis.setReleasedDate(analysisDO.getReleasedDate());
+        analysis.setRevision(analysisDO.getRevision());
+        analysis.setSampleItemId(analysisDO.getSampleItemId());
+        analysis.setSectionId(analysisDO.getSectionId());
+        analysis.setStartedDate(analysisDO.getStartedDate());
+        analysis.setStatusId(analysisDO.getStatusId());
+        analysis.setTestId(analysisDO.getTestId());
+        analysis.setUnitOfMeasureId(analysisDO.getUnitOfMeasureId());
+        
+       manager.persist(analysis);
+       analysisDO.setId(analysis.getId());
+    }
+
+    public void update(AnalysisTestDO analysisDO) {
+        manager.setFlushMode(FlushModeType.COMMIT);
+        
+        Analysis analysis = manager.find(Analysis.class, analysisDO.getId());
             
-            analysis.setAvailableDate(analysisDO.getAvailableDate());
-            analysis.setCompletedDate(analysisDO.getCompletedDate());
-            analysis.setIsReportable(analysisDO.getIsReportable());
-            analysis.setParentAnalysisId(analysisDO.getParentAnalysisId());
-            analysis.setParentResultId(analysisDO.getParentResultId());
-            analysis.setPreAnalysisId(analysisDO.getPreAnalysisId());
-            analysis.setPrintedDate(analysisDO.getPrintedDate());
-            analysis.setReleasedDate(analysisDO.getReleasedDate());
-            analysis.setRevision(analysisDO.getRevision());
-            analysis.setSampleItemId(analysisDO.getSampleItemId());
-            analysis.setSectionId(analysisDO.getSectionId());
-            analysis.setStartedDate(analysisDO.getStartedDate());
-            analysis.setStatusId(analysisDO.getStatusId());
-            analysis.setTestId(analysisDO.getTestId());
-            analysis.setUnitOfMeasureId(analysisDO.getUnitOfMeasureId());
+        analysis.setAvailableDate(analysisDO.getAvailableDate());
+        analysis.setCompletedDate(analysisDO.getCompletedDate());
+        analysis.setIsReportable(analysisDO.getIsReportable());
+        analysis.setParentAnalysisId(analysisDO.getParentAnalysisId());
+        analysis.setParentResultId(analysisDO.getParentResultId());
+        analysis.setPreAnalysisId(analysisDO.getPreAnalysisId());
+        analysis.setPrintedDate(analysisDO.getPrintedDate());
+        analysis.setReleasedDate(analysisDO.getReleasedDate());
+        analysis.setRevision(analysisDO.getRevision());
+        analysis.setSampleItemId(analysisDO.getSampleItemId());
+        analysis.setSectionId(analysisDO.getSectionId());
+        analysis.setStartedDate(analysisDO.getStartedDate());
+        analysis.setStatusId(analysisDO.getStatusId());
+        analysis.setTestId(analysisDO.getTestId());
+        analysis.setUnitOfMeasureId(analysisDO.getUnitOfMeasureId());
             
-            if(analysis.getId() == null)
-                manager.persist(analysis);
-        }
+        if(analysis.getId() == null)
+            manager.persist(analysis);
+    }
+    
+    public void delete(AnalysisTestDO analysisDO) {
+        manager.setFlushMode(FlushModeType.COMMIT);
+        
+        Analysis analysis = manager.find(Analysis.class, analysisDO.getId());
+        
+        if(analysis != null)
+            manager.remove(analysis);
     }
 }

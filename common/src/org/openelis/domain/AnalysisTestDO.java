@@ -85,11 +85,11 @@ public class AnalysisTestDO implements RPC {
         setIsReportable(isReportable);
         setUnitOfMeasureId(unitOfMeasureId);
         setStatusId(statusId);
-        setAvailableDate(availableDate);
-        setStartedDate(startedDate);
-        setCompletedDate(completedDate);
-        setReleasedDate(releasedDate);
-        setPrintedDate(printedDate);
+        setAvailableDate(Datetime.getInstance(Datetime.YEAR, Datetime.DAY, availableDate));
+        setStartedDate(Datetime.getInstance(Datetime.YEAR, Datetime.DAY, startedDate));
+        setCompletedDate(Datetime.getInstance(Datetime.YEAR, Datetime.DAY, completedDate));
+        setReleasedDate(Datetime.getInstance(Datetime.YEAR, Datetime.DAY, releasedDate));
+        setPrintedDate(Datetime.getInstance(Datetime.YEAR, Datetime.DAY, printedDate));
     }
 
     // analysis and test name,method name, and status
@@ -126,11 +126,11 @@ public class AnalysisTestDO implements RPC {
         setIsReportable(isReportable);
         setUnitOfMeasureId(unitOfMeasureId);
         setStatusId(statusId);
-        setAvailableDate(availableDate);
-        setStartedDate(startedDate);
-        setCompletedDate(completedDate);
-        setReleasedDate(releasedDate);
-        setPrintedDate(printedDate);
+        setAvailableDate(Datetime.getInstance(Datetime.YEAR, Datetime.DAY, availableDate));
+        setStartedDate(Datetime.getInstance(Datetime.YEAR, Datetime.DAY, startedDate));
+        setCompletedDate(Datetime.getInstance(Datetime.YEAR, Datetime.DAY, completedDate));
+        setReleasedDate(Datetime.getInstance(Datetime.YEAR, Datetime.DAY, releasedDate));
+        setPrintedDate(Datetime.getInstance(Datetime.YEAR, Datetime.DAY, printedDate));
 
         // test params
         test.setId(testId);
@@ -231,50 +231,40 @@ public class AnalysisTestDO implements RPC {
         return availableDate;
     }
 
-    public void setAvailableDate(Date availableDate) {
-        this.availableDate = new Datetime(Datetime.YEAR,
-                                          Datetime.DAY,
-                                          availableDate);
+    public void setAvailableDate(Datetime availableDate) {
+        this.availableDate = availableDate;
     }
 
     public Datetime getStartedDate() {
         return startedDate;
     }
 
-    public void setStartedDate(Date startedDate) {
-        this.startedDate = new Datetime(Datetime.YEAR,
-                                        Datetime.DAY,
-                                        startedDate);
+    public void setStartedDate(Datetime startedDate) {
+        this.startedDate = startedDate;
     }
 
     public Datetime getCompletedDate() {
         return completedDate;
     }
 
-    public void setCompletedDate(Date completedDate) {
-        this.completedDate = new Datetime(Datetime.YEAR,
-                                          Datetime.DAY,
-                                          completedDate);
+    public void setCompletedDate(Datetime completedDate) {
+        this.completedDate = completedDate;
     }
 
     public Datetime getReleasedDate() {
         return releasedDate;
     }
 
-    public void setReleasedDate(Date releasedDate) {
-        this.releasedDate = new Datetime(Datetime.YEAR,
-                                         Datetime.DAY,
-                                         releasedDate);
+    public void setReleasedDate(Datetime releasedDate) {
+        this.releasedDate = releasedDate;
     }
 
     public Datetime getPrintedDate() {
         return printedDate;
     }
 
-    public void setPrintedDate(Date printedDate) {
-        this.printedDate = new Datetime(Datetime.YEAR,
-                                        Datetime.DAY,
-                                        printedDate);
+    public void setPrintedDate(Datetime printedDate) {
+        this.printedDate = printedDate;
     }
 
     public String getSection() {
