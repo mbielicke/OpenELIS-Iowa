@@ -28,6 +28,7 @@ package org.openelis.manager;
 import java.util.ArrayList;
 
 import org.openelis.domain.AnalysisTestDO;
+import org.openelis.domain.SampleItemDO;
 import org.openelis.exception.NotFoundException;
 import org.openelis.gwt.common.RPC;
 
@@ -107,6 +108,14 @@ public class AnalysisManager implements RPC {
         
         if(tmpList.analysis.getId() != null)
             deletedList.add(tmpList);
+    }
+    
+    public int getIndex(AnalysisTestDO aDO){
+        for(int i=0; i<count(); i++)
+            if(items.get(i).analysis == aDO)
+                return i;
+        
+        return -1;
     }
     
     //qaevents

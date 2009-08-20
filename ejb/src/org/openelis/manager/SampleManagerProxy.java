@@ -50,7 +50,25 @@ public class SampleManagerProxy {
         sm.getOrganizations();
         sm.getProjects();
         sm.getSampleItems();
-        System.out.println("5a");
+        
+        return sm;
+    }
+                         
+    public SampleManager fetchWithItemsAnalyses(Integer sampleId) throws Exception {
+        SampleLocal sl = getSampleLocal();
+        SampleDO sampleDO = sl.fetchById(sampleId);
+        
+        SampleManager sm = SampleManager.getInstance();
+        sm.setSample(sampleDO);
+        
+        sm.getDomainManager();
+        sm.getOrganizations();
+        sm.getProjects();
+        SampleItemManager sim = sm.getSampleItems();
+        
+        for(int i=0; i<sim.count(); i++)
+            sim.getAnalysisAt(i);
+        
         return sm;
     }
     

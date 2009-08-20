@@ -153,6 +153,14 @@ public class SampleItemManager implements RPC {
     
         return item.analysis;
     }
+    
+    public int getIndex(SampleItemDO itemDO){
+        for(int i=0; i<count(); i++)
+            if(items.get(i).sampleItem == itemDO)
+                return i;
+        
+        return -1;
+    }
 
     public void setAnalysisAt(AnalysisManager analysis, int i) {
         getItem(i).analysis = analysis;
