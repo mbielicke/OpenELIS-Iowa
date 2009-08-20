@@ -231,7 +231,12 @@ public class SampleProjectScreen extends Screen implements HasActionHandlers<Sam
                TableDataRow row = new TableDataRow(3);
                row.key = projectRow.getId();
                
-               row.cells.get(0).value = new TableDataRow(projectRow.getProjectId(),projectRow.getProject().getName());
+               TableDataRow projRow = new TableDataRow(2);
+               projRow.key = projectRow.getProjectId();
+               projRow.cells.get(0).value = projectRow.getProject().getName();
+               projRow.cells.get(1).value = projectRow.getProject().getDescription();
+               
+               row.cells.get(0).value = projRow;
                row.cells.get(1).value = projectRow.getProject().getDescription();
                row.cells.get(2).value = projectRow.getIsPermanent();
                model.add(row);

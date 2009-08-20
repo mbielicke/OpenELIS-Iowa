@@ -27,6 +27,8 @@ package org.openelis.modules.environmentalSampleLogin.client;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Set;
 
 import org.openelis.cache.DictionaryCache;
@@ -66,6 +68,10 @@ import org.openelis.gwt.widget.rewrite.CheckBox;
 import org.openelis.gwt.widget.rewrite.Dropdown;
 import org.openelis.gwt.widget.rewrite.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.rewrite.TableDataRow;
+import org.openelis.gwt.widget.table.rewrite.event.BeforeCellEditedEvent;
+import org.openelis.gwt.widget.table.rewrite.event.BeforeCellEditedHandler;
+import org.openelis.gwt.widget.table.rewrite.event.RowAddedEvent;
+import org.openelis.gwt.widget.table.rewrite.event.RowAddedHandler;
 import org.openelis.gwt.widget.tree.rewrite.TreeDataItem;
 import org.openelis.gwt.widget.tree.rewrite.TreeRow;
 import org.openelis.gwt.widget.tree.rewrite.TreeWidget;
@@ -73,6 +79,7 @@ import org.openelis.gwt.widget.tree.rewrite.event.LeafOpenedEvent;
 import org.openelis.gwt.widget.tree.rewrite.event.LeafOpenedHandler;
 import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.SampleEnvironmentalManager;
+import org.openelis.manager.SampleItemManager;
 import org.openelis.manager.SampleManager;
 import org.openelis.metamap.SampleEnvironmentalMetaMap;
 import org.openelis.modules.main.client.openelis.OpenELIS;
@@ -82,6 +89,8 @@ import org.openelis.modules.sampleProject.client.SampleProjectScreen;
 import org.openelis.utilgwt.AutocompleteRPC;
 
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
+import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -583,6 +592,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements BeforeGetM
             }
         });
         
+        /*
         itemsTree.addLeafOpenedHandler(new LeafOpenedHandler(){
            public void onLeafOpened(LeafOpenedEvent event) {
                try{
@@ -599,13 +609,46 @@ public class EnvironmentalSampleLoginScreen extends Screen implements BeforeGetM
                    return;
                }
             } 
-        });
+        });*/
         
+        itemsTree.addBeforeSelectionHandler(new BeforeSelectionHandler<TreeRow>(){
+           public void onBeforeSelection(BeforeSelectionEvent<TreeRow> event) {
+               //do nothing
+                
+            } 
+        });
         itemsTree.addSelectionHandler(new SelectionHandler<TreeRow>(){
            public void onSelection(SelectionEvent<TreeRow> event) {
-            // TODO Auto-generated method stub
+            Window.alert("selected");
             
            }
+        });
+        
+        itemsTree.addBeforeCellEditedHandler(new BeforeCellEditedHandler(){
+           public void onBeforeCellEdited(BeforeCellEditedEvent event) {
+               //never allowed to edit tree..use tabs
+               event.cancel();
+            } 
+        });
+        
+        itemsTree.addRowAddedHandler(new RowAddedHandler(){
+           public void onRowAdded(RowAddedEvent event) {
+               try{
+                   TreeDataItem addedRow = (TreeDataItem)event.getRow();
+                   
+                   if("sampleItem".equals(addedRow.leafType)){
+                       manager.getSampleItems().addSampleItem(((TreeDataItemSampleItem)addedRow.data).sampleItemDO);
+                   }else if("analysis".equals(addedRow.leafType)){
+                       TreeDataItemAnalysis data = (TreeDataItemAnalysis)addedRow.data;
+                       int sampleItemIndex = manager.getSampleItems().getIndex(data.sampleItemDO);
+                       
+                       manager.getSampleItems().getAnalysisAt(sampleItemIndex).addAnalysis(data.analysisTestDO);
+                   }
+
+               }catch(Exception e){
+                   Window.alert(e.getMessage());
+               }
+            } 
         });
         
         final AppButton billToLookup = (AppButton)def.getWidget("billToLookup");
@@ -1090,7 +1133,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements BeforeGetM
         window.setBusy(consts.get("fetching"));
         
         try {
-            manager = SampleManager.findById(id);
+            manager = SampleManager.findByIdWithItemsAnalyses(id);
         
         } catch (Exception e) {
             setState(Screen.State.DEFAULT);
@@ -1326,42 +1369,64 @@ public class EnvironmentalSampleLoginScreen extends Screen implements BeforeGetM
         }
     }
     
-    public void onAddItemButtonClick() {/*
-        int selectedIndex = itemsTestsTree.model.getSelectedIndex();
-        TreeDataItem newRow = itemsTestsTree.model.createTreeItem("sampleItem");
-        newRow.cells[0].setValue(form.nextItemSequence + " - ");
+    public void onAddItemButtonClick() {
+        int nextItemSequence = manager.getSample().getNextItemSequence();
+
+        TreeDataItem newRow = itemsTree.createTreeItem("sampleItem");
+        newRow.toggle();
+        newRow.cells.get(0).value = nextItemSequence + " - ";
         
-        form.nextItemSequence++;
+        SampleItemDO siDO = new SampleItemDO();
+        siDO.setItemSequence(nextItemSequence);
+        TreeDataItemSampleItem data = new TreeDataItemSampleItem();
         
-        /*if(selectedIndex != -1){
-            TreeDataItem selectedRow = itemsTestsTree.model.getSelection();
-            if(!"sampleItem".equals(selectedRow.leafType))
-                selectedRow = selectedRow.parent;
-            selectedRow.addItem(newRow);
+        try{
             
-            if (!selectedRow.open)
-                selectedRow.toggle();
-        }else
+            data.sampleItemManager = manager.getSampleItems();
+            data.sampleItemDO = siDO;
+        }catch(Exception e){
+            Window.alert(e.getMessage());
+        }
         
-        itemsTestsTree.model.addRow(newRow);
+        newRow.data = data;
         
-        itemsTestsTree.model.refresh();*/
+        manager.getSample().setNextItemSequence(nextItemSequence+1);
+        
+        itemsTree.addRow(newRow);
     }
     
-    public void onAddTestButtonClick() {/*
-        TreeDataItem newRow = itemsTestsTree.model.createTreeItem("analysis");
-        newRow.cells[0].setValue("TEST");
-        TreeDataItem selectedRow = itemsTestsTree.model.getRow(itemsTestsTree.model.getSelectedIndex());
+    public void onAddTestButtonClick() {
+        TreeDataItem newRow = itemsTree.createTreeItem("analysis");
+        newRow.cells.get(0).value = "TEST";
+        
+        TreeDataItem selectedRow = itemsTree.getRow(itemsTree.getSelectedIndex());
         
         if(!"sampleItem".equals(selectedRow.leafType))
             selectedRow = selectedRow.parent;
         
+        TreeDataItemSampleItem sampleItemData = (TreeDataItemSampleItem)selectedRow.data;
+        SampleItemDO itemDO = sampleItemData.sampleItemDO;
+        int sampleItemIndex = sampleItemData.sampleItemManager.getIndex(itemDO);
+        
+        AnalysisTestDO aDO = new AnalysisTestDO();
+        TreeDataItemAnalysis data = new TreeDataItemAnalysis();
+        
+        try{
+            data.sampleItemManager = sampleItemData.sampleItemManager;
+            data.sampleItemDO = itemDO;
+            data.analysisManager = sampleItemData.sampleItemManager.getAnalysisAt(sampleItemIndex);
+            data.analysisTestDO = aDO;
+        }catch(Exception e){
+            Window.alert(e.getMessage());
+        }
+        
+        newRow.data = data;
         selectedRow.addItem(newRow);
         
         if (!selectedRow.open)
             selectedRow.toggle();
         
-        itemsTestsTree.model.refresh();*/
+        itemsTree.refresh(true);
     }
     
     public void onRemoveRowButtonClick() {/*
@@ -1612,26 +1677,66 @@ public class EnvironmentalSampleLoginScreen extends Screen implements BeforeGetM
     }
         
     private ArrayList<TreeDataItem> getTreeModel() {
+        int i, j;
+        AnalysisManager am;
+        SampleItemDO itemDO;
+        TreeDataItem tmp;
+        TreeDataItem treeModelItem, row;
         ArrayList<TreeDataItem> model = new ArrayList<TreeDataItem>();
         
-        if(manager == null)
-            return model;
-        
-        try{   
-            for(int iter = 0;iter < manager.getSampleItems().count();iter++) {
-                SampleItemDO sampleItemRow = (SampleItemDO)manager.getSampleItems().getSampleItemAt(iter);
+        try{  
+            HashMap<Integer, TreeDataItem> keyTable = new HashMap<Integer, TreeDataItem>();
             
-               TreeDataItem row = new TreeDataItem(2);
-               row.leafType = "sampleItem";
-               row.key = sampleItemRow.getId();
-               row.cells.get(0).value = sampleItemRow.getItemSequence()+" - "+sampleItemRow.getContainer();
-               row.cells.get(1).value = sampleItemRow.getTypeOfSample();
-               row.open = false;
-               row.checkForChildren(true);
-               
-               model.add(row);
+            if(manager == null)
+                return model;
+            
+            for(i=0; i<manager.getSampleItems().count(); i++){
+                SampleItemManager sim = manager.getSampleItems();
+                itemDO = sim.getSampleItemAt(i);
+                
+                row = new TreeDataItem(2);
+                row.leafType = "sampleItem";
+                row.toggle();
+                row.key = itemDO.getId();
+                //container
+                row.cells.get(0).value = itemDO.getItemSequence()+" - "+itemDO.getContainer();
+                //source,type
+                row.cells.get(1).value = itemDO.getTypeOfSample();
+                
+                TreeDataItemSampleItem data = new TreeDataItemSampleItem();
+                data.sampleItemManager = manager.getSampleItems();
+                data.sampleItemDO = itemDO;
+                row.data = data;
+                
+                tmp = keyTable.get(itemDO.getId());
+                if(tmp != null){
+                    tmp.addItem(row);
+                }else{
+                    keyTable.put(itemDO.getId(), row);
+                    model.add(row);
+                }
+                
+                am = manager.getSampleItems().getAnalysisAt(i);
+                for(j=0; j<am.count(); j++){
+                    AnalysisTestDO aDO = (AnalysisTestDO)am.getAnalysisAt(j);
+                    
+                    treeModelItem = new TreeDataItem(2);
+                    treeModelItem.leafType = "analysis";
+                    
+                    treeModelItem.key = aDO.getId();
+                    treeModelItem.cells.get(0).value = aDO.test.getName() + " : " + aDO.test.getMethodName();
+                    treeModelItem.cells.get(1).value = aDO.getStatusId();
+                    
+                    TreeDataItemAnalysis aData = new TreeDataItemAnalysis();
+                    aData.sampleItemManager = sim;
+                    aData.sampleItemDO = itemDO;
+                    aData.analysisManager = am;
+                    aData.analysisTestDO = aDO;
+                    treeModelItem.data = aData;
+                    
+                    row.addItem(treeModelItem);
+                }
             }
-            
         } catch (Exception e) {
     
             e.printStackTrace();
@@ -1641,6 +1746,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements BeforeGetM
         return model;
     }
     
+    /*
     private void loadChildrenNodes(TreeDataItem parentRow, AnalysisManager am){
         
         for(int i=0; i<am.count(); i++){
@@ -1658,6 +1764,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements BeforeGetM
         itemsTree.refresh(true);
         
     }
+    */
     
     private void getOrganizationMatches(String match, AutoComplete widget){
         AutocompleteRPC rpc = new AutocompleteRPC();

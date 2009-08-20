@@ -25,13 +25,14 @@
 */
 package org.openelis.modules.environmentalSampleLogin.client;
 
-import org.openelis.gwt.common.data.TreeDataItem;
+import org.openelis.domain.AnalysisTestDO;
+import org.openelis.domain.SampleItemDO;
+import org.openelis.manager.AnalysisManager;
+import org.openelis.manager.SampleItemManager;
 
-public class TreeDataItemTest extends TreeDataItem {
-    TestInfoForm testInfoForm;
-    AnalysisForm analysisForm;
-    
-    public TreeDataItemTest(int size) {
-        super(size);
-    }
+public class TreeDataItemAnalysis {
+    SampleItemManager sampleItemManager;
+    SampleItemDO sampleItemDO;
+    AnalysisManager analysisManager;
+    AnalysisTestDO analysisTestDO;
 }

@@ -47,6 +47,10 @@ public class SampleManagerProxy {
         return service.call("fetch", sampleId);
     }
     
+    public SampleManager fetchWithItemsAnalyses(Integer sampleId) throws Exception {
+     return service.call("fetchWithItemsAnalyses", sampleId);   
+    }
+    
     public SampleManager fetchByAccessionNumber(Integer accessionNumber) throws Exception {
         return service.call("fetchByAccessionNumber", accessionNumber);
     }
