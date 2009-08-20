@@ -25,14 +25,6 @@
 */
 package org.openelis.modules.environmentalSampleLogin.client;
 
-import org.openelis.gwt.common.RPC;
-import org.openelis.gwt.common.data.TreeDataModel;
+public class SampleIntCommentsTab {
 
-public class SampleTreeForm implements RPC{
-
-    private static final long serialVersionUID = 1L;
-    public Integer treeRow;
-    public Integer sampleItemId;
-    public TreeDataModel treeModel;
-    
 }

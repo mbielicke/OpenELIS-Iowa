@@ -25,32 +25,6 @@
 */
 package org.openelis.modules.environmentalSampleLogin.client;
 
-import org.openelis.gwt.common.Form;
-import org.openelis.gwt.common.data.AbstractField;
+public class TestResultsTab {
 
-import com.google.gwt.xml.client.Node;
-
-public class TestInfoForm extends Form<Integer> {
-
-    private static final long serialVersionUID = 1L;
-
-    public TestInfoForm() {
-        
-   }
-   
-   public TestInfoForm(Node node) {
-       this();
-       createFields(node);
-   }
-   
-   public TestInfoForm(String key) {
-       this();
-       this.key = key;
-   }
-   
-   public AbstractField[] getFields() {
-       return new AbstractField[] {
-                                   
-       };
-   }
 }

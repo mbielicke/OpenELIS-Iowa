@@ -25,36 +25,6 @@
 */
 package org.openelis.modules.environmentalSampleLogin.client;
 
-import org.openelis.gwt.common.Form;
-import org.openelis.gwt.common.data.AbstractField;
-import org.openelis.gwt.common.data.TableDataRow;
-import org.openelis.gwt.common.data.TableField;
+public class AnalysisExCommentTab {
 
-import com.google.gwt.xml.client.Node;
-
-public class SampleProjectForm extends Form<Integer> {
-
-    private static final long serialVersionUID = 1L;
-    
-    public TableField<TableDataRow<Integer>> sampleProjectTable;
-    
-    public SampleProjectForm() {
-        sampleProjectTable = new TableField<TableDataRow<Integer>>("sampleProjectTable");
-   }
-   
-   public SampleProjectForm(Node node) {
-       this();
-       createFields(node);
-   }
-   
-   public SampleProjectForm(String key) {
-       this();
-       this.key = key;
-   }
-   
-   public AbstractField[] getFields() {
-       return new AbstractField[] {
-                                   sampleProjectTable
-       };
-   }
 }

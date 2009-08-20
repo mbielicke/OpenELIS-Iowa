@@ -25,10 +25,6 @@
 */
 package org.openelis.modules.environmentalSampleLogin.client;
 
-import org.openelis.domain.SampleItemDO;
-import org.openelis.manager.SampleItemManager;
+public class SampleExCommentTab {
 
-public class TreeDataItemSampleItem {
-    SampleItemManager sampleItemManager;
-    SampleItemDO sampleItemDO;
 }
