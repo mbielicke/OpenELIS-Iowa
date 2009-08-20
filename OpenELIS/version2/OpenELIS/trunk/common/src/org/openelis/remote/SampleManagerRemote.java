@@ -12,6 +12,7 @@ public interface SampleManagerRemote {
     public SampleManager update(SampleManager man) throws Exception;
     public SampleManager add(SampleManager man) throws Exception;
     public SampleManager fetch(Integer sampleId) throws Exception;
+    public SampleManager fetchWithItemsAnalysis(Integer sampleId) throws Exception;
     public SampleManager fetchByAccessionNumber(Integer accessionNumber) throws Exception;
     
     public SampleManager fetchForUpdate(Integer sampleId) throws Exception;

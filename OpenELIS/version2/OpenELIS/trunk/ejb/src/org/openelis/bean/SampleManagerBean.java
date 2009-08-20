@@ -90,6 +90,12 @@ public class SampleManagerBean  implements SampleManagerRemote {
         
         return man;
     }
+    
+    public SampleManager fetchWithItemsAnalysis(Integer sampleId) throws Exception {
+        SampleManager man = SampleManager.findByIdWithItemsAnalyses(sampleId);
+        
+        return man;
+    }
 
     public SampleManager fetchByAccessionNumber(Integer accessionNumber) throws Exception {
         SampleManager man = SampleManager.findByAccessionNumber(accessionNumber);

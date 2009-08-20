@@ -77,6 +77,10 @@ public class SampleManager implements RPC {
         return proxy().fetch(id);
     }
     
+    public static SampleManager findByIdWithItemsAnalyses(Integer id) throws Exception {
+        return proxy().fetchWithItemsAnalyses(id);
+    }
+    
     /**
      * Creates a new instance of this object with the specified Specimen. Use this function to load an instance of this object from database.
      */
@@ -161,7 +165,7 @@ public class SampleManager implements RPC {
      
         return sampleItems;
     }
-
+    
     public SampleOrganizationManager getOrganizations() throws Exception {
         if(organizations == null){
             if(sample.getId() != null){
