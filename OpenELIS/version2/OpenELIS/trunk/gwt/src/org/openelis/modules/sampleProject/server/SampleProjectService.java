@@ -27,12 +27,12 @@ package org.openelis.modules.sampleProject.server;
 
 import java.util.ArrayList;
 
+import org.openelis.common.AutocompleteRPC;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.ProjectRemote;
 import org.openelis.server.constants.Constants;
-import org.openelis.utilgwt.AutocompleteRPC;
 
 public class SampleProjectService {
     public String getScreen() throws RPCException {

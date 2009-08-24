@@ -25,6 +25,7 @@
 */
 package org.openelis.modules.environmentalSampleLogin.client;
 
-public class StorageTab {
+import org.openelis.gwt.screen.rewrite.Screen;
 
+public class StorageTab extends Screen {
 }
