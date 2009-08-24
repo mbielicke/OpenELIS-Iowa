@@ -27,6 +27,7 @@ package org.openelis.modules.environmentalSampleLogin.server;
 
 import java.util.ArrayList;
 
+import org.openelis.common.AutocompleteRPC;
 import org.openelis.domain.IdNameDO;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.RPCException;
@@ -41,7 +42,6 @@ import org.openelis.remote.TestRemote;
 import org.openelis.server.constants.Constants;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
-import org.openelis.utilgwt.AutocompleteRPC;
 
 public class EnvironmentalSampleLoginService {
 

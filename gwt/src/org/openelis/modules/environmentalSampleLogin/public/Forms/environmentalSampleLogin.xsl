@@ -323,7 +323,7 @@ UIRF Software License are applicable instead of those above.
 								</row>
 								<row>
 									<text style="Prompt">Qty:</text>
-									<textbox case="mixed" key="{sampleItemMetaMap:getQuantity($sampleItem)}" onchange="this" width="150px" field="Integer"/>
+									<textbox case="mixed" key="{sampleItemMetaMap:getQuantity($sampleItem)}" onchange="this" width="150px" field="Double"/>
 									<text style="Prompt">Unit:</text>
 									<dropdown case="mixed" key="{sampleItemMetaMap:getUnitOfMeasureId($sampleItem)}" onchange="this" width="150px" field="Integer"/>
 								</row>
@@ -398,82 +398,74 @@ UIRF Software License are applicable instead of those above.
 						</VerticalPanel>
 					</tab>
 					<tab key="tab3" text="{resource:getString($constants,'analysisExtrnlCmnts')}">
-						<VerticalPanel height="170px" width="730px">
+					<VerticalPanel height="170px" width="100%">
 						<TablePanel style="Form" padding="0" spacing="0">
 						<row>
-							<widget colspan="2" align="center">
-								<appButton action="analysisNoteExt" onclick="this" key="analysisNoteExt" style="Button">
-									<HorizontalPanel>
-              							<AbsolutePanel xsi:type="Absolute" layout="absolute" style="StandardNoteButtonImage"/>
-	                					<text><xsl:value-of select='resource:getString($constants,"edit")'/></text>
-						             </HorizontalPanel>
-						    	</appButton>
-						  	</widget>
+							<notes key="anExNotesPanel" width="690px" height="150px"/>
 						</row>
 						<row>
-							<widget>
-								<textarea width="710px" height="125px" case="mixed"/>
-							</widget>
-						</row>
+							<appButton action="standardNote" key="anExNoteButton" style="Button">
+                          		<HorizontalPanel>
+                            		<AbsolutePanel style="StandardNoteButtonImage"/>
+                            		<text><xsl:value-of select="resource:getString($constants,'addNote')"/></text>
+                          		</HorizontalPanel>
+                        	</appButton>
+                       	</row>
 					</TablePanel>
 						</VerticalPanel>
 					</tab>
 					<tab key="tab4" text="{resource:getString($constants,'analysisIntrnlCmnts')}">
-						<VerticalPanel height="170px" width="730px">
-							<widget halign="center">
-								<appButton action="analysisNoteInt" key="analysisNoteInt" onclick="this" style="Button">
-									<HorizontalPanel>
-										<AbsolutePanel style="StandardNoteButtonImage"/>
-										<text><xsl:value-of select="resource:getString($constants,'edit')"/></text>
-									</HorizontalPanel>
-								</appButton>
-							</widget>
-							<widget halign="center">
-								<HorizontalPanel style="notesPanelContainer">
-									<VerticalPanel height="125px" key="notesPanel" onclick="this" overflowX="auto" overflowY="scroll" style="NotesPanel" valign="top" width="715px"/>
-								</HorizontalPanel>
-							</widget>
+					<VerticalPanel height="170px" width="100%">
+						<TablePanel style="Form" padding="0" spacing="0">
+						<row>
+							<notes key="anIntNotesPanel" width="690px" height="150px"/>
+						</row>
+						<row>
+							<appButton action="standardNote" key="anIntNoteButton" style="Button">
+                          		<HorizontalPanel>
+                            		<AbsolutePanel style="StandardNoteButtonImage"/>
+                            		<text><xsl:value-of select="resource:getString($constants,'addNote')"/></text>
+                          		</HorizontalPanel>
+                        	</appButton>
+                       	</row>
+					</TablePanel>
 						</VerticalPanel>
 					</tab>
 					<tab key="tab5" text="{resource:getString($constants,'storage')}">
 						<VerticalPanel height="170px" width="730px"/>
 					</tab>
 					<tab key="tab6" text="{resource:getString($constants,'sampleExtrnlCmnts')}">
-						<VerticalPanel height="170px" width="730px">
+					<VerticalPanel height="170px" width="100%">
 						<TablePanel style="Form" padding="0" spacing="0">
 						<row>
-							<widget colspan="2" align="center">
-								<appButton action="standardNoteShipping" onclick="this" key="sampleNoteExtButton" style="Button">
-									<HorizontalPanel>
-              							<AbsolutePanel xsi:type="Absolute" layout="absolute" style="StandardNoteButtonImage"/>
-	                					<text><xsl:value-of select='resource:getString($constants,"edit")'/></text>
-						             </HorizontalPanel>
-						    	</appButton>
-						  	</widget>
+							<notes key="sampleExtNotesPanel" width="690px" height="150px"/>
 						</row>
 						<row>
-							<widget>
-								<textarea width="710px" height="125px" case="mixed"/>
-							</widget>
-						</row>
+							<appButton action="standardNote" key="sampleExtNoteButton" style="Button">
+                          		<HorizontalPanel>
+                            		<AbsolutePanel style="StandardNoteButtonImage"/>
+                            		<text><xsl:value-of select="resource:getString($constants,'addNote')"/></text>
+                          		</HorizontalPanel>
+                        	</appButton>
+                       	</row>
 					</TablePanel>
 						</VerticalPanel>
 					</tab>
 					<tab key="tab7" text="{resource:getString($constants,'sampleIntrnlCmnts')}">
-						<VerticalPanel height="170px" width="730px">
-							<widget halign="center">
-								<appButton action="standardNote" key="sampleNoteIntButton" onclick="this" style="Button">
-									<HorizontalPanel>
-										<AbsolutePanel style="StandardNoteButtonImage"/>
-										<text><xsl:value-of select="resource:getString($constants,'edit')"/></text>
-									</HorizontalPanel>
-								</appButton>
-							</widget>
-							<widget halign="center">
-								<HorizontalPanel style="notesPanelContainer">
-									<VerticalPanel height="125px" key="notesPanel" onclick="this" overflowX="auto" overflowY="scroll" style="NotesPanel" valign="top" width="715px"/>
-								</HorizontalPanel>
-							</widget>
+					<VerticalPanel height="170px" width="100%">
+						<TablePanel style="Form" padding="0" spacing="0">
+						<row>
+							<notes key="sampleIntNotesPanel" width="690px" height="150px"/>
+						</row>
+						<row>
+							<appButton action="standardNote" key="sampleIntNoteButton" style="Button">
+                          		<HorizontalPanel>
+                            		<AbsolutePanel style="StandardNoteButtonImage"/>
+                            		<text><xsl:value-of select="resource:getString($constants,'addNote')"/></text>
+                          		</HorizontalPanel>
+                        	</appButton>
+                       	</row>
+					</TablePanel>
 						</VerticalPanel>
 					</tab>
 				</TabPanel>

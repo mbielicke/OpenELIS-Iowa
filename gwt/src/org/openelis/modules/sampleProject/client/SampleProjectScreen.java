@@ -28,6 +28,7 @@ package org.openelis.modules.sampleProject.client;
 import java.util.ArrayList;
 import java.util.EnumSet;
 
+import org.openelis.common.AutocompleteRPC;
 import org.openelis.domain.ProjectDO;
 import org.openelis.domain.SampleProjectDO;
 import org.openelis.gwt.event.ActionEvent;
@@ -51,7 +52,6 @@ import org.openelis.gwt.widget.table.rewrite.event.RowDeletedEvent;
 import org.openelis.gwt.widget.table.rewrite.event.RowDeletedHandler;
 import org.openelis.manager.SampleProjectManager;
 import org.openelis.metamap.SampleProjectMetaMap;
-import org.openelis.utilgwt.AutocompleteRPC;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -231,12 +231,7 @@ public class SampleProjectScreen extends Screen implements HasActionHandlers<Sam
                TableDataRow row = new TableDataRow(3);
                row.key = projectRow.getId();
                
-               TableDataRow projRow = new TableDataRow(2);
-               projRow.key = projectRow.getProjectId();
-               projRow.cells.get(0).value = projectRow.getProject().getName();
-               projRow.cells.get(1).value = projectRow.getProject().getDescription();
-               
-               row.cells.get(0).value = projRow;
+               row.cells.get(0).value = new TableDataRow(projectRow.getProjectId(),projectRow.getProject().getName());
                row.cells.get(1).value = projectRow.getProject().getDescription();
                row.cells.get(2).value = projectRow.getIsPermanent();
                model.add(row);

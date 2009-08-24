@@ -27,6 +27,7 @@ package org.openelis.modules.organization.server;
 
 import java.util.ArrayList;
 
+import org.openelis.common.AutocompleteRPC;
 import org.openelis.domain.IdNameDO;
 import org.openelis.domain.OrganizationAutoDO;
 import org.openelis.gwt.common.LastPageException;
@@ -35,7 +36,6 @@ import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.manager.OrganizationContactManager;
 import org.openelis.manager.OrganizationManager;
 import org.openelis.modules.organization.client.OrgQuery;
-import org.openelis.modules.organization.client.ParentOrgRPC;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.OrganizationManagerRemote;
 import org.openelis.remote.OrganizationRemote;
@@ -140,20 +140,18 @@ public class OrganizationService {
         return ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/organization.xsl");      
     }
 
-    //autocomplete textbox method
-    //match is what they typed
-    public ParentOrgRPC getMatches(ParentOrgRPC rpc) {
+    public AutocompleteRPC getMatches(AutocompleteRPC rpc) {
     	OrganizationRemote remote = (OrganizationRemote)EJBFactory.lookup("openelis/OrganizationBean/remote");
     
     	try{
     		int id = Integer.parseInt(rpc.match); //this will throw an exception if it isnt an id
     		//lookup by id...should only bring back 1 result
-    		rpc.model = (ArrayList<OrganizationAutoDO>)remote.autoCompleteLookupById(id);
+    		rpc.model = (ArrayList)remote.autoCompleteLookupById(id);
     		
     	}catch(NumberFormatException e){
     		//it isnt an id
     		//lookup by name
-    		rpc.model = (ArrayList<OrganizationAutoDO>)remote.autoCompleteLookupByName(rpc.match+"%", 10);
+    		rpc.model = (ArrayList)remote.autoCompleteLookupByName(rpc.match+"%", 10);
     	}
         
     	return rpc;		

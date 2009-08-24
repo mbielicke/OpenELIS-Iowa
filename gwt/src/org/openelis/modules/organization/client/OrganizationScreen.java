@@ -20,10 +20,13 @@ import java.util.EnumSet;
 import java.util.Set;
 
 import org.openelis.cache.DictionaryCache;
+import org.openelis.common.AutocompleteRPC;
+import org.openelis.common.NotesTab;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameDO;
 import org.openelis.domain.OrganizationAddressDO;
 import org.openelis.domain.OrganizationAutoDO;
+import org.openelis.domain.ProjectDO;
 import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.SecurityModule;
@@ -101,7 +104,7 @@ public class OrganizationScreen extends Screen implements BeforeGetMatchesHandle
         contactsTab = new ContactsTab(def);
 
         // Create the Handler for the Notes tab passing in the ScreenDef;
-        notesTab = new NotesTab(def);
+        notesTab = new NotesTab(def, "notesPanel", "standardNoteButton", false);
 
         // Set up tabs to recieve State Change events from the main Screen.
         addScreenHandler(contactsTab, new ScreenEventHandler<Object>() {
@@ -769,12 +772,15 @@ public class OrganizationScreen extends Screen implements BeforeGetMatchesHandle
     }
 
     public void onGetMatches(GetMatchesEvent event) {
-        ParentOrgRPC prpc = new ParentOrgRPC();
-        prpc.match = event.getMatch();
+        AutocompleteRPC rpc = new AutocompleteRPC();
+        rpc.match = event.getMatch();
         try {
-            prpc = service.call("getMatches",prpc);
+            rpc = service.call("getMatches",rpc);
             ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
-            for (OrganizationAutoDO autoDO : prpc.model) {
+            
+            for (int i=0; i<rpc.model.size(); i++){
+                OrganizationAutoDO autoDO = (OrganizationAutoDO)rpc.model.get(i);
+                
                 TableDataRow row = new TableDataRow(4);
                 row.key = autoDO.getId();
                 row.cells.get(0).value = autoDO.getName();

@@ -25,6 +25,8 @@
 */
 package org.openelis.modules.environmentalSampleLogin.client;
 
-public class SampleIntCommentsTab {
+import org.openelis.gwt.screen.rewrite.Screen;
+
+public class SampleIntCommentsTab extends Screen {
 
 }

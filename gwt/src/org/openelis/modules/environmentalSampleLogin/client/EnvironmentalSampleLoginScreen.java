@@ -32,6 +32,8 @@ import java.util.Hashtable;
 import java.util.Set;
 
 import org.openelis.cache.DictionaryCache;
+import org.openelis.common.AutocompleteRPC;
+import org.openelis.common.NotesTab;
 import org.openelis.domain.AnalysisTestDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameDO;
@@ -83,10 +85,10 @@ import org.openelis.manager.SampleItemManager;
 import org.openelis.manager.SampleManager;
 import org.openelis.metamap.SampleEnvironmentalMetaMap;
 import org.openelis.modules.main.client.openelis.OpenELIS;
+import org.openelis.modules.organization.client.ContactsTab;
 import org.openelis.modules.sampleLocation.client.SampleLocationScreen;
 import org.openelis.modules.sampleOrganization.client.SampleOrganizationScreen;
 import org.openelis.modules.sampleProject.client.SampleProjectScreen;
-import org.openelis.utilgwt.AutocompleteRPC;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
@@ -103,6 +105,15 @@ public class EnvironmentalSampleLoginScreen extends Screen implements BeforeGetM
     public enum Tabs {SAMPLE_ITEM,ANALYSIS, TEST_RESULT, AN_EXT_COMMENT, 
                         AN_INT_COMMENTS, STORAGE, SMP_EXT_COMMENT, SMP_INT_COMMENTS};    
     protected Tabs               tab           = Tabs.SAMPLE_ITEM;
+    
+    private SampleItemTab          sampleItemTab;
+    private AnalysisTab             analysisTab;
+    private TestResultsTab         testResultsTab;
+    private NotesTab            analysisExtCommentTab, analysisIntCommentsTab, 
+                                sampleExtCommentTab, sampleIntCommentsTab;
+    private StorageTab          storageTab;
+    
+    
     protected TextBox location;
     protected AutoComplete<Integer> project, reportTo, billTo;
     protected TreeWidget itemsTree;
@@ -150,7 +161,23 @@ public class EnvironmentalSampleLoginScreen extends Screen implements BeforeGetM
         
         //FIXME change this when we can add the module
         security = OpenELIS.security.getModule("organization");
-
+        
+        sampleItemTab = new SampleItemTab(def);
+        
+        analysisTab = new AnalysisTab(def);
+        
+        //FIXME code this testResultsTab = new TestResultsTab(def);
+        
+        analysisExtCommentTab = new NotesTab(def, "anExNotesPanel", "anExNoteButton", true);
+        
+        analysisIntCommentsTab = new NotesTab(def, "anIntNotesPanel", "anIntNoteButton", false);
+        
+        //FIXME code this storageTab = new StorageTab(def);
+        
+        sampleExtCommentTab = new NotesTab(def, "sampleExtNotesPanel", "sampleExtNoteButton", true);
+        
+        sampleIntCommentsTab = new NotesTab(def, "sampleIntNotesPanel", "sampleIntNoteButton", false);
+        
         // Setup link between Screen and widget Handlers
         initialize();
 

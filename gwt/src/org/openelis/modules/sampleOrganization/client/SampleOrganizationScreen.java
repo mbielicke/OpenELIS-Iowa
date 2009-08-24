@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 
 import org.openelis.cache.DictionaryCache;
+import org.openelis.common.AutocompleteRPC;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.OrganizationAutoDO;
 import org.openelis.domain.SampleOrganizationDO;
@@ -54,7 +55,6 @@ import org.openelis.gwt.widget.table.rewrite.event.RowAddedHandler;
 import org.openelis.gwt.widget.table.rewrite.event.RowDeletedEvent;
 import org.openelis.gwt.widget.table.rewrite.event.RowDeletedHandler;
 import org.openelis.manager.SampleOrganizationManager;
-import org.openelis.utilgwt.AutocompleteRPC;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.SelectionEvent;
@@ -253,19 +253,12 @@ public class SampleOrganizationScreen  extends Screen implements HasActionHandle
             for(int iter = 0;iter < manager.count();iter++) {
                 SampleOrganizationDO orgDO = (SampleOrganizationDO)manager.getOrganizationAt(iter);
             
-               TableDataRow autoRow = new TableDataRow(4);
-               autoRow.key = orgDO.getOrganizationId();
-               autoRow.cells.get(0).value = orgDO.getOrganization().getName();
-               autoRow.cells.get(1).value = orgDO.getOrganization().getAddressDO().getStreetAddress();
-               autoRow.cells.get(2).value = orgDO.getOrganization().getAddressDO().getCity();
-               autoRow.cells.get(3).value = orgDO.getOrganization().getAddressDO().getState();
-               
                TableDataRow row = new TableDataRow(5);
                row.key = orgDO.getId();
                
                row.cells.get(0).value = orgDO.getTypeId();
                row.cells.get(1).value = orgDO.getOrganizationId();
-               row.cells.get(2).value = autoRow;
+               row.cells.get(2).value = new TableDataRow(orgDO.getOrganizationId(), orgDO.getOrganization().getName());
                row.cells.get(3).value = orgDO.getOrganization().getAddressDO().getCity();
                row.cells.get(4).value = orgDO.getOrganization().getAddressDO().getState();
                

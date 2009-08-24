@@ -1,4 +1,4 @@
-package org.openelis.modules.organization.client;
+package org.openelis.common;
 
 import org.openelis.domain.NoteDO;
 import org.openelis.gwt.common.Datetime;
@@ -6,7 +6,6 @@ import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.StateChangeEvent;
-import org.openelis.gwt.screen.AppScreen;
 import org.openelis.gwt.screen.ScreenWindow;
 import org.openelis.gwt.screen.rewrite.Screen;
 import org.openelis.gwt.screen.rewrite.ScreenDef;
@@ -29,18 +28,24 @@ public class NotesTab extends Screen {
     protected EditNoteScreen editNote;
     private String           userName;
     private Integer          userId;
-    private boolean          loaded = false;
+    private String notesPanelKey, editButtonKey;
+    private boolean          loaded, isExternal;
 
-    public NotesTab(ScreenDef def) {
+    public NotesTab(ScreenDef def, String notesPanelKey, String editButtonKey, boolean isExternal) {
         setDef(def);
         userName = OpenELIS.security.getSystemUserName();
         userId = OpenELIS.security.getSystemUserId();
 
+        this.notesPanelKey = notesPanelKey;
+        this.editButtonKey = editButtonKey;
+        
+        this.isExternal = isExternal;
+        
         initialize();
     }
 
     public void initialize() {
-        notesPanel = (NotesPanel)def.getWidget("notesPanel");
+        notesPanel = (NotesPanel)def.getWidget(notesPanelKey);
         addScreenHandler(notesPanel, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 drawNotes();
@@ -51,7 +56,7 @@ public class NotesTab extends Screen {
                     notesPanel.clearNotes();
             }
         });
-        final AppButton standardNote = (AppButton)def.getWidget("standardNoteButton");
+        final AppButton standardNote = (AppButton)def.getWidget(editButtonKey);
         addScreenHandler(standardNote, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 if (editNote == null) {
@@ -79,14 +84,20 @@ public class NotesTab extends Screen {
                                                       "",
                                                       true,
                                                       false);
-                modal.setName(AppScreen.consts.get("standardNote"));
+                modal.setName(consts.get("standardNote"));
                 modal.setContent(editNote);
 
-                NoteDO note = manager.getInternalEditingNote();
+                NoteDO note = null;
+                
+                if(isExternal)
+                    note = manager.getExternalEditingNote();
+                else
+                    note = manager.getInternalEditingNote();
+                
                 note.setSystemUser(userName);
                 note.setSystemUserId(userId);
                 note.setTimestamp(Datetime.getInstance(Datetime.YEAR, Datetime.SECOND));
-                editNote.setNote(manager.getInternalEditingNote());
+                editNote.setNote(note);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {

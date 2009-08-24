@@ -34,9 +34,6 @@ UIRF Software License are applicable instead of those above.
     <inherits name="org.openelis.gwt.Common"/>
     <inherits name="org.openelis.gwt.Screen"/>
      
-    <inherits name="org.openelis.Cache"/>
-    <inherits name="org.openelis.Util"/>
-    
     <inherits name='com.google.gwt.widgetideas.GWTCanvas'/>
     <inherits name='com.allen_sauer.gwt.dnd.gwt-dnd'/> 
     <inherits name="org.openelis.modules.main.Main"/>
@@ -84,6 +81,8 @@ UIRF Software License are applicable instead of those above.
     <inherits name="org.openelis.ELISCommon"/>     
     
     <source path="manager"/>
+    <source path="cache"/>
+    <source path="common"/>
     
 	<!-- Specify the app entry point class.                   -->
 	<entry-point class='org.openelis.modules.main.client.OpenELIS'/>
