@@ -30,7 +30,7 @@ import org.openelis.exception.InconsistencyException;
 import org.openelis.exception.NotFoundException;
 import org.openelis.gwt.common.RPC;
 
-public class SampleManager implements RPC {
+public class SampleManager implements RPC, HasNotesInt {
     private static final long serialVersionUID = 1L;
     
     protected SampleDO sample;
@@ -39,6 +39,10 @@ public class SampleManager implements RPC {
     protected SampleProjectManager projects;
     protected SampleQaEventManager qaEvents;
     protected SampleDomainInt sampleDomain;
+    protected NoteManager sampleInternalNotes;
+    protected NoteManager sampleExternalNote;
+    
+    protected Integer sampleReferenceTableId, sampleInternalReferenceTableId;
     
     public static final String  ENVIRONMENTAL_DOMAIN_FLAG   = "E",
                                 HUMAN_DOMAIN_FLAG           = "H",
@@ -113,6 +117,26 @@ public class SampleManager implements RPC {
     
     public void setSample(SampleDO sample) {
         this.sample = sample;
+    }
+    
+    public Integer getSampleReferenceTableId() {
+        return sampleReferenceTableId;
+    }
+
+    public void setSampleReferenceTableId(Integer sampleReferenceTableId) {
+        this.sampleReferenceTableId = sampleReferenceTableId;
+    }
+
+    public Integer getSampleInternalReferenceTableId() {
+        return sampleInternalReferenceTableId;
+    }
+
+    public void setSampleInternalReferenceTableId(Integer sampleInternalReferenceTableId) {
+        this.sampleInternalReferenceTableId = sampleInternalReferenceTableId;
+    }
+    
+    public NoteManager getNotes() throws Exception {
+        throw new UnsupportedOperationException();
     }
     
     //get manager methods
@@ -229,6 +253,46 @@ public class SampleManager implements RPC {
      
         return qaEvents;
     }*/
+    
+    public NoteManager getInternalNotes() throws Exception {
+        if(sampleInternalNotes == null){
+            if(sample.getId() != null){
+                try{
+                    sampleInternalNotes = NoteManager.findByRefTableRefId(sampleInternalReferenceTableId, sample.getId());
+                    
+                }catch(NotFoundException e){
+                    //ignore
+                }catch(Exception e){
+                    throw e;
+                }
+            }
+        }
+        
+        if(sampleInternalNotes == null)
+            sampleInternalNotes = NoteManager.getInstance();
+
+        return sampleInternalNotes;
+    }  
+    
+    public NoteManager getExternalNote() throws Exception {
+        if(sampleExternalNote == null){
+            if(sample.getId() != null){
+                try{
+                    sampleExternalNote = NoteManager.findByRefTableRefId(sampleReferenceTableId, sample.getId());
+                    
+                }catch(NotFoundException e){
+                    //ignore
+                }catch(Exception e){
+                    throw e;
+                }
+            }
+        }
+        
+        if(sampleExternalNote == null)
+            sampleExternalNote = NoteManager.getInstance();
+
+        return sampleExternalNote;
+    }  
 
   //service methods
     public SampleManager add() throws Exception {
@@ -254,5 +318,5 @@ public class SampleManager implements RPC {
             proxy = new SampleManagerProxy();
         
         return proxy;
-    }
+    }    
 }

@@ -85,11 +85,11 @@ public class AnalysisTestDO implements RPC {
         setIsReportable(isReportable);
         setUnitOfMeasureId(unitOfMeasureId);
         setStatusId(statusId);
-        setAvailableDate(Datetime.getInstance(Datetime.YEAR, Datetime.DAY, availableDate));
-        setStartedDate(Datetime.getInstance(Datetime.YEAR, Datetime.DAY, startedDate));
-        setCompletedDate(Datetime.getInstance(Datetime.YEAR, Datetime.DAY, completedDate));
-        setReleasedDate(Datetime.getInstance(Datetime.YEAR, Datetime.DAY, releasedDate));
-        setPrintedDate(Datetime.getInstance(Datetime.YEAR, Datetime.DAY, printedDate));
+        setAvailableDate(Datetime.getInstance(Datetime.YEAR, Datetime.SECOND, availableDate));
+        setStartedDate(Datetime.getInstance(Datetime.YEAR, Datetime.SECOND, startedDate));
+        setCompletedDate(Datetime.getInstance(Datetime.YEAR, Datetime.SECOND, completedDate));
+        setReleasedDate(Datetime.getInstance(Datetime.YEAR, Datetime.SECOND, releasedDate));
+        setPrintedDate(Datetime.getInstance(Datetime.YEAR, Datetime.SECOND, printedDate));
     }
 
     // analysis and test name,method name, and status

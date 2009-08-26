@@ -28,14 +28,13 @@ package org.openelis.manager;
 import java.util.ArrayList;
 
 import org.openelis.domain.AnalysisTestDO;
-import org.openelis.domain.SampleItemDO;
 import org.openelis.exception.NotFoundException;
 import org.openelis.gwt.common.RPC;
 
-public class AnalysisManager implements RPC {
+public class AnalysisManager implements RPC, HasNotesInt {
     private static final long serialVersionUID = 1L;
     
-    protected Integer                           sampleItemId, analysisReferenceId;
+    protected Integer                           sampleItemId, analysisReferenceId, analysisInternalReferenceTableId;
     protected ArrayList<AnalysisListItem>                   items, deletedList;
     
     protected transient static AnalysisManagerProxy proxy;
@@ -80,6 +79,18 @@ public class AnalysisManager implements RPC {
     public void setAnalysisReferenceId(Integer analysisReferenceId) {
         this.analysisReferenceId = analysisReferenceId;
     }
+    
+    public Integer getAnalysisInternalReferenceTableId() {
+        return analysisInternalReferenceTableId;
+    }
+
+    public void setAnalysisInternalReferenceTableId(Integer analysisInternalReferenceTableId) {
+        this.analysisInternalReferenceTableId = analysisInternalReferenceTableId;
+    }  
+    
+    public NoteManager getNotes() throws Exception {
+      throw new UnsupportedOperationException();
+    } 
     
     //analysis
     public AnalysisTestDO getAnalysisAt(int i) {
@@ -147,13 +158,13 @@ public class AnalysisManager implements RPC {
     }
     
     
-    //notes
-    public NoteManager getNotesAt(int i) throws Exception {
+    //internal notes
+    public NoteManager getInternalNotesAt(int i) throws Exception {
         AnalysisListItem item = getItem(i);
-        if(item.notes == null){
-            if(item.analysis != null && item.analysis.getId() != null && analysisReferenceId != null){
+        if(item.analysisInternalNotes == null){
+            if(item.analysis != null && item.analysis.getId() != null && analysisInternalReferenceTableId != null){
                 try{
-                    item.notes = NoteManager.findByRefTableRefId(analysisReferenceId, item.analysis.getId());
+                    item.analysisInternalNotes = NoteManager.findByRefTableRefId(analysisInternalReferenceTableId, item.analysis.getId());
                     
                 }catch(NotFoundException e){
                     //ignore
@@ -163,14 +174,40 @@ public class AnalysisManager implements RPC {
             }
         }
         
-        if(item.notes == null)
-            item.notes = NoteManager.getInstance();
+        if(item.analysisInternalNotes == null)
+            item.analysisInternalNotes = NoteManager.getInstance();
 
-        return item.notes;
+        return item.analysisInternalNotes;
     }
     
-    public void setNotesAt(NoteManager notes, int i) {
-        getItem(i).notes = notes;
+    public void setInternalNotes(NoteManager notes, int i) {
+        getItem(i).analysisInternalNotes = notes;
+    }
+    
+    //external note
+    public NoteManager getExternalNoteAt(int i) throws Exception {
+        AnalysisListItem item = getItem(i);
+        if(item.analysisExternalNote == null){
+            if(item.analysis != null && item.analysis.getId() != null && analysisReferenceId != null){
+                try{
+                    item.analysisExternalNote = NoteManager.findByRefTableRefId(analysisReferenceId, item.analysis.getId());
+                    
+                }catch(NotFoundException e){
+                    //ignore
+                }catch(Exception e){
+                    throw e;
+                }
+            }
+        }
+        
+        if(item.analysisExternalNote == null)
+            item.analysisExternalNote = NoteManager.getInstance();
+
+        return item.analysisExternalNote;
+    }
+    
+    public void setExternalNoteAt(NoteManager note, int i) {
+        getItem(i).analysisExternalNote = note;
     }
     
     //storage
@@ -230,5 +267,5 @@ public class AnalysisManager implements RPC {
 
     AnalysisListItem getDeletedAt(int i) {
         return deletedList.get(i);
-    }    
+    }       
 }
