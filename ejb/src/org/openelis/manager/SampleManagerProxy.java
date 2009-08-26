@@ -29,6 +29,7 @@ import javax.naming.InitialContext;
 
 import org.openelis.domain.SampleDO;
 import org.openelis.local.SampleLocal;
+import org.openelis.utils.ReferenceTableCache;
 
 public class SampleManagerProxy {
     public SampleManager add(SampleManager man) throws Exception {
@@ -51,6 +52,9 @@ public class SampleManagerProxy {
         sm.getProjects();
         sm.getSampleItems();
         
+        sm.setSampleReferenceTableId(ReferenceTableCache.getReferenceTable("sample"));
+        sm.setSampleInternalReferenceTableId(ReferenceTableCache.getReferenceTable("sample_internal_note"));
+        
         return sm;
     }
                          
@@ -64,6 +68,10 @@ public class SampleManagerProxy {
         sm.getDomainManager();
         sm.getOrganizations();
         sm.getProjects();
+        
+        sm.setSampleReferenceTableId(ReferenceTableCache.getReferenceTable("sample"));
+        sm.setSampleInternalReferenceTableId(ReferenceTableCache.getReferenceTable("sample_internal_note"));
+        
         SampleItemManager sim = sm.getSampleItems();
         
         for(int i=0; i<sim.count(); i++)
