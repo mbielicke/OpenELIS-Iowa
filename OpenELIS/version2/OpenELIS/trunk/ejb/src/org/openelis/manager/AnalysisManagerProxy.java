@@ -31,6 +31,7 @@ import javax.naming.InitialContext;
 
 import org.openelis.domain.AnalysisTestDO;
 import org.openelis.local.AnalysisLocal;
+import org.openelis.utils.ReferenceTableCache;
 
 public class AnalysisManagerProxy {
     public AnalysisManager fetchBySampleItemId(Integer sampleItemId) throws Exception {
@@ -42,6 +43,8 @@ public class AnalysisManagerProxy {
             am.addAnalysis(items.get(i));
         
         am.setSampleItemId(sampleItemId);
+        am.setAnalysisReferenceId(ReferenceTableCache.getReferenceTable("analysis"));
+        am.setAnalysisInternalReferenceTableId(ReferenceTableCache.getReferenceTable("analysis_internal_note"));
 
         return am;
     }
@@ -58,7 +61,8 @@ public class AnalysisManagerProxy {
             al.add(analysisDO);
             
             man.getQAEventAt(i).add();
-            man.getNotesAt(i).add();
+            man.getInternalNotesAt(i).add();
+            man.getExternalNoteAt(i).add();
             man.getStorageAt(i).add();
         }
         
@@ -82,7 +86,8 @@ public class AnalysisManagerProxy {
                 al.update(analysisDO);
             
             man.getQAEventAt(i).update();
-            man.getNotesAt(i).update();
+            man.getInternalNotesAt(i).update();
+            man.getExternalNoteAt(i).update();
             man.getStorageAt(i).update();
         }
 
