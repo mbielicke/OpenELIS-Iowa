@@ -397,6 +397,10 @@ public class EditNoteScreen extends Screen implements
      * }
      */
 
+    public void setScreenState(State state){
+        setState(state);
+    }
+    
     public void setNote(NoteDO note) {
         screenNoteDO = new NoteDO();
         screenNoteDO.copy(note);

@@ -25,32 +25,40 @@
 */
 package org.openelis.modules.environmentalSampleLogin.client;
 
+import java.util.ArrayList;
 import java.util.EnumSet;
 
+import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.AnalysisTestDO;
-import org.openelis.domain.SampleItemDO;
+import org.openelis.domain.DictionaryDO;
 import org.openelis.gwt.common.Datetime;
+import org.openelis.gwt.event.ActionEvent;
+import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
+import org.openelis.gwt.event.HasActionHandlers;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.rewrite.Screen;
 import org.openelis.gwt.screen.rewrite.ScreenDef;
 import org.openelis.gwt.screen.rewrite.ScreenEventHandler;
-import org.openelis.gwt.screen.rewrite.Screen.State;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.rewrite.AutoComplete;
 import org.openelis.gwt.widget.rewrite.CalendarLookUp;
 import org.openelis.gwt.widget.rewrite.CheckBox;
 import org.openelis.gwt.widget.rewrite.Dropdown;
+import org.openelis.gwt.widget.table.rewrite.TableDataRow;
 import org.openelis.metamap.SampleMetaMap;
 
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.shared.HandlerRegistration;
 
-public class AnalysisTab extends Screen {
- private boolean dropdownsInited, loaded;
+public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab.Action> {
+    public enum Action {CHANGED};
+    private boolean loaded;
     
     private SampleMetaMap meta;
+    
     protected AnalysisTestDO analysis;
-//    protected Dropdown<Integer> typeOfSampleId, containerId, unitOfMeasureId;
+    protected Dropdown<Integer> statusId;
 
     public AnalysisTab(ScreenDef def) {
         setDef(def);
@@ -58,9 +66,13 @@ public class AnalysisTab extends Screen {
         meta = new SampleMetaMap("sample.");
         
         initialize();
+        
+        setStatusesModel(DictionaryCache.getListByCategorySystemName("analysis_status"));
     }
     
     private void initialize() {
+        final AnalysisTab anTab = this;
+        
         final AutoComplete<Integer> test = (AutoComplete)def.getWidget(meta.SAMPLE_ITEM.ANALYSIS.TEST.getName());
         addScreenHandler(test, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
@@ -69,6 +81,7 @@ public class AnalysisTab extends Screen {
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
                 analysis.test.setId(event.getValue());
+                ActionEvent.fire(anTab, Action.CHANGED, null);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -93,7 +106,7 @@ public class AnalysisTab extends Screen {
             }
         });
 
-        final Dropdown<Integer> statusId = (Dropdown)def.getWidget(meta.SAMPLE_ITEM.ANALYSIS.getStatusId());
+        statusId = (Dropdown)def.getWidget(meta.SAMPLE_ITEM.ANALYSIS.getStatusId());
         addScreenHandler(statusId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 statusId.setSelection(analysis.getStatusId());
@@ -101,6 +114,7 @@ public class AnalysisTab extends Screen {
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
                 analysis.setStatusId(event.getValue());
+                ActionEvent.fire(anTab, Action.CHANGED, null);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -112,7 +126,7 @@ public class AnalysisTab extends Screen {
         final TextBox revision = (TextBox)def.getWidget(meta.SAMPLE_ITEM.ANALYSIS.getRevision());
         addScreenHandler(revision, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                revision.setValue(Integer.toString(analysis.getRevision()));
+                revision.setValue(getString(analysis.getRevision()));
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -225,4 +239,38 @@ public class AnalysisTab extends Screen {
             }
         });
     }
+    
+    private void setStatusesModel(ArrayList<DictionaryDO> list) {
+        ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
+        model.add(new TableDataRow(null, ""));
+        for(DictionaryDO resultDO :  list){
+            model.add(new TableDataRow(resultDO.getId(),resultDO.getEntry()));
+        } 
+        statusId.setModel(model);
+    }
+    
+    public void setData(SampleDataBundle data) {
+        if(data.analysisTestDO == null){
+            analysis = new AnalysisTestDO();
+            StateChangeEvent.fire(this, State.DEFAULT);   
+        }else{
+            analysis = data.analysisTestDO;
+            
+            if(state == State.ADD || state == State.UPDATE)
+                StateChangeEvent.fire(this, State.UPDATE);
+        }
+        
+        loaded = false;
+    }
+     
+     public void draw(){
+         if(!loaded)
+             DataChangeEvent.fire(this);
+         
+         loaded = true;
+     }
+     
+     public HandlerRegistration addActionHandler(ActionHandler<Action> handler) {
+         return addHandler(handler, ActionEvent.getType());
+     }
 }

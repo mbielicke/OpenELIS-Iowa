@@ -25,8 +25,59 @@
 */
 package org.openelis.modules.environmentalSampleLogin.client;
 
-import org.openelis.gwt.screen.rewrite.Screen;
+import org.openelis.common.NotesTab;
+import org.openelis.domain.AnalysisTestDO;
+import org.openelis.gwt.event.DataChangeEvent;
+import org.openelis.gwt.event.StateChangeEvent;
+import org.openelis.gwt.screen.rewrite.ScreenDef;
+import org.openelis.manager.AnalysisManager;
+import org.openelis.manager.HasNotesInt;
+import org.openelis.manager.NoteManager;
 
-public class AnalysisIntCommentsTab extends Screen {
+import com.google.gwt.user.client.Window;
+
+public class AnalysisIntCommentsTab extends NotesTab {
+
+    protected AnalysisTestDO analysis;
+    protected AnalysisManager anMan;
+    
+    public AnalysisIntCommentsTab(ScreenDef def, String notesPanelKey, String editButtonKey, boolean isExternal) {
+        super(def, notesPanelKey, editButtonKey, isExternal);
+    }
+    
+    public void draw() {
+        if (!loaded) {
+            try {
+                if(anMan == null)
+                    manager = NoteManager.getInstance();
+                else
+                    manager = anMan.getInternalNotesAt(anMan.getIndex(analysis));
+
+                DataChangeEvent.fire(this);
+                loaded = true;
+            } catch (Exception e) {
+                Window.alert(e.getMessage());
+            }
+        }
+    }
+    
+    public void setData(SampleDataBundle data) {
+        if(data.analysisTestDO == null){
+            analysis = new AnalysisTestDO();
+            StateChangeEvent.fire(this, State.DEFAULT);   
+        }else{
+            analysis = data.analysisTestDO;
+            
+            if(state == State.ADD || state == State.UPDATE)
+                StateChangeEvent.fire(this, State.UPDATE);
+        }
+
+        anMan = data.analysisManager;
+        loaded = false;
+    }
+    
+    public void setManager(HasNotesInt parentManager) {
+        throw new UnsupportedOperationException();
+    }
 
 }

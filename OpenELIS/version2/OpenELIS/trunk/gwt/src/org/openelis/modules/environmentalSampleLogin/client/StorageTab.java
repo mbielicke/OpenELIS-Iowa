@@ -25,7 +25,39 @@
 */
 package org.openelis.modules.environmentalSampleLogin.client;
 
+import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.screen.rewrite.Screen;
+import org.openelis.gwt.screen.rewrite.ScreenDef;
+import org.openelis.metamap.SampleMetaMap;
 
 public class StorageTab extends Screen {
+    private boolean loaded;
+    
+    private SampleMetaMap meta;
+    //protected AnalysisManager manager;
+    //protected AnalysisTestDO analysis;
+//    protected Dropdown<Integer> typeOfSampleId, containerId, unitOfMeasureId;
+
+    public StorageTab(ScreenDef def) {
+        setDef(def);
+        
+        meta = new SampleMetaMap("sample.");
+        
+        initialize();
+    }
+    
+    private void initialize() {
+        
+    }
+    
+    public void setData(SampleDataBundle data) {
+        //this.manager = manager;
+    }
+
+    public void draw(){
+         if(!loaded)
+             DataChangeEvent.fire(this);
+         
+         loaded = true;
+     }
 }

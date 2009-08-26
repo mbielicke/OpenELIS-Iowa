@@ -25,10 +25,34 @@
 */
 package org.openelis.modules.environmentalSampleLogin.client;
 
+import org.openelis.domain.AnalysisTestDO;
 import org.openelis.domain.SampleItemDO;
+import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.SampleItemManager;
 
-public class TreeDataItemSampleItem {
+public class SampleDataBundle {
     SampleItemManager sampleItemManager;
-    SampleItemDO sampleItemDO;
+    SampleItemDO      sampleItemDO;
+    AnalysisManager   analysisManager;
+    AnalysisTestDO    analysisTestDO;
+
+    public SampleDataBundle() {
+
+    }
+
+    public SampleDataBundle(SampleItemManager sampleItemManager,
+                            SampleItemDO sampleItemDO,
+                            AnalysisManager analysisManager,
+                            AnalysisTestDO analysisTestDO) {
+        this.sampleItemManager = sampleItemManager;
+        this.sampleItemDO = sampleItemDO;
+        this.analysisManager = analysisManager;
+        this.analysisTestDO = analysisTestDO;
+    }
+    
+    public SampleDataBundle(SampleItemManager sampleItemManager,
+                            SampleItemDO sampleItemDO) {
+        this.sampleItemManager = sampleItemManager;
+        this.sampleItemDO = sampleItemDO;
+    }
 }

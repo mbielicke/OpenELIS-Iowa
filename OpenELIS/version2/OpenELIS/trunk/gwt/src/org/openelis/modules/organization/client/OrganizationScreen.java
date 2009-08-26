@@ -116,7 +116,7 @@ public class OrganizationScreen extends Screen implements BeforeGetMatchesHandle
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                StateChangeEvent.fire(contactsTab, event.getState());
+                contactsTab.setState(event.getState());
             }
         });
 
@@ -129,7 +129,7 @@ public class OrganizationScreen extends Screen implements BeforeGetMatchesHandle
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                StateChangeEvent.fire(notesTab, event.getState());
+                notesTab.setState(event.getState());
             }
         });
         // Setup service used by screen
