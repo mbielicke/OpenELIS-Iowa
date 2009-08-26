@@ -28,12 +28,10 @@ package org.openelis.modules.environmentalSampleLogin.client;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Set;
 
 import org.openelis.cache.DictionaryCache;
 import org.openelis.common.AutocompleteRPC;
-import org.openelis.common.NotesTab;
 import org.openelis.domain.AnalysisTestDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameDO;
@@ -51,8 +49,6 @@ import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.rewrite.QueryData;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
-import org.openelis.gwt.event.BeforeGetMatchesEvent;
-import org.openelis.gwt.event.BeforeGetMatchesHandler;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.GetMatchesEvent;
 import org.openelis.gwt.event.GetMatchesHandler;
@@ -77,15 +73,12 @@ import org.openelis.gwt.widget.table.rewrite.event.RowAddedHandler;
 import org.openelis.gwt.widget.tree.rewrite.TreeDataItem;
 import org.openelis.gwt.widget.tree.rewrite.TreeRow;
 import org.openelis.gwt.widget.tree.rewrite.TreeWidget;
-import org.openelis.gwt.widget.tree.rewrite.event.LeafOpenedEvent;
-import org.openelis.gwt.widget.tree.rewrite.event.LeafOpenedHandler;
 import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.SampleEnvironmentalManager;
 import org.openelis.manager.SampleItemManager;
 import org.openelis.manager.SampleManager;
 import org.openelis.metamap.SampleEnvironmentalMetaMap;
 import org.openelis.modules.main.client.openelis.OpenELIS;
-import org.openelis.modules.organization.client.ContactsTab;
 import org.openelis.modules.sampleLocation.client.SampleLocationScreen;
 import org.openelis.modules.sampleOrganization.client.SampleOrganizationScreen;
 import org.openelis.modules.sampleProject.client.SampleProjectScreen;
@@ -100,40 +93,32 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.TabPanel;
 
-public class EnvironmentalSampleLoginScreen extends Screen implements BeforeGetMatchesHandler, GetMatchesHandler {
+public class EnvironmentalSampleLoginScreen extends Screen {
 
-    public enum Tabs {SAMPLE_ITEM,ANALYSIS, TEST_RESULT, AN_EXT_COMMENT, 
-                        AN_INT_COMMENTS, STORAGE, SMP_EXT_COMMENT, SMP_INT_COMMENTS};    
-    protected Tabs               tab           = Tabs.SAMPLE_ITEM;
-    
-    private SampleItemTab          sampleItemTab;
-    private AnalysisTab             analysisTab;
-    private TestResultsTab         testResultsTab;
-    private NotesTab            analysisExtCommentTab, analysisIntCommentsTab, 
-                                sampleExtCommentTab, sampleIntCommentsTab;
-    private StorageTab          storageTab;
+    public enum Tabs {
+        SAMPLE_ITEM, ANALYSIS, TEST_RESULT, AN_EXT_COMMENT, AN_INT_COMMENTS,
+        STORAGE, SMP_EXT_COMMENT, SMP_INT_COMMENTS
+    };
+
+    protected Tabs                     tab = Tabs.SAMPLE_ITEM;
+
+    private SampleItemTab              sampleItemTab;
+    private AnalysisTab                analysisTab;
+    private TestResultsTab             testResultsTab;
+    private SampleExCommentTab         sampleExtCommentTab;
+    private SampleIntCommentsTab       sampleIntCommentsTab;
+    private AnalysisExCommentTab       analysisExtCommentTab;
+    private AnalysisIntCommentsTab     analysisIntCommentsTab;
+    private StorageTab                 storageTab;
     
     
     protected TextBox location;
     protected AutoComplete<Integer> project, reportTo, billTo;
     protected TreeWidget itemsTree;
-    //private TreeWidget itemsTestsTree;
-    //private AppButton addItemButton, addTestButton, removeRowButton, analysisNoteInt, analysisNoteExt;
+
     private SampleLocationScreen locationScreen;
     private SampleOrganizationScreen organizationScreen;
     private SampleProjectScreen projectScreen;
-    //private TextBox locationTextBox;
-    //private ScreenTabPanel tabPanel;
-    private boolean canEditTestResultsTab;
-    
-    //private ScreenDropDownWidget sampleType, sampleStatus, container, unit, analysisStatus;
-    //private ScreenAutoCompleteWidget projectAuto, reportToAuto, billToAuto, section, test, method;
-    //private ScreenTextBox containerRef, qty, revision;
-    //private ScreenCheck isReportable;
-    //private ScreenCalendar startedDate, completedDate, releasedDate, printedDate;
-    
-    //private ProjectEntryManager projectManager;
-    //private OrganizationEntryManager orgManager;
     
     private SampleEnvironmentalMetaMap Meta;
     
@@ -143,8 +128,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements BeforeGetM
     private SampleManager manager;
     
     public EnvironmentalSampleLoginScreen() throws Exception {
-        //////////////
-     // Call base to get ScreenDef and draw screen
+        //Call base to get ScreenDef and draw screen
         super("OpenELISServlet?service=org.openelis.modules.environmentalSampleLogin.server.EnvironmentalSampleLoginService");
         manager = SampleManager.getInstance();
         manager.getSample().setDomain(SampleManager.ENVIRONMENTAL_DOMAIN_FLAG);
@@ -166,71 +150,29 @@ public class EnvironmentalSampleLoginScreen extends Screen implements BeforeGetM
         
         analysisTab = new AnalysisTab(def);
         
-        //FIXME code this testResultsTab = new TestResultsTab(def);
+        testResultsTab = new TestResultsTab(def);
         
-        analysisExtCommentTab = new NotesTab(def, "anExNotesPanel", "anExNoteButton", true);
+        analysisExtCommentTab = new AnalysisExCommentTab(def, "anExNotesPanel", "anExNoteButton", true);
         
-        analysisIntCommentsTab = new NotesTab(def, "anIntNotesPanel", "anIntNoteButton", false);
+        analysisIntCommentsTab = new AnalysisIntCommentsTab(def, "anIntNotesPanel", "anIntNoteButton", false);
         
-        //FIXME code this storageTab = new StorageTab(def);
+        storageTab = new StorageTab(def);
         
-        sampleExtCommentTab = new NotesTab(def, "sampleExtNotesPanel", "sampleExtNoteButton", true);
+        sampleExtCommentTab = new SampleExCommentTab(def, "sampleExtNotesPanel", "sampleExtNoteButton", true);
         
-        sampleIntCommentsTab = new NotesTab(def, "sampleIntNotesPanel", "sampleIntNoteButton", false);
+        sampleIntCommentsTab = new SampleIntCommentsTab(def, "sampleIntNotesPanel", "sampleIntNoteButton", false);
         
         // Setup link between Screen and widget Handlers
         initialize();
-
-        /*
-        // Create the Handler for the Contacts tab passing in the ScreenDef
-        contactsTab = new ContactsTab(def);
-
-        // Create the Handler for the Notes tab passing in the ScreenDef;
-        notesTab = new NotesTab(def);
-
-        // Set up tabs to recieve State Change events from the main Screen.
-        addScreenHandler(contactsTab, new ScreenEventHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
-                contactsTab.setManager(manager);
-
-                if (tab == Tabs.CONTACTS)
-                    drawTabs();
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                StateChangeEvent.fire(contactsTab, event.getState());
-            }
-        });
-*/
-  
-        // Initialize Screen
-        setState(State.DEFAULT);
         
         //setup the dropdowns
         setStatusModel();
         setAnalysisStatusModel();
         
-        /////////////////////////////
-        //FIXME move this
-        /*
-        cache = DictionaryCache.getListByCategorySystemName("analysis_status");
-        model = getDictionaryIdEntryList(cache);
-        ((TableDropdown)itemsTestsTree.columns.get(1).getColumnWidget("analysis")).setModel(model);
-        ((Dropdown)analysisStatus.getWidget()).setModel(model);
+        //Initialize Screen
+        setState(State.DEFAULT);
         
-        cache = DictionaryCache.getListByCategorySystemName("sample_status");
-        model = getDictionaryIdEntryList(cache);
-        ((Dropdown)sampleStatus.getWidget()).setModel(model);
-        
-        cache = DictionaryCache.getListByCategorySystemName("sample_container");
-        model = getDictionaryIdEntryList(cache);
-        ((Dropdown)container.getWidget()).setModel(model);
-        
-        cache = DictionaryCache.getListByCategorySystemName("unit_of_measure");
-        model = getDictionaryIdEntryList(cache);
-        ((Dropdown)unit.getWidget()).setModel(model);
-        */
-        //////////////////////////
+        DataChangeEvent.fire(this);
     }
     
     private void initialize() {
@@ -618,26 +560,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements BeforeGetM
                 itemsTree.setQueryMode(event.getState() == State.QUERY);
             }
         });
-        
-        /*
-        itemsTree.addLeafOpenedHandler(new LeafOpenedHandler(){
-           public void onLeafOpened(LeafOpenedEvent event) {
-               try{
-                   TreeDataItem openedRow = event.getItem();
-                   int selectedIndex = event.getRow();
-
-                   if(!openedRow.isLoaded()){
-                       if("sampleItem".equals(openedRow.leafType))
-                           loadChildrenNodes(openedRow, manager.getSampleItems().getAnalysisAt(selectedIndex));
-                   }
-               }catch(Exception e){
-                   e.printStackTrace();
-                   Window.alert(e.getMessage());
-                   return;
-               }
-            } 
-        });*/
-        
+               
         itemsTree.addBeforeSelectionHandler(new BeforeSelectionHandler<TreeRow>(){
            public void onBeforeSelection(BeforeSelectionEvent<TreeRow> event) {
                //do nothing
@@ -646,8 +569,23 @@ public class EnvironmentalSampleLoginScreen extends Screen implements BeforeGetM
         });
         itemsTree.addSelectionHandler(new SelectionHandler<TreeRow>(){
            public void onSelection(SelectionEvent<TreeRow> event) {
-            Window.alert("selected");
-            
+               SampleDataBundle data;
+               
+               TreeDataItem selection = itemsTree.getSelection();
+               
+               if(selection != null)
+                   data = (SampleDataBundle)selection.data;
+               else
+                   data = new SampleDataBundle();
+               
+               sampleItemTab.setData(data);
+               analysisTab.setData(data);
+               testResultsTab.setData(data);
+               analysisExtCommentTab.setData(data);
+               analysisIntCommentsTab.setData(data);
+               storageTab.setData(data);
+               
+               drawTabs();
            }
         });
         
@@ -664,9 +602,9 @@ public class EnvironmentalSampleLoginScreen extends Screen implements BeforeGetM
                    TreeDataItem addedRow = (TreeDataItem)event.getRow();
                    
                    if("sampleItem".equals(addedRow.leafType)){
-                       manager.getSampleItems().addSampleItem(((TreeDataItemSampleItem)addedRow.data).sampleItemDO);
+                       manager.getSampleItems().addSampleItem(((SampleDataBundle)addedRow.data).sampleItemDO);
                    }else if("analysis".equals(addedRow.leafType)){
-                       TreeDataItemAnalysis data = (TreeDataItemAnalysis)addedRow.data;
+                       SampleDataBundle data = (SampleDataBundle)addedRow.data;
                        int sampleItemIndex = manager.getSampleItems().getIndex(data.sampleItemDO);
                        
                        manager.getSampleItems().getAnalysisAt(sampleItemIndex).addAnalysis(data.analysisTestDO);
@@ -763,17 +701,148 @@ public class EnvironmentalSampleLoginScreen extends Screen implements BeforeGetM
         });
         
         //Create Default blank model for AutoComplete fields reportto, billto, and project
-        project.setSelection(null, "");
-        reportTo.setSelection(null, "");
-        billTo.setSelection(null, "");
+        //project.setSelection(null, "");
+        //reportTo.setSelection(null, "");
+        //billTo.setSelection(null, "");
         
-        // Screens now must implement AutoCompleteCallInt and set themselves as the calling interface
-        //reportTo.addBeforeGetMatchesHandler(this);
-        //reportTo.addGetMatchesHandler(this);
-        //billTo.addBeforeGetMatchesHandler(this);
-        //billTo.addGetMatchesHandler(this);
-        //project.addBeforeGetMatchesHandler(this);
-        //project.addGetMatchesHandler(this);
+        // Set up tabs to recieve State Change events from the main Screen.
+        addScreenHandler(sampleItemTab, new ScreenEventHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                sampleItemTab.setData(new SampleDataBundle());
+
+                if (tab == Tabs.SAMPLE_ITEM)
+                    drawTabs();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                sampleItemTab.setState(event.getState());
+            }
+        });
+        
+        addScreenHandler(analysisTab, new ScreenEventHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                analysisTab.setData(new SampleDataBundle());
+
+                    if (tab == Tabs.ANALYSIS)
+                        drawTabs();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                analysisTab.setState(event.getState());
+            }
+        });
+        
+        addScreenHandler(testResultsTab, new ScreenEventHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                    testResultsTab.setData(new SampleDataBundle());
+
+                    if (tab == Tabs.TEST_RESULT)
+                        drawTabs();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                testResultsTab.setState(event.getState());
+            }
+        });
+        
+        addScreenHandler(analysisExtCommentTab, new ScreenEventHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                    analysisExtCommentTab.setData(new SampleDataBundle());
+
+                    if (tab == Tabs.AN_EXT_COMMENT)
+                        drawTabs();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                analysisExtCommentTab.setState(event.getState());
+            }
+        });
+        
+        addScreenHandler(analysisIntCommentsTab, new ScreenEventHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                    analysisIntCommentsTab.setData(new SampleDataBundle());
+
+                    if (tab == Tabs.AN_INT_COMMENTS)
+                        drawTabs();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                analysisIntCommentsTab.setState(event.getState());
+            }
+        });
+        
+        addScreenHandler(storageTab, new ScreenEventHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                    storageTab.setData(new SampleDataBundle());
+
+                    if (tab == Tabs.STORAGE)
+                        drawTabs();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                storageTab.setState(event.getState());
+            }
+        });
+        
+        addScreenHandler(sampleExtCommentTab, new ScreenEventHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                sampleExtCommentTab.setManager(manager);
+
+                if (tab == Tabs.SMP_EXT_COMMENT)
+                    drawTabs();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                sampleExtCommentTab.setState(event.getState());
+            }
+        });
+        
+        addScreenHandler(sampleIntCommentsTab, new ScreenEventHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                sampleIntCommentsTab.setManager(manager);
+
+                if (tab == Tabs.SMP_INT_COMMENTS)
+                    drawTabs();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                sampleIntCommentsTab.setState(event.getState());
+            }
+        });
+        
+        sampleItemTab.addActionHandler(new ActionHandler<SampleItemTab.Action>(){
+            public void onAction(ActionEvent<SampleItemTab.Action> event) {
+                if(event.getAction() == SampleItemTab.Action.CHANGED){
+                    TreeDataItem selected = itemsTree.getSelection();
+                    int selectedIndex = itemsTree.getSelectedIndex();
+                    
+                    //make sure it is a sample item row
+                    if("analysis".equals(selected.leafType))
+                        selected = selected.parent;
+                    
+                    SampleDataBundle data = (SampleDataBundle)selected.data;
+                    SampleItemDO itemDO = data.sampleItemDO;
+                    
+                    itemsTree.setCell(selectedIndex, 0, itemDO.getItemSequence()+" - "+itemDO.getContainer());
+                    itemsTree.setCell(selectedIndex, 1, itemDO.getTypeOfSample());
+                }
+            }
+        });
+        
+        analysisTab.addActionHandler(new ActionHandler<AnalysisTab.Action>(){
+            public void onAction(ActionEvent<AnalysisTab.Action> event) {
+                if(event.getAction() == AnalysisTab.Action.CHANGED){
+                    TreeDataItem selected = itemsTree.getSelection();
+                    int selectedIndex = itemsTree.getSelectedIndex();
+                    
+                    SampleDataBundle data = (SampleDataBundle)selected.data;
+                    AnalysisTestDO aDO = data.analysisTestDO;
+                    
+                    itemsTree.setCell(selectedIndex, 0, aDO.test.getName() + " : " + aDO.test.getMethodName());
+                    itemsTree.setCell(selectedIndex, 1, aDO.getStatusId());
+                }
+            }
+        });
         
         final AppButton queryButton = (AppButton)def.getWidget("query");
         addScreenHandler(queryButton, new ScreenEventHandler<Object>() {
@@ -894,150 +963,13 @@ public class EnvironmentalSampleLoginScreen extends Screen implements BeforeGetM
                     tab = Tabs.SMP_INT_COMMENTS;
                 
                 window.setBusy(consts.get("loadingMessage"));
+                
                 drawTabs();
                 window.clearStatus();
             }
         });
     }
 
-    /*
-    public void performCommand(Enum action, Object obj) {
-        if(action.equals(SampleProjectScreen.Action.Commited)){
-            form.orgProjectForm.sampleProjectForm.sampleProjectTable.setValue(obj);
-            projectManager.setList(form.orgProjectForm.sampleProjectForm.sampleProjectTable.getValue());
-            TableDataRow newTableRow = projectManager.getFirstPermanentProject();
-            
-            if(newTableRow != null)
-                projectAuto.load((DropDownField<Integer>)newTableRow.cells[0]);
-            else
-                ((AutoComplete)projectAuto.getWidget()).setSelections(new ArrayList());
-            
-        }else if(action.equals(SampleOrganizationScreen.Action.Commited)){
-            form.orgProjectForm.sampleOrgForm.sampleOrganizationTable.setValue(obj);
-            orgManager.setList(form.orgProjectForm.sampleOrgForm.sampleOrganizationTable.getValue());
-            
-            //update billto
-            TableDataRow newTableRow = orgManager.getBillTo();
-            if(newTableRow != null)
-                billToAuto.load((DropDownField<Integer>)newTableRow.cells[2]);
-            else
-                ((AutoComplete)billToAuto.getWidget()).setSelections(new ArrayList());
-            
-            //update report to
-            newTableRow = orgManager.getReportTo();
-            if(newTableRow != null)
-                reportToAuto.load((DropDownField<Integer>)newTableRow.cells[2]);
-            else
-                ((AutoComplete)reportToAuto.getWidget()).setSelections(new ArrayList());
-            
-        }else
-            super.performCommand(action, obj);
-    }
-    */
-    
-    /*
-    public void onChange(Widget sender) {
-        if(sender == locationTextBox)
-            form.envInfoForm.locationForm.samplingLocation.setValue(locationTextBox.getText());
-        else if(sender == projectAuto.getWidget())
-            updateProjectListAfterChange();
-        else if(sender == reportToAuto.getWidget())
-            updateReportToListAfterChange();
-        else if(sender == billToAuto.getWidget())
-            updateBillToListAfterChange();
-        //sample item  tab
-        
-        //analysis tab
-        else if(sender == test.getWidget()){
-            //get the subform to save it to
-            AnalysisForm af = (AnalysisForm)itemsTestsTree.model.getSelection().getData();
-            AutoComplete td = (AutoComplete)test.getWidget();
-            ArrayList selections = td.getSelections();
-            
-            if(selections.size() == 0){
-                AutoComplete md = (AutoComplete)method.getWidget();
-                md.setSelections(new ArrayList());
-            }
-            
-            StringObject methodName = (StringObject)((TableDataRow<Integer>)selections.get(0)).cells[1];
-            Integer methodId = (Integer)((TableDataRow<Integer>)selections.get(0)).getData().getValue();
-            DropDownField<Integer> methodField = new DropDownField<Integer>();
-            TableDataModel<TableDataRow<Integer>> methodModel = new TableDataModel<TableDataRow<Integer>>();
-            methodModel.add(new TableDataRow<Integer>(methodId, methodName));
-            methodField.setModel(methodModel);
-            methodField.setValue(methodModel.get(0));
-            method.load(methodField);
-            
-            test.submit(af.testId);
-            method.submit(af.methodId);
-            redrawRow();
-        }
-        else
-            super.onChange(sender);
-    }
-    */
-    
-    /*
-    public void afterDraw(boolean sucess) {
-        ButtonPanel bpanel = (ButtonPanel)getWidget("buttons");
-        
-        //disable the buttons for the demo for now
-        bpanel.enableButton("query", false);
-        bpanel.enableButton("add", false);
-        
-        CommandChain formChain = new CommandChain();
-        formChain.addCommand(this);
-        formChain.addCommand(bpanel);
-        formChain.addCommand(keyList);
-        
-        itemsTestsTree = (TreeWidget)getWidget("itemsTestsTree");
-        itemsTestsTree.model.addTreeModelListener(this);
-        
-        tabPanel = (ScreenTabPanel)widgets.get("sampleItemTabPanel");
-        
-        //buttons
-        addItemButton = (AppButton)getWidget("addItemButton");
-        addTestButton = (AppButton)getWidget("addTestButton");
-        removeRowButton = (AppButton)getWidget("removeRowButton");
-        analysisNoteInt = (AppButton)getWidget("analysisNoteInt");
-        analysisNoteExt = (AppButton)getWidget("analysisNoteExt");
-        
-        sampleStatus = (ScreenDropDownWidget)widgets.get(Meta.SAMPLE.getStatusId());
-        locationTextBox = (TextBox)getWidget(Meta.getSamplingLocation());
-        projectAuto = (ScreenAutoCompleteWidget)widgets.get(Meta.SAMPLE.SAMPLE_PROJECT.PROJECT.getName());
-        projectManager = new ProjectEntryManager();
-        reportToAuto = (ScreenAutoCompleteWidget)widgets.get(Meta.SAMPLE.SAMPLE_ORGANIZATION.ORGANIZATION.getName());
-        billToAuto = (ScreenAutoCompleteWidget)widgets.get("billTo");
-        orgManager = new OrganizationEntryManager();
-        
-        //sample item tab widgets
-        sampleType = (ScreenDropDownWidget)widgets.get(Meta.SAMPLE.SAMPLE_ITEM.getTypeOfSampleId());
-        container = (ScreenDropDownWidget)widgets.get(Meta.SAMPLE.SAMPLE_ITEM.getContainerId());
-        containerRef = (ScreenTextBox)widgets.get(Meta.SAMPLE.SAMPLE_ITEM.getContainerReference());
-        qty = (ScreenTextBox)widgets.get(Meta.SAMPLE.SAMPLE_ITEM.getQuantity());
-        unit = (ScreenDropDownWidget)widgets.get(Meta.SAMPLE.SAMPLE_ITEM.getUnitOfMeasureId());
-        
-        //analysis tab widgets
-        test = (ScreenAutoCompleteWidget)widgets.get(Meta.SAMPLE.SAMPLE_ITEM.ANALYSIS.TEST.getName());
-        method = (ScreenAutoCompleteWidget)widgets.get(Meta.SAMPLE.SAMPLE_ITEM.ANALYSIS.TEST.METHOD.getName());
-        analysisStatus = (ScreenDropDownWidget)widgets.get(Meta.SAMPLE.SAMPLE_ITEM.ANALYSIS.getStatusId());
-        revision = (ScreenTextBox)widgets.get(Meta.SAMPLE.SAMPLE_ITEM.ANALYSIS.getRevision());
-        isReportable = (ScreenCheck)widgets.get(Meta.SAMPLE.SAMPLE_ITEM.ANALYSIS.getIsReportable());
-        section = (ScreenAutoCompleteWidget)widgets.get(Meta.SAMPLE.SAMPLE_ITEM.ANALYSIS.getSectionId());
-        startedDate = (ScreenCalendar) widgets.get(Meta.SAMPLE.SAMPLE_ITEM.ANALYSIS.getStartedDate());
-        completedDate = (ScreenCalendar) widgets.get(Meta.SAMPLE.SAMPLE_ITEM.ANALYSIS.getCompletedDate());
-        releasedDate = (ScreenCalendar) widgets.get(Meta.SAMPLE.SAMPLE_ITEM.ANALYSIS.getReleasedDate());
-        printedDate = (ScreenCalendar) widgets.get(Meta.SAMPLE.SAMPLE_ITEM.ANALYSIS.getPrintedDate());
-    
-        form.sampleItemAndAnalysisForm.itemsTestsTree.setValue(itemsTestsTree.model.getData());
-        
-        updateChain.add(afterFetch);
-        fetchChain.add(afterFetch);
-        
-        super.afterDraw(sucess);
-    }
-    */
-    
     protected void query() {
         manager = SampleManager.getInstance();
         manager.getSample().setDomain(SampleManager.ENVIRONMENTAL_DOMAIN_FLAG);
@@ -1070,8 +1002,8 @@ public class EnvironmentalSampleLoginScreen extends Screen implements BeforeGetM
         manager.getSample().setStatusId(DictionaryCache.getIdFromSystemName("sample_initiated"));
         manager.getSample().setNextItemSequence(0);
         
-        DataChangeEvent.fire(this);
         setState(Screen.State.ADD);
+        DataChangeEvent.fire(this);
         window.setDone(consts.get("enterInformationPressCommit"));
     }
     
@@ -1081,10 +1013,10 @@ public class EnvironmentalSampleLoginScreen extends Screen implements BeforeGetM
         try {
             manager = manager.fetchForUpdate();
 
+            setState(State.UPDATE);
             DataChangeEvent.fire(this);
             window.clearStatus();
-            setState(State.UPDATE);
-
+            
         } catch (EntityLockedException e) {
             window.clearStatus();
             Window.alert(e.getMessage());
@@ -1261,36 +1193,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements BeforeGetM
         }
         nav.setQuery(query);
     }
-    
-       /*
-    public void getChildNodes(final TreeModel model, final int row) {
-        final TreeDataItem item = model.getRow(row);
-        Integer id = item.key;
-        item.getItems().clear();
-
-        window.setBusy();
-
-        SampleTreeForm form = new SampleTreeForm();
-        form.treeRow = row;
-        form.sampleItemId = id;
-        
-        screenService.call("getSampleItemAnalysesTreeModel", form, new AsyncCallback<SampleTreeForm>(){
-            public void onSuccess(SampleTreeForm result){
-                for(int i=0; i<result.treeModel.size(); i++)
-                    item.addItem(result.treeModel.get(i));
-                item.loaded = true;
-                
-                model.toggle(row);
-                
-                window.clearStatus();
-            }
-            
-            public void onFailure(Throwable caught){
-                Window.alert(caught.getMessage());
-            }
-         });        
-    }*/
-    
+       
     private void onProjectLookupClick(){
         try {
             if (projectScreen == null) {
@@ -1363,12 +1266,13 @@ public class EnvironmentalSampleLoginScreen extends Screen implements BeforeGetM
     private void onLocationLookupClick(){
         try {
             if (locationScreen == null) {
-                
+                    final EnvironmentalSampleLoginScreen env = this;
                     locationScreen = new SampleLocationScreen();
+                    
                     locationScreen.addActionHandler(new ActionHandler<SampleLocationScreen.Action>() {
                         public void onAction(ActionEvent<SampleLocationScreen.Action> event) {
                             if (event.getAction() == SampleLocationScreen.Action.COMMIT) {
-                                fireLocationDataChanged();
+                                DataChangeEvent.fire(env, location);
                             }
                         }
                     });
@@ -1405,17 +1309,15 @@ public class EnvironmentalSampleLoginScreen extends Screen implements BeforeGetM
         
         SampleItemDO siDO = new SampleItemDO();
         siDO.setItemSequence(nextItemSequence);
-        TreeDataItemSampleItem data = new TreeDataItemSampleItem();
         
         try{
             
-            data.sampleItemManager = manager.getSampleItems();
-            data.sampleItemDO = siDO;
+            SampleDataBundle data = new SampleDataBundle(manager.getSampleItems(),siDO);
+            newRow.data = data;
         }catch(Exception e){
             Window.alert(e.getMessage());
+            return;
         }
-        
-        newRow.data = data;
         
         manager.getSample().setNextItemSequence(nextItemSequence+1);
         
@@ -1431,24 +1333,22 @@ public class EnvironmentalSampleLoginScreen extends Screen implements BeforeGetM
         if(!"sampleItem".equals(selectedRow.leafType))
             selectedRow = selectedRow.parent;
         
-        TreeDataItemSampleItem sampleItemData = (TreeDataItemSampleItem)selectedRow.data;
+        SampleDataBundle sampleItemData = (SampleDataBundle)selectedRow.data;
         SampleItemDO itemDO = sampleItemData.sampleItemDO;
         int sampleItemIndex = sampleItemData.sampleItemManager.getIndex(itemDO);
         
         AnalysisTestDO aDO = new AnalysisTestDO();
-        TreeDataItemAnalysis data = new TreeDataItemAnalysis();
+        
         
         try{
-            data.sampleItemManager = sampleItemData.sampleItemManager;
-            data.sampleItemDO = itemDO;
-            data.analysisManager = sampleItemData.sampleItemManager.getAnalysisAt(sampleItemIndex);
-            data.analysisTestDO = aDO;
+            SampleDataBundle data = new SampleDataBundle(sampleItemData.sampleItemManager, itemDO,
+                                                         sampleItemData.sampleItemManager.getAnalysisAt(sampleItemIndex),aDO);
+            newRow.data = data;
+            selectedRow.addItem(newRow);
         }catch(Exception e){
             Window.alert(e.getMessage());
+            return;
         }
-        
-        newRow.data = data;
-        selectedRow.addItem(newRow);
         
         if (!selectedRow.open)
             selectedRow.toggle();
@@ -1463,45 +1363,6 @@ public class EnvironmentalSampleLoginScreen extends Screen implements BeforeGetM
         addTestButton.changeState(ButtonState.DISABLED);*/
     }
     
-    
-    /*
-    private void loadTabs(){
-        int tabSelected = tabPanel.getSelectedIndex();
-        
-        String treeRowType = null;
-        
-        if(itemsTestsTree.model.getSelectedIndex() != -1)
-            treeRowType = itemsTestsTree.model.getSelection().leafType;
-        
-        if(tabSelected == 0){
-            if("sampleItem".equals(treeRowType)){
-                enableSampleItemTab(true);
-                loadSampleItemTab(itemsTestsTree.model.getSelection());
-            }else if("analysis".equals(treeRowType)){
-                enableSampleItemTab(true);
-                loadSampleItemTab(itemsTestsTree.model.getSelection().parent);
-            }
-        }else if(tabSelected == 1){
-            if("sampleItem".equals(treeRowType)){
-                enableAnalysisTab(false);
-            }else if("analysis".equals(treeRowType)){
-                enableAnalysisTab(true);
-                loadAnalysisTab(itemsTestsTree.model.getSelection());
-            }
-        }else if(tabSelected == 2){
-            //
-        }else if(tabSelected == 3){
-            //
-        }else if(tabSelected == 4){
-            //
-        }else if(tabSelected == 5){
-            //
-        }else if(tabSelected == 6){
-            //
-        }else if(tabSelected == 7){
-            //
-        }
-    }*/
     
     /*
     private void redrawRow(){
@@ -1533,87 +1394,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements BeforeGetM
         }
     }*/
     
-    //tab load methods
-    private void loadSampleItemTab(TreeDataItem itemRow){/*
-        SampleItemForm subForm = (SampleItemForm)itemRow.getData();
-        
-        if(subForm != null)
-            load(subForm);*/
-    }
-    
-    private void loadAnalysisTab(TreeDataItem testRow){/*
-        AnalysisForm subForm = (AnalysisForm)testRow.getData();
-        if(subForm  != null)
-            load(subForm);  */
-    }
-    
-    private void loadTestResultsTab(TreeDataItem testRow){
-        
-    }
-    
-    private void loadAnExtCommentTab(TreeDataItem testRow){
-        
-    }
-    
-    private void loadAnIntCommentsTab(TreeDataItem testRow){
-        
-    }
-    
-    private void loadStorageTab(TreeDataItem itemRow){
-        
-    }
-    
-    private void loadSmpExtCommentTab(){
-        
-    }
-    
-    private void loadSmpIntCommentsTab(){
-        
-    }
-    
-    //tab enable/disable methods
-    /*
-    private void enableSampleItemTab(boolean enable){
-        sampleType.enable(enable);
-        container.enable(enable);
-        containerRef.enable(enable);
-        qty.enable(enable);
-        unit.enable(enable);
-    }
-    
-    private void enableAnalysisTab(boolean enable){
-        test.enable(enable);
-        revision.enable(enable);
-        isReportable.enable(enable);
-        section.enable(enable);
-        startedDate.enable(enable);
-        completedDate.enable(enable);
-        releasedDate.enable(enable);
-        printedDate.enable(enable);
-    }
-    
-    private void enableTestResultsTab(boolean enable){
-        canEditTestResultsTab = enable; 
-    }
-    
-    private void enableAnExtCommentTab(boolean enable){
-        if(enable)
-            analysisNoteExt.changeState(ButtonState.UNPRESSED);
-        else
-            analysisNoteExt.changeState(ButtonState.DISABLED);
-    }
-    
-    private void enableAnIntCommentsTab(boolean enable){
-        if(enable)
-            analysisNoteInt.changeState(ButtonState.UNPRESSED);
-        else
-            analysisNoteInt.changeState(ButtonState.DISABLED);        
-    }
-    
-    private void enableStorageTab(boolean enable){
-        //FIXME add this code when we have widgets on that tab
-    }
-    */
+   
     private ArrayList<TableDataRow> getDictionaryIdEntryList(ArrayList list){
         ArrayList<TableDataRow> m = new ArrayList<TableDataRow>();
         TableDataRow row;
@@ -1651,14 +1432,22 @@ public class EnvironmentalSampleLoginScreen extends Screen implements BeforeGetM
     }
     
     private void drawTabs() {
-        /*
-        if (tab == Tabs.CONTACTS) {
-            contactsTab.draw();
-        } else if (tab == Tabs.IDENTIFIERS) {
-            // manager = OrganizationsManager.findByIdWithIdentifiers(id);
-        } else if (tab == Tabs.NOTES) {
-            notesTab.draw();
-        }*/
+        if (tab == Tabs.SAMPLE_ITEM)
+            sampleItemTab.draw();
+        else if (tab == Tabs.ANALYSIS)
+            analysisTab.draw();
+        else if (tab == Tabs.TEST_RESULT)
+            testResultsTab.draw();
+        else if (tab == Tabs.AN_EXT_COMMENT)
+            analysisExtCommentTab.draw();
+        else if (tab == Tabs.AN_INT_COMMENTS)
+            analysisIntCommentsTab.draw();
+        else if (tab == Tabs.STORAGE)
+            storageTab.draw();
+        else if (tab == Tabs.SMP_EXT_COMMENT)
+            sampleExtCommentTab.draw();
+        else if (tab == Tabs.SMP_INT_COMMENTS)
+            sampleIntCommentsTab.draw();
     }
     
     private SampleEnvironmentalManager getEnvManager(){
@@ -1677,32 +1466,6 @@ public class EnvironmentalSampleLoginScreen extends Screen implements BeforeGetM
     }
     
     
-    //new methods
-    public void onBeforeGetMatches(BeforeGetMatchesEvent event) {
-        
-    }
-
-    public void onGetMatches(GetMatchesEvent event) {
-        /*
-        String cat = ((AutoComplete)event.getSource()).cat;
-        AutocompleteRPC rpc = new AutocompleteRPC();
-        rpc.match = event.getMatch();
-        
-        try {
-            rpc = service.call("getMatches", rpc);
-            ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
-            
-            
-            
-            
-            
-            ((AutoComplete)event.getSource()).showAutoMatches(model);
-        }catch(Exception e) {
-            Window.alert(e.getMessage());                     
-        }
-        */
-    }
-        
     private ArrayList<TreeDataItem> getTreeModel() {
         int i, j;
         AnalysisManager am;
@@ -1730,9 +1493,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements BeforeGetM
                 //source,type
                 row.cells.get(1).value = itemDO.getTypeOfSample();
                 
-                TreeDataItemSampleItem data = new TreeDataItemSampleItem();
-                data.sampleItemManager = manager.getSampleItems();
-                data.sampleItemDO = itemDO;
+                SampleDataBundle data = new SampleDataBundle(manager.getSampleItems(), itemDO);
                 row.data = data;
                 
                 tmp = keyTable.get(itemDO.getId());
@@ -1754,11 +1515,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements BeforeGetM
                     treeModelItem.cells.get(0).value = aDO.test.getName() + " : " + aDO.test.getMethodName();
                     treeModelItem.cells.get(1).value = aDO.getStatusId();
                     
-                    TreeDataItemAnalysis aData = new TreeDataItemAnalysis();
-                    aData.sampleItemManager = sim;
-                    aData.sampleItemDO = itemDO;
-                    aData.analysisManager = am;
-                    aData.analysisTestDO = aDO;
+                    SampleDataBundle aData = new SampleDataBundle(sim, itemDO, am, aDO);
                     treeModelItem.data = aData;
                     
                     row.addItem(treeModelItem);
@@ -1772,26 +1529,6 @@ public class EnvironmentalSampleLoginScreen extends Screen implements BeforeGetM
         
         return model;
     }
-    
-    /*
-    private void loadChildrenNodes(TreeDataItem parentRow, AnalysisManager am){
-        
-        for(int i=0; i<am.count(); i++){
-            AnalysisTestDO aDO = am.getAnalysisAt(i);
-            TreeDataItem item = new TreeDataItem(2);
-            
-            item.leafType = "analysis";
-            item.key = "";
-            item.cells.get(0).value = aDO.test.getName() + ", " + aDO.test.getMethodName();
-            item.cells.get(1).value = aDO.getStatusId();
-            
-            parentRow.addItem(item);
-        }
-        
-        itemsTree.refresh(true);
-        
-    }
-    */
     
     private void getOrganizationMatches(String match, AutoComplete widget){
         AutocompleteRPC rpc = new AutocompleteRPC();
@@ -1818,9 +1555,5 @@ public class EnvironmentalSampleLoginScreen extends Screen implements BeforeGetM
         }catch(Exception e) {
             Window.alert(e.getMessage());                     
         }
-    }
-    
-    private void fireLocationDataChanged(){
-        DataChangeEvent.fire(this, location);
     }
 }

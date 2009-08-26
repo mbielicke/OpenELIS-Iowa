@@ -22,14 +22,14 @@ import com.google.gwt.user.client.Window;
 
 public class NotesTab extends Screen {
 
-    private HasNotesInt      parentManager;
-    private NoteManager     manager;
-    private NotesPanel       notesPanel;
+    protected HasNotesInt      parentManager;
+    protected NoteManager     manager;
+    protected NotesPanel       notesPanel;
     protected EditNoteScreen editNote;
-    private String           userName;
-    private Integer          userId;
-    private String notesPanelKey, editButtonKey;
-    private boolean          loaded, isExternal;
+    protected String           userName;
+    protected Integer          userId;
+    protected String notesPanelKey, editButtonKey;
+    protected boolean          loaded, isExternal;
 
     public NotesTab(ScreenDef def, String notesPanelKey, String editButtonKey, boolean isExternal) {
         setDef(def);
@@ -89,15 +89,20 @@ public class NotesTab extends Screen {
 
                 NoteDO note = null;
                 
+                try{
                 if(isExternal)
                     note = manager.getExternalEditingNote();
                 else
                     note = manager.getInternalEditingNote();
-                
+                }catch(Exception e ){
+                    e.printStackTrace();
+                    Window.alert("error!");
+                }
                 note.setSystemUser(userName);
                 note.setSystemUserId(userId);
                 note.setTimestamp(Datetime.getInstance(Datetime.YEAR, Datetime.SECOND));
                 editNote.setNote(note);
+                editNote.setScreenState(State.DEFAULT);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {

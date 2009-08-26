@@ -170,13 +170,13 @@ UIRF Software License are applicable instead of those above.
 							<text style="Prompt"><xsl:value-of select="resource:getString($constants,'orderNum')"/>:</text>
 							<textbox key="orderNumber"  width="75px" tab="{sampleMetaMap:getCollectionDate($sample)},{sampleMetaMap:getAccessionNumber($sample)}" field="Integer"/>
 							<text style="Prompt"><xsl:value-of select="resource:getString($constants,'collected')"/>:</text>
-							<calendar begin="0" end="2" key="{sampleMetaMap:getCollectionDate($sample)}" width="75px" tab="{sampleMetaMap:getCollectionTime($sample)},orderNumber"/>
+							<calendar begin="0" end="2" pattern="{resource:getString($constants,'datePattern')}" key="{sampleMetaMap:getCollectionDate($sample)}" width="75px" tab="{sampleMetaMap:getCollectionTime($sample)},orderNumber"/>
 							<text style="Prompt"><xsl:value-of select="resource:getString($constants,'time')"/>:</text>
-							<calendar begin="3" end="5" key="{sampleMetaMap:getCollectionTime($sample)}" width="60px" tab="{sampleMetaMap:getReceivedDate($sample)},{sampleMetaMap:getCollectionDate($sample)}"/>
+							<calendar begin="3" end="5" pattern="{resource:getString($constants,'timePattern')}" key="{sampleMetaMap:getCollectionTime($sample)}" width="60px" tab="{sampleMetaMap:getReceivedDate($sample)},{sampleMetaMap:getCollectionDate($sample)}"/>
 						</row>
 						<row>
 							<text style="Prompt"><xsl:value-of select="resource:getString($constants,'received')"/>:</text>
-							<calendar key="{sampleMetaMap:getReceivedDate($sample)}" begin="0" end="2" width="110px" tab="{sampleMetaMap:getStatusId($sample)},{sampleMetaMap:getCollectionTime($sample)}"/>
+							<calendar key="{sampleMetaMap:getReceivedDate($sample)}" pattern="{resource:getString($constants,'dateTimePattern')}" begin="0" end="5" width="110px" tab="{sampleMetaMap:getStatusId($sample)},{sampleMetaMap:getCollectionTime($sample)}"/>
 							<text style="Prompt"><xsl:value-of select="resource:getString($constants,'status')"/>:</text>
 							<dropdown key="{sampleMetaMap:getStatusId($sample)}" case="mixed" width="110px" tab="{sampleMetaMap:getClientReference($sample)},{sampleMetaMap:getReceivedDate($sample)}" required="true" field="Integer"/>
 							<text style="Prompt"><xsl:value-of select="resource:getString($constants,'clntRef')"/>:</text>
@@ -360,15 +360,15 @@ UIRF Software License are applicable instead of those above.
 								</row>
 								<row>
 									<text style="Prompt">Started:</text>
-									<calendar begin="0" end="2" key="{analysisMetaMap:getStartedDate($analysis)}"/>
+									<calendar begin="0" end="5" pattern="{resource:getString($constants,'dateTimePattern')}" key="{analysisMetaMap:getStartedDate($analysis)}"/>
 									<text style="Prompt">Completed:</text>
-									<calendar begin="0" end="2" key="{analysisMetaMap:getCompletedDate($analysis)}"/>
+									<calendar begin="0" end="5" pattern="{resource:getString($constants,'dateTimePattern')}" key="{analysisMetaMap:getCompletedDate($analysis)}"/>
 								</row>
 								<row>
 									<text style="Prompt">Released:</text>
-									<calendar begin="0" end="2" key="{analysisMetaMap:getReleasedDate($analysis)}"/>
+									<calendar begin="0" end="5" pattern="{resource:getString($constants,'dateTimePattern')}" key="{analysisMetaMap:getReleasedDate($analysis)}"/>
 									<text style="Prompt">Printed:</text>
-									<calendar begin="0" end="2" key="{analysisMetaMap:getPrintedDate($analysis)}"/>
+									<calendar begin="0" end="5" pattern="{resource:getString($constants,'dateTimePattern')}" key="{analysisMetaMap:getPrintedDate($analysis)}"/>
 								</row>
 							</TablePanel>
 						</VerticalPanel>

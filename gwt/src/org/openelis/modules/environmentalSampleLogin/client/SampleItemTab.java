@@ -31,7 +31,10 @@ import java.util.EnumSet;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.SampleItemDO;
+import org.openelis.gwt.event.ActionEvent;
+import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
+import org.openelis.gwt.event.HasActionHandlers;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.rewrite.Screen;
 import org.openelis.gwt.screen.rewrite.ScreenDef;
@@ -42,9 +45,11 @@ import org.openelis.gwt.widget.table.rewrite.TableDataRow;
 import org.openelis.metamap.SampleMetaMap;
 
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.shared.HandlerRegistration;
 
-public class SampleItemTab extends Screen {
-    private boolean dropdownsInited, loaded;
+public class SampleItemTab extends Screen implements HasActionHandlers<SampleItemTab.Action> {
+    public enum Action {CHANGED};
+    private boolean loaded;
     
     private SampleMetaMap meta;
     protected SampleItemDO sampleItem;
@@ -56,9 +61,15 @@ public class SampleItemTab extends Screen {
         meta = new SampleMetaMap("sample.");
         
         initialize();
+        
+        setSampleTypesModel(DictionaryCache.getListByCategorySystemName("type_of_sample"));
+        setContainersModel(DictionaryCache.getListByCategorySystemName("sample_container"));
+        setUnitsModel(DictionaryCache.getListByCategorySystemName("unit_of_measure"));
     }
     
     private void initialize() {
+        final SampleItemTab itemTab = this;
+        
         typeOfSampleId = (Dropdown)def.getWidget(meta.SAMPLE_ITEM.getTypeOfSampleId());
         addScreenHandler(typeOfSampleId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
@@ -67,6 +78,8 @@ public class SampleItemTab extends Screen {
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
                 sampleItem.setTypeOfSampleId(event.getValue());
+                sampleItem.setTypeOfSample(typeOfSampleId.getTextBoxDisplay());
+                ActionEvent.fire(itemTab, Action.CHANGED, null);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -83,6 +96,8 @@ public class SampleItemTab extends Screen {
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
                 sampleItem.setContainerId(event.getValue());
+                sampleItem.setContainer(containerId.getTextBoxDisplay());
+                ActionEvent.fire(itemTab, Action.CHANGED, null);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -110,11 +125,12 @@ public class SampleItemTab extends Screen {
         final TextBox quantity = (TextBox)def.getWidget(meta.SAMPLE_ITEM.getQuantity());
         addScreenHandler(quantity, new ScreenEventHandler<Double>() {
             public void onDataChange(DataChangeEvent event) {
-                quantity.setValue(Double.toString(sampleItem.getQuantity()));
+                quantity.setValue(getString(sampleItem.getQuantity()));
             }
 
             public void onValueChange(ValueChangeEvent<Double> event) {
-                sampleItem.setQuantity(event.getValue());
+                sampleItem.setQuantity((Double)quantity.getFieldValue());
+                
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -144,7 +160,7 @@ public class SampleItemTab extends Screen {
         ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
         for(DictionaryDO resultDO :  list){
-            model.add(new TableDataRow(resultDO.getEntry(),resultDO.getEntry()));
+            model.add(new TableDataRow(resultDO.getId(),resultDO.getEntry()));
         } 
         typeOfSampleId.setModel(model);
     }
@@ -153,7 +169,7 @@ public class SampleItemTab extends Screen {
         ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
         for(DictionaryDO resultDO :  list){
-            model.add(new TableDataRow(resultDO.getEntry(),resultDO.getEntry()));
+            model.add(new TableDataRow(resultDO.getId(),resultDO.getEntry()));
         } 
         containerId.setModel(model);
     }
@@ -162,27 +178,33 @@ public class SampleItemTab extends Screen {
         ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
         for(DictionaryDO resultDO :  list){
-            model.add(new TableDataRow(resultDO.getEntry(),resultDO.getEntry()));
+            model.add(new TableDataRow(resultDO.getId(),resultDO.getEntry()));
         } 
         unitOfMeasureId.setModel(model);
     }
     
-    public void setItemDO(SampleItemDO itemDO) {
-        sampleItem = itemDO;
+    public void setData(SampleDataBundle data) {
+        if(data.sampleItemDO == null){
+            sampleItem = new SampleItemDO();
+            StateChangeEvent.fire(this, State.DEFAULT);   
+        }else{
+            sampleItem = data.sampleItemDO;
+            
+            if(state == State.ADD || state == State.UPDATE)
+                StateChangeEvent.fire(this, State.UPDATE);
+        }
+        
         loaded = false;
-         
-         if(!dropdownsInited) {
-             setSampleTypesModel(DictionaryCache.getListByCategorySystemName("type_of_sample"));
-             setContainersModel(DictionaryCache.getListByCategorySystemName("sample_container"));
-             setUnitsModel(DictionaryCache.getListByCategorySystemName("unit_of_measure"));
-             dropdownsInited = true;
-         }                
-     }
-     
+    }
+    
      public void draw(){
          if(!loaded)
              DataChangeEvent.fire(this);
          
          loaded = true;
      }
+
+    public HandlerRegistration addActionHandler(ActionHandler<Action> handler) {
+        return addHandler(handler, ActionEvent.getType());
+    }
 }
