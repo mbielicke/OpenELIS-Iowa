@@ -9,6 +9,6 @@ public class AnalysisListItem implements Serializable {
 
     AnalysisTestDO            analysis;
     AnalysisQaEventManager    qaEvents;
-    NoteManager               notes;
+    NoteManager               analysisInternalNotes, analysisExternalNote;
     StorageManager            storage;
 }

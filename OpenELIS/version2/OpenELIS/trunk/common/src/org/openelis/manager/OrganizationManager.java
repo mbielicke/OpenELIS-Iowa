@@ -105,6 +105,7 @@ public class OrganizationManager implements RPC, HasNotesInt {
 
         return notes;
     }  
+    
     public OrganizationContactManager getContacts() throws Exception {
         if(contacts == null){
             if(organizationAddress.getOrganizationId() != null){
