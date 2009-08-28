@@ -181,7 +181,7 @@ UIRF Software License are applicable instead of those above.
 							<text style="Prompt"><xsl:value-of select="resource:getString($constants,'received')"/>:</text>
 							<calendar key="{sampleMetaMap:getReceivedDate($sample)}" pattern="{resource:getString($constants,'dateTimePattern')}" begin="0" end="5" width="110px" tab="{sampleMetaMap:getStatusId($sample)},{sampleMetaMap:getCollectionTime($sample)}"/>
 							<text style="Prompt"><xsl:value-of select="resource:getString($constants,'status')"/>:</text>
-							<dropdown key="{sampleMetaMap:getStatusId($sample)}" case="MIXED" width="110px" tab="{sampleMetaMap:getClientReference($sample)},{sampleMetaMap:getReceivedDate($sample)}" required="true" field="Integer"/>
+							<dropdown key="{sampleMetaMap:getStatusId($sample)}" width="110px" tab="{sampleMetaMap:getClientReference($sample)},{sampleMetaMap:getReceivedDate($sample)}" required="true" field="Integer"/>
 							<text style="Prompt"><xsl:value-of select="resource:getString($constants,'clntRef')"/>:</text>
 							<widget colspan="3">
 								<textbox key="{sampleMetaMap:getClientReference($sample)}" width="175px" tab="{envMeta:getIsHazardous($env)},{sampleMetaMap:getStatusId($sample)}" field="String"/>					
@@ -206,7 +206,7 @@ UIRF Software License are applicable instead of those above.
 						<row>
 							<text style="Prompt"><xsl:value-of select="resource:getString($constants,'location')"/>:</text>
 							<HorizontalPanel> 
-							<textbox key="{envMeta:getSamplingLocation($env)}" onchange="this" width="175px" field="String"/>
+							<textbox key="{envMeta:getSamplingLocation($env)}" width="175px" field="String"/>
 							<appButton key="locButton" style="Button">
 									<AbsolutePanel style="LookupButtonImage"/>
 							</appButton>
@@ -236,18 +236,18 @@ UIRF Software License are applicable instead of those above.
 									<label />
 								</col>
 								<col>
-									<dropdown case="lower" width="110px" field="String" />
+									<dropdown case="LOWER" width="110px" field="String" />
 								</col>
 							</leaf>
 	                  	</tree>
 	                  	<HorizontalPanel style="TableButtonFooter">
-	                  		<appButton action="addItem" key="addItemButton" onclick="this" style="Button">
+	                  		<appButton action="addItem" key="addItemButton" style="Button">
 								<HorizontalPanel>
 									<AbsolutePanel style="AddRowButtonImage"/>
 									<text><xsl:value-of select="resource:getString($constants,'addItem')"/></text>
 								</HorizontalPanel>
 							</appButton>
-							<appButton action="addTest" key="addTestButton" onclick="this" style="Button">
+							<appButton action="addTest" key="addTestButton" style="Button">
 								<HorizontalPanel>
 									<AbsolutePanel style="AddRowButtonImage"/>
 									<text><xsl:value-of select="resource:getString($constants,'addTest')"/></text>
@@ -268,7 +268,7 @@ UIRF Software License are applicable instead of those above.
 						<row>
 							<text style="Prompt"><xsl:value-of select="resource:getString($constants,'project')"/>:</text>
 							<HorizontalPanel> 
-								<autoComplete key="{projectMeta:getName($project)}" width="175px" popWidth="auto" cat="project" case="upper" field="Integer">
+								<autoComplete key="{projectMeta:getName($project)}" width="175px" popWidth="auto" case="UPPER" field="Integer">
 									<col header="Name" width="115"/>
 									<col header="Desc" width="190"/>				
 								</autoComplete>
@@ -280,7 +280,7 @@ UIRF Software License are applicable instead of those above.
 						<row>
 							<text style="Prompt"><xsl:value-of select="resource:getString($constants,'reportTo')"/>:</text>
 							<HorizontalPanel> 
-								<autoComplete key="{orgMeta:getName($org)}" cat="organization" width="175px" popWidth="auto" case="upper" field="Integer">	
+								<autoComplete key="{orgMeta:getName($org)}" width="175px" popWidth="auto" case="UPPER" field="Integer">	
 									<col header="Name" width="180"/>
 									<col header="Street" width="110"/>
 									<col header="City" width="100"/>
@@ -294,7 +294,7 @@ UIRF Software License are applicable instead of those above.
 						<row>
 							<text style="Prompt"><xsl:value-of select="resource:getString($constants,'billTo')"/>:</text>
 							<HorizontalPanel> 
-								<autoComplete key="billTo" cat="organization" width="175px" popWidth="auto" case="upper" field="Integer">
+								<autoComplete key="billTo" width="175px" popWidth="auto" case="UPPER" field="Integer">
 									<col header="Name" width="180"/>
 									<col header="Street" width="110"/>
 									<col header="City" width="100"/>
@@ -315,20 +315,20 @@ UIRF Software License are applicable instead of those above.
 							<TablePanel style="Form" spacing="0" padding="0">
 								<row>
 									<text style="Prompt">Sample Type:</text>
-									<dropdown case="mixed" key="{sampleItemMetaMap:getTypeOfSampleId($sampleItem)}" onchange="this" width="150px" field="Integer"/>
+									<dropdown key="{sampleItemMetaMap:getTypeOfSampleId($sampleItem)}" width="150px" field="Integer"/>
 									
 								</row>
 								<row>
 									<text style="Prompt">Container:</text>
-									<dropdown case="mixed" key="{sampleItemMetaMap:getContainerId($sampleItem)}" onchange="this" width="225px" field="Integer"/>
+									<dropdown key="{sampleItemMetaMap:getContainerId($sampleItem)}" width="225px" field="Integer"/>
 									<text style="Prompt">Container Reference:</text>
-									<textbox case="mixed" key="{sampleItemMetaMap:getContainerReference($sampleItem)}" onchange="this" width="215px" field="String"/>
+									<textbox key="{sampleItemMetaMap:getContainerReference($sampleItem)}" width="215px" field="String"/>
 								</row>
 								<row>
 									<text style="Prompt">Qty:</text>
-									<textbox case="mixed" key="{sampleItemMetaMap:getQuantity($sampleItem)}" onchange="this" width="150px" field="Double"/>
+									<textbox key="{sampleItemMetaMap:getQuantity($sampleItem)}" width="150px" field="Double"/>
 									<text style="Prompt">Unit:</text>
-									<dropdown case="mixed" key="{sampleItemMetaMap:getUnitOfMeasureId($sampleItem)}" onchange="this" width="150px" field="Integer"/>
+									<dropdown key="{sampleItemMetaMap:getUnitOfMeasureId($sampleItem)}" width="150px" field="Integer"/>
 								</row>
 							</TablePanel>
 						</VerticalPanel>
@@ -338,26 +338,26 @@ UIRF Software License are applicable instead of those above.
 							<TablePanel style="Form" spacing="0" padding="0">
 								<row>
 									<text style="Prompt">Test:</text>
-									<autoComplete key="{sampleTestMetaMap:getName($test)}" cat="testMethod" width="150px" popWidth="auto" case="lower" field="Integer">
+									<autoComplete key="{sampleTestMetaMap:getName($test)}" width="150px" popWidth="auto" case="LOWER" field="Integer">
 										<col header="Test" width="150"/>
 										<col header="Method" width="150"/>												
 									</autoComplete>
 									<text style="Prompt">Method:</text>
-									<autoComplete key="{methodMeta:getName($method)}" cat="testMethod" width="150px" popWidth="auto" case="lower" field="Integer">
+									<autoComplete key="{methodMeta:getName($method)}" width="150px" popWidth="auto"  case="LOWER" field="Integer">
 										<col header="Method" width="150"/>												
 									</autoComplete>
 								</row>
 								<row>
 									<text style="Prompt">Status:</text>
-									<dropdown case="mixed" key="{analysisMetaMap:getStatusId($analysis)}" onchange="this" width="150px" field="Integer"/>
+									<dropdown key="{analysisMetaMap:getStatusId($analysis)}" width="150px" field="Integer"/>
 									<text style="Prompt">Revision:</text>
-									<textbox case="mixed" key="{analysisMetaMap:getRevision($analysis)}" onchange="this" width="60px" field="Integer"/>
+									<textbox key="{analysisMetaMap:getRevision($analysis)}" width="60px" field="Integer"/>
 								</row>
 								<row>
 									<text style="Prompt">Reportable:</text>
 									<check key="{analysisMetaMap:getIsReportable($analysis)}"/>
 									<text style="Prompt">Section:</text>
-									<autoComplete key="{sectionMeta:getName($section)}" cat="section" width="150px" popWidth="auto" case="upper" field="Integer">
+									<autoComplete key="{sectionMeta:getName($section)}" width="150px" popWidth="auto" case="UPPER" field="Integer">
 										<col header="Name" width="150"/>												
 									</autoComplete>
 								</row>
@@ -441,7 +441,7 @@ UIRF Software License are applicable instead of those above.
                               <label/>
                           </col>
                           <col header="Location" width="230">
-                         	 <autoComplete key="" case="lower" field="Integer" width="210px" popWidth="auto">
+                         	 <autoComplete key="" case="LOWER" field="Integer" width="210px" popWidth="auto">
                       			<col header="Name" width="180"/>
 			                  </autoComplete>
                           </col>
@@ -453,13 +453,13 @@ UIRF Software License are applicable instead of those above.
                           </col>
                           </table>
                           <HorizontalPanel>
-                      		<appButton action="addStorage" key="addStorageButton" onclick="this" style="Button">
+                      		<appButton action="addStorage" key="addStorageButton" style="Button">
                         		<HorizontalPanel>
                           			<AbsolutePanel style="AddRowButtonImage"/>
 			                          <text><xsl:value-of select="resource:getString($constants,'addRow')"/></text>
             		            </HorizontalPanel>
                     	  	</appButton>
-	                      <appButton action="removeStorage" key="removeStorageButton" onclick="this" style="Button">
+	                      <appButton action="removeStorage" key="removeStorageButton" style="Button">
     	                    <HorizontalPanel>
         	                  <AbsolutePanel style="RemoveRowButtonImage"/>
             		              <text><xsl:value-of select="resource:getString($constants,'removeRow')"/></text>
