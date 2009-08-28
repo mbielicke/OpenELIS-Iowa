@@ -25,7 +25,7 @@ license ("UIRF Software License"), in which case the provisions of a
 UIRF Software License are applicable instead of those above. 
 -->
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-                xmlns:xalan="http://xml.apache.org/xalan"
+				xmlns:xalan="http://xml.apache.org/xalan"
                 xmlns:resource="xalan://org.openelis.util.UTFResource"
                 xmlns:locale="xalan://java.util.Locale" 
                 xmlns:envMeta="xalan://org.openelis.metamap.SampleEnvironmentalMetaMap"
@@ -41,6 +41,9 @@ UIRF Software License are applicable instead of those above.
                 xmlns:sectionMeta="xalan://org.openelis.meta.SectionMeta"
                 xmlns:methodMeta="xalan://org.openelis.meta.MethodMeta"
                 extension-element-prefixes="resource"
+                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				xsi:noNamespaceSchemaLocation="../../../../../../../../OpenELIS-Lib/src/org/openelis/gwt/public/ScreenSchema.xsd"
+				xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform ../../../../../../../../OpenELIS-Lib/src/org/openelis/gwt/public/XSLTSchema.xsd"
                 version="1.0">
 <xsl:import href="aToZOneColumn.xsl"/>
 
@@ -117,7 +120,7 @@ UIRF Software License are applicable instead of those above.
     <xsl:variable name="language"><xsl:value-of select="locale"/></xsl:variable>
     <xsl:variable name="props"><xsl:value-of select="props"/></xsl:variable>
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))"/>
-<screen id="EnvironmentalSampleLogin" name="{resource:getString($constants,'environmentalSampleLogin')}" serviceUrl="ElisService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<screen id="EnvironmentalSampleLogin" name="{resource:getString($constants,'environmentalSampleLogin')}">
 		<VerticalPanel spacing="0" padding="0">
 		<!--button panel code-->
 				<AbsolutePanel spacing="0" style="ButtonPanelContainer">
@@ -170,15 +173,15 @@ UIRF Software License are applicable instead of those above.
 							<text style="Prompt"><xsl:value-of select="resource:getString($constants,'orderNum')"/>:</text>
 							<textbox key="orderNumber"  width="75px" tab="{sampleMetaMap:getCollectionDate($sample)},{sampleMetaMap:getAccessionNumber($sample)}" field="Integer"/>
 							<text style="Prompt"><xsl:value-of select="resource:getString($constants,'collected')"/>:</text>
-							<calendar begin="0" end="2" pattern="{resource:getString($constants,'datePattern')}" key="{sampleMetaMap:getCollectionDate($sample)}" width="75px" tab="{sampleMetaMap:getCollectionTime($sample)},orderNumber"/>
+							<calendar begin="0" end="2" pattern="{resource:getString($constants,'datePattern')}" key="{sampleMetaMap:getCollectionDate($sample)}" width="80px" required="true" tab="{sampleMetaMap:getCollectionTime($sample)},orderNumber"/>
 							<text style="Prompt"><xsl:value-of select="resource:getString($constants,'time')"/>:</text>
-							<calendar begin="3" end="5" pattern="{resource:getString($constants,'timePattern')}" key="{sampleMetaMap:getCollectionTime($sample)}" width="60px" tab="{sampleMetaMap:getReceivedDate($sample)},{sampleMetaMap:getCollectionDate($sample)}"/>
+							<textbox pattern="{resource:getString($constants,'timePattern')}" begin="3" end="5" key="{sampleMetaMap:getCollectionTime($sample)}" width="60px" tab="{sampleMetaMap:getReceivedDate($sample)},{sampleMetaMap:getCollectionDate($sample)}" field="Date"/>
 						</row>
 						<row>
 							<text style="Prompt"><xsl:value-of select="resource:getString($constants,'received')"/>:</text>
 							<calendar key="{sampleMetaMap:getReceivedDate($sample)}" pattern="{resource:getString($constants,'dateTimePattern')}" begin="0" end="5" width="110px" tab="{sampleMetaMap:getStatusId($sample)},{sampleMetaMap:getCollectionTime($sample)}"/>
 							<text style="Prompt"><xsl:value-of select="resource:getString($constants,'status')"/>:</text>
-							<dropdown key="{sampleMetaMap:getStatusId($sample)}" case="mixed" width="110px" tab="{sampleMetaMap:getClientReference($sample)},{sampleMetaMap:getReceivedDate($sample)}" required="true" field="Integer"/>
+							<dropdown key="{sampleMetaMap:getStatusId($sample)}" case="MIXED" width="110px" tab="{sampleMetaMap:getClientReference($sample)},{sampleMetaMap:getReceivedDate($sample)}" required="true" field="Integer"/>
 							<text style="Prompt"><xsl:value-of select="resource:getString($constants,'clntRef')"/>:</text>
 							<widget colspan="3">
 								<textbox key="{sampleMetaMap:getClientReference($sample)}" width="175px" tab="{envMeta:getIsHazardous($env)},{sampleMetaMap:getStatusId($sample)}" field="String"/>					
@@ -196,7 +199,7 @@ UIRF Software License are applicable instead of those above.
 						</row>
 						<row>
 							<text style="Prompt"><xsl:value-of select="resource:getString($constants,'collector')"/>:</text>
-							<textbox key="{envMeta:getCollector($env)}" tab="{envMeta:getCollectorPhone($env)},{envMeta:getDescription($env)}" width="235px" field="String"/>		
+							<textbox key="{envMeta:getCollector($env)}" tab="{envMeta:getCollectorPhone($env)},{envMeta:getDescription($env)}" width="235px" required="true" field="String"/>		
 							<text style="Prompt"><xsl:value-of select="resource:getString($constants,'phone')"/>:</text>
 							<textbox key="{envMeta:getCollectorPhone($env)}" tab="{envMeta:getSamplingLocation($env)},{envMeta:getCollector($env)}" width="120px" field="String"/>		
 						</row>
@@ -354,7 +357,7 @@ UIRF Software License are applicable instead of those above.
 									<text style="Prompt">Reportable:</text>
 									<check key="{analysisMetaMap:getIsReportable($analysis)}"/>
 									<text style="Prompt">Section:</text>
-									<autoComplete key="{analysisMetaMap:getSectionId($analysis)}" cat="section" width="150px" popWidth="auto" case="upper" field="Integer">
+									<autoComplete key="{sectionMeta:getName($section)}" cat="section" width="150px" popWidth="auto" case="upper" field="Integer">
 										<col header="Name" width="150"/>												
 									</autoComplete>
 								</row>
@@ -432,7 +435,38 @@ UIRF Software License are applicable instead of those above.
 						</VerticalPanel>
 					</tab>
 					<tab key="tab5" text="{resource:getString($constants,'storage')}">
-						<VerticalPanel height="170px" width="730px"/>
+						<VerticalPanel height="170px">
+						<table key="storageTable" maxRows="6" showScroll="ALWAYS" title="" width="auto">
+                          <col header="User" width="155">
+                              <label/>
+                          </col>
+                          <col header="Location" width="230">
+                         	 <autoComplete key="" case="lower" field="Integer" width="210px" popWidth="auto">
+                      			<col header="Name" width="180"/>
+			                  </autoComplete>
+                          </col>
+                          <col header="Check In" width="130">
+                              <calendar key="" begin="0" end="4" pattern="{resource:getString($constants,'dateTimePattern')}" width="110"/>
+                          </col>
+                          <col header="Check Out" width="130">
+                              <calendar key="" begin="0" end="4" pattern="{resource:getString($constants,'dateTimePattern')}" width="110"/>
+                          </col>
+                          </table>
+                          <HorizontalPanel>
+                      		<appButton action="addStorage" key="addStorageButton" onclick="this" style="Button">
+                        		<HorizontalPanel>
+                          			<AbsolutePanel style="AddRowButtonImage"/>
+			                          <text><xsl:value-of select="resource:getString($constants,'addRow')"/></text>
+            		            </HorizontalPanel>
+                    	  	</appButton>
+	                      <appButton action="removeStorage" key="removeStorageButton" onclick="this" style="Button">
+    	                    <HorizontalPanel>
+        	                  <AbsolutePanel style="RemoveRowButtonImage"/>
+            		              <text><xsl:value-of select="resource:getString($constants,'removeRow')"/></text>
+                    	    </HorizontalPanel>
+	                      </appButton>
+    	                </HorizontalPanel>
+						</VerticalPanel>
 					</tab>
 					<tab key="tab6" text="{resource:getString($constants,'sampleExtrnlCmnts')}">
 					<VerticalPanel height="170px" width="100%">
