@@ -31,6 +31,9 @@ import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.SampleItemManager;
 
 public class SampleDataBundle {
+    public enum Type {SAMPLE_ITEM, ANALYSIS};
+    
+    Type type;
     SampleItemManager sampleItemManager;
     SampleItemDO      sampleItemDO;
     AnalysisManager   analysisManager;
@@ -41,6 +44,12 @@ public class SampleDataBundle {
     }
 
     public SampleDataBundle(SampleItemManager sampleItemManager,
+                            SampleItemDO sampleItemDO) {
+        this(sampleItemManager, sampleItemDO, null, null);
+        type = Type.SAMPLE_ITEM;
+    }
+    
+    public SampleDataBundle(SampleItemManager sampleItemManager,
                             SampleItemDO sampleItemDO,
                             AnalysisManager analysisManager,
                             AnalysisTestDO analysisTestDO) {
@@ -48,11 +57,6 @@ public class SampleDataBundle {
         this.sampleItemDO = sampleItemDO;
         this.analysisManager = analysisManager;
         this.analysisTestDO = analysisTestDO;
-    }
-    
-    public SampleDataBundle(SampleItemManager sampleItemManager,
-                            SampleItemDO sampleItemDO) {
-        this.sampleItemManager = sampleItemManager;
-        this.sampleItemDO = sampleItemDO;
+        type = Type.ANALYSIS;
     }
 }
