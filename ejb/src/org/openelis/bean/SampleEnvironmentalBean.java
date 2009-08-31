@@ -87,7 +87,7 @@ public class SampleEnvironmentalBean implements SampleEnvironmentalRemote, Sampl
          query.setMaxResults(first+max);
         
 //      ***set the parameters in the query
-        qb.setQueryParams(query);
+        qb.setNewQueryParams(query, fields);
         
         ArrayList<IdNameDO> returnList = (ArrayList<IdNameDO>)GetPage.getPage(query.getResultList(), first, max);
         

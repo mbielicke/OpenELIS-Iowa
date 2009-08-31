@@ -31,6 +31,7 @@ import javax.naming.InitialContext;
 
 import org.openelis.domain.SampleItemDO;
 import org.openelis.local.SampleItemLocal;
+import org.openelis.utils.ReferenceTableCache;
 
 public class SampleItemManagerProxy {
     public SampleItemManager fetchBySampleId(Integer sampleId) throws Exception {
@@ -42,6 +43,7 @@ public class SampleItemManagerProxy {
             sim.addSampleItem(items.get(i));
         
         sim.setSampleId(sampleId);
+        sim.setSampleItemReferenceTableId(ReferenceTableCache.getReferenceTable("sample_item"));
 
         return sim;
     }

@@ -25,28 +25,25 @@
 */
 package org.openelis.bean;
 
-import javax.annotation.Resource;
-import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
 import javax.persistence.PersistenceContext;
-import javax.transaction.UserTransaction;
 
 import org.jboss.annotation.security.SecurityDomain;
-import org.openelis.manager.NoteManager;
-import org.openelis.remote.NoteManagerRemote;
+import org.openelis.manager.StorageManager;
+import org.openelis.remote.StorageManagerRemote;
 
 @Stateless
+@TransactionManagement(TransactionManagementType.BEAN)
 
 @SecurityDomain("openelis")
 //@RolesAllowed("organization-select")
-public class NoteManagerBean implements NoteManagerRemote {
-
+public class StorageManagerBean implements StorageManagerRemote{
+    
     @PersistenceContext(name = "openelis")
     
-    public NoteManager fetch(Integer referenceTableId, Integer referenceId) throws Exception {
-        return NoteManager.findByRefTableRefId(referenceTableId, referenceId);
-
+    public StorageManager fetch(Integer referenceTableId, Integer referenceId) throws Exception {
+        return StorageManager.findByRefTableRefId(referenceTableId, referenceId);
     }
 }
