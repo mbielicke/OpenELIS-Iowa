@@ -31,14 +31,16 @@ import org.openelis.meta.TestMeta;
 
 public class SampleTestMetaMap extends TestMeta implements MetaMap {
 
-    public MethodMeta METHOD = new MethodMeta("t.method.");
+    public MethodMeta METHOD;
     
     public SampleTestMetaMap(){
         super("t.");
+        METHOD = new MethodMeta("t.method");
     }
             
     public SampleTestMetaMap(String path){
-        super(path);               
+        super(path); 
+        METHOD = new MethodMeta(path+"method.");
     }
     
     public MethodMeta getMethod(){
@@ -50,7 +52,7 @@ public class SampleTestMetaMap extends TestMeta implements MetaMap {
     }
     
     public boolean hasColumn(String name){        
-        if(name.startsWith("t.method."))
+        if(name.startsWith(path+"method."))
             return METHOD.hasColumn(name);
         return super.hasColumn(name);
     }

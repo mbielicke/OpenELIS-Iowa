@@ -84,19 +84,7 @@ public class InventoryLocationDO implements RPC {
         setExpirationDate(new Datetime(Datetime.YEAR,
                                        Datetime.DAY,
                                        expirationDate));
-
-        // build the storage location string
-        String storageLocation = "";
-        if (parentStorageLocName != null)
-            storageLocation += parentStorageLocName.trim() + ", "
-                               + childStorageUnit.trim()
-                               + " "
-                               + childStorageLocLocation.trim();
-        else
-            storageLocation += childStorageUnit.trim() + " "
-                               + childStorageLocLocation.trim();
-
-        setStorageLocation(storageLocation);
+        setStorageLocation(DataBaseUtil.formatStorageLocation(childStorageLocName, childStorageLocLocation, childStorageUnit, parentStorageLocName));
     }
 
     public Datetime getExpirationDate() {

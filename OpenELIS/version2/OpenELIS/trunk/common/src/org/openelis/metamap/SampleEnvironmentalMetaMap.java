@@ -60,17 +60,38 @@ public class SampleEnvironmentalMetaMap extends SampleEnvironmentalMeta implemen
             return ADDRESS.hasColumn(name);
         if(name.startsWith("sample."))
             return SAMPLE.hasColumn(name);
+        if(name.startsWith("sampleProject."))
+            return SAMPLE.SAMPLE_PROJECT.hasColumn(name);
+        if(name.startsWith("sampleOrganization."))
+            return SAMPLE.SAMPLE_ORGANIZATION.hasColumn(name);
+        if(name.startsWith("sampleItem."))
+            return SAMPLE.SAMPLE_ITEM.hasColumn(name);
+        if(name.startsWith("analysis."))
+            return SAMPLE.SAMPLE_ITEM.ANALYSIS.hasColumn(name);
+        
         return super.hasColumn(name);
     }
     
     public String buildFrom(String name){
         String from = "SampleEnvironmental se ";
-        //if(name.indexOf("notes.") > -1)
+
         from += ", IN (se.sample) sample ";
         
         if(name.indexOf("address.") > -1)
             from += ", IN (se.address) address ";
+        
+        if(name.indexOf("sampleProject.") > -1)
+            from += ", IN (sample.sampleProject) sampleProject ";
             
+        if(name.indexOf("sampleOrganization.") > -1)
+            from += ", IN (sample.sampleOrganization) sampleOrganization ";
+        
+        if(name.indexOf("sampleItem.") > -1 || name.indexOf("analysis.") > -1)
+            from += ", IN (sample.sampleItem) sampleItem";
+        
+        if(name.indexOf("analysis.") > -1)
+            from += ", IN (sampleItem.analysis) analysis ";
+        
         return from;
     }
 

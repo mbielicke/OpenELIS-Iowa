@@ -25,6 +25,103 @@
 */
 package org.openelis.domain;
 
-public class StorageDO {
+import java.util.Date;
 
+import org.openelis.gwt.common.Datetime;
+import org.openelis.gwt.common.RPC;
+import org.openelis.utilcommon.DataBaseUtil;
+
+public class StorageDO implements RPC {
+
+    private static final long serialVersionUID = 1L;
+    
+    protected Integer id;
+    protected Integer referenceId;
+    protected Integer referenceTableId;
+    protected Integer storageLocationId;
+    protected String storageLocation;
+    protected Datetime checkin;
+    protected Datetime checkout;
+    protected Integer systemUserId;
+    
+    public StorageDO(){
+        
+    }
+    
+    public StorageDO(Integer id, Integer referenceId, Integer referenceTableId, Integer storageLocationId,
+                     Date checkin, Date checkout, Integer systemUserId, String storageLocName, String StorageLocLocation,
+                     String parentLocName, String unitDesc){
+        setId(id);
+        setReferenceId(referenceId);
+        setReferenceTableId(referenceTableId);
+        setStorageLocationId(storageLocationId);
+        setStorageLocation(DataBaseUtil.formatStorageLocation(storageLocName, StorageLocLocation, unitDesc, parentLocName));
+        setCheckin(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE, checkin));
+        setCheckout(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE, checkout));
+        setSystemUserId(systemUserId);
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Integer getReferenceId() {
+        return referenceId;
+    }
+
+    public void setReferenceId(Integer referenceId) {
+        this.referenceId = referenceId;
+    }
+
+    public Integer getReferenceTableId() {
+        return referenceTableId;
+    }
+
+    public void setReferenceTableId(Integer referenceTableId) {
+        this.referenceTableId = referenceTableId;
+    }
+
+    public Integer getStorageLocationId() {
+        return storageLocationId;
+    }
+
+    public void setStorageLocationId(Integer storageLocationId) {
+        this.storageLocationId = storageLocationId;
+    }
+
+    public Datetime getCheckin() {
+        return checkin;
+    }
+
+    public void setCheckin(Datetime checkin) {
+        this.checkin = checkin;
+    }
+
+    public Datetime getCheckout() {
+        return checkout;
+    }
+
+    public void setCheckout(Datetime checkout) {
+        this.checkout = checkout;
+    }
+
+    public Integer getSystemUserId() {
+        return systemUserId;
+    }
+
+    public void setSystemUserId(Integer systemUserId) {
+        this.systemUserId = systemUserId;
+    }
+
+    public String getStorageLocation() {
+        return storageLocation;
+    }
+
+    public void setStorageLocation(String storageLocation) {
+        this.storageLocation = DataBaseUtil.trim(storageLocation);
+    }
 }

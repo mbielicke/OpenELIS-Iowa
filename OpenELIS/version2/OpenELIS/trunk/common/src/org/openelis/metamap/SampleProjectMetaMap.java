@@ -47,26 +47,13 @@ public class SampleProjectMetaMap extends SampleProjectMeta implements MetaMap {
     }
     
     public boolean hasColumn(String name){
-        /*if(name.startsWith(path+"address."))
-            return ADDRESS.hasColumn(name);
-        if(name.startsWith(path+"parentOrganization."))
-            return PARENT_ORGANIZATION.hasColumn(name);
-        if(name.startsWith("notes."))
-            return NOTE.hasColumn(name);
-        if(name.startsWith("contacts."))
-            return ORGANIZATION_CONTACT.hasColumn(name);
-            */
+        if(name.startsWith(path+"project."))
+            return PROJECT.hasColumn(name);
         return super.hasColumn(name);
     }
     
     public String buildFrom(String name){
         String from = "";
-        /*Organization o ";
-        if(name.indexOf("notes.") > -1)
-            from += ", IN (o.note) notes ";
-        if(name.indexOf("contacts.") > -1)
-            from += ", IN (o.organizationContact) contacts ";
-            */ 
         return from;
     }
 }

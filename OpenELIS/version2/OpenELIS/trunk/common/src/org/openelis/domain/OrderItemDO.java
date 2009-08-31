@@ -86,19 +86,7 @@ public class OrderItemDO implements RPC {
         setTransactionId(transactionId);
         setQuantityOnHand(quantityOnHand);
         setLotNumber(lotNumber);
-
-        // build the storage location string
-        String storageLocation = "";
-        if (parentStorageLocName != null)
-            storageLocation += parentStorageLocName.trim() + ", "
-                               + childStorageUnit.trim()
-                               + " "
-                               + childStorageLocLocation.trim();
-        else
-            storageLocation += childStorageUnit.trim() + " "
-                               + childStorageLocLocation.trim();
-
-        setLocation(storageLocation);
+        setLocation(DataBaseUtil.formatStorageLocation(childStorageLocName, childStorageLocLocation, childStorageUnit, parentStorageLocName));
     }
 
     public OrderItemDO(Integer id,

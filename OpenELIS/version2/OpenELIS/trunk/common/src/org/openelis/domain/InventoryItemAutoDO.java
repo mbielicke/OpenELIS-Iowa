@@ -105,19 +105,7 @@ public class InventoryItemAutoDO implements RPC {
         setName(name);
         setStore(store);
         setLocationId(locationId);
-
-        // build the storage location string
-        String storageLocation = "";
-        if (parentStorageLocName != null)
-            storageLocation += parentStorageLocName.trim() + ", "
-                               + childStorageUnit.trim()
-                               + " "
-                               + childStorageLocLocation.trim();
-        else
-            storageLocation += childStorageUnit.trim() + " "
-                               + childStorageLocLocation.trim();
-
-        setLocation(storageLocation);
+        setLocation(DataBaseUtil.formatStorageLocation(childStorageLocName, childStorageLocLocation, childStorageUnit, parentStorageLocName));
         setLotNum(lotNum);
         setExpDate(expDate);
         setQuantityOnHand(quantityOnHand);
@@ -146,19 +134,7 @@ public class InventoryItemAutoDO implements RPC {
         setDescription(description);
         setStore(store);
         setLocationId(locationId);
-
-        // build the storage location string
-        String storageLocation = "";
-        if (parentStorageLocName != null)
-            storageLocation += parentStorageLocName.trim() + ", "
-                               + childStorageUnit.trim()
-                               + " "
-                               + childStorageLocLocation.trim();
-        else
-            storageLocation += childStorageUnit.trim() + " "
-                               + childStorageLocLocation.trim();
-
-        setLocation(storageLocation);
+        setLocation(DataBaseUtil.formatStorageLocation(childStorageLocName, childStorageLocLocation, childStorageUnit, parentStorageLocName));
         setLotNum(lotNum);
         setExpDate(expDate);
         setQuantityOnHand(quantityOnHand);

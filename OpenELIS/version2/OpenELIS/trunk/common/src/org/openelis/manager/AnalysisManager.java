@@ -212,13 +212,12 @@ public class AnalysisManager implements RPC, HasNotesInt {
     
     //storage
     public StorageManager getStorageAt(int i) throws Exception {
-        return null;
-        /*AnalysisListItem item = getItem(i);
-        if(item.storage == null){
-            if(item.analysis != null && sampleItemId != null){
+        AnalysisListItem item = getItem(i);
+
+        if (item.storage == null) {
+            if(item.analysis != null && item.analysis.getId() != null && analysisReferenceId != null){
                 try{
-                    item.storage = StorageManager.findBySampleItemId(sampleItemId);
-                    
+                    item.storage = StorageManager.findByRefTableRefId(analysisReferenceId, item.analysis.getId());
                 }catch(NotFoundException e){
                     //ignore
                 }catch(Exception e){
@@ -226,11 +225,11 @@ public class AnalysisManager implements RPC, HasNotesInt {
                 }
             }
         }
-        
+            
         if(item.storage == null)
             item.storage = StorageManager.getInstance();
-
-        return item.storage;*/
+    
+        return item.storage;
     }
     
     public void setStorageAt(StorageManager storage, int i) {

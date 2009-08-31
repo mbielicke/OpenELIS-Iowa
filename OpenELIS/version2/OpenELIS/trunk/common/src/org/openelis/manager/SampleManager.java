@@ -256,7 +256,7 @@ public class SampleManager implements RPC, HasNotesInt {
     
     public NoteManager getInternalNotes() throws Exception {
         if(sampleInternalNotes == null){
-            if(sample.getId() != null){
+            if(sample.getId() != null && sampleInternalReferenceTableId != null){
                 try{
                     sampleInternalNotes = NoteManager.findByRefTableRefId(sampleInternalReferenceTableId, sample.getId());
                     
@@ -276,7 +276,7 @@ public class SampleManager implements RPC, HasNotesInt {
     
     public NoteManager getExternalNote() throws Exception {
         if(sampleExternalNote == null){
-            if(sample.getId() != null){
+            if(sample.getId() != null && sampleReferenceTableId != null){
                 try{
                     sampleExternalNote = NoteManager.findByRefTableRefId(sampleReferenceTableId, sample.getId());
                     

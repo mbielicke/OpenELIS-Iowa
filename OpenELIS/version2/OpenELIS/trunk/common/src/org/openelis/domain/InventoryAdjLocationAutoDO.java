@@ -55,10 +55,7 @@ public class InventoryAdjLocationAutoDO implements RPC {
         setInventoryItemId(inventoryItemId);
         setInventoryItem(inventoryItem);
         setStore(store);
-        setStorageLocation(storageLocationName.trim() + ", "
-                           + storageUnitDescription.trim()
-                           + " "
-                           + storageLocation.trim());
+        setStorageLocation(DataBaseUtil.formatStorageLocation(storageLocationName, storageLocation, storageUnitDescription));
         setQuantityOnHand(quantityOnHand);
     }
 

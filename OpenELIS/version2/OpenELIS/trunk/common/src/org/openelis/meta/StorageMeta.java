@@ -33,7 +33,7 @@ import java.util.HashSet;
 import org.openelis.gwt.common.Meta;
 
 public class StorageMeta implements Meta {
-  	private String path = "";
+  	protected String path = "";
 	private static final String entityName = "Storage";
 	
 	private static final String
@@ -42,10 +42,11 @@ public class StorageMeta implements Meta {
               REFERENCE_TABLE_ID					="referenceTableId",
               STORAGE_LOCATION_ID					="storageLocationId",
               CHECKIN					="checkin",
-              CHECKOUT					="checkout";
+              CHECKOUT					="checkout",
+              SYSTEM_USER_ID            ="systemUserId";
 
   	private static final String[] columnNames = {
-  	  ID,REFERENCE_ID,REFERENCE_TABLE_ID,STORAGE_LOCATION_ID,CHECKIN,CHECKOUT};
+  	  ID,REFERENCE_ID,REFERENCE_TABLE_ID,STORAGE_LOCATION_ID,CHECKIN,CHECKOUT,SYSTEM_USER_ID};
   	  
 	private HashSet<String> columnHashList;
     
@@ -100,6 +101,10 @@ public class StorageMeta implements Meta {
 
     public String getCheckout() {
         return path + CHECKOUT;
+    } 
+    
+    public String getSystemUserId() {
+        return path + SYSTEM_USER_ID;
     } 
 
   
