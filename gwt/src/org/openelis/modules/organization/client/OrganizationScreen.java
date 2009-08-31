@@ -184,15 +184,15 @@ public class OrganizationScreen extends Screen implements BeforeGetMatchesHandle
         });
 
         final TextBox id = (TextBox)def.getWidget(OrgMeta.getId());
-        addScreenHandler(id, new ScreenEventHandler<String>() {
+        addScreenHandler(id, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 id.setValue(getString(manager.getOrganizationAddress()
                                              .getOrganizationId()));
             }
 
-            public void onValueChange(ValueChangeEvent<String> event) {
+            public void onValueChange(ValueChangeEvent<Integer> event) {
                 manager.getOrganizationAddress()
-                       .setOrganizationId(Integer.valueOf(event.getValue()));
+                       .setOrganizationId(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -728,6 +728,7 @@ public class OrganizationScreen extends Screen implements BeforeGetMatchesHandle
         window.setDone(consts.get("queryingComplete"));
         if (query.results == null || query.results.size() == 0) {
             window.setDone(consts.get("noRecordsFound"));
+            setState(State.DEFAULT);
         } else
             window.setDone(consts.get("queryingComplete"));
         query.model = new ArrayList<TableDataRow>();

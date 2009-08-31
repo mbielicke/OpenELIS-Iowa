@@ -230,10 +230,10 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             }
         });
         
-        final CalendarLookUp collectedTime = (CalendarLookUp)def.getWidget(Meta.SAMPLE.getCollectionTime());
+        final TextBox collectedTime = (TextBox)def.getWidget(Meta.SAMPLE.getCollectionTime());
         addScreenHandler(collectedTime, new ScreenEventHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
-                collectedTime.setValue(manager.getSample().getCollectionTime());
+                collectedTime.setValue(getString(manager.getSample().getCollectionTime()));
             }
 
             public void onValueChange(ValueChangeEvent<Datetime> event) {
@@ -535,7 +535,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                billTo.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
+                billTo.enable(EnumSet.of(State.ADD, State.UPDATE)
                                    .contains(event.getState()));
                 billTo.setQueryMode(event.getState() == State.QUERY);
             }
@@ -812,7 +812,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
         
         sampleItemTab.addActionHandler(new ActionHandler<SampleItemTab.Action>(){
             public void onAction(ActionEvent<SampleItemTab.Action> event) {
-                if(event.getAction() == SampleItemTab.Action.CHANGED){
+                if(state != State.QUERY && event.getAction() == SampleItemTab.Action.CHANGED){
                     TreeDataItem selected = itemsTree.getSelection();
                     int selectedIndex = itemsTree.getSelectedIndex();
                     
@@ -831,7 +831,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
         
         analysisTab.addActionHandler(new ActionHandler<AnalysisTab.Action>(){
             public void onAction(ActionEvent<AnalysisTab.Action> event) {
-                if(event.getAction() == AnalysisTab.Action.CHANGED){
+                if(state != State.QUERY && event.getAction() == AnalysisTab.Action.CHANGED){
                     TreeDataItem selected = itemsTree.getSelection();
                     int selectedIndex = itemsTree.getSelectedIndex();
                     
@@ -994,6 +994,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
         //default the form
         try{
             ((SampleEnvironmentalManager)manager.getDomainManager()).getEnvironmental().setIsHazardous("N");
+            
         }catch(Exception e){
             Window.alert(e.getMessage());
             return;
@@ -1185,6 +1186,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
         window.setDone(consts.get("queryingComplete"));
         if (query.results == null || query.results.size() == 0) {
             window.setDone(consts.get("noRecordsFound"));
+            setState(State.DEFAULT);
         } else
             window.setDone(consts.get("queryingComplete"));
         query.model = new ArrayList<TableDataRow>();
@@ -1309,6 +1311,8 @@ public class EnvironmentalSampleLoginScreen extends Screen {
         
         SampleItemDO siDO = new SampleItemDO();
         siDO.setItemSequence(nextItemSequence);
+        siDO.setContainer("");
+        siDO.setTypeOfSample("");
         
         try{
             
@@ -1326,7 +1330,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
     
     public void onAddTestButtonClick() {
         TreeDataItem newRow = itemsTree.createTreeItem("analysis");
-        newRow.cells.get(0).value = "TEST";
+        newRow.cells.get(0).value = "";
         
         TreeDataItem selectedRow = itemsTree.getRow(itemsTree.getSelectedIndex());
         
@@ -1338,7 +1342,8 @@ public class EnvironmentalSampleLoginScreen extends Screen {
         int sampleItemIndex = sampleItemData.sampleItemManager.getIndex(itemDO);
         
         AnalysisTestDO aDO = new AnalysisTestDO();
-        
+        aDO.test.setName("");
+        aDO.test.setMethodName("");
         
         try{
             SampleDataBundle data = new SampleDataBundle(sampleItemData.sampleItemManager, itemDO,
@@ -1353,7 +1358,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
         if (!selectedRow.open)
             selectedRow.toggle();
         
-        itemsTree.refresh(true);
+        //itemsTree.refreshRow(selectedRow);
     }
     
     public void onRemoveRowButtonClick() {/*

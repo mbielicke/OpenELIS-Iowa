@@ -155,7 +155,7 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
             }
         });
 
-        final AutoComplete<Integer> sectionId = (AutoComplete)def.getWidget(meta.SAMPLE_ITEM.ANALYSIS.getSectionId());
+        final AutoComplete<Integer> sectionId = (AutoComplete)def.getWidget(meta.SAMPLE_ITEM.ANALYSIS.SECTION.getName());
         addScreenHandler(sectionId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 sectionId.setSelection(analysis.getSectionId(), analysis.getSection());
