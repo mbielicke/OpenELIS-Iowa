@@ -6,7 +6,5 @@ import org.openelis.manager.NoteManager;
 
 @Remote
 public interface NoteManagerRemote {
-    public NoteManager update(NoteManager man) throws Exception;
-    public NoteManager add(NoteManager man) throws Exception;
     public NoteManager fetch(Integer referenceTableId, Integer referenceId) throws Exception;
 }

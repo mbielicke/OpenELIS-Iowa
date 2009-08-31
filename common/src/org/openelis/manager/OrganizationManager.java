@@ -88,7 +88,7 @@ public class OrganizationManager implements RPC, HasNotesInt {
     //getters/setters
     public NoteManager getNotes() throws Exception {
         if(notes == null){
-            if(organizationAddress.getOrganizationId() != null){
+            if(organizationAddress.getOrganizationId() != null && organizationReferenceTable != null){
                 try{
                     notes = NoteManager.findByRefTableRefId(organizationReferenceTable, organizationAddress.getOrganizationId());
                     

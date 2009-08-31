@@ -38,6 +38,8 @@ public class SampleItemManager implements RPC {
     protected Integer                           sampleId;
     protected ArrayList<SampleItemListItem>                   items;
     protected ArrayList<SampleItemListItem>                   deletedList;
+    
+    protected Integer sampleItemReferenceTableId;
 
     protected transient static SampleItemManagerProxy proxy;
 
@@ -76,6 +78,14 @@ public class SampleItemManager implements RPC {
         this.sampleId = sampleId;
     }
     
+    public Integer getSampleItemReferenceTableId() {
+        return sampleItemReferenceTableId;
+    }
+
+    public void setSampleItemReferenceTableId(Integer sampleItemReferenceTableId) {
+        this.sampleItemReferenceTableId = sampleItemReferenceTableId;
+    }
+    
     // sample item
     public SampleItemDO getSampleItemAt(int i) {
         return getItem(i).sampleItem;
@@ -110,9 +120,9 @@ public class SampleItemManager implements RPC {
         SampleItemListItem item = getItem(i);
 
         if (item.storage == null) {
-            if(item.sampleItem != null && item.sampleItem.getId() != null){
+            if(item.sampleItem != null && item.sampleItem.getId() != null && sampleItemReferenceTableId != null){
                 try{
-                    item.storage = StorageManager.findBySampleItemId(item.sampleItem.getId());
+                    item.storage = StorageManager.findByRefTableRefId(sampleItemReferenceTableId, item.sampleItem.getId());
                 }catch(NotFoundException e){
                     //ignore
                 }catch(Exception e){
@@ -125,7 +135,6 @@ public class SampleItemManager implements RPC {
             item.storage = StorageManager.getInstance();
     
         return item.storage;
-
     }
 
     public void setStorageAt(StorageManager storage, int i) {
@@ -204,5 +213,5 @@ public class SampleItemManager implements RPC {
 
     SampleItemListItem getDeletedAt(int i) {
         return deletedList.get(i);
-    }
+    }    
 }

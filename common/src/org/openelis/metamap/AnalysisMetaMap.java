@@ -34,15 +34,17 @@ public class AnalysisMetaMap extends AnalysisMeta implements MetaMap {
     public AnalysisMetaMap(){
         super("analysis.");
         SECTION = new SectionMeta();
+        TEST = new SampleTestMetaMap();
     }
     
     public AnalysisMetaMap(String path){
         super(path);
-        SECTION = new SectionMeta();
+        SECTION = new SectionMeta(path+"section.");
+        TEST = new SampleTestMetaMap(path+"test.");
     }
     
-    public SampleTestMetaMap TEST = new SampleTestMetaMap("t.");
-    public SectionMeta SECTION = new SectionMeta("s.");
+    public SampleTestMetaMap TEST;
+    public SectionMeta SECTION;
     
     public SampleTestMetaMap getTest(){
         return TEST;
@@ -53,9 +55,9 @@ public class AnalysisMetaMap extends AnalysisMeta implements MetaMap {
     }
     
     public boolean hasColumn(String name){
-        if(name.startsWith("t."))
+        if(name.startsWith(path+"test."))
             return TEST.hasColumn(name);
-        else if(name.startsWith("s."))
+        else if(name.startsWith(path+"section."))
             return SECTION.hasColumn(name);  
         return super.hasColumn(name);
     }

@@ -49,20 +49,8 @@ public class StorageLocationAutoDO implements RPC {
                                  String storageUnitDescription) {
         setId(id);
         setName(name);
-
-        // build the storage location string
-        String storageLocation = "";
-        if (parentStorageLocName != null)
-            storageLocation += parentStorageLocName.trim() + ", "
-                               + storageUnitDescription.trim()
-                               + " "
-                               + location.trim();
-        else
-            storageLocation += storageUnitDescription.trim() + " "
-                               + location.trim();
-
         setLocationId(locationId);
-        setLocation(storageLocation);
+        setLocation(DataBaseUtil.formatStorageLocation(name, location, storageUnitDescription, parentStorageLocName));
     }
 
     public StorageLocationAutoDO(Integer id,
@@ -72,19 +60,7 @@ public class StorageLocationAutoDO implements RPC {
                                  String storageUnitDescription) {
         setId(id);
         setName(name);
-
-        // build the storage location string
-        String storageLocation = "";
-        if (parentStorageLocName != null)
-            storageLocation += parentStorageLocName.trim() + ", "
-                               + storageUnitDescription.trim()
-                               + " "
-                               + location.trim();
-        else
-            storageLocation += storageUnitDescription.trim() + " "
-                               + location.trim();
-
-        setLocation(storageLocation);
+        setLocation(DataBaseUtil.formatStorageLocation(name, location, storageUnitDescription, parentStorageLocName));
     }
 
     // with qty on hand
@@ -96,19 +72,7 @@ public class StorageLocationAutoDO implements RPC {
                                  Integer qtyOnHand) {
         setId(id);
         setName(name);
-
-        // build the storage location string
-        String storageLocation = "";
-        if (parentStorageLocName != null)
-            storageLocation += parentStorageLocName.trim() + ", "
-                               + storageUnitDescription.trim()
-                               + " "
-                               + location.trim();
-        else
-            storageLocation += storageUnitDescription.trim() + " "
-                               + location.trim();
-
-        setLocation(storageLocation);
+        setLocation(DataBaseUtil.formatStorageLocation(name, location, storageUnitDescription, parentStorageLocName));
         setQtyOnHand(qtyOnHand);
     }
 
@@ -123,20 +87,8 @@ public class StorageLocationAutoDO implements RPC {
                                  String lotNum) {
         setId(id);
         setName(name);
-
-        // build the storage location string
-        String storageLocation = "";
-        if (parentStorageLocName != null)
-            storageLocation += parentStorageLocName.trim() + ", "
-                               + storageUnitDescription.trim()
-                               + " "
-                               + location.trim();
-        else
-            storageLocation += storageUnitDescription.trim() + " "
-                               + location.trim();
-
         setLocationId(locationId);
-        setLocation(storageLocation);
+        setLocation(DataBaseUtil.formatStorageLocation(name, location, storageUnitDescription, parentStorageLocName));
         setQtyOnHand(qtyOnHand);
         setLotNum(lotNum);
     }

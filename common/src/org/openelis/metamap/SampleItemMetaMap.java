@@ -35,7 +35,7 @@ public class SampleItemMetaMap extends SampleItemMeta implements MetaMap {
     public SampleItemMetaMap(){
         super("sampleItem.");
         PARENT_SAMPLE_ITEM = new SampleItemMetaMap("parentStorageItem.");
-        ANALYSIS = new AnalysisMetaMap("a.");
+        ANALYSIS = new AnalysisMetaMap("analysis.");
     }
     
     public SampleItemMetaMap(String path){
@@ -44,7 +44,7 @@ public class SampleItemMetaMap extends SampleItemMeta implements MetaMap {
     
     public SampleItemMetaMap(String path, boolean parent){
         super(path);
-        ANALYSIS = new AnalysisMetaMap("a.");
+        ANALYSIS = new AnalysisMetaMap("analysis.");
         this.parent = parent;
         if(!parent)
             PARENT_SAMPLE_ITEM = new SampleItemMetaMap(path+"parentSampleItem.", true);
@@ -65,7 +65,7 @@ public class SampleItemMetaMap extends SampleItemMeta implements MetaMap {
     public boolean hasColumn(String name){
         if(name.startsWith(path+"parentSampleItem."))
             return PARENT_SAMPLE_ITEM.hasColumn(name);  
-        if(name.startsWith(path+"a."))
+        if(name.startsWith("analysis."))
             return ANALYSIS.hasColumn(name);
         return super.hasColumn(name);
     }

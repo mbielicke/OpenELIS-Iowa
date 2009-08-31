@@ -32,17 +32,17 @@ public class SampleMetaMap extends SampleMeta implements MetaMap {
     
     public SampleMetaMap() {
         super("sample.");
-        SAMPLE_ITEM = new SampleItemMetaMap(path+"sampleItem.");
-        SAMPLE_ORGANIZATION = new SampleOrganizationMetaMap(path+"sampleOrganization.");
-        SAMPLE_PROJECT = new SampleProjectMetaMap(path+"sampleProject.");
+        SAMPLE_ITEM = new SampleItemMetaMap("sampleItem.");
+        SAMPLE_ORGANIZATION = new SampleOrganizationMetaMap("sampleOrganization.");
+        SAMPLE_PROJECT = new SampleProjectMetaMap("sampleProject.");
     }
     
     public SampleMetaMap(String path) {
         super(path);
         
-        SAMPLE_ITEM = new SampleItemMetaMap(path+"sampleItem.");
-        SAMPLE_ORGANIZATION = new SampleOrganizationMetaMap(path+"sampleOrganization.");
-        SAMPLE_PROJECT = new SampleProjectMetaMap(path+"sampleProject.");
+        SAMPLE_ITEM = new SampleItemMetaMap("sampleItem.");
+        SAMPLE_ORGANIZATION = new SampleOrganizationMetaMap("sampleOrganization.");
+        SAMPLE_PROJECT = new SampleProjectMetaMap("sampleProject.");
     }
     
     public SampleItemMetaMap SAMPLE_ITEM;
@@ -70,9 +70,9 @@ public class SampleMetaMap extends SampleMeta implements MetaMap {
     public boolean hasColumn(String columnName) {
         if(columnName.startsWith(path+"sampleItem."))
             return SAMPLE_ITEM.hasColumn(columnName);
-        if(columnName.startsWith(path+"sampleOrganization."))
+        if(columnName.startsWith("sampleOrganization."))
             return SAMPLE_ORGANIZATION.hasColumn(columnName);
-        if(columnName.startsWith(path+"sampleProject."))
+        if(columnName.startsWith("sampleProject."))
             return SAMPLE_PROJECT.hasColumn(columnName);
         return super.hasColumn(columnName);
     }      
