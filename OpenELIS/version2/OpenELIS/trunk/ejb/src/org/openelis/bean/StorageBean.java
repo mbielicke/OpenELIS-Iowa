@@ -35,67 +35,60 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
-import org.openelis.domain.NoteDO;
-import org.openelis.entity.Note;
+import org.openelis.domain.StorageDO;
+import org.openelis.entity.Storage;
 import org.openelis.exception.NotFoundException;
-import org.openelis.gwt.common.Datetime;
 import org.openelis.local.LoginLocal;
-import org.openelis.local.NoteLocal;
-import org.openelis.remote.NoteRemote;
+import org.openelis.local.StorageLocal;
 
 @Stateless
 
 @SecurityDomain("openelis")
-public class NoteBean implements NoteRemote, NoteLocal {
-
+public class StorageBean implements StorageLocal{
     @PersistenceContext(name = "openelis")
     private EntityManager manager;
     
     @EJB LoginLocal login;
-    
-    public ArrayList<NoteDO> getNotes(Integer refTableId, Integer refId) throws Exception {
+
+    public void add(StorageDO storageDO) throws Exception {
+        manager.setFlushMode(FlushModeType.COMMIT);
         
-        Query query = manager.createNamedQuery("Note.Notes");
+        Storage storage = new Storage();
+        
+        storage.setCheckin(storageDO.getCheckin());
+        storage.setCheckout(storageDO.getCheckout());
+        storage.setReferenceId(storageDO.getReferenceId());
+        storage.setReferenceTableId(storageDO.getReferenceTableId());
+        storage.setStorageLocationId(storageDO.getStorageLocationId());
+        storage.setSystemUserId(storageDO.getSystemUserId());
+        
+        manager.persist(storage);
+        storageDO.setId(storage.getId());
+    }
+
+    public void update(StorageDO storageDO) throws Exception {
+        manager.setFlushMode(FlushModeType.COMMIT);
+        
+        Storage storage = manager.find(Storage.class, storageDO.getId());
+
+        storage.setCheckin(storageDO.getCheckin());
+        storage.setCheckout(storageDO.getCheckout());
+        storage.setReferenceId(storageDO.getReferenceId());
+        storage.setReferenceTableId(storageDO.getReferenceTableId());
+        storage.setStorageLocationId(storageDO.getStorageLocationId());
+        storage.setSystemUserId(storageDO.getSystemUserId());
+    }
+    
+    public ArrayList<StorageDO> fetchByRefId(Integer refTableId, Integer refId) throws Exception {
+        Query query = manager.createNamedQuery("Storage.StorageById");
         query.setParameter("referenceTable", refTableId);
         query.setParameter("id", refId);
         
-        ArrayList<NoteDO> list = (ArrayList<NoteDO>)query.getResultList();
+        ArrayList<StorageDO> list = (ArrayList<StorageDO>)query.getResultList();
         
         if(list.size() == 0)
             throw new NotFoundException();
         
         return list;
-    }
-    
-    public void update(NoteDO noteDO) throws Exception {
-        manager.setFlushMode(FlushModeType.COMMIT);
-        
-        Note note = manager.find(Note.class, noteDO.getId());
-
-        note.setIsExternal(noteDO.getIsExternal());
-        note.setReferenceId(noteDO.getReferenceId());
-        note.setReferenceTableId(noteDO.getReferenceTable());
-        note.setSubject(noteDO.getSubject());
-        note.setSystemUserId(login.getSystemUserId());
-        note.setText(noteDO.getText());
-        note.setTimestamp(Datetime.getInstance());
-    }
-    
-    public void add(NoteDO noteDO) throws Exception {
-        manager.setFlushMode(FlushModeType.COMMIT);
-        
-        Note note = new Note();
-        
-        note.setIsExternal(noteDO.getIsExternal());
-        note.setReferenceId(noteDO.getReferenceId());
-        note.setReferenceTableId(noteDO.getReferenceTable());
-        note.setSubject(noteDO.getSubject());
-        note.setSystemUserId(login.getSystemUserId());
-        note.setText(noteDO.getText());
-        note.setTimestamp(Datetime.getInstance());
-        
-        manager.persist(note);
-        
-        noteDO.setId(note.getId());
     }
 }

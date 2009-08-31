@@ -23,30 +23,17 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.bean;
+package org.openelis.local;
 
-import javax.annotation.Resource;
-import javax.ejb.SessionContext;
-import javax.ejb.Stateless;
-import javax.ejb.TransactionManagement;
-import javax.ejb.TransactionManagementType;
-import javax.persistence.PersistenceContext;
-import javax.transaction.UserTransaction;
+import java.util.ArrayList;
 
-import org.jboss.annotation.security.SecurityDomain;
-import org.openelis.manager.NoteManager;
-import org.openelis.remote.NoteManagerRemote;
+import javax.ejb.Local;
 
-@Stateless
+import org.openelis.domain.StorageDO;
 
-@SecurityDomain("openelis")
-//@RolesAllowed("organization-select")
-public class NoteManagerBean implements NoteManagerRemote {
-
-    @PersistenceContext(name = "openelis")
-    
-    public NoteManager fetch(Integer referenceTableId, Integer referenceId) throws Exception {
-        return NoteManager.findByRefTableRefId(referenceTableId, referenceId);
-
-    }
+@Local
+public interface StorageLocal {
+    public ArrayList<StorageDO> fetchByRefId(Integer refTableId, Integer refId) throws Exception;
+    public void update(StorageDO storage) throws Exception;
+    public void add(StorageDO storage) throws Exception;
 }

@@ -38,16 +38,24 @@ import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
-@NamedQueries({@NamedQuery(name = "Storage.IdByStorageLocation", query = "select s.id from Storage s where s.storageLocationId = :id")})
+@NamedQueries({@NamedQuery(name = "Storage.IdByStorageLocation", query = "select s.id from Storage s where s.storageLocationId = :id"),
+               @NamedQuery(name = "Storage.StorageById", query = "select new org.openelis.domain.StorageDO(s.id, s.referenceId, s.referenceTableId, " +
+                                        "s.storageLocationId, s.checkin, s.checkout, s.systemUserId, childLoc.name, childLoc.location, " +
+                                        " parentLoc.name, childLoc.storageUnit.description) from Storage s left join s.storageLocation childLoc " + 
+                                        " left join childLoc.parentStorageLocation parentLoc where s.referenceTableId = :referenceTable and " +
+               		                    " s.referenceId = :id ORDER BY s.checkout DESC")})
 
 @Entity
 @Table(name="storage")
@@ -72,8 +80,14 @@ public class Storage implements Auditable, Cloneable {
   private Date checkin;             
 
   @Column(name="checkout")
-  private Date checkout;             
-
+  private Date checkout;    
+  
+  @Column(name="system_user_id")
+  private Integer systemUserId;
+  
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "storage_location_id", insertable = false, updatable = false)
+  private StorageLocation storageLocation;
 
   @Transient
   private Storage original;
@@ -136,6 +150,15 @@ public class Storage implements Auditable, Cloneable {
        (checkout != null && !checkout.equals(this.checkout)))
       this.checkout = checkout.getDate();
   }
+  
+  public Integer getSystemUserId() {
+      return systemUserId;
+    }
+    public void setSystemUserId(Integer systemUserId) {
+      if((systemUserId == null && this.systemUserId != null) || 
+         (systemUserId != null && !systemUserId.equals(this.systemUserId)))
+        this.systemUserId = systemUserId;
+    }
 
   
   public void setClone() {
@@ -160,6 +183,8 @@ public class Storage implements Auditable, Cloneable {
       AuditUtil.getChangeXML(checkin,original.checkin,doc,"checkin");
 
       AuditUtil.getChangeXML(checkout,original.checkout,doc,"checkout");
+      
+      AuditUtil.getChangeXML(systemUserId,original.systemUserId,doc,"system_user_id");
 
       if(root.hasChildNodes())
         return XMLUtil.toString(doc);
@@ -172,5 +197,11 @@ public class Storage implements Auditable, Cloneable {
   public String getTableName() {
     return "storage";
   }
+public StorageLocation getStorageLocation() {
+    return storageLocation;
+}
+public void setStorageLocation(StorageLocation storageLocation) {
+    this.storageLocation = storageLocation;
+}
   
 }   

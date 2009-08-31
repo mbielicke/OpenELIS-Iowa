@@ -322,4 +322,16 @@ public Collection<SampleItem> getSampleItem() {
 public void setSampleItem(Collection<SampleItem> sampleItem) {
     this.sampleItem = sampleItem;
 }
+public Collection<SampleOrganization> getSampleOrganization() {
+    return sampleOrganization;
+}
+public void setSampleOrganization(Collection<SampleOrganization> sampleOrganization) {
+    this.sampleOrganization = sampleOrganization;
+}
+public Collection<SampleProject> getSampleProject() {
+    return sampleProject;
+}
+public void setSampleProject(Collection<SampleProject> sampleProject) {
+    this.sampleProject = sampleProject;
+}
 }   

@@ -29,6 +29,8 @@ package org.openelis.entity;
   * SampleItem Entity POJO for database 
   */
 
+import java.util.Collection;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -38,6 +40,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -107,6 +110,10 @@ public class SampleItem implements Auditable, Cloneable {
   @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "sample_item_id", insertable = false, updatable = false)
   private Sample parentSampleItem;
+  
+  @OneToMany(fetch = FetchType.LAZY)
+  @JoinColumn(name = "sample_item_id")
+  private Collection<Analysis> analysis;
 
   @Transient
   private SampleItem original;
@@ -267,6 +274,12 @@ public Sample getSampleItem() {
 }
 public void setSampleItem(Sample sampleItem) {
     this.parentSampleItem = sampleItem;
+}
+public Collection<Analysis> getAnalysis() {
+    return analysis;
+}
+public void setAnalysis(Collection<Analysis> analysis) {
+    this.analysis = analysis;
 }
   
 }   
