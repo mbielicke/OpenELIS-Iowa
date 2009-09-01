@@ -28,6 +28,7 @@ package org.openelis.metamap;
 import org.openelis.gwt.common.MetaMap;
 import org.openelis.meta.AddressMeta;
 import org.openelis.meta.SampleEnvironmentalMeta;
+import org.openelis.meta.StorageMeta;
 
 public class SampleEnvironmentalMetaMap extends SampleEnvironmentalMeta implements MetaMap{
 
@@ -42,7 +43,7 @@ public class SampleEnvironmentalMetaMap extends SampleEnvironmentalMeta implemen
     public SampleMetaMap SAMPLE = new SampleMetaMap("sample.");
     
     public AddressMeta ADDRESS = new AddressMeta("address.");
-
+    
     public SampleMetaMap getSample() {
         return SAMPLE;
     }
