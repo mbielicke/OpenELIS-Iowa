@@ -26,7 +26,6 @@ import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameDO;
 import org.openelis.domain.OrganizationAddressDO;
 import org.openelis.domain.OrganizationAutoDO;
-import org.openelis.domain.ProjectDO;
 import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.SecurityModule;
@@ -511,8 +510,8 @@ public class OrganizationScreen extends Screen implements BeforeGetMatchesHandle
 
     protected void query() {
         manager = OrganizationManager.getInstance();
-        DataChangeEvent.fire(this);
         setState(Screen.State.QUERY);
+        DataChangeEvent.fire(this);
         window.setDone(consts.get("enterFieldsToQuery"));
     }
 
@@ -528,8 +527,8 @@ public class OrganizationScreen extends Screen implements BeforeGetMatchesHandle
         manager = OrganizationManager.getInstance();
         manager.getOrganizationAddress().setIsActive("Y");
 
-        DataChangeEvent.fire(this);
         setState(Screen.State.ADD);
+        DataChangeEvent.fire(this);
         window.setDone(consts.get("enterInformationPressCommit"));
     }
 
@@ -539,9 +538,9 @@ public class OrganizationScreen extends Screen implements BeforeGetMatchesHandle
         try {
             manager = manager.fetchForUpdate();
 
-            DataChangeEvent.fire(this);
             window.clearStatus();
             setState(State.UPDATE);
+            DataChangeEvent.fire(this);
 
         } catch (EntityLockedException e) {
             window.clearStatus();
@@ -585,9 +584,9 @@ public class OrganizationScreen extends Screen implements BeforeGetMatchesHandle
             try {
                 manager = manager.abort();
 
-                DataChangeEvent.fire(this);
                 clearErrors();
                 setState(State.DISPLAY);
+                DataChangeEvent.fire(this);
                 
                 window.clearStatus();
             } catch (Exception e) {
@@ -597,15 +596,15 @@ public class OrganizationScreen extends Screen implements BeforeGetMatchesHandle
 
         } else if (state == State.ADD) {
             manager = OrganizationManager.getInstance();
-            DataChangeEvent.fire(this);
             clearErrors();
             setState(State.DEFAULT);
+            DataChangeEvent.fire(this);
             window.setDone(consts.get("addAborted"));
         } else if (state == State.QUERY) {
             manager = OrganizationManager.getInstance();
-            DataChangeEvent.fire(this);
-            setState(State.DEFAULT);
             clearErrors();
+            setState(State.DEFAULT);
+            DataChangeEvent.fire(this);
             window.setDone(consts.get("queryAborted"));
         }
     }
@@ -629,9 +628,8 @@ public class OrganizationScreen extends Screen implements BeforeGetMatchesHandle
             return;
         }
 
-        DataChangeEvent.fire(this);
-
         setState(Screen.State.DISPLAY);
+        DataChangeEvent.fire(this);
         window.clearStatus();
     }
 
@@ -661,8 +659,9 @@ public class OrganizationScreen extends Screen implements BeforeGetMatchesHandle
         try {
             manager = manager.add();
 
-            DataChangeEvent.fire(this);
+            
             setState(Screen.State.DISPLAY);
+            DataChangeEvent.fire(this);
             window.clearStatus();
         } catch (ValidationErrorsList e) {
             showErrors(e);
@@ -678,8 +677,8 @@ public class OrganizationScreen extends Screen implements BeforeGetMatchesHandle
         try {
             manager = manager.update();
 
-            DataChangeEvent.fire(this);
             setState(Screen.State.DISPLAY);
+            DataChangeEvent.fire(this);
             window.clearStatus();
         } catch (ValidationErrorsList e) {
             showErrors(e);

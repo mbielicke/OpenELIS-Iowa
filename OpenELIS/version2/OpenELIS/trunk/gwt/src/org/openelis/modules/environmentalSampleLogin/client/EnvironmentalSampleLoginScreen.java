@@ -171,7 +171,6 @@ public class EnvironmentalSampleLoginScreen extends Screen {
         
         //Initialize Screen
         setState(State.DEFAULT);
-        
         DataChangeEvent.fire(this);
     }
     
@@ -350,7 +349,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
         });
         
         final TextBox collectorPhone = (TextBox)def.getWidget(Meta.getCollectorPhone());
-        addScreenHandler(collector, new ScreenEventHandler<String>() {
+        addScreenHandler(collectorPhone, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 collectorPhone.setValue(getEnvManager().getEnvironmental().getCollectorPhone());
             }
@@ -974,8 +973,8 @@ public class EnvironmentalSampleLoginScreen extends Screen {
         manager = SampleManager.getInstance();
         manager.getSample().setDomain(SampleManager.ENVIRONMENTAL_DOMAIN_FLAG);
         
-        DataChangeEvent.fire(this);
         setState(Screen.State.QUERY);
+        DataChangeEvent.fire(this);
         window.setDone(consts.get("enterFieldsToQuery"));
     }
 
@@ -993,15 +992,17 @@ public class EnvironmentalSampleLoginScreen extends Screen {
         
         //default the form
         try{
+            manager.getSample().setRevision(0);
+            manager.getSample().setStatusId(DictionaryCache.getIdFromSystemName("sample_initiated"));
+            manager.getSample().setEnteredDate(Datetime.getInstance(Datetime.YEAR, Datetime.DAY));
+            manager.getSample().setReceivedDate(Datetime.getInstance(Datetime.YEAR, Datetime.DAY));
+            manager.getSample().setNextItemSequence(0);
             ((SampleEnvironmentalManager)manager.getDomainManager()).getEnvironmental().setIsHazardous("N");
             
         }catch(Exception e){
             Window.alert(e.getMessage());
             return;
         }
-        
-        manager.getSample().setStatusId(DictionaryCache.getIdFromSystemName("sample_initiated"));
-        manager.getSample().setNextItemSequence(0);
         
         setState(Screen.State.ADD);
         DataChangeEvent.fire(this);
@@ -1060,9 +1061,9 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             try {
                 manager = manager.abort();
 
-                DataChangeEvent.fire(this);
                 clearErrors();
                 setState(State.DISPLAY);
+                DataChangeEvent.fire(this);
                 
                 window.clearStatus();
             } catch (Exception e) {
@@ -1074,17 +1075,19 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             manager = SampleManager.getInstance();
             manager.getSample().setDomain(SampleManager.ENVIRONMENTAL_DOMAIN_FLAG);
             
-            DataChangeEvent.fire(this);
             clearErrors();
             setState(State.DEFAULT);
+            DataChangeEvent.fire(this);
+            
             window.setDone(consts.get("addAborted"));
         } else if (state == State.QUERY) {
             manager = SampleManager.getInstance();
             manager.getSample().setDomain(SampleManager.ENVIRONMENTAL_DOMAIN_FLAG);
 
-            DataChangeEvent.fire(this);
-            setState(State.DEFAULT);
             clearErrors();
+            setState(State.DEFAULT);
+            DataChangeEvent.fire(this);
+            
             window.setDone(consts.get("queryAborted"));
         }
     }
@@ -1103,9 +1106,8 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             return;
         }
 
-        DataChangeEvent.fire(this);
-
         setState(Screen.State.DISPLAY);
+        DataChangeEvent.fire(this);
         window.clearStatus();
     }
     
@@ -1125,8 +1127,8 @@ public class EnvironmentalSampleLoginScreen extends Screen {
         try {
             manager = manager.add();
 
-            DataChangeEvent.fire(this);
             setState(Screen.State.DISPLAY);
+            DataChangeEvent.fire(this);
             window.clearStatus();
         } catch (ValidationErrorsList e) {
             showErrors(e);
@@ -1142,8 +1144,8 @@ public class EnvironmentalSampleLoginScreen extends Screen {
         try {
             manager = manager.update();
 
-            DataChangeEvent.fire(this);
             setState(Screen.State.DISPLAY);
+            DataChangeEvent.fire(this);
             window.clearStatus();
         } catch (ValidationErrorsList e) {
             showErrors(e);
@@ -1185,8 +1187,8 @@ public class EnvironmentalSampleLoginScreen extends Screen {
     private void loadQueryPage(SampleEnvQuery query) {
         window.setDone(consts.get("queryingComplete"));
         if (query.results == null || query.results.size() == 0) {
-            window.setDone(consts.get("noRecordsFound"));
             setState(State.DEFAULT);
+            window.setDone(consts.get("noRecordsFound"));
         } else
             window.setDone(consts.get("queryingComplete"));
         query.model = new ArrayList<TableDataRow>();
@@ -1311,8 +1313,8 @@ public class EnvironmentalSampleLoginScreen extends Screen {
         
         SampleItemDO siDO = new SampleItemDO();
         siDO.setItemSequence(nextItemSequence);
-        siDO.setContainer("");
-        siDO.setTypeOfSample("");
+        siDO.setContainer("<>");
+        siDO.setTypeOfSample("<>");
         
         try{
             
@@ -1330,7 +1332,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
     
     public void onAddTestButtonClick() {
         TreeDataItem newRow = itemsTree.createTreeItem("analysis");
-        newRow.cells.get(0).value = "";
+        newRow.cells.get(0).value = "<>";
         
         TreeDataItem selectedRow = itemsTree.getRow(itemsTree.getSelectedIndex());
         
