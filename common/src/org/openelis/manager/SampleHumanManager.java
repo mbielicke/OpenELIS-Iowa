@@ -115,5 +115,11 @@ public class SampleHumanManager implements RPC, SampleDomainInt {
         return human;
     }
     
-  
+    public SampleHumanManager add() throws Exception {
+        return null;
+    }
+    
+    public SampleHumanManager update() throws Exception {
+        return null;
+    }
 }
