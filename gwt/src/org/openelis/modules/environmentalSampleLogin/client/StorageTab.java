@@ -69,7 +69,7 @@ public class StorageTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                storageTable.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                storageTable.enable(EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));
                 storageTable.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -152,7 +152,7 @@ public class StorageTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                removeStorageButton.enable(EnumSet.of(State.ADD, state.UPDATE).contains(event.getState()));
+                removeStorageButton.enable(EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()));
             }
         });
 
@@ -190,6 +190,7 @@ public class StorageTab extends Screen {
     
     public void setData(SampleDataBundle data) {
         this.data = data;
+        manager = null;
         loaded = false;
     }
 
