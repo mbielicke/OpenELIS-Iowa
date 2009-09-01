@@ -34,10 +34,8 @@ public interface AddressLocal {
 	
     public AddressDO getAddress(Integer addressId);
     
-//	commit a change to address, or insert a new address
-	public Integer updateAddress(AddressDO addressDO);
-	
-	//delete an addressDO
-	public void deleteAddress(AddressDO addressDO);
+	public void add(AddressDO addressDO);
+	public void update(AddressDO addressDO);
+	public void delete(AddressDO addressDO);
 
 }

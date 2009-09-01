@@ -33,12 +33,20 @@ import org.openelis.local.SampleEnvironmentalLocal;
 public class SampleEnvironmentalManagerProxy {
     public SampleEnvironmentalManager add(SampleEnvironmentalManager man) throws Exception {
         SampleEnvironmentalLocal el = getSampleEnvLocal();
-        return null;
+        
+        man.getEnvironmental().setSampleId(man.getSampleId());
+        el.add(man.getEnvironmental());
+        
+        return man;
     }
 
     public SampleEnvironmentalManager update(SampleEnvironmentalManager man) throws Exception {
         SampleEnvironmentalLocal el = getSampleEnvLocal();
-        return null;
+        
+        man.getEnvironmental().setSampleId(man.getSampleId());
+        el.update(man.getEnvironmental());
+        
+        return man;
     }
     
     public SampleEnvironmentalManager fetch(Integer sampleId) throws Exception {

@@ -214,13 +214,17 @@ public class ProviderBean implements ProviderRemote, ProviderLocal {
                                 
                 if(provAddDO.getDelete() && provAddDO.getId() != null){
                     manager.remove(provAdd);                     
-                    addressBean.deleteAddress(provAddDO.getAddressDO());                    
+                    addressBean.delete(provAddDO.getAddressDO());                    
                 }else if(!provAddDO.getDelete()){   
-                    Integer addressId = addressBean.updateAddress(provAddDO.getAddressDO());                                                                                      
+                    if(provAddDO.getAddressDO() == null)
+                        addressBean.add(provAddDO.getAddressDO());
+                    else
+                        addressBean.update(provAddDO.getAddressDO());
+                                                                                     
                     provAdd.setExternalId(provAddDO.getExternalId());
                     provAdd.setLocation(provAddDO.getLocation());
                     provAdd.setProviderId(provider.getId());
-                    provAdd.setAddressId(addressId);
+                    provAdd.setAddressId(provAddDO.getAddressDO().getId());
                     
                     if(provAdd.getId()==null){
                         manager.persist(provAdd);                          
