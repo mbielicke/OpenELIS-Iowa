@@ -39,65 +39,67 @@ import org.openelis.local.AddressLocal;
 import org.openelis.remote.AddressRemote;
 
 @Stateless
-public class AddressBean implements AddressRemote, AddressLocal{
+public class AddressBean implements AddressRemote, AddressLocal {
 
     @PersistenceContext(unitName = "openelis")
     EntityManager manager;
-    
-	public Integer updateAddress(AddressDO addressDO) {
-		 manager.setFlushMode(FlushModeType.COMMIT);
 
-		 Address address = null;
-		 
-		 if (addressDO.getId() == null)
-         	address = new Address();
-         else
-             address = manager.find(Address.class, addressDO.getId());
-		 
-		 address.setCellPhone(addressDO.getCellPhone());
-		 address.setCity(addressDO.getCity());
-		 address.setCountry(addressDO.getCountry());
-		 address.setEmail(addressDO.getEmail());
-		 address.setFaxPhone(addressDO.getFaxPhone());
-		 address.setHomePhone(addressDO.getHomePhone());
-		 address.setMultipleUnit(addressDO.getMultipleUnit());
-		 address.setState(addressDO.getState());
-		 address.setStreetAddress(addressDO.getStreetAddress());
-		 address.setWorkPhone(addressDO.getWorkPhone());
-		 address.setZipCode(addressDO.getZipCode());
-		 
-		 //if the address id is null then we need to insert the record
-		 if(address.getId() == null){
-			 manager.persist(address);
-		 }
+    public void add(AddressDO addressDO) {
+        manager.setFlushMode(FlushModeType.COMMIT);
 
-		return address.getId();
-	}
+        Address address = new Address();
 
-	public void deleteAddress(AddressDO addressDO) {
-		manager.setFlushMode(FlushModeType.COMMIT);
-		 
-		 Address address = null;
-		 
-		 if (addressDO.getId() == null)
-        	address = new Address();
-        else
-            address = manager.find(Address.class, addressDO.getId());
-		 
-		 if(address.getId() != null){
-			 manager.remove(address);
-		 }
-		
-	}
+        address.setCellPhone(addressDO.getCellPhone());
+        address.setCity(addressDO.getCity());
+        address.setCountry(addressDO.getCountry());
+        address.setEmail(addressDO.getEmail());
+        address.setFaxPhone(addressDO.getFaxPhone());
+        address.setHomePhone(addressDO.getHomePhone());
+        address.setMultipleUnit(addressDO.getMultipleUnit());
+        address.setState(addressDO.getState());
+        address.setStreetAddress(addressDO.getStreetAddress());
+        address.setWorkPhone(addressDO.getWorkPhone());
+        address.setZipCode(addressDO.getZipCode());
+
+        manager.persist(address);
+
+        addressDO.setId(address.getId());
+    }
+
+    public void update(AddressDO addressDO) {
+        manager.setFlushMode(FlushModeType.COMMIT);
+
+        Address address = manager.find(Address.class, addressDO.getId());
+
+        address.setCellPhone(addressDO.getCellPhone());
+        address.setCity(addressDO.getCity());
+        address.setCountry(addressDO.getCountry());
+        address.setEmail(addressDO.getEmail());
+        address.setFaxPhone(addressDO.getFaxPhone());
+        address.setHomePhone(addressDO.getHomePhone());
+        address.setMultipleUnit(addressDO.getMultipleUnit());
+        address.setState(addressDO.getState());
+        address.setStreetAddress(addressDO.getStreetAddress());
+        address.setWorkPhone(addressDO.getWorkPhone());
+        address.setZipCode(addressDO.getZipCode());
+    }
+
+    public void delete(AddressDO addressDO) {
+        manager.setFlushMode(FlushModeType.COMMIT);
+
+        Address address = manager.find(Address.class, addressDO.getId());
+
+        manager.remove(address);
+    }
 
     public AddressDO getAddress(Integer addressId) {
         Query query = manager.createNamedQuery("Address.AddressById");
         query.setParameter("id", addressId);
         List resultList = query.getResultList();
-        
-        if(resultList.size() > 0)
+
+        if (resultList.size() > 0)
             return (AddressDO)resultList.get(0);
-        
+
         return null;
     }
 

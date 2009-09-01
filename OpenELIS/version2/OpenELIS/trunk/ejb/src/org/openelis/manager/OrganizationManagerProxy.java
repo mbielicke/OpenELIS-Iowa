@@ -39,7 +39,7 @@ public class OrganizationManagerProxy {
         ol.add(man.getOrganizationAddress());
         
         orgId = man.getOrganizationAddress().getOrganizationId();
-        orgRefId = man.getOrganizationReferenceTable();
+        orgRefId = ReferenceTableCache.getReferenceTable("organization");
         
         man.getContacts().setOrganizationId(orgId);
         man.getContacts().add();
@@ -102,13 +102,11 @@ public class OrganizationManagerProxy {
     }
 
     public OrganizationManager fetchForUpdate(OrganizationManager man) throws Exception {
-        //do nothing
-        return null;
+        throw new UnsupportedOperationException();
     }
     
     public OrganizationManager abort(Integer orgId) throws Exception {
-        //do nothing
-        return null;
+        throw new UnsupportedOperationException();
     }
     
     public void validate(OrganizationManager man) throws Exception {

@@ -27,6 +27,7 @@ package org.openelis.bean;
 
 import java.util.ArrayList;
 
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
@@ -39,6 +40,7 @@ import org.openelis.domain.SampleEnvironmentalDO;
 import org.openelis.entity.SampleEnvironmental;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.rewrite.QueryData;
+import org.openelis.local.AddressLocal;
 import org.openelis.local.SampleEnvironmentalLocal;
 import org.openelis.manager.SampleManager;
 import org.openelis.metamap.SampleEnvironmentalMetaMap;
@@ -53,6 +55,8 @@ import org.openelis.utils.GetPage;
 public class SampleEnvironmentalBean implements SampleEnvironmentalRemote, SampleEnvironmentalLocal {
     @PersistenceContext(name = "openelis")
     private EntityManager manager;
+    
+    @EJB private AddressLocal addressBean;
    
     private static final SampleEnvironmentalMetaMap Meta = new SampleEnvironmentalMetaMap();
     
@@ -102,7 +106,9 @@ public class SampleEnvironmentalBean implements SampleEnvironmentalRemote, Sampl
 
         SampleEnvironmental environmental = new SampleEnvironmental();
         
-        environmental.setAddressId(envSampleDO.getAddressId());
+        addressBean.add(envSampleDO.getAddressDO());
+        
+        environmental.setAddressId(envSampleDO.getAddressDO().getId());
         environmental.setCollector(envSampleDO.getCollector());
         environmental.setCollectorPhone(envSampleDO.getCollectorPhone());
         environmental.setDescription(envSampleDO.getDescription());
@@ -120,7 +126,9 @@ public class SampleEnvironmentalBean implements SampleEnvironmentalRemote, Sampl
         
         SampleEnvironmental environmental = manager.find(SampleEnvironmental.class, envSampleDO.getId());
         
-        environmental.setAddressId(envSampleDO.getAddressId());
+        addressBean.update(envSampleDO.getAddressDO());
+        
+        environmental.setAddressId(envSampleDO.getAddressDO().getId());
         environmental.setCollector(envSampleDO.getCollector());
         environmental.setCollectorPhone(envSampleDO.getCollectorPhone());
         environmental.setDescription(envSampleDO.getDescription());

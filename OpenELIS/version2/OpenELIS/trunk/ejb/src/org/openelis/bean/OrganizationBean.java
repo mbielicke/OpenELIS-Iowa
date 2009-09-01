@@ -128,10 +128,10 @@ public class OrganizationBean implements OrganizationRemote, OrganizationLocal {
          Organization organization = new Organization();
         
         //send the address to the update address bean
-        Integer orgAddressId = addressBean.updateAddress(organizationDO.getAddressDO());
+        addressBean.add(organizationDO.getAddressDO());
         
         //update organization
-        organization.setAddressId(orgAddressId);
+        organization.setAddressId(organizationDO.getAddressDO().getId());
         
         organization.setIsActive(organizationDO.getIsActive());
         organization.setName(organizationDO.getName());
@@ -149,7 +149,7 @@ public class OrganizationBean implements OrganizationRemote, OrganizationLocal {
          Organization organization = manager.find(Organization.class, organizationDO.getOrganizationId());
 
         //send the address to the update address bean
-        addressBean.updateAddress(organizationDO.getAddressDO());
+        addressBean.update(organizationDO.getAddressDO());
         
         //update organization
         organization.setIsActive(organizationDO.getIsActive());
@@ -166,12 +166,12 @@ public class OrganizationBean implements OrganizationRemote, OrganizationLocal {
         OrganizationContact orgContact = new OrganizationContact();
     
         //send the contact address to the address bean
-        Integer contactAddressId = addressBean.updateAddress(contactDO.getAddressDO());
+        addressBean.add(contactDO.getAddressDO());
             
         orgContact.setContactTypeId(contactDO.getContactType());
         orgContact.setName(contactDO.getName());
         orgContact.setOrganizationId(contactDO.getOrganization());
-        orgContact.setAddressId(contactAddressId);
+        orgContact.setAddressId(contactDO.getAddressDO().getId());
         
         manager.persist(orgContact);
         contactDO.setId(orgContact.getId());
@@ -184,12 +184,12 @@ public class OrganizationBean implements OrganizationRemote, OrganizationLocal {
         OrganizationContact orgContact = manager.find(OrganizationContact.class, contactDO.getId());
 
         //send the contact address to the address bean
-        Integer contactAddressId = addressBean.updateAddress(contactDO.getAddressDO());
+        addressBean.update(contactDO.getAddressDO());
             
         orgContact.setContactTypeId(contactDO.getContactType());
         orgContact.setName(contactDO.getName());
         orgContact.setOrganizationId(contactDO.getOrganization());
-        orgContact.setAddressId(contactAddressId);
+        orgContact.setAddressId(contactDO.getAddressDO().getId());
         
     }
     
@@ -197,6 +197,8 @@ public class OrganizationBean implements OrganizationRemote, OrganizationLocal {
         manager.setFlushMode(FlushModeType.COMMIT);
         
         OrganizationContact orgContact = manager.find(OrganizationContact.class, contactDO.getId());
+        
+        addressBean.delete(contactDO.getAddressDO());
         
         if(orgContact != null)
             manager.remove(orgContact);

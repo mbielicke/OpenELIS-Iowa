@@ -33,11 +33,68 @@ import org.openelis.utils.ReferenceTableCache;
 
 public class SampleManagerProxy {
     public SampleManager add(SampleManager man) throws Exception {
-        return null;
+        Integer sampleId, sampleRefId, sampleInternalRefId;
+        SampleLocal sl = getSampleLocal();
+        sl.add(man.getSample());
+        
+        sampleId = man.getSample().getId();
+        sampleRefId = ReferenceTableCache.getReferenceTable("sample");
+        sampleInternalRefId = ReferenceTableCache.getReferenceTable("sample_internal_note");
+        
+        man.getDomainManager().setSampleId(sampleId);
+        man.getDomainManager().add();
+        
+        man.getSampleItems().setSampleId(sampleId);
+        man.getSampleItems().add();
+        
+        man.getOrganizations().setSampleId(sampleId);
+        man.getOrganizations().add();
+        
+        man.getProjects().setSampleId(sampleId);
+        man.getProjects().add();
+        
+        //man.getqaEvents
+        
+        man.getInternalNotes().setReferenceTableId(sampleInternalRefId);
+        man.getInternalNotes().setReferenceId(sampleId);
+        man.getInternalNotes().add();
+        
+        man.getExternalNote().setReferenceTableId(sampleRefId);
+        man.getExternalNote().setReferenceId(sampleId);
+        man.getExternalNote().add();
+        
+        return man;
     }
 
     public SampleManager update(SampleManager man) throws Exception {
-        return null;
+        Integer sampleId, sampleRefId, sampleInternalRefId;
+        SampleLocal sl = getSampleLocal();
+        sl.add(man.getSample());
+        
+        sampleId = man.getSample().getId();
+        sampleRefId = man.getSampleReferenceTableId();
+        sampleInternalRefId = man.getSampleInternalReferenceTableId();
+        
+        man.getSampleItems().setSampleId(sampleId);
+        man.getSampleItems().update();
+        
+        man.getOrganizations().setSampleId(sampleId);
+        man.getOrganizations().update();
+        
+        man.getProjects().setSampleId(sampleId);
+        man.getProjects().update();
+        
+        //man.getqaEvents
+        
+        man.getInternalNotes().setReferenceTableId(sampleInternalRefId);
+        man.getInternalNotes().setReferenceId(sampleId);
+        man.getInternalNotes().update();
+        
+        man.getExternalNote().setReferenceTableId(sampleRefId);
+        man.getExternalNote().setReferenceId(sampleId);
+        man.getExternalNote().update();
+        
+        return man;
     }
     
     public SampleManager fetch(Integer sampleId) throws Exception {
@@ -80,7 +137,6 @@ public class SampleManagerProxy {
         return sm;
     }
     
-    //FIXME not sure if we want to load the whole top form for this method
     public SampleManager fetchByAccessionNumber(Integer accessionNumber) throws Exception {
         SampleLocal sl = getSampleLocal();
         SampleDO sampleDO = sl.fetchByAccessionNumber(accessionNumber);
@@ -96,12 +152,11 @@ public class SampleManagerProxy {
     }
     
     public SampleManager fetchForUpdate(Integer sampleId) throws Exception {
-        return null;
+        throw new UnsupportedOperationException();
     }
     
     public SampleManager abort(Integer sampleId) throws Exception {
-        return null;
-    }
+        throw new UnsupportedOperationException();    }
     
     public void validate(SampleManager man) throws Exception {
         
