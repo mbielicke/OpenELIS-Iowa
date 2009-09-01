@@ -338,12 +338,8 @@ public class EditNoteScreen extends Screen implements
               noteNode.cells.get(0).value = note.getName() + " : "
                                                  + note.getDescription();
               noteNode.data = note.getText();
-              catNode.addItem(noteNode);
+              tree.addChildItem(catNode, noteNode);
           }
-          
-          tree.refresh(false);
-          //DataChangeEvent.fire(this);
-         
     }
 
     private void buildTree(TreeDataItem row, ArrayList<StandardNoteDO> noteList) {
@@ -357,11 +353,8 @@ public class EditNoteScreen extends Screen implements
                                                + noteDO.getDescription();
             treeModelItem.data = noteDO.getText();
 
-            row.addItem(treeModelItem);
+            tree.addChildItem(row, treeModelItem);
         }
-
-        tree.refresh(true);
-        //DataChangeEvent.fire(this);
     }
 
     private void buildTree() {
@@ -384,9 +377,7 @@ public class EditNoteScreen extends Screen implements
             treeList.add(treeModelItem);
         }
 
-        tree.setModel(treeList);
-        tree.refresh(false);
-        //DataChangeEvent.fire(this);
+        tree.load(treeList);
     }
 
     /*

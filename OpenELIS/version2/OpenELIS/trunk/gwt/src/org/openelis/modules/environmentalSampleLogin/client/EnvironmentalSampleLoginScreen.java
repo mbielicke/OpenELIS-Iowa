@@ -474,7 +474,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
-                TableDataRow selectedRow = project.getSelection();
+                TableDataRow selectedRow = reportTo.getSelection();
                 SampleOrganizationDO reportToOrg = null;
                 try{
                     if(selectedRow.key != null){
@@ -530,7 +530,29 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
-                //((SampleEnvironmentalManager)manager.getDomainManager()).getEnvironmental().setSamplingLocation(event.getValue());
+                TableDataRow selectedRow = billTo.getSelection();
+                SampleOrganizationDO billToOrg = null;
+                try{
+                    if(selectedRow.key != null){
+                        billToOrg = new SampleOrganizationDO();
+                        billToOrg.setOrganizationId((Integer)selectedRow.key);
+                        billToOrg.getOrganization().setName((String)selectedRow.cells.get(0).value);
+                        billToOrg.getOrganization().getAddressDO().setCity((String)selectedRow.cells.get(2).value);
+                        billToOrg.getOrganization().getAddressDO().setState((String)selectedRow.cells.get(3).value);
+                    }
+                    
+                    manager.getOrganizations().setBillTo(billToOrg);
+                    
+                    billToOrg = manager.getOrganizations().getFirstBillTo();
+                    
+                    if(billToOrg != null)
+                        billTo.setSelection(billToOrg.getId(), billToOrg.getOrganization().getName());
+                    else
+                        billTo.setSelection(null, "");
+                    
+                }catch(Exception e){
+                    Window.alert(e.getMessage());
+                }
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
