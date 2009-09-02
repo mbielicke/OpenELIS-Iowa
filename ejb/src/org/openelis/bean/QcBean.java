@@ -28,10 +28,8 @@ package org.openelis.bean;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.ejb.EJB;
-import javax.ejb.EJBs;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -44,7 +42,6 @@ import org.openelis.domain.IdNameDO;
 import org.openelis.domain.IdNameLotNumberDO;
 import org.openelis.domain.QcAnalyteDO;
 import org.openelis.domain.QcDO;
-import org.openelis.domain.SecuritySystemUserDO;
 import org.openelis.entity.Qc;
 import org.openelis.entity.QcAnalyte;
 import org.openelis.gwt.common.Datetime;
@@ -66,12 +63,9 @@ import org.openelis.utilcommon.NumericRange;
 import org.openelis.utilcommon.ParseException;
 import org.openelis.utilcommon.TiterRange;
 import org.openelis.utils.GetPage;
+import org.openelis.utils.ReferenceTableCache;
 
 @Stateless
-@EJBs( {
-        @EJB(name="ejb/SystemUser",beanInterface=SystemUserUtilLocal.class),
-        @EJB(name = "ejb/Lock", beanInterface = LockLocal.class)        
-        })
 @SecurityDomain("openelis")
 public class QcBean implements QcRemote {
 
@@ -81,8 +75,10 @@ public class QcBean implements QcRemote {
     @Resource
     private SessionContext ctx;
 
+    @EJB
     private LockLocal lockBean;
     
+    @EJB
     private SystemUserUtilLocal sysUser;    
     
     @EJB
@@ -90,10 +86,10 @@ public class QcBean implements QcRemote {
     
     private static QcMetaMap QcMeta = new QcMetaMap(); 
     
-    @PostConstruct
-    private void init() {
-        lockBean = (LockLocal)ctx.lookup("ejb/Lock");
-        sysUser = (SystemUserUtilLocal)ctx.lookup("ejb/SystemUser");
+    private static Integer qcRefTableId;
+    
+    public QcBean() {
+        qcRefTableId = ReferenceTableCache.getReferenceTable("system_variable");
     }
     
     public QcDO getQc(Integer qcId) {
@@ -141,42 +137,14 @@ public class QcBean implements QcRemote {
         return qcAnaDOList;
     }
 
-    public QcDO getQcAndLock(Integer qcId, String session) throws Exception {
-        Query query; 
-        
-        query = manager.createNamedQuery("getTableId");
-        query.setParameter("name", "qc");
-        lockBean.getLock((Integer)query.getSingleResult(), qcId);
+    public QcDO getQcAndLock(Integer qcId, String session) throws Exception {        
+        lockBean.getLock(qcRefTableId, qcId);
         return getQc(qcId);
     }
 
-    public QcDO getQcAndUnlock(Integer qcId, String session) {
-        Query unlockQuery; 
-        
-        unlockQuery = manager.createNamedQuery("getTableId");
-        unlockQuery.setParameter("name", "qc");
-        lockBean.giveUpLock((Integer)unlockQuery.getSingleResult(), qcId);
+    public QcDO getQcAndUnlock(Integer qcId, String session) {        
+        lockBean.giveUpLock(qcRefTableId, qcId);
         return getQc(qcId);
-    }
-
-    public List<SecuritySystemUserDO> preparedByAutocompleteByName(String loginName,
-                                                              int numResult) {
-        SecuritySystemUserDO secUserDO;
-        SystemUserDO userDO;
-        List<SystemUserDO> userDOList;
-        List<SecuritySystemUserDO> secUserDOList;
-                        
-        userDOList = sysUser.systemUserAutocompleteByLoginName(loginName,numResult);
-        secUserDOList = new ArrayList<SecuritySystemUserDO>();
-        for(int i=0; i < userDOList.size(); i++) {
-            userDO = userDOList.get(i);
-            secUserDO = new SecuritySystemUserDO(userDO.getId(),userDO.getLoginName(),
-                                                 userDO.getLastName(),userDO.getFirstName(),
-                                                 userDO.getInitials(),userDO.getIsEmployee(),
-                                                 userDO.getIsActive());
-            secUserDOList.add(secUserDO);
-        } 
-        return secUserDOList;
     }
 
     public List<IdNameLotNumberDO> query(ArrayList<AbstractField> fields,
@@ -221,22 +189,19 @@ public class QcBean implements QcRemote {
 
     public Integer updateQc(QcDO qcDO, List<QcAnalyteDO> qcAnaDOList) throws Exception {
         Query query;
-        Integer qcReferenceId,qcId,qcaId,typeId,dictId;
+        Integer qcId,qcaId,typeId,dictId;
         Qc qc;
         QcAnalyteDO qcaDO;
         QcAnalyte qca;
         String systemName;
         List results;
                 
-        query = manager.createNamedQuery("getTableId");
-        query.setParameter("name", "qc");
-        qcReferenceId = (Integer)query.getSingleResult();
         qcId = qcDO.getId();
         
         if (qcId != null) {
             // we need to call lock one more time to make sure their lock
             // didnt expire and someone else grabbed the record
-            lockBean.validateLock(qcReferenceId, qcId);
+            lockBean.validateLock(qcRefTableId, qcId);
         }
 
         validateQc(qcDO, qcAnaDOList);
@@ -307,7 +272,7 @@ public class QcBean implements QcRemote {
             }
         }
         
-        lockBean.giveUpLock(qcReferenceId, qcId);        
+        lockBean.giveUpLock(qcRefTableId, qcId);        
         return qc.getId();
     }
     

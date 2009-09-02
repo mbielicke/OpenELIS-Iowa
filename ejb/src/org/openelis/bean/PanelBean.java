@@ -39,14 +39,13 @@ import org.openelis.metamap.PanelMetaMap;
 import org.openelis.remote.PanelRemote;
 import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
+import org.openelis.utils.ReferenceTableCache;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.ejb.EJB;
-import javax.ejb.EJBs;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -56,9 +55,6 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 @Stateless
-@EJBs({
-    @EJB(name="ejb/Lock",beanInterface=LockLocal.class)
-})
 @SecurityDomain("openelis")
 public class PanelBean implements PanelRemote {
     
@@ -68,16 +64,15 @@ public class PanelBean implements PanelRemote {
     @Resource
     private SessionContext ctx;
     
+    @EJB
     private LockLocal lockBean;
     
     private static final PanelMetaMap PanelMeta = new PanelMetaMap(); 
     
-
-    @PostConstruct
-    private void init()
-    {
-        lockBean =  (LockLocal)ctx.lookup("ejb/Lock");
-        
+    private static Integer panelRefTableId;
+    
+    public PanelBean() {
+        panelRefTableId = ReferenceTableCache.getReferenceTable("panel");
     }
     
     public PanelDO getPanel(Integer panelId) {
@@ -88,16 +83,12 @@ public class PanelBean implements PanelRemote {
     }
 
     public PanelDO getPanelAndLock(Integer panelId, String session) throws Exception {        
-        Query query = manager.createNamedQuery("getTableId");
-        query.setParameter("name", "panel");
-        lockBean.getLock((Integer)query.getSingleResult(), panelId);
+        lockBean.getLock(panelRefTableId, panelId);
         return getPanel(panelId);
     }
 
     public PanelDO getPanelAndUnlock(Integer panelId, String session) {
-        Query unlockQuery = manager.createNamedQuery("getTableId");
-        unlockQuery.setParameter("name", "panel");
-        lockBean.giveUpLock((Integer)unlockQuery.getSingleResult(), panelId);
+        lockBean.giveUpLock(panelRefTableId, panelId);
         return getPanel(panelId);
     }
 
@@ -149,13 +140,10 @@ public class PanelBean implements PanelRemote {
     public Integer updatePanel(PanelDO panelDO,
                                List<PanelItemDO> panelItemDOList) throws Exception {
      try {          
-        Query query = manager.createNamedQuery("getTableId");
-        query.setParameter("name", "panel");
-        Integer panelReferenceId = (Integer)query.getSingleResult();
         if (panelDO.getId() != null) {
             // we need to call lock one more time to make sure their lock
             // didn't expire and someone else grabbed the record            
-            lockBean.validateLock(panelReferenceId,panelDO.getId());                        
+            lockBean.validateLock(panelRefTableId,panelDO.getId());                        
         }
         
         manager.setFlushMode(FlushModeType.COMMIT);
@@ -199,7 +187,7 @@ public class PanelBean implements PanelRemote {
             
          }
 
-        lockBean.giveUpLock(panelReferenceId, panel.getId());
+        lockBean.giveUpLock(panelRefTableId, panel.getId());
         return panel.getId();
        } catch (Exception ex) {
          ex.printStackTrace();

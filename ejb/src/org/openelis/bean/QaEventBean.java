@@ -38,16 +38,15 @@ import org.openelis.metamap.QaEventMetaMap;
 import org.openelis.remote.QaEventRemote;
 import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
+import org.openelis.utils.ReferenceTableCache;
 import org.openelis.utils.SecurityInterceptor;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
-import javax.ejb.EJBs;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -56,9 +55,6 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 @Stateless
-@EJBs({
-    @EJB(name="ejb/Lock",beanInterface=LockLocal.class)
-})
 @SecurityDomain("openelis")
 @RolesAllowed("qaevent-select")
 public class QaEventBean implements QaEventRemote{
@@ -69,14 +65,15 @@ public class QaEventBean implements QaEventRemote{
     @Resource
     private SessionContext ctx;
     
+    @EJB
     private LockLocal lockBean;
     
     private static final QaEventMetaMap QaeMeta = new QaEventMetaMap();
-
-    @PostConstruct
-    private void init()
-    {
-        lockBean =  (LockLocal)ctx.lookup("ejb/Lock");
+    
+    private static Integer qaEventRefTableId;
+    
+    public QaEventBean() {
+        qaEventRefTableId = ReferenceTableCache.getReferenceTable("qaevent");
     }
     
     public QaEventDO getQaEvent(Integer qaEventId) {
@@ -100,12 +97,16 @@ public class QaEventBean implements QaEventRemote{
         QueryBuilder qb = new QueryBuilder();
                
         qb.setMeta(QaeMeta);        
-        qb.setSelect("distinct new org.openelis.domain.IdNameTestMethodDO("+ QaeMeta.getId()+", "+QaeMeta.getName()+", "+QaeMeta.getTest().getName()+", "+QaeMeta.getTest().getMethod().getName() + ") ");        
+        qb.setSelect("distinct new org.openelis.domain.IdNameTestMethodDO("
+                     + QaeMeta.getId()+", "+QaeMeta.getName()
+                     +", "+QaeMeta.getQaEventTest().getName()
+                     +", "+QaeMeta.getQaEventTest().getMethod().getName() + ") ");        
         
         //this method is going to throw an exception if a column doesnt match
         qb.addWhere(fields);
                 
-        qb.setOrderBy(QaeMeta.getName()+", "+QaeMeta.getTest().getName()+", "+QaeMeta.getTest().getMethod().getName());                           
+        qb.setOrderBy(QaeMeta.getName()+", "+QaeMeta.getQaEventTest().getName()
+                      +", "+QaeMeta.getQaEventTest().getMethod().getName());                           
                 
         sb.append(qb.getEJBQL());                 
         Query query = manager.createQuery(sb.toString());
@@ -128,16 +129,13 @@ public class QaEventBean implements QaEventRemote{
         SecurityInterceptor.applySecurity(ctx.getCallerPrincipal().getName(), "qaevent", ModuleFlags.UPDATE);
         QaEvent qaEvent;
         Query query;
-        Integer qaEventReferenceId,qaEventId;
+        Integer qaEventId;
         
-        query = manager.createNamedQuery("getTableId");
-        query.setParameter("name", "qaevent");
-        qaEventReferenceId = (Integer)query.getSingleResult();
         qaEventId = qaEventDO.getId();
             
         if(qaEventId != null){
             //we need to call lock one more time to make sure their lock didnt expire and someone else grabbed the record
-            lockBean.validateLock(qaEventReferenceId,qaEventId);                        
+            lockBean.validateLock(qaEventRefTableId,qaEventId);                        
         }               
         
         validateQaEvent(qaEventDO);  
@@ -163,25 +161,19 @@ public class QaEventBean implements QaEventRemote{
             manager.persist(qaEvent);
         }
                 
-        lockBean.giveUpLock(qaEventReferenceId,qaEvent.getId()); 
+        lockBean.giveUpLock(qaEventRefTableId,qaEvent.getId()); 
         return qaEvent.getId();
     }
 
     @RolesAllowed("qaevent-update")
     public QaEventDO getQaEventAndLock(Integer qaEventId, String session) throws Exception {
         SecurityInterceptor.applySecurity(ctx.getCallerPrincipal().getName(), "qaevent", ModuleFlags.UPDATE);
-        Query query = manager.createNamedQuery("getTableId");
-        query.setParameter("name", "qaevent");
-        lockBean.getLock((Integer)query.getSingleResult(),qaEventId);
-        
+        lockBean.getLock(qaEventRefTableId,qaEventId);        
         return getQaEvent(qaEventId);
     }
 
     public QaEventDO getQaEventAndUnlock(Integer qaEventId, String session) {
-        Query query = manager.createNamedQuery("getTableId");
-        query.setParameter("name", "qaevent");
-        lockBean.giveUpLock((Integer)query.getSingleResult(),qaEventId);           
-        
+        lockBean.giveUpLock(qaEventRefTableId,qaEventId);                   
         return getQaEvent(qaEventId);
     }
     

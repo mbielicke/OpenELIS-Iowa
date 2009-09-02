@@ -29,11 +29,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
-import javax.ejb.EJBs;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -62,13 +60,10 @@ import org.openelis.metamap.CategoryMetaMap;
 import org.openelis.remote.CategoryRemote;
 import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
+import org.openelis.utils.ReferenceTableCache;
 import org.openelis.utils.SecurityInterceptor;
 
 @Stateless
-@EJBs({
-    @EJB(name="ejb/Lock",beanInterface=LockLocal.class),
-    @EJB(name="ejb/JMSMessageProducer",beanInterface=JMSMessageProducerLocal.class)
-})
 @SecurityDomain("openelis")
 @RolesAllowed("dictionary-select")
 public class CategoryBean implements CategoryRemote,CategoryLocal {
@@ -79,19 +74,19 @@ public class CategoryBean implements CategoryRemote,CategoryLocal {
     @Resource
     private SessionContext ctx;
     
+    @EJB
     private LockLocal lockBean;
+    
+    @EJB
     private JMSMessageProducerLocal jmsProducer;
-    
-    
-    private static CategoryMetaMap CatMeta = new CategoryMetaMap();
-
-    @PostConstruct
-    private void init()
-    {
-        lockBean =  (LockLocal)ctx.lookup("ejb/Lock");
-        jmsProducer = (JMSMessageProducerLocal)ctx.lookup("ejb/JMSMessageProducer");
         
-    }
+    private static CategoryMetaMap CatMeta = new CategoryMetaMap();
+    
+    private static Integer catRefTableId;
+    
+    public CategoryBean() {
+        catRefTableId = ReferenceTableCache.getReferenceTable("category");
+    }  
    
     public CategoryDO getCategory(Integer categoryId) {        
         
@@ -144,19 +139,11 @@ public class CategoryBean implements CategoryRemote,CategoryLocal {
     @RolesAllowed("dictionary-update")
     public Integer updateCategory(CategoryDO categoryDO, List dictEntries) throws Exception {
         SecurityInterceptor.applySecurity(ctx.getCallerPrincipal().getName(), "dictionary", ModuleFlags.UPDATE);
-        Query query = manager.createNamedQuery("getTableId");
-        query.setParameter("name", "category");
-        Integer categoryReferenceId = (Integer)query.getSingleResult();
         Integer categoryId = categoryDO.getId(); 
         if (categoryId != null) {
             // we need to call lock one more time to make sure their lock didnt
             // expire and someone else grabbed the record
-            try {
-                lockBean.validateLock(categoryReferenceId,categoryDO.getId());
-            } catch(Exception ex) {
-                throw ex;
-            } 
-            
+            lockBean.validateLock(catRefTableId,categoryDO.getId());                        
         }
 
         validateCategory(categoryDO, dictEntries);
@@ -209,7 +196,7 @@ public class CategoryBean implements CategoryRemote,CategoryLocal {
             }
         }
         
-        lockBean.giveUpLock(categoryReferenceId,category.getId()); 
+        lockBean.giveUpLock(catRefTableId,category.getId()); 
         
         //invalidate the cache
         DictionaryCacheMessage msg = new DictionaryCacheMessage();

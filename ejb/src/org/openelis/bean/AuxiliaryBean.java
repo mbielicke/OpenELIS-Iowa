@@ -31,10 +31,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.ejb.EJB;
-import javax.ejb.EJBs;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -61,26 +59,20 @@ import org.openelis.local.LockLocal;
 import org.openelis.metamap.AuxFieldGroupMetaMap;
 import org.openelis.metamap.AuxFieldMetaMap;
 import org.openelis.remote.AuxiliaryRemote;
-import org.openelis.security.local.SystemUserUtilLocal;
 import org.openelis.utilcommon.NumericRange;
 import org.openelis.utilcommon.InconsistentException;
 import org.openelis.util.QueryBuilder;
 import org.openelis.utilcommon.ParseException;
 import org.openelis.utilcommon.TestResultValidator;
 import org.openelis.utils.GetPage;
+import org.openelis.utils.ReferenceTableCache;
 
 @Stateless
-@EJBs({
-    @EJB(name="ejb/Lock",beanInterface=LockLocal.class),
-})
 @SecurityDomain("openelis")
 public class AuxiliaryBean implements AuxiliaryRemote {
     
     @PersistenceContext(name = "openelis")
     private EntityManager manager;
-
-    @EJB
-    private SystemUserUtilLocal sysUser;
 
     @Resource
     private SessionContext ctx;
@@ -88,15 +80,16 @@ public class AuxiliaryBean implements AuxiliaryRemote {
     @EJB
     private CategoryLocal categoryBean;
 
+    @EJB
     private LockLocal lockBean;
     
-    private static final AuxFieldGroupMetaMap AuxFieldGroupMeta = new AuxFieldGroupMetaMap();
+    private static Integer auxFGRefTableId;
     
-    @PostConstruct
-    private void init() {
-        lockBean = (LockLocal)ctx.lookup("ejb/Lock");
-        sysUser = (SystemUserUtilLocal)ctx.lookup("ejb/SystemUser");
+    public AuxiliaryBean() {
+        auxFGRefTableId = ReferenceTableCache.getReferenceTable("aux_field_group");
     }
+    
+    private static final AuxFieldGroupMetaMap AuxFieldGroupMeta = new AuxFieldGroupMetaMap();     
 
     public List<AuxFieldValueDO> getAuxFieldValues(Integer auxFieldId) {        
         List<AuxFieldValueDO> auxfieldValues;
@@ -145,38 +138,27 @@ public class AuxiliaryBean implements AuxiliaryRemote {
     
     public AuxFieldGroupDO getAuxFieldGroupAndUnlock(Integer auxFieldGroupId,
                                                      String session) {
-        Query unlockQuery = manager.createNamedQuery("getTableId");
-        unlockQuery.setParameter("name", "aux_field_group");
-        lockBean.giveUpLock((Integer)unlockQuery.getSingleResult(), auxFieldGroupId);
+        lockBean.giveUpLock(auxFGRefTableId, auxFieldGroupId);
         return getAuxFieldGroup(auxFieldGroupId);
     }
     
     public AuxFieldGroupDO getAuxFieldGroupAndLock(Integer auxFieldGroupId,
-                                                   String session) throws Exception {
-        
-        Query query = manager.createNamedQuery("getTableId");
-        query.setParameter("name", "aux_field_group");
-        Integer tableId = (Integer)query.getSingleResult();        
-        lockBean.getLock(tableId, auxFieldGroupId);
+                                                   String session) throws Exception {         
+        lockBean.getLock(auxFGRefTableId, auxFieldGroupId);
         return getAuxFieldGroup(auxFieldGroupId);
     }
 
     public Integer updateAuxiliary(AuxFieldGroupDO auxFieldGroupDO,
                                    List<AuxFieldDO> auxFields) throws Exception {
-     try {  
-         
-        Query query = manager.createNamedQuery("getTableId");
-        query.setParameter("name", "aux_field_group");
-        Integer afgReferenceId = (Integer)query.getSingleResult();
+     try {           
         
         AuxFieldGroup auxFieldGroup = null;        
         List<AuxFieldValueDO> auxFieldValues = null;
-        
-        
+                
         if (auxFieldGroupDO.getId() != null) {
             // we need to call lock one more time to make sure their lock
             // didn't expire and someone else grabbed the record
-            lockBean.validateLock(afgReferenceId,auxFieldGroupDO.getId());                         
+            lockBean.validateLock(auxFGRefTableId,auxFieldGroupDO.getId());                         
         }
 
         validateAuxiliary(auxFieldGroupDO, auxFields);
@@ -258,7 +240,7 @@ public class AuxiliaryBean implements AuxiliaryRemote {
          }     
         }
       } 
-        lockBean.giveUpLock(afgReferenceId, auxFieldGroup.getId());
+        lockBean.giveUpLock(auxFGRefTableId, auxFieldGroup.getId());
         return auxFieldGroup.getId();
     } catch (Exception ex) {
         ex.printStackTrace();

@@ -28,10 +28,8 @@ package org.openelis.bean;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.ejb.EJB;
-import javax.ejb.EJBs;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -59,12 +57,9 @@ import org.openelis.security.domain.SystemUserDO;
 import org.openelis.security.local.SystemUserUtilLocal;
 import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
+import org.openelis.utils.ReferenceTableCache;
 
 @Stateless
-@EJBs( {
-        @EJB(name="ejb/SystemUser",beanInterface=SystemUserUtilLocal.class),
-        @EJB(name = "ejb/Lock", beanInterface = LockLocal.class)        
-        })
 @SecurityDomain("openelis")
 public class ProjectBean implements ProjectRemote {
 
@@ -74,16 +69,18 @@ public class ProjectBean implements ProjectRemote {
     @Resource
     private SessionContext ctx;
 
+    @EJB
     private LockLocal lockBean;
     
+    @EJB
     private SystemUserUtilLocal sysUser;
     
     private static ProjectMetaMap ProjMeta = new ProjectMetaMap();
-
-    @PostConstruct
-    private void init() {
-        lockBean = (LockLocal)ctx.lookup("ejb/Lock");
-        sysUser = (SystemUserUtilLocal)ctx.lookup("ejb/SystemUser");
+    
+    private static Integer projRefTableId;
+    
+    public ProjectBean() {
+        projRefTableId = ReferenceTableCache.getReferenceTable("project");
     }
     
     public ProjectDO getProject(Integer projectId) {
@@ -101,20 +98,14 @@ public class ProjectBean implements ProjectRemote {
 
     public ProjectDO getProjectAndLock(Integer projectId, String session) throws Exception {
         //SecurityInterceptor.applySecurity(ctx.getCallerPrincipal().getName(), "project", ModuleFlags.UPDATE);
-        Query query; 
                 
-        query = manager.createNamedQuery("getTableId");
-        query.setParameter("name", "project");
-        lockBean.getLock((Integer)query.getSingleResult(), projectId);
+        lockBean.getLock(projRefTableId, projectId);
         return getProject(projectId);
     }
 
     public ProjectDO getProjectAndUnlock(Integer projectId, String session) {
-        Query unlockQuery; 
-        
-        unlockQuery = manager.createNamedQuery("getTableId");
-        unlockQuery.setParameter("name", "project");
-        lockBean.giveUpLock((Integer)unlockQuery.getSingleResult(), projectId);
+
+        lockBean.giveUpLock(projRefTableId, projectId);
         return getProject(projectId);
     }
 
@@ -155,21 +146,17 @@ public class ProjectBean implements ProjectRemote {
 
     public Integer updateProject(ProjectDO projectDO,         
                                  List<ProjectParameterDO> paramDOList) throws Exception {       
-        Query query;
-        Integer projectReferenceId,projectId;
+        Integer projectId;
         Project project;
         ProjectParameterDO paramDO;
         ProjectParameter param;
         
-        query = manager.createNamedQuery("getTableId");
-        query.setParameter("name", "project");
-        projectReferenceId = (Integer)query.getSingleResult();
         projectId = projectDO.getId();
         
         if (projectId != null) {
             // we need to call lock one more time to make sure their lock
             // didnt expire and someone else grabbed the record
-            lockBean.validateLock(projectReferenceId, projectId);
+            lockBean.validateLock(projRefTableId, projectId);
         }
 
         validateProject(projectDO, paramDOList);
@@ -220,7 +207,7 @@ public class ProjectBean implements ProjectRemote {
                 }
             }
         }
-        lockBean.giveUpLock(projectReferenceId, projectId);        
+        lockBean.giveUpLock(projRefTableId, projectId);        
         return project.getId();
     }
 

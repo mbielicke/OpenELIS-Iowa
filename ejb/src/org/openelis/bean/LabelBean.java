@@ -25,13 +25,13 @@
 */
 package org.openelis.bean;
 
-import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.LabelDO;
 import org.openelis.entity.Label;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.gwt.common.SecurityModule.ModuleFlags;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.local.LockLocal;
 import org.openelis.metamap.LabelMetaMap;
@@ -39,15 +39,14 @@ import org.openelis.remote.LabelRemote;
 import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
 import org.openelis.utils.ReferenceTableCache;
+import org.openelis.utils.SecurityInterceptor;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
-import javax.ejb.EJBs;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -57,10 +56,6 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 @Stateless
-@EJBs({
-    @EJB(name="ejb/Lock",beanInterface=LockLocal.class)
-})
-@SecurityDomain("openelis")
 @RolesAllowed("label-select")
 public class LabelBean implements LabelRemote {
     
@@ -70,6 +65,7 @@ public class LabelBean implements LabelRemote {
     @Resource
     private SessionContext ctx;
     
+    @EJB
     private LockLocal lockBean;
     private static int labelRefTableId;
     private static final LabelMetaMap Meta = new LabelMetaMap();
@@ -78,11 +74,6 @@ public class LabelBean implements LabelRemote {
         labelRefTableId = ReferenceTableCache.getReferenceTable("label");
     }
     
-    @PostConstruct
-    private void init()
-    {
-        lockBean =  (LockLocal)ctx.lookup("ejb/Lock");
-    }
     
     public LabelDO getLabel(Integer labelId) {
         Query query = manager.createNamedQuery("Label.Label");
@@ -93,6 +84,7 @@ public class LabelBean implements LabelRemote {
 
     @RolesAllowed("label-update")
     public LabelDO getLabelAndLock(Integer labelId, String session) throws Exception {
+        SecurityInterceptor.applySecurity(ctx.getCallerPrincipal().getName(), "label", ModuleFlags.UPDATE);
         lockBean.getLock(labelRefTableId, labelId);
         
         return getLabel(labelId);
@@ -134,7 +126,7 @@ public class LabelBean implements LabelRemote {
 
     @RolesAllowed("label-update")
     public Integer updateLabel(LabelDO labelDO) throws Exception {
-        Query query;
+        SecurityInterceptor.applySecurity(ctx.getCallerPrincipal().getName(), "label", ModuleFlags.UPDATE);
         Integer labelId;
         Label label;
                 
@@ -220,7 +212,6 @@ public class LabelBean implements LabelRemote {
     @RolesAllowed("label-delete")
     public void deleteLabel(LabelDO labelDO) throws Exception {
         Integer labelId;
-        Query lockQuery;
         Label label;
         
         labelId = labelDO.getId();                
