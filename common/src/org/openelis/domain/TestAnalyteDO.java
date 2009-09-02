@@ -29,41 +29,38 @@ import org.openelis.gwt.common.RPC;
 import org.openelis.utilcommon.DataBaseUtil;
 
 public class TestAnalyteDO implements RPC {
+    /**
+     * 
+     */
     private static final long serialVersionUID = 1L;
-
-    protected Integer         id;
-    protected Integer         testId;
-    protected Integer         analyteGroup;
-    protected Integer         resultGroup;
-    protected Integer         sortOrder;
-    protected Integer         typeId;
-    protected Integer         analyteId;
-    protected String          analyteName;
-    protected String          isReportable;
-    protected Integer         scriptletId;
-    protected String          scriptletName;
-    private Boolean           delete           = false;
-    private Boolean           grouped          = false;
-
+    
+    protected Integer id;             
+    protected Integer testId;      
+    protected Integer rowGroup;
+    protected Integer resultGroup;             
+    protected Integer sortOrder;             
+    protected Integer typeId;             
+    protected Integer analyteId;     
+    protected String analyteName;
+    protected String isReportable;             
+    protected Integer scriptletId;    
+    protected String scriptletName;
+    protected String isColumn;
+    private Boolean delete = false;    
+    private Boolean grouped = false;
+    
     public TestAnalyteDO() {
 
     }
-
-    public TestAnalyteDO(Integer id,
-                         Integer testId,
-                         Integer analyteGroup,
-                         Integer resultGroup,
-                         Integer sortOrder,
-                         Integer typeId,
-                         Integer analyteId,
-                         String analyteName,
-                         String isReportable,
-                         Integer scriptletId,
-                         String scriptletName) {
-
+    
+    public TestAnalyteDO(Integer id,Integer testId,Integer rowGroup,
+                         Integer resultGroup,Integer sortOrder,Integer typeId,
+                         String isColumn,Integer analyteId,String analyteName, 
+                         String isReportable,Integer scriptletId,String scriptletName) {
+                     
         setId(id);
         setTestId(testId);
-        setAnalyteGroup(analyteGroup);
+        setRowGroup(rowGroup);
         setResultGroup(resultGroup);
         setSortOrder(sortOrder);
         setTypeId(typeId);
@@ -71,15 +68,16 @@ public class TestAnalyteDO implements RPC {
         setIsReportable(isReportable);
         setScriptletId(scriptletId);
         setScriptletName(scriptletName);
-        setAnalyteName(analyteName);
+        setAnalyteName(analyteName); 
+        setIsColumn(isColumn);
     }
 
-    public Integer getAnalyteGroup() {
-        return analyteGroup;
+    public Integer getRowGroup() {
+        return rowGroup;
     }
 
-    public void setAnalyteGroup(Integer analyteGroup) {
-        this.analyteGroup = analyteGroup;
+    public void setRowGroup(Integer rowGroup) {
+        this.rowGroup = rowGroup;
     }
 
     public Integer getAnalyteId() {
@@ -176,6 +174,14 @@ public class TestAnalyteDO implements RPC {
 
     public void setScriptletName(String scriptletName) {
         this.scriptletName = DataBaseUtil.trim(scriptletName);
+    }
+
+    public String getIsColumn() {
+        return isColumn;
+    }
+
+    public void setIsColumn(String isColumn) {
+        this.isColumn = DataBaseUtil.trim(isColumn);
     }
 
 }

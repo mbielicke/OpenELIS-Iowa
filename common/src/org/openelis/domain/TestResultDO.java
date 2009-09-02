@@ -31,40 +31,28 @@ import org.openelis.utilcommon.DataBaseUtil;
 public class TestResultDO implements RPC {
 
     private static final long serialVersionUID = 1L;
-
-    protected Integer         id;
-    protected Integer         testId;
-    protected Integer         resultGroup;
-    protected Integer         sortOrder;
-    protected Integer         flagsId;
-    protected Integer         typeId;
-    protected String          value;
-    protected Integer         significantDigits;
-    protected Integer         roundingMethodId;
-    protected String          quantLimit;
-    protected String          contLevel;
-    protected String          hazardLevel;
-    protected Integer         unitOfMeasureId;
-    private boolean           delete;
-
+    
+    protected Integer id;             
+    protected Integer testId;             
+    protected Integer resultGroup;             
+    protected Integer sortOrder;
+    protected Integer flagsId;             
+    protected Integer typeId;             
+    protected String value;             
+    protected Integer significantDigits;             
+    protected Integer roundingMethodId;
+    protected Integer unitOfMeasureId;   
+    private boolean delete;
+    
     public TestResultDO() {
 
     }
-
-    public TestResultDO(Integer id,
-                        Integer testId,
-                        Integer resultGroup,
-                        Integer sortOrder,
-                        Integer flagsId,
-                        Integer typeId,
-                        String value,
-                        Integer significantDigits,
-                        Integer roundingMethodId,
-                        String quantLimit,
-                        String contLevel,
-                        String hazardLevel,
-                        Integer unitOfMeasureId) {
-
+    
+    public TestResultDO(Integer id,Integer testId,Integer resultGroup,
+                        Integer sortOrder,Integer flagsId,Integer typeId,
+                        String value,Integer significantDigits,
+                        Integer roundingMethodId,Integer unitOfMeasureId) {
+        
         setId(id);
         setTestId(testId);
         setResultGroup(resultGroup);
@@ -73,20 +61,10 @@ public class TestResultDO implements RPC {
         setTypeId(typeId);
         setValue(value);
         setSignificantDigits(significantDigits);
-        setRoundingMethodId(roundingMethodId);
-        setQuantLimit(quantLimit);
-        setContLevel(contLevel);
-        setHazardLevel(hazardLevel);
+        setRoundingMethodId(roundingMethodId);    
         setUnitOfMeasureId(unitOfMeasureId);
-    }
-
-    public String getContLevel() {
-        return contLevel;
-    }
-
-    public void setContLevel(String contLevel) {
-        this.contLevel = DataBaseUtil.trim(contLevel);
-    }
+    }   
+    
 
     public Integer getFlagsId() {
         return flagsId;
@@ -96,28 +74,12 @@ public class TestResultDO implements RPC {
         this.flagsId = flagsId;
     }
 
-    public String getHazardLevel() {
-        return hazardLevel;
-    }
-
-    public void setHazardLevel(String hazardLevel) {
-        this.hazardLevel = DataBaseUtil.trim(hazardLevel);
-    }
-
     public Integer getId() {
         return id;
     }
 
     public void setId(Integer id) {
         this.id = id;
-    }
-
-    public String getQuantLimit() {
-        return quantLimit;
-    }
-
-    public void setQuantLimit(String quantLimit) {
-        this.quantLimit = DataBaseUtil.trim(quantLimit);
     }
 
     public Integer getResultGroup() {

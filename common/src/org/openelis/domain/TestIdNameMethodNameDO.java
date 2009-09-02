@@ -28,78 +28,42 @@ package org.openelis.domain;
 import org.openelis.gwt.common.RPC;
 import org.openelis.utilcommon.DataBaseUtil;
 
-public class TestMethodAutoDO implements RPC {
+
+public class TestIdNameMethodNameDO implements RPC {
 
     private static final long serialVersionUID = 1L;
     
-    protected Integer testId;
+    protected Integer id;
     protected String testName;
-    protected Integer methodId;
     protected String methodName;
-    protected String testDescription;
-    protected String methodDescription;
     
-    public TestMethodAutoDO(){
+    public TestIdNameMethodNameDO() {
         
     }
     
-    public TestMethodAutoDO(Integer testId, String testName, 
-                            String testDescription,Integer methodId,
-                            String methodName,String methodDescription){
-        setTestId(testId);
+    public TestIdNameMethodNameDO(Integer id,String testName,String methodName) {
+        setId(id);
         setTestName(testName);
-        setMethodId(methodId);
         setMethodName(methodName);
-        setTestDescription(testDescription);
-        setMethodDescription(methodDescription);
     }
 
-    public Integer getTestId() {
-        return testId;
+    public Integer getId() {
+        return id;
     }
-
-    public void setTestId(Integer testId) {
-        this.testId = testId;
+    public void setId(Integer id) {
+        this.id = id;
     }
-
     public String getTestName() {
-        return DataBaseUtil.trim(testName);
+        return testName;
     }
-
     public void setTestName(String testName) {
-        this.testName = testName;
+        this.testName = DataBaseUtil.trim(testName);
     }
-
-    public Integer getMethodId() {
-        return methodId;
-    }
-
-    public void setMethodId(Integer methodId) {
-        this.methodId = methodId;
-    }
-
     public String getMethodName() {
-        return DataBaseUtil.trim(methodName);
+        return methodName;
     }
-
     public void setMethodName(String methodName) {
-        this.methodName = methodName;
-    }
-
-    public String getTestDescription() {
-        return DataBaseUtil.trim(testDescription);
-    }
-
-    public String getMethodDescription() {
-        return DataBaseUtil.trim(methodDescription);
-    }
-
-    public void setTestDescription(String testDescription) {
-        this.testDescription = testDescription;
-    }
-
-    public void setMethodDescription(String methodDescription) {
-        this.methodDescription = methodDescription;
+        this.methodName = DataBaseUtil.trim(methodName);
     }
 
 }

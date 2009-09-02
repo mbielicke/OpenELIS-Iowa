@@ -32,34 +32,22 @@ public class SectionDO implements RPC {
 
     private static final long serialVersionUID = 1L;
 
-    protected Integer         id;
-    protected Integer         organizationId;
-    protected String          organizationName;
-    protected Integer         parentSectionId;
-    protected String          name;
-    protected String          description;
-    protected String          isExternal;
-    protected boolean         delete;
-
-    public boolean getDelete() {
-        return delete;
-    }
-
-    public void setDelete(boolean delete) {
-        this.delete = delete;
-    }
+    protected Integer id; 
+    protected Integer organizationId; 
+    protected String organizationName; 
+    protected Integer parentSectionId;
+    protected String parentSectionName;
+    protected String name;
+    protected String description;
+    protected String isExternal;   
 
     public SectionDO() {
 
     }
 
-    public SectionDO(Integer id,
-                     Integer organizationId,
-                     String organizationName,
-                     String name,
-                     String description,
-                     Integer parentSectionId,
-                     String isExternal) {
+    public SectionDO(Integer id,Integer organizationId,String organizationName,
+                     String name,String description,Integer parentSectionId,
+                     String parentSectionName,String isExternal) {
 
         setId(id);
         setOrganizationId(organizationId);
@@ -67,7 +55,8 @@ public class SectionDO implements RPC {
         setName(name);
         setDescription(description);
         setParentSectionId(parentSectionId);
-        setIsExternal(isExternal);
+        setParentSectionName(parentSectionName);
+        setIsExternal(isExternal);        
     }
 
     public SectionDO(Integer id, String name) {
@@ -129,5 +118,13 @@ public class SectionDO implements RPC {
 
     public void setOrganizationName(String organizationName) {
         this.organizationName = DataBaseUtil.trim(organizationName);
+    }
+
+    public String getParentSectionName() {
+        return parentSectionName;
+    }
+
+    public void setParentSectionName(String parentSectionName) {
+        this.parentSectionName = DataBaseUtil.trim(parentSectionName);
     }
 }
