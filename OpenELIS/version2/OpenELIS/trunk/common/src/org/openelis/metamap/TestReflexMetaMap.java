@@ -26,25 +26,36 @@
 package org.openelis.metamap;
 
 import org.openelis.gwt.common.MetaMap;
+import org.openelis.meta.TestMeta;
 import org.openelis.meta.TestReflexMeta;
 
 public class TestReflexMetaMap extends TestReflexMeta implements MetaMap {
 
-    public String buildFrom(String where) {        
+   private TestMeta ADD_TEST;
+    
+   public String buildFrom(String where) {        
         return "TestReflex ";
-    }
+   }
 
    public TestReflexMetaMap(){
        super();
+       ADD_TEST = new TestMeta(path+"addTest.");
    }
    
    public TestReflexMetaMap(String path){
        super(path);
+       ADD_TEST = new TestMeta(path+"addTest.");
    }
    
    public boolean hasColumn(String name){        
+       if(name.startsWith(path+"addTest."))
+           return ADD_TEST.hasColumn(name);
        return super.hasColumn(name);
    }
+   
+   public TestMeta getAddTest() {
+       return ADD_TEST;
+    }
    
    public static String getTableName(){
        return "TestReflex";

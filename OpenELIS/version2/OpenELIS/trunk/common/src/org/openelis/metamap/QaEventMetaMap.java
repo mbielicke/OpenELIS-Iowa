@@ -27,15 +27,25 @@ package org.openelis.metamap;
 
 import org.openelis.gwt.common.MetaMap;
 import org.openelis.meta.QaeventMeta;
+import org.openelis.meta.TestMeta;
 
 public class QaEventMetaMap extends QaeventMeta implements MetaMap {
 
+    private QaEventTestMetaMap QAEVENT_TEST;
+    
+    private TestMeta TEST;
+    
     public QaEventMetaMap(){
         super("qae.");
+        QAEVENT_TEST = new QaEventTestMetaMap(path+"test.");
+        TEST = new TestMeta("qae.test."); 
     }
     
-    private QaEventTestMetaMap TEST = new QaEventTestMetaMap("qae.test.");
-    
+    public QaEventMetaMap(String path){
+        super(path); 
+        QAEVENT_TEST = new QaEventTestMetaMap(path+"test.");
+        TEST = new TestMeta(path+"qae.test.");
+    }       
     
     public String buildFrom(String name) {                       
         return "QaEvent qae";
@@ -48,12 +58,18 @@ public class QaEventMetaMap extends QaeventMeta implements MetaMap {
 
    public boolean hasColumn(String name){
        if(name.startsWith("test."))
+           return QAEVENT_TEST.hasColumn(name);
+       if(name.startsWith(path+"test."))
            return TEST.hasColumn(name);
        return super.hasColumn(name); 
    }
    
-   public QaEventTestMetaMap getTest() {
-        return TEST;
+   public QaEventTestMetaMap getQaEventTest() {
+        return QAEVENT_TEST;
    }
+   
+   public TestMeta getTest() {
+       return TEST;
+  }
 
 }

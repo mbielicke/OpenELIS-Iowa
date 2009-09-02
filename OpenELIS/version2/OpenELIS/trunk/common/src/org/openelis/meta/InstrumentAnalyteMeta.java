@@ -9,7 +9,7 @@ import java.util.HashSet;
 import org.openelis.gwt.common.Meta;
 
 public class InstrumentAnalyteMeta implements Meta {
-  	private String path = "";
+  	protected String path = "";
 	private static final String entityName = "InstrumentAnalyte";
 	
 	private static final String
