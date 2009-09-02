@@ -29,7 +29,7 @@ UIRF Software License are applicable instead of those above.
                 xmlns:resource="xalan://org.openelis.util.UTFResource"
                 xmlns:locale="xalan://java.util.Locale"
                 xmlns:meta="xalan://org.openelis.metamap.QaEventMetaMap"
-                xmlns:testMeta="xalan://org.openelis.metamap.QaEventTestMetaMap"
+                xmlns:testMeta="xalan://org.openelis.meta.TestMeta"
                 extension-element-prefixes="resource"
                 version="1.0">
 <xsl:import href="aToZOneColumn.xsl"/>
@@ -47,13 +47,12 @@ UIRF Software License are applicable instead of those above.
   </xalan:component>
   
   <xalan:component prefix="testMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.QaEventTestMetaMap"/>
+    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.TestMeta"/>
   </xalan:component>
 
   <xsl:template match="doc"> 
     <xsl:variable name="qae" select="meta:new()"/>
     <xsl:variable name="test" select="meta:getTest($qae)"/>
-    <xsl:variable name="method" select="testMeta:getMethod($test)"/>
     <xsl:variable name="language">
      <xsl:value-of select="locale"/>
     </xsl:variable>
@@ -65,13 +64,6 @@ UIRF Software License are applicable instead of those above.
 <display>
 		 <HorizontalPanel spacing= "0" padding= "0">  
  					<CollapsePanel key="collapsePanel" style="LeftSidePanel">
- 					  <!--
-						<azTable colwidths ="100,65,65" height="425px" key="azTable" maxRows="19" tablewidth="auto" title="" width="100%" headers = "{resource:getString($constants,'name')},{resource:getString($constants,'test')},{resource:getString($constants,'method')}">
-							<buttonPanel key="atozButtons">
-								<xsl:call-template name="aToZLeftPanelButtons"/>
-							</buttonPanel>
-						</azTable>
-						-->
 						<resultsTable height="425" width="100%" key="azTable" showError="false">
 					       <buttonPanel key="atozButtons">
 								<xsl:call-template name="aToZLeftPanelButtons"/>
@@ -149,19 +141,19 @@ UIRF Software License are applicable instead of those above.
     </row>
      <row>
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"type")'/>:</text> 		
-	  <dropdown key="{meta:getTypeId($qae)}" width = "120px" case="mixed" tab="{meta:getTestId($qae)},{meta:getDescription($qae)}"/>									        
+	  <dropdown key="{meta:getTypeId($qae)}" width = "120px" case="mixed" tab="{testMeta:getName($test)},{meta:getDescription($qae)}"/>									        
      </row>
      <row>
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"test")'/>:</text>
 	  <!--<dropdown key="{meta:getTestId($qae)}" width = "140px"  case="mixed" tab="{meta:getIsBillable($qae)},{meta:getTypeId($qae)}"/>-->
-	  <autoComplete case="lower" cat="testMethod" key="{meta:getTestId($qae)}" serviceUrl="OpenELISServlet?service=org.openelis.modules.qaevent.server.QAEventService" tab="{meta:getIsBillable($qae)},{meta:getTypeId($qae)}" width="140px">
+	  <autoComplete case="lower" cat="testMethod" key="{testMeta:getName($test)}" serviceUrl="OpenELISServlet?service=org.openelis.modules.qaevent.server.QAEventService" tab="{meta:getIsBillable($qae)},{meta:getTypeId($qae)}" width="140px">
 		<widths>140</widths>
 	  </autoComplete>
 	 </row>		
 	  						
       <row>           
         <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"billable")'/>:</text>
-        <check key= "{meta:getIsBillable($qae)}" tab="{meta:getReportingSequence($qae)},{meta:getTestId($qae)}"/>
+        <check key= "{meta:getIsBillable($qae)}" tab="{meta:getReportingSequence($qae)},{testMeta:getName($test)}"/>
       </row> 
       <row>       
       <text style= "Prompt"><xsl:value-of select='resource:getString($constants,"sequence")'/>:</text>   
@@ -192,7 +184,7 @@ UIRF Software License are applicable instead of those above.
  <string key="{meta:getDescription($qae)}" max = "60" required = "false" /> 	 
  <check key= "{meta:getIsBillable($qae)}" required = "false" />
  <string key="{meta:getReportingText($qae)}" required = "true"/>
- <dropdown key="{meta:getTestId($qae)}" type="integer" required = "false" />
+ <dropdown key="{testMeta:getName($test)}" type="integer" required = "false" />
  <dropdown key="{meta:getTypeId($qae)}" type="integer" required = "true"/>
 </rpc>
 </screen>
