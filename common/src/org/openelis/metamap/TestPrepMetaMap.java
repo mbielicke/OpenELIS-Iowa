@@ -26,10 +26,13 @@
 package org.openelis.metamap;
 
 import org.openelis.gwt.common.MetaMap;
+import org.openelis.meta.TestMeta;
 import org.openelis.meta.TestPrepMeta;
 
 public class TestPrepMetaMap extends TestPrepMeta implements MetaMap {
 
+    private TestMeta PREP_TEST;
+    
     public String buildFrom(String name) {               
         return "TestPrep ";
     }
@@ -38,17 +41,25 @@ public class TestPrepMetaMap extends TestPrepMeta implements MetaMap {
     
     public TestPrepMetaMap(){
         super();
+        PREP_TEST = new TestMeta(path+"prepTest.");
     }
     
     public TestPrepMetaMap(String path){
-        super(path);        
+        super(path);       
+        PREP_TEST = new TestMeta(path+"prepTest.");
     }
     
     
     public boolean hasColumn(String name){        
+        if(name.startsWith(path+"prepTest."))
+            return PREP_TEST.hasColumn(name);
         return super.hasColumn(name);
     }
 
+    public TestMeta getPrepTest() {
+       return PREP_TEST;
+    }
+    
     public static String getTableName() {
         return tableName;
     }

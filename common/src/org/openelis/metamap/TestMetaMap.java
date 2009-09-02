@@ -30,6 +30,7 @@ import org.openelis.meta.LabelMeta;
 import org.openelis.meta.MethodMeta;
 import org.openelis.meta.ScriptletMeta;
 import org.openelis.meta.TestMeta;
+import org.openelis.meta.TestTrailerMeta;
 
 public class TestMetaMap extends TestMeta implements MetaMap {
 
@@ -45,6 +46,7 @@ public class TestMetaMap extends TestMeta implements MetaMap {
     private TestSectionMetaMap TEST_SECTION;    
     private TestResultMetaMap TEST_RESULT;    
     private TestWorksheetAnalyteMetaMap TEST_WORKSHEET_ANALYTE;
+    private TestTrailerMeta TEST_TRAILER;
     
     public TestMetaMap(){
         super("t.");
@@ -60,6 +62,7 @@ public class TestMetaMap extends TestMeta implements MetaMap {
         TEST_SECTION = new TestSectionMetaMap("testSection.");    
         TEST_RESULT = new TestResultMetaMap("testResult.");    
         TEST_WORKSHEET_ANALYTE = new TestWorksheetAnalyteMetaMap("testWorksheetAnalyte.");
+        TEST_TRAILER = new TestTrailerMeta("t.testTrailer.");
     }
             
     public TestMetaMap(String path){
@@ -76,6 +79,7 @@ public class TestMetaMap extends TestMeta implements MetaMap {
         TEST_SECTION = new TestSectionMetaMap(path+"testSection.");    
         TEST_RESULT = new TestResultMetaMap(path+"testResult.");    
         TEST_WORKSHEET_ANALYTE = new TestWorksheetAnalyteMetaMap(path+"testWorksheetAnalyte.");
+        TEST_TRAILER = new TestTrailerMeta(path+"t.testTrailer.");
     }       
     
     public TestWorksheetItemMetaMap getTestWorksheetItem(){
@@ -130,6 +134,10 @@ public class TestMetaMap extends TestMeta implements MetaMap {
         return TEST_RESULT;
     }
     
+    public TestTrailerMeta getTestTrailer() {
+        return TEST_TRAILER;
+    }
+    
     
     public boolean hasColumn(String name){        
         if(name.startsWith("testPrep."))
@@ -156,6 +164,8 @@ public class TestMetaMap extends TestMeta implements MetaMap {
             return SCRIPTLET.hasColumn(name);
         if(name.startsWith(path+"label."))
             return LABEL.hasColumn(name);
+        if(name.startsWith(path+"testTrailer."))
+            return TEST_TRAILER.hasColumn(name);
         return super.hasColumn(name);
     }
     

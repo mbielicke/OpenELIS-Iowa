@@ -42,10 +42,11 @@ public class InstrumentLogMeta implements Meta {
               TYPE_ID					="typeId",
               WORKSHEET_ID					="worksheetId",
               EVENT_BEGIN					="eventBegin",
-              EVENT_END					="eventEnd";
-
+              EVENT_END					="eventEnd",
+	          TEXT                      = "text";            
+  
   	private static final String[] columnNames = {
-  	  ID,INSTRUMENT_ID,TYPE_ID,WORKSHEET_ID,EVENT_BEGIN,EVENT_END};
+  	  ID,INSTRUMENT_ID,TYPE_ID,WORKSHEET_ID,EVENT_BEGIN,EVENT_END,TEXT};
   	  
 	private HashSet<String> columnHashList;
     
@@ -101,6 +102,10 @@ public class InstrumentLogMeta implements Meta {
     public String getEventEnd() {
         return path + EVENT_END;
     } 
+    
+    public String getText() {
+        return path + TEXT;
+    }
 
   
 }   

@@ -33,7 +33,7 @@ import java.util.HashSet;
 import org.openelis.gwt.common.Meta;
 
 public class ProjectMeta implements Meta {
-  	public String path = "";
+  	protected String path = "";
 	private static final String entityName = "Project";
 	
 	private static final String

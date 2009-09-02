@@ -32,15 +32,18 @@ import org.openelis.meta.SectionMeta;
 public class SectionMetaMap extends SectionMeta implements MetaMap {
 
    private OrganizationMeta ORGANIZATION;
+   private SectionMeta PARENT_SECTION;
     
    public SectionMetaMap() {
        super("s.");
        ORGANIZATION = new OrganizationMeta("s.organization.");
+       PARENT_SECTION = new SectionMeta("s.parentSection.");
    } 
     
    public SectionMetaMap(String path){
        super(path);
        ORGANIZATION = new OrganizationMeta(path+"s.organization.");
+       PARENT_SECTION = new SectionMeta(path+"s.parentSection.");
    }
    
    public String buildFrom(String where) {
@@ -50,11 +53,17 @@ public class SectionMetaMap extends SectionMeta implements MetaMap {
    public boolean hasColumn(String name){        
        if(name.startsWith(path+"organization."))
            return ORGANIZATION.hasColumn(name);
+       if(name.startsWith(path+"parentSection."))
+           return PARENT_SECTION.hasColumn(name);
        return super.hasColumn(name);
    }  
    
    public OrganizationMeta getOrganization() {
        return ORGANIZATION;
+   }
+   
+   public SectionMeta getParentSection(){
+       return PARENT_SECTION;
    }
 
 }

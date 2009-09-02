@@ -33,7 +33,7 @@ import java.util.HashSet;
 import org.openelis.gwt.common.Meta;
 
 public class QcAnalyteMeta implements Meta {
-  	public String path = "";
+  	protected String path = "";
 	private static final String entityName = "QcAnalyte";
 	
 	private static final String

@@ -26,35 +26,51 @@
 package org.openelis.metamap;
 
 import org.openelis.gwt.common.MetaMap;
+import org.openelis.meta.InstrumentMeta;
 import org.openelis.meta.ScriptletMeta;
-import org.openelis.meta.TestWorksheetMeta;
 
-public class TestWorksheetMetaMap extends TestWorksheetMeta implements MetaMap {
+public class InstrumentMetaMap extends InstrumentMeta implements MetaMap {
 
+    private InstrumentLogMetaMap INSTRUMENT_LOG;
     private ScriptletMeta SCRIPTLET;
     
-    public String buildFrom(String name) {               
-        return "TestWorksheet ";       
-    }       
-    
-    public TestWorksheetMetaMap(){
-        super();
-        SCRIPTLET = new ScriptletMeta(path+"scriptlet.");
+    public InstrumentMetaMap() {
+        super("inst.");
+        INSTRUMENT_LOG = new InstrumentLogMetaMap("instrumentLog.");        
+        SCRIPTLET = new ScriptletMeta("inst.scriptlet.");
     }
     
-    public TestWorksheetMetaMap(String path){
-        super(path);           
-        SCRIPTLET = new ScriptletMeta(path+"scriptlet.");
+    public InstrumentMetaMap(String path){
+        super(path);        
+        INSTRUMENT_LOG = new InstrumentLogMetaMap(path+"instrumentLog.");
+        SCRIPTLET = new ScriptletMeta(path+"inst.scriptlet.");
     }
     
-    public boolean hasColumn(String name){     
+    public String buildFrom(String name) {
+        String from = "Instrument inst ";       
+        if(name.indexOf("instrumentLog.") > -1)
+            from += ", IN (inst.instrumentLog) instrumentLog ";
+        return from;
+    }
+    
+    public boolean hasColumn(String name){ 
+        if(name.startsWith("instrumentLog."))
+            return INSTRUMENT_LOG.hasColumn(name);        
         if(name.startsWith(path+"scriptlet."))
             return SCRIPTLET.hasColumn(name);
         return super.hasColumn(name);
-    }    
-        
-    public ScriptletMeta getScriptlet() {
+    }
+    
+    public InstrumentLogMetaMap getInstrumentLog() {
+        return INSTRUMENT_LOG;
+    }
+    
+    public ScriptletMeta getScriptlet (){
         return SCRIPTLET;
+    }   
+    
+    public static InstrumentMetaMap getInstance() {
+        return new InstrumentMetaMap();
     }
 
 }

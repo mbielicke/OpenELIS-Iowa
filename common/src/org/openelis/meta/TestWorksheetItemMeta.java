@@ -33,7 +33,7 @@ import java.util.HashSet;
 import org.openelis.gwt.common.Meta;
 
 public class TestWorksheetItemMeta implements Meta {
-  	private String path = "";
+  	protected String path = "";
 	private static final String entityName = "TestWorksheetItem";
 	
 	private static final String

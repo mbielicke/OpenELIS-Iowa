@@ -33,9 +33,7 @@ public class TestTypeOfSampleMetaMap extends TestTypeOfSampleMeta implements
 
     public String buildFrom(String where) {        
         return "TestTypeOfSample ";
-    }
-    
-    private static final String tableName = "TestTypeOfSample";    
+    }   
     
     public TestTypeOfSampleMetaMap(){
         super();
@@ -50,7 +48,7 @@ public class TestTypeOfSampleMetaMap extends TestTypeOfSampleMeta implements
     }
 
     public static String getTableName() {
-        return tableName;
+        return "sampleTypeTable";
     }
 
 }

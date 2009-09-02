@@ -22,7 +22,7 @@ public class TestSectionMetaMap extends TestSectionMeta implements MetaMap {
     }
     
     public static String getTableName(){
-        return "TestSection";
+        return "sectionTable";
     }
 
 }

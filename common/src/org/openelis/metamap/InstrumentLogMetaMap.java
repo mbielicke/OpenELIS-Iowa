@@ -26,35 +26,27 @@
 package org.openelis.metamap;
 
 import org.openelis.gwt.common.MetaMap;
-import org.openelis.meta.ScriptletMeta;
-import org.openelis.meta.TestWorksheetMeta;
+import org.openelis.meta.InstrumentLogMeta;
 
-public class TestWorksheetMetaMap extends TestWorksheetMeta implements MetaMap {
-
-    private ScriptletMeta SCRIPTLET;
+public class InstrumentLogMetaMap extends InstrumentLogMeta implements MetaMap {
     
-    public String buildFrom(String name) {               
-        return "TestWorksheet ";       
-    }       
-    
-    public TestWorksheetMetaMap(){
+    public InstrumentLogMetaMap() {
         super();
-        SCRIPTLET = new ScriptletMeta(path+"scriptlet.");
     }
     
-    public TestWorksheetMetaMap(String path){
-        super(path);           
-        SCRIPTLET = new ScriptletMeta(path+"scriptlet.");
+    public InstrumentLogMetaMap(String path){
+        super(path);
     }
     
-    public boolean hasColumn(String name){     
-        if(name.startsWith(path+"scriptlet."))
-            return SCRIPTLET.hasColumn(name);
+    public String buildFrom(String where) {
+        return "InstrumentLog ";
+    }
+    
+    public boolean hasColumn(String name){
         return super.hasColumn(name);
-    }    
-        
-    public ScriptletMeta getScriptlet() {
-        return SCRIPTLET;
     }
 
+    public static String getTableName() {
+        return "InstrumentLog";
+    }
 }
