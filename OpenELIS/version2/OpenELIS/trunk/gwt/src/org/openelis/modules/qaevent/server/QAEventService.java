@@ -25,7 +25,6 @@
 */
 package org.openelis.modules.qaevent.server;
 
-import org.openelis.domain.IdNameDO;
 import org.openelis.domain.IdNameTestMethodDO;
 import org.openelis.domain.QaEventDO;
 import org.openelis.domain.QaEventTestDropdownDO;
@@ -39,16 +38,13 @@ import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.FieldType;
-import org.openelis.gwt.common.data.IntegerField;
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.common.data.TableDataModel;
 import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
 import org.openelis.gwt.services.AutoCompleteServiceInt;
-import org.openelis.metamap.QaEventMetaMap;
 import org.openelis.modules.qaevent.client.QAEventForm;
-import org.openelis.persistence.CachingManager;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.QaEventRemote;
 import org.openelis.remote.TestRemote;
@@ -69,8 +65,6 @@ public class QAEventService implements AppScreenFormServiceInt<QAEventForm, Quer
     private static final int leftTableRowsPerPage = 19;  
     
     private UTFResource openElisConstants= UTFResource.getBundle((String)SessionManager.getSession().getAttribute("locale"));
-    
-    private static final QaEventMetaMap QAEMeta = new QaEventMetaMap();
     
     public Query<TableDataRow<Integer>> commitQuery(Query<TableDataRow<Integer>> query) throws RPCException {
         List qaEventNames = new ArrayList();
@@ -118,6 +112,7 @@ public class QAEventService implements AppScreenFormServiceInt<QAEventForm, Quer
         qaeDO =  getQaEventDOFromRPC(rpc);
         try{ 
             qaeId = remote.updateQaEvent(qaeDO);
+            qaeDO = remote.getQaEvent(qaeId);
         }catch(ValidationErrorsList e) {
             setRpcErrors(e.getErrorList(), rpc);
             return rpc;
@@ -139,6 +134,7 @@ public class QAEventService implements AppScreenFormServiceInt<QAEventForm, Quer
         qaeDO =  getQaEventDOFromRPC(rpc);       
         try{ 
             remote.updateQaEvent(qaeDO);
+            qaeDO = remote.getQaEvent(rpc.entityKey);
         }catch(ValidationErrorsList e) {
             setRpcErrors(e.getErrorList(), rpc);
             return rpc;
