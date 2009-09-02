@@ -25,21 +25,15 @@
 */
 package org.openelis.modules.section.client;
 
-import java.util.ArrayList;
-
 import org.openelis.cache.SectionCache;
-import org.openelis.domain.SectionDO;
 import org.openelis.gwt.common.Query;
 import org.openelis.gwt.common.data.KeyListManager;
 import org.openelis.gwt.common.data.QueryStringField;
-import org.openelis.gwt.common.data.StringObject;
-import org.openelis.gwt.common.data.TableDataModel;
 import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.screen.CommandChain;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.ButtonPanel;
 import org.openelis.gwt.widget.CollapsePanel;
-import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.ResultsTable;
 import org.openelis.metamap.SectionMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
@@ -53,9 +47,7 @@ public class SectionScreen extends OpenELISScreenForm<SectionForm, Query<TableDa
 
     private KeyListManager<Integer> keyList = new KeyListManager<Integer>();
     
-    private SectionMetaMap SectionMeta = new SectionMetaMap(); 
-    
-    private Dropdown section;
+    private SectionMetaMap SectionMeta = new SectionMetaMap();    
     
     private TextBox sectName;
     
@@ -69,8 +61,6 @@ public class SectionScreen extends OpenELISScreenForm<SectionForm, Query<TableDa
         ButtonPanel bpanel, atozButtons;
         CommandChain chain;       
         ResultsTable atozTable;
-        ArrayList cache;
-        TableDataModel<TableDataRow> model;
         
         atozTable = (ResultsTable)getWidget("azTable");
         atozButtons = (ButtonPanel)getWidget("atozButtons");
@@ -86,17 +76,12 @@ public class SectionScreen extends OpenELISScreenForm<SectionForm, Query<TableDa
         chain.addCommand(bpanel);
         chain.addCommand(keyList);
         chain.addCommand(atozTable);
-        chain.addCommand(atozButtons);   
-        
-        section = (Dropdown)getWidget(SectionMeta.getParentSectionId());        
+        chain.addCommand(atozButtons);             
         
         sectName = (TextBox)getWidget(SectionMeta.getName());
                      
         updateChain.add(afterUpdate);
         super.afterDraw(success);
-        cache = SectionCache.getSectionList();
-        model = getSectionList(cache);
-        section.setModel(model);
     }
     
     public void performCommand(Enum action, Object obj) {        
@@ -139,26 +124,4 @@ public class SectionScreen extends OpenELISScreenForm<SectionForm, Query<TableDa
             sectName.setFocus(true);
         }
     };
-    
-    private TableDataModel<TableDataRow> getSectionList(ArrayList list){
-        TableDataModel<TableDataRow> m = new TableDataModel<TableDataRow>();
-        TableDataRow<Integer> row;
-        SectionDO sectDO;
-        
-        if(list == null)
-            return m;
-        
-        m = new TableDataModel<TableDataRow>();
-        m.add(new TableDataRow<Integer>(null,new StringObject("")));
-        
-        for(int i=0; i<list.size(); i++){
-            row = new TableDataRow<Integer>(1);
-            sectDO = (SectionDO)list.get(i);
-            row.key = sectDO.getId();
-            row.cells[0] = new StringObject(sectDO.getName());
-            m.add(row);
-        }
-        
-        return m;
-    }
 }

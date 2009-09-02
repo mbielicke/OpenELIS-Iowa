@@ -61,6 +61,7 @@ import org.openelis.remote.AnalyteRemote;
 import org.openelis.remote.CategoryRemote;
 import org.openelis.remote.InventoryItemRemote;
 import org.openelis.remote.QcRemote;
+import org.openelis.remote.SystemUserUtilRemote;
 import org.openelis.server.constants.Constants;
 import org.openelis.util.FormUtil;
 import org.openelis.util.SessionManager;
@@ -232,7 +233,7 @@ public class QCService implements
         List<SecuritySystemUserDO> users;
         InventoryItemRemote invRemote;
         AnalyteRemote anaRemote;
-        QcRemote qcRemote;
+        SystemUserUtilRemote remote;
         
         dataModel = null;        
         if("inventoryItem".equals(cat)) {
@@ -240,8 +241,8 @@ public class QCService implements
             items = invRemote.inventoryItemStoreAutoCompleteLookupByName(match.trim()+"%",10, false, true);
             dataModel = getInvItemAutocompleteModel(items);
         } else if("preparedBy".equals(cat)) {
-            qcRemote = (QcRemote)EJBFactory.lookup("openelis/QcBean/remote");
-            users =  qcRemote.preparedByAutocompleteByName(match.trim()+"%", 10);
+            remote = (SystemUserUtilRemote)EJBFactory.lookup("openelis/SystemUserUtilBean/remote");
+            users = remote.systemUserAutocompleteByName(match.trim() + "%", 10);
             dataModel = getPrepByAutocompleteModel(users);
         } else if("analyte".equals(cat)) {
             anaRemote = (AnalyteRemote)EJBFactory.lookup("openelis/AnalyteBean/remote");

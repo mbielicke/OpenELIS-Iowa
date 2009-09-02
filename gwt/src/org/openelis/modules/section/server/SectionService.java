@@ -198,46 +198,68 @@ public class SectionService implements
                                      TableDataModel model,
                                      String match,
                                      HashMap<String, FieldType> params) throws RPCException {
-        OrganizationRemote remote = (OrganizationRemote)EJBFactory.lookup("openelis/OrganizationBean/remote");
-        TableDataModel<TableDataRow<Integer>> dataModel = new TableDataModel<TableDataRow<Integer>>();
+        OrganizationRemote oremote;
+        TableDataModel<TableDataRow<Integer>> dataModel;
         List autoCompleteList;
-    
-        try{
-            int id = Integer.parseInt(match); //this will throw an exception if it isnt an id
-            //lookup by id...should only bring back 1 result
-            autoCompleteList = remote.autoCompleteLookupById(id);
-            
-        }catch(NumberFormatException e){
-            //it isnt an id
-            //lookup by name
-            autoCompleteList = remote.autoCompleteLookupByName(match+"%", 10);
-        }
+        int id,i;
+        OrganizationAutoDO resultDO;
+        Integer orgId;        
+        String name,address,city,state;
+        TableDataRow<Integer> data;
+        SectionRemote sremote;
+        SectionDO sectDO;
+ 
         
-        for(int i=0; i < autoCompleteList.size(); i++){
-            OrganizationAutoDO resultDO = (OrganizationAutoDO) autoCompleteList.get(i);
-            //org id
-            Integer orgId = resultDO.getId();
-            //org name
-            String name = resultDO.getName();
-            //org street address
-            String address = resultDO.getAddress();
-            //org city
-            String city = resultDO.getCity();
-            //org state
-            String state = resultDO.getState();
+        dataModel = new TableDataModel<TableDataRow<Integer>>();
+        
+        if("organization".equals(cat)) {
+            oremote = (OrganizationRemote)EJBFactory.lookup("openelis/OrganizationBean/remote");
+            try{
+                id = Integer.parseInt(match); //this will throw an exception if it isnt an id
+                //lookup by id...should only bring back 1 result
+                autoCompleteList = oremote.autoCompleteLookupById(id);
+                
+            }catch(NumberFormatException e){
+                //it isnt an id lookup by name
+                autoCompleteList = oremote.autoCompleteLookupByName(match+"%", 10);
+            }
             
-            TableDataRow<Integer> data = new TableDataRow<Integer>(orgId,
-                                                                   new FieldType[] {
-                                                                                    new StringObject(name),
-                                                                                    new StringObject(address),
-                                                                                    new StringObject(city),
-                                                                                    new StringObject(state)
-                                                                   }
-                                         );
+            for(i=0; i < autoCompleteList.size(); i++){
+                resultDO = (OrganizationAutoDO) autoCompleteList.get(i);
+                //org id
+                orgId = resultDO.getId();
+                //org name
+                name = resultDO.getName();
+                //org street address
+                address = resultDO.getAddress();
+                //org city
+                city = resultDO.getCity();
+                //org state
+                state = resultDO.getState();
+                
+                data = new TableDataRow<Integer>(orgId,new FieldType[] {new StringObject(name),
+                                                                        new StringObject(address),
+                                                                        new StringObject(city),
+                                                                        new StringObject(state)}
+                );
+                
+                //add the dataset to the datamodel
+                dataModel.add(data);                            
+            }       
+        } else if("parentSection".equals(cat)) {
+            sremote = (SectionRemote)EJBFactory.lookup("openelis/SectionBean/remote");
+            autoCompleteList = sremote.getAutoCompleteSectionByName(match+"%", 10);
             
-            //add the dataset to the datamodel
-            dataModel.add(data);                            
-        }       
+            for (i = 0; i < autoCompleteList.size(); i++) {
+
+                sectDO = (SectionDO)autoCompleteList.get(i);
+                id = sectDO.getId();
+                name = sectDO.getName();
+
+                data = new TableDataRow<Integer>(id, new StringObject(name));
+                dataModel.add(data);
+            }
+        }
         
         return dataModel;   
     }
@@ -249,7 +271,14 @@ public class SectionService implements
         rpc.description.setValue(sectionDO.getDescription());
         rpc.isExternal.setValue(sectionDO.getIsExternal());
         rpc.name.setValue(sectionDO.getName());
-        rpc.parentSectionId.setValue(new TableDataRow<Integer>(sectionDO.getParentSectionId()));
+        
+        model = new TableDataModel<TableDataRow<Integer>>();
+        if(sectionDO.getParentSectionId() != null) {
+            model.add(new TableDataRow<Integer>(sectionDO.getParentSectionId(),
+                            new StringObject(sectionDO.getParentSectionName())));
+        }
+        rpc.parentSectionId.setModel(model);
+        rpc.parentSectionId.setValue(model.get(0));
         
         model = new TableDataModel<TableDataRow<Integer>>();
         if(sectionDO.getOrganizationId() != null) {

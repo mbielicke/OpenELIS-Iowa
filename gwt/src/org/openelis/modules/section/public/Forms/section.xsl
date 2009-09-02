@@ -30,7 +30,8 @@ UIRF Software License are applicable instead of those above.
                 xmlns:resource="xalan://org.openelis.util.UTFResource"                
                 xmlns:locale="xalan://java.util.Locale"
                 xmlns:meta="xalan://org.openelis.metamap.SectionMetaMap"   
-                xmlns:org="xalan://org.openelis.meta.OrganizationMeta"         
+                xmlns:org="xalan://org.openelis.meta.OrganizationMeta"
+                xmlns:parentSect="xalan://org.openelis.meta.SectionMeta"         
                 extension-element-prefixes="resource"
                 version="1.0">
 	<xsl:import href="aToZTwoColumns.xsl"/>
@@ -46,10 +47,14 @@ UIRF Software License are applicable instead of those above.
 	<xalan:component prefix="org">
 		<xalan:script lang="javaclass" src="xalan://org.openelis.meta.OrganizationMeta"/>
 	</xalan:component>
+		<xalan:component prefix="parentSect">
+		<xalan:script lang="javaclass" src="xalan://org.openelis.meta.SectionMeta"/>
+	</xalan:component>
 	
 	<xsl:template match="doc">	
 	   <xsl:variable name="sect" select="meta:new()"/>
 	   <xsl:variable name="o" select="meta:getOrganization($sect)"/>
+	   <xsl:variable name="psect" select="meta:getParentSection($sect)"/>
 		<xsl:variable name="language">
 		<xsl:value-of select="locale"/>
 		</xsl:variable>
@@ -128,7 +133,7 @@ UIRF Software License are applicable instead of those above.
 								<row>
 								  <text style="Prompt"><xsl:value-of select="resource:getString($constants,'name')"/>:</text>
 								  <widget colspan = "6">	
-									<textbox key="{meta:getName($sect)}" tab = "{meta:getDescription($sect)},{meta:getParentSectionId($sect)}" case = "lower" max="20" width="145px" />																									    								   
+									<textbox key="{meta:getName($sect)}" tab = "{meta:getDescription($sect)},{parentSect:getName($psect)}" case = "lower" max="20" width="145px" />																									    								   
 								  </widget>
 								</row>
 								<row>
@@ -144,7 +149,7 @@ UIRF Software License are applicable instead of those above.
 								<row>
 									<text style="Prompt"><xsl:value-of select="resource:getString($constants,'organization')"/>:</text>
 									<widget>
-										<autoComplete case="upper" cat="organization" key="{org:getName($o)}" tab = "{meta:getParentSectionId($sect)},{meta:getIsExternal($sect)}" serviceUrl="OpenELISServlet?service=org.openelis.modules.section.server.SectionService" width="285px">
+										<autoComplete case="upper" cat="organization" key="{org:getName($o)}" tab = "{parentSect:getName($psect)},{meta:getIsExternal($sect)}" serviceUrl="OpenELISServlet?service=org.openelis.modules.section.server.SectionService" width="285px">
 								       		<headers><xsl:value-of select="resource:getString($constants,'name')"/>,<xsl:value-of select="resource:getString($constants,'street')"/>,<xsl:value-of select="resource:getString($constants,'city')"/>,<xsl:value-of select="resource:getString($constants,'st')"/></headers>
 										    <widths>180,110,100,20</widths>
 									  	</autoComplete>
@@ -152,7 +157,10 @@ UIRF Software License are applicable instead of those above.
 								</row>
 								<row>
 									<text style="Prompt"><xsl:value-of select="resource:getString($constants,'parentSection')"/>:</text>
-								    <dropdown key="{meta:getParentSectionId($sect)}" tab = "{meta:getName($sect)},{org:getName($o)}" width="180px" />									
+								    <!-- <dropdown key="{parentSect:getName($psect)}" tab = "{meta:getName($sect)},{org:getName($o)}" width="180px" />-->									
+								    <autoComplete case="lower" cat="parentSection" key="{parentSect:getName($psect)}" tab = "{meta:getName($sect)},{org:getName($o)}" serviceUrl="OpenELISServlet?service=org.openelis.modules.section.server.SectionService" width="180px">
+								        <widths>180</widths>
+									</autoComplete>
 								</row>			
 						     </TablePanel>			                                                       					        
 							</VerticalPanel>						    	
@@ -165,7 +173,7 @@ UIRF Software License are applicable instead of those above.
 			 <check key="{meta:getIsExternal($sect)}" required="true"/>			 
 			 <string key="{meta:getDescription($sect)}" max="60" required="false"/>			 
 			 <dropdown key="{org:getName($o)}" case="lower" required="false" type="integer"/>
-			 <dropdown key="{meta:getParentSectionId($sect)}" case="lower" required="false" type="integer"/>			
+			 <dropdown key="{parentSect:getName($psect)}" case="lower" required="false" type="integer"/>			
 		  </rpc>
 		</screen>
   </xsl:template>
