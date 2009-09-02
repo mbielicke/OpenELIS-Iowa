@@ -37,6 +37,7 @@ import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.gwt.common.SecurityModule.ModuleFlags;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.local.AddressLocal;
 import org.openelis.local.LockLocal;
@@ -47,16 +48,16 @@ import org.openelis.security.domain.SystemUserDO;
 import org.openelis.security.local.SystemUserLocal;
 import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
+import org.openelis.utils.ReferenceTableCache;
+import org.openelis.utils.SecurityInterceptor;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
-import javax.ejb.EJBs;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -65,11 +66,6 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 @Stateless
-@EJBs({
-    @EJB(name="ejb/Lock",beanInterface=LockLocal.class),
-    @EJB(name="ejb/Address",beanInterface=AddressLocal.class),
-    @EJB(name="ejb/SystemUser",beanInterface=SystemUserLocal.class)
-})
 @SecurityDomain("openelis")
 @RolesAllowed("provider-select")
 public class ProviderBean implements ProviderRemote, ProviderLocal {
@@ -80,19 +76,21 @@ public class ProviderBean implements ProviderRemote, ProviderLocal {
     @Resource
     private SessionContext ctx;
     
+    @EJB
     private SystemUserLocal userLocal;
     
+    @EJB
     private LockLocal lockBean;
+    
+    @EJB
     private AddressLocal addressBean;
     
     private static final ProviderMetaMap ProvMeta = new ProviderMetaMap(); 
     
-    @PostConstruct
-    private void init()
-    {
-        lockBean =  (LockLocal)ctx.lookup("ejb/Lock");
-        addressBean =  (AddressLocal)ctx.lookup("ejb/Address");
-        userLocal = (SystemUserLocal)ctx.lookup("ejb/SystemUser");
+    private static Integer providerRefTableId;
+    
+    public ProviderBean() {
+        providerRefTableId = ReferenceTableCache.getReferenceTable("provider");
     }
     
     public ProviderDO getProvider(Integer providerId) {                 
@@ -131,10 +129,7 @@ public class ProviderBean implements ProviderRemote, ProviderLocal {
        return provNotes;
     }
 
-    public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception {
-        
-       Query refIdQuery = manager.createNamedQuery("getTableId");
-       refIdQuery.setParameter("name", "provider");                       
+    public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception {                         
         
        StringBuffer sb = new StringBuffer();
        QueryBuilder qb = new QueryBuilder();
@@ -168,14 +163,12 @@ public class ProviderBean implements ProviderRemote, ProviderLocal {
 
     @RolesAllowed("provider-update")
     public Integer updateProvider(ProviderDO providerDO, NoteDO noteDO,List addresses) throws Exception{
-        Query query = manager.createNamedQuery("getTableId");
-        query.setParameter("name", "provider");
-        Integer providerReferenceId = (Integer)query.getSingleResult();
+        SecurityInterceptor.applySecurity(ctx.getCallerPrincipal().getName(), "provider", ModuleFlags.UPDATE);
         Integer providerId = providerDO.getId();
         
         if(providerId != null){
             //we need to call lock one more time to make sure their lock didnt expire and someone else grabbed the record
-            lockBean.validateLock(providerReferenceId,providerId);
+            lockBean.validateLock(providerRefTableId,providerId);
         }
         
         validateProvider(providerDO,addresses);
@@ -240,7 +233,7 @@ public class ProviderBean implements ProviderRemote, ProviderLocal {
                 note = new Note();                
                 note.setIsExternal(noteDO.getIsExternal());
                 note.setReferenceId(provider.getId());
-                note.setReferenceTableId(providerReferenceId);
+                note.setReferenceTableId(providerRefTableId);
                 note.setSubject(noteDO.getSubject());
                 note.setSystemUserId(lockBean.getSystemUserId());
                 note.setText(noteDO.getText());
@@ -255,23 +248,20 @@ public class ProviderBean implements ProviderRemote, ProviderLocal {
             ex.printStackTrace();
             throw ex;
         } 
-        lockBean.giveUpLock(providerReferenceId,provider.getId()); 
+        lockBean.giveUpLock(providerRefTableId,provider.getId()); 
             
         return provider.getId();
     }
 
     @RolesAllowed("provider-update")
     public ProviderDO getProviderAndLock(Integer providerId, String session) throws Exception{
-        Query query = manager.createNamedQuery("getTableId");
-        query.setParameter("name", "provider");
-        lockBean.getLock((Integer)query.getSingleResult(),providerId);         
+        SecurityInterceptor.applySecurity(ctx.getCallerPrincipal().getName(), "provider", ModuleFlags.UPDATE);
+        lockBean.getLock(providerRefTableId,providerId);         
         return getProvider(providerId);
     }
 
-    public ProviderDO getProviderAndUnlock(Integer providerId, String session) {
-        Query query = manager.createNamedQuery("getTableId");
-        query.setParameter("name", "provider");
-        lockBean.giveUpLock((Integer)query.getSingleResult(),providerId);
+    public ProviderDO getProviderAndUnlock(Integer providerId, String session) {        
+        lockBean.giveUpLock(providerRefTableId,providerId);
         return getProvider(providerId);
     }
 
@@ -288,7 +278,8 @@ public class ProviderBean implements ProviderRemote, ProviderLocal {
        String location = provAddDO.getLocation();  
        String city = provAddDO.getAddressDO().getCity();
        String state = provAddDO.getAddressDO().getState();
-       String zipcode = provAddDO.getAddressDO().getZipCode();      
+       String zipcode = provAddDO.getAddressDO().getZipCode();
+       String country = provAddDO.getAddressDO().getCountry();
        if(!provAddDO.getDelete()) {
         if(location == null || "".equals(location)){            
            exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex, ProvMeta.getProviderAddress().getLocation()));
@@ -302,6 +293,10 @@ public class ProviderBean implements ProviderRemote, ProviderLocal {
         if(zipcode == null || "".equals(zipcode)){            
            exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex,ProvMeta.getProviderAddress().getAddress().getZipCode()));
         }
+        
+        if(country == null || "".equals(country)){            
+            exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex,ProvMeta.getProviderAddress().getAddress().getCountry()));
+         }
        }
    }
     

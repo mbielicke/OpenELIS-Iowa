@@ -53,6 +53,7 @@ import org.openelis.metamap.SectionMetaMap;
 import org.openelis.remote.SectionRemote;
 import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
+import org.openelis.utils.ReferenceTableCache;
 
 @Stateless
 
@@ -66,13 +67,19 @@ public class SectionBean implements SectionRemote {
     @Resource
     private SessionContext ctx;
     
-    private SectionMetaMap SectMeta = new SectionMetaMap();
+    private static final SectionMetaMap SectMeta = new SectionMetaMap();
     
     @EJB
     private LockLocal lockBean;
     
     @EJB
     private JMSMessageProducerLocal jmsProducer;
+    
+    private static Integer sectRefTableId;
+    
+    private SectionBean(){
+        sectRefTableId = ReferenceTableCache.getReferenceTable("section");
+    }
     
     public List getAutoCompleteSectionByName(String name, int maxResults) {
         Query query = manager.createNamedQuery("Section.AutoByName");
@@ -93,20 +100,12 @@ public class SectionBean implements SectionRemote {
     }
 
     public SectionDO getSectionAndLock(Integer sectionId, String session) throws Exception {
-        Query query;
-        
-        query = manager.createNamedQuery("getTableId");
-        query.setParameter("name", "section");
-        lockBean.getLock((Integer)query.getSingleResult(), sectionId);
+        lockBean.getLock(sectRefTableId, sectionId);
         return getSection(sectionId);
     }
 
     public SectionDO getSectionAndUnlock(Integer sectionId, String session) {
-        Query unlockQuery;
-        
-        unlockQuery = manager.createNamedQuery("getTableId");
-        unlockQuery.setParameter("name", "section");
-        lockBean.giveUpLock((Integer)unlockQuery.getSingleResult(), sectionId);
+        lockBean.giveUpLock(sectRefTableId, sectionId);
         return getSection(sectionId);
     }
 
@@ -156,15 +155,12 @@ public class SectionBean implements SectionRemote {
         Section section;
         SectionCacheMessage msg;
         
-        query = manager.createNamedQuery("getTableId");
-        query.setParameter("name", "section");
-        sectReferenceId = (Integer)query.getSingleResult();
         sectId = sectionDO.getId();
         
         if (sectId != null) {
             // we need to call lock one more time to make sure their lock
             // didnt expire and someone else grabbed the record
-            lockBean.validateLock(sectReferenceId, sectId);
+            lockBean.validateLock(sectRefTableId, sectId);
         }
 
         validateSection(sectionDO);
@@ -188,7 +184,7 @@ public class SectionBean implements SectionRemote {
         if(sectId == null) {
             manager.persist(section);
         }
-        lockBean.giveUpLock(sectReferenceId, sectId);     
+        lockBean.giveUpLock(sectRefTableId, sectId);     
         
         //invalidate the cache
         msg = new SectionCacheMessage();        

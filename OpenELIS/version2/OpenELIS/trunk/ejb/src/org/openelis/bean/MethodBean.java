@@ -39,14 +39,13 @@ import org.openelis.metamap.MethodMetaMap;
 import org.openelis.remote.MethodRemote;
 import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
+import org.openelis.utils.ReferenceTableCache;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.ejb.EJB;
-import javax.ejb.EJBs;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -55,7 +54,6 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 @Stateless
-@EJBs( {@EJB(name = "ejb/Lock", beanInterface = LockLocal.class)})
 @SecurityDomain("openelis")
 public class MethodBean implements MethodRemote {
 
@@ -65,18 +63,17 @@ public class MethodBean implements MethodRemote {
     @Resource
     private SessionContext ctx;
 
+    @EJB
     private LockLocal lockBean;
 
     private static MethodMetaMap MethodMeta = new MethodMetaMap();
 
-    @PostConstruct
-    private void init()
-
-    {
-        lockBean = (LockLocal)ctx.lookup("ejb/Lock");
-
-    }
-
+    private static Integer methodRefTableId; 
+    
+    public MethodBean() {
+        methodRefTableId = ReferenceTableCache.getReferenceTable("method");
+    } 
+    
     public MethodDO getMethod(Integer methodId) {
         Query query = manager.createNamedQuery("Method.MethodById");
         query.setParameter("id", methodId);
@@ -85,19 +82,13 @@ public class MethodBean implements MethodRemote {
     }
 
     public MethodDO getMethodAndLock(Integer methodId, String session) throws Exception {
-        Query query = manager.createNamedQuery("getTableId");
-        query.setParameter("name", "method");
-
-        lockBean.getLock((Integer)query.getSingleResult(), methodId);
+        lockBean.getLock(methodRefTableId, methodId);
 
         return getMethod(methodId);
     }
 
     public MethodDO getMethodAndUnlock(Integer methodId, String session) {
-        Query query = manager.createNamedQuery("getTableId");
-        query.setParameter("name", "method");
-
-        lockBean.giveUpLock((Integer)query.getSingleResult(), methodId);
+        lockBean.giveUpLock(methodRefTableId, methodId);
 
         return getMethod(methodId);
     }
@@ -149,15 +140,12 @@ public class MethodBean implements MethodRemote {
 
     public Integer updateMethod(MethodDO methodDO) throws Exception {
         try {
-            Query query = manager.createNamedQuery("getTableId");
-            query.setParameter("name", "method");
-            Integer methodReferenceId = (Integer)query.getSingleResult();
             Integer methodId = methodDO.getId();
 
             if (methodId != null) {
                 // we need to call lock one more time to make sure their lock
                 // didnt expire and someone else grabbed the record
-                lockBean.validateLock(methodReferenceId, methodId);
+                lockBean.validateLock(methodRefTableId, methodId);
             }
             
             validateMethod(methodDO);
@@ -182,7 +170,7 @@ public class MethodBean implements MethodRemote {
                 manager.persist(method);
             }
 
-            lockBean.giveUpLock(methodReferenceId, method.getId());
+            lockBean.giveUpLock(methodRefTableId, method.getId());
             return method.getId();
         } catch (Exception ex) {
             ex.printStackTrace();

@@ -28,11 +28,9 @@ package org.openelis.bean;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
-import javax.ejb.EJBs;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -46,6 +44,7 @@ import org.openelis.entity.SystemVariable;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.gwt.common.SecurityModule.ModuleFlags;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.local.LockLocal;
 import org.openelis.metamap.SystemVariableMetaMap;
@@ -53,11 +52,9 @@ import org.openelis.remote.SystemVariableRemote;
 import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
 import org.openelis.utils.ReferenceTableCache;
+import org.openelis.utils.SecurityInterceptor;
 
 @Stateless
-@EJBs({
-    @EJB(name="ejb/Lock",beanInterface=LockLocal.class)
-})
 @SecurityDomain("openelis")
 @RolesAllowed("systemvariable-select")
 public class SystemVariableBean implements SystemVariableRemote{
@@ -68,19 +65,15 @@ public class SystemVariableBean implements SystemVariableRemote{
     @Resource
     private SessionContext ctx;
     
+    @EJB
     private LockLocal lockBean;
+    
     private static int systemVariableRefTableId;
     private static final SystemVariableMetaMap Meta = new SystemVariableMetaMap();
 
     public SystemVariableBean(){
         systemVariableRefTableId = ReferenceTableCache.getReferenceTable("system_variable");
-    }
-    
-    @PostConstruct
-    private void init()
-    {
-        lockBean =  (LockLocal)ctx.lookup("ejb/Lock");
-    }
+    }   
 
     public SystemVariableDO getSystemVariable(Integer sysVarId) {
         Query query = manager.createNamedQuery("SystemVariable.SystemVariable");
@@ -92,6 +85,7 @@ public class SystemVariableBean implements SystemVariableRemote{
 
     @RolesAllowed("systemvariable-update")
     public SystemVariableDO getSystemVariableAndLock(Integer sysVarId, String session) throws Exception {
+        SecurityInterceptor.applySecurity(ctx.getCallerPrincipal().getName(), "system_variable", ModuleFlags.UPDATE);
         lockBean.getLock(systemVariableRefTableId, sysVarId);
         
         return getSystemVariable(sysVarId);
@@ -134,6 +128,7 @@ public class SystemVariableBean implements SystemVariableRemote{
 
    @RolesAllowed("systemvariable-update")
     public Integer updateSystemVariable(SystemVariableDO sysVarDO) throws Exception {
+       SecurityInterceptor.applySecurity(ctx.getCallerPrincipal().getName(), "system_variable", ModuleFlags.UPDATE);
        Integer sysVarId;
        SystemVariable sysVar;
        
@@ -169,19 +164,19 @@ public class SystemVariableBean implements SystemVariableRemote{
     }  
     
    @RolesAllowed("systemvariable-delete")    
-    public void deleteSystemVariable(Integer sysVarId) throws Exception {
-     SystemVariable sysVar;
+   public void deleteSystemVariable(Integer sysVarId) throws Exception {
+       SystemVariable sysVar;
      
-     lockBean.getLock(systemVariableRefTableId, sysVarId);  
+       lockBean.getLock(systemVariableRefTableId, sysVarId);  
      
-     manager.setFlushMode(FlushModeType.COMMIT);
-     sysVar = null;
-     sysVar = manager.find(SystemVariable.class, sysVarId);
-     if(sysVar !=null){
-         manager.remove(sysVar);
-     }             
+       manager.setFlushMode(FlushModeType.COMMIT);
+       sysVar = null;
+       sysVar = manager.find(SystemVariable.class, sysVarId);
+       if(sysVar !=null){
+           manager.remove(sysVar);
+       }             
        
-     lockBean.giveUpLock(systemVariableRefTableId, sysVarId);
+       lockBean.giveUpLock(systemVariableRefTableId, sysVarId);
    }
     
     private void validateSystemVariable(SystemVariableDO sysVarDO) throws Exception{
