@@ -25,32 +25,13 @@
 */
 package org.openelis.remote;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.ejb.Remote;
 
-import org.openelis.domain.IdNameDO;
-import org.openelis.domain.ProjectDO;
-import org.openelis.domain.ProjectParameterDO;
-import org.openelis.gwt.common.data.AbstractField;
+import org.openelis.domain.SecuritySystemUserDO;
 
 @Remote
-public interface ProjectRemote {
-
-    public ProjectDO getProject(Integer projectId);
-    
-    public ProjectDO getProjectAndUnlock(Integer projectId, String session);
-    
-    public ProjectDO getProjectAndLock(Integer projectId, String session)throws Exception;
-    
-    public Integer updateProject(ProjectDO projectDO,
-                                 List<ProjectParameterDO> projParamDOList)throws Exception;
-    
-    public List<IdNameDO> query(ArrayList<AbstractField> fields, int first, int max) throws Exception;    
-    
-    public List<ProjectParameterDO> getProjectParameters(Integer projectId);        
-    
-    public List autoCompleteLookupByName(String projectName, Integer maxResults);
-    
+public interface SystemUserUtilRemote {
+    public List<SecuritySystemUserDO> systemUserAutocompleteByName(String loginName, int numResult);   
 }

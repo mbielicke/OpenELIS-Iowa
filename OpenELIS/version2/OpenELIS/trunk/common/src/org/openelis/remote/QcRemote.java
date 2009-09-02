@@ -34,7 +34,6 @@ import org.openelis.domain.IdNameDO;
 import org.openelis.domain.IdNameLotNumberDO;
 import org.openelis.domain.QcAnalyteDO;
 import org.openelis.domain.QcDO;
-import org.openelis.domain.SecuritySystemUserDO;
 import org.openelis.gwt.common.data.AbstractField;
 
 @Remote
@@ -50,9 +49,7 @@ public interface QcRemote {
     
     public List<QcAnalyteDO> getQcAnalytes(Integer qcId);
     
-    public List<IdNameLotNumberDO> query(ArrayList<AbstractField> fields, int first, int max) throws Exception;
-    
-    public List<SecuritySystemUserDO> preparedByAutocompleteByName(String loginName, int numResult);
+    public List<IdNameLotNumberDO> query(ArrayList<AbstractField> fields, int first, int max) throws Exception;   
     
     public List<IdNameDO> qcAutocompleteByName(String name, int numResult);
 }

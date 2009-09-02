@@ -26,7 +26,6 @@
 package org.openelis.remote;
 
 import org.openelis.domain.NoteDO;
-import org.openelis.domain.ProviderAddressDO;
 import org.openelis.domain.ProviderDO;
 import org.openelis.gwt.common.data.AbstractField;
 

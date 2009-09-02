@@ -30,27 +30,24 @@ import java.util.List;
 
 import javax.ejb.Remote;
 
-import org.openelis.domain.IdNameDO;
-import org.openelis.domain.ProjectDO;
-import org.openelis.domain.ProjectParameterDO;
+import org.openelis.domain.InstrumentDO;
+import org.openelis.domain.InstrumentLogDO;
 import org.openelis.gwt.common.data.AbstractField;
 
 @Remote
-public interface ProjectRemote {
-
-    public ProjectDO getProject(Integer projectId);
+public interface InstrumentRemote {
     
-    public ProjectDO getProjectAndUnlock(Integer projectId, String session);
+    public InstrumentDO getInstrument(Integer instrumentId);
     
-    public ProjectDO getProjectAndLock(Integer projectId, String session)throws Exception;
+    public InstrumentDO getInstrumentAndUnlock(Integer instrumentId, String session);
     
-    public Integer updateProject(ProjectDO projectDO,
-                                 List<ProjectParameterDO> projParamDOList)throws Exception;
+    public InstrumentDO getInstrumentAndLock(Integer instrumentId, String session) throws Exception;
     
-    public List<IdNameDO> query(ArrayList<AbstractField> fields, int first, int max) throws Exception;    
+    public Integer updateInstrument(InstrumentDO instrumentDO,
+                                    List<InstrumentLogDO> logEntries) throws Exception;   
     
-    public List<ProjectParameterDO> getProjectParameters(Integer projectId);        
+    public List<InstrumentLogDO> getInstrumentLogs(Integer instrumentId);
     
-    public List autoCompleteLookupByName(String projectName, Integer maxResults);
+    public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception;
     
 }
