@@ -23,7 +23,7 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.modules.project.client;
+package org.openelis.modules.instrument.client;
 
 import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.data.AbstractField;
@@ -34,53 +34,57 @@ import org.openelis.gwt.common.data.IntegerField;
 import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.common.data.TableField;
-import org.openelis.metamap.ProjectMetaMap;
+import org.openelis.metamap.InstrumentMetaMap;
 
 import com.google.gwt.xml.client.Node;
 
-public class ProjectForm extends Form<Integer> {
 
+public class InstrumentForm extends Form<Integer> {
 
     private static final long serialVersionUID = 1L;
 
     public IntegerField id;
-    public StringField name, description,referenceTo;
+    public StringField name, description,modelNumber,serialNumber,location;
     public CheckField isActive;
-    public DateField completedDate,startedDate;
-    public DropDownField<Integer> scripletId,ownerId;
-    public TableField<TableDataRow<Integer>> parameterTable;
-        
-    public ProjectForm() {
-        ProjectMetaMap meta = new ProjectMetaMap();
+    public DateField activeBegin,activeEnd;
+    public DropDownField<Integer> scriptletId,typeId;
+    public TableField<TableDataRow<Integer>> logTable;
+    
+    public InstrumentForm() {
+        InstrumentMetaMap meta = new InstrumentMetaMap(); 
         id = new IntegerField(meta.getId());
         name = new StringField(meta.getName());
         description = new StringField(meta.getDescription());
-        referenceTo = new StringField(meta.getReferenceTo());
+        modelNumber = new StringField(meta.getModelNumber());
+        serialNumber = new StringField(meta.getSerialNumber());
+        location = new StringField(meta.getLocation());
+        scriptletId = new DropDownField<Integer>(meta.getScriptlet().getName());
+        typeId = new DropDownField<Integer>(meta.getTypeId());
+        activeBegin = new DateField(meta.getActiveBegin());
+        activeEnd = new DateField(meta.getActiveEnd());
         isActive = new CheckField(meta.getIsActive());
-        completedDate = new DateField(meta.getCompletedDate());
-        startedDate = new DateField(meta.getStartedDate());
-        scripletId = new DropDownField<Integer>(meta.getScriptlet().getName());
-        ownerId = new DropDownField<Integer>(meta.getOwnerId());
-        parameterTable = new TableField<TableDataRow<Integer>>("parameterTable");
-    }    
+        logTable = new TableField<TableDataRow<Integer>>("logTable");
+    }
     
-    public ProjectForm(Node node) {
+    public InstrumentForm(Node node) {
         this();
         createFields(node);
     }
-
+    
     public AbstractField[] getFields() {
         return new AbstractField[] {
                                     id,
                                     name,
                                     description,
-                                    referenceTo,
+                                    modelNumber,
+                                    serialNumber,
+                                    location,
                                     isActive,
-                                    completedDate,
-                                    startedDate,
-                                    scripletId,
-                                    ownerId,
-                                    parameterTable
+                                    activeBegin,
+                                    activeEnd,
+                                    scriptletId,
+                                    typeId,
+                                    logTable
         };
     }
 

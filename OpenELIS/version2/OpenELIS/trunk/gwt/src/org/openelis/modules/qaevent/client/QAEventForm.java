@@ -60,7 +60,7 @@ public class QAEventForm extends Form<Integer> {
         description =  new StringField(meta.getDescription());
         isBillable = new CheckField(meta.getIsBillable());
         reportingText = new StringField(meta.getReportingText());
-        testId = new DropDownField<Integer>(meta.getTestId());
+        testId = new DropDownField<Integer>(meta.getTest().getName());
         typeId = new DropDownField<Integer>(meta.getTypeId());
     }
     

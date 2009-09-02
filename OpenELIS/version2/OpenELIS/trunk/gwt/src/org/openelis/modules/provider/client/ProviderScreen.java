@@ -226,17 +226,18 @@ public class ProviderScreen extends OpenELISScreenForm<ProviderForm,Query<TableD
     };   
     
     public boolean onBeforeTabSelected(SourcesTabEvents sender, int index) {
+
+        return true;
+    }
+
+    public void onTabSelected(SourcesTabEvents sender, int index) {
+        form.provTabPanel = tabPanel.getSelectedTabKey();
         if(state != State.QUERY){
             if (index == 0 && !form.addresses.load) 
                 fillAddressModel();
             else if (index == 1 && !form.notes.load) 
                 fillNotesModel();
         }
-        return true;
-    }
-
-    public void onTabSelected(SourcesTabEvents sender, int tabIndex) {
-        form.provTabPanel = tabPanel.getSelectedTabKey();
     }
     
     public boolean canAdd(TableWidget widget,TableDataRow set, int row) {

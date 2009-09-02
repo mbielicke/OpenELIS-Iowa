@@ -51,7 +51,7 @@ public class SectionForm extends Form<Integer> {
         name = new StringField(meta.getName());                                    
         description = new StringField(meta.getDescription());
         isExternal = new CheckField(meta.getIsExternal());
-        parentSectionId = new DropDownField<Integer>(meta.getParentSectionId());
+        parentSectionId = new DropDownField<Integer>(meta.getParentSection().getName());
         organizationId = new DropDownField<Integer>(meta.getOrganization().getName());
     }
 

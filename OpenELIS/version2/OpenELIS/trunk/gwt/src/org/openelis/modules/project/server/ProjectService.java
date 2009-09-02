@@ -56,6 +56,7 @@ import org.openelis.modules.project.client.ProjectForm;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.ProjectRemote;
 import org.openelis.remote.ScriptletRemote;
+import org.openelis.remote.SystemUserUtilRemote;
 import org.openelis.server.constants.Constants;
 import org.openelis.util.FormUtil;
 import org.openelis.util.SessionManager;
@@ -215,13 +216,13 @@ public class ProjectService implements AppScreenFormServiceInt<ProjectForm, Quer
         TableDataModel<TableDataRow<Integer>> dataModel;
         List<SecuritySystemUserDO> list;
         List<IdNameDO> entries;
-        ProjectRemote remote;
+        SystemUserUtilRemote remote;
         ScriptletRemote sremote;
         
         dataModel = null;
         if(("owner").equals(cat)) {
-            remote = (ProjectRemote)EJBFactory.lookup("openelis/ProjectBean/remote");
-            list = remote.ownerAutocompleteByName(match.trim() + "%", 10);
+            remote = (SystemUserUtilRemote)EJBFactory.lookup("openelis/SystemUserUtilBean/remote");
+            list = remote.systemUserAutocompleteByName(match.trim() + "%", 10);
             dataModel = getOwnerAutocompleteModel(list);
         } else if(("scriptlet").equals(cat)) {
             sremote = (ScriptletRemote)EJBFactory.lookup("openelis/ScriptletBean/remote");

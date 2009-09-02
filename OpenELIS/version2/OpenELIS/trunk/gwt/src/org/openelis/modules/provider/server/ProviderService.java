@@ -58,7 +58,6 @@ import org.openelis.modules.provider.client.AddressesForm;
 import org.openelis.modules.provider.client.NotesForm;
 import org.openelis.modules.provider.client.ProviderForm;
 import org.openelis.persistence.EJBFactory;
-import org.openelis.remote.CategoryRemote;
 import org.openelis.remote.ProviderRemote;
 import org.openelis.server.constants.Constants;
 import org.openelis.util.FormUtil;
@@ -71,7 +70,7 @@ import org.w3c.dom.Element;
 
 public class ProviderService implements AppScreenFormServiceInt<ProviderForm, Query<TableDataRow<Integer>>>{
     
-    private static final long serialVersionUID = 0L;
+    private static final long serialVersionUID = 1L;
     private static final int leftTableRowsPerPage = 18;
      
     private UTFResource openElisConstants= UTFResource.getBundle((String)SessionManager.getSession().getAttribute("locale"));
@@ -208,29 +207,30 @@ public class ProviderService implements AppScreenFormServiceInt<ProviderForm, Qu
     }
 
     public ProviderForm abort(ProviderForm rpc) throws RPCException {
-            ProviderRemote remote = (ProviderRemote)EJBFactory.lookup("openelis/ProviderBean/remote");
-            Integer providerId = rpc.entityKey;
-            
-            
-            ProviderDO provDO = new ProviderDO();
-             try{
-              provDO =  (ProviderDO)remote.getProviderAndUnlock(providerId, SessionManager.getSession().getId());
-              }catch(Exception ex){
-                 throw new RPCException(ex.getMessage());
-             }  
-    //      set the fields in the RPC
-              setFieldsInRPC(rpc, provDO);
-              
-              if(rpc.addresses.load)                  
-                loadAddressesModel(rpc.entityKey, rpc.addresses.providerAddressTable);
-              
-              
-              if(rpc.notes.load)
-                  rpc.notes.notesPanel.setValue(getNotesModel(rpc.entityKey));
-              
-              return rpc;
-           
+        ProviderRemote remote = (ProviderRemote)EJBFactory.lookup("openelis/ProviderBean/remote");
+        Integer providerId = rpc.entityKey;
+        String tab = rpc.provTabPanel;
+
+        ProviderDO provDO = new ProviderDO();
+        try {
+            provDO = (ProviderDO)remote.getProviderAndUnlock(providerId,
+                                                             SessionManager.getSession()
+                                                                           .getId());
+        } catch (Exception ex) {
+            throw new RPCException(ex.getMessage());
         }
+        // set the fields in the RPC
+        setFieldsInRPC(rpc, provDO);
+
+        if ("addressesTab".equals(tab))
+            loadAddressesModel(rpc.entityKey,
+                               rpc.addresses.providerAddressTable);
+        else if ("notesTab".equals(tab))
+            rpc.notes.notesPanel.setValue(getNotesModel(rpc.entityKey));
+
+        return rpc;
+           
+    }
 
     public ProviderForm fetch(ProviderForm rpc) throws RPCException {
             ProviderRemote remote = (ProviderRemote)EJBFactory.lookup("openelis/ProviderBean/remote");
@@ -354,46 +354,6 @@ public class ProviderService implements AppScreenFormServiceInt<ProviderForm, Qu
         ProviderRemote remote = (ProviderRemote)EJBFactory.lookup("openelis/ProviderBean/remote");
         List contactsList = remote.getProviderAddresses(orgId);
         fillAddressTable(model.getValue(),contactsList);
-    }
-    
-    public TableDataModel<TableDataRow> getInitialModel(String cat) {        
-        CategoryRemote catRemote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
-        List<IdNameDO> entries = null; 
-        Integer id = null;
-                
-        TableDataModel<TableDataRow> model = new TableDataModel<TableDataRow>();
-        
-        if(cat.equals("providerType")){
-            id = catRemote.getCategoryId("provider_type");                       
-        }else if(cat.equals("state")){
-            id = catRemote.getCategoryId("state");
-        }else if(cat.equals("country")){
-            id = catRemote.getCategoryId("country");            
-        }
-                
-        if(id != null){
-            entries = catRemote.getDropdownValues(id);
-            
-            if(entries.size() > 0){ 
-                if(cat.equals("providerType")){
-                   model.add(new TableDataRow<Integer>(-1,new StringObject(""))); 
-                } else{
-                    model.add(new TableDataRow<String>("",new StringObject("")));
-                }            
-            }
-        
-            int i=0;
-            for(IdNameDO resultDO : entries){
-                if(cat.equals("providerType")){
-                    model.add(new TableDataRow<Integer>(resultDO.getId(),new StringObject(resultDO.getName())));
-                }else{
-                   model.add(new TableDataRow<String>(resultDO.getName(),new StringObject(resultDO.getName())));
-                }
-                i++;
-            }
-        }        
-        
-        return model;
     }
     
     public StringObject getNotesModel(Integer key){

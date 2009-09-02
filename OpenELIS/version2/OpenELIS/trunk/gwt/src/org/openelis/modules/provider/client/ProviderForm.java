@@ -31,8 +31,6 @@ import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.IntegerField;
 import org.openelis.gwt.common.data.StringField;
-import org.openelis.gwt.common.data.TableDataModel;
-import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.metamap.ProviderMetaMap;
 
 import com.google.gwt.xml.client.Node;

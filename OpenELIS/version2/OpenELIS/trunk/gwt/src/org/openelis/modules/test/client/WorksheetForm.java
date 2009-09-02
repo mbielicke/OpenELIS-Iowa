@@ -40,7 +40,7 @@ public class WorksheetForm extends Form<Integer> {
     /**
      * 
      */
-    private static final long serialVersionUID = -2134012961429860507L;
+    private static final long serialVersionUID = 1L;
     
     public Integer id;
     public DropDownField<Integer> formatId;
@@ -54,7 +54,7 @@ public class WorksheetForm extends Form<Integer> {
     public WorksheetForm() {
         TestMetaMap meta = new TestMetaMap();
         formatId = new DropDownField<Integer>(meta.getTestWorksheet().getFormatId());
-        scriptletId = new DropDownField<Integer>(meta.getTestWorksheet().getScriptletId());
+        scriptletId = new DropDownField<Integer>(meta.getTestWorksheet().getScriptlet().getName());
         batchCapacity = new IntegerField(meta.getTestWorksheet().getBatchCapacity());
         totalCapacity = new IntegerField(meta.getTestWorksheet().getTotalCapacity());
         worksheetTable = new TableField<TableDataRow<Integer>>("worksheetTable");

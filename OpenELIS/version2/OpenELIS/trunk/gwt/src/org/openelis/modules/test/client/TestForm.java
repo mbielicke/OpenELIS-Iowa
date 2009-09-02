@@ -96,7 +96,7 @@ public class TestForm extends Form<Integer> {
         timeHolding = new IntegerField(meta.getTimeHolding());
         labelId = new DropDownField<Integer>(meta.getLabel().getName());
         labelQty = new IntegerField(meta.getLabelQty());
-        testTrailerId = new DropDownField<Integer>(meta.getTestTrailerId());
+        testTrailerId = new DropDownField<Integer>(meta.getTestTrailer().getName());
         testFormatId = new DropDownField<Integer>(meta.getTestFormatId());
         scriptletId = new DropDownField<Integer>(meta.getScriptlet().getName());
         revisionMethodId = new DropDownField<Integer>(meta.getRevisionMethodId());
