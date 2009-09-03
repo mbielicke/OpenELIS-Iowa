@@ -36,7 +36,7 @@ import org.openelis.domain.TestTypeOfSampleDO;
 import org.openelis.domain.TestWorksheetAnalyteDO;
 import org.openelis.domain.TestWorksheetDO;
 import org.openelis.domain.TestWorksheetItemDO;
-import org.openelis.gwt.common.data.AbstractField;
+import org.openelis.gwt.common.rewrite.QueryData;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -51,13 +51,9 @@ public interface TestRemote {
 
     public TestDO getTestAndLock(Integer testId,String session) throws Exception;
 
-    public TestDO getTest(Integer testId);
-
     public List<TestPrepDO> getTestPreps(Integer testId);
     
-    public List<TestReflexDO> getTestReflexes(Integer testId);
-    
-    public List<TestTypeOfSampleDO> getTestTypeOfSamples(Integer testId);
+    public List<TestReflexDO> getTestReflexes(Integer testId);                  
     
     public TestWorksheetDO getTestWorksheet(Integer testId);
     
@@ -65,11 +61,9 @@ public interface TestRemote {
     
     public List<TestWorksheetAnalyteDO> getTestWorksheetAnalytes(Integer testId);
     
-    public List<IdNameDO> getTestAnalytesNotAddedToWorksheet(Integer testId);
+    public List<IdNameDO> getTestAnalytesNotAddedToWorksheet(Integer testId);        
     
-    public List<TestAnalyteDO> getTestAnalytes(Integer testId);
-    
-    public List<TestSectionDO> getTestSections(Integer testId);
+    public List<TestSectionDO> getTestSections(Integer testId) throws Exception;
     
     public List<TestResultDO> getTestResults(Integer testId, Integer resultGroup);
     
@@ -85,16 +79,14 @@ public interface TestRemote {
                               List<TestSectionDO> sectionDOList,
                               List<TestResultDO> resultDOList) throws Exception;
     
-    public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception;
+    public List query(ArrayList<QueryData> fields, int first, int max) throws Exception;
     
-    public List getTestAnalyteDropDownValues(Integer testId);    
+    public List<IdNameDO> getAnalyteIdNamesByTestId(Integer testId);    
     
     public List getTestResultsForTestAnalyte(Integer testId,Integer analyteId);
     
     public List<IdNameDO> getTestResultsforTest(Integer testId);
-    
-    public List<IdNameDO> getResultGroupsForTest(Integer testId);
-    
+        
     public List<IdNameDO> getUnitsOfMeasureForTest(Integer testId);   
     
     public List getTestAutoCompleteByName(String name, int maxResults);
@@ -102,6 +94,4 @@ public interface TestRemote {
     public HashMap<Integer,List<IdNameDO>> getAnalyteResultsMap(Integer testId);
     
     public HashMap<Integer,List<Integer>> getResultGroupAnalytesMap(Integer testId);
-    
-    public HashMap<Integer,Integer> getUnitIdNumResMapForTest(Integer testId);
 }
