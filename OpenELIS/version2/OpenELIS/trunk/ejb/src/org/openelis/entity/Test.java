@@ -67,7 +67,7 @@ import org.openelis.utils.Auditable;
     @NamedQuery(name = "Test.TestByName", query = "from Test t where t.name = :name order by t.name"),
     @NamedQuery(name = "Test.TestIdNameMethodSectionNames", query = "select distinct new org.openelis.domain.TestMethodSectionNamesDO(t.id,t.name,m.name,s.name)" 
              + "  from Test t left join t.method m left join t.testSection ts left join ts.section s where t.isActive = :isActive order by t.name,m.name,s.name "),
-    @NamedQuery(name = "Test.TestMethodAutoByName", query = "select new org.openelis.domain.TestMethodAutoDO(t.id, t.name, m.id, m.name)from Test t LEFT JOIN t.method m " +
+    @NamedQuery(name = "Test.TestMethodAutoByName", query = "select new org.openelis.domain.TestMethodAutoDO(t.id, t.name,t.description, m.id, m.name,m.description)from Test t LEFT JOIN t.method m " +
    		                " where t.name like :name and t.isActive='Y' order by t.name"),
     @NamedQuery(name = "Test.TestListByMethodId", query = "from Test t where t.methodId = :id and t.isActive = 'Y'")})
     

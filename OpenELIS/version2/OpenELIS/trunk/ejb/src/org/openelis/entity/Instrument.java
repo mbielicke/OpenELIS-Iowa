@@ -34,16 +34,28 @@ import org.w3c.dom.Element;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.util.XMLUtil;
 
+import java.util.Collection;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
+
+@NamedQueries({@NamedQuery(name = "Instrument.InstrumentDOById", query = "select new org.openelis.domain.InstrumentDO(inst.id,inst.name,inst.description,inst.modelNumber,"+
+                           " inst.serialNumber,inst.typeId,inst.location,inst.isActive,inst.activeBegin,inst.activeEnd,s.id,s.name)" +
+                           " from Instrument inst left join inst.scriptlet s where inst.id = :id "),
+               @NamedQuery(name = "Instrument.InstrumentsByNameAndSerialNumber", query = "from Instrument where name = :name and serialNumber = :serialNumber")})
 
 @Entity
 @Table(name="instrument")
@@ -83,7 +95,15 @@ public class Instrument implements Auditable, Cloneable {
   private Date activeEnd;             
 
   @Column(name="scriptlet_id")
-  private Integer scriptletId;             
+  private Integer scriptletId;    
+  
+  @OneToMany(fetch = FetchType.LAZY)
+  @JoinColumn(name = "instrument_id",insertable = false, updatable = false)
+  private Collection<InstrumentLog> instrumentLog;
+  
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "scriptlet_id",insertable = false, updatable = false)
+  private Scriptlet scriptlet;
 
 
   @Transient
@@ -165,23 +185,31 @@ public class Instrument implements Auditable, Cloneable {
   public Datetime getActiveBegin() {
     if(activeBegin == null)
       return null;
-    return new Datetime(Datetime.YEAR ,Datetime. DAY,activeBegin);
+    return new Datetime(Datetime.YEAR ,Datetime.DAY,activeBegin);
   }
-  public void setActiveBegin (Datetime active_begin){
-    if((activeBegin == null && this.activeBegin != null) || 
-       (activeBegin != null && !activeBegin.equals(this.activeBegin)))
-      this.activeBegin = active_begin.getDate();
+  public void setActiveBegin (Datetime active_begin){    
+    if ((active_begin == null && this.activeBegin != null) || (active_begin != null && this.activeBegin == null)||
+        (active_begin != null && !active_begin.equals(new Datetime(Datetime.YEAR,Datetime.DAY,this.activeBegin)))) {
+            if (active_begin != null)
+                this.activeBegin = active_begin.getDate();
+            else
+                this.activeBegin = null;
+        }
   }
 
   public Datetime getActiveEnd() {
     if(activeEnd == null)
       return null;
-    return new Datetime(Datetime.YEAR ,Datetime. DAY,activeEnd);
+    return new Datetime(Datetime.YEAR ,Datetime.DAY,activeEnd);
   }
-  public void setActiveEnd (Datetime active_end){
-    if((activeEnd == null && this.activeEnd != null) || 
-       (activeEnd != null && !activeEnd.equals(this.activeEnd)))
-      this.activeEnd = active_end.getDate();
+  public void setActiveEnd (Datetime active_end){    
+    if ((active_end == null && this.activeEnd != null) || (active_end != null && this.activeEnd == null)||
+        (active_end != null && !active_end.equals(new Datetime(Datetime.YEAR,Datetime.DAY,this.activeEnd)))) {
+            if (active_end != null)
+                this.activeEnd = active_end.getDate();
+            else
+                this.activeEnd = null;
+        }
   }
 
   public Integer getScriptletId() {
@@ -192,8 +220,20 @@ public class Instrument implements Auditable, Cloneable {
        (scriptletId != null && !scriptletId.equals(this.scriptletId)))
       this.scriptletId = scriptletId;
   }
-
   
+  public Collection<InstrumentLog> getInstrumentLog() {
+      return instrumentLog;
+  }
+  public void setInstrumentLog(Collection<InstrumentLog> instrumentLog) {
+      this.instrumentLog = instrumentLog;
+  }
+  public Scriptlet getScriptlet() {
+      return scriptlet;
+  }
+  public void setScriptlet(Scriptlet scriptlet) {
+      this.scriptlet = scriptlet;
+  }
+
   public void setClone() {
     try {
       original = (Instrument)this.clone();

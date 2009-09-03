@@ -49,8 +49,8 @@ import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 @NamedQueries({@NamedQuery(name = "TestAnalyte.TestAnalyteByAnalyteId", query = "select t.id from TestAnalyte t where t.analyteId = :id"),
                @NamedQuery(name = "TestAnalyte.TestAnalyteByTestId", query = "from TestAnalyte ta where ta.testId = :testId"),
-               @NamedQuery(name = "TestAnalyte.IdName", query = "select distinct new org.openelis.domain.IdNameDO(ta.id, a.name) from TestAnalyte ta left join ta.analyte a where ta.testId = :testId order by a.name"),
-               @NamedQuery(name = "TestAnalyte.TestAnalyteDOListByTestId", query = "select distinct new org.openelis.domain.TestAnalyteDO(ta.id,ta.testId,ta.analyteGroup,ta.resultGroup,ta.sortOrder,ta.typeId,ta.analyteId,a.name,ta.isReportable,s.id,s.name)" +
+               @NamedQuery(name = "TestAnalyte.IdName", query = "select distinct new org.openelis.domain.IdNameDO(a.id, a.name) from TestAnalyte ta left join ta.analyte a where ta.testId = :testId order by a.name"),
+               @NamedQuery(name = "TestAnalyte.TestAnalyteDOListByTestId", query = "select distinct new org.openelis.domain.TestAnalyteDO(ta.id,ta.testId,ta.rowGroup,ta.resultGroup,ta.sortOrder,ta.typeId,ta.isColumn,ta.analyteId,a.name,ta.isReportable,s.id,s.name)" +
                     "                  from TestAnalyte ta left join ta.scriptlet s left join ta.analyte a where ta.testId = :testId order by ta.sortOrder"),
                @NamedQuery(name = "TestAnalyte.TestAnalytesByResultGroupAndTestId", query = "select ta.resultGroup, ta.id from TestAnalyte ta  where ta.testId = :testId " +
                     " group by ta.resultGroup, ta.id order by ta.resultGroup, ta.id"),
@@ -71,8 +71,8 @@ public class TestAnalyte implements Auditable, Cloneable {
   @Column(name="test_id")
   private Integer testId;   
   
-  @Column(name="analyte_group")
-  private Integer analyteGroup;
+  @Column(name="row_group")
+  private Integer rowGroup;
 
   @Column(name="result_group")
   private Integer resultGroup;             
@@ -87,7 +87,10 @@ public class TestAnalyte implements Auditable, Cloneable {
   private Integer analyteId;             
 
   @Column(name="is_reportable")
-  private String isReportable;             
+  private String isReportable;   
+  
+  @Column(name="is_column")
+  private String isColumn;
 
   @Column(name="scriptlet_id")
   private Integer scriptletId;             
@@ -126,13 +129,13 @@ public class TestAnalyte implements Auditable, Cloneable {
       this.testId = testId;
   }
 
-  public Integer getAnalyteGroup() {
-      return analyteGroup;
+  public Integer getRowGroup() {
+      return rowGroup;
     }
-    public void setAnalyteGroup(Integer analyteGroup) {
-      if((analyteGroup == null && this.analyteGroup != null) || 
-         (analyteGroup != null && !analyteGroup.equals(this.analyteGroup)))
-        this.analyteGroup = analyteGroup;
+    public void setRowGroup(Integer rowGroup) {
+      if((rowGroup == null && this.rowGroup != null) || 
+         (rowGroup != null && !rowGroup.equals(this.rowGroup)))
+        this.rowGroup = rowGroup;
     }
   
   public Integer getResultGroup() {
@@ -179,7 +182,17 @@ public class TestAnalyte implements Auditable, Cloneable {
        (isReportable != null && !isReportable.equals(this.isReportable)))
       this.isReportable = isReportable;
   }
-
+  
+  public String getIsColumn() {
+      return isReportable;
+  }
+  
+  public void setIsColumn(String isColumn) {
+      if((isColumn == null && this.isColumn != null) || 
+         (isColumn != null && !isColumn.equals(this.isColumn)))
+        this.isColumn = isColumn;
+  }
+  
   public Integer getScriptletId() {
     return scriptletId;
   }
@@ -205,7 +218,7 @@ public class TestAnalyte implements Auditable, Cloneable {
 
       AuditUtil.getChangeXML(testId,original.testId,doc,"test_id");
       
-      AuditUtil.getChangeXML(analyteGroup,original.analyteGroup,doc,"analyte_group");
+      AuditUtil.getChangeXML(rowGroup,original.rowGroup,doc,"row_group");
 
       AuditUtil.getChangeXML(resultGroup,original.resultGroup,doc,"result_group");
 
@@ -216,6 +229,8 @@ public class TestAnalyte implements Auditable, Cloneable {
       AuditUtil.getChangeXML(analyteId,original.analyteId,doc,"analyte_id");
 
       AuditUtil.getChangeXML(isReportable,original.isReportable,doc,"is_reportable");
+      
+      AuditUtil.getChangeXML(isColumn,original.isColumn,doc,"is_column");
 
       AuditUtil.getChangeXML(scriptletId,original.scriptletId,doc,"scriptlet_id");
 

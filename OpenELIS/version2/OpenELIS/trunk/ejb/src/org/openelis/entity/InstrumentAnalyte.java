@@ -6,20 +6,23 @@ package org.openelis.entity;
   */
 
 import org.w3c.dom.Document;
+
 import org.w3c.dom.Element;
-import org.openelis.gwt.common.Datetime;
 import org.openelis.util.XMLUtil;
 
-import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
+
 
 @Entity
 @Table(name="instrument_analyte")
@@ -37,6 +40,9 @@ public class InstrumentAnalyte implements Auditable, Cloneable {
   @Column(name="analyte_id")
   private Integer analyteId;             
 
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "analyte_id",insertable = false, updatable = false)
+  private Analyte analyte;
 
   @Transient
   private InstrumentAnalyte original;
@@ -67,6 +73,13 @@ public class InstrumentAnalyte implements Auditable, Cloneable {
     if((analyteId == null && this.analyteId != null) || 
        (analyteId != null && !analyteId.equals(this.analyteId)))
       this.analyteId = analyteId;
+  }
+  
+  public Analyte getAnalyte() {
+      return analyte;
+  }
+  public void setAnalyte(Analyte analyte) {
+      this.analyte = analyte;
   }
 
   
