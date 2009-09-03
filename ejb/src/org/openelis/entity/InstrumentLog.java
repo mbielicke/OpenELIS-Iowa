@@ -40,10 +40,15 @@ import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
+
+@NamedQueries({@NamedQuery(name = "InstrumentLog.InstrumentLogDOsByInstrumentId" , query = "select new org.openelis.domain.InstrumentLogDO(il.id,il.instrumentId,il.typeId,"+
+                          " il.worksheetId,il.eventBegin,il.eventEnd,il.text) from InstrumentLog il where il.instrumentId = :instrumentId")})
 
 @Entity
 @Table(name="instrument_log")
@@ -70,7 +75,9 @@ public class InstrumentLog implements Auditable, Cloneable {
   @Column(name="event_end")
   private Date eventEnd;             
 
-
+  @Column(name="text")
+  private String text;
+  
   @Transient
   private InstrumentLog original;
 
@@ -117,9 +124,11 @@ public class InstrumentLog implements Auditable, Cloneable {
     return new Datetime(Datetime.YEAR,Datetime.SECOND,eventBegin);
   }
   public void setEventBegin (Datetime event_begin){
-    if((eventBegin == null && this.eventBegin != null) || 
-       (eventBegin != null && !eventBegin.equals(this.eventBegin)))
-      this.eventBegin = event_begin.getDate();
+    if ((event_begin == null && this.eventBegin != null) || (event_begin != null && this.eventBegin == null)||
+        (event_begin != null && !event_begin.equals(new Datetime(Datetime.YEAR,Datetime.DAY,this.eventBegin)))) {
+            this.eventBegin = event_begin.getDate();
+        }
+    
   }
 
   public Datetime getEventEnd() {
@@ -128,9 +137,23 @@ public class InstrumentLog implements Auditable, Cloneable {
     return new Datetime(Datetime.YEAR,Datetime.SECOND,eventEnd);
   }
   public void setEventEnd (Datetime event_end){
-    if((eventEnd == null && this.eventEnd != null) || 
-       (eventEnd != null && !eventEnd.equals(this.eventEnd)))
-      this.eventEnd = event_end.getDate();
+    if ((event_end == null && this.eventEnd != null) || (event_end != null && this.eventEnd == null)||
+        (event_end != null && !event_end.equals(new Datetime(Datetime.YEAR,Datetime.DAY,this.eventEnd)))) {
+            if (event_end != null)
+                this.eventEnd = event_end.getDate();
+            else
+                this.eventEnd = null;
+        }
+  }
+  
+  public String getText() {
+      return text;
+  }
+  
+  public void setText(String text) {
+      if((text == null && this.text != null) || 
+         (text != null && !text.equals(this.text)))
+        this.text = text;
   }
 
   
@@ -156,6 +179,8 @@ public class InstrumentLog implements Auditable, Cloneable {
       AuditUtil.getChangeXML(eventBegin,original.eventBegin,doc,"event_begin");
 
       AuditUtil.getChangeXML(eventEnd,original.eventEnd,doc,"event_end");
+      
+      AuditUtil.getChangeXML(text,original.text,doc,"text");
 
       if(root.hasChildNodes())
         return XMLUtil.toString(doc);

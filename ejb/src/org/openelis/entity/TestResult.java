@@ -52,14 +52,9 @@ import org.openelis.utils.Auditable;
                @NamedQuery(name = "TestResult.IdValueByTestId", query = "select distinct new org.openelis.domain.IdNameDO(tr.id,tr.value) " +
                                     " from TestResult tr where tr.testId = :testId order by tr.value "),
                @NamedQuery(name = "TestResult.TestResultDOList", query = "select distinct new org.openelis.domain.TestResultDO(tr.id,tr.testId,tr.resultGroup,"+
-                        " tr.sortOrder,tr.flagsId,tr.typeId,tr.value, tr.significantDigits,tr.roundingMethodId, "+
-                        " tr.quantLimit,tr.contLevel,tr.hazardLevel,tr.unitOfMeasureId)  from TestResult tr " +
-                        " where tr.testId = :testId and tr.resultGroup = :resultGroup order by tr.sortOrder "),
-               @NamedQuery(name = "TestResult.ResultGroupsByTestId", query = "select distinct new org.openelis.domain.IdNameDO(tr.resultGroup,null) " +
-                        " from TestResult tr where tr.testId = :testId order by tr.resultGroup "),
-               @NamedQuery(name = "TestResult.ResultCountByValue", query = "select tr.id from TestResult tr where tr.value = :value"),
-               @NamedQuery(name = "TestResult.NumResultsforUnitIdByTest", query = "select distinct tr.unitOfMeasureId, count(tr.id) " +
-                        " from TestResult tr where tr.testId = :testId and tr.unitOfMeasureId != null group by tr.unitOfMeasureId")})
+                        " tr.sortOrder,tr.flagsId,tr.typeId,tr.value, tr.significantDigits,tr.roundingMethodId, tr.unitOfMeasureId)  from TestResult tr " +
+                        " where tr.testId = :testId and tr.resultGroup = :resultGroup order by tr.sortOrder "),               
+               @NamedQuery(name = "TestResult.ResultCountByValue", query = "select tr.id from TestResult tr where tr.value = :value")})
 @Entity
 @Table(name="test_result")
 @EntityListeners({AuditUtil.class})
@@ -93,15 +88,6 @@ public class TestResult implements Auditable, Cloneable {
 
   @Column(name="rounding_method_id")
   private Integer roundingMethodId;
-  
-  @Column(name="quant_limit")
-  private String quantLimit;             
-
-  @Column(name="cont_level")
-  private String contLevel;      
-  
-  @Column(name="hazard_level")
-  private String hazardLevel;
   
   @Column(name="unit_of_measure_id")
   private Integer unitOfMeasureId;
@@ -190,33 +176,6 @@ public class TestResult implements Auditable, Cloneable {
          (significantDigits != null && !significantDigits.equals(this.significantDigits)))
         this.significantDigits = significantDigits;
     }
-
-  public String getQuantLimit() {
-    return quantLimit;
-  }
-  public void setQuantLimit(String quantLimit) {
-    if((quantLimit == null && this.quantLimit != null) || 
-       (quantLimit != null && !quantLimit.equals(this.quantLimit)))
-      this.quantLimit = quantLimit;
-  }
-
-  public String getContLevel() {
-    return contLevel;
-  }
-  public void setContLevel(String contLevel) {
-    if((contLevel == null && this.contLevel != null) || 
-       (contLevel != null && !contLevel.equals(this.contLevel)))
-      this.contLevel = contLevel;
-  }
-
-  public String getHazardLevel() {
-      return hazardLevel;
-    }
-  public void setHazardLevel(String hazardLevel) {
-      if((hazardLevel == null && this.hazardLevel != null) || 
-         (hazardLevel != null && !hazardLevel.equals(this.hazardLevel)))
-        this.hazardLevel = hazardLevel;
-    }
   
   public Integer getUnitOfMeasureId() {
       return unitOfMeasureId;
@@ -256,12 +215,6 @@ public class TestResult implements Auditable, Cloneable {
       
       AuditUtil.getChangeXML(roundingMethodId,original.roundingMethodId,doc,"rounding_method_id");
 
-      AuditUtil.getChangeXML(quantLimit,original.quantLimit,doc,"quant_limit");
-
-      AuditUtil.getChangeXML(contLevel,original.contLevel,doc,"cont_level");
-      
-      AuditUtil.getChangeXML(hazardLevel,original.hazardLevel,doc,"hazard_level");
-      
       AuditUtil.getChangeXML(unitOfMeasureId,original.unitOfMeasureId,doc,"unit_of_measure_id");
 
       if(root.hasChildNodes())
