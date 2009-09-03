@@ -1,0 +1,24 @@
+package org.openelis.remote;
+
+import javax.ejb.Remote;
+
+import org.openelis.manager.TestAnalyteManager;
+import org.openelis.manager.TestManager;
+import org.openelis.manager.TestResultManager;
+import org.openelis.manager.TestTypeOfSampleManager;
+
+@Remote
+public interface TestManagerRemote {
+    public TestManager update(TestManager man) throws Exception;
+    public TestManager add(TestManager man) throws Exception;
+    public TestManager fetch(Integer orgId) throws Exception;
+    public TestManager fetchWithSampleTypes(Integer testId) throws Exception; 
+    public TestManager fetchWithAnalytesAndResults(Integer testId) throws Exception;    
+    public TestAnalyteManager fetchTestAnalytesByTestId(Integer testId) throws Exception;
+    public TestResultManager fetchTestResultsByTestId(Integer testId) throws Exception;
+       
+    public TestManager fetchForUpdate(Integer orgId) throws Exception;
+    public TestManager abortUpdate(Integer orgId) throws Exception;
+    public TestTypeOfSampleManager fetchSampleTypeByTestId(Integer testId)throws Exception;
+          
+}
