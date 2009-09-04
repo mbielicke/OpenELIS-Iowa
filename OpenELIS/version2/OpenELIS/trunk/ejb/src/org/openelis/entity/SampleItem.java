@@ -55,13 +55,13 @@ import org.w3c.dom.Element;
     @NamedQuery(name = "SampleItem.SampleItemById", query = "select new org.openelis.domain.SampleItemDO(item.id, item.sampleId, " + 
                 "item.sampleItemId, item.itemSequence, item.typeOfSampleId, typeDict.entry, item.sourceOfSampleId, sourceDict.entry, " + 
                 "item.sourceOther, item.containerId, contDict.entry, " +
-                "item.containerReference, item.quantity, item.unitOfMeasureId) from SampleItem item, Dictionary sourceDict, Dictionary typeDict, Dictionary contDict where " + 
-                " item.sourceOfSampleId = sourceDict.id AND item.typeOfSampleId=typeDict.id AND item.containerId = contDict.id AND item.id = :id"),
+                "item.containerReference, item.quantity, item.unitOfMeasureId) from SampleItem item LEFT JOIN item.sourceDict sourceDict LEFT JOIN item.typeDict typeDict LEFT JOIN " +
+                " item.containerDict contDict where item.id = :id"),
     @NamedQuery(name = "SampleItem.SampleItemBySampleId", query = "select new org.openelis.domain.SampleItemDO(item.id, item.sampleId, " + 
                 "item.sampleItemId, item.itemSequence, item.typeOfSampleId, typeDict.entry, item.sourceOfSampleId, sourceDict.entry, " + 
                 "item.sourceOther, item.containerId, contDict.entry, " +
-                "item.containerReference, item.quantity, item.unitOfMeasureId) from SampleItem item, Dictionary sourceDict, Dictionary typeDict, Dictionary contDict where " + 
-                " item.sourceOfSampleId = sourceDict.id AND item.typeOfSampleId=typeDict.id AND item.containerId = contDict.id AND item.sampleId = :id")})
+                "item.containerReference, item.quantity, item.unitOfMeasureId) from SampleItem item  LEFT JOIN item.sourceDict sourceDict LEFT JOIN item.typeDict typeDict LEFT JOIN " +
+                " item.containerDict contDict where item.sampleId = :id")})
                 
 @Entity
 @Table(name="sample_item")
@@ -114,7 +114,19 @@ public class SampleItem implements Auditable, Cloneable {
   @OneToMany(fetch = FetchType.LAZY)
   @JoinColumn(name = "sample_item_id")
   private Collection<Analysis> analysis;
+  
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "source_of_sample_id", insertable = false, updatable = false)
+  private Dictionary sourceDict;
 
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "type_of_sample_id", insertable = false, updatable = false)
+  private Dictionary typeDict;
+  
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "container_id", insertable = false, updatable = false)
+  private Dictionary containerDict;
+  
   @Transient
   private SampleItem original;
 
@@ -280,6 +292,30 @@ public Collection<Analysis> getAnalysis() {
 }
 public void setAnalysis(Collection<Analysis> analysis) {
     this.analysis = analysis;
+}
+public Sample getParentSampleItem() {
+    return parentSampleItem;
+}
+public void setParentSampleItem(Sample parentSampleItem) {
+    this.parentSampleItem = parentSampleItem;
+}
+public Dictionary getSourceDict() {
+    return sourceDict;
+}
+public void setSourceDict(Dictionary sourceDict) {
+    this.sourceDict = sourceDict;
+}
+public Dictionary getTypeDict() {
+    return typeDict;
+}
+public void setTypeDict(Dictionary typeDict) {
+    this.typeDict = typeDict;
+}
+public Dictionary getContainerDict() {
+    return containerDict;
+}
+public void setContainerDict(Dictionary containerDict) {
+    this.containerDict = containerDict;
 }
   
 }   

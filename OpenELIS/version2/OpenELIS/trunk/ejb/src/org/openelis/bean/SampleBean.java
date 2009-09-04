@@ -25,6 +25,8 @@
 */
 package org.openelis.bean;
 
+import java.util.List;
+
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -35,15 +37,21 @@ import javax.persistence.Query;
 import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.SampleDO;
 import org.openelis.entity.Sample;
+import org.openelis.gwt.common.FieldErrorException;
+import org.openelis.gwt.common.FormErrorException;
+import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.LockLocal;
 import org.openelis.local.SampleLocal;
+import org.openelis.metamap.OrganizationMetaMap;
+import org.openelis.metamap.SampleMetaMap;
+import org.openelis.remote.SampleRemote;
 import org.openelis.utils.ReferenceTableCache;
 
 @Stateless
 
 @SecurityDomain("openelis")
 //@RolesAllowed("inventory-select")
-public class SampleBean implements SampleLocal {
+public class SampleBean implements SampleRemote, SampleLocal {
 
     @PersistenceContext(name = "openelis")
     private EntityManager manager;
@@ -52,6 +60,8 @@ public class SampleBean implements SampleLocal {
     @EJB private LockLocal lockBean;
     
     private static int sampleRefTableId;
+    
+    private static final SampleMetaMap sampleMeta = new SampleMetaMap();
     
     public SampleBean(){
         sampleRefTableId = ReferenceTableCache.getReferenceTable("sample");
@@ -118,6 +128,20 @@ public class SampleBean implements SampleLocal {
         sample.setStatusId(sampleDO.getStatusId());
         
         lockBean.giveUpLock(sampleRefTableId, sampleDO.getId());
+    }
+    
+    public void validateAccessionNumber(Integer accessionNumber) throws Exception {
+        Query query = manager.createNamedQuery("Sample.AccessionNumberCheck");
+        query.setParameter("id", accessionNumber);
+        
+        List list = query.getResultList();
+        
+        if(list.size() > 0){
+            ValidationErrorsList errorsList = new ValidationErrorsList();
+            errorsList.add(new FieldErrorException("accessionNumberDuplicate", sampleMeta.getAccessionNumber()));
+            
+            throw errorsList;
+        }
     }
     
     private void validateSample() throws Exception {

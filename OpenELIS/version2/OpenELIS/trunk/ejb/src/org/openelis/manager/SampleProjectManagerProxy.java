@@ -80,6 +80,10 @@ public class SampleProjectManagerProxy {
         return man;
     }
     
+    public void validate(SampleProjectManager man) throws Exception {
+        
+    }
+    
     private SampleProjectLocal getProjectLocal(){
         try{
             InitialContext ctx = new InitialContext();

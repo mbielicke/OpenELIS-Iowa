@@ -77,6 +77,10 @@ public class NoteManagerProxy {
         return n;
     }
     
+    public void validate(NoteManager man) throws Exception {
+        
+    }
+    
     private NoteLocal getNoteLocal(){
         try{
             InitialContext ctx = new InitialContext();

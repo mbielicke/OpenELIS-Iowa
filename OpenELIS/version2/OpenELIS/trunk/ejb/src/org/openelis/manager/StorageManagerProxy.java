@@ -77,6 +77,10 @@ public class StorageManagerProxy {
         return sm;
     }
     
+    public void validate(StorageManager man) throws Exception {
+        
+    }
+    
     private StorageLocal getStorageLocal(){
         try{
             InitialContext ctx = new InitialContext();
