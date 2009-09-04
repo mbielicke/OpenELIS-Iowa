@@ -46,4 +46,8 @@ public class SampleProjectManagerProxy {
     public SampleProjectManager update(SampleProjectManager man) throws Exception {
         throw new UnsupportedOperationException();
     }
+    
+    public void validate(SampleProjectManager man) throws Exception {
+        
+    }
 }
