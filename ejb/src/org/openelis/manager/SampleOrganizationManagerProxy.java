@@ -83,6 +83,10 @@ public class SampleOrganizationManagerProxy {
         return man;
     }
     
+    public void validate(SampleOrganizationManager man) throws Exception {
+        
+    }
+    
     private SampleOrganizationLocal getOrganizationLocal(){
         try{
             InitialContext ctx = new InitialContext();

@@ -49,8 +49,11 @@ public class SampleItemManagerProxy {
     }
     
     public SampleItemManager add(SampleItemManager man) throws Exception {
+        Integer sampleItemRefTableId;
         SampleItemLocal sil = getSampleItemLocal();
         SampleItemDO itemDO;
+        
+        sampleItemRefTableId = ReferenceTableCache.getReferenceTable("sample_item");
         
         for(int i=0; i<man.count(); i++){
             itemDO = man.getSampleItemAt(i);
@@ -58,7 +61,11 @@ public class SampleItemManagerProxy {
             
             sil.add(itemDO);
             
+            man.getStorageAt(i).setReferenceId(itemDO.getId());
+            man.getStorageAt(i).setReferenceTableId(sampleItemRefTableId);
             man.getStorageAt(i).add();
+            
+            man.getAnalysisAt(i).setSampleItemId(itemDO.getId());
             man.getAnalysisAt(i).add();
         }
         
@@ -66,8 +73,11 @@ public class SampleItemManagerProxy {
     }
 
     public SampleItemManager update(SampleItemManager man) throws Exception {
+        Integer sampleItemRefTableId;
         SampleItemLocal sil = getSampleItemLocal();
         SampleItemDO itemDO;
+        
+        sampleItemRefTableId = man.getSampleItemReferenceTableId();
         
         for(int j=0; j<man.deleteCount(); j++)
             sil.delete(man.getDeletedAt(j).sampleItem);
@@ -81,11 +91,19 @@ public class SampleItemManagerProxy {
             }else
                 sil.update(itemDO);
             
+            man.getStorageAt(i).setReferenceId(itemDO.getId());
+            man.getStorageAt(i).setReferenceTableId(sampleItemRefTableId);
             man.getStorageAt(i).update();
+            
+            man.getAnalysisAt(i).setSampleItemId(itemDO.getId());
             man.getAnalysisAt(i).update();
         }
 
         return man;
+    }
+    
+    public void validate(SampleItemManager man) throws Exception {
+        
     }
     
     private SampleItemLocal getSampleItemLocal(){

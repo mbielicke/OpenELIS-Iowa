@@ -94,6 +94,10 @@ public class AnalysisManagerProxy {
         return man;
     }
     
+    public void validate(AnalysisManager man) throws Exception {
+        
+    }
+    
     private AnalysisLocal getAnalysisLocal(){
         try{
             InitialContext ctx = new InitialContext();
