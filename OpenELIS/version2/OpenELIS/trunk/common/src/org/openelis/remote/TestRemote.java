@@ -91,6 +91,8 @@ public interface TestRemote {
     
     public List getTestAutoCompleteByName(String name, int maxResults);
     
+    public List getTestAutoCompleteByNameSampleItemType(String name, Integer sampleItemType, int maxResults);
+    
     public HashMap<Integer,List<IdNameDO>> getAnalyteResultsMap(Integer testId);
     
     public HashMap<Integer,List<Integer>> getResultGroupAnalytesMap(Integer testId);

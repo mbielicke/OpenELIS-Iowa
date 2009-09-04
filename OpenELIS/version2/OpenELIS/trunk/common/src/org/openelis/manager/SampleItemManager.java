@@ -187,6 +187,10 @@ public class SampleItemManager implements RPC {
     public SampleItemManager update() throws Exception {
         return proxy().update(this);
     }
+    
+    public void validate() throws Exception {
+        proxy().validate(this);
+    }
 
     private static SampleItemManagerProxy proxy() {
         if (proxy == null)

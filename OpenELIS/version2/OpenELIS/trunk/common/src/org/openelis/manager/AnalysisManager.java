@@ -250,6 +250,9 @@ public class AnalysisManager implements RPC, HasNotesInt {
         return proxy().update(this);
     }
     
+    public void validate() throws Exception {
+        proxy().validate(this);
+    }
     private static AnalysisManagerProxy proxy() {
         if (proxy == null)
             proxy = new AnalysisManagerProxy();

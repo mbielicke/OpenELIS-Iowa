@@ -119,6 +119,10 @@ public class SampleProjectManager implements RPC {
     public SampleProjectManager update() throws Exception {
         return proxy().update(this);
     }
+    
+    public void validate() throws Exception {
+        proxy().validate(this);
+    }
 
     private static SampleProjectManagerProxy proxy() {
         if (proxy == null)
