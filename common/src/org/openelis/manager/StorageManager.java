@@ -115,7 +115,7 @@ public class StorageManager implements RPC {
     }
     
     public void validate() throws Exception {
-        
+        proxy().validate(this);
     }
     
     private static StorageManagerProxy proxy(){

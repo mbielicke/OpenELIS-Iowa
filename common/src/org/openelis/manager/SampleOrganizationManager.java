@@ -171,6 +171,10 @@ public class SampleOrganizationManager implements RPC {
     public SampleOrganizationManager update() throws Exception {
         return proxy().update(this);
     }
+    
+    public void validate() throws Exception {
+        proxy().validate(this);
+    }
 
     private static SampleOrganizationManagerProxy proxy() {
         if (proxy == null)
