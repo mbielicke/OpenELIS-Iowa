@@ -51,4 +51,8 @@ public class StorageManagerProxy {
         
         return service.call("fetch", p);
     }
+    
+    public void validate(StorageManager man) throws Exception {
+        
+    }
 }

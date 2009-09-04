@@ -45,4 +45,8 @@ public class AnalysisManagerProxy {
     public AnalysisManager update(AnalysisManager man) throws Exception{
         throw new UnsupportedOperationException();
     }
+    
+    public void validate(AnalysisManager man) throws Exception {
+        
+    }
 }

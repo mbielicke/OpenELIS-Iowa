@@ -39,6 +39,10 @@ public class SampleItemManagerProxy {
         return service.call("fetchSampleItemsBySampleId", sampleId);
     }
     
+    public void validate(SampleItemManager man) throws Exception {
+        
+    }
+    
     public SampleItemManager add(SampleItemManager man) throws Exception {
         throw new UnsupportedOperationException();
     }

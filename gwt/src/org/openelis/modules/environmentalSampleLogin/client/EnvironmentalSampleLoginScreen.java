@@ -89,6 +89,8 @@ import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.TabPanel;
@@ -148,7 +150,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
         
         sampleItemTab = new SampleItemTab(def);
         
-        analysisTab = new AnalysisTab(def);
+        analysisTab = new AnalysisTab(def, this);
         
         testResultsTab = new TestResultsTab(def);
         
@@ -181,8 +183,20 @@ public class EnvironmentalSampleLoginScreen extends Screen {
                 accessionNumber.setValue(getString(manager.getSample().getAccessionNumber()));
             }
 
-            public void onValueChange(ValueChangeEvent<Integer> event) {
-                manager.getSample().setAccessionNumber(event.getValue());
+            public void onValueChange(final ValueChangeEvent<Integer> event) {
+                DeferredCommand.addCommand(new Command() {
+                    public void execute() {
+                        try{
+                            service.call("validateAccessionNumber", event.getValue());
+                            manager.getSample().setAccessionNumber(event.getValue());
+                            
+                        }catch(ValidationErrorsList e) {
+                            showErrors(e);
+                        }catch(Exception e){
+                            Window.alert(e.getMessage());
+                        }
+                    }
+                });
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -721,11 +735,6 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             }
         });
         
-        //Create Default blank model for AutoComplete fields reportto, billto, and project
-        //project.setSelection(null, "");
-        //reportTo.setSelection(null, "");
-        //billTo.setSelection(null, "");
-        
         // Set up tabs to recieve State Change events from the main Screen.
         addScreenHandler(sampleItemTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
@@ -835,7 +844,6 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             public void onAction(ActionEvent<SampleItemTab.Action> event) {
                 if(state != State.QUERY && event.getAction() == SampleItemTab.Action.CHANGED){
                     TreeDataItem selected = itemsTree.getSelection();
-                    int selectedIndex = itemsTree.getSelectedIndex();
                     
                     //make sure it is a sample item row
                     if("analysis".equals(selected.leafType))
@@ -844,8 +852,10 @@ public class EnvironmentalSampleLoginScreen extends Screen {
                     SampleDataBundle data = (SampleDataBundle)selected.data;
                     SampleItemDO itemDO = data.sampleItemDO;
                     
-                    itemsTree.setCell(selectedIndex, 0, itemDO.getItemSequence()+" - "+itemDO.getContainer());
-                    itemsTree.setCell(selectedIndex, 1, itemDO.getTypeOfSample());
+                    selected.cells.get(0).value = itemDO.getItemSequence()+" - "+formatTreeString(itemDO.getContainer());
+                    selected.cells.get(1).value = formatTreeString(itemDO.getTypeOfSample());
+                    
+                    itemsTree.refresh(true);
                 }
             }
         });
@@ -859,7 +869,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
                     SampleDataBundle data = (SampleDataBundle)selected.data;
                     AnalysisTestDO aDO = data.analysisTestDO;
                     
-                    itemsTree.setCell(selectedIndex, 0, aDO.test.getName() + " : " + aDO.test.getMethodName());
+                    itemsTree.setCell(selectedIndex, 0, formatTreeString(aDO.test.getName()) + " : " + formatTreeString(aDO.test.getMethodName()));
                     itemsTree.setCell(selectedIndex, 1, aDO.getStatusId());
                 }
             }
@@ -1015,7 +1025,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
         //default the form
         try{
             manager.getSample().setRevision(0);
-            manager.getSample().setStatusId(DictionaryCache.getIdFromSystemName("sample_initiated"));
+            manager.getSample().setStatusId(DictionaryCache.getIdFromSystemName("sample_logged_in"));
             manager.getSample().setEnteredDate(Datetime.getInstance(Datetime.YEAR, Datetime.DAY));
             manager.getSample().setReceivedDate(Datetime.getInstance(Datetime.YEAR, Datetime.DAY));
             manager.getSample().setNextItemSequence(0);
@@ -1331,12 +1341,11 @@ public class EnvironmentalSampleLoginScreen extends Screen {
 
         TreeDataItem newRow = itemsTree.createTreeItem("sampleItem");
         newRow.toggle();
-        newRow.cells.get(0).value = nextItemSequence + " - ";
+        newRow.cells.get(0).value = nextItemSequence + " - <>";
+        newRow.cells.get(1).value = "<>";
         
         SampleItemDO siDO = new SampleItemDO();
         siDO.setItemSequence(nextItemSequence);
-        siDO.setContainer("<>");
-        siDO.setTypeOfSample("<>");
         
         try{
             
@@ -1353,8 +1362,11 @@ public class EnvironmentalSampleLoginScreen extends Screen {
     }
     
     public void onAddTestButtonClick() {
+        int loggedInId = DictionaryCache.getIdFromSystemName("analysis_logged_in");
+        
         TreeDataItem newRow = itemsTree.createTreeItem("analysis");
-        newRow.cells.get(0).value = "<>";
+        newRow.cells.get(0).value = "<> : <>";
+        newRow.cells.get(1).value = loggedInId;
         
         TreeDataItem selectedRow = itemsTree.getRow(itemsTree.getSelectedIndex());
         
@@ -1366,14 +1378,15 @@ public class EnvironmentalSampleLoginScreen extends Screen {
         int sampleItemIndex = sampleItemData.sampleItemManager.getIndex(itemDO);
         
         AnalysisTestDO aDO = new AnalysisTestDO();
-        aDO.test.setName("");
-        aDO.test.setMethodName("");
+        aDO.setStatusId(loggedInId);
+        aDO.setRevision(0);
         
         try{
             SampleDataBundle data = new SampleDataBundle(sampleItemData.sampleItemManager, itemDO,
                                                          sampleItemData.sampleItemManager.getAnalysisAt(sampleItemIndex),aDO);
             newRow.data = data;
-            selectedRow.addItem(newRow);
+            itemsTree.addChildItem(selectedRow, newRow);
+
         }catch(Exception e){
             Window.alert(e.getMessage());
             return;
@@ -1381,8 +1394,6 @@ public class EnvironmentalSampleLoginScreen extends Screen {
         
         if (!selectedRow.open)
             selectedRow.toggle();
-        
-        //itemsTree.refreshRow(selectedRow);
     }
     
     public void onRemoveRowButtonClick() {/*
@@ -1584,5 +1595,12 @@ public class EnvironmentalSampleLoginScreen extends Screen {
         }catch(Exception e) {
             Window.alert(e.getMessage());                     
         }
+    }
+    
+    private String formatTreeString(String val){
+        if(val == null || "".equals(val))
+            return "<>";
+        
+        return val;
     }
 }

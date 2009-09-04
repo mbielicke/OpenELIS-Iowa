@@ -31,15 +31,20 @@ import java.util.EnumSet;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.AnalysisTestDO;
 import org.openelis.domain.DictionaryDO;
+import org.openelis.domain.SampleItemDO;
+import org.openelis.domain.SampleTestMethodDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
+import org.openelis.gwt.event.GetMatchesEvent;
+import org.openelis.gwt.event.GetMatchesHandler;
 import org.openelis.gwt.event.HasActionHandlers;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.rewrite.Screen;
 import org.openelis.gwt.screen.rewrite.ScreenDef;
 import org.openelis.gwt.screen.rewrite.ScreenEventHandler;
+import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.rewrite.AutoComplete;
 import org.openelis.gwt.widget.rewrite.CalendarLookUp;
@@ -50,6 +55,7 @@ import org.openelis.metamap.SampleMetaMap;
 
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.Window;
 
 public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab.Action> {
     public enum Action {CHANGED};
@@ -57,30 +63,55 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
     
     private SampleMetaMap meta;
     
+    private Screen parentScreen;
+    
+    protected AutoComplete<Integer> test, method;
+    protected CheckBox isReportable;
+    
     protected AnalysisTestDO analysis;
+    protected SampleItemDO sampleItem;
     protected Dropdown<Integer> statusId;
 
-    public AnalysisTab(ScreenDef def) {
+    public AnalysisTab(ScreenDef def, Screen parentScreen) {
+        service = new ScreenService("OpenELISServlet?service=org.openelis.modules.analysis.server.AnalysisService");
         setDef(def);
+        this.parentScreen = parentScreen;
         
         meta = new SampleMetaMap("sample.");
         
         initialize();
-        
+       
         setStatusesModel(DictionaryCache.getListByCategorySystemName("analysis_status"));
     }
     
     private void initialize() {
         final AnalysisTab anTab = this;
         
-        final AutoComplete<Integer> test = (AutoComplete)def.getWidget(meta.SAMPLE_ITEM.ANALYSIS.TEST.getName());
+        test = (AutoComplete)def.getWidget(meta.SAMPLE_ITEM.ANALYSIS.TEST.getName());
         addScreenHandler(test, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 test.setSelection(analysis.test.getId(), analysis.test.getName());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
+                TableDataRow selectedRow = test.getSelection();
+                SampleTestMethodDO testDO=null;
+                
+                if(selectedRow != null)
+                    testDO = (SampleTestMethodDO)selectedRow.data;
+                
                 analysis.test.setId(event.getValue());
+                
+                if(testDO != null){
+                    //set the method
+                    method.setSelection(new TableDataRow(testDO.getMethodId(), testDO.getMethodName()));
+                    analysis.test.setMethodId(testDO.getMethodId());
+                    
+                    //set isreportable
+                    isReportable.setValue(testDO.getIsReportable());
+                    analysis.setIsReportable(testDO.getIsReportable());
+                }
+                
                 ActionEvent.fire(anTab, Action.CHANGED, null);
             }
 
@@ -89,8 +120,42 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
                 test.setQueryMode(event.getState() == State.QUERY);
             }
         });
+        
+        test.addGetMatchesHandler(new GetMatchesHandler(){
+           public void onGetMatches(GetMatchesEvent event) {
+               AnalysisAutoCompleteRPC rpc = new AnalysisAutoCompleteRPC();
+               rpc.match = event.getMatch();
+               rpc.sampleItemType = sampleItem.getTypeOfSampleId();
+               
+               if(rpc.sampleItemType == null){
+                   parentScreen.window.setError(consts.get("sampleItemTypeRequired"));
+               }else{
+                   try {
+                       rpc = service.call("getTestMethodMatches", rpc);
+                       ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
+                           
+                       for (int i=0; i<rpc.model.size(); i++){
+                           SampleTestMethodDO autoDO = (SampleTestMethodDO)rpc.model.get(i);
+                           
+                           TableDataRow row = new TableDataRow(2);
+                           row.key = autoDO.getTestId();
+                           row.cells.get(0).value = autoDO.getTestName();
+                           row.cells.get(1).value = autoDO.getMethodName();
+                           row.data = autoDO;
+                           
+                           model.add(row);
+                       } 
+                       
+                       test.showAutoMatches(model);
+                           
+                   }catch(Exception e) {
+                       Window.alert(e.getMessage());                     
+                   }
+               }
+            } 
+        });
 
-        final AutoComplete<Integer> method = (AutoComplete)def.getWidget(meta.SAMPLE_ITEM.ANALYSIS.TEST.METHOD.getName());
+        method = (AutoComplete)def.getWidget(meta.SAMPLE_ITEM.ANALYSIS.TEST.METHOD.getName());
         addScreenHandler(method, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 method.setSelection(analysis.test.getMethodId(), analysis.test.getMethodName());
@@ -101,7 +166,7 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                method.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE,State.DELETE).contains(event.getState()));
+                method.enable(EnumSet.of(State.QUERY).contains(event.getState()));
                 method.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -134,12 +199,12 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                revision.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE,State.DELETE).contains(event.getState()));
+                revision.enable(EnumSet.of(State.QUERY).contains(event.getState()));
                 revision.setQueryMode(event.getState() == State.QUERY);
             }
         });
 
-        final CheckBox isReportable = (CheckBox)def.getWidget(meta.SAMPLE_ITEM.ANALYSIS.getIsReportable());
+        isReportable = (CheckBox)def.getWidget(meta.SAMPLE_ITEM.ANALYSIS.getIsReportable());
         addScreenHandler(isReportable, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 isReportable.setValue(analysis.getIsReportable());
@@ -182,7 +247,7 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                startedDate.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
+                startedDate.enable(EnumSet.of(State.QUERY)
                                    .contains(event.getState()));
                 startedDate.setQueryMode(event.getState() == State.QUERY);
             }
@@ -199,7 +264,7 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                completedDate.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
+                completedDate.enable(EnumSet.of(State.QUERY)
                                    .contains(event.getState()));
                 completedDate.setQueryMode(event.getState() == State.QUERY);
             }
@@ -216,7 +281,7 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                releasedDate.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
+                releasedDate.enable(EnumSet.of(State.QUERY)
                                    .contains(event.getState()));
                 releasedDate.setQueryMode(event.getState() == State.QUERY);
             }
@@ -255,6 +320,8 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
             StateChangeEvent.fire(this, State.DEFAULT);   
         }else{
             analysis = data.analysisTestDO;
+            
+            sampleItem = data.sampleItemDO;
             
             if(state == State.ADD || state == State.UPDATE)
                 StateChangeEvent.fire(this, State.UPDATE);

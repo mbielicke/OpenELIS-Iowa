@@ -477,7 +477,7 @@ public class InstrumentService implements
         
     }
     
-    private void setRpcErrors(ArrayList<RPCException> exceptionList, InstrumentForm form) {
+    private void setRpcErrors(ArrayList<Exception> exceptionList, InstrumentForm form) {
         HashMap<String,AbstractField> map;
         String fieldName;
         int index;

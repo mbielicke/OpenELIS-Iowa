@@ -386,7 +386,7 @@ public class ProjectService implements AppScreenFormServiceInt<ProjectForm, Quer
         return paramDOList;
     }
     
-    private void setRpcErrors(ArrayList<RPCException> exceptionList, ProjectForm form) {
+    private void setRpcErrors(ArrayList<Exception> exceptionList, ProjectForm form) {
         HashMap<String,AbstractField> map;
         String fieldName;
         int index;

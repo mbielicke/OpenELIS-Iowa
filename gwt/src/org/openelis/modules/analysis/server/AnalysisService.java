@@ -25,9 +25,13 @@
 */
 package org.openelis.modules.analysis.server;
 
+import java.util.ArrayList;
+
 import org.openelis.manager.AnalysisManager;
+import org.openelis.modules.environmentalSampleLogin.client.AnalysisAutoCompleteRPC;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.AnalysisManagerRemote;
+import org.openelis.remote.TestRemote;
 
 public class AnalysisService {
     public AnalysisManager fetchBySampleItemId(Integer sampleItemId) throws Exception {
@@ -39,5 +43,12 @@ public class AnalysisService {
             e.printStackTrace();
             throw e;
         }
+    }
+    
+    public AnalysisAutoCompleteRPC getTestMethodMatches(AnalysisAutoCompleteRPC rpc) throws Exception {
+        TestRemote remote = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
+        rpc.model = (ArrayList)remote.getTestAutoCompleteByNameSampleItemType(rpc.match+"%", rpc.sampleItemType, 10);
+        
+        return rpc;
     }
 }

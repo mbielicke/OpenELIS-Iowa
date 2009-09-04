@@ -53,4 +53,8 @@ public class SampleOrganizationManagerProxy {
     public SampleOrganizationManager update(SampleOrganizationManager man) throws Exception {
         throw new UnsupportedOperationException();
     }
+    
+    public void validate(SampleOrganizationManager man) throws Exception {
+        
+    }
 }

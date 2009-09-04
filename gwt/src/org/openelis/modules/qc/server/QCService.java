@@ -349,7 +349,7 @@ public class QCService implements
         return qcDO;
     }
     
-    private void setRpcErrors(ArrayList<RPCException> exceptionList, QCForm form) {
+    private void setRpcErrors(ArrayList<Exception> exceptionList, QCForm form) {
         HashMap<String,AbstractField> map;
         String fieldName;
         int index;

@@ -65,6 +65,9 @@ public class SampleManagerProxy {
     
     public void validate(SampleManager man) throws Exception {
       //  offFocus -accession not dup (also check on commit (backend))
+        //sample validate code
+        
+        //man.getSampleItems().valsampleite
         
         
     }

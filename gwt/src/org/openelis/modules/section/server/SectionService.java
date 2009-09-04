@@ -318,7 +318,7 @@ public class SectionService implements
     }
     
     
-    private void setRpcErrors(ArrayList<RPCException> exceptionList, SectionForm form) {
+    private void setRpcErrors(ArrayList<Exception> exceptionList, SectionForm form) {
         HashMap<String,AbstractField> map;
         
         map = null;
