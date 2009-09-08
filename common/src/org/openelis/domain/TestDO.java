@@ -103,8 +103,8 @@ public class TestDO implements RPC {
         setDescription(description);
         setReportingDescription(reportingDescription);
         setIsActive(isActive);
-        setActiveBegin(activeBegin);
-        setActiveEnd(activeEnd);
+        setActiveBegin(Datetime.getInstance(Datetime.YEAR, Datetime.YEAR, activeBegin));
+        setActiveEnd(Datetime.getInstance(Datetime.YEAR, Datetime.YEAR, activeEnd));
         setIsReportable(isReportable);
         setTimeTransit(timeTransit);
         setTimeHolding(timeHolding);
@@ -169,18 +169,16 @@ public class TestDO implements RPC {
         return activeBegin;
     }
 
-    public void setActiveBegin(Date activeBegin) {
-        this.activeBegin = new Datetime(Datetime.YEAR,
-                                        Datetime.DAY,
-                                        activeBegin);
+    public void setActiveBegin(Datetime activeBegin) {
+        this.activeBegin = activeBegin;
     }
 
     public Datetime getActiveEnd() {
         return activeEnd;
     }
 
-    public void setActiveEnd(Date activeEnd) {
-        this.activeEnd = new Datetime(Datetime.YEAR, Datetime.DAY, activeEnd);
+    public void setActiveEnd(Datetime activeEnd) {
+        this.activeEnd = activeEnd;
     }
 
     public String getDescription() {
