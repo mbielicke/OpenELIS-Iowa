@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import org.openelis.domain.SampleItemDO;
 import org.openelis.exception.NotFoundException;
 import org.openelis.gwt.common.RPC;
+import org.openelis.gwt.common.ValidationErrorsList;
 
 public class SampleItemManager implements RPC {
 
@@ -189,7 +190,16 @@ public class SampleItemManager implements RPC {
     }
     
     public void validate() throws Exception {
-        proxy().validate(this);
+        ValidationErrorsList errorsList = new ValidationErrorsList();
+        
+        proxy().validate(this, errorsList);
+        
+        if(errorsList.size() > 0)
+            throw errorsList;
+    }
+    
+    public void validate(ValidationErrorsList errorsList) throws Exception {
+        proxy().validate(this, errorsList);
     }
 
     private static SampleItemManagerProxy proxy() {

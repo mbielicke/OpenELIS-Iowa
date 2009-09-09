@@ -31,6 +31,7 @@ import org.openelis.domain.NoteDO;
 import org.openelis.domain.StorageDO;
 import org.openelis.exception.MultipleNoteException;
 import org.openelis.gwt.common.RPC;
+import org.openelis.gwt.common.ValidationErrorsList;
 
 public class StorageManager implements RPC {
 
@@ -115,7 +116,16 @@ public class StorageManager implements RPC {
     }
     
     public void validate() throws Exception {
-        proxy().validate(this);
+        ValidationErrorsList errorsList = new ValidationErrorsList();
+        
+        proxy().validate(this, errorsList);
+        
+        if(errorsList.size() > 0)
+            throw errorsList;
+    }
+    
+    public void validate(ValidationErrorsList errorsList) throws Exception {
+        proxy().validate(this, errorsList);
     }
     
     private static StorageManagerProxy proxy(){
