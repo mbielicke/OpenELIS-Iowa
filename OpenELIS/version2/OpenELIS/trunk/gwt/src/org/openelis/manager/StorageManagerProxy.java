@@ -25,6 +25,7 @@
 */
 package org.openelis.manager;
 
+import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.modules.storage.client.StorageServiceParams;
 
@@ -52,7 +53,7 @@ public class StorageManagerProxy {
         return service.call("fetch", p);
     }
     
-    public void validate(StorageManager man) throws Exception {
+    public void validate(StorageManager man, ValidationErrorsList errorsList) throws Exception {
         
     }
 }

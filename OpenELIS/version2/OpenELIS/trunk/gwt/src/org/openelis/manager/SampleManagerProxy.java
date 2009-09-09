@@ -25,6 +25,10 @@
 */
 package org.openelis.manager;
 
+import org.openelis.domain.SampleDO;
+import org.openelis.gwt.common.Datetime;
+import org.openelis.gwt.common.FieldErrorException;
+import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.services.ScreenService;
 
 public class SampleManagerProxy {
@@ -63,11 +67,19 @@ public class SampleManagerProxy {
         return service.call("abort", sampleId);
     }
     
-    public void validate(SampleManager man) throws Exception {
+    public void validate(SampleManager man, ValidationErrorsList errorsList) throws Exception {
       //  offFocus -accession not dup (also check on commit (backend))
         //sample validate code
+        SampleDO sampleDO = man.getSample();
+        //validate the dates
+        if(sampleDO.getCollectionDate() != null && sampleDO.getReceivedDate() != null)
+            if(sampleDO.getCollectionDate().compareTo(sampleDO.getReceivedDate()) == 1)
+                errorsList.add(new FieldErrorException("COLLECTED DATE CANT BE GREATER THAN RECIEVED", ""));
         
-        //man.getSampleItems().valsampleite
+        
+        man.getSampleItems().validate(errorsList);
+        man.getOrganizations().validate(errorsList);
+        man.getProjects().validate(errorsList);
         
         
     }

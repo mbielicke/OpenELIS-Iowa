@@ -201,8 +201,8 @@ public class EditNoteScreen extends Screen implements
             public void onClick(ClickEvent event) {
                 if("".equals(search.getValue()))
                     buildTree();
-                
-                buildTree(find());
+                else
+                    buildTree(find());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {

@@ -25,6 +25,7 @@
 */
 package org.openelis.manager;
 
+import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.manager.NoteManager;
 import org.openelis.modules.note.client.NoteServiceParams;
@@ -53,7 +54,7 @@ public class NoteManagerProxy {
         return service.call("fetch", p);
     }
     
-    public void validate(NoteManager man) throws Exception {
+    public void validate(NoteManager man, ValidationErrorsList errorsList) throws Exception {
         
     }
 }

@@ -154,7 +154,7 @@ UIRF Software License are applicable instead of those above.
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'collected')" />:
               </text>
-              <calendar key="{sampleMetaMap:getCollectionDate($sample)}" begin="0" end="2" width="80px" pattern="{resource:getString($constants,'datePattern')}" tab="{sampleMetaMap:getCollectionTime($sample)},orderNumber" required="true" />
+              <calendar key="{sampleMetaMap:getCollectionDate($sample)}" begin="0" end="2" width="80px" pattern="{resource:getString($constants,'datePattern')}" tab="{sampleMetaMap:getCollectionTime($sample)},orderNumber"/>
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'time')" />:
               </text>
@@ -168,7 +168,7 @@ UIRF Software License are applicable instead of those above.
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'status')" />:
               </text>
-              <dropdown key="{sampleMetaMap:getStatusId($sample)}" width="110px" tab="{sampleMetaMap:getClientReference($sample)},{sampleMetaMap:getReceivedDate($sample)}" field="Integer" required="true" />
+              <dropdown key="{sampleMetaMap:getStatusId($sample)}" width="110px" popWidth="110px" tab="{sampleMetaMap:getClientReference($sample)},{sampleMetaMap:getReceivedDate($sample)}" field="Integer" required="true" />
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'clntRef')" />:
               </text>
@@ -208,7 +208,7 @@ UIRF Software License are applicable instead of those above.
                 </text>
                 <HorizontalPanel>
                   <textbox key="{envMeta:getSamplingLocation($env)}" width="175px" field="String" />
-                  <appButton key="locButton" style="Button">
+                  <appButton key="locButton" style="LookupButton">
                     <AbsolutePanel style="LookupButtonImage" />
                   </appButton>
                 </HorizontalPanel>
@@ -239,7 +239,7 @@ UIRF Software License are applicable instead of those above.
                       <label />
                     </col>
                     <col>
-                      <dropdown width="110px" case="LOWER" field="String" />
+                      <dropdown width="110px" popWidth="110px" case="LOWER" field="String" />
                     </col>
                   </leaf>
                 </tree>
@@ -285,7 +285,7 @@ UIRF Software License are applicable instead of those above.
                       <col width="115" header="Name" />
                       <col width="190" header="Desc" />
                     </autoComplete>
-                    <appButton key="projectLookup" style="Button">
+                    <appButton key="projectLookup" style="LookupButton">
                       <AbsolutePanel style="LookupButtonImage" />
                     </appButton>
                   </HorizontalPanel>
@@ -301,7 +301,7 @@ UIRF Software License are applicable instead of those above.
                       <col width="100" header="City" />
                       <col width="20" header="St" />
                     </autoComplete>
-                    <appButton key="reportToLookup" style="Button">
+                    <appButton key="reportToLookup" style="LookupButton">
                       <AbsolutePanel style="LookupButtonImage" />
                     </appButton>
                   </HorizontalPanel>
@@ -317,7 +317,7 @@ UIRF Software License are applicable instead of those above.
                       <col width="100" header="City" />
                       <col width="20" header="St" />
                     </autoComplete>
-                    <appButton key="billToLookup" style="Button">
+                    <appButton key="billToLookup" style="LookupButton">
                       <AbsolutePanel style="LookupButtonImage" />
                     </appButton>
                   </HorizontalPanel>
@@ -332,11 +332,17 @@ UIRF Software License are applicable instead of those above.
                 <TablePanel padding="0" spacing="0" style="Form">
                   <row>
                     <text style="Prompt">Sample Type:</text>
-                    <dropdown key="{sampleItemMetaMap:getTypeOfSampleId($sampleItem)}" width="150px" field="Integer" />
+                    <dropdown key="{sampleItemMetaMap:getTypeOfSampleId($sampleItem)}" width="150px" popWidth="150px" field="Integer" />
+                  </row>
+                  <row>
+                  	<text style="Prompt">Source:</text>
+                    <dropdown key="{sampleItemMetaMap:getSourceOfSampleId($sampleItem)}" width="150px" popWidth="150px" field="Integer" />
+                   	<text style="Prompt">Source Other:</text>
+                 	<textbox key="{sampleItemMetaMap:getSourceOther($sampleItem)}" width="215px" field="String" />
                   </row>
                   <row>
                     <text style="Prompt">Container:</text>
-                    <dropdown key="{sampleItemMetaMap:getContainerId($sampleItem)}" width="225px" field="Integer" />
+                    <dropdown key="{sampleItemMetaMap:getContainerId($sampleItem)}" width="225px" popWidth="225px" field="Integer" />
                     <text style="Prompt">Container Reference:</text>
                     <textbox key="{sampleItemMetaMap:getContainerReference($sampleItem)}" width="215px" field="String" />
                   </row>
@@ -344,7 +350,7 @@ UIRF Software License are applicable instead of those above.
                     <text style="Prompt">Qty:</text>
                     <textbox key="{sampleItemMetaMap:getQuantity($sampleItem)}" width="150px" field="Double" />
                     <text style="Prompt">Unit:</text>
-                    <dropdown key="{sampleItemMetaMap:getUnitOfMeasureId($sampleItem)}" width="150px" field="Integer" />
+                    <dropdown key="{sampleItemMetaMap:getUnitOfMeasureId($sampleItem)}" width="150px" popWidth="150px" field="Integer" />
                   </row>
                 </TablePanel>
               </VerticalPanel>
@@ -357,6 +363,7 @@ UIRF Software License are applicable instead of those above.
                     <autoComplete key="{sampleTestMetaMap:getName($test)}" width="150px" case="LOWER" popWidth="auto" field="Integer">
                       <col width="150" header="Test" />
                       <col width="150" header="Method" />
+                      <col width="200" header="Description" />
                     </autoComplete>
                     <text style="Prompt">Method:</text>
                     <autoComplete key="{methodMeta:getName($method)}" width="150px" case="LOWER" popWidth="auto" field="Integer">
@@ -365,7 +372,7 @@ UIRF Software License are applicable instead of those above.
                   </row>
                   <row>
                     <text style="Prompt">Status:</text>
-                    <dropdown key="{analysisMetaMap:getStatusId($analysis)}" width="150px" field="Integer" />
+                    <dropdown key="{analysisMetaMap:getStatusId($analysis)}" width="150px" popWidth="150px" field="Integer" />
                     <text style="Prompt">Revision:</text>
                     <textbox key="{analysisMetaMap:getRevision($analysis)}" width="60px" field="Integer" />
                   </row>
@@ -373,9 +380,7 @@ UIRF Software License are applicable instead of those above.
                     <text style="Prompt">Reportable:</text>
                     <check key="{analysisMetaMap:getIsReportable($analysis)}" />
                     <text style="Prompt">Section:</text>
-                    <autoComplete key="{sectionMeta:getName($section)}" width="150px" case="UPPER" popWidth="auto" field="Integer">
-                      <col width="150" header="Name" />
-                    </autoComplete>
+                    <dropdown key="{sectionMeta:getName($section)}" width="150px" popWidth="150px" case="LOWER" field="Integer"/>
                   </row>
                   <row>
                     <text style="Prompt">Started:</text>
