@@ -25,6 +25,7 @@
 */
 package org.openelis.manager;
 
+import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.services.ScreenService;
 
 public class SampleProjectManagerProxy {
@@ -47,7 +48,7 @@ public class SampleProjectManagerProxy {
         throw new UnsupportedOperationException();
     }
     
-    public void validate(SampleProjectManager man) throws Exception {
+    public void validate(SampleProjectManager man, ValidationErrorsList errorsList) throws Exception {
         
     }
 }

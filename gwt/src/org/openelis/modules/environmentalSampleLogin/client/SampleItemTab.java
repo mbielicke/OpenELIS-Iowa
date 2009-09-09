@@ -53,7 +53,7 @@ public class SampleItemTab extends Screen implements HasActionHandlers<SampleIte
     
     private SampleMetaMap meta;
     protected SampleItemDO sampleItem;
-    protected Dropdown<Integer> typeOfSampleId, containerId, unitOfMeasureId;
+    protected Dropdown<Integer> typeOfSampleId, sourceOfSampleId, containerId, unitOfMeasureId;
 
     public SampleItemTab(ScreenDef def) {
         setDef(def);
@@ -63,6 +63,7 @@ public class SampleItemTab extends Screen implements HasActionHandlers<SampleIte
         initialize();
         
         setSampleTypesModel(DictionaryCache.getListByCategorySystemName("type_of_sample"));
+        setSourceModel(DictionaryCache.getListByCategorySystemName("source_of_sample"));
         setContainersModel(DictionaryCache.getListByCategorySystemName("sample_container"));
         setUnitsModel(DictionaryCache.getListByCategorySystemName("unit_of_measure"));
     }
@@ -85,6 +86,40 @@ public class SampleItemTab extends Screen implements HasActionHandlers<SampleIte
             public void onStateChange(StateChangeEvent<State> event) {
                 typeOfSampleId.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE,State.DELETE).contains(event.getState()));
                 typeOfSampleId.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+        
+        sourceOfSampleId = (Dropdown)def.getWidget(meta.SAMPLE_ITEM.getSourceOfSampleId());
+        addScreenHandler(sourceOfSampleId, new ScreenEventHandler<Integer>() {
+            public void onDataChange(DataChangeEvent event) {
+                sourceOfSampleId.setSelection(sampleItem.getSourceOfSampleId());
+            }
+
+            public void onValueChange(ValueChangeEvent<Integer> event) {
+                sampleItem.setSourceOfSampleId(event.getValue());
+                sampleItem.setSourceOfSample(sourceOfSampleId.getTextBoxDisplay());
+                ActionEvent.fire(itemTab, Action.CHANGED, null);
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                sourceOfSampleId.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                sourceOfSampleId.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+        
+        final TextBox sourceOther = (TextBox)def.getWidget(meta.SAMPLE_ITEM.getSourceOther());
+        addScreenHandler(sourceOther, new ScreenEventHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                sourceOther.setValue(sampleItem.getSourceOther());
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                sampleItem.setSourceOther(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                sourceOther.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                sourceOther.setQueryMode(event.getState() == State.QUERY);
             }
         });
 
@@ -163,6 +198,15 @@ public class SampleItemTab extends Screen implements HasActionHandlers<SampleIte
             model.add(new TableDataRow(resultDO.getId(),resultDO.getEntry()));
         } 
         typeOfSampleId.setModel(model);
+    }
+    
+    private void setSourceModel(ArrayList<DictionaryDO> list) {
+        ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
+        model.add(new TableDataRow(null, ""));
+        for(DictionaryDO resultDO :  list){
+            model.add(new TableDataRow(resultDO.getId(),resultDO.getEntry()));
+        } 
+        sourceOfSampleId.setModel(model);
     }
     
     private void setContainersModel(ArrayList<DictionaryDO> list) {

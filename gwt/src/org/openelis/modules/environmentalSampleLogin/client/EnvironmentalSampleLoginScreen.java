@@ -1157,6 +1157,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
     public void commitAdd() {
         window.setBusy(consts.get("commiting"));
         try {
+            manager.validate();
             manager = manager.add();
 
             setState(Screen.State.DISPLAY);
@@ -1174,6 +1175,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
     public void commitUpdate() {
         window.setBusy(consts.get("commiting"));
         try {
+            manager.validate();
             manager = manager.update();
 
             setState(Screen.State.DISPLAY);

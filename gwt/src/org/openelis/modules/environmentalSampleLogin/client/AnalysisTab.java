@@ -33,6 +33,8 @@ import org.openelis.domain.AnalysisTestDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.SampleItemDO;
 import org.openelis.domain.SampleTestMethodDO;
+import org.openelis.domain.SectionDO;
+import org.openelis.domain.TestSectionDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
@@ -66,6 +68,7 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
     private Screen parentScreen;
     
     protected AutoComplete<Integer> test, method;
+    protected Dropdown<Integer> sectionId;
     protected CheckBox isReportable;
     
     protected AnalysisTestDO analysis;
@@ -104,12 +107,34 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
                 
                 if(testDO != null){
                     //set the method
-                    method.setSelection(new TableDataRow(testDO.getMethodId(), testDO.getMethodName()));
-                    analysis.test.setMethodId(testDO.getMethodId());
+                    method.setSelection(new TableDataRow(testDO.getTest().getMethodId(), testDO.getTest().getMethodName()));
+                    analysis.test.setName(testDO.getTest().getName());
+                    analysis.test.setMethodId(testDO.getTest().getMethodId());
+                    analysis.test.setMethodName(testDO.getTest().getMethodName());
                     
                     //set isreportable
-                    isReportable.setValue(testDO.getIsReportable());
-                    analysis.setIsReportable(testDO.getIsReportable());
+                    isReportable.setValue(testDO.getTest().getIsReportable());
+                    analysis.setIsReportable(testDO.getTest().getIsReportable());
+                    
+                    //section code
+                    //figure out if there is a default section
+                    Integer defaultId = DictionaryCache.getIdFromSystemName("test_section_default");
+                    ArrayList<TestSectionDO> sectionDOs = testDO.getSections();
+                    TestSectionDO defaultDO = null;
+                    for(int i=0; i<sectionDOs.size(); i++){
+                        if(defaultId.equals(sectionDOs.get(i).getFlagId())){
+                            defaultDO = sectionDOs.get(i);
+                            break;
+                        }
+                    }
+                    
+                    if(defaultDO != null){
+                        setSectionsModel(defaultDO.getSectionId(), defaultDO.getSection());
+                        sectionId.setSelection(defaultDO.getSectionId());
+                    }else if(testDO.getSections().size() > 0)
+                        setSectionsModel(testDO.getSections());
+                    
+                    //test pre requirement code
                 }
                 
                 ActionEvent.fire(anTab, Action.CHANGED, null);
@@ -137,10 +162,11 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
                        for (int i=0; i<rpc.model.size(); i++){
                            SampleTestMethodDO autoDO = (SampleTestMethodDO)rpc.model.get(i);
                            
-                           TableDataRow row = new TableDataRow(2);
-                           row.key = autoDO.getTestId();
-                           row.cells.get(0).value = autoDO.getTestName();
-                           row.cells.get(1).value = autoDO.getMethodName();
+                           TableDataRow row = new TableDataRow(3);
+                           row.key = autoDO.getTest().getId();
+                           row.cells.get(0).value = autoDO.getTest().getName();
+                           row.cells.get(1).value = autoDO.getTest().getMethodName();
+                           row.cells.get(2).value = autoDO.getTest().getDescription();
                            row.data = autoDO;
                            
                            model.add(row);
@@ -220,10 +246,13 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
             }
         });
 
-        final AutoComplete<Integer> sectionId = (AutoComplete)def.getWidget(meta.SAMPLE_ITEM.ANALYSIS.SECTION.getName());
+        sectionId = (Dropdown<Integer>)def.getWidget(meta.SAMPLE_ITEM.ANALYSIS.SECTION.getName());
         addScreenHandler(sectionId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                sectionId.setSelection(analysis.getSectionId(), analysis.getSection());
+                if(analysis.getSectionId() != null)
+                    setSectionsModel(analysis.getSectionId(), analysis.getSection());
+                
+                sectionId.setSelection(analysis.getSectionId());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -312,6 +341,26 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
             model.add(new TableDataRow(resultDO.getId(),resultDO.getEntry()));
         } 
         statusId.setModel(model);
+    }
+    
+    private void setSectionsModel(Integer id, String sectionName) {
+        ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
+        model.add(new TableDataRow(null, ""));
+        model.add(new TableDataRow(sectionId, sectionName));
+         
+        sectionId.setModel(model);
+    }
+    
+    private void setSectionsModel(ArrayList<TestSectionDO> sections) {
+        ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
+        model.add(new TableDataRow(null, ""));
+        
+        for(int i=0; i<sections.size(); i++){
+            TestSectionDO sectionDO = sections.get(i);
+            model.add(new TableDataRow(sectionDO.getSectionId(), sectionDO.getSection()));
+        }
+         
+        sectionId.setModel(model);
     }
     
     public void setData(SampleDataBundle data) {

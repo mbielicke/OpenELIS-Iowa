@@ -50,8 +50,12 @@ public class AnalysisExCommentTab extends NotesTab {
             try {
                 if(anMan == null)
                     manager = NoteManager.getInstance();
-                else
-                    manager = anMan.getExternalNoteAt(anMan.getIndex(analysis));
+                else{
+                    int index = anMan.getIndex(analysis);
+                    
+                    if(index != -1)
+                        manager = anMan.getExternalNoteAt(index);
+                }
                 
                 DataChangeEvent.fire(this);
                 loaded = true;
