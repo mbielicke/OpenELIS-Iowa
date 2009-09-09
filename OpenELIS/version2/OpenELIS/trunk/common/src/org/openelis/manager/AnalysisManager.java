@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import org.openelis.domain.AnalysisTestDO;
 import org.openelis.exception.NotFoundException;
 import org.openelis.gwt.common.RPC;
+import org.openelis.gwt.common.ValidationErrorsList;
 
 public class AnalysisManager implements RPC, HasNotesInt {
     private static final long serialVersionUID = 1L;
@@ -251,8 +252,18 @@ public class AnalysisManager implements RPC, HasNotesInt {
     }
     
     public void validate() throws Exception {
-        proxy().validate(this);
+        ValidationErrorsList errorsList = new ValidationErrorsList();
+        
+        proxy().validate(this, errorsList);
+        
+        if(errorsList.size() > 0)
+            throw errorsList;
     }
+    
+    public void validate(ValidationErrorsList errorsList) throws Exception {
+        proxy().validate(this, errorsList);
+    }
+    
     private static AnalysisManagerProxy proxy() {
         if (proxy == null)
             proxy = new AnalysisManagerProxy();

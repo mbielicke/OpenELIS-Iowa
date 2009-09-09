@@ -26,6 +26,7 @@
 package org.openelis.domain;
 
 import org.openelis.gwt.common.RPC;
+import org.openelis.utilcommon.DataBaseUtil;
 
 public class TestSectionDO implements RPC {
     private static final long serialVersionUID = 1L;
@@ -33,6 +34,7 @@ public class TestSectionDO implements RPC {
     protected Integer         id;
     protected Integer         testId;
     protected Integer         sectionId;
+    protected String          section;
     protected Integer         flagId;
     private Boolean           delete           = false;
 
@@ -43,11 +45,12 @@ public class TestSectionDO implements RPC {
     public TestSectionDO(Integer id,
                          Integer testId,
                          Integer sectionId,
-                         Integer flagId) {
-        this.id = id;
-        this.sectionId = sectionId;
-        this.testId = testId;
-        this.flagId = flagId;
+                         Integer flagId, String sectionName) {
+        setId(id);
+        setSectionId(sectionId);
+        setSection(sectionName);
+        setTestId(testId);
+        setFlagId(flagId);
     }
 
     public Integer getFlagId() {
@@ -88,5 +91,13 @@ public class TestSectionDO implements RPC {
 
     public void setDelete(Boolean delete) {
         this.delete = delete;
+    }
+
+    public String getSection() {
+        return section;
+    }
+
+    public void setSection(String section) {
+        this.section = DataBaseUtil.trim(section);
     }
 }

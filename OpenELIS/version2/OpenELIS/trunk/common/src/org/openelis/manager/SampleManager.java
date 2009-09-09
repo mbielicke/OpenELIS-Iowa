@@ -29,6 +29,7 @@ import org.openelis.domain.SampleDO;
 import org.openelis.exception.InconsistencyException;
 import org.openelis.exception.NotFoundException;
 import org.openelis.gwt.common.RPC;
+import org.openelis.gwt.common.ValidationErrorsList;
 
 public class SampleManager implements RPC, HasNotesInt {
     private static final long serialVersionUID = 1L;
@@ -310,7 +311,11 @@ public class SampleManager implements RPC, HasNotesInt {
     }
     
     public void validate() throws Exception {
-        proxy().validate(this);
+        ValidationErrorsList errorList = new ValidationErrorsList();
+        proxy().validate(this, errorList);
+        
+        if(errorList.size() > 0)
+            throw errorList;
     }
     
     private static SampleManagerProxy proxy(){

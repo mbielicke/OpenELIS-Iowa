@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import org.openelis.domain.SampleOrganizationDO;
 import org.openelis.domain.SampleProjectDO;
 import org.openelis.gwt.common.RPC;
+import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.DropDownField;
 import org.openelis.gwt.common.data.TableDataRow;
 
@@ -173,7 +174,16 @@ public class SampleOrganizationManager implements RPC {
     }
     
     public void validate() throws Exception {
-        proxy().validate(this);
+        ValidationErrorsList errorsList = new ValidationErrorsList();
+        
+        proxy().validate(this, errorsList);
+        
+        if(errorsList.size() > 0)
+            throw errorsList;
+    }
+    
+    public void validate(ValidationErrorsList errorsList) throws Exception {
+        proxy().validate(this, errorsList);
     }
 
     private static SampleOrganizationManagerProxy proxy() {

@@ -1,5 +1,9 @@
 package org.openelis.domain;
 
+import java.util.ArrayList;
+import java.util.Date;
+
+import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.RPC;
 import org.openelis.utilcommon.DataBaseUtil;
 
@@ -7,66 +11,71 @@ public class SampleTestMethodDO implements RPC {
 
     private static final long serialVersionUID = 1L;
     
-    protected Integer testId;
-    protected String testName;
-    protected Integer methodId;
-    protected String methodName;
-    protected String isReportable;
-    
-    //sections
-    //pre tests
+    protected TestDO test = new TestDO();
+    protected ArrayList<TestSectionDO> sections;
+    protected ArrayList<TestPrepDO> prepTests;
     
     public SampleTestMethodDO(){
         
     }
     
-    public SampleTestMethodDO(Integer testId, String testName, Integer methodId,
-                              String methodName, String isReportable){
-        setTestId(testId);
-        setTestName(testName);
-        setMethodId(methodId);
-        setMethodName(methodName);
-        setIsReportable(isReportable);
+    public SampleTestMethodDO(Integer id, String name, Integer methodId, String methodName, String description,
+                  String reportingDescription, String isActive, Date activeBegin, Date activeEnd, String isReportable,
+                  Integer timeTransit, Integer timeHolding, Integer timeTaAverage, Integer timeTaWarning, Integer timeTaMax,
+                  Integer labelId, String labelName, Integer labelQty, Integer testTrailerId, String testTrailerName,
+                  Integer scriptletId, String scriptletName, Integer testFormatId, Integer revisionMethodId, Integer reportingMethodId,
+                  Integer sortingMethodId, Integer reportingSequence){
         
+        test.setId(id);
+        test.setName(name);
+        test.setMethodId(methodId);
+        test.setMethodName(methodName);
+        test.setDescription(description);
+        test.setReportingDescription(reportingDescription);
+        test.setIsActive(isActive);
+        test.setActiveBegin(Datetime.getInstance(Datetime.YEAR, Datetime.DAY, activeBegin));
+        test.setActiveEnd(Datetime.getInstance(Datetime.YEAR, Datetime.DAY, activeEnd));
+        test.setIsReportable(isReportable);
+        test.setTimeTransit(timeTransit);
+        test.setTimeHolding(timeHolding);
+        test.setTimeTaAverage(timeTaAverage);
+        test.setTimeTaWarning(timeTaWarning);
+        test.setTimeTaMax(timeTaMax);
+        test.setLabelId(labelId);
+        test.setLabelName(labelName);
+        test.setLabelQty(labelQty);
+        test.setTestTrailerId(testTrailerId);
+        test.setTestTrailerName(testTrailerName);
+        test.setScriptletId(scriptletId);
+        test.setScriptletName(scriptletName);
+        test.setTestFormatId(testFormatId);
+        test.setRevisionMethodId(revisionMethodId);
+        test.setReportingMethodId(reportingMethodId);
+        test.setSortingMethodId(sortingMethodId);
+        test.setReportingSequence(reportingSequence);
+    }
+   
+    public TestDO getTest() {
+        return test;
     }
 
-    public Integer getTestId() {
-        return testId;
+    public void setTest(TestDO test) {
+        this.test = test;
     }
 
-    public void setTestId(Integer testId) {
-        this.testId = testId;
+    public ArrayList<TestSectionDO> getSections() {
+        return sections;
     }
 
-    public String getTestName() {
-        return testName;
+    public void setSections(ArrayList<TestSectionDO> sections) {
+        this.sections = sections;
     }
 
-    public void setTestName(String testName) {
-        this.testName = DataBaseUtil.trim(testName);
+    public ArrayList<TestPrepDO> getPrepTests() {
+        return prepTests;
     }
 
-    public Integer getMethodId() {
-        return methodId;
-    }
-
-    public void setMethodId(Integer methodId) {
-        this.methodId = methodId;
-    }
-
-    public String getMethodName() {
-        return methodName;
-    }
-
-    public void setMethodName(String methodName) {
-        this.methodName = DataBaseUtil.trim(methodName);
-    }
-
-    public String getIsReportable() {
-        return isReportable;
-    }
-
-    public void setIsReportable(String isReportable) {
-        this.isReportable = isReportable;
+    public void setPrepTests(ArrayList<TestPrepDO> prepTests) {
+        this.prepTests = prepTests;
     }
 }
