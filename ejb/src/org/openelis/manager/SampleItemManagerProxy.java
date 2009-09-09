@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import javax.naming.InitialContext;
 
 import org.openelis.domain.SampleItemDO;
+import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.SampleItemLocal;
 import org.openelis.utils.ReferenceTableCache;
 
@@ -102,7 +103,7 @@ public class SampleItemManagerProxy {
         return man;
     }
     
-    public void validate(SampleItemManager man) throws Exception {
+    public void validate(SampleItemManager man, ValidationErrorsList errorsList) throws Exception {
         
     }
     

@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import javax.naming.InitialContext;
 
 import org.openelis.domain.NoteDO;
+import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.NoteLocal;
 
 public class NoteManagerProxy {
@@ -77,7 +78,7 @@ public class NoteManagerProxy {
         return n;
     }
     
-    public void validate(NoteManager man) throws Exception {
+    public void validate(NoteManager man, ValidationErrorsList errorsList) throws Exception {
         
     }
     
