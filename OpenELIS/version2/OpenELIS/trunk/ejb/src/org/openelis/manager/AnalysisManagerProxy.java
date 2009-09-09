@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import javax.naming.InitialContext;
 
 import org.openelis.domain.AnalysisTestDO;
+import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.AnalysisLocal;
 import org.openelis.utils.ReferenceTableCache;
 
@@ -94,7 +95,7 @@ public class AnalysisManagerProxy {
         return man;
     }
     
-    public void validate(AnalysisManager man) throws Exception {
+    public void validate(AnalysisManager man, ValidationErrorsList errorsList) throws Exception {
         
     }
     

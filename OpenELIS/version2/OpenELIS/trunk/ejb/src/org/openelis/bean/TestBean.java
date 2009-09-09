@@ -28,6 +28,7 @@ package org.openelis.bean;
 import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.DictionaryIdEntrySysNameDO;
 import org.openelis.domain.IdNameDO;
+import org.openelis.domain.SampleTestMethodDO;
 import org.openelis.domain.TestAnalyteDO;
 import org.openelis.domain.TestDO;
 import org.openelis.domain.TestPrepDO;
@@ -914,13 +915,29 @@ public class TestBean implements TestRemote,TestLocal {
         return query.getResultList();
     }
     
-        public List getTestAutoCompleteByNameSampleItemType(String name, Integer sampleItemType, int maxResults){
+    public List getTestAutoCompleteByNameSampleItemType(String name, Integer sampleItemType, int maxResults){
         Query query = manager.createNamedQuery("Test.TestMethodAutoByNameSampleItemType");
         query.setParameter("name", name);
         query.setParameter("typeId", sampleItemType);
         query.setMaxResults(maxResults);
-
-        return query.getResultList();
+        
+        List testList = query.getResultList();
+        
+        for(int i=0; i<testList.size(); i++){
+            SampleTestMethodDO testDO = (SampleTestMethodDO)testList.get(i);
+            //query for test sections
+            try{
+                testDO.setSections(getTestSections(testDO.getTest().getId()));
+                
+            }catch(Exception e){
+                testDO.setSections(new ArrayList<TestSectionDO>());
+            }
+            
+            //query for pre tests
+            testDO.setPrepTests((ArrayList<TestPrepDO>)getTestPreps(testDO.getTest().getId()));
+        }
+        
+        return testList;
     }
     
     public void add(TestDO testDO) throws Exception {

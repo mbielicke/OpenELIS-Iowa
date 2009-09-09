@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import javax.naming.InitialContext;
 
 import org.openelis.domain.SampleOrganizationDO;
+import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.SampleOrganizationLocal;
 
 public class SampleOrganizationManagerProxy {
@@ -83,7 +84,7 @@ public class SampleOrganizationManagerProxy {
         return man;
     }
     
-    public void validate(SampleOrganizationManager man) throws Exception {
+    public void validate(SampleOrganizationManager man, ValidationErrorsList errorsList) throws Exception {
         
     }
     

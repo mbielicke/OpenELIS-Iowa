@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import javax.naming.InitialContext;
 
 import org.openelis.domain.SampleProjectDO;
+import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.SampleProjectLocal;
 
 public class SampleProjectManagerProxy {
@@ -80,7 +81,7 @@ public class SampleProjectManagerProxy {
         return man;
     }
     
-    public void validate(SampleProjectManager man) throws Exception {
+    public void validate(SampleProjectManager man, ValidationErrorsList errorsList) throws Exception {
         
     }
     

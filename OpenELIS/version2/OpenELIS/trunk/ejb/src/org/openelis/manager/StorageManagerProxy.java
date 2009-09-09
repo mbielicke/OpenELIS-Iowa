@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import javax.naming.InitialContext;
 
 import org.openelis.domain.StorageDO;
+import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.StorageLocal;
 
 public class StorageManagerProxy {
@@ -77,7 +78,7 @@ public class StorageManagerProxy {
         return sm;
     }
     
-    public void validate(StorageManager man) throws Exception {
+    public void validate(StorageManager man, ValidationErrorsList errorsList) throws Exception {
         
     }
     

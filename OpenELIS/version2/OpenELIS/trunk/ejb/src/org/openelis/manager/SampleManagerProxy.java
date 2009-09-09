@@ -28,6 +28,7 @@ package org.openelis.manager;
 import javax.naming.InitialContext;
 
 import org.openelis.domain.SampleDO;
+import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.SampleLocal;
 import org.openelis.utils.ReferenceTableCache;
 
@@ -158,7 +159,7 @@ public class SampleManagerProxy {
     public SampleManager abort(Integer sampleId) throws Exception {
         throw new UnsupportedOperationException();    }
     
-    public void validate(SampleManager man) throws Exception {
+    public void validate(SampleManager man, ValidationErrorsList errorsList) throws Exception {
         
     }
     
