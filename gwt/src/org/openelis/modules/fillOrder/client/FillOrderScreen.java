@@ -368,7 +368,7 @@ public class FillOrderScreen extends OpenELISScreenForm<FillOrderForm, Query<Tab
                 if(rForm.status.equals(Form.Status.invalid)){
                     if(rForm.getErrors().size() > 0){
                         if(rForm.getErrors().size() > 1){
-                            window.setMessagePopup((String[])rForm.getErrors().toArray(new String[rForm.getErrors().size()]), "ErrorPanel");
+                            window.setMessagePopup(rForm.getErrors(), "ErrorPanel");
                             window.setStatus("(Error 1 of "+rForm.getErrors().size()+") "+(String)rForm.getErrors().get(0), "ErrorPanel");
                         }else
                             window.setStatus((String)rForm.getErrors().get(0),"ErrorPanel");
