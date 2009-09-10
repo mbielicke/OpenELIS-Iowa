@@ -26,7 +26,9 @@ license ("UIRF Software License"), in which case the provisions of a
 UIRF Software License are applicable instead of those above. 
   -->
 
-<xsl:stylesheet extension-element-prefixes="resource" version="1.0" xmlns:addressMeta="xalan://org.openelis.meta.AddressMeta" xmlns:analysisMetaMap="xalan://org.openelis.metamap.AnalysisMetaMap" xmlns:envMeta="xalan://org.openelis.metamap.SampleEnvironmentalMetaMap" xmlns:locale="xalan://java.util.Locale" xmlns:methodMeta="xalan://org.openelis.meta.MethodMeta" xmlns:orgMeta="xalan://org.openelis.meta.OrganizationMeta" xmlns:projectMeta="xalan://org.openelis.meta.ProjectMeta" xmlns:resource="xalan://org.openelis.util.UTFResource" xmlns:sampleItemMetaMap="xalan://org.openelis.metamap.SampleItemMetaMap" xmlns:sampleMetaMap="xalan://org.openelis.metamap.SampleMetaMap" xmlns:sampleOrgMetaMap="xalan://org.openelis.metamap.SampleOrganizationMetaMap" xmlns:sampleProjectMetaMap="xalan://org.openelis.metamap.SampleProjectMetaMap" xmlns:sampleTestMetaMap="xalan://org.openelis.metamap.SampleTestMetaMap" xmlns:sectionMeta="xalan://org.openelis.meta.SectionMeta" xmlns:xalan="http://xml.apache.org/xalan" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xsi:noNamespaceSchemaLocation="../../../../../../../../OpenELIS-Lib/src/org/openelis/gwt/public/ScreenSchema.xsd" xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform ../../../../../../../../OpenELIS-Lib/src/org/openelis/gwt/public/XSLTSchema.xsd">
+<xsl:stylesheet extension-element-prefixes="resource" version="1.0" xmlns:addressMeta="xalan://org.openelis.meta.AddressMeta" xmlns:analysisMetaMap="xalan://org.openelis.metamap.AnalysisMetaMap" 
+xmlns:envMeta="xalan://org.openelis.metamap.SampleEnvironmentalMetaMap" xmlns:locale="xalan://java.util.Locale" xmlns:methodMeta="xalan://org.openelis.meta.MethodMeta" 
+xmlns:orgMeta="xalan://org.openelis.meta.OrganizationMeta" xmlns:projectMeta="xalan://org.openelis.meta.ProjectMeta" xmlns:resource="xalan://org.openelis.util.UTFResource" xmlns:sampleItemMetaMap="xalan://org.openelis.metamap.SampleItemMetaMap" xmlns:sampleMetaMap="xalan://org.openelis.metamap.SampleMetaMap" xmlns:sampleOrgMetaMap="xalan://org.openelis.metamap.SampleOrganizationMetaMap" xmlns:sampleProjectMetaMap="xalan://org.openelis.metamap.SampleProjectMetaMap" xmlns:sampleTestMetaMap="xalan://org.openelis.metamap.SampleTestMetaMap" xmlns:sectionMeta="xalan://org.openelis.meta.SectionMeta" xmlns:xalan="http://xml.apache.org/xalan" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xsi:noNamespaceSchemaLocation="../../../../../../../../OpenELIS-Lib/src/org/openelis/gwt/public/ScreenSchema.xsd" xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform ../../../../../../../../OpenELIS-Lib/src/org/openelis/gwt/public/XSLTSchema.xsd">
   <xsl:import href="aToZOneColumn.xsl" />
   <xalan:component prefix="resource">
     <xalan:script lang="javaclass" src="xalan://org.openelis.util.UTFResource" />
@@ -220,56 +222,62 @@ UIRF Software License are applicable instead of those above.
               <text style="FormTitle">
                 <xsl:value-of select="resource:getString($constants,'itemsAndAnalyses')" />
               </text>
-              <VerticalPanel style="WhiteContentPanel">
-                <tree key="itemsTestsTree" width="auto" maxRows="4" showScroll="ALWAYS" tab="{projectMeta:getName($project)},{envMeta:getSamplingLocation($env)}">
-                  <header>
-                    <col width="280" header="{resource:getString($constants,'itemTests')}" />
-                    <col width="130" header="{resource:getString($constants,'typeStatus')}" />
-                  </header>
-                  <leaf key="sampleItem">
-                    <col>
-                      <label />
-                    </col>
-                    <col>
-                      <label />
-                    </col>
-                  </leaf>
-                  <leaf key="analysis">
-                    <col>
-                      <label />
-                    </col>
-                    <col>
-                      <dropdown width="110px" popWidth="110px" case="LOWER" field="String" />
-                    </col>
-                  </leaf>
-                </tree>
-                <HorizontalPanel style="TableButtonFooter">
-                  <appButton key="addItemButton" style="Button" action="addItem">
-                    <HorizontalPanel>
-                      <AbsolutePanel style="AddRowButtonImage" />
-                      <text>
-                        <xsl:value-of select="resource:getString($constants,'addItem')" />
-                      </text>
-                    </HorizontalPanel>
-                  </appButton>
-                  <appButton key="addTestButton" style="Button" action="addTest">
-                    <HorizontalPanel>
-                      <AbsolutePanel style="AddRowButtonImage" />
-                      <text>
-                        <xsl:value-of select="resource:getString($constants,'addTest')" />
-                      </text>
-                    </HorizontalPanel>
-                  </appButton>
-                  <appButton key="removeRowButton" style="Button" action="removeRow">
-                    <HorizontalPanel>
-                      <AbsolutePanel style="RemoveRowButtonImage" />
-                      <text>
-                        <xsl:value-of select="resource:getString($constants,'removeRow')" />
-                      </text>
-                    </HorizontalPanel>
-                  </appButton>
-                </HorizontalPanel>
-              </VerticalPanel>
+              <TablePanel spacing="0" padding="0" style="WhiteContentPanel">
+              	<row>
+	                <tree key="itemsTestsTree" width="auto" maxRows="4" showScroll="ALWAYS" tab="{projectMeta:getName($project)},{envMeta:getSamplingLocation($env)}">
+	                  <header>
+	                    <col width="280" header="{resource:getString($constants,'itemTests')}" />
+	                    <col width="130" header="{resource:getString($constants,'typeStatus')}" />
+	                  </header>
+	                  <leaf key="sampleItem">
+	                    <col>
+	                      <label />
+	                    </col>
+	                    <col>
+	                      <label />
+	                    </col>
+	                  </leaf>
+	                  <leaf key="analysis">
+	                    <col>
+	                      <label />
+	                    </col>
+	                    <col>
+	                      <dropdown width="110px" popWidth="110px" case="LOWER" field="String" />
+	                    </col>
+	                  </leaf>
+	                </tree>
+                </row>
+                <row>
+	                <widget style="TreeButtonFooter">
+		                <HorizontalPanel>
+		                  <appButton key="addItemButton" style="Button" action="addItem">
+		                    <HorizontalPanel>
+		                      <AbsolutePanel style="AddRowButtonImage" />
+		                      <text>
+		                        <xsl:value-of select="resource:getString($constants,'addItem')" />
+		                      </text>
+		                    </HorizontalPanel>
+		                  </appButton>
+		                  <appButton key="addTestButton" style="Button" action="addTest">
+		                    <HorizontalPanel>
+		                      <AbsolutePanel style="AddRowButtonImage" />
+		                      <text>
+		                        <xsl:value-of select="resource:getString($constants,'addTest')" />
+		                      </text>
+		                    </HorizontalPanel>
+		                  </appButton>
+		                  <appButton key="removeRowButton" style="Button" action="removeRow">
+		                    <HorizontalPanel>
+		                      <AbsolutePanel style="RemoveRowButtonImage" />
+		                      <text>
+		                        <xsl:value-of select="resource:getString($constants,'removeRow')" />
+		                      </text>
+		                    </HorizontalPanel>
+		                  </appButton>
+		                </HorizontalPanel>
+	                </widget>
+                </row>
+              </TablePanel>
             </VerticalPanel>
             <VerticalPanel style="subform">
               <text style="FormTitle">
@@ -331,25 +339,25 @@ UIRF Software License are applicable instead of those above.
               <VerticalPanel width="730px" height="170px">
                 <TablePanel padding="0" spacing="0" style="Form">
                   <row>
-                    <text style="Prompt">Sample Type:</text>
+                    <text style="Prompt"><xsl:value-of select="resource:getString($constants,'sampleType')" />:</text>
                     <dropdown key="{sampleItemMetaMap:getTypeOfSampleId($sampleItem)}" width="150px" popWidth="150px" field="Integer" />
                   </row>
                   <row>
-                  	<text style="Prompt">Source:</text>
+                  	<text style="Prompt"><xsl:value-of select="resource:getString($constants,'source')" />:</text>
                     <dropdown key="{sampleItemMetaMap:getSourceOfSampleId($sampleItem)}" width="150px" popWidth="150px" field="Integer" />
-                   	<text style="Prompt">Source Other:</text>
+                   	<text style="Prompt"><xsl:value-of select="resource:getString($constants,'sourceOther')" />:</text>
                  	<textbox key="{sampleItemMetaMap:getSourceOther($sampleItem)}" width="215px" field="String" />
                   </row>
                   <row>
-                    <text style="Prompt">Container:</text>
+                    <text style="Prompt"><xsl:value-of select="resource:getString($constants,'container')" />:</text>
                     <dropdown key="{sampleItemMetaMap:getContainerId($sampleItem)}" width="225px" popWidth="225px" field="Integer" />
-                    <text style="Prompt">Container Reference:</text>
+                    <text style="Prompt"><xsl:value-of select="resource:getString($constants,'containerReference')" />:</text>
                     <textbox key="{sampleItemMetaMap:getContainerReference($sampleItem)}" width="215px" field="String" />
                   </row>
                   <row>
-                    <text style="Prompt">Qty:</text>
+                    <text style="Prompt"><xsl:value-of select="resource:getString($constants,'qty')" />:</text>
                     <textbox key="{sampleItemMetaMap:getQuantity($sampleItem)}" width="150px" field="Double" />
-                    <text style="Prompt">Unit:</text>
+                    <text style="Prompt"><xsl:value-of select="resource:getString($constants,'unit')" />:</text>
                     <dropdown key="{sampleItemMetaMap:getUnitOfMeasureId($sampleItem)}" width="150px" popWidth="150px" field="Integer" />
                   </row>
                 </TablePanel>
@@ -359,39 +367,39 @@ UIRF Software License are applicable instead of those above.
               <VerticalPanel width="730px" height="170px">
                 <TablePanel padding="0" spacing="0" style="Form">
                   <row>
-                    <text style="Prompt">Test:</text>
+                    <text style="Prompt"><xsl:value-of select="resource:getString($constants,'test')" />:</text>
                     <autoComplete key="{sampleTestMetaMap:getName($test)}" width="150px" case="LOWER" popWidth="auto" field="Integer">
                       <col width="150" header="Test" />
                       <col width="150" header="Method" />
                       <col width="200" header="Description" />
                     </autoComplete>
-                    <text style="Prompt">Method:</text>
+                    <text style="Prompt"><xsl:value-of select="resource:getString($constants,'method')" />:</text>
                     <autoComplete key="{methodMeta:getName($method)}" width="150px" case="LOWER" popWidth="auto" field="Integer">
                       <col width="150" header="Method" />
                     </autoComplete>
                   </row>
                   <row>
-                    <text style="Prompt">Status:</text>
+                    <text style="Prompt"><xsl:value-of select="resource:getString($constants,'status')" />:</text>
                     <dropdown key="{analysisMetaMap:getStatusId($analysis)}" width="150px" popWidth="150px" field="Integer" />
-                    <text style="Prompt">Revision:</text>
+                    <text style="Prompt"><xsl:value-of select="resource:getString($constants,'revision')" />:</text>
                     <textbox key="{analysisMetaMap:getRevision($analysis)}" width="60px" field="Integer" />
                   </row>
                   <row>
-                    <text style="Prompt">Reportable:</text>
+                    <text style="Prompt"><xsl:value-of select="resource:getString($constants,'testReportable')" />:</text>
                     <check key="{analysisMetaMap:getIsReportable($analysis)}" />
-                    <text style="Prompt">Section:</text>
+                    <text style="Prompt"><xsl:value-of select="resource:getString($constants,'section')" />:</text>
                     <dropdown key="{sectionMeta:getName($section)}" width="150px" popWidth="150px" case="LOWER" field="Integer"/>
                   </row>
                   <row>
-                    <text style="Prompt">Started:</text>
+                    <text style="Prompt"><xsl:value-of select="resource:getString($constants,'started')" />:</text>
                     <calendar key="{analysisMetaMap:getStartedDate($analysis)}" begin="0" end="2" pattern="{resource:getString($constants,'dateTimePattern')}" />
-                    <text style="Prompt">Completed:</text>
+                    <text style="Prompt"><xsl:value-of select="resource:getString($constants,'completed')" />:</text>
                     <calendar key="{analysisMetaMap:getCompletedDate($analysis)}" begin="0" end="2" pattern="{resource:getString($constants,'dateTimePattern')}" />
                   </row>
                   <row>
-                    <text style="Prompt">Released:</text>
+                    <text style="Prompt"><xsl:value-of select="resource:getString($constants,'released')" />:</text>
                     <calendar key="{analysisMetaMap:getReleasedDate($analysis)}" begin="0" end="2" pattern="{resource:getString($constants,'dateTimePattern')}" />
-                    <text style="Prompt">Printed:</text>
+                    <text style="Prompt"><xsl:value-of select="resource:getString($constants,'printed')" />:</text>
                     <calendar key="{analysisMetaMap:getPrintedDate($analysis)}" begin="0" end="2" pattern="{resource:getString($constants,'dateTimePattern')}" />
                   </row>
                 </TablePanel>
@@ -503,62 +511,102 @@ UIRF Software License are applicable instead of those above.
   -->
 </VerticalPanel>
             </tab>
-            <tab key="tab3" text="{resource:getString($constants,'analysisExtrnlCmnts')}">
-              <VerticalPanel width="100%" height="170px">
-                <TablePanel padding="0" spacing="0" style="Form">
-                  <row>
-                    <notes key="anExNotesPanel" width="690px" height="150px" />
+            <tab key="tab3" text="{resource:getString($constants,'analysisNotes')}">
+            <TablePanel padding="0" spacing="0" style="Form">
+                <row>
+		            <text style="LeftCondensedPrompt"><xsl:value-of select="resource:getString($constants,'external')" />:</text>
+		            <HorizontalPanel width="15px"/>
+        		    <text style="LeftCondensedPrompt"><xsl:value-of select="resource:getString($constants,'internal')" />:</text>    
+                </row>
+                <row>
+           			<notes key="anExNotesPanel" width="340px" height="120px" />
+           			<HorizontalPanel width="15px"/>
+               		<notes key="anIntNotesPanel" width="340px" height="120px" />
                   </row>
                   <row>
-                    <appButton key="anExNoteButton" style="Button" action="standardNote">
-                      <HorizontalPanel>
-                        <AbsolutePanel style="StandardNoteButtonImage" />
-                        <text>
-                          <xsl:value-of select="resource:getString($constants,'addNote')" />
-                        </text>
-                      </HorizontalPanel>
-                    </appButton>
+                    <widget style="TableButtonFooter">
+	                    <appButton key="anExNoteButton" style="Button" action="standardNote">
+	                      <HorizontalPanel>
+	                        <AbsolutePanel style="StandardNoteButtonImage" />
+	                        <text>
+	                          <xsl:value-of select="resource:getString($constants,'editNote')" />
+	                        </text>
+	                      </HorizontalPanel>
+	                    </appButton>
+                    </widget>
+		               	<HorizontalPanel width="15px"/>
+		              <widget style="TableButtonFooter">
+		               	<appButton key="anIntNoteButton" style="Button" action="standardNote">
+	                      <HorizontalPanel>
+	                        <AbsolutePanel style="StandardNoteButtonImage" />
+	                        <text>
+	                          <xsl:value-of select="resource:getString($constants,'addNote')" />
+	                        </text>
+	                      </HorizontalPanel>
+	                    </appButton>
+                    </widget>
                   </row>
                 </TablePanel>
-              </VerticalPanel>
             </tab>
-            <tab key="tab4" text="{resource:getString($constants,'analysisIntrnlCmnts')}">
-              <VerticalPanel width="100%" height="170px">
-                <TablePanel padding="0" spacing="0" style="Form">
-                  <row>
-                    <notes key="anIntNotesPanel" width="690px" height="150px" />
+            <tab key="tab4" text="{resource:getString($constants,'sampleNotes')}">
+            <TablePanel padding="0" spacing="0" style="Form">
+                <row>
+		            <text style="LeftCondensedPrompt"><xsl:value-of select="resource:getString($constants,'external')" />:</text>
+		            <HorizontalPanel width="15px"/>
+        		    <text style="LeftCondensedPrompt"><xsl:value-of select="resource:getString($constants,'internal')" />:</text>    
+                </row>
+                <row>
+           			<notes key="sampleExtNotesPanel" width="340px" height="120px" />
+           			<HorizontalPanel width="15px"/>
+               		<notes key="sampleIntNotesPanel" width="340px" height="120px" />
                   </row>
                   <row>
-                    <appButton key="anIntNoteButton" style="Button" action="standardNote">
-                      <HorizontalPanel>
-                        <AbsolutePanel style="StandardNoteButtonImage" />
-                        <text>
-                          <xsl:value-of select="resource:getString($constants,'addNote')" />
-                        </text>
-                      </HorizontalPanel>
-                    </appButton>
+                  <widget style="TableButtonFooter">
+	                  <appButton key="sampleExtNoteButton" style="Button" action="standardNote">
+	                      <HorizontalPanel>
+	                        <AbsolutePanel style="StandardNoteButtonImage" />
+	                        <text>
+	                          <xsl:value-of select="resource:getString($constants,'editNote')" />
+	                        </text>
+	                      </HorizontalPanel>
+	                    </appButton>
+                    </widget>
+	               	<HorizontalPanel width="15px"/>
+	               	<widget style="TableButtonFooter">
+		               	<appButton key="sampleIntNoteButton" style="Button" action="standardNote">
+	                      <HorizontalPanel>
+	                        <AbsolutePanel style="StandardNoteButtonImage" />
+	                        <text>
+	                          <xsl:value-of select="resource:getString($constants,'addNote')" />
+	                        </text>
+	                      </HorizontalPanel>
+	                    </appButton>
+                    </widget>
                   </row>
                 </TablePanel>
-              </VerticalPanel>
             </tab>
             <tab key="tab5" text="{resource:getString($constants,'storage')}">
-              <VerticalPanel height="170px">
+              <TablePanel height="170px">
+              <row>
                 <table key="storageTable" width="auto" maxRows="6" showScroll="ALWAYS" title="">
-                  <col width="155" header="User">
+                  <col width="155" header="{resource:getString($constants,'user')}">
                     <label />
                   </col>
-                  <col width="230" header="Location">
+                  <col width="230" header="{resource:getString($constants,'location')}">
                     <autoComplete key="" width="210px" case="LOWER" popWidth="auto" field="Integer">
                       <col width="180" header="Name" />
                     </autoComplete>
                   </col>
-                  <col width="130" header="Check In">
+                  <col width="130" header="{resource:getString($constants,'checkIn')}">
                     <calendar key="" begin="0" end="2" width="110" pattern="{resource:getString($constants,'dateTimePattern')}" />
                   </col>
-                  <col width="130" header="Check Out">
+                  <col width="130" header="{resource:getString($constants,'checkOut')}">
                     <calendar key="" begin="0" end="2" width="110" pattern="{resource:getString($constants,'dateTimePattern')}" />
                   </col>
                 </table>
+                </row>
+                <row>
+                <widget style="TableButtonFooter">
                 <HorizontalPanel>
                   <appButton key="addStorageButton" style="Button" action="addStorage">
                     <HorizontalPanel>
@@ -577,45 +625,134 @@ UIRF Software License are applicable instead of those above.
                     </HorizontalPanel>
                   </appButton>
                 </HorizontalPanel>
-              </VerticalPanel>
-            </tab>
-            <tab key="tab6" text="{resource:getString($constants,'sampleExtrnlCmnts')}">
-              <VerticalPanel width="100%" height="170px">
-                <TablePanel padding="0" spacing="0" style="Form">
-                  <row>
-                    <notes key="sampleExtNotesPanel" width="690px" height="150px" />
-                  </row>
-                  <row>
-                    <appButton key="sampleExtNoteButton" style="Button" action="standardNote">
-                      <HorizontalPanel>
-                        <AbsolutePanel style="StandardNoteButtonImage" />
-                        <text>
-                          <xsl:value-of select="resource:getString($constants,'addNote')" />
-                        </text>
-                      </HorizontalPanel>
-                    </appButton>
-                  </row>
+                </widget>
+                </row>
                 </TablePanel>
-              </VerticalPanel>
             </tab>
-            <tab key="tab7" text="{resource:getString($constants,'sampleIntrnlCmnts')}">
-              <VerticalPanel width="100%" height="170px">
-                <TablePanel padding="0" spacing="0" style="Form">
-                  <row>
-                    <notes key="sampleIntNotesPanel" width="690px" height="150px" />
-                  </row>
-                  <row>
-                    <appButton key="sampleIntNoteButton" style="Button" action="standardNote">
-                      <HorizontalPanel>
-                        <AbsolutePanel style="StandardNoteButtonImage" />
-                        <text>
-                          <xsl:value-of select="resource:getString($constants,'addNote')" />
-                        </text>
-                      </HorizontalPanel>
-                    </appButton>
-                  </row>
+            <tab key="tab6" text="{resource:getString($constants,'qaEvents')}">
+              <HorizontalPanel width="100%" height="170px">
+              <TablePanel>
+              	<row>
+                 <table key="sampleQATable" title="" width="auto" maxRows="6" showScroll="ALWAYS">
+                  <col width="175" header="Sample QA Event">
+                    <label />
+                  </col>
+                  <col width="90" header="Type">
+                  	<label/>
+                  </col>
+                  <col width="40" header="Billable">
+                  	<check/>
+                  </col>
+                </table>
+                </row>
+                <row>
+                <widget style="TableButtonFooter">
+	                <HorizontalPanel>
+	                  <appButton key="addsQAButton" style="Button" action="addStorage">
+	                    <HorizontalPanel>
+	                      <AbsolutePanel style="AddRowButtonImage" />
+	                      <text>
+	                        <xsl:value-of select="resource:getString($constants,'addRow')" />
+	                      </text>
+	                    </HorizontalPanel>
+	                  </appButton>
+	                  <appButton key="removesQAButton" style="Button" action="removeStorage">
+	                    <HorizontalPanel>
+	                      <AbsolutePanel style="RemoveRowButtonImage" />
+	                      <text>
+	                        <xsl:value-of select="resource:getString($constants,'removeRow')" />
+	                      </text>
+	                    </HorizontalPanel>
+	                  </appButton>
+	                </HorizontalPanel>
+	                </widget>
+	                </row>
+	                </TablePanel>
+              <HorizontalPanel width="15px"/>
+              <TablePanel>
+              <row>
+                 <table key="analysisQATable" title="" width="auto" maxRows="6" showScroll="ALWAYS">
+                  <col width="175" header="Analysis QA Event">
+                    <label />
+                  </col>
+                  <col width="90" header="Type">
+                  	<label/>
+                  </col>
+                  <col width="40" header="Billable">
+                  	<check/>
+                  </col>
+                </table>
+                </row>
+                <row>
+                <widget style="TableButtonFooter">
+                <HorizontalPanel>
+                  <appButton key="addaQAButton" style="Button" action="addStorage">
+                    <HorizontalPanel>
+                      <AbsolutePanel style="AddRowButtonImage" />
+                      <text>
+                        <xsl:value-of select="resource:getString($constants,'addRow')" />
+                      </text>
+                    </HorizontalPanel>
+                  </appButton>
+                  <appButton key="removeaQAButton" style="Button" action="removeStorage">
+                    <HorizontalPanel>
+                      <AbsolutePanel style="RemoveRowButtonImage" />
+                      <text>
+                        <xsl:value-of select="resource:getString($constants,'removeRow')" />
+                      </text>
+                    </HorizontalPanel>
+                  </appButton>
+                </HorizontalPanel>
+                </widget>
+                </row>
+				</TablePanel>  
+                </HorizontalPanel>
+            </tab>
+            <tab key="tab7" text="Aux Data">
+              <HorizontalPanel width="100%" height="170px">
+                <TablePanel>
+                <row>
+                 <table key="auxValsTable" title="" width="auto" maxRows="5" showScroll="ALWAYS">
+                  <col width="250" header="Name">
+                    <label />
+                  </col>
+                </table>
+                </row>
+                <row>
+                <widget style="TableButtonFooter">
+                <HorizontalPanel>
+                  <appButton key="addauxButton" style="Button" action="addStorage">
+                    <HorizontalPanel>
+                      <AbsolutePanel style="AddRowButtonImage" />
+                      <text>
+                        <xsl:value-of select="resource:getString($constants,'addRow')" />
+                      </text>
+                    </HorizontalPanel>
+                  </appButton>
+                  <appButton key="removeauxButton" style="Button" action="removeStorage">
+                    <HorizontalPanel>
+                      <AbsolutePanel style="RemoveRowButtonImage" />
+                      <text>
+                        <xsl:value-of select="resource:getString($constants,'removeRow')" />
+                      </text>
+                    </HorizontalPanel>
+                  </appButton>
+                </HorizontalPanel>
+                </widget>
+                </row>
                 </TablePanel>
-              </VerticalPanel>
+                <VerticalPanel>
+                 <table key="auxVals2Table" title="" width="auto" maxRows="5" showScroll="ALWAYS">
+                  <col width="125" header="Name">
+                    <label />
+                  </col>
+                  <col width="125" header="Value">
+                    <label />
+                  </col>
+                </table>
+                
+                </VerticalPanel>
+              </HorizontalPanel>
             </tab>
           </TabPanel>
         </VerticalPanel>
