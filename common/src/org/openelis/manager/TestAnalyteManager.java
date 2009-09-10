@@ -38,11 +38,11 @@ public class TestAnalyteManager implements RPC {
     
     protected Integer testId;    
     protected transient static TestAnalyteManagerProxy proxy;    
-    protected ArrayList<ArrayList<TestAnalyteDO>> testAnalytes;   
-    protected ArrayList<TestAnalyteDO> deletedTestAnalytes;
+    protected ArrayList<ArrayList<TestAnalyteDO>> analytes;   
+    protected ArrayList<TestAnalyteDO> deletedAnalytes;
         
     protected TestAnalyteManager() {
-        testAnalytes = new ArrayList<ArrayList<TestAnalyteDO>>();
+        analytes = new ArrayList<ArrayList<TestAnalyteDO>>();
         nextGroup = 0;
     }
     
@@ -69,18 +69,18 @@ public class TestAnalyteManager implements RPC {
     }
     
     public int rowCount() {
-        if(testAnalytes == null) 
+        if(analytes == null) 
             return 0;
         
-        return testAnalytes.size();
+        return analytes.size();
     }
     
-    public ArrayList<ArrayList<TestAnalyteDO>> getTestAnalytes() {
-        return testAnalytes;
+    public ArrayList<ArrayList<TestAnalyteDO>> getAnalytes() {
+        return analytes;
     }
 
-    public void setTestAnalytes(ArrayList<ArrayList<TestAnalyteDO>> testAnalytes) {
-        this.testAnalytes = testAnalytes;
+    void setAnalytes(ArrayList<ArrayList<TestAnalyteDO>> testAnalytes) {
+        this.analytes = testAnalytes;
     }   
     
     public void addRow(boolean isNewGroup,boolean referPrev) {        
@@ -90,14 +90,14 @@ public class TestAnalyteManager implements RPC {
     public void addRowAt(int row,boolean isNewGroup,boolean referPrev) {              
         ArrayList<TestAnalyteDO> currlist;                                                                   
         
-        if(testAnalytes == null)
-            testAnalytes = new ArrayList<ArrayList<TestAnalyteDO>>();
+        if(analytes == null)
+            analytes = new ArrayList<ArrayList<TestAnalyteDO>>();
         
             currlist = createNewDataListAt(row,isNewGroup,referPrev);
-            if(testAnalytes.size() > row) 
-                testAnalytes.add(row,currlist);
+            if(analytes.size() > row) 
+                analytes.add(row,currlist);
             else 
-                testAnalytes.add(currlist);                    
+                analytes.add(currlist);                    
         
     }
     
@@ -105,21 +105,21 @@ public class TestAnalyteManager implements RPC {
         ArrayList<TestAnalyteDO> list;
         TestAnalyteDO anaDO;
         
-        if(testAnalytes == null || row >= testAnalytes.size())
+        if(analytes == null || row >= analytes.size())
             return;
         
-        list = testAnalytes.get(row);        
+        list = analytes.get(row);        
         
-        if(deletedTestAnalytes == null)
-            deletedTestAnalytes = new ArrayList<TestAnalyteDO>();
+        if(deletedAnalytes == null)
+            deletedAnalytes = new ArrayList<TestAnalyteDO>();
         
         for(int i = 0; i < list.size(); i++) {
             anaDO = list.get(i);
             if(anaDO.getId() != null)
-                deletedTestAnalytes.add(anaDO);                       
+                deletedAnalytes.add(anaDO);                       
         }
         
-        testAnalytes.remove(row);
+        analytes.remove(row);
     }
     
     public void addColumnAt(int row, int col, Integer analyteId) {
@@ -127,9 +127,9 @@ public class TestAnalyteManager implements RPC {
         ArrayList<TestAnalyteDO> list;
         int i,rg,nrg;
         
-        rg = testAnalytes.get(row).get(col-1).getRowGroup();
-        for(i = row; i < testAnalytes.size(); i++) {
-            list = testAnalytes.get(i);
+        rg = analytes.get(row).get(col-1).getRowGroup();
+        for(i = row; i < analytes.size(); i++) {
+            list = analytes.get(i);
             if(list.size() <= col-1)
                 break;
                       
@@ -151,7 +151,7 @@ public class TestAnalyteManager implements RPC {
         }     
         
         for(i = row-1; i > -1; i--) {
-            list = testAnalytes.get(i);
+            list = analytes.get(i);
             if(list.size() <= col-1)                
                 break;
             
@@ -179,49 +179,49 @@ public class TestAnalyteManager implements RPC {
         ArrayList<TestAnalyteDO> list;
         int i,rg,nrg;
         
-        anaDO = testAnalytes.get(row).get(col);        
+        anaDO = analytes.get(row).get(col);        
         rg = anaDO.getRowGroup();
 
-        if(deletedTestAnalytes == null) 
-            deletedTestAnalytes = new ArrayList<TestAnalyteDO>();
+        if(deletedAnalytes == null) 
+            deletedAnalytes = new ArrayList<TestAnalyteDO>();
         
-        for(i = row; i < testAnalytes.size(); i++) {
-            list = testAnalytes.get(i);
+        for(i = row; i < analytes.size(); i++) {
+            list = analytes.get(i);
             nrg = list.get(0).getRowGroup();
             if(rg != nrg)
                 break;
             
             nextDO = list.get(col);                                
-            deletedTestAnalytes.add(nextDO);
+            deletedAnalytes.add(nextDO);
             list.remove(col);
         }
         
         for(i = row-1; i > -1; i--) {
-            list = testAnalytes.get(i);
+            list = analytes.get(i);
             nrg = list.get(0).getRowGroup();
             if(rg != nrg)
                 break;
             
             nextDO = list.get(col);                       
-            deletedTestAnalytes.add(nextDO);
+            deletedAnalytes.add(nextDO);
             list.remove(col);
         }
     }
     
     public int columnCount(int row) { 
-        if(testAnalytes == null)
+        if(analytes == null)
             return 0;
         try {
-            return testAnalytes.get(row).size();
+            return analytes.get(row).size();
         } catch (IndexOutOfBoundsException ex) {            
             return 0;
         }
     }
     
-    public TestAnalyteDO getTestAnalyteAt(int row, int col) {
+    public TestAnalyteDO getAnalyteAt(int row, int col) {
         TestAnalyteDO ado;                        
         try {
-            ado = testAnalytes.get(row).get(col);
+            ado = analytes.get(row).get(col);
         } catch (IndexOutOfBoundsException ex) {            
             return null;
         }
@@ -238,14 +238,14 @@ public class TestAnalyteManager implements RPC {
     }       
     
     int deleteCount(){
-        if(deletedTestAnalytes == null)
+        if(deletedAnalytes == null)
             return 0;
         
-        return deletedTestAnalytes.size();
+        return deletedAnalytes.size();
     }
     
     TestAnalyteDO getDeletedAt(int i) {
-        return deletedTestAnalytes.get(i);
+        return deletedAnalytes.get(i);
     }
     
     private static TestAnalyteManagerProxy proxy() {
@@ -280,9 +280,9 @@ public class TestAnalyteManager implements RPC {
               //  prevlist = testAnalytes.get(row+1);
             
             if(referPrev && row-1 >= 0) {
-                prevlist = testAnalytes.get(row-1);
+                prevlist = analytes.get(row-1);
             } else {
-                prevlist = testAnalytes.get(row+1);
+                prevlist = analytes.get(row+1);
             }
             
             for(int i = 0; i < prevlist.size(); i++) {
@@ -323,9 +323,9 @@ public class TestAnalyteManager implements RPC {
         int i,rg;
         ArrayList<TestAnalyteDO> list;
         
-        if(testAnalytes != null) {                     
-            for (i = 0; i < testAnalytes.size(); i++) {
-                list = testAnalytes.get(i);
+        if(analytes != null) {                     
+            for (i = 0; i < analytes.size(); i++) {
+                list = analytes.get(i);
                 rg = list.get(0).getRowGroup();
                 nextGroup = Math.max(nextGroup, rg);
             }

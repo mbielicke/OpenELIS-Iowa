@@ -52,11 +52,13 @@ import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.SecurityModule.ModuleFlags;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.QueryStringField;
+import org.openelis.gwt.common.rewrite.QueryData;
 import org.openelis.local.CategoryLocal;
 import org.openelis.local.JMSMessageProducerLocal;
 import org.openelis.local.LockLocal;
 import org.openelis.messages.DictionaryCacheMessage;
 import org.openelis.metamap.CategoryMetaMap;
+import org.openelis.metamap.DictionaryMetaMap;
 import org.openelis.remote.CategoryRemote;
 import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
@@ -463,21 +465,36 @@ public class CategoryBean implements CategoryRemote,CategoryLocal {
         if(exceptionList.size() > 0)
             throw exceptionList;
     }
+    
+    public ArrayList getDictionaryListByPatternAndCategory(ArrayList<QueryData> fields) {
+        StringBuffer sb = new StringBuffer();
+        QueryBuilder qb = new QueryBuilder();
+        DictionaryMetaMap dictMeta;
+        ArrayList returnList;
+        
+        dictMeta = new DictionaryMetaMap();
+        qb.setMeta(dictMeta);
 
-
-    public List getDictionaryListByPatternAndCategory(QueryStringField pattern,
-                                                      Integer categoryId) {
-        Query query = null;
-        if (categoryId != null) {
-            query = manager.createNamedQuery("Dictionary.DictionaryListByPatternAndCategory");
-            query.setParameter("categoryId", categoryId);
-            query.setParameter("pattern", pattern.getParameter().get(0));
-        } else {
-            query = manager.createNamedQuery("Dictionary.autoCompleteByEntry");
-            query.setParameter("entry", pattern.getParameter().get(0));
+        qb.setSelect("distinct new org.openelis.domain.IdNameDO("
+                     +dictMeta.getId()+", "
+                     +dictMeta.getEntry() + ") ");               
+        try {
+            qb.addNewWhere(fields);
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
-        List idNameDOList = query.getResultList();
-        return   idNameDOList;
+        
+        qb.setOrderBy(dictMeta.getEntry());
+
+        sb.append(qb.getEJBQL());                                
+        Query query = manager.createQuery(sb.toString());
+
+        // ***set the parameters in the query
+        qb.setNewQueryParams(query,fields);
+        
+        returnList = (ArrayList<DictionaryDO>)query.getResultList();
+        
+        return returnList;
     }
     
     public Integer getNumResultsAffected(String entry, Integer id) {

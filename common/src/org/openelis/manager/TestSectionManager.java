@@ -38,13 +38,13 @@ public class TestSectionManager implements RPC {
     private static final long serialVersionUID = 1L;
     
     protected Integer testId;
-    protected ArrayList<TestSectionDO> testSections;
-    protected ArrayList<TestSectionDO> deletedTestSections;
+    protected ArrayList<TestSectionDO> sections;
+    protected ArrayList<TestSectionDO> deletedSections;
     
     protected transient static TestSectionManagerProxy proxy;
     
     protected TestSectionManager() {
-        testSections = null;
+        sections = null;
     }
     
     /**
@@ -54,7 +54,7 @@ public class TestSectionManager implements RPC {
         TestSectionManager tsm;
         
         tsm = new TestSectionManager();
-        tsm.testSections = new ArrayList<TestSectionDO>();
+        tsm.sections = new ArrayList<TestSectionDO>();
         
         return tsm;
     }
@@ -69,52 +69,44 @@ public class TestSectionManager implements RPC {
    
     
     public int count(){
-        if(testSections == null)
+        if(sections == null)
             return 0;
         
-        return testSections.size();
+        return sections.size();
     }
     
-    public ArrayList<TestSectionDO> getTestSections() {
-        return testSections;
-    }
-
-    public void setTestSections(ArrayList<TestSectionDO> testSections) {
-        this.testSections = testSections;
+    public TestSectionDO getSectionAt(int i) {
+        return sections.get(i);
     }
     
-    public TestSectionDO getTestSectionAt(int i) {
-        return testSections.get(i);
+    public void setSectionAt(TestSectionDO section, int i) {
+        sections.set(i, section);
     }
     
-    public void setTestSectionAt(TestSectionDO section, int i) {
-        testSections.set(i, section);
-    }
-    
-    public void addTestSection(TestSectionDO section){
-        if(testSections == null)
-            testSections = new ArrayList<TestSectionDO>();
+    public void addSection(TestSectionDO section){
+        if(sections == null)
+            sections = new ArrayList<TestSectionDO>();
         
-        testSections.add(section);
+        sections.add(section);
     }
     
-    public void addTestSectionAt(TestSectionDO section, int i){
-        if(testSections == null)
-            testSections = new ArrayList<TestSectionDO>();
+    public void addSectionAt(TestSectionDO section, int i){
+        if(sections == null)
+            sections = new ArrayList<TestSectionDO>();
         
-        testSections.add(i, section);
+        sections.add(i, section);
     }
     
-    public void removeTestSectionAt(int i){
-        if(testSections == null || i >= testSections.size())
+    public void removeSectionAt(int i){
+        if(sections == null || i >= sections.size())
             return;
         
-        TestSectionDO tmpDO = testSections.remove(i);
+        TestSectionDO tmpDO = sections.remove(i);
         
-        if(deletedTestSections == null)
-            deletedTestSections = new ArrayList<TestSectionDO>();
+        if(deletedSections == null)
+            deletedSections = new ArrayList<TestSectionDO>();
         
-        deletedTestSections.add(tmpDO);
+        deletedSections.add(tmpDO);
     }
     
     //service methods
@@ -125,7 +117,26 @@ public class TestSectionManager implements RPC {
     public TestSectionManager update() throws Exception {
         return proxy().update(this);
     }
-       
+    
+    ArrayList<TestSectionDO> getSections() {
+        return sections;
+    }
+
+    void setSections(ArrayList<TestSectionDO> testSections) {
+        this.sections = testSections;
+    }
+    
+    int deleteCount(){
+        if(deletedSections == null)
+            return 0;
+        
+        return deletedSections.size();
+    }
+    
+    TestSectionDO getDeletedAt(int i){
+        return deletedSections.get(i);
+    }
+    
     private static TestSectionManagerProxy proxy(){
         if(proxy == null)
             proxy = new TestSectionManagerProxy();
@@ -133,14 +144,5 @@ public class TestSectionManager implements RPC {
         return proxy;
     }
     
-    int deleteCount(){
-        if(deletedTestSections == null)
-            return 0;
-        
-        return deletedTestSections.size();
-    }
     
-    TestSectionDO getDeletedAt(int i){
-        return deletedTestSections.get(i);
-    }
 }

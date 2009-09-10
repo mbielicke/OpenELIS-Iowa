@@ -42,7 +42,7 @@ public class TestAnalyteManagerProxy{
         int i,j,so;        
 
         tl = getTestLocal();
-        grid = man.getTestAnalytes();
+        grid = man.getAnalytes();
         so = 0;
         
         for(i = 0; i < man.rowCount(); i++) {
@@ -67,7 +67,7 @@ public class TestAnalyteManagerProxy{
         int i,j,so;        
         
         tl = getTestLocal();
-        grid = man.getTestAnalytes();
+        grid = man.getAnalytes();
         so = 0;
         
         for(i = 0; i < man.deleteCount(); i++){
@@ -100,7 +100,7 @@ public class TestAnalyteManagerProxy{
         tl = getTestLocal();
         grid = tl.fetchTestAnalytesById(testId);
         tam = TestAnalyteManager.getInstance();
-        tam.setTestAnalytes(grid);
+        tam.setAnalytes(grid);
         tam.setTestId(testId);
         
         return tam;

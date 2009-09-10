@@ -36,13 +36,13 @@ public class TestResultManager implements RPC {
     private static final long serialVersionUID = 1L;
     
     protected Integer testId;
-    protected ArrayList<ArrayList<TestResultDO>> testResults;    
-    protected ArrayList<TestResultDO> deletedTestResults;   
+    protected ArrayList<ArrayList<TestResultDO>> results;    
+    protected ArrayList<TestResultDO> deletedResults;   
     
     protected transient static TestResultManagerProxy proxy;
     
     protected TestResultManager() {
-        testResults = null;
+        results = null;
     }
 
     /**
@@ -52,7 +52,7 @@ public class TestResultManager implements RPC {
         TestResultManager trm;
         
         trm = new TestResultManager();
-        trm.testResults = new ArrayList<ArrayList<TestResultDO>>();
+        trm.results = new ArrayList<ArrayList<TestResultDO>>();
         
         return trm;
     }
@@ -70,19 +70,19 @@ public class TestResultManager implements RPC {
     }    
     
     public int groupCount(){
-        if(testResults == null)
+        if(results == null)
             return 0;
         
-        return testResults.size();
+        return results.size();
     }
     
-    public TestResultDO getTestResultAt(int group, int row) {
+    public TestResultDO getResultAt(int group, int row) {
         ArrayList<TestResultDO> list;
         
-        if(group <= 0 || row < 0 || group-1 >= testResults.size())
+        if(group <= 0 || row < 0 || group-1 >= results.size())
             return null;
         
-        list = testResults.get(group-1);
+        list = results.get(group-1);
         
         if(row < list.size())
             return list.get(row);
@@ -91,26 +91,26 @@ public class TestResultManager implements RPC {
     }
     
     public int getResultGroupSize(int group) {        
-        if(testResults == null || group <= 0 || group-1 >= testResults.size())
+        if(results == null || group <= 0 || group-1 >= results.size())
             return 0;
         
-        return testResults.get(group-1).size();
+        return results.get(group-1).size();
     }
     
-    public void addTestResult(int group) {      
-        if(testResults == null || group <= 0 || group-1 >= testResults.size())
+    public void addResult(int group) {      
+        if(results == null || group <= 0 || group-1 >= results.size())
             return;
    
-        testResults.get(group-1).add(new TestResultDO());
+        results.get(group-1).add(new TestResultDO());
     }
     
-    public void addTestResultAt(int group, int row) {
+    public void addResultAt(int group, int row) {
         ArrayList<TestResultDO> list;
         
-        if(row < 0 || testResults == null || group <= 0 || group-1 >= testResults.size())
+        if(row < 0 || results == null || group <= 0 || group-1 >= results.size())
             return;
         
-        list = testResults.get(group-1);
+        list = results.get(group-1);
         
         if (row < list.size()) {        
             list.add(row, new TestResultDO());
@@ -120,20 +120,20 @@ public class TestResultManager implements RPC {
     }
     
     public void addResultGroup() {        
-        if(testResults == null)
-            testResults = new ArrayList<ArrayList<TestResultDO>>();
+        if(results == null)
+            results = new ArrayList<ArrayList<TestResultDO>>();
         
-        testResults.add(new ArrayList<TestResultDO>());
+        results.add(new ArrayList<TestResultDO>());
     }
     
-    public void removeTestResultAt(int group, int row) {
+    public void removeResultAt(int group, int row) {
         ArrayList<TestResultDO> list;
         TestResultDO testResult;
         
-        if(row < 0 || testResults == null || group <= 0 || group-1 >= testResults.size())
+        if(row < 0 || results == null || group <= 0 || group-1 >= results.size())
             return;
         
-        list = testResults.get(group-1);
+        list = results.get(group-1);
         
         if(row >= list.size())
             return;
@@ -141,18 +141,18 @@ public class TestResultManager implements RPC {
         testResult = list.remove(row);
         
         if(testResult.getId() != null) {
-            if(deletedTestResults == null)
-                deletedTestResults = new ArrayList<TestResultDO>();
+            if(deletedResults == null)
+                deletedResults = new ArrayList<TestResultDO>();
             
-            deletedTestResults.add(testResult);
+            deletedResults.add(testResult);
         }
     }
     
     public void removeResultGroup(int group) {
-        if(testResults == null || group <= 0 || group-1 >= testResults.size())
+        if(results == null || group <= 0 || group-1 >= results.size())
             return;
         
-        testResults.remove(group-1);
+        results.remove(group-1);
     }
     
     public TestResultManager add() throws Exception {
@@ -163,23 +163,23 @@ public class TestResultManager implements RPC {
         return proxy().update(this);
     }
 
-    ArrayList<ArrayList<TestResultDO>> getTestResults() {
-        return testResults;
+    ArrayList<ArrayList<TestResultDO>> getResults() {
+        return results;
     }
 
-    void setTestResults(ArrayList<ArrayList<TestResultDO>> testResults) {
-        this.testResults = testResults;
+    void setResults(ArrayList<ArrayList<TestResultDO>> testResults) {
+        this.results = testResults;
     }
     
     int deleteCount(){
-        if(deletedTestResults == null)
+        if(deletedResults == null)
             return 0;
         
-        return deletedTestResults.size();
+        return deletedResults.size();
     }
     
     TestResultDO getDeletedAt(int i) {
-        return deletedTestResults.get(i);
+        return deletedResults.get(i);
     }
     
     private static TestResultManagerProxy proxy() {
