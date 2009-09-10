@@ -29,7 +29,7 @@ import org.openelis.gwt.services.ScreenService;
 
 public class TestManagerProxy {
 
-    protected static final String TEST_MANAGER_SERVICE_URL = "org.openelis.modules.testnew.server.TestServiceNew";
+    protected static final String TEST_MANAGER_SERVICE_URL = "org.openelis.modules.test.server.TestService";
     protected ScreenService service;
     
     public TestManagerProxy() {
@@ -41,7 +41,11 @@ public class TestManagerProxy {
     }
     
     public TestManager update(TestManager man) throws Exception {
-        return service.call("update",man);
+        try{
+            return service.call("update",man);
+        } catch(Exception e) {
+            throw e;
+        }
     }
     
     public TestManager fetch(Integer testId) throws Exception {

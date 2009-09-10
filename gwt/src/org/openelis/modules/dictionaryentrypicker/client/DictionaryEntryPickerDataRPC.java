@@ -26,20 +26,17 @@
 
 package org.openelis.modules.dictionaryentrypicker.client;
 
+import java.util.ArrayList;
+
+import org.openelis.domain.IdNameDO;
 import org.openelis.gwt.common.RPC;
-import org.openelis.gwt.common.data.TableDataModel;
-import org.openelis.gwt.common.data.TableDataRow;
+import org.openelis.gwt.common.rewrite.QueryData;
 
 public class DictionaryEntryPickerDataRPC implements RPC {
 
-    /**
-     * 
-     */
     private static final long serialVersionUID = 1L;
     
-    public Integer id;
-    public TableDataModel<TableDataRow<Integer>> dictionaryTableModel;
-    public String stringValue;
+    public ArrayList<IdNameDO> categoryModel,dictionaryTableModel; 
+    public ArrayList<QueryData> fields;
     
-
 }

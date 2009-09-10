@@ -1,2573 +1,1386 @@
-/**
- * Exhibit A - UIRF Open-source Based Public Software License.
- * 
- * The contents of this file are subject to the UIRF Open-source Based Public
- * Software License(the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * openelis.uhl.uiowa.edu
- * 
- * Software distributed under the License is distributed on an "AS IS" basis,
- * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
- * the specific language governing rights and limitations under the License.
- * 
- * The Original Code is OpenELIS code.
- * 
- * The Initial Developer of the Original Code is The University of Iowa.
- * Portions created by The University of Iowa are Copyright 2006-2008. All
- * Rights Reserved.
- * 
- * Contributor(s): ______________________________________.
- * 
- * Alternatively, the contents of this file marked "Separately-Licensed" may be
- * used under the terms of a UIRF Software license ("UIRF Software License"), in
- * which case the provisions of a UIRF Software License are applicable instead
- * of those above.
- */
+/** Exhibit A - UIRF Open-source Based Public Software License.
+* 
+* The contents of this file are subject to the UIRF Open-source Based
+* Public Software License(the "License"); you may not use this file except
+* in compliance with the License. You may obtain a copy of the License at
+* openelis.uhl.uiowa.edu
+* 
+* Software distributed under the License is distributed on an "AS IS"
+* basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+* License for the specific language governing rights and limitations
+* under the License.
+* 
+* The Original Code is OpenELIS code.
+* 
+* The Initial Developer of the Original Code is The University of Iowa.
+* Portions created by The University of Iowa are Copyright 2006-2008. All
+* Rights Reserved.
+* 
+* Contributor(s): ______________________________________.
+* 
+* Alternatively, the contents of this file marked
+* "Separately-Licensed" may be used under the terms of a UIRF Software
+* license ("UIRF Software License"), in which case the provisions of a
+* UIRF Software License are applicable instead of those above. 
+*/
 package org.openelis.modules.test.client;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 
 import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.SectionCache;
 import org.openelis.domain.DictionaryDO;
+import org.openelis.domain.IdNameDO;
 import org.openelis.domain.SectionDO;
-import org.openelis.gwt.common.Form;
-import org.openelis.gwt.common.Query;
-import org.openelis.gwt.common.data.AbstractField;
-import org.openelis.gwt.common.data.CheckField;
-import org.openelis.gwt.common.data.DateField;
-import org.openelis.gwt.common.data.DropDownField;
-import org.openelis.gwt.common.data.IntegerField;
-import org.openelis.gwt.common.data.IntegerObject;
-import org.openelis.gwt.common.data.KeyListManager;
-import org.openelis.gwt.common.data.QueryStringField;
-import org.openelis.gwt.common.data.StringField;
-import org.openelis.gwt.common.data.StringObject;
-import org.openelis.gwt.common.data.TableDataModel;
-import org.openelis.gwt.common.data.TableDataRow;
-import org.openelis.gwt.common.data.TreeDataItem;
-import org.openelis.gwt.common.data.TreeDataModel;
-import org.openelis.gwt.screen.CommandChain;
-import org.openelis.gwt.screen.ScreenTabPanel;
-import org.openelis.gwt.screen.ScreenTableWidget;
-import org.openelis.gwt.screen.ScreenTextBox;
-import org.openelis.gwt.screen.ScreenTreeWidget;
-import org.openelis.gwt.screen.ScreenVertical;
-import org.openelis.gwt.screen.ScreenWindow;
-import org.openelis.gwt.widget.AppButton;
-import org.openelis.gwt.widget.ButtonPanel;
-import org.openelis.gwt.widget.CollapsePanel;
-import org.openelis.gwt.widget.Dropdown;
-import org.openelis.gwt.widget.MenuItem;
-import org.openelis.gwt.widget.ModelUtil;
-import org.openelis.gwt.widget.ResultsTable;
-import org.openelis.gwt.widget.AppButton.ButtonState;
-import org.openelis.gwt.widget.table.TableDropdown;
-import org.openelis.gwt.widget.table.TableManager;
-import org.openelis.gwt.widget.table.TableWidget;
-import org.openelis.gwt.widget.table.event.SourcesTableWidgetEvents;
-import org.openelis.gwt.widget.table.event.TableWidgetListener;
-import org.openelis.gwt.widget.tree.TreeManager;
-import org.openelis.gwt.widget.tree.TreeModel;
-import org.openelis.gwt.widget.tree.TreeWidget;
-import org.openelis.gwt.widget.tree.event.SourcesTreeWidgetEvents;
-import org.openelis.gwt.widget.tree.event.TreeWidgetListener;
+import org.openelis.domain.TestDO;
+import org.openelis.domain.TestIdNameMethodNameDO;
+import org.openelis.domain.TestSectionDO;
+import org.openelis.gwt.common.Datetime;
+import org.openelis.gwt.common.EntityLockedException;
+import org.openelis.gwt.common.FieldErrorException;
+import org.openelis.gwt.common.FormErrorException;
+import org.openelis.gwt.common.GridFieldErrorException;
+import org.openelis.gwt.common.RPC;
+import org.openelis.gwt.common.SecurityModule;
+import org.openelis.gwt.common.TableFieldErrorException;
+import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.gwt.common.rewrite.Query;
+import org.openelis.gwt.common.rewrite.QueryData;
+import org.openelis.gwt.event.BeforeGetMatchesEvent;
+import org.openelis.gwt.event.BeforeGetMatchesHandler;
+import org.openelis.gwt.event.DataChangeEvent;
+import org.openelis.gwt.event.GetMatchesEvent;
+import org.openelis.gwt.event.GetMatchesHandler;
+import org.openelis.gwt.event.StateChangeEvent;
+import org.openelis.gwt.screen.rewrite.Screen;
+import org.openelis.gwt.screen.rewrite.ScreenEventHandler;
+import org.openelis.gwt.screen.rewrite.ScreenNavigator;
+import org.openelis.gwt.widget.rewrite.CalendarLookUp;
+import org.openelis.gwt.widget.HasField;
+import org.openelis.gwt.widget.TextBox;
+import org.openelis.gwt.widget.rewrite.AppButton;
+import org.openelis.gwt.widget.rewrite.AutoComplete;
+import org.openelis.gwt.widget.rewrite.ButtonGroup;
+import org.openelis.gwt.widget.rewrite.CheckBox;
+import org.openelis.gwt.widget.rewrite.Dropdown;
+import org.openelis.gwt.widget.rewrite.AppButton.ButtonState;
+import org.openelis.gwt.widget.table.rewrite.TableColumn;
+import org.openelis.gwt.widget.table.rewrite.TableDataRow;
+import org.openelis.gwt.widget.table.rewrite.TableWidget;
+import org.openelis.gwt.widget.table.rewrite.event.CellEditedEvent;
+import org.openelis.gwt.widget.table.rewrite.event.CellEditedHandler;
+import org.openelis.gwt.widget.table.rewrite.event.RowAddedEvent;
+import org.openelis.gwt.widget.table.rewrite.event.RowAddedHandler;
+import org.openelis.gwt.widget.table.rewrite.event.RowDeletedEvent;
+import org.openelis.gwt.widget.table.rewrite.event.RowDeletedHandler;
+import org.openelis.manager.TestManager;
+import org.openelis.manager.TestSectionManager;
 import org.openelis.metamap.TestMetaMap;
-import org.openelis.modules.dictionaryentrypicker.client.DictionaryEntryPickerScreen;
-import org.openelis.modules.main.client.OpenELISScreenForm;
+import org.openelis.modules.main.client.openelis.OpenELIS;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.rpc.SyncCallback;
-import com.google.gwt.user.client.ui.ChangeListener;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.SourcesTabEvents;
-import com.google.gwt.user.client.ui.TabListener;
 import com.google.gwt.user.client.ui.TabPanel;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.xml.client.Document;
-import com.google.gwt.xml.client.XMLParser;
 
-public class TestScreen extends OpenELISScreenForm<TestForm, Query<TableDataRow<Integer>>> implements
-                                                                                          ClickListener,
-                                                                                          TabListener,
-                                                                                          TableManager,
-                                                                                          TableWidgetListener,
-                                                                                          TreeManager,
-                                                                                          TreeWidgetListener,
-                                                                                          ChangeListener{
+public class TestScreen extends Screen {
 
-    private TableDataModel<TableDataRow<Integer>> testAnalyteModel, sampleTypeUnitModel,
-                                                  resultUnitModel, resultGroupModel,
-                                                  testResultDefaultModel;
+    public enum Tabs {
+        DETAILS, SAMPLE_TYPES, ANALYTES_RESULTS, PREPS_REFLEXES,WORKSHEET
+    };
 
-    private AppButton removeSampleTypeButton, removePrepTestButton,
-                      addRowButton, deleteButton, groupAnalytesButton,
-                      ungroupAnalytesButton, removeReflexTestButton,
-                      removeWSItemButton, removeTestSectionButton,
-                      dictionaryLookUpButton, removeTestResultButton,
-                      addResultTabButton;
-
-    private TreeWidget analyteTreeWidget = null;
-
-    private int group = 0;
-
-    private TableWidget reflexTestTableWidget,              // the widget for the table for reflexive tests
-                        prepTestTableWidget,                // the widget for the table for prep tests  
-                        wsItemTableWidget,                  // the widget for the table for worksheet items
-                        sampleTypeTableWidget,              // the widget for the table for types of sample 
-                        sectionTableWidget,                 // the widget for the table for test sections  
-                        resultTableWidget,                  // the widget for the table for test results
-                        wsAnalyteTableWidget;               // the widget for the table for worksheet analytes   
-
-
-    private TestMetaMap TestMeta = new TestMetaMap();
-
-    private KeyListManager keyList = new KeyListManager();
-
-    private ScreenTextBox testId;
-    private TextBox testName;
-
-    private TabPanel resultPanel,testTabPanel;    
+    protected Tabs tab = Tabs.DETAILS;    
+   
+    private TestMetaMap TestMeta;     
+    private TestManager manager;
+    private SampleTypeTab sampleTypeTab;
+    private AnalyteAndResultTab analyteAndResultTab;
+  
+    private SecurityModule security;
     
-    private ScreenTabPanel screenTestTab;
-
-    private ArrayList<TableDataModel<TableDataRow<Integer>>> resultTableModelCollection,
-                                                             resultDropdownModelCollection;
-
-    private int tempAnaId,tempResId; 
-
-    private static String panelString = "<VerticalPanel/>";
+    EnumSet<State> enabledStates = EnumSet.of(State.ADD,State.UPDATE,State.QUERY);       
     
-    private Dropdown revisionMethod, sortingMethod, reportingMethod, 
-                     testFormat, wsFormat;  
+    ScreenNavigator nav;
     
-    private boolean unitListChanged, analyteListChanged;        
+    private TableWidget sectionTable; 
+    
+    public TestScreen() throws Exception{
+        super("OpenELISServlet?service=org.openelis.modules.test.server.TestService");        
+        manager = TestManager.getInstance();
+        
+        TestMeta = new TestMetaMap();
+        
+        security = OpenELIS.security.getModule("test");
 
-    public TestScreen() {
-        super("org.openelis.modules.test.server.TestService");
-        query = new Query<TableDataRow<Integer>>();
-        getScreen(new TestForm());
+        // Setup link between Screen and widget Handlers
+        initialize();    
+        setState(State.DEFAULT);
+        DataChangeEvent.fire(this);               
     }
 
-    public void afterDraw(boolean success) {
-        ButtonPanel bpanel, atozButtons;
-        CommandChain chain;       
-        ResultsTable atozTable;        
-        ScreenTableWidget s;
-        ScreenTreeWidget analyteTree;        
-        ArrayList cache;
-        TableDataModel<TableDataRow> model;
-
-        atozTable = (ResultsTable)getWidget("azTable");
-        atozButtons = (ButtonPanel)getWidget("atozButtons");
-        ((CollapsePanel)getWidget("collapsePanel")).addChangeListener(atozTable);
-
-        bpanel = (ButtonPanel)getWidget("buttons");
+    private void initialize() {
         
-        testTabPanel = (TabPanel)getWidget("testTabPanel");
-        resultPanel = (TabPanel)getWidget("resultTabPanel");
-                       
-        tempAnaId = -1;
-        tempResId = -1;
+        nav = new ScreenNavigator<Query<TestIdNameMethodNameDO>>(this) {
+            public void getSelection(RPC entry) {
+                fetch(((TestIdNameMethodNameDO)entry).getId());
+            }
+            public void loadPage(Query<TestIdNameMethodNameDO> query) {
+                loadQueryPage(query);
+            }
+        };
+        
+        // Create the Handler for SampleTypeTab passing in the ScreenDef
+        sampleTypeTab = new SampleTypeTab(def);
 
-        unitListChanged = false;
-        analyteListChanged = false;        
+        // Set up tabs to recieve State Change events from the main Screen.
+        addScreenHandler(sampleTypeTab, new ScreenEventHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                sampleTypeTab.setManager(manager);
+
+                if (tab == Tabs.SAMPLE_TYPES)
+                    drawTabs(); 
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                StateChangeEvent.fire(sampleTypeTab, event.getState());
+            }
+        });
+        
+        analyteAndResultTab = new AnalyteAndResultTab(def,service);
+
+        // Set up tabs to recieve State Change events from the main Screen.
+        addScreenHandler(analyteAndResultTab, new ScreenEventHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                analyteAndResultTab.setManager(manager);
+
+                if (tab == Tabs.ANALYTES_RESULTS)
+                    drawTabs(); 
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                StateChangeEvent.fire(analyteAndResultTab, event.getState());
+            }
+        });
+        
+        final TextBox id = (TextBox)def.getWidget(TestMeta.getId());
+        addScreenHandler(id, new ScreenEventHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                id.setValue(getString(manager.getTest().getId()));
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                manager.getTest().setId(Integer.valueOf(event.getValue()));
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                id.enable(EnumSet.of(State.QUERY).contains(event.getState()));
+                id.setQueryMode(event.getState() == State.QUERY);
+
+                if (event.getState() == State.QUERY)
+                    id.setFocus(true);
+            }
+        });
+        
+        final TextBox name = (TextBox)def.getWidget(TestMeta.getName());
+        addScreenHandler(name, new ScreenEventHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                name.setValue(manager.getTest().getName());
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                manager.getTest().setName(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                name.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
+                                   .contains(event.getState()));
+                name.setQueryMode(event.getState() == State.QUERY);
+
+                if (event.getState() == State.ADD || event.getState() == State.UPDATE)
+                    name.setFocus(true);
+            }
+        });
+        
+        final AutoComplete<Integer> method = (AutoComplete)def.getWidget(TestMeta.getMethod()
+                                                                                   .getName());
+        addScreenHandler(method, new ScreenEventHandler<Integer>() {
+            public void onDataChange(DataChangeEvent event) {
+                TestDO testDO = manager.getTest();
+                method.setSelection(testDO.getMethodId(),
+                                               testDO.getMethodName());
+            }
+
+            public void onValueChange(ValueChangeEvent<Integer> event) {
+                manager.getTest()
+                       .setMethodId(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                method.enable(EnumSet.of(State.ADD,
+                                            State.UPDATE,
+                                            State.QUERY)
+                                        .contains(event.getState()));
+                method.setQueryMode(event.getState() == State.QUERY);
+            }
+        });           
+
+        // Screens now must implement AutoCompleteCallInt and set themselves as the calling interface       
+        method.addGetMatchesHandler(new GetMatchesHandler() {                        
+            public void onGetMatches(GetMatchesEvent event) {
+                TestAutoRPC trpc;
+                ArrayList<TableDataRow> model;
+                TableDataRow row;
+                trpc = new TestAutoRPC(); 
+                trpc.match = event.getMatch();                
+                try {
+                    trpc = service.call("getMethodMatches",trpc);
+                    model = new ArrayList<TableDataRow>();
+                    for(IdNameDO autoDO : trpc.idNameList) {
+                        row = new TableDataRow(1);
+                        row.key = autoDO.getId();
+                        row.cells.get(0).value = autoDO.getName();
+                        model.add(row);
+                    }
+                    ((AutoComplete)event.getSource()).showAutoMatches(model);
+                }catch(Exception e) {
+                    Window.alert(e.getMessage());                     
+                }
+            }
+            
+        });
+        
+
+        final TextBox description = (TextBox)def.getWidget(TestMeta.getDescription());
+        addScreenHandler(description, new ScreenEventHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                description.setValue(manager.getTest().getDescription());
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                manager.getTest().setDescription(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                description.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
+                                   .contains(event.getState()));
+                description.setQueryMode(event.getState() == State.QUERY);
+               
+            }
+        });
+        
+
+        final TextBox reportingDescription = (TextBox)def.getWidget(TestMeta.getReportingDescription());
+        addScreenHandler(reportingDescription, new ScreenEventHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                reportingDescription.setValue(manager.getTest().getReportingDescription());
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                manager.getTest().setReportingDescription(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                reportingDescription.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
+                                   .contains(event.getState()));
+                reportingDescription.setQueryMode(event.getState() == State.QUERY);
+                
+            }
+        });
+        
+        final TextBox timeTaMax = (TextBox)def.getWidget(TestMeta.getTimeTaMax());
+        addScreenHandler(timeTaMax, new ScreenEventHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                timeTaMax.setValue(getString(manager.getTest().getTimeTaMax()));
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                manager.getTest().setTimeTaMax(Integer.valueOf(event.getValue()));
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                timeTaMax.enable(EnumSet.of(State.ADD,
+                                            State.UPDATE,
+                                            State.QUERY)
+                                        .contains(event.getState()));
+                timeTaMax.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+        
+        
+        final TextBox timeTaAverage = (TextBox)def.getWidget(TestMeta.getTimeTaAverage());
+        addScreenHandler(timeTaAverage, new ScreenEventHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                timeTaAverage.setValue(getString(manager.getTest().getTimeTaAverage()));
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                manager.getTest().setTimeTaAverage(Integer.valueOf(event.getValue()));
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                timeTaAverage.enable(EnumSet.of(State.ADD,
+                                                State.UPDATE,
+                                                State.QUERY)
+                                            .contains(event.getState()));
+                timeTaAverage.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+        
+        final TextBox timeTaWarning = (TextBox)def.getWidget(TestMeta.getTimeTaWarning());
+        addScreenHandler(timeTaWarning, new ScreenEventHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                timeTaWarning.setValue(getString(manager.getTest().getTimeTaWarning()));
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                manager.getTest().setTimeTaWarning(Integer.valueOf(event.getValue()));
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                timeTaWarning.enable(EnumSet.of(State.ADD,
+                                                State.UPDATE,
+                                                State.QUERY)
+                                            .contains(event.getState()));
+                timeTaWarning.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+        
+        final TextBox timeTransit = (TextBox)def.getWidget(TestMeta.getTimeTransit());
+        addScreenHandler(timeTransit, new ScreenEventHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                timeTransit.setValue(getString(manager.getTest().getTimeTransit()));
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                manager.getTest().setTimeTransit(Integer.valueOf(event.getValue()));
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                timeTransit.enable(EnumSet.of(State.ADD,
+                                                State.UPDATE,
+                                                State.QUERY)
+                                            .contains(event.getState()));
+                timeTransit.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+        
+        final TextBox timeHolding = (TextBox)def.getWidget(TestMeta.getTimeHolding());
+        addScreenHandler(timeHolding, new ScreenEventHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                timeHolding.setValue(getString(manager.getTest().getTimeHolding()));
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                manager.getTest().setTimeHolding(Integer.valueOf(event.getValue()));
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                timeHolding.enable(EnumSet.of(State.ADD,
+                                                State.UPDATE,
+                                                State.QUERY)
+                                            .contains(event.getState()));
+                timeHolding.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+                
+        final CheckBox isActive = (CheckBox)def.getWidget(TestMeta.getIsActive());
+        addScreenHandler(isActive, new ScreenEventHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                isActive.setValue(manager.getTest()
+                                         .getIsActive());
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                manager.getTest().setIsActive(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                isActive.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
+                                       .contains(event.getState()));
+                isActive.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+        
+        final CalendarLookUp activeBegin = (CalendarLookUp)def.getWidget(TestMeta.getActiveBegin());
+        addScreenHandler(activeBegin, new ScreenEventHandler<Datetime>() {
+            public void onDataChange(DataChangeEvent event) {
+                activeBegin.setValue(manager.getTest().getActiveBegin());
+            }
+
+            public void onValueChange(ValueChangeEvent<Datetime> event) {
+                if(event.getValue() != null)
+                    manager.getTest().setActiveBegin(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                activeBegin.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
+                                       .contains(event.getState()));
+                activeBegin.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+
+        final CalendarLookUp activeEnd = (CalendarLookUp)def.getWidget(TestMeta.getActiveEnd());
+        addScreenHandler(activeEnd, new ScreenEventHandler<Datetime>() {
+            public void onDataChange(DataChangeEvent event) {
+                activeEnd.setValue(manager.getTest().getActiveEnd());
+            }
+
+            public void onValueChange(ValueChangeEvent<Datetime> event) {
+                if(event.getValue() != null)
+                    manager.getTest().setActiveEnd(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                activeEnd.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
+                                       .contains(event.getState()));
+                activeEnd.setQueryMode(event.getState() == State.QUERY);                                                                                                             
+            }
+        });        
+        
+        final AutoComplete<Integer> label = (AutoComplete)def.getWidget(TestMeta.getLabel()
+                                                                        .getName());
+        addScreenHandler(label, new ScreenEventHandler<Integer>() {
+          public void onDataChange(DataChangeEvent event) {
+              TestDO testDO = manager.getTest();
+              label.setSelection(testDO.getLabelId(),testDO.getLabelName());              
+          }
+        
+          public void onValueChange(ValueChangeEvent<Integer> event) {
+              manager.getTest().setLabelId(event.getValue());
+          }
+        
+          public void onStateChange(StateChangeEvent<State> event) {
+              label.enable(EnumSet.of(State.ADD,
+                                          State.UPDATE,
+                                          State.QUERY)
+                                      .contains(event.getState()));
+              label.setQueryMode(event.getState() == State.QUERY);
+          }
+        });           
+        
+        // Screens now must implement AutoCompleteCallInt and set themselves as the calling interface
+        label.addGetMatchesHandler(new GetMatchesHandler() {                        
+            public void onGetMatches(GetMatchesEvent event) {
+                TestAutoRPC trpc;
+                ArrayList<TableDataRow> model;
+                TableDataRow row;
+                trpc = new TestAutoRPC(); 
+                trpc.match = event.getMatch();                
+                try {
+                    trpc = service.call("getLabelMatches",trpc);
+                    model = new ArrayList<TableDataRow>();
+                    for(IdNameDO autoDO : trpc.idNameList) {
+                        row = new TableDataRow(1);
+                        row.key = autoDO.getId();
+                        row.cells.get(0).value = autoDO.getName();
+                        model.add(row);
+                    }
+                    ((AutoComplete)event.getSource()).showAutoMatches(model);
+                }catch(Exception e) {
+                    Window.alert(e.getMessage());                     
+                }
+            }
+            
+        });        
+     
+        final TextBox labelQty = (TextBox)def.getWidget(TestMeta.getLabelQty());
+        addScreenHandler(labelQty, new ScreenEventHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                labelQty.setValue(getString(manager.getTest().getLabelQty()));
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                manager.getTest().setLabelQty(Integer.valueOf(event.getValue()));
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                labelQty.enable(EnumSet.of(State.ADD,
+                                                State.UPDATE,
+                                                State.QUERY)
+                                            .contains(event.getState()));
+                labelQty.setQueryMode(event.getState() == State.QUERY);
+            }
+        });        
+        
+        sectionTable = (TableWidget)def.getWidget("sectionTable");
+        addScreenHandler(sectionTable,new ScreenEventHandler<ArrayList<TableDataRow>>() {
+            public void onDataChange(DataChangeEvent event) {
+                sectionTable.load(getTableModel());
+            }
+            public void onStateChange(StateChangeEvent<State> event) {
+                sectionTable.enable(EnumSet.of(State.ADD,State.UPDATE,State.QUERY).contains(event.getState()));
+            }
+        });
+        
+        sectionTable.addCellEditedHandler(new CellEditedHandler(){
+            public void onCellUpdated(CellEditedEvent event) {
+                int row,col,i;
+                Integer val;
+                String systemName;
+                TestSectionManager tsm;
+                TestSectionDO sectionDO;
+                TableDataRow tableRow;
+                
+                row = event.getRow();
+                col = event.getCell();
+                tableRow = sectionTable.getRow(row);
+                tsm = manager.getTestSections();
+                
+                try{
+                    sectionDO = tsm.getSectionAt(row);
+                }catch(Exception e){
+                    Window.alert(e.getMessage());
+                    return;
+                }
+                    
+                val = (Integer)tableRow.cells.get(col).value;
+                
+                switch (col){
+                    case 0:
+                            sectionDO.setSectionId(val);                            
+                            break;
+                    case 1:
+                            sectionDO.setFlagId(val);
+                            if(val == null)
+                                break;
+                            systemName = DictionaryCache.getSystemNameFromId(val);
+                            if(systemName != null) {
+                                if ("test_section_default".equals(systemName)) {
+                                    for(i = 0; i < tsm.count(); i++) {
+                                        if(i == row) 
+                                            continue;
+                                        sectionDO = tsm.getSectionAt(i);
+                                        sectionDO.setFlagId(null);    
+                                        sectionTable.getData().get(i).cells.get(col).setValue(null);
+                                    }
+                                } else {
+                                    for(i = 0; i < tsm.count(); i++) {
+                                        sectionDO = tsm.getSectionAt(i);
+                                        sectionDO.setFlagId(val);     
+                                        sectionTable.getData().get(i).cells.get(col).setValue(val);
+                                    }
+                                }      
+                                sectionTable.refresh();
+                            }
+                            break;
+                }
+            }
+        });
+        
+        sectionTable.addRowAddedHandler(new RowAddedHandler(){
+            public void onRowAdded(RowAddedEvent event) {
+                try{
+                    manager.getTestSections().addSection(new TestSectionDO());
+                }catch(Exception e){
+                    Window.alert(e.getMessage());
+                }
+                
+            }
+        });
+        
+        sectionTable.addRowDeletedHandler(new RowDeletedHandler(){
+            public void onRowDeleted(RowDeletedEvent event) {
+                try{
+                    manager.getTestSections().removeSectionAt(event.getIndex());
+                }catch(Exception e){
+                    Window.alert(e.getMessage());
+                }
+                
+            }
+        }); 
+        
+        final AppButton removeSection = (AppButton)def.getWidget("removeSectionButton");
+        addScreenHandler(removeSection,new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                int selectedRow = sectionTable.getSelectedIndex();
+                if (selectedRow > -1 && sectionTable.numRows() > 0) {
+                    sectionTable.deleteRow(selectedRow);
+                }
+            }
+            public void onStateChange(StateChangeEvent<State> event) {
+                if(event.getState() == State.ADD || event.getState() == State.UPDATE)
+                    removeSection.enable(true);
+                else
+                    removeSection.enable(false);
+            }
+            
+        });
+        
+        final AppButton addSection = (AppButton)def.getWidget("addSectionButton");
+        addScreenHandler(addSection,new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                sectionTable.addRow();
+                sectionTable.selectRow(sectionTable.numRows()-1);
+                sectionTable.scrollToSelection();
+                sectionTable.startEditing(sectionTable.numRows()-1, 0);
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                if(event.getState() == State.ADD || event.getState() == State.UPDATE)
+                    addSection.enable(true);
+                else
+                    addSection.enable(false);
+            }
+            
+        });
+    
+    
+        final CheckBox isReportable = (CheckBox)def.getWidget(TestMeta.getIsReportable());
+        addScreenHandler(isReportable, new ScreenEventHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                isReportable.setValue(manager.getTest()
+                                         .getIsReportable());
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                manager.getTest().setIsReportable(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                isReportable.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
+                                       .contains(event.getState()));
+                isReportable.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+        
+        final Dropdown<Integer> revisionMethod = 
+            (Dropdown<Integer>)def.getWidget(TestMeta.getRevisionMethodId());
+        addScreenHandler(revisionMethod, new ScreenEventHandler<Integer>() {
+            public void onDataChange(DataChangeEvent event) {
+                revisionMethod.setSelection(manager.getTest().getRevisionMethodId());
+            }
+        
+             public void onValueChange(ValueChangeEvent<Integer> event) {
+                manager.getTest().setRevisionMethodId(event.getValue());
+            }
+        
+             public void onStateChange(StateChangeEvent<State> event) {
+                 revisionMethod.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
+                                    .contains(event.getState()));
+                 revisionMethod.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+        
+        final Dropdown<Integer> sortingMethod = 
+            (Dropdown<Integer>)def.getWidget(TestMeta.getSortingMethodId());
+        addScreenHandler(sortingMethod, new ScreenEventHandler<Integer>() {
+            public void onDataChange(DataChangeEvent event) {
+                sortingMethod.setSelection(manager.getTest().getSortingMethodId());
+            }
+        
+             public void onValueChange(ValueChangeEvent<Integer> event) {
+                manager.getTest().setSortingMethodId(event.getValue());
+            }
+        
+             public void onStateChange(StateChangeEvent<State> event) {
+                 sortingMethod.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
+                                    .contains(event.getState()));
+                 sortingMethod.setQueryMode(event.getState() == State.QUERY);
+            }
+        });  
+        
+        final Dropdown<Integer> reportingMethod = 
+            (Dropdown<Integer>)def.getWidget(TestMeta.getReportingMethodId());
+        addScreenHandler(reportingMethod, new ScreenEventHandler<Integer>() {
+            public void onDataChange(DataChangeEvent event) {
+                reportingMethod.setSelection(manager.getTest().getReportingMethodId());
+            }
+        
+             public void onValueChange(ValueChangeEvent<Integer> event) {
+                manager.getTest().setReportingMethodId(event.getValue());
+            }
+        
+             public void onStateChange(StateChangeEvent<State> event) {
+                 reportingMethod.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
+                                    .contains(event.getState()));
+                 reportingMethod.setQueryMode(event.getState() == State.QUERY);
+            }
+        });      
+        
+        final TextBox reportingSequence = (TextBox)def.getWidget(TestMeta.getReportingSequence());
+        addScreenHandler(reportingSequence, new ScreenEventHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                reportingSequence.setValue(getString(manager.getTest().getReportingSequence()));
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                manager.getTest().setReportingSequence(Integer.valueOf(event.getValue()));
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                reportingSequence.enable(EnumSet.of(State.ADD,
+                                                State.UPDATE,
+                                                State.QUERY)
+                                            .contains(event.getState()));
+                reportingSequence.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+        
+        final AutoComplete<Integer> testTrailer = (AutoComplete)def.getWidget(TestMeta.getTestTrailer()
+                                                                        .getName());
+        addScreenHandler(testTrailer, new ScreenEventHandler<Integer>() {
+          public void onDataChange(DataChangeEvent event) {
+              TestDO testDO = manager.getTest();
+              testTrailer.setSelection(testDO.getTestTrailerId(),
+                                       testDO.getTestTrailerName());
+          }
+        
+          public void onValueChange(ValueChangeEvent<Integer> event) {
+              manager.getTest().setTestTrailerId(event.getValue());
+          }
+        
+          public void onStateChange(StateChangeEvent<State> event) {
+              testTrailer.enable(EnumSet.of(State.ADD,
+                                          State.UPDATE,
+                                          State.QUERY)
+                                      .contains(event.getState()));
+              testTrailer.setQueryMode(event.getState() == State.QUERY);
+          }
+        });           
+        
+        // Screens now must implement AutoCompleteCallInt and set themselves as the calling interface
+        testTrailer.addGetMatchesHandler(new GetMatchesHandler() {                        
+            public void onGetMatches(GetMatchesEvent event) {
+                TestAutoRPC trpc;
+                ArrayList<TableDataRow> model;
+                TableDataRow row;
+                trpc = new TestAutoRPC(); 
+                trpc.match = event.getMatch();                
+                try {
+                    trpc = service.call("getTrailerMatches",trpc);
+                    model = new ArrayList<TableDataRow>();
+                    for(IdNameDO autoDO : trpc.idNameList) {
+                        row = new TableDataRow(1);
+                        row.key = autoDO.getId();
+                        row.cells.get(0).value = autoDO.getName();
+                        model.add(row);
+                    }
+                    ((AutoComplete)event.getSource()).showAutoMatches(model);
+                }catch(Exception e) {
+                    Window.alert(e.getMessage());                     
+                }
+            }
+            
+        });
+
+        final Dropdown<Integer> testFormat = 
+            (Dropdown<Integer>)def.getWidget(TestMeta.getTestFormatId());
+        addScreenHandler(testFormat, new ScreenEventHandler<Integer>() {
+            public void onDataChange(DataChangeEvent event) {
+                testFormat.setSelection(manager.getTest().getTestFormatId());
+            }
+        
+             public void onValueChange(ValueChangeEvent<Integer> event) {
+                manager.getTest().setTestFormatId(event.getValue());
+            }
+        
+             public void onStateChange(StateChangeEvent<State> event) {
+                 testFormat.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
+                                    .contains(event.getState()));
+                 testFormat.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+        
+        final AutoComplete<Integer> scriptlet = (AutoComplete)def.getWidget(TestMeta.getScriptlet()
+                                                                              .getName());
+        addScreenHandler(scriptlet, new ScreenEventHandler<Integer>() {
+          public void onDataChange(DataChangeEvent event) {
+              TestDO testDO = manager.getTest();
+              scriptlet.setSelection(testDO.getScriptletId(),
+                                     testDO.getScriptletName());
+          }
+        
+          public void onValueChange(ValueChangeEvent<Integer> event) {
+              manager.getTest().setScriptletId(event.getValue());
+          }
+         
+          public void onStateChange(StateChangeEvent<State> event) {
+              scriptlet.enable(EnumSet.of(State.ADD,
+                                          State.UPDATE,
+                                          State.QUERY)
+                                      .contains(event.getState()));
+              scriptlet.setQueryMode(event.getState() == State.QUERY);
+          }
+        });           
+          
+        // Screens now must implement AutoCompleteCallInt and set themselves as the calling interface
+        scriptlet.addGetMatchesHandler(new GetMatchesHandler() {                        
+            public void onGetMatches(GetMatchesEvent event) {
+                TestAutoRPC trpc;
+                ArrayList<TableDataRow> model;
+                TableDataRow row;
+                trpc = new TestAutoRPC(); 
+                trpc.match = event.getMatch();                
+                try {
+                    trpc = service.call("getScriptletMatches",trpc);
+                    model = new ArrayList<TableDataRow>();
+                    for(IdNameDO autoDO : trpc.idNameList) {
+                        row = new TableDataRow(1);
+                        row.key = autoDO.getId();
+                        row.cells.get(0).value = autoDO.getName();
+                        model.add(row);
+                    }
+                    ((AutoComplete)event.getSource()).showAutoMatches(model);
+                }catch(Exception e) {
+                    Window.alert(e.getMessage());                     
+                }
+            }
+            
+        });        
+        
+        final AppButton queryButton = (AppButton)def.getWidget("query");
+        addScreenHandler(queryButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                query();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                if(EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState()) && 
+                                security.hasSelectPermission())
+                    queryButton.enable(true);
+                else if (event.getState() == State.QUERY)
+                    queryButton.changeState(ButtonState.LOCK_PRESSED);
+                else
+                    queryButton.enable(false);
+            }
+        });
+
+        final AppButton addButton = (AppButton)def.getWidget("add");
+        addScreenHandler(addButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                add();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                if (EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState()))
+                    addButton.enable(true);
+                else if (EnumSet.of(State.ADD).contains(event.getState()))
+                    addButton.changeState(ButtonState.LOCK_PRESSED);
+                else
+                    addButton.enable(false);
+            }
+        });
+
+        final AppButton updateButton = (AppButton)def.getWidget("update");
+        addScreenHandler(updateButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                update();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                if (EnumSet.of(State.DISPLAY).contains(event.getState()) && 
+                                security.hasUpdatePermission())
+                    updateButton.enable(true);
+                else if (EnumSet.of(State.UPDATE).contains(event.getState()))
+                    updateButton.changeState(ButtonState.LOCK_PRESSED);
+                else
+                    updateButton.enable(false);
+
+            }
+        });
+
+        final AppButton nextButton = (AppButton)def.getWidget("next");
+        addScreenHandler(nextButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                next();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                nextButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+
+        final AppButton prevButton = (AppButton)def.getWidget("previous");
+        addScreenHandler(prevButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                previous();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                prevButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+
+        final AppButton commitButton = (AppButton)def.getWidget("commit");
+        addScreenHandler(commitButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                commit();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                commitButton.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE).contains(event.getState()));
+            }
+        });
+
+        final AppButton abortButton = (AppButton)def.getWidget("abort");
+        addScreenHandler(abortButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                abort();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                abortButton.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE).contains(event.getState()));
+            }
+        });
+
+        // Get AZ buttons and setup Screen listeners and call to for query
+        final ButtonGroup azButtons = (ButtonGroup)def.getWidget("atozButtons");
+        addScreenHandler(azButtons, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                String baction = ((AppButton)event.getSource()).action;
+                getTests(baction.substring(6, baction.length()));
+            }
+            
+            public void onStateChange(StateChangeEvent<State> event) {
+                if(EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState()) &&
+                                     security.hasSelectPermission())
+                    azButtons.unlock();
+                else
+                    azButtons.lock();
+            }
+
+        });
+        
+        // Get TabPanel and set Tab Selection Handlers
+        final TabPanel tabs = (TabPanel)def.getWidget("testTabPanel");
+        tabs.addSelectionHandler(new SelectionHandler<Integer>() {
+            public void onSelection(SelectionEvent<Integer> event) {
+                int tabIndex = event.getSelectedItem().intValue();
+                if (tabIndex == Tabs.DETAILS.ordinal())
+                    tab = Tabs.DETAILS;
+                else if (tabIndex == Tabs.SAMPLE_TYPES.ordinal())
+                    tab = Tabs.SAMPLE_TYPES;
+                else if (tabIndex == Tabs.ANALYTES_RESULTS.ordinal())
+                    tab = Tabs.ANALYTES_RESULTS;
+                else if (tabIndex == Tabs.PREPS_REFLEXES.ordinal())
+                    tab = Tabs.PREPS_REFLEXES;
+                else if (tabIndex == Tabs.WORKSHEET.ordinal())
+                    tab = Tabs.WORKSHEET;
+
+                window.setBusy("Loading...");
+                drawTabs();
+                window.clearStatus();
+            }
+        });
         //
         // this is done to remove an unwanted tab that gets added to
         // testTabPanel, for some reason, when you put a tab panel inside one
         // of its tabs
         //
-        testTabPanel.remove(3);
+        //tabs.remove(3);        
+        //resultTabPanel  = (ScrollableTabBar)def.getWidget("resultTabPanel");
+        //resultTabPanel.remove(0);
         
-        screenTestTab = (ScreenTabPanel)widgets.get("testTabPanel");
- 
-        //
-        // this is done to remove the default tab that's added to
-        // resultPanel,so that it looks empty when the screen gets drawn
-        //
-        resultPanel.remove(0);
-        //
-        // we are interested in getting button actions in two places,
-        // modelwidget and this screen.
-        //
-        chain = new CommandChain();
-        chain.addCommand(this);
-        chain.addCommand(bpanel);
-        chain.addCommand(keyList);
-        chain.addCommand(atozTable);
-        chain.addCommand(atozButtons);
-
-        //
-        // initializing the buttons that are not part of any button panel
-        //
-        removeSampleTypeButton = (AppButton)getWidget("removeSampleTypeButton");
-        removePrepTestButton = (AppButton)getWidget("removePrepTestButton");
-        removeReflexTestButton = (AppButton)getWidget("removeReflexTestButton");
-        removeWSItemButton = (AppButton)getWidget("removeWSItemButton");
-        deleteButton = (AppButton)getWidget("deleteButton");
-        addRowButton = (AppButton)getWidget("addRowButton");
-        groupAnalytesButton = (AppButton)getWidget("groupAnalytesButton");
-        ungroupAnalytesButton = (AppButton)getWidget("ungroupAnalytesButton");
-        removeTestSectionButton = (AppButton)getWidget("removeTestSectionButton");
-        dictionaryLookUpButton = (AppButton)getWidget("dictionaryLookUpButton");
-        removeTestResultButton = (AppButton)getWidget("removeTestResultButton");
-        addResultTabButton = (AppButton)getWidget("addResultTabButton");
-        
-        testId = (ScreenTextBox)widgets.get(TestMeta.getId());
-        testName = (TextBox)getWidget(TestMeta.getName());
-
-        //
-        // initializing the tree-table widget
-        //
-        analyteTree = (ScreenTreeWidget)widgets.get("analyteTree");
-        analyteTreeWidget = (TreeWidget)analyteTree.getWidget();
-        
-        // initializing all the dropdown widgets
-        revisionMethod = (Dropdown)getWidget(TestMeta.getRevisionMethodId());
-        sortingMethod = (Dropdown)getWidget(TestMeta.getSortingMethodId());
-        reportingMethod = (Dropdown)getWidget(TestMeta.getReportingMethodId());        
-        testFormat = (Dropdown)getWidget(TestMeta.getTestFormatId());                
-        wsFormat = (Dropdown)getWidget(TestMeta.getTestWorksheet().getFormatId());        
-
-        //
-        // set the model for each column. Note that we have to do it twice:
-        // once for the normal table and once for query table.
-        // see setTableDropdownModel(TableWidget widget,int column,DataModel
-        // model);
-        //
-        s = (ScreenTableWidget)widgets.get("sampleTypeTable");
-        sampleTypeTableWidget = (TableWidget)s.getWidget();
-        sampleTypeTableWidget.addTableWidgetListener(this);
-        
-        s = (ScreenTableWidget)widgets.get("testPrepTable");
-        prepTestTableWidget = (TableWidget)s.getWidget();
-
-        s = (ScreenTableWidget)widgets.get("testReflexTable");
-        reflexTestTableWidget = (TableWidget)s.getWidget();
-        reflexTestTableWidget.addTableWidgetListener(this);
-        
-        setTableDropdownModel(reflexTestTableWidget,2,getSingleRowModel());
-
-        s = (ScreenTableWidget)widgets.get("worksheetTable");
-        wsItemTableWidget = (TableWidget)s.getWidget();       
-        wsItemTableWidget.addTableWidgetListener(this);
-        
-        s = (ScreenTableWidget)widgets.get("sectionTable");
-        sectionTableWidget = (TableWidget)s.getWidget();
-        sectionTableWidget.addTableWidgetListener(this);
-
-        s = (ScreenTableWidget)widgets.get("testResultsTable");
-        resultTableWidget = (TableWidget)s.getWidget();
-        resultTableWidget.addTableWidgetListener(this);
-        
-        s = (ScreenTableWidget)widgets.get("worksheetAnalyteTable");
-        wsAnalyteTableWidget = (TableWidget)s.getWidget();        
-
-        wsAnalyteTableWidget.addTableWidgetListener(this);
-
-        resultGroupModel = new TableDataModel<TableDataRow<Integer>>();
-        
-        resultGroupModel.setDefaultSet(new TableDataRow<Integer>(null,new StringObject("")));
-        
-        setTableDropdownModel(analyteTreeWidget,4,"analyte",resultGroupModel);
-
-        analyteTreeWidget.model.manager = this;
-        analyteTreeWidget.enabled(false);
-        analyteTreeWidget.addTreeWidgetListener(this);
-
-        // override the callbacks
-        fetchChain.add(0, beforeFetch);
-        updateChain.add(0, beforeFetch);
-        updateChain.add(afterUpdate);
-        commitUpdateChain.add(commitUpdateCallback);
-        commitAddChain.add(commitAddCallback);        
-        abortChain.add(0, beforeFetch);
-
-        form.testAnalyte.analyteTree.setValue(analyteTreeWidget.model.getData());
-        
-        //
-        // the submit method puts the TreeDataModel from the TreeWidget in the
-        // tree field from the rpc
-        //        
-        analyteTree.submit(form.testAnalyte.analyteTree);        
-        
-        testResultDefaultModel = (TableDataModel<TableDataRow<Integer>>)resultTableWidget.model.getData().clone();
-        form.testAnalyte.defaultResultModel = testResultDefaultModel;
-        super.afterDraw(success);
-
-        analyteTree.enable(true);     
-                
-        cache = DictionaryCache.getListByCategorySystemName("test_revision_method");
-        model = getDictionaryIdEntryList(cache);
-        revisionMethod.setModel(model);
-        
-        cache = DictionaryCache.getListByCategorySystemName("test_reflex_flags");
-        model = getDictionaryIdEntryList(cache);
-        ((TableDropdown)reflexTestTableWidget.columns.get(3).getColumnWidget()).setModel(model);
-
-        cache = DictionaryCache.getListByCategorySystemName("test_reporting_method");
-        model = getDictionaryIdEntryList(cache);
-        reportingMethod.setModel(model);
-        
-        cache = DictionaryCache.getListByCategorySystemName("test_analyte_type");
-        model = getDictionaryIdEntryList(cache);
-        ((TableDropdown)analyteTreeWidget.columns.get(1).getColumnWidget("analyte")).setModel(model);
-        
-        cache = DictionaryCache.getListByCategorySystemName("test_result_flags");
-        model = getDictionaryIdEntryList(cache);
-        ((TableDropdown)resultTableWidget.columns.get(6).getColumnWidget()).setModel(model);
-        
-        cache = DictionaryCache.getListByCategorySystemName("test_result_type");
-        model = getDictionaryIdEntryList(cache);
-        ((TableDropdown)resultTableWidget.columns.get(1).getColumnWidget()).setModel(model);          
-        
-        cache = DictionaryCache.getListByCategorySystemName("rounding_method");
-        model = getDictionaryIdEntryList(cache);
-        ((TableDropdown)resultTableWidget.columns.get(8).getColumnWidget()).setModel(model);
-        
-        cache = DictionaryCache.getListByCategorySystemName("unit_of_measure");
-        model = getDictionaryIdEntryList(cache);
-        setUnitsOfMeasureModel(model);
-        
-        cache = DictionaryCache.getListByCategorySystemName("type_of_sample");
-        model = getDictionaryIdEntryList(cache);
-        ((TableDropdown)sampleTypeTableWidget.columns.get(0).getColumnWidget()).setModel(model);
-        sampleTypeUnitModel.clone();
-        
-        cache = DictionaryCache.getListByCategorySystemName("test_section_flags");
-        model = getDictionaryIdEntryList(cache);
-        ((TableDropdown)sectionTableWidget.columns.get(1).getColumnWidget()).setModel(model);        
-        
-        cache = DictionaryCache.getListByCategorySystemName("test_format");
-        model = getDictionaryIdEntryList(cache);
-        testFormat.setModel(model);
-        
-        cache = DictionaryCache.getListByCategorySystemName("test_sorting_method");
-        model = getDictionaryIdEntryList(cache);
-        sortingMethod.setModel(model);
-        
-        cache = DictionaryCache.getListByCategorySystemName("test_worksheet_analyte_flags");
-        model = getDictionaryIdEntryList(cache);
-        ((TableDropdown)wsAnalyteTableWidget.columns.get(3).getColumnWidget()).setModel(model);
-        
-        cache = DictionaryCache.getListByCategorySystemName("test_worksheet_format");
-        model = getDictionaryIdEntryList(cache);
-        wsFormat.setModel(model);
-
-        cache = SectionCache.getSectionList();
-        model = getSectionList(cache);
-        ((TableDropdown)sectionTableWidget.columns.get(0).getColumnWidget()).setModel(model);
-                              
-        cache = DictionaryCache.getListByCategorySystemName("test_worksheet_item_type");
-        model = getDictionaryIdEntryList(cache);
-        ((TableDropdown)wsItemTableWidget.columns.get(1).getColumnWidget()).setModel(model); 
+        setRevisionMethodsModel();
+        setSortingMethodsModel();
+        setReportingMethodsModel();
+        setTestFormatsModel();
+        setTestSectionsModel();
+        setTestSectionFlagsModel();
+    }
+    
+    public void setState(Screen.State state){
+        super.setState(state);
+        sampleTypeTab.setState(state);
+        analyteAndResultTab.setState(state);
+    }
+    
+    public HandlerRegistration addBeforeGetMatchesHandler(BeforeGetMatchesHandler handler) {
+        return addHandler(handler, BeforeGetMatchesEvent.getType());
+    }
+    
+    public HandlerRegistration addGetMatchesHandler(GetMatchesHandler handler) {
+        return addHandler(handler,GetMatchesEvent.getType());
     }
     
     
-    /**
-     * This function is for responding to the various events that take place on
-     * the screen and that can be identified by the value of the argument
-     * action. This is different from the handling of normal click events,
-     * because more than one widget can send te same action and also the widget
-     * sending an action may not be a button. This is called for all the objects
-     * added to the CommandChain for the screen in the afterDraw method
-     */
-    public void performCommand(Enum action, Object obj) {    
-        ArrayList<TableDataRow<Integer>> selectedRows;
-        if (action == KeyListManager.Action.FETCH) {                    
-            form.entityKey = (Integer)((Object[])obj)[0];
-            setTableDropdownModel(reflexTestTableWidget,2,getSingleRowModel());
-            //TODO make sure to use this with drag and drop as well
-            analyteListChanged = false;                       
-        } else if (action == ButtonPanel.Action.QUERY && obj instanceof AppButton) {
-            String query = ((AppButton)obj).action;
-            if (query.indexOf(":") != -1) {
-                getTests(query.substring(6));
-                return;
-            }
-        } else if (action == ButtonPanel.Action.COMMIT && obj instanceof AppButton
-                   && !(state == State.QUERY)) {                               
-            if (sectionTableWidget.model.getData().size() == 0) {
-                    Window.alert(consts.get("atleastOneSection"));
-                    return;
-                }
-            if (form.testAnalyte.load || state == State.ADD) {
-                if (analyteTreeWidget.model.getData().size() > 0 && (resultTableModelCollection.size() == 0)) {
-                    boolean ok = Window.confirm(consts.get("analyteNoResults"));
-                    if (!ok)
-                        return;
+    public String getString(Object obj) {
+        if (obj == null)
+            return "";
 
-                } else if (resultTableModelCollection.size() > 0 && analyteTreeWidget.model.getData()
-                                                                                          .size() == 0) {
-                    boolean ok = Window.confirm(consts.get("resultNoAnalytes"));
-                    if (!ok)
-                        return;
-
-                } else if (!checkResGrpSel()) {
-                    boolean ok = Window.confirm(consts.get("resultGrpNotSelForAll"));
-                    if (!ok)
-                        return;
-                }
-
-            }
-            if (!validate()) {
-                window.setStatus(consts.get("correctErrors"), "ErrorPanel");
-                return;
-            }
-            if (!dataInWorksheetForm()) {
-                form.worksheet.load = false;
-            }
-        } else if(action == DictionaryEntryPickerScreen.Action.COMMIT) {              
-            selectedRows = (ArrayList<TableDataRow<Integer>>)obj;
-            addResultRows(selectedRows);
+        return obj.toString();
+    }
+    
+    private void drawTabs() { 
+        if (tab == Tabs.SAMPLE_TYPES) {
+            sampleTypeTab.draw();
+        } else if (tab == Tabs.ANALYTES_RESULTS) {
+            analyteAndResultTab.draw();
+        } else if (tab == Tabs.PREPS_REFLEXES) {
+            
+        } else if (tab == Tabs.WORKSHEET) {
+            
         }
-        super.performCommand(action, obj);
     }
     
-    public boolean canPerformCommand(Enum action, Object obj) {
-        if(action == DictionaryEntryPickerScreen.Action.COMMIT || 
-                        action == DictionaryEntryPickerScreen.Action.ABORT)
-            return true;
-        else
-            return super.canPerformCommand(action, obj);
-    } 
+    protected void query() {
+        manager = TestManager.getInstance();
+        setState(Screen.State.QUERY);
+        DataChangeEvent.fire(this);        
+        window.setDone(consts.get("enterFieldsToQuery"));
+    }
+    
+    protected void previous() {
+        nav.previous();
+    }
 
-    /**
-     * Overridden to manage various clicks that don't come through perform
-     * command.
-     */
-    public void onClick(Widget sender) {
-        if (sender == removeSampleTypeButton)
-            onSampleTypeRowButtonClick();
-        else if (sender == removePrepTestButton)
-            onPrepTestRowButtonClick();
-        else if (sender == removeReflexTestButton)
-            onReflexTestRowButtonClick();
-        else if (sender == removeWSItemButton)
-            onWSItemRowButtonClick();
-        else if (sender == addRowButton)
-            onAddRowButtonClicked();
-        else if (sender == deleteButton)
-            onDeleteTreeItemButtonClicked();
-        else if (sender == removeTestSectionButton)
-            onTestSectionRowButtonClicked();
-        else if (sender == removeTestResultButton)
-            onTestResultRowButtonClicked();
-        else if (sender == dictionaryLookUpButton)
-            onDictionaryLookUpButtonClicked();
-        else if (sender == addResultTabButton)
-            onAddResultTabButtonClicked();
-        else if (sender == groupAnalytesButton)
-            onGroupAnalytesButtonClicked();
-        else if (sender == ungroupAnalytesButton)
-            onUngroupAnalytesButtonClicked();
-        else if (sender instanceof MenuItem) {
-            if ("duplicateRecord".equals(((String)((MenuItem)sender).objClass))) {
-                onDuplicateRecordClick();
+    protected void next() {
+        nav.next();
+    }
+
+    protected void add() {
+        TestDO test;
+        manager = TestManager.getInstance(); 
+        test = manager.getTest();        
+        test.setIsActive("N");
+        test.setIsReportable("N");    
+        setState(Screen.State.ADD);
+        DataChangeEvent.fire(this);        
+        window.setDone(consts.get("enterInformationPressCommit"));
+    }
+
+    protected void update() {
+        window.setBusy("Locking Record for update...");
+
+        try {
+            manager = manager.fetchForUpdate();
+
+            setState(State.UPDATE);
+            DataChangeEvent.fire(this);
+            window.clearStatus();
+            
+
+        } catch (EntityLockedException e) {
+            window.clearStatus();
+            Window.alert(e.getMessage());
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+        }
+    }
+
+    public void commit() {
+        if (state == State.UPDATE) {
+            commitUpdate();
+            /*if (validate()) {
+                window.setBusy(consts.get("updating"));
+                commitUpdate();
+            } else {
+                window.setError(consts.get("correctErrors"));
+            }*/
+        }
+        if (state == State.ADD) {
+            commitAdd();
+            /*if (validate()) {
+                window.setBusy(consts.get("adding"));
+                commitAdd();
+            } else {
+                window.setError(consts.get("correctErrors"));
+            }*/
+        }
+        if (state == State.QUERY) {
+            if (validate()) {
+                ArrayList<QueryData> qFields = getQueryFields();
+                commitQuery(qFields);
+            } else {
+                window.setError(consts.get("correctErrors"));
             }
         }
-
-    }
-
-    private SyncCallback<TestForm> beforeFetch = new SyncCallback<TestForm>() {
-        public void onSuccess(TestForm result) {            
-            loadListsAndModels(result);
-        }        
-        public void onFailure(Throwable caught) {
-            Window.alert(caught.getMessage());
-        }
-    };
-    
-    public void query() {
-        super.query();        
-        enableTableAutoAdd(false);
-        setActiveRow();
-        setTableDropdownModel(resultTableWidget, 0, sampleTypeUnitModel);
-        testId.setFocus(true);
-        resultPanel.clear();
-        removeSampleTypeButton.changeState(ButtonState.DISABLED);
-        removePrepTestButton.changeState(ButtonState.DISABLED);
-        removeReflexTestButton.changeState(ButtonState.DISABLED);
-        removeWSItemButton.changeState(ButtonState.DISABLED);
-        deleteButton.changeState(ButtonState.DISABLED);
-        addRowButton.changeState(ButtonState.DISABLED);
-        removeTestResultButton.changeState(ButtonState.DISABLED);
-        removeTestSectionButton.changeState(ButtonState.DISABLED);
-        dictionaryLookUpButton.changeState(ButtonState.DISABLED);
-        addResultTabButton.changeState(ButtonState.DISABLED);
-        groupAnalytesButton.changeState(ButtonState.DISABLED);
-        ungroupAnalytesButton.changeState(ButtonState.DISABLED);
-    }
-    
-
-    public void add() {
-        super.add();
-        group = 0;            
-        resetResultGroupDropDownModel();
-        resetTestAnalyteDropDownModel();
-        resetUnitDropDownModel();
-        resetTestResultDropDownModel();
-        resultPanel.clear();
-        resultTableModelCollection = new ArrayList<TableDataModel<TableDataRow<Integer>>>();
-        resultDropdownModelCollection = new ArrayList<TableDataModel<TableDataRow<Integer>>>();        
-
-        //TODO use this with drag and drop as well 
-        analyteListChanged = true;
-        
-        enableTableAutoAdd(true);
-        setActiveRow();
-        //
-        // disable anything that is not editable and set focus to the widget
-        // which should get the first focus for editing
-        //
-        testId.enable(false);
-        testName.setFocus(true);
     }
 
     public void abort() {
-        group = 0;
-        enableTableAutoAdd(false);        
-        resultPanel.clear();        
-        
-        //
-        // On committing after update, the model in the unit dropdown in resultTableWidget
-        // (resultUnitModel) could have gotten changed from what it was when 
-        // fetch was done as it depends on the list of units in sampleTypeTableWidget,
-        // so when abort is executed the unit selected for some of the test results
-        // in the database may not be in resultUnitModel and thus they won't show up
-        // when the data in resultTableWidget is refreshed.
-        // Hence, to make those units to show up the units dropdown widget in resultTableWidget
-        // is loaded with the list of all units in the system
-        //
-        if(state == State.UPDATE)
-            setTableDropdownModel(resultTableWidget, 0, sampleTypeUnitModel);
-        
-        //TODO use this with drag and drop as well 
-        analyteListChanged = false;               
-        super.abort();       
-    }
+        if (state == State.UPDATE) {
+            window.setBusy("Canceling changes ...");
 
-    protected SyncCallback<TestForm> afterUpdate = new SyncCallback<TestForm>() {
-        public void onFailure(Throwable caught) {
-            Window.alert(caught.getMessage());
-        }
-
-        public void onSuccess(TestForm result) {            
-            //
-            // disable anything that is not editable and set focus to the widget
-            // which should get the first focus for editing
-            //
-            enableTableAutoAdd(true);
-            setActiveRow();
-            testId.enable(false);
-            testName.setFocus(true);
-                        
-            //
-            // we set this flag to true to force the unit dropdown in resultTableWidget to
-            // be reloaded with the list of units specific to the current test 
-            //
-            unitListChanged = true;            
-            reloadTestResultUnitDropdownModel();                                           
-            //TODO use this with drag and drop as well 
-            analyteListChanged = true;
-            
-        }
-    };   
-
-    protected SyncCallback<TestForm> commitUpdateCallback = new SyncCallback<TestForm>() {
-        public void onSuccess(TestForm result) {
-            if (form.status == Form.Status.invalid) {               
-                if (form.testAnalyte.resultTableModelCollection != null)
-                    resultTableModelCollection = form.testAnalyte.resultTableModelCollection;
-            } else {
-                enableTableAutoAdd(false);
+            try {
+                manager = manager.abort();
+                clearErrors();
+                setState(State.DISPLAY);
+                DataChangeEvent.fire(this);                                               
+                window.clearStatus();
+            } catch (Exception e) {
+                Window.alert(e.getMessage());
+                window.clearStatus();
             }
-        }
 
-        public void onFailure(Throwable caught) {
-            handleError(caught);
-        }
-    };
-
-    protected SyncCallback<TestForm> commitAddCallback = new SyncCallback<TestForm>() {
-        public void onSuccess(TestForm result) {
-            if (form.status == Form.Status.invalid) {                
-                if (form.testAnalyte.resultTableModelCollection != null)
-                    resultTableModelCollection = form.testAnalyte.resultTableModelCollection;
-            } else {
-                enableTableAutoAdd(false);                
-            }
-        }
-
-        public void onFailure(Throwable caught) {
-            handleError(caught);
-        }
-    };
-
-    protected void submitForm() {
-        super.submitForm();
-
-        if (!(state == State.QUERY)) {
-            form.testAnalyte.resultTableModelCollection = resultTableModelCollection;
-
-            resultTableWidget.finishEditing();
-            sectionTableWidget.finishEditing();
-            reflexTestTableWidget.finishEditing();
-        }
-    }
-
-    public void onTabSelected(SourcesTabEvents sender, int tabIndex) {            
-        TableDataModel<TableDataRow<Integer>> model;                
-        if (sender == resultPanel) {
-            //
-            // when a user clicks a tab on the test results panel (resultPanel)
-            // to see the data for that result group, the model for the table
-            // displayed under it, is taken from the list of models
-            // (resultModelCollection) and set to the table
-            // 
-            if (resultTableModelCollection!=null && resultTableModelCollection.size() > tabIndex) {
-                    model = resultTableModelCollection.get(tabIndex);
-                    resultTableWidget.model.load(model);                    
-            }             
-        } else {            
-            form.testTabPanel = screenTestTab.getSelectedTabKey();            
-            if (state != State.QUERY) {                   
-                if (tabIndex == 1) { 
-                    if(!form.sampleType.load) {                       
-                        fillSampleTypes();
-                    }
-                    resultTableWidget.finishEditing();
-                } else if (tabIndex == 2) {                    
-                    if(!form.testAnalyte.load) {                                    
-                        fillTestAnalyte();                     
-                    }                                     
-                    reloadTestResultUnitDropdownModel();                                      
-                } else if (tabIndex == 3) {
-                    //
-                    // this is done here again because screenTestTab.getSelectedTabKey()
-                    // doesn't return the right key for any tab after the 3rd one 
-                    // because the 3rd tab has another TabPanel inside it which makes
-                    // an unwanted tab get added to screenTestTab's tabList                    
-                    //
-                    form.testTabPanel = "prepAndReflexTab";
-                    if(!form.prepAndReflex.load) {                          
-                        fillPrepTestsReflexTests();
-                    }                        
-                    reloadTestAnalyteDropdownModel();
-                    resultTableWidget.finishEditing();
-                } else if (tabIndex == 4) { 
-                    //
-                    // this is done here again because screenTestTab.getSelectedTabKey()
-                    // doesn't return the right key for any tab after the 3rd one 
-                    // because the 3rd tab has another TabPanel inside it which makes
-                    // an unwanted tab get added to screenTestTab's tabList                     
-                    //
-                    form.testTabPanel = "worksheetTab";
-                    if(!form.worksheet.load) {                      
-                        fillWorksheetLayout();
-                    }
-                    analyteTreeWidget.finishEditing();
-                }
-            }
-        } 
-    }
-
-    /**
-     * Overriden to allow lazy loading various tabs of the various tab panels on
-     * the screen
-     */
-    public boolean onBeforeTabSelected(SourcesTabEvents sender, int tabIndex) {        
-        return true;
-    }
-
-    public boolean validate() {
-        if (treeItemsHaveErrors()) {
-            Window.alert(consts.get("anaTypeAndNameRequired"));
-            return false;
-        }
-
-        if (resultRowsHaveErrors()) {
-            return false;
-        }
-
-        if (worksheetItemRowsHaveErrors()) {
-            return false;
-        }
-        return true;
-    }
-
-    public boolean canAdd(TableWidget widget, TableDataRow set, int row) {
-        return false;
-    }
-
-    public boolean canAutoAdd(TableWidget widget, TableDataRow addRow) {
-        DropDownField<Integer> ddField;
-        if (widget == wsItemTableWidget) {
-            return canAutoAddAfterWsItemRow(addRow);           
-        } else if (widget == reflexTestTableWidget) {
-            if (isReflexRowEmpty(addRow))
-                return false;            
-        } else if (widget == resultTableWidget) {
-            ddField = (DropDownField<Integer>)addRow.cells[1];
-            if(ddField.getSelectedKey() == null)
-                return false;            
-        } else if(widget == sectionTableWidget) {
-            if (isSectionRowEmpty(addRow))
-                return false;            
-        } else if (widget == prepTestTableWidget) {
-            ddField = (DropDownField<Integer>)addRow.cells[0];
-            if(ddField.getSelectedKey() == null)
-                return false;            
-        } else if (widget == sampleTypeTableWidget) {
-            ddField = (DropDownField<Integer>)addRow.cells[0];
-            if(ddField.getSelectedKey() == null)
-                return false;            
-        }
-        
-        return true;
-    }
-
-    public boolean canDelete(TableWidget widget, TableDataRow set, int row) {
-        return false;
-    }
-
-    public boolean canEdit(TableWidget widget,TableDataRow set,int row,int col) {
-        DropDownField<Integer> ddfield;
-        TableDataRow<Integer> vset,ddset;
-        IntegerObject iobj;        
-        int rg;
-
-        vset = null;
-        
-        if (state == State.UPDATE || state == State.ADD) {
-            // column 2 is for the Results dropdown
-            if (widget == reflexTestTableWidget && col == 2 && set !=null) {
-                ddfield = (DropDownField<Integer>)set.cells[1];
-                //
-                // checks to see if the analyte list has at least one option in it
-                // 
-                if(ddfield.getValue() != null && ddfield.getValue().size() > 0)
-                    vset = ddfield.getValue().get(0);
-                                                 
-                    if (vset != null && ddfield.getErrors().size() == 0 &&
-                                    vset.key != null) {
-                         ddset = ModelUtil.getRowByKey(testAnalyteModel,vset.key);
-                         iobj = (IntegerObject)ddset.getData();
-                         if(iobj!=null) {
-                             rg = iobj.getValue();                          
-                             setTestResultsForResultGroup(rg, set);
-                         }                                                  
-                    }   else {
-                        Window.alert(consts.get("selectAnaBeforeRes"));
-                        return false;
-                    }
-
-            } else if (widget == resultTableWidget) {
-                if(resultPanel.getTabBar().getTabCount() == 0) {
-                    Window.alert(consts.get("atleastOneResGrp"));
-                    return false;
-                }                
-            }                            
-            return true;
-        } else if(state == State.QUERY) {
-            if((widget == resultTableWidget && col == 2) ||
-                            (widget == reflexTestTableWidget && (col==1 || col==2))||
-                            (widget == wsAnalyteTableWidget)) {
-                return false;
-            }
-            return true;
-        }
-        
-        return false;   
-    }
-
-    public boolean canSelect(TableWidget widget, TableDataRow set, int row) {
-        if (state == State.UPDATE || state == State.ADD || state == State.QUERY) {
-            if(state == State.QUERY && (widget == wsAnalyteTableWidget))
-                 return false;                  
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * This function is called whenever a given cell in a table looses focus,
-     * which signifies that it is no longer being edited
-     */
-    public void finishedEditing(SourcesTableWidgetEvents sender,int row, int col) {     
-        String systemName;
-        Integer selValue;
-        if (sender == sectionTableWidget && row < sectionTableWidget.model.getData().size()&& col == 1) {
-            
-            selValue = (Integer)((DropDownField)sectionTableWidget.model.getRow(row).cells[col]).getSelectedKey();                                      
-            // 
-            // This code is for finding out which option was chosen in the "Options"
-            // column of the Test Section table in the Test Details tab, so that
-            // the values for the other rows can be changed accordingly
-            //
-            systemName = getSelectedSystemName(row,1,sectionTableWidget);            
-            if(systemName != null) {
-                if ("test_section_default".equals(systemName)) {
-                    for (int iter = 0; iter < sectionTableWidget.model.numRows(); iter++) {
-                        if (iter != row) {
-                            // 
-                            // if the option chosen is "Default" for this
-                            // row, then all the other rows must be set to
-                            // the blank option
-                            //                                                                                                                                                                     
-                            DropDownField field = (DropDownField)sectionTableWidget.model.getRow(iter).cells[1];
-                            field.setValue(new TableDataRow<Integer>(null));
-                        }
-                    }
-                    sectionTableWidget.model.refresh();
-                } else {
-                    if (selValue != null) {
-                        for (int iter = 0; iter < sectionTableWidget.model.numRows(); iter++) {
-                            DropDownField field = (DropDownField)sectionTableWidget.model.getRow(iter).cells[1];
-                            //
-                            // if the option chosen is "Ask" or "Match User Location" for
-                            // this row, then all the other rows must be set to
-                            // the same option which is this one
-                            // 
-                            field.setValue(new TableDataRow<Integer>(selValue));
-                        }
-                    }
-                    sectionTableWidget.model.refresh();
-                }
-            }   
-            
-        } else if (sender == resultTableWidget && row < resultTableWidget.model.getData()
-                        .size() && state != State.QUERY) {
-            final String value = ((StringField)resultTableWidget.model.getRow(row).cells[2]).getValue();
-            if (col == 2 && !"".equals(value.trim())) {
-                final int currRow = row;
-                systemName = getSelectedSystemName(row,1,resultTableWidget);
-                //              
-                // This code is for finding out which option was chosen in the 
-                // "Type" column of the Test Results table in the "Analyte" tab, 
-                // so that error checking or formatting can be done for the value 
-                // set in the "Value" column
-                //
-                if(systemName != null) {
-                    Double darray[] = new Double[2];                    
-                    String finalValue = "";
-                    if ("test_res_type_dictionary".equals(systemName)) {
-                        //
-                        // Find out if this value is stored in the database if
-                        // the type chosen was "Dictionary"
-                        //
-                        TestGeneralPurposeRPC tsrpc = new TestGeneralPurposeRPC();
-                        tsrpc.stringValue = value;
-                        screenService.call("getEntryIdForEntryText",tsrpc,
-                                           new SyncCallback<TestGeneralPurposeRPC>() {
-                                               public void onSuccess(TestGeneralPurposeRPC result) {
-                                                   //
-                                                   // If this value is not stored in the
-                                                   // database then add error to this
-                                                   // cell in the "Value" column
-                                                   //
-                                                   if (result.key == null) {
-                                                       resultTableWidget.model.setCellError(currRow,2,
-                                                                                            consts.get("illegalDictEntryException"));
-                                                   } else {
-                                                       TableDataRow<Integer> set = resultTableWidget.model.getRow(currRow);
-                                                       if (set.key == null) {
-                                                           set.key = getNextTempResId();
-                                                       }
-                                                       resultTableWidget.model.setCell(currRow,2,
-                                                                                       (result.stringValue));
-
-                                                       checkAndAddNewResultValue(value,set);
-                                                   }
-                                               }
-
-                                               public void onFailure(Throwable caught) {
-                                                   Window.alert(caught.getMessage());
-                                                   window.clearStatus();
-                                               }
-                                           });
-
-                    } else if ("test_res_type_numeric".equals(systemName)) {
-                        //
-                        // Get the string that was entered if the type
-                        // chosen was "Numeric" and try to break it up at
-                        // the "," if it follows the pattern number,number
-                        //
-                        String[] strList = value.split(",");
-                        boolean convert = false;
-                        if (strList.length == 2) {
-                            for (int iter = 0; iter < strList.length; iter++) {
-                                String token = strList[iter];
-                                try {
-                                    // 
-                                    // Convert each number obtained
-                                    // from the string and store its value
-                                    // converted to double if its a valid
-                                    // number, into an array
-                                    //
-                                    Double doubleVal = Double.valueOf(token);
-                                    darray[iter] = doubleVal;
-                                    convert = true;
-                                } catch (NumberFormatException ex) {
-                                    convert = false;
-                                }
-                            }
-                        }
-
-                        if (convert) {
-                            //
-                            // If its a valid string store the converted
-                            // string back into the column otherwise add
-                            // an error to the cell and store empty
-                            // string into the cell
-                            //  
-                            if (darray[0].toString().indexOf(".") == -1) {
-                                finalValue = darray[0].toString() + ".0" + ",";
-                            } else {
-                                finalValue = darray[0].toString() + ",";
-                            }
-
-                            if (darray[1].toString().indexOf(".") == -1) {
-                                finalValue += darray[1].toString() + ".0";
-                            } else {
-                                finalValue += darray[1].toString();
-                            }
-                            resultTableWidget.model.setCell(currRow,2,finalValue);
-                            TableDataRow<Integer> set = resultTableWidget.model.getRow(currRow);
-
-                            if (set.key == null)
-                                set.key = getNextTempResId();
-
-                            checkAndAddNewResultValue(finalValue, set);
-
-                        } else {
-                            resultTableWidget.model.setCellError(currRow,
-                                                                 2,
-                                                                 consts.get("illegalNumericFormatException"));
-                        }
-
-                    } else if ("test_res_type_titer".equals(systemName)) {
-                        //
-                        // Get the string that was entered if the type chosen
-                        // was "Titer" and try to
-                        // break it up at the ":" if it follows the pattern
-                        // "number:number"
-                        //
-                        String[] strList = value.split(":");
-                        boolean convert = false;
-                        if (strList.length == 2) {
-                            for (int iter = 0; iter < strList.length; iter++) {
-                                String token = strList[iter];
-                                try {
-                                    //
-                                    // Convert each number obtained from the
-                                    // string and store its value converted to 
-                                    // int if it's a valid number, into an array
-                                    //
-                                    Integer.parseInt(token);                                    
-                                    convert = true;
-                                } catch (NumberFormatException ex) {
-                                    convert = false;
-                                }
-                            }
-                        }
-                        if (convert) {
-                            //
-                            // If it's a valid string store the converted
-                            // string back into the column otherwise add an
-                            // error to the cell and store empty string
-                            // into the cell
-                            //
-                            resultTableWidget.model.setCell(currRow,2,value);
-                            TableDataRow<Integer> set = resultTableWidget.model.getRow(currRow);
-
-                            if (set.key == null)
-                                set.key = getNextTempResId();
-
-                            checkAndAddNewResultValue(value, set);
-
-                        } else {
-                            resultTableWidget.model.setCellError(currRow,
-                                                                 2,
-                                                                 consts.get("illegalTiterFormatException"));
-                        }
-
-                    } else if ("test_res_type_date".equals(systemName)) {
-                        resultTableWidget.model.setCell(currRow, 2, value);
-                        TableDataRow set = (TableDataRow)resultTableWidget.model.getData()
-                                                                                .get(currRow);
-                        try {
-                            finalValue = validateDate(value);
-                            resultTableWidget.model.setCell(currRow,
-                                                            2,
-                                                            finalValue);
-
-                            if (set.key == null)
-                                set.key = getNextTempResId();
-
-                            checkAndAddNewResultValue(finalValue, set);
-
-                        } catch (IllegalArgumentException ex) {
-                            resultTableWidget.model.setCellError(currRow,
-                                                                 2,
-                                                                 consts.get("illegalDateValueException"));
-                        }
-                    } else if ("test_res_type_date_time".equals(systemName)) {
-                        resultTableWidget.model.setCell(currRow, 2, value);
-                        TableDataRow set = (TableDataRow)resultTableWidget.model.getData()
-                                                                                .get(currRow);
-                        try {
-                            finalValue = validateDateTime(value);
-                            resultTableWidget.model.setCell(currRow,
-                                                            2,
-                                                            finalValue);
-
-                            if (set.key == null)
-                                set.key = getNextTempResId();
-
-                            checkAndAddNewResultValue(finalValue, set);
-
-                        } catch (IllegalArgumentException ex) {
-                            resultTableWidget.model.setCellError(currRow,
-                                                                 2,
-                                                                 consts.get("illegalDateTimeValueException"));
-                        }
-                    } else if ("test_res_type_time".equals(systemName)) {
-                        resultTableWidget.model.setCell(currRow, 2, value);
-                        TableDataRow set = (TableDataRow)resultTableWidget.model.getData()
-                                                                                .get(currRow);
-                        try {
-                            finalValue = validateTime(value);
-                            resultTableWidget.model.setCell(currRow,
-                                                            2,
-                                                            finalValue);
-
-                            if (set.key == null)
-                                set.key = getNextTempResId();
-
-                            checkAndAddNewResultValue(finalValue, set);
-
-                        } catch (IllegalArgumentException ex) {
-                            resultTableWidget.model.setCellError(currRow,
-                                                                 2,
-                                                                 consts.get("illegalTimeValueException"));
-                        }
-                    }
-             }   
-            }
-        } else if (sender == wsItemTableWidget && row < wsItemTableWidget.model.getData()
-                                                                     .size()) {            
-            if (col == 0 && row < wsItemTableWidget.model.getData().size()) {                      
-                systemName = getSelectedSystemName(row,1,wsItemTableWidget);                
-                if(systemName!=null) {
-                    Integer value = (Integer)(wsItemTableWidget.model.getRow(row).cells[0]).getValue();
-                    if ("pos_duplicate".equals(systemName) || "pos_fixed".equals(systemName)) {
-                        if (value == null) {
-                            wsItemTableWidget.model.setCellError(row,0,
-                                                                 consts.get("fixedDuplicatePosException"));
-                        }    
-                    } else if (!("pos_duplicate".equals(systemName) && !("pos_fixed".equals(systemName)))) {
-                        if (value != null) {
-                            wsItemTableWidget.model.setCellError(row,0,
-                                                                 consts.get("posSpecifiedException"));
-                        }
-                    }
-                }       
-            }
-        } else if (sender == reflexTestTableWidget && row < reflexTestTableWidget.model.getData()
-                                                                             .size()) {
-            TableDataRow<Integer> rset,vset;
-            DropDownField<Integer> ddfield;
-            ArrayList<TableDataRow<Integer>> value;
-            IntegerObject iobj;
-            int rg;
-            
-            rset = reflexTestTableWidget.model.getRow(row);
-            ddfield = (DropDownField<Integer>)rset.cells[col];
-            value = ddfield.getValue();
-            
-            if(value != null && value.size() > 0) {
-             if (col == 1) {
-                vset = (TableDataRow<Integer>)value.get(0);
-                if (vset != null) {
-                     iobj = (IntegerObject)vset.getData(); 
-                     if(iobj!=null) {
-                         rg = iobj.getValue();
-                         setTestResultsForResultGroup(rg, rset);
-                     }
-                }        
-            } 
-          }   
-        } else if (sender == sampleTypeTableWidget && col == 1
-                   && row < sampleTypeTableWidget.model.getData().size()) {
-            unitListChanged = true;            
-        } else if (sender == wsAnalyteTableWidget && col == 1) {
-            TableDataRow<Integer> trow = wsAnalyteTableWidget.model.getRow(row);
-            setAnalytesAvailable(trow);
-            setRepeatValue(trow);
-            wsAnalyteTableWidget.model.refresh();
-        }
-    }
-
-    public void startEditing(SourcesTableWidgetEvents sender, int row, int col) {
-
-    }
-
-    public void stopEditing(SourcesTableWidgetEvents sender, int row, int col) {
-
-    }
-
-    public void finishedEditing(SourcesTreeWidgetEvents sender, int row, int col) {
-        int index,tempAnaId;
-        Integer resGrpNum;
-        boolean createNewSet;
-        
-        TreeDataItem item;
-        DropDownField<Integer> field;
-        String selText,prevVal;        
-        TableDataRow<Integer> ddset;
-        IntegerObject data;       
-
-        index = analyteTreeWidget.modelIndexList[row];        
-        tempAnaId = 0;
-        item = analyteTreeWidget.model.getRow(index);
-        createNewSet = false;
-        
-        if (col == 0) {            
-            field = (DropDownField)item.cells[col];
-            selText = (String)field.getTextValue();
-            //
-            // checks to see if any analyte was selected for this row, if not then
-            // an error is added to the cell, this needs to be done because the tree 
-            // widget on its own doesn't support it right now. The model of the tree
-            // widget is refreshed to make sure that the newly added error shows 
-            // in the cell as soon as the cell loses focus 
-            //
-            if (field.getSelectedKey() != null) {             
-                if (item.key == null) {                             
-                    createNewSet = true;
-                } else {                    
-                   data = (IntegerObject)item.getData();
-                   ddset = ModelUtil.getRowByKey(testAnalyteModel,item.key);
-                   if (ddset != null) {
-                        prevVal = (String)ddset.cells[0].getValue();
-                        if (!prevVal.trim().equals(selText.trim())) {
-                            
-                            setErrorToReflexFields(consts.get("analyteNameChanged"),
-                                                   item.key,1);
-                            
-                            ddset.cells[0].setValue(selText);
-                            
-                            ((TableDropdown)reflexTestTableWidget.columns.get(1)
-                               .getColumnWidget()).setModel(testAnalyteModel);
-                            
-                            updateWorksheetAnalyte(data.getValue(),
-                               (Integer)field.getSelectedKey(),selText);
-                            
-                            data.setValue((Integer)field.getSelectedKey());
-                        }
-                    }
-                }            
-
-            if (createNewSet) {
-                tempAnaId = getNextTempAnaId();
-                ddset = new TableDataRow<Integer>(tempAnaId,new StringObject(selText));                
-                item.key = tempAnaId;                                
-
-                testAnalyteModel.add(ddset);
-                ((TableDropdown)reflexTestTableWidget.columns.get(1)
-                                                        .getColumnWidget()).setModel(testAnalyteModel);
-
-                addWorksheetAnalyte((Integer)field.getSelectedKey(), selText);
-            }
-          }
-        } else if (col == 4) {
-            field = (DropDownField)item.cells[col];            
-            resGrpNum = (Integer)field.getSelectedKey();                             
-
-            //
-            // checks to see if a result group was chosen, if so, sets the data 
-            // field of the dropdown option in testAnalyteDropdownModel that 
-            // corresponds to this TreeDataItem  
-            //
-            if (item.key != null && resGrpNum != null) {                                  
-             ddset = ModelUtil.getRowByKey(testAnalyteModel,item.key); 
-             if(ddset != null) {
-                 data = (IntegerObject)ddset.getData();
-                 if(data == null)                      
-                     data = new IntegerObject();                 
-                 data.setValue(resGrpNum);
-                 ddset.setData(data);                 
-             } 
-            }
-                 
-        }
-
-    }
-
-    public void startedEditing(SourcesTreeWidgetEvents sender, int row, int col) {
-
-    }
-
-    public void stopEditing(SourcesTreeWidgetEvents sender, int row, int col) {
-
-    }
-    
-
-    public boolean canAdd(TreeWidget widget, TreeDataItem set, int row) {
-        return false;
-    }
-
-    public boolean canClose(TreeWidget widget, TreeDataItem set, int row) {
-        return true;
-    }
-
-    public boolean canDelete(TreeWidget widget, TreeDataItem set, int row) {
-        return false;
-    }
-
-    public boolean canEdit(TreeWidget widget, TreeDataItem set, int row, int col) {
-        if ((state == State.ADD) || (state == State.UPDATE))
-            return true;
-
-        return false;
-    }
-
-    public boolean canOpen(TreeWidget widget, TreeDataItem addRow, int row) {
-        return true;
-    }
-
-    public boolean canSelect(TreeWidget widget, TreeDataItem item, int row) {
-        if ("analyte".equals(item.leafType)) {
-            DropDownField field = (DropDownField)item.cells[4];
-            Integer key = (Integer)field.getSelectedKey();
-            if (key != null && key > 0) {
-                //
-                // the following check is there to make sure that if the user
-                // somehow previously committed an analyte with a result group 
-                // selected that had no results in it or if this data was present
-                // in the database due to any reason, the analyte row can still
-                // be selected because the selectTab(key-1) won't throw an
-                // ArrayIndexOutOfBoundsException. This exception would be thrown
-                // if we tried to select a tab that wasn't there
-                //
-                if((key-1) < resultPanel.getTabBar().getTabCount())
-                    resultPanel.getTabBar().selectTab(key-1);
-            }
-        }        
-        return true;
-    }    
-    
-    
-    /**
-     * This function adds new rows to the Results table with the values for the
-     * "Value" column being set to the entries that were chosen through the
-     * dictionary entry lookup screen
-     */
-    private void addResultRows(ArrayList<TableDataRow<Integer>> selectedRows) {
-        List<String> entries;
-        TableDataRow<Integer> row,set,dictSet;
-        String entry;    
-        Integer key;
-                  
-        key = DictionaryCache.getIdFromSystemName("test_res_type_dictionary");
-        if (selectedRows != null) {
-          if (resultPanel.getTabBar().getTabCount() == 0) {
-                Window.alert(consts.get("atleastOneResGrp"));
-                return;
-          }
-            dictSet = new TableDataRow<Integer>(key); 
-            entries = new ArrayList<String>();
-            for (int iter = 0; iter < selectedRows.size(); iter++) {
-                set = selectedRows.get(iter);
-                entry = (String)(set.cells[0]).getValue();
-                if (entry != null && !entries.contains(entry.trim())) {
-                    entries.add(entry);
-                    row = (TableDataRow<Integer>)resultTableWidget.model.createRow();
-                    row.cells[1].setValue(dictSet);
-                    row.cells[2].setValue(entry);                                        
-                    row.key = getNextTempResId();
-                    resultTableWidget.model.addRow(row);
-                    checkAndAddNewResultValue(entry, row);
-                }
-            }
-            resultTableWidget.model.refresh();
-        }
-    }
-
-    private AsyncCallback<TestForm> fetchForDuplicateCallBack = new AsyncCallback<TestForm>() {
-        public void onSuccess(TestForm result) {
-            form = result;                       
-            loadListsAndModels(result);
-            refreshTempIds();
-            loadScreen();
-            enable(true);
-            setState(State.ADD);
-            enableTableAutoAdd(true);
-            window.setDone(consts.get("enterInformationPressCommit"));
-        }
-
-        public void onFailure(Throwable caught) {
-            handleError(caught);
-            window.setDone("Load Failed");
+        } else if (state == State.ADD) {
+            manager = TestManager.getInstance();
+            clearErrors();
             setState(State.DEFAULT);
-            form.entityKey = null;
-        }
-    };
-    
-    /**
-     * This method fetches the data model stored in resultDropDownModelMap with
-     * the analyte's id as the key and sets the model as the model for the
-     * "Results" column's dropdown in the Reflexive Tests table
-     */
-    private void setTestResultsForResultGroup(int resultGroup,TableDataRow<Integer> set) {
-        TableDataModel<TableDataRow<Integer>> model;
-        DropDownField<Integer> field;
-        TableDataRow<Integer> prevSet;  
-        Integer key;               
-        
-        if(resultDropdownModelCollection != null && resultDropdownModelCollection.size() > resultGroup-1) {            
-            model = (TableDataModel<TableDataRow<Integer>>)resultDropdownModelCollection.get(resultGroup-1);
-            field = (DropDownField<Integer>)set.cells[2];                       
-            key = (Integer)field.getSelectedKey();
-            
-            if (model != null) {
-                field.setModel(model);                
-                // if the new model doesn't contain the dataset that was selected
-                // from the previous one, then it may cause an
-                // ArrayIndexOutOfBoundsException
-                // when you try to edit the Results column, this code makes sure
-                // that in that situation the blank set is set as the value so
-                // that it becomes the one that's selected and one that still 
-                // belongs to the current data model.
-                // Otherwise the previously selected set is set as the value 
-                if (key != null) {
-                    prevSet = ModelUtil.getRowByKey(model, key);
-                    if(prevSet!=null) {
-                        field.setValue(prevSet);
-                    }                   
-                }
-            }
+            DataChangeEvent.fire(this);            
+            window.setDone(consts.get("addAborted"));
+        } else if (state == State.QUERY) {
+            manager = TestManager.getInstance();
+            clearErrors();
+            setState(State.DEFAULT);
+            DataChangeEvent.fire(this);
+            window.setDone(consts.get("queryAborted"));
         }
     }
 
+    protected void fetch(Integer id) {
+        window.setBusy("Fetching ...");        
+        try {
+            if(tab == Tabs.DETAILS) {
+               manager = TestManager.findById(id);
+            } else if (tab == Tabs.SAMPLE_TYPES) {
+                manager = TestManager.findByIdWithSampleTypes(id);                
+            } else if (tab == Tabs.ANALYTES_RESULTS) {
+                manager = TestManager.findByIdWithAnalytesAndResults(id);
+            } else if (tab == Tabs.PREPS_REFLEXES) {
+                
+            } else if (tab == Tabs.WORKSHEET) {
+                
+            }
+
+        } catch (Exception e) {
+            setState(Screen.State.DEFAULT);
+            Window.alert(consts.get("fetchFailed") + e.getMessage());
+            window.clearStatus();
+
+            return;
+        }
+
+        setState(Screen.State.DISPLAY);
+        DataChangeEvent.fire(this);
+        window.clearStatus();
+    }
+    
+    protected boolean validate() {
+        return super.validate();
+    }
+    
     private void getTests(String query) {
         if (state == State.DISPLAY || state == State.DEFAULT) {
-            QueryStringField qField = new QueryStringField(TestMeta.getName());
-            qField.setValue(query);
+            QueryData qField = new QueryData();
+            qField.key = TestMeta.getName();
+            qField.query = query;
+            qField.type = QueryData.Type.STRING;
             commitQuery(qField);
         }
     }
-
-    /**
-     * This function sets the Data Model for a dropdown field that's inside the
-     * TableWidget "widget" in the column "column" to the argument "model"
-     */
-    private void setTableDropdownModel(TableWidget widget,int column,
-                                       TableDataModel<TableDataRow<Integer>> model) {
-        ((TableDropdown)widget.columns.get(column).getColumnWidget()).setModel(model);
-    }
-
-    /**
-     * This function sets the Data Model for a dropdown field that's inside the
-     * TreeWidget "widget" in the column "column" of the node with leafType
-     * "leafType" to the argument "model"
-     */
-    private void setTableDropdownModel(TreeWidget widget,int column,String leafType,
-                                       TableDataModel<TableDataRow<Integer>> model) {
-        ((TableDropdown)widget.columns.get(column).getColumnWidget(leafType)).setModel(model);
-    }
     
-    private void setUnitsOfMeasureModel(TableDataModel<TableDataRow> units) {
-        ((TableDropdown)sampleTypeTableWidget.columns.get(1).getColumnWidget()).setModel(units);
-        ((TableDropdown)resultTableWidget.columns.get(0).getColumnWidget()).setModel(units);
-        sampleTypeUnitModel = (TableDataModel<TableDataRow<Integer>>)units.clone();
-        resultUnitModel = (TableDataModel<TableDataRow<Integer>>)units.clone();
-    }
-    
-    private void setSectionsModel(TableDataModel<TableDataRow<Integer>> sections) {
-        ((TableDropdown)sectionTableWidget.columns.get(0).getColumnWidget()).setModel(sections);        
-    }
-    
-    /**
-     * The function for loading the fields in the "prepAndReflex" sub-rpc
-     * section as defined in the xsl file for the screen. It's mapped to the
-     * "Prep Test & Reflexive Test" tab in the tab-panel on the screen
-     */
-    private void fillPrepTestsReflexTests() {       
-        if (form.entityKey == null)
-            return;
-
-        form.prepAndReflex.entityKey = form.entityKey;
-
-        window.setBusy();
-
-        screenService.call("loadPrepTestsReflexTests",form.prepAndReflex,
-                           new AsyncCallback<PrepAndReflexForm>() {
-                               public void onSuccess(PrepAndReflexForm result) {
-                                   form.prepAndReflex = result;
-                                   loadListsAndModels(form);
-                                   load(result);
-                                   window.clearStatus();
-                               }
-
-                               public void onFailure(Throwable caught) {
-                                   Window.alert(caught.getMessage());
-                                   window.clearStatus();
-                               }
-                           });
+    public void commitQuery(QueryData qField) {
+        ArrayList<QueryData> qList = new ArrayList<QueryData>();
+        qList.add(qField);
+        commitQuery(qList);
     }
 
-    /**
-     * The function for loading the fields in "sampleType" sub-rpc section as
-     * defined in the xsl file for the screen. It's mapped to the "Sample Type"
-     * tab in the tab-panel on the screen
-     */
-    private void fillSampleTypes() {       
-        if (form.entityKey == null)
-            return;
-        
-        form.sampleType.entityKey = form.entityKey;
-
-        window.setBusy();        
-        screenService.call("loadSampleTypes",form.sampleType,
-                           new AsyncCallback<SampleTypeForm>() {
-                               public void onSuccess(SampleTypeForm result) {
-                                   form.sampleType = result;
-                                   loadListsAndModels(form);
-                                   load(result);
-                                   window.clearStatus();
-                               }
-
-                               public void onFailure(Throwable caught) {
-                                   Window.alert(caught.getMessage());
-                                   window.clearStatus();
-                               }
-                           });
-    }
-
-    /**
-     * The function for loading the fields in "worksheet" sub-rpc section as
-     * defined in the xsl file for the screen. It's mapped to the "WorkSheet
-     * Layout" tab in the tab-panel on the screen
-     */
-    private void fillWorksheetLayout() {
-        if (form.entityKey == null)
-            return;
-
-        form.worksheet.entityKey = form.entityKey;
-
-        window.setBusy();
-
-        screenService.call("loadWorksheetLayout",form.worksheet,
-                           new AsyncCallback<WorksheetForm>() {
-                               public void onSuccess(WorksheetForm result) {
-                                   form.worksheet = result;
-                                   loadListsAndModels(form);
-                                   load(form.worksheet);
-                                   window.clearStatus();
-                               }
-
-                               public void onFailure(Throwable caught) {
-                                   Window.alert(caught.getMessage());
-                                   window.clearStatus();
-                               }
-                           });
-    }
-
-    /**
-     * The function for loading the fields in "testAnalyte" sub-rpc section as
-     * defined in the xsl file for the screen. It's mapped to the "Analyte" tab
-     * in the tab-panel on the screen
-     */
-    private void fillTestAnalyte() {        
-        if (form.entityKey == null)
-            return;
-        
-        form.testAnalyte.entityKey = form.entityKey;
-
-        window.setBusy();                
-        
-        screenService.call("loadTestAnalyte",form.testAnalyte,
-                           new AsyncCallback<TestAnalyteForm>() {
-                               public void onSuccess(TestAnalyteForm result) {                                                                         
-                                   form.testAnalyte = result;        
-                                   loadListsAndModels(form);
-                                   load(form.testAnalyte);                                               
-                                   window.clearStatus();
-                               }
-
-                               public void onFailure(Throwable caught) {
-                                   Window.alert(caught.getMessage());
-                                   window.clearStatus();
-                               }
-                           });
-
-    }
- 
-    /**
-     * The functions for handling the click events associated with the those
-     * buttons on the screen which remove selected rows from particular tables
-     */
-    private void onSampleTypeRowButtonClick() {
-        int row;
-        row = sampleTypeTableWidget.modelIndexList[sampleTypeTableWidget.activeRow];        
-        if(row > -1) {
-            sampleTypeTableWidget.model.deleteRow(row);
-            unitListChanged = true;
-        } 
-    }
-
-    private void onPrepTestRowButtonClick() {
-        int index = prepTestTableWidget.modelIndexList[prepTestTableWidget.activeRow];
-        if (index > -1)
-            prepTestTableWidget.model.deleteRow(index);
-    }
-
-    private void onWSItemRowButtonClick() {
-        int index = wsItemTableWidget.modelIndexList[wsItemTableWidget.activeRow];
-        if (index > -1)
-            wsItemTableWidget.model.deleteRow(index);
-    }
-
-    private void onReflexTestRowButtonClick() {        
-        int index = reflexTestTableWidget.modelIndexList[reflexTestTableWidget.activeRow];        
-        if (index > -1)
-            reflexTestTableWidget.model.deleteRow(index);
-    }
-
-    private void onTestSectionRowButtonClicked() {
-        int index = sectionTableWidget.modelIndexList[sectionTableWidget.activeRow];
-        if (index > -1) 
-            sectionTableWidget.model.deleteRow(index);        
-    }
-
-    private void onTestResultRowButtonClicked() {
-        TableDataModel<TableDataRow<Integer>> resModel,ddModel;
-        int selIndex,selTab;
-        TableDataRow<Integer> resSet,ddSet;
-        
-        resModel = resultTableWidget.model.getData();
-        selIndex = resultTableWidget.modelIndexList[resultTableWidget.activeRow];
-        selTab = resultPanel.getTabBar().getSelectedTab();
-        
-        if (selIndex > -1) {
-            if (resModel.size() > 1) {
-                resSet = resultTableWidget.model.getRow(selIndex);                
-                if (resSet.key != null) {                    
-                    setErrorToReflexFields(consts.get("resultDeleted"),resSet.key,2);  
-                    ddModel = resultDropdownModelCollection.get(selTab);
-                    ddSet = ModelUtil.getRowByKey(ddModel, resSet.key);
-                    ddModel.delete(ddSet);
-                    refreshReflexResultDropdowns(selTab+1);
-                }
-                resultTableWidget.model.deleteRow(selIndex);      
-            } else {
-                Window.alert(consts.get("atleastOneResInResGrp"));
+    public ArrayList<QueryData> getQueryFields() {
+        ArrayList<QueryData> list = new ArrayList<QueryData>();
+        Set<String> keys = def.getWidgets().keySet();
+        for (String key : def.getWidgets().keySet()) {
+            if (def.getWidget(key) instanceof HasField) {
+                ((HasField)def.getWidget(key)).getQuery(list, key);
             }
+        }
+        return list;
+    }
+
+    public void commitAdd() {
+        window.setBusy("Committing ....");
+        try {
+            manager = manager.add();
+            setState(Screen.State.DISPLAY);
+            DataChangeEvent.fire(this);
+            window.clearStatus();
+        } catch (ValidationErrorsList e) {
+            showErrors(e);
+
+        } catch (Exception e) {
+            Window.alert("commitAdd(): " + e.getMessage());
+            window.clearStatus();
         }
     }
 
-    private void onAddResultTabButtonClicked() {
-        TableDataRow<Integer> ddset;        
-        group++;
+    public void commitUpdate() {
+        window.setBusy("Committing ....");
+        try {
+            manager = manager.update();
+            setState(Screen.State.DISPLAY);
+            DataChangeEvent.fire(this);
+            window.clearStatus();
+        } catch (ValidationErrorsList e) {
+            showErrors(e);
 
-        resultPanel.add(getDummyPanel(), new Integer(group).toString());        
-        resultTableModelCollection.add((TableDataModel<TableDataRow<Integer>>)testResultDefaultModel.clone());
-        resultDropdownModelCollection.add(getDefaultResultDropdownModel());
-        resultPanel.selectTab(group - 1);
+        } catch (Exception e) {
+            Window.alert("commitUpdate(): " + e.getMessage());
+            e.printStackTrace();
+            window.clearStatus();
 
-        ddset = new TableDataRow<Integer>(group,new StringObject((new Integer(group)).toString()));
-
-        resultGroupModel.add(ddset);
-
-        setTableDropdownModel(analyteTreeWidget,4,"analyte",resultGroupModel);
-    }
-
-    private void onAddRowButtonClicked() {
-        TreeDataItem newItem = analyteTreeWidget.model.createTreeItem("analyte");
-        analyteTreeWidget.model.addRow(newItem);
-        analyteTreeWidget.model.refresh();
-    }
-
-    private void onGroupAnalytesButtonClicked() {
-        TreeDataItem cloneItem = null;
-        ArrayList<TreeDataItem> items = analyteTreeWidget.model.getSelections();
-        if (items.size() < 2) {
-            Window.alert(consts.get("atleastTwoAnalytes"));
-            return;
-        }
-        ArrayList<Integer> selectedRowIndexes = (ArrayList<Integer>)analyteTreeWidget.model.getSelectedRowList()
-                                                                                               .clone();
-        Collections.sort(selectedRowIndexes);
-
-        TreeDataItem groupItem = analyteTreeWidget.model.createTreeItem("top");
-        groupItem.cells[0].setValue(consts.get("analyteGroup"));
-
-        for (int iter = 0; iter < selectedRowIndexes.size(); iter++) {
-            int index = selectedRowIndexes.get(iter);
-            if (iter > 0 && index != (selectedRowIndexes.get(iter - 1) + 1)) {
-                Window.alert(consts.get("analyteNotAdjcnt"));
-                return;
-            }
-        }
-        for (TreeDataItem item : items) {
-            if ("top".equals(item.leafType)) {
-                Window.alert(consts.get("cantGroupGroups"));
-                return;
-            }
-            if (item.parent != null) {
-                Window.alert(consts.get("analyteAlreadyGrouped"));
-                return;
-            }
-            cloneItem = (TreeDataItem)item.clone();
-            cloneItem.setData(item.getData());
-            item.setData(null);
-            groupItem.addItem(cloneItem);
-        }
-
-        analyteTreeWidget.model.deleteRows(analyteTreeWidget.model.getSelectedRowList());
-
-        if (analyteTreeWidget.model.getData().size() > 0) {
-            if (selectedRowIndexes.get(0) < analyteTreeWidget.model.getData()
-                                                                       .size()) {
-                analyteTreeWidget.model.addRow(selectedRowIndexes.get(0),
-                                                   groupItem);
-            } else {
-                analyteTreeWidget.model.addRow(groupItem);
-            }
-        } else {
-            analyteTreeWidget.model.addRow(groupItem);
-        }
-
-        analyteTreeWidget.model.refresh();
-    }
-
-    private void onUngroupAnalytesButtonClicked() {
-        TreeDataItem item;
-        TreeDataItem newItem;
-
-        List<TreeDataItem> chItems;
-        int index;
-        ArrayList<Integer> selRows = (ArrayList<Integer>)analyteTreeWidget.model.getSelectedRowList()
-                                                                                    .clone();
-
-        if (selRows.size() > 0) {
-            for (int iter = 0; iter < selRows.size(); iter++) {
-                index = selRows.get(iter);
-                item = analyteTreeWidget.model.getRow(index);
-                if ("top".equals(item.leafType)) {
-                    chItems = item.getItems();
-
-                    for (int i = 0; i < chItems.size(); i++) {
-                        newItem = (TreeDataItem)chItems.get(i).clone();
-                        newItem.parent = null;
-                        newItem.setData(chItems.get(i).getData());
-                        chItems.get(i).setData(null);
-                        analyteTreeWidget.model.addRow(index + i, newItem);
-                    }
-
-                    analyteTreeWidget.model.deleteRow(index);
-                }
-            }
-            analyteTreeWidget.model.refresh();
         }
     }
     
-   /**
-    * The method for the code to be executed when one or more nodes from the 
-    * analyte tree are removed  
-    */
-    private void onDeleteTreeItemButtonClicked() {
-        List<Integer> selectedRowIndexes = (ArrayList<Integer>)analyteTreeWidget.model.getSelectedRowList()
-                                                                                          .clone();
-        int iter, index;
-        TreeDataItem item, parent;
-        TreeDataModel model;        
-        Integer anaId;
-        TableDataRow<Integer> ddset;              
+    public void commitQuery(ArrayList<QueryData> qFields) {
+        Query<TestIdNameMethodNameDO> query = new Query<TestIdNameMethodNameDO>();
+        query.fields = qFields;
+        window.setBusy("Querying...");
 
-        for (iter = 0; iter < selectedRowIndexes.size(); iter++) {
-            index = selectedRowIndexes.get(iter);
-            item = (TreeDataItem)analyteTreeWidget.model.getRow(index)
-                                                            .clone();
-            if (item.parent != null) {
-                parent = item.parent;
-                if (parent.getData() == null) {
-                    model = new TreeDataModel();
-                    parent.setData(model);
-                }
-                ((TreeDataModel)parent.getData()).add(item);
-                analyteTreeWidget.model.deleteRow(index);
-            } else {
-                analyteTreeWidget.model.deleteRow(index);
+        service.call("query", query, new AsyncCallback<Query<TestIdNameMethodNameDO>>() {
+            public void onSuccess(Query<TestIdNameMethodNameDO> query) {
+                loadQuery(query);
             }
 
-            if (item.key != null) {                               
-                setErrorToReflexFields(consts.get("analyteDeleted"),item.key,1);
-                
-                ddset = ((TableDataRow<Integer>)ModelUtil.getRowByKey(testAnalyteModel,item.key));
-                if(ddset != null) 
-                    testAnalyteModel.delete(ddset);                                   
-
-                anaId = (Integer)((DropDownField)item.cells[0]).getSelectedKey();
-                deleteWorksheetAnalytes(anaId);
+            public void onFailure(Throwable caught) {
+                if (caught instanceof ValidationErrorsList)
+                    showErrors((ValidationErrorsList)caught);
+                else
+                    Window.alert(caught.getMessage());
             }
-            
-            ((TableDropdown)reflexTestTableWidget.columns.get(1)
-                            .getColumnWidget()).setModel(testAnalyteModel);
-        }
-        analyteTreeWidget.model.refresh();
-    }
-
-    private void onDuplicateRecordClick() {
-        form.numGroups = group;
-        form.resultTableModel = testResultDefaultModel;
-        screenService.call("getDuplicateRPC", form, fetchForDuplicateCallBack);
-    }
-
-    /**
-     * This function opens a dialog window which allows the users to select one
-     * or more dictionary entries to be added to the Test Results table
-     */
-    private void onDictionaryLookUpButtonClicked() {
-        ScreenWindow modal;
-        DictionaryEntryPickerScreen pickerScreen;
-        
-        pickerScreen = new DictionaryEntryPickerScreen();       
-        modal = new ScreenWindow(null,"Dictionary LookUp","dictionaryEntryPickerScreen","Loading...",true,false);
-        pickerScreen.addCommandListener(this);
-        modal.setName(consts.get("chooseDictEntry"));
-        modal.setContent(pickerScreen);
-    }
-
-    private void enableTableAutoAdd(boolean enable) {
-        reflexTestTableWidget.model.enableAutoAdd(enable);
-        wsItemTableWidget.model.enableAutoAdd(enable);
-        prepTestTableWidget.model.enableAutoAdd(enable);
-        sampleTypeTableWidget.model.enableAutoAdd(enable);
-        sectionTableWidget.model.enableAutoAdd(enable);
-        resultTableWidget.model.enableAutoAdd(enable);
-    }
-
-    private VerticalPanel getDummyPanel() {
-        Document document = XMLParser.parse(panelString);
-        ScreenVertical vertical = new ScreenVertical(document.getDocumentElement(),
-                                                     this);
-        VerticalPanel dummy = (VerticalPanel)vertical.getWidget();
-        return dummy;
-    }
-
-    private boolean checkResGrpSel() {
-        TreeDataItem item = null;
-        TreeDataItem chItem = null;
-        TreeModel model = analyteTreeWidget.model;
-        Integer selVal = null;
-
-        for (int i = 0; i < model.getData().size(); i++) {
-            item = model.getData().get(i);
-            if ("top".equals(item.leafType)) {
-                for (int j = 0; j < item.getItems().size(); j++) {
-                    chItem = item.getItems().get(j);
-                    selVal = (Integer)((DropDownField)chItem.cells[4]).getSelectedKey();
-                    if (selVal == null) {
-                        return false;
-                    }
-                }
-            } else {
-                selVal = (Integer)((DropDownField)item.cells[4]).getSelectedKey();
-                if (selVal == null) {
-                    return false;
-
-                }
-            }
-        }
-
-        return true;
-    }
-
-    private boolean treeItemsHaveErrors() {
-        TreeDataItem item = null;
-        TreeModel model = analyteTreeWidget.model;
-        int itemsInError = 0;        
-        for (int i = 0; i < model.getData().size(); i++) {
-            item = model.getData().get(i);
-            if ("top".equals(item.leafType)) {
-                for (int j = 0; j < item.getItems().size(); j++) {
-                    if (setErrorToItem(item.getItems().get(j)))
-                        itemsInError++;
-                }
-            } else {
-                if (setErrorToItem(item))
-                    itemsInError++;
-            }
-        }
-
-        if (itemsInError > 0) {
-          //  model.refresh();
-           return true;
-        }
-
-        return false;
-    }
-
-    private boolean resultRowsHaveErrors() {
-        TableDataModel<TableDataRow<Integer>> model = reflexTestTableWidget.model.getData();
-        TableDataRow<Integer> row = null;
-        AbstractField field = null;
-        if (model != null) {
-            for (int j = 0; j < model.size(); j++) {
-                row = model.get(j);
-                for (int k = 0; k < row.size(); k++) {
-                    field = (AbstractField)row.cells[k];
-                    if (field.getErrors().size() > 0) {
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
-    }
-
-    private boolean worksheetItemRowsHaveErrors() {
-        TableDataModel<TableDataRow<Integer>> model = wsItemTableWidget.model.getData();
-        TableDataRow<Integer> row = null;
-        AbstractField field = null;
-        if (model != null) {
-            for (int j = 0; j < model.size(); j++) {
-                row = model.get(j);
-                for (int k = 0; k < row.size(); k++) {
-                    field = (AbstractField)row.cells[k];
-                    if (field.getErrors().size() > 0) {
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
-    }
-
-    private int getNextTempAnaId() {
-        return --tempAnaId;
-    }
-
-    private int getNextTempResId() {
-        return --tempResId;
-    }
-
-    private TableDataModel<TableDataRow<Integer>> getSingleRowModel() {
-        TableDataModel<TableDataRow<Integer>> model = new TableDataModel<TableDataRow<Integer>>();
-        TableDataRow<Integer> blankset = new TableDataRow<Integer>(null,new StringObject(""));
-        model.add(blankset);
-        return model;
-    } 
-
-    /**
-     *  This method sets fields in the TableDataModel of reflexTestTableWidget 
-     *  in error specified by the parameter "error". Since all fields in the table 
-     *  are DropDownFields, in order to find the row that will show the error, the 
-     *  id of the selected option is needed and it is specified through the 
-     *  parameter "id". The parameter col specifies the column in which the field 
-     *  is. In addition to adding the error the method also sets the value of the
-     *  field to null in order to select the blank option
-     */
-    private void setErrorToReflexFields(String error, Integer id, int col) {
-        TableDataRow<Integer> rset;
-        DropDownField<Integer> field,nextField;                
-        for (int i = 0; i < reflexTestTableWidget.model.getData().size(); i++) {
-            rset = reflexTestTableWidget.model.getRow(i);
-            field = (DropDownField<Integer>)rset.cells[col];
-            if (id.equals(field.getSelectedKey())) {
-                if (!field.getErrors().contains(error)) {
-                    field.setValue(null);
-                    reflexTestTableWidget.model.setCellError(i, col, error);
-                    
-                    if(col == 1) {
-                        //
-                        // if the field in column 1 i.e. the field for test analyte
-                        // has been set to null then to avoid committing a test result
-                        // value (column 2) to the database that now belongs to an 
-                        // invalid test analyte (null), the value of the field in column 2
-                        // is set to null too. This avoids the situation where the user 
-                        // selects an analyte in column 1 and the result in column 2 doesn't 
-                        // belong to the result group associated with the analyte
-                        // and commits the data without changing the result
-                        //
-                        nextField = (DropDownField<Integer>)rset.cells[col+1];
-                        nextField.setValue(null);
-                        reflexTestTableWidget.model.setCellError(i, col+1,consts.get("selectAnaBeforeRes"));
-                    }
-                }
-            }
-        }
+        });
     }
     
-    /** 
-     * This method finds all those rows in reflexWidget which have the dropdown 
-     * for test results i.e. column 3, set to the values in the result group specified
-     * by the argument "resultGroup" and then sets them with the corresponding
-     * model from resultDropdownModelCollection. The value of resultGroup should
-     * be greater than zero as it represents an actual result group as seen 
-     * on the screen     
-     */
-    private void refreshReflexResultDropdowns(int resultGroup)  {
-        TableDataRow<Integer> rset;
-        DropDownField<Integer> anaField, resField;
-        TableDataRow<Integer> taRow,ddaRow;
-        TableDataModel<TableDataRow<Integer>> model;
-        int rg;
-        
-        for (int i = 0; i < reflexTestTableWidget.model.getData().size(); i++) {
-            rset = reflexTestTableWidget.model.getRow(i);
-            anaField = (DropDownField<Integer>)rset.cells[1];
-            resField = (DropDownField<Integer>)rset.cells[2];
-            if(anaField.getValue() != null && anaField.getValue().size() > 0) {
-                //
-                // get the selected TableDataRow from the analyte dropdown
-                //
-                taRow = anaField.getValue().get(0);                
-                if(taRow != null && taRow.key != null) {
-                    //
-                    // get the TableDataRow with the same key as taRow from 
-                    // testAnalyteDropdownModel; taRow doesn't have its data
-                    // set to anything because it belongs to the model that was 
-                    // created on the servlet and at that point the result group 
-                    // information is not avaliable because this model is 
-                    // populated from the data from the table test_reflex
-                    //
-                    ddaRow = ModelUtil.getRowByKey(testAnalyteModel,taRow.key);                    
-                    if(ddaRow!=null && ddaRow.getData()!=null){
-                        //
-                        // if the result group matches, get the corresponding 
-                        // model from resultDropdownModelCollection and set it 
-                        // in the test result dropdown field for this row  
-                        //
-                        rg = ((IntegerObject)ddaRow.getData()).getValue();
-                        if(rg == resultGroup && resultGroup >= 1) {
-                            model = resultDropdownModelCollection.get(rg-1);
-                            resField.setModel(model);
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    /**
-     * This method is responsible for whenever a table row in resultTableWidget
-     * gets edited, the change is reflected if necessary in the table for reflexive tests  
-     */    
-    private void checkAndAddNewResultValue(String value,TableDataRow<Integer> set) {
-        int selTab;      
-        TableDataModel<TableDataRow<Integer>> ddModel;
-        TableDataRow<Integer> addset;
-        String prevVal;
-
-        selTab = resultPanel.getTabBar().getSelectedTab();
-        ddModel = resultDropdownModelCollection.get(selTab); 
-        addset = ModelUtil.getRowByKey(ddModel, set.key);
-        
-        if (addset != null) {
-            prevVal = (String)addset.cells[0].getValue();
-            if (!prevVal.trim().equals(value.trim())) {
-                setErrorToReflexFields(consts.get("resultValueChanged"),
-                                       set.key,2);
-                addset.cells[0].setValue(value);
-            }
-        } else {
-            addset = new TableDataRow<Integer>(set.key, new StringObject(value));
-            ddModel.add(addset);
-        }        
-        
-        refreshReflexResultDropdowns(selTab+1);
-    }
-
-    private boolean setErrorToItem(TreeDataItem item) {
-        boolean someError = false;
-        DropDownField field = (DropDownField)item.cells[0];
-        String error = consts.get("fieldRequiredException");
-        if (field.getSelectedKey() == null && !field.getErrors().contains(error)) {
-            someError = true;                        
-        }
-
-        field = (DropDownField)item.cells[1];
-        if (field.getSelectedKey() == null && !field.getErrors().contains(error)) {;
-            someError = true;
-        }
-
-        return someError;
-    }
-
-    private void refreshTempIds() {
-        TableDataRow<Integer> set;
-        Integer id;
-        TableDataModel<TableDataRow<Integer>> model;
-        int i,j;
-        if (testAnalyteModel != null) {
-            for (i = 1; i < testAnalyteModel.size(); i++) {
-                set = testAnalyteModel.get(i);
-                id = (Integer)set.key;                
-                if (id < tempAnaId)
-                    tempAnaId = id;
-            }
-        }
-        
-        if (resultDropdownModelCollection != null) {
-            for (i = 0; i < resultDropdownModelCollection.size(); i++){
-                model = resultDropdownModelCollection.get(i);
-                for (j = 1; i < model.size(); i++) {
-                    set = model.get(j);
-                    id = (Integer)set.key;                
-                    if (id < tempResId)
-                        tempResId = id;
-                }
-            }
-        }
-    }
-       
-    private boolean dataInWorksheetForm() {
-        WorksheetForm wsForm = form.worksheet;
-        Integer key = (Integer)wsForm.formatId.getSelectedKey();
-        if (wsForm.worksheetTable.getValue().size() == 0 && (key == null)
-            && (wsForm.batchCapacity == null)
-            && (wsForm.totalCapacity == null))
-            return false;
-        else
-            return true;
-    }
-
-    private void deleteWorksheetAnalytes(Integer analyteId) {
-        TableDataModel model = wsAnalyteTableWidget.model.getData();
-        TableDataRow set = null;
-        IntegerField data = null;        
-        for (int iter = 0; iter < model.size(); iter++) {
-            set = (TableDataRow<Integer>)model.get(iter);
-            data = (IntegerField)set.getData();            
-            if (data != null && analyteId.equals(data.getValue()))
-                model.delete(iter);
-        }
-        wsAnalyteTableWidget.model.refresh();
-    }
-
-    private void addWorksheetAnalyte(Integer analyteId, String analyteName) {
-        if (!analytePresent(analyteId)) {
-            TableDataModel<TableDataRow<Integer>> model = wsAnalyteTableWidget.model.getData();
-            TableDataRow<Integer> set = model.createNewSet();
-            set.setData(new IntegerField(analyteId));
-            set.cells[0].setValue(analyteName);
-            model.add(set);
-            wsAnalyteTableWidget.model.refresh();
-        }
-    }
-
-    private boolean analytePresent(Integer analyteId) {
-        TableDataRow row = null;
-        IntegerField data = null;
-        for (int i = 0; i < wsAnalyteTableWidget.model.getData().size(); i++) {
-            row = wsAnalyteTableWidget.model.getData().get(i);            
-            data = (IntegerField)row.getData();
-            if (analyteId.equals(data.getValue())) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private void updateWorksheetAnalyte(Integer oldId,
-                                        Integer newId,
-                                        String analyteName) {
-        deleteWorksheetAnalytes(oldId);
-        addWorksheetAnalyte(newId, analyteName);
-    }
-
-    private void setAnalytesAvailable(TableDataRow<Integer> trow) {
-        StringField strf = (StringField)trow.cells[0];
-        String anaName = strf.getValue().trim();
-        String selText = null;
-        TreeDataItem item = null;
-        DropDownField anaField = null;
-        CheckField chf = (CheckField)trow.cells[1];
-
-        for (int i = 0; i < analyteTreeWidget.model.getData().size(); i++) {
-            item = analyteTreeWidget.model.getData().get(i);
-            if ("top".equals(item.leafType)) {
-                for (TreeDataItem citem : item.getItems()) {
-                    anaField = (DropDownField)citem.cells[0];
-                    selText = ((String)anaField.getTextValue()).trim();
-                    if (anaName.equals(selText)) {
-                        setAnalyteAvailable(item.getItems(), chf.isChecked());
-                        break;
-                    }
-                }
-            }
-        }
-    }
-
-    private void setAnalyteAvailable(List<TreeDataItem> items, boolean available) {
-        String tanaName = null;
-        String ianaName = null;
-        TreeDataItem item = null;
-        TableDataRow<Integer> row = null;
-
-        for (int i = 0; i < items.size(); i++) {
-            item = items.get(i);
-            ianaName = ((String)((DropDownField)item.cells[0]).getTextValue()).trim();
-            for (int j = 0; j < wsAnalyteTableWidget.model.getData().size(); j++) {
-                row = wsAnalyteTableWidget.model.getRow(j);
-                tanaName = ((String)((StringField)row.cells[0]).getValue()).trim();
-
-                if (tanaName.equals(ianaName)) {
-                    if (available) {
-                        ((CheckField)row.cells[1]).setValue("Y");
-                        window.setStatus(consts.get("additionalAnalytesAdded"),"");
-                    } else {
-                        ((CheckField)row.cells[1]).setValue(null);
-                        window.setStatus(consts.get("otherAnalytesRemoved"), "");
-                    }
-                    setRepeatValue(row);
-                }
-            }
-        }
-    }
-
-    private void setRepeatValue(TableDataRow<Integer> row) {
-        CheckField chf = (CheckField)row.cells[1];
-        IntegerField rfield = (IntegerField)row.cells[2];
-
-        if (chf.isChecked() && (rfield.getValue() == null || rfield.getValue() == 0))
-            rfield.setValue(new Integer(1));
-    }
-    
-    private String validateDate(String value) throws IllegalArgumentException {
-        Date date = null;                                               
-        DateField df = null;                                                 
-      try{  
-        date = new Date(value.replaceAll("-", "/"));                                              
-        df = new DateField((byte)0, (byte)2,date);                                                       
-      }catch(IllegalArgumentException ex) {
-           throw ex;                                                 
-       } 
-      
-      if(df!=null)
-          return df.format();
-     
-      return null;
-    }
-    
-    private String validateDateTime(String value) throws IllegalArgumentException {
-        Date date = null;                                               
-        DateField df = null;
-        String[] split = null;
-        String hhmm = null;
-      try{                  
-        split = value.split(" ");  
-        if(split.length != 2)
-          throw new IllegalArgumentException();
-        
-        hhmm = split[1];
-        if(hhmm.split(":").length != 2) 
-            throw new IllegalArgumentException();  
-        
-        date = new Date(value.replaceAll("-", "/"));                                              
-        df = new DateField((byte)0, (byte)4,date);                                               
-       
-      }catch(IllegalArgumentException ex) {
-           throw ex;           
-       } 
-      
-      if(df!=null) 
-       return df.format();
-      
-      return null;
-    }
-    
-    private String validateTime(String value) throws IllegalArgumentException {
-        Date date = null;                                               
-        DateField df = null;
-        String[] split = null;
-        String defDate = "2000-01-01 ";
-        String nextDayDate = "2000-01-02 ";
-        String dateStr = defDate + value;
-        boolean nextDay = false;
-        
-        try{                  
-           split = value.split(":");  
-           if(split.length != 2)
-             throw new IllegalArgumentException();               
-           
-           date = new Date(dateStr.replaceAll("-", "/"));
-           
-           if(Integer.parseInt(split[0]) > 23) 
-               nextDay = true;
-               
-           df = new DateField((byte)0, (byte)4,date);                                                      
-         }catch(IllegalArgumentException ex) {          
-             throw ex;                   
-          } 
-         
-         if(df!=null) { 
-          if(nextDay)    
-           return df.format().replace(nextDayDate,"");   
-          else   
-           return df.format().replace(defDate,"");
-         } 
-         
-         return null;
-       }
-    
-    
-    private void resetResultGroupDropDownModel() {
-        resultGroupModel.clear();
-        resultGroupModel.add(new TableDataRow<Integer>(null,new StringObject("")));
-        setTableDropdownModel(analyteTreeWidget,4,"analyte",
-                              resultGroupModel);                    
-    }
-    
-    private void resetUnitDropDownModel() {
-      if(resultUnitModel != null)   
-        resultUnitModel.clear();
-      else
-        resultUnitModel = new TableDataModel<TableDataRow<Integer>>();
-      
-      resultUnitModel.add(new TableDataRow<Integer>(null,new StringObject("")));
-      setTableDropdownModel(resultTableWidget,0, resultUnitModel);    
-    }
-    
-    private void resetTestAnalyteDropDownModel() {
-        if(testAnalyteModel != null)   
-            testAnalyteModel.clear();
-        else
-            testAnalyteModel = new TableDataModel<TableDataRow<Integer>>();
-        
-        testAnalyteModel.add(new TableDataRow<Integer>(null,new StringObject("")));
-        setTableDropdownModel(reflexTestTableWidget,1, testAnalyteModel); 
-        
-      }
-      
-    private void resetTestResultDropDownModel() {
-        TableDropdown resdd  = (TableDropdown)reflexTestTableWidget.columns.get(2).getColumnWidget();
-        TableDataModel model = new TableDataModel<TableDataRow<Integer>>();
-        model.add(new TableDataRow<Integer>(null,new StringObject("")));
-        setTableDropdownModel(reflexTestTableWidget,2, model); 
-    }
-    
-    private TableDataModel<TableDataRow<Integer>> getDefaultResultDropdownModel(){
-        TableDataModel<TableDataRow<Integer>> model;
-        TableDataRow<Integer> row;
-        
-        row = new TableDataRow<Integer>(null, new StringObject(""));
-        model = new TableDataModel<TableDataRow<Integer>>();
-        model.add(row);
-        
-        return model;
-        
-    }
-    
-    /** 
-     * This method checks to see if all the cells in a given row of reflexWidget
-     * i.e. the argument "row" have either the blank option or no option selected
-     * for them, if this is the case then it returns true otherwise false  
-     */
-    private boolean isReflexRowEmpty (TableDataRow<Integer> row) {
-        int numCellsEmpty, i;
-        DropDownField<Integer> ddField;
-        
-        numCellsEmpty = 0;
-        
-        for(i = 0; i < row.cells.length; i++) {
-         ddField = (DropDownField<Integer>)row.cells[i];
-         if(ddField.getSelectedKey() == null) 
-            numCellsEmpty++;
-        }
-        
-        if(numCellsEmpty == i) 
-            return true;
-        
-        return false;
-    }
-    
-    /** 
-     * This method checks to see if all the cells in a given row of sectionTableWidget
-     * i.e. the argument "row" have either the blank option or no option selected
-     * for them, if this is the case then it returns true otherwise false  
-     */
-    private boolean isSectionRowEmpty (TableDataRow<Integer> row) {
-        int numCellsEmpty, i;
-        DropDownField<Integer> ddField;
-        
-        numCellsEmpty = 0;
-        
-        for(i = 0; i < row.cells.length; i++) {
-         ddField = (DropDownField<Integer>)row.cells[i];
-         if(ddField.getSelectedKey() == null) 
-            numCellsEmpty++;
-        }
-        
-        if(numCellsEmpty == i) 
-            return true;
-        
-        return false;
-    }
-    
-    /**
-     * This method checks to see if a row can be auto added after the argument
-     * "row" in the table for worksheet items. If both the type dropdown and 
-     * qc item columns have non null and non empty values in them then the 
-     * method returns true otherwise it returns false   
-     */
-    private boolean canAutoAddAfterWsItemRow(TableDataRow<Integer> row) {
-        DropDownField<Integer> tField;
-        DropDownField<String> qField;       
-        
-        tField = (DropDownField<Integer>)row.cells[1];
-        qField = (DropDownField<String>)row.cells[2];
-                    
-        if(tField.getSelectedKey() == null && qField.getSelectedKey() == null) {            
-                return false;            
-        }
-        
-        return true;
-    }
-    
-    /**
-     * This method reloads testAnalyteDropdownModel with the most current data in
-     * analyteTreeWidget's TreeDataModel 
-     */
-    private void reloadTestAnalyteDropdownModel() {
-        TreeDataItem item,citem;
-        List<TreeDataItem> list;
-        TreeDataModel model;
-        DropDownField<Integer> anaField,rgField;
-        TableDataRow row;
-        IntegerObject data;
-        String selText;
-        Integer selKey;
-        int i,j;       
-        
-        if(testAnalyteModel != null && analyteListChanged) {
-            analyteTreeWidget.finishEditing();
-            testAnalyteModel.clear();        
-            testAnalyteModel.add(new TableDataRow<Integer>(null,new StringObject("")));
-        
-            model = analyteTreeWidget.model.getData();
-            for (i = 0; i < model.size(); i++) {
-                item = model.get(i);
-                if ("top".equals(item.leafType)) {
-                    list = item.getItems();
-                    for (j = 0; j < list.size(); j++) {
-                        citem = list.get(j);
-                        row = getDropdownRowFromTreeItem(citem);
-                        if(row !=null)                       
-                            testAnalyteModel.add(row);                    
+    protected void showErrors(ValidationErrorsList errors) {
+        for (Exception ex : errors.getErrorList()) {
+            if (ex instanceof TableFieldErrorException) {                               
+                if(ex instanceof GridFieldErrorException) {
+                    GridFieldErrorException gtfe = (GridFieldErrorException)ex;
+                    if ("analyteTable".equals(gtfe.getTableKey())) {
+                        analyteAndResultTab.showTestAnalyteError(gtfe);
+                    } else if ("resultTable".equals(gtfe.getTableKey())) {
+                        analyteAndResultTab.showTestResultError(gtfe);
                     }
                 } else {
-                    row = getDropdownRowFromTreeItem(item);
-                    if(row !=null)                       
-                        testAnalyteModel.add(row);                   
+                    TableFieldErrorException tfe = (TableFieldErrorException)ex;
+                    ((TableWidget)def.getWidget(tfe.getTableKey())).setCellError(tfe.getRowIndex(),
+                                                                                 tfe.getFieldName(),
+                                                                                 consts.get(tfe.getMessage()));
                 }
+            } else if(ex instanceof FieldErrorException){
+                FieldErrorException fe = (FieldErrorException)ex;
+                ((HasField)def.getWidget(fe.getFieldName())).addError(consts.get(fe.getMessage()));
+            } else if (ex instanceof FormErrorException) {
+                window.setError(consts.get(ex.getMessage()));
+                return;
             }
-        
-            setTableDropdownModel(reflexTestTableWidget,1, testAnalyteModel);
         }
+        window.setError(consts.get("correctErrors"));
     }
 
-    /**
-     * This method returns a TableDataRow that can be added to testAnalyteDropdownModel
-     * and which is created from the argument "item"
-     */
-    private TableDataRow<Integer> getDropdownRowFromTreeItem(TreeDataItem item){
-        DropDownField<Integer> anaField, rgField;
+    public void loadQuery(Query<TestIdNameMethodNameDO> query) {
+        manager = TestManager.getInstance();
+        DataChangeEvent.fire(this);
+
+        loadQueryPage(query);
+    }
+
+    private void loadQueryPage(Query<TestIdNameMethodNameDO> query) {
+        window.setDone(consts.get("queryingComplete"));
+        if (query.results == null || query.results.size() == 0) {
+            window.setDone("No records found");
+        } else
+            window.setDone(consts.get("queryingComplete"));
+        query.model = new ArrayList<TableDataRow>();
+        for (TestIdNameMethodNameDO entry : query.results) {
+            query.model.add(new TableDataRow(entry.getId(), entry.getTestName()+","+entry.getMethodName()));
+        }
+        nav.setQuery(query);
+        //ActionEvent.fire(this, Action.NEW_PAGE, query);
+    }
+    
+    private void setTestFormatsModel() {
+        ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
+        List<DictionaryDO> list = DictionaryCache.getListByCategorySystemName("test_format");
+        model.add(new TableDataRow(null, ""));
+        for (DictionaryDO resultDO : list) {
+            model.add(new TableDataRow(resultDO.getId(), resultDO.getEntry()));
+        }
+        ((Dropdown<Integer>)def.getWidget(TestMeta.getTestFormatId())).setModel(model);
+        
+    }
+
+    private void setReportingMethodsModel() {
+        ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
+        List<DictionaryDO> list = DictionaryCache.getListByCategorySystemName("test_reporting_method");
+        model.add(new TableDataRow(null, ""));
+        for (DictionaryDO resultDO : list) {
+            model.add(new TableDataRow(resultDO.getId(), resultDO.getEntry()));
+        }
+        ((Dropdown<Integer>)def.getWidget(TestMeta.getReportingMethodId())).setModel(model);
+        
+    }
+
+    private void setSortingMethodsModel() {
+        ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
+        List<DictionaryDO> list = DictionaryCache.getListByCategorySystemName("test_sorting_method");
+        model.add(new TableDataRow(null, ""));
+        for (DictionaryDO resultDO : list) {
+            model.add(new TableDataRow(resultDO.getId(), resultDO.getEntry()));
+        }
+        ((Dropdown<Integer>)def.getWidget(TestMeta.getSortingMethodId())).setModel(model);
+        
+    }
+
+    private void setRevisionMethodsModel() {
+        ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
+        List<DictionaryDO> list = DictionaryCache.getListByCategorySystemName("test_revision_method");        
+        model.add(new TableDataRow(null, ""));
+        for (DictionaryDO resultDO : list) {
+            model.add(new TableDataRow(resultDO.getId(), resultDO.getEntry()));
+        }
+        ((Dropdown<Integer>)def.getWidget(TestMeta.getRevisionMethodId())).setModel(model);
+        
+    }
+    
+    private void setTestSectionFlagsModel() {
+        ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
+        TableColumn column =  sectionTable.columns.get(1);
+        List<DictionaryDO> list = DictionaryCache.getListByCategorySystemName("test_section_flags");        
+        model.add(new TableDataRow(null, ""));
+        for (DictionaryDO resultDO : list) {
+            model.add(new TableDataRow(resultDO.getId(), resultDO.getEntry()));
+        }
+        ((Dropdown<Integer>)column.getColumnWidget()).setModel(model);
+        
+    }
+
+    private void setTestSectionsModel() {
+        ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
+        TableColumn column =  sectionTable.columns.get(0);
+        List<SectionDO> list = SectionCache.getSectionList();        
+        model.add(new TableDataRow(null, ""));
+        for (SectionDO resultDO : list) {
+            model.add(new TableDataRow(resultDO.getId(), resultDO.getName()));
+        }
+        ((Dropdown<Integer>)column.getColumnWidget()).setModel(model);
+        
+    }
+    
+    private ArrayList<TableDataRow> getTableModel() {
+        ArrayList<TableDataRow> model;
+        TestSectionDO sectionDO;
+        TestSectionManager tsm;
         TableDataRow row;
-        IntegerObject data;
-        String selText;
-        Integer selKey;
-        int i, j;
-        
-        row = null;
 
-        anaField = (DropDownField<Integer>)item.cells[0];
-        rgField = (DropDownField<Integer>)item.cells[4];
-        selText = (String)anaField.getTextValue();
-        //
-        // this check is to prevent "row" from having a null key and/or a blank
-        // display label, which could happen if there's an item in the tree with
-        // no text in the "Analyte" column, but the key for which is not null because
-        // it previously had some text in that column and thus was assigned a key
-        //
-        if (item.key != null && selText != null && !(selText.length()==0)) {
-            row = new TableDataRow<Integer>(item.key, new StringObject(selText));
-            selKey = (Integer)rgField.getSelectedKey();
-            if (selKey != null)
-                row.setData(new IntegerObject(selKey));
-        }
-        
-        return row;
-    } 
-    
-    /**
-     * This method reloads resultUnitModel with the most current data in
-     * sampleTypeTableWidget's TableDataModel 
-     */
-    private void reloadTestResultUnitDropdownModel() {
-        TableDataRow<Integer> smplRow, ddRow;
-        TableDataModel<TableDataRow<Integer>> tmodel;
-        DropDownField<Integer> ddField;
-        Integer key;
-        String selText;
+        model = new ArrayList<TableDataRow>();
+        if (manager == null)
+            return model;
+        tsm = manager.getTestSections();
+        try {
+            for (int iter = 0; iter < tsm.count(); iter++) {
+                sectionDO = tsm.getSectionAt(iter);
 
-        int i;
+                row = new TableDataRow(2);
+                row.key = sectionDO.getId();
 
-        if (!unitListChanged)
-            return;
-
-        sampleTypeTableWidget.finishEditing();
-        tmodel = sampleTypeTableWidget.model.getData();
-        resultUnitModel.clear();
-        resultUnitModel.add(new TableDataRow<Integer>(null,
-                                                      new StringObject("")));
-        for (i = 0; i < tmodel.size(); i++) {
-            smplRow = tmodel.get(i);
-            ddField = (DropDownField<Integer>)smplRow.cells[1];
-            key = (Integer)ddField.getSelectedKey();
-            if (key != null) {
-                ddRow = ModelUtil.getRowByKey(sampleTypeUnitModel, key);
-                resultUnitModel.add(ddRow);
+                row.cells.get(0).value = sectionDO.getSectionId();
+                row.cells.get(1).value = sectionDO.getFlagId();
+                model.add(row);
             }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
         }
 
-        setTableDropdownModel(resultTableWidget, 0, resultUnitModel);
-        unitListChanged = false;
+        return model;
     }
-    
-    /**
-     * This function returns the system name for the option that was selected
-     * in a given row, represented by the argument "row", from the dropdown in
-     * column col in the TableWidget tableWidget, it returns null if no option was selected   
-     */
-    private String getSelectedSystemName(int row,int col, TableWidget tableWidget){
-        TableDataRow<Integer> trow,ddRow;        
-        String sysname;
-        Integer key;
-        if(row > -1) {
-            trow = tableWidget.model.getRow(row);
-            key = (Integer)(((DropDownField<Integer>)trow.cells[col]).getSelectedKey());            
-            sysname = DictionaryCache.getSystemNameFromId(key);
-            return sysname;                                                   
-        }    
-        return null;
-    }        
-    
-    private void setActiveRow() {
-        sectionTableWidget.activeRow = -1;
-        sampleTypeTableWidget.activeRow = -1;
-        analyteTreeWidget.activeRow = -1;
-        resultTableWidget.activeRow = -1;
-        prepTestTableWidget.activeRow = -1;
-        reflexTestTableWidget.activeRow = -1;
-        wsItemTableWidget.activeRow = -1;
-        wsAnalyteTableWidget.activeRow = -1;
-    }
-    
-    private void loadListsAndModels(TestForm form){        
-        if(form.testAnalyte.resultTableModelCollection != null){
-            resultTableModelCollection = form.testAnalyte.resultTableModelCollection;
-            if(resultTableModelCollection.size() > 0) {                      
-                form.testAnalyte.testResultsTable.setValue(resultTableModelCollection.get(0));
-                refreshResGrpModelAndTab(resultTableModelCollection.size());
-            } else {
-                refreshResGrpModelAndTab(0);
-            }            
-        }
-        
-        if(form.testAnalyte.resultDropdownModelCollection != null) 
-            resultDropdownModelCollection = form.testAnalyte.resultDropdownModelCollection;        
-                               
-        if(form.prepAndReflex.testAnalyteModel != null) {
-            setTableDropdownModel(reflexTestTableWidget,1,form.prepAndReflex.testAnalyteModel);
-            testAnalyteModel = form.prepAndReflex.testAnalyteModel;
-        }
-    }
-    
-    private void refreshResGrpModelAndTab(int rg) {
-        int difference,i;
-        group = rg;                                                                      
-        
-        if (group > 0) {
-            difference = group - resultPanel.getTabBar().getTabCount();
-            while (difference != 0) {
-                if (difference > 0) {
-                    resultPanel.add(getDummyPanel(),
-                                    String.valueOf(resultPanel.getTabBar().getTabCount() + 1));
-                    difference--;
-                } else {
-                    resultPanel.remove(resultPanel.getTabBar()
-                                                  .getTabCount() - 1);
-                    difference++;
-                }
-            }                                                                                                                            
 
-           if (resultPanel.getTabBar().getTabCount() > 0) {                                       
-               resultPanel.selectTab(0);                                      
-           }
-        } else {
-            resultPanel.clear();
-        }                                                                                                               
-        
-        resultGroupModel.clear();
-        resultGroupModel.add(new TableDataRow<Integer>(null, new StringObject("")));        
-        for (i = 0;i < group; i++) {                        
-            resultGroupModel.add(new TableDataRow<Integer>(i+1,new StringObject(String.valueOf(i+1))));
-        }
-                             
-        setTableDropdownModel(analyteTreeWidget,4,"analyte",resultGroupModel);        
-    }
-    
-    private TableDataModel<TableDataRow> getDictionaryIdEntryList(ArrayList list){
-        TableDataModel<TableDataRow> m = new TableDataModel<TableDataRow>();
-        TableDataRow<Integer> row;
-        
-        if(list == null)
-            return m;
-        
-        m = new TableDataModel<TableDataRow>();
-        m.add(new TableDataRow<Integer>(null,new StringObject("")));
-        
-        for(int i=0; i<list.size(); i++){
-            row = new TableDataRow<Integer>(1);
-            DictionaryDO dictDO = (DictionaryDO)list.get(i);
-            row.key = dictDO.getId();
-            row.cells[0] = new StringObject(dictDO.getEntry());
-            m.add(row);
-        }
-        
-        return m;
-    }
-    
-    private TableDataModel<TableDataRow> getSectionList(ArrayList list){
-        TableDataModel<TableDataRow> m = new TableDataModel<TableDataRow>();
-        TableDataRow<Integer> row;
-        SectionDO sectDO;
-        
-        if(list == null)
-            return m;
-        
-        m = new TableDataModel<TableDataRow>();
-        m.add(new TableDataRow<Integer>(null,new StringObject("")));
-        
-        for(int i=0; i<list.size(); i++){
-            row = new TableDataRow<Integer>(1);
-            sectDO = (SectionDO)list.get(i);
-            row.key = sectDO.getId();
-            row.cells[0] = new StringObject(sectDO.getName());
-            m.add(row);
-        }
-        
-        return m;
-    }
+
 }

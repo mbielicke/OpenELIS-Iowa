@@ -1,212 +1,282 @@
-/** Exhibit A - UIRF Open-source Based Public Software License.
-* 
-* The contents of this file are subject to the UIRF Open-source Based
-* Public Software License(the "License"); you may not use this file except
-* in compliance with the License. You may obtain a copy of the License at
-* openelis.uhl.uiowa.edu
-* 
-* Software distributed under the License is distributed on an "AS IS"
-* basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
-* License for the specific language governing rights and limitations
-* under the License.
-* 
-* The Original Code is OpenELIS code.
-* 
-* The Initial Developer of the Original Code is The University of Iowa.
-* Portions created by The University of Iowa are Copyright 2006-2008. All
-* Rights Reserved.
-* 
-* Contributor(s): ______________________________________.
-* 
-* Alternatively, the contents of this file marked
-* "Separately-Licensed" may be used under the terms of a UIRF Software
-* license ("UIRF Software License"), in which case the provisions of a
-* UIRF Software License are applicable instead of those above. 
-*/
+/**
+ * Exhibit A - UIRF Open-source Based Public Software License.
+ * 
+ * The contents of this file are subject to the UIRF Open-source Based Public
+ * Software License(the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * openelis.uhl.uiowa.edu
+ * 
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+ * the specific language governing rights and limitations under the License.
+ * 
+ * The Original Code is OpenELIS code.
+ * 
+ * The Initial Developer of the Original Code is The University of Iowa.
+ * Portions created by The University of Iowa are Copyright 2006-2008. All
+ * Rights Reserved.
+ * 
+ * Contributor(s): ______________________________________.
+ * 
+ * Alternatively, the contents of this file marked "Separately-Licensed" may be
+ * used under the terms of a UIRF Software license ("UIRF Software License"), in
+ * which case the provisions of a UIRF Software License are applicable instead
+ * of those above.
+ */
 package org.openelis.modules.dictionaryentrypicker.client;
-
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.ChangeListener;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.Widget;
-
-import org.openelis.gwt.common.Query;
-import org.openelis.gwt.common.data.TableDataRow;
-import org.openelis.gwt.event.CommandListener;
-import org.openelis.gwt.event.CommandListenerCollection;
-import org.openelis.gwt.event.SourcesCommandEvents;
-import org.openelis.gwt.screen.CommandChain;
-import org.openelis.gwt.screen.ScreenTableWidget;
-import org.openelis.gwt.widget.AppButton;
-import org.openelis.gwt.widget.ButtonPanel;
-import org.openelis.gwt.widget.Dropdown;
-import org.openelis.gwt.widget.table.TableManager;
-import org.openelis.gwt.widget.table.TableWidget;
-import org.openelis.modules.main.client.OpenELISScreenForm;
 
 import java.util.ArrayList;
 
-public class DictionaryEntryPickerScreen extends OpenELISScreenForm<DictionaryEntryPickerForm,Query<TableDataRow<Integer>>> implements TableManager, 
-                                                                                                                                 ClickListener,
-                                                                                                                                 SourcesCommandEvents{
+import org.openelis.domain.IdNameDO;
+import org.openelis.gwt.common.rewrite.QueryData;
+import org.openelis.gwt.event.ActionEvent;
+import org.openelis.gwt.event.ActionHandler;
+import org.openelis.gwt.event.DataChangeEvent;
+import org.openelis.gwt.event.HasActionHandlers;
+import org.openelis.gwt.event.StateChangeEvent;
+import org.openelis.gwt.screen.rewrite.Screen;
+import org.openelis.gwt.screen.rewrite.ScreenEventHandler;
+import org.openelis.gwt.widget.TextBox;
+import org.openelis.gwt.widget.rewrite.AppButton;
+import org.openelis.gwt.widget.rewrite.ButtonGroup;
+import org.openelis.gwt.widget.rewrite.Dropdown;
+import org.openelis.gwt.widget.table.rewrite.TableDataRow;
+import org.openelis.gwt.widget.table.rewrite.TableWidget;
+import org.openelis.metamap.DictionaryMetaMap;
+
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.Window;
+
+public class DictionaryEntryPickerScreen extends Screen implements
+                                                          HasActionHandlers<DictionaryEntryPickerScreen.Action> {
+
+    protected TextBox<String> findTextBox;
+    protected AppButton findButton;
+    protected TableWidget dictEntTable;
+    protected Dropdown<Integer> category;
     
-    private TextBox findTextBox;
+    private ArrayList<TableDataRow> selectionList;
     
-    private TableWidget dictionaryController;
-    
-    private Dropdown categoryDrop;       
-    
-    private AppButton findButton,prevPressed;
-    
-    private ButtonPanel atozButtons;      
-   
-    public enum Action {COMMIT,ABORT};
-    
-    public ArrayList<TableDataRow<Integer>> selectedRows; 
-    
-    
-    public DictionaryEntryPickerScreen() {        
-        super("org.openelis.modules.dictionaryentrypicker.server.DictionaryEntryPickerService");
-        query = new Query<TableDataRow<Integer>>();
-        getScreen(new DictionaryEntryPickerForm());
+    private DictionaryMetaMap dictMeta;  
+
+    public enum Action {
+        COMMIT, ABORT
+    };
+
+    public DictionaryEntryPickerScreen() throws Exception {
+        // Call base to get ScreenDef and draw screen
+        super("OpenELISServlet?service=org.openelis.modules.dictionaryentrypicker.server.DictionaryEntryPickerService");
+
+        // Setup link between Screen and widget Handlers
+        initialize();
+
+        // Initialize Screen
+        setState(State.DEFAULT);
+                
     }
-    
-    public void performCommand(Enum action, Object obj) {   
-        String baction, query;
-        if (obj instanceof AppButton) {
-            baction = ((AppButton)obj).action;
-            if (baction.startsWith("query:")) {
-                if(prevPressed!=null) 
-                    atozButtons.setButtonState(prevPressed, AppButton.ButtonState.UNPRESSED);
-                query = baction.substring(6);                
-                findTextBox.setText(query); 
-                prevPressed = (AppButton)obj;                                          
-                loadDictionaryModel(query);
-            }else{
-                super.performCommand(action, obj);
+
+    private void initialize() {        
+        dictMeta = new DictionaryMetaMap();
+        
+        selectionList = null;
+        
+        category = (Dropdown)def.getWidget("category");
+        addScreenHandler(category, new ScreenEventHandler<Integer>() {
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                category.enable(true);
             }
-        }
+        });
+
+        findTextBox = (TextBox)def.getWidget("findTextBox");
+        addScreenHandler(findTextBox, new ScreenEventHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                findTextBox.setValue(null);
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                findTextBox.enable(true);
+            }
+        });
+
+        findButton = (AppButton)def.getWidget("findButton");
+        addScreenHandler(findButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                executeQuery();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                findButton.enable(true);
+            }
+        });
+
+        dictEntTable = (TableWidget)def.getWidget("dictEntTable");
+        addScreenHandler(dictEntTable,new ScreenEventHandler<ArrayList<TableDataRow>>() {
+            
+            public void onStateChange(StateChangeEvent<State> event) {
+                dictEntTable.enable(true);
+                
+            }
+        });
+        
+
+        dictEntTable.addSelectionHandler(new SelectionHandler(){
+            public void onSelection(SelectionEvent event) {
+                selectionList = dictEntTable.getSelections();               
+            }
+            
+        });
+
+        final AppButton commitButton = (AppButton)def.getWidget("commit");
+        addScreenHandler(commitButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                commit();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                commitButton.enable(true);
+            }
+        });
+
+        final AppButton abortButton = (AppButton)def.getWidget("abort");
+        addScreenHandler(abortButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                abort();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                abortButton.enable(true);
+            }
+        });
+        
+        // Get AZ buttons and setup Screen listeners and call to for query
+        final ButtonGroup azButtons = (ButtonGroup)def.getWidget("atozButtons");
+        addScreenHandler(azButtons, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                String baction;
+                
+                baction = ((AppButton)event.getSource()).action;
+                findTextBox.setText(baction.substring(6, baction.length()));
+                executeQuery();
+            }
+            
+            public void onStateChange(StateChangeEvent<State> event) {
+                azButtons.enable(true);
+            }
+
+        });
+        
+        category.setModel(getCategoryModel());
+
     }
-    
-    public void afterDraw(boolean sucess) {
-        ButtonPanel bpanel;
-        ScreenTableWidget dictTable;
-        CommandChain chain;
-        
-        window.setStatus("","spinnerIcon");
-        
-        bpanel = (ButtonPanel) getWidget("buttons");
-        dictTable = (ScreenTableWidget)widgets.get("dictEntTable");        
-        dictionaryController  = (TableWidget)dictTable.getWidget();
-        
-        addCommandListener(bpanel);
-        bpanel.addCommandListener(this);
-        atozButtons = (ButtonPanel)getWidget("atozButtons");
-       
-        chain = new CommandChain();
-        chain.addCommand(this);
-        chain.addCommand(atozButtons);                               
-        
-        prevPressed = null;
-        findTextBox = (TextBox)getWidget("findTextBox");        
-        
-        categoryDrop = (Dropdown)getWidget("category");        
-        categoryDrop.setModel(form.categoryModel);                
-        
-        dictionaryController.model.enableMultiSelect(true);
-        
-        findButton = (AppButton)getWidget("findButton"); 
-        
-        super.afterDraw(sucess);                   
-    }
-    
+
     public void commit() {
-        selectedRows = dictionaryController.model.getSelections();   
-        if(commandListeners != null)
-            commandListeners.fireCommand(Action.COMMIT,selectedRows);     
+        ActionEvent.fire(this, Action.COMMIT, selectionList);
         window.close();
     }
 
     public void abort() {
-        selectedRows = null;
-        if(commandListeners != null)
-            commandListeners.fireCommand(Action.ABORT,selectedRows);
+        ActionEvent.fire(this, Action.ABORT, null);
         window.close();
     }
-    
-    public boolean canAdd(TableWidget widget, TableDataRow set, int row) {
-        return false;
+
+    public void setScreenState(State state) {
+        setState(state);
     }
 
-    public boolean canAutoAdd(TableWidget widget, TableDataRow addRow) {
-        return false;
-    }
-
-    public boolean canDelete(TableWidget widget, TableDataRow set, int row) {
-        return false;
-    }
-
-    public boolean canEdit(TableWidget widget, TableDataRow set, int row, int col) {
-        return false;
-    }
-
-    public boolean canSelect(TableWidget widget, TableDataRow set, int row) {        
-        return true;
-    }
-
-    public void onClick(Widget sender) {
-        String queryString;
-        if(sender == findButton){                     
-          queryString = findTextBox.getText();   
-          if(queryString != null && !"".equals(queryString.trim()))
-              loadDictionaryModel(queryString);
-        }
+    public HandlerRegistration addActionHandler(ActionHandler<DictionaryEntryPickerScreen.Action> handler) {
+        return addHandler(handler, ActionEvent.getType());
     }
     
-    public void addCommandListener(CommandListener listener) {
-        if(commandListeners == null){
-            commandListeners = new CommandListenerCollection();
-        }
-        commandListeners.add(listener);
-    }
     
-    private void loadDictionaryModel(String pattern){ 
-        DictionaryEntryPickerDataRPC dedrpc;
-        Integer categoryId;
+    
+    private ArrayList<TableDataRow> getCategoryModel() {
+        DictionaryEntryPickerDataRPC rpc;
+        ArrayList<TableDataRow> model;
+        TableDataRow row;
         
-        categoryId = null;
-        
-        if(categoryDrop.getSelections().size() > 0)
-            categoryId = (Integer)categoryDrop.getSelections().get(0).key;
-        
-        if(categoryId == null) {                          
-            Window.alert(consts.get("plsSelCat"));
-            return;
-        }
-        
-        window.setStatus("", "spinnerIcon");   
-        dedrpc = new DictionaryEntryPickerDataRPC();
-        
-        dedrpc.id = categoryId;
-        dedrpc.dictionaryTableModel = dictionaryController.model.getData();
-        dedrpc.stringValue = pattern;
-        
-        screenService.call("getDictionaryEntries", dedrpc, new AsyncCallback<DictionaryEntryPickerDataRPC>() {
-            public void onFailure(Throwable caught) {                
-                Window.alert(caught.getMessage());
-                window.setStatus("","");
-            }
-
-            public void onSuccess(DictionaryEntryPickerDataRPC result) {                  
-                dictionaryController.model.setModel(result.dictionaryTableModel);
-                dictionaryController.model.refresh();
-                window.setStatus(consts.get("loadCompleteMessage"),"");
+        model = null;
+        rpc = new DictionaryEntryPickerDataRPC();
+        try {
+            rpc = service.call("getCategoryModel",rpc);
+            model = new ArrayList<TableDataRow>();
+            model.add(new TableDataRow(null,""));
+            for(IdNameDO autoDO : rpc.categoryModel) {
+                row = new TableDataRow(1);
+                row.key = autoDO.getId();
+                row.cells.get(0).value = autoDO.getName();
+                model.add(row);
             }
             
-        });
+        }catch(Exception e) {
+            Window.alert(e.getMessage());
+            
+        }
+        return model;
+    }
+    
+    private void executeQuery() {
+        Integer catId;
+        String pattern;        
+        DictionaryEntryPickerDataRPC rpc;
+        QueryData id, entry;
         
-    }    
-
+        catId = category.getValue();        
+        pattern = findTextBox.getText();
+        
+        if(catId == null) {
+            Window.alert(consts.get("plsSelCat"));
+            return;
+        }               
+        
+        if(pattern == null || "".equals(pattern.trim()))
+            return;
+        
+        rpc = new DictionaryEntryPickerDataRPC();
+        rpc.fields = new ArrayList<QueryData>();
+        
+        id = new QueryData();
+        id.key = dictMeta.getCategoryId();
+        id.type = QueryData.Type.INTEGER;
+        id.query = catId.toString();        
+        rpc.fields.add(id);
+        
+        entry = new QueryData();
+        entry.key = dictMeta.getEntry();
+        entry.type = QueryData.Type.STRING;
+        entry.query = pattern;        
+        rpc.fields.add(entry);
+        
+        try {
+            rpc = service.call("getDictionaryEntries",rpc);
+            fillDictEntryTable(rpc.dictionaryTableModel);
+        } catch(Exception e) {
+            e.printStackTrace();
+            Window.alert(e.getMessage());
+            
+        }                           
+    }
+    
+    private void fillDictEntryTable(ArrayList<IdNameDO> entries) {
+        IdNameDO resultDO;
+        TableDataRow row;
+        ArrayList<TableDataRow> model;
+        
+        dictEntTable.clear();
+        
+        model = new ArrayList<TableDataRow>();
+        for(int i = 0; i < entries.size(); i++) {
+            resultDO = entries.get(i);
+            row = new TableDataRow(resultDO.getId(),resultDO.getName());
+            model.add(row);
+        }
+        
+        dictEntTable.load(model);
+        
+    }
+    
+    
 }

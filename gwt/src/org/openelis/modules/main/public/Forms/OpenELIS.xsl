@@ -61,7 +61,7 @@ UIRF Software License are applicable instead of those above.
   <xsl:template match="doc">
    <xsl:variable name="security" select="service:getSecurity()"/>
 <screen id="main" serviceUrl="OpenELISService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-	<display  constants="OpenELISConstants">
+	<!-- <display  constants="OpenELISConstants">-->
 		<VerticalPanel style="AppBackground" sizeToWindow="true">
 		<AbsolutePanel style="topMenuBar">
 		<menuPanel layout="horizontal" xsi:type="Panel" style="topBarItemHolder" spacing="0" padding="0">
@@ -529,10 +529,10 @@ sampleManagementDescription = Description...
 				    </xsl:if>
 					<html panelWidth="100%" showError="false">&lt;hr/&gt;</html>
 				    <xsl:call-template name="menuItem">
-				      <xsl:with-param name="key"></xsl:with-param>
+				      <xsl:with-param name="key">Instrument</xsl:with-param>
 				      <xsl:with-param name="label">instrument</xsl:with-param>
-				      <xsl:with-param name="enabled">false</xsl:with-param>
-				      <xsl:with-param name="class"></xsl:with-param>
+				      <xsl:with-param name="enabled">true</xsl:with-param>
+				      <xsl:with-param name="class">InstrumentScreen</xsl:with-param>
 				      <xsl:with-param name="args"></xsl:with-param>
 				    </xsl:call-template>
 					<html panelWidth="100%" showError="false">&lt;hr/&gt;</html>
@@ -664,9 +664,9 @@ sampleManagementDescription = Description...
     	<winbrowser key="browser" sizeToWindow="true"/>
 		</HorizontalPanel>
 	</VerticalPanel>
-	</display>
+	<!-- </display>
 	<rpc key="display"/>
-	<rpc key="query"/>
+	<rpc key="query"/> -->
 </screen>
   </xsl:template> 				      
    				      

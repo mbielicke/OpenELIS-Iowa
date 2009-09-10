@@ -30,6 +30,7 @@ import java.util.List;
 
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.DictionaryDO;
+import org.openelis.domain.TestResultDO;
 import org.openelis.gwt.common.Form;
 import org.openelis.gwt.common.Query;
 import org.openelis.gwt.common.data.DropDownField;
@@ -39,8 +40,12 @@ import org.openelis.gwt.common.data.StringField;
 import org.openelis.gwt.common.data.StringObject;
 import org.openelis.gwt.common.data.TableDataModel;
 import org.openelis.gwt.common.data.TableDataRow;
+import org.openelis.gwt.event.ActionEvent;
+import org.openelis.gwt.event.ActionHandler;
+import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.screen.CommandChain;
 import org.openelis.gwt.screen.ScreenWindow;
+import org.openelis.gwt.screen.rewrite.Screen;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.ButtonPanel;
@@ -80,6 +85,8 @@ public class QCScreen extends OpenELISScreenForm<QCForm, Query<TableDataRow<Inte
     private Dropdown qcType,preparedUnit;   
     
     private AutoComplete prepBy;    
+    
+    private DictionaryEntryPickerScreen dictEntryPicker;
     
     public QCScreen() {
         super("org.openelis.modules.qc.server.QCService");
@@ -151,10 +158,10 @@ public class QCScreen extends OpenELISScreenForm<QCForm, Query<TableDataRow<Inte
                 getQCs(query.substring(6));
             else                         
                 super.performCommand(action, obj);            
-         }  else if(action == DictionaryEntryPickerScreen.Action.COMMIT) {              
+         }  /*else if(action == DictionaryEntryPickerScreen.Action.COMMIT) {              
              selectedRows = (ArrayList<TableDataRow<Integer>>)obj;
              dictionaryLookupClosed(selectedRows);
-         } else{
+         }*/ else{
              super.performCommand(action, obj);
          }   
     }
@@ -447,17 +454,39 @@ public class QCScreen extends OpenELISScreenForm<QCForm, Query<TableDataRow<Inte
     }
     
     private void onDictionaryLookUpButtonClicked() {
-        ScreenWindow modal;
-        DictionaryEntryPickerScreen pickerScreen;
-        
-        pickerScreen = new DictionaryEntryPickerScreen();       
-        modal = new ScreenWindow(null,"Dictionary LookUp","dictionaryEntryPickerScreen","Loading...",true,false);
-        pickerScreen.addCommandListener(this);
+        ScreenWindow modal;                                                            
+        if(dictEntryPicker == null) {
+            try {
+                dictEntryPicker = new DictionaryEntryPickerScreen();
+                dictEntryPicker.addActionHandler(new ActionHandler<DictionaryEntryPickerScreen.Action>(){
+
+                    public void onAction(ActionEvent<DictionaryEntryPickerScreen.Action> event) {
+                       int selTab;
+                       ArrayList<org.openelis.gwt.widget.table.rewrite.TableDataRow> model;
+                       TestResultDO resDO;
+                       org.openelis.gwt.widget.table.rewrite.TableDataRow row;
+                       Integer dictId;                               
+                       if(event.getAction() == DictionaryEntryPickerScreen.Action.COMMIT) {
+                           model = (ArrayList<org.openelis.gwt.widget.table.rewrite.TableDataRow>)event.getData();                                                                                      
+                           dictId = DictionaryCache.getIdFromSystemName("qc_analyte_dictionary");  
+                           addQCAnalyteRows(model,dictId);                                                          
+                       }                                
+                    }
+                    
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+                Window.alert("error: " + e.getMessage());
+                return;
+            }                                       
+        }
+        modal = new ScreenWindow(null,"Dictionary LookUp","dictionaryEntryPickerScreen","",true,false);
         modal.setName(consts.get("chooseDictEntry"));
-        modal.setContent(pickerScreen);
+        modal.setContent(dictEntryPicker);
+        dictEntryPicker.setScreenState(Screen.State.DEFAULT);
     }
     
-    private void dictionaryLookupClosed(ArrayList<TableDataRow<Integer>> selectedRows) {              
+    private void dictionaryLookupClosed(ArrayList<org.openelis.gwt.widget.table.rewrite.TableDataRow> selectedRows) {              
         Integer key;
                 
         key = DictionaryCache.getIdFromSystemName("qc_analyte_dictionary");  
@@ -465,10 +494,11 @@ public class QCScreen extends OpenELISScreenForm<QCForm, Query<TableDataRow<Inte
              
     }
     
-    private void addQCAnalyteRows(ArrayList<TableDataRow<Integer>> selectedRows,
+    private void addQCAnalyteRows(ArrayList<org.openelis.gwt.widget.table.rewrite.TableDataRow> selectedRows,
                                   Integer key) {
          List<String> entries;
-         TableDataRow<Integer> row,set,dictSet;
+         TableDataRow<Integer> row,dictSet;
+         org.openelis.gwt.widget.table.rewrite.TableDataRow set;
          String entry;         
 
          if (selectedRows != null) {
@@ -476,7 +506,7 @@ public class QCScreen extends OpenELISScreenForm<QCForm, Query<TableDataRow<Inte
              entries = new ArrayList<String>();
              for (int iter = 0; iter < selectedRows.size(); iter++) {
                  set = selectedRows.get(iter);
-                 entry = (String)(set.cells[0]).getValue();
+                 entry = (String)(set.cells.get(0)).getValue();
                  if (entry != null && !entries.contains(entry.trim())) {
                      entries.add(entry);
                      row = (TableDataRow<Integer>)qcAnalyteTableWidget.model.createRow();

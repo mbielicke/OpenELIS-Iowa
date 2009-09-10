@@ -47,6 +47,7 @@ UIRF Software License are applicable instead of those above.
     <inherits name="org.openelis.modules.environmentalSampleLogin.EnvironmentalSampleLogin"/>
     <inherits name="org.openelis.modules.favorites.Favorites"/>
     <inherits name="org.openelis.modules.fillOrder.FillOrder"/>
+    <inherits name="org.openelis.modules.instrument.Instrument"/>
     <inherits name="org.openelis.modules.inventoryAdjustment.InventoryAdjustment"/>
     <inherits name="org.openelis.modules.inventoryItem.InventoryItem"/>
     <inherits name="org.openelis.modules.inventoryReceipt.InventoryReceipt"/>
@@ -76,7 +77,7 @@ UIRF Software License are applicable instead of those above.
     <inherits name="org.openelis.modules.storageunit.StorageUnit"/> 
     <inherits name="org.openelis.modules.systemvariable.SystemVariable"/>        
     <inherits name="org.openelis.modules.testTrailer.TestTrailer"/>
-    <inherits name="org.openelis.modules.test.Test"/> 
+    <inherits name="org.openelis.modules.test.Test"/>
     <inherits name="org.openelis.modules.dictionaryentrypicker.DictionaryEntryPicker"/>
     <inherits name="org.openelis.ELISCommon"/>     
     

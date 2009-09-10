@@ -1,28 +1,28 @@
-/** Exhibit A - UIRF Open-source Based Public Software License.
-* 
-* The contents of this file are subject to the UIRF Open-source Based
-* Public Software License(the "License"); you may not use this file except
-* in compliance with the License. You may obtain a copy of the License at
-* openelis.uhl.uiowa.edu
-* 
-* Software distributed under the License is distributed on an "AS IS"
-* basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
-* License for the specific language governing rights and limitations
-* under the License.
-* 
-* The Original Code is OpenELIS code.
-* 
-* The Initial Developer of the Original Code is The University of Iowa.
-* Portions created by The University of Iowa are Copyright 2006-2008. All
-* Rights Reserved.
-* 
-* Contributor(s): ______________________________________.
-* 
-* Alternatively, the contents of this file marked
-* "Separately-Licensed" may be used under the terms of a UIRF Software
-* license ("UIRF Software License"), in which case the provisions of a
-* UIRF Software License are applicable instead of those above. 
-*/
+/**
+ * Exhibit A - UIRF Open-source Based Public Software License.
+ * 
+ * The contents of this file are subject to the UIRF Open-source Based Public
+ * Software License(the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * openelis.uhl.uiowa.edu
+ * 
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+ * the specific language governing rights and limitations under the License.
+ * 
+ * The Original Code is OpenELIS code.
+ * 
+ * The Initial Developer of the Original Code is The University of Iowa.
+ * Portions created by The University of Iowa are Copyright 2006-2008. All
+ * Rights Reserved.
+ * 
+ * Contributor(s): ______________________________________.
+ * 
+ * Alternatively, the contents of this file marked "Separately-Licensed" may be
+ * used under the terms of a UIRF Software license ("UIRF Software License"), in
+ * which case the provisions of a UIRF Software License are applicable instead
+ * of those above.
+ */
 package org.openelis.modules.instrument.server;
 
 import java.util.ArrayList;
@@ -54,9 +54,7 @@ import org.openelis.gwt.common.data.TableDataRow;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.AppScreenFormServiceInt;
 import org.openelis.gwt.services.AutoCompleteServiceInt;
-import org.openelis.metamap.InstrumentLogMetaMap;
 import org.openelis.modules.instrument.client.InstrumentForm;
-import org.openelis.modules.instrument.client.InstrumentGeneralPurposeRPC;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.AnalyteRemote;
 import org.openelis.remote.InstrumentRemote;
@@ -67,15 +65,14 @@ import org.openelis.util.FormUtil;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
 
-
 public class InstrumentService implements
                               AppScreenFormServiceInt<InstrumentForm, Query<TableDataRow<Integer>>>,
                               AutoCompleteServiceInt {
 
     private static final int leftTableRowsPerPage = 20;
     private UTFResource openElisConstants = UTFResource.getBundle((String)SessionManager.getSession()
-                                                                  .getAttribute("locale"));
-    
+                                                                                        .getAttribute("locale"));
+
     public Query<TableDataRow<Integer>> commitQuery(Query<TableDataRow<Integer>> query) throws RPCException {
         List instNames;
         InstrumentRemote remote = (InstrumentRemote)EJBFactory.lookup("openelis/InstrumentBean/remote");
@@ -85,7 +82,7 @@ public class InstrumentService implements
                                      leftTableRowsPerPage);
         } catch (LastPageException e) {
             throw new LastPageException(openElisConstants.getString("lastPageException"));
-        } catch (Exception e) {            
+        } catch (Exception e) {
             throw new RPCException(e.getMessage());
         }
 
@@ -98,124 +95,122 @@ public class InstrumentService implements
         while (i < instNames.size() && i < leftTableRowsPerPage) {
             IdNameSerialNumberDO resultDO = (IdNameSerialNumberDO)instNames.get(i);
 
-            query.results.add(new TableDataRow<Integer>(resultDO.getId(), 
-                                new FieldType[] {
-                                                 new StringObject(resultDO.getName()),
-                                                 new StringObject(resultDO.getSerialNumber()),
-                    }));
+            query.results.add(new TableDataRow<Integer>(resultDO.getId(),
+                                                        new FieldType[] {new StringObject(resultDO.getName()),
+                                                                         new StringObject(resultDO.getSerialNumber()),}));
             i++;
         }
 
         return query;
-    }   
+    }
 
     public InstrumentForm commitAdd(InstrumentForm rpc) throws RPCException {
         InstrumentRemote remote;
         InstrumentDO instDO;
         Integer instId;
         List<InstrumentLogDO> logDOList;
-        
+
         remote = (InstrumentRemote)EJBFactory.lookup("openelis/InstrumentBean/remote");
         instDO = getInstrumentDOFromRPC(rpc);
         logDOList = getInstrumentLogsFromRPC(rpc, null);
         try {
-            instId = remote.updateInstrument(instDO,  logDOList);
+            instId = remote.updateInstrument(instDO, logDOList);
             instDO = remote.getInstrument(instId);
             setFieldsInRPC(rpc, instDO);
-        } catch(ValidationErrorsList e) {
+        } catch (ValidationErrorsList e) {
             setRpcErrors(e.getErrorList(), rpc);
             return rpc;
-        } catch (Exception e) {    
+        } catch (Exception e) {
             e.printStackTrace();
-            throw new RPCException(e.getMessage());            
+            throw new RPCException(e.getMessage());
         }
         return rpc;
     }
-    
+
     public InstrumentForm commitUpdate(InstrumentForm rpc) throws RPCException {
         InstrumentRemote remote;
         InstrumentDO instDO;
         List<InstrumentLogDO> logDOList;
-        
+
         remote = (InstrumentRemote)EJBFactory.lookup("openelis/InstrumentBean/remote");
         instDO = getInstrumentDOFromRPC(rpc);
         logDOList = getInstrumentLogsFromRPC(rpc, rpc.entityKey);
-        
+
         try {
             remote.updateInstrument(instDO, logDOList);
             instDO = remote.getInstrument(rpc.entityKey);
             setFieldsInRPC(rpc, instDO);
-        } catch(ValidationErrorsList e) {
+        } catch (ValidationErrorsList e) {
             setRpcErrors(e.getErrorList(), rpc);
             return rpc;
-        } catch (Exception e) { 
+        } catch (Exception e) {
             e.printStackTrace();
-            throw new RPCException(e.getMessage());            
+            throw new RPCException(e.getMessage());
         }
         return rpc;
     }
 
-    public InstrumentForm commitDelete(InstrumentForm rpc) throws RPCException {        
+    public InstrumentForm commitDelete(InstrumentForm rpc) throws RPCException {
         return null;
     }
-    
+
     public InstrumentForm abort(InstrumentForm rpc) throws RPCException {
         InstrumentRemote remote;
-        InstrumentDO instDO; 
+        InstrumentDO instDO;
         List<InstrumentLogDO> logDOList;
-        
-        remote = (InstrumentRemote)EJBFactory.lookup("openelis/InstrumentBean/remote");            
-        instDO = remote.getInstrumentAndUnlock(rpc.entityKey,SessionManager.getSession().getId());
+
+        remote = (InstrumentRemote)EJBFactory.lookup("openelis/InstrumentBean/remote");
+        instDO = remote.getInstrumentAndUnlock(rpc.entityKey,
+                                               SessionManager.getSession()
+                                                             .getId());
         setFieldsInRPC(rpc, instDO);
-        
+
         logDOList = remote.getInstrumentLogs(rpc.entityKey);
         fillLogEntries(logDOList, rpc);
-   
+
         return rpc;
     }
-
 
     public InstrumentForm fetch(InstrumentForm rpc) throws RPCException {
         InstrumentRemote remote;
         InstrumentDO instDO;
         List<InstrumentLogDO> logDOList;
-        
-        remote = (InstrumentRemote)EJBFactory.lookup("openelis/InstrumentBean/remote");            
+
+        remote = (InstrumentRemote)EJBFactory.lookup("openelis/InstrumentBean/remote");
         instDO = remote.getInstrument(rpc.entityKey);
         setFieldsInRPC(rpc, instDO);
-   
+
         logDOList = remote.getInstrumentLogs(rpc.entityKey);
         fillLogEntries(logDOList, rpc);
-        
+
         return rpc;
     }
 
     public InstrumentForm fetchForUpdate(InstrumentForm rpc) throws RPCException {
         InstrumentRemote remote;
-        InstrumentDO instDO;        
+        InstrumentDO instDO;
         List<InstrumentLogDO> logDOList;
-        
-        remote = (InstrumentRemote)EJBFactory.lookup("openelis/InstrumentBean/remote");         
-        try{
+
+        remote = (InstrumentRemote)EJBFactory.lookup("openelis/InstrumentBean/remote");
+        try {
             instDO = remote.getInstrumentAndLock(rpc.entityKey,
-                                                 SessionManager.getSession().getId());
+                                                 SessionManager.getSession()
+                                                               .getId());
             setFieldsInRPC(rpc, instDO);
             logDOList = remote.getInstrumentLogs(rpc.entityKey);
             fillLogEntries(logDOList, rpc);
-        }catch(Exception ex) {
+        } catch (Exception ex) {
             throw new RPCException(ex.getMessage());
-        }                
-        
+        }
+
         return rpc;
     }
-    
-
 
     public InstrumentForm getScreen(InstrumentForm rpc) throws RPCException {
-        rpc.xml = ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/instrument.xsl");                     
+        rpc.xml = ServiceUtils.getXML(Constants.APP_ROOT + "/Forms/instrument.xsl");
         return rpc;
     }
-    
+
     public TableDataModel getMatches(String cat,
                                      TableDataModel model,
                                      String match,
@@ -223,60 +218,27 @@ public class InstrumentService implements
         AnalyteRemote aremote;
         TableDataModel<TableDataRow<Integer>> dataModel;
         List<IdNameDO> entries;
-        List<TestMethodAutoDO> tmlist;        
+        List<TestMethodAutoDO> tmlist;
         ScriptletRemote sremote;
         TestRemote tremote;
-                        
+
         dataModel = null;
-        
-        if("analyte".equals(cat)) {
-            aremote = (AnalyteRemote)EJBFactory.lookup("openelis/AnalyteBean/remote");
-            entries = aremote.autoCompleteLookupByName(match.trim() + "%", 10);
-            dataModel = getAutocompleteModel(entries);
-        } else if("scriptlet".equals(cat)) {
+
+        if ("scriptlet".equals(cat)) {
             sremote = (ScriptletRemote)EJBFactory.lookup("openelis/ScriptletBean/remote");
-            entries = sremote.getScriptletAutoCompleteByName(match.trim() + "%", 10);
+            entries = sremote.getScriptletAutoCompleteByName(match.trim() + "%",
+                                                             10);
             dataModel = getAutocompleteModel(entries);
-        } else if("testMethod".equals(cat)) {
+        } else if ("testMethod".equals(cat)) {
             tremote = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
             tmlist = tremote.getTestAutoCompleteByName(match.trim() + "%", 10);
             dataModel = getTestMethodAutocompleteModel(tmlist);
-        } 
-        
+        }
+
         return dataModel;
     }
-    
-    public InstrumentGeneralPurposeRPC getAnalyteModelForTest(InstrumentGeneralPurposeRPC rpc) {
-        List<IdNameDO> list;
-        IdNameDO anaDO;
-        TestRemote remote;
-        int i;
-        TableDataModel<TableDataRow<Integer>> autoModel;
-        TableDataRow<Integer> tset, anaset;
-        DropDownField<Integer> ddField;
-                
-        remote  = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
-        list  = remote.getAnalyteIdNamesByTestId(rpc.testId);
-        if(list.size() > 0) {
-            rpc.analyteModel =  new TableDataModel<TableDataRow<Integer>>();
-            for(i = 0 ; i < list.size(); i++) {
-                anaDO = list.get(i);
-                tset = new TableDataRow<Integer>(1);                
-                ddField = new DropDownField<Integer>();
-                tset.cells[0] = ddField;
-                anaset = new TableDataRow<Integer>(anaDO.getId(),new StringObject(anaDO.getName()));
-                autoModel = new TableDataModel<TableDataRow<Integer>>();
-                autoModel.add(anaset);
-                ddField.setModel(autoModel);                
-                ddField.setValue(anaset);
-                rpc.analyteModel.add(tset);
-            }
-        } 
-        
-        return rpc;
-    }   
-    
-    private TableDataModel<TableDataRow<Integer>> getAutocompleteModel(List<IdNameDO> entries){
+
+    private TableDataModel<TableDataRow<Integer>> getAutocompleteModel(List<IdNameDO> entries) {
         TableDataModel<TableDataRow<Integer>> dataModel = new TableDataModel<TableDataRow<Integer>>();
         for (Iterator iter = entries.iterator(); iter.hasNext();) {
 
@@ -288,46 +250,45 @@ public class InstrumentService implements
                                                                    new StringObject(entryText));
             dataModel.add(data);
         }
-        
+
         return dataModel;
     }
-    
-    private TableDataModel<TableDataRow<Integer>> getTestMethodAutocompleteModel(List<TestMethodAutoDO> entries){
+
+    private TableDataModel<TableDataRow<Integer>> getTestMethodAutocompleteModel(List<TestMethodAutoDO> entries) {
         TableDataModel<TableDataRow<Integer>> dataModel;
         TableDataRow<Integer> data;
         Integer itemId;
         TestMethodAutoDO resultDO;
-        String name, method,tdesc,mdesc;
-        
+        String name, method, tdesc, mdesc;
+
         dataModel = new TableDataModel<TableDataRow<Integer>>();
-        
-        for(int i=0; i < entries.size(); i++){
-            resultDO = (TestMethodAutoDO) entries.get(i);
-            
+
+        for (int i = 0; i < entries.size(); i++) {
+            resultDO = (TestMethodAutoDO)entries.get(i);
+
             itemId = resultDO.getTestId();
             name = resultDO.getTestName();
             method = resultDO.getMethodName();
             tdesc = resultDO.getTestDescription();
             mdesc = resultDO.getMethodDescription();
-            
+
             data = new TableDataRow<Integer>(itemId,
                                              new FieldType[] {new StringObject(name),
-                                                              new StringObject(method),     
-                                                              new StringObject(tdesc),                                                                                                                    
+                                                              new StringObject(method),
+                                                              new StringObject(tdesc),
                                                               new StringObject(mdesc)});
-                        
-            //add the dataset to the datamodel
-            dataModel.add(data);                            
-        }       
-        
+
+            // add the dataset to the datamodel
+            dataModel.add(data);
+        }
+
         return dataModel;
     }
 
-    
-    private void setFieldsInRPC(InstrumentForm rpc, InstrumentDO instDO){
+    private void setFieldsInRPC(InstrumentForm rpc, InstrumentDO instDO) {
         TableDataModel<TableDataRow<Integer>> model;
-        Datetime    dt;
-        
+        Datetime dt;
+
         rpc.id.setValue(instDO.getId());
         rpc.name.setValue(instDO.getName());
         rpc.isActive.setValue(instDO.getIsActive());
@@ -336,31 +297,31 @@ public class InstrumentService implements
         rpc.location.setValue(instDO.getLocation());
         rpc.typeId.setValue(new TableDataRow<Integer>(instDO.getTypeId()));
         rpc.description.setValue(instDO.getDescription());
-        
+
         dt = instDO.getActiveBegin();
-        if(dt != null && dt.getDate() !=null) {
+        if (dt != null && dt.getDate() != null) {
             rpc.activeBegin.setValue(Datetime.getInstance(Datetime.YEAR,
                                                           Datetime.DAY,
                                                           dt.getDate()));
         }
-        
-        dt = instDO.getActiveEnd(); 
-        if(dt != null && dt.getDate() !=null) {
+
+        dt = instDO.getActiveEnd();
+        if (dt != null && dt.getDate() != null) {
             rpc.activeEnd.setValue(Datetime.getInstance(Datetime.YEAR,
-                                                       Datetime.DAY,
-                                                       dt.getDate()));
+                                                        Datetime.DAY,
+                                                        dt.getDate()));
         }
-        
+
         model = new TableDataModel();
-        if(instDO.getScriptletId() != null) {
+        if (instDO.getScriptletId() != null) {
             model.add(new TableDataRow<Integer>(instDO.getScriptletId(),
-                            new StringObject(instDO.getScriptletName())));
+                                                new StringObject(instDO.getScriptletName())));
             rpc.scriptletId.setValue(model.get(0));
         }
         rpc.scriptletId.setModel(model);
-        
+
     }
-    
+
     private InstrumentDO getInstrumentDOFromRPC(InstrumentForm rpc) {
         InstrumentDO instDO;
         Datetime activeBegin, activeEnd;
@@ -385,9 +346,9 @@ public class InstrumentService implements
         if (activeEnd != null)
             instDO.setActiveEnd(activeEnd.getDate());
 
-        return instDO; 
-    }     
-    
+        return instDO;
+    }
+
     private List<InstrumentLogDO> getInstrumentLogsFromRPC(InstrumentForm rpc,
                                                            Integer instId) {
         ArrayList<InstrumentLogDO> logDOList;
@@ -398,111 +359,113 @@ public class InstrumentService implements
         ArrayList<TableDataRow<Integer>> deletions;
         int i;
         Datetime activeBegin, activeEnd;
-        
+
         model = rpc.logTable.getValue();
         logDOList = new ArrayList<InstrumentLogDO>();
-        
-        for(i=0; i < model.size(); i++) {
+
+        for (i = 0; i < model.size(); i++) {
             row = model.get(i);
             logDO = new InstrumentLogDO();
             logDO.setDelete(false);
             logDO.setId(row.key);
-            field = (DropDownField<Integer>)row.cells[0];  
+            field = (DropDownField<Integer>)row.cells[0];
             logDO.setTypeId((Integer)field.getSelectedKey());
-            
+
             logDO.setWorksheetId((Integer)row.cells[1].getValue());
-            
+
             activeBegin = ((DateField)row.cells[2]).getValue();
-            if(activeBegin!=null)
+            if (activeBegin != null)
                 logDO.setEventBegin(activeBegin.getDate());
-            
+
             activeEnd = ((DateField)row.cells[3]).getValue();
-            if(activeEnd!=null)
+            if (activeEnd != null)
                 logDO.setEventEnd(activeEnd.getDate());
-            
+
             logDO.setText((String)row.cells[4].getValue());
-            
+
             logDOList.add(logDO);
         }
-        
-        deletions  =  model.getDeletions();
-        if(deletions!=null){
-            for(i=0; i < deletions.size(); i++) {
+
+        deletions = model.getDeletions();
+        if (deletions != null) {
+            for (i = 0; i < deletions.size(); i++) {
                 row = deletions.get(i);
                 logDO = new InstrumentLogDO();
                 logDO.setId(row.key);
-                logDO.setDelete(true);            
+                logDO.setDelete(true);
                 logDOList.add(logDO);
             }
             deletions.clear();
         }
-        
-        return logDOList;
-    }    
 
-    
+        return logDOList;
+    }
+
     private void fillLogEntries(List<InstrumentLogDO> logDOList,
                                 InstrumentForm form) {
         TableDataModel<TableDataRow<Integer>> tmodel;
         InstrumentLogDO logDO;
         TableDataRow<Integer> row;
         Datetime dt;
-        
+
         tmodel = form.logTable.getValue();
         tmodel.clear();
-        
-        for(int i=0; i < logDOList.size(); i++) {
+
+        for (int i = 0; i < logDOList.size(); i++) {
             row = tmodel.createNewSet();
             logDO = logDOList.get(i);
             row.key = logDO.getId();
-            
+
             row.cells[0].setValue(new TableDataRow<Integer>(logDO.getTypeId()));
             row.cells[1].setValue(logDO.getWorksheetId());
-                      
+
             dt = logDO.getEventBegin();
             row.cells[2].setValue(Datetime.getInstance(Datetime.YEAR,
-                                                          Datetime.MINUTE,
-                                                          dt.getDate()));
-                        
-            dt = logDO.getEventEnd(); 
-            if(dt != null && dt.getDate() !=null) {
+                                                       Datetime.MINUTE,
+                                                       dt.getDate()));
+
+            dt = logDO.getEventEnd();
+            if (dt != null && dt.getDate() != null) {
                 row.cells[3].setValue(Datetime.getInstance(Datetime.YEAR,
-                                                              Datetime.MINUTE,
-                                                              dt.getDate()));
+                                                           Datetime.MINUTE,
+                                                           dt.getDate()));
             }
-            
+
             row.cells[4].setValue(logDO.getText());
             tmodel.add(row);
         }
-        
+
     }
-    
-    private void setRpcErrors(ArrayList<Exception> exceptionList, InstrumentForm form) {
-        HashMap<String,AbstractField> map;
+
+    private void setRpcErrors(ArrayList<Exception> exceptionList,
+                              InstrumentForm form) {
+        HashMap<String, AbstractField> map;
         String fieldName;
         int index;
         TableFieldErrorException exc;
-        
+
         map = null;
-        if(exceptionList.size() > 0)
+        if (exceptionList.size() > 0)
             map = FormUtil.createFieldMap(form);
-                  //we need to get the keys and look them up in the resource bundle for internationalization
-        for (int i=0; i<exceptionList.size();i++) {
-            //if the error is inside the entries table
-            if(exceptionList.get(i) instanceof TableFieldErrorException){      
-                exc = (TableFieldErrorException)exceptionList.get(i);    
+        // we need to get the keys and look them up in the resource bundle for
+        // internationalization
+        for (int i = 0; i < exceptionList.size(); i++) {
+            // if the error is inside the entries table
+            if (exceptionList.get(i) instanceof TableFieldErrorException) {
+                exc = (TableFieldErrorException)exceptionList.get(i);
                 index = exc.getRowIndex();
-                fieldName = exc.getFieldName();        
+                fieldName = exc.getFieldName();
                 form.logTable.getField(index, fieldName)
-                    .addError(openElisConstants.getString(exc.getMessage()));                
-            } else if(exceptionList.get(i) instanceof FieldErrorException) {
-                 map.get(((FieldErrorException)exceptionList.get(i)).getFieldName()).addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
-                //if the error is on the entire form
-            } else if(exceptionList.get(i) instanceof FormErrorException) {
+                             .addError(openElisConstants.getString(exc.getMessage()));
+            } else if (exceptionList.get(i) instanceof FieldErrorException) {
+                map.get(((FieldErrorException)exceptionList.get(i)).getFieldName())
+                   .addError(openElisConstants.getString(((FieldErrorException)exceptionList.get(i)).getMessage()));
+                // if the error is on the entire form
+            } else if (exceptionList.get(i) instanceof FormErrorException) {
                 form.addError(openElisConstants.getString(((FormErrorException)exceptionList.get(i)).getMessage()));
             }
-        }   
+        }
         form.status = Form.Status.invalid;
-        
+
     }
 }
