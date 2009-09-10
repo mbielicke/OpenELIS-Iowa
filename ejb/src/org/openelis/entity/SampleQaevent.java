@@ -2,7 +2,7 @@
 package org.openelis.entity;
 
 /**
-  * AnalysisQaevent Entity POJO for database 
+  * SampleQaevent Entity POJO for database 
   */
 
 import org.w3c.dom.Document;
@@ -22,17 +22,17 @@ import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
 @Entity
-@Table(name="analysis_qaevent")
+@Table(name="sample_qaevent")
 @EntityListeners({AuditUtil.class})
-public class AnalysisQaevent implements Auditable, Cloneable {
+public class SampleQaevent implements Auditable, Cloneable {
   
   @Id
   @GeneratedValue
   @Column(name="id")
   private Integer id;             
 
-  @Column(name="analysis_id")
-  private Integer analysisId;             
+  @Column(name="sample_id")
+  private Integer sampleId;             
 
   @Column(name="qaevent_id")
   private Integer qaeventId;             
@@ -45,7 +45,7 @@ public class AnalysisQaevent implements Auditable, Cloneable {
 
 
   @Transient
-  private AnalysisQaevent original;
+  private SampleQaevent original;
 
   
   public Integer getId() {
@@ -57,13 +57,13 @@ public class AnalysisQaevent implements Auditable, Cloneable {
       this.id = id;
   }
 
-  public Integer getAnalysisId() {
-    return analysisId;
+  public Integer getSampleId() {
+    return sampleId;
   }
-  public void setAnalysisId(Integer analysisId) {
-    if((analysisId == null && this.analysisId != null) || 
-       (analysisId != null && !analysisId.equals(this.analysisId)))
-      this.analysisId = analysisId;
+  public void setSampleId(Integer sampleId) {
+    if((sampleId == null && this.sampleId != null) || 
+       (sampleId != null && !sampleId.equals(this.sampleId)))
+      this.sampleId = sampleId;
   }
 
   public Integer getQaeventId() {
@@ -96,7 +96,7 @@ public class AnalysisQaevent implements Auditable, Cloneable {
   
   public void setClone() {
     try {
-      original = (AnalysisQaevent)this.clone();
+      original = (SampleQaevent)this.clone();
     }catch(Exception e){}
   }
   
@@ -107,7 +107,7 @@ public class AnalysisQaevent implements Auditable, Cloneable {
       
       AuditUtil.getChangeXML(id,original.id,doc,"id");
 
-      AuditUtil.getChangeXML(analysisId,original.analysisId,doc,"analysis_id");
+      AuditUtil.getChangeXML(sampleId,original.sampleId,doc,"sample_id");
 
       AuditUtil.getChangeXML(qaeventId,original.qaeventId,doc,"qaevent_id");
 
@@ -124,7 +124,7 @@ public class AnalysisQaevent implements Auditable, Cloneable {
   }
    
   public String getTableName() {
-    return "analysis_qaevent";
+    return "sample_qaevent";
   }
   
 }   

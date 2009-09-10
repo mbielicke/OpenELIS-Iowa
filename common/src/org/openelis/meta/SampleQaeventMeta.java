@@ -2,26 +2,26 @@
 package org.openelis.meta;
 
 /**
-  * AnalysisQaevent META Data
+  * SampleQaevent META Data
   */
 
 import java.util.HashSet;
 
 import org.openelis.gwt.common.Meta;
 
-public class AnalysisQaeventMeta implements Meta {
+public class SampleQaeventMeta implements Meta {
   	private String path = "";
-	private static final String entityName = "AnalysisQaevent";
+	private static final String entityName = "SampleQaevent";
 	
 	private static final String
               ID					="id",
-              ANALYSIS_ID					="analysisId",
+              SAMPLE_ID					="sampleId",
               QAEVENT_ID					="qaeventId",
               TYPE_ID					="typeId",
               IS_BILLABLE					="isBillable";
 
   	private static final String[] columnNames = {
-  	  ID,ANALYSIS_ID,QAEVENT_ID,TYPE_ID,IS_BILLABLE};
+  	  ID,SAMPLE_ID,QAEVENT_ID,TYPE_ID,IS_BILLABLE};
   	  
 	private HashSet<String> columnHashList;
     
@@ -32,11 +32,11 @@ public class AnalysisQaeventMeta implements Meta {
         }
     }
     
-    public AnalysisQaeventMeta() {
+    public SampleQaeventMeta() {
 		init();        
     }
     
-    public AnalysisQaeventMeta(String path) {
+    public SampleQaeventMeta(String path) {
         this.path = path;
 		init();        
     }
@@ -58,8 +58,8 @@ public class AnalysisQaeventMeta implements Meta {
         return path + ID;
     } 
 
-    public String getAnalysisId() {
-        return path + ANALYSIS_ID;
+    public String getSampleId() {
+        return path + SAMPLE_ID;
     } 
 
     public String getQaeventId() {
