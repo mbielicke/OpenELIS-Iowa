@@ -31,6 +31,8 @@ UIRF Software License are applicable instead of those above.
                 extension-element-prefixes="resource"
                 version="1.0">
   <xsl:import href="aToZOneColumn.xsl"/>
+  <xsl:import href="button.xsl" />
+  
   <xalan:component prefix="resource">
     <xalan:script lang="javaclass" src="xalan://org.openelis.util.UTFResource"/>
   </xalan:component>  
@@ -41,14 +43,12 @@ UIRF Software License are applicable instead of those above.
   <xsl:variable name="language"><xsl:value-of select="locale"/></xsl:variable>
   <xsl:variable name="props"><xsl:value-of select="props"/></xsl:variable>
   <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))"/>
- <screen id="DictionaryEntryPicker" name="{resource:getString($constants,'dictionaryEntrySelection')}" serviceUrl="OpenElisService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-	<display>
+ <screen id="DictionaryEntryPicker" name="{resource:getString($constants,'dictionaryEntrySelection')}" serviceUrl="OpenElisService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">	
 		<HorizontalPanel style="WhiteContentPanel" spacing="0">
 			<!--left table goes here -->
-			 						
-							<buttonPanel key="atozButtons">
-								<xsl:call-template name="aToZLeftPanelButtons"/>
-							</buttonPanel>						
+			 <buttonGroup key='atozButtons'>
+                <xsl:call-template name='aToZLeftPanelButtons' />
+              </buttonGroup>							
 		<HorizontalPanel width = "5px"/>
 		<VerticalPanel style="WhiteContentPanel" spacing="0" width="300px">
 		 
@@ -56,7 +56,7 @@ UIRF Software License are applicable instead of those above.
          <row>
           <text style="Prompt"><xsl:value-of select="resource:getString($constants,'selectCategory')"/>:</text>
           <widget colspan = "3">	 		
-		   <dropdown key="category" width="250px" showError="false" alwaysEnabled="true"/>				  
+		   <dropdown key="category" popWidth = "250" width="250" showError="false" enabledStates="default"/>				  
 		  </widget> 
 		 </row> 
 		 <row>
@@ -67,54 +67,41 @@ UIRF Software License are applicable instead of those above.
 		<row>
 		  <text style="Prompt"><xsl:value-of select="resource:getString($constants,'enterSearch')"/>:</text>
 		  
-		   <textbox key="findTextBox" width="120px" showError="false" alwaysEnabled="true"/>
-		   <appButton action="find" onclick="this" style="Button" key="findButton" showError="false" alwaysEnabled="true">
+		   <textbox key="findTextBox" width="120px" showError="false" enabledStates="default"/>
+		   <appButton action="find" onclick="this" style="Button" key="findButton" showError="false" enabledStates="default">
 			<HorizontalPanel>
             	<AbsolutePanel style="FindButtonImage"/>
-                		<text><xsl:value-of select='resource:getString($constants,"find")'/></text>
-				</HorizontalPanel>
-		   </appButton>
-		   
+                <text><xsl:value-of select='resource:getString($constants,"find")'/></text>
+			</HorizontalPanel>
+		   </appButton>		   
 		</row>
 	   </TablePanel>	
 		 
 		 <widget>
-							<table maxRows = "14" width = "auto" manager = "this" key="dictEntTable"  title="" showError="false" showScroll="ALWAYS">
-								<headers><xsl:value-of select='resource:getString($constants,"entry")'/></headers>
-								<widths>320</widths>
-								<editors>																	
-									<label/>																		
-								</editors>
-								<fields>																																				
-									<string key="entry"/>																		
-								</fields>
-								<sorts>true</sorts>
-								<filters>false</filters>
-								<colAligns>left</colAligns>
+							<table maxRows = "14" width = "auto" key="dictEntTable" multiSelect = "true" title="" showError="false" showScroll="ALWAYS">
+								<col key="entry" width="320" sort="false" header="{resource:getString($constants,'entry')}">
+                                	<label width="320" case="mixed"/>
+                                </col>
 							</table>
 							
 	     </widget>						
 							
 	  <AbsolutePanel spacing="0" style="BottomButtonPanelContainer" align="center">
-    			<buttonPanel key="buttons">
-    			<xsl:call-template name="popupSelectButton">
-						<xsl:with-param name="language">
-							<xsl:value-of select="language"/>
-						</xsl:with-param>
-					</xsl:call-template>
-					<xsl:call-template name="popupCancelButton">
-						<xsl:with-param name="language">
-							<xsl:value-of select="language"/>
-						</xsl:with-param>
-					</xsl:call-template>
-				</buttonPanel>
-		</AbsolutePanel>
+		              <HorizontalPanel>
+		                <xsl:call-template name="commitButton">
+		                  <xsl:with-param name="language">
+		                    <xsl:value-of select="language"/>
+		                  </xsl:with-param>
+		                </xsl:call-template>
+		                <xsl:call-template name="abortButton">
+		                  <xsl:with-param name="language">
+		                    <xsl:value-of select="language"/>
+		                  </xsl:with-param>
+		                </xsl:call-template>
+		              </HorizontalPanel>
+		            </AbsolutePanel>
    </VerticalPanel>	
   </HorizontalPanel>  				
- </display>
-	<rpc key="display">	
-	 <dropdown key="category" required="false" type="integer"/>    
-	</rpc>
 </screen>
   </xsl:template>
 </xsl:stylesheet>					

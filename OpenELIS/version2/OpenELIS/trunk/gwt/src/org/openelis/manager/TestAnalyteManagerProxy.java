@@ -29,7 +29,7 @@ import org.openelis.gwt.services.ScreenService;
 
 public class TestAnalyteManagerProxy{
 
-    protected static final String TEST_MANAGER_SERVICE_URL = "org.openelis.modules.testnew.server.TestServiceNew";
+    protected static final String TEST_MANAGER_SERVICE_URL = "org.openelis.modules.test.server.TestService";
     protected ScreenService service;
     
     public TestAnalyteManagerProxy() {

@@ -47,6 +47,7 @@ import org.openelis.modules.dictionary.client.DictionaryScreen;
 import org.openelis.modules.environmentalSampleLogin.client.EnvironmentalSampleLoginScreen;
 import org.openelis.modules.favorites.client.FavoritesScreen;
 import org.openelis.modules.fillOrder.client.FillOrderScreen;
+import org.openelis.modules.instrument.client.InstrumentScreen;
 import org.openelis.modules.inventoryAdjustment.client.InventoryAdjustmentScreen;
 import org.openelis.modules.inventoryItem.client.InventoryItemScreen;
 import org.openelis.modules.inventoryReceipt.client.InventoryReceiptScreen;
@@ -501,23 +502,36 @@ public class OpenELIS extends Screen implements ClickHandler {
 		});
 		((MenuItem)def.getWidget("instrument")).addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
-				//browser.addScreen(new Instrument());
-			}
+				GWT.runAsync(new RunAsyncCallback() {
+	                public void onSuccess() {
+	                    browser.addScreen(new InstrumentScreen());
+	                }
+	                public void onFailure(Throwable caught) {
+	                    caught.printStackTrace();
+	                    Window.alert(caught.getMessage());
+	                }
+	            });
+			}			
 		});
 		((MenuItem)def.getWidget("test")).addClickHandler(new ClickHandler() {
-			public void onClick(ClickEvent event) {
+			public void onClick(ClickEvent event) {				
 				GWT.runAsync(new RunAsyncCallback() {
-					public void onSuccess() {
-						browser.addScreen(new TestScreen());
-					}
-					public void onFailure(Throwable caught) {
-						caught.printStackTrace();
-						Window.alert(caught.getMessage());
-					}
-				});
+                    public void onSuccess() {
+                        try {
+                            browser.addScreen(new TestScreen());
+                        }catch(Exception e){
+                            e.printStackTrace();
+                            Window.alert(e.getMessage());
+                        }
+                    }
+                    public void onFailure(Throwable caught) {
+                        caught.printStackTrace();
+                        Window.alert(caught.getMessage());
+                    }
+                });
 				
 			}
-		});
+		});		
 		((MenuItem)def.getWidget("method")).addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
 				GWT.runAsync(new RunAsyncCallback() {
@@ -684,11 +698,6 @@ public class OpenELIS extends Screen implements ClickHandler {
 					}
 				});
 				
-			}
-		});
-		((MenuItem)def.getWidget("instrument")).addClickHandler(new ClickHandler() {
-			public void onClick(ClickEvent event) {
-				//browser.addScreen(new )
 			}
 		});
 		((MenuItem)def.getWidget("scriptlet")).addClickHandler(new ClickHandler() {
