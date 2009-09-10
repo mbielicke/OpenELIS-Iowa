@@ -55,14 +55,12 @@
 						padding="0">
 						<TablePanel style="Form">
 							<row>
-								<text style="Prompt">Subject:</text>
-								<textbox case="mixed" key="subject" width="500px"
-									enabledStates="default" />
+								<text key="subjectText" style="Prompt">Subject:</text>
+								<textbox case="mixed" key="subject" width="500px" />
 							</row>
 							<row>
 								<text style="Prompt">Text:</text>
-								<textarea case="mixed" key="text" width="500px" height="150px"
-									enabledStates="default" />
+								<textarea case="mixed" key="text" width="500px" height="150px"/>
 							</row>
 							<row>
 							</row>

@@ -85,6 +85,7 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
         initialize();
        
         setStatusesModel(DictionaryCache.getListByCategorySystemName("analysis_status"));
+        setSectionsModel(new ArrayList());
     }
     
     private void initialize() {
@@ -251,6 +252,8 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
             public void onDataChange(DataChangeEvent event) {
                 if(analysis.getSectionId() != null)
                     setSectionsModel(analysis.getSectionId(), analysis.getSection());
+                else
+                    setSectionsModel(new ArrayList());
                 
                 sectionId.setSelection(analysis.getSectionId());
             }
@@ -346,7 +349,7 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
     private void setSectionsModel(Integer id, String sectionName) {
         ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        model.add(new TableDataRow(sectionId, sectionName));
+        model.add(new TableDataRow(id, sectionName));
          
         sectionId.setModel(model);
     }

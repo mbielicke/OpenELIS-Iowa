@@ -54,6 +54,7 @@ import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.Label;
 
 public class EditNoteScreen extends Screen implements
                                           HasActionHandlers<EditNoteScreen.Action> {
@@ -65,7 +66,7 @@ public class EditNoteScreen extends Screen implements
     };
 
     protected TextArea                text, preview;
-    protected TextBox                 search;
+    protected TextBox                 subject, search;
     protected AppButton               pasteButton, findButton;
     protected TreeWidget              tree;
 
@@ -117,7 +118,7 @@ public class EditNoteScreen extends Screen implements
             }
         });
         
-        final TextBox subject = (TextBox)def.getWidget("subject");
+        subject = (TextBox)def.getWidget("subject");
         addScreenHandler(subject, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 subject.setValue(screenNoteDO.getSubject());
@@ -128,8 +129,15 @@ public class EditNoteScreen extends Screen implements
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                if (screenNoteDO != null)
-                    subject.enable("N".equals(screenNoteDO.getIsExternal()));
+                if (screenNoteDO != null){
+                    if("N".equals(screenNoteDO.getIsExternal())){
+                        subject.setVisible(true);
+                        subject.setFocus(true);
+                    }else{
+                        subject.setVisible(false);
+                        text.setFocus(true);
+                    }
+                }
 
             }
         });
@@ -296,15 +304,39 @@ public class EditNoteScreen extends Screen implements
     }
 
     public void commit() {
-        managerNoteDO.copy(screenNoteDO);
-        
-        ActionEvent.fire(this, Action.COMMIT, null);
-        window.close();
+        if(validate()){
+            managerNoteDO.copy(screenNoteDO);
+            
+            ActionEvent.fire(this, Action.COMMIT, null);
+            clearErrors();
+            window.close();
+        }
     }
 
     public void abort() {
         ActionEvent.fire(this, Action.ABORT, null);
+        clearErrors();
         window.close();
+    }
+    
+    protected boolean validate() {
+        boolean valid = true;
+        if(screenNoteDO != null){
+            if("N".equals(screenNoteDO.getIsExternal())){
+                if(subject.getValue().trim().length() == 0){
+                    subject.addError(consts.get("fieldRequiredException"));
+                    valid = false;
+                }
+            }
+            
+            if(text.getValue().trim().length() == 0){
+                text.addError(consts.get("fieldRequiredException"));
+                valid = false;
+            }
+        }
+        
+        window.setError(consts.get("correctErrors"));
+        return valid;
     }
 
     private void buildTree(ArrayList<StandardNoteDO> noteList) {

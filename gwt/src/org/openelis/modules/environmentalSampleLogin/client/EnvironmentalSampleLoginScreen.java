@@ -55,6 +55,7 @@ import org.openelis.gwt.event.GetMatchesHandler;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.ScreenWindow;
 import org.openelis.gwt.screen.rewrite.Screen;
+import org.openelis.gwt.screen.rewrite.ScreenDef;
 import org.openelis.gwt.screen.rewrite.ScreenEventHandler;
 import org.openelis.gwt.screen.rewrite.ScreenNavigator;
 import org.openelis.gwt.widget.HasField;
@@ -98,8 +99,8 @@ import com.google.gwt.user.client.ui.TabPanel;
 public class EnvironmentalSampleLoginScreen extends Screen {
 
     public enum Tabs {
-        SAMPLE_ITEM, ANALYSIS, TEST_RESULT, AN_EXT_COMMENT, AN_INT_COMMENTS,
-        STORAGE, SMP_EXT_COMMENT, SMP_INT_COMMENTS
+        SAMPLE_ITEM, ANALYSIS, TEST_RESULT, EXT_COMMENTS, INT_COMMENTS,
+        STORAGE
     };
 
     protected Tabs                     tab = Tabs.SAMPLE_ITEM;
@@ -107,10 +108,12 @@ public class EnvironmentalSampleLoginScreen extends Screen {
     private SampleItemTab              sampleItemTab;
     private AnalysisTab                analysisTab;
     private TestResultsTab             testResultsTab;
-    private SampleExCommentTab         sampleExtCommentTab;
-    private SampleIntCommentsTab       sampleIntCommentsTab;
-    private AnalysisExCommentTab       analysisExtCommentTab;
-    private AnalysisIntCommentsTab     analysisIntCommentsTab;
+    private SampleCommentsTab          externalCommentsTab;
+    private SampleCommentsTab          internalCommentsTab;
+    //private SampleExCommentTab         sampleExtCommentTab;
+    //private SampleIntCommentsTab       sampleIntCommentsTab;
+    //private AnalysisExCommentTab       analysisExtCommentTab;
+    //private AnalysisIntCommentsTab     analysisIntCommentsTab;
     private StorageTab                 storageTab;
     
     
@@ -154,15 +157,13 @@ public class EnvironmentalSampleLoginScreen extends Screen {
         
         testResultsTab = new TestResultsTab(def);
         
-        analysisExtCommentTab = new AnalysisExCommentTab(def, "anExNotesPanel", "anExNoteButton", true);
+        externalCommentsTab = new SampleCommentsTab(def, "sampleExtNotesPanel", "sampleExtNoteButton", true,
+                                                      "anExNotesPanel", "anExNoteButton", true);
         
-        analysisIntCommentsTab = new AnalysisIntCommentsTab(def, "anIntNotesPanel", "anIntNoteButton", false);
+        internalCommentsTab = new SampleCommentsTab(def, "sampleIntNotesPanel", "sampleIntNoteButton", false,
+                                                    "anIntNotesPanel", "anIntNoteButton", false);
         
         storageTab = new StorageTab(def);
-        
-        sampleExtCommentTab = new SampleExCommentTab(def, "sampleExtNotesPanel", "sampleExtNoteButton", true);
-        
-        sampleIntCommentsTab = new SampleIntCommentsTab(def, "sampleIntNotesPanel", "sampleIntNoteButton", false);
         
         // Setup link between Screen and widget Handlers
         initialize();
@@ -616,8 +617,8 @@ public class EnvironmentalSampleLoginScreen extends Screen {
                sampleItemTab.setData(data);
                analysisTab.setData(data);
                testResultsTab.setData(data);
-               analysisExtCommentTab.setData(data);
-               analysisIntCommentsTab.setData(data);
+               externalCommentsTab.setData(data);
+               internalCommentsTab.setData(data);
                storageTab.setData(data);
                
                drawTabs();
@@ -775,29 +776,31 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             }
         });
         
-        addScreenHandler(analysisExtCommentTab, new ScreenEventHandler<Object>() {
+        addScreenHandler(externalCommentsTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
-                    analysisExtCommentTab.setData(new SampleDataBundle());
+                externalCommentsTab.setData(new SampleDataBundle());
+                externalCommentsTab.setManager(manager);
 
-                    if (tab == Tabs.AN_EXT_COMMENT)
-                        drawTabs();
+                if (tab == Tabs.EXT_COMMENTS)
+                    drawTabs();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                analysisExtCommentTab.setState(event.getState());
+                externalCommentsTab.setState(event.getState());
             }
         });
-        
-        addScreenHandler(analysisIntCommentsTab, new ScreenEventHandler<Object>() {
+                
+        addScreenHandler(internalCommentsTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
-                    analysisIntCommentsTab.setData(new SampleDataBundle());
+                internalCommentsTab.setData(new SampleDataBundle());
+                internalCommentsTab.setManager(manager);
 
-                    if (tab == Tabs.AN_INT_COMMENTS)
+                    if (tab == Tabs.INT_COMMENTS)
                         drawTabs();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                analysisIntCommentsTab.setState(event.getState());
+                internalCommentsTab.setState(event.getState());
             }
         });
         
@@ -813,33 +816,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
                 storageTab.setState(event.getState());
             }
         });
-        
-        addScreenHandler(sampleExtCommentTab, new ScreenEventHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
-                sampleExtCommentTab.setManager(manager);
-
-                if (tab == Tabs.SMP_EXT_COMMENT)
-                    drawTabs();
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                sampleExtCommentTab.setState(event.getState());
-            }
-        });
-        
-        addScreenHandler(sampleIntCommentsTab, new ScreenEventHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
-                sampleIntCommentsTab.setManager(manager);
-
-                if (tab == Tabs.SMP_INT_COMMENTS)
-                    drawTabs();
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                sampleIntCommentsTab.setState(event.getState());
-            }
-        });
-        
+                
         sampleItemTab.addActionHandler(new ActionHandler<SampleItemTab.Action>(){
             public void onAction(ActionEvent<SampleItemTab.Action> event) {
                 if(state != State.QUERY && event.getAction() == SampleItemTab.Action.CHANGED){
@@ -926,7 +903,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
 
             }
         });
-
+        
         final AppButton nextButton = (AppButton)def.getWidget("next");
         addScreenHandler(nextButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
@@ -982,16 +959,12 @@ public class EnvironmentalSampleLoginScreen extends Screen {
                     tab = Tabs.ANALYSIS;
                 else if (tabIndex == Tabs.TEST_RESULT.ordinal())
                     tab = Tabs.TEST_RESULT;
-                else if (tabIndex == Tabs.AN_EXT_COMMENT.ordinal())
-                    tab = Tabs.AN_EXT_COMMENT;
-                else if (tabIndex == Tabs.AN_INT_COMMENTS.ordinal())
-                    tab = Tabs.AN_INT_COMMENTS;
+                else if (tabIndex == Tabs.EXT_COMMENTS.ordinal())
+                    tab = Tabs.EXT_COMMENTS;
+                else if (tabIndex == Tabs.INT_COMMENTS.ordinal())
+                    tab = Tabs.INT_COMMENTS;
                 else if (tabIndex == Tabs.STORAGE.ordinal())
                     tab = Tabs.STORAGE;
-                else if (tabIndex == Tabs.SMP_EXT_COMMENT.ordinal())
-                    tab = Tabs.SMP_EXT_COMMENT;
-                else if (tabIndex == Tabs.SMP_INT_COMMENTS.ordinal())
-                    tab = Tabs.SMP_INT_COMMENTS;
                 
                 window.setBusy(consts.get("loadingMessage"));
                 
@@ -1480,16 +1453,12 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             analysisTab.draw();
         else if (tab == Tabs.TEST_RESULT)
             testResultsTab.draw();
-        else if (tab == Tabs.AN_EXT_COMMENT)
-            analysisExtCommentTab.draw();
-        else if (tab == Tabs.AN_INT_COMMENTS)
-            analysisIntCommentsTab.draw();
+        else if (tab == Tabs.EXT_COMMENTS)
+            externalCommentsTab.draw();
+        else if (tab == Tabs.INT_COMMENTS)
+            internalCommentsTab.draw();
         else if (tab == Tabs.STORAGE)
             storageTab.draw();
-        else if (tab == Tabs.SMP_EXT_COMMENT)
-            sampleExtCommentTab.draw();
-        else if (tab == Tabs.SMP_INT_COMMENTS)
-            sampleIntCommentsTab.draw();
     }
     
     private SampleEnvironmentalManager getEnvManager(){
