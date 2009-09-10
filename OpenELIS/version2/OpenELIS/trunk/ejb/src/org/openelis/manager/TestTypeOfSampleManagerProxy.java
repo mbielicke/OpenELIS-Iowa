@@ -42,7 +42,7 @@ public class TestTypeOfSampleManagerProxy {
         tl = getTestLocal();         
         
         for(i = 0; i < man.count(); i++){
-            sampleType = man.getSampleTypeAt(i);
+            sampleType = man.getTypeAt(i);
             
             sampleType.setTestId(man.getTestId());
             tl.addSampleType(sampleType);            
@@ -61,7 +61,7 @@ public class TestTypeOfSampleManagerProxy {
         }
         
         for(i = 0; i < man.count(); i++){
-            sampleType = man.getSampleTypeAt(i);
+            sampleType = man.getTypeAt(i);
             
             if(sampleType.getId() == null){
                 sampleType.setTestId(man.getTestId());
@@ -81,7 +81,7 @@ public class TestTypeOfSampleManagerProxy {
         tl = getTestLocal();                        
         sampleTypes = tl.fetchSampleTypesById(testId);
         ttsm = TestTypeOfSampleManager.getInstance();
-        ttsm.setSampleTypes(sampleTypes);
+        ttsm.setTypes(sampleTypes);
         ttsm.setTestId(testId);
         
         return ttsm;

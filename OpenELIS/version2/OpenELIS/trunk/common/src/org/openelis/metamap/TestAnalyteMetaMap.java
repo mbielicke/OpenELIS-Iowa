@@ -46,4 +46,8 @@ public class TestAnalyteMetaMap extends TestAnalyteMeta implements MetaMap {
         return super.hasColumn(name);
     }
 
+    public static String getTableName() {        
+        return "analyteTable";
+    }
+
 }

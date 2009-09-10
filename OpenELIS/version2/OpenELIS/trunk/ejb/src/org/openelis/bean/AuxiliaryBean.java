@@ -323,7 +323,7 @@ public class AuxiliaryBean implements AuxiliaryRemote {
     
     private void validateAuxField(ValidationErrorsList exceptionList,List<AuxFieldDO> auxFields) {
         TableFieldErrorException ex, auxfvEx;
-        List<RPCException> exList = null;
+        List<Exception> exList = null;
         
         if(auxFields == null)
             return;
@@ -408,12 +408,12 @@ public class AuxiliaryBean implements AuxiliaryRemote {
             throw exceptionList;
     }
     
-    private List<RPCException> validateAuxFieldValue(List<AuxFieldValueDO> auxFieldValueDOList) {        
+    private List<Exception> validateAuxFieldValue(List<AuxFieldValueDO> auxFieldValueDOList) {        
         AuxFieldValueDO valueDO;
         Integer numId, dictId, typeId, yesNoId, dateId, dtId, timeId, alcId, 
                 amcId, aucId,entryId;;
         ArrayList<Integer> dvl;
-        List<RPCException> exList;
+        List<Exception> exList;
         List<NumericRange> nrList;
         String value, fieldName,typeName,valueName;
         NumericRange nr;
@@ -428,7 +428,7 @@ public class AuxiliaryBean implements AuxiliaryRemote {
 
         dvl = new ArrayList<Integer>();
         nrList = new ArrayList<NumericRange>();
-        exList = new ArrayList<RPCException>();        
+        exList = new ArrayList<Exception>();        
         
         dictId = categoryBean.getEntryIdForSystemName("aux_dictionary");        
         numId = categoryBean.getEntryIdForSystemName("aux_numeric");        

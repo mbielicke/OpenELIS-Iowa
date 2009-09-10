@@ -44,7 +44,7 @@ public class TestResultManagerProxy {
         for(i = 0; i < man.groupCount(); i++){
             size = man.getResultGroupSize(i+1);             
             for(j = 0; i < size; j++) {
-                testResult = man.getTestResultAt(i+1, j);
+                testResult = man.getResultAt(i+1, j);
                 testResult.setTestId(man.getTestId());
                 testResult.setResultGroup(i+1);
                 testResult.setSortOrder(j);
@@ -70,7 +70,7 @@ public class TestResultManagerProxy {
         for(i = 0; i < man.groupCount(); i++){
             size = man.getResultGroupSize(i+1);             
             for(j = 0; j < size; j++) {
-                testResult = man.getTestResultAt(i+1, j);                
+                testResult = man.getResultAt(i+1, j);                
                 testResult.setResultGroup(i+1);
                 testResult.setSortOrder(j);
                 
@@ -98,7 +98,7 @@ public class TestResultManagerProxy {
         results = tl.fetchTestResultsById(testId);
         trm = TestResultManager.getInstance();
         trm.setTestId(testId);
-        trm.setTestResults(results);
+        trm.setResults(results);
         
         return trm;
     }

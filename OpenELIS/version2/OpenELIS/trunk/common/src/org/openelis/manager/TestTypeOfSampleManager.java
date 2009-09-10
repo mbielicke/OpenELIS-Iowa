@@ -36,13 +36,13 @@ public class TestTypeOfSampleManager implements RPC {
     private static final long serialVersionUID = 1L;
     
     protected Integer testId;
-    protected ArrayList<TestTypeOfSampleDO> sampleTypes;
-    protected ArrayList<TestTypeOfSampleDO> deletedSampleTypes;
+    protected ArrayList<TestTypeOfSampleDO> types;
+    protected ArrayList<TestTypeOfSampleDO> deletedTypes;
     
     protected transient static TestTypeOfSampleManagerProxy proxy;
     
     protected TestTypeOfSampleManager() {
-        sampleTypes = null;
+        types = null;
     }
     
     /**
@@ -52,7 +52,7 @@ public class TestTypeOfSampleManager implements RPC {
         TestTypeOfSampleManager ttsm;
         
         ttsm = new TestTypeOfSampleManager();
-        ttsm.sampleTypes = new ArrayList<TestTypeOfSampleDO>();
+        ttsm.types = new ArrayList<TestTypeOfSampleDO>();
         
         return ttsm;
     }
@@ -70,44 +70,44 @@ public class TestTypeOfSampleManager implements RPC {
     }
     
     public int count(){
-        if(sampleTypes == null)
+        if(types == null)
             return 0;
         
-        return sampleTypes.size();
+        return types.size();
     }
     
-    public TestTypeOfSampleDO getSampleTypeAt(int i) {
-        return sampleTypes.get(i);
+    public TestTypeOfSampleDO getTypeAt(int i) {
+        return types.get(i);
     }
     
-    public void setSampleTypeAt(TestTypeOfSampleDO sampleType, int i) {
-        sampleTypes.set(i, sampleType);
+    public void setTypeAt(TestTypeOfSampleDO sampleType, int i) {
+        types.set(i, sampleType);
     }
     
-    public void addSampleType(TestTypeOfSampleDO sampleType) {
-        if(sampleTypes == null)
-            sampleTypes = new ArrayList<TestTypeOfSampleDO>();
+    public void addType(TestTypeOfSampleDO sampleType) {
+        if(types == null)
+            types = new ArrayList<TestTypeOfSampleDO>();
         
-        sampleTypes.add(sampleType);
+        types.add(sampleType);
     }
     
-    public void addSampleTypeAt(TestTypeOfSampleDO sampleType,int i) {
-        if(sampleTypes == null)
-            sampleTypes = new ArrayList<TestTypeOfSampleDO>();
+    public void addTypeAt(TestTypeOfSampleDO sampleType,int i) {
+        if(types == null)
+            types = new ArrayList<TestTypeOfSampleDO>();
         
-        sampleTypes.add(i,sampleType);
+        types.add(i,sampleType);
     }
     
-    public void removeSampleTypeAt(int i) {
+    public void removeTypeAt(int i) {
         TestTypeOfSampleDO sampleType;
-        if (sampleTypes == null || i >= sampleTypes.size())
+        if (types == null || i >= types.size())
             return;
 
-        sampleType = sampleTypes.remove(i);
+        sampleType = types.remove(i);
         if (sampleType.getId() != null) {
-            if (deletedSampleTypes == null)
-                deletedSampleTypes = new ArrayList<TestTypeOfSampleDO>();
-            deletedSampleTypes.add(sampleType);
+            if (deletedTypes == null)
+                deletedTypes = new ArrayList<TestTypeOfSampleDO>();
+            deletedTypes.add(sampleType);
         }        
     }
     
@@ -119,23 +119,23 @@ public class TestTypeOfSampleManager implements RPC {
         return proxy().update(this);
     } 
     
-    ArrayList<TestTypeOfSampleDO> getSampleTypes() {
-        return sampleTypes;
+    ArrayList<TestTypeOfSampleDO> getTypes() {
+        return types;
     }
     
-    void setSampleTypes(ArrayList<TestTypeOfSampleDO> sampleTypes) {
-        this.sampleTypes = sampleTypes;
+    void setTypes(ArrayList<TestTypeOfSampleDO> types) {
+        this.types = types;
     }
     
     int deleteCount(){
-        if(deletedSampleTypes == null)
+        if(deletedTypes == null)
             return 0;
         
-        return deletedSampleTypes.size();
+        return deletedTypes.size();
     }
     
     TestTypeOfSampleDO getDeletedAt(int i) {
-        return deletedSampleTypes.get(i);
+        return deletedTypes.get(i);
     }
     
     private static TestTypeOfSampleManagerProxy proxy() {

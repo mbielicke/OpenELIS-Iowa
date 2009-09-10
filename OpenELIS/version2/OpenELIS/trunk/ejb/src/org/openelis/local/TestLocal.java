@@ -63,8 +63,10 @@ public interface TestLocal {
     public void addTestResult(TestResultDO testResult) throws Exception;
     public void deleteTestResult(TestResultDO deletedAt) throws Exception;
     
-    public void validateTest(TestDO testDO, List<TestSectionDO> sectionDOList,
-                             List<TestTypeOfSampleDO> sampleTypeDOlist) throws Exception;
+    public void validateTest(TestDO test, List<TestSectionDO> sections,
+                             List<TestTypeOfSampleDO> sampleTypes,
+                             ArrayList<ArrayList<TestAnalyteDO>> analytes,
+                             ArrayList<ArrayList<TestResultDO>> results) throws Exception;
     
     
                                 

@@ -43,7 +43,7 @@ public class TestSectionManagerProxy {
         tl = getTestLocal();         
         
         for(int i=0; i<man.count(); i++){
-            section = man.getTestSectionAt(i);
+            section = man.getSectionAt(i);
             section.setTestId(man.getTestId());
             
             tl.addTestSection(section);
@@ -63,7 +63,7 @@ public class TestSectionManagerProxy {
         }
         
         for(int i=0; i<man.count(); i++){
-            section = man.getTestSectionAt(i);
+            section = man.getSectionAt(i);
             
             if(section.getId() == null){
                 section.setTestId(man.getTestId());
@@ -83,7 +83,7 @@ public class TestSectionManagerProxy {
         tl = getTestLocal();
         sampleTypes = tl.fetchSampleTypesById(testId);
         ttsm = TestTypeOfSampleManager.getInstance();
-        ttsm.setSampleTypes(sampleTypes);
+        ttsm.setTypes(sampleTypes);
         ttsm.setTestId(testId);
         
         return ttsm;

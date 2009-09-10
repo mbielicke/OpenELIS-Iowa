@@ -35,6 +35,7 @@ import org.openelis.domain.CategoryDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.gwt.common.data.AbstractField;
 import org.openelis.gwt.common.data.QueryStringField;
+import org.openelis.gwt.common.rewrite.QueryData;
 
 @Remote
 public interface CategoryRemote {
@@ -55,9 +56,9 @@ public interface CategoryRemote {
     public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception;
     
      //  method to return just dictionary entries
-    public List getDictionaryEntries(Integer categoryId);
+    public List getDictionaryEntries(Integer categoryId);   
     
-    public List getDictionaryListByPatternAndCategory(QueryStringField pattern,Integer categoryId);       
+    public ArrayList getDictionaryListByPatternAndCategory(ArrayList<QueryData> fields);
         
     public List getMatchingEntries(String entry,int maxResults);
     

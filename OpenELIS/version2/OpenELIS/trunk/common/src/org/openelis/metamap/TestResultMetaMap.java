@@ -9,7 +9,7 @@ public class TestResultMetaMap extends TestResultMeta implements MetaMap {
         return "TestResult ";
     }
     
-    private static final String tableName = "TestResult";
+    private static final String tableName = "resultTable";
 
     public TestResultMetaMap() {
       super();  
