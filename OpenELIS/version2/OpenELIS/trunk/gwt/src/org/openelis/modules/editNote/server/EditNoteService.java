@@ -29,7 +29,7 @@ import java.util.ArrayList;
 
 import org.openelis.domain.StandardNoteDO;
 import org.openelis.gwt.common.RPCException;
-import org.openelis.gwt.common.rewrite.Query;
+import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.StandardNoteRemote;

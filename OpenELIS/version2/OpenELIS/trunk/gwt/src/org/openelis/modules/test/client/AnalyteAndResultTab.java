@@ -44,30 +44,31 @@ import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.GetMatchesEvent;
 import org.openelis.gwt.event.GetMatchesHandler;
 import org.openelis.gwt.event.StateChangeEvent;
-import org.openelis.gwt.screen.ScreenWindow;
-import org.openelis.gwt.screen.rewrite.Screen;
-import org.openelis.gwt.screen.rewrite.ScreenDef;
-import org.openelis.gwt.screen.rewrite.ScreenEventHandler;
+import org.openelis.gwt.screen.Screen;
+import org.openelis.gwt.screen.ScreenDef;
+import org.openelis.gwt.screen.ScreenDefInt;
+import org.openelis.gwt.screen.ScreenEventHandler;
+import org.openelis.gwt.screen.deprecated.ScreenWindow;
 import org.openelis.gwt.services.ScreenService;
-import org.openelis.gwt.widget.rewrite.AppButton;
-import org.openelis.gwt.widget.rewrite.AutoComplete;
-import org.openelis.gwt.widget.rewrite.CheckBox;
-import org.openelis.gwt.widget.rewrite.Dropdown;
-import org.openelis.gwt.widget.rewrite.ScrollableTabBar;
-import org.openelis.gwt.widget.table.rewrite.TableColumn;
-import org.openelis.gwt.widget.table.rewrite.TableDataCell;
-import org.openelis.gwt.widget.table.rewrite.TableDataRow;
-import org.openelis.gwt.widget.table.rewrite.TableWidget;
-import org.openelis.gwt.widget.table.rewrite.event.BeforeCellEditedEvent;
-import org.openelis.gwt.widget.table.rewrite.event.BeforeCellEditedHandler;
-import org.openelis.gwt.widget.table.rewrite.event.BeforeRowAddedEvent;
-import org.openelis.gwt.widget.table.rewrite.event.BeforeRowAddedHandler;
-import org.openelis.gwt.widget.table.rewrite.event.CellEditedEvent;
-import org.openelis.gwt.widget.table.rewrite.event.CellEditedHandler;
-import org.openelis.gwt.widget.table.rewrite.event.RowAddedEvent;
-import org.openelis.gwt.widget.table.rewrite.event.RowAddedHandler;
-import org.openelis.gwt.widget.table.rewrite.event.RowDeletedEvent;
-import org.openelis.gwt.widget.table.rewrite.event.RowDeletedHandler;
+import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.AutoComplete;
+import org.openelis.gwt.widget.CheckBox;
+import org.openelis.gwt.widget.Dropdown;
+import org.openelis.gwt.widget.ScrollableTabBar;
+import org.openelis.gwt.widget.table.TableColumn;
+import org.openelis.gwt.widget.table.TableDataCell;
+import org.openelis.gwt.widget.table.TableDataRow;
+import org.openelis.gwt.widget.table.TableWidget;
+import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
+import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
+import org.openelis.gwt.widget.table.event.BeforeRowAddedEvent;
+import org.openelis.gwt.widget.table.event.BeforeRowAddedHandler;
+import org.openelis.gwt.widget.table.event.CellEditedEvent;
+import org.openelis.gwt.widget.table.event.CellEditedHandler;
+import org.openelis.gwt.widget.table.event.RowAddedEvent;
+import org.openelis.gwt.widget.table.event.RowAddedHandler;
+import org.openelis.gwt.widget.table.event.RowDeletedEvent;
+import org.openelis.gwt.widget.table.event.RowDeletedHandler;
 import org.openelis.manager.TestAnalyteManager;
 import org.openelis.manager.TestManager;
 import org.openelis.manager.TestResultManager;
@@ -110,7 +111,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
     
     private int anaSelCol;           
     
-    public AnalyteAndResultTab(ScreenDef def,ScreenService service) {
+    public AnalyteAndResultTab(ScreenDefInt def,ScreenService service) {
         setDef(def);
         
         TestMeta = new TestMetaMap();

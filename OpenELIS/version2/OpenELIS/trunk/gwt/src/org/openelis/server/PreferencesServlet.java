@@ -27,7 +27,7 @@ package org.openelis.server;
 
 import org.openelis.gwt.common.Preferences;
 import org.openelis.gwt.server.AppServlet;
-import org.openelis.gwt.services.PreferencesServiceInt;
+import org.openelis.gwt.services.deprecated.PreferencesServiceInt;
 
 public class PreferencesServlet extends AppServlet implements
                                                   PreferencesServiceInt {

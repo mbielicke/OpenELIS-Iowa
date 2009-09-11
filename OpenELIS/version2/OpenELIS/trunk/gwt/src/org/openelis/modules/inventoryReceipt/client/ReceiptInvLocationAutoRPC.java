@@ -26,8 +26,8 @@
 package org.openelis.modules.inventoryReceipt.client;
 
 import org.openelis.gwt.common.RPC;
-import org.openelis.gwt.common.data.TableDataModel;
-import org.openelis.gwt.common.data.TableDataRow;
+import org.openelis.gwt.common.data.deprecated.TableDataModel;
+import org.openelis.gwt.common.data.deprecated.TableDataRow;
 
 public class ReceiptInvLocationAutoRPC implements RPC {
     private static final long serialVersionUID = 1L;

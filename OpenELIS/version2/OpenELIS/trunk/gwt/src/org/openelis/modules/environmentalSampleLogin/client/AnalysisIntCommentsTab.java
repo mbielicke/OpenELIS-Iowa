@@ -29,7 +29,8 @@ import org.openelis.common.NotesTab;
 import org.openelis.domain.AnalysisTestDO;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.StateChangeEvent;
-import org.openelis.gwt.screen.rewrite.ScreenDef;
+import org.openelis.gwt.screen.ScreenDef;
+import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.HasNotesInt;
 import org.openelis.manager.NoteManager;
@@ -41,7 +42,7 @@ public class AnalysisIntCommentsTab extends NotesTab {
     protected AnalysisTestDO analysis;
     protected AnalysisManager anMan;
     
-    public AnalysisIntCommentsTab(ScreenDef def, String notesPanelKey, String editButtonKey, boolean isExternal) {
+    public AnalysisIntCommentsTab(ScreenDefInt def, String notesPanelKey, String editButtonKey, boolean isExternal) {
         super(def, notesPanelKey, editButtonKey, isExternal);
     }
     

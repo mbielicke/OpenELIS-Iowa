@@ -28,10 +28,10 @@ package org.openelis.modules.main.client;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
 
-import org.openelis.gwt.common.Form;
-import org.openelis.gwt.common.Query;
 import org.openelis.gwt.common.RPC;
-import org.openelis.gwt.screen.AppScreenForm;
+import org.openelis.gwt.common.deprecated.Form;
+import org.openelis.gwt.common.deprecated.Query;
+import org.openelis.gwt.screen.deprecated.AppScreenForm;
 import org.openelis.modules.main.client.service.OpenELISServiceInt;
 import org.openelis.modules.main.client.service.OpenELISServiceIntAsync;
 

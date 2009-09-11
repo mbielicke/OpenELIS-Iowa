@@ -25,8 +25,8 @@
 */
 package org.openelis.modules.test.client;
 
-import org.openelis.gwt.screen.AppModule;
-import org.openelis.gwt.screen.ClassFactory;
+import org.openelis.gwt.screen.deprecated.AppModule;
+import org.openelis.gwt.screen.deprecated.ClassFactory;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 
 import com.google.gwt.user.client.Window;

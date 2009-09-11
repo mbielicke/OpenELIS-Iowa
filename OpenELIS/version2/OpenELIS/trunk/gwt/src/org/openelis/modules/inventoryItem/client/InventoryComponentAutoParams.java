@@ -25,8 +25,8 @@
 */
 package org.openelis.modules.inventoryItem.client;
 
-import org.openelis.gwt.common.Form;
-import org.openelis.gwt.widget.AutoCompleteParamsInt;
+import org.openelis.gwt.common.deprecated.Form;
+import org.openelis.gwt.widget.deprecated.AutoCompleteParamsInt;
 
 import java.util.HashMap;
 

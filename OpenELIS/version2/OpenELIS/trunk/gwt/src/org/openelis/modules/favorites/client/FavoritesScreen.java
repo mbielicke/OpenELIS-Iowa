@@ -28,11 +28,12 @@ package org.openelis.modules.favorites.client;
 import java.util.ArrayList;
 
 import org.openelis.gwt.common.RPC;
-import org.openelis.gwt.screen.rewrite.Screen;
-import org.openelis.gwt.screen.rewrite.ScreenDef;
+import org.openelis.gwt.screen.Screen;
+import org.openelis.gwt.screen.ScreenDef;
+import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.services.ScreenService;
-import org.openelis.gwt.widget.rewrite.CheckBox;
-import org.openelis.gwt.widget.rewrite.MenuItem;
+import org.openelis.gwt.widget.CheckBox;
+import org.openelis.gwt.widget.MenuItem;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -52,7 +53,7 @@ public class FavoritesScreen extends Screen {
     private ArrayList<String> menuKeys;
     private ArrayList<CheckBox> checks;
     
-	public FavoritesScreen(ScreenDef def) throws Throwable {
+	public FavoritesScreen(ScreenDefInt def) throws Throwable {
 		this.def = def;
 		service = new ScreenService("OpenELISServlet?service=org.openelis.modules.favorites.server.FavoritesService");
 		getFavorites();

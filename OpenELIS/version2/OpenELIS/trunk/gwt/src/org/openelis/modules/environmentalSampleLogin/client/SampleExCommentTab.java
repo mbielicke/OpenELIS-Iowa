@@ -27,14 +27,15 @@ package org.openelis.modules.environmentalSampleLogin.client;
 
 import org.openelis.common.NotesTab;
 import org.openelis.gwt.event.DataChangeEvent;
-import org.openelis.gwt.screen.rewrite.ScreenDef;
+import org.openelis.gwt.screen.ScreenDef;
+import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.manager.SampleManager;
 
 import com.google.gwt.user.client.Window;
 
 public class SampleExCommentTab extends NotesTab {
 
-    public SampleExCommentTab(ScreenDef def, String notesPanelKey, String editButtonKey, boolean isExternal) {
+    public SampleExCommentTab(ScreenDefInt def, String notesPanelKey, String editButtonKey, boolean isExternal) {
         super(def, notesPanelKey, editButtonKey, isExternal);
     }
     

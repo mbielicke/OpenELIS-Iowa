@@ -25,23 +25,23 @@
 */
 package org.openelis.modules.panel.client;
 
-import org.openelis.gwt.common.Query;
-import org.openelis.gwt.common.data.DataObject;
-import org.openelis.gwt.common.data.KeyListManager;
-import org.openelis.gwt.common.data.QueryStringField;
-import org.openelis.gwt.common.data.StringField;
-import org.openelis.gwt.common.data.TableDataModel;
-import org.openelis.gwt.common.data.TableDataRow;
-import org.openelis.gwt.screen.CommandChain;
-import org.openelis.gwt.screen.ScreenTableWidget;
-import org.openelis.gwt.widget.AppButton;
-import org.openelis.gwt.widget.ButtonPanel;
-import org.openelis.gwt.widget.CollapsePanel;
-import org.openelis.gwt.widget.ResultsTable;
-import org.openelis.gwt.widget.AppButton.ButtonState;
-import org.openelis.gwt.widget.table.TableManager;
-import org.openelis.gwt.widget.table.TableModel;
-import org.openelis.gwt.widget.table.TableWidget;
+import org.openelis.gwt.common.data.deprecated.DataObject;
+import org.openelis.gwt.common.data.deprecated.KeyListManager;
+import org.openelis.gwt.common.data.deprecated.QueryStringField;
+import org.openelis.gwt.common.data.deprecated.StringField;
+import org.openelis.gwt.common.data.deprecated.TableDataModel;
+import org.openelis.gwt.common.data.deprecated.TableDataRow;
+import org.openelis.gwt.common.deprecated.Query;
+import org.openelis.gwt.screen.deprecated.CommandChain;
+import org.openelis.gwt.screen.deprecated.ScreenTableWidget;
+import org.openelis.gwt.widget.deprecated.AppButton;
+import org.openelis.gwt.widget.deprecated.ButtonPanel;
+import org.openelis.gwt.widget.deprecated.CollapsePanel;
+import org.openelis.gwt.widget.deprecated.ResultsTable;
+import org.openelis.gwt.widget.deprecated.AppButton.ButtonState;
+import org.openelis.gwt.widget.table.deprecated.TableManager;
+import org.openelis.gwt.widget.table.deprecated.TableModel;
+import org.openelis.gwt.widget.table.deprecated.TableWidget;
 import org.openelis.metamap.PanelMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
@@ -115,7 +115,7 @@ public class PanelScreen extends OpenELISScreenForm<PanelForm,Query<TableDataRow
         chain.addCommand(keyList);
         chain.addCommand(bpanel);               
         
-        ((CollapsePanel)getWidget("collapsePanel")).addChangeListener(atozTable);          
+        //((CollapsePanel)getWidget("collapsePanel")).addChangeListener(atozTable);          
         addedTestsTable = (ScreenTableWidget)widgets.get("addedTestTable");
         addedTestsWidget = ((TableWidget)addedTestsTable.getWidget());   
                 

@@ -25,10 +25,10 @@
 */
 package org.openelis.modules.richTextPopup.client;
 
-import org.openelis.gwt.common.Query;
-import org.openelis.gwt.common.data.TableDataRow;
-import org.openelis.gwt.widget.ButtonPanel;
-import org.openelis.gwt.widget.richtext.RichTextWidget;
+import org.openelis.gwt.common.data.deprecated.TableDataRow;
+import org.openelis.gwt.common.deprecated.Query;
+import org.openelis.gwt.widget.deprecated.ButtonPanel;
+import org.openelis.gwt.widget.richtext.deprecated.RichTextWidget;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
 import com.google.gwt.user.client.ui.ClickListener;

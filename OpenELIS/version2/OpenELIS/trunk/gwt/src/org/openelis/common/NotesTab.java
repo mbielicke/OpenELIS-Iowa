@@ -6,12 +6,13 @@ import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.StateChangeEvent;
-import org.openelis.gwt.screen.ScreenWindow;
-import org.openelis.gwt.screen.rewrite.Screen;
-import org.openelis.gwt.screen.rewrite.ScreenDef;
-import org.openelis.gwt.screen.rewrite.ScreenEventHandler;
+import org.openelis.gwt.screen.Screen;
+import org.openelis.gwt.screen.ScreenDef;
+import org.openelis.gwt.screen.ScreenDefInt;
+import org.openelis.gwt.screen.ScreenEventHandler;
+import org.openelis.gwt.screen.deprecated.ScreenWindow;
+import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.NotesPanel;
-import org.openelis.gwt.widget.rewrite.AppButton;
 import org.openelis.manager.HasNotesInt;
 import org.openelis.manager.NoteManager;
 import org.openelis.modules.editNote.client.EditNoteScreen;
@@ -31,7 +32,7 @@ public class NotesTab extends Screen {
     protected String notesPanelKey, editButtonKey;
     protected boolean          loaded, isExternal;
 
-    public NotesTab(ScreenDef def, String notesPanelKey, String editButtonKey, boolean isExternal) {
+    public NotesTab(ScreenDefInt def, String notesPanelKey, String editButtonKey, boolean isExternal) {
         setDef(def);
         userName = OpenELIS.security.getSystemUserName();
         userId = OpenELIS.security.getSystemUserId();

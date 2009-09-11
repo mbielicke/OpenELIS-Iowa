@@ -25,10 +25,10 @@
 */
 package org.openelis.modules.shipping.client;
 
-import org.openelis.gwt.common.Form;
-import org.openelis.gwt.common.data.AbstractField;
-import org.openelis.gwt.common.data.TableDataRow;
-import org.openelis.gwt.common.data.TableField;
+import org.openelis.gwt.common.data.deprecated.AbstractField;
+import org.openelis.gwt.common.data.deprecated.TableDataRow;
+import org.openelis.gwt.common.data.deprecated.TableField;
+import org.openelis.gwt.common.deprecated.Form;
 
 import com.google.gwt.xml.client.Node;
 

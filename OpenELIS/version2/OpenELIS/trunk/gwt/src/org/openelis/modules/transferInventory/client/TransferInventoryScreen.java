@@ -28,14 +28,14 @@ package org.openelis.modules.transferInventory.client;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Widget;
 
-import org.openelis.gwt.common.Query;
-import org.openelis.gwt.common.data.KeyListManager;
-import org.openelis.gwt.common.data.TableDataModel;
-import org.openelis.gwt.common.data.TableDataRow;
-import org.openelis.gwt.screen.CommandChain;
-import org.openelis.gwt.widget.AutoComplete;
-import org.openelis.gwt.widget.AutoCompleteCallInt;
-import org.openelis.gwt.widget.ButtonPanel;
+import org.openelis.gwt.common.data.deprecated.KeyListManager;
+import org.openelis.gwt.common.data.deprecated.TableDataModel;
+import org.openelis.gwt.common.data.deprecated.TableDataRow;
+import org.openelis.gwt.common.deprecated.Query;
+import org.openelis.gwt.screen.deprecated.CommandChain;
+import org.openelis.gwt.widget.deprecated.AutoComplete;
+import org.openelis.gwt.widget.deprecated.AutoCompleteCallInt;
+import org.openelis.gwt.widget.deprecated.ButtonPanel;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
 public class TransferInventoryScreen extends OpenELISScreenForm<TransferInventoryForm,Query<TableDataRow<Integer>>> implements ClickListener, AutoCompleteCallInt {

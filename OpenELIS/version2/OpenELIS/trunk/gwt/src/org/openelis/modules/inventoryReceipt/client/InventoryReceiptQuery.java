@@ -1,8 +1,8 @@
 package org.openelis.modules.inventoryReceipt.client;
 
-import org.openelis.gwt.common.Query;
-import org.openelis.gwt.common.data.AbstractField;
-import org.openelis.gwt.common.data.TableDataRow;
+import org.openelis.gwt.common.data.deprecated.AbstractField;
+import org.openelis.gwt.common.data.deprecated.TableDataRow;
+import org.openelis.gwt.common.deprecated.Query;
 
 import java.util.ArrayList;
 

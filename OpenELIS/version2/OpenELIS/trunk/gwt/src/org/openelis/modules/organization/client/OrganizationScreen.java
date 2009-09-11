@@ -30,29 +30,32 @@ import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.SecurityModule;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.rewrite.QueryData;
+import org.openelis.gwt.common.data.QueryData;
 import org.openelis.gwt.event.BeforeGetMatchesEvent;
 import org.openelis.gwt.event.BeforeGetMatchesHandler;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.GetMatchesEvent;
 import org.openelis.gwt.event.GetMatchesHandler;
 import org.openelis.gwt.event.StateChangeEvent;
-import org.openelis.gwt.screen.rewrite.Screen;
-import org.openelis.gwt.screen.rewrite.ScreenEventHandler;
-import org.openelis.gwt.screen.rewrite.ScreenNavigator;
+import org.openelis.gwt.screen.Screen;
+import org.openelis.gwt.screen.ScreenDefInt;
+import org.openelis.gwt.screen.ScreenEventHandler;
+import org.openelis.gwt.screen.ScreenNavigator;
+import org.openelis.gwt.services.ScreenService;
+import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.AutoComplete;
+import org.openelis.gwt.widget.ButtonGroup;
+import org.openelis.gwt.widget.CheckBox;
+import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.HasField;
 import org.openelis.gwt.widget.TextBox;
-import org.openelis.gwt.widget.rewrite.AppButton;
-import org.openelis.gwt.widget.rewrite.AutoComplete;
-import org.openelis.gwt.widget.rewrite.ButtonGroup;
-import org.openelis.gwt.widget.rewrite.CheckBox;
-import org.openelis.gwt.widget.rewrite.Dropdown;
-import org.openelis.gwt.widget.rewrite.AppButton.ButtonState;
-import org.openelis.gwt.widget.table.rewrite.TableDataRow;
+import org.openelis.gwt.widget.AppButton.ButtonState;
+import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.manager.OrganizationManager;
 import org.openelis.metamap.OrganizationMetaMap;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
@@ -81,7 +84,8 @@ public class OrganizationScreen extends Screen implements BeforeGetMatchesHandle
     
     public OrganizationScreen() throws Exception {
         // Call base to get ScreenDef and draw screen
-        super("OpenELISServlet?service=org.openelis.modules.organization.server.OrganizationService");
+    	super((ScreenDefInt)GWT.create(OrganizationDef.class));
+        service = new ScreenService("OpenELISServlet?service=org.openelis.modules.organization.server.OrganizationService");
         manager = OrganizationManager.getInstance();
 
         nav = new ScreenNavigator<OrgQuery>(this) {

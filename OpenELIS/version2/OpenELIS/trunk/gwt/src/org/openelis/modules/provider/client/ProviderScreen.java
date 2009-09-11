@@ -30,28 +30,28 @@ import java.util.ArrayList;
 
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.DictionaryDO;
-import org.openelis.gwt.common.Form;
-import org.openelis.gwt.common.Query;
-import org.openelis.gwt.common.data.DataObject;
-import org.openelis.gwt.common.data.KeyListManager;
-import org.openelis.gwt.common.data.QueryStringField;
-import org.openelis.gwt.common.data.StringObject;
-import org.openelis.gwt.common.data.TableDataModel;
-import org.openelis.gwt.common.data.TableDataRow;
-import org.openelis.gwt.screen.CommandChain;
-import org.openelis.gwt.screen.ScreenTabPanel;
-import org.openelis.gwt.screen.ScreenTableWidget;
-import org.openelis.gwt.screen.ScreenTextArea;
-import org.openelis.gwt.screen.ScreenTextBox;
-import org.openelis.gwt.screen.ScreenVertical;
-import org.openelis.gwt.widget.AppButton;
-import org.openelis.gwt.widget.ButtonPanel;
-import org.openelis.gwt.widget.CollapsePanel;
-import org.openelis.gwt.widget.Dropdown;
-import org.openelis.gwt.widget.ResultsTable;
-import org.openelis.gwt.widget.table.TableDropdown;
-import org.openelis.gwt.widget.table.TableManager;
-import org.openelis.gwt.widget.table.TableWidget;
+import org.openelis.gwt.common.data.deprecated.DataObject;
+import org.openelis.gwt.common.data.deprecated.KeyListManager;
+import org.openelis.gwt.common.data.deprecated.QueryStringField;
+import org.openelis.gwt.common.data.deprecated.StringObject;
+import org.openelis.gwt.common.data.deprecated.TableDataModel;
+import org.openelis.gwt.common.data.deprecated.TableDataRow;
+import org.openelis.gwt.common.deprecated.Form;
+import org.openelis.gwt.common.deprecated.Query;
+import org.openelis.gwt.screen.deprecated.CommandChain;
+import org.openelis.gwt.screen.deprecated.ScreenTabPanel;
+import org.openelis.gwt.screen.deprecated.ScreenTableWidget;
+import org.openelis.gwt.screen.deprecated.ScreenTextArea;
+import org.openelis.gwt.screen.deprecated.ScreenTextBox;
+import org.openelis.gwt.screen.deprecated.ScreenVertical;
+import org.openelis.gwt.widget.deprecated.AppButton;
+import org.openelis.gwt.widget.deprecated.ButtonPanel;
+import org.openelis.gwt.widget.deprecated.CollapsePanel;
+import org.openelis.gwt.widget.deprecated.Dropdown;
+import org.openelis.gwt.widget.deprecated.ResultsTable;
+import org.openelis.gwt.widget.table.deprecated.TableDropdown;
+import org.openelis.gwt.widget.table.deprecated.TableManager;
+import org.openelis.gwt.widget.table.deprecated.TableWidget;
 import org.openelis.metamap.ProviderMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
@@ -117,7 +117,7 @@ public class ProviderScreen extends OpenELISScreenForm<ProviderForm,Query<TableD
         chain.addCommand(atozButtons);
         chain.addCommand(keyList);
 
-        ((CollapsePanel)getWidget("collapsePanel")).addChangeListener(atozTable);
+        //((CollapsePanel)getWidget("collapsePanel")).addChangeListener(atozTable);
 
         // load other widgets
         removeContactButton = (AppButton)getWidget("removeAddressButton");

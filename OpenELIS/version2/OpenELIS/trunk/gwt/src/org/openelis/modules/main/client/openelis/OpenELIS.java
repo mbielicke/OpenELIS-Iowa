@@ -29,13 +29,16 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.openelis.gwt.common.SecurityUtil;
-import org.openelis.gwt.screen.AppScreen;
-import org.openelis.gwt.screen.ScreenMenuPanel;
-import org.openelis.gwt.screen.ScreenWidget;
-import org.openelis.gwt.screen.rewrite.Screen;
+import org.openelis.gwt.screen.Screen;
+import org.openelis.gwt.screen.ScreenDefInt;
+import org.openelis.gwt.screen.deprecated.AppScreen;
+import org.openelis.gwt.screen.deprecated.ScreenMenuPanel;
+import org.openelis.gwt.screen.deprecated.ScreenWidget;
+import org.openelis.gwt.services.ScreenService;
+import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.Label;
+import org.openelis.gwt.widget.MenuItem;
 import org.openelis.gwt.widget.WindowBrowser;
-import org.openelis.gwt.widget.rewrite.AppButton;
-import org.openelis.gwt.widget.rewrite.MenuItem;
 import org.openelis.modules.PTSampleLogin.client.PTSampleLoginScreen;
 import org.openelis.modules.SDWISSampleLogin.client.SDWISSampleLoginScreen;
 import org.openelis.modules.analyte.client.AnalyteScreen;
@@ -75,7 +78,10 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -88,15 +94,16 @@ public class OpenELIS extends Screen implements ClickHandler {
     private static HashMap<String, HashMap> cacheList;
     public static ArrayList<String> modules = new ArrayList<String>();
     
-	public OpenELIS() throws Throwable {	    
-        super("OpenELISServlet?service=org.openelis.modules.main.server.OpenELISScreenService");   
-    	browser = (WindowBrowser)def.getWidget("browser");
-    	browser.setBrowserHeight();
-    	OpenELISRPC rpc = service.call("initialData");
-        AppScreen.consts = rpc.appConstants;
-        Screen.consts = rpc.appConstants;
-        security = rpc.security;
-        setHandlers();
+	public OpenELIS() throws Exception {
+		service = new ScreenService("OpenELISServlet?service=org.openelis.modules.main.server.OpenELISScreenService");
+		OpenELISRPC rpc = service.call("initialData");
+		AppScreen.consts = rpc.appConstants;
+		Screen.consts = rpc.appConstants;
+		security = rpc.security;
+		drawScreen((ScreenDefInt)GWT.create(OpenELISDef.class));
+		browser = (WindowBrowser)def.getWidget("browser");
+		browser.setBrowserHeight();
+		setHandlers();
     }
 
 	public void setHandlers() {
@@ -316,6 +323,7 @@ public class OpenELIS extends Screen implements ClickHandler {
 				
 			}
 		});
+		
 		((MenuItem)def.getWidget("worksheetCreation")).addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
 				//browser.addScreen(n )

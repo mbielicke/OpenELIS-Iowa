@@ -27,9 +27,9 @@ package org.openelis.modules.main.client.service;
 
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
-import org.openelis.gwt.common.Query;
 import org.openelis.gwt.common.RPC;
-import org.openelis.gwt.services.AppScreenFormServiceInt;
+import org.openelis.gwt.common.deprecated.Query;
+import org.openelis.gwt.services.deprecated.AppScreenFormServiceInt;
 
 @RemoteServiceRelativePath("OpenELISServlet")
 public interface OpenELISServiceInt<ScreenRPC extends RPC,QueryRPC extends RPC> extends AppScreenFormServiceInt<ScreenRPC,QueryRPC> {

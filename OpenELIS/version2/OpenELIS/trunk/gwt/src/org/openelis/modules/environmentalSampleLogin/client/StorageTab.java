@@ -32,18 +32,19 @@ import org.openelis.domain.StorageDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.StateChangeEvent;
-import org.openelis.gwt.screen.rewrite.Screen;
-import org.openelis.gwt.screen.rewrite.ScreenDef;
-import org.openelis.gwt.screen.rewrite.ScreenEventHandler;
-import org.openelis.gwt.widget.rewrite.AppButton;
-import org.openelis.gwt.widget.table.rewrite.TableDataRow;
-import org.openelis.gwt.widget.table.rewrite.TableWidget;
-import org.openelis.gwt.widget.table.rewrite.event.CellEditedEvent;
-import org.openelis.gwt.widget.table.rewrite.event.CellEditedHandler;
-import org.openelis.gwt.widget.table.rewrite.event.RowAddedEvent;
-import org.openelis.gwt.widget.table.rewrite.event.RowAddedHandler;
-import org.openelis.gwt.widget.table.rewrite.event.RowDeletedEvent;
-import org.openelis.gwt.widget.table.rewrite.event.RowDeletedHandler;
+import org.openelis.gwt.screen.Screen;
+import org.openelis.gwt.screen.ScreenDef;
+import org.openelis.gwt.screen.ScreenDefInt;
+import org.openelis.gwt.screen.ScreenEventHandler;
+import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.table.TableDataRow;
+import org.openelis.gwt.widget.table.TableWidget;
+import org.openelis.gwt.widget.table.event.CellEditedEvent;
+import org.openelis.gwt.widget.table.event.CellEditedHandler;
+import org.openelis.gwt.widget.table.event.RowAddedEvent;
+import org.openelis.gwt.widget.table.event.RowAddedHandler;
+import org.openelis.gwt.widget.table.event.RowDeletedEvent;
+import org.openelis.gwt.widget.table.event.RowDeletedHandler;
 import org.openelis.manager.StorageManager;
 
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -55,7 +56,7 @@ public class StorageTab extends Screen {
     protected StorageManager manager;
     protected SampleDataBundle data;
 
-    public StorageTab(ScreenDef def) {
+    public StorageTab(ScreenDefInt def) {
         setDef(def);
         
         initialize();
