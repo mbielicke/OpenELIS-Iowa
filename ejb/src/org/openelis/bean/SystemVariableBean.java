@@ -45,7 +45,7 @@ import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.SecurityModule.ModuleFlags;
-import org.openelis.gwt.common.data.AbstractField;
+import org.openelis.gwt.common.data.deprecated.AbstractField;
 import org.openelis.local.LockLocal;
 import org.openelis.metamap.SystemVariableMetaMap;
 import org.openelis.remote.SystemVariableRemote;

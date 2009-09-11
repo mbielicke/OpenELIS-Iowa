@@ -47,7 +47,7 @@ import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.rewrite.QueryData;
+import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.AddressLocal;
 import org.openelis.local.LockLocal;
 import org.openelis.local.OrganizationLocal;

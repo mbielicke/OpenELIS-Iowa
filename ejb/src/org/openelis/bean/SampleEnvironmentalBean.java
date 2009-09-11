@@ -39,7 +39,7 @@ import org.openelis.domain.IdNameDO;
 import org.openelis.domain.SampleEnvironmentalDO;
 import org.openelis.entity.SampleEnvironmental;
 import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.rewrite.QueryData;
+import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.AddressLocal;
 import org.openelis.local.SampleEnvironmentalLocal;
 import org.openelis.manager.SampleManager;
