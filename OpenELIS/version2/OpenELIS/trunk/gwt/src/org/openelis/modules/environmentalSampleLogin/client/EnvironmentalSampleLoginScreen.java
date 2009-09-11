@@ -244,10 +244,10 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             }
         });
         
-        final TextBox collectedTime = (TextBox)def.getWidget(Meta.SAMPLE.getCollectionTime());
+        final TextBox<Datetime> collectedTime = (TextBox<Datetime>)def.getWidget(Meta.SAMPLE.getCollectionTime());
         addScreenHandler(collectedTime, new ScreenEventHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
-                collectedTime.setValue(getString(manager.getSample().getCollectionTime()));
+                collectedTime.setValue(manager.getSample().getCollectionTime());
             }
 
             public void onValueChange(ValueChangeEvent<Datetime> event) {
