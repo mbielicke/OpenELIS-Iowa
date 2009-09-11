@@ -32,8 +32,8 @@ import java.util.List;
 import javax.ejb.Remote;
 
 import org.openelis.domain.StandardNoteDO;
-import org.openelis.gwt.common.data.AbstractField;
-import org.openelis.gwt.common.rewrite.QueryData;
+import org.openelis.gwt.common.data.QueryData;
+import org.openelis.gwt.common.data.deprecated.AbstractField;
 
 @Remote
 public interface StandardNoteRemote {

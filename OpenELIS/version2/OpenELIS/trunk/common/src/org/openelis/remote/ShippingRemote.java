@@ -30,8 +30,8 @@ import org.openelis.domain.ShippingAddAutoFillDO;
 import org.openelis.domain.ShippingDO;
 import org.openelis.domain.ShippingItemDO;
 import org.openelis.domain.ShippingTrackingDO;
-import org.openelis.gwt.common.data.AbstractField;
-import org.openelis.gwt.common.data.TableDataModel;
+import org.openelis.gwt.common.data.deprecated.AbstractField;
+import org.openelis.gwt.common.data.deprecated.TableDataModel;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -30,7 +30,7 @@ import java.util.List;
 import javax.ejb.Remote;
 
 import org.openelis.domain.IdNameDO;
-import org.openelis.gwt.common.rewrite.QueryData;
+import org.openelis.gwt.common.data.QueryData;
 
 @Remote
 public interface OrganizationRemote {

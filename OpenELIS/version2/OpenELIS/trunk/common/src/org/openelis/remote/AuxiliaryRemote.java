@@ -29,7 +29,7 @@ package org.openelis.remote;
 import org.openelis.domain.AuxFieldDO;
 import org.openelis.domain.AuxFieldGroupDO;
 import org.openelis.domain.AuxFieldValueDO;
-import org.openelis.gwt.common.data.AbstractField;
+import org.openelis.gwt.common.data.deprecated.AbstractField;
 
 import java.util.ArrayList;
 import java.util.List;

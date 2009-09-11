@@ -33,9 +33,9 @@ import javax.ejb.Remote;
 
 import org.openelis.domain.CategoryDO;
 import org.openelis.domain.DictionaryDO;
-import org.openelis.gwt.common.data.AbstractField;
-import org.openelis.gwt.common.data.QueryStringField;
-import org.openelis.gwt.common.rewrite.QueryData;
+import org.openelis.gwt.common.data.QueryData;
+import org.openelis.gwt.common.data.deprecated.AbstractField;
+import org.openelis.gwt.common.data.deprecated.QueryStringField;
 
 @Remote
 public interface CategoryRemote {

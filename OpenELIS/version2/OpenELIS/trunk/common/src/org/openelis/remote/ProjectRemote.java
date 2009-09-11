@@ -33,7 +33,7 @@ import javax.ejb.Remote;
 import org.openelis.domain.IdNameDO;
 import org.openelis.domain.ProjectDO;
 import org.openelis.domain.ProjectParameterDO;
-import org.openelis.gwt.common.data.AbstractField;
+import org.openelis.gwt.common.data.deprecated.AbstractField;
 
 @Remote
 public interface ProjectRemote {

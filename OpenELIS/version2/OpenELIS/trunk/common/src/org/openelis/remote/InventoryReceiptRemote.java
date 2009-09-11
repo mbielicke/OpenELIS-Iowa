@@ -27,9 +27,9 @@ package org.openelis.remote;
 
 import org.openelis.domain.InventoryLocationDO;
 import org.openelis.domain.InventoryReceiptDO;
-import org.openelis.gwt.common.data.AbstractField;
-import org.openelis.gwt.common.data.TableDataModel;
-import org.openelis.gwt.common.data.TableDataRow;
+import org.openelis.gwt.common.data.deprecated.AbstractField;
+import org.openelis.gwt.common.data.deprecated.TableDataModel;
+import org.openelis.gwt.common.data.deprecated.TableDataRow;
 
 import java.util.ArrayList;
 import java.util.List;

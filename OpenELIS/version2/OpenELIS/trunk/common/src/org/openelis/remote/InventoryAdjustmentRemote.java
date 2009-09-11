@@ -27,7 +27,7 @@ package org.openelis.remote;
 
 import org.openelis.domain.InventoryAdjustmentAddAutoFillDO;
 import org.openelis.domain.InventoryAdjustmentDO;
-import org.openelis.gwt.common.data.AbstractField;
+import org.openelis.gwt.common.data.deprecated.AbstractField;
 
 import java.util.ArrayList;
 import java.util.List;
