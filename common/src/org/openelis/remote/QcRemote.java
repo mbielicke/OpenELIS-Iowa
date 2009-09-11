@@ -34,7 +34,7 @@ import org.openelis.domain.IdNameDO;
 import org.openelis.domain.IdNameLotNumberDO;
 import org.openelis.domain.QcAnalyteDO;
 import org.openelis.domain.QcDO;
-import org.openelis.gwt.common.data.AbstractField;
+import org.openelis.gwt.common.data.deprecated.AbstractField;
 
 @Remote
 public interface QcRemote {

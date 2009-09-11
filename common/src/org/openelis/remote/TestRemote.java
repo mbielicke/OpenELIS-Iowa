@@ -25,7 +25,7 @@
  */
 package org.openelis.remote;
 
-import org.openelis.gwt.common.rewrite.QueryData;
+import org.openelis.gwt.common.data.QueryData;
 
 import java.util.ArrayList;
 import java.util.List;

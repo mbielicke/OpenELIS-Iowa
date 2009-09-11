@@ -6,8 +6,8 @@ import org.openelis.domain.SampleOrganizationDO;
 import org.openelis.domain.SampleProjectDO;
 import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.data.DropDownField;
-import org.openelis.gwt.common.data.TableDataRow;
+import org.openelis.gwt.common.data.deprecated.DropDownField;
+import org.openelis.gwt.common.data.deprecated.TableDataRow;
 
 public class SampleOrganizationManager implements RPC {
 

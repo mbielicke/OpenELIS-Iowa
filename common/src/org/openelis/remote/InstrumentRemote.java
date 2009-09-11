@@ -32,7 +32,7 @@ import javax.ejb.Remote;
 
 import org.openelis.domain.InstrumentDO;
 import org.openelis.domain.InstrumentLogDO;
-import org.openelis.gwt.common.data.AbstractField;
+import org.openelis.gwt.common.data.deprecated.AbstractField;
 
 @Remote
 public interface InstrumentRemote {

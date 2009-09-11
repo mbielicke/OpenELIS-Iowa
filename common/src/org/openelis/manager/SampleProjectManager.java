@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import org.openelis.domain.SampleProjectDO;
 import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.data.TableDataRow;
+import org.openelis.gwt.common.data.deprecated.TableDataRow;
 
 public class SampleProjectManager implements RPC {
     private static final long                            serialVersionUID = 1L;

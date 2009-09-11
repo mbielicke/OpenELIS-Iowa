@@ -27,7 +27,7 @@ package org.openelis.remote;
 
 import org.openelis.domain.NoteDO;
 import org.openelis.domain.ProviderDO;
-import org.openelis.gwt.common.data.AbstractField;
+import org.openelis.gwt.common.data.deprecated.AbstractField;
 
 import java.util.ArrayList;
 import java.util.List;
