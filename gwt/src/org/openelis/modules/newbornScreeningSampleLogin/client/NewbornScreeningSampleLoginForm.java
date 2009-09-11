@@ -1,7 +1,7 @@
 package org.openelis.modules.newbornScreeningSampleLogin.client;
 
-import org.openelis.gwt.common.Form;
-import org.openelis.gwt.common.data.AbstractField;
+import org.openelis.gwt.common.data.deprecated.AbstractField;
+import org.openelis.gwt.common.deprecated.Form;
 
 public class NewbornScreeningSampleLoginForm extends Form<Integer> {
 

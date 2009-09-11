@@ -25,8 +25,8 @@
 */
 package org.openelis.modules.inventoryReceipt.client;
 
-import org.openelis.gwt.common.data.AbstractField;
-import org.openelis.gwt.widget.AutoCompleteParamsInt;
+import org.openelis.gwt.common.data.deprecated.AbstractField;
+import org.openelis.gwt.widget.deprecated.AutoCompleteParamsInt;
 
 import java.util.HashMap;
 

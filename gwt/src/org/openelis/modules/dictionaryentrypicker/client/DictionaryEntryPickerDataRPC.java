@@ -30,7 +30,7 @@ import java.util.ArrayList;
 
 import org.openelis.domain.IdNameDO;
 import org.openelis.gwt.common.RPC;
-import org.openelis.gwt.common.rewrite.QueryData;
+import org.openelis.gwt.common.data.QueryData;
 
 public class DictionaryEntryPickerDataRPC implements RPC {
 

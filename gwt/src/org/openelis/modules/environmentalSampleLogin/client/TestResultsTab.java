@@ -26,8 +26,9 @@
 package org.openelis.modules.environmentalSampleLogin.client;
 
 import org.openelis.gwt.event.DataChangeEvent;
-import org.openelis.gwt.screen.rewrite.Screen;
-import org.openelis.gwt.screen.rewrite.ScreenDef;
+import org.openelis.gwt.screen.Screen;
+import org.openelis.gwt.screen.ScreenDef;
+import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.metamap.SampleMetaMap;
 
 public class TestResultsTab extends Screen {
@@ -38,7 +39,7 @@ public class TestResultsTab extends Screen {
     //protected AnalysisTestDO analysis;
 //    protected Dropdown<Integer> typeOfSampleId, containerId, unitOfMeasureId;
 
-    public TestResultsTab(ScreenDef def) {
+    public TestResultsTab(ScreenDefInt def) {
         setDef(def);
         
         meta = new SampleMetaMap("sample.");

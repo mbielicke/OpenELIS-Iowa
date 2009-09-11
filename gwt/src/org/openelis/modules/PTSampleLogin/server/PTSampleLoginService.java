@@ -26,13 +26,13 @@
 package org.openelis.modules.PTSampleLogin.server;
 
 import org.openelis.domain.IdNameDO;
-import org.openelis.gwt.common.Query;
 import org.openelis.gwt.common.RPCException;
-import org.openelis.gwt.common.data.StringObject;
-import org.openelis.gwt.common.data.TableDataModel;
-import org.openelis.gwt.common.data.TableDataRow;
+import org.openelis.gwt.common.data.deprecated.StringObject;
+import org.openelis.gwt.common.data.deprecated.TableDataModel;
+import org.openelis.gwt.common.data.deprecated.TableDataRow;
+import org.openelis.gwt.common.deprecated.Query;
 import org.openelis.gwt.server.ServiceUtils;
-import org.openelis.gwt.services.AppScreenFormServiceInt;
+import org.openelis.gwt.services.deprecated.AppScreenFormServiceInt;
 import org.openelis.modules.PTSampleLogin.client.PTSampleLoginForm;
 import org.openelis.persistence.CachingManager;
 import org.openelis.persistence.EJBFactory;

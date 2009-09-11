@@ -27,15 +27,15 @@ package org.openelis.modules.shipping.client;
 
 import com.google.gwt.xml.client.Node;
 
-import org.openelis.gwt.common.Form;
-import org.openelis.gwt.common.data.AbstractField;
-import org.openelis.gwt.common.data.DateField;
-import org.openelis.gwt.common.data.DoubleField;
-import org.openelis.gwt.common.data.DropDownField;
-import org.openelis.gwt.common.data.IntegerField;
-import org.openelis.gwt.common.data.StringField;
-import org.openelis.gwt.common.data.TableDataModel;
-import org.openelis.gwt.common.data.TableDataRow;
+import org.openelis.gwt.common.data.deprecated.AbstractField;
+import org.openelis.gwt.common.data.deprecated.DateField;
+import org.openelis.gwt.common.data.deprecated.DoubleField;
+import org.openelis.gwt.common.data.deprecated.DropDownField;
+import org.openelis.gwt.common.data.deprecated.IntegerField;
+import org.openelis.gwt.common.data.deprecated.StringField;
+import org.openelis.gwt.common.data.deprecated.TableDataModel;
+import org.openelis.gwt.common.data.deprecated.TableDataRow;
+import org.openelis.gwt.common.deprecated.Form;
 import org.openelis.metamap.ShippingMetaMap;
 
 public class ShippingForm extends Form<Integer>{

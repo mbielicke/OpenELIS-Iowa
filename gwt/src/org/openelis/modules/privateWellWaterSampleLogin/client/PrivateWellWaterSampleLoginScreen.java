@@ -30,14 +30,14 @@ import com.google.gwt.user.client.ui.SourcesTabEvents;
 import com.google.gwt.user.client.ui.TabListener;
 import com.google.gwt.user.client.ui.Widget;
 
-import org.openelis.gwt.common.Query;
-import org.openelis.gwt.common.data.KeyListManager;
-import org.openelis.gwt.common.data.TableDataRow;
-import org.openelis.gwt.common.data.TreeDataItem;
-import org.openelis.gwt.screen.CommandChain;
-import org.openelis.gwt.widget.ButtonPanel;
-import org.openelis.gwt.widget.tree.TreeManager;
-import org.openelis.gwt.widget.tree.TreeWidget;
+import org.openelis.gwt.common.data.deprecated.KeyListManager;
+import org.openelis.gwt.common.data.deprecated.TableDataRow;
+import org.openelis.gwt.common.data.deprecated.TreeDataItem;
+import org.openelis.gwt.common.deprecated.Query;
+import org.openelis.gwt.screen.deprecated.CommandChain;
+import org.openelis.gwt.widget.deprecated.ButtonPanel;
+import org.openelis.gwt.widget.tree.deprecated.TreeManager;
+import org.openelis.gwt.widget.tree.deprecated.TreeWidget;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
 public class PrivateWellWaterSampleLoginScreen extends OpenELISScreenForm<PrivateWellWaterSampleLoginForm,Query<TableDataRow<Integer>>> implements ClickListener, TabListener, TreeManager{

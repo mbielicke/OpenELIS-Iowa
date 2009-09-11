@@ -25,7 +25,7 @@
 */
 package org.openelis.modules.inventoryReceipt.client;
 
-import org.openelis.gwt.common.data.FieldType;
+import org.openelis.gwt.common.data.deprecated.FieldType;
 
 public class InvReceiptOrgKey implements FieldType {
    

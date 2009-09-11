@@ -25,7 +25,7 @@
  */
  package org.openelis.modules.buildKits.client;
 
-import org.openelis.gwt.common.data.FieldType;
+import org.openelis.gwt.common.data.deprecated.FieldType;
 
 public class BuildKitsInvItemKey implements FieldType {
    

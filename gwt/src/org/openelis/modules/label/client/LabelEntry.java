@@ -25,7 +25,7 @@
 */
 package org.openelis.modules.label.client;
 
-import org.openelis.gwt.screen.AppModule;
+import org.openelis.gwt.screen.deprecated.AppModule;
 
 
 public class LabelEntry implements AppModule {

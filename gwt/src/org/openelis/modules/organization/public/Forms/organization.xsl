@@ -34,6 +34,9 @@ UIRF Software License are applicable instead of those above.
                 xmlns:note="xalan://org.openelis.meta.NoteMeta"
                 xmlns:parent="xalan://org.openelis.meta.OrganizationMeta"
                 extension-element-prefixes="resource"
+                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xsi:noNamespaceSchemaLocation="../../../../../../../../OpenELIS-Lib/src/org/openelis/gwt/public/ScreenSchema.xsd"
+                xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform ../../../../../../../../OpenELIS-Lib/src/org/openelis/gwt/public/XSLTSchema.xsd"
                 version="1.0">
   <xsl:import href="aToZOneColumn.xsl"/>
   <xalan:component prefix="resource">
@@ -75,11 +78,12 @@ UIRF Software License are applicable instead of those above.
     </xsl:variable>
 
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))"/>
-    <screen id="Organization" name="{resource:getString($constants,'organization')}" serviceUrl="TestService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <screen id="Organization" name="{resource:getString($constants,'organization')}">                 
+
         <HorizontalPanel padding="0" spacing="0">
           <!--left table goes here -->
           <CollapsePanel key="collapsePanel" height="440px" style="LeftSidePanel">
-              <resultsTable height="425px" width="100%" key="azTable" showError="false">
+              <resultsTable height="425px" width="100%" key="azTable">
                  <buttonGroup key="atozButtons">
                    <xsl:call-template name="aToZLeftPanelButtons"/>
                  </buttonGroup>
@@ -170,7 +174,7 @@ UIRF Software License are applicable instead of those above.
                 </row>
                 <row>
                   <text style="Prompt"><xsl:value-of select="resource:getString($constants,'parentOrganization')"/>:</text>
-                  <autoComplete case="upper" cat="parentOrg" key="{parent:getName($parent)}" field="Integer" tab="{meta:getIsActive($org)},{addr:getCountry($addr)}" width="241px" popWidth="auto">
+                  <autoComplete case="upper" key="{parent:getName($parent)}" field="Integer" tab="{meta:getIsActive($org)},{addr:getCountry($addr)}" width="241px" popWidth="auto">
                       <col header="Name" width="180"/>
                       <col header="Street" width="110"/>
                       <col header="City" width="100"/>
@@ -232,7 +236,7 @@ UIRF Software License are applicable instead of those above.
                     </widget>
                     <HorizontalPanel style="WhiteContentPanel">
                       <widget halign="center" style="WhiteContentPanel">
-                      <appButton action="addContact" key="addContactButton" onclick="this" style="Button">
+                      <appButton action="addContact" key="addContactButton" style="Button">
                         <HorizontalPanel>
                           <AbsolutePanel style="AddRowButtonImage"/>
                           <text><xsl:value-of select="resource:getString($constants,'addRow')"/></text>
@@ -240,7 +244,7 @@ UIRF Software License are applicable instead of those above.
                       </appButton>
                       </widget>
                       <widget halign="center" style="WhiteContentPanel">
-                      <appButton action="removeContact" key="removeContactButton" onclick="this" style="Button">
+                      <appButton action="removeContact" key="removeContactButton" style="Button">
                         <HorizontalPanel>
                           <AbsolutePanel style="RemoveRowButtonImage"/>
                           <text><xsl:value-of select="resource:getString($constants,'removeRow')"/></text>
@@ -256,7 +260,7 @@ UIRF Software License are applicable instead of those above.
                 <tab key="identifierTab" text="{resource:getString($constants,'identifier')}">
                   <VerticalPanel padding="0" spacing="0">
                   <widget valign="top">
-                    <table key="identifierstsTable" maxRows="9" showError="false" showScroll="ALWAYS" title="" width="auto">
+                    <table key="identifierstsTable" maxRows="9" showScroll="ALWAYS" title="" width="auto">
                         <col key="{contact:getName($cont)}" header="{resource:getString($constants,'identifier')}" width="267" sort="true" filter="false" align="left">
                           <textbox case="mixed" required="true" field="String"/>
                         </col>
@@ -266,7 +270,7 @@ UIRF Software License are applicable instead of those above.
                      </table>
                     </widget>
                     <widget halign="center" style="WhiteContentPanel">
-                      <appButton action="removeIdentifierRow" key="removeIdentifierButton" onclick="this" style="Button">
+                      <appButton action="removeIdentifierRow" key="removeIdentifierButton" style="Button">
                         <HorizontalPanel>
                           <AbsolutePanel style="RemoveRowButtonImage"/>
                           <text><xsl:value-of select="resource:getString($constants,'removeRow')"/></text>

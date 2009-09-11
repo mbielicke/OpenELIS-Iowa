@@ -33,11 +33,12 @@ import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.StateChangeEvent;
-import org.openelis.gwt.screen.ScreenWindow;
-import org.openelis.gwt.screen.rewrite.ScreenDef;
-import org.openelis.gwt.screen.rewrite.ScreenEventHandler;
+import org.openelis.gwt.screen.ScreenDef;
+import org.openelis.gwt.screen.ScreenDefInt;
+import org.openelis.gwt.screen.ScreenEventHandler;
+import org.openelis.gwt.screen.deprecated.ScreenWindow;
+import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.NotesPanel;
-import org.openelis.gwt.widget.rewrite.AppButton;
 import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.NoteManager;
 import org.openelis.manager.SampleManager;
@@ -60,7 +61,7 @@ public class SampleCommentsTab extends NotesTab {
     protected NotesPanel analysisNotesPanel;
     protected EditNoteScreen anEditNote;
     
-    public SampleCommentsTab(ScreenDef def, String sampleNotesPanelKey, String sampleEditButtonKey, boolean sampleIsExternal,
+    public SampleCommentsTab(ScreenDefInt def, String sampleNotesPanelKey, String sampleEditButtonKey, boolean sampleIsExternal,
                                String analysisNotesPanelKey, String analysisEditButtonKey, boolean analysisIsExternal) {
         
         super(def, sampleNotesPanelKey, sampleEditButtonKey, sampleIsExternal);

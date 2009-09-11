@@ -36,12 +36,13 @@ import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.HasActionHandlers;
 import org.openelis.gwt.event.StateChangeEvent;
-import org.openelis.gwt.screen.rewrite.Screen;
-import org.openelis.gwt.screen.rewrite.ScreenDef;
-import org.openelis.gwt.screen.rewrite.ScreenEventHandler;
+import org.openelis.gwt.screen.Screen;
+import org.openelis.gwt.screen.ScreenDef;
+import org.openelis.gwt.screen.ScreenDefInt;
+import org.openelis.gwt.screen.ScreenEventHandler;
+import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.TextBox;
-import org.openelis.gwt.widget.rewrite.Dropdown;
-import org.openelis.gwt.widget.table.rewrite.TableDataRow;
+import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.metamap.SampleMetaMap;
 
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -55,7 +56,7 @@ public class SampleItemTab extends Screen implements HasActionHandlers<SampleIte
     protected SampleItemDO sampleItem;
     protected Dropdown<Integer> typeOfSampleId, sourceOfSampleId, containerId, unitOfMeasureId;
 
-    public SampleItemTab(ScreenDef def) {
+    public SampleItemTab(ScreenDefInt def) {
         setDef(def);
         
         meta = new SampleMetaMap("sample.");

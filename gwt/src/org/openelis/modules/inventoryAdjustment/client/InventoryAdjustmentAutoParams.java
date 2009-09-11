@@ -25,7 +25,7 @@
 */
 package org.openelis.modules.inventoryAdjustment.client;
 
-import org.openelis.gwt.widget.AutoCompleteParamsInt;
+import org.openelis.gwt.widget.deprecated.AutoCompleteParamsInt;
 import org.openelis.metamap.InventoryAdjustmentMetaMap;
 
 import java.util.HashMap;

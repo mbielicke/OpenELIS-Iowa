@@ -27,19 +27,19 @@ package org.openelis.modules.testTrailer.client;
 
 import com.google.gwt.user.client.ui.TextBox;
 
-import org.openelis.gwt.common.Query;
-import org.openelis.gwt.common.data.KeyListManager;
-import org.openelis.gwt.common.data.QueryStringField;
-import org.openelis.gwt.common.data.TableDataModel;
-import org.openelis.gwt.common.data.TableDataRow;
-import org.openelis.gwt.screen.CommandChain;
-import org.openelis.gwt.screen.ScreenInputWidget;
-import org.openelis.gwt.screen.ScreenTextArea;
-import org.openelis.gwt.widget.AToZTable;
-import org.openelis.gwt.widget.AppButton;
-import org.openelis.gwt.widget.ButtonPanel;
-import org.openelis.gwt.widget.CollapsePanel;
-import org.openelis.gwt.widget.ResultsTable;
+import org.openelis.gwt.common.data.deprecated.KeyListManager;
+import org.openelis.gwt.common.data.deprecated.QueryStringField;
+import org.openelis.gwt.common.data.deprecated.TableDataModel;
+import org.openelis.gwt.common.data.deprecated.TableDataRow;
+import org.openelis.gwt.common.deprecated.Query;
+import org.openelis.gwt.screen.deprecated.CommandChain;
+import org.openelis.gwt.screen.deprecated.ScreenInputWidget;
+import org.openelis.gwt.screen.deprecated.ScreenTextArea;
+import org.openelis.gwt.widget.deprecated.AToZTable;
+import org.openelis.gwt.widget.deprecated.AppButton;
+import org.openelis.gwt.widget.deprecated.ButtonPanel;
+import org.openelis.gwt.widget.deprecated.CollapsePanel;
+import org.openelis.gwt.widget.deprecated.ResultsTable;
 import org.openelis.metamap.TestTrailerMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
@@ -81,7 +81,7 @@ public class TestTrailerScreen extends OpenELISScreenForm<TestTrailerForm,Query<
         chain.addCommand(atozButtons);
         chain.addCommand(atozTable);
         
-        ((CollapsePanel)getWidget("collapsePanel")).addChangeListener(atozTable);
+        //((CollapsePanel)getWidget("collapsePanel")).addChangeListener(atozTable);
            
         nameTextBox = (TextBox) getWidget(TestTrailerMeta.getName());
         startWidget = (ScreenInputWidget)widgets.get(TestTrailerMeta.getName());

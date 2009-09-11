@@ -25,7 +25,7 @@
 */
 package org.openelis.modules.order.client;
 
-import org.openelis.gwt.common.data.FieldType;
+import org.openelis.gwt.common.data.deprecated.FieldType;
 
 public class OrderOrgKey implements FieldType {
    

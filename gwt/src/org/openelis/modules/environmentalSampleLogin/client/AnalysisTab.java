@@ -43,16 +43,17 @@ import org.openelis.gwt.event.GetMatchesEvent;
 import org.openelis.gwt.event.GetMatchesHandler;
 import org.openelis.gwt.event.HasActionHandlers;
 import org.openelis.gwt.event.StateChangeEvent;
-import org.openelis.gwt.screen.rewrite.Screen;
-import org.openelis.gwt.screen.rewrite.ScreenDef;
-import org.openelis.gwt.screen.rewrite.ScreenEventHandler;
+import org.openelis.gwt.screen.Screen;
+import org.openelis.gwt.screen.ScreenDef;
+import org.openelis.gwt.screen.ScreenDefInt;
+import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.services.ScreenService;
+import org.openelis.gwt.widget.AutoComplete;
+import org.openelis.gwt.widget.CalendarLookUp;
+import org.openelis.gwt.widget.CheckBox;
+import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.TextBox;
-import org.openelis.gwt.widget.rewrite.AutoComplete;
-import org.openelis.gwt.widget.rewrite.CalendarLookUp;
-import org.openelis.gwt.widget.rewrite.CheckBox;
-import org.openelis.gwt.widget.rewrite.Dropdown;
-import org.openelis.gwt.widget.table.rewrite.TableDataRow;
+import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.metamap.SampleMetaMap;
 
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -75,7 +76,7 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
     protected SampleItemDO sampleItem;
     protected Dropdown<Integer> statusId;
 
-    public AnalysisTab(ScreenDef def, Screen parentScreen) {
+    public AnalysisTab(ScreenDefInt def, Screen parentScreen) {
         service = new ScreenService("OpenELISServlet?service=org.openelis.modules.analysis.server.AnalysisService");
         setDef(def);
         this.parentScreen = parentScreen;

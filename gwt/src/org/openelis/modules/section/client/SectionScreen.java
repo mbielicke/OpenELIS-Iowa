@@ -26,15 +26,15 @@
 package org.openelis.modules.section.client;
 
 import org.openelis.cache.SectionCache;
-import org.openelis.gwt.common.Query;
-import org.openelis.gwt.common.data.KeyListManager;
-import org.openelis.gwt.common.data.QueryStringField;
-import org.openelis.gwt.common.data.TableDataRow;
-import org.openelis.gwt.screen.CommandChain;
-import org.openelis.gwt.widget.AppButton;
-import org.openelis.gwt.widget.ButtonPanel;
-import org.openelis.gwt.widget.CollapsePanel;
-import org.openelis.gwt.widget.ResultsTable;
+import org.openelis.gwt.common.data.deprecated.KeyListManager;
+import org.openelis.gwt.common.data.deprecated.QueryStringField;
+import org.openelis.gwt.common.data.deprecated.TableDataRow;
+import org.openelis.gwt.common.deprecated.Query;
+import org.openelis.gwt.screen.deprecated.CommandChain;
+import org.openelis.gwt.widget.deprecated.AppButton;
+import org.openelis.gwt.widget.deprecated.ButtonPanel;
+import org.openelis.gwt.widget.deprecated.CollapsePanel;
+import org.openelis.gwt.widget.deprecated.ResultsTable;
 import org.openelis.metamap.SectionMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
@@ -64,7 +64,7 @@ public class SectionScreen extends OpenELISScreenForm<SectionForm, Query<TableDa
         
         atozTable = (ResultsTable)getWidget("azTable");
         atozButtons = (ButtonPanel)getWidget("atozButtons");
-        ((CollapsePanel)getWidget("collapsePanel")).addChangeListener(atozTable);
+        //((CollapsePanel)getWidget("collapsePanel")).addChangeListener(atozTable);
 
         bpanel = (ButtonPanel)getWidget("buttons");        
         //

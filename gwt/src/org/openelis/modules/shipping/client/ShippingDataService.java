@@ -1,7 +1,7 @@
 package org.openelis.modules.shipping.client;
 
-import org.openelis.gwt.common.data.TableDataModel;
-import org.openelis.gwt.common.data.TableDataRow;
+import org.openelis.gwt.common.data.deprecated.TableDataModel;
+import org.openelis.gwt.common.data.deprecated.TableDataRow;
 
 public class ShippingDataService {
     Integer shipFromId;

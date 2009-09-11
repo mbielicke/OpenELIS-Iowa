@@ -33,7 +33,7 @@ import org.openelis.domain.TestIdNameMethodNameDO;
 import org.openelis.domain.TestMethodAutoDO;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.RPCException;
-import org.openelis.gwt.common.rewrite.Query;
+import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.manager.TestAnalyteManager;
 import org.openelis.manager.TestManager;

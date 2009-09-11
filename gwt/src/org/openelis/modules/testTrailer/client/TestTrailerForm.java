@@ -25,10 +25,10 @@
 */
 package org.openelis.modules.testTrailer.client;
 
-import org.openelis.gwt.common.Form;
-import org.openelis.gwt.common.data.AbstractField;
-import org.openelis.gwt.common.data.IntegerField;
-import org.openelis.gwt.common.data.StringField;
+import org.openelis.gwt.common.data.deprecated.AbstractField;
+import org.openelis.gwt.common.data.deprecated.IntegerField;
+import org.openelis.gwt.common.data.deprecated.StringField;
+import org.openelis.gwt.common.deprecated.Form;
 import org.openelis.metamap.TestTrailerMetaMap;
 
 import com.google.gwt.xml.client.Node;

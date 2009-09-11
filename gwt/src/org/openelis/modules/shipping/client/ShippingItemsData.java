@@ -1,6 +1,6 @@
 package org.openelis.modules.shipping.client;
 
-import org.openelis.gwt.common.data.FieldType;
+import org.openelis.gwt.common.data.deprecated.FieldType;
 
 public class ShippingItemsData implements FieldType {
    
