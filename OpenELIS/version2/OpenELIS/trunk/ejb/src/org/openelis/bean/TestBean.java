@@ -57,7 +57,7 @@ import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.SecurityModule.ModuleFlags;
-import org.openelis.gwt.common.rewrite.QueryData;
+import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.CategoryLocal;
 import org.openelis.local.LockLocal;
 import org.openelis.local.TestLocal;

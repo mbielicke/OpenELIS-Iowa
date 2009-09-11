@@ -53,7 +53,7 @@ import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.data.AbstractField;
+import org.openelis.gwt.common.data.deprecated.AbstractField;
 import org.openelis.local.CategoryLocal;
 import org.openelis.local.LockLocal;
 import org.openelis.metamap.AuxFieldGroupMetaMap;
