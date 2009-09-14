@@ -23,66 +23,40 @@
  * which case the provisions of a UIRF Software License are applicable instead
  * of those above.
  */
-
 package org.openelis.domain;
 
-import org.openelis.utilcommon.DataBaseUtil;
+import java.util.Date;
 
 /**
- * Class represents the fields in database table aux_field_value.
+ * The class extends the instrument DO and carries an additional scriptlet name
+ * field. This additional fields is for read/display only and does not get
+ * committed to the database. Note: isChanged will reflect any changes to
+ * read/display fields.
  */
 
-public class AuxFieldValueDO extends DataObject {
+public class InstrumentScriptletDO extends InstrumentDO {
 
     private static final long serialVersionUID = 1L;
 
-    protected Integer         id, auxFieldId, typeId;
-    protected String          value;
+    protected String          scriptletName;
 
-    public AuxFieldValueDO() {
+    public InstrumentScriptletDO() {
     }
 
-    public AuxFieldValueDO(Integer id, Integer auxFieldId, Integer typeId, String value) {
-        setId(id);
-        setAuxFieldId(auxFieldId);
-        setTypeId(typeId);
-        setValue(value);
-        _changed = false;
+    public InstrumentScriptletDO(Integer id, String name, String description, String modelNumber,
+                                 String serialNumber, Integer typeId, String location,
+                                 String isActive, Date activeBegin, Date activeEnd,
+                                 Integer scriptletId, String scriptletName) {
+        super(id, name, description, modelNumber, serialNumber, typeId, location, isActive,
+              activeBegin, activeEnd, scriptletId);
+        setScriptletName(scriptletName);
     }
 
-    public Integer getId() {
-        return id;
+    public String getScriptletName() {
+        return scriptletName;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
-        _changed = true;
-    }
-
-    public Integer getAuxFieldId() {
-        return auxFieldId;
-    }
-
-    public void setAuxFieldId(Integer auxFieldId) {
-        this.auxFieldId = auxFieldId;
-        _changed = true;
-    }
-
-    public Integer getTypeId() {
-        return typeId;
-    }
-
-    public void setTypeId(Integer typeId) {
-        this.typeId = typeId;
-        _changed = true;
-    }
-
-    public String getValue() {
-        return value;
-    }
-
-    public void setValue(String value) {
-        this.value = DataBaseUtil.trim(value);
-        _changed = true;
+    public void setScriptletName(String scriptletName) {
+        this.scriptletName = scriptletName;
     }
 }

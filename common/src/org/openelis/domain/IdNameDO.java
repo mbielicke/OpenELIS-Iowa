@@ -25,10 +25,15 @@
 */
 package org.openelis.domain;
 
-import org.openelis.gwt.common.RPC;
 import org.openelis.utilcommon.DataBaseUtil;
 
-public class IdNameDO implements RPC {
+/**
+ * The class is used to carry id and name field for query returns, for left 
+ * display, and some auto complete fields. The fields are considered read/display
+ * and do not get committed to the database.
+ */
+
+public class IdNameDO extends DataObject {
 
     private static final long serialVersionUID = 1L;
 
@@ -36,7 +41,6 @@ public class IdNameDO implements RPC {
     protected String          name;
 
     public IdNameDO() {
-
     }
 
     public IdNameDO(Integer id, String name) {
@@ -67,5 +71,4 @@ public class IdNameDO implements RPC {
     public void setName(String name) {
         this.name = DataBaseUtil.trim(name);
     }
-
 }

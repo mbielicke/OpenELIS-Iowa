@@ -23,66 +23,39 @@
  * which case the provisions of a UIRF Software License are applicable instead
  * of those above.
  */
-
 package org.openelis.domain;
 
-import org.openelis.utilcommon.DataBaseUtil;
-
 /**
- * Class represents the fields in database table aux_field_value.
+ * The class extends qaevent DO and carries a commonly used field testName. The
+ * additional field is read/display only and does not get committed to the
+ * database. Note: isChanged will reflect any changes to read/display fields.
  */
 
-public class AuxFieldValueDO extends DataObject {
+public class QaEventTestDO extends QaEventDO {
 
     private static final long serialVersionUID = 1L;
 
-    protected Integer         id, auxFieldId, typeId;
-    protected String          value;
+    //
+    // additional field for read/display purposes
+    //
+    protected String          testName;
 
-    public AuxFieldValueDO() {
+    public QaEventTestDO() {
     }
 
-    public AuxFieldValueDO(Integer id, Integer auxFieldId, Integer typeId, String value) {
-        setId(id);
-        setAuxFieldId(auxFieldId);
-        setTypeId(typeId);
-        setValue(value);
-        _changed = false;
+    public QaEventTestDO(Integer id, String name, String description, Integer testId,
+                         String testName, Integer typeId, String isBillable,
+                         Integer reportingSequence, String reportingText) {
+        super(id, name, description, testId, typeId, isBillable, reportingSequence,
+              reportingText);
+        setTestName(testName);
     }
 
-    public Integer getId() {
-        return id;
+    public String getTestName() {
+        return testName;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
-        _changed = true;
-    }
-
-    public Integer getAuxFieldId() {
-        return auxFieldId;
-    }
-
-    public void setAuxFieldId(Integer auxFieldId) {
-        this.auxFieldId = auxFieldId;
-        _changed = true;
-    }
-
-    public Integer getTypeId() {
-        return typeId;
-    }
-
-    public void setTypeId(Integer typeId) {
-        this.typeId = typeId;
-        _changed = true;
-    }
-
-    public String getValue() {
-        return value;
-    }
-
-    public void setValue(String value) {
-        this.value = DataBaseUtil.trim(value);
-        _changed = true;
+    public void setTestName(String testName) {
+        this.testName = testName;
     }
 }

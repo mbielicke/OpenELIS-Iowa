@@ -23,66 +23,37 @@
  * which case the provisions of a UIRF Software License are applicable instead
  * of those above.
  */
-
 package org.openelis.domain;
 
 import org.openelis.utilcommon.DataBaseUtil;
 
 /**
- * Class represents the fields in database table aux_field_value.
+ * The class extends qc analyte DO and carries a commonly used field analyte name.
+ * The additional field is for read/display only and does not get committed to the
+ * database. Note: isChanged will reflect any changes to read/display fields.
  */
 
-public class AuxFieldValueDO extends DataObject {
+public class QcAnalyteAnalyteDO extends QcAnalyteDO {
 
     private static final long serialVersionUID = 1L;
 
-    protected Integer         id, auxFieldId, typeId;
-    protected String          value;
+    protected String          analyteName;
 
-    public AuxFieldValueDO() {
+    public QcAnalyteAnalyteDO() {
     }
 
-    public AuxFieldValueDO(Integer id, Integer auxFieldId, Integer typeId, String value) {
-        setId(id);
-        setAuxFieldId(auxFieldId);
-        setTypeId(typeId);
-        setValue(value);
-        _changed = false;
+    public QcAnalyteAnalyteDO(Integer id, Integer qcId, Integer analyteId, String analyteName,
+                              Integer typeId, String value, String isTrendable) {
+        super(id, qcId, analyteId, typeId, value, isTrendable);
+        setAnalyteName(analyteName);
     }
 
-    public Integer getId() {
-        return id;
+    public String getAnalyteName() {
+        return analyteName;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
-        _changed = true;
+    public void setAnalyteName(String analyteName) {
+        this.analyteName = DataBaseUtil.trim(analyteName);
     }
 
-    public Integer getAuxFieldId() {
-        return auxFieldId;
-    }
-
-    public void setAuxFieldId(Integer auxFieldId) {
-        this.auxFieldId = auxFieldId;
-        _changed = true;
-    }
-
-    public Integer getTypeId() {
-        return typeId;
-    }
-
-    public void setTypeId(Integer typeId) {
-        this.typeId = typeId;
-        _changed = true;
-    }
-
-    public String getValue() {
-        return value;
-    }
-
-    public void setValue(String value) {
-        this.value = DataBaseUtil.trim(value);
-        _changed = true;
-    }
 }

@@ -25,13 +25,79 @@
 */
 package org.openelis.utilcommon;
 
+import java.util.Date;
+import org.openelis.gwt.common.Datetime;
+
 public class DataBaseUtil {
 
+    /*
+     * Removed blanks from both sides of the string and nullifies empty strings
+     */
     public static String trim(String result) {
-        if (result == null || result.length() == 0)
-            return null;
-        else
-            return result.trim();
+        if (result != null) {
+            result = result.trim();
+            if (result.length() == 0)
+                result = null;
+        }
+        return result;
+    }
+
+    /*
+     * Convenience methods to covert a date or a datetime to datetime with
+     * date precision.
+     */
+    public static Datetime toYD(Datetime yearToDay) {
+        if (yearToDay != null) {
+            yearToDay.startCode = Datetime.YEAR;
+            yearToDay.endCode = Datetime.DAY;
+        }
+        return yearToDay;
+    }
+    
+    public static Datetime toYD(Date yearToDay) {
+        Datetime dt;
+
+        dt = null;
+        if (yearToDay != null) 
+            dt = new Datetime(Datetime.YEAR, Datetime.DAY, yearToDay);
+        
+        return dt;
+    }
+    
+    public static Datetime toYM(Datetime yearToMinute) {
+        if (yearToMinute != null) {
+            yearToMinute.startCode = Datetime.YEAR;
+            yearToMinute.endCode = Datetime.MINUTE;
+        }
+        return yearToMinute;
+    }
+
+    public static Datetime toYM(Date yearToMinute) {
+        Datetime dt;
+
+        dt = null;
+        if (yearToMinute != null) 
+            dt = new Datetime(Datetime.YEAR, Datetime.MINUTE, yearToMinute);
+        
+        return dt;
+    }
+    
+    public static Datetime toHM(Datetime hourToMinute) {
+        if (hourToMinute != null) {
+            hourToMinute.startCode = Datetime.HOUR;
+            hourToMinute.endCode = Datetime.MINUTE;
+        }
+        return hourToMinute;
+    }
+    
+    public static Datetime toHM(Date hourToMinute) {
+        Datetime dt;
+
+        dt = null;
+        if (hourToMinute != null) 
+            dt = new Datetime(Datetime.YEAR, Datetime.DAY, hourToMinute);
+        
+        return dt;
     }
     
     public static String formatStorageLocation(String storageName, String StorageLocation, String storageUnitDesc){

@@ -3,53 +3,31 @@ package org.openelis.domain;
 import java.util.Date;
 
 import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.RPC;
+import org.openelis.utilcommon.DataBaseUtil;
 
-public class AuxFieldGroupDO implements RPC {
+/**
+ * Class represents the fields in database table aux_field_group.
+ */
+public class AuxFieldGroupDO extends DataObject {
+
     private static final long serialVersionUID = 1L;
 
     protected Integer         id;
-    protected String          name;
-    protected String          description;
-    protected String          isActive;
-    protected Datetime        activeBegin;
-    protected Datetime        activeEnd;
-    private boolean           delete           = false;
+    protected String          name, description, isActive;
+    protected Datetime        activeBegin, activeEnd;
 
     public AuxFieldGroupDO() {
-
     }
 
-    public AuxFieldGroupDO(Integer id,
-                           String name,
-                           String description,
-                           String isActive,
-                           Date activeBegin,
-                           Date activeEnd) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.isActive = isActive;
-        setActiveBegin(activeBegin);
-        setActiveEnd(activeEnd);
-    }
-
-    public Datetime getActiveBegin() {
-        return activeBegin;
-    }
-
-    public void setActiveBegin(Date activeBegin) {
-        this.activeBegin = new Datetime(Datetime.YEAR,
-                                        Datetime.DAY,
-                                        activeBegin);
-    }
-
-    public Datetime getActiveEnd() {
-        return activeEnd;
-    }
-
-    public void setActiveEnd(Date activeEnd) {
-        this.activeEnd = new Datetime(Datetime.YEAR, Datetime.DAY, activeEnd);
+    public AuxFieldGroupDO(Integer id, String name, String description, String isActive,
+                           Date activeBegin, Date activeEnd) {
+        setId(id);
+        setName(name);
+        setDescription(description);
+        setIsActive(isActive);
+        setActiveBegin(DataBaseUtil.toYD(activeBegin));
+        setActiveEnd(DataBaseUtil.toYD(activeEnd));
+        _changed = false;
     }
 
     public Integer getId() {
@@ -58,6 +36,7 @@ public class AuxFieldGroupDO implements RPC {
 
     public void setId(Integer id) {
         this.id = id;
+        _changed = true;
     }
 
     public String getName() {
@@ -65,7 +44,8 @@ public class AuxFieldGroupDO implements RPC {
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.name = DataBaseUtil.trim(name);
+        _changed = true;
     }
 
     public String getDescription() {
@@ -73,7 +53,8 @@ public class AuxFieldGroupDO implements RPC {
     }
 
     public void setDescription(String description) {
-        this.description = description;
+        this.description = DataBaseUtil.trim(description);
+        _changed = true;
     }
 
     public String getIsActive() {
@@ -81,14 +62,23 @@ public class AuxFieldGroupDO implements RPC {
     }
 
     public void setIsActive(String isActive) {
-        this.isActive = isActive;
+        this.isActive = DataBaseUtil.trim(isActive);
+        _changed = true;
     }
 
-    public boolean isDelete() {
-        return delete;
+    public Datetime getActiveBegin() {
+        return activeBegin;
     }
 
-    public void setDelete(boolean delete) {
-        this.delete = delete;
+    public void setActiveBegin(Datetime activeBegin) {
+        this.activeBegin = DataBaseUtil.toYD(activeBegin);
+    }
+
+    public Datetime getActiveEnd() {
+        return activeEnd;
+    }
+
+    public void setActiveEnd(Datetime activeEnd) {
+        this.activeEnd = DataBaseUtil.toYD(activeEnd);
     }
 }

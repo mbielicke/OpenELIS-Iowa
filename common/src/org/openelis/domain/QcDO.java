@@ -1,87 +1,67 @@
-/** Exhibit A - UIRF Open-source Based Public Software License.
-* 
-* The contents of this file are subject to the UIRF Open-source Based
-* Public Software License(the "License"); you may not use this file except
-* in compliance with the License. You may obtain a copy of the License at
-* openelis.uhl.uiowa.edu
-* 
-* Software distributed under the License is distributed on an "AS IS"
-* basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
-* License for the specific language governing rights and limitations
-* under the License.
-* 
-* The Original Code is OpenELIS code.
-* 
-* The Initial Developer of the Original Code is The University of Iowa.
-* Portions created by The University of Iowa are Copyright 2006-2008. All
-* Rights Reserved.
-* 
-* Contributor(s): ______________________________________.
-* 
-* Alternatively, the contents of this file marked
-* "Separately-Licensed" may be used under the terms of a UIRF Software
-* license ("UIRF Software License"), in which case the provisions of a
-* UIRF Software License are applicable instead of those above. 
-*/
+/**
+ * Exhibit A - UIRF Open-source Based Public Software License.
+ * 
+ * The contents of this file are subject to the UIRF Open-source Based Public
+ * Software License(the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * openelis.uhl.uiowa.edu
+ * 
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+ * the specific language governing rights and limitations under the License.
+ * 
+ * The Original Code is OpenELIS code.
+ * 
+ * The Initial Developer of the Original Code is The University of Iowa.
+ * Portions created by The University of Iowa are Copyright 2006-2008. All
+ * Rights Reserved.
+ * 
+ * Contributor(s): ______________________________________.
+ * 
+ * Alternatively, the contents of this file marked "Separately-Licensed" may be
+ * used under the terms of a UIRF Software license ("UIRF Software License"), in
+ * which case the provisions of a UIRF Software License are applicable instead
+ * of those above.
+ */
 package org.openelis.domain;
 
 import java.util.Date;
-
 import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.RPC;
 import org.openelis.utilcommon.DataBaseUtil;
 
-public class QcDO implements RPC {
+/**
+ * Class represents the fields in database table qc.
+ */
+
+public class QcDO extends DataObject {
+
     private static final long serialVersionUID = 1L;
 
-    protected Integer         id;
-    protected String          name;
-    protected Integer         typeId;
-    protected Integer         inventoryItemId;
-    protected String          inventoryItemName;
-    protected String          source;
-    protected String          lotNumber;
-    protected Datetime        preparedDate;
+    protected Integer         id, typeId, inventoryItemId, preparedUnitId, preparedById;
+    protected String          name, source, lotNumber, preparedByName, isSingleUse;
+    protected Datetime        preparedDate, usableDate, expireDate;
     protected Double          preparedVolume;
-    protected Integer         preparedUnitId;
-    protected Integer         preparedById;
-    protected String          preparedByName;
-    protected Datetime        usableDate;
-    protected Datetime        expireDate;
-    protected String          isSingleUse;
 
     public QcDO() {
-
     }
 
-    public QcDO(Integer id,
-                String name,
-                Integer typeId,
-                Integer inventoryItemId,
-                String inventoryItemName,
-                String source,
-                String lotNumber,
-                Date preparedDate,
-                Double preparedVolume,
-                Integer preparedUnitId,
-                Integer preparedById,
-                Date usableDate,
-                Date expireDate,
-                String isSingleUse) {
+    public QcDO(Integer id, String name, Integer typeId, Integer inventoryItemId, String source,
+                String lotNumber, Date preparedDate, Double preparedVolume, Integer preparedUnitId,
+                Integer preparedById, Date usableDate, Date expireDate, String isSingleUse) {
         setId(id);
         setName(name);
         setTypeId(typeId);
         setInventoryItemId(inventoryItemId);
-        setInventoryItemName(inventoryItemName);
         setSource(source);
         setLotNumber(lotNumber);
-        setPreparedDate(preparedDate);
+        setPreparedDate(DataBaseUtil.toYM(preparedDate));
         setPreparedVolume(preparedVolume);
         setPreparedUnitId(preparedUnitId);
         setPreparedById(preparedById);
-        setUsableDate(usableDate);
-        setExpireDate(expireDate);
+        setUsableDate(DataBaseUtil.toYM(usableDate));
+        setExpireDate(DataBaseUtil.toYM(expireDate));
         setIsSingleUse(isSingleUse);
+        _changed = false;
     }
 
     public Integer getId() {
@@ -90,6 +70,7 @@ public class QcDO implements RPC {
 
     public void setId(Integer id) {
         this.id = id;
+        _changed = true;
     }
 
     public String getName() {
@@ -98,6 +79,7 @@ public class QcDO implements RPC {
 
     public void setName(String name) {
         this.name = DataBaseUtil.trim(name);
+        _changed = true;
     }
 
     public Integer getTypeId() {
@@ -106,6 +88,7 @@ public class QcDO implements RPC {
 
     public void setTypeId(Integer typeId) {
         this.typeId = typeId;
+        _changed = true;
     }
 
     public Integer getInventoryItemId() {
@@ -114,14 +97,7 @@ public class QcDO implements RPC {
 
     public void setInventoryItemId(Integer inventoryItemId) {
         this.inventoryItemId = inventoryItemId;
-    }
-
-    public String getInventoryItemName() {
-        return inventoryItemName;
-    }
-
-    public void setInventoryItemName(String inventoryItemName) {
-        this.inventoryItemName = DataBaseUtil.trim(inventoryItemName);
+        _changed = true;
     }
 
     public String getSource() {
@@ -130,6 +106,7 @@ public class QcDO implements RPC {
 
     public void setSource(String source) {
         this.source = DataBaseUtil.trim(source);
+        _changed = true;
     }
 
     public String getLotNumber() {
@@ -138,6 +115,7 @@ public class QcDO implements RPC {
 
     public void setLotNumber(String lotNumber) {
         this.lotNumber = DataBaseUtil.trim(lotNumber);
+        _changed = true;
     }
 
     public Double getPreparedVolume() {
@@ -146,6 +124,7 @@ public class QcDO implements RPC {
 
     public void setPreparedVolume(Double preparedVolume) {
         this.preparedVolume = preparedVolume;
+        _changed = true;
     }
 
     public Integer getPreparedUnitId() {
@@ -154,6 +133,7 @@ public class QcDO implements RPC {
 
     public void setPreparedUnitId(Integer preparedUnitId) {
         this.preparedUnitId = preparedUnitId;
+        _changed = true;
     }
 
     public Integer getPreparedById() {
@@ -162,6 +142,7 @@ public class QcDO implements RPC {
 
     public void setPreparedById(Integer preparedById) {
         this.preparedById = preparedById;
+        _changed = true;
     }
 
     public String getIsSingleUse() {
@@ -170,36 +151,34 @@ public class QcDO implements RPC {
 
     public void setIsSingleUse(String isSingleUse) {
         this.isSingleUse = DataBaseUtil.trim(isSingleUse);
+        _changed = true;
     }
 
     public Datetime getPreparedDate() {
         return preparedDate;
     }
 
-    public void setPreparedDate(Date preparedDate) {
-        this.preparedDate = new Datetime(Datetime.YEAR,
-                                         Datetime.SECOND,
-                                         preparedDate);
+    public void setPreparedDate(Datetime preparedDate) {
+        this.preparedDate = DataBaseUtil.toYM(preparedDate);
+        _changed = true;
     }
 
     public Datetime getUsableDate() {
         return usableDate;
     }
 
-    public void setUsableDate(Date usableDate) {
-        this.usableDate = new Datetime(Datetime.YEAR,
-                                       Datetime.SECOND,
-                                       usableDate);
+    public void setUsableDate(Datetime usableDate) {
+        this.usableDate = DataBaseUtil.toYM(usableDate);
+        _changed = true;
     }
 
     public Datetime getExpireDate() {
         return expireDate;
     }
 
-    public void setExpireDate(Date expireDate) {
-        this.expireDate = new Datetime(Datetime.YEAR,
-                                       Datetime.SECOND,
-                                       expireDate);
+    public void setExpireDate(Datetime expireDate) {
+        this.expireDate = DataBaseUtil.toYM(expireDate);
+        _changed = true;
     }
 
     public String getPreparedByName() {
@@ -207,7 +186,7 @@ public class QcDO implements RPC {
     }
 
     public void setPreparedByName(String preparedByName) {
-        this.preparedByName = preparedByName;
+        this.preparedByName = DataBaseUtil.trim(preparedByName);
+        _changed = true;
     }
-
 }
