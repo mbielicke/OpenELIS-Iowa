@@ -25,11 +25,11 @@
 */
 package org.openelis.test;
 
-import org.openelis.junit.client.TestProvider;
-
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
+
+import org.openelis.junit.client.TestProvider;
 
 
 public class TestOpenELIS extends TestCase {

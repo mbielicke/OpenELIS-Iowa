@@ -25,7 +25,6 @@
 */
 package org.openelis.modules.section.client;
 
-import org.openelis.cache.SectionCache;
 import org.openelis.gwt.common.data.deprecated.KeyListManager;
 import org.openelis.gwt.common.data.deprecated.QueryStringField;
 import org.openelis.gwt.common.data.deprecated.TableDataRow;
@@ -33,7 +32,6 @@ import org.openelis.gwt.common.deprecated.Query;
 import org.openelis.gwt.screen.deprecated.CommandChain;
 import org.openelis.gwt.widget.deprecated.AppButton;
 import org.openelis.gwt.widget.deprecated.ButtonPanel;
-import org.openelis.gwt.widget.deprecated.CollapsePanel;
 import org.openelis.gwt.widget.deprecated.ResultsTable;
 import org.openelis.metamap.SectionMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;

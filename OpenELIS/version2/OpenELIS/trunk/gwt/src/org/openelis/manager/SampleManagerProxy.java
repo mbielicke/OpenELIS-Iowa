@@ -26,7 +26,6 @@
 package org.openelis.manager;
 
 import org.openelis.domain.SampleDO;
-import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.services.ScreenService;

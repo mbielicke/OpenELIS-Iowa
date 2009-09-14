@@ -25,7 +25,6 @@
 */
 package org.openelis.modules.privateWellWaterSampleLogin.server;
 
-import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.data.deprecated.TableDataRow;
 import org.openelis.gwt.common.deprecated.Query;
 import org.openelis.gwt.server.ServiceUtils;
@@ -35,42 +34,42 @@ import org.openelis.server.constants.Constants;
 
 public class PrivateWellWaterSampleLoginService implements AppScreenFormServiceInt<PrivateWellWaterSampleLoginForm, Query<TableDataRow<Integer>>>{
 
-    public PrivateWellWaterSampleLoginForm abort(PrivateWellWaterSampleLoginForm rpc) throws RPCException {
+    public PrivateWellWaterSampleLoginForm abort(PrivateWellWaterSampleLoginForm rpc) throws Exception {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public PrivateWellWaterSampleLoginForm commitAdd(PrivateWellWaterSampleLoginForm rpc) throws RPCException {
+    public PrivateWellWaterSampleLoginForm commitAdd(PrivateWellWaterSampleLoginForm rpc) throws Exception {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public PrivateWellWaterSampleLoginForm commitDelete(PrivateWellWaterSampleLoginForm rpc) throws RPCException {
+    public PrivateWellWaterSampleLoginForm commitDelete(PrivateWellWaterSampleLoginForm rpc) throws Exception {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public Query<TableDataRow<Integer>> commitQuery(Query<TableDataRow<Integer>> data) throws RPCException {
+    public Query<TableDataRow<Integer>> commitQuery(Query<TableDataRow<Integer>> data) throws Exception {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public PrivateWellWaterSampleLoginForm commitUpdate(PrivateWellWaterSampleLoginForm rpc) throws RPCException {
+    public PrivateWellWaterSampleLoginForm commitUpdate(PrivateWellWaterSampleLoginForm rpc) throws Exception {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public PrivateWellWaterSampleLoginForm fetch(PrivateWellWaterSampleLoginForm rpc) throws RPCException {
+    public PrivateWellWaterSampleLoginForm fetch(PrivateWellWaterSampleLoginForm rpc) throws Exception {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public PrivateWellWaterSampleLoginForm fetchForUpdate(PrivateWellWaterSampleLoginForm rpc) throws RPCException {
+    public PrivateWellWaterSampleLoginForm fetchForUpdate(PrivateWellWaterSampleLoginForm rpc) throws Exception {
         // TODO Auto-generated method stub
         return null;
     }
     
-    public PrivateWellWaterSampleLoginForm getScreen(PrivateWellWaterSampleLoginForm rpc) throws RPCException {
+    public PrivateWellWaterSampleLoginForm getScreen(PrivateWellWaterSampleLoginForm rpc) throws Exception {
         rpc.xml = ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/privateWellWaterSampleLogin.xsl");
         return rpc;
     }

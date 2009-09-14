@@ -32,7 +32,6 @@ import javax.servlet.http.HttpSession;
 
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.RPC;
-import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.data.deprecated.FieldType;
 import org.openelis.gwt.common.data.deprecated.TableDataModel;
 import org.openelis.gwt.common.data.deprecated.TableDataRow;
@@ -47,39 +46,39 @@ public class OpenELISServlet extends ScreenControllerServlet implements OpenELIS
 
     private static final long serialVersionUID = 1L; 
 
-    public RPC abort(RPC rpc) throws RPCException {
+    public RPC abort(RPC rpc) throws Exception {
         return getService().abort(rpc);
     }
 
-    public RPC  commitAdd(RPC rpc) throws RPCException {
+    public RPC  commitAdd(RPC rpc) throws Exception {
         return getService().commitAdd(rpc);
     }
 
-    public RPC commitDelete(RPC rpc) throws RPCException {
+    public RPC commitDelete(RPC rpc) throws Exception {
         return getService().commitDelete(rpc);
     }
 
-    public RPC commitQuery(RPC query) throws RPCException {
+    public RPC commitQuery(RPC query) throws Exception {
         return getService().commitQuery(query);
     }
 
-    public RPC commitUpdate(RPC rpc) throws RPCException {
+    public RPC commitUpdate(RPC rpc) throws Exception {
         return getService().commitUpdate(rpc);
     }
 
-    public RPC fetch(RPC rpc) throws RPCException {
+    public RPC fetch(RPC rpc) throws Exception {
         return getService().fetch(rpc);
     }
 
-    public RPC fetchForUpdate(RPC rpc) throws RPCException {
+    public RPC fetchForUpdate(RPC rpc) throws Exception {
         return getService().fetchForUpdate(rpc);
     }
     
-    public RPC getScreen(RPC rpc) throws RPCException {
+    public RPC getScreen(RPC rpc) throws Exception {
         return ((AppScreenServiceInt<RPC>)getService()).getScreen(rpc);
     }
     
-    public <T extends FieldType> T getObject(String method, FieldType[] args) throws RPCException {
+    public <T extends FieldType> T getObject(String method, FieldType[] args) throws Exception {
         AppScreenFormServiceInt service = (AppScreenFormServiceInt) getService();
         Class[] params = null;
         if(args != null){
@@ -94,15 +93,15 @@ public class OpenELISServlet extends ScreenControllerServlet implements OpenELIS
             if(e instanceof InvocationTargetException){
                 InvocationTargetException er = (InvocationTargetException)e;
                 if(er.getCause() != null)
-                    throw (RPCException)er.getCause();
+                    throw (Exception)er.getCause();
             }
 
             e.printStackTrace();
-            throw new RPCException(e.getMessage());
+            throw new Exception(e.getMessage());
         }
     }
     
-    private AppScreenFormServiceInt<RPC,RPC> getService() throws RPCException {
+    private AppScreenFormServiceInt<RPC,RPC> getService() throws Exception {
         try {
             return (AppScreenFormServiceInt<RPC,RPC>)Class.forName(getThreadLocalRequest().getParameter("service")).newInstance();
         }catch(Exception e){
@@ -110,7 +109,7 @@ public class OpenELISServlet extends ScreenControllerServlet implements OpenELIS
                 throw new FormErrorException(e.getMessage());
             else{
                 e.printStackTrace();
-                throw new RPCException(e.getMessage());
+                throw new Exception(e.getMessage());
             }
         }
     }
@@ -135,7 +134,7 @@ public class OpenELISServlet extends ScreenControllerServlet implements OpenELIS
         return getThreadLocalRequest().getLocale().getLanguage();
     }
 
-	public TableDataModel<TableDataRow<Object>> getMatches(String cat, TableDataModel model, String match, HashMap<String,FieldType> params) throws RPCException{
+	public TableDataModel<TableDataRow<Object>> getMatches(String cat, TableDataModel model, String match, HashMap<String,FieldType> params) throws Exception{
 		return ((AutoCompleteServiceInt)getService()).getMatches(cat,model,match,params);
 	}
 

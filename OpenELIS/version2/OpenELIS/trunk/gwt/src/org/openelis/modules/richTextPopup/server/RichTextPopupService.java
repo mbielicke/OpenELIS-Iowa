@@ -25,7 +25,6 @@
 */
 package org.openelis.modules.richTextPopup.server;
 
-import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.data.deprecated.TableDataRow;
 import org.openelis.gwt.common.deprecated.Query;
 import org.openelis.gwt.server.ServiceUtils;
@@ -37,41 +36,41 @@ public class RichTextPopupService implements AppScreenFormServiceInt<RichTextPop
 
     private static final long serialVersionUID = 1L;
 
-    public Query<TableDataRow<Integer>> commitQuery(Query<TableDataRow<Integer>> query) throws RPCException {
+    public Query<TableDataRow<Integer>> commitQuery(Query<TableDataRow<Integer>> query) throws Exception {
         return null;
     }
 
-    public RichTextPopupForm commitAdd(RichTextPopupForm rpc) throws RPCException {
+    public RichTextPopupForm commitAdd(RichTextPopupForm rpc) throws Exception {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public RichTextPopupForm commitUpdate(RichTextPopupForm rpc) throws RPCException {
+    public RichTextPopupForm commitUpdate(RichTextPopupForm rpc) throws Exception {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public RichTextPopupForm commitDelete(RichTextPopupForm rpc) throws RPCException {
+    public RichTextPopupForm commitDelete(RichTextPopupForm rpc) throws Exception {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public RichTextPopupForm abort(RichTextPopupForm rpc) throws RPCException {
+    public RichTextPopupForm abort(RichTextPopupForm rpc) throws Exception {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public RichTextPopupForm fetch(RichTextPopupForm rpc) throws RPCException {
+    public RichTextPopupForm fetch(RichTextPopupForm rpc) throws Exception {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public RichTextPopupForm fetchForUpdate(RichTextPopupForm rpc) throws RPCException {
+    public RichTextPopupForm fetchForUpdate(RichTextPopupForm rpc) throws Exception {
         // TODO Auto-generated method stub
         return null;
     }
     
-    public RichTextPopupForm getScreen(RichTextPopupForm rpc) throws RPCException {
+    public RichTextPopupForm getScreen(RichTextPopupForm rpc) throws Exception {
         rpc.xml = ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/richTextPopup.xsl");
 
         return rpc;

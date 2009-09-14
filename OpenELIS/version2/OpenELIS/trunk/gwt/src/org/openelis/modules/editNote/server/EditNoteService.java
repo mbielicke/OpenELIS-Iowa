@@ -28,7 +28,6 @@ package org.openelis.modules.editNote.server;
 import java.util.ArrayList;
 
 import org.openelis.domain.StandardNoteDO;
-import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.persistence.EJBFactory;
@@ -37,7 +36,7 @@ import org.openelis.server.constants.Constants;
 
 public class EditNoteService {
 
-    public Query<StandardNoteDO> query(Query<StandardNoteDO> query) throws RPCException {
+    public Query<StandardNoteDO> query(Query<StandardNoteDO> query) throws Exception {
 
         StandardNoteRemote remote = (StandardNoteRemote)EJBFactory.lookup("openelis/StandardNoteBean/remote");
 
@@ -48,12 +47,12 @@ public class EditNoteService {
                 query.results.add(result);
             }
         }catch(Exception e){
-            throw new RPCException(e.getMessage());
+            throw new Exception(e.getMessage());
         }
         return query;
     }
     
-    public String getScreen() throws RPCException {
+    public String getScreen() throws Exception {
         return ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/editNote.xsl");      
     }
 }

@@ -32,7 +32,6 @@ import org.openelis.domain.IdNameDO;
 import org.openelis.domain.TestIdNameMethodNameDO;
 import org.openelis.domain.TestMethodAutoDO;
 import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.manager.TestAnalyteManager;
@@ -59,7 +58,7 @@ public class TestService {
     
     private UTFResource openElisConstants= UTFResource.getBundle((String)SessionManager.getSession().getAttribute("locale"));
     
-    public Query<TestIdNameMethodNameDO> query(Query<TestIdNameMethodNameDO> query) throws RPCException {
+    public Query<TestIdNameMethodNameDO> query(Query<TestIdNameMethodNameDO> query) throws Exception {
 
         TestRemote remote = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
 
@@ -73,7 +72,7 @@ public class TestService {
             throw new LastPageException(openElisConstants.getString("lastPageException"));
         }catch(Exception e){
             e.printStackTrace();
-            throw new RPCException(e.getMessage());
+            throw new Exception(e.getMessage());
         }
         return query;
     }
@@ -145,7 +144,7 @@ public class TestService {
         return man;
     } 
     
-    public String getScreen() throws RPCException {
+    public String getScreen() throws Exception {
         return ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/test.xsl");      
     }     
     

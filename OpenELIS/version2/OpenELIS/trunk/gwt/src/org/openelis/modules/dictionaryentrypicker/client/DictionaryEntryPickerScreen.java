@@ -53,7 +53,7 @@ import com.google.gwt.user.client.Window;
 public class DictionaryEntryPickerScreen extends Screen implements
                                                           HasActionHandlers<DictionaryEntryPickerScreen.Action> {
 
-    protected TextBox<String> findTextBox;
+    protected TextBox findTextBox;
     protected AppButton findButton;
     protected TableWidget dictEntTable;
     protected Dropdown<Integer> category;
@@ -91,7 +91,7 @@ public class DictionaryEntryPickerScreen extends Screen implements
             }
         });
 
-        findTextBox = (TextBox)def.getWidget("findTextBox");
+        findTextBox = (TextBox<String>)def.getWidget("findTextBox");
         addScreenHandler(findTextBox, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 findTextBox.setValue(null);

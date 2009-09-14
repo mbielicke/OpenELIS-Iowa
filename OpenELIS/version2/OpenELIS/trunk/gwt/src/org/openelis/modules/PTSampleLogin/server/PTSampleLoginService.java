@@ -25,8 +25,10 @@
 */
 package org.openelis.modules.PTSampleLogin.server;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.openelis.domain.IdNameDO;
-import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.data.deprecated.StringObject;
 import org.openelis.gwt.common.data.deprecated.TableDataModel;
 import org.openelis.gwt.common.data.deprecated.TableDataRow;
@@ -39,42 +41,39 @@ import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.CategoryRemote;
 import org.openelis.server.constants.Constants;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class PTSampleLoginService implements AppScreenFormServiceInt<PTSampleLoginForm, Query<TableDataRow<Integer>>>{
 
-    public PTSampleLoginForm abort(PTSampleLoginForm rpc) throws RPCException {
+    public PTSampleLoginForm abort(PTSampleLoginForm rpc) throws Exception {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public PTSampleLoginForm commitAdd(PTSampleLoginForm rpc) throws RPCException {
+    public PTSampleLoginForm commitAdd(PTSampleLoginForm rpc) throws Exception {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public PTSampleLoginForm commitDelete(PTSampleLoginForm rpc) throws RPCException {
+    public PTSampleLoginForm commitDelete(PTSampleLoginForm rpc) throws Exception {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public Query<TableDataRow<Integer>> commitQuery(Query<TableDataRow<Integer>> data) throws RPCException {
+    public Query<TableDataRow<Integer>> commitQuery(Query<TableDataRow<Integer>> data) throws Exception {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public PTSampleLoginForm commitUpdate(PTSampleLoginForm rpc) throws RPCException {
+    public PTSampleLoginForm commitUpdate(PTSampleLoginForm rpc) throws Exception {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public PTSampleLoginForm fetch(PTSampleLoginForm rpc) throws RPCException {
+    public PTSampleLoginForm fetch(PTSampleLoginForm rpc) throws Exception {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public PTSampleLoginForm fetchForUpdate(PTSampleLoginForm rpc) throws RPCException {
+    public PTSampleLoginForm fetchForUpdate(PTSampleLoginForm rpc) throws Exception {
         // TODO Auto-generated method stub
         return null;
     }

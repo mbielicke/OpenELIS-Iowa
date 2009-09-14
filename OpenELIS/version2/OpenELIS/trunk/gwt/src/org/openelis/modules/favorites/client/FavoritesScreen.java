@@ -29,7 +29,6 @@ import java.util.ArrayList;
 
 import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.screen.Screen;
-import org.openelis.gwt.screen.ScreenDef;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.CheckBox;

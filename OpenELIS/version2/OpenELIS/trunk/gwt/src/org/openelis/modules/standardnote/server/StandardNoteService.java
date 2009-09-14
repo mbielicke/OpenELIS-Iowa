@@ -34,7 +34,6 @@ import org.openelis.domain.StandardNoteDO;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.deprecated.AbstractField;
 import org.openelis.gwt.common.data.deprecated.FieldType;
@@ -64,7 +63,7 @@ public class StandardNoteService implements AppScreenFormServiceInt<StandardNote
 	
     private static final StandardNoteMetaMap StandardNoteMeta = new StandardNoteMetaMap();
     
-	public Query<TableDataRow<Integer>> commitQuery(Query<TableDataRow<Integer>> query) throws RPCException {
+	public Query<TableDataRow<Integer>> commitQuery(Query<TableDataRow<Integer>> query) throws Exception {
         List standardNotes = new ArrayList();
         //		if the rpc is null then we need to get the page
         /*
@@ -82,7 +81,7 @@ public class StandardNoteService implements AppScreenFormServiceInt<StandardNote
     	        	if(e instanceof LastPageException){
     	        		throw new LastPageException(openElisConstants.getString("lastPageException"));
     	        	}else{
-    	        		throw new RPCException(e.getMessage());	
+    	        		throw new Exception(e.getMessage());	
     	        	}
     	        }
 
@@ -96,7 +95,7 @@ public class StandardNoteService implements AppScreenFormServiceInt<StandardNote
                 }catch(LastPageException e) {
                     throw new LastPageException(openElisConstants.getString("lastPageException"));
         		}catch(Exception e){
-        			throw new RPCException(e.getMessage());
+        			throw new Exception(e.getMessage());
         		}
         		
                 //need to save the rpc used to the encache
@@ -118,7 +117,7 @@ public class StandardNoteService implements AppScreenFormServiceInt<StandardNote
     		return query;
     	}
 
-    public StandardNoteForm commitAdd(StandardNoteForm rpc) throws RPCException {
+    public StandardNoteForm commitAdd(StandardNoteForm rpc) throws Exception {
 //		remote interface to call the standardNote bean
 		StandardNoteRemote remote = (StandardNoteRemote)EJBFactory.lookup("openelis/StandardNoteBean/remote");
 		StandardNoteDO newStandardNoteDO = new StandardNoteDO();
@@ -135,7 +134,7 @@ public class StandardNoteService implements AppScreenFormServiceInt<StandardNote
                 setRpcErrors(((ValidationErrorsList)e).getErrorList(), rpc);
                 return rpc;
             }else
-                throw new RPCException(e.getMessage());
+                throw new Exception(e.getMessage());
         }
 		
         newStandardNoteDO.setId(standardNoteId);
@@ -146,7 +145,7 @@ public class StandardNoteService implements AppScreenFormServiceInt<StandardNote
 		return rpc;
 	}
 
-	public StandardNoteForm commitUpdate(StandardNoteForm rpc) throws RPCException {
+	public StandardNoteForm commitUpdate(StandardNoteForm rpc) throws Exception {
 //		remote interface to call the standardnote bean
 		StandardNoteRemote remote = (StandardNoteRemote)EJBFactory.lookup("openelis/StandardNoteBean/remote");
 		StandardNoteDO newStandardNoteDO = new StandardNoteDO();
@@ -162,7 +161,7 @@ public class StandardNoteService implements AppScreenFormServiceInt<StandardNote
                 setRpcErrors(((ValidationErrorsList)e).getErrorList(), rpc);
                 return rpc;
             }else
-                throw new RPCException(e.getMessage());
+                throw new Exception(e.getMessage());
         }
 		
 //		set the fields in the RPC
@@ -171,7 +170,7 @@ public class StandardNoteService implements AppScreenFormServiceInt<StandardNote
 		return rpc;
 	}
 
-	public StandardNoteForm commitDelete(StandardNoteForm rpc) throws RPCException {
+	public StandardNoteForm commitDelete(StandardNoteForm rpc) throws Exception {
     //		remote interface to call the standard note bean
     		StandardNoteRemote remote = (StandardNoteRemote)EJBFactory.lookup("openelis/StandardNoteBean/remote");
     		
@@ -183,7 +182,7 @@ public class StandardNoteService implements AppScreenFormServiceInt<StandardNote
                     setRpcErrors(((ValidationErrorsList)e).getErrorList(), rpc);
                     return rpc;
                 }else
-                    throw new RPCException(e.getMessage());
+                    throw new Exception(e.getMessage());
             }
     		
     		//this should set all fields in the rpc to null
@@ -192,7 +191,7 @@ public class StandardNoteService implements AppScreenFormServiceInt<StandardNote
     		return rpc;
     	}
 
-    public StandardNoteForm abort(StandardNoteForm rpc) throws RPCException {
+    public StandardNoteForm abort(StandardNoteForm rpc) throws Exception {
     //		remote interface to call the storage unit bean
     		StandardNoteRemote remote = (StandardNoteRemote)EJBFactory.lookup("openelis/StandardNoteBean/remote");
     		
@@ -205,7 +204,7 @@ public class StandardNoteService implements AppScreenFormServiceInt<StandardNote
           return rpc;  
     	}
 
-    public StandardNoteForm fetch(StandardNoteForm rpc) throws RPCException {
+    public StandardNoteForm fetch(StandardNoteForm rpc) throws Exception {
     	//		remote interface to call the standard note bean
 		StandardNoteRemote remote = (StandardNoteRemote)EJBFactory.lookup("openelis/StandardNoteBean/remote");
 		
@@ -217,7 +216,7 @@ public class StandardNoteService implements AppScreenFormServiceInt<StandardNote
 		return rpc;
 	}
 
-	public StandardNoteForm fetchForUpdate(StandardNoteForm rpc) throws RPCException {
+	public StandardNoteForm fetchForUpdate(StandardNoteForm rpc) throws Exception {
 //		remote interface to call the standard note bean
 		StandardNoteRemote remote = (StandardNoteRemote)EJBFactory.lookup("openelis/StandardNoteBean/remote");
 		StandardNoteDO standardNoteDO = new StandardNoteDO();
@@ -225,7 +224,7 @@ public class StandardNoteService implements AppScreenFormServiceInt<StandardNote
 		try{
 			standardNoteDO = remote.getStandardNoteAndLock(rpc.entityKey, SessionManager.getSession().getId());
 		}catch(Exception e){
-			throw new RPCException(e.getMessage());
+			throw new Exception(e.getMessage());
 		}
 		
 //		set the fields in the RPC
@@ -238,7 +237,7 @@ public class StandardNoteService implements AppScreenFormServiceInt<StandardNote
 		return null;
 	}
     
-    public StandardNoteForm getScreen(StandardNoteForm rpc) throws RPCException {
+    public StandardNoteForm getScreen(StandardNoteForm rpc) throws Exception {
         rpc.xml = ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/standardNote.xsl");
 	    
 	    return rpc;

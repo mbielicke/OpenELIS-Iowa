@@ -25,10 +25,9 @@
 */
 package org.openelis.modules.sampleManagement.server;
 
-import org.openelis.gwt.common.RPCException;
-import org.openelis.gwt.common.data.deprecated.AbstractField;
+import java.util.HashMap;
+
 import org.openelis.gwt.common.data.deprecated.FieldType;
-import org.openelis.gwt.common.data.deprecated.TableDataModel;
 import org.openelis.gwt.common.data.deprecated.TableDataRow;
 import org.openelis.gwt.common.deprecated.Query;
 import org.openelis.gwt.server.ServiceUtils;
@@ -36,56 +35,53 @@ import org.openelis.gwt.services.deprecated.AppScreenFormServiceInt;
 import org.openelis.modules.sampleManagement.client.SampleManagementForm;
 import org.openelis.server.constants.Constants;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-
 public class SampleManagementService implements AppScreenFormServiceInt<SampleManagementForm, Query<TableDataRow<Integer>>>{
 
-    public SampleManagementForm abort(SampleManagementForm rpc) throws RPCException {
+    public SampleManagementForm abort(SampleManagementForm rpc) throws Exception {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public SampleManagementForm commitAdd(SampleManagementForm rpc) throws RPCException {
+    public SampleManagementForm commitAdd(SampleManagementForm rpc) throws Exception {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public SampleManagementForm commitDelete(SampleManagementForm rpc) throws RPCException {
+    public SampleManagementForm commitDelete(SampleManagementForm rpc) throws Exception {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public Query<TableDataRow<Integer>> commitQuery(Query<TableDataRow<Integer>> query) throws RPCException {
+    public Query<TableDataRow<Integer>> commitQuery(Query<TableDataRow<Integer>> query) throws Exception {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public SampleManagementForm commitUpdate(SampleManagementForm rpc) throws RPCException {
+    public SampleManagementForm commitUpdate(SampleManagementForm rpc) throws Exception {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public SampleManagementForm fetch(SampleManagementForm rpc) throws RPCException {
+    public SampleManagementForm fetch(SampleManagementForm rpc) throws Exception {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public SampleManagementForm fetchForUpdate(SampleManagementForm rpc) throws RPCException {
+    public SampleManagementForm fetchForUpdate(SampleManagementForm rpc) throws Exception {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public String getXML() throws RPCException {
+    public String getXML() throws Exception {
         return ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/sampleManagement.xsl");
     }
 
-    public HashMap<String, FieldType> getXMLData() throws RPCException {
+    public HashMap<String, FieldType> getXMLData() throws Exception {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public HashMap<String, FieldType> getXMLData(HashMap<String, FieldType> args) throws RPCException {
+    public HashMap<String, FieldType> getXMLData(HashMap<String, FieldType> args) throws Exception {
         // TODO Auto-generated method stub
         return null;
     }

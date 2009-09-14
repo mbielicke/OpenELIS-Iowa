@@ -46,7 +46,6 @@ import org.openelis.gwt.screen.deprecated.ScreenTextBox;
 import org.openelis.gwt.screen.deprecated.ScreenVertical;
 import org.openelis.gwt.widget.deprecated.AppButton;
 import org.openelis.gwt.widget.deprecated.ButtonPanel;
-import org.openelis.gwt.widget.deprecated.CollapsePanel;
 import org.openelis.gwt.widget.deprecated.Dropdown;
 import org.openelis.gwt.widget.deprecated.ResultsTable;
 import org.openelis.gwt.widget.table.deprecated.TableDropdown;

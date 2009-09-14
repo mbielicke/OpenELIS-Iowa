@@ -25,7 +25,8 @@
 */
 package org.openelis.modules.transferInventory.server;
 
-import org.openelis.gwt.common.RPCException;
+import java.util.HashMap;
+
 import org.openelis.gwt.common.data.deprecated.FieldType;
 import org.openelis.gwt.common.data.deprecated.TableDataRow;
 import org.openelis.gwt.common.deprecated.Query;
@@ -34,55 +35,53 @@ import org.openelis.gwt.services.deprecated.AppScreenFormServiceInt;
 import org.openelis.modules.transferInventory.client.TransferInventoryForm;
 import org.openelis.server.constants.Constants;
 
-import java.util.HashMap;
-
 public class TransferInventoryService implements AppScreenFormServiceInt<TransferInventoryForm,Query<TableDataRow<Integer>>>{
 
-    public TransferInventoryForm abort(TransferInventoryForm rpc) throws RPCException {
+    public TransferInventoryForm abort(TransferInventoryForm rpc) throws Exception {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public TransferInventoryForm commitAdd(TransferInventoryForm rpc) throws RPCException {
+    public TransferInventoryForm commitAdd(TransferInventoryForm rpc) throws Exception {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public TransferInventoryForm commitDelete(TransferInventoryForm rpc) throws RPCException {
+    public TransferInventoryForm commitDelete(TransferInventoryForm rpc) throws Exception {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public Query<TableDataRow<Integer>> commitQuery(Query<TableDataRow<Integer>> query) throws RPCException {
+    public Query<TableDataRow<Integer>> commitQuery(Query<TableDataRow<Integer>> query) throws Exception {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public TransferInventoryForm commitUpdate(TransferInventoryForm rpc) throws RPCException {
+    public TransferInventoryForm commitUpdate(TransferInventoryForm rpc) throws Exception {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public TransferInventoryForm fetch(TransferInventoryForm rpc) throws RPCException {
+    public TransferInventoryForm fetch(TransferInventoryForm rpc) throws Exception {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public TransferInventoryForm fetchForUpdate(TransferInventoryForm rpc) throws RPCException {
+    public TransferInventoryForm fetchForUpdate(TransferInventoryForm rpc) throws Exception {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public String getXML() throws RPCException {
+    public String getXML() throws Exception {
         return ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/transferInventory.xsl");
     }
 
-    public HashMap<String, FieldType> getXMLData() throws RPCException {
+    public HashMap<String, FieldType> getXMLData() throws Exception {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public HashMap<String, FieldType> getXMLData(HashMap<String, FieldType> args) throws RPCException {
+    public HashMap<String, FieldType> getXMLData(HashMap<String, FieldType> args) throws Exception {
         // TODO Auto-generated method stub
         return null;
     }

@@ -25,13 +25,12 @@
 */
 package org.openelis.modules.sampleLocation.server;
 
-import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.server.constants.Constants;
 
 public class SampleLocationService {
 
-    public String getScreen() throws RPCException {
+    public String getScreen() throws Exception {
         return ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/sampleLocation.xsl");      
     }
 }

@@ -25,6 +25,10 @@
 */
 package org.openelis.modules.qaevent.server;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 import org.openelis.domain.IdNameTestMethodDO;
 import org.openelis.domain.QaEventDO;
 import org.openelis.domain.QaEventTestDropdownDO;
@@ -32,7 +36,6 @@ import org.openelis.domain.TestMethodAutoDO;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.deprecated.AbstractField;
 import org.openelis.gwt.common.data.deprecated.FieldType;
@@ -53,10 +56,6 @@ import org.openelis.util.FormUtil;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
 
 public class QAEventService implements AppScreenFormServiceInt<QAEventForm, Query<TableDataRow<Integer>>>,
                                        AutoCompleteServiceInt {
@@ -66,7 +65,7 @@ public class QAEventService implements AppScreenFormServiceInt<QAEventForm, Quer
     
     private UTFResource openElisConstants= UTFResource.getBundle((String)SessionManager.getSession().getAttribute("locale"));
     
-    public Query<TableDataRow<Integer>> commitQuery(Query<TableDataRow<Integer>> query) throws RPCException {
+    public Query<TableDataRow<Integer>> commitQuery(Query<TableDataRow<Integer>> query) throws Exception {
         List qaEventNames = new ArrayList();
 
         QaEventRemote remote = (QaEventRemote)EJBFactory.lookup("openelis/QaEventBean/remote"); 
@@ -76,7 +75,7 @@ public class QAEventService implements AppScreenFormServiceInt<QAEventForm, Quer
         }catch(LastPageException e) {
             throw new LastPageException(openElisConstants.getString("lastPageException"));
         }catch(Exception e){            
-            throw new RPCException(e.getMessage());
+            throw new Exception(e.getMessage());
         }
     
         //need to save the rpc used to the encache            
@@ -102,7 +101,7 @@ public class QAEventService implements AppScreenFormServiceInt<QAEventForm, Quer
          return query;
     }
 
-    public QAEventForm commitAdd(QAEventForm rpc) throws RPCException {
+    public QAEventForm commitAdd(QAEventForm rpc) throws Exception {
         QaEventRemote remote;
         QaEventDO qaeDO;          
         Integer qaeId;
@@ -117,7 +116,7 @@ public class QAEventService implements AppScreenFormServiceInt<QAEventForm, Quer
             setRpcErrors(e.getErrorList(), rpc);
             return rpc;
         } catch (Exception e) {            
-            throw new RPCException(e.getMessage());            
+            throw new Exception(e.getMessage());            
         }
 
         qaeDO.setId(qaeId);
@@ -126,7 +125,7 @@ public class QAEventService implements AppScreenFormServiceInt<QAEventForm, Quer
         return rpc;
     }
 
-    public QAEventForm commitUpdate(QAEventForm rpc) throws RPCException {
+    public QAEventForm commitUpdate(QAEventForm rpc) throws Exception {
         QaEventRemote remote;
         QaEventDO qaeDO;
         
@@ -139,7 +138,7 @@ public class QAEventService implements AppScreenFormServiceInt<QAEventForm, Quer
             setRpcErrors(e.getErrorList(), rpc);
             return rpc;
         } catch (Exception e) {           
-            throw new RPCException(e.getMessage());            
+            throw new Exception(e.getMessage());            
         }
         
         setFieldsInRPC(rpc, qaeDO);
@@ -148,12 +147,12 @@ public class QAEventService implements AppScreenFormServiceInt<QAEventForm, Quer
     }
     
 
-    public QAEventForm commitDelete(QAEventForm rpc) throws RPCException {
+    public QAEventForm commitDelete(QAEventForm rpc) throws Exception {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public QAEventForm abort(QAEventForm rpc) throws RPCException {
+    public QAEventForm abort(QAEventForm rpc) throws Exception {
             QaEventRemote remote = (QaEventRemote)EJBFactory.lookup("openelis/QaEventBean/remote"); 
             Integer qaEventId = rpc.entityKey;
     
@@ -161,7 +160,7 @@ public class QAEventService implements AppScreenFormServiceInt<QAEventForm, Quer
              try{
               qaeDO = remote.getQaEventAndUnlock(qaEventId, SessionManager.getSession().getId());
              } catch(Exception ex){
-                 throw new RPCException(ex.getMessage());
+                 throw new Exception(ex.getMessage());
              }  
     //      set the fields in the RPC
              setFieldsInRPC(rpc, qaeDO);
@@ -169,7 +168,7 @@ public class QAEventService implements AppScreenFormServiceInt<QAEventForm, Quer
             
         }
 
-    public QAEventForm fetch(QAEventForm rpc) throws RPCException {
+    public QAEventForm fetch(QAEventForm rpc) throws Exception {
         QaEventRemote remote = (QaEventRemote)EJBFactory.lookup("openelis/QaEventBean/remote"); 
         Integer qaeId = rpc.entityKey;
         QaEventDO qaeDO = remote.getQaEvent(qaeId);
@@ -179,7 +178,7 @@ public class QAEventService implements AppScreenFormServiceInt<QAEventForm, Quer
         return rpc;
     }
 
-    public QAEventForm fetchForUpdate(QAEventForm rpc) throws RPCException {
+    public QAEventForm fetchForUpdate(QAEventForm rpc) throws Exception {
         QaEventRemote remote = (QaEventRemote)EJBFactory.lookup("openelis/QaEventBean/remote"); 
         Integer qaEventId = rpc.entityKey;
 
@@ -187,7 +186,7 @@ public class QAEventService implements AppScreenFormServiceInt<QAEventForm, Quer
          try{
           qaeDO = remote.getQaEventAndLock(qaEventId, SessionManager.getSession().getId());
          } catch(Exception ex){
-             throw new RPCException(ex.getMessage());
+             throw new Exception(ex.getMessage());
          }  
          //  set the fields in the RPC
          setFieldsInRPC(rpc, qaeDO);        
@@ -195,7 +194,7 @@ public class QAEventService implements AppScreenFormServiceInt<QAEventForm, Quer
         return rpc;
     }
     
-    public QAEventForm getScreen(QAEventForm rpc) throws RPCException{       
+    public QAEventForm getScreen(QAEventForm rpc) throws Exception{       
        rpc.xml = ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/qaEvent.xsl");                     
        return rpc;
     }
@@ -296,7 +295,7 @@ public class QAEventService implements AppScreenFormServiceInt<QAEventForm, Quer
     public TableDataModel getMatches(String cat,
                                      TableDataModel model,
                                      String match,
-                                     HashMap<String, FieldType> params) throws RPCException {
+                                     HashMap<String, FieldType> params) throws Exception {
         TestRemote tremote;
         List<TestMethodAutoDO> tmlist;
         TableDataModel<TableDataRow<Integer>> dataModel;

@@ -25,12 +25,11 @@
 */
 package org.openelis.modules.main.client.service;
 
+import org.openelis.gwt.common.RPC;
+import org.openelis.gwt.services.deprecated.AppScreenFormServiceIntAsync;
+
 import com.google.gwt.http.client.Request;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-
-import org.openelis.gwt.common.RPC;
-import org.openelis.gwt.common.deprecated.Query;
-import org.openelis.gwt.services.deprecated.AppScreenFormServiceIntAsync;
 
 public interface OpenELISServiceIntAsync<ScreenRPC extends RPC,QueryRPC extends RPC> extends AppScreenFormServiceIntAsync<ScreenRPC,QueryRPC> {
     

@@ -42,7 +42,6 @@ import org.openelis.gwt.screen.deprecated.CommandChain;
 import org.openelis.gwt.screen.deprecated.ScreenTableWidget;
 import org.openelis.gwt.widget.deprecated.AppButton;
 import org.openelis.gwt.widget.deprecated.ButtonPanel;
-import org.openelis.gwt.widget.deprecated.CollapsePanel;
 import org.openelis.gwt.widget.deprecated.Dropdown;
 import org.openelis.gwt.widget.deprecated.ResultsTable;
 import org.openelis.gwt.widget.table.deprecated.TableDropdown;
@@ -54,7 +53,6 @@ import org.openelis.modules.main.client.OpenELISScreenForm;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.SyncCallback;
 import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.SourcesTabEvents;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 

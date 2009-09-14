@@ -25,13 +25,17 @@
 */
 package org.openelis.modules.dictionary.server;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+
 import org.openelis.domain.CategoryDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameDO;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.deprecated.AbstractField;
@@ -48,19 +52,12 @@ import org.openelis.gwt.services.deprecated.AppScreenFormServiceInt;
 import org.openelis.gwt.services.deprecated.AutoCompleteServiceInt;
 import org.openelis.modules.dictionary.client.DictionaryEntryTextRPC;
 import org.openelis.modules.dictionary.client.DictionaryForm;
-import org.openelis.persistence.CachingManager;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.CategoryRemote;
-import org.openelis.remote.SectionRemote;
 import org.openelis.server.constants.Constants;
 import org.openelis.util.FormUtil;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 
 public class DictionaryService implements AppScreenFormServiceInt<DictionaryForm,Query<TableDataRow<Integer>>>,
                                            AutoCompleteServiceInt{
@@ -71,7 +68,7 @@ public class DictionaryService implements AppScreenFormServiceInt<DictionaryForm
     private UTFResource openElisConstants= UTFResource.getBundle((String)SessionManager.getSession().getAttribute("locale"));
          
     
-    public Query<TableDataRow<Integer>> commitQuery(Query<TableDataRow<Integer>> query) throws RPCException {
+    public Query<TableDataRow<Integer>> commitQuery(Query<TableDataRow<Integer>> query) throws Exception {
         List systemNames = new ArrayList();
 
             CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
@@ -82,7 +79,7 @@ public class DictionaryService implements AppScreenFormServiceInt<DictionaryForm
                     throw new LastPageException(openElisConstants.getString("lastPageException"));
             }catch(Exception e){
                 e.printStackTrace();
-                throw new RPCException(e.getMessage());                
+                throw new Exception(e.getMessage());                
             }
             
         int i=0;
@@ -100,7 +97,7 @@ public class DictionaryService implements AppScreenFormServiceInt<DictionaryForm
         return query;
     }
 
-    public DictionaryForm commitAdd(DictionaryForm rpc) throws RPCException {       
+    public DictionaryForm commitAdd(DictionaryForm rpc) throws Exception {       
         CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");         
         IntegerField catId = rpc.id;       
         CategoryDO categoryDO = getCategoryDOFromRPC(rpc);                        
@@ -115,7 +112,7 @@ public class DictionaryService implements AppScreenFormServiceInt<DictionaryForm
             setRpcErrors(e.getErrorList(), rpc);
             return rpc;
         } catch (Exception e) {
-            throw new RPCException(e.getMessage());            
+            throw new Exception(e.getMessage());            
         }
        
         categoryDO.setId(categoryId);           
@@ -124,7 +121,7 @@ public class DictionaryService implements AppScreenFormServiceInt<DictionaryForm
         return rpc;
     }
 
-    public DictionaryForm commitUpdate(DictionaryForm rpc) throws RPCException {
+    public DictionaryForm commitUpdate(DictionaryForm rpc) throws Exception {
         
         CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");         
         IntegerField categoryId = rpc.id;
@@ -141,7 +138,7 @@ public class DictionaryService implements AppScreenFormServiceInt<DictionaryForm
             setRpcErrors(e.getErrorList(), rpc);
             return rpc;
         } catch (Exception e) {
-            throw new RPCException(e.getMessage());            
+            throw new Exception(e.getMessage());            
         }
          
         setFieldsInRPC(rpc,categoryDO);                       
@@ -151,12 +148,12 @@ public class DictionaryService implements AppScreenFormServiceInt<DictionaryForm
 
    
 
-    public DictionaryForm commitDelete(DictionaryForm rpc) throws RPCException {
+    public DictionaryForm commitDelete(DictionaryForm rpc) throws Exception {
         // Delete functionality is not needed on the screen 
         return null;
     }
 
-    public DictionaryForm abort(DictionaryForm rpc) throws RPCException {
+    public DictionaryForm abort(DictionaryForm rpc) throws Exception {
             CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
             Integer categoryId = rpc.entityKey;
     
@@ -164,7 +161,7 @@ public class DictionaryService implements AppScreenFormServiceInt<DictionaryForm
              try{
                 catDO = remote.getCategoryAndUnlock(categoryId, SessionManager.getSession().getId());
              }catch(Exception ex){
-                 throw new RPCException(ex.getMessage());
+                 throw new Exception(ex.getMessage());
              }  
     //      set the fields in the RPC
              setFieldsInRPC(rpc,catDO);           
@@ -175,7 +172,7 @@ public class DictionaryService implements AppScreenFormServiceInt<DictionaryForm
             return rpc;
         }
 
-    public DictionaryForm fetch(DictionaryForm rpc) throws RPCException {               
+    public DictionaryForm fetch(DictionaryForm rpc) throws Exception {               
         
         CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
         Integer categoryId = rpc.entityKey;        
@@ -190,7 +187,7 @@ public class DictionaryService implements AppScreenFormServiceInt<DictionaryForm
      
     }
 
-    public DictionaryForm fetchForUpdate(DictionaryForm rpc) throws RPCException {
+    public DictionaryForm fetchForUpdate(DictionaryForm rpc) throws Exception {
         CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
         Integer categoryId = rpc.entityKey;
 
@@ -198,7 +195,7 @@ public class DictionaryService implements AppScreenFormServiceInt<DictionaryForm
          try{
             catDO = remote.getCategoryAndLock(categoryId, SessionManager.getSession().getId());
          }catch(Exception ex){
-             throw new RPCException(ex.getMessage());
+             throw new Exception(ex.getMessage());
          }  
 //      set the fields in the RPC
          setFieldsInRPC(rpc,catDO);                                                  
@@ -208,7 +205,7 @@ public class DictionaryService implements AppScreenFormServiceInt<DictionaryForm
         return rpc;
     }
     
-    public DictionaryForm getScreen(DictionaryForm rpc) throws RPCException {        
+    public DictionaryForm getScreen(DictionaryForm rpc) throws Exception {        
         rpc.xml = ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/dictionary.xsl");                                                                
         return rpc;
     }

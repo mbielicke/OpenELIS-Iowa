@@ -145,7 +145,7 @@ UIRF Software License are applicable instead of those above.
 
                 <row>
                   <text style="Prompt"><xsl:value-of select="resource:getString($constants,'name')"/>:</text>
-                  <textbox case="upper" key="{meta:getName($org)}" max="40" tab="{addr:getMultipleUnit($addr)},{meta:getId($org)}" width="225px" field="String" required="true" shortcut="j"/>
+                  <textbox case="upper" key="{meta:getName($org)}" max="40" tab="{addr:getMultipleUnit($addr)},{meta:getId($org)}" width="225px" field="String" required="true" />
                   <text style="Prompt"><xsl:value-of select="resource:getString($constants,'city')"/>:</text>
                   <widget colspan="3">
                     <textbox case="upper" key="{addr:getCity($addr)}" max="30" tab="{addr:getState($addr)},{addr:getStreetAddress($addr)}" width="212px" field="String" required="true"/>

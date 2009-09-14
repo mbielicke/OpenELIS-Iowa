@@ -27,7 +27,6 @@ package org.openelis.manager;
 
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.services.ScreenService;
-import org.openelis.manager.NoteManager;
 import org.openelis.modules.note.client.NoteServiceParams;
 
 public class NoteManagerProxy {

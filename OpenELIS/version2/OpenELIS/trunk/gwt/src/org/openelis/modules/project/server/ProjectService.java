@@ -38,7 +38,6 @@ import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.deprecated.AbstractField;
@@ -68,7 +67,7 @@ public class ProjectService implements AppScreenFormServiceInt<ProjectForm, Quer
     private static final int leftTableRowsPerPage = 20;
     private UTFResource openElisConstants = UTFResource.getBundle((String)SessionManager.getSession()
                                                                                         .getAttribute("locale"));
-    public Query<TableDataRow<Integer>> commitQuery(Query<TableDataRow<Integer>> query) throws RPCException {
+    public Query<TableDataRow<Integer>> commitQuery(Query<TableDataRow<Integer>> query) throws Exception {
         List<IdNameDO> projectNames;
         ProjectRemote remote;
         IdNameDO resultDO;
@@ -83,7 +82,7 @@ public class ProjectService implements AppScreenFormServiceInt<ProjectForm, Quer
             throw new LastPageException(openElisConstants.getString("lastPageException"));
         } catch (Exception e) {
             e.printStackTrace();
-            throw new RPCException(e.getMessage());
+            throw new Exception(e.getMessage());
         }
 
         // fill the model with the query results
@@ -102,7 +101,7 @@ public class ProjectService implements AppScreenFormServiceInt<ProjectForm, Quer
         return query;        
     }
     
-    public ProjectForm commitAdd(ProjectForm rpc) throws RPCException {
+    public ProjectForm commitAdd(ProjectForm rpc) throws Exception {
         ProjectRemote remote;
         ProjectDO projectDO;
         Integer projId;
@@ -120,12 +119,12 @@ public class ProjectService implements AppScreenFormServiceInt<ProjectForm, Quer
             return rpc;
         } catch (Exception e) {
             e.printStackTrace();
-            throw new RPCException(e.getMessage());            
+            throw new Exception(e.getMessage());            
         }
         return rpc;
     }   
 
-    public ProjectForm commitUpdate(ProjectForm rpc) throws RPCException {
+    public ProjectForm commitUpdate(ProjectForm rpc) throws Exception {
         ProjectRemote remote;
         ProjectDO projectDO;
         List<ProjectParameterDO> list;
@@ -142,16 +141,16 @@ public class ProjectService implements AppScreenFormServiceInt<ProjectForm, Quer
             return rpc;
         } catch (Exception e) {
             e.printStackTrace();
-            throw new RPCException(e.getMessage());            
+            throw new Exception(e.getMessage());            
         }
         return rpc;
     }
     
-    public ProjectForm commitDelete(ProjectForm rpc) throws RPCException {        
+    public ProjectForm commitDelete(ProjectForm rpc) throws Exception {        
         return null;
     }
     
-    public ProjectForm abort(ProjectForm rpc) throws RPCException {
+    public ProjectForm abort(ProjectForm rpc) throws Exception {
         ProjectRemote remote;
         ProjectDO projectDO;
         List<ProjectParameterDO> paramDOList;
@@ -164,14 +163,14 @@ public class ProjectService implements AppScreenFormServiceInt<ProjectForm, Quer
             setFieldsInRPC(rpc,projectDO);
             fillParameterTable(paramDOList, rpc);
         } catch(Exception ex) {
-            throw new RPCException(ex.getMessage());
+            throw new Exception(ex.getMessage());
         }
         
         return rpc;
     }
 
 
-    public ProjectForm fetch(ProjectForm rpc) throws RPCException {
+    public ProjectForm fetch(ProjectForm rpc) throws Exception {
         ProjectRemote remote;
         ProjectDO projectDO;
         List<ProjectParameterDO> paramDOList;
@@ -184,7 +183,7 @@ public class ProjectService implements AppScreenFormServiceInt<ProjectForm, Quer
         return rpc;
     }
 
-    public ProjectForm fetchForUpdate(ProjectForm rpc) throws RPCException {
+    public ProjectForm fetchForUpdate(ProjectForm rpc) throws Exception {
         ProjectRemote remote;
         ProjectDO projectDO;
         List<ProjectParameterDO> paramDOList;
@@ -197,13 +196,13 @@ public class ProjectService implements AppScreenFormServiceInt<ProjectForm, Quer
             setFieldsInRPC(rpc,projectDO);
             fillParameterTable(paramDOList, rpc);
         } catch(Exception ex) {
-            throw new RPCException(ex.getMessage());
+            throw new Exception(ex.getMessage());
         }
         
         return rpc;
     }
 
-    public ProjectForm getScreen(ProjectForm rpc) throws RPCException {
+    public ProjectForm getScreen(ProjectForm rpc) throws Exception {
         rpc.xml = ServiceUtils.getXML(Constants.APP_ROOT + "/Forms/project.xsl");        
         
         return rpc;
@@ -212,7 +211,7 @@ public class ProjectService implements AppScreenFormServiceInt<ProjectForm, Quer
     public TableDataModel getMatches(String cat,
                                      TableDataModel model,
                                      String match,
-                                     HashMap<String, FieldType> params) throws RPCException {
+                                     HashMap<String, FieldType> params) throws Exception {
         TableDataModel<TableDataRow<Integer>> dataModel;
         List<SecuritySystemUserDO> list;
         List<IdNameDO> entries;

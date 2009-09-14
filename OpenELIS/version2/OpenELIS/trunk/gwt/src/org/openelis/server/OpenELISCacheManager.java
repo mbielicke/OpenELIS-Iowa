@@ -1,13 +1,13 @@
 package org.openelis.server;
 
+import java.io.Serializable;
+
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheException;
 import net.sf.ehcache.Element;
 import net.sf.ehcache.Status;
 
 import org.openelis.persistence.CachingManager;
-
-import java.io.Serializable;
 
 public class OpenELISCacheManager extends CachingManager {
     

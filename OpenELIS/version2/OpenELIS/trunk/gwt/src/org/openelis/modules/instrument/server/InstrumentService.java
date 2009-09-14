@@ -39,7 +39,6 @@ import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.deprecated.AbstractField;
@@ -73,7 +72,7 @@ public class InstrumentService implements
     private UTFResource openElisConstants = UTFResource.getBundle((String)SessionManager.getSession()
                                                                                         .getAttribute("locale"));
 
-    public Query<TableDataRow<Integer>> commitQuery(Query<TableDataRow<Integer>> query) throws RPCException {
+    public Query<TableDataRow<Integer>> commitQuery(Query<TableDataRow<Integer>> query) throws Exception {
         List instNames;
         InstrumentRemote remote = (InstrumentRemote)EJBFactory.lookup("openelis/InstrumentBean/remote");
         try {
@@ -83,7 +82,7 @@ public class InstrumentService implements
         } catch (LastPageException e) {
             throw new LastPageException(openElisConstants.getString("lastPageException"));
         } catch (Exception e) {
-            throw new RPCException(e.getMessage());
+            throw new Exception(e.getMessage());
         }
 
         // fill the model with the query results
@@ -104,7 +103,7 @@ public class InstrumentService implements
         return query;
     }
 
-    public InstrumentForm commitAdd(InstrumentForm rpc) throws RPCException {
+    public InstrumentForm commitAdd(InstrumentForm rpc) throws Exception {
         InstrumentRemote remote;
         InstrumentDO instDO;
         Integer instId;
@@ -122,12 +121,12 @@ public class InstrumentService implements
             return rpc;
         } catch (Exception e) {
             e.printStackTrace();
-            throw new RPCException(e.getMessage());
+            throw new Exception(e.getMessage());
         }
         return rpc;
     }
 
-    public InstrumentForm commitUpdate(InstrumentForm rpc) throws RPCException {
+    public InstrumentForm commitUpdate(InstrumentForm rpc) throws Exception {
         InstrumentRemote remote;
         InstrumentDO instDO;
         List<InstrumentLogDO> logDOList;
@@ -145,16 +144,16 @@ public class InstrumentService implements
             return rpc;
         } catch (Exception e) {
             e.printStackTrace();
-            throw new RPCException(e.getMessage());
+            throw new Exception(e.getMessage());
         }
         return rpc;
     }
 
-    public InstrumentForm commitDelete(InstrumentForm rpc) throws RPCException {
+    public InstrumentForm commitDelete(InstrumentForm rpc) throws Exception {
         return null;
     }
 
-    public InstrumentForm abort(InstrumentForm rpc) throws RPCException {
+    public InstrumentForm abort(InstrumentForm rpc) throws Exception {
         InstrumentRemote remote;
         InstrumentDO instDO;
         List<InstrumentLogDO> logDOList;
@@ -171,7 +170,7 @@ public class InstrumentService implements
         return rpc;
     }
 
-    public InstrumentForm fetch(InstrumentForm rpc) throws RPCException {
+    public InstrumentForm fetch(InstrumentForm rpc) throws Exception {
         InstrumentRemote remote;
         InstrumentDO instDO;
         List<InstrumentLogDO> logDOList;
@@ -186,7 +185,7 @@ public class InstrumentService implements
         return rpc;
     }
 
-    public InstrumentForm fetchForUpdate(InstrumentForm rpc) throws RPCException {
+    public InstrumentForm fetchForUpdate(InstrumentForm rpc) throws Exception {
         InstrumentRemote remote;
         InstrumentDO instDO;
         List<InstrumentLogDO> logDOList;
@@ -200,13 +199,13 @@ public class InstrumentService implements
             logDOList = remote.getInstrumentLogs(rpc.entityKey);
             fillLogEntries(logDOList, rpc);
         } catch (Exception ex) {
-            throw new RPCException(ex.getMessage());
+            throw new Exception(ex.getMessage());
         }
 
         return rpc;
     }
 
-    public InstrumentForm getScreen(InstrumentForm rpc) throws RPCException {
+    public InstrumentForm getScreen(InstrumentForm rpc) throws Exception {
         rpc.xml = ServiceUtils.getXML(Constants.APP_ROOT + "/Forms/instrument.xsl");
         return rpc;
     }
@@ -214,7 +213,7 @@ public class InstrumentService implements
     public TableDataModel getMatches(String cat,
                                      TableDataModel model,
                                      String match,
-                                     HashMap<String, FieldType> params) throws RPCException {
+                                     HashMap<String, FieldType> params) throws Exception {
         AnalyteRemote aremote;
         TableDataModel<TableDataRow<Integer>> dataModel;
         List<IdNameDO> entries;

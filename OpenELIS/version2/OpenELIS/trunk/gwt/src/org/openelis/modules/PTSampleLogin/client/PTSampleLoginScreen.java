@@ -25,13 +25,6 @@
 */
 package org.openelis.modules.PTSampleLogin.client;
 
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.SourcesTabEvents;
-import com.google.gwt.user.client.ui.TabListener;
-import com.google.gwt.user.client.ui.Widget;
-
 import org.openelis.gwt.common.data.deprecated.KeyListManager;
 import org.openelis.gwt.common.data.deprecated.TableDataModel;
 import org.openelis.gwt.common.data.deprecated.TableDataRow;
@@ -43,6 +36,13 @@ import org.openelis.gwt.widget.deprecated.Dropdown;
 import org.openelis.gwt.widget.tree.deprecated.TreeManager;
 import org.openelis.gwt.widget.tree.deprecated.TreeWidget;
 import org.openelis.modules.main.client.OpenELISScreenForm;
+
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.SourcesTabEvents;
+import com.google.gwt.user.client.ui.TabListener;
+import com.google.gwt.user.client.ui.Widget;
 
 public class PTSampleLoginScreen extends OpenELISScreenForm<PTSampleLoginForm,Query<TableDataRow<Integer>>> implements ClickListener, TabListener, TreeManager{
 

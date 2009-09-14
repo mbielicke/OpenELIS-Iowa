@@ -25,7 +25,7 @@
 */
 package org.openelis.server.constants;
 
-import java.util.*;
+import java.util.Hashtable;
 
 /**
  * @author fyu

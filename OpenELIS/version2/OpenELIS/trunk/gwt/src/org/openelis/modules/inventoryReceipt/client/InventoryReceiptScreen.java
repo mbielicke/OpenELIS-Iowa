@@ -56,7 +56,6 @@ import org.openelis.gwt.widget.table.deprecated.event.SourcesTableWidgetEvents;
 import org.openelis.gwt.widget.table.deprecated.event.TableModelListener;
 import org.openelis.gwt.widget.table.deprecated.event.TableWidgetListener;
 import org.openelis.metamap.InventoryReceiptMetaMap;
-import org.openelis.modules.fillOrder.client.FillOrderItemInfoForm;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
 import com.google.gwt.user.client.Window;

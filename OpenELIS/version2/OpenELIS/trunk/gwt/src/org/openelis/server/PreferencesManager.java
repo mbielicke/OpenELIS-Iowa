@@ -25,6 +25,8 @@
 */
 package org.openelis.server;
 
+import java.util.Iterator;
+
 import org.openelis.domain.PreferencesDO;
 import org.openelis.gwt.common.Preferences;
 import org.openelis.persistence.EJBFactory;
@@ -34,8 +36,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-
-import java.util.Iterator;
 
 public class PreferencesManager {
     

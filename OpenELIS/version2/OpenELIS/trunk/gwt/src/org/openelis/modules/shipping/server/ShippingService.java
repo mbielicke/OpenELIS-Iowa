@@ -40,7 +40,6 @@ import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.deprecated.AbstractField;
@@ -78,7 +77,7 @@ public class ShippingService implements AppScreenFormServiceInt<ShippingForm, Qu
 	private static final int leftTableRowsPerPage = 20;
 
 	public Query<TableDataRow<Integer>> commitQuery(Query<TableDataRow<Integer>> query)
-			throws RPCException {
+			throws Exception {
 		List shippingIds;
 /*
 		if (qList == null) {
@@ -101,7 +100,7 @@ public class ShippingService implements AppScreenFormServiceInt<ShippingForm, Qu
 					throw new LastPageException(openElisConstants
 							.getString("lastPageException"));
 				} else {
-					throw new RPCException(e.getMessage());
+					throw new Exception(e.getMessage());
 				}
 			}
 		} else {*/
@@ -113,7 +112,7 @@ public class ShippingService implements AppScreenFormServiceInt<ShippingForm, Qu
             }catch(LastPageException e) {
                 throw new LastPageException(openElisConstants.getString("lastPageException"));
 			} catch (Exception e) {
-				throw new RPCException(e.getMessage());
+				throw new Exception(e.getMessage());
 			}
 
 			// need to save the rpc used to the encache
@@ -139,7 +138,7 @@ public class ShippingService implements AppScreenFormServiceInt<ShippingForm, Qu
 		return query;
 	}
 
-	public ShippingForm commitAdd(ShippingForm rpc) throws RPCException {
+	public ShippingForm commitAdd(ShippingForm rpc) throws Exception {
 		// remote interface to call the shipping bean
 		ShippingRemote remote = (ShippingRemote) EJBFactory
 				.lookup("openelis/ShippingBean/remote");
@@ -174,7 +173,7 @@ System.out.println("after shipping items");
                 setRpcErrors(((ValidationErrorsList)e).getErrorList(), rpc);
                 return rpc;
             }else
-                throw new RPCException(e.getMessage());
+                throw new Exception(e.getMessage());
 		}
 
 		// lookup the changes from the database and build the rpc
@@ -195,7 +194,7 @@ System.out.println("after shipping items");
 		return rpc;
 	}
 
-	public ShippingForm commitUpdate(ShippingForm rpc) throws RPCException {
+	public ShippingForm commitUpdate(ShippingForm rpc) throws Exception {
 		// remote interface to call the shipping bean
 		ShippingRemote remote = (ShippingRemote) EJBFactory
 				.lookup("openelis/ShippingBean/remote");
@@ -228,7 +227,7 @@ System.out.println("after shipping items");
                 setRpcErrors(((ValidationErrorsList)e).getErrorList(), rpc);
                 return rpc;
             }else
-                throw new RPCException(e.getMessage());
+                throw new Exception(e.getMessage());
         }
 
 		// set the fields in the RPC
@@ -246,11 +245,11 @@ System.out.println("after shipping items");
 		return rpc;
 	}
 
-	public ShippingForm commitDelete(ShippingForm rpc) throws RPCException {
+	public ShippingForm commitDelete(ShippingForm rpc) throws Exception {
 		return null;
 	}
 
-	public ShippingForm abort(ShippingForm rpc) throws RPCException {
+	public ShippingForm abort(ShippingForm rpc) throws Exception {
 		// remote interface to call the shipping bean
 		ShippingRemote remote = (ShippingRemote) EJBFactory
 				.lookup("openelis/ShippingBean/remote");
@@ -269,7 +268,7 @@ System.out.println("after shipping items");
 		return rpc;
 	}
 
-	public ShippingForm fetch(ShippingForm rpc) throws RPCException {
+	public ShippingForm fetch(ShippingForm rpc) throws Exception {
 	    // remote interface to call the shipping bean
 		ShippingRemote remote = (ShippingRemote) EJBFactory
 				.lookup("openelis/ShippingBean/remote");
@@ -292,7 +291,7 @@ System.out.println("after shipping items");
 		return rpc;
 	}
 
-	public ShippingForm fetchForUpdate(ShippingForm rpc) throws RPCException {
+	public ShippingForm fetchForUpdate(ShippingForm rpc) throws Exception {
 		// remote interface to call the shipping bean
 		ShippingRemote remote = (ShippingRemote) EJBFactory
 				.lookup("openelis/ShippingBean/remote");
@@ -301,7 +300,7 @@ System.out.println("after shipping items");
 		try {
 			shippingDO = remote.getShipmentAndLock(rpc.entityKey);
 		} catch (Exception e) {
-			throw new RPCException(e.getMessage());
+			throw new Exception(e.getMessage());
 		}
 
 		// set the fields in the RPC
@@ -319,35 +318,35 @@ System.out.println("after shipping items");
 		return rpc;
 	}
 
-	public ShippingForm getScreen(ShippingForm rpc) throws RPCException{
+	public ShippingForm getScreen(ShippingForm rpc) throws Exception{
         rpc.xml = ServiceUtils.getXML(Constants.APP_ROOT + "/Forms/shipping.xsl");
 
         return rpc;
 	}
 	
-	public ShippingItemsForm loadShippingItems(ShippingItemsForm rpc) throws RPCException {
+	public ShippingItemsForm loadShippingItems(ShippingItemsForm rpc) throws Exception {
 		loadShippingItemsForm(rpc.entityKey, rpc);
 		return rpc;
 	}
 	
-	public void loadShippingItemsForm(Integer key, ShippingItemsForm form) throws RPCException {
+	public void loadShippingItemsForm(Integer key, ShippingItemsForm form) throws Exception {
 		getShippingItemsModel(key, form.itemsTable);
 		getTrackingNumbersModel(key, form.trackingNumbersTable);
 		form.load = true;
 	}
 
-	public ShippingNotesForm loadOrderShippingNotes(ShippingNotesForm rpc) throws RPCException {
+	public ShippingNotesForm loadOrderShippingNotes(ShippingNotesForm rpc) throws Exception {
 		loadOrderShippingNotesForm(rpc.entityKey, rpc);
 		return rpc;	
 }
 	
-	public void loadOrderShippingNotesForm(Integer key, ShippingNotesForm form) throws RPCException {
+	public void loadOrderShippingNotesForm(Integer key, ShippingNotesForm form) throws Exception {
 	    getOrderShippingNotesValue(key, form);
 		form.load = true;
 	}
 
 	public void getShippingItemsModel(Integer key, TableField<TableDataRow<Integer>> shippingItemsTable)
-			throws RPCException {
+			throws Exception {
 		ShippingRemote remote = (ShippingRemote) EJBFactory
 				.lookup("openelis/ShippingBean/remote");
 		List shippingItemsList = remote.getShippingItems(key);
@@ -374,7 +373,7 @@ System.out.println("after shipping items");
 	}
 
 	public void getTrackingNumbersModel(Integer key, TableField<TableDataRow<Integer>> trackingTable)
-			throws RPCException {
+			throws Exception {
 		ShippingRemote remote = (ShippingRemote) EJBFactory
 				.lookup("openelis/ShippingBean/remote");
 		List trackingNumbersList = remote.getTrackingNumbers(key);
@@ -395,7 +394,7 @@ System.out.println("after shipping items");
 		}
 	}
 
-	public void getOrderShippingNotesValue(Integer key, ShippingNotesForm form) throws RPCException {
+	public void getOrderShippingNotesValue(Integer key, ShippingNotesForm form) throws Exception {
 		ShippingRemote remote = (ShippingRemote) EJBFactory.lookup("openelis/ShippingBean/remote");
 
 		NoteDO noteDO = remote.getShippingNote(key);
@@ -609,7 +608,7 @@ System.out.println("after shipping items");
 	}
 
 	public TableDataModel getMatches(String cat, TableDataModel model, String match,
-			HashMap<String,FieldType> params) throws RPCException {
+			HashMap<String,FieldType> params) throws Exception {
 		if ("shippedTo".equals(cat))
 			return getShippedToMatches(match);
 

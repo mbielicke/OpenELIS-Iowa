@@ -28,7 +28,6 @@ package org.openelis.modules.sampleOrganization.server;
 import java.util.ArrayList;
 
 import org.openelis.common.AutocompleteRPC;
-import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.OrganizationRemote;
@@ -36,7 +35,7 @@ import org.openelis.server.constants.Constants;
 
 public class SampleOrganizationService {
     
-    public String getScreen() throws RPCException {
+    public String getScreen() throws Exception {
         return ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/sampleOrganization.xsl");      
     }
 

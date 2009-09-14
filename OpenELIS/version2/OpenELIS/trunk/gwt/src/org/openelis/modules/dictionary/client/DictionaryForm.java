@@ -26,17 +26,16 @@
 
 package org.openelis.modules.dictionary.client;
 
-import com.google.gwt.xml.client.Node;
-
 import org.openelis.gwt.common.data.deprecated.AbstractField;
 import org.openelis.gwt.common.data.deprecated.DropDownField;
 import org.openelis.gwt.common.data.deprecated.IntegerField;
 import org.openelis.gwt.common.data.deprecated.StringField;
-import org.openelis.gwt.common.data.deprecated.TableDataModel;
 import org.openelis.gwt.common.data.deprecated.TableDataRow;
 import org.openelis.gwt.common.data.deprecated.TableField;
 import org.openelis.gwt.common.deprecated.Form;
 import org.openelis.metamap.CategoryMetaMap;
+
+import com.google.gwt.xml.client.Node;
 
 
 public class DictionaryForm extends Form<Integer> {
