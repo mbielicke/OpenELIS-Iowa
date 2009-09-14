@@ -10,7 +10,7 @@ import java.util.HashSet;
 import org.openelis.gwt.common.Meta;
 
 public class AnalysisQaeventMeta implements Meta {
-  	private String path = "";
+  	protected String path = "";
 	private static final String entityName = "AnalysisQaevent";
 	
 	private static final String

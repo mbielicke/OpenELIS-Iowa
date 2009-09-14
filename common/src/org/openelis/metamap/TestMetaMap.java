@@ -34,19 +34,19 @@ import org.openelis.meta.TestTrailerMeta;
 
 public class TestMetaMap extends TestMeta implements MetaMap {
 
-    private TestPrepMetaMap TEST_PREP;    
-    private TestTypeOfSampleMetaMap TEST_TYPE_OF_SAMPLE;     
-    private TestReflexMetaMap TEST_REFLEX;     
-    private TestAnalyteMetaMap TEST_ANALYTE;     
-    private TestWorksheetMetaMap TEST_WORKSHEET;    
-    private MethodMeta METHOD;    
-    private ScriptletMeta SCRIPTLET;      
-    private LabelMeta LABEL; 
-    private TestWorksheetItemMetaMap TEST_WORKSHEET_ITEM;      
-    private TestSectionMetaMap TEST_SECTION;    
-    private TestResultMetaMap TEST_RESULT;    
-    private TestWorksheetAnalyteMetaMap TEST_WORKSHEET_ANALYTE;
-    private TestTrailerMeta TEST_TRAILER;
+    public TestPrepMetaMap TEST_PREP;    
+    public TestTypeOfSampleMetaMap TEST_TYPE_OF_SAMPLE;     
+    public TestReflexMetaMap TEST_REFLEX;     
+    public TestAnalyteMetaMap TEST_ANALYTE;     
+    public TestWorksheetMetaMap TEST_WORKSHEET;    
+    public MethodMeta METHOD;    
+    public ScriptletMeta SCRIPTLET;      
+    public LabelMeta LABEL; 
+    public TestWorksheetItemMetaMap TEST_WORKSHEET_ITEM;      
+    public TestSectionMetaMap TEST_SECTION;    
+    public TestResultMetaMap TEST_RESULT;    
+    public TestWorksheetAnalyteMetaMap TEST_WORKSHEET_ANALYTE;
+    public TestTrailerMeta TEST_TRAILER;
     
     public TestMetaMap(){
         super("t.");
@@ -72,7 +72,7 @@ public class TestMetaMap extends TestMeta implements MetaMap {
         TEST_REFLEX = new TestReflexMetaMap(path+"testReflex.");     
         TEST_ANALYTE = new TestAnalyteMetaMap(path+"testAnalyte.");     
         TEST_WORKSHEET = new TestWorksheetMetaMap(path+"testWorksheet.");    
-        METHOD = new MethodMeta(path+"t.method.");    
+        METHOD = new MethodMeta(path+"method.");    
         SCRIPTLET = new ScriptletMeta(path+"t.scriptlet.");      
         LABEL = new LabelMeta(path+"t.label."); 
         TEST_WORKSHEET_ITEM = new TestWorksheetItemMetaMap(path+"testWorksheetItem.");      

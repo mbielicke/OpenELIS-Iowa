@@ -35,6 +35,8 @@ public class SampleMetaMap extends SampleMeta implements MetaMap {
         SAMPLE_ITEM = new SampleItemMetaMap("sampleItem.");
         SAMPLE_ORGANIZATION = new SampleOrganizationMetaMap("sampleOrganization.");
         SAMPLE_PROJECT = new SampleProjectMetaMap("sampleProject.");
+        SAMPLE_QA_EVENT = new SampleQaeventMetaMap();
+        
     }
     
     public SampleMetaMap(String path) {
@@ -43,6 +45,7 @@ public class SampleMetaMap extends SampleMeta implements MetaMap {
         SAMPLE_ITEM = new SampleItemMetaMap("sampleItem.");
         SAMPLE_ORGANIZATION = new SampleOrganizationMetaMap("sampleOrganization.");
         SAMPLE_PROJECT = new SampleProjectMetaMap("sampleProject.");
+        SAMPLE_QA_EVENT = new SampleQaeventMetaMap();
     }
     
     public SampleItemMetaMap SAMPLE_ITEM;
@@ -50,6 +53,8 @@ public class SampleMetaMap extends SampleMeta implements MetaMap {
     public SampleOrganizationMetaMap SAMPLE_ORGANIZATION;
     
     public SampleProjectMetaMap SAMPLE_PROJECT;
+    
+    public SampleQaeventMetaMap SAMPLE_QA_EVENT;
     
     public SampleItemMetaMap getSampleItem(){
         return SAMPLE_ITEM;
@@ -61,6 +66,10 @@ public class SampleMetaMap extends SampleMeta implements MetaMap {
     
     public SampleProjectMetaMap getSampleProject(){
         return SAMPLE_PROJECT;
+    }
+    
+    public SampleQaeventMetaMap getSampleQaevent(){
+        return SAMPLE_QA_EVENT;
     }
     
     public String buildFrom(String where) {
