@@ -28,7 +28,15 @@ UIRF Software License are applicable instead of those above.
 
 <xsl:stylesheet extension-element-prefixes="resource" version="1.0" xmlns:addressMeta="xalan://org.openelis.meta.AddressMeta" xmlns:analysisMetaMap="xalan://org.openelis.metamap.AnalysisMetaMap" 
 xmlns:envMeta="xalan://org.openelis.metamap.SampleEnvironmentalMetaMap" xmlns:locale="xalan://java.util.Locale" xmlns:methodMeta="xalan://org.openelis.meta.MethodMeta" 
-xmlns:orgMeta="xalan://org.openelis.meta.OrganizationMeta" xmlns:projectMeta="xalan://org.openelis.meta.ProjectMeta" xmlns:resource="xalan://org.openelis.util.UTFResource" xmlns:sampleItemMetaMap="xalan://org.openelis.metamap.SampleItemMetaMap" xmlns:sampleMetaMap="xalan://org.openelis.metamap.SampleMetaMap" xmlns:sampleOrgMetaMap="xalan://org.openelis.metamap.SampleOrganizationMetaMap" xmlns:sampleProjectMetaMap="xalan://org.openelis.metamap.SampleProjectMetaMap" xmlns:sampleTestMetaMap="xalan://org.openelis.metamap.SampleTestMetaMap" xmlns:sectionMeta="xalan://org.openelis.meta.SectionMeta" xmlns:xalan="http://xml.apache.org/xalan" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xsi:noNamespaceSchemaLocation="../../../../../../../../OpenELIS-Lib/src/org/openelis/gwt/public/ScreenSchema.xsd" xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform ../../../../../../../../OpenELIS-Lib/src/org/openelis/gwt/public/XSLTSchema.xsd">
+xmlns:orgMeta="xalan://org.openelis.meta.OrganizationMeta" xmlns:projectMeta="xalan://org.openelis.meta.ProjectMeta" xmlns:resource="xalan://org.openelis.util.UTFResource" 
+xmlns:sampleItemMetaMap="xalan://org.openelis.metamap.SampleItemMetaMap" xmlns:sampleMetaMap="xalan://org.openelis.metamap.SampleMetaMap" 
+xmlns:sampleOrgMetaMap="xalan://org.openelis.metamap.SampleOrganizationMetaMap" 
+xmlns:sampleProjectMetaMap="xalan://org.openelis.metamap.SampleProjectMetaMap"
+xmlns:analysisQAEventMetaMap="xalan://org.openelis.metamap.AnalysisQaeventMetaMap"
+xmlns:sampleQAEventMetaMap="xalan://org.openelis.metamap.SampleQaeventMetaMap"
+xmlns:qaeventMeta="xalan://org.openelis.meta.QaeventMeta" 
+xmlns:testMetaMap="xalan://org.openelis.metamap.TestMetaMap" xmlns:sectionMeta="xalan://org.openelis.meta.SectionMeta" xmlns:xalan="http://xml.apache.org/xalan" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xsi:noNamespaceSchemaLocation="../../../../../../../../OpenELIS-Lib/src/org/openelis/gwt/public/ScreenSchema.xsd" xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform ../../../../../../../../OpenELIS-Lib/src/org/openelis/gwt/public/XSLTSchema.xsd">
   <xsl:import href="aToZOneColumn.xsl" />
   <xalan:component prefix="resource">
     <xalan:script lang="javaclass" src="xalan://org.openelis.util.UTFResource" />
@@ -63,8 +71,8 @@ xmlns:orgMeta="xalan://org.openelis.meta.OrganizationMeta" xmlns:projectMeta="xa
   <xalan:component prefix="analysisMetaMap">
     <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.AnalysisMetaMap" />
   </xalan:component>
-  <xalan:component prefix="sampleTestMetaMap">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.SampleTestMetaMap" />
+  <xalan:component prefix="testMetaMap">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.TestMetaMap" />
   </xalan:component>
   <xalan:component prefix="sectionMeta">
     <xalan:script lang="javaclass" src="xalan://org.openelis.meta.SectionMeta" />
@@ -72,15 +80,29 @@ xmlns:orgMeta="xalan://org.openelis.meta.OrganizationMeta" xmlns:projectMeta="xa
   <xalan:component prefix="methodMeta">
     <xalan:script lang="javaclass" src="xalan://org.openelis.meta.MethodMeta" />
   </xalan:component>
+  <xalan:component prefix="analysisQAEventMetaMap">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.AnalysisQaeventMetaMap" />
+  </xalan:component>
+  <xalan:component prefix="sampleQAEventMetaMap">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.SampleQaeventMetaMap" />
+  </xalan:component>
+  <xalan:component prefix="qaeventMeta">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.QaeventMeta" />
+  </xalan:component>
+
   <xsl:template match="doc">
     <xsl:variable name="env" select="envMeta:new()" />
     <xsl:variable name="sample" select="envMeta:getSample($env)" />
     <xsl:variable name="address" select="envMeta:getAddress($env)" />
     <xsl:variable name="sampleItem" select="sampleMetaMap:getSampleItem($sample)" />
+    <xsl:variable name="sampleQAE" select="sampleMetaMap:getSampleQaevent($sample)" />
+    <xsl:variable name="sampleQA" select="sampleQAEventMetaMap:getQaevent($sampleQAE)" />
     <xsl:variable name="analysis" select="sampleItemMetaMap:getAnalysis($sampleItem)" />
+    <xsl:variable name="analysisQAE" select="analysisMetaMap:getAnalysisQaevent($analysis)" />
+    <xsl:variable name="analysisQA" select="analysisQAEventMetaMap:getQaevent($analysisQAE)" />
     <xsl:variable name="test" select="analysisMetaMap:getTest($analysis)" />
     <xsl:variable name="section" select="analysisMetaMap:getSection($analysis)" />
-    <xsl:variable name="method" select="sampleTestMetaMap:getMethod($test)" />
+    <xsl:variable name="method" select="testMetaMap:getMethod($test)" />
     <xsl:variable name="sampleOrg" select="sampleMetaMap:getSampleOrganization($sample)" />
     <xsl:variable name="sampleProject" select="sampleMetaMap:getSampleProject($sample)" />
     <xsl:variable name="parentSampleItem" select="sampleItemMetaMap:getParentSampleItem($sampleItem)" />
@@ -222,7 +244,7 @@ xmlns:orgMeta="xalan://org.openelis.meta.OrganizationMeta" xmlns:projectMeta="xa
               <text style="FormTitle">
                 <xsl:value-of select="resource:getString($constants,'itemsAndAnalyses')" />
               </text>
-              <TablePanel spacing="0" padding="0" style="WhiteContentPanel">
+              <TablePanel spacing="0" padding="0">
               	<row>
 	                <tree key="itemsTestsTree" width="auto" maxRows="4" showScroll="ALWAYS" tab="{projectMeta:getName($project)},{envMeta:getSamplingLocation($env)}">
 	                  <header>
@@ -290,8 +312,8 @@ xmlns:orgMeta="xalan://org.openelis.meta.OrganizationMeta" xmlns:projectMeta="xa
                   </text>
                   <HorizontalPanel>
                     <autoComplete key="{projectMeta:getName($project)}" width="175px" case="UPPER" popWidth="auto" field="Integer">
-                      <col width="115" header="Name" />
-                      <col width="190" header="Desc" />
+                      <col width="115" header="{resource:getString($constants,'name')}" />
+                      <col width="190" header="{resource:getString($constants,'desc')}" />
                     </autoComplete>
                     <appButton key="projectLookup" style="LookupButton">
                       <AbsolutePanel style="LookupButtonImage" />
@@ -304,10 +326,10 @@ xmlns:orgMeta="xalan://org.openelis.meta.OrganizationMeta" xmlns:projectMeta="xa
                   </text>
                   <HorizontalPanel>
                     <autoComplete key="{orgMeta:getName($org)}" width="175px" case="UPPER" popWidth="auto" field="Integer">
-                      <col width="180" header="Name" />
-                      <col width="110" header="Street" />
-                      <col width="100" header="City" />
-                      <col width="20" header="St" />
+                      <col width="180" header="{resource:getString($constants,'name')}" />
+                      <col width="110" header="{resource:getString($constants,'street')}" />
+                      <col width="100" header="{resource:getString($constants,'city')}" />
+                      <col width="20" header="{resource:getString($constants,'st')}" />
                     </autoComplete>
                     <appButton key="reportToLookup" style="LookupButton">
                       <AbsolutePanel style="LookupButtonImage" />
@@ -320,10 +342,10 @@ xmlns:orgMeta="xalan://org.openelis.meta.OrganizationMeta" xmlns:projectMeta="xa
                   </text>
                   <HorizontalPanel>
                     <autoComplete key="billTo" width="175px" case="UPPER" popWidth="auto" field="Integer">
-                      <col width="180" header="Name" />
-                      <col width="110" header="Street" />
-                      <col width="100" header="City" />
-                      <col width="20" header="St" />
+                      <col width="180" header="{resource:getString($constants,'name')}" />
+                      <col width="110" header="{resource:getString($constants,'street')}" />
+                      <col width="100" header="{resource:getString($constants,'city')}" />
+                      <col width="20" header="{resource:getString($constants,'st')}" />
                     </autoComplete>
                     <appButton key="billToLookup" style="LookupButton">
                       <AbsolutePanel style="LookupButtonImage" />
@@ -333,7 +355,6 @@ xmlns:orgMeta="xalan://org.openelis.meta.OrganizationMeta" xmlns:projectMeta="xa
               </TablePanel>
             </VerticalPanel>
           </HorizontalPanel>
-          <VerticalPanel height="5px" />
           <TabPanel key="sampleItemTabPanel" height="170px">
             <tab key="tab0" text="{resource:getString($constants,'sampleItem')}">
               <VerticalPanel width="730px" height="170px">
@@ -368,14 +389,14 @@ xmlns:orgMeta="xalan://org.openelis.meta.OrganizationMeta" xmlns:projectMeta="xa
                 <TablePanel padding="0" spacing="0" style="Form">
                   <row>
                     <text style="Prompt"><xsl:value-of select="resource:getString($constants,'test')" />:</text>
-                    <autoComplete key="{sampleTestMetaMap:getName($test)}" width="150px" case="LOWER" popWidth="auto" field="Integer">
-                      <col width="150" header="Test" />
-                      <col width="150" header="Method" />
-                      <col width="200" header="Description" />
+                    <autoComplete key="{testMetaMap:getName($test)}" width="150px" case="LOWER" popWidth="auto" field="Integer">
+                      <col width="150" header="{resource:getString($constants,'test')}" />
+                      <col width="150" header="{resource:getString($constants,'method')}" />
+                      <col width="200" header="{resource:getString($constants,'description')}" />
                     </autoComplete>
                     <text style="Prompt"><xsl:value-of select="resource:getString($constants,'method')" />:</text>
                     <autoComplete key="{methodMeta:getName($method)}" width="150px" case="LOWER" popWidth="auto" field="Integer">
-                      <col width="150" header="Method" />
+                      <col width="150" header="{resource:getString($constants,'method')}" />
                     </autoComplete>
                   </row>
                   <row>
@@ -512,29 +533,36 @@ xmlns:orgMeta="xalan://org.openelis.meta.OrganizationMeta" xmlns:projectMeta="xa
 </VerticalPanel>
             </tab>
             <tab key="tab3" text="{resource:getString($constants,'analysisNotes')}">
-            <TablePanel padding="0" spacing="0" style="Form">
+            <HorizontalPanel>
+            <TablePanel padding="0" spacing="0" style="TabSubForm">
                 <row>
-		            <text style="LeftCondensedPrompt"><xsl:value-of select="resource:getString($constants,'external')" />:</text>
-		            <HorizontalPanel width="15px"/>
-        		    <text style="LeftCondensedPrompt"><xsl:value-of select="resource:getString($constants,'internal')" />:</text>    
-                </row>
-                <row>
-           			<notes key="anExNotesPanel" width="340px" height="120px" />
-           			<HorizontalPanel width="15px"/>
-               		<notes key="anIntNotesPanel" width="340px" height="120px" />
-                  </row>
+		            <text style="Title"><xsl:value-of select="resource:getString($constants,'external')" />:</text>
+		        </row>
+		        <row>
+		        	<notes key="anExNotesPanel" width="340px" height="120px" />
+		        </row>
+		        <row>
+			        <widget style="TableButtonFooter">
+		                    <appButton key="anExNoteButton" style="Button" action="standardNote">
+		                      <HorizontalPanel>
+		                        <AbsolutePanel style="StandardNoteButtonImage" />
+		                        <text>
+		                          <xsl:value-of select="resource:getString($constants,'editNote')" />
+		                        </text>
+		                      </HorizontalPanel>
+		                    </appButton>
+	                    </widget>
+		        </row>
+		    </TablePanel>
+		    <VerticalPanel style="Divider"/>
+		    <TablePanel padding="0" spacing="0" style="TabSubForm">
+			    <row>
+			    	<text style="Title"><xsl:value-of select="resource:getString($constants,'internal')" />:</text>    
+			    </row>
+		     	<row>
+           			<notes key="anIntNotesPanel" width="340px" height="120px" />
+           		</row>
                   <row>
-                    <widget style="TableButtonFooter">
-	                    <appButton key="anExNoteButton" style="Button" action="standardNote">
-	                      <HorizontalPanel>
-	                        <AbsolutePanel style="StandardNoteButtonImage" />
-	                        <text>
-	                          <xsl:value-of select="resource:getString($constants,'editNote')" />
-	                        </text>
-	                      </HorizontalPanel>
-	                    </appButton>
-                    </widget>
-		               	<HorizontalPanel width="15px"/>
 		              <widget style="TableButtonFooter">
 		               	<appButton key="anIntNoteButton" style="Button" action="standardNote">
 	                      <HorizontalPanel>
@@ -547,31 +575,39 @@ xmlns:orgMeta="xalan://org.openelis.meta.OrganizationMeta" xmlns:projectMeta="xa
                     </widget>
                   </row>
                 </TablePanel>
+                </HorizontalPanel>
             </tab>
             <tab key="tab4" text="{resource:getString($constants,'sampleNotes')}">
-            <TablePanel padding="0" spacing="0" style="Form">
+             <HorizontalPanel>
+            <TablePanel padding="0" spacing="0" style="TabSubForm">
+            	<row>
+            		<text style="Title"><xsl:value-of select="resource:getString($constants,'external')" />:</text>
+            	</row>
+            	<row>
+            		<notes key="sampleExtNotesPanel" width="340px" height="120px" />
+            	</row>
+            	<row>
+	            	<widget style="TableButtonFooter">
+		                  <appButton key="sampleExtNoteButton" style="Button" action="standardNote">
+		                      <HorizontalPanel>
+		                        <AbsolutePanel style="StandardNoteButtonImage" />
+		                        <text>
+		                          <xsl:value-of select="resource:getString($constants,'editNote')" />
+		                        </text>
+		                      </HorizontalPanel>
+		                    </appButton>
+	                    </widget>
+            	</row>
+          	</TablePanel>
+          	<VerticalPanel style="Divider"/>
+          	<TablePanel padding="0" spacing="0" style="TabSubForm">
                 <row>
-		            <text style="LeftCondensedPrompt"><xsl:value-of select="resource:getString($constants,'external')" />:</text>
-		            <HorizontalPanel width="15px"/>
-        		    <text style="LeftCondensedPrompt"><xsl:value-of select="resource:getString($constants,'internal')" />:</text>    
+        		    <text style="Title"><xsl:value-of select="resource:getString($constants,'internal')" />:</text>    
                 </row>
                 <row>
-           			<notes key="sampleExtNotesPanel" width="340px" height="120px" />
-           			<HorizontalPanel width="15px"/>
                		<notes key="sampleIntNotesPanel" width="340px" height="120px" />
                   </row>
                   <row>
-                  <widget style="TableButtonFooter">
-	                  <appButton key="sampleExtNoteButton" style="Button" action="standardNote">
-	                      <HorizontalPanel>
-	                        <AbsolutePanel style="StandardNoteButtonImage" />
-	                        <text>
-	                          <xsl:value-of select="resource:getString($constants,'editNote')" />
-	                        </text>
-	                      </HorizontalPanel>
-	                    </appButton>
-                    </widget>
-	               	<HorizontalPanel width="15px"/>
 	               	<widget style="TableButtonFooter">
 		               	<appButton key="sampleIntNoteButton" style="Button" action="standardNote">
 	                      <HorizontalPanel>
@@ -584,9 +620,10 @@ xmlns:orgMeta="xalan://org.openelis.meta.OrganizationMeta" xmlns:projectMeta="xa
                     </widget>
                   </row>
                 </TablePanel>
+                </HorizontalPanel>
             </tab>
             <tab key="tab5" text="{resource:getString($constants,'storage')}">
-              <TablePanel height="170px">
+              <TablePanel height="170px" style="Form">
               <row>
                 <table key="storageTable" width="auto" maxRows="6" showScroll="ALWAYS" title="">
                   <col width="155" header="{resource:getString($constants,'user')}">
@@ -594,7 +631,7 @@ xmlns:orgMeta="xalan://org.openelis.meta.OrganizationMeta" xmlns:projectMeta="xa
                   </col>
                   <col width="230" header="{resource:getString($constants,'location')}">
                     <autoComplete key="" width="210px" case="LOWER" popWidth="auto" field="Integer">
-                      <col width="180" header="Name" />
+                      <col width="180" header="{resource:getString($constants,'name')}" />
                     </autoComplete>
                   </col>
                   <col width="130" header="{resource:getString($constants,'checkIn')}">
@@ -631,24 +668,28 @@ xmlns:orgMeta="xalan://org.openelis.meta.OrganizationMeta" xmlns:projectMeta="xa
             </tab>
             <tab key="tab6" text="{resource:getString($constants,'qaEvents')}">
               <HorizontalPanel width="100%" height="170px">
-              <TablePanel>
+              	<TablePanel padding="0" spacing="0" style="TabSubForm">
               	<row>
-                 <table key="sampleQATable" title="" width="auto" maxRows="6" showScroll="ALWAYS">
-                  <col width="175" header="Sample QA Event">
-                    <label />
-                  </col>
-                  <col width="90" header="Type">
-                  	<label/>
-                  </col>
-                  <col width="40" header="Billable">
-                  	<check/>
-                  </col>
-                </table>
+	                 <table key="sampleQATable" title="" width="auto" maxRows="6" showScroll="ALWAYS">
+	                  <col width="185" header="{resource:getString($constants,'sampleQAEvent')}">
+	                  	<autoComplete key="{qaeventMeta:getName($sampleQA)}" width="165px" case="LOWER" popWidth="auto" field="Integer">
+                      		<col width="100" header="{resource:getString($constants,'name')}" />
+                      		<col width="150" header="{resource:getString($constants,'desc')}" />
+                      		<col width="80" header="{resource:getString($constants,'type')}" />
+                    	</autoComplete>
+	                  </col>
+	                  <col width="90" header="{resource:getString($constants,'type')}">
+		                  <dropdown key="{sampleQAEventMetaMap:getTypeId($sampleQAE)}" width="75px" popWidth="75px" field="Integer"/>
+	                  </col>
+	                  <col width="60" header="{resource:getString($constants,'billable')}">
+	                  	<check key="{sampleQAEventMetaMap:getIsBillable($sampleQAE)}"/>
+	                  </col>
+	                </table>
                 </row>
                 <row>
                 <widget style="TableButtonFooter">
 	                <HorizontalPanel>
-	                  <appButton key="addsQAButton" style="Button" action="addStorage">
+	                  <appButton key="addSampleQAButton" style="Button" action="addStorage">
 	                    <HorizontalPanel>
 	                      <AbsolutePanel style="AddRowButtonImage" />
 	                      <text>
@@ -656,7 +697,7 @@ xmlns:orgMeta="xalan://org.openelis.meta.OrganizationMeta" xmlns:projectMeta="xa
 	                      </text>
 	                    </HorizontalPanel>
 	                  </appButton>
-	                  <appButton key="removesQAButton" style="Button" action="removeStorage">
+	                  <appButton key="removeSampleQAButton" style="Button" action="removeStorage">
 	                    <HorizontalPanel>
 	                      <AbsolutePanel style="RemoveRowButtonImage" />
 	                      <text>
@@ -668,25 +709,29 @@ xmlns:orgMeta="xalan://org.openelis.meta.OrganizationMeta" xmlns:projectMeta="xa
 	                </widget>
 	                </row>
 	                </TablePanel>
-              <HorizontalPanel width="15px"/>
-              <TablePanel>
+              <VerticalPanel style="Divider"/>
+              <TablePanel padding="0" spacing="0" style="TabSubForm">
               <row>
                  <table key="analysisQATable" title="" width="auto" maxRows="6" showScroll="ALWAYS">
-                  <col width="175" header="Analysis QA Event">
-                    <label />
-                  </col>
-                  <col width="90" header="Type">
-                  	<label/>
-                  </col>
-                  <col width="40" header="Billable">
-                  	<check/>
-                  </col>
+                  <col width="185" header="{resource:getString($constants,'analysisQAEvent')}">
+                    	<autoComplete key="{qaeventMeta:getName($analysisQA)}" width="165px" case="LOWER" popWidth="auto" field="Integer">
+                      		<col width="100" header="{resource:getString($constants,'name')}" />
+                      		<col width="150" header="{resource:getString($constants,'desc')}" />
+                      		<col width="80" header="{resource:getString($constants,'type')}" />
+                    	</autoComplete>
+	                  </col>
+	                  <col width="90" header="{resource:getString($constants,'type')}">
+		                  <dropdown key="{analysisQAEventMetaMap:getTypeId($analysisQAE)}" width="75px" popWidth="75px" field="Integer"/>
+	                  </col>
+	                  <col width="60" header="{resource:getString($constants,'billable')}">
+	                  	<check key="{analysisQAEventMetaMap:getIsBillable($analysisQAE)}"/>
+	                  </col>
                 </table>
                 </row>
                 <row>
                 <widget style="TableButtonFooter">
                 <HorizontalPanel>
-                  <appButton key="addaQAButton" style="Button" action="addStorage">
+                  <appButton key="addAanalysisQAButton" style="Button" action="addStorage">
                     <HorizontalPanel>
                       <AbsolutePanel style="AddRowButtonImage" />
                       <text>
@@ -694,7 +739,7 @@ xmlns:orgMeta="xalan://org.openelis.meta.OrganizationMeta" xmlns:projectMeta="xa
                       </text>
                     </HorizontalPanel>
                   </appButton>
-                  <appButton key="removeaQAButton" style="Button" action="removeStorage">
+                  <appButton key="removeAnalysisQAButton" style="Button" action="removeStorage">
                     <HorizontalPanel>
                       <AbsolutePanel style="RemoveRowButtonImage" />
                       <text>
@@ -713,7 +758,7 @@ xmlns:orgMeta="xalan://org.openelis.meta.OrganizationMeta" xmlns:projectMeta="xa
                 <TablePanel>
                 <row>
                  <table key="auxValsTable" title="" width="auto" maxRows="5" showScroll="ALWAYS">
-                  <col width="250" header="Name">
+                  <col width="250" header="{resource:getString($constants,'name')}">
                     <label />
                   </col>
                 </table>
@@ -743,10 +788,10 @@ xmlns:orgMeta="xalan://org.openelis.meta.OrganizationMeta" xmlns:projectMeta="xa
                 </TablePanel>
                 <VerticalPanel>
                  <table key="auxVals2Table" title="" width="auto" maxRows="5" showScroll="ALWAYS">
-                  <col width="125" header="Name">
+                  <col width="125" header="{resource:getString($constants,'name')}">
                     <label />
                   </col>
-                  <col width="125" header="Value">
+                  <col width="125" header="{resource:getString($constants,'value')}">
                     <label />
                   </col>
                 </table>
