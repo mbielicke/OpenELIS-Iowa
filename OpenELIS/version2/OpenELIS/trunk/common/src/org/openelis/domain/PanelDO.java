@@ -25,32 +25,27 @@
 */
 package org.openelis.domain;
 
-import org.openelis.gwt.common.RPC;
+import org.openelis.utilcommon.DataBaseUtil;
 
-public class PanelDO implements RPC {
+/**
+ * Class represents the fields in database table panel.  
+ */
+
+public class PanelDO extends DataObject {
 
     private static final long serialVersionUID = 1L;
 
     protected Integer         id;
-    protected String          name;
-    protected String          description;
-
+    protected String          name, description;
+    
     public PanelDO() {
-
     }
 
     public PanelDO(Integer id, String name, String description) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
+        setId(id);
+        setName(name);
+        setDescription(description);
+        _changed = false;
     }
 
     public Integer getId() {
@@ -59,6 +54,7 @@ public class PanelDO implements RPC {
 
     public void setId(Integer id) {
         this.id = id;
+        _changed = true;
     }
 
     public String getName() {
@@ -66,7 +62,16 @@ public class PanelDO implements RPC {
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.name = DataBaseUtil.trim(name);
+        _changed = true;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = DataBaseUtil.trim(description);
+        _changed = true;
+    }
 }

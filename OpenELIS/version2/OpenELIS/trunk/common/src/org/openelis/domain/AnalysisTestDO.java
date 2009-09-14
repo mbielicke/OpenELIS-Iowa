@@ -1,277 +1,99 @@
-/** Exhibit A - UIRF Open-source Based Public Software License.
-* 
-* The contents of this file are subject to the UIRF Open-source Based
-* Public Software License(the "License"); you may not use this file except
-* in compliance with the License. You may obtain a copy of the License at
-* openelis.uhl.uiowa.edu
-* 
-* Software distributed under the License is distributed on an "AS IS"
-* basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
-* License for the specific language governing rights and limitations
-* under the License.
-* 
-* The Original Code is OpenELIS code.
-* 
-* The Initial Developer of the Original Code is The University of Iowa.
-* Portions created by The University of Iowa are Copyright 2006-2008. All
-* Rights Reserved.
-* 
-* Contributor(s): ______________________________________.
-* 
-* Alternatively, the contents of this file marked
-* "Separately-Licensed" may be used under the terms of a UIRF Software
-* license ("UIRF Software License"), in which case the provisions of a
-* UIRF Software License are applicable instead of those above. 
-*/
+/**
+ * Exhibit A - UIRF Open-source Based Public Software License.
+ * 
+ * The contents of this file are subject to the UIRF Open-source Based Public
+ * Software License(the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * openelis.uhl.uiowa.edu
+ * 
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+ * the specific language governing rights and limitations under the License.
+ * 
+ * The Original Code is OpenELIS code.
+ * 
+ * The Initial Developer of the Original Code is The University of Iowa.
+ * Portions created by The University of Iowa are Copyright 2006-2008. All
+ * Rights Reserved.
+ * 
+ * Contributor(s): ______________________________________.
+ * 
+ * Alternatively, the contents of this file marked "Separately-Licensed" may be
+ * used under the terms of a UIRF Software license ("UIRF Software License"), in
+ * which case the provisions of a UIRF Software License are applicable instead
+ * of those above.
+ */
 package org.openelis.domain;
 
 import java.util.Date;
 
-import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.RPC;
-import org.openelis.utilcommon.DataBaseUtil;
+/**
+ * The class extends analysis DO and carries several commonly used fields such
+ * as test & method names. The additional fields are for read/display only and
+ * do not get committed to the database. Note: isChanged will reflect any
+ * changes to read/display fields.
+ */
 
-public class AnalysisTestDO implements RPC {
+public class AnalysisTestDO extends AnalysisDO {
+
     private static final long serialVersionUID = 1L;
 
-    protected Integer         id;
-    protected Integer         sampleItemId;
-    protected Integer         revision;
-    protected Integer         testId;
-    protected Integer         sectionId;
-    protected String          section;
-    protected Integer         preAnalysisId;
-    protected Integer         parentAnalysisId;
-    protected Integer         parentResultId;
-    protected String          isReportable;
-    protected Integer         unitOfMeasureId;
-    protected Integer         statusId;
-    protected Datetime        availableDate;
-    protected Datetime        startedDate;
-    protected Datetime        completedDate;
-    protected Datetime        releasedDate;
-    protected Datetime        printedDate;
-    public TestDO             test             = new TestDO();
+    //
+    // additional fields for read/display purposes
+    //
+    protected Integer         methodId;
+    protected String          testName, methodName, sectionName;
 
     public AnalysisTestDO() {
-
-    }
-
-    // just analysis values
-    public AnalysisTestDO(Integer id,
-                          Integer sampleItemId,
-                          Integer revision,
-                          Integer testId,
-                          Integer sectionId,
-                          Integer preAnalysisId,
-                          Integer parentAnalysisId,
-                          Integer parentResultId,
-                          String isReportable,
-                          Integer unitOfMeasureId,
-                          Integer statusId,
-                          Date availableDate,
-                          Date startedDate,
-                          Date completedDate,
-                          Date releasedDate,
-                          Date printedDate) {
-        setId(id);
-        setSampleItemId(sampleItemId);
-        setRevision(revision);
-        setTestId(testId);
-        setSectionId(sectionId);
-        setPreAnalysisId(preAnalysisId);
-        setParentAnalysisId(parentAnalysisId);
-        setParentResultId(parentResultId);
-        setIsReportable(isReportable);
-        setUnitOfMeasureId(unitOfMeasureId);
-        setStatusId(statusId);
-        setAvailableDate(Datetime.getInstance(Datetime.YEAR, Datetime.SECOND, availableDate));
-        setStartedDate(Datetime.getInstance(Datetime.YEAR, Datetime.SECOND, startedDate));
-        setCompletedDate(Datetime.getInstance(Datetime.YEAR, Datetime.SECOND, completedDate));
-        setReleasedDate(Datetime.getInstance(Datetime.YEAR, Datetime.SECOND, releasedDate));
-        setPrintedDate(Datetime.getInstance(Datetime.YEAR, Datetime.SECOND, printedDate));
     }
 
     // analysis and test name,method name, and status
-    public AnalysisTestDO(Integer id,
-                          Integer sampleItemId,
-                          Integer revision,
-                          Integer testId,
-                          Integer sectionId,
-                          String section,
-                          Integer preAnalysisId,
-                          Integer parentAnalysisId,
-                          Integer parentResultId,
-                          String isReportable,
-                          Integer unitOfMeasureId,
-                          Integer statusId,
-                          Date availableDate,
-                          Date startedDate,
-                          Date completedDate,
-                          Date releasedDate,
-                          Date printedDate,
-                          String testName,
-                          Integer testMethodId,
-                          String testMethodName) {
+    public AnalysisTestDO(Integer id, Integer sampleItemId, Integer revision, Integer testId,
+                          Integer sectionId, Integer preAnalysisId, Integer parentAnalysisId,
+                          Integer parentResultId, String isReportable, Integer unitOfMeasureId,
+                          Integer statusId, Date availableDate, Date startedDate,
+                          Date completedDate, Date releasedDate, Date printedDate,
+                          String sectionName, String testName, Integer methodId, String methodName) {
 
-        setId(id);
-        setSampleItemId(sampleItemId);
-        setRevision(revision);
-        setTestId(testId);
-        setSectionId(sectionId);
-        setSection(section);
-        setPreAnalysisId(preAnalysisId);
-        setParentAnalysisId(parentAnalysisId);
-        setParentResultId(parentResultId);
-        setIsReportable(isReportable);
-        setUnitOfMeasureId(unitOfMeasureId);
-        setStatusId(statusId);
-        setAvailableDate(Datetime.getInstance(Datetime.YEAR, Datetime.DAY, availableDate));
-        setStartedDate(Datetime.getInstance(Datetime.YEAR, Datetime.DAY, startedDate));
-        setCompletedDate(Datetime.getInstance(Datetime.YEAR, Datetime.DAY, completedDate));
-        setReleasedDate(Datetime.getInstance(Datetime.YEAR, Datetime.DAY, releasedDate));
-        setPrintedDate(Datetime.getInstance(Datetime.YEAR, Datetime.DAY, printedDate));
+        super(id, sampleItemId, revision, testId, sectionId, preAnalysisId, parentAnalysisId,
+              parentResultId, isReportable, unitOfMeasureId, statusId, availableDate, startedDate,
+              completedDate, releasedDate, printedDate);
 
-        // test params
-        test.setId(testId);
-        test.setName(testName);
-        test.setMethodId(testMethodId);
-        test.setMethodName(testMethodName);
+        setSectionName(sectionName);
+        setTestName(testName);
+        setMethodId(methodId);
+        setMethodName(methodName);
     }
 
-    public Integer getId() {
-        return id;
+    public String getSectionName() {
+        return sectionName;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+    public void setSectionName(String sectionName) {
+        this.sectionName = sectionName;
     }
 
-    public Integer getSampleItemId() {
-        return sampleItemId;
+    public String getTestName() {
+        return testName;
     }
 
-    public void setSampleItemId(Integer sampleItemId) {
-        this.sampleItemId = sampleItemId;
+    public void setTestName(String testName) {
+        this.testName = testName;
     }
 
-    public Integer getRevision() {
-        return revision;
+    public Integer getMethodId() {
+        return methodId;
     }
 
-    public void setRevision(Integer revision) {
-        this.revision = revision;
+    public void setMethodId(Integer methodId) {
+        this.methodId = methodId;
     }
 
-    public Integer getTestId() {
-        return testId;
+    public String getMethodName() {
+        return methodName;
     }
 
-    public void setTestId(Integer testId) {
-        this.testId = testId;
-    }
-
-    public Integer getSectionId() {
-        return sectionId;
-    }
-
-    public void setSectionId(Integer sectionId) {
-        this.sectionId = sectionId;
-    }
-
-    public Integer getPreAnalysisId() {
-        return preAnalysisId;
-    }
-
-    public void setPreAnalysisId(Integer preAnalysisId) {
-        this.preAnalysisId = preAnalysisId;
-    }
-
-    public Integer getParentAnalysisId() {
-        return parentAnalysisId;
-    }
-
-    public void setParentAnalysisId(Integer parentAnalysisId) {
-        this.parentAnalysisId = parentAnalysisId;
-    }
-
-    public Integer getParentResultId() {
-        return parentResultId;
-    }
-
-    public void setParentResultId(Integer parentResultId) {
-        this.parentResultId = parentResultId;
-    }
-
-    public String getIsReportable() {
-        return isReportable;
-    }
-
-    public void setIsReportable(String isReportable) {
-        this.isReportable = DataBaseUtil.trim(isReportable);
-    }
-
-    public Integer getUnitOfMeasureId() {
-        return unitOfMeasureId;
-    }
-
-    public void setUnitOfMeasureId(Integer unitOfMeasureId) {
-        this.unitOfMeasureId = unitOfMeasureId;
-    }
-
-    public Integer getStatusId() {
-        return statusId;
-    }
-
-    public void setStatusId(Integer statusId) {
-        this.statusId = statusId;
-    }
-
-    public Datetime getAvailableDate() {
-        return availableDate;
-    }
-
-    public void setAvailableDate(Datetime availableDate) {
-        this.availableDate = availableDate;
-    }
-
-    public Datetime getStartedDate() {
-        return startedDate;
-    }
-
-    public void setStartedDate(Datetime startedDate) {
-        this.startedDate = startedDate;
-    }
-
-    public Datetime getCompletedDate() {
-        return completedDate;
-    }
-
-    public void setCompletedDate(Datetime completedDate) {
-        this.completedDate = completedDate;
-    }
-
-    public Datetime getReleasedDate() {
-        return releasedDate;
-    }
-
-    public void setReleasedDate(Datetime releasedDate) {
-        this.releasedDate = releasedDate;
-    }
-
-    public Datetime getPrintedDate() {
-        return printedDate;
-    }
-
-    public void setPrintedDate(Datetime printedDate) {
-        this.printedDate = printedDate;
-    }
-
-    public String getSection() {
-        return section;
-    }
-
-    public void setSection(String section) {
-        this.section = DataBaseUtil.trim(section);
+    public void setMethodName(String methodName) {
+        this.methodName = methodName;
     }
 }

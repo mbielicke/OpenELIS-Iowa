@@ -23,66 +23,42 @@
  * which case the provisions of a UIRF Software License are applicable instead
  * of those above.
  */
-
 package org.openelis.domain;
 
+import java.util.Date;
 import org.openelis.utilcommon.DataBaseUtil;
 
 /**
- * Class represents the fields in database table aux_field_value.
+ * The class extends qc DO and carries a commonly used field inventory_item
+ * name. The additional field is for read/display only and does not get
+ * committed to the database. Note: isChanged will reflect any changes to
+ * read/display fields.
  */
 
-public class AuxFieldValueDO extends DataObject {
+public class QcInventoryItem extends QcDO {
 
     private static final long serialVersionUID = 1L;
 
-    protected Integer         id, auxFieldId, typeId;
-    protected String          value;
+    protected String          inventoryItemName;
 
-    public AuxFieldValueDO() {
+    public QcInventoryItem() {
     }
 
-    public AuxFieldValueDO(Integer id, Integer auxFieldId, Integer typeId, String value) {
-        setId(id);
-        setAuxFieldId(auxFieldId);
-        setTypeId(typeId);
-        setValue(value);
-        _changed = false;
+    public QcInventoryItem(Integer id, String name, Integer typeId, Integer inventoryItemId,
+                           String inventoryItemName, String source, String lotNumber,
+                           Date preparedDate, Double preparedVolume, Integer preparedUnitId,
+                           Integer preparedById, Date usableDate, Date expireDate,
+                           String isSingleUse) {
+        super(id, name, typeId, inventoryItemId, source, lotNumber, preparedDate, preparedVolume,
+              preparedUnitId, preparedById, usableDate, expireDate, isSingleUse);
+        setInventoryItemName(inventoryItemName);
     }
 
-    public Integer getId() {
-        return id;
+    public String getInventoryItemName() {
+        return inventoryItemName;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
-        _changed = true;
-    }
-
-    public Integer getAuxFieldId() {
-        return auxFieldId;
-    }
-
-    public void setAuxFieldId(Integer auxFieldId) {
-        this.auxFieldId = auxFieldId;
-        _changed = true;
-    }
-
-    public Integer getTypeId() {
-        return typeId;
-    }
-
-    public void setTypeId(Integer typeId) {
-        this.typeId = typeId;
-        _changed = true;
-    }
-
-    public String getValue() {
-        return value;
-    }
-
-    public void setValue(String value) {
-        this.value = DataBaseUtil.trim(value);
-        _changed = true;
+    public void setInventoryItemName(String inventoryItemName) {
+        this.inventoryItemName = DataBaseUtil.trim(inventoryItemName);
     }
 }
