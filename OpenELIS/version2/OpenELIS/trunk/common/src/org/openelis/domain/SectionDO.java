@@ -1,83 +1,55 @@
-/** Exhibit A - UIRF Open-source Based Public Software License.
-* 
-* The contents of this file are subject to the UIRF Open-source Based
-* Public Software License(the "License"); you may not use this file except
-* in compliance with the License. You may obtain a copy of the License at
-* openelis.uhl.uiowa.edu
-* 
-* Software distributed under the License is distributed on an "AS IS"
-* basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
-* License for the specific language governing rights and limitations
-* under the License.
-* 
-* The Original Code is OpenELIS code.
-* 
-* The Initial Developer of the Original Code is The University of Iowa.
-* Portions created by The University of Iowa are Copyright 2006-2008. All
-* Rights Reserved.
-* 
-* Contributor(s): ______________________________________.
-* 
-* Alternatively, the contents of this file marked
-* "Separately-Licensed" may be used under the terms of a UIRF Software
-* license ("UIRF Software License"), in which case the provisions of a
-* UIRF Software License are applicable instead of those above. 
-*/
+/**
+ * Exhibit A - UIRF Open-source Based Public Software License.
+ * 
+ * The contents of this file are subject to the UIRF Open-source Based Public
+ * Software License(the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * openelis.uhl.uiowa.edu
+ * 
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+ * the specific language governing rights and limitations under the License.
+ * 
+ * The Original Code is OpenELIS code.
+ * 
+ * The Initial Developer of the Original Code is The University of Iowa.
+ * Portions created by The University of Iowa are Copyright 2006-2008. All
+ * Rights Reserved.
+ * 
+ * Contributor(s): ______________________________________.
+ * 
+ * Alternatively, the contents of this file marked "Separately-Licensed" may be
+ * used under the terms of a UIRF Software license ("UIRF Software License"), in
+ * which case the provisions of a UIRF Software License are applicable instead
+ * of those above.
+ */
 package org.openelis.domain;
 
-import org.openelis.gwt.common.RPC;
 import org.openelis.utilcommon.DataBaseUtil;
 
-public class SectionDO implements RPC {
+/**
+ * Class represents the fields in database table section.
+ */
+
+public class SectionDO extends DataObject {
 
     private static final long serialVersionUID = 1L;
 
-    protected Integer id; 
-    protected Integer organizationId; 
-    protected String organizationName; 
-    protected Integer parentSectionId;
-    protected String parentSectionName;
-    protected String name;
-    protected String description;
-    protected String isExternal;   
+    protected Integer         id, organizationId, parentSectionId;
+    protected String          name, description, isExternal;
 
     public SectionDO() {
-
     }
 
-    public SectionDO(Integer id,Integer organizationId,String organizationName,
-                     String name,String description,Integer parentSectionId,
-                     String parentSectionName,String isExternal) {
-
+    public SectionDO(Integer id, Integer parentSectionId, String name, String description,
+                     String isExternal, Integer organizationId) {
         setId(id);
-        setOrganizationId(organizationId);
-        setOrganizationName(organizationName);
+        setParentSectionId(parentSectionId);
         setName(name);
         setDescription(description);
-        setParentSectionId(parentSectionId);
-        setParentSectionName(parentSectionName);
-        setIsExternal(isExternal);        
-    }
-
-    public SectionDO(Integer id, String name) {
-        setId(id);
-        setName(name);
-    }
-
-    public Integer getOrganizationId() {
-        return organizationId;
-    }
-
-    public void setOrganizationId(Integer organizationId) {
-        this.organizationId = organizationId;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = DataBaseUtil.trim(description);
+        setIsExternal(isExternal);
+        setOrganizationId(organizationId);
+        _changed = false;
     }
 
     public Integer getId() {
@@ -86,14 +58,7 @@ public class SectionDO implements RPC {
 
     public void setId(Integer id) {
         this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = DataBaseUtil.trim(name);
+        _changed = true;
     }
 
     public Integer getParentSectionId() {
@@ -102,6 +67,25 @@ public class SectionDO implements RPC {
 
     public void setParentSectionId(Integer parentSectionId) {
         this.parentSectionId = parentSectionId;
+        _changed = true;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = DataBaseUtil.trim(name);
+        _changed = true;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = DataBaseUtil.trim(description);
+        _changed = true;
     }
 
     public String getIsExternal() {
@@ -110,21 +94,15 @@ public class SectionDO implements RPC {
 
     public void setIsExternal(String isExternal) {
         this.isExternal = DataBaseUtil.trim(isExternal);
+        _changed = true;
     }
 
-    public String getOrganizationName() {
-        return organizationName;
+    public Integer getOrganizationId() {
+        return organizationId;
     }
 
-    public void setOrganizationName(String organizationName) {
-        this.organizationName = DataBaseUtil.trim(organizationName);
-    }
-
-    public String getParentSectionName() {
-        return parentSectionName;
-    }
-
-    public void setParentSectionName(String parentSectionName) {
-        this.parentSectionName = DataBaseUtil.trim(parentSectionName);
+    public void setOrganizationId(Integer organizationId) {
+        this.organizationId = organizationId;
+        _changed = true;
     }
 }

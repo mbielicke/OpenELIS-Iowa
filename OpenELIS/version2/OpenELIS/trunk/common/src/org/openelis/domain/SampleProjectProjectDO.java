@@ -25,60 +25,44 @@
  */
 package org.openelis.domain;
 
+import org.openelis.utilcommon.DataBaseUtil;
+
 /**
- * Class represents the fields in database table sample_organization.
+ * The class extends sample project DO and carries several commonly used fields
+ * such as project name and description. The additional fields are for
+ * read/display only and do not get committed to the database. Note: isChanged
+ * will reflect any changes to read/display fields.
  */
 
-public class SampleOrganizationDO extends DataObject {
+public class SampleProjectProjectDO extends SampleProjectDO {
 
     private static final long serialVersionUID = 1L;
 
-    protected Integer         id, sampleId, organizationId, typeId;
+    protected String          projectName, projectDescription;
 
-    public SampleOrganizationDO() {
+    public SampleProjectProjectDO() {
     }
 
-    public SampleOrganizationDO(Integer id, Integer sampleId, Integer organizationId, Integer typeId) {
-        setId(id);
-        setSampleId(sampleId);
-        setOrganizationId(organizationId);
-        setTypeId(typeId);
-        _changed = false;
+    public SampleProjectProjectDO(Integer id, Integer sampleId, Integer projectId,
+                                  String isPermanent, String projectName, String projectDescription) {
+        super(id, sampleId, projectId, isPermanent);
+        setProjectName(projectName);
+        setProjectDescription(projectDescription);
     }
 
-    public Integer getId() {
-        return id;
+    public String getProjectName() {
+        return projectName;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
-        _changed = true;
+    public void setProjectName(String projectName) {
+        this.projectName = DataBaseUtil.trim(projectName);
     }
 
-    public Integer getSampleId() {
-        return sampleId;
+    public String getProjectDescription() {
+        return projectDescription;
     }
 
-    public void setSampleId(Integer sampleId) {
-        this.sampleId = sampleId;
-        _changed = true;
-    }
-
-    public Integer getOrganizationId() {
-        return organizationId;
-    }
-
-    public void setOrganizationId(Integer organizationId) {
-        this.organizationId = organizationId;
-        _changed = true;
-    }
-
-    public Integer getTypeId() {
-        return typeId;
-    }
-
-    public void setTypeId(Integer typeId) {
-        this.typeId = typeId;
-        _changed = true;
+    public void setProjectDescription(String projectDescription) {
+        this.projectDescription = DataBaseUtil.trim(projectDescription);
     }
 }
