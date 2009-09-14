@@ -34,19 +34,22 @@ public class AnalysisMetaMap extends AnalysisMeta implements MetaMap {
     public AnalysisMetaMap(){
         super("analysis.");
         SECTION = new SectionMeta();
-        TEST = new SampleTestMetaMap();
+        TEST = new TestMetaMap();
+        ANALYSIS_QA_EVENT = new AnalysisQaeventMetaMap();
     }
     
     public AnalysisMetaMap(String path){
         super(path);
         SECTION = new SectionMeta(path+"section.");
-        TEST = new SampleTestMetaMap(path+"test.");
+        TEST = new TestMetaMap(path+"test.");
+        ANALYSIS_QA_EVENT = new AnalysisQaeventMetaMap();
     }
     
-    public SampleTestMetaMap TEST;
+    public TestMetaMap TEST;
     public SectionMeta SECTION;
+    public AnalysisQaeventMetaMap ANALYSIS_QA_EVENT;
     
-    public SampleTestMetaMap getTest(){
+    public TestMetaMap getTest(){
         return TEST;
     }
     
@@ -54,11 +57,17 @@ public class AnalysisMetaMap extends AnalysisMeta implements MetaMap {
         return SECTION;
     }
     
+    public AnalysisQaeventMetaMap getAnalysisQaevent(){
+        return ANALYSIS_QA_EVENT;
+    }
+    
     public boolean hasColumn(String name){
         if(name.startsWith(path+"test."))
             return TEST.hasColumn(name);
         else if(name.startsWith(path+"section."))
             return SECTION.hasColumn(name);  
+        else if(name.startsWith(path+"analysisQAEvent"))
+            return ANALYSIS_QA_EVENT.hasColumn(name);
         return super.hasColumn(name);
     }
     

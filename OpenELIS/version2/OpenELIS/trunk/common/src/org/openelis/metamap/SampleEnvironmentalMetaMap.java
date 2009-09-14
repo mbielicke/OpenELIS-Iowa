@@ -69,6 +69,8 @@ public class SampleEnvironmentalMetaMap extends SampleEnvironmentalMeta implemen
             return SAMPLE.SAMPLE_ITEM.hasColumn(name);
         if(name.startsWith("analysis."))
             return SAMPLE.SAMPLE_ITEM.ANALYSIS.hasColumn(name);
+        if(name.startsWith("sampleQAEvent."))
+            return SAMPLE.SAMPLE_QA_EVENT.hasColumn(name);
         
         return super.hasColumn(name);
     }
@@ -92,6 +94,9 @@ public class SampleEnvironmentalMetaMap extends SampleEnvironmentalMeta implemen
         
         if(name.indexOf("analysis.") > -1)
             from += ", IN (sampleItem.analysis) analysis ";
+        
+        if(name.indexOf("sampleQAEvent.") > -1)
+            from += ", IN (sampleItem.sampleQAEvent) sampleQAEvent ";
         
         return from;
     }
