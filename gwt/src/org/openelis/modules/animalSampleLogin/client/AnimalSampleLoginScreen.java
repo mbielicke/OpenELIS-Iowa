@@ -25,11 +25,6 @@
 */
 package org.openelis.modules.animalSampleLogin.client;
 
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.SourcesTabEvents;
-import com.google.gwt.user.client.ui.TabListener;
-import com.google.gwt.user.client.ui.Widget;
-
 import org.openelis.gwt.common.data.deprecated.Field;
 import org.openelis.gwt.common.data.deprecated.KeyListManager;
 import org.openelis.gwt.common.data.deprecated.TableDataRow;
@@ -40,6 +35,11 @@ import org.openelis.gwt.widget.deprecated.ButtonPanel;
 import org.openelis.gwt.widget.tree.deprecated.TreeManager;
 import org.openelis.gwt.widget.tree.deprecated.TreeWidget;
 import org.openelis.modules.main.client.OpenELISScreenForm;
+
+import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.SourcesTabEvents;
+import com.google.gwt.user.client.ui.TabListener;
+import com.google.gwt.user.client.ui.Widget;
 
 public class AnimalSampleLoginScreen extends OpenELISScreenForm<AnimalSampleLoginForm,Query<TableDataRow<Integer>>> implements ClickListener, TabListener, TreeManager{
 

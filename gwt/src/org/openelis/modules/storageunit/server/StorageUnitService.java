@@ -34,7 +34,6 @@ import org.openelis.domain.StorageUnitDO;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.deprecated.AbstractField;
 import org.openelis.gwt.common.data.deprecated.StringObject;
@@ -61,7 +60,7 @@ public class StorageUnitService implements AppScreenFormServiceInt<StorageUnitFo
 
     private static final StorageUnitMetaMap StorageUnitMeta = new StorageUnitMetaMap();
     
-	public Query<TableDataRow<Integer>> commitQuery(Query<TableDataRow<Integer>> query) throws RPCException {
+	public Query<TableDataRow<Integer>> commitQuery(Query<TableDataRow<Integer>> query) throws Exception {
         List storageUnits = new ArrayList();
 		// if the rpc is null then we need to get the page
 		/*if (qList == null) {
@@ -83,7 +82,7 @@ public class StorageUnitService implements AppScreenFormServiceInt<StorageUnitFo
 					throw new LastPageException(openElisConstants
 							.getString("lastPageException"));
 				} else {
-					throw new RPCException(e.getMessage());
+					throw new Exception(e.getMessage());
 				}
 			}
 
@@ -98,7 +97,7 @@ public class StorageUnitService implements AppScreenFormServiceInt<StorageUnitFo
             }catch(LastPageException e) {
                 throw new LastPageException(openElisConstants.getString("lastPageException"));
 			} catch (Exception e) {
-				throw new RPCException(e.getMessage());
+				throw new Exception(e.getMessage());
 			}
 
             //need to save the rpc used to the encache
@@ -120,7 +119,7 @@ public class StorageUnitService implements AppScreenFormServiceInt<StorageUnitFo
 	}
 
 	public StorageUnitForm commitUpdate(StorageUnitForm rpc)
-			throws RPCException {
+			throws Exception {
 		// remote interface to call the storage unit bean
 		StorageUnitRemote remote = (StorageUnitRemote) EJBFactory
 				.lookup("openelis/StorageUnitBean/remote");
@@ -137,7 +136,7 @@ public class StorageUnitService implements AppScreenFormServiceInt<StorageUnitFo
                 setRpcErrors(((ValidationErrorsList)e).getErrorList(), rpc);
                 return rpc;
             }else
-                throw new RPCException(e.getMessage());
+                throw new Exception(e.getMessage());
         }
 		
 		// set the fields in the RPC
@@ -147,7 +146,7 @@ public class StorageUnitService implements AppScreenFormServiceInt<StorageUnitFo
 	}
 
 	public StorageUnitForm commitAdd(StorageUnitForm rpc)
-    		throws RPCException {
+    		throws Exception {
     	// remote interface to call the storageunit bean
     	StorageUnitRemote remote = (StorageUnitRemote) EJBFactory.lookup("openelis/StorageUnitBean/remote");
     	StorageUnitDO newStorageUnitDO = new StorageUnitDO();
@@ -164,7 +163,7 @@ public class StorageUnitService implements AppScreenFormServiceInt<StorageUnitFo
                 setRpcErrors(((ValidationErrorsList)e).getErrorList(), rpc);
                 return rpc;
             }else
-                throw new RPCException(e.getMessage());
+                throw new Exception(e.getMessage());
         }
     
         newStorageUnitDO.setId(storageUnitId);
@@ -176,7 +175,7 @@ public class StorageUnitService implements AppScreenFormServiceInt<StorageUnitFo
     }
 
     public StorageUnitForm commitDelete(StorageUnitForm rpc)
-			throws RPCException {
+			throws Exception {
 		// remote interface to call the storage unit bean
 		StorageUnitRemote remote = (StorageUnitRemote) EJBFactory.lookup("openelis/StorageUnitBean/remote");
 		
@@ -188,7 +187,7 @@ public class StorageUnitService implements AppScreenFormServiceInt<StorageUnitFo
                 setRpcErrors(((ValidationErrorsList)e).getErrorList(), rpc);
                 return rpc;
             }else
-                throw new RPCException(e.getMessage());
+                throw new Exception(e.getMessage());
         }	
 
 		setFieldsInRPC(rpc, new StorageUnitDO());
@@ -196,7 +195,7 @@ public class StorageUnitService implements AppScreenFormServiceInt<StorageUnitFo
 		return rpc;
 	}
 
-	public StorageUnitForm abort(StorageUnitForm rpc) throws RPCException {
+	public StorageUnitForm abort(StorageUnitForm rpc) throws Exception {
     	// remote interface to call the storage unit bean
     	StorageUnitRemote remote = (StorageUnitRemote) EJBFactory
     			.lookup("openelis/StorageUnitBean/remote");
@@ -210,7 +209,7 @@ public class StorageUnitService implements AppScreenFormServiceInt<StorageUnitFo
     	return rpc;
     }
 
-    public StorageUnitForm fetch(StorageUnitForm rpc) throws RPCException {
+    public StorageUnitForm fetch(StorageUnitForm rpc) throws Exception {
 		// remote interface to call the storage unit bean
 		StorageUnitRemote remote = (StorageUnitRemote) EJBFactory
 				.lookup("openelis/StorageUnitBean/remote");
@@ -224,7 +223,7 @@ public class StorageUnitService implements AppScreenFormServiceInt<StorageUnitFo
 	}
 
 	public StorageUnitForm fetchForUpdate(StorageUnitForm rpc)
-			throws RPCException {
+			throws Exception {
 		// remote interface to call the storage unit bean
 		StorageUnitRemote remote = (StorageUnitRemote) EJBFactory
 				.lookup("openelis/StorageUnitBean/remote");
@@ -233,7 +232,7 @@ public class StorageUnitService implements AppScreenFormServiceInt<StorageUnitFo
 		try {
 			storageUnitDO = remote.getStorageUnitAndLock(rpc.entityKey, SessionManager.getSession().getId());
 		} catch (Exception e) {
-			throw new RPCException(e.getMessage());
+			throw new Exception(e.getMessage());
 		}
 
 		// set the fields in the RPC
@@ -242,7 +241,7 @@ public class StorageUnitService implements AppScreenFormServiceInt<StorageUnitFo
 		return rpc;
 	}
     
-    public StorageUnitForm getScreen(StorageUnitForm rpc) throws RPCException {
+    public StorageUnitForm getScreen(StorageUnitForm rpc) throws Exception {
         rpc.xml = ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/storageUnit.xsl");
         
         return rpc;

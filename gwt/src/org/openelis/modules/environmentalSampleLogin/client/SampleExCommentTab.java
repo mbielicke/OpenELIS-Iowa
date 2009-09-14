@@ -27,7 +27,6 @@ package org.openelis.modules.environmentalSampleLogin.client;
 
 import org.openelis.common.NotesTab;
 import org.openelis.gwt.event.DataChangeEvent;
-import org.openelis.gwt.screen.ScreenDef;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.manager.SampleManager;
 

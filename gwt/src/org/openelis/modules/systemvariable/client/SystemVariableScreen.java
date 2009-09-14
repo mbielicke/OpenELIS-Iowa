@@ -25,9 +25,6 @@
 */
 package org.openelis.modules.systemvariable.client;
 
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.Widget;
-
 import org.openelis.gwt.common.data.deprecated.KeyListManager;
 import org.openelis.gwt.common.data.deprecated.QueryStringField;
 import org.openelis.gwt.common.data.deprecated.TableDataRow;
@@ -36,10 +33,12 @@ import org.openelis.gwt.screen.deprecated.CommandChain;
 import org.openelis.gwt.screen.deprecated.ScreenInputWidget;
 import org.openelis.gwt.widget.deprecated.AppButton;
 import org.openelis.gwt.widget.deprecated.ButtonPanel;
-import org.openelis.gwt.widget.deprecated.CollapsePanel;
 import org.openelis.gwt.widget.deprecated.ResultsTable;
 import org.openelis.metamap.SystemVariableMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
+
+import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.Widget;
 
 public class SystemVariableScreen extends OpenELISScreenForm<SystemVariableForm,Query<TableDataRow<Integer>>> implements ClickListener {
     

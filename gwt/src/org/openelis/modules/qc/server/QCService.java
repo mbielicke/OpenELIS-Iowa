@@ -40,7 +40,6 @@ import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.deprecated.AbstractField;
@@ -75,7 +74,7 @@ public class QCService implements
     private UTFResource openElisConstants = UTFResource.getBundle((String)SessionManager.getSession()
                                                                                         .getAttribute("locale"));
     
-    public Query<TableDataRow<Integer>> commitQuery(Query<TableDataRow<Integer>> query) throws RPCException {
+    public Query<TableDataRow<Integer>> commitQuery(Query<TableDataRow<Integer>> query) throws Exception {
         List<IdNameLotNumberDO> qcNames;
         QcRemote remote;
         IdNameLotNumberDO resultDO;
@@ -91,7 +90,7 @@ public class QCService implements
             throw new LastPageException(openElisConstants.getString("lastPageException"));
         } catch (Exception e) {
             e.printStackTrace();
-            throw new RPCException(e.getMessage());
+            throw new Exception(e.getMessage());
         }
 
         // fill the model with the query results
@@ -112,7 +111,7 @@ public class QCService implements
         return query;   
     }
     
-    public QCForm commitAdd(QCForm rpc) throws RPCException {
+    public QCForm commitAdd(QCForm rpc) throws Exception {
         QcRemote remote;
         QcDO qcDO;
         Integer qcId;
@@ -129,13 +128,13 @@ public class QCService implements
             setRpcErrors(e.getErrorList(), rpc);
             return rpc;
         } catch (Exception e) {            
-            throw new RPCException(e.getMessage());            
+            throw new Exception(e.getMessage());            
         }
         
         return rpc;
     }   
 
-    public QCForm commitUpdate(QCForm rpc) throws RPCException {
+    public QCForm commitUpdate(QCForm rpc) throws Exception {
         QcRemote remote;
         QcDO qcDO;
         List<QcAnalyteDO> qcaDOList;
@@ -151,17 +150,17 @@ public class QCService implements
             setRpcErrors(e.getErrorList(), rpc);
             return rpc;
         } catch (Exception e) {            
-            throw new RPCException(e.getMessage());            
+            throw new Exception(e.getMessage());            
         }
         
         return rpc;
     }
     
-    public QCForm commitDelete(QCForm rpc) throws RPCException {
+    public QCForm commitDelete(QCForm rpc) throws Exception {
         return null;
     }
 
-    public QCForm abort(QCForm rpc) throws RPCException {
+    public QCForm abort(QCForm rpc) throws Exception {
         QcDO qcDO;
         List<QcAnalyteDO> qcAnaDOList;
         QcRemote remote;
@@ -175,7 +174,7 @@ public class QCService implements
         return rpc;
     }
 
-    public QCForm fetch(QCForm rpc) throws RPCException {
+    public QCForm fetch(QCForm rpc) throws Exception {
         QcDO qcDO;
         List<QcAnalyteDO> qcAnaDOList;
         QcRemote remote;
@@ -189,7 +188,7 @@ public class QCService implements
         return rpc;
     }
 
-    public QCForm fetchForUpdate(QCForm rpc) throws RPCException {
+    public QCForm fetchForUpdate(QCForm rpc) throws Exception {
         QcDO qcDO;
         QcRemote remote;
         List<QcAnalyteDO> qcAnaDOList;
@@ -202,13 +201,13 @@ public class QCService implements
             qcAnaDOList = remote.getQcAnalytes(rpc.entityKey);
             fillQcAnalyteTable(qcAnaDOList,rpc);
         } catch(Exception ex) {
-            throw new RPCException(ex.getMessage());
+            throw new Exception(ex.getMessage());
         }
         
         return rpc;        
     }
 
-    public QCForm getScreen(QCForm rpc) throws RPCException {
+    public QCForm getScreen(QCForm rpc) throws Exception {
         rpc.xml = ServiceUtils.getXML(Constants.APP_ROOT + "/Forms/qc.xsl");               
         return rpc;
     }
@@ -226,7 +225,7 @@ public class QCService implements
     }
 
     public TableDataModel getMatches(String cat,TableDataModel model,String match,
-                                     HashMap<String, FieldType> params) throws RPCException {
+                                     HashMap<String, FieldType> params) throws Exception {
         TableDataModel<TableDataRow<Integer>> dataModel;
         List<IdNameDO> analytes;
         List<InventoryItemAutoDO> items;
@@ -299,7 +298,7 @@ public class QCService implements
     }
     
 
-    public TableDataModel getAutocompleteModel(List<IdNameDO> entries) throws RPCException {
+    public TableDataModel getAutocompleteModel(List<IdNameDO> entries) throws Exception {
         TableDataModel<TableDataRow<Integer>> dataModel;
         IdNameDO element;
         Integer entryId;

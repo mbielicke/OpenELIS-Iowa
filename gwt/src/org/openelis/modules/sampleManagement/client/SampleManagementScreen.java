@@ -25,15 +25,15 @@
 */
 package org.openelis.modules.sampleManagement.client;
 
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.Widget;
-
 import org.openelis.gwt.common.data.deprecated.KeyListManager;
 import org.openelis.gwt.common.data.deprecated.TableDataRow;
 import org.openelis.gwt.common.deprecated.Query;
 import org.openelis.gwt.screen.deprecated.CommandChain;
 import org.openelis.gwt.widget.deprecated.ButtonPanel;
 import org.openelis.modules.main.client.OpenELISScreenForm;
+
+import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.Widget;
 
 public class SampleManagementScreen extends OpenELISScreenForm<SampleManagementForm,Query<TableDataRow<Integer>>> implements ClickListener{
 

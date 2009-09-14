@@ -42,7 +42,6 @@ import org.openelis.gwt.screen.deprecated.CommandChain;
 import org.openelis.gwt.screen.deprecated.ScreenCalendar;
 import org.openelis.gwt.screen.deprecated.ScreenDropDownWidget;
 import org.openelis.gwt.screen.deprecated.ScreenTextBox;
-import org.openelis.gwt.screen.deprecated.AppScreenForm.State;
 import org.openelis.gwt.widget.deprecated.AppButton;
 import org.openelis.gwt.widget.deprecated.AutoComplete;
 import org.openelis.gwt.widget.deprecated.AutoCompleteCallInt;
@@ -55,8 +54,6 @@ import org.openelis.gwt.widget.table.deprecated.event.SourcesTableWidgetEvents;
 import org.openelis.gwt.widget.table.deprecated.event.TableWidgetListener;
 import org.openelis.metamap.InventoryAdjustmentMetaMap;
 import org.openelis.modules.fillOrder.client.FillOrderItemInfoForm;
-import org.openelis.modules.inventoryReceipt.client.InvReceiptItemInfoForm;
-import org.openelis.modules.inventoryReceipt.client.ReceiptInvItemKey;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
 import com.google.gwt.user.client.Window;

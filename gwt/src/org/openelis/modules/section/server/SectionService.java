@@ -36,8 +36,6 @@ import org.openelis.domain.SectionDO;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.RPCException;
-import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.deprecated.AbstractField;
 import org.openelis.gwt.common.data.deprecated.FieldType;
@@ -49,7 +47,6 @@ import org.openelis.gwt.common.deprecated.Query;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.deprecated.AppScreenFormServiceInt;
 import org.openelis.gwt.services.deprecated.AutoCompleteServiceInt;
-import org.openelis.modules.project.client.ProjectForm;
 import org.openelis.modules.section.client.SectionForm;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.OrganizationRemote;
@@ -67,7 +64,7 @@ public class SectionService implements
     private UTFResource openElisConstants = UTFResource.getBundle((String)SessionManager.getSession()
                                                                                         .getAttribute("locale"));
     
-    public Query<TableDataRow<Integer>> commitQuery(Query<TableDataRow<Integer>> query) throws RPCException {
+    public Query<TableDataRow<Integer>> commitQuery(Query<TableDataRow<Integer>> query) throws Exception {
         List<IdNameDO> sectionNames;
         IdNameDO resultDO;
         StringObject name;
@@ -82,7 +79,7 @@ public class SectionService implements
             throw new LastPageException(openElisConstants.getString("lastPageException"));
         } catch (Exception e) {
             e.printStackTrace();
-            throw new RPCException(e.getMessage());
+            throw new Exception(e.getMessage());
         }
 
         // fill the model with the query results
@@ -101,7 +98,7 @@ public class SectionService implements
         return query; 
     }
     
-    public SectionForm abort(SectionForm rpc) throws RPCException {                
+    public SectionForm abort(SectionForm rpc) throws Exception {                
         SectionRemote remote;
         SectionDO sectionDO;
         
@@ -111,13 +108,13 @@ public class SectionService implements
                                                  SessionManager.getSession().getId());
             setFieldsInRPC(rpc, sectionDO);            
         } catch(Exception ex) {
-            throw new RPCException(ex.getMessage());
+            throw new Exception(ex.getMessage());
         }
                 
         return rpc;
     }
 
-    public SectionForm commitAdd(SectionForm rpc) throws RPCException {
+    public SectionForm commitAdd(SectionForm rpc) throws Exception {
         SectionRemote remote;
         SectionDO sectionDO;
         Integer sectId;
@@ -133,12 +130,12 @@ public class SectionService implements
             return rpc;
         } catch (Exception e) {
             e.printStackTrace();
-            throw new RPCException(e.getMessage());            
+            throw new Exception(e.getMessage());            
         }
         return rpc;
     }
 
-    public SectionForm commitUpdate(SectionForm rpc) throws RPCException {
+    public SectionForm commitUpdate(SectionForm rpc) throws Exception {
         SectionRemote remote;
         SectionDO sectionDO;
         
@@ -153,16 +150,16 @@ public class SectionService implements
             return rpc;
         } catch (Exception e) {
             e.printStackTrace();
-            throw new RPCException(e.getMessage());            
+            throw new Exception(e.getMessage());            
         }
         return rpc;
     }
     
-    public SectionForm commitDelete(SectionForm rpc) throws RPCException {       
+    public SectionForm commitDelete(SectionForm rpc) throws Exception {       
         return null;
     }
 
-    public SectionForm fetch(SectionForm rpc) throws RPCException {
+    public SectionForm fetch(SectionForm rpc) throws Exception {
         SectionRemote remote;
         SectionDO sectionDO;
         
@@ -173,7 +170,7 @@ public class SectionService implements
         return rpc;
     }
 
-    public SectionForm fetchForUpdate(SectionForm rpc) throws RPCException {
+    public SectionForm fetchForUpdate(SectionForm rpc) throws Exception {
         SectionRemote remote;
         SectionDO sectionDO;
         
@@ -183,13 +180,13 @@ public class SectionService implements
                                                  SessionManager.getSession().getId());
             setFieldsInRPC(rpc, sectionDO);
         } catch(Exception ex) {
-            throw new RPCException(ex.getMessage());
+            throw new Exception(ex.getMessage());
         }
                 
         return rpc;
     }
 
-    public SectionForm getScreen(SectionForm rpc) throws RPCException {        
+    public SectionForm getScreen(SectionForm rpc) throws Exception {        
         rpc.xml = ServiceUtils.getXML(Constants.APP_ROOT + "/Forms/section.xsl");
         return rpc;
     }
@@ -197,7 +194,7 @@ public class SectionService implements
     public TableDataModel getMatches(String cat,
                                      TableDataModel model,
                                      String match,
-                                     HashMap<String, FieldType> params) throws RPCException {
+                                     HashMap<String, FieldType> params) throws Exception {
         OrganizationRemote oremote;
         TableDataModel<TableDataRow<Integer>> dataModel;
         List autoCompleteList;

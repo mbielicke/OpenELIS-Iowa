@@ -25,13 +25,16 @@
 */
 package org.openelis.modules.analyte.server;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+
 import org.openelis.domain.AnalyteDO;
 import org.openelis.domain.IdNameDO;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.QueryException;
-import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.deprecated.AbstractField;
 import org.openelis.gwt.common.data.deprecated.FieldType;
@@ -52,11 +55,6 @@ import org.openelis.util.FormUtil;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-
 public class AnalyteService implements AppScreenFormServiceInt<AnalyteForm,Query<TableDataRow<Integer>>>, AutoCompleteServiceInt {
 
 	private static final int leftTableRowsPerPage = 9;
@@ -65,7 +63,7 @@ public class AnalyteService implements AppScreenFormServiceInt<AnalyteForm,Query
     
     private static final AnalyteMetaMap Meta = new AnalyteMetaMap();
     
-	public  Query<TableDataRow<Integer>> commitQuery(Query<TableDataRow<Integer>> query) throws RPCException {
+	public  Query<TableDataRow<Integer>> commitQuery(Query<TableDataRow<Integer>> query) throws Exception {
         List analyteNames = new ArrayList();
     //		if the rpc is null then we need to get the page
             /*
@@ -83,7 +81,7 @@ public class AnalyteService implements AppScreenFormServiceInt<AnalyteForm,Query
     	        	if(e instanceof LastPageException){
     	        		throw new LastPageException(openElisConstants.getString("lastPageException"));
     	        	}else{
-    	        		throw new RPCException(e.getMessage());	
+    	        		throw new Exception(e.getMessage());	
     	        	}
     	        }
 
@@ -97,7 +95,7 @@ public class AnalyteService implements AppScreenFormServiceInt<AnalyteForm,Query
                 }catch(LastPageException e) {
                     throw new LastPageException(openElisConstants.getString("lastPageException"));
         		}catch(Exception e){
-        			throw new RPCException(e.getMessage());
+        			throw new Exception(e.getMessage());
         		}
                 
                 //need to save the rpc used to the encache
@@ -127,7 +125,7 @@ public class AnalyteService implements AppScreenFormServiceInt<AnalyteForm,Query
     		return query;
     	}
 
-    public AnalyteForm commitAdd(AnalyteForm rpc) throws RPCException {
+    public AnalyteForm commitAdd(AnalyteForm rpc) throws Exception {
 //		 remote interface to call the analyte bean
 		AnalyteRemote remote = (AnalyteRemote) EJBFactory.lookup("openelis/AnalyteBean/remote");
 		AnalyteDO newAnalyteDO = new AnalyteDO();
@@ -144,7 +142,7 @@ public class AnalyteService implements AppScreenFormServiceInt<AnalyteForm,Query
                 setRpcErrors(((ValidationErrorsList)e).getErrorList(), rpc);
                 return rpc;
             }else
-                throw new RPCException(e.getMessage());
+                throw new Exception(e.getMessage());
 		}
 
 		newAnalyteDO.setId(analyteId);
@@ -155,7 +153,7 @@ public class AnalyteService implements AppScreenFormServiceInt<AnalyteForm,Query
 		return rpc;
 	}
 
-	public AnalyteForm commitUpdate(AnalyteForm rpc) throws RPCException {
+	public AnalyteForm commitUpdate(AnalyteForm rpc) throws Exception {
     //		remote interface to call the analyte bean
     		AnalyteRemote remote = (AnalyteRemote)EJBFactory.lookup("openelis/AnalyteBean/remote");
     		AnalyteDO newAnalyteDO = new AnalyteDO();
@@ -171,7 +169,7 @@ public class AnalyteService implements AppScreenFormServiceInt<AnalyteForm,Query
                     setRpcErrors(((ValidationErrorsList)e).getErrorList(), rpc);
                     return rpc;
                 }else
-                    throw new RPCException(e.getMessage());
+                    throw new Exception(e.getMessage());
     		}
     
     //		set the fields in the RPC
@@ -180,7 +178,7 @@ public class AnalyteService implements AppScreenFormServiceInt<AnalyteForm,Query
     		return rpc;
     	}
 
-    public AnalyteForm commitDelete(AnalyteForm rpc) throws RPCException {
+    public AnalyteForm commitDelete(AnalyteForm rpc) throws Exception {
 //		remote interface to call the analyte bean
 		AnalyteRemote remote = (AnalyteRemote)EJBFactory.lookup("openelis/AnalyteBean/remote");
 		
@@ -192,7 +190,7 @@ public class AnalyteService implements AppScreenFormServiceInt<AnalyteForm,Query
                 setRpcErrors(((ValidationErrorsList)e).getErrorList(), rpc);
                 return rpc;
             }else
-                throw new RPCException(e.getMessage());
+                throw new Exception(e.getMessage());
 		}	
 		
 		setFieldsInRPC(rpc, new AnalyteDO());
@@ -200,7 +198,7 @@ public class AnalyteService implements AppScreenFormServiceInt<AnalyteForm,Query
 		return rpc;
 	}
 
-	public AnalyteForm abort(AnalyteForm rpc) throws RPCException {
+	public AnalyteForm abort(AnalyteForm rpc) throws Exception {
     //		remote interface to call the analyte bean
     		AnalyteRemote remote = (AnalyteRemote)EJBFactory.lookup("openelis/AnalyteBean/remote");
     		
@@ -213,7 +211,7 @@ public class AnalyteService implements AppScreenFormServiceInt<AnalyteForm,Query
     		return rpc;  
     	}
 
-    public AnalyteForm fetch(AnalyteForm rpc) throws RPCException {
+    public AnalyteForm fetch(AnalyteForm rpc) throws Exception {
 //		remote interface to call the storage unit bean
 		AnalyteRemote remote = (AnalyteRemote)EJBFactory.lookup("openelis/AnalyteBean/remote");
 		
@@ -225,7 +223,7 @@ public class AnalyteService implements AppScreenFormServiceInt<AnalyteForm,Query
 		return rpc;
 	}
 
-	public AnalyteForm fetchForUpdate(AnalyteForm rpc) throws RPCException {
+	public AnalyteForm fetchForUpdate(AnalyteForm rpc) throws Exception {
 //		 remote interface to call the analyte bean
 		AnalyteRemote remote = (AnalyteRemote) EJBFactory.lookup("openelis/AnalyteBean/remote");
 
@@ -233,7 +231,7 @@ public class AnalyteService implements AppScreenFormServiceInt<AnalyteForm,Query
 		try {
 			analyteDO = remote.getAnalyteAndLock(rpc.entityKey, SessionManager.getSession().getId());
 		} catch (Exception e) {
-			throw new RPCException(e.getMessage());
+			throw new Exception(e.getMessage());
 		}
 
 		// set the fields in the RPC
@@ -242,29 +240,29 @@ public class AnalyteService implements AppScreenFormServiceInt<AnalyteForm,Query
 		return rpc;
 	}
 
-	public String getXML() throws RPCException {
+	public String getXML() throws Exception {
     	return null;
     }
 
-    public HashMap<String, FieldType> getXMLData() throws RPCException {
+    public HashMap<String, FieldType> getXMLData() throws Exception {
     	return null;
     }
 
-    public HashMap<String, FieldType> getXMLData(HashMap<String, FieldType> args) throws RPCException {
+    public HashMap<String, FieldType> getXMLData(HashMap<String, FieldType> args) throws Exception {
     	return null;
     }
     
-    public AnalyteForm getScreen(AnalyteForm rpc) throws RPCException {
+    public AnalyteForm getScreen(AnalyteForm rpc) throws Exception {
         rpc.xml = ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/analyte.xsl");
         
         return rpc;
     }
 
-    public TableDataModel getDisplay(String cat, TableDataModel model, AbstractField value) throws RPCException {
+    public TableDataModel getDisplay(String cat, TableDataModel model, AbstractField value) throws Exception {
     	return null;
     }
 
-    public TableDataModel getMatches(String cat, TableDataModel model, String match, HashMap<String,FieldType> params) throws RPCException {
+    public TableDataModel getMatches(String cat, TableDataModel model, String match, HashMap<String,FieldType> params) throws Exception {
     	if(cat.equals("parentAnalyte"))
     		return getParentAnalyteMatches(match);
     	

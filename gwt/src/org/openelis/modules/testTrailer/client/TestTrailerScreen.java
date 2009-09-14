@@ -25,23 +25,20 @@
 */
 package org.openelis.modules.testTrailer.client;
 
-import com.google.gwt.user.client.ui.TextBox;
-
 import org.openelis.gwt.common.data.deprecated.KeyListManager;
 import org.openelis.gwt.common.data.deprecated.QueryStringField;
-import org.openelis.gwt.common.data.deprecated.TableDataModel;
 import org.openelis.gwt.common.data.deprecated.TableDataRow;
 import org.openelis.gwt.common.deprecated.Query;
 import org.openelis.gwt.screen.deprecated.CommandChain;
 import org.openelis.gwt.screen.deprecated.ScreenInputWidget;
 import org.openelis.gwt.screen.deprecated.ScreenTextArea;
-import org.openelis.gwt.widget.deprecated.AToZTable;
 import org.openelis.gwt.widget.deprecated.AppButton;
 import org.openelis.gwt.widget.deprecated.ButtonPanel;
-import org.openelis.gwt.widget.deprecated.CollapsePanel;
 import org.openelis.gwt.widget.deprecated.ResultsTable;
 import org.openelis.metamap.TestTrailerMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
+
+import com.google.gwt.user.client.ui.TextBox;
 
 public class TestTrailerScreen extends OpenELISScreenForm<TestTrailerForm,Query<TableDataRow<Integer>>> {
 	

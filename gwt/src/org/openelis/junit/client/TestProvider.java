@@ -25,11 +25,11 @@
 */
 package org.openelis.junit.client;
 
-import com.google.gwt.junit.client.GWTTestCase;
-import com.google.gwt.user.client.Timer;
-
 import org.openelis.modules.main.client.OpenELIS;
 import org.openelis.modules.provider.client.ProviderScreen;
+
+import com.google.gwt.junit.client.GWTTestCase;
+import com.google.gwt.user.client.Timer;
 
 
 public class TestProvider extends GWTTestCase {

@@ -49,7 +49,6 @@ import org.openelis.gwt.widget.deprecated.AutoComplete;
 import org.openelis.gwt.widget.deprecated.AutoCompleteCallInt;
 import org.openelis.gwt.widget.deprecated.ButtonPanel;
 import org.openelis.gwt.widget.deprecated.CheckBox;
-import org.openelis.gwt.widget.deprecated.CollapsePanel;
 import org.openelis.gwt.widget.deprecated.Dropdown;
 import org.openelis.gwt.widget.deprecated.MenuItem;
 import org.openelis.gwt.widget.deprecated.ResultsTable;

@@ -26,8 +26,6 @@
 
 package org.openelis.modules.panel.client;
 
-import com.google.gwt.xml.client.Node;
-
 import org.openelis.gwt.common.data.deprecated.AbstractField;
 import org.openelis.gwt.common.data.deprecated.IntegerField;
 import org.openelis.gwt.common.data.deprecated.StringField;
@@ -36,6 +34,8 @@ import org.openelis.gwt.common.data.deprecated.TableDataRow;
 import org.openelis.gwt.common.data.deprecated.TableField;
 import org.openelis.gwt.common.deprecated.Form;
 import org.openelis.metamap.PanelMetaMap;
+
+import com.google.gwt.xml.client.Node;
 
 public class PanelForm extends Form<Integer> {
 

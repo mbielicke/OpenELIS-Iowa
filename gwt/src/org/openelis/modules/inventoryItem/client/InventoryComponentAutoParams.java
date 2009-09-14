@@ -25,10 +25,9 @@
 */
 package org.openelis.modules.inventoryItem.client;
 
-import org.openelis.gwt.common.deprecated.Form;
-import org.openelis.gwt.widget.deprecated.AutoCompleteParamsInt;
-
 import java.util.HashMap;
+
+import org.openelis.gwt.widget.deprecated.AutoCompleteParamsInt;
 
 public class InventoryComponentAutoParams implements AutoCompleteParamsInt<InventoryItemForm>{
 

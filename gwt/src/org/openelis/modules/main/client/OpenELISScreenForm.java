@@ -25,15 +25,14 @@
 */
 package org.openelis.modules.main.client;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.rpc.ServiceDefTarget;
-
 import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.deprecated.Form;
-import org.openelis.gwt.common.deprecated.Query;
 import org.openelis.gwt.screen.deprecated.AppScreenForm;
 import org.openelis.modules.main.client.service.OpenELISServiceInt;
 import org.openelis.modules.main.client.service.OpenELISServiceIntAsync;
+
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.rpc.ServiceDefTarget;
 
 public class OpenELISScreenForm<ScreenRPC extends Form,QueryRPC extends RPC> extends AppScreenForm<ScreenRPC,QueryRPC> {
     

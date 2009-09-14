@@ -27,7 +27,6 @@ package org.openelis.modules.clinicalSampleLogin.server;
 
 import java.util.HashMap;
 
-import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.data.deprecated.FieldType;
 import org.openelis.gwt.common.data.deprecated.TableDataRow;
 import org.openelis.gwt.common.deprecated.Query;
@@ -38,55 +37,55 @@ import org.openelis.server.constants.Constants;
 
 public class ClinicalSampleLoginService implements AppScreenFormServiceInt<ClinicalSampleLoginForm,Query<TableDataRow<Integer>>>{
 
-    public ClinicalSampleLoginForm abort(ClinicalSampleLoginForm rpc) throws RPCException {
+    public ClinicalSampleLoginForm abort(ClinicalSampleLoginForm rpc) throws Exception {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public ClinicalSampleLoginForm commitAdd(ClinicalSampleLoginForm rpc) throws RPCException {
+    public ClinicalSampleLoginForm commitAdd(ClinicalSampleLoginForm rpc) throws Exception {
         return null;
     }
 
-    public ClinicalSampleLoginForm commitDelete(ClinicalSampleLoginForm rpc) throws RPCException {
+    public ClinicalSampleLoginForm commitDelete(ClinicalSampleLoginForm rpc) throws Exception {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public Query<TableDataRow<Integer>> commitQuery(Query<TableDataRow<Integer>> data) throws RPCException {
+    public Query<TableDataRow<Integer>> commitQuery(Query<TableDataRow<Integer>> data) throws Exception {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public ClinicalSampleLoginForm commitUpdate(ClinicalSampleLoginForm rpc) throws RPCException {
+    public ClinicalSampleLoginForm commitUpdate(ClinicalSampleLoginForm rpc) throws Exception {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public ClinicalSampleLoginForm fetch(ClinicalSampleLoginForm rpc) throws RPCException {
+    public ClinicalSampleLoginForm fetch(ClinicalSampleLoginForm rpc) throws Exception {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public ClinicalSampleLoginForm fetchForUpdate(ClinicalSampleLoginForm rpc) throws RPCException {
+    public ClinicalSampleLoginForm fetchForUpdate(ClinicalSampleLoginForm rpc) throws Exception {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public String getXML() throws RPCException {
+    public String getXML() throws Exception {
         return ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/clinicalSampleLogin.xsl");
     }
 
-    public HashMap<String, FieldType> getXMLData() throws RPCException {
+    public HashMap<String, FieldType> getXMLData() throws Exception {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public HashMap<String, FieldType> getXMLData(HashMap<String, FieldType> args) throws RPCException {
+    public HashMap<String, FieldType> getXMLData(HashMap<String, FieldType> args) throws Exception {
         // TODO Auto-generated method stub
         return null;
     }
     
-    public ClinicalSampleLoginForm getScreen(ClinicalSampleLoginForm rpc) throws RPCException{
+    public ClinicalSampleLoginForm getScreen(ClinicalSampleLoginForm rpc) throws Exception{
         rpc.xml = ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/clinicalSampleLogin.xsl");
         return rpc;
     }

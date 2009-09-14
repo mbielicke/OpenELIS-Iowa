@@ -25,10 +25,10 @@
 */
 package org.openelis.modules.inventoryAdjustment.client;
 
+import java.util.HashMap;
+
 import org.openelis.gwt.widget.deprecated.AutoCompleteParamsInt;
 import org.openelis.metamap.InventoryAdjustmentMetaMap;
-
-import java.util.HashMap;
 
 public class InventoryAdjustmentAutoParams implements AutoCompleteParamsInt<InventoryAdjustmentForm>{
 

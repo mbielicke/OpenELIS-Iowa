@@ -45,7 +45,6 @@ import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.deprecated.AbstractField;
@@ -86,7 +85,7 @@ public class OrderService implements AppScreenFormServiceInt<OrderForm, OrderQue
     
     private static final int leftTableRowsPerPage = 15;
     
-    public OrderQuery commitQuery(OrderQuery query) throws RPCException {
+    public OrderQuery commitQuery(OrderQuery query) throws Exception {
         List orderIds;
         /*OrderQuery ordQuery = null;
         if(qList != null)
@@ -109,7 +108,7 @@ public class OrderService implements AppScreenFormServiceInt<OrderForm, OrderQue
                 if(e instanceof LastPageException){
                     throw new LastPageException(openElisConstants.getString("lastPageException"));
                 }else{
-                    throw new RPCException(e.getMessage()); 
+                    throw new Exception(e.getMessage()); 
                 }
             }    
             
@@ -121,7 +120,7 @@ public class OrderService implements AppScreenFormServiceInt<OrderForm, OrderQue
             }catch(LastPageException e) {
                 throw new LastPageException(openElisConstants.getString("lastPageException"));
             }catch(Exception e){
-                throw new RPCException(e.getMessage());
+                throw new Exception(e.getMessage());
             }
     
             //put order type back in the field map because we may need it later
@@ -145,7 +144,7 @@ public class OrderService implements AppScreenFormServiceInt<OrderForm, OrderQue
         return query;
     }
 
-    public OrderForm commitAdd(OrderForm rpc) throws RPCException {
+    public OrderForm commitAdd(OrderForm rpc) throws Exception {
 //      remote interface to call the order bean
         OrderRemote remote = (OrderRemote)EJBFactory.lookup("openelis/OrderBean/remote");
         OrderDO orderDO = new OrderDO();
@@ -192,7 +191,7 @@ public class OrderService implements AppScreenFormServiceInt<OrderForm, OrderQue
                 setRpcErrors(((ValidationErrorsList)e).getErrorList(), itemsTableField, rpc);
                 return rpc;
             }else
-                throw new RPCException(e.getMessage());
+                throw new Exception(e.getMessage());
         }
         
         //lookup the changes from the database and build the rpc
@@ -204,7 +203,7 @@ public class OrderService implements AppScreenFormServiceInt<OrderForm, OrderQue
         return rpc;
     }
 
-    public OrderForm commitUpdate(OrderForm rpc) throws RPCException {
+    public OrderForm commitUpdate(OrderForm rpc) throws Exception {
         //remote interface to call the order bean
         OrderRemote remote = (OrderRemote)EJBFactory.lookup("openelis/OrderBean/remote");
         OrderDO orderDO = new OrderDO();
@@ -254,7 +253,7 @@ public class OrderService implements AppScreenFormServiceInt<OrderForm, OrderQue
                 setRpcErrors(((ValidationErrorsList)e).getErrorList(), itemsTableField, rpc);
                 return rpc;
             }else
-                throw new RPCException(e.getMessage());
+                throw new Exception(e.getMessage());
         }
 
         //set the fields in the RPC
@@ -263,11 +262,11 @@ public class OrderService implements AppScreenFormServiceInt<OrderForm, OrderQue
         return rpc;
     }
 
-    public OrderForm commitDelete(OrderForm rpc) throws RPCException {
+    public OrderForm commitDelete(OrderForm rpc) throws Exception {
         return null;
     }
 
-    public OrderForm abort(OrderForm rpc) throws RPCException {
+    public OrderForm abort(OrderForm rpc) throws Exception {
         //remote interface to call the order bean
         OrderRemote remote = (OrderRemote)EJBFactory.lookup("openelis/OrderBean/remote");
         
@@ -297,7 +296,7 @@ public class OrderService implements AppScreenFormServiceInt<OrderForm, OrderQue
         return rpc;  
     }
 
-    public OrderForm fetch(OrderForm rpc) throws RPCException {
+    public OrderForm fetch(OrderForm rpc) throws Exception {
         //remote interface to call the order bean
         OrderRemote remote = (OrderRemote)EJBFactory.lookup("openelis/OrderBean/remote");
         
@@ -328,7 +327,7 @@ public class OrderService implements AppScreenFormServiceInt<OrderForm, OrderQue
         return rpc;
     }
 
-    public OrderForm fetchForUpdate(OrderForm rpc) throws RPCException {
+    public OrderForm fetchForUpdate(OrderForm rpc) throws Exception {
         //remote interface to call the order bean
         OrderRemote remote = (OrderRemote)EJBFactory.lookup("openelis/OrderBean/remote");
         
@@ -339,7 +338,7 @@ public class OrderService implements AppScreenFormServiceInt<OrderForm, OrderQue
         try{
             orderDO = remote.getOrderAndLock(rpc.entityKey, orderType, SessionManager.getSession().getId());
         }catch(Exception e){
-            throw new RPCException(e.getMessage());
+            throw new Exception(e.getMessage());
         }
         
         //set the fields in the RPC
@@ -364,7 +363,7 @@ public class OrderService implements AppScreenFormServiceInt<OrderForm, OrderQue
         return rpc;  
     }
     
-    public OrderForm getDuplicateRPC(OrderForm rpc) throws RPCException{
+    public OrderForm getDuplicateRPC(OrderForm rpc) throws Exception{
         OrderRemote remote = (OrderRemote)EJBFactory.lookup("openelis/OrderBean/remote");        
         
         String orderType = rpc.orderType;
@@ -397,7 +396,7 @@ public class OrderService implements AppScreenFormServiceInt<OrderForm, OrderQue
         return rpc;
     }
     
-    public OrderForm getScreen(OrderForm rpc) throws RPCException {
+    public OrderForm getScreen(OrderForm rpc) throws Exception {
         String action = rpc.orderType;
         
         if(OrderRemote.INTERNAL.equals(action))
@@ -410,52 +409,52 @@ public class OrderService implements AppScreenFormServiceInt<OrderForm, OrderQue
         return rpc;
     }
     
-    public ItemsForm loadItems(ItemsForm rpc) throws RPCException {
+    public ItemsForm loadItems(ItemsForm rpc) throws Exception {
         loadItemsForm(rpc.entityKey, rpc.forDuplicate, rpc);
         return rpc;
     }
     
-    public void loadItemsForm(Integer key, boolean forDuplicate, ItemsForm form) throws RPCException {
+    public void loadItemsForm(Integer key, boolean forDuplicate, ItemsForm form) throws Exception {
         getItemsModel(key, forDuplicate, form.itemsTable);
         form.load = true;
     }
 
-    public ReceiptForm loadReceipts(ReceiptForm rpc) throws RPCException {
+    public ReceiptForm loadReceipts(ReceiptForm rpc) throws Exception {
         loadReceiptsForm(rpc.entityKey, rpc.orderType, rpc);
         return rpc;
     }
     
-    public void loadReceiptsForm(Integer key, String orderType, ReceiptForm form) throws RPCException {
+    public void loadReceiptsForm(Integer key, String orderType, ReceiptForm form) throws Exception {
         getReceiptsModel(key, form.receiptsTable, orderType);
         form.load = true;
     }
 
-    public OrderShippingNoteForm loadOrderShippingNotes(OrderShippingNoteForm rpc) throws RPCException {
+    public OrderShippingNoteForm loadOrderShippingNotes(OrderShippingNoteForm rpc) throws Exception {
         loadOrderShippingNotesForm(rpc.entityKey, rpc);
         return rpc;
     }
     
-    public void loadOrderShippingNotesForm(Integer key, OrderShippingNoteForm form) throws RPCException {
+    public void loadOrderShippingNotesForm(Integer key, OrderShippingNoteForm form) throws Exception {
         getShippingNotes(key, form);
         form.load = true;
     }
     
-    public OrderNoteForm loadCustomerNotes(OrderNoteForm rpc) throws RPCException {
+    public OrderNoteForm loadCustomerNotes(OrderNoteForm rpc) throws Exception {
         loadCustomerNotesForm(rpc.entityKey, rpc);
         return rpc;
     }
     
-    public void loadCustomerNotesForm(Integer key, OrderNoteForm form) throws RPCException {
+    public void loadCustomerNotesForm(Integer key, OrderNoteForm form) throws Exception {
         getCustomerNotes(key, form);
         form.load = true;
     }
 
-    public ReportToBillToForm loadReportToBillTo(ReportToBillToForm rpc) throws RPCException {
+    public ReportToBillToForm loadReportToBillTo(ReportToBillToForm rpc) throws Exception {
         loadReportToBillToForm(rpc.entityKey, rpc);
         return rpc;
     }
     
-    public void loadReportToBillToForm(Integer key, ReportToBillToForm form) throws RPCException {
+    public void loadReportToBillToForm(Integer key, ReportToBillToForm form) throws Exception {
         fillReportToBillToValues(key, form);
         form.load = true;
     }
@@ -495,7 +494,7 @@ public class OrderService implements AppScreenFormServiceInt<OrderForm, OrderQue
         return orderRpc;
     }
 
-    public TableDataModel getMatches(String cat, TableDataModel model, String match, HashMap params) throws RPCException {
+    public TableDataModel getMatches(String cat, TableDataModel model, String match, HashMap params) throws Exception {
         if("organization".equals(cat))
             return getOrganizationMatches(match);
         else if("reportTo".equals(cat))

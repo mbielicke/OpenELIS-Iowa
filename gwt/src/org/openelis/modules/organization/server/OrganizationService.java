@@ -29,9 +29,7 @@ import java.util.ArrayList;
 
 import org.openelis.common.AutocompleteRPC;
 import org.openelis.domain.IdNameDO;
-import org.openelis.domain.OrganizationAutoDO;
 import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.manager.OrganizationContactManager;
 import org.openelis.manager.OrganizationManager;
@@ -49,7 +47,7 @@ public class OrganizationService {
     
 	private UTFResource openElisConstants= UTFResource.getBundle((String)SessionManager.getSession().getAttribute("locale"));
 	
-	public OrgQuery query(OrgQuery query) throws RPCException {
+	public OrgQuery query(OrgQuery query) throws Exception {
 
 	    OrganizationRemote remote = (OrganizationRemote)EJBFactory.lookup("openelis/OrganizationBean/remote");
 
@@ -62,7 +60,7 @@ public class OrganizationService {
 	    }catch(LastPageException e) {
 	        throw new LastPageException(openElisConstants.getString("lastPageException"));
 	    }catch(Exception e){
-	        throw new RPCException(e.getMessage());
+	        throw new Exception(e.getMessage());
 	    }
 	    return query;
     }
@@ -136,7 +134,7 @@ public class OrganizationService {
         return man;
     }
     
-    public String getScreen() throws RPCException {
+    public String getScreen() throws Exception {
         return ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/organization.xsl");      
     }
 

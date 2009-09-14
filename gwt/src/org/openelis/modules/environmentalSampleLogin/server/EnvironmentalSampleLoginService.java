@@ -30,7 +30,6 @@ import java.util.ArrayList;
 import org.openelis.common.AutocompleteRPC;
 import org.openelis.domain.IdNameDO;
 import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.modules.environmentalSampleLogin.client.SampleEnvQuery;
 import org.openelis.persistence.EJBFactory;
@@ -48,7 +47,7 @@ public class EnvironmentalSampleLoginService {
     private UTFResource openElisConstants= UTFResource.getBundle((String)SessionManager.getSession().getAttribute("locale"));
     private static final int leftTableRowsPerPage = 12;
     
-    public SampleEnvQuery query(SampleEnvQuery query) throws RPCException {
+    public SampleEnvQuery query(SampleEnvQuery query) throws Exception {
         SampleEnvironmentalRemote remote = (SampleEnvironmentalRemote)EJBFactory.lookup("openelis/SampleEnvironmentalBean/remote");
 
         try{    
@@ -60,12 +59,12 @@ public class EnvironmentalSampleLoginService {
         }catch(LastPageException e) {
             throw new LastPageException(openElisConstants.getString("lastPageException"));
         }catch(Exception e){
-            throw new RPCException(e.getMessage());
+            throw new Exception(e.getMessage());
         }
         return query;
     }
     
-    public String getScreen() throws RPCException {
+    public String getScreen() throws Exception {
         return ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/environmentalSampleLogin.xsl");      
     }
     

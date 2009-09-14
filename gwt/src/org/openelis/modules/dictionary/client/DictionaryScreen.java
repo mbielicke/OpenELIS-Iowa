@@ -28,12 +28,6 @@ package org.openelis.modules.dictionary.client;
 
 import java.util.ArrayList;
 
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.rpc.SyncCallback;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.Widget;
-
 import org.openelis.cache.SectionCache;
 import org.openelis.domain.SectionDO;
 import org.openelis.gwt.common.data.deprecated.KeyListManager;
@@ -48,17 +42,21 @@ import org.openelis.gwt.screen.deprecated.CommandChain;
 import org.openelis.gwt.screen.deprecated.ScreenInputWidget;
 import org.openelis.gwt.widget.deprecated.AppButton;
 import org.openelis.gwt.widget.deprecated.ButtonPanel;
-import org.openelis.gwt.widget.deprecated.CollapsePanel;
 import org.openelis.gwt.widget.deprecated.Dropdown;
 import org.openelis.gwt.widget.deprecated.ResultsTable;
 import org.openelis.gwt.widget.deprecated.AppButton.ButtonState;
-import org.openelis.gwt.widget.table.deprecated.TableDropdown;
 import org.openelis.gwt.widget.table.deprecated.TableManager;
 import org.openelis.gwt.widget.table.deprecated.TableWidget;
 import org.openelis.gwt.widget.table.deprecated.event.SourcesTableWidgetEvents;
 import org.openelis.gwt.widget.table.deprecated.event.TableWidgetListener;
 import org.openelis.metamap.CategoryMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
+
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.SyncCallback;
+import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.Widget;
 
 public class DictionaryScreen extends OpenELISScreenForm<DictionaryForm,Query<TableDataRow<Integer>>> implements ClickListener,
                                                                     TableManager,

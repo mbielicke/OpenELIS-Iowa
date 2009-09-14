@@ -25,8 +25,10 @@
 */
 package org.openelis.modules.SDWISSampleLogin.server;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.openelis.domain.IdNameDO;
-import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.data.deprecated.StringObject;
 import org.openelis.gwt.common.data.deprecated.TableDataModel;
 import org.openelis.gwt.common.data.deprecated.TableDataRow;
@@ -39,42 +41,39 @@ import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.CategoryRemote;
 import org.openelis.server.constants.Constants;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class SDWISSampleLoginService implements AppScreenFormServiceInt<SDWISSampleLoginForm, Query<TableDataRow<Integer>>>{
 
-    public SDWISSampleLoginForm abort(SDWISSampleLoginForm rpc) throws RPCException {
+    public SDWISSampleLoginForm abort(SDWISSampleLoginForm rpc) throws Exception {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public SDWISSampleLoginForm commitAdd(SDWISSampleLoginForm rpc) throws RPCException {
+    public SDWISSampleLoginForm commitAdd(SDWISSampleLoginForm rpc) throws Exception {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public SDWISSampleLoginForm commitDelete(SDWISSampleLoginForm rpc) throws RPCException {
+    public SDWISSampleLoginForm commitDelete(SDWISSampleLoginForm rpc) throws Exception {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public Query<TableDataRow<Integer>> commitQuery(Query<TableDataRow<Integer>> data) throws RPCException {
+    public Query<TableDataRow<Integer>> commitQuery(Query<TableDataRow<Integer>> data) throws Exception {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public SDWISSampleLoginForm commitUpdate(SDWISSampleLoginForm rpc) throws RPCException {
+    public SDWISSampleLoginForm commitUpdate(SDWISSampleLoginForm rpc) throws Exception {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public SDWISSampleLoginForm fetch(SDWISSampleLoginForm rpc) throws RPCException {
+    public SDWISSampleLoginForm fetch(SDWISSampleLoginForm rpc) throws Exception {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public SDWISSampleLoginForm fetchForUpdate(SDWISSampleLoginForm rpc) throws RPCException {
+    public SDWISSampleLoginForm fetchForUpdate(SDWISSampleLoginForm rpc) throws Exception {
         // TODO Auto-generated method stub
         return null;
     }

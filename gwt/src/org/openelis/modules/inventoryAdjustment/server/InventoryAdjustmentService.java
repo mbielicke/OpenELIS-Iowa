@@ -41,7 +41,6 @@ import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.deprecated.AbstractField;
@@ -78,7 +77,7 @@ public class InventoryAdjustmentService implements AppScreenFormServiceInt<Inven
     
     private UTFResource openElisConstants= UTFResource.getBundle((String)SessionManager.getSession().getAttribute("locale"));
     
-    public InventoryAdjustmentForm abort(InventoryAdjustmentForm rpc) throws RPCException {
+    public InventoryAdjustmentForm abort(InventoryAdjustmentForm rpc) throws Exception {
         //remote interface to call the inventory adjustment bean
         InventoryAdjustmentRemote remote = (InventoryAdjustmentRemote)EJBFactory.lookup("openelis/InventoryAdjustmentBean/remote");        
         
@@ -94,7 +93,7 @@ public class InventoryAdjustmentService implements AppScreenFormServiceInt<Inven
         return rpc;  
     }
 
-    public InventoryAdjustmentForm commitAdd(InventoryAdjustmentForm rpc) throws RPCException {
+    public InventoryAdjustmentForm commitAdd(InventoryAdjustmentForm rpc) throws Exception {
         //remote interface to call the inventory adjustment bean
         InventoryAdjustmentRemote remote = (InventoryAdjustmentRemote)EJBFactory.lookup("openelis/InventoryAdjustmentBean/remote");
         InventoryAdjustmentDO invAdjustmentDO = new InventoryAdjustmentDO();
@@ -117,7 +116,7 @@ public class InventoryAdjustmentService implements AppScreenFormServiceInt<Inven
                 setRpcErrors(((ValidationErrorsList)e).getErrorList(), adjTableField, rpc);
                 return rpc;
             }else
-                throw new RPCException(e.getMessage());
+                throw new Exception(e.getMessage());
         }
         
         //lookup the changes from the database and build the rpc
@@ -129,11 +128,11 @@ public class InventoryAdjustmentService implements AppScreenFormServiceInt<Inven
         return rpc;
     }
 
-    public InventoryAdjustmentForm commitDelete(InventoryAdjustmentForm rpc) throws RPCException {
+    public InventoryAdjustmentForm commitDelete(InventoryAdjustmentForm rpc) throws Exception {
         return null;
     }
 
-    public Query<TableDataRow<Integer>> commitQuery(Query<TableDataRow<Integer>> query) throws RPCException {
+    public Query<TableDataRow<Integer>> commitQuery(Query<TableDataRow<Integer>> query) throws Exception {
         List inventoryAdjustmentNames;
         /*
         //if the rpc is null then we need to get the page
@@ -142,7 +141,7 @@ public class InventoryAdjustmentService implements AppScreenFormServiceInt<Inven
             qList = (ArrayList<AbstractField>)SessionManager.getSession().getAttribute("InventoryAdjustmentQuery");
     
             if(qList == null)
-                throw new RPCException(openElisConstants.getString("queryExpiredException"));
+                throw new Exception(openElisConstants.getString("queryExpiredException"));
 
             InventoryAdjustmentRemote remote = (InventoryAdjustmentRemote)EJBFactory.lookup("openelis/InventoryAdjustmentBean/remote");
             try{
@@ -151,7 +150,7 @@ public class InventoryAdjustmentService implements AppScreenFormServiceInt<Inven
                 if(e instanceof LastPageException){
                     throw new LastPageException(openElisConstants.getString("lastPageException"));
                 }else{
-                    throw new RPCException(e.getMessage()); 
+                    throw new Exception(e.getMessage()); 
                 }           
             }    
         }else{*/
@@ -167,7 +166,7 @@ public class InventoryAdjustmentService implements AppScreenFormServiceInt<Inven
             }catch(LastPageException e) {
                 throw new LastPageException(openElisConstants.getString("lastPageException"));
             }catch(Exception e){
-                throw new RPCException(e.getMessage());
+                throw new Exception(e.getMessage());
             }
     
         
@@ -192,7 +191,7 @@ public class InventoryAdjustmentService implements AppScreenFormServiceInt<Inven
         return query;
     }
 
-    public InventoryAdjustmentForm commitUpdate(InventoryAdjustmentForm rpc) throws RPCException {
+    public InventoryAdjustmentForm commitUpdate(InventoryAdjustmentForm rpc) throws Exception {
         //remote interface to call the inventory adjustment bean
         InventoryAdjustmentRemote remote = (InventoryAdjustmentRemote)EJBFactory.lookup("openelis/InventoryAdjustmentBean/remote");
         InventoryAdjustmentDO invAdjustmentDO = new InventoryAdjustmentDO();
@@ -214,7 +213,7 @@ public class InventoryAdjustmentService implements AppScreenFormServiceInt<Inven
                 setRpcErrors(((ValidationErrorsList)e).getErrorList(), adjTableField, rpc);
                 return rpc;
             }else
-                throw new RPCException(e.getMessage());
+                throw new Exception(e.getMessage());
         }
         
         //set the fields in the RPC
@@ -223,7 +222,7 @@ public class InventoryAdjustmentService implements AppScreenFormServiceInt<Inven
         return rpc;
     }
 
-    public InventoryAdjustmentForm fetch(InventoryAdjustmentForm rpc) throws RPCException {
+    public InventoryAdjustmentForm fetch(InventoryAdjustmentForm rpc) throws Exception {
         //remote interface to call the organization bean
         InventoryAdjustmentRemote remote = (InventoryAdjustmentRemote)EJBFactory.lookup("openelis/InventoryAdjustmentBean/remote");
         
@@ -239,7 +238,7 @@ public class InventoryAdjustmentService implements AppScreenFormServiceInt<Inven
         return rpc;  
     }
 
-    public InventoryAdjustmentForm fetchForUpdate(InventoryAdjustmentForm rpc) throws RPCException {
+    public InventoryAdjustmentForm fetchForUpdate(InventoryAdjustmentForm rpc) throws Exception {
         //remote interface to call the inventory adjustment bean
         InventoryAdjustmentRemote remote = (InventoryAdjustmentRemote)EJBFactory.lookup("openelis/InventoryAdjustmentBean/remote");
         
@@ -251,7 +250,7 @@ public class InventoryAdjustmentService implements AppScreenFormServiceInt<Inven
             childList = remote.getChildRecordsAndLock(rpc.entityKey);
             
         }catch(Exception e){
-            throw new RPCException(e.getMessage());
+            throw new Exception(e.getMessage());
         }
         
         //set the fields in the RPC
@@ -262,7 +261,7 @@ public class InventoryAdjustmentService implements AppScreenFormServiceInt<Inven
         return rpc;  
     }
     
-    public InventoryAdjustmentForm getScreen(InventoryAdjustmentForm rpc) throws RPCException{
+    public InventoryAdjustmentForm getScreen(InventoryAdjustmentForm rpc) throws Exception{
         rpc.xml = ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/inventoryAdjustment.xsl");
     
         return rpc;
@@ -281,7 +280,7 @@ public class InventoryAdjustmentService implements AppScreenFormServiceInt<Inven
         return rpc;
     }
     
-    public InventoryAdjustmentForm getInventoryItemInformation(InventoryAdjustmentForm rpc) throws RPCException {
+    public InventoryAdjustmentForm getInventoryItemInformation(InventoryAdjustmentForm rpc) throws Exception {
         InventoryAdjustmentRemote remote = (InventoryAdjustmentRemote)EJBFactory.lookup("openelis/InventoryAdjustmentBean/remote");
         
         List invLocationRecords;
@@ -289,7 +288,7 @@ public class InventoryAdjustmentService implements AppScreenFormServiceInt<Inven
             invLocationRecords = remote.getInventoryitemDataAndLockLoc(rpc.locId, rpc.oldLocId, rpc.storeIdKey);
         
         }catch(Exception e){
-            throw new RPCException(e.getMessage());
+            throw new Exception(e.getMessage());
         }
 
         if(invLocationRecords.size() > 0){
@@ -308,20 +307,20 @@ public class InventoryAdjustmentService implements AppScreenFormServiceInt<Inven
         return rpc;
     }
     
-    public InventoryAdjustmentItemAutoRPC getMatchesObj(InventoryAdjustmentItemAutoRPC rpc) throws RPCException {
+    public InventoryAdjustmentItemAutoRPC getMatchesObj(InventoryAdjustmentItemAutoRPC rpc) throws Exception {
         if("inventoryItem".equals(rpc.cat))
             rpc.autoMatches = getInventoryItemMatches(rpc.text, rpc.storeId);
             return rpc;
     }
 
-    public TableDataModel getMatches(String cat, TableDataModel model, String match, HashMap<String, FieldType> params) throws RPCException {
+    public TableDataModel getMatches(String cat, TableDataModel model, String match, HashMap<String, FieldType> params) throws Exception {
         //if(cat.equals("inventoryItem"))
         //    return getInventoryItemMatches(match, params);
         
         return null;
     }
     
-    private TableDataModel getInventoryItemMatches(String match, Integer storeId) throws RPCException{
+    private TableDataModel getInventoryItemMatches(String match, Integer storeId) throws Exception{
         if(storeId == null || storeId == 0){
             //we dont want to do anything...throw error
             throw new FormErrorException(openElisConstants.getString("inventoryAdjItemAutoException"));
@@ -525,7 +524,7 @@ public class InventoryAdjustmentService implements AppScreenFormServiceInt<Inven
         return childModel;
     }
     
-    public InventoryAdjustmentForm fetchLocationAndLock(InventoryAdjustmentForm rpc) throws RPCException {
+    public InventoryAdjustmentForm fetchLocationAndLock(InventoryAdjustmentForm rpc) throws Exception {
         InventoryReceiptRemote remote = (InventoryReceiptRemote)EJBFactory.lookup("openelis/InventoryReceiptBean/remote");
         InventoryLocationDO locDO;
         
@@ -533,7 +532,7 @@ public class InventoryAdjustmentService implements AppScreenFormServiceInt<Inven
             locDO = remote.lockLocationAndFetch(rpc.oldLocId, rpc.locId);
 
         }catch(Exception e){
-            throw new RPCException(e.getMessage());
+            throw new Exception(e.getMessage());
         }
 
         if(locDO != null)

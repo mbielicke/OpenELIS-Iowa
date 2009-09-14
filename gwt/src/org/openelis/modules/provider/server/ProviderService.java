@@ -31,14 +31,12 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.openelis.domain.IdLastNameFirstNameDO;
-import org.openelis.domain.IdNameDO;
 import org.openelis.domain.NoteDO;
 import org.openelis.domain.ProviderAddressDO;
 import org.openelis.domain.ProviderDO;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.deprecated.AbstractField;
@@ -75,7 +73,7 @@ public class ProviderService implements AppScreenFormServiceInt<ProviderForm, Qu
      
     private UTFResource openElisConstants= UTFResource.getBundle((String)SessionManager.getSession().getAttribute("locale"));
     
-    public Query<TableDataRow<Integer>> commitQuery(Query<TableDataRow<Integer>> query) throws RPCException {        
+    public Query<TableDataRow<Integer>> commitQuery(Query<TableDataRow<Integer>> query) throws Exception {        
         List providers = new ArrayList();
 
             ProviderRemote remote = (ProviderRemote)EJBFactory.lookup("openelis/ProviderBean/remote");            
@@ -86,7 +84,7 @@ public class ProviderService implements AppScreenFormServiceInt<ProviderForm, Qu
                     throw new LastPageException(openElisConstants.getString("lastPageException"));
             }catch(Exception e){
                 e.printStackTrace();
-                throw new RPCException(e.getMessage());
+                throw new Exception(e.getMessage());
             }              
              
             
@@ -112,7 +110,7 @@ public class ProviderService implements AppScreenFormServiceInt<ProviderForm, Qu
         return query;
     }
 
-    public ProviderForm commitAdd(ProviderForm rpc) throws RPCException {               
+    public ProviderForm commitAdd(ProviderForm rpc) throws Exception {               
         ProviderRemote remote = (ProviderRemote)EJBFactory.lookup("openelis/ProviderBean/remote");
         ProviderDO providerDO  = getProviderDOFromRPC(rpc);
     
@@ -135,7 +133,7 @@ public class ProviderService implements AppScreenFormServiceInt<ProviderForm, Qu
             setRpcErrors(e.getErrorList(), rpc);
             return rpc;
         } catch (Exception e) {
-            throw new RPCException(e.getMessage());            
+            throw new Exception(e.getMessage());            
         }
          
         providerDO.setId(providerId);
@@ -157,7 +155,7 @@ public class ProviderService implements AppScreenFormServiceInt<ProviderForm, Qu
         return rpc;
     }
 
-    public ProviderForm commitUpdate(ProviderForm rpc) throws RPCException {
+    public ProviderForm commitUpdate(ProviderForm rpc) throws Exception {
         ProviderRemote remote = (ProviderRemote)EJBFactory.lookup("openelis/ProviderBean/remote");
         ProviderDO providerDO  = getProviderDOFromRPC(rpc);
     
@@ -181,7 +179,7 @@ public class ProviderService implements AppScreenFormServiceInt<ProviderForm, Qu
             setRpcErrors(e.getErrorList(), rpc);
             return rpc;
         } catch (Exception e) {
-            throw new RPCException(e.getMessage());            
+            throw new Exception(e.getMessage());            
         }
 
         //set the fields in the RPC
@@ -202,11 +200,11 @@ public class ProviderService implements AppScreenFormServiceInt<ProviderForm, Qu
         return rpc;
     }
 
-    public ProviderForm commitDelete(ProviderForm rpcReturn) throws RPCException {
+    public ProviderForm commitDelete(ProviderForm rpcReturn) throws Exception {
         return null;
     }
 
-    public ProviderForm abort(ProviderForm rpc) throws RPCException {
+    public ProviderForm abort(ProviderForm rpc) throws Exception {
         ProviderRemote remote = (ProviderRemote)EJBFactory.lookup("openelis/ProviderBean/remote");
         Integer providerId = rpc.entityKey;
         String tab = rpc.provTabPanel;
@@ -217,7 +215,7 @@ public class ProviderService implements AppScreenFormServiceInt<ProviderForm, Qu
                                                              SessionManager.getSession()
                                                                            .getId());
         } catch (Exception ex) {
-            throw new RPCException(ex.getMessage());
+            throw new Exception(ex.getMessage());
         }
         // set the fields in the RPC
         setFieldsInRPC(rpc, provDO);
@@ -232,7 +230,7 @@ public class ProviderService implements AppScreenFormServiceInt<ProviderForm, Qu
            
     }
 
-    public ProviderForm fetch(ProviderForm rpc) throws RPCException {
+    public ProviderForm fetch(ProviderForm rpc) throws Exception {
             ProviderRemote remote = (ProviderRemote)EJBFactory.lookup("openelis/ProviderBean/remote");
             Integer providerId = rpc.entityKey;
                     
@@ -251,14 +249,14 @@ public class ProviderService implements AppScreenFormServiceInt<ProviderForm, Qu
             return rpc;
         }   
     
-    public AddressesForm loadAddresses(AddressesForm rpc) throws RPCException {
+    public AddressesForm loadAddresses(AddressesForm rpc) throws Exception {
         AddressesForm form = (AddressesForm) rpc;
         loadAddressesModel(rpc.entityKey, form.providerAddressTable);
         form.load = true;
         return rpc;
     }
     
-    public NotesForm loadNotes(NotesForm rpc) throws RPCException {
+    public NotesForm loadNotes(NotesForm rpc) throws Exception {
         StringObject so = getNotesModel(rpc.entityKey);
         NotesForm form = (NotesForm)rpc; 
         form.notesPanel.setValue(so.getValue());
@@ -266,7 +264,7 @@ public class ProviderService implements AppScreenFormServiceInt<ProviderForm, Qu
         return rpc;
     }
 
-    public ProviderForm fetchForUpdate(ProviderForm rpc) throws RPCException {
+    public ProviderForm fetchForUpdate(ProviderForm rpc) throws Exception {
        ProviderRemote remote = (ProviderRemote)EJBFactory.lookup("openelis/ProviderBean/remote");
        Integer providerId = rpc.entityKey;
                       
@@ -274,7 +272,7 @@ public class ProviderService implements AppScreenFormServiceInt<ProviderForm, Qu
         try{
          provDO =  (ProviderDO)remote.getProviderAndLock(providerId, SessionManager.getSession().getId());
         }catch(Exception ex){
-            throw new RPCException(ex.getMessage());
+            throw new Exception(ex.getMessage());
         }  
              
         // set the fields in the RPC
@@ -292,7 +290,7 @@ public class ProviderService implements AppScreenFormServiceInt<ProviderForm, Qu
          return rpc;
      }
     
-    public ProviderForm getScreen(ProviderForm rpc) throws RPCException{
+    public ProviderForm getScreen(ProviderForm rpc) throws Exception{
         rpc.xml = ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/provider.xsl");
         
         return rpc;
@@ -452,13 +450,13 @@ public class ProviderService implements AppScreenFormServiceInt<ProviderForm, Qu
         return model;
     }
     
-    private AddressesForm loadAddresses(Integer key, AddressesForm form) throws RPCException {
+    private AddressesForm loadAddresses(Integer key, AddressesForm form) throws Exception {
         loadAddressesModel(key, form.providerAddressTable);
         form.load = true;
         return form;
     }
     
-    private NotesForm loadNotes(Integer key, NotesForm form) throws RPCException {
+    private NotesForm loadNotes(Integer key, NotesForm form) throws Exception {
         StringObject so = getNotesModel(key);
         form.notesPanel.setValue(so.getValue());
         form.load = true;

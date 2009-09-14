@@ -25,13 +25,15 @@
 */
 package org.openelis.modules.method.server;
 
+import java.util.HashMap;
+import java.util.List;
+
 import org.openelis.domain.IdNameDO;
 import org.openelis.domain.MethodDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.deprecated.AbstractField;
 import org.openelis.gwt.common.data.deprecated.FieldType;
@@ -51,16 +53,13 @@ import org.openelis.util.FormUtil;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
 
-import java.util.HashMap;
-import java.util.List;
-
 public class MethodService implements AppScreenFormServiceInt<MethodForm, Query<TableDataRow<Integer>>> {
 
     private UTFResource openElisConstants= UTFResource.getBundle((String)SessionManager.getSession().getAttribute("locale"));
     
     private static final int leftTableRowsPerPage = 9;   
     
-    public Query<TableDataRow<Integer>> commitQuery(Query<TableDataRow<Integer>> query) throws RPCException {
+    public Query<TableDataRow<Integer>> commitQuery(Query<TableDataRow<Integer>> query) throws Exception {
         List methodNames;        
             MethodRemote remote = (MethodRemote)EJBFactory.lookup("openelis/MethodBean/remote");
             
@@ -69,7 +68,7 @@ public class MethodService implements AppScreenFormServiceInt<MethodForm, Query<
             }catch(LastPageException e) {
                 throw new LastPageException(openElisConstants.getString("lastPageException"));
             }catch(Exception e){
-                throw new RPCException(e.getMessage());
+                throw new Exception(e.getMessage());
             }
     
         int i=0;
@@ -86,20 +85,20 @@ public class MethodService implements AppScreenFormServiceInt<MethodForm, Query<
         return query;
     }
     
-    public MethodForm abort(MethodForm rpc) throws RPCException {
+    public MethodForm abort(MethodForm rpc) throws Exception {
         MethodRemote remote = (MethodRemote)EJBFactory.lookup("openelis/MethodBean/remote");
         Integer methodId = rpc.entityKey;
         MethodDO methodDO = new MethodDO();
         try{
             methodDO = remote.getMethodAndUnlock(methodId,SessionManager.getSession().getId());
         }catch(Exception ex){
-            throw new RPCException(ex.getMessage());
+            throw new Exception(ex.getMessage());
         } 
         setFieldsInRPC(rpc, methodDO);
         return rpc;
     }
 
-    public MethodForm commitAdd(MethodForm rpc) throws RPCException {
+    public MethodForm commitAdd(MethodForm rpc) throws Exception {
         MethodRemote remote = (MethodRemote)EJBFactory.lookup("openelis/MethodBean/remote");
         MethodDO methodDO = getMethodDOFromRPC(rpc);
 
@@ -110,20 +109,20 @@ public class MethodService implements AppScreenFormServiceInt<MethodForm, Query<
             setRpcErrors(e.getErrorList(), rpc);
             return rpc;
         } catch (Exception e) {
-            throw new RPCException(e.getMessage());            
+            throw new Exception(e.getMessage());            
         }
         methodDO.setId(methodId);
         setFieldsInRPC(rpc, methodDO);
         return rpc;
     }
 
-    public MethodForm commitDelete(MethodForm rpc) throws RPCException {
+    public MethodForm commitDelete(MethodForm rpc) throws Exception {
         // TODO Auto-generated method stub
         return null;
     }
 
 
-    public MethodForm commitUpdate(MethodForm rpc) throws RPCException {       
+    public MethodForm commitUpdate(MethodForm rpc) throws Exception {       
         MethodRemote remote = (MethodRemote)EJBFactory.lookup("openelis/MethodBean/remote");
         MethodDO methodDO = getMethodDOFromRPC(rpc);
         try{
@@ -132,13 +131,13 @@ public class MethodService implements AppScreenFormServiceInt<MethodForm, Query<
             setRpcErrors(e.getErrorList(), rpc);
             return rpc;
         } catch (Exception e) {
-            throw new RPCException(e.getMessage());            
+            throw new Exception(e.getMessage());            
         }
         setFieldsInRPC(rpc, methodDO);        
         return rpc;
     }
 
-    public MethodForm fetch(MethodForm rpc) throws RPCException {
+    public MethodForm fetch(MethodForm rpc) throws Exception {
         MethodRemote remote = (MethodRemote)EJBFactory.lookup("openelis/MethodBean/remote");
         Integer methodId = rpc.entityKey;
         MethodDO methodDO = remote.getMethod(methodId);
@@ -146,24 +145,24 @@ public class MethodService implements AppScreenFormServiceInt<MethodForm, Query<
         return rpc;
     }
 
-    public MethodForm fetchForUpdate(MethodForm rpc) throws RPCException {
+    public MethodForm fetchForUpdate(MethodForm rpc) throws Exception {
         MethodRemote remote = (MethodRemote)EJBFactory.lookup("openelis/MethodBean/remote");
         Integer methodId = rpc.entityKey;
         MethodDO methodDO = new MethodDO();
         try{
             methodDO = remote.getMethodAndLock(methodId,SessionManager.getSession().getId());
         }catch(Exception ex){
-            throw new RPCException(ex.getMessage());
+            throw new Exception(ex.getMessage());
         } 
         setFieldsInRPC(rpc, methodDO);
         return rpc;
     }
 
-    public String getXML() throws RPCException {
+    public String getXML() throws Exception {
         return ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/method.xsl");
     }
 
-    public HashMap<String, FieldType> getXMLData() throws RPCException {
+    public HashMap<String, FieldType> getXMLData() throws Exception {
         StringObject xml = new StringObject();
         xml.setValue(ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/method.xsl"));
                         
@@ -172,12 +171,12 @@ public class MethodService implements AppScreenFormServiceInt<MethodForm, Query<
         return map;
     }
 
-    public HashMap<String, FieldType> getXMLData(HashMap<String, FieldType> args) throws RPCException {
+    public HashMap<String, FieldType> getXMLData(HashMap<String, FieldType> args) throws Exception {
         // TODO Auto-generated method stub
         return null;
     }
     
-    public MethodForm getScreen(MethodForm rpc) throws RPCException{
+    public MethodForm getScreen(MethodForm rpc) throws Exception{
         rpc.xml = ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/method.xsl");
         return rpc;
     }

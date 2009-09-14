@@ -39,7 +39,6 @@ import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.QueryException;
-import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.deprecated.AbstractField;
 import org.openelis.gwt.common.data.deprecated.CheckField;
@@ -86,7 +85,7 @@ public class FillOrderService implements AppScreenFormServiceInt<FillOrderForm, 
     
     private static final int leftTableRowsPerPage = 250;
     
-    public Query<TableDataRow<Integer>> commitQuery(Query<TableDataRow<Integer>> query) throws RPCException {
+    public Query<TableDataRow<Integer>> commitQuery(Query<TableDataRow<Integer>> query) throws Exception {
         List orders;
         //if the rpc is null then we need to get the page
        /* if(form == null){
@@ -94,7 +93,7 @@ public class FillOrderService implements AppScreenFormServiceInt<FillOrderForm, 
             form = (Form)SessionManager.getSession().getAttribute("FillOrderQuery");
     
             if(form == null)
-                throw new RPCException(openElisConstants.getString("queryExpiredException"));
+                throw new Exception(openElisConstants.getString("queryExpiredException"));
 
             FillOrderRemote remote = (FillOrderRemote)EJBFactory.lookup("openelis/FillOrderBean/remote");
             try{
@@ -103,7 +102,7 @@ public class FillOrderService implements AppScreenFormServiceInt<FillOrderForm, 
                 if(e instanceof LastPageException){
                     throw new LastPageException(openElisConstants.getString("lastPageException"));
                 }else{
-                    throw new RPCException(e.getMessage()); 
+                    throw new Exception(e.getMessage()); 
                 }           
             }    
         }else{*/
@@ -117,7 +116,7 @@ public class FillOrderService implements AppScreenFormServiceInt<FillOrderForm, 
             }catch(LastPageException e) {
                 throw new LastPageException(openElisConstants.getString("lastPageException"));
             }catch(Exception e){
-                throw new RPCException(e.getMessage());
+                throw new Exception(e.getMessage());
             }    
         
             //need to save the rpc used to the encache
@@ -133,39 +132,39 @@ public class FillOrderService implements AppScreenFormServiceInt<FillOrderForm, 
         return query;
     }
 
-    public FillOrderForm commitAdd(FillOrderForm rpc) throws RPCException {
+    public FillOrderForm commitAdd(FillOrderForm rpc) throws Exception {
         return null;
     }
 
-    public FillOrderForm commitUpdate(FillOrderForm rpc) throws RPCException {
+    public FillOrderForm commitUpdate(FillOrderForm rpc) throws Exception {
         return null;
     }
 
-    public FillOrderForm commitDelete(FillOrderForm rpc) throws RPCException {
+    public FillOrderForm commitDelete(FillOrderForm rpc) throws Exception {
         return null;
     }
 
-    public FillOrderForm abort(FillOrderForm rpc) throws RPCException {
+    public FillOrderForm abort(FillOrderForm rpc) throws Exception {
         return null;
     }
 
-    public FillOrderForm fetch(FillOrderForm rpc) throws RPCException {
+    public FillOrderForm fetch(FillOrderForm rpc) throws Exception {
         return null;
     }
 
-    public FillOrderForm fetchForUpdate(FillOrderForm rpcReturn) throws RPCException {
+    public FillOrderForm fetchForUpdate(FillOrderForm rpcReturn) throws Exception {
         return null;
     }
 
-    public String getXML() throws RPCException {
+    public String getXML() throws Exception {
         return null;
     }
 
-    public HashMap<String, FieldType> getXMLData() throws RPCException {
+    public HashMap<String, FieldType> getXMLData() throws Exception {
         return null;
     }
     
-    public FillOrderForm getScreen(FillOrderForm rpc) throws RPCException {
+    public FillOrderForm getScreen(FillOrderForm rpc) throws Exception {
         rpc.xml = ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/fillOrder.xsl");
 
         if(subRpcNode == null){
@@ -209,11 +208,11 @@ public class FillOrderService implements AppScreenFormServiceInt<FillOrderForm, 
         return orderList;
     }
     
-    public HashMap<String, FieldType> getXMLData(HashMap<String, FieldType> args) throws RPCException {
+    public HashMap<String, FieldType> getXMLData(HashMap<String, FieldType> args) throws Exception {
         return null;
     }
     
-    public FillOrderItemInfoForm setOrderToProcessed(FillOrderItemInfoForm rpc) throws RPCException {
+    public FillOrderItemInfoForm setOrderToProcessed(FillOrderItemInfoForm rpc) throws Exception {
         List orders = getListOfOrdersFromTree(rpc.originalOrderItemsTree.getValue());
        
         FillOrderRemote remote = (FillOrderRemote)EJBFactory.lookup("openelis/FillOrderBean/remote");
@@ -224,7 +223,7 @@ public class FillOrderService implements AppScreenFormServiceInt<FillOrderForm, 
                 setRpcErrors(((ValidationErrorsList)e).getErrorList(), rpc);
                 return rpc;
             }else
-                throw new RPCException(e.getMessage());
+                throw new Exception(e.getMessage());
         }
         
         List refreshedRows = remote.getOrdersById(getOrderIds(rpc.tableData));
@@ -241,7 +240,7 @@ public class FillOrderService implements AppScreenFormServiceInt<FillOrderForm, 
         return returnList;
     }
     
-    public FillOrderItemInfoForm validateOrders(FillOrderItemInfoForm rpc) throws RPCException { 
+    public FillOrderItemInfoForm validateOrders(FillOrderItemInfoForm rpc) throws Exception { 
         List orders = getListOfOrdersFromTree(rpc.originalOrderItemsTree.getValue());
         FillOrderRemote remote = (FillOrderRemote)EJBFactory.lookup("openelis/FillOrderBean/remote");
         try {
@@ -251,25 +250,25 @@ public class FillOrderService implements AppScreenFormServiceInt<FillOrderForm, 
                 setRpcErrors(((ValidationErrorsList)e).getErrorList(), rpc);
                 return rpc;
             }else{
-                throw new RPCException(e.getMessage());
+                throw new Exception(e.getMessage());
             }
         }
         
         return rpc;
     }
 
-    public FillOrderLocationAutoRPC getMatchesObj(FillOrderLocationAutoRPC rpc) throws RPCException {
+    public FillOrderLocationAutoRPC getMatchesObj(FillOrderLocationAutoRPC rpc) throws Exception {
         if("invLocation".equals(rpc.cat))
             rpc.autoMatches =  getLocationMatches(rpc.match, rpc.id);
         
         return rpc;
     }
     
-    public TableDataModel getMatches(String cat, TableDataModel model, String match, HashMap<String, FieldType> params) throws RPCException {
+    public TableDataModel getMatches(String cat, TableDataModel model, String match, HashMap<String, FieldType> params) throws Exception {
         return null;
     }
     
-    private TableDataModel getLocationMatches(String match, Integer invItemId) throws RPCException{
+    private TableDataModel getLocationMatches(String match, Integer invItemId) throws Exception{
         TableDataModel<TableDataRow<Integer>> dataModel = new TableDataModel<TableDataRow<Integer>>();
         List autoCompleteList = new ArrayList();
 
@@ -408,7 +407,7 @@ public class FillOrderService implements AppScreenFormServiceInt<FillOrderForm, 
         return rpc;
     }
     
-    public FillOrderItemInfoForm fetchOrderItemAndLock(FillOrderItemInfoForm rpc)throws RPCException{
+    public FillOrderItemInfoForm fetchOrderItemAndLock(FillOrderItemInfoForm rpc)throws Exception{
         rpc.tableData = new TableDataModel<TableDataRow<Integer>>();
         FillOrderRemote remote = (FillOrderRemote)EJBFactory.lookup("openelis/FillOrderBean/remote");
         List order=null;
@@ -417,7 +416,7 @@ public class FillOrderService implements AppScreenFormServiceInt<FillOrderForm, 
             order = remote.getOrderAndLock(rpc.entityKey);
 
         }catch(Exception e){
-            throw new RPCException(e.getMessage());
+            throw new Exception(e.getMessage());
         }
         
         FillOrderDO fillOrderDO;
@@ -427,12 +426,12 @@ public class FillOrderService implements AppScreenFormServiceInt<FillOrderForm, 
         return rpc;
     }
     
-    public FillOrderItemInfoForm unlockOrders(FillOrderItemInfoForm rpc) throws RPCException{
+    public FillOrderItemInfoForm unlockOrders(FillOrderItemInfoForm rpc) throws Exception{
         FillOrderRemote remote = (FillOrderRemote)EJBFactory.lookup("openelis/FillOrderBean/remote");
         try{
             remote.unlockOrders(getOrderIds(rpc.tableData));
         }catch(Exception e){
-            throw new RPCException(e.getMessage());
+            throw new Exception(e.getMessage());
         }
                     
         return rpc;

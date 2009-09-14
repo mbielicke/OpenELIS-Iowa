@@ -39,7 +39,6 @@ import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.deprecated.AbstractField;
@@ -76,7 +75,7 @@ public class AuxiliaryService implements
     private UTFResource openElisConstants = UTFResource.getBundle((String)SessionManager.getSession()
                                                                                         .getAttribute("locale"));
     
-    public Query<TableDataRow<Integer>> commitQuery(Query<TableDataRow<Integer>> query) throws RPCException {
+    public Query<TableDataRow<Integer>> commitQuery(Query<TableDataRow<Integer>> query) throws Exception {
         List auxfgNames;
         
             AuxiliaryRemote remote = (AuxiliaryRemote)EJBFactory.lookup("openelis/AuxiliaryBean/remote");
@@ -87,7 +86,7 @@ public class AuxiliaryService implements
                 throw new LastPageException(openElisConstants.getString("lastPageException"));
             } catch (Exception e) {
                 e.printStackTrace();
-                throw new RPCException(e.getMessage());
+                throw new Exception(e.getMessage());
             }
             
 
@@ -106,7 +105,7 @@ public class AuxiliaryService implements
         return query;
     }
     
-    public AuxiliaryForm commitAdd(AuxiliaryForm rpc) throws RPCException {
+    public AuxiliaryForm commitAdd(AuxiliaryForm rpc) throws Exception {
         AuxiliaryRemote remote = (AuxiliaryRemote)EJBFactory.lookup("openelis/AuxiliaryBean/remote");
         AuxFieldGroupDO axfgDO = getAuxFieldGroupDOFromRPC(rpc);
         Integer axfgId;
@@ -119,7 +118,7 @@ public class AuxiliaryService implements
             setRpcErrors(e.getErrorList(), rpc);
             return rpc;
         } catch (Exception e) {
-            throw new RPCException(e.getMessage());            
+            throw new Exception(e.getMessage());            
         }
     
         axfgDO.setId(axfgId);
@@ -127,7 +126,7 @@ public class AuxiliaryService implements
         return rpc;
     }
     
-    public AuxiliaryForm commitUpdate(AuxiliaryForm rpc) throws RPCException {
+    public AuxiliaryForm commitUpdate(AuxiliaryForm rpc) throws Exception {
         AuxiliaryRemote remote = (AuxiliaryRemote)EJBFactory.lookup("openelis/AuxiliaryBean/remote");
         AuxFieldGroupDO axfgDO = getAuxFieldGroupDOFromRPC(rpc);
         IntegerField axfgId = rpc.id;
@@ -140,19 +139,19 @@ public class AuxiliaryService implements
             setRpcErrors(e.getErrorList(), rpc);
             return rpc;
         } catch (Exception e) {
-            throw new RPCException(e.getMessage());            
+            throw new Exception(e.getMessage());            
         }
            
         setFieldsInRPC(rpc, axfgDO);
         return rpc;
     }
     
-    public AuxiliaryForm commitDelete(AuxiliaryForm rpc) throws RPCException {
+    public AuxiliaryForm commitDelete(AuxiliaryForm rpc) throws Exception {
         // TODO Auto-generated method stub
         return null;
     }
     
-    public AuxiliaryForm abort(AuxiliaryForm rpc) throws RPCException {
+    public AuxiliaryForm abort(AuxiliaryForm rpc) throws Exception {
         AuxiliaryRemote remote = (AuxiliaryRemote)EJBFactory.lookup("openelis/AuxiliaryBean/remote");
         AuxFieldGroupDO axfgDO = remote.getAuxFieldGroupAndUnlock(rpc.entityKey,SessionManager.getSession().getId());
         setFieldsInRPC(rpc, axfgDO);
@@ -161,7 +160,7 @@ public class AuxiliaryService implements
     }
        
 
-    public AuxiliaryForm fetch(AuxiliaryForm rpc) throws RPCException {
+    public AuxiliaryForm fetch(AuxiliaryForm rpc) throws Exception {
         AuxiliaryRemote remote = (AuxiliaryRemote)EJBFactory.lookup("openelis/AuxiliaryBean/remote");
         AuxFieldGroupDO axfgDO = remote.getAuxFieldGroup(rpc.entityKey);
         setFieldsInRPC(rpc, axfgDO);        
@@ -169,31 +168,31 @@ public class AuxiliaryService implements
         return rpc;
     }
 
-    public AuxiliaryForm fetchForUpdate(AuxiliaryForm rpc) throws RPCException {
+    public AuxiliaryForm fetchForUpdate(AuxiliaryForm rpc) throws Exception {
         AuxiliaryRemote remote = (AuxiliaryRemote)EJBFactory.lookup("openelis/AuxiliaryBean/remote");
         AuxFieldGroupDO axfgDO = new AuxFieldGroupDO(); 
         try{
             axfgDO = remote.getAuxFieldGroupAndLock(rpc.entityKey, SessionManager.getSession().getId());
         }   catch (Exception e) {
             e.printStackTrace();
-            throw new RPCException(e.getMessage());
+            throw new Exception(e.getMessage());
         }
         setFieldsInRPC(rpc, axfgDO);
         fillAuxFieldTable(rpc.entityKey, rpc);
         return rpc;
     }
 
-    public String getXML() throws RPCException {
+    public String getXML() throws Exception {
         return ServiceUtils.getXML(Constants.APP_ROOT + "/Forms/auxiliary.xsl");
     }       
     
-    public AuxiliaryForm getScreen(AuxiliaryForm rpc) throws RPCException {        
+    public AuxiliaryForm getScreen(AuxiliaryForm rpc) throws Exception {        
         rpc.xml = ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/auxiliary.xsl");        
          
         return rpc;
     }
     
-    public HashMap<String, FieldType> getXMLData() throws RPCException {
+    public HashMap<String, FieldType> getXMLData() throws Exception {
         StringObject xml = new StringObject();
         xml.setValue(ServiceUtils.getXML(Constants.APP_ROOT + "/Forms/auxiliary.xsl"));       
 
@@ -202,12 +201,12 @@ public class AuxiliaryService implements
         return map;
     }
 
-    public HashMap<String, FieldType> getXMLData(HashMap<String, FieldType> args) throws RPCException {
+    public HashMap<String, FieldType> getXMLData(HashMap<String, FieldType> args) throws Exception {
         return null;
     }
 
     public TableDataModel getMatches(String cat,TableDataModel model,String match,
-                                HashMap<String, FieldType> params) throws RPCException {
+                                HashMap<String, FieldType> params) throws Exception {
         TableDataModel<TableDataRow<Integer>> dataModel = null;
         List<IdNameDO> entries;
         ScriptletRemote sremote;

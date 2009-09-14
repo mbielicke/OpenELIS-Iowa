@@ -25,10 +25,6 @@
 */
 package org.openelis.modules.method.client;
 
-import com.google.gwt.user.client.rpc.SyncCallback;
-import com.google.gwt.user.client.ui.ChangeListener;
-import com.google.gwt.user.client.ui.TextBox;
-
 import org.openelis.gwt.common.data.deprecated.KeyListManager;
 import org.openelis.gwt.common.data.deprecated.QueryStringField;
 import org.openelis.gwt.common.data.deprecated.TableDataRow;
@@ -36,10 +32,13 @@ import org.openelis.gwt.common.deprecated.Query;
 import org.openelis.gwt.screen.deprecated.CommandChain;
 import org.openelis.gwt.widget.deprecated.AppButton;
 import org.openelis.gwt.widget.deprecated.ButtonPanel;
-import org.openelis.gwt.widget.deprecated.CollapsePanel;
 import org.openelis.gwt.widget.deprecated.ResultsTable;
 import org.openelis.metamap.MethodMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
+
+import com.google.gwt.user.client.rpc.SyncCallback;
+import com.google.gwt.user.client.ui.ChangeListener;
+import com.google.gwt.user.client.ui.TextBox;
 
 public class MethodScreen extends OpenELISScreenForm<MethodForm,Query<TableDataRow<Integer>>> implements ChangeListener{
     

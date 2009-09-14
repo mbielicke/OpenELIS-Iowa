@@ -28,7 +28,6 @@ package org.openelis.modules.dictionaryentrypicker.server;
 import java.util.ArrayList;
 
 import org.openelis.domain.IdNameDO;
-import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.modules.dictionaryentrypicker.client.DictionaryEntryPickerDataRPC;
 import org.openelis.persistence.EJBFactory;
@@ -37,7 +36,7 @@ import org.openelis.server.constants.Constants;
 
 public class DictionaryEntryPickerService {
     
-    public String getScreen() throws RPCException {        
+    public String getScreen() throws Exception {        
         return ServiceUtils.getXML(Constants.APP_ROOT + "/Forms/dictionaryEntryPicker.xsl");
     }
     

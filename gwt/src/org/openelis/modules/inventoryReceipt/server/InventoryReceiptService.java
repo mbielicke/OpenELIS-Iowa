@@ -41,7 +41,6 @@ import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.QueryException;
-import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.deprecated.AbstractField;
@@ -93,7 +92,7 @@ public class InventoryReceiptService implements AppScreenFormServiceInt<Inventor
     
     private UTFResource openElisConstants = UTFResource.getBundle((String)SessionManager.getSession().getAttribute("locale"));
     
-    public InventoryReceiptQuery commitQuery(InventoryReceiptQuery query) throws RPCException {
+    public InventoryReceiptQuery commitQuery(InventoryReceiptQuery query) throws Exception {
         List receipts;
         /*InventoryReceiptQuery invQuery = null;
         if(qList != null)
@@ -115,7 +114,7 @@ public class InventoryReceiptService implements AppScreenFormServiceInt<Inventor
                 if(e instanceof LastPageException){
                     throw new LastPageException(openElisConstants.getString("lastPageException"));
                 }else{
-                    throw new RPCException(e.getMessage()); 
+                    throw new Exception(e.getMessage()); 
                 }           
             }    
         }else{*/
@@ -131,7 +130,7 @@ public class InventoryReceiptService implements AppScreenFormServiceInt<Inventor
             }catch(LastPageException e) {
                 throw new LastPageException(openElisConstants.getString("lastPageException"));
             }catch(Exception e){
-                throw new RPCException(e.getMessage());
+                throw new Exception(e.getMessage());
             }
     
             //need to save the rpc used to the encache
@@ -149,7 +148,7 @@ public class InventoryReceiptService implements AppScreenFormServiceInt<Inventor
         return query;
     }
     
-    public InventoryReceiptForm commitQueryAndLock(InventoryReceiptForm rpc) throws RPCException {
+    public InventoryReceiptForm commitQueryAndLock(InventoryReceiptForm rpc) throws Exception {
         List receipts;
         InventoryReceiptQuery invQuery = (InventoryReceiptQuery)SessionManager.getSession().getAttribute("InventoryReceiptQuery");
         
@@ -163,7 +162,7 @@ public class InventoryReceiptService implements AppScreenFormServiceInt<Inventor
             if(e instanceof LastPageException){
                 throw new LastPageException(openElisConstants.getString("lastPageException"));
             }else{
-                throw new RPCException(e.getMessage()); 
+                throw new Exception(e.getMessage()); 
             }           
         }
         
@@ -174,7 +173,7 @@ public class InventoryReceiptService implements AppScreenFormServiceInt<Inventor
         return rpc;
     }
     
-    public InventoryReceiptForm commitQueryAndUnlock(InventoryReceiptForm rpc) throws RPCException {
+    public InventoryReceiptForm commitQueryAndUnlock(InventoryReceiptForm rpc) throws Exception {
         List receipts;
         InventoryReceiptQuery invQuery = (InventoryReceiptQuery)SessionManager.getSession().getAttribute("InventoryReceiptQuery");
         
@@ -188,7 +187,7 @@ public class InventoryReceiptService implements AppScreenFormServiceInt<Inventor
             if(e instanceof LastPageException){
                 throw new LastPageException(openElisConstants.getString("lastPageException"));
             }else{
-                throw new RPCException(e.getMessage()); 
+                throw new Exception(e.getMessage()); 
             }           
         }    
         
@@ -199,7 +198,7 @@ public class InventoryReceiptService implements AppScreenFormServiceInt<Inventor
     }
 
 
-    public InventoryReceiptForm commitAdd(InventoryReceiptForm rpc) throws RPCException {
+    public InventoryReceiptForm commitAdd(InventoryReceiptForm rpc) throws Exception {
         //remote interface to call the inventory receipt bean
         InventoryReceiptRemote remote = (InventoryReceiptRemote)EJBFactory.lookup("openelis/InventoryReceiptBean/remote");
         List inventoryReceipts = new ArrayList();
@@ -226,13 +225,13 @@ public class InventoryReceiptService implements AppScreenFormServiceInt<Inventor
                 setRpcErrors(((ValidationErrorsList)e).getErrorList(), recieptsTableField, rpc);
                 return rpc;
             }else
-                throw new RPCException(e.getMessage());
+                throw new Exception(e.getMessage());
         }
         
         return rpc;
     }
 
-    public InventoryReceiptForm commitUpdate(InventoryReceiptForm rpc) throws RPCException {
+    public InventoryReceiptForm commitUpdate(InventoryReceiptForm rpc) throws Exception {
         //remote interface to call the inventory receipt bean
         InventoryReceiptRemote remote = (InventoryReceiptRemote)EJBFactory.lookup("openelis/InventoryReceiptBean/remote");
         List inventoryReceipts = new ArrayList();
@@ -256,29 +255,29 @@ public class InventoryReceiptService implements AppScreenFormServiceInt<Inventor
                 setRpcErrors(((ValidationErrorsList)e).getErrorList(), receiptsTableField, rpc);
                 return rpc;
             }else
-                throw new RPCException(e.getMessage());
+                throw new Exception(e.getMessage());
         }
 
         return rpc;
     }
 
-    public InventoryReceiptForm commitDelete(InventoryReceiptForm rpc) throws RPCException {
+    public InventoryReceiptForm commitDelete(InventoryReceiptForm rpc) throws Exception {
         return null;
     }
 
-    public InventoryReceiptForm abort(InventoryReceiptForm rpc) throws RPCException {
+    public InventoryReceiptForm abort(InventoryReceiptForm rpc) throws Exception {
         return null;
     }
 
-    public InventoryReceiptForm fetch(InventoryReceiptForm rpc) throws RPCException {
+    public InventoryReceiptForm fetch(InventoryReceiptForm rpc) throws Exception {
         return null;
     }
 
-    public InventoryReceiptForm fetchForUpdate(InventoryReceiptForm rpc) throws RPCException {
+    public InventoryReceiptForm fetchForUpdate(InventoryReceiptForm rpc) throws Exception {
         return null;
     }
     
-    public InventoryReceiptForm getScreen(InventoryReceiptForm rpc) throws RPCException{
+    public InventoryReceiptForm getScreen(InventoryReceiptForm rpc) throws Exception{
         String type = rpc.screenType;
         
         if(type.equals(InventoryReceiptRemote.RECEIPT))
@@ -305,14 +304,14 @@ public class InventoryReceiptService implements AppScreenFormServiceInt<Inventor
         return rpc;
     }
     
-    public InventoryReceiptForm getReceiptsAndLockOrder(InventoryReceiptForm rpc) throws RPCException {
+    public InventoryReceiptForm getReceiptsAndLockOrder(InventoryReceiptForm rpc) throws Exception {
         InventoryReceiptRemote remote = (InventoryReceiptRemote)EJBFactory.lookup("openelis/InventoryReceiptBean/remote");
         List receiptRecords = null;
         try{
             receiptRecords = remote.getInventoryReceiptRecordsAndLock(rpc.orderId);
             
         }catch(Exception e){
-            throw new RPCException(e.getMessage());
+            throw new Exception(e.getMessage());
         }
         
         TableDataModel<TableDataRow<InvReceiptItemInfoForm>> model = new TableDataModel<TableDataRow<InvReceiptItemInfoForm>>(); 
@@ -347,7 +346,7 @@ public class InventoryReceiptService implements AppScreenFormServiceInt<Inventor
         return rpc;
     }
 
-    public ReceiptInvLocationAutoRPC getMatchesCall(ReceiptInvLocationAutoRPC rpc) throws RPCException {
+    public ReceiptInvLocationAutoRPC getMatchesCall(ReceiptInvLocationAutoRPC rpc) throws Exception {
         if("location".equals(rpc.cat))
             rpc.autoMatches = getLocationMatches(rpc.match, rpc.addToExisting, rpc.invItemId);
         else if("toInventoryItemTrans".equals(rpc.cat))
@@ -359,7 +358,7 @@ public class InventoryReceiptService implements AppScreenFormServiceInt<Inventor
     }
     
     
-    public TableDataModel getMatches(String cat, TableDataModel model, String match, HashMap<String, FieldType> params) throws RPCException {
+    public TableDataModel getMatches(String cat, TableDataModel model, String match, HashMap<String, FieldType> params) throws Exception {
         if(cat.equals("inventoryItem"))
             return getInventoryItemMatches(match, false, -1, -1);
         else if(cat.equals("inventoryItemTrans"))
@@ -370,7 +369,7 @@ public class InventoryReceiptService implements AppScreenFormServiceInt<Inventor
         return null;
     }
     
-    private TableDataModel getLocationMatches(String match, String addToExisting, Integer inventoryItemId) throws RPCException{
+    private TableDataModel getLocationMatches(String match, String addToExisting, Integer inventoryItemId) throws Exception{
         //InventoryItemRemote remote = (InventoryItemRemote)EJBFactory.lookup("openelis/InventoryItemBean/remote");
         TableDataModel<TableDataRow<Integer>> dataModel = new TableDataModel<TableDataRow<Integer>>();
         List<StorageLocationAutoDO> autoCompleteList = new ArrayList();
@@ -393,7 +392,7 @@ public class InventoryReceiptService implements AppScreenFormServiceInt<Inventor
         return dataModel;       
     }
     
-    private TableDataModel<TableDataRow<Integer>> getInventoryItemMatches(String match, boolean loc, Integer inventoryItemId, Integer parentInventoryItemId) throws RPCException{
+    private TableDataModel<TableDataRow<Integer>> getInventoryItemMatches(String match, boolean loc, Integer inventoryItemId, Integer parentInventoryItemId) throws Exception{
         InventoryItemRemote remote = (InventoryItemRemote)EJBFactory.lookup("openelis/InventoryItemBean/remote");
         if(inventoryItemId == null && parentInventoryItemId == null)
                 throw new FormErrorException(openElisConstants.getString("inventoryTransferFromItemException"));
@@ -833,7 +832,7 @@ public class InventoryReceiptService implements AppScreenFormServiceInt<Inventor
         } 
     }
     
-    public TransferLocationRPC fetchLocationAndLock(TransferLocationRPC rpc) throws RPCException {
+    public TransferLocationRPC fetchLocationAndLock(TransferLocationRPC rpc) throws Exception {
         InventoryReceiptRemote remote = (InventoryReceiptRemote)EJBFactory.lookup("openelis/InventoryReceiptBean/remote");
         InventoryLocationDO locDO;
         
@@ -841,7 +840,7 @@ public class InventoryReceiptService implements AppScreenFormServiceInt<Inventor
             locDO = remote.lockLocationAndFetch(rpc.oldLocId, rpc.currentLocId);
 
         }catch(Exception e){
-            throw new RPCException(e.getMessage());
+            throw new Exception(e.getMessage());
         }
 
         if(locDO != null)

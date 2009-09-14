@@ -26,7 +26,6 @@
 package org.openelis.server.handlers;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import org.openelis.domain.SectionDO;
 import org.openelis.messages.SectionCacheMessage;

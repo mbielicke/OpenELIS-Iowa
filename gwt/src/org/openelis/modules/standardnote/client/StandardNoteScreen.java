@@ -40,7 +40,6 @@ import org.openelis.gwt.screen.deprecated.ScreenInputWidget;
 import org.openelis.gwt.screen.deprecated.ScreenTextArea;
 import org.openelis.gwt.widget.deprecated.AppButton;
 import org.openelis.gwt.widget.deprecated.ButtonPanel;
-import org.openelis.gwt.widget.deprecated.CollapsePanel;
 import org.openelis.gwt.widget.deprecated.Dropdown;
 import org.openelis.gwt.widget.deprecated.ResultsTable;
 import org.openelis.metamap.StandardNoteMetaMap;

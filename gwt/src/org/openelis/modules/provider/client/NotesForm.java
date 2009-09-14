@@ -26,12 +26,12 @@
 
 package org.openelis.modules.provider.client;
 
-import com.google.gwt.xml.client.Node;
-
 import org.openelis.gwt.common.data.deprecated.AbstractField;
 import org.openelis.gwt.common.data.deprecated.StringField;
 import org.openelis.gwt.common.deprecated.Form;
 import org.openelis.metamap.ProviderMetaMap;
+
+import com.google.gwt.xml.client.Node;
 
 /**
  * Specific instance of Form for loading and submitting 

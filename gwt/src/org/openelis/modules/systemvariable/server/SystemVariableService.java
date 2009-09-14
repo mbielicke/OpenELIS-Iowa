@@ -26,13 +26,15 @@
 
 package org.openelis.modules.systemvariable.server;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 import org.openelis.domain.IdNameDO;
 import org.openelis.domain.SystemVariableDO;
-import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.deprecated.AbstractField;
 import org.openelis.gwt.common.data.deprecated.StringObject;
@@ -50,10 +52,6 @@ import org.openelis.util.FormUtil;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
 public class SystemVariableService implements AppScreenFormServiceInt<SystemVariableForm,Query<TableDataRow<Integer>>> {
 
     private static final long serialVersionUID = 1L;
@@ -61,7 +59,7 @@ public class SystemVariableService implements AppScreenFormServiceInt<SystemVari
     
     private UTFResource openElisConstants= UTFResource.getBundle((String)SessionManager.getSession().getAttribute("locale"));
     
-     public Query<TableDataRow<Integer>> commitQuery(Query<TableDataRow<Integer>> query) throws RPCException {
+     public Query<TableDataRow<Integer>> commitQuery(Query<TableDataRow<Integer>> query) throws Exception {
         List sysVars = new ArrayList();
         SystemVariableRemote remote = (SystemVariableRemote)EJBFactory.lookup("openelis/SystemVariableBean/remote"); 
                           
@@ -71,7 +69,7 @@ public class SystemVariableService implements AppScreenFormServiceInt<SystemVari
             throw new LastPageException(openElisConstants.getString("lastPageException"));
         }catch(Exception e){
             e.printStackTrace();
-            throw new RPCException(e.getMessage());
+            throw new Exception(e.getMessage());
         } 
                   
      int i=0;
@@ -90,7 +88,7 @@ public class SystemVariableService implements AppScreenFormServiceInt<SystemVari
          return query;
     }
 
-    public SystemVariableForm commitAdd(SystemVariableForm rpc) throws RPCException {
+    public SystemVariableForm commitAdd(SystemVariableForm rpc) throws Exception {
         SystemVariableRemote remote;
         SystemVariableDO sysVarDO;
         Integer svId;
@@ -103,7 +101,7 @@ public class SystemVariableService implements AppScreenFormServiceInt<SystemVari
             setRpcErrors(e.getErrorList(), rpc);
             return rpc;
         } catch (Exception e) {            
-            throw new RPCException(e.getMessage());            
+            throw new Exception(e.getMessage());            
         } 
         
         sysVarDO.setId(svId);
@@ -112,7 +110,7 @@ public class SystemVariableService implements AppScreenFormServiceInt<SystemVari
         return rpc;
     }
 
-    public SystemVariableForm commitUpdate(SystemVariableForm rpc) throws RPCException {
+    public SystemVariableForm commitUpdate(SystemVariableForm rpc) throws Exception {
         SystemVariableRemote remote;
         SystemVariableDO sysVarDO;
         
@@ -124,7 +122,7 @@ public class SystemVariableService implements AppScreenFormServiceInt<SystemVari
             setRpcErrors(e.getErrorList(), rpc);
             return rpc;
         } catch (Exception e) {            
-            throw new RPCException(e.getMessage());            
+            throw new Exception(e.getMessage());            
         }
         
         setFieldsInRPC(rpc, sysVarDO);
@@ -133,14 +131,14 @@ public class SystemVariableService implements AppScreenFormServiceInt<SystemVari
     }
 
 
-    public SystemVariableForm commitDelete(SystemVariableForm rpc) throws RPCException {
+    public SystemVariableForm commitDelete(SystemVariableForm rpc) throws Exception {
         SystemVariableRemote remote;
         
         remote = (SystemVariableRemote)EJBFactory.lookup("openelis/SystemVariableBean/remote");
         try{
             remote.deleteSystemVariable(rpc.entityKey);
         }catch(Exception ex){
-            throw new RPCException(ex.getMessage());
+            throw new Exception(ex.getMessage());
         }
         
         setFieldsInRPC(rpc, new SystemVariableDO());
@@ -148,7 +146,7 @@ public class SystemVariableService implements AppScreenFormServiceInt<SystemVari
     }
 
 
-    public SystemVariableForm abort(SystemVariableForm rpc) throws RPCException {
+    public SystemVariableForm abort(SystemVariableForm rpc) throws Exception {
         SystemVariableRemote remote = (SystemVariableRemote)EJBFactory.lookup("openelis/SystemVariableBean/remote");
         Integer svId = rpc.entityKey;
         
@@ -156,7 +154,7 @@ public class SystemVariableService implements AppScreenFormServiceInt<SystemVari
         try{
           svDO = remote.getSystemVariableAndUnlock(svId, SessionManager.getSession().getId());
         }catch(Exception ex){
-            throw new RPCException(ex.getMessage());
+            throw new Exception(ex.getMessage());
         }  
         
         setFieldsInRPC(rpc, svDO);
@@ -164,7 +162,7 @@ public class SystemVariableService implements AppScreenFormServiceInt<SystemVari
     }
 
 
-    public SystemVariableForm fetch(SystemVariableForm rpc) throws RPCException {
+    public SystemVariableForm fetch(SystemVariableForm rpc) throws Exception {
         SystemVariableRemote remote = (SystemVariableRemote)EJBFactory.lookup("openelis/SystemVariableBean/remote");
         Integer svId = rpc.entityKey;
         
@@ -174,7 +172,7 @@ public class SystemVariableService implements AppScreenFormServiceInt<SystemVari
     }
 
 
-    public SystemVariableForm fetchForUpdate(SystemVariableForm rpc) throws RPCException {
+    public SystemVariableForm fetchForUpdate(SystemVariableForm rpc) throws Exception {
         SystemVariableRemote remote = (SystemVariableRemote)EJBFactory.lookup("openelis/SystemVariableBean/remote");
         Integer svId = rpc.entityKey;
         
@@ -182,14 +180,14 @@ public class SystemVariableService implements AppScreenFormServiceInt<SystemVari
         try{
           svDO = remote.getSystemVariableAndLock(svId, SessionManager.getSession().getId());
         }catch(Exception ex){
-            throw new RPCException(ex.getMessage());
+            throw new Exception(ex.getMessage());
         }  
         setFieldsInRPC(rpc, svDO);
         return rpc;
     }
 
 
-    public SystemVariableForm getScreen(SystemVariableForm rpc) throws RPCException{
+    public SystemVariableForm getScreen(SystemVariableForm rpc) throws Exception{
         rpc.xml = ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/systemVariable.xsl");
         return rpc;
     }

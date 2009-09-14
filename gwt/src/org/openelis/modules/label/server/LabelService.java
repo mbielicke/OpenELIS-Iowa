@@ -25,12 +25,15 @@
 */
 package org.openelis.modules.label.server;
 
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+
 import org.openelis.domain.IdNameDO;
 import org.openelis.domain.LabelDO;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.deprecated.AbstractField;
 import org.openelis.gwt.common.data.deprecated.FieldType;
@@ -51,10 +54,6 @@ import org.openelis.util.FormUtil;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-
 public class LabelService implements AppScreenFormServiceInt<LabelForm,Query<TableDataRow<Integer>>>,
                                         AutoCompleteServiceInt {   
     
@@ -63,7 +62,7 @@ public class LabelService implements AppScreenFormServiceInt<LabelForm,Query<Tab
     
     private UTFResource openElisConstants= UTFResource.getBundle((String)SessionManager.getSession().getAttribute("locale"));    
     
-    public Query<TableDataRow<Integer>> commitQuery(Query<TableDataRow<Integer>> query) throws RPCException {
+    public Query<TableDataRow<Integer>> commitQuery(Query<TableDataRow<Integer>> query) throws Exception {
         List labels;
         LabelRemote remote; 
         IdNameDO resultDO;
@@ -78,7 +77,7 @@ public class LabelService implements AppScreenFormServiceInt<LabelForm,Query<Tab
         }catch(LastPageException e) {
             throw new LastPageException(openElisConstants.getString("lastPageException"));
         }catch(Exception e){            
-            throw new RPCException(e.getMessage());
+            throw new Exception(e.getMessage());
         }
             
         i=0;
@@ -99,7 +98,7 @@ public class LabelService implements AppScreenFormServiceInt<LabelForm,Query<Tab
         return query;
     }
 
-    public LabelForm commitAdd(LabelForm rpc) throws RPCException {
+    public LabelForm commitAdd(LabelForm rpc) throws Exception {
         LabelRemote remote; 
         LabelDO labelDO;
         Integer labelId; 
@@ -114,7 +113,7 @@ public class LabelService implements AppScreenFormServiceInt<LabelForm,Query<Tab
             setRpcErrors(e.getErrorList(), rpc);
             return rpc;
         } catch (Exception e) {
-            throw new RPCException(e.getMessage());            
+            throw new Exception(e.getMessage());            
         }
         
         labelDO.setId(labelId);
@@ -123,7 +122,7 @@ public class LabelService implements AppScreenFormServiceInt<LabelForm,Query<Tab
         return rpc;
     }
 
-    public LabelForm commitUpdate(LabelForm rpc) throws RPCException {
+    public LabelForm commitUpdate(LabelForm rpc) throws Exception {
         LabelRemote remote; 
         LabelDO labelDO;         
           
@@ -137,14 +136,14 @@ public class LabelService implements AppScreenFormServiceInt<LabelForm,Query<Tab
             setRpcErrors(e.getErrorList(), rpc);
             return rpc;
         } catch (Exception e) {
-            throw new RPCException(e.getMessage());            
+            throw new Exception(e.getMessage());            
         }
         
         setFieldsInRPC(rpc, labelDO);
         return rpc;
     }
 
-    public LabelForm commitDelete(LabelForm rpc) throws RPCException {
+    public LabelForm commitDelete(LabelForm rpc) throws Exception {
         LabelDO labelDO;         
         LabelRemote remote; 
         
@@ -157,27 +156,27 @@ public class LabelService implements AppScreenFormServiceInt<LabelForm,Query<Tab
             setRpcErrors(e.getErrorList(), rpc);
             return rpc;
         } catch (Exception e) {
-            throw new RPCException(e.getMessage());            
+            throw new Exception(e.getMessage());            
         }
         setFieldsInRPC(rpc, new LabelDO());
         return rpc;
     }
 
-    public LabelForm abort(LabelForm rpc) throws RPCException {
+    public LabelForm abort(LabelForm rpc) throws Exception {
         LabelRemote remote = (LabelRemote)EJBFactory.lookup("openelis/LabelBean/remote"); 
         Integer labelId = rpc.entityKey;
         LabelDO labelDO =null;
         try{
             labelDO  = remote.getLabelAndUnlock(labelId, SessionManager.getSession().getId());
            } catch(Exception ex){
-               throw new RPCException(ex.getMessage());
+               throw new Exception(ex.getMessage());
            }  
            
          setFieldsInRPC(rpc, labelDO);   
          return rpc;
     }
 
-    public LabelForm fetch(LabelForm rpc) throws RPCException {
+    public LabelForm fetch(LabelForm rpc) throws Exception {
         LabelRemote remote = (LabelRemote)EJBFactory.lookup("openelis/LabelBean/remote"); 
         Integer labelId = rpc.entityKey;
 
@@ -189,21 +188,21 @@ public class LabelService implements AppScreenFormServiceInt<LabelForm,Query<Tab
         return rpc;
     }
 
-    public LabelForm fetchForUpdate(LabelForm rpc) throws RPCException {
+    public LabelForm fetchForUpdate(LabelForm rpc) throws Exception {
         LabelRemote remote = (LabelRemote)EJBFactory.lookup("openelis/LabelBean/remote"); 
         Integer labelId = rpc.entityKey;
         LabelDO labelDO =null;
         try{
             labelDO  = remote.getLabelAndLock(labelId, SessionManager.getSession().getId());
            } catch(Exception ex){
-               throw new RPCException(ex.getMessage());
+               throw new Exception(ex.getMessage());
            }  
            
          setFieldsInRPC(rpc, labelDO);   
          return rpc;
     }
 
-    public LabelForm getScreen(LabelForm rpc) throws RPCException{
+    public LabelForm getScreen(LabelForm rpc) throws Exception{
         rpc.xml  = ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/label.xsl");                 
         return rpc;
     }   
@@ -255,7 +254,7 @@ public class LabelService implements AppScreenFormServiceInt<LabelForm,Query<Tab
 	}
 
     public TableDataModel getMatches(String cat,TableDataModel model,String match,
-                                     HashMap<String, FieldType> params) throws RPCException {        
+                                     HashMap<String, FieldType> params) throws Exception {        
         TableDataModel<TableDataRow<Integer>> dataModel;
         ScriptletRemote sremote;
         List<IdNameDO> entries;

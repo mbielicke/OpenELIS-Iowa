@@ -1,12 +1,11 @@
 package org.openelis.modules.fillOrder.client;
 
-import com.google.gwt.xml.client.Node;
-
 import org.openelis.gwt.common.data.deprecated.AbstractField;
-import org.openelis.gwt.common.data.deprecated.TableDataModel;
 import org.openelis.gwt.common.data.deprecated.TableDataRow;
 import org.openelis.gwt.common.data.deprecated.TableField;
 import org.openelis.gwt.common.deprecated.Form;
+
+import com.google.gwt.xml.client.Node;
 
 public class FillOrderForm extends Form<Integer> {
     private static final long serialVersionUID = 1L;

@@ -25,23 +25,19 @@
 */
 package org.openelis.modules.analyte.client;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.RunAsyncCallback;
-import com.google.gwt.user.client.ui.TextBox;
-
 import org.openelis.gwt.common.data.deprecated.KeyListManager;
 import org.openelis.gwt.common.data.deprecated.QueryStringField;
 import org.openelis.gwt.common.data.deprecated.TableDataRow;
 import org.openelis.gwt.common.deprecated.Query;
-import org.openelis.gwt.screen.deprecated.AppScreenForm;
 import org.openelis.gwt.screen.deprecated.CommandChain;
 import org.openelis.gwt.screen.deprecated.ScreenInputWidget;
 import org.openelis.gwt.widget.deprecated.AppButton;
 import org.openelis.gwt.widget.deprecated.ButtonPanel;
-import org.openelis.gwt.widget.deprecated.CollapsePanel;
 import org.openelis.gwt.widget.deprecated.ResultsTable;
 import org.openelis.metamap.AnalyteMetaMap;
 import org.openelis.modules.main.client.OpenELISScreenForm;
+
+import com.google.gwt.user.client.ui.TextBox;
 
 
 public class AnalyteScreen extends OpenELISScreenForm<AnalyteForm,Query<TableDataRow<Integer>> > {

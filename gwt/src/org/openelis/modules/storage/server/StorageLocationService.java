@@ -25,15 +25,16 @@
 */
 package org.openelis.modules.storage.server;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+
 import org.openelis.domain.IdNameDO;
 import org.openelis.domain.StorageLocationDO;
 import org.openelis.domain.StorageUnitAutoDO;
-import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.QueryException;
-import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.deprecated.AbstractField;
@@ -58,11 +59,6 @@ import org.openelis.util.FormUtil;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-
 public class StorageLocationService implements AppScreenFormServiceInt<StorageLocationForm,Query<TableDataRow<Integer>>>,
    											   AutoCompleteServiceInt{
 
@@ -72,7 +68,7 @@ public class StorageLocationService implements AppScreenFormServiceInt<StorageLo
 
     private static final StorageLocationMetaMap StorageLocationMeta = new StorageLocationMetaMap();
     
-	public Query<TableDataRow<Integer>> commitQuery(Query<TableDataRow<Integer>> query) throws RPCException {
+	public Query<TableDataRow<Integer>> commitQuery(Query<TableDataRow<Integer>> query) throws Exception {
         List storageLocs = new ArrayList();
     //		if the rpc is null then we need to get the page
         /*
@@ -90,7 +86,7 @@ public class StorageLocationService implements AppScreenFormServiceInt<StorageLo
     	        	if(e instanceof LastPageException){
     	        		throw new LastPageException(openElisConstants.getString("lastPageException"));
     	        	}else{
-    	        		throw new RPCException(e.getMessage());	
+    	        		throw new Exception(e.getMessage());	
     	        	}
     	        }
 
@@ -102,7 +98,7 @@ public class StorageLocationService implements AppScreenFormServiceInt<StorageLo
                     storageLocs = remote.query(query.fields,query.page*leftTableRowsPerPage,leftTableRowsPerPage);
     
         		}catch(Exception e){
-        			throw new RPCException(e.getMessage());
+        			throw new Exception(e.getMessage());
         		}
         		
     //          need to save the rpc used to the encache
@@ -123,7 +119,7 @@ public class StorageLocationService implements AppScreenFormServiceInt<StorageLo
     		return query;
     	}
 
-    public StorageLocationForm commitAdd(StorageLocationForm rpc) throws RPCException {
+    public StorageLocationForm commitAdd(StorageLocationForm rpc) throws Exception {
 //		remote interface to call the storageLocation bean
 		StorageLocationRemote remote = (StorageLocationRemote)EJBFactory.lookup("openelis/StorageLocationBean/remote");
 		StorageLocationDO newStorageLocDO = new StorageLocationDO();
@@ -147,7 +143,7 @@ public class StorageLocationService implements AppScreenFormServiceInt<StorageLo
                 setRpcErrors(((ValidationErrorsList)e).getErrorList(), childTableField, rpc);
                 return rpc;
             }else
-                throw new RPCException(e.getMessage());
+                throw new Exception(e.getMessage());
         }
 		
 		newStorageLocDO.setId(storageLocId);
@@ -158,7 +154,7 @@ public class StorageLocationService implements AppScreenFormServiceInt<StorageLo
 		return rpc;
 	}
 
-	public StorageLocationForm commitUpdate(StorageLocationForm rpc) throws RPCException {
+	public StorageLocationForm commitUpdate(StorageLocationForm rpc) throws Exception {
 //		remote interface to call the storage loc bean
 		StorageLocationRemote remote = (StorageLocationRemote)EJBFactory.lookup("openelis/StorageLocationBean/remote");
 		StorageLocationDO newStorageLocDO = new StorageLocationDO();
@@ -181,7 +177,7 @@ public class StorageLocationService implements AppScreenFormServiceInt<StorageLo
                 setRpcErrors(((ValidationErrorsList)e).getErrorList(), childTableField, rpc);
                 return rpc;
             }else
-                throw new RPCException(e.getMessage());
+                throw new Exception(e.getMessage());
         }
 		
 //		set the fields in the RPC
@@ -190,7 +186,7 @@ public class StorageLocationService implements AppScreenFormServiceInt<StorageLo
 		return rpc;
 	}
 
-	public StorageLocationForm commitDelete(StorageLocationForm rpc) throws RPCException {
+	public StorageLocationForm commitDelete(StorageLocationForm rpc) throws Exception {
 //		remote interface to call the storage location bean
 		StorageLocationRemote remote = (StorageLocationRemote)EJBFactory.lookup("openelis/StorageLocationBean/remote");
 		
@@ -202,7 +198,7 @@ public class StorageLocationService implements AppScreenFormServiceInt<StorageLo
                 setRpcErrors(((ValidationErrorsList)e).getErrorList(), null, rpc);
                 return rpc;
             }else
-                throw new RPCException(e.getMessage());
+                throw new Exception(e.getMessage());
         }	
 		
 		setFieldsInRPC(rpc, new StorageLocationDO());
@@ -211,7 +207,7 @@ public class StorageLocationService implements AppScreenFormServiceInt<StorageLo
 		return rpc;
 	}
 
-	public StorageLocationForm abort(StorageLocationForm rpc) throws RPCException {
+	public StorageLocationForm abort(StorageLocationForm rpc) throws Exception {
     //		remote interface to call the storage location bean
     		StorageLocationRemote remote = (StorageLocationRemote)EJBFactory.lookup("openelis/StorageLocationBean/remote");
     		
@@ -230,7 +226,7 @@ public class StorageLocationService implements AppScreenFormServiceInt<StorageLo
     		return rpc;  
     	}
 
-    public StorageLocationForm fetch(StorageLocationForm rpc) throws RPCException {
+    public StorageLocationForm fetch(StorageLocationForm rpc) throws Exception {
 //		remote interface to call the storage loc bean
 		StorageLocationRemote remote = (StorageLocationRemote)EJBFactory.lookup("openelis/StorageLocationBean/remote");
 		
@@ -248,7 +244,7 @@ public class StorageLocationService implements AppScreenFormServiceInt<StorageLo
 		return rpc;
 	}
 
-	public StorageLocationForm fetchForUpdate(StorageLocationForm rpc) throws RPCException {
+	public StorageLocationForm fetchForUpdate(StorageLocationForm rpc) throws Exception {
 //		remote interface to call the storage loc bean
 		StorageLocationRemote remote = (StorageLocationRemote)EJBFactory.lookup("openelis/StorageLocationBean/remote");
 		StorageLocationDO storageLocDO = new StorageLocationDO();
@@ -256,7 +252,7 @@ public class StorageLocationService implements AppScreenFormServiceInt<StorageLo
 		try{
 			storageLocDO = remote.getStorageLocAndLock(rpc.entityKey, SessionManager.getSession().getId());
 		}catch(Exception e){
-			throw new RPCException(e.getMessage());
+			throw new Exception(e.getMessage());
 		}
 		
 //		set the fields in the RPC
@@ -271,7 +267,7 @@ public class StorageLocationService implements AppScreenFormServiceInt<StorageLo
 		return rpc;
 	}
     
-    public StorageLocationForm getScreen(StorageLocationForm rpc) throws RPCException {
+    public StorageLocationForm getScreen(StorageLocationForm rpc) throws Exception {
         rpc.xml = ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/storageLocation.xsl");
 
         return rpc;

@@ -26,7 +26,6 @@
 package org.openelis.manager;
 
 import org.openelis.gwt.services.ScreenService;
-import org.openelis.manager.OrganizationContactManager;
 
 public class OrganizationContactManagerProxy {
     protected static final String ORG_MANAGER_SERVICE_URL = "org.openelis.modules.organization.server.OrganizationService";

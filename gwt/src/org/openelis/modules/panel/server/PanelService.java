@@ -25,6 +25,10 @@
 */
 package org.openelis.modules.panel.server;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 import org.openelis.domain.IdNameDO;
 import org.openelis.domain.PanelDO;
 import org.openelis.domain.PanelItemDO;
@@ -32,7 +36,6 @@ import org.openelis.domain.TestMethodSectionNamesDO;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.RPCException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.deprecated.AbstractField;
@@ -53,10 +56,6 @@ import org.openelis.util.FormUtil;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
 public class PanelService implements AppScreenFormServiceInt<PanelForm, Query<TableDataRow<Integer>>> {
 
     private static final int leftTableRowsPerPage = 13;
@@ -64,7 +63,7 @@ public class PanelService implements AppScreenFormServiceInt<PanelForm, Query<Ta
                                                                                         .getAttribute("locale"));
     
     
-    public Query<TableDataRow<Integer>> commitQuery(Query<TableDataRow<Integer>> query) throws RPCException {
+    public Query<TableDataRow<Integer>> commitQuery(Query<TableDataRow<Integer>> query) throws Exception {
         List panelNames;
         PanelRemote remote = (PanelRemote)EJBFactory.lookup("openelis/PanelBean/remote");            
 
@@ -73,7 +72,7 @@ public class PanelService implements AppScreenFormServiceInt<PanelForm, Query<Ta
         }catch(LastPageException e) {
             throw new LastPageException(openElisConstants.getString("lastPageException"));
          } catch (Exception e) {            
-            throw new RPCException(e.getMessage());
+            throw new Exception(e.getMessage());
          }
             
 
@@ -92,7 +91,7 @@ public class PanelService implements AppScreenFormServiceInt<PanelForm, Query<Ta
         return query;
     }
 
-    public PanelForm commitAdd(PanelForm rpc) throws RPCException {
+    public PanelForm commitAdd(PanelForm rpc) throws Exception {
         PanelRemote remote;
         PanelDO panelDO;
         List<PanelItemDO>itemDOList;               
@@ -107,7 +106,7 @@ public class PanelService implements AppScreenFormServiceInt<PanelForm, Query<Ta
             setRpcErrors(e.getErrorList(), rpc);
             return rpc;
         } catch (Exception e) {
-            throw new RPCException(e.getMessage());            
+            throw new Exception(e.getMessage());            
         }
     
         panelDO.setId(panelId);
@@ -115,7 +114,7 @@ public class PanelService implements AppScreenFormServiceInt<PanelForm, Query<Ta
         return rpc;
     }
     
-    public PanelForm commitUpdate(PanelForm rpc) throws RPCException {
+    public PanelForm commitUpdate(PanelForm rpc) throws Exception {
         PanelRemote remote;
         PanelDO panelDO;
         List<PanelItemDO>itemDOList;  
@@ -130,26 +129,26 @@ public class PanelService implements AppScreenFormServiceInt<PanelForm, Query<Ta
             setRpcErrors(e.getErrorList(), rpc);
             return rpc;
         } catch (Exception e) {
-            throw new RPCException(e.getMessage());            
+            throw new Exception(e.getMessage());            
         }
 
         setFieldsInRPC(rpc, panelDO);
         return rpc;
     }
 
-    public PanelForm commitDelete(PanelForm rpc) throws RPCException {
+    public PanelForm commitDelete(PanelForm rpc) throws Exception {
         PanelRemote remote = (PanelRemote)EJBFactory.lookup("openelis/PanelBean/remote");
         try{
             remote.deletePanel(rpc.entityKey);
         }catch(Exception e){
             e.printStackTrace();
-            throw new RPCException(e.getMessage());
+            throw new Exception(e.getMessage());
         }
         setFieldsInRPC(rpc, new PanelDO());
         return rpc;
     }
 
-    public PanelForm abort(PanelForm rpc) throws RPCException {
+    public PanelForm abort(PanelForm rpc) throws Exception {
         PanelRemote remote = (PanelRemote)EJBFactory.lookup("openelis/PanelBean/remote");
         PanelDO panelDO = remote.getPanel(rpc.entityKey);
         setFieldsInRPC(rpc, panelDO);
@@ -158,7 +157,7 @@ public class PanelService implements AppScreenFormServiceInt<PanelForm, Query<Ta
         return rpc;
     }
 
-    public PanelForm fetch(PanelForm rpc) throws RPCException {
+    public PanelForm fetch(PanelForm rpc) throws Exception {
         PanelRemote remote = (PanelRemote)EJBFactory.lookup("openelis/PanelBean/remote");
         PanelDO panelDO = remote.getPanel(rpc.entityKey);
         setFieldsInRPC(rpc, panelDO);
@@ -167,7 +166,7 @@ public class PanelService implements AppScreenFormServiceInt<PanelForm, Query<Ta
         return rpc;
     }
 
-    public PanelForm fetchForUpdate(PanelForm rpc) throws RPCException {
+    public PanelForm fetchForUpdate(PanelForm rpc) throws Exception {
         PanelRemote remote = (PanelRemote)EJBFactory.lookup("openelis/PanelBean/remote");
         PanelDO panelDO = new PanelDO();
         try{ 
@@ -176,7 +175,7 @@ public class PanelService implements AppScreenFormServiceInt<PanelForm, Query<Ta
          
         }catch(Exception ex){
             ex.printStackTrace();
-            throw new RPCException(ex.getMessage());
+            throw new Exception(ex.getMessage());
         } 
         setFieldsInRPC(rpc, panelDO);
         List<PanelItemDO> itemDOList = remote.getPanelItems(rpc.entityKey);
@@ -184,7 +183,7 @@ public class PanelService implements AppScreenFormServiceInt<PanelForm, Query<Ta
         return rpc;
     }
     
-    public PanelForm getScreen(PanelForm rpc) throws RPCException{        
+    public PanelForm getScreen(PanelForm rpc) throws Exception{        
         rpc.xml = ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/panel.xsl");                               
         rpc.allTests = getTestMethodNames();
         return rpc;

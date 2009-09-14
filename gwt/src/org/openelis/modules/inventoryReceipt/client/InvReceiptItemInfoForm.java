@@ -25,8 +25,6 @@
 */
 package org.openelis.modules.inventoryReceipt.client;
 
-import com.google.gwt.xml.client.Node;
-
 import org.openelis.gwt.common.data.deprecated.AbstractField;
 import org.openelis.gwt.common.data.deprecated.CheckField;
 import org.openelis.gwt.common.data.deprecated.DateField;
@@ -36,6 +34,8 @@ import org.openelis.gwt.common.data.deprecated.TableDataModel;
 import org.openelis.gwt.common.data.deprecated.TableDataRow;
 import org.openelis.gwt.common.deprecated.Form;
 import org.openelis.metamap.InventoryReceiptMetaMap;
+
+import com.google.gwt.xml.client.Node;
 
 
 public class InvReceiptItemInfoForm extends Form<Integer> {
