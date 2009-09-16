@@ -161,9 +161,27 @@ public class SampleTypeTab extends Screen {
 
     }
     
+    public void setManager(TestManager manager) {
+        this.manager = manager;
+        loaded = false;
+        if(!dropdownsInited) {
+            setSampleTypes();
+            setUnitsOfMeasure();
+            dropdownsInited = true;
+        }
+    }
+    
+    public void draw(){
+        if(!loaded)
+            DataChangeEvent.fire(this);
+        
+        loaded = true;
+    }
+    
     private ArrayList<TableDataRow> getTableModel() {
         ArrayList<TableDataRow> model;
         TestTypeOfSampleManager ttsm;
+        TestTypeOfSampleDO sampleType;
         TableDataRow row;
         
         model = new ArrayList<TableDataRow>();
@@ -174,7 +192,7 @@ public class SampleTypeTab extends Screen {
         try {
             ttsm = manager.getSampleTypes();
             for(int i = 0; i < ttsm.count(); i++) {
-                TestTypeOfSampleDO sampleType = ttsm.getTypeAt(i);
+                sampleType = ttsm.getTypeAt(i);
                 row = new TableDataRow(2);
                 row.key = sampleType.getId();               
                 
@@ -211,23 +229,6 @@ public class SampleTypeTab extends Screen {
         } 
         ((Dropdown)sampleTypeTable.columns.get(1).getColumnWidget()).setModel(model);
         
-    }
-    
-    public void setManager(TestManager manager) {
-        this.manager = manager;
-        loaded = false;
-        if(!dropdownsInited) {
-            setSampleTypes();
-            setUnitsOfMeasure();
-            dropdownsInited = true;
-        }
-    }
-    
-    public void draw(){
-        if(!loaded)
-            DataChangeEvent.fire(this);
-        
-        loaded = true;
     }       
     
 }

@@ -32,11 +32,13 @@ import java.util.Set;
 
 import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.SectionCache;
+import org.openelis.common.AutocompleteRPC;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameDO;
 import org.openelis.domain.SectionDO;
 import org.openelis.domain.TestDO;
 import org.openelis.domain.TestIdNameMethodNameDO;
+import org.openelis.domain.TestMethodAutoDO;
 import org.openelis.domain.TestSectionDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.EntityLockedException;
@@ -58,6 +60,7 @@ import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
+import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.ButtonGroup;
@@ -66,7 +69,6 @@ import org.openelis.gwt.widget.CheckBox;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.HasField;
 import org.openelis.gwt.widget.TextBox;
-import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableColumn;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableWidget;
@@ -102,6 +104,7 @@ public class TestScreen extends Screen {
     private TestManager manager;
     private SampleTypeTab sampleTypeTab;
     private AnalyteAndResultTab analyteAndResultTab;
+    private PrepTestAndReflexTestTab prepAndReflexTab; 
   
     private SecurityModule security;
     
@@ -166,6 +169,22 @@ public class TestScreen extends Screen {
 
             public void onStateChange(StateChangeEvent<State> event) {
                 StateChangeEvent.fire(analyteAndResultTab, event.getState());
+            }
+        });
+        
+        prepAndReflexTab = new PrepTestAndReflexTestTab(def,service);
+
+        // Set up tabs to recieve State Change events from the main Screen.
+        addScreenHandler(prepAndReflexTab, new ScreenEventHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                prepAndReflexTab.setManager(manager);
+
+                if (tab == Tabs.PREPS_REFLEXES)
+                    drawTabs(); 
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                StateChangeEvent.fire(prepAndReflexTab, event.getState());
             }
         });
         
@@ -234,15 +253,18 @@ public class TestScreen extends Screen {
         // Screens now must implement AutoCompleteCallInt and set themselves as the calling interface       
         method.addGetMatchesHandler(new GetMatchesHandler() {                        
             public void onGetMatches(GetMatchesEvent event) {
-                TestAutoRPC trpc;
+                AutocompleteRPC trpc;
                 ArrayList<TableDataRow> model;
                 TableDataRow row;
-                trpc = new TestAutoRPC(); 
+                IdNameDO autoDO;
+                
+                trpc = new AutocompleteRPC(); 
                 trpc.match = event.getMatch();                
                 try {
                     trpc = service.call("getMethodMatches",trpc);
-                    model = new ArrayList<TableDataRow>();
-                    for(IdNameDO autoDO : trpc.idNameList) {
+                    model = new ArrayList<TableDataRow>();                    
+                    for(int i = 0; i < trpc.model.size(); i++) {
+                        autoDO = (IdNameDO)trpc.model.get(i);
                         row = new TableDataRow(1);
                         row.key = autoDO.getId();
                         row.cells.get(0).value = autoDO.getName();
@@ -468,15 +490,18 @@ public class TestScreen extends Screen {
         // Screens now must implement AutoCompleteCallInt and set themselves as the calling interface
         label.addGetMatchesHandler(new GetMatchesHandler() {                        
             public void onGetMatches(GetMatchesEvent event) {
-                TestAutoRPC trpc;
+                AutocompleteRPC trpc;
                 ArrayList<TableDataRow> model;
                 TableDataRow row;
-                trpc = new TestAutoRPC(); 
+                IdNameDO autoDO;
+                
+                trpc = new AutocompleteRPC(); 
                 trpc.match = event.getMatch();                
                 try {
                     trpc = service.call("getLabelMatches",trpc);
-                    model = new ArrayList<TableDataRow>();
-                    for(IdNameDO autoDO : trpc.idNameList) {
+                    model = new ArrayList<TableDataRow>();                    
+                    for(int i = 0; i < trpc.model.size(); i++) {
+                        autoDO = (IdNameDO)trpc.model.get(i);
                         row = new TableDataRow(1);
                         row.key = autoDO.getId();
                         row.cells.get(0).value = autoDO.getName();
@@ -748,15 +773,18 @@ public class TestScreen extends Screen {
         // Screens now must implement AutoCompleteCallInt and set themselves as the calling interface
         testTrailer.addGetMatchesHandler(new GetMatchesHandler() {                        
             public void onGetMatches(GetMatchesEvent event) {
-                TestAutoRPC trpc;
+                AutocompleteRPC trpc;
                 ArrayList<TableDataRow> model;
                 TableDataRow row;
-                trpc = new TestAutoRPC(); 
+                IdNameDO autoDO;
+                
+                trpc = new AutocompleteRPC(); 
                 trpc.match = event.getMatch();                
                 try {
                     trpc = service.call("getTrailerMatches",trpc);
-                    model = new ArrayList<TableDataRow>();
-                    for(IdNameDO autoDO : trpc.idNameList) {
+                    model = new ArrayList<TableDataRow>();                    
+                    for(int i = 0; i < trpc.model.size(); i++) {
+                        autoDO = (IdNameDO)trpc.model.get(i);
                         row = new TableDataRow(1);
                         row.key = autoDO.getId();
                         row.cells.get(0).value = autoDO.getName();
@@ -813,15 +841,18 @@ public class TestScreen extends Screen {
         // Screens now must implement AutoCompleteCallInt and set themselves as the calling interface
         scriptlet.addGetMatchesHandler(new GetMatchesHandler() {                        
             public void onGetMatches(GetMatchesEvent event) {
-                TestAutoRPC trpc;
+                AutocompleteRPC trpc;
                 ArrayList<TableDataRow> model;
                 TableDataRow row;
-                trpc = new TestAutoRPC(); 
+                IdNameDO autoDO;
+                
+                trpc = new AutocompleteRPC(); 
                 trpc.match = event.getMatch();                
                 try {
                     trpc = service.call("getScriptletMatches",trpc);
                     model = new ArrayList<TableDataRow>();
-                    for(IdNameDO autoDO : trpc.idNameList) {
+                    for(int i = 0; i < trpc.model.size(); i++) {
+                        autoDO = (IdNameDO)trpc.model.get(i);
                         row = new TableDataRow(1);
                         row.key = autoDO.getId();
                         row.cells.get(0).value = autoDO.getName();
@@ -990,6 +1021,7 @@ public class TestScreen extends Screen {
         super.setState(state);
         sampleTypeTab.setState(state);
         analyteAndResultTab.setState(state);
+        prepAndReflexTab.setState(state);
     }
     
     public HandlerRegistration addBeforeGetMatchesHandler(BeforeGetMatchesHandler handler) {
@@ -1014,7 +1046,7 @@ public class TestScreen extends Screen {
         } else if (tab == Tabs.ANALYTES_RESULTS) {
             analyteAndResultTab.draw();
         } else if (tab == Tabs.PREPS_REFLEXES) {
-            
+            prepAndReflexTab.draw();
         } else if (tab == Tabs.WORKSHEET) {
             
         }
@@ -1134,7 +1166,7 @@ public class TestScreen extends Screen {
             } else if (tab == Tabs.ANALYTES_RESULTS) {
                 manager = TestManager.findByIdWithAnalytesAndResults(id);
             } else if (tab == Tabs.PREPS_REFLEXES) {
-                
+                manager = TestManager.findByIdWithPrepTestAndReflexTests(id);
             } else if (tab == Tabs.WORKSHEET) {
                 
             }
@@ -1195,6 +1227,7 @@ public class TestScreen extends Screen {
 
         } catch (Exception e) {
             Window.alert("commitAdd(): " + e.getMessage());
+            e.printStackTrace();
             window.clearStatus();
         }
     }
@@ -1250,7 +1283,7 @@ public class TestScreen extends Screen {
                     TableFieldErrorException tfe = (TableFieldErrorException)ex;
                     ((TableWidget)def.getWidget(tfe.getTableKey())).setCellError(tfe.getRowIndex(),
                                                                                  tfe.getFieldName(),
-                                                                                 consts.get(tfe.getMessage()));
+                                                                                 tfe.getMessage());
                 }
             } else if(ex instanceof FieldErrorException){
                 FieldErrorException fe = (FieldErrorException)ex;
