@@ -25,6 +25,9 @@
 */
 package org.openelis.domain;
 
+import java.util.Date;
+
+import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.RPC;
 import org.openelis.utilcommon.DataBaseUtil;
 
@@ -38,6 +41,8 @@ public class TestMethodAutoDO implements RPC {
     protected String methodName;
     protected String testDescription;
     protected String methodDescription;
+    protected Datetime activeBegin;
+    protected Datetime activeEnd;
     
     public TestMethodAutoDO(){
         
@@ -52,6 +57,20 @@ public class TestMethodAutoDO implements RPC {
         setMethodName(methodName);
         setTestDescription(testDescription);
         setMethodDescription(methodDescription);
+    }
+
+    public TestMethodAutoDO(Integer testId, String testName, 
+                            String testDescription,Integer methodId,
+                            String methodName,String methodDescription,
+                            Date activeBegin, Date activeEnd){
+        setTestId(testId);
+        setTestName(testName);
+        setMethodId(methodId);
+        setMethodName(methodName);
+        setTestDescription(testDescription);
+        setMethodDescription(methodDescription);
+        setActiveBegin(Datetime.getInstance(Datetime.YEAR, Datetime.DAY, activeBegin));
+        setActiveEnd(Datetime.getInstance(Datetime.YEAR, Datetime.DAY, activeEnd));
     }
 
     public Integer getTestId() {
@@ -102,4 +121,19 @@ public class TestMethodAutoDO implements RPC {
         this.methodDescription = methodDescription;
     }
 
+    public Datetime getActiveBegin() {
+        return activeBegin;
+    }
+
+    public void setActiveBegin(Datetime activeBegin) {
+        this.activeBegin = DataBaseUtil.toYD(activeBegin);
+    }
+
+    public Datetime getActiveEnd() {
+        return activeEnd;
+    }
+
+    public void setActiveEnd(Datetime activeEnd) {
+        this.activeEnd = DataBaseUtil.toYD(activeEnd);
+    }
 }
