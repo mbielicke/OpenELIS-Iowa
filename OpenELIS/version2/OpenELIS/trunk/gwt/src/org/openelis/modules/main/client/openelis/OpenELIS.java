@@ -72,6 +72,7 @@ import org.openelis.modules.storageunit.client.StorageUnitScreen;
 import org.openelis.modules.systemvariable.client.SystemVariableScreen;
 import org.openelis.modules.test.client.TestScreen;
 import org.openelis.modules.testTrailer.client.TestTrailerScreen;
+import org.openelis.modules.worksheetCreation.client.WorksheetCreationLookupScreen;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
@@ -322,7 +323,22 @@ public class OpenELIS extends Screen implements ClickHandler {
 		
 		((MenuItem)def.getWidget("worksheetCreation")).addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
-				//browser.addScreen(n )
+                
+                GWT.runAsync(new RunAsyncCallback() {
+                    public void onSuccess() {
+                        try {
+                            browser.addScreen(new WorksheetCreationLookupScreen());
+                        }catch(Exception e){
+                            e.printStackTrace();
+                            Window.alert(e.getMessage());
+                        }
+                    }
+                    public void onFailure(Throwable caught) {
+                        caught.printStackTrace();
+                        Window.alert(caught.getMessage());
+                    }
+                });
+            
 			}
 		});
 		((MenuItem)def.getWidget("worksheetCompletion")).addClickHandler(new ClickHandler() {

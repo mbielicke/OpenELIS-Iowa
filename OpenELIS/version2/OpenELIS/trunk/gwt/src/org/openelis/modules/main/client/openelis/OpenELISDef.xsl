@@ -113,7 +113,7 @@ UIRF Software License are applicable instead of those above.
 					<label style="topMenuBarItem" text="{resource:getString($constants,'analysis')}" hover="Hover"/>
 		      </menuDisplay>
 				<menuPanel layout="vertical" style="topMenuContainer" position="below">
-				    <menuItem enabled="false" key="worksheetCreation" icon="worksheetCreationIcon" label="{resource:getString($constants,'worksheetCreation')}" description="{resource:getString($constants,'worksheetCreationDescription')}"/>
+				    <menuItem enabled="true" key="worksheetCreation" icon="worksheetCreationIcon" label="{resource:getString($constants,'worksheetCreation')}" description="{resource:getString($constants,'worksheetCreationDescription')}"/>
 				    <menuItem enabled="false" key="worksheetCompletion" icon="worksheetCompletionIcon" label="{resource:getString($constants,'worksheetCompletion')}" description="{resource:getString($constants,'worksheetCompletionDescription')}"/>
 				    <menuItem enabled="false" key="addOrCancel" icon="addOrCancelIcon" label="{resource:getString($constants,'addOrCancel')}" description="{resource:getString($constants,'addOrCancelDescription')}"/>
 				    <menuItem enabled="flase" key="reviewAndRelease" icon="reviewAndReleaseIcon" label="{resource:getString($constants,'reviewAndRelease')}" description="{resource:getString($constants,'reviewAndReleaseDescription')}"/>
