@@ -35,7 +35,9 @@ public class TestReflexDO implements RPC {
     protected Integer         id;
     protected Integer         testId;
     protected Integer         testAnalyteId;
+    protected String          analyteName;
     protected Integer         testResultId;
+    protected String          resultValue;
     protected Integer         flagsId;
     protected Integer         addTestId;
     protected String          addTestName;
@@ -49,7 +51,9 @@ public class TestReflexDO implements RPC {
     public TestReflexDO(Integer id,
                         Integer testId,
                         Integer testAnalyteId,
+                        String analyteName,
                         Integer testResultId,
+                        String  resultValue,
                         Integer flagsId,
                         Integer addTestId,
                         String addTestName,
@@ -57,7 +61,9 @@ public class TestReflexDO implements RPC {
         setId(id);
         setTestId(testId);
         setTestAnalyteId(testAnalyteId);
+        setAnalyteName(analyteName);
         setTestResultId(testResultId);
+        setResultValue(resultValue);
         setFlagsId(flagsId);
         setAddTestId(addTestId);
         setAddTestName(addTestName);
@@ -134,6 +140,22 @@ public class TestReflexDO implements RPC {
 
     public void setMethodName(String methodName) {
         this.methodName = DataBaseUtil.trim(methodName);
+    }
+
+    public String getAnalyteName() {
+        return analyteName;
+    }
+
+    public void setAnalyteName(String analyteName) {
+        this.analyteName = DataBaseUtil.trim(analyteName);
+    }
+
+    public String getResultValue() {
+        return resultValue;
+    }
+
+    public void setResultValue(String resultValue) {
+        this.resultValue = DataBaseUtil.trim(resultValue);
     }
 
 }

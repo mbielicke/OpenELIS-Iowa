@@ -26,6 +26,7 @@
 package org.openelis.manager;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.naming.InitialContext;
 
@@ -41,7 +42,14 @@ public class TestManagerProxy {
         TestTypeOfSampleManager ttsm;
         TestAnalyteManager tam;
         TestResultManager trm;
+        TestPrepManager tpm;
+        TestReflexManager tfm;
+        
         Integer testId;
+        HashMap<Integer,Integer> analyteMap, resultMap;        
+        
+        analyteMap = new HashMap<Integer, Integer>();
+        resultMap = new HashMap<Integer, Integer>();
 
         tl = getTestLocal();
         tl.add(man.getTest());
@@ -58,11 +66,19 @@ public class TestManagerProxy {
 
         tam = man.getTestAnalytes();
         tam.setTestId(testId);
-        tam.add();
-
+        tam.add(analyteMap);
+        
         trm = man.getTestResults();
         trm.setTestId(testId);
-        trm.add();
+        trm.add(resultMap);
+        
+        tpm = man.getPrepTests();
+        tpm.setTestId(testId);
+        tpm.add();
+        
+        tfm = man.getReflexTests();
+        tfm.setTestId(testId);
+        tfm.add(analyteMap, resultMap);
 
         return man;
     }
@@ -73,7 +89,14 @@ public class TestManagerProxy {
         TestTypeOfSampleManager ttsm;
         TestAnalyteManager tam;
         TestResultManager trm;
+        TestPrepManager tpm;
+        TestReflexManager tfm;
+        
         Integer testId;
+        HashMap<Integer,Integer> analyteMap, resultMap;
+        
+        analyteMap = new HashMap<Integer, Integer>();
+        resultMap = new HashMap<Integer, Integer>();
 
         tl = getTestLocal();
         tl.update(man.getTest());
@@ -90,11 +113,19 @@ public class TestManagerProxy {
 
         tam = man.getTestAnalytes();
         tam.setTestId(testId);
-        tam.update();
+        tam.update(analyteMap);
 
         trm = man.getTestResults();
         trm.setTestId(testId);
-        trm.update();
+        trm.update(resultMap);
+        
+        tpm = man.getPrepTests();
+        tpm.setTestId(testId);
+        tpm.update();
+        
+        tfm = man.getReflexTests();
+        tfm.setTestId(testId);
+        tfm.update(analyteMap, resultMap);
 
         return man;
     }
@@ -137,6 +168,15 @@ public class TestManagerProxy {
 
         return man;
     }
+    
+    public TestManager fetchWithPrepTestsAndReflexTests(Integer testId) throws Exception {
+        TestManager man;
+
+        man = fetch(testId);
+        man.getPrepTests();
+        
+        return man;
+    }
 
     public TestManager fetchForUpdate(Integer testId) throws Exception {
         throw new UnsupportedOperationException();
@@ -155,7 +195,8 @@ public class TestManagerProxy {
                         man.getTestSections().getSections(),
                         man.getSampleTypes().getTypes(),
                         man.getTestAnalytes().getAnalytes(),
-                        man.getTestResults().getResults());
+                        man.getTestResults().getResults(),
+                        man.getPrepTests().getPreps());
     }
 
     private TestLocal getTestLocal() {

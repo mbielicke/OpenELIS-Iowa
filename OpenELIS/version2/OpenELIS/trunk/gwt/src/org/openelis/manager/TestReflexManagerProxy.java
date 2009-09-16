@@ -23,45 +23,34 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.metamap;
+package org.openelis.manager;
 
-import org.openelis.gwt.common.MetaMap;
-import org.openelis.meta.TestMeta;
-import org.openelis.meta.TestPrepMeta;
+import java.util.HashMap;
 
-public class TestPrepMetaMap extends TestPrepMeta implements MetaMap {
+import org.openelis.gwt.services.ScreenService;
 
-    private TestMeta PREP_TEST;
-    
-    public String buildFrom(String name) {               
-        return "TestPrep ";
-    }
-    
-    private static final String tableName = "testPrepTable"; 
-    
-    public TestPrepMetaMap(){
-        super();
-        PREP_TEST = new TestMeta(path+"prepTest.");
-    }
-    
-    public TestPrepMetaMap(String path){
-        super(path);       
-        PREP_TEST = new TestMeta(path+"prepTest.");
-    }
-    
-    
-    public boolean hasColumn(String name){        
-        if(name.startsWith(path+"prepTest."))
-            return PREP_TEST.hasColumn(name);
-        return super.hasColumn(name);
-    }
+public class TestReflexManagerProxy {
 
-    public TestMeta getPrepTest() {
-       return PREP_TEST;
+    protected static final String TEST_MANAGER_SERVICE_URL = "org.openelis.modules.test.server.TestService";
+    protected ScreenService service;
+    
+    public TestReflexManagerProxy() {
+        service = new ScreenService("OpenELISServlet?service="+TEST_MANAGER_SERVICE_URL);
     }
     
-    public static String getTableName() {
-        return tableName;
+    public TestReflexManager add(TestReflexManager man,
+                                 HashMap<Integer,Integer> analyteMap,
+                                 HashMap<Integer,Integer> resultMap) throws Exception {
+        throw new UnsupportedOperationException();
     }
-
+    
+    public TestReflexManager update(TestReflexManager man,
+                                    HashMap<Integer,Integer> analyteMap,
+                                    HashMap<Integer,Integer> resultMap) throws Exception {
+        throw new UnsupportedOperationException();
+    }
+    
+    public TestReflexManager fetchByTestId(Integer testId) throws Exception {
+        return service.call("fetchReflexiveTestsByTestId", testId);
+    } 
 }

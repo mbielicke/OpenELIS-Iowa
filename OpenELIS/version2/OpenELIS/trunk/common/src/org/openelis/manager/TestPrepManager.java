@@ -35,13 +35,13 @@ public class TestPrepManager implements RPC {
     private static final long serialVersionUID = 1L;
     
     protected Integer testId;
-    protected ArrayList<TestPrepDO> prepTests;
-    protected ArrayList<TestPrepDO> deletedPrepTests;
+    protected ArrayList<TestPrepDO> preps;
+    protected ArrayList<TestPrepDO> deletedPreps;
     
     protected transient static TestPrepManagerProxy proxy;
     
     protected TestPrepManager() {
-        prepTests = null;
+        preps = null;
     }
     
     /**
@@ -51,7 +51,7 @@ public class TestPrepManager implements RPC {
         TestPrepManager tpm;
         
         tpm = new TestPrepManager();
-        tpm.prepTests = new ArrayList<TestPrepDO>();
+        tpm.preps = new ArrayList<TestPrepDO>();
         
         return tpm;
     }
@@ -69,32 +69,46 @@ public class TestPrepManager implements RPC {
     }
     
     public int count(){
-        if(prepTests == null)
+        if(preps == null)
             return 0;
         
-        return prepTests.size();
+        return preps.size();
     }
     
-    public TestPrepDO getPrepTestAt(int i) {
-        return prepTests.get(i);
+    public TestPrepDO getPrepAt(int i) {
+        return preps.get(i);
     } 
     
-    public void setPrepTestAt(TestPrepDO prepTest, int i) {
-        prepTests.set(i,prepTest);
+    public void setPrepAt(TestPrepDO prepTest, int i) {
+        preps.set(i,prepTest);
     }
     
-    public void addPrepTest(TestPrepDO prepTest) {
-        if(prepTests == null) 
-            prepTests = new ArrayList<TestPrepDO>();
+    public void addPrep(TestPrepDO prepTest) {
+        if(preps == null) 
+            preps = new ArrayList<TestPrepDO>();
     
-        prepTests.add(prepTest);
+        preps.add(prepTest);
     }
     
-    public void addPrepTestAt(TestPrepDO prepTest, int i) {
-        if(prepTests == null) 
-            prepTests = new ArrayList<TestPrepDO>();
+    public void addPrepAt(TestPrepDO prepTest, int i) {
+        if(preps == null) 
+            preps = new ArrayList<TestPrepDO>();
     
-        prepTests.add(i,prepTest);
+        preps.add(i,prepTest);
+    }
+    
+    
+    public void removePrepAt(int i) {
+        TestPrepDO prepTest;
+        if (preps == null || i >= preps.size())
+            return;
+
+        prepTest = preps.remove(i);
+        if (prepTest.getId() != null) {
+            if (deletedPreps == null)
+                deletedPreps = new ArrayList<TestPrepDO>();
+            deletedPreps.add(prepTest);
+        }        
     }
     
     public TestPrepManager add() throws Exception {
@@ -105,23 +119,23 @@ public class TestPrepManager implements RPC {
         return proxy().update(this);                
     }
     
-    ArrayList<TestPrepDO> getPrepTests() {
-        return prepTests;
+    ArrayList<TestPrepDO> getPreps() {
+        return preps;
     }
+    
+    void setPreps(ArrayList<TestPrepDO> prepTests) {
+        this.preps = prepTests;
+    }   
     
     int deleteCount(){
-        if(deletedPrepTests == null)
+        if(deletedPreps == null)
             return 0;
         
-        return deletedPrepTests.size();
+        return deletedPreps.size();
     }
     
-    void setPrepTests(ArrayList<TestPrepDO> prepTests) {
-        this.prepTests = prepTests;
-    }       
-    
     TestPrepDO getDeletedAt(int i) {
-        return deletedPrepTests.get(i);
+        return deletedPreps.get(i);
     }
     
     private static TestPrepManagerProxy proxy() {

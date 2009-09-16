@@ -49,17 +49,19 @@ import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 @NamedQueries({@NamedQuery(name = "TestReflex.TestReflexDOList", 
-                 query = " select new org.openelis.domain.TestReflexDO(tr.id, tr.testId,tr.testAnalyteId," +
-                         " tr.testResultId, tr.flagsId, t.id, t.name, m.name) " +
-                         " from TestReflex tr left join tr.addTest t left join t.method m where tr.testId = :testId"),
+                 query = " select new org.openelis.domain.TestReflexDO(tr.id, tr.testId,tra.id,a.name," +
+                         " tr.testResultId,trs.value, tr.flagsId, t.id, t.name, m.name) " +
+                         " from TestReflex tr left join tr.testResult trs left join tr.testAnalyte tra " +
+                         "  left join tra.analyte a left join tr.addTest t left join t.method m where tr.testId = :testId"),
                @NamedQuery(name = "TestReflex.TestReflexesByTestAndTestResult", 
                  query = " from TestReflex tr where tr.testId = :testId and tr.testResultId = :testResultId  "), 
                @NamedQuery(name = "TestReflex.TestReflexesByTestAndTestAnalyte", 
                  query = " from TestReflex tr where tr.testId = :testId and tr.testAnalyteId = :testAnalyteId  "),
                @NamedQuery(name = "TestReflex.TestReflexesByAddTestId", 
-                 query = " select new org.openelis.domain.TestReflexDO(tr.id, tr.testId,tr.testAnalyteId," +
-                         " tr.testResultId, tr.flagsId, t.id, t.name, m.name) " +
-                         " from TestReflex tr left join tr.test t left join t.method m" +
+                 query = " select new org.openelis.domain.TestReflexDO(tr.id, tr.testId,tra.id,a.name," +
+                         " tr.testResultId,trs.value, tr.flagsId, t.id, t.name, m.name) " +
+                         " from TestReflex tr left join tr.testAnalyte tra left join tra.analyte a left join tr.testResult trs " +
+                         " left join tr.test t left join t.method m" +
                          " where tr.addTestId = :testId and t.isActive = 'Y' ")  })
 
 @Entity
@@ -90,6 +92,10 @@ public class TestReflex implements Auditable, Cloneable {
   @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "flags_id",insertable = false, updatable = false)
   private Dictionary dictionary;
+  
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "test_analyte_id",insertable = false, updatable = false)
+  private TestAnalyte testAnalyte;
   
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "test_result_id",insertable = false, updatable = false)
@@ -219,6 +225,12 @@ public Test getTest() {
 }
 public void setTest(Test test) {
     this.test = test;
+}
+public TestAnalyte getTestAnalyte() {
+    return testAnalyte;
+}
+public void setTestAnalyte(TestAnalyte testAnalyte) {
+    this.testAnalyte = testAnalyte;
 }
   
 }   

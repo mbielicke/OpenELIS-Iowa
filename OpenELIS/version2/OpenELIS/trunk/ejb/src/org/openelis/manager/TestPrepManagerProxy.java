@@ -25,24 +25,63 @@
 */
 package org.openelis.manager;
 
+import java.util.ArrayList;
+
 import javax.naming.InitialContext;
 
+import org.openelis.domain.TestPrepDO;
 import org.openelis.local.TestLocal;
 
 public class TestPrepManagerProxy {
 
     public TestPrepManager add(TestPrepManager man) throws Exception {        
+        TestLocal tl;
+        TestPrepDO prepTest;
+        
+        tl = getTestLocal();         
+        
+        for(int i=0; i<man.count(); i++){
+            prepTest = man.getPrepAt(i);
+            prepTest.setTestId(man.getTestId());
+            
+            tl.addPrepTest(prepTest);
+        }
+        
         return man;
     }
     
     public TestPrepManager update(TestPrepManager man) throws Exception {        
+        TestLocal tl;
+        TestPrepDO prepTest;
+        
+        tl = getTestLocal(); 
+        
+        for(int i = 0; i < man.deleteCount(); i++) {
+            tl.deletePrepTest(man.getDeletedAt(i));
+        }
+        
+        for(int i=0; i<man.count(); i++){
+            prepTest = man.getPrepAt(i);
+            
+            if(prepTest.getId() == null){
+                prepTest.setTestId(man.getTestId());
+                tl.addPrepTest(prepTest);
+            }else
+                tl.updatePrepTest(prepTest);
+        }
+        
         return man;
     }
     
     public TestPrepManager fetchByTestId(Integer testId) throws Exception {
         TestPrepManager tpm;
+        TestLocal tl;
+        ArrayList<TestPrepDO> prepTests;
         
+        tl = getTestLocal();
+        prepTests = tl.fetchPrepTestsById(testId);
         tpm = TestPrepManager.getInstance();
+        tpm.setPreps(prepTests);
         return tpm;
         
     }

@@ -38,6 +38,8 @@ public class TestManager implements RPC {
     protected TestTypeOfSampleManager sampleTypes;
     protected TestAnalyteManager testAnalytes;
     protected TestResultManager testResults;
+    protected TestPrepManager prepTests;
+    protected TestReflexManager reflexTests;
         
     protected transient static TestManagerProxy proxy;
 
@@ -50,6 +52,8 @@ public class TestManager implements RPC {
         sampleTypes = null;
         testAnalytes = null;
         testResults = null;
+        prepTests = null;
+        reflexTests = null;
     }
     
     /**
@@ -74,6 +78,10 @@ public class TestManager implements RPC {
     
     public static TestManager findByIdWithAnalytesAndResults(Integer id) throws Exception{
         return proxy().fetchWithAnalytesAndResults(id);
+    }
+    
+    public static TestManager findByIdWithPrepTestAndReflexTests(Integer id) throws Exception{
+        return proxy().fetchWithPrepTestsAndReflexTests(id);
     }
     
     
@@ -102,7 +110,7 @@ public class TestManager implements RPC {
             sampleTypes = TestTypeOfSampleManager.getInstance();        
         
         return sampleTypes;
-    }
+    }    
     
     /*public TestAnalyteManager getAnalytesAndResults() throws Exception {
         if(testAnalytes == null || testResults == null){
@@ -166,6 +174,46 @@ public class TestManager implements RPC {
             testResults = TestResultManager.getInstance();        
         
         return testResults;
+    }
+    
+    public TestPrepManager getPrepTests() throws Exception {
+        if(prepTests == null){
+            if(test.getId() != null) {
+                try {
+                    prepTests = TestPrepManager.findByTestId(test.getId());
+                } catch(NotFoundException e){
+                    //ignore
+                }catch(Exception e){
+                    e.printStackTrace();
+                    throw e;
+                }
+            }
+        }
+        
+        if(prepTests == null)
+            prepTests = TestPrepManager.getInstance();        
+        
+        return prepTests;
+    }
+    
+    public TestReflexManager  getReflexTests() throws Exception {
+        if(reflexTests == null){
+            if(test.getId() != null) {
+                try {
+                    reflexTests = TestReflexManager.findByTestId(test.getId());
+                } catch(NotFoundException e){
+                    //ignore
+                }catch(Exception e){
+                    e.printStackTrace();
+                    throw e;
+                }
+            }
+        }
+        
+        if(reflexTests == null)
+            reflexTests = TestReflexManager.getInstance();        
+        
+        return reflexTests;
     }
     
     public TestDO getTest() {

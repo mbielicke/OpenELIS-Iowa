@@ -39,6 +39,8 @@ import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.local.LockLocal;
 import org.openelis.manager.TestAnalyteManager;
 import org.openelis.manager.TestManager;
+import org.openelis.manager.TestPrepManager;
+import org.openelis.manager.TestReflexManager;
 import org.openelis.manager.TestResultManager;
 import org.openelis.manager.TestTypeOfSampleManager;
 import org.openelis.remote.TestManagerRemote;
@@ -76,13 +78,17 @@ public class TestManagerBean implements TestManagerRemote {
     }
     
     public TestManager update(TestManager man) throws Exception {
-        man.validate();
+        try{
+            man.validate();
         
-        UserTransaction ut = ctx.getUserTransaction();
-        ut.begin();
-        man.update();
-        ut.commit();
-        
+            UserTransaction ut = ctx.getUserTransaction();
+            ut.begin();
+            man.update();
+            ut.commit();
+        }catch(Exception ex) {
+            ex.printStackTrace();
+            throw ex;
+        }
         return man;
     }
 
@@ -100,6 +106,12 @@ public class TestManagerBean implements TestManagerRemote {
     
     public TestManager fetchWithAnalytesAndResults(Integer testId) throws Exception {
         TestManager man = TestManager.findByIdWithAnalytesAndResults(testId);
+        
+        return man;
+    }
+    
+    public TestManager fetchWithPrepTestsAndReflexTests(Integer testId) throws Exception {
+        TestManager man = TestManager.findByIdWithPrepTestAndReflexTests(testId);
         
         return man;
     }
@@ -130,6 +142,18 @@ public class TestManagerBean implements TestManagerRemote {
 
     public TestResultManager fetchTestResultsByTestId(Integer testId) throws Exception {
         TestResultManager trm = TestResultManager.findByTestId(testId);
+        
+        return trm;
+    }
+
+    public TestPrepManager fetchPrepTestsByTestId(Integer testId) throws Exception {
+        TestPrepManager tpm = TestPrepManager.findByTestId(testId);
+        
+        return tpm;
+    }
+
+    public TestReflexManager fetchReflexiveTestsByTestId(Integer testId) throws Exception {
+        TestReflexManager trm = TestReflexManager.findByTestId(testId);
         
         return trm;
     }
