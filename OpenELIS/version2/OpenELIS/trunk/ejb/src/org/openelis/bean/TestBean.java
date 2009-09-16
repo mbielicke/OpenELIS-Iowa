@@ -931,6 +931,14 @@ public class TestBean implements TestRemote, TestLocal {
         return query.getResultList();
     }
 
+    public List getTestWithActiveAutoCompleteByName(String name, int maxResults) {
+        Query query = manager.createNamedQuery("Test.TestMethodActiveAutoByName");
+        query.setParameter("name", name);
+        query.setMaxResults(maxResults);
+
+        return query.getResultList();
+    }
+
     public List getTestAutoCompleteByNameSampleItemType(String name,
                                                         Integer sampleItemType,
                                                         int maxResults) {
