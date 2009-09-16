@@ -1,91 +1,61 @@
-/** Exhibit A - UIRF Open-source Based Public Software License.
-* 
-* The contents of this file are subject to the UIRF Open-source Based
-* Public Software License(the "License"); you may not use this file except
-* in compliance with the License. You may obtain a copy of the License at
-* openelis.uhl.uiowa.edu
-* 
-* Software distributed under the License is distributed on an "AS IS"
-* basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
-* License for the specific language governing rights and limitations
-* under the License.
-* 
-* The Original Code is OpenELIS code.
-* 
-* The Initial Developer of the Original Code is The University of Iowa.
-* Portions created by The University of Iowa are Copyright 2006-2008. All
-* Rights Reserved.
-* 
-* Contributor(s): ______________________________________.
-* 
-* Alternatively, the contents of this file marked
-* "Separately-Licensed" may be used under the terms of a UIRF Software
-* license ("UIRF Software License"), in which case the provisions of a
-* UIRF Software License are applicable instead of those above. 
-*/
+/**
+ * Exhibit A - UIRF Open-source Based Public Software License.
+ * 
+ * The contents of this file are subject to the UIRF Open-source Based Public
+ * Software License(the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * openelis.uhl.uiowa.edu
+ * 
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+ * the specific language governing rights and limitations under the License.
+ * 
+ * The Original Code is OpenELIS code.
+ * 
+ * The Initial Developer of the Original Code is The University of Iowa.
+ * Portions created by The University of Iowa are Copyright 2006-2008. All
+ * Rights Reserved.
+ * 
+ * Contributor(s): ______________________________________.
+ * 
+ * Alternatively, the contents of this file marked "Separately-Licensed" may be
+ * used under the terms of a UIRF Software license ("UIRF Software License"), in
+ * which case the provisions of a UIRF Software License are applicable instead
+ * of those above.
+ */
 package org.openelis.domain;
 
-import org.openelis.gwt.common.RPC;
 import org.openelis.utilcommon.DataBaseUtil;
 
-public class TestAnalyteDO implements RPC {
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 1L;
-    
-    protected Integer id;             
-    protected Integer testId;      
-    protected Integer rowGroup;
-    protected Integer resultGroup;             
-    protected Integer sortOrder;             
-    protected Integer typeId;             
-    protected Integer analyteId;     
-    protected String analyteName;
-    protected String isReportable;             
-    protected Integer scriptletId;    
-    protected String scriptletName;
-    protected String isColumn;
-    private Boolean delete = false;    
-    private Boolean grouped = false;
-    
-    public TestAnalyteDO() {
+/**
+ * Class represents the fields in database table test_analyte.
+ */
 
+public class TestAnalyteDO extends DataObject {
+
+    private static final long serialVersionUID = 1L;
+
+    protected Integer         id, testId, sortOrder, rowGroup, analyteId, typeId, resultGroup,
+                    scriptletId;
+    protected String          isColumn, isReportable;
+
+    public TestAnalyteDO() {
     }
-    
-    public TestAnalyteDO(Integer id,Integer testId,Integer rowGroup,
-                         Integer resultGroup,Integer sortOrder,Integer typeId,
-                         String isColumn,Integer analyteId,String analyteName, 
-                         String isReportable,Integer scriptletId,String scriptletName) {
-                     
+
+    public TestAnalyteDO(Integer id, Integer testId, Integer sortOrder, Integer rowGroup,
+                         String isColumn, Integer analyteId, Integer typeId, String isReportable,
+                         Integer resultGroup, Integer scriptletId) {
         setId(id);
         setTestId(testId);
-        setRowGroup(rowGroup);
-        setResultGroup(resultGroup);
         setSortOrder(sortOrder);
-        setTypeId(typeId);
-        setAnalyteId(analyteId);
-        setIsReportable(isReportable);
-        setScriptletId(scriptletId);
-        setScriptletName(scriptletName);
-        setAnalyteName(analyteName); 
+        setRowGroup(rowGroup);
         setIsColumn(isColumn);
-    }
-
-    public Integer getRowGroup() {
-        return rowGroup;
-    }
-
-    public void setRowGroup(Integer rowGroup) {
-        this.rowGroup = rowGroup;
-    }
-
-    public Integer getAnalyteId() {
-        return analyteId;
-    }
-
-    public void setAnalyteId(Integer analyteId) {
-        this.analyteId = analyteId;
+        setAnalyteId(analyteId);
+        setTypeId(typeId);
+        setIsReportable(isReportable);
+        setResultGroup(resultGroup);
+        setScriptletId(scriptletId);
+        _changed = false;
     }
 
     public Integer getId() {
@@ -94,38 +64,7 @@ public class TestAnalyteDO implements RPC {
 
     public void setId(Integer id) {
         this.id = id;
-    }
-
-    public String getIsReportable() {
-        return isReportable;
-    }
-
-    public void setIsReportable(String isReportable) {
-        this.isReportable = DataBaseUtil.trim(isReportable);
-    }
-
-    public Integer getResultGroup() {
-        return resultGroup;
-    }
-
-    public void setResultGroup(Integer resultGroup) {
-        this.resultGroup = resultGroup;
-    }
-
-    public Integer getScriptletId() {
-        return scriptletId;
-    }
-
-    public void setScriptletId(Integer scriptletId) {
-        this.scriptletId = scriptletId;
-    }
-
-    public Integer getSortOrder() {
-        return sortOrder;
-    }
-
-    public void setSortOrder(Integer sortOrder) {
-        this.sortOrder = sortOrder;
+        _changed = true;
     }
 
     public Integer getTestId() {
@@ -134,46 +73,25 @@ public class TestAnalyteDO implements RPC {
 
     public void setTestId(Integer testId) {
         this.testId = testId;
+        _changed = true;
     }
 
-    public Integer getTypeId() {
-        return typeId;
+    public Integer getSortOrder() {
+        return sortOrder;
     }
 
-    public void setTypeId(Integer typeId) {
-        this.typeId = typeId;
+    public void setSortOrder(Integer sortOrder) {
+        this.sortOrder = sortOrder;
+        _changed = true;
     }
 
-    public Boolean getDelete() {
-        return delete;
+    public Integer getRowGroup() {
+        return rowGroup;
     }
 
-    public void setDelete(Boolean delete) {
-        this.delete = delete;
-    }
-
-    public Boolean getGrouped() {
-        return grouped;
-    }
-
-    public void setGrouped(Boolean grouped) {
-        this.grouped = grouped;
-    }
-
-    public String getAnalyteName() {
-        return analyteName;
-    }
-
-    public void setAnalyteName(String analyteName) {
-        this.analyteName = DataBaseUtil.trim(analyteName);
-    }
-
-    public String getScriptletName() {
-        return scriptletName;
-    }
-
-    public void setScriptletName(String scriptletName) {
-        this.scriptletName = DataBaseUtil.trim(scriptletName);
+    public void setRowGroup(Integer rowGroup) {
+        this.rowGroup = rowGroup;
+        _changed = true;
     }
 
     public String getIsColumn() {
@@ -182,6 +100,51 @@ public class TestAnalyteDO implements RPC {
 
     public void setIsColumn(String isColumn) {
         this.isColumn = DataBaseUtil.trim(isColumn);
+        _changed = true;
     }
 
+    public Integer getAnalyteId() {
+        return analyteId;
+    }
+
+    public void setAnalyteId(Integer analyteId) {
+        this.analyteId = analyteId;
+        _changed = true;
+    }
+
+    public Integer getTypeId() {
+        return typeId;
+    }
+
+    public void setTypeId(Integer typeId) {
+        this.typeId = typeId;
+        _changed = true;
+    }
+
+    public String getIsReportable() {
+        return isReportable;
+    }
+
+    public void setIsReportable(String isReportable) {
+        this.isReportable = DataBaseUtil.trim(isReportable);
+        _changed = true;
+    }
+
+    public Integer getResultGroup() {
+        return resultGroup;
+    }
+
+    public void setResultGroup(Integer resultGroup) {
+        this.resultGroup = resultGroup;
+        _changed = true;
+    }
+
+    public Integer getScriptletId() {
+        return scriptletId;
+    }
+
+    public void setScriptletId(Integer scriptletId) {
+        this.scriptletId = scriptletId;
+        _changed = true;
+    }
 }

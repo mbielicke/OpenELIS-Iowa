@@ -1,110 +1,66 @@
-/** Exhibit A - UIRF Open-source Based Public Software License.
-* 
-* The contents of this file are subject to the UIRF Open-source Based
-* Public Software License(the "License"); you may not use this file except
-* in compliance with the License. You may obtain a copy of the License at
-* openelis.uhl.uiowa.edu
-* 
-* Software distributed under the License is distributed on an "AS IS"
-* basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
-* License for the specific language governing rights and limitations
-* under the License.
-* 
-* The Original Code is OpenELIS code.
-* 
-* The Initial Developer of the Original Code is The University of Iowa.
-* Portions created by The University of Iowa are Copyright 2006-2008. All
-* Rights Reserved.
-* 
-* Contributor(s): ______________________________________.
-* 
-* Alternatively, the contents of this file marked
-* "Separately-Licensed" may be used under the terms of a UIRF Software
-* license ("UIRF Software License"), in which case the provisions of a
-* UIRF Software License are applicable instead of those above. 
-*/
+/**
+ * Exhibit A - UIRF Open-source Based Public Software License.
+ * 
+ * The contents of this file are subject to the UIRF Open-source Based Public
+ * Software License(the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * openelis.uhl.uiowa.edu
+ * 
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+ * the specific language governing rights and limitations under the License.
+ * 
+ * The Original Code is OpenELIS code.
+ * 
+ * The Initial Developer of the Original Code is The University of Iowa.
+ * Portions created by The University of Iowa are Copyright 2006-2008. All
+ * Rights Reserved.
+ * 
+ * Contributor(s): ______________________________________.
+ * 
+ * Alternatively, the contents of this file marked "Separately-Licensed" may be
+ * used under the terms of a UIRF Software license ("UIRF Software License"), in
+ * which case the provisions of a UIRF Software License are applicable instead
+ * of those above.
+ */
 package org.openelis.domain;
 
 import java.util.Date;
-
 import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.RPC;
 import org.openelis.utilcommon.DataBaseUtil;
 
-public class TestDO implements RPC {
+/**
+ * Class represents the fields in database table test.
+ */
+
+public class TestDO extends DataObject {
 
     private static final long serialVersionUID = 1L;
 
-    protected Integer         id;
-    protected String          name;
-    protected Integer         methodId;
-    protected String          methodName;
-    protected String          description;
-    protected String          reportingDescription;
-    protected String          isActive;
-    protected Datetime        activeBegin;
-    protected Datetime        activeEnd;
-    protected String          isReportable;
-    protected Integer         timeTransit;
-    protected Integer         timeHolding;
-    protected Integer         timeTaAverage;
-    protected Integer         timeTaWarning;
-    protected Integer         timeTaMax;
-    protected Integer         labelId;
-    protected String          labelName;
-    protected Integer         labelQty;
-    protected Integer         testTrailerId;
-    protected String          testTrailerName;
-    protected Integer         scriptletId;
-    protected String          scriptletName;
-    protected Integer         testFormatId;
-    protected Integer         revisionMethodId;
-    protected Integer         reportingMethodId;
-    protected Integer         sortingMethodId;
-    protected Integer         reportingSequence;
-
-    private Boolean           delete           = false;
+    protected Integer         id, methodId, timeTransit, timeHolding, timeTaAverage, timeTaWarning,
+                              timeTaMax, labelId, labelQty, testTrailerId, scriptletId, testFormatId,
+                              revisionMethodId, reportingMethodId, sortingMethodId, reportingSequence;
+    protected String          name, description, reportingDescription, isActive, isReportable;
+    protected Datetime        activeBegin, activeEnd, labelName;
 
     public TestDO() {
-
     }
 
-    public TestDO(Integer id,
-                  String name,
-                  Integer methodId,
-                  String methodName,
-                  String description,
-                  String reportingDescription,
-                  String isActive,
-                  Date activeBegin,
-                  Date activeEnd,
-                  String isReportable,
-                  Integer timeTransit,
-                  Integer timeHolding,
-                  Integer timeTaAverage,
-                  Integer timeTaWarning,
-                  Integer timeTaMax,
-                  Integer labelId,
-                  String labelName,
-                  Integer labelQty,
-                  Integer testTrailerId,
-                  String testTrailerName,
-                  Integer scriptletId,
-                  String scriptletName,
-                  Integer testFormatId,
-                  Integer revisionMethodId,
-                  Integer reportingMethodId,
-                  Integer sortingMethodId,
-                  Integer reportingSequence) {
+    public TestDO(Integer id, String name, String description, String reportingDescription,
+                  Integer methodId, String isActive, Date activeBegin, Date activeEnd,
+                  String isReportable, Integer timeTransit, Integer timeHolding,
+                  Integer timeTaAverage, Integer timeTaWarning, Integer timeTaMax, Integer labelId,
+                  Integer labelQty, Integer testTrailerId, Integer scriptletId,
+                  Integer testFormatId, Integer revisionMethodId, Integer reportingMethodId,
+                  Integer sortingMethodId, Integer reportingSequence) {
         setId(id);
         setName(name);
-        setMethodId(methodId);
-        setMethodName(methodName);
         setDescription(description);
         setReportingDescription(reportingDescription);
+        setMethodId(methodId);
         setIsActive(isActive);
-        setActiveBegin(Datetime.getInstance(Datetime.YEAR, Datetime.YEAR, activeBegin));
-        setActiveEnd(Datetime.getInstance(Datetime.YEAR, Datetime.YEAR, activeEnd));
+        setActiveBegin(DataBaseUtil.toYD(activeBegin));
+        setActiveEnd(DataBaseUtil.toYD(activeEnd));
         setIsReportable(isReportable);
         setTimeTransit(timeTransit);
         setTimeHolding(timeHolding);
@@ -112,17 +68,15 @@ public class TestDO implements RPC {
         setTimeTaWarning(timeTaWarning);
         setTimeTaMax(timeTaMax);
         setLabelId(labelId);
-        setLabelName(labelName);
         setLabelQty(labelQty);
         setTestTrailerId(testTrailerId);
-        setTestTrailerName(testTrailerName);
         setScriptletId(scriptletId);
-        setScriptletName(scriptletName);
         setTestFormatId(testFormatId);
         setRevisionMethodId(revisionMethodId);
         setReportingMethodId(reportingMethodId);
         setSortingMethodId(sortingMethodId);
         setReportingSequence(reportingSequence);
+        _changed = false;
     }
 
     public Integer getId() {
@@ -131,14 +85,7 @@ public class TestDO implements RPC {
 
     public void setId(Integer id) {
         this.id = id;
-    }
-
-    public Integer getMethodId() {
-        return methodId;
-    }
-
-    public void setMethodId(Integer methodId) {
-        this.methodId = methodId;
+        _changed = true;
     }
 
     public String getName() {
@@ -147,38 +94,7 @@ public class TestDO implements RPC {
 
     public void setName(String name) {
         this.name = DataBaseUtil.trim(name);
-    }
-
-    public Boolean getDelete() {
-        return delete;
-    }
-
-    public void setDelete(Boolean delete) {
-        this.delete = delete;
-    }
-
-    public String getMethodName() {
-        return methodName;
-    }
-
-    public void setMethodName(String methodName) {
-        this.methodName = DataBaseUtil.trim(methodName);
-    }
-
-    public Datetime getActiveBegin() {
-        return activeBegin;
-    }
-
-    public void setActiveBegin(Datetime activeBegin) {
-        this.activeBegin = activeBegin;
-    }
-
-    public Datetime getActiveEnd() {
-        return activeEnd;
-    }
-
-    public void setActiveEnd(Datetime activeEnd) {
-        this.activeEnd = activeEnd;
+        _changed = true;
     }
 
     public String getDescription() {
@@ -187,38 +103,7 @@ public class TestDO implements RPC {
 
     public void setDescription(String description) {
         this.description = DataBaseUtil.trim(description);
-    }
-
-    public String getIsActive() {
-        return isActive;
-    }
-
-    public void setIsActive(String isActive) {
-        this.isActive = DataBaseUtil.trim(isActive);
-    }
-
-    public String getIsReportable() {
-        return isReportable;
-    }
-
-    public void setIsReportable(String isReportable) {
-        this.isReportable = DataBaseUtil.trim(isReportable);
-    }
-
-    public Integer getLabelId() {
-        return labelId;
-    }
-
-    public void setLabelId(Integer labelId) {
-        this.labelId = labelId;
-    }
-
-    public Integer getLabelQty() {
-        return labelQty;
-    }
-
-    public void setLabelQty(Integer labelQty) {
-        this.labelQty = labelQty;
+        _changed = true;
     }
 
     public String getReportingDescription() {
@@ -227,70 +112,52 @@ public class TestDO implements RPC {
 
     public void setReportingDescription(String reportingDescription) {
         this.reportingDescription = DataBaseUtil.trim(reportingDescription);
+        _changed = true;
     }
 
-    public Integer getRevisionMethodId() {
-        return revisionMethodId;
+    public Integer getMethodId() {
+        return methodId;
     }
 
-    public void setRevisionMethodId(Integer revisionMethodId) {
-        this.revisionMethodId = revisionMethodId;
+    public void setMethodId(Integer methodId) {
+        this.methodId = methodId;
+        _changed = true;
     }
 
-    public Integer getScriptletId() {
-        return scriptletId;
+    public String getIsActive() {
+        return isActive;
     }
 
-    public void setScriptletId(Integer scriptletId) {
-        this.scriptletId = scriptletId;
+    public void setIsActive(String isActive) {
+        this.isActive = DataBaseUtil.trim(isActive);
+        _changed = true;
     }
 
-    public Integer getTestFormatId() {
-        return testFormatId;
+    public Datetime getActiveBegin() {
+        return activeBegin;
     }
 
-    public void setTestFormatId(Integer testFormatId) {
-        this.testFormatId = testFormatId;
+    public void setActiveBegin(Datetime activeBegin) {
+        this.activeBegin = DataBaseUtil.toYD(activeBegin);
+        _changed = true;
     }
 
-    public Integer getTestTrailerId() {
-        return testTrailerId;
+    public Datetime getActiveEnd() {
+        return activeEnd;
     }
 
-    public void setTestTrailerId(Integer testTrailerId) {
-        this.testTrailerId = testTrailerId;
+    public void setActiveEnd(Datetime activeEnd) {
+        this.activeEnd = activeEnd;
+        _changed = true;
     }
 
-    public Integer getTimeHolding() {
-        return timeHolding;
+    public String getIsReportable() {
+        return isReportable;
     }
 
-    public void setTimeHolding(Integer timeHolding) {
-        this.timeHolding = timeHolding;
-    }
-
-    public Integer getTimeTaAverage() {
-        return timeTaAverage;
-    }
-
-    public void setTimeTaAverage(Integer timeTaAverage) {
-        this.timeTaAverage = timeTaAverage;
-    }
-
-    public Integer getTimeTaMax() {
-        return timeTaMax;
-    }
-
-    public void setTimeTaMax(Integer timeTaMax) {
-        this.timeTaMax = timeTaMax;
-    }
-
-    public Integer getTimeTaWarning() {
-        return timeTaWarning;
-    }
-
-    public void setTimeTaWarning(Integer timeTaWarning) {
-        this.timeTaWarning = timeTaWarning;
+    public void setIsReportable(String isReportable) {
+        this.isReportable = DataBaseUtil.trim(isReportable);
+        _changed = true;
     }
 
     public Integer getTimeTransit() {
@@ -299,6 +166,97 @@ public class TestDO implements RPC {
 
     public void setTimeTransit(Integer timeTransit) {
         this.timeTransit = timeTransit;
+        _changed = true;
+    }
+
+    public Integer getTimeHolding() {
+        return timeHolding;
+    }
+
+    public void setTimeHolding(Integer timeHolding) {
+        this.timeHolding = timeHolding;
+        _changed = true;
+    }
+
+    public Integer getTimeTaAverage() {
+        return timeTaAverage;
+    }
+
+    public void setTimeTaAverage(Integer timeTaAverage) {
+        this.timeTaAverage = timeTaAverage;
+        _changed = true;
+    }
+
+    public Integer getTimeTaMax() {
+        return timeTaMax;
+    }
+
+    public void setTimeTaMax(Integer timeTaMax) {
+        this.timeTaMax = timeTaMax;
+        _changed = true;
+    }
+
+    public Integer getTimeTaWarning() {
+        return timeTaWarning;
+    }
+
+    public void setTimeTaWarning(Integer timeTaWarning) {
+        this.timeTaWarning = timeTaWarning;
+        _changed = true;
+    }
+
+    public Integer getLabelId() {
+        return labelId;
+    }
+
+    public void setLabelId(Integer labelId) {
+        this.labelId = labelId;
+        _changed = true;
+    }
+
+    public Integer getLabelQty() {
+        return labelQty;
+    }
+
+    public void setLabelQty(Integer labelQty) {
+        this.labelQty = labelQty;
+        _changed = true;
+    }
+
+    public Integer getTestTrailerId() {
+        return testTrailerId;
+    }
+
+    public void setTestTrailerId(Integer testTrailerId) {
+        this.testTrailerId = testTrailerId;
+        _changed = true;
+    }
+
+    public Integer getScriptletId() {
+        return scriptletId;
+    }
+
+    public void setScriptletId(Integer scriptletId) {
+        this.scriptletId = scriptletId;
+        _changed = true;
+    }
+
+    public Integer getTestFormatId() {
+        return testFormatId;
+    }
+
+    public void setTestFormatId(Integer testFormatId) {
+        this.testFormatId = testFormatId;
+        _changed = true;
+    }
+
+    public Integer getRevisionMethodId() {
+        return revisionMethodId;
+    }
+
+    public void setRevisionMethodId(Integer revisionMethodId) {
+        this.revisionMethodId = revisionMethodId;
+        _changed = true;
     }
 
     public Integer getReportingMethodId() {
@@ -307,14 +265,7 @@ public class TestDO implements RPC {
 
     public void setReportingMethodId(Integer reportingMethodId) {
         this.reportingMethodId = reportingMethodId;
-    }
-
-    public Integer getReportingSequence() {
-        return reportingSequence;
-    }
-
-    public void setReportingSequence(Integer reportingSequence) {
-        this.reportingSequence = reportingSequence;
+        _changed = true;
     }
 
     public Integer getSortingMethodId() {
@@ -323,30 +274,15 @@ public class TestDO implements RPC {
 
     public void setSortingMethodId(Integer sortingMethodId) {
         this.sortingMethodId = sortingMethodId;
+        _changed = true;
     }
 
-    public String getScriptletName() {
-        return scriptletName;
+    public Integer getReportingSequence() {
+        return reportingSequence;
     }
 
-    public void setScriptletName(String scriptletName) {
-        this.scriptletName = DataBaseUtil.trim(scriptletName);
+    public void setReportingSequence(Integer reportingSequence) {
+        this.reportingSequence = reportingSequence;
+        _changed = true;
     }
-
-    public String getTestTrailerName() {
-        return testTrailerName;
-    }
-
-    public void setTestTrailerName(String testTrailerName) {
-        this.testTrailerName = DataBaseUtil.trim(testTrailerName);
-    }
-
-    public String getLabelName() {
-        return labelName;
-    }
-
-    public void setLabelName(String labelName) {
-        this.labelName = DataBaseUtil.trim(labelName);
-    }
-
 }

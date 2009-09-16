@@ -38,46 +38,23 @@ public class ProviderAddressDO extends DataObject {
 
     protected Integer         id, providerId;
     protected String          location, externalId;
-    protected AddressDO       addressDO        = new AddressDO();
+    protected AddressDO       addressDO;
 
     public ProviderAddressDO() {
+        addressDO = new AddressDO();
     }
 
     public ProviderAddressDO(Integer id, String location, String externalId, Integer providerId,
-                             Integer addressId, String multipleUnit, String streetAddress,
-                             String city, String state, String zipCode, String workPhone,
-                             String homePhone, String cellPhone, String faxPhone, String email,
-                             String country) {
+                             Integer addressId, String multipleUnit, String streetAddress, String city,
+                             String state, String zipCode, String workPhone, String homePhone,
+                             String cellPhone, String faxPhone, String email, String country) {
         setId(id);
         setLocation(location);
         setExternalId(externalId);
         setProviderId(providerId);
-        addressDO.setId(addressId);
-        addressDO.setMultipleUnit(multipleUnit);
-        addressDO.setStreetAddress(streetAddress);
-        addressDO.setCity(city);
-        addressDO.setState(state);
-        addressDO.setZipCode(zipCode);
-        addressDO.setWorkPhone(workPhone);
-        addressDO.setHomePhone(homePhone);
-        addressDO.setCellPhone(cellPhone);
-        addressDO.setFaxPhone(faxPhone);
-        addressDO.setEmail(email);
-        addressDO.setCountry(country);
+        addressDO = new AddressDO(addressId, multipleUnit, streetAddress, city, state, zipCode,
+                                  workPhone, homePhone, cellPhone, faxPhone, email, country);
         _changed = false;
-    }
-
-    public AddressDO getAddressDO() {
-        return addressDO;
-    }
-
-    public String getExternalId() {
-        return externalId;
-    }
-
-    public void setExternalId(String externalId) {
-        this.externalId = DataBaseUtil.trim(externalId);
-        _changed = true;
     }
 
     public Integer getId() {
@@ -86,6 +63,15 @@ public class ProviderAddressDO extends DataObject {
 
     public void setId(Integer id) {
         this.id = id;
+        _changed = true;
+    }
+
+    public String getExternalId() {
+        return externalId;
+    }
+
+    public void setExternalId(String externalId) {
+        this.externalId = DataBaseUtil.trim(externalId);
         _changed = true;
     }
 
@@ -107,4 +93,7 @@ public class ProviderAddressDO extends DataObject {
         _changed = true;
     }
 
+    public AddressDO getAddressDO() {
+        return addressDO;
+    }
 }

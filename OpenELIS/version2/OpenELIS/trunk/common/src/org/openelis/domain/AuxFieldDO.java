@@ -28,7 +28,7 @@ package org.openelis.domain;
 import org.openelis.utilcommon.DataBaseUtil;
 
 /**
- * Class represents the fields in aux_field
+ * Class represents the fields in database table aux_field.  
  */
 
 public class AuxFieldDO extends DataObject {
@@ -36,7 +36,7 @@ public class AuxFieldDO extends DataObject {
     private static final long serialVersionUID = 1L;
 
     protected Integer         id, auxFieldGroupId, sortOrder, analyteId, methodId, unitOfMeasureId,
-                    scriptletId;
+                              scriptletId;
     protected String          description, isRequired, isActive, isReportable;
 
     public AuxFieldDO() {

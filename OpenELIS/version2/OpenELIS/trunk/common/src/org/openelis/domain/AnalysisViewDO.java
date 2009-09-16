@@ -34,7 +34,7 @@ import java.util.Date;
  * changes to read/display fields.
  */
 
-public class AnalysisTestDO extends AnalysisDO {
+public class AnalysisViewDO extends AnalysisDO {
 
     private static final long serialVersionUID = 1L;
 
@@ -44,11 +44,11 @@ public class AnalysisTestDO extends AnalysisDO {
     protected Integer         methodId;
     protected String          testName, methodName, sectionName;
 
-    public AnalysisTestDO() {
+    public AnalysisViewDO() {
     }
 
     // analysis and test name,method name, and status
-    public AnalysisTestDO(Integer id, Integer sampleItemId, Integer revision, Integer testId,
+    public AnalysisViewDO(Integer id, Integer sampleItemId, Integer revision, Integer testId,
                           Integer sectionId, Integer preAnalysisId, Integer parentAnalysisId,
                           Integer parentResultId, String isReportable, Integer unitOfMeasureId,
                           Integer statusId, Date availableDate, Date startedDate,

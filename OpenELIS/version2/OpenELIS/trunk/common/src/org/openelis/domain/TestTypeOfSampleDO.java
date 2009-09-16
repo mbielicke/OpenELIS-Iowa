@@ -1,53 +1,49 @@
-/** Exhibit A - UIRF Open-source Based Public Software License.
-* 
-* The contents of this file are subject to the UIRF Open-source Based
-* Public Software License(the "License"); you may not use this file except
-* in compliance with the License. You may obtain a copy of the License at
-* openelis.uhl.uiowa.edu
-* 
-* Software distributed under the License is distributed on an "AS IS"
-* basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
-* License for the specific language governing rights and limitations
-* under the License.
-* 
-* The Original Code is OpenELIS code.
-* 
-* The Initial Developer of the Original Code is The University of Iowa.
-* Portions created by The University of Iowa are Copyright 2006-2008. All
-* Rights Reserved.
-* 
-* Contributor(s): ______________________________________.
-* 
-* Alternatively, the contents of this file marked
-* "Separately-Licensed" may be used under the terms of a UIRF Software
-* license ("UIRF Software License"), in which case the provisions of a
-* UIRF Software License are applicable instead of those above. 
-*/
+/**
+ * Exhibit A - UIRF Open-source Based Public Software License.
+ * 
+ * The contents of this file are subject to the UIRF Open-source Based Public
+ * Software License(the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * openelis.uhl.uiowa.edu
+ * 
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+ * the specific language governing rights and limitations under the License.
+ * 
+ * The Original Code is OpenELIS code.
+ * 
+ * The Initial Developer of the Original Code is The University of Iowa.
+ * Portions created by The University of Iowa are Copyright 2006-2008. All
+ * Rights Reserved.
+ * 
+ * Contributor(s): ______________________________________.
+ * 
+ * Alternatively, the contents of this file marked "Separately-Licensed" may be
+ * used under the terms of a UIRF Software license ("UIRF Software License"), in
+ * which case the provisions of a UIRF Software License are applicable instead
+ * of those above.
+ */
 package org.openelis.domain;
 
-import org.openelis.gwt.common.RPC;
+/**
+ * Class represents the fields in database table analysis.
+ */
 
-public class TestTypeOfSampleDO implements RPC {
+public class TestTypeOfSampleDO extends DataObject {
     private static final long serialVersionUID = 1L;
 
-    protected Integer         id;
-    protected Integer         testId;
-    protected Integer         typeOfSampleId;
-    protected Integer         unitOfMeasureId;
-    protected Boolean         delete           = false;
+    protected Integer         id, testId, typeOfSampleId, unitOfMeasureId;
 
     public TestTypeOfSampleDO() {
-
     }
 
-    public TestTypeOfSampleDO(Integer id,
-                              Integer testId,
-                              Integer typeOfSampleId,
+    public TestTypeOfSampleDO(Integer id, Integer testId, Integer typeOfSampleId,
                               Integer unitOfMeasureId) {
-        this.id = id;
-        this.testId = testId;
-        this.typeOfSampleId = typeOfSampleId;
-        this.unitOfMeasureId = unitOfMeasureId;
+        setId(id);
+        setTestId(testId);
+        setTypeOfSampleId(typeOfSampleId);
+        setUnitOfMeasureId(unitOfMeasureId);
+        _changed = false;
     }
 
     public Integer getId() {
@@ -56,6 +52,7 @@ public class TestTypeOfSampleDO implements RPC {
 
     public void setId(Integer id) {
         this.id = id;
+        _changed = true;
     }
 
     public Integer getTestId() {
@@ -64,6 +61,7 @@ public class TestTypeOfSampleDO implements RPC {
 
     public void setTestId(Integer testId) {
         this.testId = testId;
+        _changed = true;
     }
 
     public Integer getTypeOfSampleId() {
@@ -72,6 +70,7 @@ public class TestTypeOfSampleDO implements RPC {
 
     public void setTypeOfSampleId(Integer typeOfSampleId) {
         this.typeOfSampleId = typeOfSampleId;
+        _changed = true;
     }
 
     public Integer getUnitOfMeasureId() {
@@ -80,14 +79,6 @@ public class TestTypeOfSampleDO implements RPC {
 
     public void setUnitOfMeasureId(Integer unitOfMeasureId) {
         this.unitOfMeasureId = unitOfMeasureId;
+        _changed = true;
     }
-
-    public Boolean getDelete() {
-        return delete;
-    }
-
-    public void setDelete(Boolean delete) {
-        this.delete = delete;
-    }
-
 }

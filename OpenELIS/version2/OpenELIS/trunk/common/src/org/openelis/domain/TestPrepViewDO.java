@@ -28,60 +28,42 @@ package org.openelis.domain;
 import org.openelis.utilcommon.DataBaseUtil;
 
 /**
- * Class represents the fields in database table test_trailer.
+ * The class extends test prep DO and carries several commonly used fields such
+ * as prep test & method names. The additional fields are for read/display only and
+ * do not get committed to the database. Note: isChanged will reflect any
+ * changes to read/display fields.
  */
 
-public class TestTrailerDO extends DataObject {
+public class TestPrepViewDO extends TestPrepDO {
 
     private static final long serialVersionUID = 1L;
 
-    protected Integer         id;
-    protected String          name, description, text;
+    protected String          prepTestName;
+    protected String          methodName;
 
-    public TestTrailerDO() {
+    public TestPrepViewDO() {
     }
 
-    public TestTrailerDO(Integer id, String name, String description, String text) {
-        setId(id);
-        setName(name);
-        setDescription(description);
-        setText(text);
-        _changed = false;
+    public TestPrepViewDO(Integer id, Integer testId, Integer prepTestId, String isOptional,
+                                String prepTestName, String methodName) {
+        super(id, testId, prepTestId, isOptional);
+        setPrepTestName(prepTestName);
+        setMethodName(methodName);
     }
 
-    public Integer getId() {
-        return id;
+    public String getPrepTestName() {
+        return prepTestName;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
-        _changed = false;
+    public void setPrepTestName(String prepTestName) {
+        this.prepTestName = DataBaseUtil.trim(prepTestName);
     }
 
-    public String getName() {
-        return name;
+    public String getMethodName() {
+        return methodName;
     }
 
-    public void setName(String name) {
-        this.name = DataBaseUtil.trim(name);
-        _changed = false;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = DataBaseUtil.trim(description);
-        _changed = false;
-    }
-
-    public String getText() {
-        return text;
-    }
-
-    public void setText(String text) {
-        this.text = DataBaseUtil.trim(text);
-        _changed = false;
+    public void setMethodName(String methodName) {
+        this.methodName = DataBaseUtil.trim(methodName);
     }
 }

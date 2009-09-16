@@ -61,60 +61,6 @@ public class AddressDO extends DataObject {
         _changed = false;
     }
 
-    public String getCellPhone() {
-        return cellPhone;
-    }
-
-    public void setCellPhone(String cellPhone) {
-        this.cellPhone = DataBaseUtil.trim(cellPhone);
-        _changed = true;
-    }
-
-    public String getCity() {
-        return city;
-    }
-
-    public void setCity(String city) {
-        this.city = DataBaseUtil.trim(city);
-        _changed = true;
-    }
-
-    public String getCountry() {
-        return country;
-    }
-
-    public void setCountry(String country) {
-        this.country = DataBaseUtil.trim(country);
-        _changed = true;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = DataBaseUtil.trim(email);
-        _changed = true;
-    }
-
-    public String getFaxPhone() {
-        return faxPhone;
-    }
-
-    public void setFaxPhone(String faxPhone) {
-        this.faxPhone = DataBaseUtil.trim(faxPhone);
-        _changed = true;
-    }
-
-    public String getHomePhone() {
-        return homePhone;
-    }
-
-    public void setHomePhone(String homePhone) {
-        this.homePhone = DataBaseUtil.trim(homePhone);
-        _changed = true;
-    }
-
     public Integer getId() {
         return id;
     }
@@ -133,6 +79,24 @@ public class AddressDO extends DataObject {
         _changed = true;
     }
 
+    public String getStreetAddress() {
+        return streetAddress;
+    }
+
+    public void setStreetAddress(String streetAddress) {
+        this.streetAddress = DataBaseUtil.trim(streetAddress);
+        _changed = true;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = DataBaseUtil.trim(city);
+        _changed = true;
+    }
+
     public String getState() {
         return state;
     }
@@ -142,12 +106,12 @@ public class AddressDO extends DataObject {
         _changed = true;
     }
 
-    public String getStreetAddress() {
-        return streetAddress;
+    public String getZipCode() {
+        return zipCode;
     }
 
-    public void setStreetAddress(String streetAddress) {
-        this.streetAddress = DataBaseUtil.trim(streetAddress);
+    public void setZipCode(String zipCode) {
+        this.zipCode = DataBaseUtil.trim(zipCode);
         _changed = true;
     }
 
@@ -160,12 +124,48 @@ public class AddressDO extends DataObject {
         _changed = true;
     }
 
-    public String getZipCode() {
-        return zipCode;
+    public String getHomePhone() {
+        return homePhone;
     }
 
-    public void setZipCode(String zipCode) {
-        this.zipCode = DataBaseUtil.trim(zipCode);
+    public void setHomePhone(String homePhone) {
+        this.homePhone = DataBaseUtil.trim(homePhone);
+        _changed = true;
+    }
+
+    public String getCellPhone() {
+        return cellPhone;
+    }
+
+    public void setCellPhone(String cellPhone) {
+        this.cellPhone = DataBaseUtil.trim(cellPhone);
+        _changed = true;
+    }
+
+    public String getFaxPhone() {
+        return faxPhone;
+    }
+
+    public void setFaxPhone(String faxPhone) {
+        this.faxPhone = DataBaseUtil.trim(faxPhone);
+        _changed = true;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = DataBaseUtil.trim(email);
+        _changed = true;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = DataBaseUtil.trim(country);
         _changed = true;
     }
 }

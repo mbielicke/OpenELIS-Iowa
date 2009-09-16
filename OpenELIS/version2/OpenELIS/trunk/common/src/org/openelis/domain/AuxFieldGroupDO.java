@@ -8,6 +8,7 @@ import org.openelis.utilcommon.DataBaseUtil;
 /**
  * Class represents the fields in database table aux_field_group.
  */
+
 public class AuxFieldGroupDO extends DataObject {
 
     private static final long serialVersionUID = 1L;

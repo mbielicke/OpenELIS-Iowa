@@ -25,30 +25,28 @@
  */
 package org.openelis.domain;
 
-import java.util.Date;
+import org.openelis.utilcommon.DataBaseUtil;
 
 /**
- * The class extends the instrument DO and carries an additional scriptlet name
- * field. This additional fields is for read/display only and does not get
- * committed to the database. Note: isChanged will reflect any changes to
- * read/display fields.
+ * The class extends test worksheet DO and adds a commonly used field scriptlet
+ * name. The additional field is for read/display only and do not get committed
+ * to the database. Note: isChanged will reflect any changes to read/display
+ * fields.
  */
 
-public class InstrumentScriptletDO extends InstrumentDO {
+public class TestWorksheetViewDO extends TestWorksheetDO {
 
     private static final long serialVersionUID = 1L;
 
     protected String          scriptletName;
 
-    public InstrumentScriptletDO() {
+    public TestWorksheetViewDO() {
     }
 
-    public InstrumentScriptletDO(Integer id, String name, String description, String modelNumber,
-                                 String serialNumber, Integer typeId, String location,
-                                 String isActive, Date activeBegin, Date activeEnd,
-                                 Integer scriptletId, String scriptletName) {
-        super(id, name, description, modelNumber, serialNumber, typeId, location, isActive,
-              activeBegin, activeEnd, scriptletId);
+    public TestWorksheetViewDO(Integer id, Integer testId, Integer batchCapacity,
+                               Integer totalCapacity, Integer formatId, Integer scriptletId,
+                               String scriptletName) {
+        super(id, testId, batchCapacity, totalCapacity, formatId, scriptletId);
         setScriptletName(scriptletName);
     }
 
@@ -57,6 +55,6 @@ public class InstrumentScriptletDO extends InstrumentDO {
     }
 
     public void setScriptletName(String scriptletName) {
-        this.scriptletName = scriptletName;
+        this.scriptletName = DataBaseUtil.trim(scriptletName);
     }
 }
