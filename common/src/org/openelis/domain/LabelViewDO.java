@@ -34,16 +34,16 @@ import org.openelis.utilcommon.DataBaseUtil;
  * read/display fields.
  */
 
-public class LabelScriptletDO extends LabelDO {
+public class LabelViewDO extends LabelDO {
 
     private static final long serialVersionUID = 1L;
 
     protected String          scriptletName;
 
-    public LabelScriptletDO() {
+    public LabelViewDO() {
     }
 
-    public LabelScriptletDO(Integer id, String name, String description, Integer printerTypeId,
+    public LabelViewDO(Integer id, String name, String description, Integer printerTypeId,
                    Integer scriptletId, String scriptletName) {
         super(id, name, description, printerTypeId, scriptletId);
         setScriptletName(scriptletName);

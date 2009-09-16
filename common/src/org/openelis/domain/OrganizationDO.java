@@ -28,25 +28,33 @@ package org.openelis.domain;
 import org.openelis.utilcommon.DataBaseUtil;
 
 /**
- * Class represents the fields in database table analyte.
+ * Class represents the fields in database table organization. The address
+ * information in this class is maintained in AddressDO object.
  */
-public class AnalyteDO extends DataObject {
+
+public class OrganizationDO extends DataObject {
 
     private static final long serialVersionUID = 1L;
 
-    protected Integer         id, parentAnalyteId;
-    protected String          name, isActive, externalId;
+    protected Integer         id, parentOrganizationId;
+    protected String          name, isActive;
+    protected AddressDO       addressDO;
 
-    public AnalyteDO() {
+    public OrganizationDO() {
+        addressDO = new AddressDO();
     }
 
-    public AnalyteDO(Integer id, String name, String isActive, Integer parentAnalyteId,
-                     String externalId) {
+    public OrganizationDO(Integer id, Integer parentOrganizationId, String name, String isActive,
+                          Integer addressId, String multipleUnit, String streetAddress,
+                          String city, String state, String zipCode, String workPhone,
+                          String homePhone, String cellPhone, String faxPhone, String email,
+                          String country) {
         setId(id);
+        setParentOrganizationId(parentOrganizationId);
         setName(name);
         setIsActive(isActive);
-        setParentAnalyteId(parentAnalyteId);
-        setExternalId(externalId);
+        addressDO = new AddressDO(addressId, multipleUnit, streetAddress, city, state, zipCode,
+                                  workPhone, homePhone, cellPhone, faxPhone, email, country);
         _changed = false;
     }
 
@@ -56,6 +64,15 @@ public class AnalyteDO extends DataObject {
 
     public void setId(Integer id) {
         this.id = id;
+        _changed = true;
+    }
+
+    public Integer getParentOrganizationId() {
+        return parentOrganizationId;
+    }
+
+    public void setParentOrganizationId(Integer parentOrganizationId) {
+        this.parentOrganizationId = parentOrganizationId;
         _changed = true;
     }
 
@@ -77,21 +94,7 @@ public class AnalyteDO extends DataObject {
         _changed = true;
     }
 
-    public Integer getParentAnalyteId() {
-        return parentAnalyteId;
-    }
-
-    public void setParentAnalyteId(Integer parentAnalyteId) {
-        this.parentAnalyteId = parentAnalyteId;
-        _changed = true;
-    }
-
-    public String getExternalId() {
-        return externalId;
-    }
-
-    public void setExternalId(String externalId) {
-        this.externalId = DataBaseUtil.trim(externalId);
-        _changed = true;
+    public AddressDO getAddressDO() {
+        return addressDO;
     }
 }
