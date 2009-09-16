@@ -33,16 +33,7 @@ import java.util.List;
 import javax.ejb.Remote;
 
 @Remote
-public interface TestRemote {
+public interface WorksheetCreationRemote {
 
     public List query(ArrayList<QueryData> fields, int first, int max) throws Exception;
-
-    public List getTestAutoCompleteByName(String name, int maxResults);
-
-    public List getTestWithActiveAutoCompleteByName(String name, int maxResults);
-
-    public List getTestAutoCompleteByNameSampleItemType(String name,
-                                                        Integer sampleItemType,
-                                                        int maxResults);
-
 }
