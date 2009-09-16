@@ -661,14 +661,11 @@ UIRF Software License are applicable instead of those above.
                                     <col width="470" field="Integer" header="Name" />
                                   </autoComplete>
                                 </col>
-                                <col key="{testPrep:getIsOptional($tp)}" header="{resource:getString($constants,'optional')}">
+                                <col key="{testPrep:getIsOptional($tp)}" width ="10" header="{resource:getString($constants,'optional')}">
                                   <check />
                                 </col>
                               </table>
                             </widget>
-<!-- 
-<HorizontalPanel width = "10px"/>
-  -->
                           </HorizontalPanel>
                           <HorizontalPanel style="WhiteContentPanel">
                             <widget halign="center" style="WhiteContentPanel">
@@ -705,11 +702,15 @@ UIRF Software License are applicable instead of those above.
                                     <col width="160" header="Name" />
                                   </autoComplete>
                                 </col>
-                                <col key="{testRef:getTestAnalyteId($tref)}" width="181" header="{resource:getString($constants,'testAnalyte')}">
-                                  <dropdown width="181" case="mixed" field="Integer" required="true" />
+                                <col key="{testRef:getTestAnalyteId($tref)}" width="181" sort="false" header="{resource:getString($constants,'testAnalyte')}">
+                                 <autoComplete width="181" case="mixed" popWidth="auto" autoCall="PrepTestAndReflexTestTab">
+                                   <col width="181" field="Integer" required="true" />
+                                 </autoComplete>
                                 </col>
                                 <col key="{testRef:getTestResultId($tref)}" width="140" header="{resource:getString($constants,'result')}">
-                                  <dropdown width="140" case="mixed" field="Integer" required="true" />
+                                 <autoComplete width="140" case="mixed" popWidth="auto" autoCall="PrepTestAndReflexTestTab">
+                                   <col width="140" field="Integer" required="true"/>
+                                 </autoComplete>
                                 </col>
                                 <col key="{testRef:getFlagsId($tref)}" width="104" header="{resource:getString($constants,'flags')}">
                                   <dropdown width="200" case="mixed" field="Integer" required="false" />

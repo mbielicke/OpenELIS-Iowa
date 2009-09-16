@@ -30,6 +30,7 @@ import java.util.EnumSet;
 import java.util.List;
 
 import org.openelis.cache.DictionaryCache;
+import org.openelis.common.AutocompleteRPC;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameDO;
 import org.openelis.domain.TestAnalyteDO;
@@ -82,7 +83,6 @@ import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.user.client.Window;
 
-
 public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,BeforeGetMatchesHandler{
     private TestManager manager;
     private TestMetaMap TestMeta;
@@ -108,7 +108,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
             
     private boolean addAnalyteRow,dropdownsInited, loaded, headerAddedInTheMiddle;
     
-    private int anaSelCol;           
+    private int anaSelCol,tempId;  
     
     public AnalyteAndResultTab(ScreenDefInt def,ScreenService service) {
         setDef(def);
@@ -124,6 +124,8 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
         anaSelCol = -1;
         
         source = this;
+        
+        tempId =  -1;
         
         headerAddedInTheMiddle = false;
         
@@ -207,13 +209,15 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
                 TableDataRow row,value;
                 TestAnalyteDO anaDO;                
                 Integer key;
+                AutoComplete<Integer> auto;
                 
 
                 r = event.getRow();
                 col = event.getCell();
                 row = analyteTable.getRow(r);
                 value = (TableDataRow)row.cells.get(col).value;
-                key = (Integer)value.key;                
+                key = (Integer)value.key;    
+                auto = (AutoComplete<Integer>)analyteTable.columns.get(col).getColumnWidget();
                 
                 try {                                                                                              
                     if("SubHeader".equals(row.style)) {                        
@@ -250,6 +254,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
                             //
                             anaDO = displayManager.getTestAnalyteAt(r, col);
                             anaDO.setAnalyteId(key);
+                            anaDO.setAnalyteName(auto.getTextBoxDisplay());
                         } else {
                             //
                             // otherwise we need to set the key as the result group
@@ -322,14 +327,14 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
                             if(index+1 < analyteTable.numRows()) {
                                 nrow = analyteTable.getRow(index+1);
                                 if(!"SubHeader".equals(nrow.style)) {
-                                    testAnalyteManager.addRowAt(dindex,false,false);
+                                    testAnalyteManager.addRowAt(dindex,false,false,getNextTempId());
                                     return;
                                 }
                             }
-                            testAnalyteManager.addRowAt(dindex+1,true,false);
+                            testAnalyteManager.addRowAt(dindex+1,true,false,getNextTempId());
                         }
                         else {
-                            testAnalyteManager.addRowAt(dindex+1,false,true);
+                            testAnalyteManager.addRowAt(dindex+1,false,true,getNextTempId());
                         }
                         
                         displayManager.setDataGrid(testAnalyteManager.getAnalytes());
@@ -531,16 +536,21 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
         // Screens now must implement AutoCompleteCallInt and set themselves as the calling interface       
         scriptlet.addGetMatchesHandler(new GetMatchesHandler() {                        
             public void onGetMatches(GetMatchesEvent event) {
-                TestAutoRPC trpc;
+                AutocompleteRPC trpc;
                 ArrayList<TableDataRow> model;
                 TableDataRow row;
-                trpc = new TestAutoRPC(); 
+                IdNameDO autoDO;
+                
+                trpc = new AutocompleteRPC(); 
                 trpc.match = event.getMatch();                
                 try {
                     trpc = service.call("getScriptletMatches",trpc);
                     model = new ArrayList<TableDataRow>();
-                    for(IdNameDO autoDO : trpc.idNameList) {
-                        row = new TableDataRow(autoDO.getId(),autoDO.getName());
+                    for(int i = 0; i < trpc.model.size(); i++) {
+                        autoDO = (IdNameDO)trpc.model.get(i);
+                        row = new TableDataRow(1);
+                        row.key = autoDO.getId();
+                        row.cells.get(0).value = autoDO.getName();
                         model.add(row);
                     }
                     scriptlet.showAutoMatches(model);
@@ -611,19 +621,31 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
                 
                 ar = analyteTable.activeRow;
                 num = analyteTable.numRows(); 
+                
                 if(ar == -1 || ar == num-1) {
                     analyteTable.addRow(createHeaderRow());
                     analyteTable.selectRow(num);
                     analyteTable.scrollToSelection();
                     //analyteTable.startEditing(num, 0);
                 } else {
-                    row = analyteTable.getRow(ar+1);
-                    if("SubHeader".equals(row.style)) {
+                    row = analyteTable.getRow(ar);
+                    if("SubHeader".equals(row.style)) {    
                         headerAddedInTheMiddle = true;
-                        analyteTable.addRow(ar+1,createHeaderRow());
-                        analyteTable.selectRow(ar+1);
+                        analyteTable.addRow(ar,createHeaderRow());
+                        analyteTable.selectRow(ar);
                         analyteTable.scrollToSelection();                    
                         //analyteTable.startEditing(ar+1, 0);
+                    } else { 
+                        row = analyteTable.getRow(ar+1);
+                        if("SubHeader".equals(row.style)) {
+                            headerAddedInTheMiddle = true;
+                            analyteTable.addRow(ar+1,createHeaderRow());
+                            analyteTable.selectRow(ar+1);
+                            analyteTable.scrollToSelection();                    
+                            //analyteTable.startEditing(ar+1, 0);
+                        } else {
+                            Window.alert(consts.get("headerCantBeAddedInsideGroup"));
+                        }
                     }
                 }
             }
@@ -639,17 +661,16 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
         final AppButton removeHeaderButton = (AppButton)def.getWidget("removeHeaderButton");
         addScreenHandler(removeHeaderButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-                int ar,num;
+                int ar;
                 TableDataRow row;
                 
-                ar = analyteTable.activeRow;
-                num = analyteTable.numRows();
+                ar = analyteTable.activeRow;                
                 
                 if(ar != -1) {
                     row = analyteTable.getRow(ar);                    
                     if("SubHeader".equals(row.style)) {  
                         analyteTable.deleteRow(ar);
-                        while(ar < num) {                        
+                        while(ar < analyteTable.numRows()) {                        
                             row = analyteTable.getRow(ar);
                             if("SubHeader".equals(row.style)) 
                                 break;
@@ -700,8 +721,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
                 
                 ar = analyteTable.activeRow;
                 if(anaSelCol != -1 && ar != -1) {                                                                                              
-                    shiftDataInRowToTheLeft(ar);
-                    //shiftDataAboveToTheLeft(ar);
+                    shiftDataInRowToTheLeft(ar);                   
                     shiftDataBelowToTheLeft(ar);        
 
                     analyteTable.refresh();                    
@@ -766,10 +786,13 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
                 int row,col,group;                
                 TestResultDO result ;
                 Object val;
+                Integer typeId;
+                TableDataRow trow;
+                String sysName;
 
                 row = event.getRow();
                 col = event.getCell();
-                val = resultTable.getRow(row).cells.get(col).value;
+                val = resultTable.getRow(row).cells.get(col).getValue();
                 group = resultTabPanel.getTabBar().getSelectedTab();
                 result = testResultManager.getResultAt(group+1, row);
                 
@@ -781,6 +804,16 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
                         result.setTypeId((Integer)val);
                         break;
                     case 2:             
+                        trow = resultTable.getRow(row);
+                        typeId = (Integer)trow.cells.get(1).getValue();
+                        sysName = DictionaryCache.getSystemNameFromId(typeId);
+                        if("test_res_type_numeric".equals(sysName)) {
+                            validateAndSetNumericValue((String)val,row);
+                            break;
+                        } else if("test_res_type_titer".equals(sysName)) {
+                            validateAndSetTiterValue((String)val,row);
+                            break;
+                        }                        
                         result.setValue((String)val);
                         break;
                     case 3:                
@@ -804,7 +837,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
                     testResultManager.addResultGroup();                                    
                 
                 selTab = resultTabPanel.getTabBar().getSelectedTab();                                                               
-                testResultManager.addResult(selTab+1);
+                testResultManager.addResult(selTab+1,getNextTempId());
             }
         });
 
@@ -898,18 +931,24 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
                         dictEntryPicker.addActionHandler(new ActionHandler<DictionaryEntryPickerScreen.Action>(){
 
                             public void onAction(ActionEvent<Action> event) {
-                               int selTab;
+                               int selTab,numTabs;
                                ArrayList<TableDataRow> model;
                                TestResultDO resDO;
                                TableDataRow row;
-                               Integer dictId;                               
+                               Integer dictId;   
+                               
+                               selTab = resultTabPanel.getTabBar().getSelectedTab();     
+                               numTabs = resultTabPanel.getTabBar().getTabCount();
                                if(event.getAction() == DictionaryEntryPickerScreen.Action.COMMIT) {
+                                   if(numTabs == 0){
+                                       Window.alert(consts.get("atleastOneResGrp"));
+                                       return;
+                                   }                                   
                                    model = (ArrayList<TableDataRow>)event.getData();
                                    if(model != null) {
                                        for(int i = 0; i < model.size(); i++) {
-                                           row = model.get(i);        
-                                           selTab = resultTabPanel.getTabBar().getSelectedTab();
-                                           testResultManager.addResultAt(selTab+1,resultTable.numRows());
+                                           row = model.get(i);                                                   
+                                           testResultManager.addResultAt(selTab+1,resultTable.numRows(),getNextTempId());
                                            resDO = testResultManager.getResultAt(selTab+1,resultTable.numRows());
                                            dictId = DictionaryCache.getIdFromSystemName("test_res_type_dictionary");
                                            resDO.setValue((String)row.cells.get(0).getValue());
@@ -983,13 +1022,14 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
     }        
     
     public void onGetMatches(GetMatchesEvent event) {
-        TestAutoRPC trpc;
+        AutocompleteRPC trpc;
         ArrayList<TableDataRow> model;
         TableDataRow row;
         int rg;
-        String match;        
+        String match;
+        IdNameDO autoDO;
         
-        trpc = new TestAutoRPC(); 
+        trpc = new AutocompleteRPC(); 
         trpc.match = event.getMatch();
         model = null;
         
@@ -997,8 +1037,11 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
             if(isAnalyteQuery()) {
                 trpc = service.call("getAnalyteMatches",trpc);
                 model = new ArrayList<TableDataRow>();
-                for(IdNameDO autoDO : trpc.idNameList) {
-                    row = new TableDataRow(autoDO.getId(),autoDO.getName());
+                for(int i = 0; i < trpc.model.size(); i++) {
+                    autoDO = (IdNameDO)trpc.model.get(i);
+                    row = new TableDataRow(1);
+                    row.key = autoDO.getId();
+                    row.cells.get(0).value = autoDO.getName();
                     model.add(row);
                 }
             } else {
@@ -1045,9 +1088,9 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
         }
         
         if(TestMeta.getTestAnalyte().getResultGroup().equals(field)) {
-            analyteTable.setCellError(trindex, col+1, consts.get(error.getMessage()));
+            analyteTable.setCellError(trindex, col+1, error.getMessage());
         } else if(col == 0){
-            analyteTable.setCellError(trindex, col, consts.get(error.getMessage()));
+            analyteTable.setCellError(trindex, col, error.getMessage());
         } else {                      
             for(trindex = dindex-1; trindex > -1; trindex--) {            
                 trow = analyteTable.getRow(trindex);                
@@ -1417,11 +1460,124 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
                 } else {      
                     resultTable.setCellError(exc.getColumnIndex(),
                                               exc.getFieldName(),
-                                              consts.get(exc.getMessage()));
+                                              exc.getMessage());
                 }
             }
         }
     }
+    
+    private void validateAndSetNumericValue(String value,int row) {
+        Double[] darray;
+        String finalValue;
+        String[] strList;
+        boolean convert;
+        Double doubleVal;
+        String token;
+        
+        darray = new Double[2];
+        //
+        // Get the string that was entered if the type
+        // chosen was "Numeric" and try to break it up at
+        // the "," if it follows the pattern number,number
+        //
+        if (!"".equals(value.trim())) {    
+            strList = value.split(",");
+            convert = false;
+            if (strList.length == 2) {
+                for (int iter = 0; iter < strList.length; iter++) {
+                    token = strList[iter];
+                    try {
+                        // 
+                        // Convert each number obtained
+                        // from the string and store its value
+                        // converted to double if its a valid
+                        // number, into an array
+                        //
+                        doubleVal = Double.valueOf(token);
+                        darray[iter] = doubleVal;
+                        convert = true;
+                    } catch (NumberFormatException ex) {
+                        convert = false;
+                    }
+                }
+            }
+            
+            if (convert) {
+                //
+                // If it's a valid string store the converted
+                // string back into the column otherwise add
+                // an error to the cell and store empty
+                // string into the cell
+                //  
+                if (darray[0].toString()
+                                .indexOf(".") == -1) {
+                    finalValue = darray[0].toString() + ".0"
+                    + ",";
+                } else {
+                    finalValue = darray[0].toString() + ",";
+                }
+                
+                if (darray[1].toString()
+                                .indexOf(".") == -1) {
+                    finalValue += darray[1].toString() + ".0";
+                } else {
+                    finalValue += darray[1].toString();
+                }
+                resultTable.setCell(row,2,finalValue);
+                return;                
+            } else {
+                resultTable.setCellError(row,2, consts.get("illegalNumericFormatException"));                
+            }    
+        }  else {
+            resultTable.setCellError(row,2,consts.get("fieldRequiredException"));  
+            
+        }
+        resultTable.setCell(row,2,value);
+    }
+    
+    private void validateAndSetTiterValue(String value,int row) {        
+        String[] strList;
+        boolean valid;
+        String token;
+                
+        //
+        // Get the string that was entered if the type
+        // chosen was "Numeric" and try to break it up at
+        // the "," if it follows the pattern number,number
+        //
+        if (!"".equals(value.trim())) {    
+            strList = value.split(":");
+            valid = false;
+            if (strList.length == 2) {
+                for (int iter = 0; iter < strList.length; iter++) {
+                    token = strList[iter];
+                    try {
+                        // 
+                        // Convert each number obtained
+                        // from the string and store its value
+                        // converted to double if its a valid
+                        // number, into an array
+                        //
+                        Integer.parseInt(token);
+                        valid = true;
+                    } catch (NumberFormatException ex) {
+                        valid = false;
+                    }
+                }
+            }
+            
+            if (!valid)                                             
+                resultTable.setCellError(row,2, consts.get("illegalTiterFormatException"));                                
+        }  else {
+            resultTable.setCellError(row,2,consts.get("fieldRequiredException"));  
+            
+        }
+        resultTable.setCell(row,2,value);   
+    }
+    
+    private int getNextTempId() {
+        return --tempId;
+    } 
     
 }
  
