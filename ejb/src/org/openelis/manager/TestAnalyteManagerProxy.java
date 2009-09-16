@@ -26,6 +26,7 @@
 package org.openelis.manager;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.naming.InitialContext;
 
@@ -34,24 +35,29 @@ import org.openelis.local.TestLocal;
 
 public class TestAnalyteManagerProxy{
     
-    public TestAnalyteManager add(TestAnalyteManager man) throws Exception {
+    public TestAnalyteManager add(TestAnalyteManager man,HashMap<Integer,Integer> idMap) throws Exception {
         TestLocal tl;
         ArrayList<TestAnalyteDO> list; 
         ArrayList<ArrayList<TestAnalyteDO>> grid;
         TestAnalyteDO anaDO;
-        int i,j,so;        
+        int i,j,so,negId;
 
         tl = getTestLocal();
         grid = man.getAnalytes();
         so = 0;
+        negId = 0;
         
         for(i = 0; i < man.rowCount(); i++) {
             list = grid.get(i);
-            for(j = 0; j < list.size(); j++) {
-                anaDO = list.get(j); 
+            for(j = 0; j < list.size(); j++) {                
+                anaDO = list.get(j);                 
+                negId = anaDO.getId();                                    
                 anaDO.setTestId(man.getTestId());
                 anaDO.setSortOrder(++so);
                 tl.addTestAnalyte(anaDO);
+                
+                if(j == 0)
+                    idMap.put(negId, anaDO.getId());
             }
             
         }
@@ -59,16 +65,18 @@ public class TestAnalyteManagerProxy{
         return man ;
     }
     
-    public TestAnalyteManager update(TestAnalyteManager man) throws Exception {
+    public TestAnalyteManager update(TestAnalyteManager man,HashMap<Integer,Integer> idMap) throws Exception {
         TestLocal tl;
         ArrayList<TestAnalyteDO> list; 
         ArrayList<ArrayList<TestAnalyteDO>> grid;
         TestAnalyteDO anaDO;
-        int i,j,so;        
+        int i,j,so,negId;       
+        
         
         tl = getTestLocal();
         grid = man.getAnalytes();
         so = 0;
+        negId = 0;
         
         for(i = 0; i < man.deleteCount(); i++){
             tl.deleteTestAnalyte(man.getDeletedAt(i));
@@ -78,11 +86,14 @@ public class TestAnalyteManagerProxy{
             list = grid.get(i);            
             for(j = 0; j < list.size(); j++) {
                 anaDO = list.get(j);                
-                anaDO.setSortOrder(++so);
-                if(anaDO.getId() == null){                    
+                anaDO.setSortOrder(++so);                
+                if(anaDO.getId() == null || anaDO.getId() < 0) {                        
+                    negId = anaDO.getId();
                     anaDO.setTestId(man.getTestId());
-                    tl.addTestAnalyte(anaDO);                    
-                }else {
+                    tl.addTestAnalyte(anaDO);
+                    if(j == 0)
+                        idMap.put(negId, anaDO.getId());
+                } else {
                     tl.updateTestAnalyte(anaDO);
                 }
             }

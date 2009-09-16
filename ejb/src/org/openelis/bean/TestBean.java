@@ -430,7 +430,7 @@ public class TestBean implements TestRemote, TestLocal {
             }
         }
 
-        if (testReflexDOList != null) {
+        if (testReflexDOList != null) {            
             for (int iter = 0; iter < testReflexDOList.size(); iter++) {
                 TestReflexDO refDO = testReflexDOList.get(iter);
                 TestReflex testReflex = null;
@@ -1144,7 +1144,8 @@ public class TestBean implements TestRemote, TestLocal {
                              List<TestSectionDO> sections,
                              List<TestTypeOfSampleDO> sampleTypes,
                              ArrayList<ArrayList<TestAnalyteDO>> analytes,
-                             ArrayList<ArrayList<TestResultDO>> results) throws Exception {
+                             ArrayList<ArrayList<TestResultDO>> results,
+                             ArrayList<TestPrepDO> prepTests) throws Exception {
 
         ValidationErrorsList exceptionList = new ValidationErrorsList();
 
@@ -1153,6 +1154,7 @@ public class TestBean implements TestRemote, TestLocal {
         validateTypeOfSample(exceptionList, sampleTypes);
         validateTestAnalyte(exceptionList, analytes);
         validateResult(exceptionList, results, sampleTypes);
+        validateTestPrep(exceptionList, prepTests);
 
         if (exceptionList.size() > 0)
             throw exceptionList;
@@ -1340,7 +1342,7 @@ public class TestBean implements TestRemote, TestLocal {
         Integer numId,dictId,titerId,typeId,dateId,dtId,timeId,unitId,entryId,defId;
         int i, j;
         String value, fieldName;
-        boolean hasDateType;
+        //boolean hasDateType;
         NumericRange nr;
         TiterRange tr;
         HashMap<Integer, List<TiterRange>> trMap;
@@ -1361,13 +1363,13 @@ public class TestBean implements TestRemote, TestLocal {
         nrMap = new HashMap<Integer, List<NumericRange>>();        
         dictList = new ArrayList<Integer>();
         unitsWithDefault = new ArrayList<Integer>();
-        hasDateType = false;        
+        //hasDateType = false;        
 
         for (i = 0; i < results.size(); i++) {
             trMap.clear();
             nrMap.clear();
             dictList.clear();
-            hasDateType = false;
+            //hasDateType = false;
             unitsWithDefault.clear();
 
             for (j = 0; j < results.get(i).size(); j++) {
@@ -1406,6 +1408,12 @@ public class TestBean implements TestRemote, TestLocal {
                                                                   TestResultMetaMap.getTableName()));
                     
                     continue;
+                } else if (!(value == null || "".equals(value)) && (dtId.equals(typeId) || timeId.equals(typeId)
+                                                                   || dateId.equals(typeId))) {
+                    exceptionList.add(new GridFieldErrorException("valuePresentForDateTypesException",i,j,fieldName,
+                                                                  TestResultMetaMap.getTableName()));
+
+                    continue;
                 }
 
                 try {
@@ -1415,7 +1423,7 @@ public class TestBean implements TestRemote, TestLocal {
                     } else if (titerId.equals(typeId)) {
                         tr = new TiterRange(value);
                         addTiterIfNoOverLap(trMap, unitId, tr);
-                    } else if (dateId.equals(typeId)) {
+                    }/* else if (dateId.equals(typeId)) {
                         TestResultValidator.validateDate(value);
                         if (hasDateType) {
                             fieldName = TestMeta.getTestResult().getTypeId();
@@ -1429,21 +1437,14 @@ public class TestBean implements TestRemote, TestLocal {
                             throw new InconsistentException("testMoreThanOneDateTypeException");
                         }
                         hasDateType = true;
-                    } else if (dtId.equals(typeId)) {
-                        TestResultValidator.validateDateTime(value);
-                        if (hasDateType) {
-                            fieldName = TestMeta.getTestResult().getTypeId();
-                            throw new InconsistentException("testMoreThanOneDateTypeException");
-                        }
-                        hasDateType = true;
-                    } else if (timeId.equals(typeId)) {
+                    }  else if (timeId.equals(typeId)) {
                         TestResultValidator.validateTime(value);
                         if (hasDateType) {
                             fieldName = TestMeta.getTestResult().getTypeId();
                             throw new InconsistentException("testMoreThanOneDateTypeException");
                         }
                         hasDateType = true;
-                    } else if (dictId.equals(typeId)) {
+                    } */else if (dictId.equals(typeId)) {
                         entryId = categoryBean.getEntryIdForEntry(value);
                         if (entryId == null)
                             throw new ParseException("illegalDictEntryException");
@@ -1456,10 +1457,10 @@ public class TestBean implements TestRemote, TestLocal {
                         if(unitsWithDefault.indexOf(unitId) == -1) 
                             unitsWithDefault.add(unitId);                            
                         else throw new InconsistentException("testMoreThanOneDefaultForUnitException");
-                    } else {
+                    } /*else {
                         fieldName = TestMeta.getTestResult().getTypeId();
                         throw new ParseException("fieldRequiredException");
-                    }
+                    }*/
                 } catch (ParseException ex) {
                     exceptionList.add(new GridFieldErrorException(ex.getMessage(),i,j,fieldName,
                                                                   TestResultMetaMap.getTableName()));
@@ -1475,38 +1476,45 @@ public class TestBean implements TestRemote, TestLocal {
 
     private void validateTestPrep(ValidationErrorsList exceptionList,
                                   List<TestPrepDO> testPrepDOList) {
-        List<Integer> testPrepIdList = new ArrayList<Integer>();
-        int numReq = 0;
-        for (int i = 0; i < testPrepDOList.size(); i++) {
-            TestPrepDO prepDO = testPrepDOList.get(i);
-            if (!prepDO.getDelete()) {
-                if (prepDO.getPrepTestId() == null) {
-                    exceptionList.add(new TableFieldErrorException("fieldRequiredException",
-                                                                   i,
-                                                                   TestPrepMetaMap.getTableName() + ":"
-                                                                                   + TestMeta.getTestPrep()
-                                                                                             .getPrepTestId()));
+        List<Integer> testPrepIdList;
+        TableFieldErrorException exc;
+        TestPrepDO prepDO;
+        int numReq,i;
+                
+        testPrepIdList = new ArrayList<Integer>();
+        numReq = 0;
+        
+        if(testPrepDOList == null)
+            return;
+        
+        for (i = 0; i < testPrepDOList.size(); i++) {
+            prepDO = testPrepDOList.get(i);
+            if (prepDO.getPrepTestId() == null) {
+                exc = new TableFieldErrorException("fieldRequiredException",
+                                                   i,
+                                                   TestMeta.getTestPrep().getPrepTest().getName());
+                exc.setTableKey(TestPrepMetaMap.getTableName());
+                exceptionList.add(exc);                
+            } else {
+                if (!testPrepIdList.contains(prepDO.getPrepTestId())) {
+                    testPrepIdList.add(prepDO.getPrepTestId());
                 } else {
-                    if (!testPrepIdList.contains(prepDO.getPrepTestId())) {
-                        testPrepIdList.add(prepDO.getPrepTestId());
-                    } else {
-                        exceptionList.add(new TableFieldErrorException("fieldUniqueOnlyException",
-                                                                       i,
-                                                                       TestPrepMetaMap.getTableName() + ":"
-                                                                                       + TestMeta.getTestPrep()
-                                                                                                 .getPrepTestId()));
-                    }
+                    exc = new TableFieldErrorException("fieldUniqueOnlyException",
+                                                       i,
+                                                       TestMeta.getTestPrep().getPrepTest().getName());
+                    exc.setTableKey(TestPrepMetaMap.getTableName());
+                    exceptionList.add(exc);
                 }
-                if (!"Y".equals(prepDO.getIsOptional())) {
-                    if (numReq >= 1) {
-                        exceptionList.add(new TableFieldErrorException("moreThanOnePrepTestOptionalException",
-                                                                       i,
-                                                                       TestPrepMetaMap.getTableName() + ":"
-                                                                                       + TestMeta.getTestPrep()
-                                                                                                 .getIsOptional()));
-                    }
-                    numReq++;
+            }
+            if (!"Y".equals(prepDO.getIsOptional())) {
+                if (numReq >= 1) {
+                    exc = new TableFieldErrorException("moreThanOnePrepTestOptionalException",
+                                                       i,
+                                                       TestMeta.getTestPrep().getPrepTest().getName());
+                    exc.setTableKey(TestPrepMetaMap.getTableName());
+                    exceptionList.add(exc);
                 }
+                numReq++;
             }
         }
     }
@@ -2367,6 +2375,7 @@ public class TestBean implements TestRemote, TestLocal {
         sampleType.setUnitOfMeasureId(sampleTypeDO.getUnitOfMeasureId());
 
         manager.persist(sampleType);
+        sampleTypeDO.setId(sampleType.getId());
     }
 
     public void deleteSampleType(TestTypeOfSampleDO sampleTypeDO) throws Exception {
@@ -2423,6 +2432,7 @@ public class TestBean implements TestRemote, TestLocal {
         analyte.setIsColumn(analyteDO.getIsColumn());
 
         manager.persist(analyte);
+        analyteDO.setId(analyte.getId());
 
     }
 
@@ -2434,6 +2444,58 @@ public class TestBean implements TestRemote, TestLocal {
         if (analyte != null)
             manager.remove(analyte);
 
+    }
+    
+    public ArrayList<ArrayList<TestResultDO>> fetchTestResultsById(Integer testId) throws Exception {
+        ArrayList<ArrayList<TestResultDO>> listCollection;
+        ArrayList<TestResultDO> list;
+        TestResultDO resDO;
+        Integer typeId, val, resultGroup;
+        String sysName, entry;
+        Query query;        
+        Iterator iter;
+
+        list = null;
+        listCollection = new ArrayList<ArrayList<TestResultDO>>();
+        resultGroup = 1;
+        while (resultGroup != null) {
+            query = manager.createNamedQuery("TestResult.TestResultDOList");
+            query.setParameter("testId", testId);
+            query.setParameter("resultGroup", resultGroup);
+
+            try {
+                list = (ArrayList<TestResultDO>)query.getResultList();
+                if (list.size() == 0) {
+                    resultGroup = null;
+                    break;
+                }                
+                for (iter = list.iterator(); iter.hasNext();) {
+                    resDO = (TestResultDO)iter.next();
+                    typeId = resDO.getTypeId();
+                    query = manager.createNamedQuery("Dictionary.SystemNameById");
+                    query.setParameter("id", typeId);
+                    sysName = (String)query.getResultList().get(0);
+                    if ("test_res_type_dictionary".equals(sysName)) {
+                        val = Integer.parseInt(resDO.getValue());
+                        query = manager.createNamedQuery("Dictionary.EntryById");
+                        query.setParameter("id", val);
+                        entry = (String)query.getResultList().get(0);
+                        resDO.setValue(entry);
+                    }
+                }
+
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+
+            listCollection.add(list);
+            resultGroup++;
+        }
+
+        if (listCollection == null || listCollection.size() == 0)
+            throw new NotFoundException();
+
+        return listCollection;
     }
 
     public void addTestResult(TestResultDO testResultDO) throws Exception {
@@ -2454,6 +2516,7 @@ public class TestBean implements TestRemote, TestLocal {
         testResult.setValue(testResultDO.getValue());
 
         manager.persist(testResult);
+        testResultDO.setId(testResult.getId());
 
     }
 
@@ -2486,59 +2549,109 @@ public class TestBean implements TestRemote, TestLocal {
         testResult.setValue(testResultDO.getValue());        
 
     }
+    
+    public ArrayList<TestPrepDO> fetchPrepTestsById(Integer testId) throws Exception {
+        Query query = manager.createNamedQuery("TestPrep.TestPrep");
+        query.setParameter("id", testId);
+        ArrayList<TestPrepDO> testPrepDOList = (ArrayList<TestPrepDO>)query.getResultList();
+        return testPrepDOList;
+    }
 
-    public ArrayList<ArrayList<TestResultDO>> fetchTestResultsById(Integer testId) throws Exception {
-        ArrayList<ArrayList<TestResultDO>> listCollection;
-        ArrayList<TestResultDO> list;
-        TestResultDO resDO;
-        Integer typeId, val, resultGroup;
-        String sysName, entry;
-        Query query;
-        int i = 0;
-        Iterator iter;
+    public void addPrepTest(TestPrepDO prepTestDO) throws Exception {
+        TestPrep prepTest;
+        
+        manager.setFlushMode(FlushModeType.COMMIT);
+        
+        prepTest = new TestPrep();
+        
+        prepTest.setIsOptional(prepTestDO.getIsOptional());
+        prepTest.setPrepTestId(prepTestDO.getPrepTestId());
+        prepTest.setTestId(prepTestDO.getTestId());
+        
+        manager.persist(prepTest);
+        
+        prepTestDO.setId(prepTest.getId());
+        
+    }
 
-        list = null;
-        listCollection = new ArrayList<ArrayList<TestResultDO>>();
-        resultGroup = 1;
-        while (resultGroup != null) {
-            query = manager.createNamedQuery("TestResult.TestResultDOList");
-            query.setParameter("testId", testId);
-            query.setParameter("resultGroup", resultGroup);
+    public void deletePrepTest(TestPrepDO deletedAt) throws Exception {
+        TestPrep prepTest;
 
-            try {
-                list = (ArrayList<TestResultDO>)query.getResultList();
-                if (list.size() == 0) {
-                    resultGroup = null;
-                    break;
-                }
-                i = 0;
-                for (iter = list.iterator(); iter.hasNext();) {
-                    resDO = (TestResultDO)iter.next();
-                    typeId = resDO.getTypeId();
-                    query = manager.createNamedQuery("Dictionary.SystemNameById");
-                    query.setParameter("id", typeId);
-                    sysName = (String)query.getResultList().get(0);
-                    if ("test_res_type_dictionary".equals(sysName)) {
-                        val = Integer.parseInt(resDO.getValue());
-                        query = manager.createNamedQuery("Dictionary.EntryById");
-                        query.setParameter("id", val);
-                        entry = (String)query.getResultList().get(0);
-                        resDO.setValue(entry);
-                    }
-                }
+        manager.setFlushMode(FlushModeType.COMMIT);
 
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
+        prepTest = manager.find(TestPrep.class, deletedAt.getId());
 
-            listCollection.add(list);
-            resultGroup++;
-        }
+        if (prepTest != null)
+            manager.remove(prepTest);
+        
+    }
 
-        if (listCollection == null || listCollection.size() == 0)
-            throw new NotFoundException();
+    public void updatePrepTest(TestPrepDO prepTestDO) throws Exception {
+        TestPrep prepTest;
+        
+        manager.setFlushMode(FlushModeType.COMMIT);
+        
+        prepTest = manager.find(TestPrep.class,prepTestDO.getId());
+        
+        prepTest.setIsOptional(prepTestDO.getIsOptional());
+        prepTest.setPrepTestId(prepTestDO.getPrepTestId());
+        prepTest.setTestId(prepTestDO.getTestId());                                     
+    }
 
-        return listCollection;
+    public ArrayList<TestReflexDO> fetchReflexTestsById(Integer testId) throws Exception {
+        Query query = manager.createNamedQuery("TestReflex.TestReflexDOList");
+        query.setParameter("testId", testId);
+        ArrayList<TestReflexDO> testRefDOList = (ArrayList<TestReflexDO>)query.getResultList();
+        return testRefDOList;
+    }
+    
+    public void addReflexTest(TestReflexDO reflexTest) throws Exception {                
+        TestReflex testReflex;
+        
+        manager.setFlushMode(FlushModeType.COMMIT);
+        
+        testReflex = new TestReflex();
+        
+        testReflex.setTestId(reflexTest.getTestId());        
+        testReflex.setAddTestId(reflexTest.getAddTestId());
+        testReflex.setTestAnalyteId(reflexTest.getTestAnalyteId());
+        testReflex.setTestResultId(reflexTest.getTestResultId());
+        testReflex.setFlagsId(reflexTest.getFlagsId());
+        
+        manager.persist(testReflex);
+        
+        reflexTest.setId(testReflex.getId());
+    }
+
+    public void deleteReflexTest(TestReflexDO deletedAt) throws Exception {
+        TestReflex testReflex;
+
+        manager.setFlushMode(FlushModeType.COMMIT);
+
+        testReflex = manager.find(TestReflex.class, deletedAt.getId());
+
+        if (testReflex != null)
+            manager.remove(testReflex);        
+    }
+
+
+    public void updateReflexTest(TestReflexDO testReflexDO) throws Exception {
+        TestReflex testReflex;
+        
+        manager.setFlushMode(FlushModeType.COMMIT);
+        
+        testReflex = manager.find(TestReflex.class, testReflexDO.getId());
+        
+        testReflex.setTestId(testReflexDO.getId());
+        testReflex.setAddTestId(testReflexDO.getAddTestId());
+        testReflex.setTestAnalyteId(testReflexDO.getTestAnalyteId());
+        testReflex.setTestResultId(testReflexDO.getTestResultId());
+        testReflex.setFlagsId(testReflexDO.getFlagsId());
+        
+        manager.persist(testReflex);
+        
+        testReflexDO.setId(testReflex.getId());
+        
     }
 
 }

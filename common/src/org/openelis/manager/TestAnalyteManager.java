@@ -26,6 +26,7 @@
 package org.openelis.manager;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.openelis.domain.TestAnalyteDO;
 import org.openelis.gwt.common.RPC;
@@ -83,17 +84,17 @@ public class TestAnalyteManager implements RPC {
         this.analytes = testAnalytes;
     }   
     
-    public void addRow(boolean isNewGroup,boolean referPrev) {        
-        addRowAt(rowCount()-1,isNewGroup,referPrev);        
+    public void addRow(boolean isNewGroup,boolean referPrev,Integer id) {        
+        addRowAt(rowCount()-1,isNewGroup,referPrev,id);        
     }
     
-    public void addRowAt(int row,boolean isNewGroup,boolean referPrev) {              
+    public void addRowAt(int row,boolean isNewGroup,boolean referPrev,Integer id) {              
         ArrayList<TestAnalyteDO> currlist;                                                                   
         
         if(analytes == null)
             analytes = new ArrayList<ArrayList<TestAnalyteDO>>();
         
-            currlist = createNewDataListAt(row,isNewGroup,referPrev);
+            currlist = createNewDataListAt(row,isNewGroup,referPrev,id);
             if(analytes.size() > row) 
                 analytes.add(row,currlist);
             else 
@@ -104,6 +105,7 @@ public class TestAnalyteManager implements RPC {
     public void removeRowAt(int row) {
         ArrayList<TestAnalyteDO> list;
         TestAnalyteDO anaDO;
+        Integer id;
         
         if(analytes == null || row >= analytes.size())
             return;
@@ -115,7 +117,8 @@ public class TestAnalyteManager implements RPC {
         
         for(int i = 0; i < list.size(); i++) {
             anaDO = list.get(i);
-            if(anaDO.getId() != null)
+            id = anaDO.getId();
+            if(id != null && id > 0)
                 deletedAnalytes.add(anaDO);                       
         }
         
@@ -191,8 +194,9 @@ public class TestAnalyteManager implements RPC {
             if(rg != nrg)
                 break;
             
-            nextDO = list.get(col);                                
-            deletedAnalytes.add(nextDO);
+            nextDO = list.get(col);      
+            if(nextDO.getId() != null) 
+                deletedAnalytes.add(nextDO);
             list.remove(col);
         }
         
@@ -202,8 +206,9 @@ public class TestAnalyteManager implements RPC {
             if(rg != nrg)
                 break;
             
-            nextDO = list.get(col);                       
-            deletedAnalytes.add(nextDO);
+            nextDO = list.get(col);  
+            if(nextDO.getId() != null) 
+                deletedAnalytes.add(nextDO);
             list.remove(col);
         }
     }
@@ -229,12 +234,12 @@ public class TestAnalyteManager implements RPC {
         return ado;   
     }
     
-    public TestAnalyteManager add() throws Exception {
-        return proxy().add(this);
+    public TestAnalyteManager add(HashMap<Integer,Integer> idMap) throws Exception {
+        return proxy().add(this,idMap);
     }
     
-    public TestAnalyteManager update() throws Exception {
-        return proxy().update(this);
+    public TestAnalyteManager update(HashMap<Integer,Integer> idMap) throws Exception {
+        return proxy().update(this,idMap);
     }       
     
     int deleteCount(){
@@ -259,7 +264,7 @@ public class TestAnalyteManager implements RPC {
      *  
      * 
      */
-    private ArrayList<TestAnalyteDO> createNewDataListAt(int row, boolean isNewGroup,boolean referPrev) {
+    private ArrayList<TestAnalyteDO> createNewDataListAt(int row, boolean isNewGroup,boolean referPrev,Integer id) {
         TestAnalyteDO prevDO,currDO;        
         ArrayList<TestAnalyteDO> prevlist,currlist;        
         
@@ -269,16 +274,12 @@ public class TestAnalyteManager implements RPC {
         
         if(isNewGroup) {
             currDO = new TestAnalyteDO();
+            currDO.setId(id);
             currDO.setRowGroup(getNextGroup());
             currDO.setIsReportable("N");
             currDO.setIsColumn("N");
             currlist.add(currDO);                
-        } else {
-            //if(row-1 >= 0)
-              //  prevlist = testAnalytes.get(row-1);
-            //else 
-              //  prevlist = testAnalytes.get(row+1);
-            
+        } else {            
             if(referPrev && row-1 >= 0) {
                 prevlist = analytes.get(row-1);
             } else {
@@ -288,9 +289,9 @@ public class TestAnalyteManager implements RPC {
             for(int i = 0; i < prevlist.size(); i++) {
                 prevDO = prevlist.get(i);
                 if(i == 0)
-                    currDO = createTestAnalyteDO(prevDO, "N");
+                    currDO = createTestAnalyteDO(prevDO, "N",id);
                 else
-                    currDO = createTestAnalyteDO(prevDO, "Y");
+                    currDO = createTestAnalyteDO(prevDO, "Y",id);
                 currlist.add(currDO);
             }
         }
@@ -298,7 +299,7 @@ public class TestAnalyteManager implements RPC {
         return currlist;
     }
     
-    private TestAnalyteDO createTestAnalyteDO(TestAnalyteDO prevDO,String isColumn){
+    private TestAnalyteDO createTestAnalyteDO(TestAnalyteDO prevDO,String isColumn,Integer id){
         TestAnalyteDO currDO;
         
         currDO = new TestAnalyteDO();
@@ -311,6 +312,7 @@ public class TestAnalyteManager implements RPC {
             currDO.setScriptletId(prevDO.getScriptletId());
             currDO.setScriptletName(prevDO.getScriptletName());
         } else {
+            currDO.setId(id);
             currDO.setIsReportable("N");
         }
         currDO.setRowGroup(prevDO.getRowGroup());

@@ -26,6 +26,7 @@
 package org.openelis.manager;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.naming.InitialContext;
 
@@ -34,54 +35,56 @@ import org.openelis.local.TestLocal;
 
 public class TestResultManagerProxy {
     
-    public TestResultManager add(TestResultManager man) throws Exception {
+    public TestResultManager add(TestResultManager man,HashMap<Integer,Integer> idMap) throws Exception {
         TestLocal tl;              
         TestResultDO testResult;
-        int i,j,size;
+        int i,j,size,negId;
         
-        tl = getTestLocal();
+        tl = getTestLocal();        
         
         for(i = 0; i < man.groupCount(); i++){
             size = man.getResultGroupSize(i+1);             
-            for(j = 0; i < size; j++) {
+            for(j = 0; j < size; j++) {                
                 testResult = man.getResultAt(i+1, j);
+                negId = testResult.getId();
                 testResult.setTestId(man.getTestId());
                 testResult.setResultGroup(i+1);
                 testResult.setSortOrder(j);
                 
                 tl.addTestResult(testResult);
+                idMap.put(negId, testResult.getId());
             }
         }
         return man;
     }
         
-    public TestResultManager update(TestResultManager man) throws Exception {
+    public TestResultManager update(TestResultManager man,HashMap<Integer,Integer> idMap) throws Exception {
         TestLocal tl;              
         TestResultDO testResult;
-        int i,j,size;
+        int i,j,size,negId;
         
         tl = getTestLocal();
         
         try {
-        for(i = 0; i < man.deleteCount(); i++){
-            tl.deleteTestResult(man.getDeletedAt(i));
-        }
-        
-        for(i = 0; i < man.groupCount(); i++){
-            size = man.getResultGroupSize(i+1);             
-            for(j = 0; j < size; j++) {
-                testResult = man.getResultAt(i+1, j);                
-                testResult.setResultGroup(i+1);
-                testResult.setSortOrder(j);
-                
-                if(testResult.getId() == null) {
-                    testResult.setTestId(man.getTestId());
-                    tl.addTestResult(testResult);
-                } else {
-                    tl.updateTestResult(testResult);
+            for(i = 0; i < man.deleteCount(); i++) 
+                tl.deleteTestResult(man.getDeletedAt(i));            
+            
+            for(i = 0; i < man.groupCount(); i++){
+                size = man.getResultGroupSize(i+1);             
+                for(j = 0; j < size; j++) {
+                    testResult = man.getResultAt(i+1, j);                
+                    testResult.setResultGroup(i+1);
+                    testResult.setSortOrder(j);
+                    negId = testResult.getId();
+                    if(negId < 0) {                    
+                        testResult.setTestId(man.getTestId());                    
+                        tl.addTestResult(testResult);
+                        idMap.put(negId, testResult.getId());
+                    } else {
+                        tl.updateTestResult(testResult);
+                    }
                 }
             }
-        }
         } catch (Exception ex) {
             ex.printStackTrace();
             throw ex;

@@ -26,6 +26,7 @@
 package org.openelis.manager;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.openelis.domain.TestResultDO;
 import org.openelis.gwt.common.RPC;
@@ -97,25 +98,30 @@ public class TestResultManager implements RPC {
         return results.get(group-1).size();
     }
     
-    public void addResult(int group) {      
+    public void addResult(int group,Integer id) {
+        TestResultDO result;
         if(results == null || group <= 0 || group-1 >= results.size())
             return;
    
-        results.get(group-1).add(new TestResultDO());
+        result = new TestResultDO();
+        result.setId(id);
+        results.get(group-1).add(result);
     }
     
-    public void addResultAt(int group, int row) {
+    public void addResultAt(int group,int row,Integer id) {
         ArrayList<TestResultDO> list;
+        TestResultDO result;
         
         if(row < 0 || results == null || group <= 0 || group-1 >= results.size())
             return;
         
         list = results.get(group-1);
-        
+        result = new TestResultDO();
+        result.setId(id);
         if (row < list.size()) {        
-            list.add(row, new TestResultDO());
+            list.add(row, result);
         } else {
-            list.add(new TestResultDO());
+            list.add(result);
         }            
     }
     
@@ -140,7 +146,7 @@ public class TestResultManager implements RPC {
         
         testResult = list.remove(row);
         
-        if(testResult.getId() != null) {
+        if(testResult.getId() > 0) {
             if(deletedResults == null)
                 deletedResults = new ArrayList<TestResultDO>();
             
@@ -155,12 +161,12 @@ public class TestResultManager implements RPC {
         results.remove(group-1);
     }
     
-    public TestResultManager add() throws Exception {
-        return proxy().add(this);
+    public TestResultManager add(HashMap<Integer,Integer> idMap) throws Exception {
+        return proxy().add(this,idMap);
     }
     
-    public TestResultManager update() throws Exception {
-        return proxy().update(this);
+    public TestResultManager update(HashMap<Integer,Integer> idMap) throws Exception {
+        return proxy().update(this,idMap);
     }
 
     ArrayList<ArrayList<TestResultDO>> getResults() {

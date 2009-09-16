@@ -62,7 +62,7 @@ public class TestSectionManagerProxy {
             tl.deleteTestSection(man.getDeletedAt(i));
         }
         
-        for(int i=0; i<man.count(); i++){
+        for(int i = 0; i < man.count(); i++){
             section = man.getSectionAt(i);
             
             if(section.getId() == null){

@@ -32,6 +32,8 @@ import javax.ejb.Local;
 
 import org.openelis.domain.TestAnalyteDO;
 import org.openelis.domain.TestDO;
+import org.openelis.domain.TestPrepDO;
+import org.openelis.domain.TestReflexDO;
 import org.openelis.domain.TestResultDO;
 import org.openelis.domain.TestSectionDO;
 import org.openelis.domain.TestTypeOfSampleDO;
@@ -42,7 +44,9 @@ public interface TestLocal {
     public ArrayList<TestSectionDO> getTestSections(Integer testId) throws Exception;
     public ArrayList<TestTypeOfSampleDO> fetchSampleTypesById(Integer testId)throws Exception;
     public ArrayList<ArrayList<TestAnalyteDO>> fetchTestAnalytesById(Integer testId)throws Exception;
-    public ArrayList<ArrayList<TestResultDO>> fetchTestResultsById(Integer testId) throws Exception;        
+    public ArrayList<ArrayList<TestResultDO>> fetchTestResultsById(Integer testId) throws Exception;
+    public ArrayList<TestPrepDO> fetchPrepTestsById(Integer testId) throws Exception;
+    public ArrayList<TestReflexDO> fetchReflexTestsById(Integer testId) throws Exception;
     
     public void add(TestDO testDO) throws Exception;
     public void update(TestDO testDO) throws Exception;
@@ -63,11 +67,18 @@ public interface TestLocal {
     public void addTestResult(TestResultDO testResult) throws Exception;
     public void deleteTestResult(TestResultDO deletedAt) throws Exception;
     
+    public void updatePrepTest(TestPrepDO prepTest) throws Exception;
+    public void addPrepTest(TestPrepDO prepTest) throws Exception;
+    public void deletePrepTest(TestPrepDO deletedAt) throws Exception;
+    
+    public void updateReflexTest(TestReflexDO reflexTest) throws Exception; 
+    public void addReflexTest(TestReflexDO reflexTest) throws Exception;
+    public void deleteReflexTest(TestReflexDO deletedAt) throws Exception;     
+    
     public void validateTest(TestDO test, List<TestSectionDO> sections,
                              List<TestTypeOfSampleDO> sampleTypes,
                              ArrayList<ArrayList<TestAnalyteDO>> analytes,
-                             ArrayList<ArrayList<TestResultDO>> results) throws Exception;
-    
-    
-                                
-}
+                             ArrayList<ArrayList<TestResultDO>> results,
+                             ArrayList<TestPrepDO> prepTests) throws Exception;
+                          
+} 

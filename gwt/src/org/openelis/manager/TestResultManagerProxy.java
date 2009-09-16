@@ -25,6 +25,8 @@
 */
 package org.openelis.manager;
 
+import java.util.HashMap;
+
 import org.openelis.gwt.services.ScreenService;
 
 public class TestResultManagerProxy {
@@ -36,11 +38,11 @@ public class TestResultManagerProxy {
         service = new ScreenService("OpenELISServlet?service="+TEST_MANAGER_SERVICE_URL);
     }
     
-    public TestResultManager add(TestResultManager man) throws Exception {
+    public TestResultManager add(TestResultManager man,HashMap<Integer,Integer> idMap) throws Exception {
         throw new UnsupportedOperationException();
     }
         
-    public TestResultManager update(TestResultManager man) throws Exception {
+    public TestResultManager update(TestResultManager man,HashMap<Integer,Integer> idMap) throws Exception {
         throw new UnsupportedOperationException();
     }
     
