@@ -23,8 +23,8 @@ import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
-@NamedQuery(name = "TestSection.TestSectionsByTestId", query = "select distinct new org.openelis.domain.TestSectionDO(ts.id,ts.testId,ts.sectionId,ts.flagId,s.name) " +
-                                                                                 " from TestSection ts LEFT JOIN ts.section s where ts.testId = :testId")
+@NamedQuery(name = "TestSection.TestSectionsByTestId", query = "select distinct new org.openelis.domain.TestSectionDO(ts.id,ts.testId,ts.sectionId,ts.flagId) " +
+                                                                                 " from TestSection ts left join ts.section s where ts.testId = :testId")
                      
 
 @Entity
@@ -49,11 +49,6 @@ public class TestSection implements Auditable, Cloneable {
   @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "section_id",insertable = false, updatable = false)
   private Section section;
-  
-  @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "test_id",insertable = false, updatable = false)
-  private Test test;
-
 
   @Transient
   private TestSection original;

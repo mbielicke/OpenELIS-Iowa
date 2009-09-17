@@ -30,7 +30,7 @@ import java.util.HashMap;
 
 import javax.naming.InitialContext;
 
-import org.openelis.domain.TestReflexDO;
+import org.openelis.domain.TestReflexViewDO;
 import org.openelis.local.TestLocal;
 
 public class TestReflexManagerProxy {
@@ -39,7 +39,7 @@ public class TestReflexManagerProxy {
                                  HashMap<Integer,Integer> analyteMap,
                                  HashMap<Integer,Integer> resultMap) throws Exception {
         TestLocal tl;
-        TestReflexDO reflexTest;
+        TestReflexViewDO reflexTest;
         Integer anaId, resId;
         
         tl = getTestLocal();         
@@ -67,12 +67,13 @@ public class TestReflexManagerProxy {
                                     HashMap<Integer,Integer> analyteMap,
                                     HashMap<Integer,Integer> resultMap) throws Exception {
         TestLocal tl;
-        TestReflexDO reflexTest;
+        TestReflexViewDO reflexTest;
         Integer anaId, resId;
         
         tl = getTestLocal(); 
-        
+                
         for(int i = 0; i < man.deleteCount(); i++) {
+            System.out.println("delete%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
             tl.deleteReflexTest(man.getDeletedAt(i));
         }
         
@@ -82,17 +83,22 @@ public class TestReflexManagerProxy {
             anaId = reflexTest.getTestAnalyteId();
             resId = reflexTest.getTestResultId();
             
+            System.out.println("anaId "+ anaId+"%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
+            System.out.println("resId "+ resId+"%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
             if(anaId < 0)
                 reflexTest.setTestAnalyteId(analyteMap.get(anaId));
             
             if(resId < 0)
                 reflexTest.setTestResultId(resultMap.get(resId));
             
-            if(reflexTest.getId() == null){
+            if(reflexTest.getId() == null){                
                 reflexTest.setTestId(man.getTestId());
+                System.out.println("add%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
                 tl.addReflexTest(reflexTest);
-            }else
+            } else {
+                System.out.println("update %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
                 tl.updateReflexTest(reflexTest);
+            }
         }
         
         return man;
@@ -101,7 +107,7 @@ public class TestReflexManagerProxy {
     public TestReflexManager fetchByTestId(Integer testId) throws Exception {
         TestReflexManager trm;
         TestLocal tl;
-        ArrayList<TestReflexDO> reflexTests;    
+        ArrayList<TestReflexViewDO> reflexTests;    
         
         tl = getTestLocal();
         reflexTests = tl.fetchReflexTestsById(testId);

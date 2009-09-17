@@ -46,8 +46,8 @@ import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
 @NamedQueries({@NamedQuery(name = "TestWorksheetAnalyte.TestWorksheetAnalyteDOByTestId", 
-                            query = "select distinct new org.openelis.domain.TestWorksheetAnalyteDO(twa.id,twa.testId,twa.analyteId,"+
-                                 " a.name,twa.repeat,twa.flagId) from TestWorksheetAnalyte twa, Analyte a where twa.testId = :testId"+ 
+                            query = "select distinct new org.openelis.domain.TestWorksheetAnalyteViewDO(twa.id,twa.testId,twa.analyteId,"+
+                                 " twa.repeat,twa.flagId,a.name) from TestWorksheetAnalyte twa, Analyte a where twa.testId = :testId"+ 
                                   " and a.id = twa.analyteId order by a.name")})
     
 

@@ -32,6 +32,7 @@ import javax.naming.InitialContext;
 
 import org.openelis.domain.TestDO;
 import org.openelis.domain.TestSectionDO;
+import org.openelis.domain.TestViewDO;
 import org.openelis.local.TestLocal;
 
 public class TestManagerProxy {
@@ -132,7 +133,7 @@ public class TestManagerProxy {
 
     public TestManager fetch(Integer testId) throws Exception {
         TestLocal tl;
-        TestDO testDO;
+        TestViewDO testDO;
         TestManager man;
         TestSectionManager tsm;
         ArrayList<TestSectionDO> sections;
@@ -174,6 +175,7 @@ public class TestManagerProxy {
 
         man = fetch(testId);
         man.getPrepTests();
+        man.getReflexTests();
         
         return man;
     }
