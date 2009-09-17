@@ -26,6 +26,7 @@
 package org.openelis.manager;
 
 import org.openelis.domain.TestDO;
+import org.openelis.domain.TestViewDO;
 import org.openelis.exception.InconsistencyException;
 import org.openelis.exception.NotFoundException;
 import org.openelis.gwt.common.RPC;
@@ -33,7 +34,7 @@ import org.openelis.gwt.common.RPC;
 public class TestManager implements RPC {
 
     private static final long serialVersionUID = 1L;
-    protected TestDO test;
+    protected TestViewDO test;
     protected TestSectionManager testSections;
     protected TestTypeOfSampleManager sampleTypes;
     protected TestAnalyteManager testAnalytes;
@@ -63,7 +64,7 @@ public class TestManager implements RPC {
         TestManager tm;
         
         tm = new TestManager();
-        tm.test = new TestDO();
+        tm.test = new TestViewDO();
         tm.testSections = new TestSectionManager();        
         return tm;
     }
@@ -216,11 +217,11 @@ public class TestManager implements RPC {
         return reflexTests;
     }
     
-    public TestDO getTest() {
+    public TestViewDO getTest() {
         return test;
     }
 
-    public void setTest(TestDO test) {
+    public void setTest(TestViewDO test) {
         this.test = test;
     }
     

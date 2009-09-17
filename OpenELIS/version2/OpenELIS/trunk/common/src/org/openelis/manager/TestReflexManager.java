@@ -28,7 +28,7 @@ package org.openelis.manager;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.openelis.domain.TestReflexDO;
+import org.openelis.domain.TestReflexViewDO;
 import org.openelis.gwt.common.RPC;
 
 public class TestReflexManager implements RPC {
@@ -36,8 +36,8 @@ public class TestReflexManager implements RPC {
     private static final long serialVersionUID = 1L;
     
     protected Integer testId;
-    protected ArrayList<TestReflexDO> reflexes;
-    protected ArrayList<TestReflexDO> deletedReflexes;
+    protected ArrayList<TestReflexViewDO> reflexes;
+    protected ArrayList<TestReflexViewDO> deletedReflexes;
     
     protected transient static TestReflexManagerProxy proxy;
     
@@ -52,7 +52,7 @@ public class TestReflexManager implements RPC {
         TestReflexManager trm;
         
         trm = new TestReflexManager();
-        trm.reflexes = new ArrayList<TestReflexDO>();
+        trm.reflexes = new ArrayList<TestReflexViewDO>();
         
         return trm;
     }
@@ -76,30 +76,30 @@ public class TestReflexManager implements RPC {
         return reflexes.size();
     } 
 
-    public TestReflexDO getReflexAt(int i) {
+    public TestReflexViewDO getReflexAt(int i) {
         return reflexes.get(i);
     }
     
-    public void setReflexAt(TestReflexDO reflexTest, int i) {
+    public void setReflexAt(TestReflexViewDO reflexTest, int i) {
         reflexes.set(i, reflexTest);
     }
     
-    public void addReflex(TestReflexDO reflexTest) {
+    public void addReflex(TestReflexViewDO reflexTest) {
         if(reflexes == null)
-            reflexes = new ArrayList<TestReflexDO>();
+            reflexes = new ArrayList<TestReflexViewDO>();
         
         reflexes.add(reflexTest);
     }
     
-    public void addReflexAt(TestReflexDO reflexTest, int i) {
+    public void addReflexAt(TestReflexViewDO reflexTest, int i) {
         if(reflexes == null)
-            reflexes = new ArrayList<TestReflexDO>();
+            reflexes = new ArrayList<TestReflexViewDO>();
         
         reflexes.add(i,reflexTest);
     }
     
     public void removeReflexAt(int i) {
-        TestReflexDO reflexTest;
+        TestReflexViewDO reflexTest;
      
         if (reflexes == null || i >= reflexes.size())
             return;
@@ -107,7 +107,7 @@ public class TestReflexManager implements RPC {
         reflexTest = reflexes.remove(i);
         if(reflexTest.getId() != null) {
             if (deletedReflexes == null)
-                deletedReflexes = new ArrayList<TestReflexDO>();
+                deletedReflexes = new ArrayList<TestReflexViewDO>();
             deletedReflexes.add(reflexTest);
         }        
     }
@@ -119,14 +119,14 @@ public class TestReflexManager implements RPC {
     
     public TestReflexManager update(HashMap<Integer,Integer> analyteMap,
                                     HashMap<Integer,Integer> resultMap) throws Exception {
-        return proxy().add(this,analyteMap,resultMap);                
+        return proxy().update(this,analyteMap,resultMap);                
     }
 
-    ArrayList<TestReflexDO> getReflexes() {
+    ArrayList<TestReflexViewDO> getReflexes() {
         return reflexes;
     }
     
-    void setReflexes(ArrayList<TestReflexDO> reflexes) {
+    void setReflexes(ArrayList<TestReflexViewDO> reflexes) {
         this.reflexes = reflexes;
     }
     
@@ -137,7 +137,7 @@ public class TestReflexManager implements RPC {
         return deletedReflexes.size();
     }
         
-    TestReflexDO getDeletedAt(int i) {
+    TestReflexViewDO getDeletedAt(int i) {
         return deletedReflexes.get(i);
     }
     

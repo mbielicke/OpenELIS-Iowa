@@ -27,7 +27,7 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
-import org.openelis.domain.TestPrepDO;
+import org.openelis.domain.TestPrepViewDO;
 import org.openelis.gwt.common.RPC;
 
 public class TestPrepManager implements RPC {
@@ -35,8 +35,8 @@ public class TestPrepManager implements RPC {
     private static final long serialVersionUID = 1L;
     
     protected Integer testId;
-    protected ArrayList<TestPrepDO> preps;
-    protected ArrayList<TestPrepDO> deletedPreps;
+    protected ArrayList<TestPrepViewDO> preps;
+    protected ArrayList<TestPrepViewDO> deletedPreps;
     
     protected transient static TestPrepManagerProxy proxy;
     
@@ -51,7 +51,7 @@ public class TestPrepManager implements RPC {
         TestPrepManager tpm;
         
         tpm = new TestPrepManager();
-        tpm.preps = new ArrayList<TestPrepDO>();
+        tpm.preps = new ArrayList<TestPrepViewDO>();
         
         return tpm;
     }
@@ -75,38 +75,38 @@ public class TestPrepManager implements RPC {
         return preps.size();
     }
     
-    public TestPrepDO getPrepAt(int i) {
+    public TestPrepViewDO getPrepAt(int i) {
         return preps.get(i);
     } 
     
-    public void setPrepAt(TestPrepDO prepTest, int i) {
+    public void setPrepAt(TestPrepViewDO prepTest, int i) {
         preps.set(i,prepTest);
     }
     
-    public void addPrep(TestPrepDO prepTest) {
+    public void addPrep(TestPrepViewDO prepTest) {
         if(preps == null) 
-            preps = new ArrayList<TestPrepDO>();
+            preps = new ArrayList<TestPrepViewDO>();
     
         preps.add(prepTest);
     }
     
-    public void addPrepAt(TestPrepDO prepTest, int i) {
+    public void addPrepAt(TestPrepViewDO prepTest, int i) {
         if(preps == null) 
-            preps = new ArrayList<TestPrepDO>();
+            preps = new ArrayList<TestPrepViewDO>();
     
         preps.add(i,prepTest);
     }
     
     
     public void removePrepAt(int i) {
-        TestPrepDO prepTest;
+        TestPrepViewDO prepTest;
         if (preps == null || i >= preps.size())
             return;
 
         prepTest = preps.remove(i);
         if (prepTest.getId() != null) {
             if (deletedPreps == null)
-                deletedPreps = new ArrayList<TestPrepDO>();
+                deletedPreps = new ArrayList<TestPrepViewDO>();
             deletedPreps.add(prepTest);
         }        
     }
@@ -119,11 +119,11 @@ public class TestPrepManager implements RPC {
         return proxy().update(this);                
     }
     
-    ArrayList<TestPrepDO> getPreps() {
+    ArrayList<TestPrepViewDO> getPreps() {
         return preps;
     }
     
-    void setPreps(ArrayList<TestPrepDO> prepTests) {
+    void setPreps(ArrayList<TestPrepViewDO> prepTests) {
         this.preps = prepTests;
     }   
     
@@ -134,7 +134,7 @@ public class TestPrepManager implements RPC {
         return deletedPreps.size();
     }
     
-    TestPrepDO getDeletedAt(int i) {
+    TestPrepViewDO getDeletedAt(int i) {
         return deletedPreps.get(i);
     }
     

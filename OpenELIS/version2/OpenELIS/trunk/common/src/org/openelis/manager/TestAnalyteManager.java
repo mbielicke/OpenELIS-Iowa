@@ -28,7 +28,8 @@ package org.openelis.manager;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.openelis.domain.TestAnalyteDO;
+import org.openelis.domain.TestAnalyteViewDO;
+import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.gwt.common.RPC;
 
 public class TestAnalyteManager implements RPC {
@@ -39,11 +40,11 @@ public class TestAnalyteManager implements RPC {
     
     protected Integer testId;    
     protected transient static TestAnalyteManagerProxy proxy;    
-    protected ArrayList<ArrayList<TestAnalyteDO>> analytes;   
-    protected ArrayList<TestAnalyteDO> deletedAnalytes;
+    protected ArrayList<ArrayList<TestAnalyteViewDO>> analytes;   
+    protected ArrayList<TestAnalyteViewDO> deletedAnalytes;
         
     protected TestAnalyteManager() {
-        analytes = new ArrayList<ArrayList<TestAnalyteDO>>();
+        analytes = new ArrayList<ArrayList<TestAnalyteViewDO>>();
         nextGroup = 0;
     }
     
@@ -76,11 +77,11 @@ public class TestAnalyteManager implements RPC {
         return analytes.size();
     }
     
-    public ArrayList<ArrayList<TestAnalyteDO>> getAnalytes() {
+    public ArrayList<ArrayList<TestAnalyteViewDO>> getAnalytes() {
         return analytes;
     }
 
-    void setAnalytes(ArrayList<ArrayList<TestAnalyteDO>> testAnalytes) {
+    void setAnalytes(ArrayList<ArrayList<TestAnalyteViewDO>> testAnalytes) {
         this.analytes = testAnalytes;
     }   
     
@@ -89,10 +90,10 @@ public class TestAnalyteManager implements RPC {
     }
     
     public void addRowAt(int row,boolean isNewGroup,boolean referPrev,Integer id) {              
-        ArrayList<TestAnalyteDO> currlist;                                                                   
+        ArrayList<TestAnalyteViewDO> currlist;                                                                   
         
         if(analytes == null)
-            analytes = new ArrayList<ArrayList<TestAnalyteDO>>();
+            analytes = new ArrayList<ArrayList<TestAnalyteViewDO>>();
         
             currlist = createNewDataListAt(row,isNewGroup,referPrev,id);
             if(analytes.size() > row) 
@@ -103,8 +104,8 @@ public class TestAnalyteManager implements RPC {
     }
     
     public void removeRowAt(int row) {
-        ArrayList<TestAnalyteDO> list;
-        TestAnalyteDO anaDO;
+        ArrayList<TestAnalyteViewDO> list;
+        TestAnalyteViewDO anaDO;
         Integer id;
         
         if(analytes == null || row >= analytes.size())
@@ -113,7 +114,7 @@ public class TestAnalyteManager implements RPC {
         list = analytes.get(row);        
         
         if(deletedAnalytes == null)
-            deletedAnalytes = new ArrayList<TestAnalyteDO>();
+            deletedAnalytes = new ArrayList<TestAnalyteViewDO>();
         
         for(int i = 0; i < list.size(); i++) {
             anaDO = list.get(i);
@@ -126,8 +127,8 @@ public class TestAnalyteManager implements RPC {
     }
     
     public void addColumnAt(int row, int col, Integer analyteId) {
-        TestAnalyteDO anaDO;
-        ArrayList<TestAnalyteDO> list;
+        TestAnalyteViewDO anaDO;
+        ArrayList<TestAnalyteViewDO> list;
         int i,rg,nrg;
         
         rg = analytes.get(row).get(col-1).getRowGroup();
@@ -140,7 +141,7 @@ public class TestAnalyteManager implements RPC {
             if(rg != nrg)
                 break;                
             
-            anaDO = new TestAnalyteDO();
+            anaDO = new TestAnalyteViewDO();
             //anaDO.setId(--tempId);
             anaDO.setAnalyteId(analyteId);        
             anaDO.setIsColumn("Y");            
@@ -162,7 +163,7 @@ public class TestAnalyteManager implements RPC {
             if(rg != nrg)
                 break;
                                              
-            anaDO = new TestAnalyteDO();
+            anaDO = new TestAnalyteViewDO();
             //anaDO.setId(--tempId);
             anaDO.setAnalyteId(analyteId);        
             anaDO.setIsColumn("Y");            
@@ -178,15 +179,15 @@ public class TestAnalyteManager implements RPC {
     }
     
     public void removeColumnAt(int row, int col) {
-        TestAnalyteDO anaDO,nextDO;
-        ArrayList<TestAnalyteDO> list;
+        TestAnalyteViewDO anaDO,nextDO;
+        ArrayList<TestAnalyteViewDO> list;
         int i,rg,nrg;
         
         anaDO = analytes.get(row).get(col);        
         rg = anaDO.getRowGroup();
 
         if(deletedAnalytes == null) 
-            deletedAnalytes = new ArrayList<TestAnalyteDO>();
+            deletedAnalytes = new ArrayList<TestAnalyteViewDO>();
         
         for(i = row; i < analytes.size(); i++) {
             list = analytes.get(i);
@@ -223,8 +224,8 @@ public class TestAnalyteManager implements RPC {
         }
     }
     
-    public TestAnalyteDO getAnalyteAt(int row, int col) {
-        TestAnalyteDO ado;                        
+    public TestAnalyteViewDO getAnalyteAt(int row, int col) {
+        TestAnalyteViewDO ado;                        
         try {
             ado = analytes.get(row).get(col);
         } catch (IndexOutOfBoundsException ex) {            
@@ -249,7 +250,7 @@ public class TestAnalyteManager implements RPC {
         return deletedAnalytes.size();
     }
     
-    TestAnalyteDO getDeletedAt(int i) {
+    TestAnalyteViewDO getDeletedAt(int i) {
         return deletedAnalytes.get(i);
     }
     
@@ -264,16 +265,16 @@ public class TestAnalyteManager implements RPC {
      *  
      * 
      */
-    private ArrayList<TestAnalyteDO> createNewDataListAt(int row, boolean isNewGroup,boolean referPrev,Integer id) {
-        TestAnalyteDO prevDO,currDO;        
-        ArrayList<TestAnalyteDO> prevlist,currlist;        
+    private ArrayList<TestAnalyteViewDO> createNewDataListAt(int row, boolean isNewGroup,boolean referPrev,Integer id) {
+        TestAnalyteViewDO prevDO,currDO;        
+        ArrayList<TestAnalyteViewDO> prevlist,currlist;        
         
         prevDO = null;        
-        currlist = new ArrayList<TestAnalyteDO>(1);
+        currlist = new ArrayList<TestAnalyteViewDO>(1);
         prevlist = null;
         
         if(isNewGroup) {
-            currDO = new TestAnalyteDO();
+            currDO = new TestAnalyteViewDO();
             currDO.setId(id);
             currDO.setRowGroup(getNextGroup());
             currDO.setIsReportable("N");
@@ -289,9 +290,9 @@ public class TestAnalyteManager implements RPC {
             for(int i = 0; i < prevlist.size(); i++) {
                 prevDO = prevlist.get(i);
                 if(i == 0)
-                    currDO = createTestAnalyteDO(prevDO, "N",id);
+                    currDO = createTestAnalyteViewDO(prevDO, "N",id);
                 else
-                    currDO = createTestAnalyteDO(prevDO, "Y",id);
+                    currDO = createTestAnalyteViewDO(prevDO, "Y",id);
                 currlist.add(currDO);
             }
         }
@@ -299,10 +300,10 @@ public class TestAnalyteManager implements RPC {
         return currlist;
     }
     
-    private TestAnalyteDO createTestAnalyteDO(TestAnalyteDO prevDO,String isColumn,Integer id){
-        TestAnalyteDO currDO;
+    private TestAnalyteViewDO createTestAnalyteViewDO(TestAnalyteViewDO prevDO,String isColumn,Integer id){
+        TestAnalyteViewDO currDO;
         
-        currDO = new TestAnalyteDO();
+        currDO = new TestAnalyteViewDO();
         if("Y".equals(isColumn)) {
             currDO.setAnalyteId(prevDO.getAnalyteId());
             currDO.setAnalyteName(prevDO.getAnalyteName());            
@@ -323,7 +324,7 @@ public class TestAnalyteManager implements RPC {
     
     private int getNextGroup() {
         int i,rg;
-        ArrayList<TestAnalyteDO> list;
+        ArrayList<TestAnalyteViewDO> list;
         
         if(analytes != null) {                     
             for (i = 0; i < analytes.size(); i++) {
