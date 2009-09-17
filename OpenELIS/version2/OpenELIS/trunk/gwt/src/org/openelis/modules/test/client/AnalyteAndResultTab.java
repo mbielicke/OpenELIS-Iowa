@@ -34,6 +34,7 @@ import org.openelis.common.AutocompleteRPC;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameDO;
 import org.openelis.domain.TestAnalyteDO;
+import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.domain.TestResultDO;
 import org.openelis.domain.TestTypeOfSampleDO;
 import org.openelis.gwt.common.GridFieldErrorException;
@@ -44,6 +45,7 @@ import org.openelis.gwt.event.BeforeGetMatchesHandler;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.GetMatchesEvent;
 import org.openelis.gwt.event.GetMatchesHandler;
+import org.openelis.gwt.event.HasActionHandlers;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
@@ -75,15 +77,17 @@ import org.openelis.manager.TestResultManager;
 import org.openelis.manager.TestTypeOfSampleManager;
 import org.openelis.metamap.TestMetaMap;
 import org.openelis.modules.dictionaryentrypicker.client.DictionaryEntryPickerScreen;
-import org.openelis.modules.dictionaryentrypicker.client.DictionaryEntryPickerScreen.Action;
+import org.openelis.modules.environmentalSampleLogin.client.SampleItemTab.Action;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Window;
 
-public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,BeforeGetMatchesHandler{
+public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,BeforeGetMatchesHandler,
+                                                           HasActionHandlers<AnalyteAndResultTab.Action> {
     private TestManager manager;
     private TestMetaMap TestMeta;
     
@@ -105,6 +109,8 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
     private AppButton removeColumnButton,addColumnButton;
     
     private ArrayList<GridFieldErrorException> resultErrorList;
+    
+    public enum Action {ANALYTE_CHANGED,ANALYTE_DELETED,RESULT_CHANGED,RESULT_DELETED};
             
     private boolean addAnalyteRow,dropdownsInited, loaded, headerAddedInTheMiddle;
     
@@ -130,6 +136,8 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
         headerAddedInTheMiddle = false;
         
         resultErrorList = null;
+        
+        final AnalyteAndResultTab anaResTab = this;
         
         analyteTable = (TableWidget)def.getWidget("analyteTable");
         addScreenHandler(analyteTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
@@ -207,7 +215,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
             public void onCellUpdated(CellEditedEvent event) {
                 int r,col,numCol,dindex;
                 TableDataRow row,value;
-                TestAnalyteDO anaDO;                
+                TestAnalyteViewDO anaDO;                
                 Integer key;
                 AutoComplete<Integer> auto;
                 
@@ -255,6 +263,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
                             anaDO = displayManager.getTestAnalyteAt(r, col);
                             anaDO.setAnalyteId(key);
                             anaDO.setAnalyteName(auto.getTextBoxDisplay());
+                            ActionEvent.fire(anaResTab, Action.ANALYTE_CHANGED, anaDO);
                         } else {
                             //
                             // otherwise we need to set the key as the result group
@@ -356,14 +365,17 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
             public void onRowDeleted(RowDeletedEvent event) {
                 int index,dindex;
                 TableDataRow row;
+                TestAnalyteViewDO anaDO;
                 
                 index = event.getIndex();
                 row = event.getRow();
 
                 if(!"SubHeader".equals(row.style)) {
                     dindex = displayManager.getDataRowIndex(index);
+                    anaDO = testAnalyteManager.getAnalyteAt(dindex, 0);
                     testAnalyteManager.removeRowAt(dindex);
-                    displayManager.setDataGrid(testAnalyteManager.getAnalytes());                                          
+                    displayManager.setDataGrid(testAnalyteManager.getAnalytes());
+                    ActionEvent.fire(anaResTab, Action.ANALYTE_DELETED, anaDO);
                 }
             }
         });
@@ -373,8 +385,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
         typeId = (Dropdown<Integer>)def.getWidget(TestMeta.getTestAnalyte().getTypeId());
         addScreenHandler(typeId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {                      
-                TestAnalyteDO anaDO;               
-                               
+                TestAnalyteViewDO anaDO;                                              
                 
                 if(displayManager != null && analyteTable.activeRow != -1) {                    
                     if(anaSelCol == 0)
@@ -392,7 +403,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
-                TestAnalyteDO anaDO;
+                TestAnalyteViewDO anaDO;
                 TableDataRow row;
                 int i,ar;
                 
@@ -427,7 +438,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
         isReportable = (CheckBox)def.getWidget(TestMeta.getTestAnalyte().getIsReportable());
         addScreenHandler(isReportable, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                TestAnalyteDO anaDO;                   
+                TestAnalyteViewDO anaDO;                   
                 
                 if(displayManager != null && analyteTable.activeRow != -1) {                                                      
                     if(anaSelCol == 0)
@@ -445,7 +456,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {                                
-                TestAnalyteDO anaDO;
+                TestAnalyteViewDO anaDO;
                 TableDataRow row;
                 int i,ar;
                 
@@ -482,7 +493,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
         scriptlet = (AutoComplete<Integer>)def.getWidget(TestMeta.getTestAnalyte().getScriptletId());
         addScreenHandler(scriptlet, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                TestAnalyteDO anaDO;
+                TestAnalyteViewDO anaDO;
                 
                 if(displayManager != null && analyteTable.activeRow != -1) {
                         if(anaSelCol == 0)
@@ -498,7 +509,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {                                
-                TestAnalyteDO anaDO;
+                TestAnalyteViewDO anaDO;
                 TableDataRow row;
                 int i,ar;
                 
@@ -788,7 +799,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
                 Object val;
                 Integer typeId;
                 TableDataRow trow;
-                String sysName;
+                String sysName,value;
 
                 row = event.getRow();
                 col = event.getCell();
@@ -808,13 +819,14 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
                         typeId = (Integer)trow.cells.get(1).getValue();
                         sysName = DictionaryCache.getSystemNameFromId(typeId);
                         if("test_res_type_numeric".equals(sysName)) {
-                            validateAndSetNumericValue((String)val,row);
-                            break;
+                            value = validateAndSetNumericValue((String)val,row);                            
                         } else if("test_res_type_titer".equals(sysName)) {
-                            validateAndSetTiterValue((String)val,row);
-                            break;
-                        }                        
-                        result.setValue((String)val);
+                            value = validateAndSetTiterValue((String)val,row);                            
+                        } else {
+                            value = (String)val;
+                        }                       
+                        result.setValue(value);
+                        ActionEvent.fire(anaResTab, Action.RESULT_CHANGED, result);
                         break;
                     case 3:                
                         result.setFlagsId((Integer)val);
@@ -844,7 +856,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
         resultTable.addRowDeletedHandler(new RowDeletedHandler() {
             public void onRowDeleted(RowDeletedEvent event) {
                 int row,selTab;
-             
+                
                 selTab = resultTabPanel.getTabBar().getSelectedTab();                
                 row = event.getIndex();        
                 
@@ -930,7 +942,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
                         dictEntryPicker = new DictionaryEntryPickerScreen();
                         dictEntryPicker.addActionHandler(new ActionHandler<DictionaryEntryPickerScreen.Action>(){
 
-                            public void onAction(ActionEvent<Action> event) {
+                            public void onAction(ActionEvent<DictionaryEntryPickerScreen.Action> event) {
                                int selTab,numTabs;
                                ArrayList<TableDataRow> model;
                                TestResultDO resDO;
@@ -1109,11 +1121,15 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
         showErrorsForResultGroup(resultTabPanel.getTabBar().getSelectedTab());
     }
     
+    public HandlerRegistration addActionHandler(ActionHandler<AnalyteAndResultTab.Action> handler) {
+        return addHandler(handler, ActionEvent.getType());
+    } 
+    
     private ArrayList<TableDataRow> getAnalyteTableModel() {
        int m,c,len;
        ArrayList<TableDataRow> model;
        TableDataRow hrow,row;
-       TestAnalyteDO anaDO;
+       TestAnalyteViewDO anaDO;
        boolean headerFilled;
        
        model = new ArrayList<TableDataRow>();
@@ -1466,7 +1482,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
         }
     }
     
-    private void validateAndSetNumericValue(String value,int row) {
+    private String validateAndSetNumericValue(String value,int row) {
         Double[] darray;
         String finalValue;
         String[] strList;
@@ -1524,7 +1540,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
                     finalValue += darray[1].toString();
                 }
                 resultTable.setCell(row,2,finalValue);
-                return;                
+                return finalValue;                
             } else {
                 resultTable.setCellError(row,2, consts.get("illegalNumericFormatException"));                
             }    
@@ -1533,9 +1549,10 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
             
         }
         resultTable.setCell(row,2,value);
+        return value;
     }
     
-    private void validateAndSetTiterValue(String value,int row) {        
+    private String validateAndSetTiterValue(String value,int row) {        
         String[] strList;
         boolean valid;
         String token;
@@ -1572,12 +1589,13 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
             resultTable.setCellError(row,2,consts.get("fieldRequiredException"));  
             
         }
-        resultTable.setCell(row,2,value);   
+        resultTable.setCell(row,2,value); 
+        return value;
     }
     
     private int getNextTempId() {
         return --tempId;
-    } 
+    }
     
 }
  

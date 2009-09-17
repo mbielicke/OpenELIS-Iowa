@@ -40,6 +40,7 @@ import org.openelis.domain.TestDO;
 import org.openelis.domain.TestIdNameMethodNameDO;
 import org.openelis.domain.TestMethodAutoDO;
 import org.openelis.domain.TestSectionDO;
+import org.openelis.domain.TestViewDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.FieldErrorException;
@@ -158,7 +159,6 @@ public class TestScreen extends Screen {
         
         analyteAndResultTab = new AnalyteAndResultTab(def,service);
 
-        // Set up tabs to recieve State Change events from the main Screen.
         addScreenHandler(analyteAndResultTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                 analyteAndResultTab.setManager(manager);
@@ -173,8 +173,7 @@ public class TestScreen extends Screen {
         });
         
         prepAndReflexTab = new PrepTestAndReflexTestTab(def,service);
-
-        // Set up tabs to recieve State Change events from the main Screen.
+        
         addScreenHandler(prepAndReflexTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                 prepAndReflexTab.setManager(manager);
@@ -186,7 +185,9 @@ public class TestScreen extends Screen {
             public void onStateChange(StateChangeEvent<State> event) {
                 StateChangeEvent.fire(prepAndReflexTab, event.getState());
             }
-        });
+        });               
+        
+        analyteAndResultTab.addActionHandler(prepAndReflexTab);
         
         final TextBox id = (TextBox)def.getWidget(TestMeta.getId());
         addScreenHandler(id, new ScreenEventHandler<String>() {
@@ -231,7 +232,7 @@ public class TestScreen extends Screen {
                                                                                    .getName());
         addScreenHandler(method, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                TestDO testDO = manager.getTest();
+                TestViewDO testDO = manager.getTest();
                 method.setSelection(testDO.getMethodId(),
                                                testDO.getMethodName());
             }
@@ -470,7 +471,7 @@ public class TestScreen extends Screen {
                                                                         .getName());
         addScreenHandler(label, new ScreenEventHandler<Integer>() {
           public void onDataChange(DataChangeEvent event) {
-              TestDO testDO = manager.getTest();
+              TestViewDO testDO = manager.getTest();
               label.setSelection(testDO.getLabelId(),testDO.getLabelName());              
           }
         
@@ -752,9 +753,9 @@ public class TestScreen extends Screen {
                                                                         .getName());
         addScreenHandler(testTrailer, new ScreenEventHandler<Integer>() {
           public void onDataChange(DataChangeEvent event) {
-              TestDO testDO = manager.getTest();
+              TestViewDO testDO = manager.getTest();
               testTrailer.setSelection(testDO.getTestTrailerId(),
-                                       testDO.getTestTrailerName());
+                                       testDO.getTrailerName());
           }
         
           public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -820,7 +821,7 @@ public class TestScreen extends Screen {
                                                                               .getName());
         addScreenHandler(scriptlet, new ScreenEventHandler<Integer>() {
           public void onDataChange(DataChangeEvent event) {
-              TestDO testDO = manager.getTest();
+              TestViewDO testDO = manager.getTest();
               scriptlet.setSelection(testDO.getScriptletId(),
                                      testDO.getScriptletName());
           }
