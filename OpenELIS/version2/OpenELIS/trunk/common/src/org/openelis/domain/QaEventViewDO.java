@@ -25,30 +25,31 @@
  */
 package org.openelis.domain;
 
+import org.openelis.utilcommon.DataBaseUtil;
+
 /**
  * The class extends qaevent DO and carries a commonly used field testName. The
  * additional field is read/display only and does not get committed to the
  * database. Note: isChanged will reflect any changes to read/display fields.
  */
 
-public class QaEventTestDO extends QaEventDO {
+public class QaEventViewDO extends QaEventDO {
 
     private static final long serialVersionUID = 1L;
 
-    //
-    // additional field for read/display purposes
-    //
-    protected String          testName;
+    protected Integer         methodId;
+    protected String          testName, methodName;
 
-    public QaEventTestDO() {
+    public QaEventViewDO() {
     }
 
-    public QaEventTestDO(Integer id, String name, String description, Integer testId,
-                         String testName, Integer typeId, String isBillable,
-                         Integer reportingSequence, String reportingText) {
-        super(id, name, description, testId, typeId, isBillable, reportingSequence,
-              reportingText);
+    public QaEventViewDO(Integer id, String name, String description, Integer testId,
+                         Integer typeId, String isBillable, Integer reportingSequence,
+                         String reportingText, String testName, Integer methodId, String methodName) {
+        super(id, name, description, testId, typeId, isBillable, reportingSequence, reportingText);
         setTestName(testName);
+        setMethodId(methodId);
+        setMethodName(methodName);
     }
 
     public String getTestName() {
@@ -56,6 +57,22 @@ public class QaEventTestDO extends QaEventDO {
     }
 
     public void setTestName(String testName) {
-        this.testName = testName;
+        this.testName = DataBaseUtil.trim(testName);
+    }
+
+    public Integer getMethodId() {
+        return methodId;
+    }
+
+    public void setMethodId(Integer methodId) {
+        this.methodId = methodId;
+    }
+
+    public String getMethodName() {
+        return methodName;
+    }
+
+    public void setMethodName(String methodName) {
+        this.methodName = DataBaseUtil.trim(methodName);
     }
 }
