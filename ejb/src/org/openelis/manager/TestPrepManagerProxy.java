@@ -29,14 +29,14 @@ import java.util.ArrayList;
 
 import javax.naming.InitialContext;
 
-import org.openelis.domain.TestPrepDO;
+import org.openelis.domain.TestPrepViewDO;
 import org.openelis.local.TestLocal;
 
 public class TestPrepManagerProxy {
 
     public TestPrepManager add(TestPrepManager man) throws Exception {        
         TestLocal tl;
-        TestPrepDO prepTest;
+        TestPrepViewDO prepTest;
         
         tl = getTestLocal();         
         
@@ -52,7 +52,7 @@ public class TestPrepManagerProxy {
     
     public TestPrepManager update(TestPrepManager man) throws Exception {        
         TestLocal tl;
-        TestPrepDO prepTest;
+        TestPrepViewDO prepTest;
         
         tl = getTestLocal(); 
         
@@ -76,7 +76,7 @@ public class TestPrepManagerProxy {
     public TestPrepManager fetchByTestId(Integer testId) throws Exception {
         TestPrepManager tpm;
         TestLocal tl;
-        ArrayList<TestPrepDO> prepTests;
+        ArrayList<TestPrepViewDO> prepTests;
         
         tl = getTestLocal();
         prepTests = tl.fetchPrepTestsById(testId);

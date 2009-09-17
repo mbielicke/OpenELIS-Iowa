@@ -31,14 +31,15 @@ import java.util.HashMap;
 import javax.naming.InitialContext;
 
 import org.openelis.domain.TestAnalyteDO;
+import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.local.TestLocal;
 
 public class TestAnalyteManagerProxy{
     
     public TestAnalyteManager add(TestAnalyteManager man,HashMap<Integer,Integer> idMap) throws Exception {
         TestLocal tl;
-        ArrayList<TestAnalyteDO> list; 
-        ArrayList<ArrayList<TestAnalyteDO>> grid;
+        ArrayList<TestAnalyteViewDO> list; 
+        ArrayList<ArrayList<TestAnalyteViewDO>> grid;
         TestAnalyteDO anaDO;
         int i,j,so,negId;
 
@@ -67,8 +68,8 @@ public class TestAnalyteManagerProxy{
     
     public TestAnalyteManager update(TestAnalyteManager man,HashMap<Integer,Integer> idMap) throws Exception {
         TestLocal tl;
-        ArrayList<TestAnalyteDO> list; 
-        ArrayList<ArrayList<TestAnalyteDO>> grid;
+        ArrayList<TestAnalyteViewDO> list; 
+        ArrayList<ArrayList<TestAnalyteViewDO>> grid;
         TestAnalyteDO anaDO;
         int i,j,so,negId;       
         
@@ -85,14 +86,18 @@ public class TestAnalyteManagerProxy{
         for(i = 0; i < man.rowCount(); i++) {
             list = grid.get(i);            
             for(j = 0; j < list.size(); j++) {
-                anaDO = list.get(j);                
+                System.out.println("j "+ j+"%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");                
+                anaDO = list.get(j);     
+                System.out.println("anaDO.getId() "+ anaDO.getId()+"%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
                 anaDO.setSortOrder(++so);                
-                if(anaDO.getId() == null || anaDO.getId() < 0) {                        
+                if(anaDO.getId() == null) {                                            
+                    anaDO.setTestId(man.getTestId());
+                    tl.addTestAnalyte(anaDO);                    
+                } else if(anaDO.getId() < 0){
                     negId = anaDO.getId();
                     anaDO.setTestId(man.getTestId());
-                    tl.addTestAnalyte(anaDO);
-                    if(j == 0)
-                        idMap.put(negId, anaDO.getId());
+                    tl.addTestAnalyte(anaDO);                    
+                    idMap.put(negId, anaDO.getId());
                 } else {
                     tl.updateTestAnalyte(anaDO);
                 }
@@ -105,7 +110,7 @@ public class TestAnalyteManagerProxy{
     
     public TestAnalyteManager fetchByTestId(Integer testId) throws Exception {
         TestLocal tl;
-        ArrayList<ArrayList<TestAnalyteDO>> grid;
+        ArrayList<ArrayList<TestAnalyteViewDO>> grid;
         TestAnalyteManager tam;
         
         tl = getTestLocal();

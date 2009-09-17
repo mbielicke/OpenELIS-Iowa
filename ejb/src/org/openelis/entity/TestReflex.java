@@ -48,9 +48,9 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
-@NamedQueries({@NamedQuery(name = "TestReflex.TestReflexDOList", 
-                 query = " select new org.openelis.domain.TestReflexDO(tr.id, tr.testId,tra.id,a.name," +
-                         " tr.testResultId,trs.value, tr.flagsId, t.id, t.name, m.name) " +
+@NamedQueries({@NamedQuery(name = "TestReflex.TestReflexViewDOList", 
+                 query = " select new org.openelis.domain.TestReflexViewDO(tr.id, tr.testId,tr.testAnalyteId,tr.testResultId," +
+                         " tr.flagsId,t.id,t.name,m.name,a.name,trs.value) " +
                          " from TestReflex tr left join tr.testResult trs left join tr.testAnalyte tra " +
                          "  left join tra.analyte a left join tr.addTest t left join t.method m where tr.testId = :testId"),
                @NamedQuery(name = "TestReflex.TestReflexesByTestAndTestResult", 
@@ -58,8 +58,8 @@ import org.openelis.utils.Auditable;
                @NamedQuery(name = "TestReflex.TestReflexesByTestAndTestAnalyte", 
                  query = " from TestReflex tr where tr.testId = :testId and tr.testAnalyteId = :testAnalyteId  "),
                @NamedQuery(name = "TestReflex.TestReflexesByAddTestId", 
-                 query = " select new org.openelis.domain.TestReflexDO(tr.id, tr.testId,tra.id,a.name," +
-                         " tr.testResultId,trs.value, tr.flagsId, t.id, t.name, m.name) " +
+                 query = " select new org.openelis.domain.TestReflexViewDO(tr.id, tr.testId,tr.testAnalyteId," +
+                         " tr.testResultId,tr.flagsId,tr.addTestId,t.name,m.name,a.name,trs.value) " +
                          " from TestReflex tr left join tr.testAnalyte tra left join tra.analyte a left join tr.testResult trs " +
                          " left join tr.test t left join t.method m" +
                          " where tr.addTestId = :testId and t.isActive = 'Y' ")  })

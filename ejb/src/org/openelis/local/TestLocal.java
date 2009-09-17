@@ -31,22 +31,24 @@ import java.util.List;
 import javax.ejb.Local;
 
 import org.openelis.domain.TestAnalyteDO;
+import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.domain.TestDO;
-import org.openelis.domain.TestPrepDO;
-import org.openelis.domain.TestReflexDO;
+import org.openelis.domain.TestPrepViewDO;
+import org.openelis.domain.TestReflexViewDO;
 import org.openelis.domain.TestResultDO;
 import org.openelis.domain.TestSectionDO;
 import org.openelis.domain.TestTypeOfSampleDO;
+import org.openelis.domain.TestViewDO;
 
 @Local
 public interface TestLocal {
-    public TestDO fetchById(Integer testId) throws Exception;   
+    public TestViewDO fetchById(Integer testId) throws Exception;   
     public ArrayList<TestSectionDO> getTestSections(Integer testId) throws Exception;
     public ArrayList<TestTypeOfSampleDO> fetchSampleTypesById(Integer testId)throws Exception;
-    public ArrayList<ArrayList<TestAnalyteDO>> fetchTestAnalytesById(Integer testId)throws Exception;
+    public ArrayList<ArrayList<TestAnalyteViewDO>> fetchTestAnalytesById(Integer testId)throws Exception;
     public ArrayList<ArrayList<TestResultDO>> fetchTestResultsById(Integer testId) throws Exception;
-    public ArrayList<TestPrepDO> fetchPrepTestsById(Integer testId) throws Exception;
-    public ArrayList<TestReflexDO> fetchReflexTestsById(Integer testId) throws Exception;
+    public ArrayList<TestPrepViewDO> fetchPrepTestsById(Integer testId) throws Exception;
+    public ArrayList<TestReflexViewDO> fetchReflexTestsById(Integer testId) throws Exception;
     
     public void add(TestDO testDO) throws Exception;
     public void update(TestDO testDO) throws Exception;
@@ -67,18 +69,18 @@ public interface TestLocal {
     public void addTestResult(TestResultDO testResult) throws Exception;
     public void deleteTestResult(TestResultDO deletedAt) throws Exception;
     
-    public void updatePrepTest(TestPrepDO prepTest) throws Exception;
-    public void addPrepTest(TestPrepDO prepTest) throws Exception;
-    public void deletePrepTest(TestPrepDO deletedAt) throws Exception;
+    public void updatePrepTest(TestPrepViewDO prepTest) throws Exception;
+    public void addPrepTest(TestPrepViewDO prepTest) throws Exception;
+    public void deletePrepTest(TestPrepViewDO deletedAt) throws Exception;
     
-    public void updateReflexTest(TestReflexDO reflexTest) throws Exception; 
-    public void addReflexTest(TestReflexDO reflexTest) throws Exception;
-    public void deleteReflexTest(TestReflexDO deletedAt) throws Exception;     
+    public void updateReflexTest(TestReflexViewDO reflexTest) throws Exception; 
+    public void addReflexTest(TestReflexViewDO reflexTest) throws Exception;
+    public void deleteReflexTest(TestReflexViewDO deletedAt) throws Exception;     
     
-    public void validateTest(TestDO test, List<TestSectionDO> sections,
+    public void validateTest(TestViewDO test, List<TestSectionDO> sections,
                              List<TestTypeOfSampleDO> sampleTypes,
-                             ArrayList<ArrayList<TestAnalyteDO>> analytes,
+                             ArrayList<ArrayList<TestAnalyteViewDO>> analytes,
                              ArrayList<ArrayList<TestResultDO>> results,
-                             ArrayList<TestPrepDO> prepTests) throws Exception;
+                             ArrayList<TestPrepViewDO> prepTests) throws Exception;
                           
 } 

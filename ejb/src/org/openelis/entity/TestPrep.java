@@ -48,11 +48,11 @@ import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
-@NamedQueries({@NamedQuery(name = "TestPrep.TestPrep", query = "select distinct new org.openelis.domain.TestPrepDO(tp.id, tp.testId, tp.prepTestId,t.name,t.method.name,tp.isOptional) " 
-                                                       + "  from TestPrep tp left join tp.prepTest t where tp.testId = :id "),
+@NamedQueries({@NamedQuery(name = "TestPrep.TestPrep", query = "select distinct new org.openelis.domain.TestPrepViewDO(tp.id, tp.testId, tp.prepTestId,tp.isOptional,t.name,m.name) " 
+                                                       + "  from TestPrep tp left join tp.prepTest t left join t.method m where tp.testId = :id "),
                @NamedQuery(name = "TestPrep.TestPrepByTestId", query = "from TestPrep tp where tp.testId = :testId"),
-               @NamedQuery(name = "TestPrep.TestPrepByPrepTestId", query = " select distinct new org.openelis.domain.TestPrepDO(tp.id, tp.testId, tp.prepTestId,t.name,t.method.name,tp.isOptional) " 
-                                                       + " from TestPrep tp left join tp.test t where tp.prepTestId = :testId and t.isActive = 'Y' ")})
+               @NamedQuery(name = "TestPrep.TestPrepByPrepTestId", query = " select distinct new org.openelis.domain.TestPrepViewDO(tp.id, tp.testId, tp.prepTestId,tp.isOptional,t.name,m.name) " 
+                                                       + " from TestPrep tp left join tp.test t left join t.method m where tp.prepTestId = :testId and t.isActive = 'Y' ")})
     
 @Entity
 @Table(name="test_prep")

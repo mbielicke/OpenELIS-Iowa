@@ -50,7 +50,7 @@ import org.openelis.utils.Auditable;
 @NamedQueries({@NamedQuery(name = "TestAnalyte.TestAnalyteByAnalyteId", query = "select t.id from TestAnalyte t where t.analyteId = :id"),
                @NamedQuery(name = "TestAnalyte.TestAnalyteByTestId", query = "from TestAnalyte ta where ta.testId = :testId"),
                @NamedQuery(name = "TestAnalyte.IdName", query = "select distinct new org.openelis.domain.IdNameDO(a.id, a.name) from TestAnalyte ta left join ta.analyte a where ta.testId = :testId order by a.name"),
-               @NamedQuery(name = "TestAnalyte.TestAnalyteDOListByTestId", query = "select distinct new org.openelis.domain.TestAnalyteDO(ta.id,ta.testId,ta.rowGroup,ta.resultGroup,ta.sortOrder,ta.typeId,ta.isColumn,ta.analyteId,a.name,ta.isReportable,s.id,s.name)" +
+               @NamedQuery(name = "TestAnalyte.TestAnalyteDOListByTestId", query = "select distinct new org.openelis.domain.TestAnalyteViewDO(ta.id,ta.testId,ta.sortOrder,ta.rowGroup,ta.isColumn,ta.analyteId,ta.typeId,ta.isReportable,ta.resultGroup,ta.scriptletId,a.name,s.name)" +
                     "                  from TestAnalyte ta left join ta.scriptlet s left join ta.analyte a where ta.testId = :testId order by ta.sortOrder"),
                @NamedQuery(name = "TestAnalyte.TestAnalytesByResultGroupAndTestId", query = "select ta.resultGroup, ta.id from TestAnalyte ta  where ta.testId = :testId " +
                     " group by ta.resultGroup, ta.id order by ta.resultGroup, ta.id"),
