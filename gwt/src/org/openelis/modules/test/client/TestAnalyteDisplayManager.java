@@ -28,13 +28,13 @@ package org.openelis.modules.test.client;
 
 import java.util.ArrayList;
 
-import org.openelis.domain.TestAnalyteDO;
+import org.openelis.domain.TestAnalyteViewDO;
 
 
 public class TestAnalyteDisplayManager {
   
     private ArrayList<Integer> indexes;     
-    private ArrayList<ArrayList<TestAnalyteDO>> grid;
+    private ArrayList<ArrayList<TestAnalyteViewDO>> grid;
     private boolean isValid;
     private int nextGroup;
     
@@ -42,7 +42,7 @@ public class TestAnalyteDisplayManager {
         indexes = new ArrayList<Integer>();                    
     }           
     
-    public void setDataGrid(ArrayList<ArrayList<TestAnalyteDO>> grid) {
+    public void setDataGrid(ArrayList<ArrayList<TestAnalyteViewDO>> grid) {
         this.grid = grid;
         isValid = false;        
     }
@@ -52,9 +52,9 @@ public class TestAnalyteDisplayManager {
         return indexes.get(r) == -1;        
     }
     
-    public TestAnalyteDO getTestAnalyteAt(int r, int c) {
+    public TestAnalyteViewDO getTestAnalyteAt(int r, int c) {
         int index;
-        TestAnalyteDO ado;
+        TestAnalyteViewDO ado;
         
         refreshIndexes();               
         try {
@@ -126,7 +126,7 @@ public class TestAnalyteDisplayManager {
     private void refreshIndexes() {
         int i;
         Integer j,rg;
-        TestAnalyteDO ado;                
+        TestAnalyteViewDO ado;                
         
         if(isValid)
             return;                                                       
@@ -137,7 +137,7 @@ public class TestAnalyteDisplayManager {
         indexes.clear();                  
                 
         for(i = 0 ; i < grid.size(); i++) {
-            ado = (TestAnalyteDO)grid.get(i).get(0);
+            ado = (TestAnalyteViewDO)grid.get(i).get(0);
             rg = ado.getRowGroup();
             
             if(j != rg) {                 

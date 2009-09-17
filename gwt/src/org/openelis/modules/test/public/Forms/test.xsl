@@ -713,7 +713,7 @@ UIRF Software License are applicable instead of those above.
                                  </autoComplete>
                                 </col>
                                 <col key="{testRef:getFlagsId($tref)}" width="104" header="{resource:getString($constants,'flags')}">
-                                  <dropdown width="200" case="mixed" field="Integer" required="false" />
+                                  <dropdown width="200" case="mixed" field="Integer" popWidth="300" required="false" />
                                 </col>
                               </table>
                             </widget>
