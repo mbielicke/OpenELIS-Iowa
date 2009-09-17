@@ -32,18 +32,18 @@ package org.openelis.domain;
  * changes to read/display fields.
  */
 
-public class SampleOrganizationOrganizationDO extends SampleOrganizationDO {
+public class SampleOrganizationViewDO extends SampleOrganizationDO {
 
     private static final long serialVersionUID = 1L;
 
-    protected String organizationName, OrganizationCity, OrganizationState;
+    protected String          organizationName, OrganizationCity, OrganizationState;
 
-    public SampleOrganizationOrganizationDO() {
+    public SampleOrganizationViewDO() {
     }
 
-    public SampleOrganizationOrganizationDO(Integer id, Integer sampleId, Integer organizationId,
-                                Integer typeId, String organizationName, String organizationCity,
-                                String organizationState) {
+    public SampleOrganizationViewDO(Integer id, Integer sampleId, Integer organizationId,
+                                    Integer typeId, String organizationName,
+                                    String organizationCity, String organizationState) {
         super(id, sampleId, organizationId, typeId);
         setOrganizationName(organizationName);
         setOrganizationCity(organizationCity);
