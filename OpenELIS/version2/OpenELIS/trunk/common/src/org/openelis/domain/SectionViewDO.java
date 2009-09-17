@@ -34,16 +34,16 @@ import org.openelis.utilcommon.DataBaseUtil;
  * any changes to read/display fields.
  */
 
-public class SectionOrganizationDO extends SectionDO {
+public class SectionViewDO extends SectionDO {
 
     private static final long serialVersionUID = 1L;
 
     protected String          parentSectionName, organizationName;
 
-    public SectionOrganizationDO() {
+    public SectionViewDO() {
     }
 
-    public SectionOrganizationDO(Integer id, Integer parentSectionId, String name,
+    public SectionViewDO(Integer id, Integer parentSectionId, String name,
                                  String description, String isExternal, Integer organizationId,
                                  String parentSectionName, String organizationName) {
         super(id, parentSectionId, name, description, isExternal, organizationId);
