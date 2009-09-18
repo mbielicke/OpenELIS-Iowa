@@ -30,7 +30,6 @@ import java.util.ArrayList;
 import org.openelis.common.AutocompleteRPC;
 import org.openelis.domain.WorksheetCreationViewDO;
 import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.RPCException;
 import org.openelis.modules.worksheetCreation.client.WorksheetCreationQuery;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.TestRemote;
@@ -49,7 +48,7 @@ public class WorksheetCreationService {
         return rpc;
     }
 
-    public WorksheetCreationQuery query(WorksheetCreationQuery query) throws RPCException {
+    public WorksheetCreationQuery query(WorksheetCreationQuery query) throws Exception {
         ArrayList<WorksheetCreationViewDO> results;
         WorksheetCreationRemote            remote;
         
@@ -64,7 +63,7 @@ public class WorksheetCreationService {
         } catch (LastPageException e) {
             throw new LastPageException(openElisConstants.getString("noRecordsFound"));
         } catch (Exception e) {
-            throw new RPCException(e.getMessage());
+            throw new Exception(e.getMessage());
         }
         return query;
     }
