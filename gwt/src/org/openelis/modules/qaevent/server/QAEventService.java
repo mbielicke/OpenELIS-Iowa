@@ -29,10 +29,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.openelis.common.AutocompleteRPC;
 import org.openelis.domain.IdNameTestMethodDO;
-import org.openelis.domain.QaEventDO;
-import org.openelis.domain.QaEventTestDropdownDO;
-import org.openelis.domain.TestMethodAutoDO;
+import org.openelis.domain.QaEventViewDO;
+import org.openelis.domain.TestMethodViewDO;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
@@ -47,9 +47,13 @@ import org.openelis.gwt.common.deprecated.Query;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.deprecated.AppScreenFormServiceInt;
 import org.openelis.gwt.services.deprecated.AutoCompleteServiceInt;
+import org.openelis.manager.AnalysisQaEventManager;
+import org.openelis.manager.SampleQaEventManager;
 import org.openelis.modules.qaevent.client.QAEventForm;
 import org.openelis.persistence.EJBFactory;
+import org.openelis.remote.AnalysisQAEventManagerRemote;
 import org.openelis.remote.QaEventRemote;
+import org.openelis.remote.SampleQAEventManagerRemote;
 import org.openelis.remote.TestRemote;
 import org.openelis.server.constants.Constants;
 import org.openelis.util.FormUtil;
@@ -103,7 +107,7 @@ public class QAEventService implements AppScreenFormServiceInt<QAEventForm, Quer
 
     public QAEventForm commitAdd(QAEventForm rpc) throws Exception {
         QaEventRemote remote;
-        QaEventDO qaeDO;          
+        QaEventViewDO qaeDO;          
         Integer qaeId;
         
         qaeId = null;
@@ -127,7 +131,7 @@ public class QAEventService implements AppScreenFormServiceInt<QAEventForm, Quer
 
     public QAEventForm commitUpdate(QAEventForm rpc) throws Exception {
         QaEventRemote remote;
-        QaEventDO qaeDO;
+        QaEventViewDO qaeDO;
         
         remote = (QaEventRemote)EJBFactory.lookup("openelis/QaEventBean/remote");
         qaeDO =  getQaEventDOFromRPC(rpc);       
@@ -156,7 +160,7 @@ public class QAEventService implements AppScreenFormServiceInt<QAEventForm, Quer
             QaEventRemote remote = (QaEventRemote)EJBFactory.lookup("openelis/QaEventBean/remote"); 
             Integer qaEventId = rpc.entityKey;
     
-            QaEventDO qaeDO = new QaEventDO();
+            QaEventViewDO qaeDO = new QaEventViewDO();
              try{
               qaeDO = remote.getQaEventAndUnlock(qaEventId, SessionManager.getSession().getId());
              } catch(Exception ex){
@@ -171,7 +175,7 @@ public class QAEventService implements AppScreenFormServiceInt<QAEventForm, Quer
     public QAEventForm fetch(QAEventForm rpc) throws Exception {
         QaEventRemote remote = (QaEventRemote)EJBFactory.lookup("openelis/QaEventBean/remote"); 
         Integer qaeId = rpc.entityKey;
-        QaEventDO qaeDO = remote.getQaEvent(qaeId);
+        QaEventViewDO qaeDO = remote.getQaEvent(qaeId);
 //      set the fields in the RPC
         setFieldsInRPC(rpc, qaeDO);      
             
@@ -182,7 +186,7 @@ public class QAEventService implements AppScreenFormServiceInt<QAEventForm, Quer
         QaEventRemote remote = (QaEventRemote)EJBFactory.lookup("openelis/QaEventBean/remote"); 
         Integer qaEventId = rpc.entityKey;
 
-        QaEventDO qaeDO = new QaEventDO();
+        QaEventViewDO qaeDO = new QaEventViewDO();
          try{
           qaeDO = remote.getQaEventAndLock(qaEventId, SessionManager.getSession().getId());
          } catch(Exception ex){
@@ -199,46 +203,7 @@ public class QAEventService implements AppScreenFormServiceInt<QAEventForm, Quer
        return rpc;
     }
 
-    public TableDataModel<TableDataRow<Integer>> getInitialModel(String cat) {        
-        List entries; 
-        Integer dropdownId;
-        String dropDownText, methodName;
-        QaEventRemote qaeRemote;
-        QaEventTestDropdownDO resultDO;
-        StringObject textObject;
-        TableDataModel<TableDataRow<Integer>> model;
-        int i;
-                
-        entries = null;
-        methodName = null;    
-        dropDownText = null;
-        dropdownId = null;        
-        model = new TableDataModel<TableDataRow<Integer>>();
-        
-        if(cat.equals("test")){
-            qaeRemote = (QaEventRemote)EJBFactory.lookup("openelis/QaEventBean/remote"); 
-            entries = qaeRemote.getTestNames();
-        }            
-        
-        model.add(new TableDataRow<Integer>(null,new StringObject("")));                
-    
-        i = 0;
-        while(i < entries.size()){            
-            if(cat.equals("test")){ 
-                resultDO = (QaEventTestDropdownDO) entries.get(i);
-                dropdownId = resultDO.getId();
-                dropDownText = resultDO.getTest();
-                methodName = resultDO.getMethod();
-            }            
-            textObject = new StringObject(dropDownText+" , "+methodName);            
-            model.add(new TableDataRow<Integer>(dropdownId,textObject));
-            i++;
-         }
-           
-        return model;
-    }
-
-    private void setFieldsInRPC(QAEventForm form, QaEventDO qaeDO){
+    private void setFieldsInRPC(QAEventForm form, QaEventViewDO qaeDO){
         TableDataModel<TableDataRow<Integer>> model;
         
         form.id.setValue(qaeDO.getId());
@@ -260,10 +225,10 @@ public class QAEventService implements AppScreenFormServiceInt<QAEventForm, Quer
         form.typeId.setValue(new TableDataRow<Integer>(qaeDO.getTypeId()));
     }
     
-    private QaEventDO getQaEventDOFromRPC(QAEventForm form){
-        QaEventDO qaeDO;
+    private QaEventViewDO getQaEventDOFromRPC(QAEventForm form){
+        QaEventViewDO qaeDO;
 
-        qaeDO = new QaEventDO();
+        qaeDO = new QaEventViewDO();
         qaeDO.setId(form.id.getValue());
         qaeDO.setDescription(form.description.getValue());
         qaeDO.setIsBillable(form.isBillable.getValue());
@@ -297,7 +262,7 @@ public class QAEventService implements AppScreenFormServiceInt<QAEventForm, Quer
                                      String match,
                                      HashMap<String, FieldType> params) throws Exception {
         TestRemote tremote;
-        List<TestMethodAutoDO> tmlist;
+        List<TestMethodViewDO> tmlist;
         TableDataModel<TableDataRow<Integer>> dataModel;
         
         tremote = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
@@ -306,10 +271,10 @@ public class QAEventService implements AppScreenFormServiceInt<QAEventForm, Quer
         return dataModel;
     }
     
-    private TableDataModel<TableDataRow<Integer>> getTestMethodAutoCompleteModel(List<TestMethodAutoDO> autoCompleteList){
+    private TableDataModel<TableDataRow<Integer>> getTestMethodAutoCompleteModel(List<TestMethodViewDO> autoCompleteList){
         TableDataModel<TableDataRow<Integer>> dataModel;
         TableDataRow<Integer> data;
-        TestMethodAutoDO resultDO;
+        TestMethodViewDO resultDO;
         Integer testId;
         String testName;
         String methodName;
@@ -317,7 +282,7 @@ public class QAEventService implements AppScreenFormServiceInt<QAEventForm, Quer
         dataModel = new TableDataModel<TableDataRow<Integer>>();
         
         for(int i=0; i < autoCompleteList.size(); i++){
-            resultDO = (TestMethodAutoDO) autoCompleteList.get(i);
+            resultDO = (TestMethodViewDO) autoCompleteList.get(i);
             testId = resultDO.getTestId();
             testName = resultDO.getTestName();
             methodName = resultDO.getMethodName();
@@ -329,6 +294,23 @@ public class QAEventService implements AppScreenFormServiceInt<QAEventForm, Quer
         }       
         
         return dataModel;       
+    }
+    
+    public AutocompleteRPC getQAEventMatches(AutocompleteRPC rpc){
+        QaEventRemote remote = (QaEventRemote)EJBFactory.lookup("openelis/QaEventBean/remote");
+        rpc.model = (ArrayList)remote.autoCompleteLookupByName(rpc.match+"%", 10);
+        return rpc;
+    }
+    //qa event manager methods
+    public SampleQaEventManager fetchBySampleId(Integer sampleId) throws Exception {
+        SampleQAEventManagerRemote remote = (SampleQAEventManagerRemote)EJBFactory.lookup("openelis/SampleQAEventManagerBean/remote");
+        
+        return remote.fetchBySampleId(sampleId);
+    }
+    
+    public AnalysisQaEventManager fetchByAnalysisId(Integer analysisId) throws Exception {
+        AnalysisQAEventManagerRemote remote = (AnalysisQAEventManagerRemote)EJBFactory.lookup("openelis/AnalysisQAEventManagerBean/remote");
+        return remote.fetchByAnalysisId(analysisId);
     }
 
 }

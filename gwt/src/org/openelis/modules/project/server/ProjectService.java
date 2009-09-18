@@ -31,8 +31,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.openelis.domain.IdNameDO;
-import org.openelis.domain.ProjectDO;
 import org.openelis.domain.ProjectParameterDO;
+import org.openelis.domain.ProjectViewDO;
 import org.openelis.domain.SecuritySystemUserDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FieldErrorException;
@@ -103,7 +103,7 @@ public class ProjectService implements AppScreenFormServiceInt<ProjectForm, Quer
     
     public ProjectForm commitAdd(ProjectForm rpc) throws Exception {
         ProjectRemote remote;
-        ProjectDO projectDO;
+        ProjectViewDO projectDO;
         Integer projId;
         List<ProjectParameterDO> list;
         
@@ -126,7 +126,7 @@ public class ProjectService implements AppScreenFormServiceInt<ProjectForm, Quer
 
     public ProjectForm commitUpdate(ProjectForm rpc) throws Exception {
         ProjectRemote remote;
-        ProjectDO projectDO;
+        ProjectViewDO projectDO;
         List<ProjectParameterDO> list;
         
         remote = (ProjectRemote)EJBFactory.lookup("openelis/ProjectBean/remote");
@@ -152,7 +152,7 @@ public class ProjectService implements AppScreenFormServiceInt<ProjectForm, Quer
     
     public ProjectForm abort(ProjectForm rpc) throws Exception {
         ProjectRemote remote;
-        ProjectDO projectDO;
+        ProjectViewDO projectDO;
         List<ProjectParameterDO> paramDOList;
 
         remote = (ProjectRemote)EJBFactory.lookup("openelis/ProjectBean/remote");
@@ -172,7 +172,7 @@ public class ProjectService implements AppScreenFormServiceInt<ProjectForm, Quer
 
     public ProjectForm fetch(ProjectForm rpc) throws Exception {
         ProjectRemote remote;
-        ProjectDO projectDO;
+        ProjectViewDO projectDO;
         List<ProjectParameterDO> paramDOList;
                 
         remote = (ProjectRemote)EJBFactory.lookup("openelis/ProjectBean/remote");
@@ -185,7 +185,7 @@ public class ProjectService implements AppScreenFormServiceInt<ProjectForm, Quer
 
     public ProjectForm fetchForUpdate(ProjectForm rpc) throws Exception {
         ProjectRemote remote;
-        ProjectDO projectDO;
+        ProjectViewDO projectDO;
         List<ProjectParameterDO> paramDOList;
                 
         remote = (ProjectRemote)EJBFactory.lookup("openelis/ProjectBean/remote");
@@ -267,7 +267,7 @@ public class ProjectService implements AppScreenFormServiceInt<ProjectForm, Quer
         return dataModel;
     }
     
-    private void setFieldsInRPC(ProjectForm rpc,ProjectDO projectDO) {
+    private void setFieldsInRPC(ProjectForm rpc,ProjectViewDO projectDO) {
         TableDataModel<TableDataRow<Integer>> model;
         Datetime date;
         rpc.id.setValue(projectDO.getId());
@@ -298,16 +298,16 @@ public class ProjectService implements AppScreenFormServiceInt<ProjectForm, Quer
      
         model = new TableDataModel<TableDataRow<Integer>>();
         model.add(new TableDataRow<Integer>(projectDO.getOwnerId(),
-                            new StringObject(projectDO.getOwnerName())));
+                            new StringObject(projectDO.getSystemUserName())));
         rpc.ownerId.setModel(model);
         rpc.ownerId.setValue(model.get(0));
     }
     
-    private ProjectDO getProjectDOFromRPC(ProjectForm rpc) {
-        ProjectDO projectDO;
+    private ProjectViewDO getProjectDOFromRPC(ProjectForm rpc) {
+        ProjectViewDO projectDO;
         Datetime complDate,startDate;
         
-        projectDO = new ProjectDO();
+        projectDO = new ProjectViewDO();
         
         projectDO.setId(rpc.id.getValue());
         projectDO.setName(rpc.name.getValue());
@@ -321,9 +321,9 @@ public class ProjectService implements AppScreenFormServiceInt<ProjectForm, Quer
         startDate = rpc.startedDate.getValue();
         
         if(complDate != null)
-            projectDO.setCompletedDate(complDate.getDate());
+            projectDO.setCompletedDate(complDate);
         if(startDate != null)
-            projectDO.setStartedDate(startDate.getDate());
+            projectDO.setStartedDate(startDate);
         
         return projectDO;
     }
@@ -361,7 +361,7 @@ public class ProjectService implements AppScreenFormServiceInt<ProjectForm, Quer
         for(i = 0; i < model.size(); i++) {
             row = model.get(i);
             paramDO = new ProjectParameterDO();            
-            paramDO.setDelete(false);
+            //paramDO.setDelete(false);
             paramDO.setId(row.key);
             paramDO.setProjectId(rpc.entityKey);
             paramDO.setParameter((String)row.cells[0].getValue());
@@ -375,7 +375,7 @@ public class ProjectService implements AppScreenFormServiceInt<ProjectForm, Quer
             for(i = 0; i < deletions.size(); i++) {
                 row = deletions.get(i);
                 paramDO = new ProjectParameterDO();
-                paramDO.setDelete(true);
+                //paramDO.setDelete(true);
                 paramDO.setId(row.key);
                 paramDOList.add(paramDO);
             }            

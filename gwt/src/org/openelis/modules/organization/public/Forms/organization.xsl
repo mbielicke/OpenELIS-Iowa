@@ -35,10 +35,10 @@ UIRF Software License are applicable instead of those above.
                 xmlns:parent="xalan://org.openelis.meta.OrganizationMeta"
                 extension-element-prefixes="resource"
                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                xsi:noNamespaceSchemaLocation="../../../../../../../../OpenELIS-Lib/src/org/openelis/gwt/public/ScreenSchema.xsd"
-                xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform ../../../../../../../../OpenELIS-Lib/src/org/openelis/gwt/public/XSLTSchema.xsd"
+                xsi:noNamespaceSchemaLocation="http://openelis.uhl.uiowa.edu/schema/ScreenSchema.xsd"
+                xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd"
                 version="1.0">
-  <xsl:import href="aToZOneColumn.xsl"/>
+  <xsl:import href="http://openelis.uhl.uiowa.edu/schema/aToZOneColumn.xsl"/>
   <xalan:component prefix="resource">
     <xalan:script lang="javaclass" src="xalan://org.openelis.util.UTFResource"/>
   </xalan:component>

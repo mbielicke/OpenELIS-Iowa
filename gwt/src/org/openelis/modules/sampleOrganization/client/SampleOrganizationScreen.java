@@ -31,8 +31,9 @@ import java.util.EnumSet;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.common.AutocompleteRPC;
 import org.openelis.domain.DictionaryDO;
-import org.openelis.domain.OrganizationAutoDO;
+import org.openelis.domain.OrganizationVO;
 import org.openelis.domain.SampleOrganizationDO;
+import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -79,6 +80,8 @@ public class SampleOrganizationScreen  extends Screen implements HasActionHandle
 
         // Initialize Screen
         setState(State.DEFAULT);
+        
+        setOrganizationTypes(DictionaryCache.getListByCategorySystemName("organization_type"));
     }
     
     private void initialize(){
@@ -100,7 +103,7 @@ public class SampleOrganizationScreen  extends Screen implements HasActionHandle
                 int row,col;
                 row = event.getRow();
                 col = event.getCell();
-                SampleOrganizationDO orgDO;
+                SampleOrganizationViewDO orgDO;
                 TableDataRow tableRow = sampleOrganizationTable.getRow(row);
                 try{
                     orgDO = manager.getOrganizationAt(row);
@@ -117,7 +120,6 @@ public class SampleOrganizationScreen  extends Screen implements HasActionHandle
                         break;
                     case 1:
                         orgDO.setOrganizationId((Integer)val);
-                        orgDO.getOrganization().setOrganizationId((Integer)val);
                         break;
                     case 2:
                         TableDataRow selectedRow = organization.getSelection();
@@ -141,13 +143,13 @@ public class SampleOrganizationScreen  extends Screen implements HasActionHandle
                                                         4,
                                                         state);
 
-                        orgDO.getOrganization().setName((String)selectedRow.cells.get(0).value);
+                        orgDO.setOrganizationName((String)selectedRow.cells.get(0).value);
                         break;
                     case 3:
-                        orgDO.getOrganization().getAddressDO().setCity((String)val);
+                        orgDO.setOrganizationCity((String)val);
                         break;
                     case 4:
-                        orgDO.getOrganization().getAddressDO().setState((String)val);
+                        orgDO.setOrganizationState((String)val);
                         break;
                 }
             }
@@ -162,12 +164,12 @@ public class SampleOrganizationScreen  extends Screen implements HasActionHandle
                     ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
                         
                     for (int i=0; i<rpc.model.size(); i++){
-                        OrganizationAutoDO autoDO = (OrganizationAutoDO)rpc.model.get(i);
+                        OrganizationVO autoDO = (OrganizationVO)rpc.model.get(i);
                         
                         TableDataRow row = new TableDataRow(4);
                         row.key = autoDO.getId();
                         row.cells.get(0).value = autoDO.getName();
-                        row.cells.get(1).value = autoDO.getAddress();
+                        row.cells.get(1).value = autoDO.getStreetAddress();
                         row.cells.get(2).value = autoDO.getCity();
                         row.cells.get(3).value = autoDO.getState();
                         model.add(row);
@@ -183,7 +185,7 @@ public class SampleOrganizationScreen  extends Screen implements HasActionHandle
         
         sampleOrganizationTable.addRowAddedHandler(new RowAddedHandler() {
             public void onRowAdded(RowAddedEvent event) {
-                manager.addOrganization(new SampleOrganizationDO());
+                manager.addOrganization(new SampleOrganizationViewDO());
             }
         });
 
@@ -248,16 +250,16 @@ public class SampleOrganizationScreen  extends Screen implements HasActionHandle
         try 
         {   
             for(int iter = 0;iter < manager.count();iter++) {
-                SampleOrganizationDO orgDO = (SampleOrganizationDO)manager.getOrganizationAt(iter);
+                SampleOrganizationViewDO orgDO = (SampleOrganizationViewDO)manager.getOrganizationAt(iter);
             
                TableDataRow row = new TableDataRow(5);
                row.key = orgDO.getId();
                
                row.cells.get(0).value = orgDO.getTypeId();
                row.cells.get(1).value = orgDO.getOrganizationId();
-               row.cells.get(2).value = new TableDataRow(orgDO.getOrganizationId(), orgDO.getOrganization().getName());
-               row.cells.get(3).value = orgDO.getOrganization().getAddressDO().getCity();
-               row.cells.get(4).value = orgDO.getOrganization().getAddressDO().getState();
+               row.cells.get(2).value = new TableDataRow(orgDO.getOrganizationId(), orgDO.getOrganizationName());
+               row.cells.get(3).value = orgDO.getOrganizationCity();
+               row.cells.get(4).value = orgDO.getOrganizationState();
                
                model.add(row);
                
@@ -282,9 +284,6 @@ public class SampleOrganizationScreen  extends Screen implements HasActionHandle
     
     public void setManager(SampleOrganizationManager man){
         manager = man;
-        
-        if(!loaded)
-            setOrganizationTypes(DictionaryCache.getListByCategorySystemName("organization_type"));
         
         DataChangeEvent.fire(this);
     }

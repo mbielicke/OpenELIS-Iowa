@@ -31,7 +31,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.openelis.domain.IdLastNameFirstNameDO;
-import org.openelis.domain.NoteDO;
+import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.ProviderAddressDO;
 import org.openelis.domain.ProviderDO;
 import org.openelis.gwt.common.FieldErrorException;
@@ -114,7 +114,7 @@ public class ProviderService implements AppScreenFormServiceInt<ProviderForm, Qu
         ProviderRemote remote = (ProviderRemote)EJBFactory.lookup("openelis/ProviderBean/remote");
         ProviderDO providerDO  = getProviderDOFromRPC(rpc);
     
-        NoteDO providerNote = new NoteDO();       
+        NoteViewDO providerNote = new NoteViewDO();       
         
         TableDataModel<TableDataRow<Integer>> addressTable = rpc.addresses.providerAddressTable.getValue();
         Integer providerId = providerDO.getId();
@@ -160,7 +160,7 @@ public class ProviderService implements AppScreenFormServiceInt<ProviderForm, Qu
         ProviderDO providerDO  = getProviderDOFromRPC(rpc);
     
         ArrayList<ProviderAddressDO> provAddDOList = new ArrayList<ProviderAddressDO>();
-        NoteDO providerNote = new NoteDO();       
+        NoteViewDO providerNote = new NoteViewDO();       
         
         TableDataModel<TableDataRow<Integer>> addressTable = rpc.addresses.providerAddressTable.getValue();
         if(rpc.addresses.load)        
@@ -368,7 +368,7 @@ public class ProviderService implements AppScreenFormServiceInt<ProviderForm, Qu
         root.setAttribute("key", "notePanel");   
         int i=0;
         while(itr.hasNext()){           
-            NoteDO noteRow = (NoteDO)itr.next();
+            NoteViewDO noteRow = (NoteViewDO)itr.next();
             
             //user id
             String userName = noteRow.getSystemUser();
@@ -502,10 +502,10 @@ public class ProviderService implements AppScreenFormServiceInt<ProviderForm, Qu
            
             provAddDO.setLocation((String)((StringField)row.getCells().get(0)).getValue());
             provAddDO.setExternalId((String)((StringField)row.getCells().get(1)).getValue());
-            provAddDO.setProvider((Integer)providerId);
+            provAddDO.setProviderId((Integer)providerId);
            
  
-            provAddDO.setDelete(false);
+            //provAddDO.setDelete(false);
 
             provAddDO.getAddressDO().setMultipleUnit(((String)((StringField)row.getCells().get(2)).getValue()));
             provAddDO.getAddressDO().setStreetAddress(((String)((StringField)row.getCells().get(3)).getValue()));
@@ -534,8 +534,8 @@ public class ProviderService implements AppScreenFormServiceInt<ProviderForm, Qu
                
                provAddDO.setLocation((String)((StringField)row.getCells().get(0)).getValue());
                provAddDO.setExternalId((String)((StringField)row.getCells().get(1)).getValue());
-               provAddDO.setProvider((Integer)providerId);              
-               provAddDO.setDelete(true);                          
+               provAddDO.setProviderId((Integer)providerId);              
+               //provAddDO.setDelete(true);                          
                provAddDOList.add(provAddDO);   
               }
            addressTable.getDeletions().clear();

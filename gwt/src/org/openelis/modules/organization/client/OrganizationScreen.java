@@ -24,8 +24,8 @@ import org.openelis.common.AutocompleteRPC;
 import org.openelis.common.NotesTab;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameDO;
-import org.openelis.domain.OrganizationAddressDO;
-import org.openelis.domain.OrganizationAutoDO;
+import org.openelis.domain.OrganizationVO;
+import org.openelis.domain.OrganizationViewDO;
 import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.SecurityModule;
@@ -190,12 +190,12 @@ public class OrganizationScreen extends Screen implements BeforeGetMatchesHandle
         addScreenHandler(id, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 id.setValue(getString(manager.getOrganizationAddress()
-                                             .getOrganizationId()));
+                                             .getId()));
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
                 manager.getOrganizationAddress()
-                       .setOrganizationId(event.getValue());
+                       .setId(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -341,13 +341,13 @@ public class OrganizationScreen extends Screen implements BeforeGetMatchesHandle
                                                                                    .getName());
         addScreenHandler(parentOrg, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                OrganizationAddressDO orgDO = manager.getOrganizationAddress();
+                OrganizationViewDO orgDO = manager.getOrganizationAddress();
                 if (orgDO.getParentOrganizationId() == null) {
                     parentOrg.clear();
                 } else {
                     ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
                     model.add(new TableDataRow(orgDO.getParentOrganizationId(),
-                                               orgDO.getParentOrganization()));
+                                               orgDO.getParentOrganizationName()));
                     parentOrg.setModel(model);
                 }
                 parentOrg.setSelection(manager.getOrganizationAddress()
@@ -357,6 +357,8 @@ public class OrganizationScreen extends Screen implements BeforeGetMatchesHandle
             public void onValueChange(ValueChangeEvent<Integer> event) {
                 manager.getOrganizationAddress()
                        .setParentOrganizationId(event.getValue());
+                manager.getOrganizationAddress()
+                .setParentOrganizationName(parentOrg.getTextBoxDisplay());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -783,12 +785,12 @@ public class OrganizationScreen extends Screen implements BeforeGetMatchesHandle
             ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
             
             for (int i=0; i<rpc.model.size(); i++){
-                OrganizationAutoDO autoDO = (OrganizationAutoDO)rpc.model.get(i);
+                OrganizationVO autoDO = (OrganizationVO)rpc.model.get(i);
                 
                 TableDataRow row = new TableDataRow(4);
                 row.key = autoDO.getId();
                 row.cells.get(0).value = autoDO.getName();
-                row.cells.get(1).value = autoDO.getAddress();
+                row.cells.get(1).value = autoDO.getStreetAddress();
                 row.cells.get(2).value = autoDO.getCity();
                 row.cells.get(3).value = autoDO.getState();
                 model.add(row);

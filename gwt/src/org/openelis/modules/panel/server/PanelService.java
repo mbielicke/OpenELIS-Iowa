@@ -259,7 +259,7 @@ public class PanelService implements AppScreenFormServiceInt<PanelForm, Query<Ta
       for (i = 0; i < model.size(); i++) {
           row = model.get(i);
           itemDO = new PanelItemDO();         
-          itemDO.setDelete(false);             
+         // itemDO.setDelete(false);             
           itemDO.setId(row.key);           
           itemDO.setPanelId(panelId);
           itemDO.setTestName((String)row.getCells().get(0).getValue());
@@ -274,7 +274,7 @@ public class PanelService implements AppScreenFormServiceInt<PanelForm, Query<Ta
           row = deletions.get(i);
           itemDO = new PanelItemDO();
           itemDO.setId(row.key);
-          itemDO.setDelete(true);          
+         // itemDO.setDelete(true);          
           itemDOList.add(itemDO);
         }
      
