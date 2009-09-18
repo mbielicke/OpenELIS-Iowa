@@ -32,9 +32,9 @@ import java.util.List;
 
 import org.openelis.domain.IdNameDO;
 import org.openelis.domain.IdNameSerialNumberDO;
-import org.openelis.domain.InstrumentDO;
 import org.openelis.domain.InstrumentLogDO;
-import org.openelis.domain.TestMethodAutoDO;
+import org.openelis.domain.InstrumentViewDO;
+import org.openelis.domain.TestMethodViewDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
@@ -105,7 +105,7 @@ public class InstrumentService implements
 
     public InstrumentForm commitAdd(InstrumentForm rpc) throws Exception {
         InstrumentRemote remote;
-        InstrumentDO instDO;
+        InstrumentViewDO instDO;
         Integer instId;
         List<InstrumentLogDO> logDOList;
 
@@ -128,7 +128,7 @@ public class InstrumentService implements
 
     public InstrumentForm commitUpdate(InstrumentForm rpc) throws Exception {
         InstrumentRemote remote;
-        InstrumentDO instDO;
+        InstrumentViewDO instDO;
         List<InstrumentLogDO> logDOList;
 
         remote = (InstrumentRemote)EJBFactory.lookup("openelis/InstrumentBean/remote");
@@ -155,7 +155,7 @@ public class InstrumentService implements
 
     public InstrumentForm abort(InstrumentForm rpc) throws Exception {
         InstrumentRemote remote;
-        InstrumentDO instDO;
+        InstrumentViewDO instDO;
         List<InstrumentLogDO> logDOList;
 
         remote = (InstrumentRemote)EJBFactory.lookup("openelis/InstrumentBean/remote");
@@ -172,7 +172,7 @@ public class InstrumentService implements
 
     public InstrumentForm fetch(InstrumentForm rpc) throws Exception {
         InstrumentRemote remote;
-        InstrumentDO instDO;
+        InstrumentViewDO instDO;
         List<InstrumentLogDO> logDOList;
 
         remote = (InstrumentRemote)EJBFactory.lookup("openelis/InstrumentBean/remote");
@@ -187,7 +187,7 @@ public class InstrumentService implements
 
     public InstrumentForm fetchForUpdate(InstrumentForm rpc) throws Exception {
         InstrumentRemote remote;
-        InstrumentDO instDO;
+        InstrumentViewDO instDO;
         List<InstrumentLogDO> logDOList;
 
         remote = (InstrumentRemote)EJBFactory.lookup("openelis/InstrumentBean/remote");
@@ -217,7 +217,7 @@ public class InstrumentService implements
         AnalyteRemote aremote;
         TableDataModel<TableDataRow<Integer>> dataModel;
         List<IdNameDO> entries;
-        List<TestMethodAutoDO> tmlist;
+        List<TestMethodViewDO> tmlist;
         ScriptletRemote sremote;
         TestRemote tremote;
 
@@ -253,17 +253,17 @@ public class InstrumentService implements
         return dataModel;
     }
 
-    private TableDataModel<TableDataRow<Integer>> getTestMethodAutocompleteModel(List<TestMethodAutoDO> entries) {
+    private TableDataModel<TableDataRow<Integer>> getTestMethodAutocompleteModel(List<TestMethodViewDO> entries) {
         TableDataModel<TableDataRow<Integer>> dataModel;
         TableDataRow<Integer> data;
         Integer itemId;
-        TestMethodAutoDO resultDO;
+        TestMethodViewDO resultDO;
         String name, method, tdesc, mdesc;
 
         dataModel = new TableDataModel<TableDataRow<Integer>>();
 
         for (int i = 0; i < entries.size(); i++) {
-            resultDO = (TestMethodAutoDO)entries.get(i);
+            resultDO = (TestMethodViewDO)entries.get(i);
 
             itemId = resultDO.getTestId();
             name = resultDO.getTestName();
@@ -284,7 +284,7 @@ public class InstrumentService implements
         return dataModel;
     }
 
-    private void setFieldsInRPC(InstrumentForm rpc, InstrumentDO instDO) {
+    private void setFieldsInRPC(InstrumentForm rpc, InstrumentViewDO instDO) {
         TableDataModel<TableDataRow<Integer>> model;
         Datetime dt;
 
@@ -321,11 +321,11 @@ public class InstrumentService implements
 
     }
 
-    private InstrumentDO getInstrumentDOFromRPC(InstrumentForm rpc) {
-        InstrumentDO instDO;
+    private InstrumentViewDO getInstrumentDOFromRPC(InstrumentForm rpc) {
+        InstrumentViewDO instDO;
         Datetime activeBegin, activeEnd;
 
-        instDO = new InstrumentDO();
+        instDO = new InstrumentViewDO();
 
         instDO.setId(rpc.id.getValue());
         instDO.setName(rpc.name.getValue());
@@ -339,11 +339,11 @@ public class InstrumentService implements
 
         activeBegin = rpc.activeBegin.getValue();
         if (activeBegin != null)
-            instDO.setActiveBegin(activeBegin.getDate());
+            instDO.setActiveBegin(activeBegin);
 
         activeEnd = rpc.activeEnd.getValue();
         if (activeEnd != null)
-            instDO.setActiveEnd(activeEnd.getDate());
+            instDO.setActiveEnd(activeEnd);
 
         return instDO;
     }
@@ -365,7 +365,7 @@ public class InstrumentService implements
         for (i = 0; i < model.size(); i++) {
             row = model.get(i);
             logDO = new InstrumentLogDO();
-            logDO.setDelete(false);
+           // logDO.setDelete(false);
             logDO.setId(row.key);
             field = (DropDownField<Integer>)row.cells[0];
             logDO.setTypeId((Integer)field.getSelectedKey());
@@ -374,11 +374,11 @@ public class InstrumentService implements
 
             activeBegin = ((DateField)row.cells[2]).getValue();
             if (activeBegin != null)
-                logDO.setEventBegin(activeBegin.getDate());
+                logDO.setEventBegin(activeBegin);
 
             activeEnd = ((DateField)row.cells[3]).getValue();
             if (activeEnd != null)
-                logDO.setEventEnd(activeEnd.getDate());
+                logDO.setEventEnd(activeEnd);
 
             logDO.setText((String)row.cells[4].getValue());
 
@@ -391,7 +391,7 @@ public class InstrumentService implements
                 row = deletions.get(i);
                 logDO = new InstrumentLogDO();
                 logDO.setId(row.key);
-                logDO.setDelete(true);
+               // logDO.setDelete(true);
                 logDOList.add(logDO);
             }
             deletions.clear();

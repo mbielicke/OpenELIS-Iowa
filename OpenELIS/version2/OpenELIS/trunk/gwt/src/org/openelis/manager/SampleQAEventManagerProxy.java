@@ -23,13 +23,32 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.cache.server;
+package org.openelis.manager;
 
-import java.util.ArrayList;
+import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.gwt.services.ScreenService;
 
-import org.openelis.domain.SectionViewDO;
-import org.openelis.gwt.common.RPC;
-
-public class SectionCacheRPC implements RPC {
-    public ArrayList<SectionViewDO> list;
+public class SampleQAEventManagerProxy {
+    protected static final String QA_EVENT_SERVICE_URL = "org.openelis.modules.qaevent.server.QAEventService";
+    protected ScreenService service;
+    
+    public SampleQAEventManagerProxy(){
+        service = new ScreenService("OpenELISServlet?service="+QA_EVENT_SERVICE_URL);
+    }
+    
+    public SampleQaEventManager fetchBySampleId(Integer sampleId) throws Exception {
+        return service.call("fetchBySampleId", sampleId);
+    }
+    
+    public SampleQaEventManager add(SampleQaEventManager man) throws Exception {
+        throw new UnsupportedOperationException();
+    }
+    
+    public SampleQaEventManager update(SampleQaEventManager man) throws Exception {
+        throw new UnsupportedOperationException();
+    }
+    
+    public void validate(SampleQaEventManager man, ValidationErrorsList errorsList) throws Exception {
+        
+    }
 }

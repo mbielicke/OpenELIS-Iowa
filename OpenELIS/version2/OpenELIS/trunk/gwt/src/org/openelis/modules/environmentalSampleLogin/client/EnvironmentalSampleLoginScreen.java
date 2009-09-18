@@ -32,15 +32,15 @@ import java.util.Set;
 
 import org.openelis.cache.DictionaryCache;
 import org.openelis.common.AutocompleteRPC;
-import org.openelis.domain.AnalysisTestDO;
+import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameDO;
-import org.openelis.domain.OrganizationAutoDO;
+import org.openelis.domain.OrganizationVO;
 import org.openelis.domain.ProjectDO;
 import org.openelis.domain.SampleEnvironmentalDO;
-import org.openelis.domain.SampleItemDO;
-import org.openelis.domain.SampleOrganizationDO;
-import org.openelis.domain.SampleProjectDO;
+import org.openelis.domain.SampleItemViewDO;
+import org.openelis.domain.SampleOrganizationViewDO;
+import org.openelis.domain.SampleProjectViewDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.RPC;
@@ -98,8 +98,8 @@ import com.google.gwt.user.client.ui.TabPanel;
 public class EnvironmentalSampleLoginScreen extends Screen {
 
     public enum Tabs {
-        SAMPLE_ITEM, ANALYSIS, TEST_RESULT, EXT_COMMENTS, INT_COMMENTS,
-        STORAGE
+        SAMPLE_ITEM, ANALYSIS, TEST_RESULT, ANALYSIS_NOTES, SAMPLE_NOTES,
+        STORAGE, QA_EVENTS
     };
 
     protected Tabs                     tab = Tabs.SAMPLE_ITEM;
@@ -107,13 +107,10 @@ public class EnvironmentalSampleLoginScreen extends Screen {
     private SampleItemTab              sampleItemTab;
     private AnalysisTab                analysisTab;
     private TestResultsTab             testResultsTab;
-    private SampleCommentsTab          externalCommentsTab;
-    private SampleCommentsTab          internalCommentsTab;
-    //private SampleExCommentTab         sampleExtCommentTab;
-    //private SampleIntCommentsTab       sampleIntCommentsTab;
-    //private AnalysisExCommentTab       analysisExtCommentTab;
-    //private AnalysisIntCommentsTab     analysisIntCommentsTab;
+    private AnalysisNotesTab           analysisNotesTab;
+    private SampleNotesTab             sampleNotesTab;
     private StorageTab                 storageTab;
+    private QAEventsTab                qaEventsTab;
     
     
     protected TextBox location;
@@ -156,13 +153,13 @@ public class EnvironmentalSampleLoginScreen extends Screen {
         
         testResultsTab = new TestResultsTab(def);
         
-        externalCommentsTab = new SampleCommentsTab(def, "sampleExtNotesPanel", "sampleExtNoteButton", true,
-                                                      "anExNotesPanel", "anExNoteButton", true);
+        analysisNotesTab = new AnalysisNotesTab(def, "anExNotesPanel", "anExNoteButton", "anIntNotesPanel", "anIntNoteButton");
         
-        internalCommentsTab = new SampleCommentsTab(def, "sampleIntNotesPanel", "sampleIntNoteButton", false,
-                                                    "anIntNotesPanel", "anIntNoteButton", false);
+        sampleNotesTab = new SampleNotesTab(def, "sampleExtNotesPanel", "sampleExtNoteButton", "sampleIntNotesPanel", "sampleIntNoteButton");
         
         storageTab = new StorageTab(def);
+        
+        qaEventsTab = new QAEventsTab(def);
         
         // Setup link between Screen and widget Handlers
         initialize();
@@ -260,7 +257,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             }
         });
         
-        final CalendarLookUp receivedDate = (CalendarLookUp)def.getWidget(Meta.SAMPLE.getReceivedDate());
+        final CalendarLookUp receivedDate = (CalendarLookUp)def.getWidget(Meta.getSample().getReceivedDate());
         addScreenHandler(receivedDate, new ScreenEventHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
                 receivedDate.setValue(manager.getSample().getReceivedDate());
@@ -400,10 +397,10 @@ public class EnvironmentalSampleLoginScreen extends Screen {
         addScreenHandler(project, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 try{
-                    SampleProjectDO projectDO = manager.getProjects().getFirstPermanentProject();
+                    SampleProjectViewDO projectDO = manager.getProjects().getFirstPermanentProject();
                     
                     if(projectDO != null)
-                        project.setSelection(projectDO.getId(), projectDO.getProject().getName());
+                        project.setSelection(projectDO.getId(), projectDO.getProjectName());
                     else
                         project.setSelection(null, "");
                     
@@ -414,14 +411,14 @@ public class EnvironmentalSampleLoginScreen extends Screen {
 
             public void onValueChange(ValueChangeEvent<String> event) {
                 TableDataRow selectedRow = project.getSelection();
-                SampleProjectDO projectDO = null;
+                SampleProjectViewDO projectDO = null;
                 try{
                     if(selectedRow.key != null){
-                        projectDO = new SampleProjectDO();
+                        projectDO = new SampleProjectViewDO();
                         projectDO.setIsPermanent("Y");
                         projectDO.setProjectId((Integer)selectedRow.key);
-                        projectDO.getProject().setName((String)selectedRow.cells.get(0).value);
-                        projectDO.getProject().setDescription((String)selectedRow.cells.get(1).value);
+                        projectDO.setProjectName((String)selectedRow.cells.get(0).value);
+                        projectDO.setProjectDescription((String)selectedRow.cells.get(1).value);
                     }
                     
                     manager.getProjects().addFirstPermanentProject(projectDO);
@@ -429,7 +426,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
                     projectDO = manager.getProjects().getFirstPermanentProject();
                     
                     if(projectDO != null)
-                        project.setSelection(projectDO.getProjectId(), projectDO.getProject().getName());
+                        project.setSelection(projectDO.getProjectId(), projectDO.getProjectName());
                     else
                         project.setSelection(null, "");
                     
@@ -475,10 +472,10 @@ public class EnvironmentalSampleLoginScreen extends Screen {
         addScreenHandler(reportTo, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 try{
-                    SampleOrganizationDO reportToOrg = manager.getOrganizations().getFirstReportTo();
+                    SampleOrganizationViewDO reportToOrg = manager.getOrganizations().getFirstReportTo();
                     
                     if(reportToOrg != null)
-                        reportTo.setSelection(reportToOrg.getId(), reportToOrg.getOrganization().getName());
+                        reportTo.setSelection(reportToOrg.getId(), reportToOrg.getOrganizationName());
                     else
                         reportTo.setSelection(null, "");
                     
@@ -489,14 +486,14 @@ public class EnvironmentalSampleLoginScreen extends Screen {
 
             public void onValueChange(ValueChangeEvent<String> event) {
                 TableDataRow selectedRow = reportTo.getSelection();
-                SampleOrganizationDO reportToOrg = null;
+                SampleOrganizationViewDO reportToOrg = null;
                 try{
                     if(selectedRow.key != null){
-                        reportToOrg = new SampleOrganizationDO();
+                        reportToOrg = new SampleOrganizationViewDO();
                         reportToOrg.setOrganizationId((Integer)selectedRow.key);
-                        reportToOrg.getOrganization().setName((String)selectedRow.cells.get(0).value);
-                        reportToOrg.getOrganization().getAddressDO().setCity((String)selectedRow.cells.get(2).value);
-                        reportToOrg.getOrganization().getAddressDO().setState((String)selectedRow.cells.get(3).value);
+                        reportToOrg.setOrganizationName((String)selectedRow.cells.get(0).value);
+                        reportToOrg.setOrganizationCity((String)selectedRow.cells.get(2).value);
+                        reportToOrg.setOrganizationState((String)selectedRow.cells.get(3).value);
                     }
                     
                     manager.getOrganizations().setReportTo(reportToOrg);
@@ -504,7 +501,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
                     reportToOrg = manager.getOrganizations().getFirstReportTo();
                     
                     if(reportToOrg != null)
-                        reportTo.setSelection(reportToOrg.getId(), reportToOrg.getOrganization().getName());
+                        reportTo.setSelection(reportToOrg.getId(), reportToOrg.getOrganizationName());
                     else
                         reportTo.setSelection(null, "");
                     
@@ -531,10 +528,10 @@ public class EnvironmentalSampleLoginScreen extends Screen {
         addScreenHandler(billTo, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 try{
-                    SampleOrganizationDO billToOrg = manager.getOrganizations().getFirstBillTo();
+                    SampleOrganizationViewDO billToOrg = manager.getOrganizations().getFirstBillTo();
                     
                     if(billToOrg != null)
-                        billTo.setSelection(billToOrg.getId(), billToOrg.getOrganization().getName());
+                        billTo.setSelection(billToOrg.getId(), billToOrg.getOrganizationName());
                     else
                         billTo.setSelection(null, "");
                     
@@ -545,14 +542,14 @@ public class EnvironmentalSampleLoginScreen extends Screen {
 
             public void onValueChange(ValueChangeEvent<String> event) {
                 TableDataRow selectedRow = billTo.getSelection();
-                SampleOrganizationDO billToOrg = null;
+                SampleOrganizationViewDO billToOrg = null;
                 try{
                     if(selectedRow.key != null){
-                        billToOrg = new SampleOrganizationDO();
+                        billToOrg = new SampleOrganizationViewDO();
                         billToOrg.setOrganizationId((Integer)selectedRow.key);
-                        billToOrg.getOrganization().setName((String)selectedRow.cells.get(0).value);
-                        billToOrg.getOrganization().getAddressDO().setCity((String)selectedRow.cells.get(2).value);
-                        billToOrg.getOrganization().getAddressDO().setState((String)selectedRow.cells.get(3).value);
+                        billToOrg.setOrganizationName((String)selectedRow.cells.get(0).value);
+                        billToOrg.setOrganizationCity((String)selectedRow.cells.get(2).value);
+                        billToOrg.setOrganizationState((String)selectedRow.cells.get(3).value);
                     }
                     
                     manager.getOrganizations().setBillTo(billToOrg);
@@ -560,7 +557,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
                     billToOrg = manager.getOrganizations().getFirstBillTo();
                     
                     if(billToOrg != null)
-                        billTo.setSelection(billToOrg.getId(), billToOrg.getOrganization().getName());
+                        billTo.setSelection(billToOrg.getId(), billToOrg.getOrganizationName());
                     else
                         billTo.setSelection(null, "");
                     
@@ -616,9 +613,9 @@ public class EnvironmentalSampleLoginScreen extends Screen {
                sampleItemTab.setData(data);
                analysisTab.setData(data);
                testResultsTab.setData(data);
-               externalCommentsTab.setData(data);
-               internalCommentsTab.setData(data);
+               analysisNotesTab.setData(data);
                storageTab.setData(data);
+               qaEventsTab.setData(data);
                
                drawTabs();
            }
@@ -775,31 +772,29 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             }
         });
         
-        addScreenHandler(externalCommentsTab, new ScreenEventHandler<Object>() {
+        addScreenHandler(analysisNotesTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
-                externalCommentsTab.setData(new SampleDataBundle());
-                externalCommentsTab.setManager(manager);
+                analysisNotesTab.setData(new SampleDataBundle());
 
-                if (tab == Tabs.EXT_COMMENTS)
+                if (tab == Tabs.ANALYSIS_NOTES)
                     drawTabs();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                externalCommentsTab.setState(event.getState());
+                analysisNotesTab.setState(event.getState());
             }
         });
                 
-        addScreenHandler(internalCommentsTab, new ScreenEventHandler<Object>() {
+        addScreenHandler(sampleNotesTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
-                internalCommentsTab.setData(new SampleDataBundle());
-                internalCommentsTab.setManager(manager);
+                sampleNotesTab.setManager(manager);
 
-                    if (tab == Tabs.INT_COMMENTS)
+                    if (tab == Tabs.SAMPLE_NOTES)
                         drawTabs();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                internalCommentsTab.setState(event.getState());
+                sampleNotesTab.setState(event.getState());
             }
         });
         
@@ -815,7 +810,21 @@ public class EnvironmentalSampleLoginScreen extends Screen {
                 storageTab.setState(event.getState());
             }
         });
-                
+
+        addScreenHandler(qaEventsTab, new ScreenEventHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                    qaEventsTab.setData(new SampleDataBundle());
+                    qaEventsTab.setManager(manager);
+
+                    if (tab == Tabs.QA_EVENTS)
+                        drawTabs();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                qaEventsTab.setState(event.getState());
+            }
+        });
+        
         sampleItemTab.addActionHandler(new ActionHandler<SampleItemTab.Action>(){
             public void onAction(ActionEvent<SampleItemTab.Action> event) {
                 if(state != State.QUERY && event.getAction() == SampleItemTab.Action.CHANGED){
@@ -826,7 +835,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
                         selected = selected.parent;
                     
                     SampleDataBundle data = (SampleDataBundle)selected.data;
-                    SampleItemDO itemDO = data.sampleItemDO;
+                    SampleItemViewDO itemDO = data.sampleItemDO;
                     
                     selected.cells.get(0).value = itemDO.getItemSequence()+" - "+formatTreeString(itemDO.getContainer());
                     selected.cells.get(1).value = formatTreeString(itemDO.getTypeOfSample());
@@ -843,9 +852,9 @@ public class EnvironmentalSampleLoginScreen extends Screen {
                     int selectedIndex = itemsTree.getSelectedIndex();
                     
                     SampleDataBundle data = (SampleDataBundle)selected.data;
-                    AnalysisTestDO aDO = data.analysisTestDO;
+                    AnalysisViewDO aDO = data.analysisTestDO;
                     
-                    itemsTree.setCell(selectedIndex, 0, formatTreeString(aDO.test.getName()) + " : " + formatTreeString(aDO.test.getMethodName()));
+                    itemsTree.setCell(selectedIndex, 0, formatTreeString(aDO.getTestName()) + " : " + formatTreeString(aDO.getMethodName()));
                     itemsTree.setCell(selectedIndex, 1, aDO.getStatusId());
                 }
             }
@@ -958,12 +967,14 @@ public class EnvironmentalSampleLoginScreen extends Screen {
                     tab = Tabs.ANALYSIS;
                 else if (tabIndex == Tabs.TEST_RESULT.ordinal())
                     tab = Tabs.TEST_RESULT;
-                else if (tabIndex == Tabs.EXT_COMMENTS.ordinal())
-                    tab = Tabs.EXT_COMMENTS;
-                else if (tabIndex == Tabs.INT_COMMENTS.ordinal())
-                    tab = Tabs.INT_COMMENTS;
+                else if (tabIndex == Tabs.ANALYSIS_NOTES.ordinal())
+                    tab = Tabs.ANALYSIS_NOTES;
+                else if (tabIndex == Tabs.SAMPLE_NOTES.ordinal())
+                    tab = Tabs.SAMPLE_NOTES;
                 else if (tabIndex == Tabs.STORAGE.ordinal())
                     tab = Tabs.STORAGE;
+                else if (tabIndex == Tabs.QA_EVENTS.ordinal())
+                    tab = Tabs.QA_EVENTS;
                 
                 window.setBusy(consts.get("loadingMessage"));
                 
@@ -979,6 +990,16 @@ public class EnvironmentalSampleLoginScreen extends Screen {
         
         setState(Screen.State.QUERY);
         DataChangeEvent.fire(this);
+        
+        //we need to make sure the tabs are cleared
+        sampleItemTab.draw();
+        analysisTab.draw();
+        testResultsTab.draw();
+        analysisNotesTab.draw();
+        sampleNotesTab.draw();
+        storageTab.draw();
+        qaEventsTab.draw();
+        
         window.setDone(consts.get("enterFieldsToQuery"));
     }
 
@@ -998,8 +1019,8 @@ public class EnvironmentalSampleLoginScreen extends Screen {
         try{
             manager.getSample().setRevision(0);
             manager.getSample().setStatusId(DictionaryCache.getIdFromSystemName("sample_logged_in"));
-            manager.getSample().setEnteredDate(Datetime.getInstance(Datetime.YEAR, Datetime.DAY));
-            manager.getSample().setReceivedDate(Datetime.getInstance(Datetime.YEAR, Datetime.DAY));
+            manager.getSample().setEnteredDate(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE));
+            manager.getSample().setReceivedDate(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE));
             manager.getSample().setNextItemSequence(0);
             ((SampleEnvironmentalManager)manager.getDomainManager()).getEnvironmental().setIsHazardous("N");
             
@@ -1318,7 +1339,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
         newRow.cells.get(0).value = nextItemSequence + " - <>";
         newRow.cells.get(1).value = "<>";
         
-        SampleItemDO siDO = new SampleItemDO();
+        SampleItemViewDO siDO = new SampleItemViewDO();
         siDO.setItemSequence(nextItemSequence);
         
         try{
@@ -1348,10 +1369,10 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             selectedRow = selectedRow.parent;
         
         SampleDataBundle sampleItemData = (SampleDataBundle)selectedRow.data;
-        SampleItemDO itemDO = sampleItemData.sampleItemDO;
+        SampleItemViewDO itemDO = sampleItemData.sampleItemDO;
         int sampleItemIndex = sampleItemData.sampleItemManager.getIndex(itemDO);
         
-        AnalysisTestDO aDO = new AnalysisTestDO();
+        AnalysisViewDO aDO = new AnalysisViewDO();
         aDO.setStatusId(loggedInId);
         aDO.setRevision(0);
         
@@ -1452,12 +1473,14 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             analysisTab.draw();
         else if (tab == Tabs.TEST_RESULT)
             testResultsTab.draw();
-        else if (tab == Tabs.EXT_COMMENTS)
-            externalCommentsTab.draw();
-        else if (tab == Tabs.INT_COMMENTS)
-            internalCommentsTab.draw();
+        else if (tab == Tabs.ANALYSIS_NOTES)
+            analysisNotesTab.draw();
+        else if (tab == Tabs.SAMPLE_NOTES)
+            sampleNotesTab.draw();
         else if (tab == Tabs.STORAGE)
             storageTab.draw();
+        else if (tab == Tabs.QA_EVENTS)
+            qaEventsTab.draw();
     }
     
     private SampleEnvironmentalManager getEnvManager(){
@@ -1479,7 +1502,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
     private ArrayList<TreeDataItem> getTreeModel() {
         int i, j;
         AnalysisManager am;
-        SampleItemDO itemDO;
+        SampleItemViewDO itemDO;
         TreeDataItem tmp;
         TreeDataItem treeModelItem, row;
         ArrayList<TreeDataItem> model = new ArrayList<TreeDataItem>();
@@ -1516,13 +1539,13 @@ public class EnvironmentalSampleLoginScreen extends Screen {
                 
                 am = manager.getSampleItems().getAnalysisAt(i);
                 for(j=0; j<am.count(); j++){
-                    AnalysisTestDO aDO = (AnalysisTestDO)am.getAnalysisAt(j);
+                    AnalysisViewDO aDO = (AnalysisViewDO)am.getAnalysisAt(j);
                     
                     treeModelItem = new TreeDataItem(2);
                     treeModelItem.leafType = "analysis";
                     
                     treeModelItem.key = aDO.getId();
-                    treeModelItem.cells.get(0).value = aDO.test.getName() + " : " + aDO.test.getMethodName();
+                    treeModelItem.cells.get(0).value = aDO.getTestName() + " : " + aDO.getMethodName();
                     treeModelItem.cells.get(1).value = aDO.getStatusId();
                     
                     SampleDataBundle aData = new SampleDataBundle(sim, itemDO, am, aDO);
@@ -1548,12 +1571,12 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
                 
             for (int i=0; i<rpc.model.size(); i++){
-                OrganizationAutoDO autoDO = (OrganizationAutoDO)rpc.model.get(i);
+                OrganizationVO autoDO = (OrganizationVO)rpc.model.get(i);
                 
                 TableDataRow row = new TableDataRow(4);
                 row.key = autoDO.getId();
                 row.cells.get(0).value = autoDO.getName();
-                row.cells.get(1).value = autoDO.getAddress();
+                row.cells.get(1).value = autoDO.getStreetAddress();
                 row.cells.get(2).value = autoDO.getCity();
                 row.cells.get(3).value = autoDO.getState();
   

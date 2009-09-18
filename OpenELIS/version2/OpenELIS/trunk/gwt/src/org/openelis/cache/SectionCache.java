@@ -29,7 +29,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.openelis.cache.server.SectionCacheRPC;
-import org.openelis.domain.SectionDO;
+import org.openelis.domain.SectionViewDO;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 
@@ -38,29 +38,29 @@ import com.google.gwt.user.client.Window;
 public class SectionCache {
     protected static final String SECTION_CACHE_SERVICE_URL = "org.openelis.cache.server.SectionCacheService";
     protected ScreenService service;
-    HashMap<String, ArrayList<SectionDO>> sectionList;
+    HashMap<String, ArrayList<SectionViewDO>> sectionList;
     private static SectionCache instance;
     
     public SectionCache() {
         service = new ScreenService("OpenELISServlet?service="+SECTION_CACHE_SERVICE_URL);
         
-        sectionList = (HashMap<String, ArrayList<SectionDO>>)OpenELIS.getCacheList().get("SectionsCache");
+        sectionList = (HashMap<String, ArrayList<SectionViewDO>>)OpenELIS.getCacheList().get("SectionsCache");
         
         if(sectionList == null){
-            sectionList = new HashMap<String, ArrayList<SectionDO>>();
+            sectionList = new HashMap<String, ArrayList<SectionViewDO>>();
             OpenELIS.getCacheList().put("SectionsCache", sectionList);
         }
     }
     
-    public static ArrayList<SectionDO> getSectionList() {
+    public static ArrayList<SectionViewDO> getSectionList() {
         if(instance == null)
             instance = new SectionCache();
         
         return instance.getSectionListInt();
     }
     
-    protected ArrayList<SectionDO> getSectionListInt() {
-        ArrayList<SectionDO> returnList = sectionList.get("sections");
+    protected ArrayList<SectionViewDO> getSectionListInt() {
+        ArrayList<SectionViewDO> returnList = sectionList.get("sections");
         
         if(returnList == null){
             try{

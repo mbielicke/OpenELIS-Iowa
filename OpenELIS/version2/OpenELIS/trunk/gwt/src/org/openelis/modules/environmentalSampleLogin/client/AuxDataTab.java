@@ -25,28 +25,8 @@
 */
 package org.openelis.modules.environmentalSampleLogin.client;
 
-import org.openelis.common.NotesTab;
-import org.openelis.gwt.event.DataChangeEvent;
-import org.openelis.gwt.screen.ScreenDefInt;
-import org.openelis.manager.SampleManager;
+import org.openelis.gwt.screen.Screen;
 
-import com.google.gwt.user.client.Window;
+public class AuxDataTab extends Screen {
 
-public class SampleExCommentTab extends NotesTab {
-
-    public SampleExCommentTab(ScreenDefInt def, String notesPanelKey, String editButtonKey, boolean isExternal) {
-        super(def, notesPanelKey, editButtonKey, isExternal);
-    }
-    
-    public void draw() {
-        if (parentManager != null && !loaded) {
-            try {
-                manager = ((SampleManager)parentManager).getExternalNote();
-                DataChangeEvent.fire(this);
-                loaded = true;
-            } catch (Exception e) {
-                Window.alert(e.getMessage());
-            }
-        }
-    }
 }

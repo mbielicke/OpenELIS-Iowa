@@ -1,6 +1,6 @@
 package org.openelis.common;
 
-import org.openelis.domain.NoteDO;
+import org.openelis.domain.NoteViewDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
@@ -87,7 +87,7 @@ public class NotesTab extends Screen {
                 modal.setName(consts.get("standardNote"));
                 modal.setContent(editNote);
 
-                NoteDO note = null;
+                NoteViewDO note = null;
                 
                 try{
                 if(isExternal)
@@ -118,7 +118,7 @@ public class NotesTab extends Screen {
     private void drawNotes() {
         notesPanel.clearNotes();
         for (int i = 0; i < manager.count(); i++) {
-            NoteDO noteRow = manager.getNoteAt(i);
+            NoteViewDO noteRow = manager.getNoteAt(i);
             notesPanel.addNote(noteRow.getSubject(),
                                noteRow.getSystemUser(),
                                noteRow.getText(),

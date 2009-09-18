@@ -30,7 +30,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-import org.openelis.domain.AnalyteDO;
+import org.openelis.domain.AnalyteViewDO;
 import org.openelis.domain.IdNameDO;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
@@ -128,7 +128,7 @@ public class AnalyteService implements AppScreenFormServiceInt<AnalyteForm,Query
     public AnalyteForm commitAdd(AnalyteForm rpc) throws Exception {
 //		 remote interface to call the analyte bean
 		AnalyteRemote remote = (AnalyteRemote) EJBFactory.lookup("openelis/AnalyteBean/remote");
-		AnalyteDO newAnalyteDO = new AnalyteDO();
+		AnalyteViewDO newAnalyteDO = new AnalyteViewDO();
 
 		// build the analyte DO from the form
 		newAnalyteDO = getAnalyteDOFromRPC(rpc);
@@ -156,7 +156,7 @@ public class AnalyteService implements AppScreenFormServiceInt<AnalyteForm,Query
 	public AnalyteForm commitUpdate(AnalyteForm rpc) throws Exception {
     //		remote interface to call the analyte bean
     		AnalyteRemote remote = (AnalyteRemote)EJBFactory.lookup("openelis/AnalyteBean/remote");
-    		AnalyteDO newAnalyteDO = new AnalyteDO();
+    		AnalyteViewDO newAnalyteDO = new AnalyteViewDO();
     
     		//build the AnalyteDO from the form
     		newAnalyteDO = getAnalyteDOFromRPC(rpc);
@@ -193,7 +193,7 @@ public class AnalyteService implements AppScreenFormServiceInt<AnalyteForm,Query
                 throw new Exception(e.getMessage());
 		}	
 		
-		setFieldsInRPC(rpc, new AnalyteDO());
+		setFieldsInRPC(rpc, new AnalyteViewDO());
 		
 		return rpc;
 	}
@@ -203,7 +203,7 @@ public class AnalyteService implements AppScreenFormServiceInt<AnalyteForm,Query
     		AnalyteRemote remote = (AnalyteRemote)EJBFactory.lookup("openelis/AnalyteBean/remote");
     		
     		
-    		AnalyteDO analyteDO = remote.getAnalyteAndUnlock(rpc.entityKey, SessionManager.getSession().getId());
+    		AnalyteViewDO analyteDO = remote.getAnalyteAndUnlock(rpc.entityKey, SessionManager.getSession().getId());
     
     //		set the fields in the RPC
     		setFieldsInRPC(rpc, analyteDO);
@@ -215,7 +215,7 @@ public class AnalyteService implements AppScreenFormServiceInt<AnalyteForm,Query
 //		remote interface to call the storage unit bean
 		AnalyteRemote remote = (AnalyteRemote)EJBFactory.lookup("openelis/AnalyteBean/remote");
 		
-		AnalyteDO analyteDO = remote.getAnalyte(rpc.entityKey);
+		AnalyteViewDO analyteDO = remote.getAnalyte(rpc.entityKey);
 		
 //		set the fields in the RPC
 		setFieldsInRPC(rpc, analyteDO);
@@ -227,7 +227,7 @@ public class AnalyteService implements AppScreenFormServiceInt<AnalyteForm,Query
 //		 remote interface to call the analyte bean
 		AnalyteRemote remote = (AnalyteRemote) EJBFactory.lookup("openelis/AnalyteBean/remote");
 
-		AnalyteDO analyteDO = new AnalyteDO();
+		AnalyteViewDO analyteDO = new AnalyteViewDO();
 		try {
 			analyteDO = remote.getAnalyteAndLock(rpc.entityKey, SessionManager.getSession().getId());
 		} catch (Exception e) {
@@ -269,7 +269,7 @@ public class AnalyteService implements AppScreenFormServiceInt<AnalyteForm,Query
     	return null;		
     }
 
-    private void setFieldsInRPC(AnalyteForm form, AnalyteDO analyteDO){
+    private void setFieldsInRPC(AnalyteForm form, AnalyteViewDO analyteDO){
     	form.id.setValue(analyteDO.getId());
     	form.name.setValue(analyteDO.getName());
     	form.isActive.setValue(analyteDO.getIsActive());
@@ -280,20 +280,20 @@ public class AnalyteService implements AppScreenFormServiceInt<AnalyteForm,Query
 			form.parentName.clear();
 		else{
             TableDataModel<TableDataRow<Integer>> parentModel = new TableDataModel<TableDataRow<Integer>>();
-            parentModel.add(new TableDataRow<Integer>(analyteDO.getParentAnalyteId(),new StringObject(analyteDO.getParentAnalyte())));
+            parentModel.add(new TableDataRow<Integer>(analyteDO.getParentAnalyteId(),new StringObject(analyteDO.getParentAnalyteName())));
             form.parentName.setModel(parentModel);
             form.parentName.setValue(parentModel.get(0));
 		}
 	}
 	
-	private AnalyteDO getAnalyteDOFromRPC(AnalyteForm form) {
-		AnalyteDO newAnalyteDO = new AnalyteDO();
+	private AnalyteViewDO getAnalyteDOFromRPC(AnalyteForm form) {
+	    AnalyteViewDO newAnalyteDO = new AnalyteViewDO();
 
 		newAnalyteDO.setId(form.id.getValue());
 		newAnalyteDO.setName(form.name.getValue());
 		newAnalyteDO.setIsActive(form.isActive.getValue());
 		newAnalyteDO.setParentAnalyteId((Integer) form.parentName.getSelectedKey());
-        newAnalyteDO.setParentAnalyte((String) form.parentName.getTextValue());
+        newAnalyteDO.setParentAnalyteName((String) form.parentName.getTextValue());
 		newAnalyteDO.setExternalId(form.externalId.getValue());		
 
 		return newAnalyteDO;

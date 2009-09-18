@@ -26,8 +26,7 @@
 package org.openelis.modules.environmentalSampleLogin.client;
 
 import org.openelis.common.NotesTab;
-import org.openelis.domain.AnalysisTestDO;
-import org.openelis.domain.NoteDO;
+import org.openelis.domain.NoteViewDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
@@ -38,7 +37,6 @@ import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.deprecated.ScreenWindow;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.NotesPanel;
-import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.NoteManager;
 import org.openelis.manager.SampleManager;
 import org.openelis.modules.editNote.client.EditNoteScreen;
@@ -46,51 +44,45 @@ import org.openelis.modules.editNote.client.EditNoteScreen;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.Window;
 
-public class SampleCommentsTab extends NotesTab {
-    protected AnalysisTestDO analysis;
-    protected AnalysisManager anMan;
+public class SampleNotesTab extends NotesTab {
+    protected String internalNotesPanelKey;
+    protected String internalEditButtonKey;
     
-    //analysis values
-    protected String analysisNotesPanelKey;
-    protected String analysisEditButtonKey;
-    protected boolean analysisIsExternal;
+    protected NoteManager internalManager;
     
-    protected NoteManager anNoteManager;
+    protected NotesPanel internalNotesPanel;
+    protected EditNoteScreen internalEditNote;
     
-    protected NotesPanel analysisNotesPanel;
-    protected EditNoteScreen anEditNote;
-    
-    public SampleCommentsTab(ScreenDefInt def, String sampleNotesPanelKey, String sampleEditButtonKey, boolean sampleIsExternal,
-                               String analysisNotesPanelKey, String analysisEditButtonKey, boolean analysisIsExternal) {
+    public SampleNotesTab(ScreenDefInt def, String externalNotesPanelKey, String externalEditButtonKey,
+                               String internalNotesPanelKey, String internalEditButtonKey) {
         
-        super(def, sampleNotesPanelKey, sampleEditButtonKey, sampleIsExternal);
+        super(def, externalNotesPanelKey, externalEditButtonKey, true);
         
-        this.analysisNotesPanelKey = analysisNotesPanelKey;
-        this.analysisEditButtonKey = analysisEditButtonKey;
-        this.analysisIsExternal = analysisIsExternal;
+        this.internalNotesPanelKey = internalNotesPanelKey;
+        this.internalEditButtonKey = internalEditButtonKey;
         
         initializeTab();
     }
     
     public void initializeTab() {
-        analysisNotesPanel = (NotesPanel)def.getWidget(analysisNotesPanelKey);
-        addScreenHandler(analysisNotesPanel, new ScreenEventHandler<String>() {
+        internalNotesPanel = (NotesPanel)def.getWidget(internalNotesPanelKey);
+        addScreenHandler(internalNotesPanel, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 drawNotes();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
                 if (event.getState() == State.ADD)
-                    analysisNotesPanel.clearNotes();
+                    internalNotesPanel.clearNotes();
             }
         });
-        final AppButton anStandardNote = (AppButton)def.getWidget(analysisEditButtonKey);
-        addScreenHandler(anStandardNote, new ScreenEventHandler<Object>() {
+        final AppButton internalEditButton = (AppButton)def.getWidget(internalEditButtonKey);
+        addScreenHandler(internalEditButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-                if (anEditNote == null) {
+                if (internalEditNote == null) {
                     try {
-                        anEditNote = new EditNoteScreen();
-                        anEditNote.addActionHandler(new ActionHandler<EditNoteScreen.Action>() {
+                        internalEditNote = new EditNoteScreen();
+                        internalEditNote.addActionHandler(new ActionHandler<EditNoteScreen.Action>() {
                             public void onAction(ActionEvent<EditNoteScreen.Action> event) {
                                 if (event.getAction() == EditNoteScreen.Action.COMMIT) {
                                     loaded = false;
@@ -113,15 +105,12 @@ public class SampleCommentsTab extends NotesTab {
                                                       true,
                                                       false);
                 modal.setName(consts.get("standardNote"));
-                modal.setContent(anEditNote);
+                modal.setContent(internalEditNote);
 
-                NoteDO note = null;
+                NoteViewDO note = null;
                 
                 try{
-                if(isExternal)
-                    note = anNoteManager.getExternalEditingNote();
-                else
-                    note = anNoteManager.getInternalEditingNote();
+                    note = internalManager.getInternalEditingNote();
                 }catch(Exception e ){
                     e.printStackTrace();
                     Window.alert("error!");
@@ -129,68 +118,37 @@ public class SampleCommentsTab extends NotesTab {
                 note.setSystemUser(userName);
                 note.setSystemUserId(userId);
                 note.setTimestamp(Datetime.getInstance(Datetime.YEAR, Datetime.SECOND));
-                anEditNote.setNote(note);
-                anEditNote.setScreenState(State.DEFAULT);
+                internalEditNote.setNote(note);
+                internalEditNote.setScreenState(State.DEFAULT);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
 
                 if (event.getState() == State.ADD || event.getState() == State.UPDATE)
-                    anStandardNote.enable(true);
+                    internalEditButton.enable(true);
                 else
-                    anStandardNote.enable(false);
+                    internalEditButton.enable(false);
             }
         });
     }
     
     private void drawNotes() {
-        analysisNotesPanel.clearNotes();
-        try {
-            if(anMan == null)
-                anNoteManager = NoteManager.getInstance();
-            else{
-                int index = anMan.getIndex(analysis);
-                
-                if(index != -1){
-                    if(analysisIsExternal)
-                        anNoteManager = anMan.getExternalNoteAt(index);
-                    else
-                        anNoteManager = anMan.getInternalNotesAt(index);
-                }
-            }
-
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-            return;
-        }
-        
-        
-        for (int i = 0; i < anNoteManager.count(); i++) {
-            NoteDO noteRow = anNoteManager.getNoteAt(i);
-            analysisNotesPanel.addNote(noteRow.getSubject(),
+        internalNotesPanel.clearNotes();
+        for (int i = 0; i < internalManager.count(); i++) {
+            NoteViewDO noteRow = internalManager.getNoteAt(i);
+            internalNotesPanel.addNote(noteRow.getSubject(),
                                noteRow.getSystemUser(),
                                noteRow.getText(),
                                noteRow.getTimestamp());
         }
     }
-    
+
     public void draw() {
         if (!loaded) {
             try {
-                if(anMan == null)
-                    anNoteManager = NoteManager.getInstance();
-                else{
-                    int index = anMan.getIndex(analysis);
-                    
-                    if(index != -1)
-                        anNoteManager = anMan.getExternalNoteAt(index);
-                }
-                
                 if (parentManager != null){
-                    if(isExternal)
-                        manager = ((SampleManager)parentManager).getExternalNote();
-                    else    
-                        manager = ((SampleManager)parentManager).getInternalNotes();
+                    manager = ((SampleManager)parentManager).getExternalNote();
+                    internalManager = ((SampleManager)parentManager).getInternalNotes();
                 }
 
                 DataChangeEvent.fire(this);
@@ -200,20 +158,5 @@ public class SampleCommentsTab extends NotesTab {
                 Window.alert(e.getMessage());
             }
         }
-    }
-    
-    public void setData(SampleDataBundle data) {
-        if(data.analysisTestDO == null){
-            analysis = new AnalysisTestDO();
-            StateChangeEvent.fire(this, State.DEFAULT);   
-        }else{
-            analysis = data.analysisTestDO;
-            
-            if(state == State.ADD || state == State.UPDATE)
-                StateChangeEvent.fire(this, State.UPDATE);
-        }
-
-        anMan = data.analysisManager;
-        loaded = false;
     }
 }

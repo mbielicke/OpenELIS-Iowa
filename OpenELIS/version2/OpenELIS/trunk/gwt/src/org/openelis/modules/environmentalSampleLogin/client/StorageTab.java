@@ -28,7 +28,7 @@ package org.openelis.modules.environmentalSampleLogin.client;
 import java.util.ArrayList;
 import java.util.EnumSet;
 
-import org.openelis.domain.StorageDO;
+import org.openelis.domain.StorageViewDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.StateChangeEvent;
@@ -79,7 +79,7 @@ public class StorageTab extends Screen {
                 int row,col;
                 row = event.getRow();
                 col = event.getCell();
-                StorageDO storageDO;
+                StorageViewDO storageDO;
                 TableDataRow tableRow = storageTable.getRow(row);
                 try{
                     storageDO = manager.getStorageAt(row);
@@ -110,7 +110,7 @@ public class StorageTab extends Screen {
         storageTable.addRowAddedHandler(new RowAddedHandler() {
             public void onRowAdded(RowAddedEvent event) {
                 try{
-                    manager.addStorage(new StorageDO());
+                    manager.addStorage(new StorageViewDO());
                 }catch(Exception e){
                     Window.alert(e.getMessage());
                 }
@@ -167,7 +167,7 @@ public class StorageTab extends Screen {
         try 
         {   
             for(int iter = 0;iter < manager.count();iter++) {
-                StorageDO storageDO = manager.getStorageAt(iter);
+                StorageViewDO storageDO = manager.getStorageAt(iter);
             
                TableDataRow row = new TableDataRow(4);
                row.key = storageDO.getId();

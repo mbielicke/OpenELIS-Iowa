@@ -31,7 +31,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.openelis.domain.CategoryDO;
-import org.openelis.domain.DictionaryDO;
+import org.openelis.domain.DictionaryViewDO;
 import org.openelis.domain.IdNameDO;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
@@ -103,7 +103,7 @@ public class DictionaryService implements AppScreenFormServiceInt<DictionaryForm
         CategoryDO categoryDO = getCategoryDOFromRPC(rpc);                        
         TableDataModel<TableDataRow<Integer>> dictEntryTable = rpc.dictEntTable.getValue();
         
-        ArrayList<DictionaryDO> dictDOList = getDictionaryEntriesFromRPC(dictEntryTable, catId.getValue());
+        ArrayList<DictionaryViewDO> dictDOList = getDictionaryEntriesFromRPC(dictEntryTable, catId.getValue());
                         
         Integer categoryId = null;
         try{
@@ -130,7 +130,7 @@ public class DictionaryService implements AppScreenFormServiceInt<DictionaryForm
                 
         TableDataModel<TableDataRow<Integer>> dictEntryTable = rpc.dictEntTable.getValue();
         
-        ArrayList<DictionaryDO> dictDOList = getDictionaryEntriesFromRPC(dictEntryTable, categoryId.getValue());        
+        ArrayList<DictionaryViewDO> dictDOList = getDictionaryEntriesFromRPC(dictEntryTable, categoryId.getValue());        
         
         try{
             remote.updateCategory(categoryDO, dictDOList);          
@@ -248,7 +248,7 @@ public class DictionaryService implements AppScreenFormServiceInt<DictionaryForm
                          
             
             for(int iter = 0;iter < contactsList.size();iter++) {
-                DictionaryDO dictDO  = (DictionaryDO)contactsList.get(iter);
+                DictionaryViewDO dictDO  = (DictionaryViewDO)contactsList.get(iter);
                    TableDataRow<Integer> row = dictEntryModel.createNewSet();                   
                    IntegerField relEntryId = new IntegerField(dictDO.getRelatedEntryId());                    
                    row.setData(relEntryId);
@@ -265,7 +265,7 @@ public class DictionaryService implements AppScreenFormServiceInt<DictionaryForm
                       (row.cells[4]).setValue(null);
                    else{
                        TableDataModel<TableDataRow<Integer>> model = new TableDataModel<TableDataRow<Integer>>();
-                       model.add(new TableDataRow<Integer>(dictDO.getRelatedEntryId(),new StringObject(dictDO.getRelatedEntryText())));
+                       model.add(new TableDataRow<Integer>(dictDO.getRelatedEntryId(),new StringObject(dictDO.getRelatedEntryName())));
                        model.add(new TableDataRow<Integer>(null,new StringObject("")));                        
                        ((DropDownField<Integer>)row.cells[4]).setModel(model);
                        (row.cells[4]).setValue(model.get(0));
@@ -305,26 +305,26 @@ public class DictionaryService implements AppScreenFormServiceInt<DictionaryForm
     }
         
     
-    private ArrayList<DictionaryDO> getDictionaryEntriesFromRPC(TableDataModel<TableDataRow<Integer>> dictEntryTable, Integer categoryId){
+    private ArrayList<DictionaryViewDO> getDictionaryEntriesFromRPC(TableDataModel<TableDataRow<Integer>> dictEntryTable, Integer categoryId){
         
-        ArrayList<DictionaryDO> dictDOList;
-        DictionaryDO dictDO;
+        ArrayList<DictionaryViewDO> dictDOList;
+        DictionaryViewDO dictDO;
         List<TableDataRow<Integer>> deletions;
         TableDataRow<Integer> row;
         int i;
         
-        dictDOList = new ArrayList<DictionaryDO>();
+        dictDOList = new ArrayList<DictionaryViewDO>();
         for(i = 0; i < dictEntryTable.size(); i++){            
              row = dictEntryTable.get(i);
-             dictDO = new DictionaryDO();                               
+             dictDO = new DictionaryViewDO();                               
              dictDO.setId(row.key);                                  
-             dictDO.setDelete(false);                           
+             //dictDO.setDelete(false);                           
              dictDO.setIsActive((String)(row.cells[0]).getValue());
              dictDO.setSystemName((String)(row.cells[1]).getValue()); 
              dictDO.setLocalAbbrev(((String)(row.cells[2]).getValue()));
              dictDO.setEntry((String)(row.cells[3]).getValue());                                    
              dictDO.setRelatedEntryId((Integer)((DropDownField)row.cells[4]).getSelectedKey());                                                     
-             dictDO.setCategory(categoryId);                               
+             dictDO.setCategoryId(categoryId);                               
              dictDOList.add(dictDO);             
        }
         
@@ -332,9 +332,9 @@ public class DictionaryService implements AppScreenFormServiceInt<DictionaryForm
         if(deletions != null) {
             for(i = 0; i < deletions.size(); i++){            
                 row = deletions.get(i);
-                dictDO = new DictionaryDO();                                         
+                dictDO = new DictionaryViewDO();                                         
                 dictDO.setId(row.key);                                  
-                dictDO.setDelete(true);                                                                               
+                //dictDO.setDelete(true);                                                                               
                 dictDOList.add(dictDO);             
             }
             deletions.clear();

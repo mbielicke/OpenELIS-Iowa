@@ -36,7 +36,7 @@ import org.openelis.domain.InventoryComponentDO;
 import org.openelis.domain.InventoryItemAutoDO;
 import org.openelis.domain.InventoryItemDO;
 import org.openelis.domain.InventoryLocationDO;
-import org.openelis.domain.NoteDO;
+import org.openelis.domain.NoteViewDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
@@ -148,8 +148,8 @@ public class InventoryItemService implements AppScreenFormServiceInt<InventoryIt
         InventoryItemDO inventoryItemDO = new InventoryItemDO();
         List components = new ArrayList();
        
-        NoteDO inventoryItemNote = new NoteDO();
-        NoteDO inventoryManuNote = new NoteDO();
+        NoteViewDO inventoryItemNote = new NoteViewDO();
+        NoteViewDO inventoryManuNote = new NoteViewDO();
 
         inventoryItemDO = getInventoryItemDOFromRPC(rpc);
         
@@ -209,8 +209,8 @@ public class InventoryItemService implements AppScreenFormServiceInt<InventoryIt
         InventoryItemDO inventoryItemDO = new InventoryItemDO();
         List components = new ArrayList();
         //List locations = new ArrayList();
-        NoteDO inventoryItemNote = new NoteDO();
-        NoteDO inventoryManuNote = new NoteDO();
+        NoteViewDO inventoryItemNote = new NoteViewDO();
+        NoteViewDO inventoryManuNote = new NoteViewDO();
         
         //build the organizationAddress DO from the form
         inventoryItemDO = getInventoryItemDOFromRPC(rpc);
@@ -459,7 +459,7 @@ public class InventoryItemService implements AppScreenFormServiceInt<InventoryIt
         root.setAttribute("key", "notePanel");   
         int i=0;
         while(itr.hasNext()){
-            NoteDO noteRow = (NoteDO)itr.next();
+            NoteViewDO noteRow = (NoteViewDO)itr.next();
             
             //user id
             String userName = noteRow.getSystemUser();
@@ -536,7 +536,7 @@ public class InventoryItemService implements AppScreenFormServiceInt<InventoryIt
         InventoryItemRemote remote = (InventoryItemRemote)EJBFactory.lookup("openelis/InventoryItemBean/remote");
     
         //gets the whole notes list now
-        NoteDO note = remote.getInventoryMaunfacturingRecipe(key);
+        NoteViewDO note = remote.getInventoryMaunfacturingRecipe(key);
         
         if(note != null){
             form.manufacturingText.setValue(note.getText());

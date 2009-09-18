@@ -30,7 +30,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.openelis.domain.IdNameDO;
-import org.openelis.domain.LabelDO;
+import org.openelis.domain.LabelViewDO;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
@@ -100,12 +100,12 @@ public class LabelService implements AppScreenFormServiceInt<LabelForm,Query<Tab
 
     public LabelForm commitAdd(LabelForm rpc) throws Exception {
         LabelRemote remote; 
-        LabelDO labelDO;
+        LabelViewDO labelDO;
         Integer labelId; 
                   
         remote = (LabelRemote)EJBFactory.lookup("openelis/LabelBean/remote"); 
         labelDO = getLabelDOFromRPC(rpc);
-        labelDO.setDelete(false);
+      //  labelDO.setDelete(false);
         try{
             labelId = (Integer)remote.updateLabel(labelDO);
             labelDO = remote.getLabel(labelId);
@@ -124,11 +124,11 @@ public class LabelService implements AppScreenFormServiceInt<LabelForm,Query<Tab
 
     public LabelForm commitUpdate(LabelForm rpc) throws Exception {
         LabelRemote remote; 
-        LabelDO labelDO;         
+        LabelViewDO labelDO;         
           
         remote = (LabelRemote)EJBFactory.lookup("openelis/LabelBean/remote");
         labelDO = getLabelDOFromRPC(rpc);
-        labelDO.setDelete(false);
+   //     labelDO.setDelete(false);
         try{
             remote.updateLabel(labelDO);        
             labelDO = remote.getLabel(rpc.entityKey);
@@ -144,12 +144,12 @@ public class LabelService implements AppScreenFormServiceInt<LabelForm,Query<Tab
     }
 
     public LabelForm commitDelete(LabelForm rpc) throws Exception {
-        LabelDO labelDO;         
+        LabelViewDO labelDO;         
         LabelRemote remote; 
         
         remote = (LabelRemote)EJBFactory.lookup("openelis/LabelBean/remote");
         labelDO = getLabelDOFromRPC(rpc);
-        labelDO.setDelete(true);
+    //    labelDO.setDelete(true);
         try{
             remote.deleteLabel(labelDO);
         } catch (ValidationErrorsList e) {
@@ -158,14 +158,14 @@ public class LabelService implements AppScreenFormServiceInt<LabelForm,Query<Tab
         } catch (Exception e) {
             throw new Exception(e.getMessage());            
         }
-        setFieldsInRPC(rpc, new LabelDO());
+        setFieldsInRPC(rpc, new LabelViewDO());
         return rpc;
     }
 
     public LabelForm abort(LabelForm rpc) throws Exception {
         LabelRemote remote = (LabelRemote)EJBFactory.lookup("openelis/LabelBean/remote"); 
         Integer labelId = rpc.entityKey;
-        LabelDO labelDO =null;
+        LabelViewDO labelDO =null;
         try{
             labelDO  = remote.getLabelAndUnlock(labelId, SessionManager.getSession().getId());
            } catch(Exception ex){
@@ -180,7 +180,7 @@ public class LabelService implements AppScreenFormServiceInt<LabelForm,Query<Tab
         LabelRemote remote = (LabelRemote)EJBFactory.lookup("openelis/LabelBean/remote"); 
         Integer labelId = rpc.entityKey;
 
-        LabelDO labelDO = remote.getLabel(labelId);
+        LabelViewDO labelDO = remote.getLabel(labelId);
         
         //set the fields in the RPC
         setFieldsInRPC(rpc, labelDO);
@@ -191,7 +191,7 @@ public class LabelService implements AppScreenFormServiceInt<LabelForm,Query<Tab
     public LabelForm fetchForUpdate(LabelForm rpc) throws Exception {
         LabelRemote remote = (LabelRemote)EJBFactory.lookup("openelis/LabelBean/remote"); 
         Integer labelId = rpc.entityKey;
-        LabelDO labelDO =null;
+        LabelViewDO labelDO =null;
         try{
             labelDO  = remote.getLabelAndLock(labelId, SessionManager.getSession().getId());
            } catch(Exception ex){
@@ -207,13 +207,13 @@ public class LabelService implements AppScreenFormServiceInt<LabelForm,Query<Tab
         return rpc;
     }   
     
-    private void setFieldsInRPC(LabelForm form, LabelDO qaeDO){
+    private void setFieldsInRPC(LabelForm form, LabelViewDO qaeDO){
         TableDataModel<TableDataRow<Integer>> model;
         
         form.id.setValue(qaeDO.getId());
         form.name.setValue(qaeDO.getName());
         form.description.setValue(qaeDO.getDescription());
-        form.printerTypeId.setValue(new TableDataRow<Integer>(qaeDO.getPrinterType()));     
+        form.printerTypeId.setValue(new TableDataRow<Integer>(qaeDO.getPrinterTypeId()));     
         
         model = new TableDataModel<TableDataRow<Integer>>();
         if(qaeDO.getScriptletId() != null) {
@@ -224,10 +224,10 @@ public class LabelService implements AppScreenFormServiceInt<LabelForm,Query<Tab
         form.scriptletId.setModel(model);        
     }
     
-    private LabelDO getLabelDOFromRPC(LabelForm form){
-        LabelDO labelDO;
+    private LabelViewDO getLabelDOFromRPC(LabelForm form){
+        LabelViewDO labelDO;
 
-        labelDO = new LabelDO();
+        labelDO = new LabelViewDO();
         labelDO.setId(form.id.getValue());
         labelDO.setName(form.name.getValue());
         labelDO.setDescription(form.description.getValue());

@@ -23,31 +23,32 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.modules.environmentalSampleLogin.client;
+package org.openelis.manager;
 
-import org.openelis.common.NotesTab;
-import org.openelis.gwt.event.DataChangeEvent;
-import org.openelis.gwt.screen.ScreenDefInt;
-import org.openelis.manager.SampleManager;
+import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.gwt.services.ScreenService;
 
-import com.google.gwt.user.client.Window;
-
-public class SampleIntCommentsTab extends NotesTab {
-
+public class AnalysisQAEventManagerProxy {
+    protected static final String QA_EVENT_SERVICE_URL = "org.openelis.modules.qaevent.server.QAEventService";
+    protected ScreenService service;
     
-    public SampleIntCommentsTab(ScreenDefInt def, String notesPanelKey, String editButtonKey, boolean isExternal) {
-        super(def, notesPanelKey, editButtonKey, isExternal);
+    public AnalysisQAEventManagerProxy(){
+        service = new ScreenService("OpenELISServlet?service="+QA_EVENT_SERVICE_URL);
     }
-
-    public void draw() {
-        if (parentManager != null && !loaded) {
-            try {
-                manager = ((SampleManager)parentManager).getInternalNotes();
-                DataChangeEvent.fire(this);
-                loaded = true;
-            } catch (Exception e) {
-                Window.alert(e.getMessage());
-            }
-        }
+    
+    public AnalysisQaEventManager fetchByAnalysisId(Integer analysisId) throws Exception {
+        return service.call("fetchByAnalysisId", analysisId);
+    }
+    
+    public AnalysisQaEventManager add(AnalysisQaEventManager man) throws Exception {
+        throw new UnsupportedOperationException();
+    }
+    
+    public AnalysisQaEventManager update(AnalysisQaEventManager man) throws Exception {
+        throw new UnsupportedOperationException();
+    }
+    
+    public void validate(AnalysisQaEventManager man, ValidationErrorsList errorsList) throws Exception {
+        
     }
 }
