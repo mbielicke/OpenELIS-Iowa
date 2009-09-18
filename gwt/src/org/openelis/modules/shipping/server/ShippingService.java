@@ -30,8 +30,8 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.openelis.domain.IdNameDO;
-import org.openelis.domain.NoteDO;
-import org.openelis.domain.OrganizationAutoDO;
+import org.openelis.domain.NoteViewDO;
+import org.openelis.domain.OrganizationVO;
 import org.openelis.domain.ShippingAddAutoFillDO;
 import org.openelis.domain.ShippingDO;
 import org.openelis.domain.ShippingItemDO;
@@ -143,7 +143,7 @@ public class ShippingService implements AppScreenFormServiceInt<ShippingForm, Qu
 		ShippingRemote remote = (ShippingRemote) EJBFactory
 				.lookup("openelis/ShippingBean/remote");
 		ShippingDO shippingDO = new ShippingDO();
-		NoteDO shippingNote = new NoteDO();
+		NoteViewDO shippingNote = new NoteViewDO();
 		List trackingNumbers = new ArrayList();
 		List shippingItems = new ArrayList();
 		System.out.println("before get out of rpc");
@@ -199,7 +199,7 @@ System.out.println("after shipping items");
 		ShippingRemote remote = (ShippingRemote) EJBFactory
 				.lookup("openelis/ShippingBean/remote");
 		ShippingDO shippingDO = new ShippingDO();
-		NoteDO shippingNote = new NoteDO();
+		NoteViewDO shippingNote = new NoteViewDO();
 		List trackingNumbers = new ArrayList();
 		List shippingItems = new ArrayList();
 
@@ -397,7 +397,7 @@ System.out.println("after shipping items");
 	public void getOrderShippingNotesValue(Integer key, ShippingNotesForm form) throws Exception {
 		ShippingRemote remote = (ShippingRemote) EJBFactory.lookup("openelis/ShippingBean/remote");
 
-		NoteDO noteDO = remote.getShippingNote(key);
+		NoteViewDO noteDO = remote.getShippingNote(key);
 
 		if (noteDO != null){
 		    form.text.setValue(noteDO.getText());
@@ -634,7 +634,7 @@ System.out.println("after shipping items");
 		}
 
 		for (int i = 0; i < autoCompleteList.size(); i++) {
-			OrganizationAutoDO resultDO = (OrganizationAutoDO) autoCompleteList
+			OrganizationVO resultDO = (OrganizationVO) autoCompleteList
 					.get(i);
 			// org id
 			Integer orgId = resultDO.getId();
@@ -643,7 +643,7 @@ System.out.println("after shipping items");
 			// org apt suite #
 			String aptSuite = resultDO.getAptSuite();
 			// org street address
-			String address = resultDO.getAddress();
+			String address = resultDO.getStreetAddress();
 			// org city
 			String city = resultDO.getCity();
 			// org state

@@ -280,7 +280,7 @@ public class StandardNoteService implements AppScreenFormServiceInt<StandardNote
     	newStandardNoteDO.setDescription(form.description.getValue());
     	newStandardNoteDO.setName(form.name.getValue());
     	newStandardNoteDO.setText(form.text.getValue());
-    	newStandardNoteDO.setType((Integer) form.typeId.getSelectedKey());
+    	newStandardNoteDO.setTypeId((Integer) form.typeId.getSelectedKey());
     	
     	return newStandardNoteDO;
     }
@@ -305,7 +305,7 @@ public class StandardNoteService implements AppScreenFormServiceInt<StandardNote
     	form.name.setValue(standardNoteDO.getName());
     	form.text.setValue(standardNoteDO.getText());
         
-        if(standardNoteDO.getType() != null)
-        	form.typeId.setValue(new TableDataRow<Integer>(standardNoteDO.getType()));
+        if(standardNoteDO.getTypeId() != null)
+        	form.typeId.setValue(new TableDataRow<Integer>(standardNoteDO.getTypeId()));
     }
 }

@@ -3,7 +3,7 @@ package org.openelis.modules.test.client;
 import java.util.ArrayList;
 
 import org.openelis.domain.IdNameDO;
-import org.openelis.domain.TestMethodAutoDO;
+import org.openelis.domain.TestMethodViewDO;
 import org.openelis.gwt.common.RPC;
 
 public class TestAutoRPC implements RPC {
@@ -13,6 +13,6 @@ public class TestAutoRPC implements RPC {
     public String match;
 	
 	public ArrayList<IdNameDO> idNameList;
-	public ArrayList<TestMethodAutoDO> testMethodList;
+	public ArrayList<TestMethodViewDO> testMethodList;
 	
 }
