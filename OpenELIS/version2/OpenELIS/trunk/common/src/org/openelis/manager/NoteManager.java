@@ -27,7 +27,7 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
-import org.openelis.domain.NoteDO;
+import org.openelis.domain.NoteViewDO;
 import org.openelis.exception.MultipleNoteException;
 import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.ValidationErrorsList;
@@ -37,7 +37,7 @@ public class NoteManager implements RPC {
     private static final long serialVersionUID = 1L;
     protected Integer referenceId;
     protected Integer referenceTableId;
-    protected ArrayList<NoteDO> notes;
+    protected ArrayList<NoteViewDO> notes;
     
     protected transient static NoteManagerProxy proxy;
     
@@ -54,7 +54,7 @@ public class NoteManager implements RPC {
         NoteManager nm;
 
         nm = new NoteManager();
-        nm.notes = new ArrayList<NoteDO>();
+        nm.notes = new ArrayList<NoteViewDO>();
 
         return nm;
     }
@@ -66,13 +66,13 @@ public class NoteManager implements RPC {
         return notes.size();
     }
     
-    public NoteDO getNoteAt(int i) {
+    public NoteViewDO getNoteAt(int i) {
         return notes.get(i);
     }
     
-    public NoteDO getInternalEditingNote() {
+    public NoteViewDO getInternalEditingNote() {
         if(count() == 0 || notes.get(0).getId() != null){
-            NoteDO note = new NoteDO();
+            NoteViewDO note = new NoteViewDO();
             note.setIsExternal("N");
             
             try{
@@ -85,9 +85,9 @@ public class NoteManager implements RPC {
         return getNoteAt(0);
     }
     
-    public NoteDO getExternalEditingNote() {
+    public NoteViewDO getExternalEditingNote() {
         if(count() == 0){
-            NoteDO note = new NoteDO();
+            NoteViewDO note = new NoteViewDO();
             note.setIsExternal("Y");
             
             try{
@@ -100,7 +100,7 @@ public class NoteManager implements RPC {
         return getNoteAt(0);
     }
     
-    public void addNote(NoteDO note) throws Exception {
+    public void addNote(NoteViewDO note) throws Exception {
         //we are only going to allow 1 external note.  External notes can be modified
         //so there is no reason to have more than 1.
         if("Y".equals(note.getIsExternal()) && count() > 0)
@@ -109,14 +109,14 @@ public class NoteManager implements RPC {
         //you can only add 1 internal note at a time.  This checks to see if we 
         //already have an uncommited internal note.
         for(int i=0; i<count(); i++){
-            NoteDO noteDO = getNoteAt(i);
+            NoteViewDO noteDO = getNoteAt(i);
             
             if(noteDO.getId() == null)
                 throw new MultipleNoteException();
         }
         
         if(notes == null)
-            notes = new ArrayList<NoteDO>();
+            notes = new ArrayList<NoteViewDO>();
         
         notes.add(0, note);
     }
@@ -172,11 +172,11 @@ public class NoteManager implements RPC {
     }
 
     //these are friendly methods so only managers and proxies can call this method
-    ArrayList<NoteDO> getNotes() {
+    ArrayList<NoteViewDO> getNotes() {
         return notes;
     }
 
-    void setNotes(ArrayList<NoteDO> notes) {
+    void setNotes(ArrayList<NoteViewDO> notes) {
         this.notes = notes;
     }
 }

@@ -95,7 +95,7 @@ public class DataBaseUtil {
 
         dt = null;
         if (hourToMinute != null) 
-            dt = new Datetime(Datetime.YEAR, Datetime.DAY, hourToMinute);
+            dt = new Datetime(Datetime.HOUR, Datetime.MINUTE, hourToMinute);
         
         return dt;
     }

@@ -27,7 +27,7 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
-import org.openelis.domain.AnalysisTestDO;
+import org.openelis.domain.AnalysisViewDO;
 import org.openelis.exception.NotFoundException;
 import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.ValidationErrorsList;
@@ -38,6 +38,7 @@ public class AnalysisManager implements RPC, HasNotesInt {
     protected Integer                           sampleItemId, analysisReferenceId, analysisInternalReferenceTableId;
     protected ArrayList<AnalysisListItem>                   items, deletedList;
     
+    protected transient TestManager tests;
     protected transient static AnalysisManagerProxy proxy;
 
 
@@ -94,16 +95,16 @@ public class AnalysisManager implements RPC, HasNotesInt {
     } 
     
     //analysis
-    public AnalysisTestDO getAnalysisAt(int i) {
+    public AnalysisViewDO getAnalysisAt(int i) {
         return getItem(i).analysis;
 
     }
 
-    public void setAnalysisAt(AnalysisTestDO analysis, int i) {
+    public void setAnalysisAt(AnalysisViewDO analysis, int i) {
         getItem(i).analysis = analysis;
     }
     
-    public void addAnalysis(AnalysisTestDO analysis){
+    public void addAnalysis(AnalysisViewDO analysis){
         AnalysisListItem item = new AnalysisListItem();
         item.analysis = analysis;
         items.add(item);
@@ -122,7 +123,7 @@ public class AnalysisManager implements RPC, HasNotesInt {
             deletedList.add(tmpList);
     }
     
-    public int getIndex(AnalysisTestDO aDO){
+    public int getIndex(AnalysisViewDO aDO){
         for(int i=0; i<count(); i++)
             if(items.get(i).analysis == aDO)
                 return i;
@@ -132,14 +133,12 @@ public class AnalysisManager implements RPC, HasNotesInt {
     
     //qaevents
     public AnalysisQaEventManager getQAEventAt(int i) throws Exception {
-        return null;
-        /*
         AnalysisListItem item = getItem(i);
-
-        if (item.qaEvents == null) {
+        if(item.qaEvents == null){
             if(item.analysis != null && item.analysis.getId() != null){
                 try{
-                    item.qaEvents = qa.findBySampleItemId(item.sampleItem.getId());
+                    item.qaEvents = AnalysisQaEventManager.findByAnalysisId(item.analysis.getId());
+                    
                 }catch(NotFoundException e){
                     //ignore
                 }catch(Exception e){
@@ -147,11 +146,11 @@ public class AnalysisManager implements RPC, HasNotesInt {
                 }
             }
         }
-            
-        if(item.analysis == null)
-            item.analysis = AnalysisManager.getInstance();
-    
-        return item.analysis;*/
+        
+        if(item.qaEvents == null)
+            item.qaEvents = AnalysisQaEventManager.getInstance();
+
+        return item.qaEvents;
     }
 
     public void setQAEventAt(AnalysisQaEventManager qaEvent, int i) {
@@ -237,6 +236,14 @@ public class AnalysisManager implements RPC, HasNotesInt {
         getItem(i).storage = storage;
     }
     
+    public void setTests(TestManager tests){
+        this.tests = tests;
+    }
+    
+    public TestManager getTests(){
+        return tests;
+    }
+    
     //item
     private AnalysisListItem getItem(int i) {
         return items.get(i);
@@ -260,8 +267,8 @@ public class AnalysisManager implements RPC, HasNotesInt {
             throw errorsList;
     }
     
-    public void validate(ValidationErrorsList errorsList) throws Exception {
-        proxy().validate(this, errorsList);
+    public void validate(String sampleItemSequence, ValidationErrorsList errorsList) throws Exception {
+        proxy().validate(this, sampleItemSequence, errorsList);
     }
     
     private static AnalysisManagerProxy proxy() {

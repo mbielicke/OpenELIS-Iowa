@@ -26,7 +26,6 @@
 package org.openelis.remote;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import javax.ejb.Remote;
@@ -35,7 +34,6 @@ import org.openelis.domain.CategoryDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.gwt.common.data.deprecated.AbstractField;
-import org.openelis.gwt.common.data.deprecated.QueryStringField;
 
 @Remote
 public interface CategoryRemote {

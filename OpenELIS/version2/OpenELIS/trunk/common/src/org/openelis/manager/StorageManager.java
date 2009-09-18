@@ -27,8 +27,7 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
-import org.openelis.domain.NoteDO;
-import org.openelis.domain.StorageDO;
+import org.openelis.domain.StorageViewDO;
 import org.openelis.exception.MultipleNoteException;
 import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.ValidationErrorsList;
@@ -37,7 +36,7 @@ public class StorageManager implements RPC {
 
     private static final long serialVersionUID = 1L;
     protected Integer referenceId, referenceTableId;
-    protected ArrayList<StorageDO>  storageList;
+    protected ArrayList<StorageViewDO>  storageList;
     
     protected transient static StorageManagerProxy proxy;
 
@@ -48,7 +47,7 @@ public class StorageManager implements RPC {
         StorageManager sm;
 
         sm = new StorageManager();
-        sm.storageList = new ArrayList<StorageDO>();
+        sm.storageList = new ArrayList<StorageViewDO>();
 
         return sm;
     }
@@ -60,21 +59,21 @@ public class StorageManager implements RPC {
         return storageList.size();
     }
     
-    public StorageDO getStorageAt(int i) {
+    public StorageViewDO getStorageAt(int i) {
         return storageList.get(i);
     }
-    public void addStorage(StorageDO storage) throws Exception {
+    public void addStorage(StorageViewDO storage) throws Exception {
         //you can only add 1 storage record at a time.  This checks to see if we 
         //already have an uncommited storage record.
         for(int i=0; i<count(); i++){
-            StorageDO storageDO = getStorageAt(i);
+            StorageViewDO storageDO = getStorageAt(i);
             
             if(storageDO.getId() == null)
                 throw new MultipleNoteException();
         }
         
         if(storageList == null)
-            storageList = new ArrayList<StorageDO>();
+            storageList = new ArrayList<StorageViewDO>();
         
         storageList.add(0, storage);
     }
@@ -136,11 +135,11 @@ public class StorageManager implements RPC {
     }
     
     //these are friendly methods so only managers and proxies can call this method
-    ArrayList<StorageDO> getStorages() {
+    ArrayList<StorageViewDO> getStorages() {
         return storageList;
     }
 
-    void setStorages(ArrayList<StorageDO> storages) {
+    void setStorages(ArrayList<StorageViewDO> storages) {
         storageList = storages;
     }
 }

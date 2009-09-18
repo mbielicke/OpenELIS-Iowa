@@ -26,7 +26,7 @@
 package org.openelis.remote;
 
 import org.openelis.domain.BillToReportToDO;
-import org.openelis.domain.NoteDO;
+import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.OrderAddAutoFillDO;
 import org.openelis.domain.OrderDO;
 import org.openelis.gwt.common.data.deprecated.AbstractField;
@@ -52,13 +52,13 @@ public interface OrderRemote {
     public OrderDO getOrderAndLock(Integer orderId, String orderType, String session) throws Exception;
     
     //commit a change to order, or insert a new order record
-    public Integer updateOrder(OrderDO orderDO, String orderType, List items, NoteDO customerNoteDO, NoteDO orderShippingNotes) throws Exception;
+    public Integer updateOrder(OrderDO orderDO, String orderType, List items, NoteViewDO customerNoteDO, NoteViewDO orderShippingNotes) throws Exception;
     
     //method to return customer notes
-    public NoteDO getCustomerNote(Integer orderId);
+    public NoteViewDO getCustomerNote(Integer orderId);
     
     //method to return order/shipping notes
-    public NoteDO getOrderShippingNote(Integer orderId);
+    public NoteViewDO getOrderShippingNote(Integer orderId);
     
     //method to return order items
     public List getOrderItems(Integer orderId);

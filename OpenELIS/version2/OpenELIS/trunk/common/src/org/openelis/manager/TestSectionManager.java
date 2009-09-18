@@ -27,7 +27,8 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
-import org.openelis.domain.TestSectionDO;
+import org.openelis.cache.DictionaryCache;
+import org.openelis.domain.TestSectionViewDO;
 import org.openelis.gwt.common.RPC;
 
 public class TestSectionManager implements RPC {
@@ -38,8 +39,8 @@ public class TestSectionManager implements RPC {
     private static final long serialVersionUID = 1L;
     
     protected Integer testId;
-    protected ArrayList<TestSectionDO> sections;
-    protected ArrayList<TestSectionDO> deletedSections;
+    protected ArrayList<TestSectionViewDO> sections;
+    protected ArrayList<TestSectionViewDO> deletedSections;
     
     protected transient static TestSectionManagerProxy proxy;
     
@@ -54,7 +55,7 @@ public class TestSectionManager implements RPC {
         TestSectionManager tsm;
         
         tsm = new TestSectionManager();
-        tsm.sections = new ArrayList<TestSectionDO>();
+        tsm.sections = new ArrayList<TestSectionViewDO>();
         
         return tsm;
     }
@@ -75,24 +76,24 @@ public class TestSectionManager implements RPC {
         return sections.size();
     }
     
-    public TestSectionDO getSectionAt(int i) {
+    public TestSectionViewDO getSectionAt(int i) {
         return sections.get(i);
     }
     
-    public void setSectionAt(TestSectionDO section, int i) {
+    public void setSectionAt(TestSectionViewDO section, int i) {
         sections.set(i, section);
     }
     
-    public void addSection(TestSectionDO section){
+    public void addSection(TestSectionViewDO section){
         if(sections == null)
-            sections = new ArrayList<TestSectionDO>();
+            sections = new ArrayList<TestSectionViewDO>();
         
         sections.add(section);
     }
     
-    public void addSectionAt(TestSectionDO section, int i){
+    public void addSectionAt(TestSectionViewDO section, int i){
         if(sections == null)
-            sections = new ArrayList<TestSectionDO>();
+            sections = new ArrayList<TestSectionViewDO>();
         
         sections.add(i, section);
     }
@@ -101,12 +102,29 @@ public class TestSectionManager implements RPC {
         if(sections == null || i >= sections.size())
             return;
         
-        TestSectionDO tmpDO = sections.remove(i);
+        TestSectionViewDO tmpDO = sections.remove(i);
         
         if(deletedSections == null)
-            deletedSections = new ArrayList<TestSectionDO>();
+            deletedSections = new ArrayList<TestSectionViewDO>();
         
         deletedSections.add(tmpDO);
+    }
+    
+    public TestSectionViewDO getDefaultSection(){
+        Integer defaultId = DictionaryCache.getIdFromSystemName("test_section_default");
+        TestSectionViewDO defaultDO = null;
+        for(int i=0; i<sections.size(); i++){
+            if(defaultId.equals(sections.get(i).getFlagId())){
+                defaultDO = sections.get(i);
+                break;
+            }
+        }
+        
+        return defaultDO;
+    }
+    
+    public ArrayList<TestSectionViewDO> getSections() {
+        return sections;
     }
     
     //service methods
@@ -118,11 +136,7 @@ public class TestSectionManager implements RPC {
         return proxy().update(this);
     }
     
-    ArrayList<TestSectionDO> getSections() {
-        return sections;
-    }
-
-    void setSections(ArrayList<TestSectionDO> testSections) {
+    void setSections(ArrayList<TestSectionViewDO> testSections) {
         this.sections = testSections;
     }
     
@@ -133,7 +147,7 @@ public class TestSectionManager implements RPC {
         return deletedSections.size();
     }
     
-    TestSectionDO getDeletedAt(int i){
+    TestSectionViewDO getDeletedAt(int i){
         return deletedSections.get(i);
     }
     

@@ -32,22 +32,22 @@ import javax.ejb.Remote;
 
 import org.openelis.domain.IdNameDO;
 import org.openelis.domain.IdNameLotNumberDO;
-import org.openelis.domain.QcAnalyteDO;
-import org.openelis.domain.QcDO;
+import org.openelis.domain.QcAnalyteViewDO;
+import org.openelis.domain.QcViewDO;
 import org.openelis.gwt.common.data.deprecated.AbstractField;
 
 @Remote
 public interface QcRemote {
     
-    public QcDO getQc(Integer qcId);
+    public QcViewDO getQc(Integer qcId);
     
-    public QcDO getQcAndUnlock(Integer qcId, String session);
+    public QcViewDO getQcAndUnlock(Integer qcId, String session);
     
-    public QcDO getQcAndLock(Integer qcId, String session)throws Exception;
+    public QcViewDO getQcAndLock(Integer qcId, String session)throws Exception;
     
-    public Integer updateQc(QcDO qcDO, List<QcAnalyteDO> qcAnaDOList)throws Exception;
+    public Integer updateQc(QcViewDO qcDO, List<QcAnalyteViewDO> qcAnaDOList)throws Exception;
     
-    public List<QcAnalyteDO> getQcAnalytes(Integer qcId);
+    public List<QcAnalyteViewDO> getQcAnalytes(Integer qcId);
     
     public List<IdNameLotNumberDO> query(ArrayList<AbstractField> fields, int first, int max) throws Exception;   
     

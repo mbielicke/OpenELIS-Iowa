@@ -25,7 +25,7 @@
 */
 package org.openelis.manager;
 
-import org.openelis.domain.OrganizationAddressDO;
+import org.openelis.domain.OrganizationViewDO;
 import org.openelis.exception.InconsistencyException;
 import org.openelis.exception.NotFoundException;
 import org.openelis.gwt.common.RPC;
@@ -35,7 +35,7 @@ public class OrganizationManager implements RPC, HasNotesInt {
     private static final long                           serialVersionUID = 1L;
     protected OrganizationContactManager               contacts;
     protected NoteManager                              notes;
-    protected OrganizationAddressDO                     organizationAddress;
+    protected OrganizationViewDO                     organizationAddress;
     protected Integer organizationReferenceTable;
     
     protected transient static OrganizationManagerProxy proxy;
@@ -56,7 +56,7 @@ public class OrganizationManager implements RPC, HasNotesInt {
         OrganizationManager om;
 
         om = new OrganizationManager();
-        om.organizationAddress = new OrganizationAddressDO();
+        om.organizationAddress = new OrganizationViewDO();
 
         return om;
     }
@@ -79,18 +79,18 @@ public class OrganizationManager implements RPC, HasNotesInt {
     }
     
     public OrganizationManager fetchForUpdate() throws Exception {
-        if(organizationAddress.getOrganizationId() == null)
+        if(organizationAddress.getId() == null)
             throw new InconsistencyException("org id is null");
         
-        return proxy().fetchForUpdate(organizationAddress.getOrganizationId());
+        return proxy().fetchForUpdate(organizationAddress.getId());
     }
     
     //getters/setters
     public NoteManager getNotes() throws Exception {
         if(notes == null){
-            if(organizationAddress.getOrganizationId() != null && organizationReferenceTable != null){
+            if(organizationAddress.getId() != null && organizationReferenceTable != null){
                 try{
-                    notes = NoteManager.findByRefTableRefId(organizationReferenceTable, organizationAddress.getOrganizationId());
+                    notes = NoteManager.findByRefTableRefId(organizationReferenceTable, organizationAddress.getId());
                     
                 }catch(NotFoundException e){
                     //ignore
@@ -108,9 +108,9 @@ public class OrganizationManager implements RPC, HasNotesInt {
     
     public OrganizationContactManager getContacts() throws Exception {
         if(contacts == null){
-            if(organizationAddress.getOrganizationId() != null){
+            if(organizationAddress.getId() != null){
                 try{
-                    contacts = OrganizationContactManager.findByOrganizationId(organizationAddress.getOrganizationId());
+                    contacts = OrganizationContactManager.findByOrganizationId(organizationAddress.getId());
                     
                 }
                 catch(NotFoundException e){
@@ -127,11 +127,11 @@ public class OrganizationManager implements RPC, HasNotesInt {
         return contacts;
     }
     
-    public OrganizationAddressDO getOrganizationAddress() {
+    public OrganizationViewDO getOrganizationAddress() {
         return organizationAddress;
     }
 
-    public void setOrganizationAddress(OrganizationAddressDO organizationAddress) {
+    public void setOrganizationAddress(OrganizationViewDO organizationAddress) {
         this.organizationAddress = organizationAddress;
     }
     
@@ -155,7 +155,7 @@ public class OrganizationManager implements RPC, HasNotesInt {
     }
     
     public OrganizationManager abort() throws Exception {
-        return proxy().abort(organizationAddress.getOrganizationId());
+        return proxy().abort(organizationAddress.getId());
     }
     
     public void validate() throws Exception {

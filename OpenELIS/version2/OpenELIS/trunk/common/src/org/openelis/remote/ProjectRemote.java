@@ -31,20 +31,20 @@ import java.util.List;
 import javax.ejb.Remote;
 
 import org.openelis.domain.IdNameDO;
-import org.openelis.domain.ProjectDO;
 import org.openelis.domain.ProjectParameterDO;
+import org.openelis.domain.ProjectViewDO;
 import org.openelis.gwt.common.data.deprecated.AbstractField;
 
 @Remote
 public interface ProjectRemote {
 
-    public ProjectDO getProject(Integer projectId);
+    public ProjectViewDO getProject(Integer projectId);
     
-    public ProjectDO getProjectAndUnlock(Integer projectId, String session);
+    public ProjectViewDO getProjectAndUnlock(Integer projectId, String session);
     
-    public ProjectDO getProjectAndLock(Integer projectId, String session)throws Exception;
+    public ProjectViewDO getProjectAndLock(Integer projectId, String session)throws Exception;
     
-    public Integer updateProject(ProjectDO projectDO,
+    public Integer updateProject(ProjectViewDO projectDO,
                                  List<ProjectParameterDO> projParamDOList)throws Exception;
     
     public List<IdNameDO> query(ArrayList<AbstractField> fields, int first, int max) throws Exception;    

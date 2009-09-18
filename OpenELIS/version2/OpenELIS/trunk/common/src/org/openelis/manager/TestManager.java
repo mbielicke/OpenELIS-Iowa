@@ -81,6 +81,10 @@ public class TestManager implements RPC {
         return proxy().fetchWithAnalytesAndResults(id);
     }
     
+    public static TestManager findByIdWithPrepTest(Integer id) throws Exception{
+        return proxy().fetchWithPrepTests(id);
+    }
+    
     public static TestManager findByIdWithPrepTestAndReflexTests(Integer id) throws Exception{
         return proxy().fetchWithPrepTestsAndReflexTests(id);
     }

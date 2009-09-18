@@ -30,7 +30,7 @@ import java.util.List;
 
 import javax.ejb.Remote;
 
-import org.openelis.domain.SectionDO;
+import org.openelis.domain.SectionViewDO;
 import org.openelis.gwt.common.data.deprecated.AbstractField;
 
 @Remote
@@ -38,15 +38,15 @@ public interface SectionRemote {
 
     public List getAutoCompleteSectionByName(String name, int maxResults);
     
-    public SectionDO getSection(Integer sectionId);
+    public SectionViewDO getSection(Integer sectionId);
     
-    public SectionDO getSectionAndUnlock(Integer sectionId, String session);
+    public SectionViewDO getSectionAndUnlock(Integer sectionId, String session);
     
-    public SectionDO getSectionAndLock(Integer sectionId, String session)throws Exception;
+    public SectionViewDO getSectionAndLock(Integer sectionId, String session)throws Exception;
     
-    public Integer updateSection(SectionDO sectionDO)throws Exception;
+    public Integer updateSection(SectionViewDO sectionDO)throws Exception;
     
     public List query(ArrayList<AbstractField> fields, int first, int max)throws Exception;
     
-    public List<SectionDO> getSectionDOList();    
+    public List<SectionViewDO> getSectionDOList();    
 }

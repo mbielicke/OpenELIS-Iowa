@@ -25,44 +25,40 @@
  */
 package org.openelis.domain;
 
+import java.util.Date;
 import org.openelis.utilcommon.DataBaseUtil;
 
 /**
- * The class extends sample project DO and carries several commonly used fields
- * such as project name and description. The additional fields are for
- * read/display only and do not get committed to the database. Note: isChanged
- * will reflect any changes to read/display fields.
+ * The class extends qc DO and carries a commonly used field inventory_item
+ * name. The additional field is for read/display only and does not get
+ * committed to the database. Note: isChanged will reflect any changes to
+ * read/display fields.
  */
 
-public class SampleProjectProjectDO extends SampleProjectDO {
+public class QcViewDO extends QcDO {
 
     private static final long serialVersionUID = 1L;
 
-    protected String          projectName, projectDescription;
+    protected String          inventoryItemName;
 
-    public SampleProjectProjectDO() {
+    public QcViewDO() {
     }
 
-    public SampleProjectProjectDO(Integer id, Integer sampleId, Integer projectId,
-                                  String isPermanent, String projectName, String projectDescription) {
-        super(id, sampleId, projectId, isPermanent);
-        setProjectName(projectName);
-        setProjectDescription(projectDescription);
+    public QcViewDO(Integer id, String name, Integer typeId, Integer inventoryItemId,
+                           String inventoryItemName, String source, String lotNumber,
+                           Date preparedDate, Double preparedVolume, Integer preparedUnitId,
+                           Integer preparedById, Date usableDate, Date expireDate,
+                           String isSingleUse) {
+        super(id, name, typeId, inventoryItemId, source, lotNumber, preparedDate, preparedVolume,
+              preparedUnitId, preparedById, usableDate, expireDate, isSingleUse);
+        setInventoryItemName(inventoryItemName);
     }
 
-    public String getProjectName() {
-        return projectName;
+    public String getInventoryItemName() {
+        return inventoryItemName;
     }
 
-    public void setProjectName(String projectName) {
-        this.projectName = DataBaseUtil.trim(projectName);
-    }
-
-    public String getProjectDescription() {
-        return projectDescription;
-    }
-
-    public void setProjectDescription(String projectDescription) {
-        this.projectDescription = DataBaseUtil.trim(projectDescription);
+    public void setInventoryItemName(String inventoryItemName) {
+        this.inventoryItemName = DataBaseUtil.trim(inventoryItemName);
     }
 }

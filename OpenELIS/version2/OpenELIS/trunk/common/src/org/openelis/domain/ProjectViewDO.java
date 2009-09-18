@@ -29,36 +29,43 @@ import java.util.Date;
 import org.openelis.utilcommon.DataBaseUtil;
 
 /**
- * The class extends qc DO and carries a commonly used field inventory_item
- * name. The additional field is for read/display only and does not get
- * committed to the database. Note: isChanged will reflect any changes to
+ * The class extends the project DO and carries additional scriptlet and owner
+ * fields. These additional fields are for read/display only and do not get
+ * committed to the database. Note: isChanged will not reflect any changes to
  * read/display fields.
  */
 
-public class QcInventoryItem extends QcDO {
+public class ProjectViewDO extends ProjectDO {
 
     private static final long serialVersionUID = 1L;
 
-    protected String          inventoryItemName;
+    protected String          scriptletName;
+    protected String          systemUserName;
 
-    public QcInventoryItem() {
+    public ProjectViewDO() {
     }
 
-    public QcInventoryItem(Integer id, String name, Integer typeId, Integer inventoryItemId,
-                           String inventoryItemName, String source, String lotNumber,
-                           Date preparedDate, Double preparedVolume, Integer preparedUnitId,
-                           Integer preparedById, Date usableDate, Date expireDate,
-                           String isSingleUse) {
-        super(id, name, typeId, inventoryItemId, source, lotNumber, preparedDate, preparedVolume,
-              preparedUnitId, preparedById, usableDate, expireDate, isSingleUse);
-        setInventoryItemName(inventoryItemName);
+    public ProjectViewDO(Integer id, String name, String description, Date startedDate,
+                         Date completedDate, String isActive, String referenceTo, Integer ownerId,
+                         Integer scriptletId, String scriptletName, String systemUserName) {
+        super(id, name, description, startedDate, completedDate, isActive, referenceTo, ownerId,
+              scriptletId);
+        setScriptletName(scriptletName);
     }
 
-    public String getInventoryItemName() {
-        return inventoryItemName;
+    public String getScriptletName() {
+        return scriptletName;
     }
 
-    public void setInventoryItemName(String inventoryItemName) {
-        this.inventoryItemName = DataBaseUtil.trim(inventoryItemName);
+    public void setScriptletName(String scriptletName) {
+        this.scriptletName = DataBaseUtil.trim(scriptletName);
+    }
+
+    public String getSystemUserName() {
+        return systemUserName;
+    }
+
+    public void setSystemUserName(String systemUserName) {
+        this.systemUserName = DataBaseUtil.trim(systemUserName);
     }
 }

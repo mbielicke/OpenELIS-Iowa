@@ -28,44 +28,44 @@ package org.openelis.domain;
 import org.openelis.gwt.common.RPC;
 import org.openelis.utilcommon.DataBaseUtil;
 
-public class OrganizationAutoDO implements RPC {
+public class OrganizationVO implements RPC {
 
     private static final long serialVersionUID = 1L;
 
     protected Integer         id;
     protected String          name;
     protected String          aptSuite;
-    protected String          address;
+    protected String          streetAddress;
     protected String          city;
     protected String          state;
     protected String          zipCode;
 
-    public OrganizationAutoDO() {
+    public OrganizationVO() {
 
     }
 
-    public OrganizationAutoDO(Integer id,
+    public OrganizationVO(Integer id,
                               String name,
                               String aptSuite,
-                              String address,
+                              String streeAddress,
                               String city,
                               String state,
                               String zipCode) {
         setId(id);
         setName(name);
         setAptSuite(aptSuite);
-        setAddress(address);
+        setStreetAddress(streetAddress);
         setCity(city);
         setState(state);
         setZipCode(zipCode);
     }
 
-    public String getAddress() {
-        return address;
+    public String getStreetAddress() {
+        return streetAddress;
     }
 
-    public void setAddress(String address) {
-        this.address = DataBaseUtil.trim(address);
+    public void setStreetAddress(String streetAddress) {
+        this.streetAddress = DataBaseUtil.trim(streetAddress);
     }
 
     public String getCity() {

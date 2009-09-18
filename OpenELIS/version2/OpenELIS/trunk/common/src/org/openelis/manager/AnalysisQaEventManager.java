@@ -26,126 +26,137 @@
 
 package org.openelis.manager;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 
-import org.openelis.domain.AnalysisQaEventDO;
-import org.openelis.domain.QaEventDO;
+import org.openelis.domain.AnalysisQaEventViewDO;
+import org.openelis.gwt.common.RPC;
+import org.openelis.gwt.common.ValidationErrorsList;
 
-public class AnalysisQaEventManager implements Serializable {
+public class AnalysisQaEventManager implements RPC {
 
-    /**
-     * 
-     */
     private static final long serialVersionUID = 1L;
     
-    protected boolean loaded;
-    protected Integer analysisId;
-    protected ArrayList<Item> items;
-    protected ArrayList<AnalysisQaEventDO> removedAnaQaEvents;
+    protected Integer                           analysisId;
+    protected ArrayList<AnalysisQaEventViewDO>       items, deletedList;
     
-    //protected AnalysisQaEventsManagerIOInt manager;
-    
-    class Item {
-        public AnalysisQaEventDO analysisQAEvent;
-        public QaEventDO         qaEvent;
-    }
+    protected transient static AnalysisQAEventManagerProxy proxy;
 
     /**
      * Creates a new instance of this object.
      */
     public static AnalysisQaEventManager getInstance() {
-        AnalysisQaEventManager aqm;
+        AnalysisQaEventManager aqam;
 
-        aqm = new AnalysisQaEventManager();
-        aqm.items = new ArrayList<Item>();
-        aqm.removedAnaQaEvents = new ArrayList<AnalysisQaEventDO>();
+        aqam = new AnalysisQaEventManager();
+        aqam.items = new ArrayList<AnalysisQaEventViewDO>();
 
-        return aqm;
+        return aqam;
     }
     
-    public void setAnalysisId(Integer analysisId) {
-        this.analysisId = analysisId;
-    }   
+    /**
+     * Creates a new instance of this object with the specified sample id. Use this function to load an instance of this object from database.
+     */
+    public static AnalysisQaEventManager findByAnalysisId(Integer analysisId) throws Exception {
+        return proxy().fetchByAnalysisId(analysisId);
+    }
     
-    public int count() {
- //       manager().fetch();
+    public int count(){
+        if(items == null)
+            return 0;
+        
         return items.size();
     }
     
-    public AnalysisQaEventDO add(){
-        Item item;
+  //getters/setters
+    public Integer getAnalysisId() {
+        return analysisId;
+    }
 
- //       manager().fetch();
-        item = new Item();
-        item.analysisQAEvent = new AnalysisQaEventDO();
-        items.add(item);
+    public void setAnalysisId(Integer analysisId) {
+        this.analysisId = analysisId;
+    }
+    
+    public AnalysisQaEventViewDO getAnalysisQAAt(int i) {
+        return items.get(i);
 
-        return item.analysisQAEvent;
     }
-    
-    public void update(){
-        
-    }
-    
-    public void remove(int i) {
-        Item item;
-        AnalysisQaEventDO aq;
 
-     //   manager().fetch();
-        item = (Item)items.get(i);
-        aq = item.analysisQAEvent;
-        //
-        // save the AnalysisQAEvent record if it exists in the database
-        // so we can delete it in store().
-        //
-        if (aq.getId() != null)
-            removedAnaQaEvents.add(aq);
+    public void setAnalysisQAAt(AnalysisQaEventViewDO analysisQA, int i) {
+        items.set(i, analysisQA);
+    }
+    
+    public void addAnalysisQA(AnalysisQaEventViewDO analysisQA){
+        items.add(analysisQA);
+    }
+    
+    public void removeAnalysisQAAt(int i){
+        if(items == null || i >= items.size())
+            return;
+       
+        AnalysisQaEventViewDO tmpQA = items.remove(i);
+        
+        if(deletedList == null)
+            deletedList = new ArrayList<AnalysisQaEventViewDO>();
+        
+        if(tmpQA.getId() != null)
+            deletedList.add(tmpQA);
+    }
+    
+    /*
+    public int getIndex(AnalysisTestDO aDO){
+        for(int i=0; i<count(); i++)
+            if(items.get(i).analysis == aDO)
+                return i;
+        
+        return -1;
+    }*/
+    
+ // service methods
+    public AnalysisQaEventManager add() throws Exception {
+        return proxy().add(this);
+    }
 
-        items.remove(i);
+    public AnalysisQaEventManager update() throws Exception {
+        return proxy().update(this);
     }
     
-    public AnalysisQaEventDO getAnalysisQaEventAt(int i) {
-    //    manager().fetch();
-        return items.get(i).analysisQAEvent;
-    }
-    
-    public QaEventDO getQaEventAt(int i) {
-        return null;
-    }
-    
-    public void setQaEventAt(QaEventDO qaEvent, int i) {
-        Integer anaId = null;
+    public void validate() throws Exception {
+        ValidationErrorsList errorsList = new ValidationErrorsList();
         
-        if (qaEvent == null)
-            anaId = null;
-        else
-            anaId = qaEvent.getId();
-            
-        items.get(i).analysisQAEvent.setQaEventId(anaId);
-        items.get(i).qaEvent = qaEvent;
-    }
-    
-    public boolean hasResultOverride() {
-        int i;
+        proxy().validate(this, errorsList);
         
-        for (i = 0; i < count(); i++) {
-            if ("R".equals(getQaEventAt(i).getTypeId()))
-                return true;
-        }
-        return false;
+        if(errorsList.size() > 0)
+            throw errorsList;
     }
     
-    public String toString() {
-        StringBuffer buff = new StringBuffer();
-        
-        for (int i = 0; i < count(); i++) {
-            if (buff.length() > 0)
-                buff.append(", ");
-            buff.append(getQaEventAt(i).getName());
-        }
-        return buff.toString();
+    public void validate(ValidationErrorsList errorsList) throws Exception {
+        proxy().validate(this, errorsList);
     }
     
-  
+    private static AnalysisQAEventManagerProxy proxy() {
+        if (proxy == null)
+            proxy = new AnalysisQAEventManagerProxy();
+
+        return proxy;
+    }
+    
+    int deleteCount() {
+        if (deletedList == null)
+            return 0;
+
+        return deletedList.size();
+    }
+
+    AnalysisQaEventViewDO getDeletedAt(int i) {
+        return deletedList.get(i);
+    }       
+    
+  //these are friendly methods so only managers and proxies can call this method
+    ArrayList<AnalysisQaEventViewDO> getAnalysisQAs() {
+        return items;
+    }
+
+    void setAnalysisQAEvents(ArrayList<AnalysisQaEventViewDO> analysisQas) {
+        this.items = analysisQas;
+    }
 }

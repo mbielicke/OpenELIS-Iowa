@@ -25,31 +25,138 @@
 */
 package org.openelis.manager;
 
+import java.util.ArrayList;
+
+import org.openelis.domain.SampleQaEventViewDO;
 import org.openelis.gwt.common.RPC;
+import org.openelis.gwt.common.ValidationErrorsList;
 
 public class SampleQaEventManager implements RPC {
     
-    private static final long serialVersionUID = 1L;
+private static final long serialVersionUID = 1L;
     
-    Integer  sampleId;
+    protected Integer                           sampleId;
+    protected ArrayList<SampleQaEventViewDO>       items, deletedList;
+    
+    protected transient static SampleQAEventManagerProxy proxy;
 
     /**
      * Creates a new instance of this object.
      */
     public static SampleQaEventManager getInstance() {
-        SampleQaEventManager qem;
+        SampleQaEventManager sqam;
 
-        qem = new SampleQaEventManager();
+        sqam = new SampleQaEventManager();
+        sqam.items = new ArrayList<SampleQaEventViewDO>();
 
-        return qem;
+        return sqam;
     }
     
+    /**
+     * Creates a new instance of this object with the specified sample id. Use this function to load an instance of this object from database.
+     */
+    public static SampleQaEventManager findBySampleId(Integer sampleId) throws Exception {
+        return proxy().fetchBySampleId(sampleId);
+    }
+    
+    public int count(){
+        if(items == null)
+            return 0;
+        
+        return items.size();
+    }
+    
+    //getters/setters
     public Integer getSampleId() {
         return sampleId;
     }
 
     public void setSampleId(Integer sampleId) {
         this.sampleId = sampleId;
+    }
+    
+    public SampleQaEventViewDO getSampleQAAt(int i) {
+        return items.get(i);
+
+    }
+
+    public void setSampleQAAt(SampleQaEventViewDO sampleQA, int i) {
+        items.set(i, sampleQA);
+    }
+    
+    public void addSampleQA(SampleQaEventViewDO sampleQA){
+        items.add(sampleQA);
+    }
+    
+    public void removeSampleQAAt(int i){
+        if(items == null || i >= items.size())
+            return;
+       
+        SampleQaEventViewDO tmpQA = items.remove(i);
+        
+        if(deletedList == null)
+            deletedList = new ArrayList<SampleQaEventViewDO>();
+        
+        if(tmpQA.getId() != null)
+            deletedList.add(tmpQA);
+    }
+    
+    /*
+    public int getIndex(AnalysisTestDO aDO){
+        for(int i=0; i<count(); i++)
+            if(items.get(i).analysis == aDO)
+                return i;
+        
+        return -1;
+    }*/
+    
+    // service methods
+    public SampleQaEventManager add() throws Exception {
+        return proxy().add(this);
+    }
+
+    public SampleQaEventManager update() throws Exception {
+        return proxy().update(this);
+    }
+    
+    public void validate() throws Exception {
+        ValidationErrorsList errorsList = new ValidationErrorsList();
+        
+        proxy().validate(this, errorsList);
+        
+        if(errorsList.size() > 0)
+            throw errorsList;
+    }
+    
+    public void validate(ValidationErrorsList errorsList) throws Exception {
+        proxy().validate(this, errorsList);
+    }
+    
+    private static SampleQAEventManagerProxy proxy() {
+        if (proxy == null)
+            proxy = new SampleQAEventManagerProxy();
+
+        return proxy;
+    }
+    
+    int deleteCount() {
+        if (deletedList == null)
+            return 0;
+
+        return deletedList.size();
+    }
+
+    SampleQaEventViewDO getDeletedAt(int i) {
+        return deletedList.get(i);
+    }       
+    
+  //these are friendly methods so only managers and proxies can call this method
+    ArrayList<SampleQaEventViewDO> getSampleQAs() {
+        return items;
+    }
+
+    void setSampleQAEvents(ArrayList<SampleQaEventViewDO> sampleQas) {
+        this.items = sampleQas;
     }
 
 }

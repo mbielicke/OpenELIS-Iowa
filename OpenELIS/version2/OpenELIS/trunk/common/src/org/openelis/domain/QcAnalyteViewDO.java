@@ -25,37 +25,35 @@
  */
 package org.openelis.domain;
 
-import java.util.Date;
 import org.openelis.utilcommon.DataBaseUtil;
 
 /**
- * The class extends the project DO and carries additional scriptlet name field.
- * This additional fields is for read/display only and does not get committed to
- * the database. Note: isChanged will reflect any changes to read/display
- * fields.
+ * The class extends qc analyte DO and carries a commonly used field analyte name.
+ * The additional field is for read/display only and does not get committed to the
+ * database. Note: isChanged will reflect any changes to read/display fields.
  */
 
-public class ProjectScriptletDO extends ProjectDO {
+public class QcAnalyteViewDO extends QcAnalyteDO {
 
     private static final long serialVersionUID = 1L;
 
-    protected String          scriptletName;
+    protected String          analyteName;
 
-    public ProjectScriptletDO() {
-    }
-
-    public ProjectScriptletDO(Integer id, String name, String description, Date startedDate,
-                              Date completedDate, String isActive, String referenceTo,
-                              Integer ownerId, Integer scriptletId, String scriptletName) {
-        super(id, name, description, startedDate, completedDate, isActive, referenceTo, ownerId, scriptletId);
-        setScriptletName(scriptletName);
-    }
-    
-    public String getScriptletName() {
-        return scriptletName;
+    public QcAnalyteViewDO() {
     }
 
-    public void setScriptletName(String scriptletName) {
-        this.scriptletName = DataBaseUtil.trim(scriptletName);
+    public QcAnalyteViewDO(Integer id, Integer qcId, Integer analyteId, String analyteName,
+                              Integer typeId, String value, String isTrendable) {
+        super(id, qcId, analyteId, typeId, value, isTrendable);
+        setAnalyteName(analyteName);
     }
+
+    public String getAnalyteName() {
+        return analyteName;
+    }
+
+    public void setAnalyteName(String analyteName) {
+        this.analyteName = DataBaseUtil.trim(analyteName);
+    }
+
 }

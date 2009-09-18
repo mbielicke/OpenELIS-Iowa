@@ -25,7 +25,7 @@
 */
 package org.openelis.remote;
 
-import org.openelis.domain.NoteDO;
+import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.ShippingAddAutoFillDO;
 import org.openelis.domain.ShippingDO;
 import org.openelis.domain.ShippingItemDO;
@@ -55,12 +55,12 @@ public interface ShippingRemote {
     public List getShippingItems(Integer shippingId);
     
     //commit a change to shipping record, or insert a new shipping record
-    public Integer updateShipment(ShippingDO shippingDO, List<ShippingItemDO> shippingItems, List<ShippingTrackingDO> trackingNumbers, NoteDO shippingNotes) throws Exception;
+    public Integer updateShipment(ShippingDO shippingDO, List<ShippingItemDO> shippingItems, List<ShippingTrackingDO> trackingNumbers, NoteViewDO shippingNotes) throws Exception;
     
     //method to query for shipments
     public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception;
      
     public ShippingAddAutoFillDO getAddAutoFillValues() throws Exception;
     
-    public NoteDO getShippingNote(Integer shippingId);
+    public NoteViewDO getShippingNote(Integer shippingId);
 }
