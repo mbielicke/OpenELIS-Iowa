@@ -35,7 +35,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
-import org.openelis.domain.StorageDO;
+import org.openelis.domain.StorageViewDO;
 import org.openelis.entity.Storage;
 import org.openelis.exception.NotFoundException;
 import org.openelis.local.LoginLocal;
@@ -50,7 +50,7 @@ public class StorageBean implements StorageLocal{
     
     @EJB LoginLocal login;
 
-    public void add(StorageDO storageDO) throws Exception {
+    public void add(StorageViewDO storageDO) throws Exception {
         manager.setFlushMode(FlushModeType.COMMIT);
         
         Storage storage = new Storage();
@@ -66,7 +66,7 @@ public class StorageBean implements StorageLocal{
         storageDO.setId(storage.getId());
     }
 
-    public void update(StorageDO storageDO) throws Exception {
+    public void update(StorageViewDO storageDO) throws Exception {
         manager.setFlushMode(FlushModeType.COMMIT);
         
         Storage storage = manager.find(Storage.class, storageDO.getId());
@@ -79,12 +79,12 @@ public class StorageBean implements StorageLocal{
         storage.setSystemUserId(storageDO.getSystemUserId());
     }
     
-    public ArrayList<StorageDO> fetchByRefId(Integer refTableId, Integer refId) throws Exception {
+    public ArrayList<StorageViewDO> fetchByRefId(Integer refTableId, Integer refId) throws Exception {
         Query query = manager.createNamedQuery("Storage.StorageById");
         query.setParameter("referenceTable", refTableId);
         query.setParameter("id", refId);
         
-        ArrayList<StorageDO> list = (ArrayList<StorageDO>)query.getResultList();
+        ArrayList<StorageViewDO> list = (ArrayList<StorageViewDO>)query.getResultList();
         
         if(list.size() == 0)
             throw new NotFoundException();

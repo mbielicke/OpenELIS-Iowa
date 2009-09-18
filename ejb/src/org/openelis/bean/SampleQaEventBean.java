@@ -34,60 +34,62 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
-import org.openelis.domain.SampleOrganizationViewDO;
-import org.openelis.entity.SampleOrganization;
+import org.openelis.domain.SampleQaEventViewDO;
+import org.openelis.entity.SampleQaevent;
 import org.openelis.exception.NotFoundException;
-import org.openelis.local.SampleOrganizationLocal;
+import org.openelis.local.SampleQAEventLocal;
 
 @Stateless
 
 @SecurityDomain("openelis")
 //@RolesAllowed("LOCKINGtest")
-public class SampleOrganizationBean implements SampleOrganizationLocal {
+public class SampleQaEventBean implements SampleQAEventLocal {
+
     @PersistenceContext(name = "openelis")
     private EntityManager manager;
-   
-    public List<SampleOrganizationViewDO> fetchBySampleId(Integer sampleId) throws Exception {
-        Query query = manager.createNamedQuery("SampleOrg.SampleOrgBySampleId");
+    
+    public List fetchBySampleId(Integer sampleId) throws Exception {
+        Query query = manager.createNamedQuery("SampleQaevent.SampleQaeventBySampleId");
         query.setParameter("id", sampleId);
- 
-        List<SampleOrganizationViewDO> returnList = query.getResultList();
         
+        List returnList = query.getResultList();
         if(returnList.size() == 0)
             throw new NotFoundException();
         
         return returnList;
     }
     
-    public void add(SampleOrganizationViewDO sampleOrgDO) {
+    public void add(SampleQaEventViewDO sampleQAEventDO) {
         manager.setFlushMode(FlushModeType.COMMIT);
         
-        SampleOrganization organization = new SampleOrganization();
+        SampleQaevent sampleQA = new SampleQaevent();
         
-        organization.setOrganizationId(sampleOrgDO.getOrganizationId());
-        organization.setSampleId(sampleOrgDO.getSampleId());
-        organization.setTypeId(sampleOrgDO.getTypeId());
+        sampleQA.setIsBillable(sampleQAEventDO.getIsBillable());
+        sampleQA.setQaeventId(sampleQAEventDO.getQaEventId());
+        sampleQA.setSampleId(sampleQAEventDO.getSampleId());
+        sampleQA.setTypeId(sampleQAEventDO.getTypeId());
         
-        manager.persist(organization);
-        sampleOrgDO.setId(organization.getId());
+       manager.persist(sampleQA);
+       sampleQAEventDO.setId(sampleQA.getId());
     }
 
-    public void update(SampleOrganizationViewDO sampleOrgDO) {
+    public void update(SampleQaEventViewDO sampleQAEventDO) {
         manager.setFlushMode(FlushModeType.COMMIT);
         
-        SampleOrganization organization = manager.find(SampleOrganization.class, sampleOrgDO.getId());
-        
-        organization.setOrganizationId(sampleOrgDO.getOrganizationId());
-        organization.setSampleId(sampleOrgDO.getSampleId());
-        organization.setTypeId(sampleOrgDO.getTypeId());
+        SampleQaevent sampleQA = manager.find(SampleQaevent.class, sampleQAEventDO.getId());
+            
+        sampleQA.setIsBillable(sampleQAEventDO.getIsBillable());
+        sampleQA.setQaeventId(sampleQAEventDO.getQaEventId());
+        sampleQA.setSampleId(sampleQAEventDO.getSampleId());
+        sampleQA.setTypeId(sampleQAEventDO.getTypeId());
     }
     
-    public void delete(SampleOrganizationViewDO sampleOrgDO) {
+    public void delete(SampleQaEventViewDO sampleQAEventDO) {
         manager.setFlushMode(FlushModeType.COMMIT);
         
-        SampleOrganization organization = manager.find(SampleOrganization.class, sampleOrgDO.getId());
+        SampleQaevent sampleQA = manager.find(SampleQaevent.class, sampleQAEventDO.getId());
         
-        if(organization != null)
-            manager.remove(organization);
-    }    
+        if(sampleQA != null)
+            manager.remove(sampleQA);
+    }
 }

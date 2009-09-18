@@ -25,17 +25,32 @@
  */
 package org.openelis.bean;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+
+import javax.annotation.Resource;
+import javax.annotation.security.RolesAllowed;
+import javax.ejb.EJB;
+import javax.ejb.SessionContext;
+import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.FlushModeType;
+import javax.persistence.NoResultException;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+
 import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.DictionaryIdEntrySysNameDO;
 import org.openelis.domain.IdNameDO;
-import org.openelis.domain.SampleTestMethodDO;
 import org.openelis.domain.TestAnalyteDO;
 import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.domain.TestDO;
 import org.openelis.domain.TestPrepViewDO;
 import org.openelis.domain.TestReflexViewDO;
 import org.openelis.domain.TestResultDO;
-import org.openelis.domain.TestSectionDO;
+import org.openelis.domain.TestSectionViewDO;
 import org.openelis.domain.TestTypeOfSampleDO;
 import org.openelis.domain.TestViewDO;
 import org.openelis.domain.TestWorksheetAnalyteDO;
@@ -73,31 +88,15 @@ import org.openelis.metamap.TestTypeOfSampleMetaMap;
 import org.openelis.metamap.TestWorksheetAnalyteMetaMap;
 import org.openelis.metamap.TestWorksheetItemMetaMap;
 import org.openelis.remote.TestRemote;
-import org.openelis.utilcommon.NumericRange;
-import org.openelis.utilcommon.InconsistentException;
-import org.openelis.utilcommon.ParseException;
 import org.openelis.util.QueryBuilder;
+import org.openelis.utilcommon.InconsistentException;
+import org.openelis.utilcommon.NumericRange;
+import org.openelis.utilcommon.ParseException;
 import org.openelis.utilcommon.TestResultValidator;
 import org.openelis.utilcommon.TiterRange;
 import org.openelis.utils.GetPage;
 import org.openelis.utils.ReferenceTableCache;
 import org.openelis.utils.SecurityInterceptor;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.annotation.Resource;
-import javax.annotation.security.RolesAllowed;
-import javax.ejb.EJB;
-import javax.ejb.SessionContext;
-import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.FlushModeType;
-import javax.persistence.NoResultException;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -515,15 +514,15 @@ public class TestBean implements TestRemote, TestLocal {
         return grid;
     }
 
-    public ArrayList<TestSectionDO> getTestSections(Integer testId) throws Exception {
+    public ArrayList<TestSectionViewDO> getTestSections(Integer testId) throws Exception {
         Query query = manager.createNamedQuery("TestSection.TestSectionsByTestId");
         query.setParameter("testId", testId);
-        List<TestSectionDO> list = query.getResultList();
+        List<TestSectionViewDO> list = query.getResultList();
 
         if (list == null || list.size() == 0)
             throw new NotFoundException();
 
-        return (ArrayList<TestSectionDO>)list;
+        return (ArrayList<TestSectionViewDO>)list;
     }
 
     /**
@@ -707,6 +706,14 @@ public class TestBean implements TestRemote, TestLocal {
 
         return query.getResultList();
     }
+    
+    public List getTestWithActiveAutoCompleteByName(String name, int maxResults) {
+        Query query = manager.createNamedQuery("Test.TestMethodActiveAutoByName");
+        query.setParameter("name", name);
+        query.setMaxResults(maxResults);
+
+        return query.getResultList();
+    }
 
     public List getTestAutoCompleteByNameSampleItemType(String name,
                                                         Integer sampleItemType,
@@ -717,8 +724,9 @@ public class TestBean implements TestRemote, TestLocal {
         query.setMaxResults(maxResults);
 
         List testList = query.getResultList();
-
-        for (int i = 0; i < testList.size(); i++ ) {
+        
+        /*
+        for(int i=0; i<testList.size(); i++){
             SampleTestMethodDO testDO = (SampleTestMethodDO)testList.get(i);
             // query for test sections
             try {
@@ -727,11 +735,11 @@ public class TestBean implements TestRemote, TestLocal {
             } catch (Exception e) {
                 testDO.setSections(new ArrayList<TestSectionDO>());
             }
-
-            // query for pre tests
-            testDO.setPrepTests((ArrayList<TestPrepViewDO>)getTestPreps(testDO.getTest().getId()));
-        }
-
+            
+            //query for pre tests
+            testDO.setPrepTests((ArrayList<TestPrepDO>)getTestPreps(testDO.getTest().getId()));
+        }*/
+        
         return testList;
     }
 
@@ -806,7 +814,7 @@ public class TestBean implements TestRemote, TestLocal {
 
     }
 
-    public void addTestSection(TestSectionDO tsDO) throws Exception {
+    public void addTestSection(TestSectionViewDO tsDO) throws Exception {
         TestSection ts;
 
         manager.setFlushMode(FlushModeType.COMMIT);
@@ -821,7 +829,7 @@ public class TestBean implements TestRemote, TestLocal {
         tsDO.setId(ts.getId());
     }
 
-    public void updateTestSection(TestSectionDO tsDO) throws Exception {
+    public void updateTestSection(TestSectionViewDO tsDO) throws Exception {
         TestSection ts;
 
         manager.setFlushMode(FlushModeType.COMMIT);
@@ -833,7 +841,7 @@ public class TestBean implements TestRemote, TestLocal {
         ts.setTestId(tsDO.getTestId());
     }
 
-    public void deleteTestSection(TestSectionDO tsDO) throws Exception {
+    public void deleteTestSection(TestSectionViewDO tsDO) throws Exception {
         TestSection ts;
 
         manager.setFlushMode(FlushModeType.COMMIT);
@@ -853,7 +861,7 @@ public class TestBean implements TestRemote, TestLocal {
                              List<TestWorksheetItemDO> itemDOList,
                              List<TestWorksheetAnalyteDO> twsaDOList,
                              List<TestAnalyteDO> analyteDOList,
-                             List<TestSectionDO> sectionDOList,
+                             List<TestSectionViewDO> sectionDOList,
                              List<TestResultDO> resultDOList) throws Exception {
         ValidationErrorsList exceptionList = new ValidationErrorsList();
 
@@ -910,7 +918,7 @@ public class TestBean implements TestRemote, TestLocal {
     }
 
     public void validateTest(TestViewDO testDO,
-                             List<TestSectionDO> sections,
+                             List<TestSectionViewDO> sections,
                              List<TestTypeOfSampleDO> sampleTypes,
                              ArrayList<ArrayList<TestAnalyteViewDO>> analytes,
                              ArrayList<ArrayList<TestResultDO>> results,
@@ -1770,11 +1778,11 @@ public class TestBean implements TestRemote, TestLocal {
     }
 
     private void validateTestSections(ValidationErrorsList exceptionList,
-                                      List<TestSectionDO> sectionDOList) {
+                                      List<TestSectionViewDO> sectionDOList) {
         Integer defId, askId, matchId, flagId, sectId;
         List<Integer> idList;
         int size, numDef, numAsk, numMatch, numBlank, iter;
-        TestSectionDO secDO;
+        TestSectionViewDO secDO;
         if (sectionDOList == null || sectionDOList.size() == 0) {
             exceptionList.add(new FormErrorException("atleastOneSection"));
             return;

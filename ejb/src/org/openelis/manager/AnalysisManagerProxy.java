@@ -29,7 +29,7 @@ import java.util.ArrayList;
 
 import javax.naming.InitialContext;
 
-import org.openelis.domain.AnalysisTestDO;
+import org.openelis.domain.AnalysisViewDO;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.AnalysisLocal;
 import org.openelis.utils.ReferenceTableCache;
@@ -37,7 +37,7 @@ import org.openelis.utils.ReferenceTableCache;
 public class AnalysisManagerProxy {
     public AnalysisManager fetchBySampleItemId(Integer sampleItemId) throws Exception {
         AnalysisLocal al = getAnalysisLocal();
-        ArrayList<AnalysisTestDO> items = (ArrayList<AnalysisTestDO>)al.fetchBySampleItemId(sampleItemId);
+        ArrayList<AnalysisViewDO> items = (ArrayList<AnalysisViewDO>)al.fetchBySampleItemId(sampleItemId);
         AnalysisManager am = AnalysisManager.getInstance();
 
         for(int i=0; i<items.size(); i++)
@@ -51,9 +51,13 @@ public class AnalysisManagerProxy {
     }
     
     public AnalysisManager add(AnalysisManager man) throws Exception {
+        System.out.println("inside analysis add");
+        Integer anRefId, anIntRefId;
         AnalysisLocal al = getAnalysisLocal();
         
-        AnalysisTestDO analysisDO;
+        AnalysisViewDO analysisDO;
+        anRefId = ReferenceTableCache.getReferenceTable("analysis");
+        anIntRefId = ReferenceTableCache.getReferenceTable("analysis_internal_note");
         
         for(int i=0; i<man.count(); i++){
             analysisDO = man.getAnalysisAt(i);
@@ -61,9 +65,19 @@ public class AnalysisManagerProxy {
             
             al.add(analysisDO);
             
+            man.getQAEventAt(i).setAnalysisId(analysisDO.getId());
             man.getQAEventAt(i).add();
+            
+            man.getInternalNotesAt(i).setReferenceId(analysisDO.getId());
+            man.getInternalNotesAt(i).setReferenceTableId(anIntRefId);
             man.getInternalNotesAt(i).add();
+            
+            man.getExternalNoteAt(i).setReferenceId(analysisDO.getId());
+            man.getExternalNoteAt(i).setReferenceTableId(anRefId);
             man.getExternalNoteAt(i).add();
+            
+            man.getStorageAt(i).setReferenceId(analysisDO.getId());
+            man.getStorageAt(i).setReferenceTableId(anRefId);
             man.getStorageAt(i).add();
         }
         
@@ -71,8 +85,12 @@ public class AnalysisManagerProxy {
     }
     
     public AnalysisManager update(AnalysisManager man) throws Exception {
+        Integer anRefId, anIntRefId;
         AnalysisLocal al = getAnalysisLocal();
-        AnalysisTestDO analysisDO;
+        
+        AnalysisViewDO analysisDO;
+        anRefId = ReferenceTableCache.getReferenceTable("analysis");
+        anIntRefId = ReferenceTableCache.getReferenceTable("analysis_internal_note");
         
         for(int j=0; j<man.deleteCount(); j++)
             al.delete(man.getDeletedAt(j).analysis);
@@ -86,9 +104,19 @@ public class AnalysisManagerProxy {
             }else
                 al.update(analysisDO);
             
+            man.getQAEventAt(i).setAnalysisId(analysisDO.getId());
             man.getQAEventAt(i).update();
+            
+            man.getInternalNotesAt(i).setReferenceId(analysisDO.getId());
+            man.getInternalNotesAt(i).setReferenceTableId(anIntRefId);
             man.getInternalNotesAt(i).update();
+            
+            man.getExternalNoteAt(i).setReferenceId(analysisDO.getId());
+            man.getExternalNoteAt(i).setReferenceTableId(anRefId);
             man.getExternalNoteAt(i).update();
+            
+            man.getStorageAt(i).setReferenceId(analysisDO.getId());
+            man.getStorageAt(i).setReferenceTableId(anRefId);
             man.getStorageAt(i).update();
         }
 
@@ -96,6 +124,10 @@ public class AnalysisManagerProxy {
     }
     
     public void validate(AnalysisManager man, ValidationErrorsList errorsList) throws Exception {
+        
+    }
+
+    public void validate(AnalysisManager man, String sampleItemSequence, ValidationErrorsList errorsList) throws Exception {
         
     }
     

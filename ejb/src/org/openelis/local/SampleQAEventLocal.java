@@ -29,13 +29,13 @@ import java.util.List;
 
 import javax.ejb.Local;
 
-import org.openelis.domain.SampleOrganizationViewDO;
+import org.openelis.domain.SampleQaEventViewDO;
 
 @Local
-public interface SampleOrganizationLocal {
-    public List<SampleOrganizationViewDO> fetchBySampleId(Integer sampleId) throws Exception;   
+public interface SampleQAEventLocal {
+    public List fetchBySampleId(Integer sampleId) throws Exception;
     
-    public void add(SampleOrganizationViewDO sampleOrgDO);
-    public void update(SampleOrganizationViewDO sampleOrgDO); 
-    public void delete(SampleOrganizationViewDO sampleOrgDO);
+    public void add(SampleQaEventViewDO sampleQAEventDO);
+    public void update(SampleQaEventViewDO sampleQAEventDO);
+    public void delete(SampleQaEventViewDO sampleQAEventDO);
 }

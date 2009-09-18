@@ -29,66 +29,64 @@ import java.util.ArrayList;
 
 import javax.naming.InitialContext;
 
-import org.openelis.domain.SampleProjectViewDO;
+import org.openelis.domain.SampleQaEventViewDO;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.SampleProjectLocal;
+import org.openelis.local.SampleQAEventLocal;
 
-public class SampleProjectManagerProxy {
-    public SampleProjectManager fetchBySampleId(Integer sampleId) throws Exception {
-        SampleProjectLocal spl = getProjectLocal();
+public class SampleQAEventManagerProxy {
+    public SampleQaEventManager fetchBySampleId(Integer sampleId) throws Exception {
+        SampleQAEventLocal sqel = getSampleQAEventLocal();
+        ArrayList<SampleQaEventViewDO> items = (ArrayList<SampleQaEventViewDO>)sqel.fetchBySampleId(sampleId);
         
-        ArrayList<SampleProjectViewDO> projects = (ArrayList<SampleProjectViewDO>)spl.fetchBySampleId(sampleId);
+        SampleQaEventManager sqm = SampleQaEventManager.getInstance();
+        sqm.setSampleQAEvents(items);
+        sqm.setSampleId(sampleId);
         
-        SampleProjectManager spm = SampleProjectManager.getInstance();
-        spm.setProjects(projects);
-        spm.setSampleId(sampleId);
-        
-        return spm;
+        return sqm;
     }
     
-    public SampleProjectManager add(SampleProjectManager man) throws Exception {
-        SampleProjectLocal spl = getProjectLocal();
-        SampleProjectViewDO projectDO;
+    public SampleQaEventManager add(SampleQaEventManager man) throws Exception {
+        SampleQAEventLocal sqel = getSampleQAEventLocal();
+        SampleQaEventViewDO sampleQADO;
         
         for(int i=0; i<man.count(); i++){
-            projectDO = man.getProjectAt(i);
-            projectDO.setSampleId(man.getSampleId());
+            sampleQADO = man.getSampleQAAt(i);
+            sampleQADO.setSampleId(man.getSampleId());
             
-            spl.add(projectDO);
+            sqel.add(sampleQADO);
         }
         
         return man;
     }
     
-    public SampleProjectManager update(SampleProjectManager man) throws Exception {
-        SampleProjectLocal spl = getProjectLocal();
-        SampleProjectViewDO projectDO;
+    public SampleQaEventManager update(SampleQaEventManager man) throws Exception {
+        SampleQAEventLocal sqel = getSampleQAEventLocal();
+        SampleQaEventViewDO sampleQADO;
         
-        for(int j=0; j<man.deleteCount(); j++){
-            spl.delete(man.getDeletedAt(j));
-        }
+        for(int j=0; j<man.deleteCount(); j++)
+            sqel.delete(man.getDeletedAt(j));
         
         for(int i=0; i<man.count(); i++){
-            projectDO = man.getProjectAt(i);
+            sampleQADO = man.getSampleQAAt(i);
             
-            if(projectDO.getId() == null){
-                projectDO.setSampleId(man.getSampleId());
-                spl.add(projectDO);
+            if(sampleQADO.getId() == null){
+                sampleQADO.setSampleId(man.getSampleId());
+                sqel.add(sampleQADO);
             }else
-                spl.update(projectDO);
+                sqel.update(sampleQADO);
         }
 
         return man;
     }
     
-    public void validate(SampleProjectManager man, ValidationErrorsList errorsList) throws Exception {
+    public void validate(SampleQaEventManager man, ValidationErrorsList errorsList) throws Exception {
         
     }
     
-    private SampleProjectLocal getProjectLocal(){
+    private SampleQAEventLocal getSampleQAEventLocal(){
         try{
             InitialContext ctx = new InitialContext();
-            return (SampleProjectLocal)ctx.lookup("openelis/SampleProjectBean/local");
+            return (SampleQAEventLocal)ctx.lookup("openelis/SampleQaEventBean/local");
         }catch(Exception e){
              System.out.println(e.getMessage());
              return null;

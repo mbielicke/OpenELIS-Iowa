@@ -31,7 +31,7 @@ import java.util.HashMap;
 import javax.naming.InitialContext;
 
 import org.openelis.domain.TestDO;
-import org.openelis.domain.TestSectionDO;
+import org.openelis.domain.TestSectionViewDO;
 import org.openelis.domain.TestViewDO;
 import org.openelis.local.TestLocal;
 
@@ -136,14 +136,14 @@ public class TestManagerProxy {
         TestViewDO testDO;
         TestManager man;
         TestSectionManager tsm;
-        ArrayList<TestSectionDO> sections;
+        ArrayList<TestSectionViewDO> sections;
 
         tl = getTestLocal();
         testDO = tl.fetchById(testId);
         man = TestManager.getInstance();
         man.setTest(testDO);
 
-        sections = (ArrayList<TestSectionDO>)tl.getTestSections(testId);
+        sections = (ArrayList<TestSectionViewDO>)tl.getTestSections(testId);
 
         tsm = man.getTestSections();
         tsm.sections = sections;
@@ -167,6 +167,15 @@ public class TestManagerProxy {
         man.getTestAnalytes();
         man.getTestResults();
 
+        return man;
+    }
+    
+    public TestManager fetchWithPrepTests(Integer testId) throws Exception {
+        TestManager man;
+
+        man = fetch(testId);
+        man.getPrepTests();
+        
         return man;
     }
     

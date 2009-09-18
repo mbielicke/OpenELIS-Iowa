@@ -25,7 +25,7 @@
 */
 package org.openelis.bean;
 
-import org.openelis.domain.LabelDO;
+import org.openelis.domain.LabelViewDO;
 import org.openelis.entity.Label;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
@@ -75,22 +75,22 @@ public class LabelBean implements LabelRemote {
     }
     
     
-    public LabelDO getLabel(Integer labelId) {
+    public LabelViewDO getLabel(Integer labelId) {
         Query query = manager.createNamedQuery("Label.Label");
         query.setParameter("id", labelId);
-        LabelDO label = (LabelDO)query.getSingleResult();  
+        LabelViewDO label = (LabelViewDO)query.getSingleResult();  
         return label;
     }
 
     @RolesAllowed("label-update")
-    public LabelDO getLabelAndLock(Integer labelId, String session) throws Exception {
+    public LabelViewDO getLabelAndLock(Integer labelId, String session) throws Exception {
         SecurityInterceptor.applySecurity(ctx.getCallerPrincipal().getName(), "label", ModuleFlags.UPDATE);
         lockBean.getLock(labelRefTableId, labelId);
         
         return getLabel(labelId);
     }
 
-    public LabelDO getLabelAndUnlock(Integer labelId, String session) {
+    public LabelViewDO getLabelAndUnlock(Integer labelId, String session) {
         lockBean.giveUpLock(labelRefTableId, labelId);
         
         return getLabel(labelId);
@@ -125,7 +125,7 @@ public class LabelBean implements LabelRemote {
     }
 
     @RolesAllowed("label-update")
-    public Integer updateLabel(LabelDO labelDO) throws Exception {
+    public Integer updateLabel(LabelViewDO labelDO) throws Exception {
         SecurityInterceptor.applySecurity(ctx.getCallerPrincipal().getName(), "label", ModuleFlags.UPDATE);
         Integer labelId;
         Label label;
@@ -148,7 +148,7 @@ public class LabelBean implements LabelRemote {
         
         label.setName(labelDO.getName());
         label.setDescription(labelDO.getDescription());
-        label.setPrinterTypeId(labelDO.getPrinterType());
+        label.setPrinterTypeId(labelDO.getPrinterTypeId());
         label.setScriptletId(labelDO.getScriptletId());
         
         if(label.getId() == null){
@@ -165,20 +165,20 @@ public class LabelBean implements LabelRemote {
         return scriptlets;
     }
     
-    public void validateLabel(LabelDO labelDO) throws Exception{
+    public void validateLabel(LabelViewDO labelDO) throws Exception{
         ValidationErrorsList exceptionList;
         List <Object[]> tests;
         Query query;
          
         exceptionList = new ValidationErrorsList();
         
-        if(!labelDO.getDelete()) {
+      /*  if(!labelDO.getDelete()) {
             if("".equals(labelDO.getName())){          
                 exceptionList.add(new FieldErrorException("fieldRequiredException",Meta.getName()));                 
     
             }                       
                                     
-            if(labelDO.getPrinterType()==null){              
+            if(labelDO.getPrinterTypeId()==null){              
                 exceptionList.add(new FieldErrorException("fieldRequiredException",Meta.getPrinterTypeId()));          
             } 
               
@@ -202,7 +202,7 @@ public class LabelBean implements LabelRemote {
                     exceptionList.add(new FormErrorException("labelDeleteException"));
                 }
              }
-        }  
+        }  */
         
         if(exceptionList.size() > 0)
             throw exceptionList;
@@ -210,7 +210,7 @@ public class LabelBean implements LabelRemote {
     }    
 
     @RolesAllowed("label-delete")
-    public void deleteLabel(LabelDO labelDO) throws Exception {
+    public void deleteLabel(LabelViewDO labelDO) throws Exception {
         Integer labelId;
         Label label;
         

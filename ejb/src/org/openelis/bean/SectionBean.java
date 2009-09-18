@@ -39,7 +39,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
-import org.openelis.domain.SectionDO;
+import org.openelis.domain.SectionViewDO;
 import org.openelis.entity.Section;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
@@ -89,29 +89,29 @@ public class SectionBean implements SectionRemote {
         return query.getResultList();
     }
 
-    public SectionDO getSection(Integer sectionId) {
-        SectionDO sectionDO;
+    public SectionViewDO getSection(Integer sectionId) {
+        SectionViewDO sectionDO;
         Query query;
         
         query = manager.createNamedQuery("Section.SectionDOById");
         query.setParameter("id", sectionId);
-        sectionDO = (SectionDO)query.getSingleResult();
+        sectionDO = (SectionViewDO)query.getSingleResult();
         return sectionDO;
     }
 
-    public SectionDO getSectionAndLock(Integer sectionId, String session) throws Exception {
+    public SectionViewDO getSectionAndLock(Integer sectionId, String session) throws Exception {
         lockBean.getLock(sectRefTableId, sectionId);
         return getSection(sectionId);
     }
 
-    public SectionDO getSectionAndUnlock(Integer sectionId, String session) {
+    public SectionViewDO getSectionAndUnlock(Integer sectionId, String session) {
         lockBean.giveUpLock(sectRefTableId, sectionId);
         return getSection(sectionId);
     }
 
-    public List<SectionDO> getSectionDOList() {
+    public List<SectionViewDO> getSectionDOList() {
         Query query;
-        List<SectionDO> sections;
+        List<SectionViewDO> sections;
         
         query = manager.createNamedQuery("Section.SectionDOList");       
         sections = query.getResultList();
@@ -149,7 +149,7 @@ public class SectionBean implements SectionRemote {
          return returnList; 
     }
 
-    public Integer updateSection(SectionDO sectionDO) throws Exception {
+    public Integer updateSection(SectionViewDO sectionDO) throws Exception {
         Query query;
         Integer sectReferenceId,sectId;
         Section section;
@@ -193,7 +193,7 @@ public class SectionBean implements SectionRemote {
         return section.getId();
     }
     
-    private void validateSection(SectionDO sectionDO) throws Exception{
+    private void validateSection(SectionViewDO sectionDO) throws Exception{
         String name;
         ValidationErrorsList exceptionList;
         Query query;

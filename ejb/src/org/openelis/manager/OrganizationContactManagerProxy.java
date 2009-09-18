@@ -42,7 +42,7 @@ public class OrganizationContactManagerProxy {
         
         for(int i=0; i<man.count(); i++){
             contact = man.getContactAt(i);
-            contact.setOrganization(man.getOrganizationId());
+            contact.setOrganizationId(man.getOrganizationId());
             
             ol.addContact(contact);
         }
@@ -62,7 +62,7 @@ public class OrganizationContactManagerProxy {
             contact = man.getContactAt(i);
             
             if(contact.getId() == null){
-                contact.setOrganization(man.getOrganizationId());
+                contact.setOrganizationId(man.getOrganizationId());
                 ol.addContact(contact);
             }else
                 ol.updateContact(contact);

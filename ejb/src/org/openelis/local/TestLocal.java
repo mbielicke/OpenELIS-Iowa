@@ -36,14 +36,14 @@ import org.openelis.domain.TestDO;
 import org.openelis.domain.TestPrepViewDO;
 import org.openelis.domain.TestReflexViewDO;
 import org.openelis.domain.TestResultDO;
-import org.openelis.domain.TestSectionDO;
+import org.openelis.domain.TestSectionViewDO;
 import org.openelis.domain.TestTypeOfSampleDO;
 import org.openelis.domain.TestViewDO;
 
 @Local
 public interface TestLocal {
     public TestViewDO fetchById(Integer testId) throws Exception;   
-    public ArrayList<TestSectionDO> getTestSections(Integer testId) throws Exception;
+    public ArrayList<TestSectionViewDO> getTestSections(Integer testId) throws Exception;
     public ArrayList<TestTypeOfSampleDO> fetchSampleTypesById(Integer testId)throws Exception;
     public ArrayList<ArrayList<TestAnalyteViewDO>> fetchTestAnalytesById(Integer testId)throws Exception;
     public ArrayList<ArrayList<TestResultDO>> fetchTestResultsById(Integer testId) throws Exception;
@@ -53,9 +53,9 @@ public interface TestLocal {
     public void add(TestDO testDO) throws Exception;
     public void update(TestDO testDO) throws Exception;
     
-    public void updateTestSection(TestSectionDO sectDO) throws Exception;
-    public void addTestSection(TestSectionDO sectDO) throws Exception;
-    public void deleteTestSection(TestSectionDO sectDO) throws Exception;
+    public void updateTestSection(TestSectionViewDO sectDO) throws Exception;
+    public void addTestSection(TestSectionViewDO sectDO) throws Exception;
+    public void deleteTestSection(TestSectionViewDO sectDO) throws Exception;
     
     public void updateSampleType(TestTypeOfSampleDO sampleType) throws Exception;
     public void addSampleType(TestTypeOfSampleDO sampleType) throws Exception;
@@ -77,7 +77,7 @@ public interface TestLocal {
     public void addReflexTest(TestReflexViewDO reflexTest) throws Exception;
     public void deleteReflexTest(TestReflexViewDO deletedAt) throws Exception;     
     
-    public void validateTest(TestViewDO test, List<TestSectionDO> sections,
+    public void validateTest(TestViewDO test, List<TestSectionViewDO> sections,
                              List<TestTypeOfSampleDO> sampleTypes,
                              ArrayList<ArrayList<TestAnalyteViewDO>> analytes,
                              ArrayList<ArrayList<TestResultDO>> results,

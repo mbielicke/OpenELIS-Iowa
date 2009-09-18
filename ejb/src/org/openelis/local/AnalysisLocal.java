@@ -29,16 +29,16 @@ import java.util.List;
 
 import javax.ejb.Local;
 
-import org.openelis.domain.AnalysisTestDO;
-import org.openelis.manager.AnalysisManager;
+import org.openelis.domain.AnalysisViewDO;
+
 
 @Local
 public interface AnalysisLocal {
     
     public List fetchBySampleItemId(Integer sampleItemId) throws Exception;
     
-    public void add(AnalysisTestDO analysisDO);
-    public void update(AnalysisTestDO analysisDO);
-    public void delete(AnalysisTestDO analysisDO);
+    public void add(AnalysisViewDO analysisDO);
+    public void update(AnalysisViewDO analysisDO);
+    public void delete(AnalysisViewDO analysisDO);
     
 }

@@ -42,7 +42,6 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
-import org.openelis.domain.IdNameDO;
 import org.openelis.domain.StandardNoteDO;
 import org.openelis.entity.StandardNote;
 import org.openelis.gwt.common.FieldErrorException;
@@ -178,7 +177,7 @@ public class StandardNoteBean implements StandardNoteRemote{
         standardNote.setDescription(standardNoteDO.getDescription());
         standardNote.setName(standardNoteDO.getName());
         standardNote.setText(standardNoteDO.getText());
-        standardNote.setTypeId(standardNoteDO.getType());
+        standardNote.setTypeId(standardNoteDO.getTypeId());
          
         if (standardNote.getId() == null) {
 	       	manager.persist(standardNote);
@@ -272,7 +271,7 @@ public class StandardNoteBean implements StandardNoteRemote{
 		}
 		
 		//type required
-		if(standardNoteDO.getType() == null || "".equals(standardNoteDO.getType())){
+		if(standardNoteDO.getTypeId() == null || "".equals(standardNoteDO.getTypeId())){
 		    list.add(new FieldErrorException("fieldRequiredException",StandardNoteMap.getTypeId()));
 		}
 		

@@ -43,6 +43,7 @@ import javax.persistence.Query;
 import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.CategoryDO;
 import org.openelis.domain.DictionaryDO;
+import org.openelis.domain.DictionaryViewDO;
 import org.openelis.entity.Category;
 import org.openelis.entity.Dictionary;
 import org.openelis.gwt.common.FieldErrorException;
@@ -173,17 +174,19 @@ public class CategoryBean implements CategoryRemote,CategoryLocal {
         
         if(dictEntries!=null) {
             for (Iterator iter = dictEntries.iterator(); iter.hasNext();) {
-                DictionaryDO dictDO = (DictionaryDO)iter.next();
+                DictionaryViewDO dictDO = (DictionaryViewDO)iter.next();
                 if (dictDO.getId() == null)
                     dictionary = new Dictionary();
                 else
                     dictionary = manager.find(Dictionary.class, dictDO.getId());
 
-                if (dictDO.getDelete() && dictDO.getId() != null) {
+                //the delete flag has been removed from the do
+                //this code will get fixed when the screen is rewritten
+            //    if (dictDO.getDelete() && dictDO.getId() != null) {
                     // delete the dictionary record
-                    manager.remove(dictionary);
+           //         manager.remove(dictionary);
 
-                } else if(!dictDO.getDelete()){
+           //     } else if(!dictDO.getDelete()){
                     dictionary.setCategoryId(category.getId());
                     dictionary.setEntry(dictDO.getEntry());
                     dictionary.setIsActive(dictDO.getIsActive());
@@ -194,7 +197,7 @@ public class CategoryBean implements CategoryRemote,CategoryLocal {
                     if (dictionary.getId() == null) {
                         manager.persist(dictionary);
                     }
-                }
+             //   }
             }
         }
         
@@ -388,15 +391,15 @@ public class CategoryBean implements CategoryRemote,CategoryLocal {
 
     }
     
-    private void validateDictionary(List<DictionaryDO> dictList,
+    private void validateDictionary(List<DictionaryViewDO> dictList,
                                     ValidationErrorsList exceptionList,
                                     Integer categoryId) { 
       ArrayList<String> systemNames = new ArrayList<String>();
       ArrayList<String> entries = new ArrayList<String>();  
-      DictionaryDO dictDO = null; 
+      DictionaryViewDO dictDO = null; 
       for(int iter = 0; iter < dictList.size(); iter++) {             
         dictDO = dictList.get(iter);  
-        if(!dictDO.getDelete()) {
+     //   if(!dictDO.getDelete()) {
         if (dictDO.getEntry()!=null && !("").equals(dictDO.getEntry())) {
             if (!entries.contains(dictDO.getEntry())) {
                 entries.add(dictDO.getEntry());
@@ -452,12 +455,12 @@ public class CategoryBean implements CategoryRemote,CategoryLocal {
             }
 
         }
-      } 
+    //  } 
      }   
     }
     
     private void validateCategory(CategoryDO categoryDO,
-                               List<DictionaryDO> dictDOList) throws Exception{
+                               List<DictionaryViewDO> dictDOList) throws Exception{
         ValidationErrorsList exceptionList = new ValidationErrorsList();
         validateCategory(categoryDO, exceptionList);
         validateDictionary(dictDOList, exceptionList, categoryDO.getId());
@@ -492,7 +495,7 @@ public class CategoryBean implements CategoryRemote,CategoryLocal {
         // ***set the parameters in the query
         qb.setNewQueryParams(query,fields);
         
-        returnList = (ArrayList<DictionaryDO>)query.getResultList();
+        returnList = (ArrayList<DictionaryViewDO>)query.getResultList();
         
         return returnList;
     }

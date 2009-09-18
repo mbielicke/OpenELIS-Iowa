@@ -40,8 +40,8 @@ import javax.persistence.Query;
 import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.IdNameDO;
 import org.openelis.domain.IdNameLotNumberDO;
-import org.openelis.domain.QcAnalyteDO;
-import org.openelis.domain.QcDO;
+import org.openelis.domain.QcAnalyteViewDO;
+import org.openelis.domain.QcViewDO;
 import org.openelis.entity.Qc;
 import org.openelis.entity.QcAnalyte;
 import org.openelis.gwt.common.Datetime;
@@ -92,23 +92,23 @@ public class QcBean implements QcRemote {
         qcRefTableId = ReferenceTableCache.getReferenceTable("system_variable");
     }
     
-    public QcDO getQc(Integer qcId) {
-        QcDO qcDO;
+    public QcViewDO getQc(Integer qcId) {
+        QcViewDO qcDO;
         Query query;
         SystemUserDO userDO;
         
         query = manager.createNamedQuery("Qc.QcDOById");
         query.setParameter("id", qcId);
-        qcDO = (QcDO)query.getSingleResult(); 
+        qcDO = (QcViewDO)query.getSingleResult(); 
         userDO = sysUser.getSystemUser(qcDO.getPreparedById());
         qcDO.setPreparedByName(userDO.getLoginName());
         return qcDO;
     }
 
-    public List<QcAnalyteDO> getQcAnalytes(Integer qcId) {
+    public List<QcAnalyteViewDO> getQcAnalytes(Integer qcId) {
         Query query;
-        List<QcAnalyteDO> qcAnaDOList;
-        QcAnalyteDO qcaDO;
+        List<QcAnalyteViewDO> qcAnaDOList;
+        QcAnalyteViewDO qcaDO;
         List results;
         Integer typeId;
         String systemName,value;
@@ -137,12 +137,12 @@ public class QcBean implements QcRemote {
         return qcAnaDOList;
     }
 
-    public QcDO getQcAndLock(Integer qcId, String session) throws Exception {        
+    public QcViewDO getQcAndLock(Integer qcId, String session) throws Exception {        
         lockBean.getLock(qcRefTableId, qcId);
         return getQc(qcId);
     }
 
-    public QcDO getQcAndUnlock(Integer qcId, String session) {        
+    public QcViewDO getQcAndUnlock(Integer qcId, String session) {        
         lockBean.giveUpLock(qcRefTableId, qcId);
         return getQc(qcId);
     }
@@ -187,11 +187,11 @@ public class QcBean implements QcRemote {
             return returnList;        
     }
 
-    public Integer updateQc(QcDO qcDO, List<QcAnalyteDO> qcAnaDOList) throws Exception {
+    public Integer updateQc(QcViewDO qcDO, List<QcAnalyteViewDO> qcAnaDOList) throws Exception {
         Query query;
         Integer qcId,qcaId,typeId,dictId;
         Qc qc;
-        QcAnalyteDO qcaDO;
+        QcAnalyteViewDO qcaDO;
         QcAnalyte qca;
         String systemName;
         List results;
@@ -243,9 +243,11 @@ public class QcBean implements QcRemote {
                     qca = manager.find(QcAnalyte.class, qcaId);
                 }
                 
-                if(qcaDO.getDelete() && qcaId != null) {
-                    manager.remove(qca);
-                } else if(!qcaDO.getDelete()) {
+                //the delete flag was taken out of the do
+                //this will be fixed when the screen is rewritten
+                //if(qcaDO.getDelete() && qcaId != null) {
+                //    manager.remove(qca);
+               // } else if(!qcaDO.getDelete()) {
                     qca.setAnalyteId(qcaDO.getAnalyteId());
                     qca.setQcId(qc.getId());
                     qca.setIsTrendable(qcaDO.getIsTrendable());
@@ -268,7 +270,7 @@ public class QcBean implements QcRemote {
                     if(qca.getId() == null) {
                         manager.persist(qca);
                     }
-                }
+             //   }
             }
         }
         
@@ -287,7 +289,7 @@ public class QcBean implements QcRemote {
        return list;
     }
     
-    private void validateQc(QcDO qcDO, List<QcAnalyteDO> qcAnaDOList) throws Exception {
+    private void validateQc(QcViewDO qcDO, List<QcAnalyteViewDO> qcAnaDOList) throws Exception {
         ValidationErrorsList exceptionList;
         
         exceptionList = new ValidationErrorsList();
@@ -298,7 +300,7 @@ public class QcBean implements QcRemote {
             throw exceptionList;
     }
     
-    private void validateQc(QcDO qcDO, ValidationErrorsList exceptionList) {
+    private void validateQc(QcViewDO qcDO, ValidationErrorsList exceptionList) {
         String name,source,lotNumber;
         Datetime prepDate,expDate,usbDate;
         Query query;
@@ -384,8 +386,8 @@ public class QcBean implements QcRemote {
         
     }
     
-    private void validateQcAnalytes(List<QcAnalyteDO> qcAnaDOList, ValidationErrorsList exceptionList) {
-        QcAnalyteDO qcaDO;
+    private void validateQcAnalytes(List<QcAnalyteViewDO> qcAnaDOList, ValidationErrorsList exceptionList) {
+        QcAnalyteViewDO qcaDO;
         Integer numId,dictId,titerId,typeId,entryId;
         String value, fieldName;
         NumericRange nr;
@@ -408,8 +410,8 @@ public class QcBean implements QcRemote {
         
         for(i = 0; i < qcAnaDOList.size(); i++) {           
             qcaDO = qcAnaDOList.get(i);               
-            if(qcaDO.getDelete())
-                continue;                                                 
+            //if(qcaDO.getDelete())
+           //     continue;                                                 
             
             value = qcaDO.getValue();               
             typeId = qcaDO.getTypeId();

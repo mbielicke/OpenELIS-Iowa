@@ -29,7 +29,7 @@ import java.util.ArrayList;
 
 import javax.naming.InitialContext;
 
-import org.openelis.domain.TestSectionDO;
+import org.openelis.domain.TestSectionViewDO;
 import org.openelis.domain.TestTypeOfSampleDO;
 import org.openelis.local.TestLocal;
 
@@ -38,7 +38,7 @@ public class TestSectionManagerProxy {
 
     public TestSectionManager add(TestSectionManager man) throws Exception { 
         TestLocal tl;
-        TestSectionDO section;
+        TestSectionViewDO section;
         
         tl = getTestLocal();         
         
@@ -54,7 +54,7 @@ public class TestSectionManagerProxy {
     
     public TestSectionManager update(TestSectionManager man) throws Exception {
         TestLocal tl;
-        TestSectionDO section;
+        TestSectionViewDO section;
         
         tl = getTestLocal(); 
         

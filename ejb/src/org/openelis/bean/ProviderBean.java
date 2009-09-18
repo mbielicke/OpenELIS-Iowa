@@ -25,8 +25,22 @@
 */
 package org.openelis.bean;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import javax.annotation.Resource;
+import javax.annotation.security.RolesAllowed;
+import javax.ejb.EJB;
+import javax.ejb.SessionContext;
+import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.FlushModeType;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+
 import org.jboss.annotation.security.SecurityDomain;
-import org.openelis.domain.NoteDO;
+import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.ProviderAddressDO;
 import org.openelis.domain.ProviderDO;
 import org.openelis.entity.Note;
@@ -50,20 +64,6 @@ import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
 import org.openelis.utils.ReferenceTableCache;
 import org.openelis.utils.SecurityInterceptor;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.annotation.Resource;
-import javax.annotation.security.RolesAllowed;
-import javax.ejb.EJB;
-import javax.ejb.SessionContext;
-import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.FlushModeType;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -113,15 +113,14 @@ public class ProviderBean implements ProviderRemote, ProviderLocal {
 
 
     public List getProviderNotes(Integer providerId) {
-       Query query = null;
-        
-       query = manager.createNamedQuery("Provider.Notes");
+       Query query = manager.createNamedQuery("Note.Notes");
+       query.setParameter("referenceTable", providerRefTableId);
        query.setParameter("id", providerId);
         
        List provNotes = query.getResultList(); // getting list of noteDOs from the provider id
        
        for(int i=0; i<provNotes.size(); i++){
-           NoteDO noteDO = (NoteDO)provNotes.get(i);
+           NoteViewDO noteDO = (NoteViewDO)provNotes.get(i);
            SystemUserDO userDO = userLocal.getSystemUser(noteDO.getSystemUserId());
            noteDO.setSystemUser(userDO.getLoginName());
        }
@@ -162,7 +161,7 @@ public class ProviderBean implements ProviderRemote, ProviderLocal {
     }
 
     @RolesAllowed("provider-update")
-    public Integer updateProvider(ProviderDO providerDO, NoteDO noteDO,List addresses) throws Exception{
+    public Integer updateProvider(ProviderDO providerDO, NoteViewDO noteDO,List addresses) throws Exception{
         SecurityInterceptor.applySecurity(ctx.getCallerPrincipal().getName(), "provider", ModuleFlags.UPDATE);
         Integer providerId = providerDO.getId();
         
@@ -204,11 +203,13 @@ public class ProviderBean implements ProviderRemote, ProviderLocal {
                 } else{
                     provAdd = manager.find(ProviderAddress.class, provAddDO.getId());
                 }
-                                
-                if(provAddDO.getDelete() && provAddDO.getId() != null){
-                    manager.remove(provAdd);                     
-                    addressBean.delete(provAddDO.getAddressDO());                    
-                }else if(!provAddDO.getDelete()){   
+                     
+                //this is commented out because the DO changed
+                //when the screen is rewritten this will be fixed
+      //          if(provAddDO.getDelete() && provAddDO.getId() != null){
+      //              manager.remove(provAdd);                     
+      //              addressBean.delete(provAddDO.getAddressDO());                    
+      //          }else if(!provAddDO.getDelete()){   
                     if(provAddDO.getAddressDO() == null)
                         addressBean.add(provAddDO.getAddressDO());
                     else
@@ -224,7 +225,7 @@ public class ProviderBean implements ProviderRemote, ProviderLocal {
                     }
                 } 
                 index++;
-            }
+   //         }
             
             //update note
             Note note = null;
@@ -280,7 +281,7 @@ public class ProviderBean implements ProviderRemote, ProviderLocal {
        String state = provAddDO.getAddressDO().getState();
        String zipcode = provAddDO.getAddressDO().getZipCode();
        String country = provAddDO.getAddressDO().getCountry();
-       if(!provAddDO.getDelete()) {
+   //    if(!provAddDO.getDelete()) {
         if(location == null || "".equals(location)){            
            exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex, ProvMeta.getProviderAddress().getLocation()));
          }
@@ -297,7 +298,7 @@ public class ProviderBean implements ProviderRemote, ProviderLocal {
         if(country == null || "".equals(country)){            
             exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex,ProvMeta.getProviderAddress().getAddress().getCountry()));
          }
-       }
+     //  }
    }
     
     private void validateProvider(ProviderDO providerDO, List<ProviderAddressDO> addresses) throws Exception{

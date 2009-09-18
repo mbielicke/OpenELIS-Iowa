@@ -26,7 +26,7 @@
 package org.openelis.bean;
 
 import org.jboss.annotation.security.SecurityDomain;
-import org.openelis.domain.QaEventDO;
+import org.openelis.domain.QaEventViewDO;
 import org.openelis.entity.QaEvent;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.LastPageException;
@@ -76,20 +76,13 @@ public class QaEventBean implements QaEventRemote{
         qaEventRefTableId = ReferenceTableCache.getReferenceTable("qaevent");
     }
     
-    public QaEventDO getQaEvent(Integer qaEventId) {
+    public QaEventViewDO getQaEvent(Integer qaEventId) {
         Query query = manager.createNamedQuery("QaEvent.QaEvent");
         query.setParameter("id", qaEventId);
-        QaEventDO qaEvent = (QaEventDO) query.getSingleResult();
+        QaEventViewDO qaEvent = (QaEventViewDO) query.getSingleResult();
         
         return qaEvent;
     }  
-
-    public List<Object[]> getTestNames() {
-        Query query = manager.createNamedQuery("Test.Names");
-        query.setParameter("isActive", "Y");
-        List<Object[]> testNames = query.getResultList();         
-        return testNames;
-    }
 
     public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception {
         StringBuffer sb = new StringBuffer();
@@ -125,7 +118,7 @@ public class QaEventBean implements QaEventRemote{
     }
    
     @RolesAllowed("qaevent-update")
-    public Integer updateQaEvent(QaEventDO qaEventDO)throws Exception{ 
+    public Integer updateQaEvent(QaEventViewDO qaEventDO)throws Exception{ 
         SecurityInterceptor.applySecurity(ctx.getCallerPrincipal().getName(), "qaevent", ModuleFlags.UPDATE);
         QaEvent qaEvent;
         Query query;
@@ -166,18 +159,26 @@ public class QaEventBean implements QaEventRemote{
     }
 
     @RolesAllowed("qaevent-update")
-    public QaEventDO getQaEventAndLock(Integer qaEventId, String session) throws Exception {
+    public QaEventViewDO getQaEventAndLock(Integer qaEventId, String session) throws Exception {
         SecurityInterceptor.applySecurity(ctx.getCallerPrincipal().getName(), "qaevent", ModuleFlags.UPDATE);
         lockBean.getLock(qaEventRefTableId,qaEventId);        
         return getQaEvent(qaEventId);
     }
 
-    public QaEventDO getQaEventAndUnlock(Integer qaEventId, String session) {
+    public QaEventViewDO getQaEventAndUnlock(Integer qaEventId, String session) {
         lockBean.giveUpLock(qaEventRefTableId,qaEventId);                   
         return getQaEvent(qaEventId);
     }
     
-    private void validateQaEvent(QaEventDO qaEventDO) throws Exception{
+    public List autoCompleteLookupByName(String match, int numberOfResults) {
+        Query query = null;
+        query = manager.createNamedQuery("QaEvent.AutoCompleteByName");
+        query.setParameter("name",match);
+        query.setMaxResults(numberOfResults);
+        return query.getResultList();
+    }
+    
+    private void validateQaEvent(QaEventViewDO qaEventDO) throws Exception{
         ValidationErrorsList exceptionList;
         
         exceptionList = new ValidationErrorsList(); 

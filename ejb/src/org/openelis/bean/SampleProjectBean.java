@@ -34,7 +34,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
-import org.openelis.domain.SampleProjectDO;
+import org.openelis.domain.SampleProjectViewDO;
 import org.openelis.entity.SampleProject;
 import org.openelis.exception.NotFoundException;
 import org.openelis.local.SampleProjectLocal;
@@ -47,10 +47,10 @@ public class SampleProjectBean implements SampleProjectLocal {
     @PersistenceContext(name = "openelis")
     private EntityManager manager;
    
-    public List<SampleProjectDO> fetchBySampleId(Integer sampleId) throws Exception {
+    public List<SampleProjectViewDO> fetchBySampleId(Integer sampleId) throws Exception {
         Query query = manager.createNamedQuery("SampleProject.SampleProjectBySampleId");
         query.setParameter("id", sampleId);
-        List<SampleProjectDO> returnList = query.getResultList();
+        List<SampleProjectViewDO> returnList = query.getResultList();
         
         if(returnList.size() == 0)
             throw new NotFoundException();
@@ -58,7 +58,7 @@ public class SampleProjectBean implements SampleProjectLocal {
         return returnList;
     }
 
-    public void add(SampleProjectDO sampleProjectDO) {
+    public void add(SampleProjectViewDO sampleProjectDO) {
         manager.setFlushMode(FlushModeType.COMMIT);
         
         SampleProject project = new SampleProject();
@@ -71,7 +71,7 @@ public class SampleProjectBean implements SampleProjectLocal {
         sampleProjectDO.setId(project.getId());
     }
 
-    public void update(SampleProjectDO sampleProjectDO) {
+    public void update(SampleProjectViewDO sampleProjectDO) {
         manager.setFlushMode(FlushModeType.COMMIT);
         
         SampleProject project = manager.find(SampleProject.class, sampleProjectDO.getId());
@@ -81,7 +81,7 @@ public class SampleProjectBean implements SampleProjectLocal {
         project.setSampleId(sampleProjectDO.getSampleId());
     }
 
-    public void delete(SampleProjectDO sampleProjectDO) {
+    public void delete(SampleProjectViewDO sampleProjectDO) {
         manager.setFlushMode(FlushModeType.COMMIT);
         
         SampleProject project = manager.find(SampleProject.class, sampleProjectDO.getId());

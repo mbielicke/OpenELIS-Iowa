@@ -172,9 +172,9 @@ public class PanelBean implements PanelRemote {
             }else{
                 item = manager.find(PanelItem.class,itemDO.getId());
             }
-            if(itemDO.getDelete() && itemDO.getId() != null){                    
-                manager.remove(item);                                                     
-            }else if(!itemDO.getDelete()){
+           // if(itemDO.getDelete() && itemDO.getId() != null){                    
+           //     manager.remove(item);                                                     
+           // }else if(!itemDO.getDelete()){
                 item.setTestName(itemDO.getTestName());
                 item.setMethodName(itemDO.getMethodName());
                 item.setPanelId(panel.getId());
@@ -183,7 +183,7 @@ public class PanelBean implements PanelRemote {
                 if(item.getId() == null){
                     manager.persist(item);
                 }  
-            }
+          //  }
             
          }
 

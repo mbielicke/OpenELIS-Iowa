@@ -29,11 +29,11 @@ import java.util.ArrayList;
 
 import javax.ejb.Local;
 
-import org.openelis.domain.NoteDO;
+import org.openelis.domain.NoteViewDO;
 
 @Local
 public interface NoteLocal {
-    public ArrayList<NoteDO> getNotes(Integer refTableId, Integer refId) throws Exception;
-    public void update(NoteDO note) throws Exception;
-    public void add(NoteDO note) throws Exception;
+    public ArrayList<NoteViewDO> getNotes(Integer refTableId, Integer refId) throws Exception;
+    public void update(NoteViewDO note) throws Exception;
+    public void add(NoteViewDO note) throws Exception;
 }

@@ -4,13 +4,13 @@ import java.util.List;
 
 import javax.ejb.Local;
 
-import org.openelis.domain.SampleItemDO;
+import org.openelis.domain.SampleItemViewDO;
 
 @Local
 public interface SampleItemLocal {
-    public List<SampleItemDO> fetchBySampleId(Integer sampleId) throws Exception;
+    public List<SampleItemViewDO> fetchBySampleId(Integer sampleId) throws Exception;
     
-    public void add(SampleItemDO itemDO);
-    public void update(SampleItemDO itemDO);
-    public void delete(SampleItemDO itemDO);
+    public void add(SampleItemViewDO itemDO);
+    public void update(SampleItemViewDO itemDO);
+    public void delete(SampleItemViewDO itemDO);
 }

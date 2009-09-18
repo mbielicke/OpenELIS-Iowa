@@ -52,7 +52,7 @@ import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
-@NamedQueries({@NamedQuery(name = "Qc.QcDOById", query = "select new org.openelis.domain.QcDO(qc.id,qc.name,qc.typeId,qc.inventoryItemId,inv.name,"+
+@NamedQueries({@NamedQuery(name = "Qc.QcDOById", query = "select new org.openelis.domain.QcViewDO(qc.id,qc.name,qc.typeId,qc.inventoryItemId,inv.name,"+
                 "qc.source,qc.lotNumber,qc.preparedDate,qc.preparedVolume,qc.preparedUnitId,qc.preparedById,qc.usableDate,"+
                 "qc.expireDate,qc.isSingleUse) from Qc qc left join qc.inventoryItem inv where qc.id = :id " ),
                @NamedQuery(name = "Qc.QcByLotNumber", query = "from Qc qc where qc.lotNumber = :lotNumber "),

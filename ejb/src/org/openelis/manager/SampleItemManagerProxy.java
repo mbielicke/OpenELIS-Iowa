@@ -29,7 +29,7 @@ import java.util.ArrayList;
 
 import javax.naming.InitialContext;
 
-import org.openelis.domain.SampleItemDO;
+import org.openelis.domain.SampleItemViewDO;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.SampleItemLocal;
 import org.openelis.utils.ReferenceTableCache;
@@ -38,7 +38,7 @@ public class SampleItemManagerProxy {
     public SampleItemManager fetchBySampleId(Integer sampleId) throws Exception {
         SampleItemLocal sil = getSampleItemLocal();
 
-        ArrayList<SampleItemDO> items = (ArrayList<SampleItemDO>)sil.fetchBySampleId(sampleId);
+        ArrayList<SampleItemViewDO> items = (ArrayList<SampleItemViewDO>)sil.fetchBySampleId(sampleId);
         SampleItemManager sim = SampleItemManager.getInstance();
         for(int i=0; i<items.size(); i++)
             sim.addSampleItem(items.get(i));
@@ -52,7 +52,7 @@ public class SampleItemManagerProxy {
     public SampleItemManager add(SampleItemManager man) throws Exception {
         Integer sampleItemRefTableId;
         SampleItemLocal sil = getSampleItemLocal();
-        SampleItemDO itemDO;
+        SampleItemViewDO itemDO;
         
         sampleItemRefTableId = ReferenceTableCache.getReferenceTable("sample_item");
         
@@ -76,7 +76,7 @@ public class SampleItemManagerProxy {
     public SampleItemManager update(SampleItemManager man) throws Exception {
         Integer sampleItemRefTableId;
         SampleItemLocal sil = getSampleItemLocal();
-        SampleItemDO itemDO;
+        SampleItemViewDO itemDO;
         
         sampleItemRefTableId = man.getSampleItemReferenceTableId();
         

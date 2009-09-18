@@ -43,7 +43,7 @@ import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.BillToReportToDO;
-import org.openelis.domain.NoteDO;
+import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.OrderAddAutoFillDO;
 import org.openelis.domain.OrderDO;
 import org.openelis.domain.OrderItemDO;
@@ -156,7 +156,7 @@ public class OrderBean implements OrderRemote{
         return receipts;
     }
 
-    public NoteDO getOrderShippingNote(Integer orderId) {
+    public NoteViewDO getOrderShippingNote(Integer orderId) {
         Query query = manager.createNamedQuery("Note.Notes");
         query.setParameter("referenceTable", orderShippingNoteRefTableId);
         query.setParameter("id", orderId);
@@ -164,12 +164,12 @@ public class OrderBean implements OrderRemote{
         List results = query.getResultList();
         
         if(results.size() > 0)
-            return (NoteDO)results.get(0);
+            return (NoteViewDO)results.get(0);
         else 
             return null;
     }
 
-    public NoteDO getCustomerNote(Integer orderId) {
+    public NoteViewDO getCustomerNote(Integer orderId) {
         Query query = manager.createNamedQuery("Note.Notes");
         query.setParameter("referenceTable", orderCustNoteRefTableId);
         query.setParameter("id", orderId);
@@ -177,7 +177,7 @@ public class OrderBean implements OrderRemote{
         List results = query.getResultList();
         
         if(results.size() > 0)
-            return (NoteDO)results.get(0);
+            return (NoteViewDO)results.get(0);
         else 
             return null;
     }
@@ -264,7 +264,7 @@ public class OrderBean implements OrderRemote{
     }
 
     @RolesAllowed("order-update")
-    public Integer updateOrder(OrderDO orderDO, String orderType, List items, NoteDO customerNoteDO, NoteDO orderShippingNotes) throws Exception {
+    public Integer updateOrder(OrderDO orderDO, String orderType, List items, NoteViewDO customerNoteDO, NoteViewDO orderShippingNotes) throws Exception {
         if(orderDO.getId() != null)
             lockBean.validateLock(orderRefTable, orderDO.getId());
         

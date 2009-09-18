@@ -29,19 +29,19 @@ import java.util.ArrayList;
 
 import javax.naming.InitialContext;
 
-import org.openelis.domain.NoteDO;
+import org.openelis.domain.NoteViewDO;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.NoteLocal;
 
 public class NoteManagerProxy {
     public NoteManager add(NoteManager man) throws Exception {
-        NoteDO note;
+        NoteViewDO note;
         NoteLocal nl = getNoteLocal();
         
         if(man.count() >0){
             note = man.getNoteAt(0);
             note.setReferenceId(man.getReferenceId());
-            note.setReferenceTable(man.getReferenceTableId());
+            note.setReferenceTableId(man.getReferenceTableId());
             
             nl.add(note);
         }
@@ -50,14 +50,14 @@ public class NoteManagerProxy {
     }
 
     public NoteManager update(NoteManager man) throws Exception {
-        NoteDO note;
+        NoteViewDO note;
         NoteLocal nl = getNoteLocal();
         
         if(man.count() >0){
             note = man.getNoteAt(0);
             if(note.getId() == null){
                 note.setReferenceId(man.getReferenceId());
-                note.setReferenceTable(man.getReferenceTableId());
+                note.setReferenceTableId(man.getReferenceTableId());
                 nl.add(note);
             }else
                 nl.update(note);
@@ -68,7 +68,7 @@ public class NoteManagerProxy {
 
     public NoteManager fetch(Integer tableId, Integer id) throws Exception {
         NoteLocal nl = getNoteLocal();
-        ArrayList<NoteDO> notes = nl.getNotes(tableId, id);
+        ArrayList<NoteViewDO> notes = nl.getNotes(tableId, id);
         
         NoteManager n = NoteManager.getInstance();
         n.setNotes(notes);

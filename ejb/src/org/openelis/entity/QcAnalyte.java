@@ -49,7 +49,7 @@ import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
 @NamedQueries({@NamedQuery(name = "QCAnalyte.QCAnalyteByAnalyteId", query = "select q.id from QcAnalyte q where q.analyteId = :id"),
-               @NamedQuery(name = "QcAnalyte.QcAnalyteDOsByQcId", query = " select distinct new org.openelis.domain.QcAnalyteDO(qca.id,qca.qcId," +
+               @NamedQuery(name = "QcAnalyte.QcAnalyteDOsByQcId", query = " select distinct new org.openelis.domain.QcAnalyteViewDO(qca.id,qca.qcId," +
                		                                                      " qca.analyteId,a.name,qca.typeId,qca.value,qca.isTrendable) " +
                		                                                      " from QcAnalyte qca left join qca.analyte a where qca.qcId = :id ")})
 

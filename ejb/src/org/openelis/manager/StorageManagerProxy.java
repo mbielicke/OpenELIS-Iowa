@@ -29,13 +29,13 @@ import java.util.ArrayList;
 
 import javax.naming.InitialContext;
 
-import org.openelis.domain.StorageDO;
+import org.openelis.domain.StorageViewDO;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.StorageLocal;
 
 public class StorageManagerProxy {
     public StorageManager add(StorageManager man) throws Exception {
-        StorageDO storage;
+        StorageViewDO storage;
         StorageLocal sl = getStorageLocal();
         
         for(int i=0; i<man.count(); i++){
@@ -50,7 +50,7 @@ public class StorageManagerProxy {
     }
 
     public StorageManager update(StorageManager man) throws Exception {
-        StorageDO storage;
+        StorageViewDO storage;
         StorageLocal sl = getStorageLocal();
         
         for(int i=0; i<man.count(); i++){
@@ -68,7 +68,7 @@ public class StorageManagerProxy {
 
     public StorageManager fetch(Integer tableId, Integer id) throws Exception {
         StorageLocal sl = getStorageLocal();
-        ArrayList<StorageDO> storages = sl.fetchByRefId(tableId, id);
+        ArrayList<StorageViewDO> storages = sl.fetchByRefId(tableId, id);
         
         StorageManager sm = StorageManager.getInstance();
         sm.setStorages(storages);
