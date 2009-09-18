@@ -38,8 +38,8 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
-import org.openelis.domain.ProjectDO;
 import org.openelis.domain.ProjectParameterDO;
+import org.openelis.domain.ProjectViewDO;
 import org.openelis.domain.SecuritySystemUserDO;
 import org.openelis.entity.Project;
 import org.openelis.entity.ProjectParameter;
@@ -83,27 +83,27 @@ public class ProjectBean implements ProjectRemote {
         projRefTableId = ReferenceTableCache.getReferenceTable("project");
     }
     
-    public ProjectDO getProject(Integer projectId) {
-        ProjectDO projectDO;
+    public ProjectViewDO getProject(Integer projectId) {
+        ProjectViewDO projectDO;
         Query query;
         SystemUserDO userDO;
         
         query = manager.createNamedQuery("Project.ProjectById");
         query.setParameter("id", projectId);
-        projectDO = (ProjectDO)query.getSingleResult(); 
+        projectDO = (ProjectViewDO)query.getSingleResult(); 
         userDO = sysUser.getSystemUser(projectDO.getOwnerId());
-        projectDO.setOwnerName(userDO.getLoginName());
+        projectDO.setSystemUserName(userDO.getLoginName());
         return projectDO;
     }
 
-    public ProjectDO getProjectAndLock(Integer projectId, String session) throws Exception {
+    public ProjectViewDO getProjectAndLock(Integer projectId, String session) throws Exception {
         //SecurityInterceptor.applySecurity(ctx.getCallerPrincipal().getName(), "project", ModuleFlags.UPDATE);
                 
         lockBean.getLock(projRefTableId, projectId);
         return getProject(projectId);
     }
 
-    public ProjectDO getProjectAndUnlock(Integer projectId, String session) {
+    public ProjectViewDO getProjectAndUnlock(Integer projectId, String session) {
 
         lockBean.giveUpLock(projRefTableId, projectId);
         return getProject(projectId);
@@ -144,7 +144,7 @@ public class ProjectBean implements ProjectRemote {
         return query.getResultList();
     }
 
-    public Integer updateProject(ProjectDO projectDO,         
+    public Integer updateProject(ProjectViewDO projectDO,         
                                  List<ProjectParameterDO> paramDOList) throws Exception {       
         Integer projectId;
         Project project;
@@ -192,10 +192,12 @@ public class ProjectBean implements ProjectRemote {
                 else
                     param = manager.find(ProjectParameter.class, paramDO.getId());
                 
-                if (paramDO.getDelete() && paramDO.getId() != null) {                    
-                    manager.remove(param);
+                //these are commented out because the delete flag has been removed from the dos
+                //this will get fixed when the screen is rewritten
+             //   if (paramDO.getDelete() && paramDO.getId() != null) {                    
+             //       manager.remove(param);
 
-                } else if(!paramDO.getDelete()){
+             //   } else if(!paramDO.getDelete()){
                     param.setParameter(paramDO.getParameter());
                     param.setOperationId(paramDO.getOperationId());
                     param.setValue(paramDO.getValue());
@@ -204,7 +206,7 @@ public class ProjectBean implements ProjectRemote {
                     if (param.getId() == null) {
                         manager.persist(param);
                     }
-                }
+             //   }
             }
         }
         lockBean.giveUpLock(projRefTableId, projectId);        
@@ -248,7 +250,7 @@ public class ProjectBean implements ProjectRemote {
     }
     
         
-    private void validateProject(ProjectDO projectDO, 
+    private void validateProject(ProjectViewDO projectDO, 
                                  List<ProjectParameterDO> paramDOList) throws Exception{
         ValidationErrorsList exceptionList;
         
@@ -260,7 +262,7 @@ public class ProjectBean implements ProjectRemote {
             throw exceptionList;
     }   
     
-    private void validateProject(ProjectDO projectDO, ValidationErrorsList exceptionList) {
+    private void validateProject(ProjectViewDO projectDO, ValidationErrorsList exceptionList) {
         boolean checkDuplicate, overlap;
         Datetime dcompleteDate, dstartDate,qcompleteDate, qstartDate;
         Integer id;
@@ -343,8 +345,8 @@ public class ProjectBean implements ProjectRemote {
         if(paramDOList != null) {
             for(int i = 0; i < paramDOList.size(); i++) {
                 paramDO = paramDOList.get(i);
-                if(paramDO.getDelete())
-                    continue;
+               // if(paramDO.getDelete())
+                 //   continue;
                 
                 param = paramDO.getParameter();
                 value = paramDO.getValue();

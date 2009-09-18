@@ -35,7 +35,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
-import org.openelis.domain.NoteDO;
+import org.openelis.domain.NoteViewDO;
 import org.openelis.entity.Note;
 import org.openelis.exception.NotFoundException;
 import org.openelis.gwt.common.Datetime;
@@ -53,13 +53,13 @@ public class NoteBean implements NoteRemote, NoteLocal {
     
     @EJB LoginLocal login;
     
-    public ArrayList<NoteDO> getNotes(Integer refTableId, Integer refId) throws Exception {
+    public ArrayList<NoteViewDO> getNotes(Integer refTableId, Integer refId) throws Exception {
         
         Query query = manager.createNamedQuery("Note.Notes");
         query.setParameter("referenceTable", refTableId);
         query.setParameter("id", refId);
         
-        ArrayList<NoteDO> list = (ArrayList<NoteDO>)query.getResultList();
+        ArrayList<NoteViewDO> list = (ArrayList<NoteViewDO>)query.getResultList();
         
         if(list.size() == 0)
             throw new NotFoundException();
@@ -67,28 +67,28 @@ public class NoteBean implements NoteRemote, NoteLocal {
         return list;
     }
     
-    public void update(NoteDO noteDO) throws Exception {
+    public void update(NoteViewDO noteDO) throws Exception {
         manager.setFlushMode(FlushModeType.COMMIT);
         
         Note note = manager.find(Note.class, noteDO.getId());
 
         note.setIsExternal(noteDO.getIsExternal());
         note.setReferenceId(noteDO.getReferenceId());
-        note.setReferenceTableId(noteDO.getReferenceTable());
+        note.setReferenceTableId(noteDO.getReferenceTableId());
         note.setSubject(noteDO.getSubject());
         note.setSystemUserId(login.getSystemUserId());
         note.setText(noteDO.getText());
         note.setTimestamp(Datetime.getInstance());
     }
     
-    public void add(NoteDO noteDO) throws Exception {
+    public void add(NoteViewDO noteDO) throws Exception {
         manager.setFlushMode(FlushModeType.COMMIT);
         
         Note note = new Note();
         
         note.setIsExternal(noteDO.getIsExternal());
         note.setReferenceId(noteDO.getReferenceId());
-        note.setReferenceTableId(noteDO.getReferenceTable());
+        note.setReferenceTableId(noteDO.getReferenceTableId());
         note.setSubject(noteDO.getSubject());
         note.setSystemUserId(login.getSystemUserId());
         note.setText(noteDO.getText());

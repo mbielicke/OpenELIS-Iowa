@@ -51,7 +51,7 @@ import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
 @NamedQueries({@NamedQuery(name = "Storage.IdByStorageLocation", query = "select s.id from Storage s where s.storageLocationId = :id"),
-               @NamedQuery(name = "Storage.StorageById", query = "select new org.openelis.domain.StorageDO(s.id, s.referenceId, s.referenceTableId, " +
+               @NamedQuery(name = "Storage.StorageById", query = "select new org.openelis.domain.StorageViewDO(s.id, s.referenceId, s.referenceTableId, " +
                                         "s.storageLocationId, s.checkin, s.checkout, s.systemUserId, childLoc.name, childLoc.location, " +
                                         " parentLoc.name, childLoc.storageUnit.description) from Storage s left join s.storageLocation childLoc " + 
                                         " left join childLoc.parentStorageLocation parentLoc where s.referenceTableId = :referenceTable and " +

@@ -29,20 +29,20 @@ import java.util.List;
 
 import javax.ejb.Local;
 
-import org.openelis.domain.OrganizationAddressDO;
 import org.openelis.domain.OrganizationContactDO;
+import org.openelis.domain.OrganizationViewDO;
 
 @Local
 public interface OrganizationLocal {
-    public OrganizationAddressDO fetchById(Integer organizationId) throws Exception;
+    public OrganizationViewDO fetchById(Integer organizationId) throws Exception;
     public List fetchContactsById(Integer organizationId) throws Exception;
     
-    public void add(OrganizationAddressDO orgDO);
-    public void update(OrganizationAddressDO orgDO) throws Exception;
+    public void add(OrganizationViewDO orgDO);
+    public void update(OrganizationViewDO orgDO) throws Exception;
     
     public void updateContact(OrganizationContactDO contactDO) throws Exception;
     public void addContact(OrganizationContactDO contactDO) throws Exception;
     public void deleteContact(OrganizationContactDO contactDO) throws Exception;
     
-    public void validateOrganization(OrganizationAddressDO organizationDO, List contacts) throws Exception;
+    public void validateOrganization(OrganizationViewDO organizationDO, List contacts) throws Exception;
 }

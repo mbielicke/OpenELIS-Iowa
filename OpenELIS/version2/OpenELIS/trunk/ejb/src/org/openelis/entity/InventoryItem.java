@@ -113,10 +113,6 @@ import org.w3c.dom.Element;
                             "  from InventoryItem i, Dictionary store, Dictionary disUnit where i.storeId = store.id and i.dispensedUnitsId = disUnit.id and i.name like :name and i.isActive = 'Y' " +
                             " and i.isNotForSale = 'N' and i.isSubAssembly = 'N' and 0 < (select count(ic.id) from InventoryComponent ic where ic.inventoryItemId=i.id) order by i.name"),
      @NamedQuery(name = "InventoryItem.DescriptionById", query = "select i.description from InventoryItem i where i.id = :id"),
-     @NamedQuery(name = "InventoryItem.Notes", query = "select new org.openelis.domain.NoteDO(n.id, n.systemUserId, n.text, n.timestamp, n.subject) "
-                          + "  from Note n where n.referenceTableId = (select id from ReferenceTable where name='inventory_item') and n.referenceId = :id ORDER BY n.timestamp DESC"),
-     @NamedQuery(name = "InventoryItem.Manufacturing", query = "select new org.openelis.domain.NoteDO(n.id, n.systemUserId, n.text, n.timestamp, n.subject) "
-                          + "  from Note n where n.referenceTableId = (select id from ReferenceTable where name='inventory_item_manufacturing') and n.referenceId = :id ORDER BY n.timestamp DESC"),
      @NamedQuery(name = "InventoryItem.UpdateNameStoreCompare", query = "select i.id from InventoryItem i where i.name = :name and i.storeId = :store AND i.id != :id"),
      @NamedQuery(name = "InventoryItem.AddNameStoreCompare", query = "select i.id from InventoryItem i where i.name = :name AND i.storeId = :store"),
      @NamedQuery(name = "InventoryItem.ValidateComponentWithItemStore", query = "select i.id from InventoryItem i where " +

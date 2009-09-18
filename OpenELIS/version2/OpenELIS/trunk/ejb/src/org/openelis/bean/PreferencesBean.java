@@ -63,7 +63,7 @@ public class PreferencesBean implements PreferencesRemote{
         }catch(NoResultException e){
             prefDO = new PreferencesDO();
             prefDO.setKey(key);
-            prefDO.setSystem_user(sysUser);
+            prefDO.setSystemUserId(sysUser);
             prefDO.setText("<preferences></preferences>");
         }
         return prefDO;

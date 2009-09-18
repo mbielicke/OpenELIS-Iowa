@@ -49,7 +49,7 @@ import org.openelis.utils.Auditable;
 
 @NamedQueries( {
     @NamedQuery(name = "Patient.PatientById", query = "select new org.openelis.domain.PatientDO(p.id, p.lastName, p.firstName, p.middleName, p.addressId, " +
-                " p.birthDate, p.birthTime, p.genderId, p.race, p.ethnicityId) from Patient p where p.id = :id")})
+                " p.birthDate, p.birthTime, p.genderId, p.raceId, p.ethnicityId) from Patient p where p.id = :id")})
                 
 @Entity
 @Table(name="patient")
@@ -82,8 +82,8 @@ public class Patient implements Auditable, Cloneable {
   @Column(name="gender_id")
   private Integer genderId;             
 
-  @Column(name="race")
-  private String race;             
+  @Column(name="race_id")
+  private Integer raceId;             
 
   @Column(name="ethnicity_id")
   private Integer ethnicityId;             
@@ -169,13 +169,13 @@ public class Patient implements Auditable, Cloneable {
       this.genderId = genderId;
   }
 
-  public String getRace() {
-    return race;
+  public Integer getRaceId() {
+    return raceId;
   }
-  public void setRace(String race) {
-    if((race == null && this.race != null) || 
-       (race != null && !race.equals(this.race)))
-      this.race = race;
+  public void setRaceId(Integer raceId) {
+    if((raceId == null && this.raceId != null) || 
+       (raceId != null && !raceId.equals(this.raceId)))
+      this.raceId = raceId;
   }
 
   public Integer getEthnicityId() {
@@ -215,7 +215,7 @@ public class Patient implements Auditable, Cloneable {
 
       AuditUtil.getChangeXML(genderId,original.genderId,doc,"gender_id");
 
-      AuditUtil.getChangeXML(race,original.race,doc,"race");
+      AuditUtil.getChangeXML(raceId,original.raceId,doc,"race_id");
 
       AuditUtil.getChangeXML(ethnicityId,original.ethnicityId,doc,"ethnicity_id");
 

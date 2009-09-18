@@ -41,9 +41,9 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
-import org.openelis.domain.AuxFieldDO;
 import org.openelis.domain.AuxFieldGroupDO;
 import org.openelis.domain.AuxFieldValueDO;
+import org.openelis.domain.AuxFieldViewDO;
 import org.openelis.entity.AuxField;
 import org.openelis.entity.AuxFieldGroup;
 import org.openelis.entity.AuxFieldValue;
@@ -121,10 +121,10 @@ public class AuxiliaryBean implements AuxiliaryRemote {
         return auxfieldValues;
     }
 
-    public List<AuxFieldDO> getAuxFields(Integer auxFieldGroupId) {
+    public List<AuxFieldViewDO> getAuxFields(Integer auxFieldGroupId) {
         Query query = manager.createNamedQuery("AuxField.AuxFieldDOList");
         query.setParameter("auxFieldGroupId", auxFieldGroupId);
-        List<AuxFieldDO> auxfields = query.getResultList();
+        List<AuxFieldViewDO> auxfields = query.getResultList();
         return auxfields;
     }
 
@@ -148,7 +148,7 @@ public class AuxiliaryBean implements AuxiliaryRemote {
     }
 
     public Integer updateAuxiliary(AuxFieldGroupDO auxFieldGroupDO,
-                                   List<AuxFieldDO> auxFields) throws Exception {
+                                   List<AuxFieldViewDO> auxFields) throws Exception {
      try {           
         
         AuxFieldGroup auxFieldGroup = null;        
@@ -182,7 +182,7 @@ public class AuxiliaryBean implements AuxiliaryRemote {
         
         if(auxFields!=null) {
          for(int i = 0 ; i < auxFields.size(); i++) {
-             AuxFieldDO afDO = auxFields.get(i);
+             AuxFieldViewDO afDO = auxFields.get(i);
              AuxField af =null;
              if(afDO.getId() == null) {
                  af = new AuxField();
@@ -190,7 +190,9 @@ public class AuxiliaryBean implements AuxiliaryRemote {
                  af = manager.find(AuxField.class, afDO.getId());
              }
              
-             if(afDO.getDelete() && afDO.getId() !=null) {
+             //this has been commented out because the do has been updated and there is no delete flag
+             //this will be fixed when the screen is rewritten
+             /*if(afDO.getDelete() && afDO.getId() !=null) {
                  manager.remove(af);
              } else { 
                 if(!afDO.getDelete()) {  
@@ -236,7 +238,7 @@ public class AuxiliaryBean implements AuxiliaryRemote {
                     }  
                   }
             } 
-         }     
+         }*/     
         }
       } 
         lockBean.giveUpLock(auxFGRefTableId, auxFieldGroup.getId());
@@ -320,13 +322,13 @@ public class AuxiliaryBean implements AuxiliaryRemote {
         
     }
     
-    private void validateAuxField(ValidationErrorsList exceptionList,List<AuxFieldDO> auxFields) {
+    private void validateAuxField(ValidationErrorsList exceptionList,List<AuxFieldViewDO> auxFields) {
         TableFieldErrorException ex, auxfvEx;
         List<Exception> exList = null;
         
         if(auxFields == null)
             return;
-        
+        /*
         for(int i = 0; i < auxFields.size(); i++) {
             AuxFieldDO afDO = auxFields.get(i);
             if(!afDO.getDelete()) {
@@ -345,7 +347,7 @@ public class AuxiliaryBean implements AuxiliaryRemote {
                    exceptionList.add(auxfvEx); 
                }
             }                
-        }
+        }*/
     }
     
     public List getMatchingEntries(String name, int maxResults,String cat) {
@@ -399,7 +401,7 @@ public class AuxiliaryBean implements AuxiliaryRemote {
     }   
     
     private void validateAuxiliary(AuxFieldGroupDO auxFieldGroupDO,
-                                             List<AuxFieldDO> auxFields) throws Exception{
+                                             List<AuxFieldViewDO> auxFields) throws Exception{
         ValidationErrorsList exceptionList = new ValidationErrorsList();
         validateAuxFieldGroup(exceptionList, auxFieldGroupDO);
         validateAuxField(exceptionList, auxFields);        
@@ -444,7 +446,7 @@ public class AuxiliaryBean implements AuxiliaryRemote {
         hasDateType = false;
         hasYesNoType = false;
         hasAlphaType = false;
-        
+        /*
         for (int i = 0; i < auxFieldValueDOList.size(); i++) {
             valueDO = auxFieldValueDOList.get(i);
 
@@ -532,7 +534,7 @@ public class AuxiliaryBean implements AuxiliaryRemote {
             } catch (InconsistentException oe) {
                 exList.add(new TableFieldErrorException(oe.getMessage(),i,fieldName));
             }
-        }
+        }*/
 
         if (exList.size() == 0)
             exList = null;

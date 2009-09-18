@@ -38,8 +38,8 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
-import org.openelis.domain.InstrumentDO;
 import org.openelis.domain.InstrumentLogDO;
+import org.openelis.domain.InstrumentViewDO;
 import org.openelis.entity.Instrument;
 import org.openelis.entity.InstrumentLog;
 import org.openelis.gwt.common.Datetime;
@@ -78,19 +78,19 @@ public class InstrumentBean implements InstrumentRemote {
         instRefTableId = ReferenceTableCache.getReferenceTable("instrument"); 
     }
     
-    public InstrumentDO getInstrument(Integer instrumentId) {
+    public InstrumentViewDO getInstrument(Integer instrumentId) {
         Query query = manager.createNamedQuery("Instrument.InstrumentDOById");
         query.setParameter("id", instrumentId);
-        return (InstrumentDO)query.getResultList().get(0);
+        return (InstrumentViewDO)query.getResultList().get(0);
     }
 
-    public InstrumentDO getInstrumentAndLock(Integer instrumentId,
+    public InstrumentViewDO getInstrumentAndLock(Integer instrumentId,
                                              String session) throws Exception{
         lockBean.getLock(instRefTableId, instrumentId);
         return getInstrument(instrumentId);
     }
 
-    public InstrumentDO getInstrumentAndUnlock(Integer instrumentId,
+    public InstrumentViewDO getInstrumentAndUnlock(Integer instrumentId,
                                                String session) {
         lockBean.giveUpLock(instRefTableId, instrumentId);
         return getInstrument(instrumentId);
@@ -103,7 +103,7 @@ public class InstrumentBean implements InstrumentRemote {
     }
 
 
-    public Integer updateInstrument(InstrumentDO instrumentDO,
+    public Integer updateInstrument(InstrumentViewDO instrumentDO,
                                     List<InstrumentLogDO> logEntries) throws Exception {
         Integer instId,logId;
         Instrument inst;
@@ -149,7 +149,9 @@ public class InstrumentBean implements InstrumentRemote {
             for(i = 0; i < logEntries.size();i++) {
                 logDO = logEntries.get(i);
                 logId = logDO.getId();
-                delete = logDO.getDelete();
+                
+                delete = false;
+                //logDO.getDelete();
                 if(logId == null) {
                     log = new InstrumentLog();
                 } else {
@@ -214,7 +216,7 @@ public class InstrumentBean implements InstrumentRemote {
          return returnList;
     }
     
-    private void validateInstrument(InstrumentDO instrumentDO,
+    private void validateInstrument(InstrumentViewDO instrumentDO,
                                     List<InstrumentLogDO> logEntries) throws Exception {
         ValidationErrorsList errorsList;
      
@@ -226,7 +228,7 @@ public class InstrumentBean implements InstrumentRemote {
             throw errorsList;
     }
     
-    private void validateInstrumentDO(InstrumentDO instrumentDO,ValidationErrorsList exceptionList) {
+    private void validateInstrumentDO(InstrumentViewDO instrumentDO,ValidationErrorsList exceptionList) {
         String name, serialNumber, isActive,location;
         boolean checkDuplicate;
         Datetime activeBegin, activeEnd;
@@ -313,8 +315,8 @@ public class InstrumentBean implements InstrumentRemote {
         for(int i=0; i < logDOList.size(); i++) {
             logDO = logDOList.get(i);
             
-            if(logDO.getDelete())
-                continue;
+          //  if(logDO.getDelete())
+          //      continue;
             
             if(logDO.getTypeId()==null) {
                 exc = new TableFieldErrorException("fieldRequiredException", i,

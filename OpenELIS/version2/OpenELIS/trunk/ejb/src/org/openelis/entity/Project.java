@@ -54,10 +54,10 @@ import org.openelis.utils.Auditable;
 
 @NamedQueries( {
     @NamedQuery(name = "Project.ProjectByName", query = "select new org.openelis.domain.ProjectDO(p.id, p.name, " + 
-                " p.description, p.startedDate, p.completedDate, p.isActive, p.referenceTo, p.ownerId, s.id,s.name) " + 
+                " p.description, p.startedDate, p.completedDate, p.isActive, p.referenceTo, p.ownerId, s.id) " + 
                 " from Project p left join p.scriptlet s where p.name like :name"),
-    @NamedQuery(name = "Project.ProjectById", query = "select new org.openelis.domain.ProjectDO(p.id, p.name, " + 
-                " p.description, p.startedDate, p.completedDate, p.isActive, p.referenceTo, p.ownerId, s.id,s.name) " + 
+    @NamedQuery(name = "Project.ProjectById", query = "select new org.openelis.domain.ProjectViewDO(p.id, p.name, " + 
+                " p.description, p.startedDate, p.completedDate, p.isActive, p.referenceTo, p.ownerId, s.id,s.name, '') " + 
                 " from Project p left join p.scriptlet s where p.id = :id "),
     @NamedQuery(name = "Project.ProjectListByName", query = "from Project p where p.name = :name order by p.name")            })
                 

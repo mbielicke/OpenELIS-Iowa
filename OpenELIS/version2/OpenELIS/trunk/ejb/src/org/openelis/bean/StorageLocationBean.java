@@ -42,7 +42,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
-import org.openelis.domain.StorageLocationDO;
+import org.openelis.domain.StorageLocationViewDO;
 import org.openelis.entity.StorageLocation;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
@@ -116,7 +116,7 @@ public class StorageLocationBean implements StorageLocationRemote{
         //delete the child records if they exist
         Iterator children = childStorageLocs.iterator();
         while(children.hasNext()){
-        	StorageLocationDO childDO = (StorageLocationDO) children.next();
+            StorageLocationViewDO childDO = (StorageLocationViewDO) children.next();
         	StorageLocation child = null;
         	child = manager.find(StorageLocation.class, childDO.getId());
          		
@@ -127,22 +127,22 @@ public class StorageLocationBean implements StorageLocationRemote{
         lockBean.giveUpLock(storageLocationRefTableId, StorageLocId);
 	}
 
-	public StorageLocationDO getStorageLoc(Integer StorageId) {
+	public StorageLocationViewDO getStorageLoc(Integer StorageId) {
 		Query query = manager.createNamedQuery("StorageLocation.StorageLocation");
 		query.setParameter("id", StorageId);
-		StorageLocationDO storageLocRecord = (StorageLocationDO) query.getResultList().get(0);// getting first storage location record
+		StorageLocationViewDO storageLocRecord = (StorageLocationViewDO) query.getResultList().get(0);// getting first storage location record
 
         return storageLocRecord;
 	}
 	
     @RolesAllowed("storagelocation-update")
-	public StorageLocationDO getStorageLocAndLock(Integer StorageId, String session) throws Exception{
+	public StorageLocationViewDO getStorageLocAndLock(Integer StorageId, String session) throws Exception{
 		lockBean.getLock(storageLocationRefTableId, StorageId);
         
         return getStorageLoc(StorageId);       
 	}
 	
-	public StorageLocationDO getStorageLocAndUnlock(Integer StorageId, String session) {
+	public StorageLocationViewDO getStorageLocAndUnlock(Integer StorageId, String session) {
         lockBean.giveUpLock(storageLocationRefTableId, StorageId);
         
         return getStorageLoc(StorageId);
@@ -187,7 +187,7 @@ public class StorageLocationBean implements StorageLocationRemote{
 	}
 
     @RolesAllowed("storagelocation-update")
-	public Integer updateStorageLoc(StorageLocationDO storageDO, List storageLocationChildren) throws Exception{
+	public Integer updateStorageLoc(StorageLocationViewDO storageDO, List storageLocationChildren) throws Exception{
         if(storageDO.getId() != null)
             lockBean.validateLock(storageLocationRefTableId,storageDO.getId());
         
@@ -213,7 +213,7 @@ public class StorageLocationBean implements StorageLocationRemote{
 	    //update the children
 	    int sortOrder=1;
 	    for (int i=0; i<storageLocationChildren.size();i++) {
-	      	 StorageLocationDO childDO = (StorageLocationDO) storageLocationChildren.get(i);
+	        StorageLocationViewDO childDO = (StorageLocationViewDO) storageLocationChildren.get(i);
 	      	 StorageLocation childStorageLoc = null;
 		            
 		    if (childDO.getId() == null)
@@ -221,10 +221,12 @@ public class StorageLocationBean implements StorageLocationRemote{
 		    else
 		    	childStorageLoc = manager.find(StorageLocation.class, childDO.getId());
 		
-		    if(childDO.getDelete() && childStorageLoc.getId() != null){
+		    //deleted flag was removed from the DOs
+		    //this will be fixed when this screen is rewritten
+		    //if(childDO.getDelete() && childStorageLoc.getId() != null){
 		    	//delete the child record from the database
-			    manager.remove(childStorageLoc);        	
-		    }else{
+			//    manager.remove(childStorageLoc);        	
+		    //}else{
                 childStorageLoc.setName(storageDO.getName());
 		    	childStorageLoc.setSortOrder(sortOrder);
 				childStorageLoc.setLocation(childDO.getLocation());
@@ -236,7 +238,7 @@ public class StorageLocationBean implements StorageLocationRemote{
 					manager.persist(childStorageLoc);
 				}
 				sortOrder++;
-		    }
+		    //}
 		}
             
         lockBean.giveUpLock(storageLocationRefTableId, storageLocation.getId()); 
@@ -276,7 +278,7 @@ public class StorageLocationBean implements StorageLocationRemote{
             throw list;
 	}
 	
-	private void validateStorageLocation(StorageLocationDO storageLocationDO, List childLocs) throws Exception {
+	private void validateStorageLocation(StorageLocationViewDO storageLocationDO, List childLocs) throws Exception {
 	    ValidationErrorsList list = new ValidationErrorsList();
 	    
 		//name required
@@ -310,13 +312,13 @@ public class StorageLocationBean implements StorageLocationRemote{
 		}
 		
 		for(int i=0; i<childLocs.size();i++)         
-            validateChildStorageLocation((StorageLocationDO)childLocs.get(i), i, list);
+            validateChildStorageLocation((StorageLocationViewDO)childLocs.get(i), i, list);
         
 		if(list.size() > 0)
             throw list;
 	}
 	
-	private void validateChildStorageLocation(StorageLocationDO storageLocationDO, int rowIndex, ValidationErrorsList exceptionList){
+	private void validateChildStorageLocation(StorageLocationViewDO storageLocationDO, int rowIndex, ValidationErrorsList exceptionList){
 		//storage unit required
 		if(storageLocationDO.getStorageUnitId() == null || "".equals(storageLocationDO.getStorageUnitId())){
 			exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex, StorageLocationMeta.CHILD_STORAGE_LOCATION_META.STORAGE_UNIT_META.getDescription()));

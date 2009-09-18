@@ -58,9 +58,7 @@ import org.openelis.utils.Auditable;
 @NamedQuery(name = "Provider.Addresses", query = "select new org.openelis.domain.ProviderAddressDO(pa.id, pa.location, pa.externalId, pa.providerId, " +
             " a.id, a.multipleUnit,a.streetAddress, a.city, a.state, a.zipCode, a.workPhone, a.homePhone, "+
             " a.cellPhone, a.faxPhone, a.email, a.country)"+" from ProviderAddress pa left join pa.address a "+
-            " where pa.providerId = :id order by pa.location"),
-@NamedQuery(name = "Provider.Notes", query = "select new org.openelis.domain.NoteDO(n.id, n.systemUserId, n.text, n.timestamp, n.subject) " + 
-"  from Note n where n.referenceTableId = (select id from ReferenceTable where name='provider') and n.referenceId = :id ORDER BY n.timestamp DESC")})               
+            " where pa.providerId = :id order by pa.location")})               
 
 @Entity
 @Table(name="provider")

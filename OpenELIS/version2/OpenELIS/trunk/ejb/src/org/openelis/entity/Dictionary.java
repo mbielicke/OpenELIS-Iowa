@@ -49,21 +49,21 @@ import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
-@NamedQueries({@NamedQuery(name = "Dictionary.Dictionary", query = "select distinct new org.openelis.domain.DictionaryDO(d.id, d.categoryId, d.relatedEntryId, dre.entry, " +
-                           "d.systemName,d.isActive,  d.localAbbrev, d.entry)" +                                                                                                  
+@NamedQueries({@NamedQuery(name = "Dictionary.Dictionary", query = "select distinct new org.openelis.domain.DictionaryViewDO(d.id, d.categoryId, d.relatedEntryId, " +
+                           "d.systemName,d.isActive,  d.localAbbrev, d.entry, dre.entry)" +                                                                                                  
                            "  from  Dictionary d left join d.relatedEntry dre  where d.categoryId = :id " +
                            " order by d.entry "),
-@NamedQuery(name = "Dictionary.DictionaryByEntrySystemName", query = "select distinct new org.openelis.domain.DictionaryDO(d.id, d.categoryId, d.relatedEntryId, dre.entry, " +
+@NamedQuery(name = "Dictionary.DictionaryByEntrySystemName", query = "select distinct new org.openelis.domain.DictionaryDO(d.id, d.categoryId, d.relatedEntryId, " +
                            " d.systemName,d.isActive,  d.localAbbrev, d.entry)" +                                                                                                  
-                           " from  Dictionary d left join d.relatedEntry dre where d.systemName = :name " +
+                           " from  Dictionary d where d.systemName = :name " +
                            " order by d.entry "),
-@NamedQuery(name = "Dictionary.DictionaryByEntryId", query = "select distinct new org.openelis.domain.DictionaryDO(d.id, d.categoryId, d.relatedEntryId, dre.entry, " +
+@NamedQuery(name = "Dictionary.DictionaryByEntryId", query = "select distinct new org.openelis.domain.DictionaryDO(d.id, d.categoryId, d.relatedEntryId, " +
                            " d.systemName,d.isActive,  d.localAbbrev, d.entry)" +                                                                                                  
-                           " from  Dictionary d left join d.relatedEntry dre where d.id = :id " +
+                           " from  Dictionary d where d.id = :id " +
                            " order by d.entry "),
-@NamedQuery(name = "Dictionary.EntriesByCategoryName", query = "select distinct new org.openelis.domain.DictionaryDO(d.id, d.categoryId, d.relatedEntryId, dre.entry, " +
+@NamedQuery(name = "Dictionary.EntriesByCategoryName", query = "select distinct new org.openelis.domain.DictionaryDO(d.id, d.categoryId, d.relatedEntryId, " +
                            " d.systemName,d.isActive,  d.localAbbrev, d.entry)" +                                                                                                  
-                           " from  Dictionary d left join d.relatedEntry dre left join d.category c where c.systemName = :name " +
+                           " from  Dictionary d left join d.category c where c.systemName = :name " +
                            " order by d.entry "),
 @NamedQuery(name = "Dictionary.DropdownValues", query = "select new org.openelis.domain.IdNameDO(d.id, d.entry) from Dictionary d where " +
                                 " d.isActive='Y' and d.categoryId = :id order by d.entry"),

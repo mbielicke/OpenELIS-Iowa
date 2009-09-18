@@ -43,7 +43,7 @@ import javax.persistence.Query;
 import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.InventoryComponentDO;
 import org.openelis.domain.InventoryItemDO;
-import org.openelis.domain.NoteDO;
+import org.openelis.domain.NoteViewDO;
 import org.openelis.entity.InventoryComponent;
 import org.openelis.entity.InventoryItem;
 import org.openelis.entity.Note;
@@ -137,13 +137,14 @@ public class InventoryItemBean implements InventoryItemRemote{
 	public List getInventoryNotes(Integer inventoryItemId) {
 	    Query query = null;
         
-        query = manager.createNamedQuery("InventoryItem.Notes"); 
+        query = manager.createNamedQuery("Note.Notes");
+        query.setParameter("referenceTable", invItemRefTableId);
         query.setParameter("id", inventoryItemId);
         
         List notes = query.getResultList();// getting list of noteDOs from the item id
 
         for(int i=0; i<notes.size(); i++){
-            NoteDO noteDO = (NoteDO)notes.get(i);
+            NoteViewDO noteDO = (NoteViewDO)notes.get(i);
             SystemUserDO userDO = userLocal.getSystemUser(noteDO.getSystemUserId());
             noteDO.setSystemUser(userDO.getLoginName());
         }
@@ -151,21 +152,22 @@ public class InventoryItemBean implements InventoryItemRemote{
         return notes;
 	}
 	
-	public NoteDO getInventoryMaunfacturingRecipe(Integer inventoryItemId){
+	public NoteViewDO getInventoryMaunfacturingRecipe(Integer inventoryItemId){
 	    Query query = null;
         
-        query = manager.createNamedQuery("InventoryItem.Manufacturing"); 
+	    query = manager.createNamedQuery("Note.Notes");
+        query.setParameter("referenceTable", invItemManufacRefTableId);
         query.setParameter("id", inventoryItemId);
         
         List notes = query.getResultList();// getting list of noteDOs from the item id
 
         if(notes != null && notes.size() > 0)
-            return (NoteDO)notes.get(0);
+            return (NoteViewDO)notes.get(0);
         else 
             return null;
 	}
 
-	public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception {
+	public List query(ArrayList fields, int first, int max) throws Exception {
         
         StringBuffer sb = new StringBuffer();
         QueryBuilder qb = new QueryBuilder();
@@ -200,7 +202,7 @@ public class InventoryItemBean implements InventoryItemRemote{
 	}
 
     @RolesAllowed("inventory-update")
-	public Integer updateInventory(InventoryItemDO inventoryItemDO, List components, NoteDO noteDO, NoteDO manufacturingNote) throws Exception {
+	public Integer updateInventory(InventoryItemDO inventoryItemDO, List components, NoteViewDO noteDO, NoteViewDO manufacturingNote) throws Exception {
         if(inventoryItemDO.getId() != null){
             //we need to call lock one more time to make sure their lock didnt expire and someone else grabbed the record
             lockBean.validateLock(invItemRefTableId,inventoryItemDO.getId());

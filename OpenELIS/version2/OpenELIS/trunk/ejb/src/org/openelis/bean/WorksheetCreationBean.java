@@ -26,36 +26,21 @@
 package org.openelis.bean;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import javax.annotation.security.RolesAllowed;
-import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
-import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
-import org.openelis.domain.IdNameDO;
-import org.openelis.domain.OrganizationAddressDO;
-import org.openelis.domain.OrganizationContactDO;
 import org.openelis.domain.WorksheetCreationViewDO;
-import org.openelis.entity.Organization;
-import org.openelis.entity.OrganizationContact;
-import org.openelis.exception.NotFoundException;
-import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.TableFieldErrorException;
-import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.QueryData;
-import org.openelis.local.AddressLocal;
-import org.openelis.local.LockLocal;
 import org.openelis.metamap.SampleMetaMap;
 import org.openelis.remote.WorksheetCreationRemote;
 import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
-import org.openelis.utils.ReferenceTableCache;
 
 @Stateless
 

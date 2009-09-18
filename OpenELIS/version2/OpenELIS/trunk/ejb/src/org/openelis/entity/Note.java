@@ -48,7 +48,7 @@ import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
 @NamedQueries( {
-    @NamedQuery(name = "Note.Notes", query = "select new org.openelis.domain.NoteDO(n.id, n.systemUserId, n.text, n.timestamp, n.subject) "
+    @NamedQuery(name = "Note.Notes", query = "select new org.openelis.domain.NoteViewDO(n.id, n.referenceId, n.referenceTableId, n.timestamp, n.isExternal, n.systemUserId, n.subject, n.text, '') "
             + "  from Note n where n.referenceTableId = :referenceTable and n.referenceId = :id ORDER BY n.timestamp DESC")})
               
             

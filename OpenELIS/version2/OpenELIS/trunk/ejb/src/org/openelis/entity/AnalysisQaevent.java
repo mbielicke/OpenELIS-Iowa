@@ -5,22 +5,29 @@ package org.openelis.entity;
   * AnalysisQaevent Entity POJO for database 
   */
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.util.XMLUtil;
-
-import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+
+import org.openelis.util.XMLUtil;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
+@NamedQueries( {
+    @NamedQuery(name = "AnalysisQaevent.AnalysisQaeventByAnalysisId", query = "select new org.openelis.domain.AnalysisQaEventViewDO(q.id, q.analysisId, q.qaeventId, " + 
+                " q.typeId, q.isBillable, q.qaEvent.name) from AnalysisQaevent q where q.analysisId = :id")})
+                
 @Entity
 @Table(name="analysis_qaevent")
 @EntityListeners({AuditUtil.class})
@@ -43,7 +50,10 @@ public class AnalysisQaevent implements Auditable, Cloneable {
   @Column(name="is_billable")
   private String isBillable;             
 
-
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "qaevent_id", insertable = false, updatable = false)
+  private QaEvent qaEvent;
+  
   @Transient
   private AnalysisQaevent original;
 
@@ -126,5 +136,11 @@ public class AnalysisQaevent implements Auditable, Cloneable {
   public String getTableName() {
     return "analysis_qaevent";
   }
+public QaEvent getQaEvent() {
+    return qaEvent;
+}
+public void setQaEvent(QaEvent qaEvent) {
+    this.qaEvent = qaEvent;
+}
   
 }   

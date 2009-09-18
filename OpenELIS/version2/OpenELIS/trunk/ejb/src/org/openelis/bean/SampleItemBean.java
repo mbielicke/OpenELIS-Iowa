@@ -36,7 +36,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
-import org.openelis.domain.SampleItemDO;
+import org.openelis.domain.SampleItemViewDO;
 import org.openelis.entity.SampleItem;
 import org.openelis.exception.NotFoundException;
 import org.openelis.local.LockLocal;
@@ -53,11 +53,11 @@ public class SampleItemBean implements SampleItemLocal {
     @PersistenceContext(name = "openelis")
     private EntityManager manager;
    
-    public List<SampleItemDO> fetchBySampleId(Integer sampleId) throws Exception {
+    public List<SampleItemViewDO> fetchBySampleId(Integer sampleId) throws Exception {
         Query query = manager.createNamedQuery("SampleItem.SampleItemBySampleId");
         query.setParameter("id", sampleId);
  
-        List<SampleItemDO> returnList = query.getResultList();
+        List<SampleItemViewDO> returnList = query.getResultList();
         
         if(returnList.size() == 0)
             throw new NotFoundException();
@@ -65,7 +65,7 @@ public class SampleItemBean implements SampleItemLocal {
         return returnList;
     }
 
-    public void add(SampleItemDO itemDO){
+    public void add(SampleItemViewDO itemDO){
         manager.setFlushMode(FlushModeType.COMMIT);
         
         SampleItem item = new SampleItem();
@@ -85,7 +85,7 @@ public class SampleItemBean implements SampleItemLocal {
        itemDO.setId(item.getId());
     }
     
-    public void update(SampleItemDO itemDO){
+    public void update(SampleItemViewDO itemDO){
         manager.setFlushMode(FlushModeType.COMMIT);
         
         SampleItem item = manager.find(SampleItem.class, itemDO.getId());
@@ -102,7 +102,7 @@ public class SampleItemBean implements SampleItemLocal {
         item.setUnitOfMeasureId(itemDO.getUnitOfMeasureId());
     }
     
-    public void delete(SampleItemDO itemDO){
+    public void delete(SampleItemViewDO itemDO){
         manager.setFlushMode(FlushModeType.COMMIT);
         
         SampleItem item = manager.find(SampleItem.class, itemDO.getId());

@@ -36,7 +36,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
-import org.openelis.domain.AnalysisTestDO;
+import org.openelis.domain.AnalysisViewDO;
 import org.openelis.entity.Analysis;
 import org.openelis.exception.NotFoundException;
 import org.openelis.local.AnalysisLocal;
@@ -64,7 +64,7 @@ public class AnalysisBean implements AnalysisLocal{
         return returnList;
     }
     
-    public void add(AnalysisTestDO analysisDO) {
+    public void add(AnalysisViewDO analysisDO) {
         manager.setFlushMode(FlushModeType.COMMIT);
         
         Analysis analysis = new Analysis();
@@ -89,7 +89,7 @@ public class AnalysisBean implements AnalysisLocal{
        analysisDO.setId(analysis.getId());
     }
 
-    public void update(AnalysisTestDO analysisDO) {
+    public void update(AnalysisViewDO analysisDO) {
         manager.setFlushMode(FlushModeType.COMMIT);
         
         Analysis analysis = manager.find(Analysis.class, analysisDO.getId());
@@ -109,12 +109,9 @@ public class AnalysisBean implements AnalysisLocal{
         analysis.setStatusId(analysisDO.getStatusId());
         analysis.setTestId(analysisDO.getTestId());
         analysis.setUnitOfMeasureId(analysisDO.getUnitOfMeasureId());
-            
-        if(analysis.getId() == null)
-            manager.persist(analysis);
     }
     
-    public void delete(AnalysisTestDO analysisDO) {
+    public void delete(AnalysisViewDO analysisDO) {
         manager.setFlushMode(FlushModeType.COMMIT);
         
         Analysis analysis = manager.find(Analysis.class, analysisDO.getId());

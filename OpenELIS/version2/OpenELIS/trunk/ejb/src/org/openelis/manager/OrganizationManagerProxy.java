@@ -27,7 +27,7 @@ package org.openelis.manager;
 
 import javax.naming.InitialContext;
 
-import org.openelis.domain.OrganizationAddressDO;
+import org.openelis.domain.OrganizationViewDO;
 import org.openelis.local.OrganizationLocal;
 import org.openelis.utils.ReferenceTableCache;
 
@@ -38,7 +38,7 @@ public class OrganizationManagerProxy {
         OrganizationLocal ol = getOrganizationLocal();
         ol.add(man.getOrganizationAddress());
         
-        orgId = man.getOrganizationAddress().getOrganizationId();
+        orgId = man.getOrganizationAddress().getId();
         orgRefId = ReferenceTableCache.getReferenceTable("organization");
         
         man.getContacts().setOrganizationId(orgId);
@@ -56,7 +56,7 @@ public class OrganizationManagerProxy {
         OrganizationLocal ol = getOrganizationLocal();
 
         ol.update(man.getOrganizationAddress());
-        orgId = man.getOrganizationAddress().getOrganizationId();
+        orgId = man.getOrganizationAddress().getId();
         orgRefId = man.getOrganizationReferenceTable();
         
         man.getContacts().setOrganizationId(orgId);
@@ -71,7 +71,7 @@ public class OrganizationManagerProxy {
 
     public OrganizationManager fetch(Integer orgId) throws Exception {
         OrganizationLocal ol = getOrganizationLocal();
-        OrganizationAddressDO orgDO = ol.fetchById(orgId);
+        OrganizationViewDO orgDO = ol.fetchById(orgId);
         OrganizationManager m = OrganizationManager.getInstance();
         m.setOrganizationAddress(orgDO);
         m.setOrganizationReferenceTable(ReferenceTableCache.getReferenceTable("organization"));

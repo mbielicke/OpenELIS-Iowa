@@ -53,12 +53,13 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 @NamedQueries( {
-    @NamedQuery(name = "Organization.OrganizationAndAddress", query = "select new org.openelis.domain.OrganizationAddressDO(orgz.id,orgz.parentOrganizationId,parentOrg.name,orgz.name,orgz.isActive,orgz.address.id,"
-            + "orgz.address.multipleUnit,orgz.address.streetAddress,orgz.address.city,orgz.address.state,orgz.address.zipCode,orgz.address.country)"
+    @NamedQuery(name = "Organization.OrganizationAndAddress", query = "select new org.openelis.domain.OrganizationViewDO(orgz.id,orgz.parentOrganizationId,orgz.name,orgz.isActive,orgz.address.id,"
+            + "orgz.address.multipleUnit,orgz.address.streetAddress,orgz.address.city,orgz.address.state,orgz.address.zipCode,orgz.address.workPhone,orgz.address.homePhone, " + 
+            " orgz.address.cellPhone, orgz.address.faxPhone, orgz.address.email, orgz.address.country, parentOrg.name)"
             + "  from Organization orgz left join orgz.parentOrganization parentOrg where orgz.id = :id"),
-    @NamedQuery(name = "Organization.AutoCompleteById", query = "select new org.openelis.domain.OrganizationAutoDO(o.id, o.name, o.address.multipleUnit, o.address.streetAddress, o.address.city, o.address.state, " +
+    @NamedQuery(name = "Organization.AutoCompleteById", query = "select new org.openelis.domain.OrganizationVO(o.id, o.name, o.address.multipleUnit, o.address.streetAddress, o.address.city, o.address.state, " +
               " o.address.zipCode) from Organization o where o.id = :id and o.isActive = 'Y'"),
-    @NamedQuery(name = "Organization.AutoCompleteByName", query = "select new org.openelis.domain.OrganizationAutoDO(o.id, o.name, o.address.multipleUnit, o.address.streetAddress, o.address.city, o.address.state, " +
+    @NamedQuery(name = "Organization.AutoCompleteByName", query = "select new org.openelis.domain.OrganizationVO(o.id, o.name, o.address.multipleUnit, o.address.streetAddress, o.address.city, o.address.state, " +
               " o.address.zipCode) from Organization o where o.name like :name and o.isActive='Y' order by o.name") })
               
 @Entity

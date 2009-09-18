@@ -23,19 +23,24 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.local;
+package org.openelis.bean;
 
-import java.util.List;
+import javax.ejb.Stateless;
 
-import javax.ejb.Local;
+import org.jboss.annotation.security.SecurityDomain;
+import org.openelis.manager.AnalysisQaEventManager;
+import org.openelis.remote.AnalysisQAEventManagerRemote;
 
-import org.openelis.domain.SampleOrganizationViewDO;
+@Stateless
 
-@Local
-public interface SampleOrganizationLocal {
-    public List<SampleOrganizationViewDO> fetchBySampleId(Integer sampleId) throws Exception;   
+@SecurityDomain("openelis")
+//@RolesAllowed("inventory-select")
+public class AnalysisQAEventManagerBean implements AnalysisQAEventManagerRemote {
     
-    public void add(SampleOrganizationViewDO sampleOrgDO);
-    public void update(SampleOrganizationViewDO sampleOrgDO); 
-    public void delete(SampleOrganizationViewDO sampleOrgDO);
+    public AnalysisQaEventManager fetchByAnalysisId(Integer analysisId) throws Exception {
+        AnalysisQaEventManager man = AnalysisQaEventManager.findByAnalysisId(analysisId);   
+        
+       return man;
+    }
+
 }

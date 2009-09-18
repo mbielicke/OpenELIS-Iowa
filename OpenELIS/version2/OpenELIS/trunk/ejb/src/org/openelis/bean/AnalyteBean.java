@@ -41,7 +41,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
-import org.openelis.domain.AnalyteDO;
+import org.openelis.domain.AnalyteViewDO;
 import org.openelis.entity.Analyte;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
@@ -114,22 +114,22 @@ public class AnalyteBean implements AnalyteRemote{
 		lockBean.giveUpLock(analyteRefTableId, analyteId, session);
 	}
 
-	public AnalyteDO getAnalyte(Integer analyteId) {
+	public AnalyteViewDO getAnalyte(Integer analyteId) {
 		Query query = manager.createNamedQuery("Analyte.Analyte");
 		query.setParameter("id", analyteId);
-		AnalyteDO analyteRecord = (AnalyteDO) query.getResultList().get(0);// getting first analyte record
+		AnalyteViewDO analyteRecord = (AnalyteViewDO) query.getResultList().get(0);// getting first analyte record
 
         return analyteRecord;
 	}
 
    @RolesAllowed("analyte-update")
-	public AnalyteDO getAnalyteAndLock(Integer analyteId, String session) throws Exception {
+	public AnalyteViewDO getAnalyteAndLock(Integer analyteId, String session) throws Exception {
 		lockBean.getLock(analyteRefTableId, analyteId, session);
         
         return getAnalyte(analyteId);
 	}
 
-	public AnalyteDO getAnalyteAndUnlock(Integer analyteId, String session) {
+	public AnalyteViewDO getAnalyteAndUnlock(Integer analyteId, String session) {
 		lockBean.giveUpLock(analyteRefTableId, analyteId, session);
 		
         return getAnalyte(analyteId);
@@ -168,7 +168,7 @@ public class AnalyteBean implements AnalyteRemote{
 	}
 
     @RolesAllowed("analyte-update")
-	public Integer updateAnalyte(AnalyteDO analyteDO, String session) throws Exception{
+	public Integer updateAnalyte(AnalyteViewDO analyteDO, String session) throws Exception{
         
         validateAnalyte(analyteDO);
         
@@ -263,7 +263,7 @@ public class AnalyteBean implements AnalyteRemote{
             throw list;
 	}
 
-	private void validateAnalyte(AnalyteDO analyteDO) throws Exception{
+	private void validateAnalyte(AnalyteViewDO analyteDO) throws Exception{
         ValidationErrorsList list = new ValidationErrorsList();
 		//name required	
 		if(analyteDO.getName() == null || "".equals(analyteDO.getName())){

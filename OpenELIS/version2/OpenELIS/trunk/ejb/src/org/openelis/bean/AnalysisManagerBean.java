@@ -25,10 +25,7 @@
 */
 package org.openelis.bean;
 
-import javax.annotation.Resource;
-import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
-import javax.persistence.PersistenceContext;
 
 import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.manager.AnalysisManager;
@@ -40,11 +37,6 @@ import org.openelis.utils.ReferenceTableCache;
 @SecurityDomain("openelis")
 //@RolesAllowed("inventory-select")
 public class AnalysisManagerBean implements AnalysisManagerRemote {
-    @PersistenceContext(name = "openelis")
-
-    @Resource
-    private SessionContext ctx;
-    
     private static int analysisRefTableId;
     
     public AnalysisManagerBean(){

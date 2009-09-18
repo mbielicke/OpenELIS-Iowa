@@ -29,11 +29,11 @@ import java.util.ArrayList;
 
 import javax.ejb.Local;
 
-import org.openelis.domain.StorageDO;
+import org.openelis.domain.StorageViewDO;
 
 @Local
 public interface StorageLocal {
-    public ArrayList<StorageDO> fetchByRefId(Integer refTableId, Integer refId) throws Exception;
-    public void update(StorageDO storage) throws Exception;
-    public void add(StorageDO storage) throws Exception;
+    public ArrayList<StorageViewDO> fetchByRefId(Integer refTableId, Integer refId) throws Exception;
+    public void update(StorageViewDO storage) throws Exception;
+    public void add(StorageViewDO storage) throws Exception;
 }

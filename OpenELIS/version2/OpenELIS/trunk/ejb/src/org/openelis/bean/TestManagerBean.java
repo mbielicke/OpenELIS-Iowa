@@ -110,6 +110,10 @@ public class TestManagerBean implements TestManagerRemote {
         return man;
     }
     
+    public TestManager fetchWithPrepTests(Integer testId) throws Exception {
+        return TestManager.findByIdWithPrepTest(testId);
+    }
+    
     public TestManager fetchWithPrepTestsAndReflexTests(Integer testId) throws Exception {
         TestManager man = TestManager.findByIdWithPrepTestAndReflexTests(testId);
         

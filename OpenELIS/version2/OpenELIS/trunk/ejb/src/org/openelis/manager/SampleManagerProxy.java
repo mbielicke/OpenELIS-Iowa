@@ -54,7 +54,8 @@ public class SampleManagerProxy {
         man.getProjects().setSampleId(sampleId);
         man.getProjects().add();
         
-        //man.getqaEvents
+        man.getQaEvents().setSampleId(sampleId);
+        man.getQaEvents().add();
         
         man.getInternalNotes().setReferenceTableId(sampleInternalRefId);
         man.getInternalNotes().setReferenceId(sampleId);
@@ -70,7 +71,7 @@ public class SampleManagerProxy {
     public SampleManager update(SampleManager man) throws Exception {
         Integer sampleId, sampleRefId, sampleInternalRefId;
         SampleLocal sl = getSampleLocal();
-        sl.add(man.getSample());
+        sl.update(man.getSample());
         
         sampleId = man.getSample().getId();
         sampleRefId = man.getSampleReferenceTableId();
@@ -85,7 +86,8 @@ public class SampleManagerProxy {
         man.getProjects().setSampleId(sampleId);
         man.getProjects().update();
         
-        //man.getqaEvents
+        man.getQaEvents().setSampleId(sampleId);
+        man.getQaEvents().add();
         
         man.getInternalNotes().setReferenceTableId(sampleInternalRefId);
         man.getInternalNotes().setReferenceId(sampleId);

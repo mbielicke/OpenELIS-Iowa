@@ -48,7 +48,7 @@ import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
-@NamedQueries({@NamedQuery(name = "Label.Label", query = "select new org.openelis.domain.LabelDO(l.id,l.name,l.description,l.printerTypeId,s.id, s.name)" +                                                                                                  
+@NamedQueries({@NamedQuery(name = "Label.Label", query = "select new org.openelis.domain.LabelViewDO(l.id,l.name,l.description,l.printerTypeId,s.id, s.name)" +                                                                                                  
                                                   "  from Label l left join l.scriptlet s where l.id = :id"),
                @NamedQuery(name = "Label.LabelIdName", query = "select distinct new org.openelis.domain.IdNameDO(l.id, l.name) " + "  from Label l order by l.name"),
                @NamedQuery(name = "Label.AutocompleteByName", query = "select distinct new org.openelis.domain.IdNameDO(l.id, l.name) " + "  from Label l where l.name like :name order by l.name")})

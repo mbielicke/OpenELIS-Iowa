@@ -52,7 +52,7 @@ import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
-@NamedQueries({@NamedQuery(name = "Instrument.InstrumentDOById", query = "select new org.openelis.domain.InstrumentDO(inst.id,inst.name,inst.description,inst.modelNumber,"+
+@NamedQueries({@NamedQuery(name = "Instrument.InstrumentDOById", query = "select new org.openelis.domain.InstrumentViewDO(inst.id,inst.name,inst.description,inst.modelNumber,"+
                            " inst.serialNumber,inst.typeId,inst.location,inst.isActive,inst.activeBegin,inst.activeEnd,s.id,s.name)" +
                            " from Instrument inst left join inst.scriptlet s where inst.id = :id "),
                @NamedQuery(name = "Instrument.InstrumentsByNameAndSerialNumber", query = "from Instrument where name = :name and serialNumber = :serialNumber")})

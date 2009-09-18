@@ -42,7 +42,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
-import org.openelis.domain.NoteDO;
+import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.ShippingAddAutoFillDO;
 import org.openelis.domain.ShippingDO;
 import org.openelis.domain.ShippingItemDO;
@@ -153,7 +153,7 @@ public class ShippingBean implements ShippingRemote{
     }
 
     @RolesAllowed("shipping-update")
- public Integer updateShipment(ShippingDO shippingDO, List<ShippingItemDO> shippingItems, List<ShippingTrackingDO> trackingNumbers, NoteDO shippingNote) throws Exception {
+ public Integer updateShipment(ShippingDO shippingDO, List<ShippingItemDO> shippingItems, List<ShippingTrackingDO> trackingNumbers, NoteViewDO shippingNote) throws Exception {
         validateShipping(shippingDO, shippingItems);
         
         if(shippingDO.getId() != null)
@@ -282,7 +282,7 @@ public class ShippingBean implements ShippingRemote{
         return getShipment(shippingId);
     }
     
-    public NoteDO getShippingNote(Integer shippingId) {
+    public NoteViewDO getShippingNote(Integer shippingId) {
         Query query = manager.createNamedQuery("Note.Notes");
         query.setParameter("referenceTable", shippingRefTableId);
         query.setParameter("id", shippingId);
@@ -290,7 +290,7 @@ public class ShippingBean implements ShippingRemote{
         List results = query.getResultList();
         
         if(results.size() > 0)
-            return (NoteDO)results.get(0);
+            return (NoteViewDO)results.get(0);
         else 
             return null;
     }

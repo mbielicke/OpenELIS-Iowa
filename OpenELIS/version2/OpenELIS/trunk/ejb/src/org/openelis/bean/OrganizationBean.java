@@ -38,8 +38,8 @@ import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.IdNameDO;
-import org.openelis.domain.OrganizationAddressDO;
 import org.openelis.domain.OrganizationContactDO;
+import org.openelis.domain.OrganizationViewDO;
 import org.openelis.entity.Organization;
 import org.openelis.entity.OrganizationContact;
 import org.openelis.exception.NotFoundException;
@@ -76,10 +76,10 @@ public class OrganizationBean implements OrganizationRemote, OrganizationLocal {
         orgRefTableId = ReferenceTableCache.getReferenceTable("organization");
     }
     
-	public OrganizationAddressDO fetchById(Integer organizationId) throws Exception {		
+	public OrganizationViewDO fetchById(Integer organizationId) throws Exception {		
 		Query query = manager.createNamedQuery("Organization.OrganizationAndAddress");
 		query.setParameter("id", organizationId);
-		OrganizationAddressDO orgAddressDO = (OrganizationAddressDO) query.getSingleResult();
+		OrganizationViewDO orgAddressDO = (OrganizationViewDO) query.getSingleResult();
 
         return orgAddressDO;
 	}
@@ -123,7 +123,7 @@ public class OrganizationBean implements OrganizationRemote, OrganizationLocal {
             return returnList;
     }
 	
-	public void add(OrganizationAddressDO organizationDO){
+	public void add(OrganizationViewDO organizationDO){
          manager.setFlushMode(FlushModeType.COMMIT);
          Organization organization = new Organization();
         
@@ -139,14 +139,14 @@ public class OrganizationBean implements OrganizationRemote, OrganizationLocal {
                 
         manager.persist(organization);
         
-        organizationDO.setOrganizationId(organization.getId());
+        organizationDO.setId(organization.getId());
     }
     
-    public void update(OrganizationAddressDO organizationDO) throws Exception {
-        lockBean.validateLock(orgRefTableId, organizationDO.getOrganizationId());
+    public void update(OrganizationViewDO organizationDO) throws Exception {
+        lockBean.validateLock(orgRefTableId, organizationDO.getId());
         
          manager.setFlushMode(FlushModeType.COMMIT);
-         Organization organization = manager.find(Organization.class, organizationDO.getOrganizationId());
+         Organization organization = manager.find(Organization.class, organizationDO.getId());
 
         //send the address to the update address bean
         addressBean.update(organizationDO.getAddressDO());
@@ -168,9 +168,9 @@ public class OrganizationBean implements OrganizationRemote, OrganizationLocal {
         //send the contact address to the address bean
         addressBean.add(contactDO.getAddressDO());
             
-        orgContact.setContactTypeId(contactDO.getContactType());
+        orgContact.setContactTypeId(contactDO.getContactTypeId());
         orgContact.setName(contactDO.getName());
-        orgContact.setOrganizationId(contactDO.getOrganization());
+        orgContact.setOrganizationId(contactDO.getOrganizationId());
         orgContact.setAddressId(contactDO.getAddressDO().getId());
         
         manager.persist(orgContact);
@@ -186,9 +186,9 @@ public class OrganizationBean implements OrganizationRemote, OrganizationLocal {
         //send the contact address to the address bean
         addressBean.update(contactDO.getAddressDO());
             
-        orgContact.setContactTypeId(contactDO.getContactType());
+        orgContact.setContactTypeId(contactDO.getContactTypeId());
         orgContact.setName(contactDO.getName());
-        orgContact.setOrganizationId(contactDO.getOrganization());
+        orgContact.setOrganizationId(contactDO.getOrganizationId());
         orgContact.setAddressId(contactDO.getAddressDO().getId());
         
     }
@@ -231,7 +231,7 @@ public class OrganizationBean implements OrganizationRemote, OrganizationLocal {
 		return query.getResultList();
 	}
 	
-	public void validateOrganization(OrganizationAddressDO organizationDO, List contacts) throws Exception {
+	public void validateOrganization(OrganizationViewDO organizationDO, List contacts) throws Exception {
 	    ValidationErrorsList list = new ValidationErrorsList();
 		//name required
 		if(organizationDO.getName() == null || "".equals(organizationDO.getName())){
@@ -267,7 +267,7 @@ public class OrganizationBean implements OrganizationRemote, OrganizationLocal {
 	
 	private void validateContactAndAddress(OrganizationContactDO orgContactDO, int rowIndex, ValidationErrorsList exceptionList){
 		//contact type required
-		if(orgContactDO.getContactType() == null || "".equals(orgContactDO.getContactType())){
+		if(orgContactDO.getContactTypeId() == null || "".equals(orgContactDO.getContactTypeId())){
 			exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex, OrgMeta.ORGANIZATION_CONTACT.getContactTypeId(),"contactsTable"));
 		}
 

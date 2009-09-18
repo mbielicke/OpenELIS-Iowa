@@ -52,15 +52,15 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 @NamedQueries( {
-    @NamedQuery(name = "SampleItem.SampleItemById", query = "select new org.openelis.domain.SampleItemDO(item.id, item.sampleId, " + 
-                "item.sampleItemId, item.itemSequence, item.typeOfSampleId, typeDict.entry, item.sourceOfSampleId, sourceDict.entry, " + 
-                "item.sourceOther, item.containerId, contDict.entry, " +
-                "item.containerReference, item.quantity, item.unitOfMeasureId) from SampleItem item LEFT JOIN item.sourceDict sourceDict LEFT JOIN item.typeDict typeDict LEFT JOIN " +
+    @NamedQuery(name = "SampleItem.SampleItemById", query = "select new org.openelis.domain.SampleItemViewDO(item.id, item.sampleId, " + 
+                "item.sampleItemId, item.itemSequence, item.typeOfSampleId, item.sourceOfSampleId, item.sourceOther, item.containerId, " +
+                " item.containerReference, item.quantity, item.unitOfMeasureId, typeDict.entry, sourceDict.entry, contDict.entry) from SampleItem item " + 
+                " LEFT JOIN item.sourceDict sourceDict LEFT JOIN item.typeDict typeDict LEFT JOIN " +
                 " item.containerDict contDict where item.id = :id"),
-    @NamedQuery(name = "SampleItem.SampleItemBySampleId", query = "select new org.openelis.domain.SampleItemDO(item.id, item.sampleId, " + 
-                "item.sampleItemId, item.itemSequence, item.typeOfSampleId, typeDict.entry, item.sourceOfSampleId, sourceDict.entry, " + 
-                "item.sourceOther, item.containerId, contDict.entry, " +
-                "item.containerReference, item.quantity, item.unitOfMeasureId) from SampleItem item  LEFT JOIN item.sourceDict sourceDict LEFT JOIN item.typeDict typeDict LEFT JOIN " +
+   @NamedQuery(name = "SampleItem.SampleItemBySampleId", query = "select new org.openelis.domain.SampleItemViewDO(item.id, item.sampleId, " + 
+                "item.sampleItemId, item.itemSequence, item.typeOfSampleId, item.sourceOfSampleId, item.sourceOther, item.containerId, " +
+                "item.containerReference, item.quantity, item.unitOfMeasureId, typeDict.entry, sourceDict.entry, contDict.entry) from SampleItem item " + 
+                " LEFT JOIN item.sourceDict sourceDict LEFT JOIN item.typeDict typeDict LEFT JOIN " +
                 " item.containerDict contDict where item.sampleId = :id")})
                 
 @Entity

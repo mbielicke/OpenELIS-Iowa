@@ -54,39 +54,25 @@ import org.openelis.util.XMLUtil;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
-@NamedQueries({@NamedQuery(name = "Test.IdByTestTrailer",
-                           query = "select t.id from Test t where t.testTrailerId = :id"),
-               @NamedQuery(name = "Test.IdByLabel",
-                           query = "select distinct t.id from Test t where t.labelId = :id"),
-               @NamedQuery(name = "Test.Names",
-                           query = "select distinct new org.openelis.domain.QaEventTestDropdownDO(t.id, t.name, m.name) "
-                                 + " from Test t, Method m where t.methodId  = m.id and t.isActive = :isActive order by t.name, m.name"),
-               @NamedQuery(name = "Test.Test",
-                           query = "select distinct new org.openelis.domain.TestViewDO(t.id, t.name,t.description,t.reportingDescription," 
-                                 + "t.methodId,t.isActive,t.activeBegin,t.activeEnd,t.isReportable,"
-                                 + "t.timeTransit,t.timeHolding,t.timeTaAverage,t.timeTaWarning,t.timeTaMax,t.labelId,"
-                                 + "t.labelQty,t.testTrailerId,t.scriptletId,t.testFormatId,t.revisionMethodId,"
-                                 + "t.reportingMethodId,t.sortingMethodId,t.reportingSequence,m.name,l.name,tt.name,s.name) "
-                                 + " from Test t left join t.scriptlet s left join t.testTrailer tt left join t.label l left join t.method m where t.id = :id"),
-               @NamedQuery(name = "Test.IdName",
-                           query = "select distinct new org.openelis.domain.IdNameDO(t.id, t.name) "
-                                 + "  from Test t left join t.method order by t.name "),
-               @NamedQuery(name = "Test.TestByName",
-                           query = "from Test t where t.name = :name order by t.name"),
-               @NamedQuery(name = "Test.TestIdNameMethodSectionNames",
-                           query = "select distinct new org.openelis.domain.TestMethodSectionNamesDO(t.id,t.name,m.name,s.name)"
-                                 + " from Test t left join t.method m left join t.testSection ts left join ts.section s where t.isActive = :isActive order by t.name,m.name,s.name "),
-               @NamedQuery(name = "Test.TestMethodAutoByName", 
-                           query = "select new org.openelis.domain.TestMethodViewDO(t.id, t.name,t.description, m.id, m.name,m.description)from Test t left join t.method m "
-                                 + " where t.name like :name and t.isActive='Y' order by t.name"),
-               @NamedQuery(name = "Test.TestMethodAutoByNameSampleItemType",
-                           query = "select distinct new org.openelis.domain.SampleTestMethodDO(t.id, t.name, t.methodId,m.name,t.description, "
-                                 + " t.reportingDescription,t.isActive,t.activeBegin,t.activeEnd,t.isReportable,t.timeTransit,t.timeHolding,t.timeTaAverage,t.timeTaWarning, "
-                                 + " t.timeTaMax,l.id,l.name,t.labelQty,tt.id,tt.name,s.id,s.name,t.testFormatId,t.revisionMethodId,t.reportingMethodId,t.sortingMethodId, "
-                                 + " t.reportingSequence) from Test t left join t.scriptlet s left join t.testTrailer tt left join t.label l left join t.method m "
-                                 + " left join t.testTypeOfSample type where t.name like :name and type.typeOfSampleId = :typeId and t.isActive='Y' order by t.name"),
-               @NamedQuery(name = "Test.TestListByMethodId",
-                           query = "from Test t where t.methodId = :id and t.isActive = 'Y'")})
+@NamedQueries({@NamedQuery(name = "Test.IdByTestTrailer", query = "select t.id from Test t where t.testTrailerId = :id"),
+    @NamedQuery(name = "Test.IdByLabel", query =  "select distinct t.id from Test t where t.labelId = :id"),
+    @NamedQuery(name = "Test.Test", query = "select distinct new org.openelis.domain.TestViewDO(t.id, t.name,t.description,t.reportingDescription," 
+        + "t.methodId,t.isActive,t.activeBegin,t.activeEnd,t.isReportable,"
+        + "t.timeTransit,t.timeHolding,t.timeTaAverage,t.timeTaWarning,t.timeTaMax,t.labelId,"
+        + "t.labelQty,t.testTrailerId,t.scriptletId,t.testFormatId,t.revisionMethodId,"
+        + "t.reportingMethodId,t.sortingMethodId,t.reportingSequence,m.name,l.name,tt.name,s.name) "
+        + " from Test t left join t.scriptlet s left join t.testTrailer tt left join t.label l left join t.method m where t.id = :id"),                                                    
+    @NamedQuery(name = "Test.IdName", query = "select distinct new org.openelis.domain.IdNameDO(t.id, t.name) " + "  from Test t left join t.method order by t.name "),
+    @NamedQuery(name = "Test.TestByName", query = "from Test t where t.name = :name order by t.name"),
+    @NamedQuery(name = "Test.TestIdNameMethodSectionNames", query = "select distinct new org.openelis.domain.TestMethodSectionNamesDO(t.id,t.name,m.name,s.name)" 
+             + "  from Test t left join t.method m left join t.testSection ts left join ts.section s where t.isActive = :isActive order by t.name,m.name,s.name "),
+    @NamedQuery(name = "Test.TestMethodAutoByName", query = "select new org.openelis.domain.TestMethodViewDO(t.id, t.name,t.description, m.id, m.name,m.description)from Test t LEFT JOIN t.method m " +
+   		                " where t.name like :name and t.isActive='Y' order by t.name"),
+    @NamedQuery(name = "Test.TestMethodAutoByNameSampleItemType", query = "select distinct new org.openelis.domain.TestMethodViewDO(t.id, t.name, t.description, m.id, m.name, m.description) " + 
+                        " from Test t left join t.method m LEFT JOIN t.testTypeOfSample type where t.name like :name and type.typeOfSampleId = :typeId and t.isActive='Y' order by t.name"),
+    @NamedQuery(name = "Test.TestListByMethodId", query = "from Test t where t.methodId = :id and t.isActive = 'Y'")})
+    
+
 @Entity
 @Table(name = "test")
 @EntityListeners( {AuditUtil.class})

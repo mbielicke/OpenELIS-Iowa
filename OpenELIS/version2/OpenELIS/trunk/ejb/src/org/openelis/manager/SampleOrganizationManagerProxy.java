@@ -29,7 +29,7 @@ import java.util.ArrayList;
 
 import javax.naming.InitialContext;
 
-import org.openelis.domain.SampleOrganizationDO;
+import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.SampleOrganizationLocal;
 
@@ -40,7 +40,7 @@ public class SampleOrganizationManagerProxy {
     
     public SampleOrganizationManager fetchBySampleId(Integer sampleId) throws Exception {
         SampleOrganizationLocal sol = getOrganizationLocal();
-        ArrayList<SampleOrganizationDO> orgs = (ArrayList<SampleOrganizationDO>)sol.fetchBySampleId(sampleId);
+        ArrayList<SampleOrganizationViewDO> orgs = (ArrayList<SampleOrganizationViewDO>)sol.fetchBySampleId(sampleId);
         
         SampleOrganizationManager som = SampleOrganizationManager.getInstance();
         som.setOrganizations(orgs);
@@ -51,7 +51,7 @@ public class SampleOrganizationManagerProxy {
     
     public SampleOrganizationManager add(SampleOrganizationManager man) throws Exception {
         SampleOrganizationLocal sol = getOrganizationLocal();
-        SampleOrganizationDO orgDO;
+        SampleOrganizationViewDO orgDO;
         
         for(int i=0; i<man.count(); i++){
             orgDO = man.getOrganizationAt(i);
@@ -65,7 +65,7 @@ public class SampleOrganizationManagerProxy {
     
     public SampleOrganizationManager update(SampleOrganizationManager man) throws Exception {
         SampleOrganizationLocal sol = getOrganizationLocal();
-        SampleOrganizationDO orgDO;
+        SampleOrganizationViewDO orgDO;
         
         for(int j=0; j<man.deleteCount(); j++){
             sol.delete(man.getDeletedAt(j));

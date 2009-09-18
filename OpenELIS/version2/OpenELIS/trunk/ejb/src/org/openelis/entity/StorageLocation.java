@@ -51,10 +51,10 @@ import org.openelis.utils.Auditable;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-@NamedQueries({@NamedQuery(name = "StorageLocation.StorageLocation", query = "select new org.openelis.domain.StorageLocationDO(s.id,s.sortOrder,s.name, " +
-" s.location,s.parentStorageLocationId,s.storageUnitId,s.storageUnit.description,s.isAvailable) from StorageLocation s where s.id = :id"),
-@NamedQuery(name = "StorageLocation.GetChildren", query = "select new org.openelis.domain.StorageLocationDO(s.id,s.sortOrder,s.name, " +
-" s.location,s.parentStorageLocationId,s.storageUnitId,s.storageUnit.description,s.isAvailable) from StorageLocation s where s.parentStorageLocationId = :id"),
+@NamedQueries({@NamedQuery(name = "StorageLocation.StorageLocation", query = "select new org.openelis.domain.StorageLocationViewDO(s.id,s.sortOrder,s.name, " +
+" s.location,s.parentStorageLocationId,s.storageUnitId,s.isAvailable,s.storageUnit.description) from StorageLocation s where s.id = :id"),
+@NamedQuery(name = "StorageLocation.GetChildren", query = "select new org.openelis.domain.StorageLocationViewDO(s.id,s.sortOrder,s.name, " +
+" s.location,s.parentStorageLocationId,s.storageUnitId,s.isAvailable, s.storageUnit.description) from StorageLocation s where s.parentStorageLocationId = :id"),
 @NamedQuery(name = "StorageLocation.IdByName", query = "select s.id from StorageLocation s where s.name = :name"),
 @NamedQuery(name = "StorageLocation.IdByStorageUnit", query = "select s.id from StorageLocation s where s.storageUnitId = :id"),
 @NamedQuery(name = "StorageLocation.AutoCompleteByName", query = "select new org.openelis.domain.StorageLocationAutoDO(childLoc.id, childLoc.name, childLoc.location, " +

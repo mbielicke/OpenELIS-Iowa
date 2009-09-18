@@ -34,6 +34,7 @@ import org.w3c.dom.Element;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.util.XMLUtil;
 
+import java.util.Collection;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -44,6 +45,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -51,9 +53,9 @@ import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
 @NamedQueries( {
-    @NamedQuery(name = "Analysis.AnalysisTestBySampleItemId", query = "select new org.openelis.domain.AnalysisTestDO(a.id, a.sampleItemId, a.revision, " + 
-                " a.testId, a.sectionId, s.name, a.preAnalysisId, a.parentAnalysisId, a.parentResultId, a.isReportable, a.unitOfMeasureId, a.statusId, " + 
-                " a.availableDate, a.startedDate, a.completedDate, a.releasedDate, a.printedDate, t.name, t.method.id, t.method.name) from " +
+    @NamedQuery(name = "Analysis.AnalysisTestBySampleItemId", query = "select new org.openelis.domain.AnalysisViewDO(a.id, a.sampleItemId, a.revision, " + 
+                " a.testId, a.sectionId, a.preAnalysisId, a.parentAnalysisId, a.parentResultId, a.isReportable, a.unitOfMeasureId, a.statusId, " + 
+                " a.availableDate, a.startedDate, a.completedDate, a.releasedDate, a.printedDate, s.name, t.name, t.method.id, t.method.name) from " +
                 " Analysis a LEFT JOIN a.section s LEFT JOIN a.test t where a.sampleItemId = :id")})
                 
 @Entity
@@ -118,6 +120,11 @@ public class Analysis implements Auditable, Cloneable {
   @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "section_id", insertable = false, updatable = false)
   private Section section;
+  
+  //analysis qa events
+  @OneToMany(fetch = FetchType.LAZY)
+  @JoinColumn(name = "analysis_id")
+  private Collection<AnalysisQaevent> analysisQAEvent;
 
   @Transient
   private Analysis original;
@@ -343,6 +350,12 @@ public Section getSection() {
 }
 public void setSection(Section section) {
     this.section = section;
+}
+public Collection<AnalysisQaevent> getAnalysisQAEvent() {
+    return analysisQAEvent;
+}
+public void setAnalysisQAEvent(Collection<AnalysisQaevent> analysisQAEvent) {
+    this.analysisQAEvent = analysisQAEvent;
 }
   
 }   

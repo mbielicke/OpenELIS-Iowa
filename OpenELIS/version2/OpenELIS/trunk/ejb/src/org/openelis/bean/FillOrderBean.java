@@ -27,7 +27,7 @@ package org.openelis.bean;
 
 import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.FillOrderDO;
-import org.openelis.domain.NoteDO;
+import org.openelis.domain.NoteViewDO;
 import org.openelis.entity.InventoryLocation;
 import org.openelis.entity.InventoryXUse;
 import org.openelis.entity.Order;
@@ -261,7 +261,7 @@ public class FillOrderBean implements FillOrderRemote {
         List noteResults = query.getResultList();
         String orderNote = null;
         if(noteResults.size() > 0)
-            orderNote = ((NoteDO)noteResults.get(0)).getText();
+            orderNote = ((NoteViewDO)noteResults.get(0)).getText();
         
         query = manager.createNamedQuery("Order.FillOrderSubInfo");
         query.setParameter("id", orderId);
