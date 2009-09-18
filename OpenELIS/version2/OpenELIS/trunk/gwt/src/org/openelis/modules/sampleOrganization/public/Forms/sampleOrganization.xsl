@@ -19,8 +19,16 @@
 		above.
   -->
 
-<xsl:stylesheet extension-element-prefixes="resource" version="1.0" xmlns:locale="xalan://java.util.Locale" xmlns:resource="xalan://org.openelis.util.UTFResource" xmlns:xalan="http://xml.apache.org/xalan" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
-  <xsl:import href="button.xsl" />
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+                xmlns:xalan="http://xml.apache.org/xalan"
+                xmlns:resource="xalan://org.openelis.util.UTFResource"
+                xmlns:locale="xalan://java.util.Locale" 
+                extension-element-prefixes="resource"
+                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xsi:noNamespaceSchemaLocation="http://openelis.uhl.uiowa.edu/schema/ScreenSchema.xsd"
+                xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd"
+                version="1.0">
+  <xsl:import href="http://openelis.uhl.uiowa.edu/schema/button.xsl" />
   <xalan:component prefix="resource">
     <xalan:script lang="javaclass" src="xalan://org.openelis.util.UTFResource" />
   </xalan:component>
@@ -35,7 +43,7 @@
       <xsl:value-of select="props" />
     </xsl:variable>
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
-    <screen id="SampleOrganizationPicker" name="{resource:getString($constants,'sampleOrganization')}" serviceUrl="ElisService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <screen id="SampleOrganizationPicker" name="{resource:getString($constants,'sampleOrganization')}" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <VerticalPanel padding="0" spacing="0">
         <VerticalPanel width="300px" padding="0" spacing="0" style="WhiteContentPanel">
           <table key="sampleOrganizationTable" width="auto" maxRows="10" showScroll="ALWAYS" tab="sampleOrganizationTable,sampleOrganizationTable" title="">

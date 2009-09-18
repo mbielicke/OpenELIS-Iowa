@@ -31,8 +31,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.openelis.domain.IdNameDO;
-import org.openelis.domain.OrganizationAutoDO;
-import org.openelis.domain.SectionDO;
+import org.openelis.domain.OrganizationVO;
+import org.openelis.domain.SectionViewDO;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
@@ -100,7 +100,7 @@ public class SectionService implements
     
     public SectionForm abort(SectionForm rpc) throws Exception {                
         SectionRemote remote;
-        SectionDO sectionDO;
+        SectionViewDO sectionDO;
         
         remote = (SectionRemote)EJBFactory.lookup("openelis/SectionBean/remote");
         try{
@@ -116,7 +116,7 @@ public class SectionService implements
 
     public SectionForm commitAdd(SectionForm rpc) throws Exception {
         SectionRemote remote;
-        SectionDO sectionDO;
+        SectionViewDO sectionDO;
         Integer sectId;
         
         remote  = (SectionRemote)EJBFactory.lookup("openelis/SectionBean/remote");
@@ -137,7 +137,7 @@ public class SectionService implements
 
     public SectionForm commitUpdate(SectionForm rpc) throws Exception {
         SectionRemote remote;
-        SectionDO sectionDO;
+        SectionViewDO sectionDO;
         
         remote  = (SectionRemote)EJBFactory.lookup("openelis/SectionBean/remote");
         sectionDO = getSectionDOFromRPC(rpc);
@@ -161,7 +161,7 @@ public class SectionService implements
 
     public SectionForm fetch(SectionForm rpc) throws Exception {
         SectionRemote remote;
-        SectionDO sectionDO;
+        SectionViewDO sectionDO;
         
         remote = (SectionRemote)EJBFactory.lookup("openelis/SectionBean/remote");
         sectionDO = remote.getSection(rpc.entityKey);
@@ -172,7 +172,7 @@ public class SectionService implements
 
     public SectionForm fetchForUpdate(SectionForm rpc) throws Exception {
         SectionRemote remote;
-        SectionDO sectionDO;
+        SectionViewDO sectionDO;
         
         remote = (SectionRemote)EJBFactory.lookup("openelis/SectionBean/remote");
         try{
@@ -199,12 +199,12 @@ public class SectionService implements
         TableDataModel<TableDataRow<Integer>> dataModel;
         List autoCompleteList;
         int id,i;
-        OrganizationAutoDO resultDO;
+        OrganizationVO resultDO;
         Integer orgId;        
         String name,address,city,state;
         TableDataRow<Integer> data;
         SectionRemote sremote;
-        SectionDO sectDO;
+        IdNameDO sectDO;
  
         
         dataModel = new TableDataModel<TableDataRow<Integer>>();
@@ -222,13 +222,13 @@ public class SectionService implements
             }
             
             for(i=0; i < autoCompleteList.size(); i++){
-                resultDO = (OrganizationAutoDO) autoCompleteList.get(i);
+                resultDO = (OrganizationVO) autoCompleteList.get(i);
                 //org id
                 orgId = resultDO.getId();
                 //org name
                 name = resultDO.getName();
                 //org street address
-                address = resultDO.getAddress();
+                address = resultDO.getStreetAddress();
                 //org city
                 city = resultDO.getCity();
                 //org state
@@ -249,7 +249,7 @@ public class SectionService implements
             
             for (i = 0; i < autoCompleteList.size(); i++) {
 
-                sectDO = (SectionDO)autoCompleteList.get(i);
+                sectDO = (IdNameDO)autoCompleteList.get(i);
                 id = sectDO.getId();
                 name = sectDO.getName();
 
@@ -261,7 +261,7 @@ public class SectionService implements
         return dataModel;   
     }
     
-    private void setFieldsInRPC(SectionForm rpc, SectionDO sectionDO) {
+    private void setFieldsInRPC(SectionForm rpc, SectionViewDO sectionDO) {
         TableDataModel<TableDataRow<Integer>> model;
         
         rpc.id.setValue(sectionDO.getId());
@@ -299,10 +299,10 @@ public class SectionService implements
         }
     }
     
-    private SectionDO getSectionDOFromRPC(SectionForm rpc) {
-        SectionDO sectionDO;
+    private SectionViewDO getSectionDOFromRPC(SectionForm rpc) {
+        SectionViewDO sectionDO;
         
-        sectionDO = new SectionDO();
+        sectionDO = new SectionViewDO();
         sectionDO.setDescription(rpc.description.getValue());
         sectionDO.setName(rpc.name.getValue());
         sectionDO.setId(rpc.id.getValue());

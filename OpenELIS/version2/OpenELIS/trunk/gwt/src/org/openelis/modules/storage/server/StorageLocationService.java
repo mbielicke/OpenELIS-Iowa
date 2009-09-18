@@ -31,7 +31,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.openelis.domain.IdNameDO;
-import org.openelis.domain.StorageLocationDO;
+import org.openelis.domain.StorageLocationViewDO;
 import org.openelis.domain.StorageUnitAutoDO;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
@@ -122,7 +122,7 @@ public class StorageLocationService implements AppScreenFormServiceInt<StorageLo
     public StorageLocationForm commitAdd(StorageLocationForm rpc) throws Exception {
 //		remote interface to call the storageLocation bean
 		StorageLocationRemote remote = (StorageLocationRemote)EJBFactory.lookup("openelis/StorageLocationBean/remote");
-		StorageLocationDO newStorageLocDO = new StorageLocationDO();
+		StorageLocationViewDO newStorageLocDO = new StorageLocationViewDO();
 		List storageLocationChildren = new ArrayList();
 		
 //		build the storage unit DO from the form
@@ -157,7 +157,7 @@ public class StorageLocationService implements AppScreenFormServiceInt<StorageLo
 	public StorageLocationForm commitUpdate(StorageLocationForm rpc) throws Exception {
 //		remote interface to call the storage loc bean
 		StorageLocationRemote remote = (StorageLocationRemote)EJBFactory.lookup("openelis/StorageLocationBean/remote");
-		StorageLocationDO newStorageLocDO = new StorageLocationDO();
+		StorageLocationViewDO newStorageLocDO = new StorageLocationViewDO();
 		List storageLocationChildren = new ArrayList();
 		
 		//build the DO from the form
@@ -201,7 +201,7 @@ public class StorageLocationService implements AppScreenFormServiceInt<StorageLo
                 throw new Exception(e.getMessage());
         }	
 		
-		setFieldsInRPC(rpc, new StorageLocationDO());
+		setFieldsInRPC(rpc, new StorageLocationViewDO());
 		rpc.childStorageLocsTable.setValue(null);
 		
 		return rpc;
@@ -212,7 +212,7 @@ public class StorageLocationService implements AppScreenFormServiceInt<StorageLo
     		StorageLocationRemote remote = (StorageLocationRemote)EJBFactory.lookup("openelis/StorageLocationBean/remote");
     		
     		
-    		StorageLocationDO storageLocDO = remote.getStorageLocAndUnlock(rpc.entityKey, SessionManager.getSession().getId());
+    		StorageLocationViewDO storageLocDO = remote.getStorageLocAndUnlock(rpc.entityKey, SessionManager.getSession().getId());
     
     //		set the fields in the RPC
     		setFieldsInRPC(rpc, storageLocDO);
@@ -230,7 +230,7 @@ public class StorageLocationService implements AppScreenFormServiceInt<StorageLo
 //		remote interface to call the storage loc bean
 		StorageLocationRemote remote = (StorageLocationRemote)EJBFactory.lookup("openelis/StorageLocationBean/remote");
 		
-		StorageLocationDO storageLocDO = remote.getStorageLoc(rpc.entityKey);
+		StorageLocationViewDO storageLocDO = remote.getStorageLoc(rpc.entityKey);
 		
 //		set the fields in the RPC
 		setFieldsInRPC(rpc, storageLocDO);
@@ -247,7 +247,7 @@ public class StorageLocationService implements AppScreenFormServiceInt<StorageLo
 	public StorageLocationForm fetchForUpdate(StorageLocationForm rpc) throws Exception {
 //		remote interface to call the storage loc bean
 		StorageLocationRemote remote = (StorageLocationRemote)EJBFactory.lookup("openelis/StorageLocationBean/remote");
-		StorageLocationDO storageLocDO = new StorageLocationDO();
+		StorageLocationViewDO storageLocDO = new StorageLocationViewDO();
 		
 		try{
 			storageLocDO = remote.getStorageLocAndLock(rpc.entityKey, SessionManager.getSession().getId());
@@ -279,7 +279,7 @@ public class StorageLocationService implements AppScreenFormServiceInt<StorageLo
     			childModel.clear();
     			
     			for(int iter = 0;iter < childrenList.size();iter++) {
-    				StorageLocationDO slDO = (StorageLocationDO)childrenList.get(iter);
+    			    StorageLocationViewDO slDO = (StorageLocationViewDO)childrenList.get(iter);
     
     	               TableDataRow<Integer> row = childModel.createNewSet();
     	               row.key = slDO.getId();
@@ -289,7 +289,7 @@ public class StorageLocationService implements AppScreenFormServiceInt<StorageLo
     		       			row.getCells().get(0).setValue(null);
     		       		else{
                              TableDataModel<TableDataRow<Integer>> unitModel = new TableDataModel<TableDataRow<Integer>>();
-                             unitModel.add(new TableDataRow<Integer>(slDO.getStorageUnitId(),new StringObject(slDO.getStorageUnit())));
+                             unitModel.add(new TableDataRow<Integer>(slDO.getStorageUnitId(),new StringObject(slDO.getStorageUnitDescription())));
                              ((DropDownField<Integer>)row.getCells().get(0)).setModel(unitModel);
                              row.getCells().get(0).setValue(unitModel.get(0));
     		       		}
@@ -318,7 +318,7 @@ public class StorageLocationService implements AppScreenFormServiceInt<StorageLo
     	return null;
     }
 
-    private void setFieldsInRPC(StorageLocationForm form, StorageLocationDO storageLocDO){
+    private void setFieldsInRPC(StorageLocationForm form, StorageLocationViewDO storageLocDO){
         form.id.setValue(storageLocDO.getId());
         form.isAvailable.setValue(storageLocDO.getIsAvailable());
         form.location.setValue(storageLocDO.getLocation());
@@ -329,21 +329,21 @@ public class StorageLocationService implements AppScreenFormServiceInt<StorageLo
 			form.storageUnit.clear();
 		else{
             TableDataModel<TableDataRow<Integer>> unitModel = new TableDataModel<TableDataRow<Integer>>();
-            unitModel.add(new TableDataRow<Integer>(storageLocDO.getStorageUnitId(),new StringObject(storageLocDO.getStorageUnit())));
+            unitModel.add(new TableDataRow<Integer>(storageLocDO.getStorageUnitId(),new StringObject(storageLocDO.getStorageUnitDescription())));
             form.storageUnit.setModel(unitModel);
             form.storageUnit.setValue(unitModel.get(0));
 		}
 	}
 	
-	private StorageLocationDO getStorageLocationDOFromRPC(StorageLocationForm form){
-		StorageLocationDO newStorageLocDO = new StorageLocationDO();
+	private StorageLocationViewDO getStorageLocationDOFromRPC(StorageLocationForm form){
+	    StorageLocationViewDO newStorageLocDO = new StorageLocationViewDO();
 		
 		newStorageLocDO.setId(form.id.getValue());
 		newStorageLocDO.setIsAvailable(form.isAvailable.getValue());
 		newStorageLocDO.setLocation(form.location.getValue());
 		newStorageLocDO.setName(form.name.getValue());
 		newStorageLocDO.setStorageUnitId((Integer)form.storageUnit.getSelectedKey());
-        newStorageLocDO.setStorageUnit((String)form.storageUnit.getTextValue());
+        newStorageLocDO.setStorageUnitDescription( (String)form.storageUnit.getTextValue());
 		
 		return newStorageLocDO;
 	}
@@ -353,7 +353,7 @@ public class StorageLocationService implements AppScreenFormServiceInt<StorageLo
         List<TableDataRow<Integer>> deletedRows = childTable.getDeletions();
 		
 		for(int i=0; i<childTable.size(); i++){
-			StorageLocationDO childDO = new StorageLocationDO();
+		    StorageLocationViewDO childDO = new StorageLocationViewDO();
 			TableDataRow<Integer> row = childTable.get(i);
 			
 			//parent data
@@ -371,8 +371,8 @@ public class StorageLocationService implements AppScreenFormServiceInt<StorageLo
             for(int j=0; j<deletedRows.size(); j++){
                 TableDataRow<Integer> deletedRow = deletedRows.get(j);
                 if(deletedRow.key != null){
-                    StorageLocationDO childDO = new StorageLocationDO();
-                    childDO.setDelete(true);
+                    StorageLocationViewDO childDO = new StorageLocationViewDO();
+                    //childDO.setDelete(true);
                     childDO.setId(deletedRow.key);
                     
                     storageLocationChildren.add(childDO);

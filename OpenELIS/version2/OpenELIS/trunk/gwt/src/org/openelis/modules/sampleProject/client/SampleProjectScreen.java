@@ -30,7 +30,7 @@ import java.util.EnumSet;
 
 import org.openelis.common.AutocompleteRPC;
 import org.openelis.domain.ProjectDO;
-import org.openelis.domain.SampleProjectDO;
+import org.openelis.domain.SampleProjectViewDO;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -99,7 +99,7 @@ public class SampleProjectScreen extends Screen implements HasActionHandlers<Sam
                 int row,col;
                 row = event.getRow();
                 col = event.getCell();
-                SampleProjectDO projectDO;
+                SampleProjectViewDO projectDO;
                 TableDataRow tableRow = sampleProjectTable.getRow(row);
                 try{
                     projectDO = manager.getProjectAt(row);
@@ -121,10 +121,10 @@ public class SampleProjectScreen extends Screen implements HasActionHandlers<Sam
                         sampleProjectTable.setCell(sampleProjectTable.getSelectedIndex(), 1, des);
                         
                         projectDO.setProjectId((Integer)selectedRow.key);
-                        projectDO.getProject().setName((String)selectedRow.cells.get(0).value);
+                        projectDO.setProjectName((String)selectedRow.cells.get(0).value);
                         break;
                     case 1:
-                        projectDO.getProject().setDescription((String)val);
+                        projectDO.setProjectDescription((String)val);
                         break;
                     case 2:
                         projectDO.setIsPermanent((String)val);
@@ -161,7 +161,7 @@ public class SampleProjectScreen extends Screen implements HasActionHandlers<Sam
         
         sampleProjectTable.addRowAddedHandler(new RowAddedHandler() {
             public void onRowAdded(RowAddedEvent event) {
-                manager.addProject(new SampleProjectDO());
+                manager.addProject(new SampleProjectViewDO());
             }
         });
 
@@ -226,13 +226,13 @@ public class SampleProjectScreen extends Screen implements HasActionHandlers<Sam
         try 
         {   
             for(int iter = 0;iter < manager.count();iter++) {
-                SampleProjectDO projectRow = (SampleProjectDO)manager.getProjectAt(iter);
+                SampleProjectViewDO projectRow = (SampleProjectViewDO)manager.getProjectAt(iter);
             
                TableDataRow row = new TableDataRow(3);
                row.key = projectRow.getId();
                
-               row.cells.get(0).value = new TableDataRow(projectRow.getProjectId(),projectRow.getProject().getName());
-               row.cells.get(1).value = projectRow.getProject().getDescription();
+               row.cells.get(0).value = new TableDataRow(projectRow.getProjectId(),projectRow.getProjectName());
+               row.cells.get(1).value = projectRow.getProjectDescription();
                row.cells.get(2).value = projectRow.getIsPermanent();
                model.add(row);
                

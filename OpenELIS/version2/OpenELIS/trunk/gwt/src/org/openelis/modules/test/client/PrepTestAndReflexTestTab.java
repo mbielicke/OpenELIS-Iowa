@@ -33,7 +33,7 @@ import org.openelis.cache.DictionaryCache;
 import org.openelis.common.AutocompleteRPC;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.TestAnalyteViewDO;
-import org.openelis.domain.TestMethodAutoDO;
+import org.openelis.domain.TestMethodViewDO;
 import org.openelis.domain.TestPrepViewDO;
 import org.openelis.domain.TestReflexViewDO;
 import org.openelis.domain.TestResultDO;
@@ -395,7 +395,7 @@ public class PrepTestAndReflexTestTab extends Screen implements GetMatchesHandle
     public void onGetMatches(GetMatchesEvent event) {
         AutocompleteRPC rpc;
         ArrayList<TableDataRow> model;
-        TestMethodAutoDO autoDO;
+        TestMethodViewDO autoDO;
         TableDataRow row;
                        
         rpc = new AutocompleteRPC();
@@ -405,7 +405,7 @@ public class PrepTestAndReflexTestTab extends Screen implements GetMatchesHandle
             model = new ArrayList<TableDataRow>();
             
             for (int i=0; i<rpc.model.size(); i++){
-                autoDO = (TestMethodAutoDO)rpc.model.get(i);
+                autoDO = (TestMethodViewDO)rpc.model.get(i);
                 
                 row = new TableDataRow(1);
                 row.key = autoDO.getTestId();

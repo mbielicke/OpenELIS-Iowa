@@ -138,6 +138,13 @@ public class TestService {
         return man;
     }
     
+    public TestManager fetchWithPrepTests(Integer testId) throws Exception {
+        TestManagerRemote remote = (TestManagerRemote)EJBFactory.lookup("openelis/TestManagerBean/remote");
+        TestManager man = remote.fetchWithPrepTests(testId);
+        
+        return man;
+    }
+    
     public TestManager fetchWithPrepTestsAndReflexTests(Integer testId) throws Exception {
         TestManagerRemote remote = (TestManagerRemote)EJBFactory.lookup("openelis/TestManagerBean/remote");
         TestManager man = remote.fetchWithPrepTestsAndReflexTests(testId);

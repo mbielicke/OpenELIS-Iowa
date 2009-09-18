@@ -35,11 +35,10 @@ import org.openelis.cache.SectionCache;
 import org.openelis.common.AutocompleteRPC;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameDO;
-import org.openelis.domain.SectionDO;
+import org.openelis.domain.SectionViewDO;
 import org.openelis.domain.TestDO;
 import org.openelis.domain.TestIdNameMethodNameDO;
-import org.openelis.domain.TestMethodAutoDO;
-import org.openelis.domain.TestSectionDO;
+import org.openelis.domain.TestSectionViewDO;
 import org.openelis.domain.TestViewDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.EntityLockedException;
@@ -551,7 +550,7 @@ public class TestScreen extends Screen {
                 Integer val;
                 String systemName;
                 TestSectionManager tsm;
-                TestSectionDO sectionDO;
+                TestSectionViewDO sectionDO;
                 TableDataRow tableRow;
                 
                 row = event.getRow();
@@ -603,7 +602,7 @@ public class TestScreen extends Screen {
         sectionTable.addRowAddedHandler(new RowAddedHandler(){
             public void onRowAdded(RowAddedEvent event) {
                 try{
-                    manager.getTestSections().addSection(new TestSectionDO());
+                    manager.getTestSections().addSection(new TestSectionViewDO());
                 }catch(Exception e){
                     Window.alert(e.getMessage());
                 }
@@ -1377,9 +1376,9 @@ public class TestScreen extends Screen {
     private void setTestSectionsModel() {
         ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
         TableColumn column =  sectionTable.columns.get(0);
-        List<SectionDO> list = SectionCache.getSectionList();        
+        List<SectionViewDO> list = SectionCache.getSectionList();        
         model.add(new TableDataRow(null, ""));
-        for (SectionDO resultDO : list) {
+        for (SectionViewDO resultDO : list) {
             model.add(new TableDataRow(resultDO.getId(), resultDO.getName()));
         }
         ((Dropdown<Integer>)column.getColumnWidget()).setModel(model);
@@ -1388,7 +1387,7 @@ public class TestScreen extends Screen {
     
     private ArrayList<TableDataRow> getTableModel() {
         ArrayList<TableDataRow> model;
-        TestSectionDO sectionDO;
+        TestSectionViewDO sectionDO;
         TestSectionManager tsm;
         TableDataRow row;
 
