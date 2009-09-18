@@ -204,11 +204,11 @@ public class MethodService implements AppScreenFormServiceInt<MethodForm, Query<
       methodDO.setName(form.name.getValue());
       Datetime activeBegin = (Datetime)form.activeBegin.getValue();
       if (activeBegin != null)
-          methodDO.setActiveBegin(activeBegin.getDate());
+          methodDO.setActiveBegin(activeBegin);
 
       Datetime activeEnd = (Datetime)form.activeEnd.getValue();
       if (activeEnd != null)
-          methodDO.setActiveEnd(activeEnd.getDate());
+          methodDO.setActiveEnd(activeEnd);
 
       methodDO.setDescription(form.description.getValue());
       methodDO.setIsActive(form.isActive.getValue());

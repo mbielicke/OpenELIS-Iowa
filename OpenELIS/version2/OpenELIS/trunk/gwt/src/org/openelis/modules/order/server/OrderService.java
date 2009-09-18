@@ -36,11 +36,11 @@ import org.openelis.domain.IdNameDO;
 import org.openelis.domain.InventoryItemAutoDO;
 import org.openelis.domain.InventoryLocationDO;
 import org.openelis.domain.InventoryReceiptDO;
-import org.openelis.domain.NoteDO;
+import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.OrderAddAutoFillDO;
 import org.openelis.domain.OrderDO;
 import org.openelis.domain.OrderItemDO;
-import org.openelis.domain.OrganizationAutoDO;
+import org.openelis.domain.OrganizationVO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
@@ -149,8 +149,8 @@ public class OrderService implements AppScreenFormServiceInt<OrderForm, OrderQue
         OrderRemote remote = (OrderRemote)EJBFactory.lookup("openelis/OrderBean/remote");
         OrderDO orderDO = new OrderDO();
         List orderItems = new ArrayList();
-        NoteDO customerNotes = new NoteDO();
-        NoteDO orderShippingNotes = new NoteDO();
+        NoteViewDO customerNotes = new NoteViewDO();
+        NoteViewDO orderShippingNotes = new NoteViewDO();
         
         String orderType = rpc.orderType;
         
@@ -208,8 +208,8 @@ public class OrderService implements AppScreenFormServiceInt<OrderForm, OrderQue
         OrderRemote remote = (OrderRemote)EJBFactory.lookup("openelis/OrderBean/remote");
         OrderDO orderDO = new OrderDO();
         List orderItems = new ArrayList();
-        NoteDO customerNote = new NoteDO();
-        NoteDO shippingNote = new NoteDO();
+        NoteViewDO customerNote = new NoteViewDO();
+        NoteViewDO shippingNote = new NoteViewDO();
 
         Integer originalStatus = rpc.originalStatus;
         boolean qtyErrors = false;
@@ -531,7 +531,7 @@ public class OrderService implements AppScreenFormServiceInt<OrderForm, OrderQue
         }
         
         for(int i=0; i < autoCompleteList.size(); i++){
-            OrganizationAutoDO resultDO = (OrganizationAutoDO) autoCompleteList.get(i);
+            OrganizationVO resultDO = (OrganizationVO) autoCompleteList.get(i);
             //org id
             Integer orgId = resultDO.getId();
             //org name
@@ -539,7 +539,7 @@ public class OrderService implements AppScreenFormServiceInt<OrderForm, OrderQue
             //org apt suite #
             String aptSuite = resultDO.getAptSuite();
             //org street address
-            String address = resultDO.getAddress();
+            String address = resultDO.getStreetAddress();
             //org city
             String city = resultDO.getCity();
             //org state
@@ -857,7 +857,7 @@ public class OrderService implements AppScreenFormServiceInt<OrderForm, OrderQue
     public void getCustomerNotes(Integer orderId, OrderNoteForm form){
         OrderRemote remote = (OrderRemote)EJBFactory.lookup("openelis/OrderBean/remote");
         
-        NoteDO noteDO = remote.getCustomerNote(orderId);
+        NoteViewDO noteDO = remote.getCustomerNote(orderId);
         
         if(noteDO != null){
             form.id = noteDO.getId();
@@ -868,7 +868,7 @@ public class OrderService implements AppScreenFormServiceInt<OrderForm, OrderQue
     public void getShippingNotes(Integer orderId, OrderShippingNoteForm form){
         OrderRemote remote = (OrderRemote)EJBFactory.lookup("openelis/OrderBean/remote");
         
-        NoteDO noteDO = remote.getOrderShippingNote(orderId);
+        NoteViewDO noteDO = remote.getOrderShippingNote(orderId);
         
         if(noteDO != null){
             form.id = noteDO.getId();

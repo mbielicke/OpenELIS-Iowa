@@ -33,8 +33,8 @@ import java.util.List;
 import org.openelis.domain.IdNameDO;
 import org.openelis.domain.IdNameLotNumberDO;
 import org.openelis.domain.InventoryItemAutoDO;
-import org.openelis.domain.QcAnalyteDO;
-import org.openelis.domain.QcDO;
+import org.openelis.domain.QcAnalyteViewDO;
+import org.openelis.domain.QcViewDO;
 import org.openelis.domain.SecuritySystemUserDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FieldErrorException;
@@ -113,9 +113,9 @@ public class QCService implements
     
     public QCForm commitAdd(QCForm rpc) throws Exception {
         QcRemote remote;
-        QcDO qcDO;
+        QcViewDO qcDO;
         Integer qcId;
-        List<QcAnalyteDO> qcaDOList;
+        List<QcAnalyteViewDO> qcaDOList;
         
         remote = (QcRemote)EJBFactory.lookup("openelis/QcBean/remote");
         qcDO = getQcDOFromRPC(rpc);
@@ -136,8 +136,8 @@ public class QCService implements
 
     public QCForm commitUpdate(QCForm rpc) throws Exception {
         QcRemote remote;
-        QcDO qcDO;
-        List<QcAnalyteDO> qcaDOList;
+        QcViewDO qcDO;
+        List<QcAnalyteViewDO> qcaDOList;
         
         remote = (QcRemote)EJBFactory.lookup("openelis/QcBean/remote");
         qcDO = getQcDOFromRPC(rpc);
@@ -161,8 +161,8 @@ public class QCService implements
     }
 
     public QCForm abort(QCForm rpc) throws Exception {
-        QcDO qcDO;
-        List<QcAnalyteDO> qcAnaDOList;
+        QcViewDO qcDO;
+        List<QcAnalyteViewDO> qcAnaDOList;
         QcRemote remote;
         
         remote = (QcRemote)EJBFactory.lookup("openelis/QcBean/remote");
@@ -175,8 +175,8 @@ public class QCService implements
     }
 
     public QCForm fetch(QCForm rpc) throws Exception {
-        QcDO qcDO;
-        List<QcAnalyteDO> qcAnaDOList;
+        QcViewDO qcDO;
+        List<QcAnalyteViewDO> qcAnaDOList;
         QcRemote remote;
         
         remote = (QcRemote)EJBFactory.lookup("openelis/QcBean/remote");
@@ -189,9 +189,9 @@ public class QCService implements
     }
 
     public QCForm fetchForUpdate(QCForm rpc) throws Exception {
-        QcDO qcDO;
+        QcViewDO qcDO;
         QcRemote remote;
-        List<QcAnalyteDO> qcAnaDOList;
+        List<QcAnalyteViewDO> qcAnaDOList;
         
         remote = (QcRemote)EJBFactory.lookup("openelis/QcBean/remote");
         try {
@@ -317,11 +317,11 @@ public class QCService implements
         return dataModel;
     } 
     
-    private QcDO getQcDOFromRPC(QCForm rpc) {
-        QcDO qcDO;
+    private QcViewDO getQcDOFromRPC(QCForm rpc) {
+        QcViewDO qcDO;
         Datetime prepDate,expDate,usbDate;
         
-        qcDO = new QcDO();
+        qcDO = new QcViewDO();
         
         qcDO.setId(rpc.id.getValue());
         qcDO.setName(rpc.name.getValue());
@@ -339,11 +339,11 @@ public class QCService implements
         usbDate = rpc.usableDate.getValue();
         
         if(prepDate != null)
-            qcDO.setPreparedDate(prepDate.getDate());
+            qcDO.setPreparedDate(prepDate);
         if(expDate != null)
-            qcDO.setExpireDate(expDate.getDate());
+            qcDO.setExpireDate(expDate);
         if(usbDate != null)
-            qcDO.setUsableDate(usbDate.getDate());
+            qcDO.setUsableDate(usbDate);
                         
         return qcDO;
     }
@@ -378,7 +378,7 @@ public class QCService implements
         
     }
 
-    private void setFieldsInRPC(QCForm rpc, QcDO qcDO) {
+    private void setFieldsInRPC(QCForm rpc, QcViewDO qcDO) {
         TableDataModel<TableDataRow<Integer>> prepModel,invModel;
         Datetime date;
         
@@ -430,10 +430,10 @@ public class QCService implements
         
     }
     
-    private void fillQcAnalyteTable(List<QcAnalyteDO> qcAnaDOList, QCForm rpc) {
+    private void fillQcAnalyteTable(List<QcAnalyteViewDO> qcAnaDOList, QCForm rpc) {
         TableDataModel<TableDataRow<Integer>> tmodel,rmodel;
         TableDataRow<Integer> row,analyteSet;
-        QcAnalyteDO qcaDO;
+        QcAnalyteViewDO qcaDO;
                 
         tmodel = rpc.qcAnalyteTable.getValue();        
         tmodel.clear();
@@ -457,21 +457,21 @@ public class QCService implements
         }
     }
     
-    private List<QcAnalyteDO> getQcAnalyteListFromRPC(QCForm rpc) {
-        QcAnalyteDO qcaDO;
+    private List<QcAnalyteViewDO> getQcAnalyteListFromRPC(QCForm rpc) {
+        QcAnalyteViewDO qcaDO;
         TableDataRow<Integer> row;
         TableDataModel<TableDataRow<Integer>> model;
-        List<QcAnalyteDO> qcaDOList;
+        List<QcAnalyteViewDO> qcaDOList;
         List<TableDataRow<Integer>> deletions;
         int i;
         
         model = rpc.qcAnalyteTable.getValue();
-        qcaDOList = new ArrayList<QcAnalyteDO>();
+        qcaDOList = new ArrayList<QcAnalyteViewDO>();
         
         for(i = 0; i < model.size(); i++) {
             row = model.get(i);
-            qcaDO = new QcAnalyteDO();
-            qcaDO.setDelete(false);
+            qcaDO = new QcAnalyteViewDO();
+           // qcaDO.setDelete(false);
             qcaDO.setId(row.key);
             qcaDO.setAnalyteId((Integer)((DropDownField<Integer>)row.cells[0]).getSelectedKey());
             qcaDO.setTypeId((Integer)((DropDownField<Integer>)row.cells[1]).getSelectedKey());
@@ -485,8 +485,8 @@ public class QCService implements
         if(deletions != null) {
             for(i = 0; i < deletions.size(); i++) {
                 row = deletions.get(i);
-                qcaDO = new QcAnalyteDO();
-                qcaDO.setDelete(true);
+                qcaDO = new QcAnalyteViewDO();
+                //qcaDO.setDelete(true);
                 qcaDO.setId(row.key);
                 qcaDOList.add(qcaDO);
             }

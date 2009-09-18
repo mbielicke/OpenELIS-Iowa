@@ -36,7 +36,7 @@ UIRF Software License are applicable instead of those above.
                 extension-element-prefixes="resource"
 
                 version="2.0">
-  <xsl:import href="IMPORT/aToZOneColumn.xsl"/>
+  <xsl:import href="aToZOneColumn.xsl"/>
   <xalan:component prefix="resource">
     <xalan:script lang="javaclass" src="xalan://org.openelis.util.UTFResource"/>
   </xalan:component>

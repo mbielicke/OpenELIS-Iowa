@@ -66,7 +66,7 @@ public class ContactsTab extends Screen {
                 
                 switch (col){
                     case 0:
-                            contactDO.setContactType((Integer)val);
+                            contactDO.setContactTypeId((Integer)val);
                             break;
                     case 1:
                             contactDO.setName((String)val);
@@ -183,7 +183,7 @@ public class ContactsTab extends Screen {
                key.addId = contactRow.getAddressDO().getId();
                row.key = key;
 
-               row.cells.get(0).value = contactRow.getContactType();
+               row.cells.get(0).value = contactRow.getContactTypeId();
                row.cells.get(1).value = contactRow.getName();
                row.cells.get(2).value = contactRow.getAddressDO().getMultipleUnit();
                row.cells.get(3).value = contactRow.getAddressDO().getStreetAddress();
@@ -234,10 +234,10 @@ public class ContactsTab extends Screen {
             contactDO.getAddressDO().setFaxPhone(row.faxPhone.getValue());
             contactDO.getAddressDO().setEmail(row.email.getValue());
             */
-            contactDO.setOrganization(contactDO.getOrganization());
+            contactDO.setOrganizationId(contactDO.getOrganizationId());
             contactDO.setName((String)row.cells.get(1).value);
             contactDO.getAddressDO().setId(((Contact)row.key).addId);
-            contactDO.setContactType((Integer)row.cells.get(0).value);
+            contactDO.setContactTypeId((Integer)row.cells.get(0).value);
             contactDO.getAddressDO().setMultipleUnit((String)row.cells.get(2).value);
             contactDO.getAddressDO().setStreetAddress((String)row.cells.get(3).value);
             contactDO.getAddressDO().setCity((String)row.cells.get(4).value);
