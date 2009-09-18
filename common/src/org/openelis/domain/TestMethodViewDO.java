@@ -25,6 +25,9 @@
 */
 package org.openelis.domain;
 
+import java.util.Date;
+
+import org.openelis.gwt.common.Datetime;
 import org.openelis.utilcommon.DataBaseUtil;
 
 /**
@@ -38,6 +41,7 @@ public class TestMethodViewDO extends DataObject {
     
     protected Integer testId, methodId;
     protected String testName, testDescription, methodName, methodDescription;    
+    protected Datetime activeBegin, activeEnd;
 
     public TestMethodViewDO() {
     }
@@ -50,6 +54,20 @@ public class TestMethodViewDO extends DataObject {
         setMethodId(methodId);
         setMethodName(methodName);
         setMethodDescription(methodDescription);
+    }
+    
+    public TestMethodViewDO(Integer testId, String testName, 
+                            String testDescription,Integer methodId,
+                            String methodName,String methodDescription,
+                            Date activeBegin, Date activeEnd){
+        setTestId(testId);
+        setTestName(testName);
+        setMethodId(methodId);
+        setMethodName(methodName);
+        setTestDescription(testDescription);
+        setMethodDescription(methodDescription);
+        setActiveBegin(DataBaseUtil.toYD(activeBegin));
+        setActiveEnd(DataBaseUtil.toYD(activeEnd));
     }
 
     public Integer getTestId() {
@@ -98,5 +116,21 @@ public class TestMethodViewDO extends DataObject {
 
     public void setMethodDescription(String methodDescription) {
         this.methodDescription = DataBaseUtil.trim(methodDescription);
+    }
+    
+    public Datetime getActiveBegin() {
+        return activeBegin;
+    }
+
+    public void setActiveBegin(Datetime activeBegin) {
+        this.activeBegin = DataBaseUtil.toYD(activeBegin);
+    }
+
+    public Datetime getActiveEnd() {
+        return activeEnd;
+    }
+
+    public void setActiveEnd(Datetime activeEnd) {
+        this.activeEnd = DataBaseUtil.toYD(activeEnd);
     }
 }
