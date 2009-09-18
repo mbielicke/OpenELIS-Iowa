@@ -27,7 +27,7 @@ package org.openelis.server.handlers;
 
 import java.util.ArrayList;
 
-import org.openelis.domain.SectionDO;
+import org.openelis.domain.SectionViewDO;
 import org.openelis.messages.SectionCacheMessage;
 import org.openelis.persistence.CachingManager;
 import org.openelis.persistence.EJBFactory;
@@ -38,24 +38,24 @@ import org.openelis.remote.SectionRemote;
 public class SectionCacheHandler implements MessageHandler<SectionCacheMessage> {
 
     public void handle(SectionCacheMessage message) {  
-        ArrayList<SectionDO> sectList;
-        SectionDO msecDO,lsecDO;
+        ArrayList<SectionViewDO> sectList;
+        SectionViewDO msecDO,lsecDO;
         
-        sectList = (ArrayList<SectionDO>)CachingManager.getElement("InitialData", "sectionList");        
+        sectList = (ArrayList<SectionViewDO>)CachingManager.getElement("InitialData", "sectionList");        
         
         if(sectList !=null) 
             CachingManager.remove("InitialData", "sectionList");
         
     }
     
-    public static ArrayList  getSectionList() {
+    public static ArrayList<SectionViewDO>  getSectionList() {
         SectionRemote remote;
-        ArrayList<SectionDO> sectList; 
+        ArrayList<SectionViewDO> sectList; 
         
-        sectList = (ArrayList<SectionDO>)CachingManager.getElement("InitialData", "sectionList");
+        sectList = (ArrayList<SectionViewDO>)CachingManager.getElement("InitialData", "sectionList");
         if(sectList == null) {
             remote = (SectionRemote)EJBFactory.lookup("openelis/SectionBean/remote");
-            sectList = (ArrayList<SectionDO>)remote.getSectionDOList();        
+            sectList = (ArrayList<SectionViewDO>)remote.getSectionDOList();        
             CachingManager.putElement("InitialData", "sectionList", sectList);
         }       
         return sectList;

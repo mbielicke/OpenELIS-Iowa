@@ -39,7 +39,7 @@ import org.openelis.cache.DictionaryCache;
 import org.openelis.common.AutocompleteRPC;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameDO;
-import org.openelis.domain.TestMethodAutoDO;
+import org.openelis.domain.TestMethodViewDO;
 import org.openelis.domain.WorksheetCreationViewDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.RPC;
@@ -138,7 +138,7 @@ public class WorksheetCreationLookupScreen extends Screen {
                     ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
                         
                     for (int i=0; i<rpc.model.size(); i++) {
-                        TestMethodAutoDO autoDO = (TestMethodAutoDO)rpc.model.get(i);
+                        TestMethodViewDO autoDO = (TestMethodViewDO)rpc.model.get(i);
                         
                         row = new TableDataRow(5);
                         row.key = autoDO.getTestId();
