@@ -43,11 +43,10 @@ public class SampleItemViewDO extends SampleItemDO {
     public SampleItemViewDO() {
     }
 
-    public SampleItemViewDO(Integer id, Integer sampleId, Integer sampleItemId,
-                            Integer itemSequence, Integer typeOfSampleId, String typeOfSample,
-                            Integer sourceOfSampleId, String sourceOfSample, String sourceOther,
-                            Integer containerId, String container, String containerReference,
-                            Double quantity, Integer unitOfMeasureId) {
+    public SampleItemViewDO(Integer id, Integer sampleId, Integer sampleItemId, Integer itemSequence,
+                            Integer typeOfSampleId, Integer sourceOfSampleId, String sourceOther,
+                            Integer containerId, String containerReference, Double quantity,
+                            Integer unitOfMeasureId, String typeOfSample, String sourceOfSample, String container) {
         super(id, sampleId, sampleItemId, itemSequence, typeOfSampleId, sourceOfSampleId,sourceOther,
               containerId, containerReference, quantity, unitOfMeasureId);
 

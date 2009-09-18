@@ -30,20 +30,20 @@ import java.util.List;
 
 import javax.ejb.Remote;
 
-import org.openelis.domain.InstrumentDO;
 import org.openelis.domain.InstrumentLogDO;
+import org.openelis.domain.InstrumentViewDO;
 import org.openelis.gwt.common.data.deprecated.AbstractField;
 
 @Remote
 public interface InstrumentRemote {
     
-    public InstrumentDO getInstrument(Integer instrumentId);
+    public InstrumentViewDO getInstrument(Integer instrumentId);
     
-    public InstrumentDO getInstrumentAndUnlock(Integer instrumentId, String session);
+    public InstrumentViewDO getInstrumentAndUnlock(Integer instrumentId, String session);
     
-    public InstrumentDO getInstrumentAndLock(Integer instrumentId, String session) throws Exception;
+    public InstrumentViewDO getInstrumentAndLock(Integer instrumentId, String session) throws Exception;
     
-    public Integer updateInstrument(InstrumentDO instrumentDO,
+    public Integer updateInstrument(InstrumentViewDO instrumentDO,
                                     List<InstrumentLogDO> logEntries) throws Exception;   
     
     public List<InstrumentLogDO> getInstrumentLogs(Integer instrumentId);

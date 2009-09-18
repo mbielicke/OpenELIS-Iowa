@@ -26,8 +26,7 @@
 package org.openelis.remote;
 
 import org.openelis.domain.InventoryItemDO;
-import org.openelis.domain.NoteDO;
-import org.openelis.gwt.common.data.deprecated.AbstractField;
+import org.openelis.domain.NoteViewDO;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,13 +45,13 @@ public interface InventoryItemRemote {
 	public InventoryItemDO getInventoryItemAndLock(Integer inventoryItemId, String session) throws Exception;
 	
 	//commit a change to inventory, or insert a new inventory
-	public Integer updateInventory(InventoryItemDO inventoryItemDO, List components, NoteDO noteDO, NoteDO manufacturingNote) throws Exception;
+	public Integer updateInventory(InventoryItemDO inventoryItemDO, List components, NoteViewDO noteDO, NoteViewDO manufacturingNote) throws Exception;
 	
 	//method to return just notes
 	public List getInventoryNotes(Integer inventoryItemId);
 	
 	//method to return just notes
-    public NoteDO getInventoryMaunfacturingRecipe(Integer inventoryItemId);
+    public NoteViewDO getInventoryMaunfacturingRecipe(Integer inventoryItemId);
 	
 	//method to return just components
 	public List getInventoryComponents(Integer inventoryItemId);
@@ -64,7 +63,7 @@ public interface InventoryItemRemote {
     public String getInventoryDescription(Integer inventoryItemId);
 	
 	//method to query for inventories
-	 public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception;
+	 public List query(ArrayList fields, int first, int max) throws Exception;
 	 
 	 //auto complete  component lookup
 	 public List inventoryComponentAutoCompleteLookupByName(String itemName, Integer storeId, String currentName, int maxResults);

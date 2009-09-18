@@ -1,30 +1,28 @@
 package org.openelis.domain;
 
-import org.openelis.gwt.common.RPC;
 import org.openelis.utilcommon.DataBaseUtil;
 
-public class SampleQAEventDO implements RPC {
+public class SampleQaEventDO extends DataObject {
     private static final long serialVersionUID = 1L;
     
     protected Integer id;
     protected Integer sampleId;
     protected Integer qaEventId;
-    protected String qaEventName;
     protected Integer typeId;
     protected String isBillable;
     
-    public SampleQAEventDO(){
+    public SampleQaEventDO(){
         
     }
     
-    public SampleQAEventDO(Integer id, Integer sampleId, Integer qaEventId, String qaEventName,
+    public SampleQaEventDO(Integer id, Integer sampleId, Integer qaEventId,
                            Integer typeId, String isBillable){
         setId(id);
         setSampleId(sampleId);
         setQaEventId(qaEventId);
-        setQaEventName(qaEventName);
         setTypeId(typeId);
         setIsBillable(isBillable);
+        _changed = false;
     }
 
     public Integer getId() {
@@ -33,6 +31,7 @@ public class SampleQAEventDO implements RPC {
 
     public void setId(Integer id) {
         this.id = id;
+        _changed = true;
     }
 
     public Integer getSampleId() {
@@ -41,6 +40,7 @@ public class SampleQAEventDO implements RPC {
 
     public void setSampleId(Integer sampleId) {
         this.sampleId = sampleId;
+        _changed = true;
     }
 
     public Integer getQaEventId() {
@@ -49,6 +49,7 @@ public class SampleQAEventDO implements RPC {
 
     public void setQaEventId(Integer qaEventId) {
         this.qaEventId = qaEventId;
+        _changed = true;
     }
 
     public Integer getTypeId() {
@@ -57,6 +58,7 @@ public class SampleQAEventDO implements RPC {
 
     public void setTypeId(Integer typeId) {
         this.typeId = typeId;
+        _changed = true;
     }
 
     public String getIsBillable() {
@@ -64,14 +66,7 @@ public class SampleQAEventDO implements RPC {
     }
 
     public void setIsBillable(String isBillable) {
-        this.isBillable = isBillable;
-    }
-
-    public String getQaEventName() {
-        return qaEventName;
-    }
-
-    public void setQaEventName(String qaEventName) {
-        this.qaEventName = DataBaseUtil.trim(qaEventName);
+        this.isBillable = DataBaseUtil.trim(isBillable);
+        _changed = true;
     }
 }

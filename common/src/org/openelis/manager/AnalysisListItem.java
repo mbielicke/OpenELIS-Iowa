@@ -2,12 +2,12 @@ package org.openelis.manager;
 
 import java.io.Serializable;
 
-import org.openelis.domain.AnalysisTestDO;
+import org.openelis.domain.AnalysisViewDO;
 
 public class AnalysisListItem implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    AnalysisTestDO            analysis;
+    AnalysisViewDO            analysis;
     AnalysisQaEventManager    qaEvents;
     NoteManager               analysisInternalNotes, analysisExternalNote;
     StorageManager            storage;

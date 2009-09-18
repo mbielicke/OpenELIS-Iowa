@@ -26,9 +26,9 @@
 
 package org.openelis.remote;
 
-import org.openelis.domain.AuxFieldDO;
 import org.openelis.domain.AuxFieldGroupDO;
 import org.openelis.domain.AuxFieldValueDO;
+import org.openelis.domain.AuxFieldViewDO;
 import org.openelis.gwt.common.data.deprecated.AbstractField;
 
 import java.util.ArrayList;
@@ -41,14 +41,14 @@ public interface AuxiliaryRemote {
         
   public AuxFieldGroupDO getAuxFieldGroup(Integer auxFieldGroupId);
   
-  public List<AuxFieldDO> getAuxFields(Integer auxFieldGroupId);
+  public List<AuxFieldViewDO> getAuxFields(Integer auxFieldGroupId);
   
   public List<AuxFieldValueDO> getAuxFieldValues(Integer auxFieldId);
   
   public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception;
  
   public Integer updateAuxiliary(AuxFieldGroupDO auxFieldGroupDO,
-                                 List<AuxFieldDO> auxFields)throws Exception;
+                                 List<AuxFieldViewDO> auxFields)throws Exception;
   
   public AuxFieldGroupDO getAuxFieldGroupAndUnlock(Integer auxFieldGroupId,String session);
   

@@ -45,11 +45,11 @@ public class PatientMeta implements Meta {
               BIRTH_DATE					="birthDate",
               BIRTH_TIME					="birthTime",
               GENDER_ID					="genderId",
-              RACE					="race",
+              RACE_ID					="raceId",
               ETHNICITY_ID					="ethnicityId";
 
   	private static final String[] columnNames = {
-  	  ID,LAST_NAME,FIRST_NAME,MIDDLE_NAME,ADDRESS_ID,BIRTH_DATE,BIRTH_TIME,GENDER_ID,RACE,ETHNICITY_ID};
+  	  ID,LAST_NAME,FIRST_NAME,MIDDLE_NAME,ADDRESS_ID,BIRTH_DATE,BIRTH_TIME,GENDER_ID,RACE_ID,ETHNICITY_ID};
   	  
 	private HashSet<String> columnHashList;
     
@@ -114,8 +114,8 @@ public class PatientMeta implements Meta {
         return path + GENDER_ID;
     } 
 
-    public String getRace() {
-        return path + RACE;
+    public String getRaceId() {
+        return path + RACE_ID;
     } 
 
     public String getEthnicityId() {

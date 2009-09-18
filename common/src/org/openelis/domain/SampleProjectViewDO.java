@@ -28,32 +28,41 @@ package org.openelis.domain;
 import org.openelis.utilcommon.DataBaseUtil;
 
 /**
- * The class extends qc analyte DO and carries a commonly used field analyte name.
- * The additional field is for read/display only and does not get committed to the
- * database. Note: isChanged will reflect any changes to read/display fields.
+ * The class extends sample project DO and carries several commonly used fields
+ * such as project name and description. The additional fields are for
+ * read/display only and do not get committed to the database. Note: isChanged
+ * will reflect any changes to read/display fields.
  */
 
-public class QcAnalyteAnalyteDO extends QcAnalyteDO {
+public class SampleProjectViewDO extends SampleProjectDO {
 
     private static final long serialVersionUID = 1L;
 
-    protected String          analyteName;
+    protected String          projectName, projectDescription;
 
-    public QcAnalyteAnalyteDO() {
+    public SampleProjectViewDO() {
     }
 
-    public QcAnalyteAnalyteDO(Integer id, Integer qcId, Integer analyteId, String analyteName,
-                              Integer typeId, String value, String isTrendable) {
-        super(id, qcId, analyteId, typeId, value, isTrendable);
-        setAnalyteName(analyteName);
+    public SampleProjectViewDO(Integer id, Integer sampleId, Integer projectId,
+                                  String isPermanent, String projectName, String projectDescription) {
+        super(id, sampleId, projectId, isPermanent);
+        setProjectName(projectName);
+        setProjectDescription(projectDescription);
     }
 
-    public String getAnalyteName() {
-        return analyteName;
+    public String getProjectName() {
+        return projectName;
     }
 
-    public void setAnalyteName(String analyteName) {
-        this.analyteName = DataBaseUtil.trim(analyteName);
+    public void setProjectName(String projectName) {
+        this.projectName = DataBaseUtil.trim(projectName);
     }
 
+    public String getProjectDescription() {
+        return projectDescription;
+    }
+
+    public void setProjectDescription(String projectDescription) {
+        this.projectDescription = DataBaseUtil.trim(projectDescription);
+    }
 }

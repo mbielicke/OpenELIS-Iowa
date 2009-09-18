@@ -25,27 +25,27 @@
 */
 package org.openelis.remote;
 
-import org.openelis.domain.AnalyteDO;
-import org.openelis.gwt.common.data.deprecated.AbstractField;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.ejb.Remote;
 
+import org.openelis.domain.AnalyteViewDO;
+import org.openelis.gwt.common.data.deprecated.AbstractField;
+
 @Remote
 public interface AnalyteRemote {
 	//commit a change to analyte, or insert a new analyte
-	public Integer updateAnalyte(AnalyteDO analyteDO, String session) throws Exception;
+	public Integer updateAnalyte(AnalyteViewDO analyteDO, String session) throws Exception;
 	
 	//method to return a whole analyte
-	public AnalyteDO getAnalyte(Integer analyteId);
+	public AnalyteViewDO getAnalyte(Integer analyteId);
 	
 	//method to return a whole analyte and lock it
-	public AnalyteDO getAnalyteAndLock(Integer analyteId, String session) throws Exception;
+	public AnalyteViewDO getAnalyteAndLock(Integer analyteId, String session) throws Exception;
 	
 	//method to return a whole analyte and unlock it
-	public AnalyteDO getAnalyteAndUnlock(Integer analyteId, String session);
+	public AnalyteViewDO getAnalyteAndUnlock(Integer analyteId, String session);
 	
 	 //method to query for analytes
 	 public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception;

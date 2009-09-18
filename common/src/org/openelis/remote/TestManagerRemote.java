@@ -16,6 +16,7 @@ public interface TestManagerRemote {
     public TestManager fetch(Integer orgId) throws Exception;
     public TestManager fetchWithSampleTypes(Integer testId) throws Exception; 
     public TestManager fetchWithAnalytesAndResults(Integer testId) throws Exception;
+    public TestManager fetchWithPrepTests(Integer testId) throws Exception;
     public TestManager fetchWithPrepTestsAndReflexTests(Integer testId) throws Exception;
     
     public TestAnalyteManager fetchTestAnalytesByTestId(Integer testId) throws Exception;

@@ -46,13 +46,13 @@ public class NoteDO extends DataObject {
     }
 
     public NoteDO(Integer id, Integer referenceId, Integer referenceTable, Date timestamp,
-                  String isExternal, Integer systemUser, String subject, String text) {
+                  String isExternal, Integer systemUserId, String subject, String text) {
         setId(id);
         setReferenceId(referenceId);
         setReferenceTableId(referenceTable);
         setTimestamp(DataBaseUtil.toYM(timestamp));
         setIsExternal(isExternal);
-        setSystemUserId(systemUser);
+        setSystemUserId(systemUserId);
         setSubject(subject);
         setText(text);
         _changed = false;

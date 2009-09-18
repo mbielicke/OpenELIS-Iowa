@@ -27,7 +27,7 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
-import org.openelis.domain.SampleItemDO;
+import org.openelis.domain.SampleItemViewDO;
 import org.openelis.exception.NotFoundException;
 import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.ValidationErrorsList;
@@ -88,16 +88,16 @@ public class SampleItemManager implements RPC {
     }
     
     // sample item
-    public SampleItemDO getSampleItemAt(int i) {
+    public SampleItemViewDO getSampleItemAt(int i) {
         return getItem(i).sampleItem;
 
     }
 
-    public void setSampleItemAt(SampleItemDO sampleItem, int i) {
+    public void setSampleItemAt(SampleItemViewDO sampleItem, int i) {
         getItem(i).sampleItem = sampleItem;
     }
     
-    public void addSampleItem(SampleItemDO sampleItem){
+    public void addSampleItem(SampleItemViewDO sampleItem){
         SampleItemListItem item = new SampleItemListItem();
         item.sampleItem = sampleItem;
         items.add(item);
@@ -164,7 +164,7 @@ public class SampleItemManager implements RPC {
         return item.analysis;
     }
     
-    public int getIndex(SampleItemDO itemDO){
+    public int getIndex(SampleItemViewDO itemDO){
         for(int i=0; i<count(); i++)
             if(items.get(i).sampleItem == itemDO)
                 return i;

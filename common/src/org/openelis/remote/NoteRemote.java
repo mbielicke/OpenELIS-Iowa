@@ -29,11 +29,11 @@ import java.util.ArrayList;
 
 import javax.ejb.Remote;
 
-import org.openelis.domain.NoteDO;
+import org.openelis.domain.NoteViewDO;
 
 @Remote
 public interface NoteRemote {
-    public ArrayList<NoteDO> getNotes(Integer refTableId, Integer refId) throws Exception;
-    public void add(NoteDO noteDO) throws Exception;
-    public void update(NoteDO noteDO) throws Exception;
+    public ArrayList<NoteViewDO> getNotes(Integer refTableId, Integer refId) throws Exception;
+    public void add(NoteViewDO noteDO) throws Exception;
+    public void update(NoteViewDO noteDO) throws Exception;
 }

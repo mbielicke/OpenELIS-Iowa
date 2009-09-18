@@ -233,12 +233,12 @@ public class SampleManager implements RPC, HasNotesInt {
         return projects;
     }
 
-    /*
-    public SampleQaEventsManager getQaEventsManager() {
+    
+    public SampleQaEventManager getQaEvents() throws Exception {
         if(qaEvents == null){
             if(sample.getId() != null){
                 try{
-                    qaEvents = SampleQaEventsManager.finfindBySampleId(sample.getId());
+                    qaEvents = SampleQaEventManager.findBySampleId(sample.getId());
                     
                 }
                 catch(NotFoundException e){
@@ -250,10 +250,10 @@ public class SampleManager implements RPC, HasNotesInt {
         }
             
          if(qaEvents == null)
-             qaEvents = SampleQaEventsManager.getInstance();
+             qaEvents = SampleQaEventManager.getInstance();
      
         return qaEvents;
-    }*/
+    }
     
     public NoteManager getInternalNotes() throws Exception {
         if(sampleInternalNotes == null){

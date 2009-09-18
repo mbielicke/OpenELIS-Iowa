@@ -25,7 +25,7 @@
 */
 package org.openelis.remote;
 
-import org.openelis.domain.StorageLocationDO;
+import org.openelis.domain.StorageLocationViewDO;
 import org.openelis.gwt.common.data.deprecated.AbstractField;
 
 import java.util.ArrayList;
@@ -36,16 +36,16 @@ import javax.ejb.Remote;
 @Remote
 public interface StorageLocationRemote {
 //	commit a change to storage loc, or insert a new storage loc
-	public Integer updateStorageLoc(StorageLocationDO storageDO, List storageLocationChildren) throws Exception;
+	public Integer updateStorageLoc(StorageLocationViewDO storageDO, List storageLocationChildren) throws Exception;
 	
 	//method to return a whole storage loc
-	public StorageLocationDO getStorageLoc(Integer StorageId);
+	public StorageLocationViewDO getStorageLoc(Integer StorageId);
 	
 	//method to return a whole storage loc
-	public StorageLocationDO getStorageLocAndUnlock(Integer StorageId, String session);
+	public StorageLocationViewDO getStorageLocAndUnlock(Integer StorageId, String session);
 	
 //	method to return a whole storage loc
-	public StorageLocationDO getStorageLocAndLock(Integer StorageId, String session) throws Exception;
+	public StorageLocationViewDO getStorageLocAndLock(Integer StorageId, String session) throws Exception;
 	
 	//method to return a child storage locs
 	public List getStorageLocChildren(Integer StorageId);

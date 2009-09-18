@@ -2,7 +2,7 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
-import org.openelis.domain.SampleProjectDO;
+import org.openelis.domain.SampleProjectViewDO;
 import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.deprecated.TableDataRow;
@@ -12,8 +12,8 @@ public class SampleProjectManager implements RPC {
 
     protected Integer                                    sampleId;
 
-    protected ArrayList<SampleProjectDO>                 projects;
-    protected ArrayList<SampleProjectDO>                 deletedList;
+    protected ArrayList<SampleProjectViewDO>                 projects;
+    protected ArrayList<SampleProjectViewDO>                 deletedList;
 
     protected transient static SampleProjectManagerProxy proxy;
 
@@ -24,7 +24,7 @@ public class SampleProjectManager implements RPC {
         SampleProjectManager spm;
 
         spm = new SampleProjectManager();
-        spm.projects = new ArrayList<SampleProjectDO>();
+        spm.projects = new ArrayList<SampleProjectViewDO>();
 
         return spm;
     }
@@ -44,9 +44,9 @@ public class SampleProjectManager implements RPC {
         this.sampleId = sampleId;
     }
     
-    public SampleProjectDO getFirstPermanentProject(){
+    public SampleProjectViewDO getFirstPermanentProject(){
         int i;
-        SampleProjectDO project;
+        SampleProjectViewDO project;
         
         for(i=0;i<projects.size(); i++){
             project = projects.get(i);
@@ -56,8 +56,8 @@ public class SampleProjectManager implements RPC {
         return null;
     }
     
-    public void addFirstPermanentProject(SampleProjectDO newProject) {
-        SampleProjectDO oldProject = getFirstPermanentProject();
+    public void addFirstPermanentProject(SampleProjectViewDO newProject) {
+        SampleProjectViewDO oldProject = getFirstPermanentProject();
 
         if (oldProject == null && newProject != null) { // insert
             addProject(newProject);
@@ -75,24 +75,24 @@ public class SampleProjectManager implements RPC {
         return projects.size();
     }
 
-    public SampleProjectDO getProjectAt(int i) {
+    public SampleProjectViewDO getProjectAt(int i) {
         return projects.get(i);
     }
 
-    public void setProjectAt(SampleProjectDO project, int i) {
+    public void setProjectAt(SampleProjectViewDO project, int i) {
         projects.set(i, project);
     }
 
-    public void addProject(SampleProjectDO project) {
+    public void addProject(SampleProjectViewDO project) {
         if (projects == null)
-            projects = new ArrayList<SampleProjectDO>();
+            projects = new ArrayList<SampleProjectViewDO>();
 
         projects.add(project);
     }
 
-    public void addProjectAt(SampleProjectDO project, int i) {
+    public void addProjectAt(SampleProjectViewDO project, int i) {
         if (projects == null)
-            projects = new ArrayList<SampleProjectDO>();
+            projects = new ArrayList<SampleProjectViewDO>();
 
         if("Y".equals(project.getIsPermanent()))
             projects.add(0, project);
@@ -104,10 +104,10 @@ public class SampleProjectManager implements RPC {
         if (projects == null || i >= projects.size())
             return;
 
-        SampleProjectDO tmpDO = projects.remove(i);
+        SampleProjectViewDO tmpDO = projects.remove(i);
 
         if (deletedList == null)
-            deletedList = new ArrayList<SampleProjectDO>();
+            deletedList = new ArrayList<SampleProjectViewDO>();
 
         if(tmpDO.getId() != null)
             deletedList.add(tmpDO);
@@ -142,11 +142,11 @@ public class SampleProjectManager implements RPC {
     }
 
     // these are friendly methods so only managers and proxies can call this method
-    ArrayList<SampleProjectDO> getProjects() {
+    ArrayList<SampleProjectViewDO> getProjects() {
         return projects;
     }
 
-    void setProjects(ArrayList<SampleProjectDO> projects) {
+    void setProjects(ArrayList<SampleProjectViewDO> projects) {
         this.projects = projects;
     }
 
@@ -157,7 +157,7 @@ public class SampleProjectManager implements RPC {
         return deletedList.size();
     }
 
-    SampleProjectDO getDeletedAt(int i) {
+    SampleProjectViewDO getDeletedAt(int i) {
         return deletedList.get(i);
     }
 }

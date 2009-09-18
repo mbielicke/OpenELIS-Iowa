@@ -25,9 +25,10 @@
 */
 package org.openelis.remote;
 
-import org.openelis.domain.NoteDO;
+import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.ProviderDO;
 import org.openelis.gwt.common.data.deprecated.AbstractField;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,7 +46,7 @@ public interface ProviderRemote {
     public ProviderDO getProviderAndLock(Integer providerId, String session)throws Exception;
     
     //commit a change to provider, or insert a new provider
-    public Integer updateProvider(ProviderDO providerDO, NoteDO noteDO, List addresses) throws Exception;
+    public Integer updateProvider(ProviderDO providerDO, NoteViewDO noteDO, List addresses) throws Exception;
     
     //method to return just notes
     public List getProviderNotes(Integer providerId);
