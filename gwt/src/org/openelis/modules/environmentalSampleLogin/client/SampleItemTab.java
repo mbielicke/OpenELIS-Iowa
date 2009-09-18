@@ -30,7 +30,7 @@ import java.util.EnumSet;
 
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.DictionaryDO;
-import org.openelis.domain.SampleItemDO;
+import org.openelis.domain.SampleItemViewDO;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -52,7 +52,7 @@ public class SampleItemTab extends Screen implements HasActionHandlers<SampleIte
     private boolean loaded;
     
     private SampleMetaMap meta;
-    protected SampleItemDO sampleItem;
+    protected SampleItemViewDO sampleItem;
     protected Dropdown<Integer> typeOfSampleId, sourceOfSampleId, containerId, unitOfMeasureId;
 
     public SampleItemTab(ScreenDefInt def) {
@@ -229,7 +229,7 @@ public class SampleItemTab extends Screen implements HasActionHandlers<SampleIte
     
     public void setData(SampleDataBundle data) {
         if(data.sampleItemDO == null){
-            sampleItem = new SampleItemDO();
+            sampleItem = new SampleItemViewDO();
             StateChangeEvent.fire(this, State.DEFAULT);   
         }else{
             sampleItem = data.sampleItemDO;

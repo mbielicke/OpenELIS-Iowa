@@ -36,7 +36,8 @@ xmlns:analysisQAEventMetaMap="xalan://org.openelis.metamap.AnalysisQaeventMetaMa
 xmlns:sampleQAEventMetaMap="xalan://org.openelis.metamap.SampleQaeventMetaMap"
 xmlns:qaeventMeta="xalan://org.openelis.meta.QaeventMeta" 
 xmlns:testMetaMap="xalan://org.openelis.metamap.TestMetaMap" xmlns:sectionMeta="xalan://org.openelis.meta.SectionMeta" xmlns:xalan="http://xml.apache.org/xalan" 
-xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xsi:noNamespaceSchemaLocation="../../../../../../../../OpenELIS-Lib/src/org/openelis/gwt/public/ScreenSchema.xsd" xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform ../../../../../../../../OpenELIS-Lib/src/org/openelis/gwt/public/XSLTSchema.xsd">
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
+xsi:noNamespaceSchemaLocation="http://openelis.uhl.uiowa.edu/schema/ScreenSchema.xsd" xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd">
   <xsl:import href="aToZOneColumn.xsl" />
   <xalan:component prefix="resource">
     <xalan:script lang="javaclass" src="xalan://org.openelis.util.UTFResource" />
@@ -554,7 +555,7 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsl="http://www.w3.o
 	                    </widget>
 		        </row>
 		    </TablePanel>
-		    <VerticalPanel style="Divider"/>
+		    <AbsolutePanel style="Divider"/>
 		    <TablePanel padding="0" spacing="0" style="TabSubForm">
 			    <row>
 			    	<text style="Title"><xsl:value-of select="resource:getString($constants,'internal')" />:</text>    
@@ -599,7 +600,7 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsl="http://www.w3.o
 	                    </widget>
             	</row>
           	</TablePanel>
-          	<VerticalPanel style="Divider"/>
+          	<AbsolutePanel style="Divider"/>
           	<TablePanel padding="0" spacing="0" style="TabSubForm">
                 <row>
         		    <text style="Title"><xsl:value-of select="resource:getString($constants,'internal')" />:</text>    
@@ -623,7 +624,7 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsl="http://www.w3.o
                 </HorizontalPanel>
             </tab>
             <tab key="tab5" text="{resource:getString($constants,'storage')}">
-              <TablePanel height="170px" style="Form">
+              <TablePanel height="170px">
               <row>
                 <table key="storageTable" width="auto" maxRows="6" showScroll="ALWAYS" title="">
                   <col width="155" header="{resource:getString($constants,'user')}">
@@ -709,7 +710,7 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsl="http://www.w3.o
 	                </widget>
 	                </row>
 	                </TablePanel>
-              <VerticalPanel style="Divider"/>
+              <AbsolutePanel style="Divider"/>
               <TablePanel padding="0" spacing="0" style="TabSubForm">
               <row>
                  <table key="analysisQATable" title="" width="auto" maxRows="6" showScroll="ALWAYS">

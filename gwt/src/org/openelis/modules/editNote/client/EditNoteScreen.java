@@ -19,7 +19,7 @@ import java.util.ArrayList;
 
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.DictionaryDO;
-import org.openelis.domain.NoteDO;
+import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.StandardNoteDO;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
@@ -50,7 +50,7 @@ import com.google.gwt.user.client.Window;
 public class EditNoteScreen extends Screen implements
                                           HasActionHandlers<EditNoteScreen.Action> {
 
-    private NoteDO        managerNoteDO, screenNoteDO;
+    private NoteViewDO        managerNoteDO, screenNoteDO;
 
     public enum Action {
         COMMIT, ABORT
@@ -341,7 +341,7 @@ public class EditNoteScreen extends Screen implements
           oldTypeId = null;
           for(int i=0; i<noteList.size(); i++){
               note = noteList.get(i); 
-              currentTypeId = note.getType();
+              currentTypeId = note.getTypeId();
               
               if(!currentTypeId.equals(oldTypeId)){
                  oldTypeId = currentTypeId;
@@ -415,8 +415,8 @@ public class EditNoteScreen extends Screen implements
         setState(state);
     }
     
-    public void setNote(NoteDO note) {
-        screenNoteDO = new NoteDO();
+    public void setNote(NoteViewDO note) {
+        screenNoteDO = new NoteViewDO();
         screenNoteDO.copy(note);
         managerNoteDO = note;
         

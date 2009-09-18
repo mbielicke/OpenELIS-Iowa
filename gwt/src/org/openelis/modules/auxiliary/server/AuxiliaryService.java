@@ -31,9 +31,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-import org.openelis.domain.AuxFieldDO;
 import org.openelis.domain.AuxFieldGroupDO;
 import org.openelis.domain.AuxFieldValueDO;
+import org.openelis.domain.AuxFieldViewDO;
 import org.openelis.domain.IdNameDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FieldErrorException;
@@ -109,7 +109,7 @@ public class AuxiliaryService implements
         AuxiliaryRemote remote = (AuxiliaryRemote)EJBFactory.lookup("openelis/AuxiliaryBean/remote");
         AuxFieldGroupDO axfgDO = getAuxFieldGroupDOFromRPC(rpc);
         Integer axfgId;
-        List<AuxFieldDO> axfDOList = getAuxFieldDOListFromRPC(null, rpc);        
+        List<AuxFieldViewDO> axfDOList = getAuxFieldDOListFromRPC(null, rpc);        
     
         try {
             axfgId = remote.updateAuxiliary(axfgDO,axfDOList);
@@ -130,7 +130,7 @@ public class AuxiliaryService implements
         AuxiliaryRemote remote = (AuxiliaryRemote)EJBFactory.lookup("openelis/AuxiliaryBean/remote");
         AuxFieldGroupDO axfgDO = getAuxFieldGroupDOFromRPC(rpc);
         IntegerField axfgId = rpc.id;
-        List<AuxFieldDO> axfDOList = getAuxFieldDOListFromRPC(axfgId.getValue(), rpc);               
+        List<AuxFieldViewDO> axfDOList = getAuxFieldDOListFromRPC(axfgId.getValue(), rpc);               
     
         try {
             remote.updateAuxiliary(axfgDO,axfDOList);
@@ -288,11 +288,11 @@ public class AuxiliaryService implements
         auxFieldGroupDO.setName(((String)form.name.getValue()));   
         Datetime activeBegin = form.activeBegin.getValue();
         if (activeBegin != null)
-            auxFieldGroupDO.setActiveBegin(activeBegin.getDate());
+            auxFieldGroupDO.setActiveBegin(activeBegin);
 
         Datetime activeEnd = form.activeEnd.getValue();
         if (activeEnd != null)
-            auxFieldGroupDO.setActiveEnd(activeEnd.getDate());
+            auxFieldGroupDO.setActiveEnd(activeEnd);
 
         auxFieldGroupDO.setDescription(form.description.getValue());
         auxFieldGroupDO.setIsActive(form.isActive.getValue());
@@ -315,18 +315,18 @@ public class AuxiliaryService implements
         
     }
     
-     private List<AuxFieldDO> getAuxFieldDOListFromRPC(Integer key,AuxiliaryForm form) {
+     private List<AuxFieldViewDO> getAuxFieldDOListFromRPC(Integer key,AuxiliaryForm form) {
          TableDataModel<TableDataRow<Integer>> model = form.auxFieldTable.getValue();
          TableDataRow<Integer> row = null;
-         List<AuxFieldDO> afDOList = new ArrayList<AuxFieldDO>();
+         List<AuxFieldViewDO> afDOList = new ArrayList<AuxFieldViewDO>();
          List<AuxFieldValueDO> valueDOList = null;
-         AuxFieldDO afDO = null;
+         AuxFieldViewDO afDO = null;
          
          for(int i= 0; i < model.size(); i++) {
               row = model.get(i);
-              afDO = new AuxFieldDO();                          
+              afDO = new AuxFieldViewDO();                          
               afDO.setId(row.key);                             
-              afDO.setDelete(false);              
+              //afDO.setDelete(false);              
               afDO.setUnitOfMeasureId((Integer)((DropDownField)row.cells[2]).getSelectedKey());
               afDO.setAnalyteId((Integer)((DropDownField)row.cells[0]).getSelectedKey());
               afDO.setAuxFieldGroupId(key);
@@ -338,19 +338,19 @@ public class AuxiliaryService implements
               afDO.setScriptletId((Integer)((DropDownField)row.cells[7]).getSelectedKey());
               afDO.setSortOrder(i);
               valueDOList = getAuxFieldValueDOList(row.key,(TableDataModel)row.getData());
-              afDO.setAuxFieldValues(valueDOList);
+             //afDO.setAuxFieldValues(valueDOList);
               afDOList.add(afDO);
          }
 
          if(model.getDeletions()!=null) {
              for (int i = 0; i < model.getDeletions().size(); i++) {
                 row = (TableDataRow<Integer>)model.getDeletions().get(i);
-                afDO = new AuxFieldDO();
+                afDO = new AuxFieldViewDO();
                 afDO.setId(row.key);
-                afDO.setDelete(true);
+               // afDO.setDelete(true);
                 valueDOList = getAuxFieldValueDOList(row.key,
                                                      (TableDataModel)row.getData());
-                afDO.setAuxFieldValues(valueDOList);
+               // afDO.setAuxFieldValues(valueDOList);
                 afDOList.add(afDO);
             }     
           model.getDeletions().clear();
@@ -375,7 +375,7 @@ public class AuxiliaryService implements
                 row = model.get(j);           
                 valueDO.setId(row.key);                 
                 valueDO.setAuxFieldId(auxFieldId);
-                valueDO.setDelete(false);
+              //  valueDO.setDelete(false);
              
                 type = (DropDownField<Integer>)row.cells[0];            
                 valueDO.setTypeId((Integer)type.getSelectedKey());
@@ -392,7 +392,7 @@ public class AuxiliaryService implements
                     valueDO = new AuxFieldValueDO();  
                     row = deletions.get(j);
                     valueDO.setId(row.key);    
-                    valueDO.setDelete(true);       
+           //         valueDO.setDelete(true);       
                     valueDOList.add(valueDO);
                 }
                 deletions.clear();
@@ -403,12 +403,12 @@ public class AuxiliaryService implements
     
     private void fillAuxFieldTable(Integer key,AuxiliaryForm form) {
         TableDataRow<Integer> row = null;               
-        AuxFieldDO afDO = null;
+        AuxFieldViewDO afDO = null;
         TableDataRow<Integer> set;
         TableDataModel<TableDataRow<Integer>> acModel;
         AuxiliaryRemote remote = (AuxiliaryRemote)EJBFactory.lookup("openelis/AuxiliaryBean/remote");
         TableDataModel<TableDataRow<Integer>> model = form.auxFieldTable.getValue();
-        List<AuxFieldDO> afDOList = remote.getAuxFields(key); 
+        List<AuxFieldViewDO> afDOList = remote.getAuxFields(key); 
         model.clear();
         
         for(int i = 0; i < afDOList.size(); i++) {

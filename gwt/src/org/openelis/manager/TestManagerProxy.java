@@ -56,6 +56,10 @@ public class TestManagerProxy {
         return service.call("fetchWithAnalytesAndResults", testId);
     }
     
+    public TestManager fetchWithPrepTests(Integer testId) throws Exception {
+        return service.call("fetchWithPrepTests", testId);
+    }
+    
     public TestManager fetchWithPrepTestsAndReflexTests(Integer testId) throws Exception {
         return service.call("fetchWithPrepTestsAndReflexTests", testId);
     }

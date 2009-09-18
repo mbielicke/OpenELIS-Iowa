@@ -34,7 +34,7 @@ import java.util.List;
 import org.openelis.domain.InventoryItemAutoDO;
 import org.openelis.domain.InventoryLocationDO;
 import org.openelis.domain.InventoryReceiptDO;
-import org.openelis.domain.OrganizationAutoDO;
+import org.openelis.domain.OrganizationVO;
 import org.openelis.domain.StorageLocationAutoDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FieldErrorException;
@@ -470,7 +470,7 @@ public class InventoryReceiptService implements AppScreenFormServiceInt<Inventor
     private TableDataModel<TableDataRow<Integer>> getOrganizationMatches(String match){
         OrganizationRemote remote = (OrganizationRemote)EJBFactory.lookup("openelis/OrganizationBean/remote");
         TableDataModel<TableDataRow<Integer>> dataModel = new TableDataModel<TableDataRow<Integer>>();
-        List<OrganizationAutoDO> autoCompleteList;
+        List<OrganizationVO> autoCompleteList;
     
         try{
             int id = Integer.parseInt(match); //this will throw an exception if it isnt an id
@@ -483,7 +483,7 @@ public class InventoryReceiptService implements AppScreenFormServiceInt<Inventor
             autoCompleteList = remote.autoCompleteLookupByName(match+"%", 10);
         }
         
-        for(OrganizationAutoDO resultDO : autoCompleteList){
+        for(OrganizationVO resultDO : autoCompleteList){
             //org id
             Integer orgId = resultDO.getId();
             //org name
@@ -491,7 +491,7 @@ public class InventoryReceiptService implements AppScreenFormServiceInt<Inventor
             //org apt suite #
             String aptSuite = resultDO.getAptSuite();
             //org street address
-            String address = resultDO.getAddress();
+            String address = resultDO.getStreetAddress();
             //org city
             String city = resultDO.getCity();
             //org state

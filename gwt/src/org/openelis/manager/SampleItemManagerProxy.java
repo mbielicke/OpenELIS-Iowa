@@ -42,18 +42,20 @@ public class SampleItemManagerProxy {
     }
     
     public void validate(SampleItemManager man, ValidationErrorsList errorsList) throws Exception {
+        String sequenceNum;
         //you have to have at least 1 sample item
         if(man.count() == 0)
             errorsList.add(new FormErrorException("minOneSampleItemException"));
         
         for(int i=0; i<man.count(); i++){
+            sequenceNum = man.getSampleItemAt(i).getItemSequence().toString();
             //validate the sample item
             if(man.getSampleItemAt(i).getTypeOfSampleId() == null)
-                errorsList.add(new FormErrorException("sampleItemTypeMissing"));
+                errorsList.add(new FormErrorException("sampleItemTypeMissing", sequenceNum));
             
             //validate the children
             man.getStorageAt(i).validate(errorsList);
-            man.getAnalysisAt(i).validate(errorsList);
+            man.getAnalysisAt(i).validate(sequenceNum, errorsList);
         }
     }
     

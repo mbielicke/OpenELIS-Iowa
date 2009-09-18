@@ -25,7 +25,7 @@
 */
 package org.openelis.manager;
 
-import org.openelis.domain.AnalysisTestDO;
+import org.openelis.domain.AnalysisViewDO;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.services.ScreenService;
@@ -50,15 +50,21 @@ public class AnalysisManagerProxy {
     }
     
     public void validate(AnalysisManager man, ValidationErrorsList errorsList) throws Exception {
+        validate(man, null, errorsList);
+    }
+    
+    public void validate(AnalysisManager man, String sampleItemSequence, ValidationErrorsList errorsList) throws Exception {
         if(man.count() == 0)
-            errorsList.add(new FormErrorException("minOneAnalysisException"));
+            errorsList.add(new FormErrorException("minOneAnalysisException", sampleItemSequence));
         
         for(int i=0; i<man.count(); i++){
-            AnalysisTestDO analysisDO = man.getAnalysisAt(i);
+            AnalysisViewDO analysisDO = man.getAnalysisAt(i);
             
             if(analysisDO.getTestId() == null)
-                errorsList.add(new FormErrorException("analysisTestIdMissing"));
+                errorsList.add(new FormErrorException("analysisTestIdMissing", sampleItemSequence));
             
+            if(analysisDO.getTestId() != null && analysisDO.getSectionId() == null)
+                errorsList.add(new FormErrorException("analysisSectionIdMissing", analysisDO.getTestName(), analysisDO.getMethodName()));
             
             man.getStorageAt(i).validate(errorsList);
         }

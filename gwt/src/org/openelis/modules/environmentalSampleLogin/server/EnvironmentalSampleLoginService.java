@@ -37,7 +37,6 @@ import org.openelis.remote.OrganizationRemote;
 import org.openelis.remote.ProjectRemote;
 import org.openelis.remote.SampleEnvironmentalRemote;
 import org.openelis.remote.SampleRemote;
-import org.openelis.remote.SectionRemote;
 import org.openelis.server.constants.Constants;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
@@ -83,13 +82,6 @@ public class EnvironmentalSampleLoginService {
     public AutocompleteRPC getOrganizationMatches(AutocompleteRPC rpc) throws Exception {
         OrganizationRemote remote = (OrganizationRemote)EJBFactory.lookup("openelis/OrganizationBean/remote");
         rpc.model = (ArrayList)remote.autoCompleteLookupByName(rpc.match+"%", 10);
-        
-        return rpc;
-    }
-    
-    public AutocompleteRPC getSectionMatches(AutocompleteRPC rpc) throws Exception {
-        SectionRemote remote = (SectionRemote)EJBFactory.lookup("openelis/SectionBean/remote");
-        rpc.model = (ArrayList)remote.getAutoCompleteSectionByName(rpc.match+"%", 10);
         
         return rpc;
     }
