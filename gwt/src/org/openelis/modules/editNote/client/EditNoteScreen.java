@@ -97,10 +97,10 @@ public class EditNoteScreen extends Screen implements
             }
         });
 
-        tree.addSelectionHandler(new SelectionHandler<TreeRow>() {
-            public void onSelection(SelectionEvent<TreeRow> event) {
-                TreeRow selectedRow = event.getSelectedItem();
-                TreeDataItem item = selectedRow.item;
+        tree.addSelectionHandler(new SelectionHandler<TreeDataItem>() {
+            public void onSelection(SelectionEvent<TreeDataItem> event) {
+                //TreeRow selectedRow = event.getSelectedItem();
+                TreeDataItem item = event.getSelectedItem();
 
                 if ("note".equals(item.leafType))
                     preview.setValue((String)item.data, true);
