@@ -593,14 +593,14 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             }
         });
                
-        itemsTree.addBeforeSelectionHandler(new BeforeSelectionHandler<TreeRow>(){
-           public void onBeforeSelection(BeforeSelectionEvent<TreeRow> event) {
+        itemsTree.addBeforeSelectionHandler(new BeforeSelectionHandler<TreeDataItem>(){
+           public void onBeforeSelection(BeforeSelectionEvent<TreeDataItem> event) {
                //do nothing
                 
             } 
         });
-        itemsTree.addSelectionHandler(new SelectionHandler<TreeRow>(){
-           public void onSelection(SelectionEvent<TreeRow> event) {
+        itemsTree.addSelectionHandler(new SelectionHandler<TreeDataItem>(){
+           public void onSelection(SelectionEvent<TreeDataItem> event) {
                SampleDataBundle data;
                
                TreeDataItem selection = itemsTree.getSelection();
