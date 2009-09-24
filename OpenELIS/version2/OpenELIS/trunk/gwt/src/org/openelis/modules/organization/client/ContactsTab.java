@@ -45,11 +45,14 @@ public class ContactsTab extends Screen {
 			}
 			public void onStateChange(StateChangeEvent<State> event) {
 			    table.enable(EnumSet.of(State.ADD,State.UPDATE,State.QUERY).contains(event.getState()));
+			    table.setQueryMode(event.getState() == State.QUERY);
 			}
 		});
 		
 		table.addCellEditedHandler(new CellEditedHandler(){
             public void onCellUpdated(CellEditedEvent event) {
+            	if(state == State.QUERY)
+            		return;
                 int row,col;
                 row = event.getRow();
                 col = event.getCell();

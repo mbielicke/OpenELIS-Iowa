@@ -516,8 +516,9 @@ public class OrganizationScreen extends Screen implements BeforeGetMatchesHandle
 
     protected void query() {
         manager = OrganizationManager.getInstance();
-        setState(Screen.State.QUERY);
+        
         DataChangeEvent.fire(this);
+        setState(Screen.State.QUERY);
         window.setDone(consts.get("enterFieldsToQuery"));
     }
 
