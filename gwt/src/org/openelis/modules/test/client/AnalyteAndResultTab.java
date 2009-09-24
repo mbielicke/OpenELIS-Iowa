@@ -774,7 +774,6 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
             public void onStateChange(StateChangeEvent<State> event) {
                 resultTable.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
                 resultTable.setQueryMode(event.getState() == State.QUERY);
-                setUnitsOfMeasure();
             }
         });
 
