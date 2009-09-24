@@ -23,7 +23,7 @@ import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
-@NamedQuery(name = "TestSection.TestSectionsByTestId", query = "select distinct new org.openelis.domain.TestSectionDO(ts.id,ts.testId,ts.sectionId,ts.flagId) " +
+@NamedQuery(name = "TestSection.TestSectionsByTestId", query = "select distinct new org.openelis.domain.TestSectionViewDO(ts.id,ts.testId,ts.sectionId,ts.flagId, s.name) " +
                                                                                  " from TestSection ts left join ts.section s where ts.testId = :testId")
                      
 

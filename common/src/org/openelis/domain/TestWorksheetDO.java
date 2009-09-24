@@ -90,7 +90,7 @@ public class TestWorksheetDO extends DataObject {
         return formatId;
     }
 
-    public void setFormatId(Integer formatId) {
+    public void setFormatId(Integer formatId) {        
         this.formatId = formatId;
         _changed = true;
     }

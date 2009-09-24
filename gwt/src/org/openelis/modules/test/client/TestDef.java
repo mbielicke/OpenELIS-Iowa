@@ -23,38 +23,10 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.metamap;
+package org.openelis.modules.test.client;
 
-import org.openelis.gwt.common.MetaMap;
-import org.openelis.meta.AnalyteMeta;
-import org.openelis.meta.TestAnalyteMeta;
+import org.openelis.gwt.screen.ScreenDefInt;
 
-public class TestAnalyteMetaMap extends TestAnalyteMeta implements MetaMap {
-
-    public AnalyteMeta ANALYTE;
-    
-    public String buildFrom(String where) {        
-        return "TestAnalyte ";
-    }
-
-    public TestAnalyteMetaMap() {
-        super();
-        ANALYTE = new AnalyteMeta("path.analyte.");
-    }
-   
-    public TestAnalyteMetaMap(String path){
-        super(path);
-        ANALYTE = new AnalyteMeta(path+"analyte.");
-    }
-    
-    public boolean hasColumn(String name) {
-        if(name.startsWith(path+"analyte."))
-            return ANALYTE.hasColumn(name);
-        return super.hasColumn(name);
-    }
-    
-    public AnalyteMeta getAnalyte() {
-        return ANALYTE;
-    }
+public interface TestDef extends ScreenDefInt {
 
 }

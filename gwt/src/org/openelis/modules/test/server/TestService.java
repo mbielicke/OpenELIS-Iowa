@@ -40,6 +40,7 @@ import org.openelis.manager.TestPrepManager;
 import org.openelis.manager.TestReflexManager;
 import org.openelis.manager.TestResultManager;
 import org.openelis.manager.TestTypeOfSampleManager;
+import org.openelis.manager.TestWorksheetManager;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.AnalyteRemote;
 import org.openelis.remote.LabelRemote;
@@ -110,6 +111,11 @@ public class TestService {
         return remote.fetchReflexiveTestsByTestId(testId);
     }
     
+    public TestWorksheetManager fetchWorksheetByTestId(Integer testId) throws Exception{
+        TestManagerRemote remote = (TestManagerRemote)EJBFactory.lookup("openelis/TestManagerBean/remote");
+        return remote.fetchWorksheetByTestId(testId);
+    }
+    
     public TestManager add(TestManager man) throws Exception {
         TestManagerRemote remote = (TestManagerRemote)EJBFactory.lookup("openelis/TestManagerBean/remote");
         
@@ -119,8 +125,8 @@ public class TestService {
     
     public TestManager update(TestManager man) throws Exception {
         TestManagerRemote remote = (TestManagerRemote)EJBFactory.lookup("openelis/TestManagerBean/remote");
-        
-        return remote.update(man);
+                
+        return remote.update(man);        
         
     }
     
@@ -138,19 +144,19 @@ public class TestService {
         return man;
     }
     
-    public TestManager fetchWithPrepTests(Integer testId) throws Exception {
-        TestManagerRemote remote = (TestManagerRemote)EJBFactory.lookup("openelis/TestManagerBean/remote");
-        TestManager man = remote.fetchWithPrepTests(testId);
-        
-        return man;
-    }
-    
     public TestManager fetchWithPrepTestsAndReflexTests(Integer testId) throws Exception {
         TestManagerRemote remote = (TestManagerRemote)EJBFactory.lookup("openelis/TestManagerBean/remote");
         TestManager man = remote.fetchWithPrepTestsAndReflexTests(testId);
         
         return man;
     }
+    
+    public TestManager fetchWithWorksheet(Integer testId) throws Exception {
+        TestManagerRemote remote = (TestManagerRemote)EJBFactory.lookup("openelis/TestManagerBean/remote");
+        TestManager man = remote.fetchWithWorksheet(testId);
+        
+        return man;
+    } 
     
     public TestManager fetchForUpdate(Integer testId) throws Exception {
         //remote interface to call TestBean

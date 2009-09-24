@@ -53,11 +53,7 @@ import org.openelis.utils.Auditable;
                @NamedQuery(name = "TestAnalyte.TestAnalyteDOListByTestId", query = "select distinct new org.openelis.domain.TestAnalyteViewDO(ta.id,ta.testId,ta.sortOrder,ta.rowGroup,ta.isColumn,ta.analyteId,ta.typeId,ta.isReportable,ta.resultGroup,ta.scriptletId,a.name,s.name)" +
                     "                  from TestAnalyte ta left join ta.scriptlet s left join ta.analyte a where ta.testId = :testId order by ta.sortOrder"),
                @NamedQuery(name = "TestAnalyte.TestAnalytesByResultGroupAndTestId", query = "select ta.resultGroup, ta.id from TestAnalyte ta  where ta.testId = :testId " +
-                    " group by ta.resultGroup, ta.id order by ta.resultGroup, ta.id"),
-               @NamedQuery(name = "TestAnalyte.TestAnalytesNotAddedToWorksheet", query = "select distinct new org.openelis.domain.IdNameDO(ta.analyteId,a.name)" +
-                    " from TestAnalyte ta left join ta.analyte a where ta.testId = :testId " +
-                    " and ta.analyteId not in (select distinct twa.analyteId from TestWorksheetAnalyte twa where twa.testId = :testId)" +
-                    " order by a.name")})
+                    " group by ta.resultGroup, ta.id order by ta.resultGroup, ta.id")})
 @Entity
 @Table(name="test_analyte")
 @EntityListeners({AuditUtil.class})

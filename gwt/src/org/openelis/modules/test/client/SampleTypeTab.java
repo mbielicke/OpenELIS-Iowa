@@ -178,6 +178,16 @@ public class SampleTypeTab extends Screen {
         loaded = true;
     }
     
+    protected void clearKeys(TestTypeOfSampleManager ttsm) {
+        TestTypeOfSampleDO sampletype;
+        
+        for(int i = 0; i < ttsm.count(); i++) {
+            sampletype = ttsm.getTypeAt(i);
+            sampletype.setId(null);
+            sampletype.setTestId(null);
+        }
+    }
+    
     private ArrayList<TableDataRow> getTableModel() {
         ArrayList<TableDataRow> model;
         TestTypeOfSampleManager ttsm;

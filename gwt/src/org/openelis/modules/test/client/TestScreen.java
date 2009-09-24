@@ -58,8 +58,11 @@ import org.openelis.gwt.event.GetMatchesEvent;
 import org.openelis.gwt.event.GetMatchesHandler;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
+import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
+import org.openelis.gwt.screen.Screen.State;
+import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
@@ -68,6 +71,7 @@ import org.openelis.gwt.widget.CalendarLookUp;
 import org.openelis.gwt.widget.CheckBox;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.HasField;
+import org.openelis.gwt.widget.MenuItem;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableColumn;
 import org.openelis.gwt.widget.table.TableDataRow;
@@ -79,10 +83,12 @@ import org.openelis.gwt.widget.table.event.RowAddedHandler;
 import org.openelis.gwt.widget.table.event.RowDeletedEvent;
 import org.openelis.gwt.widget.table.event.RowDeletedHandler;
 import org.openelis.manager.TestManager;
+import org.openelis.manager.TestResultManager;
 import org.openelis.manager.TestSectionManager;
 import org.openelis.metamap.TestMetaMap;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
@@ -101,22 +107,23 @@ public class TestScreen extends Screen {
     protected Tabs tab = Tabs.DETAILS;    
    
     private TestMetaMap TestMeta;     
-    private TestManager manager;
+    private TestManager manager;    
     private SampleTypeTab sampleTypeTab;
     private AnalyteAndResultTab analyteAndResultTab;
     private PrepTestAndReflexTestTab prepAndReflexTab; 
+    private WorksheetLayoutTab worksheetLayoutTab; 
   
     private SecurityModule security;
-    
-    EnumSet<State> enabledStates = EnumSet.of(State.ADD,State.UPDATE,State.QUERY);       
     
     ScreenNavigator nav;
     
     private TableWidget sectionTable; 
     
     public TestScreen() throws Exception{
-        super("OpenELISServlet?service=org.openelis.modules.test.server.TestService");        
-        manager = TestManager.getInstance();
+        //super("OpenELISServlet?service=org.openelis.modules.test.server.TestService");
+        super((ScreenDefInt)GWT.create(TestDef.class));
+        service = new ScreenService("OpenELISServlet?service=org.openelis.modules.test.server.TestService");
+        manager = TestManager.getInstance();        
         
         TestMeta = new TestMetaMap();
         
@@ -171,8 +178,7 @@ public class TestScreen extends Screen {
             }
         });
         
-        prepAndReflexTab = new PrepTestAndReflexTestTab(def,service);
-        
+        prepAndReflexTab = new PrepTestAndReflexTestTab(def,service);        
         addScreenHandler(prepAndReflexTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                 prepAndReflexTab.setManager(manager);
@@ -187,6 +193,22 @@ public class TestScreen extends Screen {
         });               
         
         analyteAndResultTab.addActionHandler(prepAndReflexTab);
+        
+        worksheetLayoutTab = new WorksheetLayoutTab(def,service);        
+        addScreenHandler(worksheetLayoutTab, new ScreenEventHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                worksheetLayoutTab.setManager(manager);
+
+                if (tab == Tabs.WORKSHEET)
+                    drawTabs(); 
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                StateChangeEvent.fire(worksheetLayoutTab, event.getState());
+            }
+        });
+        
+        analyteAndResultTab.addActionHandler(worksheetLayoutTab);
         
         final TextBox id = (TextBox)def.getWidget(TestMeta.getId());
         addScreenHandler(id, new ScreenEventHandler<String>() {
@@ -317,13 +339,13 @@ public class TestScreen extends Screen {
         });
         
         final TextBox timeTaMax = (TextBox)def.getWidget(TestMeta.getTimeTaMax());
-        addScreenHandler(timeTaMax, new ScreenEventHandler<String>() {
+        addScreenHandler(timeTaMax, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 timeTaMax.setValue(getString(manager.getTest().getTimeTaMax()));
             }
 
-            public void onValueChange(ValueChangeEvent<String> event) {
-                manager.getTest().setTimeTaMax(Integer.valueOf(event.getValue()));
+            public void onValueChange(ValueChangeEvent<Integer> event) {
+                manager.getTest().setTimeTaMax(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -337,13 +359,13 @@ public class TestScreen extends Screen {
         
         
         final TextBox timeTaAverage = (TextBox)def.getWidget(TestMeta.getTimeTaAverage());
-        addScreenHandler(timeTaAverage, new ScreenEventHandler<String>() {
+        addScreenHandler(timeTaAverage, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 timeTaAverage.setValue(getString(manager.getTest().getTimeTaAverage()));
             }
 
-            public void onValueChange(ValueChangeEvent<String> event) {
-                manager.getTest().setTimeTaAverage(Integer.valueOf(event.getValue()));
+            public void onValueChange(ValueChangeEvent<Integer> event) {
+                manager.getTest().setTimeTaAverage(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -356,13 +378,13 @@ public class TestScreen extends Screen {
         });
         
         final TextBox timeTaWarning = (TextBox)def.getWidget(TestMeta.getTimeTaWarning());
-        addScreenHandler(timeTaWarning, new ScreenEventHandler<String>() {
+        addScreenHandler(timeTaWarning, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 timeTaWarning.setValue(getString(manager.getTest().getTimeTaWarning()));
             }
 
-            public void onValueChange(ValueChangeEvent<String> event) {
-                manager.getTest().setTimeTaWarning(Integer.valueOf(event.getValue()));
+            public void onValueChange(ValueChangeEvent<Integer> event) {
+                manager.getTest().setTimeTaWarning(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -375,13 +397,13 @@ public class TestScreen extends Screen {
         });
         
         final TextBox timeTransit = (TextBox)def.getWidget(TestMeta.getTimeTransit());
-        addScreenHandler(timeTransit, new ScreenEventHandler<String>() {
+        addScreenHandler(timeTransit, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 timeTransit.setValue(getString(manager.getTest().getTimeTransit()));
             }
 
-            public void onValueChange(ValueChangeEvent<String> event) {
-                manager.getTest().setTimeTransit(Integer.valueOf(event.getValue()));
+            public void onValueChange(ValueChangeEvent<Integer> event) {
+                manager.getTest().setTimeTransit(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -394,13 +416,13 @@ public class TestScreen extends Screen {
         });
         
         final TextBox timeHolding = (TextBox)def.getWidget(TestMeta.getTimeHolding());
-        addScreenHandler(timeHolding, new ScreenEventHandler<String>() {
+        addScreenHandler(timeHolding, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 timeHolding.setValue(getString(manager.getTest().getTimeHolding()));
             }
 
-            public void onValueChange(ValueChangeEvent<String> event) {
-                manager.getTest().setTimeHolding(Integer.valueOf(event.getValue()));
+            public void onValueChange(ValueChangeEvent<Integer> event) {
+                manager.getTest().setTimeHolding(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -516,12 +538,12 @@ public class TestScreen extends Screen {
         });        
      
         final TextBox labelQty = (TextBox)def.getWidget(TestMeta.getLabelQty());
-        addScreenHandler(labelQty, new ScreenEventHandler<String>() {
+        addScreenHandler(labelQty, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 labelQty.setValue(getString(manager.getTest().getLabelQty()));
             }
 
-            public void onValueChange(ValueChangeEvent<String> event) {
+            public void onValueChange(ValueChangeEvent<Integer> event) {
                 manager.getTest().setLabelQty(Integer.valueOf(event.getValue()));
             }
 
@@ -541,6 +563,7 @@ public class TestScreen extends Screen {
             }
             public void onStateChange(StateChangeEvent<State> event) {
                 sectionTable.enable(EnumSet.of(State.ADD,State.UPDATE,State.QUERY).contains(event.getState()));
+                sectionTable.setQueryMode(event.getState() == State.QUERY);
             }
         });
         
@@ -960,6 +983,18 @@ public class TestScreen extends Screen {
                 abortButton.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE).contains(event.getState()));
             }
         });
+        
+        //MenuPanel options = (MenuPanel)def.getWidget("optionsMenu");           
+        final MenuItem duplicate = (MenuItem)def.getWidget("duplicateRecord");
+        addScreenHandler(duplicate, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {               
+                duplicate();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                duplicate.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        }); 
 
         // Get AZ buttons and setup Screen listeners and call to for query
         final ButtonGroup azButtons = (ButtonGroup)def.getWidget("atozButtons");
@@ -1000,14 +1035,6 @@ public class TestScreen extends Screen {
                 window.clearStatus();
             }
         });
-        //
-        // this is done to remove an unwanted tab that gets added to
-        // testTabPanel, for some reason, when you put a tab panel inside one
-        // of its tabs
-        //
-        //tabs.remove(3);        
-        //resultTabPanel  = (ScrollableTabBar)def.getWidget("resultTabPanel");
-        //resultTabPanel.remove(0);
         
         setRevisionMethodsModel();
         setSortingMethodsModel();
@@ -1022,6 +1049,7 @@ public class TestScreen extends Screen {
         sampleTypeTab.setState(state);
         analyteAndResultTab.setState(state);
         prepAndReflexTab.setState(state);
+        worksheetLayoutTab.setState(state);
     }
     
     public HandlerRegistration addBeforeGetMatchesHandler(BeforeGetMatchesHandler handler) {
@@ -1048,7 +1076,7 @@ public class TestScreen extends Screen {
         } else if (tab == Tabs.PREPS_REFLEXES) {
             prepAndReflexTab.draw();
         } else if (tab == Tabs.WORKSHEET) {
-            
+            worksheetLayoutTab.draw();
         }
     }
     
@@ -1086,9 +1114,19 @@ public class TestScreen extends Screen {
 
             setState(State.UPDATE);
             DataChangeEvent.fire(this);
-            window.clearStatus();
             
-
+            //
+            // all tabs are loaded here to make sure that the on-screen validation 
+            // and the validation done at the back end doesn't suffer from
+            // errorneous conclusions about the data because of the lack of some
+            // subset of it
+            //
+            sampleTypeTab.draw();
+            analyteAndResultTab.draw();
+            prepAndReflexTab.draw();
+            worksheetLayoutTab.draw();            
+            
+            window.clearStatus();            
         } catch (EntityLockedException e) {
             window.clearStatus();
             Window.alert(e.getMessage());
@@ -1097,24 +1135,26 @@ public class TestScreen extends Screen {
         }
     }
 
-    public void commit() {
-        if (state == State.UPDATE) {
-            commitUpdate();
-            /*if (validate()) {
-                window.setBusy(consts.get("updating"));
-                commitUpdate();
+    protected void commit() {
+        if (state == State.UPDATE) {            
+            if (validate()) {
+                if (canCommitResultGroups()) {
+                    window.setBusy(consts.get("updating"));
+                    commitUpdate();
+                }
             } else {
                 window.setError(consts.get("correctErrors"));
-            }*/
+            }
         }
-        if (state == State.ADD) {
-            commitAdd();
-            /*if (validate()) {
-                window.setBusy(consts.get("adding"));
-                commitAdd();
+        if (state == State.ADD) {           
+            if (validate()) {
+                if (canCommitResultGroups()) {
+                    window.setBusy(consts.get("adding"));
+                    commitAdd();
+                }
             } else {
                 window.setError(consts.get("correctErrors"));
-            }*/
+            }
         }
         if (state == State.QUERY) {
             if (validate()) {
@@ -1126,7 +1166,7 @@ public class TestScreen extends Screen {
         }
     }
 
-    public void abort() {
+    protected void abort() {
         if (state == State.UPDATE) {
             window.setBusy("Canceling changes ...");
 
@@ -1168,7 +1208,7 @@ public class TestScreen extends Screen {
             } else if (tab == Tabs.PREPS_REFLEXES) {
                 manager = TestManager.findByIdWithPrepTestAndReflexTests(id);
             } else if (tab == Tabs.WORKSHEET) {
-                
+                manager = TestManager.findByIdWithWorksheet(id);
             }
 
         } catch (Exception e) {
@@ -1184,20 +1224,6 @@ public class TestScreen extends Screen {
         window.clearStatus();
     }
     
-    protected boolean validate() {
-        return super.validate();
-    }
-    
-    private void getTests(String query) {
-        if (state == State.DISPLAY || state == State.DEFAULT) {
-            QueryData qField = new QueryData();
-            qField.key = TestMeta.getName();
-            qField.query = query;
-            qField.type = QueryData.Type.STRING;
-            commitQuery(qField);
-        }
-    }
-    
     public void commitQuery(QueryData qField) {
         ArrayList<QueryData> qList = new ArrayList<QueryData>();
         qList.add(qField);
@@ -1207,7 +1233,7 @@ public class TestScreen extends Screen {
     public ArrayList<QueryData> getQueryFields() {
         ArrayList<QueryData> list = new ArrayList<QueryData>();
         Set<String> keys = def.getWidgets().keySet();
-        for (String key : def.getWidgets().keySet()) {
+        for (String key : keys) {
             if (def.getWidget(key) instanceof HasField) {
                 ((HasField)def.getWidget(key)).getQuery(list, key);
             }
@@ -1215,7 +1241,7 @@ public class TestScreen extends Screen {
         return list;
     }
 
-    public void commitAdd() {
+    public void commitAdd() {        
         window.setBusy("Committing ....");
         try {
             manager = manager.add();
@@ -1287,9 +1313,9 @@ public class TestScreen extends Screen {
                 }
             } else if(ex instanceof FieldErrorException){
                 FieldErrorException fe = (FieldErrorException)ex;
-                ((HasField)def.getWidget(fe.getFieldName())).addError(consts.get(fe.getMessage()));
+                ((HasField)def.getWidget(fe.getFieldName())).addError(fe.getMessage());
             } else if (ex instanceof FormErrorException) {
-                window.setError(consts.get(ex.getMessage()));
+                window.setError(ex.getMessage());
                 return;
             }
         }
@@ -1301,6 +1327,17 @@ public class TestScreen extends Screen {
         DataChangeEvent.fire(this);
 
         loadQueryPage(query);
+    }
+        
+    
+    private void getTests(String query) {
+        if (state == State.DISPLAY || state == State.DEFAULT) {
+            QueryData qField = new QueryData();
+            qField.key = TestMeta.getName();
+            qField.query = query;
+            qField.type = QueryData.Type.STRING;
+            commitQuery(qField);
+        }
     }
 
     private void loadQueryPage(Query<TestIdNameMethodNameDO> query) {
@@ -1315,6 +1352,39 @@ public class TestScreen extends Screen {
         }
         nav.setQuery(query);
         //ActionEvent.fire(this, Action.NEW_PAGE, query);
+    }
+    
+    private void duplicate() {               
+        try {
+            manager = TestManager.findById(manager.getTest().getId()); 
+                        
+            
+            sampleTypeTab.setManager(manager);            
+            analyteAndResultTab.setManager(manager);                        
+            prepAndReflexTab.setManager(manager);                        
+            worksheetLayoutTab.setManager(manager);
+            
+            manager.getSampleTypes();
+            manager.getTestAnalytes();
+            manager.getTestResults();
+            manager.getPrepTests();
+            manager.getReflexTests();
+            manager.getTestWorksheet();
+            
+            clearKeys();
+            
+            sampleTypeTab.draw();
+            analyteAndResultTab.draw();            
+            prepAndReflexTab.draw();
+            worksheetLayoutTab.draw();   
+            
+            setState(Screen.State.ADD);
+            DataChangeEvent.fire(this);  
+            
+            window.setDone(consts.get("enterInformationPressCommit"));
+        }  catch (Exception e) {
+            Window.alert(e.getMessage());
+        }
     }
     
     private void setTestFormatsModel() {
@@ -1415,5 +1485,79 @@ public class TestScreen extends Screen {
         return model;
     }
 
+    private boolean canCommitResultGroups() {
+        ArrayList<Integer> list;        
+        int i,size;
+        TestResultManager trm;
+        boolean commit;
+        
+        trm = null;        
+        commit = true;
+        
+        try {
+            trm = manager.getTestResults();
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        
+        list = getEmptyResultGroups(trm); 
+        size = list.size();        
+        if(size > 0) {    
+           commit = Window.confirm(consts.get("resultGroupsEmpty"));
+           if(commit) {
+               for(i = 0; i < size; i++) {
+                   trm.removeResultGroup(list.get(i));
+               }               
+           }        
+        }
+        return commit;
+    }
+           
+    private ArrayList<Integer> getEmptyResultGroups(TestResultManager trm) {
+        ArrayList<Integer> empList;        
+        
+        empList = new ArrayList<Integer>();
+        
+        if(trm != null) {
+            for(int i = 0; i < trm.groupCount(); i++) {
+                if(trm.getResultGroupSize(i+1) == 0)
+                    empList.add(i+1);
+            }
+        }
+        
+        return empList;
+    }
+    
+    private void clearKeys() {
+        TestDO test;                
+        
+        test = manager.getTest();     
+        test.setId(null);
+        test.setIsActive("N");
+        test.setIsReportable("N"); 
+        test.setActiveBegin(null);
+        test.setActiveEnd(null);
+        
+        try {
+            clearSectionKeys(manager.getTestSections());            
+            sampleTypeTab.clearKeys(manager.getSampleTypes());
+            analyteAndResultTab.clearKeys(manager.getTestAnalytes(),manager.getTestResults());
+            prepAndReflexTab.clearKeys(manager.getPrepTests(),manager.getReflexTests());    
+            worksheetLayoutTab.clearKeys(manager.getTestWorksheet());            
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        
+    }
+    
+    private void clearSectionKeys(TestSectionManager tsm) {
+        TestSectionViewDO section;
+        
+        for(int i = 0; i < tsm.count(); i++) {
+            section = tsm.getSectionAt(i);
+            section.setId(null);
+            section.setTestId(null);
+        }
+    }       
 
 }

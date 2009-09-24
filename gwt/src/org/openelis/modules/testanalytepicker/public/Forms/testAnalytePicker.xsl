@@ -30,7 +30,7 @@ UIRF Software License are applicable instead of those above.
                 xmlns:locale="xalan://java.util.Locale"
                 extension-element-prefixes="resource"
                 version="1.0">
-  <xsl:import href="aToZOneColumn.xsl"/>
+  <xsl:import href="button.xsl" />
   
   <xalan:component prefix="resource">
     <xalan:script lang="javaclass" src="xalan://org.openelis.util.UTFResource"/>
@@ -42,44 +42,18 @@ UIRF Software License are applicable instead of those above.
   <xsl:variable name="language"><xsl:value-of select="locale"/></xsl:variable>
   <xsl:variable name="props"><xsl:value-of select="props"/></xsl:variable>
   <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))"/>
- <screen id="DictionaryEntryPicker" name="{resource:getString($constants,'dictionaryEntrySelection')}" serviceUrl="OpenElisService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">	
-		<HorizontalPanel style="WhiteContentPanel" spacing="0">
-			<!--left table goes here -->
-			 <buttonGroup key='atozButtons'>
-                <xsl:call-template name='aToZLeftPanelButtons' />
-              </buttonGroup>							
+ <screen id="TestAnalytePicker" name="{resource:getString($constants,'testAnalyteSelection')}" serviceUrl="OpenElisService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">	
+		<HorizontalPanel style="WhiteContentPanel" spacing="0">					
 		<HorizontalPanel width = "5px"/>
-		<VerticalPanel style="WhiteContentPanel" spacing="0" width="300px">
-		 
-         <TablePanel style = "Form" spacing="0"> 
-         <row>
-          <text style="Prompt"><xsl:value-of select="resource:getString($constants,'selectCategory')"/>:</text>
-          <widget colspan = "3">	 		
-		   <dropdown key="category" popWidth = "250" width="250" showError="false" enabledStates="default"/>				  
-		  </widget> 
-		 </row> 
-		 <row>
-		  <widget> 
-		   <VerticalPanel height = "5px"/>
-		  </widget> 
-		 </row>
-		<row>
-		  <text style="Prompt"><xsl:value-of select="resource:getString($constants,'enterSearch')"/>:</text>
-		  
-		   <textbox key="findTextBox" width="120px" showError="false" enabledStates="default"/>
-		   <appButton action="find" onclick="this" style="Button" key="findButton" showError="false" enabledStates="default">
-			<HorizontalPanel>
-            	<AbsolutePanel style="FindButtonImage"/>
-                <text><xsl:value-of select='resource:getString($constants,"find")'/></text>
-			</HorizontalPanel>
-		   </appButton>		   
-		</row>
-	   </TablePanel>	
+		<VerticalPanel style="WhiteContentPanel" spacing="0" width="400px">		          
 		 
 		 <widget>
-							<table maxRows = "14" width = "auto" key="dictEntTable" multiSelect = "true" title="" showError="false" showScroll="ALWAYS">
-								<col key="entry" width="320" sort="false" header="{resource:getString($constants,'entry')}">
+							<table maxRows = "14" width = "auto" key="testAnalyteTable" title="" showError="false" showScroll="ALWAYS">
+								<col key="name" width="320" sort="false" header="{resource:getString($constants,'analyte')}">
                                 	<label width="320" case="mixed"/>
+                                </col>
+                                <col key="include" width="70" sort="false" header="{resource:getString($constants,'include')}">
+                                	<check/>
                                 </col>
 							</table>
 							
@@ -98,7 +72,7 @@ UIRF Software License are applicable instead of those above.
 		                  </xsl:with-param>
 		                </xsl:call-template>
 		              </HorizontalPanel>
-		            </AbsolutePanel> -->
+		            </AbsolutePanel>-->
 		            <AbsolutePanel spacing="0" style="BottomButtonPanelContainer" align="center">
 		             <HorizontalPanel>
                                 <widget halign="center">
@@ -126,11 +100,9 @@ UIRF Software License are applicable instead of those above.
                                 </appButton>
                               </widget>
                      </HorizontalPanel>
-                    </AbsolutePanel>		            
+                    </AbsolutePanel>
    </VerticalPanel>	
   </HorizontalPanel>  				
 </screen>
   </xsl:template>
-</xsl:stylesheet>					
-					
-					
+</xsl:stylesheet>

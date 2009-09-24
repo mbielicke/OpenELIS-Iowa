@@ -36,8 +36,11 @@ import org.openelis.util.XMLUtil;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
@@ -46,9 +49,9 @@ import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
 @NamedQueries({@NamedQuery(name = "TestWorksheetAnalyte.TestWorksheetAnalyteDOByTestId", 
-                            query = "select distinct new org.openelis.domain.TestWorksheetAnalyteViewDO(twa.id,twa.testId,twa.analyteId,"+
-                                 " twa.repeat,twa.flagId,a.name) from TestWorksheetAnalyte twa, Analyte a where twa.testId = :testId"+ 
-                                  " and a.id = twa.analyteId order by a.name")})
+                            query = "select distinct new org.openelis.domain.TestWorksheetAnalyteViewDO(twa.id,twa.testId,twa.testAnalyteId,"+
+                                 " twa.repeat,twa.flagId,a.name,ta.sortOrder) from TestWorksheetAnalyte twa left join twa.testAnalyte ta left join ta.analyte a where twa.testId = :testId"+ 
+                                  " order by ta.sortOrder ")})
     
 
 @Entity
@@ -64,8 +67,8 @@ public class TestWorksheetAnalyte implements Auditable, Cloneable {
   @Column(name="test_id")
   private Integer testId;             
 
-  @Column(name="analyte_id")
-  private Integer analyteId;             
+  @Column(name="test_analyte_id")
+  private Integer testAnalyteId;             
 
   @Column(name="repeat")
   private Integer repeat;             
@@ -73,6 +76,9 @@ public class TestWorksheetAnalyte implements Auditable, Cloneable {
   @Column(name="flag_id")
   private Integer flagId;             
 
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "test_analyte_id",insertable = false, updatable = false)
+  private TestAnalyte testAnalyte;
 
   @Transient
   private TestWorksheetAnalyte original;
@@ -96,13 +102,13 @@ public class TestWorksheetAnalyte implements Auditable, Cloneable {
       this.testId = testId;
   }
 
-  public Integer getAnalyteId() {
-    return analyteId;
+  public Integer getTestAnalyteId() {
+    return testAnalyteId;
   }
-  public void setAnalyteId(Integer analyteId) {
-    if((analyteId == null && this.analyteId != null) || 
-       (analyteId != null && !analyteId.equals(this.analyteId)))
-      this.analyteId = analyteId;
+  public void setTestAnalyteId(Integer testAnalyteId) {
+    if((testAnalyteId == null && this.testAnalyteId != null) || 
+       (testAnalyteId != null && !testAnalyteId.equals(this.testAnalyteId)))
+      this.testAnalyteId = testAnalyteId;
   }
 
   public Integer getRepeat() {
@@ -139,7 +145,7 @@ public class TestWorksheetAnalyte implements Auditable, Cloneable {
 
       AuditUtil.getChangeXML(testId,original.testId,doc,"test_id");
 
-      AuditUtil.getChangeXML(analyteId,original.analyteId,doc,"analyte_id");
+      AuditUtil.getChangeXML(testAnalyteId,original.testAnalyteId,doc,"test_Analyte_id");
 
       AuditUtil.getChangeXML(repeat,original.repeat,doc,"repeat");
 
@@ -156,5 +162,11 @@ public class TestWorksheetAnalyte implements Auditable, Cloneable {
   public String getTableName() {
     return "test_worksheet_analyte";
   }
+TestAnalyte getTestAnalyte() {
+    return testAnalyte;
+}
+void setTestAnalyte(TestAnalyte testAnalyte) {
+    this.testAnalyte = testAnalyte;
+}
   
 }   

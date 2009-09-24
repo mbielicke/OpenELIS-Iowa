@@ -51,8 +51,9 @@ public class TestAnalyteManagerProxy{
         for(i = 0; i < man.rowCount(); i++) {
             list = grid.get(i);
             for(j = 0; j < list.size(); j++) {                
-                anaDO = list.get(j);                 
-                negId = anaDO.getId();                                    
+                anaDO = list.get(j);
+                if(j == 0)
+                    negId = anaDO.getId();                                    
                 anaDO.setTestId(man.getTestId());
                 anaDO.setSortOrder(++so);
                 tl.addTestAnalyte(anaDO);
@@ -85,10 +86,8 @@ public class TestAnalyteManagerProxy{
         
         for(i = 0; i < man.rowCount(); i++) {
             list = grid.get(i);            
-            for(j = 0; j < list.size(); j++) {
-                System.out.println("j "+ j+"%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");                
-                anaDO = list.get(j);     
-                System.out.println("anaDO.getId() "+ anaDO.getId()+"%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
+            for(j = 0; j < list.size(); j++) {                
+                anaDO = list.get(j);                     
                 anaDO.setSortOrder(++so);                
                 if(anaDO.getId() == null) {                                            
                     anaDO.setTestId(man.getTestId());

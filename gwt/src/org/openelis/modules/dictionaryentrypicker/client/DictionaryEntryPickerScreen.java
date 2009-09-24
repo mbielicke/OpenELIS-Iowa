@@ -63,7 +63,7 @@ public class DictionaryEntryPickerScreen extends Screen implements
     private DictionaryMetaMap dictMeta;  
 
     public enum Action {
-        COMMIT, ABORT
+        OK, CANCEL
     };
 
     public DictionaryEntryPickerScreen() throws Exception {
@@ -94,7 +94,7 @@ public class DictionaryEntryPickerScreen extends Screen implements
         findTextBox = (TextBox<String>)def.getWidget("findTextBox");
         addScreenHandler(findTextBox, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                findTextBox.setValue("");
+                findTextBox.setValue(null);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -130,26 +130,26 @@ public class DictionaryEntryPickerScreen extends Screen implements
             
         });
 
-        final AppButton commitButton = (AppButton)def.getWidget("commit");
-        addScreenHandler(commitButton, new ScreenEventHandler<Object>() {
+        final AppButton okButton = (AppButton)def.getWidget("okButton");
+        addScreenHandler(okButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-                commit();
+                ok();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                commitButton.enable(true);
+                okButton.enable(true);
             }
         });
 
-        final AppButton abortButton = (AppButton)def.getWidget("abort");
-        addScreenHandler(abortButton, new ScreenEventHandler<Object>() {
+        final AppButton cancelButton = (AppButton)def.getWidget("cancelButton");
+        addScreenHandler(cancelButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-                abort();
+                cancel();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                abortButton.enable(true);
-            }
+                cancelButton.enable(true);
+            }        
         });
         
         // Get AZ buttons and setup Screen listeners and call to for query
@@ -167,19 +167,18 @@ public class DictionaryEntryPickerScreen extends Screen implements
                 azButtons.enable(true);
             }
 
-        });
-        
-        category.setModel(getCategoryModel());
+        });                
 
+        setCategoryModel();
     }
 
-    public void commit() {
-        ActionEvent.fire(this, Action.COMMIT, selectionList);
+    public void ok() {        
+        ActionEvent.fire(this, Action.OK, selectionList);
         window.close();
     }
 
-    public void abort() {
-        ActionEvent.fire(this, Action.ABORT, null);
+    public void cancel() {
+        ActionEvent.fire(this, Action.CANCEL, null);
         window.close();
     }
 
@@ -191,7 +190,9 @@ public class DictionaryEntryPickerScreen extends Screen implements
         return addHandler(handler, ActionEvent.getType());
     }
     
-    
+    private void setCategoryModel() {
+        category.setModel(getCategoryModel());
+    }
     
     private ArrayList<TableDataRow> getCategoryModel() {
         DictionaryEntryPickerDataRPC rpc;

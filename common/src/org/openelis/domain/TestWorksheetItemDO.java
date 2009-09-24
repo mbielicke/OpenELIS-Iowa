@@ -62,9 +62,10 @@ public class TestWorksheetItemDO extends DataObject {
         return testWorksheetId;
     }
 
-    public void setTestWorksheetId(Integer testWorksheetId) {
+    public void setTestWorksheetId(Integer testWorksheetId) {        
         this.testWorksheetId = testWorksheetId;
         _changed = true;
+        
     }
 
     public Integer getPosition() {

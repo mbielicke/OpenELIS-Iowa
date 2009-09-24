@@ -52,7 +52,7 @@ import org.openelis.utils.Auditable;
                @NamedQuery(name = "TestResult.IdValueByTestId", query = "select distinct new org.openelis.domain.IdNameDO(tr.id,tr.value) " +
                                     " from TestResult tr where tr.testId = :testId order by tr.value "),
                @NamedQuery(name = "TestResult.TestResultDOList", query = "select distinct new org.openelis.domain.TestResultDO(tr.id,tr.testId,tr.resultGroup,"+
-                        " tr.sortOrder,tr.flagsId,tr.typeId,tr.value, tr.significantDigits,tr.roundingMethodId, tr.unitOfMeasureId)  from TestResult tr " +
+                        " tr.sortOrder,tr.unitOfMeasureId,tr.typeId,tr.value,tr.significantDigits,tr.roundingMethodId,tr.flagsId)  from TestResult tr " +
                         " where tr.testId = :testId and tr.resultGroup = :resultGroup order by tr.sortOrder "),               
                @NamedQuery(name = "TestResult.ResultCountByValue", query = "select tr.id from TestResult tr where tr.value = :value")})
 @Entity

@@ -132,7 +132,7 @@ public class TestWorksheet implements Auditable, Cloneable {
   public Integer getFormatId() {
     return formatId;
   }
-  public void setNumberFormatId(Integer formatId) {
+  public void setFormatId(Integer formatId) {
     if((formatId == null && this.formatId != null) || 
        (formatId != null && !formatId.equals(this.formatId)))
       this.formatId = formatId;

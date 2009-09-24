@@ -39,6 +39,9 @@ import org.openelis.domain.TestResultDO;
 import org.openelis.domain.TestSectionViewDO;
 import org.openelis.domain.TestTypeOfSampleDO;
 import org.openelis.domain.TestViewDO;
+import org.openelis.domain.TestWorksheetAnalyteViewDO;
+import org.openelis.domain.TestWorksheetItemDO;
+import org.openelis.domain.TestWorksheetViewDO;
 
 @Local
 public interface TestLocal {
@@ -49,6 +52,9 @@ public interface TestLocal {
     public ArrayList<ArrayList<TestResultDO>> fetchTestResultsById(Integer testId) throws Exception;
     public ArrayList<TestPrepViewDO> fetchPrepTestsById(Integer testId) throws Exception;
     public ArrayList<TestReflexViewDO> fetchReflexTestsById(Integer testId) throws Exception;
+    public TestWorksheetViewDO getTestWorksheet(Integer testId) throws Exception;
+    public ArrayList<TestWorksheetAnalyteViewDO> getTestWorksheetAnalytes(Integer testId) throws Exception;
+    public ArrayList<TestWorksheetItemDO> getTestWorksheetItems(Integer testId) throws Exception;
     
     public void add(TestDO testDO) throws Exception;
     public void update(TestDO testDO) throws Exception;
@@ -75,12 +81,26 @@ public interface TestLocal {
     
     public void updateReflexTest(TestReflexViewDO reflexTest) throws Exception; 
     public void addReflexTest(TestReflexViewDO reflexTest) throws Exception;
-    public void deleteReflexTest(TestReflexViewDO deletedAt) throws Exception;     
+    public void deleteReflexTest(TestReflexViewDO deletedAt) throws Exception;  
+    
+    public void updateTestWorksheet(TestWorksheetViewDO worksheet) throws Exception;
+    public void addTestWorksheet(TestWorksheetViewDO worksheet) throws Exception;
+    
+    public void updateTestWorksheetItem(TestWorksheetItemDO item) throws Exception;
+    public void addTestWorksheetItem(TestWorksheetItemDO item) throws Exception;    
+    public void deleteTestWorksheetItem(TestWorksheetItemDO deletedItemAt) throws Exception; 
+    
+    public void updateTestWorksheetAnalyte(TestWorksheetAnalyteViewDO analyte) throws Exception;
+    public void addTestWorksheetAnalyte(TestWorksheetAnalyteViewDO analyte) throws Exception;
+    public void deleteTestWorksheetAnalyte(TestWorksheetAnalyteViewDO deletedAnalyteAt) throws Exception;
     
     public void validateTest(TestViewDO test, List<TestSectionViewDO> sections,
                              List<TestTypeOfSampleDO> sampleTypes,
                              ArrayList<ArrayList<TestAnalyteViewDO>> analytes,
                              ArrayList<ArrayList<TestResultDO>> results,
-                             ArrayList<TestPrepViewDO> prepTests) throws Exception;
-                          
+                             ArrayList<TestPrepViewDO> prepTests,
+                             ArrayList<TestReflexViewDO> reflexTests, 
+                             TestWorksheetViewDO testWorksheetViewDO, 
+                             ArrayList<TestWorksheetItemDO> arrayList,
+                             ArrayList<TestWorksheetAnalyteViewDO> wsanalytes) throws Exception;   
 } 

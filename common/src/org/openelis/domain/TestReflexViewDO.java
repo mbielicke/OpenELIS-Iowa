@@ -66,7 +66,7 @@ public class TestReflexViewDO extends TestReflexDO {
         return addMethodName;
     }
 
-    public void setAddMethodName(String AddMethodName) {
+    public void setAddMethodName(String addMethodName) {
         this.addMethodName = DataBaseUtil.trim(addMethodName);
     }
 

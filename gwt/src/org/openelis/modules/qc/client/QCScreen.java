@@ -165,8 +165,8 @@ public class QCScreen extends OpenELISScreenForm<QCForm, Query<TableDataRow<Inte
     }
     
     public boolean canPerformCommand(Enum action, Object obj) {
-        if(action == DictionaryEntryPickerScreen.Action.COMMIT || 
-                        action == DictionaryEntryPickerScreen.Action.ABORT)
+        if(action == DictionaryEntryPickerScreen.Action.OK || 
+                        action == DictionaryEntryPickerScreen.Action.CANCEL)
             return true;
         else
             return super.canPerformCommand(action, obj);
@@ -464,7 +464,7 @@ public class QCScreen extends OpenELISScreenForm<QCForm, Query<TableDataRow<Inte
                        TestResultDO resDO;
                        org.openelis.gwt.widget.table.TableDataRow row;
                        Integer dictId;                               
-                       if(event.getAction() == DictionaryEntryPickerScreen.Action.COMMIT) {
+                       if(event.getAction() == DictionaryEntryPickerScreen.Action.OK) {
                            model = (ArrayList<org.openelis.gwt.widget.table.TableDataRow>)event.getData();                                                                                      
                            dictId = DictionaryCache.getIdFromSystemName("qc_analyte_dictionary");  
                            addQCAnalyteRows(model,dictId);                                                          
