@@ -50,7 +50,7 @@ import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 @NamedQueries({@NamedQuery(name = "TestReflex.TestReflexViewDOList", 
                  query = " select new org.openelis.domain.TestReflexViewDO(tr.id, tr.testId,tr.testAnalyteId,tr.testResultId," +
-                         " tr.flagsId,t.id,t.name,m.name,a.name,trs.value) " +
+                         " tr.flagsId,tr.addTestId,t.name,m.name,a.name,trs.value) " +
                          " from TestReflex tr left join tr.testResult trs left join tr.testAnalyte tra " +
                          "  left join tra.analyte a left join tr.addTest t left join t.method m where tr.testId = :testId"),
                @NamedQuery(name = "TestReflex.TestReflexesByTestAndTestResult", 

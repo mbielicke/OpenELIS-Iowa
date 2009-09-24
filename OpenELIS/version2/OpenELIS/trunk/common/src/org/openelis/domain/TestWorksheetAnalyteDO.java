@@ -33,16 +33,16 @@ public class TestWorksheetAnalyteDO extends DataObject {
 
     private static final long serialVersionUID = 1L;
 
-    protected Integer         id, testId, analyteId, repeat, flagId;
+    protected Integer         id, testId, testAnalyteId, repeat, flagId;
 
     public TestWorksheetAnalyteDO() {
     }
 
-    public TestWorksheetAnalyteDO(Integer id, Integer testId, Integer analyteId, Integer repeat,
+    public TestWorksheetAnalyteDO(Integer id, Integer testId, Integer testAnalyteId, Integer repeat,
                                   Integer flagId) {
         setId(id);
         setTestId(testId);
-        setAnalyteId(analyteId);
+        setTestAnalyteId(testAnalyteId);
         setRepeat(repeat);
         setFlagId(flagId);
         _changed = false;
@@ -66,12 +66,12 @@ public class TestWorksheetAnalyteDO extends DataObject {
         _changed = true;
     }
 
-    public Integer getAnalyteId() {
-        return analyteId;
+    public Integer getTestAnalyteId() {
+        return testAnalyteId;
     }
 
-    public void setAnalyteId(Integer analyteId) {
-        this.analyteId = analyteId;
+    public void setTestAnalyteId(Integer testAnalyteId) {
+        this.testAnalyteId = testAnalyteId;
         _changed = true;
     }
 

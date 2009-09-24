@@ -25,7 +25,6 @@
 */
 package org.openelis.manager;
 
-import org.openelis.domain.TestDO;
 import org.openelis.domain.TestViewDO;
 import org.openelis.exception.InconsistencyException;
 import org.openelis.exception.NotFoundException;
@@ -41,6 +40,7 @@ public class TestManager implements RPC {
     protected TestResultManager testResults;
     protected TestPrepManager prepTests;
     protected TestReflexManager reflexTests;
+    protected TestWorksheetManager worksheet;
         
     protected transient static TestManagerProxy proxy;
 
@@ -55,6 +55,7 @@ public class TestManager implements RPC {
         testResults = null;
         prepTests = null;
         reflexTests = null;
+        worksheet = null;
     }
     
     /**
@@ -89,7 +90,10 @@ public class TestManager implements RPC {
         return proxy().fetchWithPrepTestsAndReflexTests(id);
     }
     
-    
+    public static TestManager findByIdWithWorksheet(Integer id) throws Exception{
+        return proxy().fetchWithWorksheet(id);
+    }    
+        
     public TestManager fetchForUpdate() throws Exception {
         if(test.getId() == null)
             throw new InconsistencyException("test id is null");
@@ -116,30 +120,6 @@ public class TestManager implements RPC {
         
         return sampleTypes;
     }    
-    
-    /*public TestAnalyteManager getAnalytesAndResults() throws Exception {
-        if(testAnalytes == null || testResults == null){
-            if(test.getId() != null) {
-                try {
-                    testAnalytes = TestAnalyteManager.findByTestId(test.getId());
-                    testResults = TestResultManager.findByTestId(test.getId());
-                } catch(NotFoundException e){
-                    //ignore
-                }catch(Exception e){
-                    e.printStackTrace();
-                    throw e;
-                }
-            }
-        }
-        
-        if(testAnalytes == null)
-            testAnalytes = TestAnalyteManager.getInstance(); 
-        
-        if(testResults == null)
-            testResults = TestResultManager.getInstance();        
-        
-        return testAnalytes;
-    }*/
     
     public TestAnalyteManager getTestAnalytes() throws Exception {
         if(testAnalytes == null){
@@ -219,6 +199,26 @@ public class TestManager implements RPC {
             reflexTests = TestReflexManager.getInstance();        
         
         return reflexTests;
+    }
+    
+    public TestWorksheetManager getTestWorksheet() throws Exception {
+        if(worksheet == null){
+            if(test.getId() != null) {
+                try {
+                    worksheet = TestWorksheetManager.findByTestId(test.getId());
+                } catch(NotFoundException e){
+                    //ignore
+                }catch(Exception e){
+                    e.printStackTrace();
+                    throw e;
+                }
+            }
+        }
+        
+        if(worksheet == null)
+            worksheet = TestWorksheetManager.getInstance();        
+        
+        return worksheet;
     }
     
     public TestViewDO getTest() {

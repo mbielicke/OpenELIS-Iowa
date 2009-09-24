@@ -64,6 +64,10 @@ public class TestManagerProxy {
         return service.call("fetchWithPrepTestsAndReflexTests", testId);
     }
     
+    public TestManager fetchWithWorksheet(Integer testId) throws Exception {
+        return service.call("fetchWithWorksheet", testId);
+    }
+    
     public TestManager fetchForUpdate(Integer testId) throws Exception {
         return service.call("fetchForUpdate",testId);
     }

@@ -43,6 +43,7 @@ import org.openelis.manager.TestPrepManager;
 import org.openelis.manager.TestReflexManager;
 import org.openelis.manager.TestResultManager;
 import org.openelis.manager.TestTypeOfSampleManager;
+import org.openelis.manager.TestWorksheetManager;
 import org.openelis.remote.TestManagerRemote;
 import org.openelis.utils.ReferenceTableCache;
 
@@ -66,29 +67,25 @@ public class TestManagerBean implements TestManagerRemote {
         testRefTableId = ReferenceTableCache.getReferenceTable("test");
     }    
 
-    public TestManager add(TestManager man) throws Exception {
-        man.validate();
-        
-        UserTransaction ut = ctx.getUserTransaction();
-        ut.begin();
-        man.add();
-        ut.commit();
-        
+    public TestManager add(TestManager man) throws Exception {        
+            man.validate();
+
+            UserTransaction ut = ctx.getUserTransaction();
+            ut.begin();
+            man.add();
+            ut.commit();
+          
         return man;
     }
     
-    public TestManager update(TestManager man) throws Exception {
-        try{
-            man.validate();
+    public TestManager update(TestManager man) throws Exception {        
+        man.validate();
+            
+        UserTransaction ut = ctx.getUserTransaction();
+        ut.begin();
+        man.update();
+        ut.commit();
         
-            UserTransaction ut = ctx.getUserTransaction();
-            ut.begin();
-            man.update();
-            ut.commit();
-        }catch(Exception ex) {
-            ex.printStackTrace();
-            throw ex;
-        }
         return man;
     }
 
@@ -116,6 +113,12 @@ public class TestManagerBean implements TestManagerRemote {
     
     public TestManager fetchWithPrepTestsAndReflexTests(Integer testId) throws Exception {
         TestManager man = TestManager.findByIdWithPrepTestAndReflexTests(testId);
+        
+        return man;
+    }
+    
+    public TestManager fetchWithWorksheet(Integer testId) throws Exception {
+        TestManager man = TestManager.findByIdWithWorksheet(testId);
         
         return man;
     }
@@ -160,6 +163,12 @@ public class TestManagerBean implements TestManagerRemote {
         TestReflexManager trm = TestReflexManager.findByTestId(testId);
         
         return trm;
+    }
+    
+    public TestWorksheetManager fetchWorksheetByTestId(Integer testId) throws Exception {
+        TestWorksheetManager twm = TestWorksheetManager.findByTestId(testId);
+        
+        return twm;
     }
 
 }

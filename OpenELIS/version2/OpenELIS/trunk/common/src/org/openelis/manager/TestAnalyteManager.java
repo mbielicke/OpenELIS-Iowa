@@ -29,7 +29,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.openelis.domain.TestAnalyteViewDO;
-import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.gwt.common.RPC;
 
 public class TestAnalyteManager implements RPC {

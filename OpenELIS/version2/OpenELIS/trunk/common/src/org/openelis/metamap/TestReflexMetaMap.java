@@ -31,7 +31,8 @@ import org.openelis.meta.TestReflexMeta;
 
 public class TestReflexMetaMap extends TestReflexMeta implements MetaMap {
 
-   private TestMeta ADD_TEST;
+   public TestMeta ADD_TEST;
+   public TestAnalyteMetaMap TEST_ANALYTE;
     
    public String buildFrom(String where) {        
         return "TestReflex ";
@@ -40,26 +41,29 @@ public class TestReflexMetaMap extends TestReflexMeta implements MetaMap {
    public TestReflexMetaMap(){
        super();
        ADD_TEST = new TestMeta(path+"addTest.");
+       TEST_ANALYTE = new TestAnalyteMetaMap("path.testAnalyte.");
    }
    
    public TestReflexMetaMap(String path){
        super(path);
        ADD_TEST = new TestMeta(path+"addTest.");
+       TEST_ANALYTE = new TestAnalyteMetaMap(path+"testAnalyte.");
    }
    
    public boolean hasColumn(String name){        
        if(name.startsWith(path+"addTest."))
            return ADD_TEST.hasColumn(name);
+       if(name.startsWith(path+"testAnalyte."))
+           return TEST_ANALYTE.hasColumn(name);
        return super.hasColumn(name);
    }
    
    public TestMeta getAddTest() {
        return ADD_TEST;
-    }
-   
-   public static String getTableName(){
-       return "TestReflex";
    }
-
+   
+   public TestAnalyteMetaMap getTestAnalyte(){
+       return TEST_ANALYTE;
+   }
    
 }

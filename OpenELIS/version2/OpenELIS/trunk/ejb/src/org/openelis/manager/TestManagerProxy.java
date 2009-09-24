@@ -30,7 +30,6 @@ import java.util.HashMap;
 
 import javax.naming.InitialContext;
 
-import org.openelis.domain.TestDO;
 import org.openelis.domain.TestSectionViewDO;
 import org.openelis.domain.TestViewDO;
 import org.openelis.local.TestLocal;
@@ -45,6 +44,7 @@ public class TestManagerProxy {
         TestResultManager trm;
         TestPrepManager tpm;
         TestReflexManager tfm;
+        TestWorksheetManager twm;
         
         Integer testId;
         HashMap<Integer,Integer> analyteMap, resultMap;        
@@ -80,6 +80,10 @@ public class TestManagerProxy {
         tfm = man.getReflexTests();
         tfm.setTestId(testId);
         tfm.add(analyteMap, resultMap);
+        
+        twm = man.getTestWorksheet();
+        twm.setTestId(testId);
+        twm.add(analyteMap);        
 
         return man;
     }
@@ -92,13 +96,13 @@ public class TestManagerProxy {
         TestResultManager trm;
         TestPrepManager tpm;
         TestReflexManager tfm;
+        TestWorksheetManager twm;
         
         Integer testId;
         HashMap<Integer,Integer> analyteMap, resultMap;
         
         analyteMap = new HashMap<Integer, Integer>();
         resultMap = new HashMap<Integer, Integer>();
-
         tl = getTestLocal();
         tl.update(man.getTest());
 
@@ -127,7 +131,10 @@ public class TestManagerProxy {
         tfm = man.getReflexTests();
         tfm.setTestId(testId);
         tfm.update(analyteMap, resultMap);
-
+        
+        twm = man.getTestWorksheet();
+        twm.setTestId(testId);
+        twm.update(analyteMap);   
         return man;
     }
 
@@ -188,6 +195,16 @@ public class TestManagerProxy {
         
         return man;
     }
+    
+    public TestManager fetchWithWorksheet(Integer testId) throws Exception {
+        TestManager man;
+
+        man = fetch(testId);
+        man.getTestWorksheet();
+        
+        return man;
+    }
+    
 
     public TestManager fetchForUpdate(Integer testId) throws Exception {
         throw new UnsupportedOperationException();
@@ -207,7 +224,11 @@ public class TestManagerProxy {
                         man.getSampleTypes().getTypes(),
                         man.getTestAnalytes().getAnalytes(),
                         man.getTestResults().getResults(),
-                        man.getPrepTests().getPreps());
+                        man.getPrepTests().getPreps(),
+                        man.getReflexTests().getReflexes(),
+                        man.getTestWorksheet().getWorksheet(),
+                        man.getTestWorksheet().getItems(),
+                        man.getTestWorksheet().getAnalytes());
     }
 
     private TestLocal getTestLocal() {

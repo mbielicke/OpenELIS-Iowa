@@ -26,7 +26,7 @@
 package org.openelis.domain;
 
 /**
- * The class extends test worksheet analysis DO and adds a commonly used field
+ * The class extends test worksheet analyte DO and adds a commonly used field
  * analyte name. This additional field is for read/display only and do not get
  * committed to the database. Note: isChanged will reflect any changes to
  * read/display fields.
@@ -37,14 +37,18 @@ public class TestWorksheetAnalyteViewDO extends TestWorksheetAnalyteDO {
     private static final long serialVersionUID = 1L;
 
     protected String          analyteName;
+    
+    protected Integer         sortOrder;  
 
     public TestWorksheetAnalyteViewDO() {
     }
 
-    public TestWorksheetAnalyteViewDO(Integer id, Integer testId, Integer analyteId,
-                                      Integer repeat, Integer flagId, String analyteName) {
-        super(id, testId, analyteId, repeat, flagId);
+    public TestWorksheetAnalyteViewDO(Integer id, Integer testId, Integer testAnalyteId,
+                                      Integer repeat, Integer flagId, String analyteName,
+                                      Integer sortOrder) {
+        super(id, testId, testAnalyteId, repeat, flagId);
         setAnalyteName(analyteName);
+        setSortOrder(sortOrder);        
     }
 
     public String getAnalyteName() {
@@ -53,5 +57,13 @@ public class TestWorksheetAnalyteViewDO extends TestWorksheetAnalyteDO {
 
     public void setAnalyteName(String analyteName) {
         this.analyteName = analyteName;
+    }
+
+    public Integer getSortOrder() {
+        return sortOrder;
+    }
+
+    public void setSortOrder(Integer sortOrder) {
+        this.sortOrder = sortOrder;
     }
 }

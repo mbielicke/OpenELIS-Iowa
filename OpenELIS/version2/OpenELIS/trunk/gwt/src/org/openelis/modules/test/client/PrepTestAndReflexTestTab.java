@@ -51,8 +51,11 @@ import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.table.TableColumn;
+import org.openelis.gwt.widget.table.TableDataCell;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableWidget;
+import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
+import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
 import org.openelis.gwt.widget.table.event.CellEditedEvent;
 import org.openelis.gwt.widget.table.event.CellEditedHandler;
 import org.openelis.gwt.widget.table.event.RowAddedEvent;
@@ -201,6 +204,27 @@ public class PrepTestAndReflexTestTab extends Screen implements GetMatchesHandle
                 testReflexTable.setQueryMode(event.getState() == State.QUERY);
             }
         });
+        
+        testReflexTable.addBeforeCellEditedHandler(new BeforeCellEditedHandler(){
+            public void onBeforeCellEdited(BeforeCellEditedEvent event) {
+                int row, col;
+                TableDataRow val;
+                TableDataCell tdc;
+                                
+                row = event.getRow();
+                col = event.getCell();                
+                if(col == 2) {                    
+                    val = (TableDataRow)testReflexTable.getRow(row).cells.get(1).getValue();
+                    tdc = testReflexTable.getCell(row, 1);                    
+                    if(val == null || val.key == null || tdc.getErrors() != null) {
+                        Window.alert(consts.get("selectAnaBeforeRes"));
+                        event.cancel();
+                    }
+                }
+                
+            }
+            
+        });
 
         testReflexTable.addCellEditedHandler(new CellEditedHandler() {
             public void onCellUpdated(CellEditedEvent event) {
@@ -295,6 +319,7 @@ public class PrepTestAndReflexTestTab extends Screen implements GetMatchesHandle
                 TableDataRow row,trow,arow;
                 Integer rg;
                 int ar,size;
+                String value;
                 
                 ar = testReflexTable.activeRow;                
                 trow =  testReflexTable.getRow(ar);               
@@ -319,9 +344,12 @@ public class PrepTestAndReflexTestTab extends Screen implements GetMatchesHandle
                 for(int i = 0; i < size; i++) {
                     res = testResultManager.getResultAt(rg, i);
                     row = new TableDataRow(1);
-                    row.key = res.getId();
-                    row.cells.get(0).setValue(res.getValue());
-                    model.add(row);
+                    value = res.getValue();
+                    if(value != null && !"".equals(value)) {
+                        row.key = res.getId();
+                        row.cells.get(0).setValue(res.getValue());
+                        model.add(row);
+                    }
                 }
                 
                 if(model.size() == 0)
@@ -445,6 +473,26 @@ public class PrepTestAndReflexTestTab extends Screen implements GetMatchesHandle
         
     }
     
+    protected void clearKeys(TestPrepManager tpm, TestReflexManager tfm) {
+        TestPrepViewDO prepDO;
+        TestReflexViewDO refDO;
+        int i;
+        
+        for(i = 0; i < tpm.count(); i++) {
+            prepDO = tpm.getPrepAt(i);
+            prepDO.setId(null);
+            prepDO.setTestId(null);
+        }
+        
+        for(i = 0; i < tfm.count(); i++) {
+            refDO = tfm.getReflexAt(i);
+            refDO.setId(null);
+            refDO.setTestAnalyteId(refDO.getTestAnalyteId()*(-1));
+            refDO.setTestResultId(refDO.getTestResultId()*(-1));
+            refDO.setTestId(null);
+        }
+    }
+    
 
     private ArrayList<TableDataRow> getPrepTestModel() {
         ArrayList<TableDataRow> model;
@@ -546,6 +594,8 @@ public class PrepTestAndReflexTestTab extends Screen implements GetMatchesHandle
             
             if(arow.key.equals(id) && !(val.equals(name))) {
                 testReflexTable.setCellError(i, 1, consts.get(key));
+                arow = new TableDataRow(null,"");
+                trow.cells.get(1).setValue(arow);
             }
         }
     }
@@ -561,6 +611,8 @@ public class PrepTestAndReflexTestTab extends Screen implements GetMatchesHandle
             
             if(rrow.key.equals(id) && !(val.equals(value))) {
                 testReflexTable.setCellError(i, 2, consts.get(key));
+                rrow = new TableDataRow(null,"");
+                trow.cells.get(2).setValue(rrow);
             }
         }
     } 

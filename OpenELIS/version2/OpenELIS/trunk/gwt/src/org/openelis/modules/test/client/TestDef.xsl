@@ -24,8 +24,31 @@ Alternatively, the contents of this file marked
 license ("UIRF Software License"), in which case the provisions of a
 UIRF Software License are applicable instead of those above. 
   -->
-<xsl:stylesheet extension-element-prefixes="resource" version="1.0" xmlns:addTestMeta="xalan://org.openelis.metamap.TestMeta" xmlns:label="xalan://org.openelis.meta.LabelMeta" xmlns:locale="xalan://java.util.Locale" xmlns:meta="xalan://org.openelis.metamap.TestMetaMap" xmlns:method="xalan://org.openelis.meta.MethodMeta" xmlns:prepTestMeta="xalan://org.openelis.metamap.TestMeta" xmlns:resource="xalan://org.openelis.util.UTFResource" xmlns:script="xalan://org.openelis.meta.ScriptletMeta" xmlns:testAnalyte="xalan://org.openelis.metamap.TestAnalyteMetaMap" xmlns:testPrep="xalan://org.openelis.metamap.TestPrepMetaMap" xmlns:testRef="xalan://org.openelis.metamap.TestReflexMetaMap" xmlns:testResult="xalan://org.openelis.metamap.TestResultMetaMap" xmlns:testSection="xalan://org.openelis.metamap.TestSectionMetaMap" xmlns:testTOS="xalan://org.openelis.metamap.TestTypeOfSampleMetaMap" xmlns:testTrailer="xalan://org.openelis.meta.TestTrailerMeta" xmlns:testWrksht="xalan://org.openelis.metamap.TestWorksheetMetaMap" xmlns:testWrkshtAna="xalan://org.openelis.metamap.TestWorksheetAnalyteMetaMap" xmlns:testWrkshtItm="xalan://org.openelis.metamap.TestWorksheetItemMetaMap" xmlns:wsscript="xalan://org.openelis.meta.ScriptletMeta" xmlns:xalan="http://xml.apache.org/xalan" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
-  <xsl:import href="aToZOneColumn.xsl" />
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+                xmlns:xalan="http://xml.apache.org/xalan"
+                xmlns:resource="xalan://org.openelis.util.UTFResource"
+                xmlns:locale="xalan://java.util.Locale" 
+                xmlns:meta="xalan://org.openelis.metamap.TestMetaMap" 
+                xmlns:addTestMeta="xalan://org.openelis.metamap.TestMeta" 
+                xmlns:label="xalan://org.openelis.meta.LabelMeta"
+                xmlns:method="xalan://org.openelis.meta.MethodMeta"
+                xmlns:prepTestMeta="xalan://org.openelis.metamap.TestMeta" 
+                xmlns:script="xalan://org.openelis.meta.ScriptletMeta" 
+                xmlns:testAnalyte="xalan://org.openelis.metamap.TestAnalyteMetaMap"               
+                xmlns:testPrep="xalan://org.openelis.metamap.TestPrepMetaMap"
+                xmlns:testRef="xalan://org.openelis.metamap.TestReflexMetaMap"
+                xmlns:testRefTana="xalan://org.openelis.metamap.TestAnalyteMetaMap" 
+                xmlns:testRefAna="xalan://org.openelis.meta.AnalyteMeta"
+                xmlns:testResult="xalan://org.openelis.metamap.TestResultMetaMap"
+                xmlns:testSection="xalan://org.openelis.metamap.TestSectionMetaMap"
+                xmlns:testTOS="xalan://org.openelis.metamap.TestTypeOfSampleMetaMap"
+                xmlns:testTrailer="xalan://org.openelis.meta.TestTrailerMeta"
+                xmlns:testWrksht="xalan://org.openelis.metamap.TestWorksheetMetaMap" 
+                xmlns:testWrkshtAna="xalan://org.openelis.metamap.TestWorksheetAnalyteMetaMap" 
+                xmlns:testWrkshtItm="xalan://org.openelis.metamap.TestWorksheetItemMetaMap"
+                xmlns:wsscript="xalan://org.openelis.meta.ScriptletMeta"
+                extension-element-prefixes="resource" version="2.0">
+  <xsl:import href="IMPORT/aToZOneColumn.xsl" />
   <xalan:component prefix="resource">
     <xalan:script lang="javaclass" src="xalan://org.openelis.util.UTFResource" />
   </xalan:component>
@@ -58,6 +81,12 @@ UIRF Software License are applicable instead of those above.
   </xalan:component>
   <xalan:component prefix="testRef">
     <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.TestReflexMetaMap" />
+  </xalan:component>
+    <xalan:component prefix="testRefTana">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.TestAnalyteMetaMap"/>
+  </xalan:component>
+      <xalan:component prefix="testRefAna">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.AnalyteMeta"/>
   </xalan:component>
   <xalan:component prefix="testWrksht">
     <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.TestWorksheetMetaMap" />
@@ -94,6 +123,8 @@ UIRF Software License are applicable instead of those above.
     <xsl:variable name="tos" select="meta:getTestTypeOfSample($test)" />
     <xsl:variable name="tref" select="meta:getTestReflex($test)" />
     <xsl:variable name="at" select="testRef:getAddTest($tref)" />
+    <xsl:variable name="tfta" select="testRef:getTestAnalyte($tref)" />
+    <xsl:variable name="tfa" select="testRefTana:getAnalyte($tfta)" />
     <xsl:variable name="tws" select="meta:getTestWorksheet($test)" />
     <xsl:variable name="wss" select="testWrksht:getScriptlet($tws)" />
     <xsl:variable name="twsi" select="meta:getTestWorksheetItem($test)" />
@@ -702,7 +733,7 @@ UIRF Software License are applicable instead of those above.
                                     <col width="160" header="Name" />
                                   </autoComplete>
                                 </col>
-                                <col key="{testRef:getTestAnalyteId($tref)}" width="181" sort="false" header="{resource:getString($constants,'testAnalyte')}">
+                                <col key="{testRefAna:getName($tfa)}" width="181" sort="false" header="{resource:getString($constants,'testAnalyte')}">
                                  <autoComplete width="181" case="mixed" popWidth="auto" required="true" autoCall="PrepTestAndReflexTestTab">
                                    <col width="181" field="Integer"  />
                                  </autoComplete>

@@ -164,8 +164,8 @@ public class AuxiliaryScreen extends OpenELISScreenForm<AuxiliaryForm, Query<Tab
     }
     
     public boolean canPerformCommand(Enum action, Object obj) {
-        if(action == DictionaryEntryPickerScreen.Action.COMMIT || 
-                        action == DictionaryEntryPickerScreen.Action.ABORT)
+        if(action == DictionaryEntryPickerScreen.Action.OK || 
+                        action == DictionaryEntryPickerScreen.Action.CANCEL)
             return true;
         else
             return super.canPerformCommand(action, obj);
@@ -283,26 +283,7 @@ public class AuxiliaryScreen extends OpenELISScreenForm<AuxiliaryForm, Query<Tab
             qField.setValue(query);
             commitQuery(qField);
         }
-    }
-    
-    /**
-     * This function is executed whenever the modal window for dictionary lookup
-     * is closed. If autoadd is enabled for auxFieldValueTableWidget which 
-     * means that the data currently showing in it is being referred to as the field
-     * values for some row in auxFieldTableWidget, then the rows selected, if any,
-     * from the lookup screen are added to auxFieldValueTableWidget. If autoadd is
-     * not enabled for auxFieldValueTableWidget, then the user is notified about first 
-     * selecting some row in auxFieldTableWidget.
-     
-    public void dictionaryLookupClosed() {              
-        Integer key;
-        if(auxFieldValueTableWidget.model.getAutoAdd()) {        
-            key = DictionaryCache.getIdFromSystemName("aux_dictionary");  
-            addAuxFieldValueRows(selectedRows,key);                                                      
-        } else {
-            Window.alert(consts.get("auxFieldSelFirst"));             
-        }       
-    }*/
+    }    
     
     public void startEditing(SourcesTableWidgetEvents sender, int row, int col) {
         
@@ -417,7 +398,7 @@ public class AuxiliaryScreen extends OpenELISScreenForm<AuxiliaryForm, Query<Tab
                        TestResultDO resDO;
                        org.openelis.gwt.widget.table.TableDataRow row;
                        Integer dictId;                               
-                       if(event.getAction() == DictionaryEntryPickerScreen.Action.COMMIT) {
+                       if(event.getAction() == DictionaryEntryPickerScreen.Action.CANCEL) {
                            model = (ArrayList<org.openelis.gwt.widget.table.TableDataRow>)event.getData();                                                                                      
                            dictId = DictionaryCache.getIdFromSystemName("aux_dictionary");                             
                            if(auxFieldValueTableWidget.model.getAutoAdd()) {        

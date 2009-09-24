@@ -82,6 +82,7 @@ UIRF Software License are applicable instead of those above.
     <inherits name="org.openelis.modules.worksheetCreation.WorksheetCreation"/> 
     <inherits name="org.openelis.modules.testPrepPicker.TestPrepPicker"/> 
     <inherits name="org.openelis.modules.dictionaryentrypicker.DictionaryEntryPicker"/>
+    <inherits name="org.openelis.modules.testanalytepicker.TestAnalytePicker"/>
     <inherits name="org.openelis.ELISCommon"/>     
     
     <source path="manager"/>

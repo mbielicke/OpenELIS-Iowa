@@ -8,6 +8,7 @@ import org.openelis.manager.TestPrepManager;
 import org.openelis.manager.TestReflexManager;
 import org.openelis.manager.TestResultManager;
 import org.openelis.manager.TestTypeOfSampleManager;
+import org.openelis.manager.TestWorksheetManager;
 
 @Remote
 public interface TestManagerRemote {
@@ -18,15 +19,16 @@ public interface TestManagerRemote {
     public TestManager fetchWithAnalytesAndResults(Integer testId) throws Exception;
     public TestManager fetchWithPrepTests(Integer testId) throws Exception;
     public TestManager fetchWithPrepTestsAndReflexTests(Integer testId) throws Exception;
+    public TestManager fetchWithWorksheet(Integer testId) throws Exception;
     
+    public TestTypeOfSampleManager fetchSampleTypeByTestId(Integer testId)throws Exception;    
     public TestAnalyteManager fetchTestAnalytesByTestId(Integer testId) throws Exception;
     public TestResultManager fetchTestResultsByTestId(Integer testId) throws Exception;
     public TestPrepManager fetchPrepTestsByTestId(Integer testId) throws Exception;
     public TestReflexManager fetchReflexiveTestsByTestId(Integer testId) throws Exception;
+    public TestWorksheetManager fetchWorksheetByTestId(Integer testId) throws Exception;
        
     public TestManager fetchForUpdate(Integer orgId) throws Exception;
-    public TestManager abortUpdate(Integer orgId) throws Exception;
-    public TestTypeOfSampleManager fetchSampleTypeByTestId(Integer testId)throws Exception;
-    
+    public TestManager abortUpdate(Integer orgId) throws Exception;        
           
 }

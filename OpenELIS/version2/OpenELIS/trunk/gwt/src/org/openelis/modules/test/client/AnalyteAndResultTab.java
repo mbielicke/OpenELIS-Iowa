@@ -33,7 +33,6 @@ import org.openelis.cache.DictionaryCache;
 import org.openelis.common.AutocompleteRPC;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameDO;
-import org.openelis.domain.TestAnalyteDO;
 import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.domain.TestResultDO;
 import org.openelis.domain.TestTypeOfSampleDO;
@@ -77,7 +76,6 @@ import org.openelis.manager.TestResultManager;
 import org.openelis.manager.TestTypeOfSampleManager;
 import org.openelis.metamap.TestMetaMap;
 import org.openelis.modules.dictionaryentrypicker.client.DictionaryEntryPickerScreen;
-import org.openelis.modules.environmentalSampleLogin.client.SampleItemTab.Action;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.SelectionEvent;
@@ -146,8 +144,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                analyteTable.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
-                analyteTable.setQueryMode(event.getState() == State.QUERY);
+                analyteTable.enable(EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));                
             }
         });
        
@@ -425,13 +422,9 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
                 }                
             }
 
-            public void onStateChange(StateChangeEvent<State> event) {
-                typeId.enable(EnumSet.of(State.QUERY).contains(event.getState()));
-                
+            public void onStateChange(StateChangeEvent<State> event) {                               
                 if(EnumSet.of(State.DEFAULT,State.DISPLAY).contains(event.getState()) && typeId.getData() != null) 
-                    typeId.setSelection(null);
-                
-                typeId.setQueryMode(event.getState() == State.QUERY);
+                    typeId.setSelection(null);            
             }
         });
 
@@ -480,13 +473,9 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
                     
             }
 
-            public void onStateChange(StateChangeEvent<State> event) {
-                isReportable.enable(EnumSet.of(State.QUERY).contains(event.getState()));
-                
+            public void onStateChange(StateChangeEvent<State> event) {                
                 if(EnumSet.of(State.DEFAULT,State.DISPLAY).contains(event.getState())) 
-                    isReportable.setValue("N");
-                
-                isReportable.setQueryMode(event.getState() == State.QUERY);
+                    isReportable.setValue("N");               
             }
         });
 
@@ -534,13 +523,9 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
                 
             }
 
-            public void onStateChange(StateChangeEvent<State> event) {
-                scriptlet.enable(EnumSet.of(State.QUERY).contains(event.getState()));
-                
+            public void onStateChange(StateChangeEvent<State> event) {                                
                 if(EnumSet.of(State.DEFAULT,State.DISPLAY).contains(event.getState())) 
                     scriptlet.setSelection(null,"");
-                
-                scriptlet.setQueryMode(event.getState() == State.QUERY);
             }
         });
         
@@ -789,6 +774,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
             public void onStateChange(StateChangeEvent<State> event) {
                 resultTable.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
                 resultTable.setQueryMode(event.getState() == State.QUERY);
+                setUnitsOfMeasure();
             }
         });
 
@@ -856,11 +842,15 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
         resultTable.addRowDeletedHandler(new RowDeletedHandler() {
             public void onRowDeleted(RowDeletedEvent event) {
                 int row,selTab;
+                TestResultDO resDO;
                 
                 selTab = resultTabPanel.getTabBar().getSelectedTab();                
-                row = event.getIndex();        
+                row = event.getIndex();                     
+                resDO = testResultManager.getResultAt(selTab+1, row);
                 
                 testResultManager.removeResultAt(selTab+1, row);
+                
+                ActionEvent.fire(anaResTab, Action.RESULT_DELETED, resDO);
             }
         });
 
@@ -951,7 +941,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
                                
                                selTab = resultTabPanel.getTabBar().getSelectedTab();     
                                numTabs = resultTabPanel.getTabBar().getTabCount();
-                               if(event.getAction() == DictionaryEntryPickerScreen.Action.COMMIT) {
+                               if(event.getAction() == DictionaryEntryPickerScreen.Action.OK) {
                                    if(numTabs == 0){
                                        Window.alert(consts.get("atleastOneResGrp"));
                                        return;
@@ -1092,7 +1082,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
         field = error.getFieldName();
         
         //
-        // find out which table row does the grid row at dindex represents
+        // find out which table row does the grid row at dindex represent
         //
         for(trindex = 0; trindex < displayManager.rowCount(); trindex++) {
            if(dindex == displayManager.getIndexAt(trindex))                
@@ -1123,7 +1113,43 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
     
     public HandlerRegistration addActionHandler(ActionHandler<AnalyteAndResultTab.Action> handler) {
         return addHandler(handler, ActionEvent.getType());
-    } 
+    }
+    
+
+    protected void clearKeys(TestAnalyteManager tam,TestResultManager trm) {
+        TestAnalyteViewDO anaDO;
+        TestResultDO resDO;
+        Integer id;
+        int i, j;
+        
+        for(i = 0; i < tam.rowCount(); i++) {
+            for(j = 0; j < tam.columnCount(i); j++) {
+                anaDO = tam.getAnalyteAt(i, j);
+                if(j == 0) {
+                    anaDO.setId(anaDO.getId()*(-1));
+                    id = anaDO.getId();
+                    if(id < tempId) 
+                        tempId = id;
+                } else {
+                    anaDO.setId(null);
+                }
+                anaDO.setTestId(null);                
+            }
+        }
+        
+        for(i = 1; i < trm.groupCount()+1; i++) {
+            for(j = 0; j < trm.getResultGroupSize(i); j++) {
+                resDO = trm.getResultAt(i, j);
+                resDO.setId(resDO.getId()*(-1));
+                resDO.setTestId(null);
+                id = resDO.getId();
+                if(id < tempId) 
+                    tempId = id;
+            }
+        }
+            
+    }
+
     
     private ArrayList<TableDataRow> getAnalyteTableModel() {
        int m,c,len;

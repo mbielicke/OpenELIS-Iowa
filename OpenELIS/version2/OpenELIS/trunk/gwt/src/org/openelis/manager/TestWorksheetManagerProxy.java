@@ -23,38 +23,33 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.metamap;
+package org.openelis.manager;
 
-import org.openelis.gwt.common.MetaMap;
-import org.openelis.meta.AnalyteMeta;
-import org.openelis.meta.TestAnalyteMeta;
+import java.util.HashMap;
 
-public class TestAnalyteMetaMap extends TestAnalyteMeta implements MetaMap {
+import org.openelis.gwt.services.ScreenService;
 
-    public AnalyteMeta ANALYTE;
+
+public class TestWorksheetManagerProxy {
+
+    protected static final String TEST_MANAGER_SERVICE_URL = "org.openelis.modules.test.server.TestService";
+    protected ScreenService service;
     
-    public String buildFrom(String where) {        
-        return "TestAnalyte ";
-    }
-
-    public TestAnalyteMetaMap() {
-        super();
-        ANALYTE = new AnalyteMeta("path.analyte.");
-    }
-   
-    public TestAnalyteMetaMap(String path){
-        super(path);
-        ANALYTE = new AnalyteMeta(path+"analyte.");
+    public TestWorksheetManagerProxy() {
+        service = new ScreenService("OpenELISServlet?service="+TEST_MANAGER_SERVICE_URL);
     }
     
-    public boolean hasColumn(String name) {
-        if(name.startsWith(path+"analyte."))
-            return ANALYTE.hasColumn(name);
-        return super.hasColumn(name);
+    public TestWorksheetManager add(TestWorksheetManager man,
+                                    HashMap<Integer,Integer> anaIdMap) throws Exception {
+        throw new UnsupportedOperationException();
     }
     
-    public AnalyteMeta getAnalyte() {
-        return ANALYTE;
+    public TestWorksheetManager update(TestWorksheetManager man,
+                                       HashMap<Integer,Integer> anaIdMap) throws Exception {
+        throw new UnsupportedOperationException();
     }
-
+    
+    public TestWorksheetManager fetchByTestId(Integer testId) throws Exception {
+        return service.call("fetchWorksheetByTestId", testId);
+    } 
 }

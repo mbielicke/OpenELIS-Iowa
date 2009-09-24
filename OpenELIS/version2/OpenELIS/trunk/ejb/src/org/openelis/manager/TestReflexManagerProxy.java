@@ -72,8 +72,7 @@ public class TestReflexManagerProxy {
         
         tl = getTestLocal(); 
                 
-        for(int i = 0; i < man.deleteCount(); i++) {
-            System.out.println("delete%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
+        for(int i = 0; i < man.deleteCount(); i++) {            
             tl.deleteReflexTest(man.getDeletedAt(i));
         }
         
@@ -82,9 +81,7 @@ public class TestReflexManagerProxy {
             
             anaId = reflexTest.getTestAnalyteId();
             resId = reflexTest.getTestResultId();
-            
-            System.out.println("anaId "+ anaId+"%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
-            System.out.println("resId "+ resId+"%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
+                        
             if(anaId < 0)
                 reflexTest.setTestAnalyteId(analyteMap.get(anaId));
             
@@ -92,11 +89,9 @@ public class TestReflexManagerProxy {
                 reflexTest.setTestResultId(resultMap.get(resId));
             
             if(reflexTest.getId() == null){                
-                reflexTest.setTestId(man.getTestId());
-                System.out.println("add%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
+                reflexTest.setTestId(man.getTestId());             
                 tl.addReflexTest(reflexTest);
-            } else {
-                System.out.println("update %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
+            } else {                
                 tl.updateReflexTest(reflexTest);
             }
         }
