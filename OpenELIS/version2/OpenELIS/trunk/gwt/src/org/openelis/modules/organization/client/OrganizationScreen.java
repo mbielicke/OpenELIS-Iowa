@@ -482,11 +482,9 @@ public class OrganizationScreen extends Screen implements BeforeGetMatchesHandle
         final ButtonGroup azButtons = (ButtonGroup)def.getWidget("atozButtons");
         addScreenHandler(azButtons, new ScreenEventHandler<Object>() {
             public void onStateChange(StateChangeEvent<State> event) {
-                if(EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState()) &&
-                                     security.hasSelectPermission())
-                    azButtons.unlock();
-                else
-                    azButtons.lock();
+                azButtons.enable(EnumSet.of(State.DEFAULT, State.DISPLAY)
+                                        .contains(event.getState()) &&
+                                 security.hasSelectPermission());
             }
 
             public void onClick(ClickEvent event) {
@@ -704,7 +702,7 @@ public class OrganizationScreen extends Screen implements BeforeGetMatchesHandle
 
     public void commitQuery(ArrayList<QueryData> qFields) {
         OrgQuery query = new OrgQuery();
-        query.fields = qFields;
+//        query.fields = qFields;
         window.setBusy(consts.get("querying"));
 
         service.call("query", query, new AsyncCallback<OrgQuery>() {
@@ -731,18 +729,22 @@ public class OrganizationScreen extends Screen implements BeforeGetMatchesHandle
     }
 
     private void loadQueryPage(OrgQuery query) {
+        ArrayList<TableDataRow> model;
+        
         window.setDone(consts.get("queryingComplete"));
-        if (query.results == null || query.results.size() == 0) {
+        if (query.getResults() == null) {
             window.setDone(consts.get("noRecordsFound"));
             setState(State.DEFAULT);
-        } else
+        } else {
             window.setDone(consts.get("queryingComplete"));
-        query.model = new ArrayList<TableDataRow>();
-        for (IdNameDO entry : query.results) {
-            query.model.add(new TableDataRow(entry.getId(), entry.getName()));
         }
+        model = new ArrayList<TableDataRow>();
+        for (IdNameDO entry : query.getResults()) {
+            model.add(new TableDataRow(entry.getId(), entry.getName()));
+        }
+        
+        query.setModel(model);
         nav.setQuery(query);
-        //ActionEvent.fire(this, Action.NEW_PAGE, query);
     }
 
     private void setCountriesModel() {

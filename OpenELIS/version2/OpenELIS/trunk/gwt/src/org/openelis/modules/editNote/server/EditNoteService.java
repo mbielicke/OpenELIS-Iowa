@@ -37,15 +37,8 @@ import org.openelis.server.constants.Constants;
 public class EditNoteService {
 
     public Query<StandardNoteDO> query(Query<StandardNoteDO> query) throws Exception {
-
-        StandardNoteRemote remote = (StandardNoteRemote)EJBFactory.lookup("openelis/StandardNoteBean/remote");
-
         try{    
-            query.results = new ArrayList<StandardNoteDO>();
-            ArrayList<StandardNoteDO> results = (ArrayList<StandardNoteDO>)remote.newQuery(query.fields);
-            for(StandardNoteDO result : results) {
-                query.results.add(result);
-            }
+            query.setResults((ArrayList<StandardNoteDO>)remote().newQuery(query.getFields()));
         }catch(Exception e){
             throw new Exception(e.getMessage());
         }
@@ -54,5 +47,9 @@ public class EditNoteService {
     
     public String getScreen() throws Exception {
         return ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/editNote.xsl");      
+    }
+
+    private StandardNoteRemote remote() {
+        return (StandardNoteRemote)EJBFactory.lookup("openelis/StandardNoteBean/remote");
     }
 }
