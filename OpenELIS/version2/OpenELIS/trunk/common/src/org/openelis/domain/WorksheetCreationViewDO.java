@@ -34,12 +34,8 @@ import org.openelis.utilcommon.DataBaseUtil;
 public class WorksheetCreationViewDO implements RPC {
     private static final long serialVersionUID = 1L;
 
-    protected Integer  analysisId;
-    protected Integer  accessionNumber;
-    protected Integer  testId;
-    protected Integer  methodId;
-    protected Integer  sectionId;
-    protected Integer  statusId;
+    protected Integer  analysisId, accessionNumber, statusId;
+    protected String   testName, methodName, sectionName;
     protected Datetime receivedDate;
 
     public WorksheetCreationViewDO() {
@@ -48,15 +44,15 @@ public class WorksheetCreationViewDO implements RPC {
 
     // analysis, accession number, test, method, section, status and received
     public WorksheetCreationViewDO(Integer analysisId, Integer accessionNumber,
-                                   Integer testId, Integer methodId, Integer sectionId,
+                                   String testName, String methodName, String sectionName,
                                    Integer statusId, Date receivedDate) {
         setAnalysisId(analysisId);
         setAccessionNumber(accessionNumber);
-        setTestId(testId);
-        setMethodId(methodId);
-        setSectionId(sectionId);
+        setTestName(testName);
+        setMethodName(methodName);
+        setSectionName(sectionName);
         setStatusId(statusId);
-        setReceivedDate(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE, receivedDate));
+        setReceivedDate(DataBaseUtil.toYM(receivedDate));
     }
 
     public Integer getAnalysisId() {
@@ -75,28 +71,28 @@ public class WorksheetCreationViewDO implements RPC {
         this.accessionNumber = accessionNumber;
     }
 
-    public Integer getTestId() {
-        return testId;
+    public String getTestName() {
+        return testName;
     }
 
-    public void setTestId(Integer testId) {
-        this.testId = testId;
+    public void setTestName(String testName) {
+        this.testName = testName;
     }
 
-    public Integer getMethodId() {
-        return methodId;
+    public String getMethodName() {
+        return methodName;
     }
 
-    public void setMethodId(Integer methodId) {
-        this.methodId = methodId;
+    public void setMethodName(String methodName) {
+        this.methodName = methodName;
     }
 
-    public Integer getSectionId() {
-        return sectionId;
+    public String getSectionName() {
+        return sectionName;
     }
 
-    public void setSectionId(Integer sectionId) {
-        this.sectionId = sectionId;
+    public void setSectionName(String sectionName) {
+        this.sectionName = sectionName;
     }
 
     public Integer getStatusId() {
