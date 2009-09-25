@@ -26,7 +26,6 @@
 package org.openelis.modules.worksheetCreation.client;
 
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.Set;
 
 import com.google.gwt.core.client.GWT;
@@ -38,11 +37,9 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.common.AutocompleteRPC;
 import org.openelis.domain.DictionaryDO;
-import org.openelis.domain.IdNameDO;
 import org.openelis.domain.TestMethodViewDO;
 import org.openelis.domain.WorksheetCreationViewDO;
 import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.SecurityModule;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.QueryData;
@@ -53,28 +50,23 @@ import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
-import org.openelis.gwt.screen.ScreenNavigator;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.CalendarLookUp;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.HasField;
+import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
-import org.openelis.gwt.widget.table.event.CellEditedEvent;
-import org.openelis.gwt.widget.table.event.CellEditedHandler;
 import org.openelis.gwt.widget.table.event.RowAddedEvent;
 import org.openelis.gwt.widget.table.event.RowAddedHandler;
 import org.openelis.gwt.widget.table.event.RowDeletedEvent;
 import org.openelis.gwt.widget.table.event.RowDeletedHandler;
-import org.openelis.meta.MethodMeta;
-import org.openelis.metamap.AnalysisMetaMap;
 import org.openelis.metamap.SampleMetaMap;
-import org.openelis.metamap.TestMetaMap;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 
 public class WorksheetCreationLookupScreen extends Screen {
@@ -82,7 +74,8 @@ public class WorksheetCreationLookupScreen extends Screen {
     private SecurityModule security;
     private SampleMetaMap  sampleMetaMap;
 
-    protected AutoComplete<Integer> testName, methodName;
+    protected AutoComplete<Integer> testId;
+    protected TextBox               methodName;
     protected Dropdown<Integer>     statusId;
     protected TableWidget           analysesTable;
     
@@ -102,30 +95,32 @@ public class WorksheetCreationLookupScreen extends Screen {
 
         // Initialize Screen
         setState(State.DEFAULT);
+        setState(State.QUERY);
         setStatusesModel(DictionaryCache.getListByCategorySystemName("analysis_status"));
     }
     
     private void initialize() {
-        testName = (AutoComplete)def.getWidget(sampleMetaMap.SAMPLE_ITEM.ANALYSIS.TEST.getName());
-        addScreenHandler(testName, new ScreenEventHandler<Integer>() {
+        testId = (AutoComplete)def.getWidget(sampleMetaMap.SAMPLE_ITEM.ANALYSIS.TEST.getId());
+        addScreenHandler(testId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
-                TableDataRow selectedRow = testName.getSelection();
+                TableDataRow selectedRow = testId.getSelection();
                 
-                if(selectedRow != null)
-                    //set the method
-                    methodName.setSelection(new TableDataRow(selectedRow.data, selectedRow.cells.get(1).value));
+                //set the method
+                if (selectedRow != null && selectedRow.key != null)
+                    methodName.setValue(selectedRow.cells.get(1).value);
+                else
+                    methodName.setValue(null);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                testName.enable(true);
-                testName.setQueryMode(true);
+                testId.enable(true);
             }
         });
 
-        testName.addGetMatchesHandler(new GetMatchesHandler(){
+        testId.addGetMatchesHandler(new GetMatchesHandler(){
             public void onGetMatches(GetMatchesEvent event) {
                 AutocompleteRPC rpc;
                 TableDataRow    row;
@@ -137,7 +132,7 @@ public class WorksheetCreationLookupScreen extends Screen {
                     rpc = service.call("getTestMethodMatches", rpc);
                     ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
                         
-                    for (int i=0; i<rpc.model.size(); i++) {
+                    for (int i = 0; i < rpc.model.size(); i++) {
                         TestMethodViewDO autoDO = (TestMethodViewDO)rpc.model.get(i);
                         
                         row = new TableDataRow(5);
@@ -145,14 +140,16 @@ public class WorksheetCreationLookupScreen extends Screen {
                         row.cells.get(0).value = autoDO.getTestName();
                         row.cells.get(1).value = autoDO.getMethodName();
                         row.cells.get(2).value = autoDO.getTestDescription();
-                        row.cells.get(3).value = autoDO.getActiveBegin();
-                        row.cells.get(4).value = autoDO.getActiveEnd();
+                        if ("N".equals(autoDO.getIsActive())) {
+                            row.cells.get(3).value = autoDO.getActiveBegin();
+                            row.cells.get(4).value = autoDO.getActiveEnd();
+                        }
                         row.data = autoDO.getMethodId();
                         
                         model.add(row);
                     } 
                     
-                    testName.showAutoMatches(model);
+                    testId.showAutoMatches(model);
                         
                 } catch(Exception e) {
                     Window.alert(e.getMessage());                     
@@ -160,7 +157,7 @@ public class WorksheetCreationLookupScreen extends Screen {
             } 
         });
 
-        methodName = (AutoComplete)def.getWidget(sampleMetaMap.SAMPLE_ITEM.ANALYSIS.TEST.METHOD.getName());
+        methodName = (TextBox)def.getWidget(sampleMetaMap.SAMPLE_ITEM.ANALYSIS.TEST.METHOD.getName());
         addScreenHandler(methodName, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
             }
@@ -240,10 +237,9 @@ public class WorksheetCreationLookupScreen extends Screen {
             }
         });
 
-        final TableWidget analysesTable = (TableWidget)def.getWidget("analysesTable");
+        analysesTable = (TableWidget)def.getWidget("analysesTable");
         addScreenHandler(analysesTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
             public void onDataChange(DataChangeEvent event) {
-//                analysesTable.load(<CHANGE-ME>);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -283,6 +279,7 @@ public class WorksheetCreationLookupScreen extends Screen {
         final AppButton selectAllButton = (AppButton)def.getWidget("selectAllButton");
         addScreenHandler(selectAllButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
+                analysesTable.selectAll();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -295,10 +292,30 @@ public class WorksheetCreationLookupScreen extends Screen {
     // Needs to be moved to the base screen code
     //
     public ArrayList<QueryData> getQueryFields() {
-        ArrayList<QueryData> list = new ArrayList<QueryData>();
-        Set<String> keys = def.getWidgets().keySet();
+        ArrayList<QueryData> list;
+        QueryData            qd;
+        QueryFieldUtil       qField;
+        TableDataRow         row;
+
+        list = new ArrayList<QueryData>();
         for (String key : def.getWidgets().keySet()) {
-            if (def.getWidget(key) instanceof HasField) {
+            //
+            // overriding AutoComplete's getQuery to return the id of the
+            // selection instead of the text
+            //
+            if (def.getWidget(key) instanceof AutoComplete) {
+                row = ((AutoComplete)def.getWidget(key)).getSelection();
+                if(row != null && row.key != null) {
+                    qd = new QueryData();
+                    qd.key = key;
+                    qd.query = ((Integer)row.key).toString();
+                    qd.type = QueryData.Type.INTEGER;
+                    list.add(qd);
+
+                    qField = new QueryFieldUtil();
+                    qField.parse(qd.query);
+                }
+            } else if (def.getWidget(key) instanceof HasField) {
                 ((HasField)def.getWidget(key)).getQuery(list, key);
             }
         }
@@ -311,25 +328,30 @@ public class WorksheetCreationLookupScreen extends Screen {
         query = new WorksheetCreationQuery();
         query.fields = getQueryFields();
 
-        window.setBusy(consts.get("querying"));
-
-        service.call("query", query, new AsyncCallback<WorksheetCreationQuery>() {
-            public void onSuccess(WorksheetCreationQuery query) {
-                loadQuery(query);
-            }
-
-            public void onFailure(Throwable caught) {
-                if (caught instanceof ValidationErrorsList)
-                    showErrors((ValidationErrorsList)caught);
-                else
-                    Window.alert(caught.getMessage());
-            }
-        });
+        if (query.fields.size() > 0) {
+            window.setBusy(consts.get("querying"));
+    
+            service.call("query", query, new AsyncCallback<WorksheetCreationQuery>() {
+                public void onSuccess(WorksheetCreationQuery query) {
+                    loadQuery(query);
+                }
+    
+                public void onFailure(Throwable caught) {
+                    if (caught instanceof ValidationErrorsList)
+                        showErrors((ValidationErrorsList)caught);
+                    else
+                        Window.alert(caught.getMessage());
+                }
+            });
+        } else {
+            window.setDone(consts.get("emptyQueryException"));
+        }
     }
 
     private void loadQuery(WorksheetCreationQuery query) {
         int i;
         ArrayList<TableDataRow> model;
+        DictionaryDO dictDo;
         TableDataRow row;
         WorksheetCreationViewDO analysisRow;
         
@@ -346,13 +368,16 @@ public class WorksheetCreationLookupScreen extends Screen {
         for (i = 0; i < query.results.size(); i++) {
             analysisRow = query.results.get(i);
 
+            dictDo = DictionaryCache.getEntryFromId(analysisRow.getStatusId());
+            
             row = new TableDataRow(6);
             row.key = analysisRow.getAnalysisId();
             row.cells.get(0).value = analysisRow.getAccessionNumber();
-            row.cells.get(1).value = analysisRow.getTestId();
-            row.cells.get(2).value = analysisRow.getMethodId();
-            row.cells.get(3).value = analysisRow.getSectionId();
-            row.cells.get(4).value = analysisRow.getStatusId();          
+            row.cells.get(1).value = analysisRow.getTestName();
+            row.cells.get(2).value = analysisRow.getMethodName();
+            row.cells.get(3).value = analysisRow.getSectionName();
+            if (dictDo != null)
+                row.cells.get(4).value = dictDo.getEntry();          
             row.cells.get(5).value = analysisRow.getReceivedDate();
 
             model.add(row);

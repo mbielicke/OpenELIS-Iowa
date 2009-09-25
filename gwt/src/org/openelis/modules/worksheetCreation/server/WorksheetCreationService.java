@@ -62,8 +62,6 @@ public class WorksheetCreationService {
             }
         } catch (LastPageException e) {
             throw new LastPageException(openElisConstants.getString("noRecordsFound"));
-        } catch (Exception e) {
-            throw new Exception(e.getMessage());
         }
         return query;
     }
