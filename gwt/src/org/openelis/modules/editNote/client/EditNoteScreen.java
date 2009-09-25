@@ -1,17 +1,27 @@
 /**
  * Exhibit A - UIRF Open-source Based Public Software License.
  * 
- * The contents of this file are subject to the UIRF Open-source Based Public Software License(the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at openelis.uhl.uiowa.edu
+ * The contents of this file are subject to the UIRF Open-source Based Public
+ * Software License(the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * openelis.uhl.uiowa.edu
  * 
- * Software distributed under the License is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for the specific language governing rights and limitations under the License.
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+ * the specific language governing rights and limitations under the License.
  * 
  * The Original Code is OpenELIS code.
  * 
- * The Initial Developer of the Original Code is The University of Iowa. Portions created by The University of Iowa are Copyright 2006-2008. All Rights Reserved.
+ * The Initial Developer of the Original Code is The University of Iowa.
+ * Portions created by The University of Iowa are Copyright 2006-2008. All
+ * Rights Reserved.
  * 
  * Contributor(s): ______________________________________.
  * 
- * Alternatively, the contents of this file marked "Separately-Licensed" may be used under the terms of a UIRF Software license ("UIRF Software License"), in which case the provisions of a UIRF Software License are applicable instead of those above.
+ * Alternatively, the contents of this file marked "Separately-Licensed" may be
+ * used under the terms of a UIRF Software license ("UIRF Software License"), in
+ * which case the provisions of a UIRF Software License are applicable instead
+ * of those above.
  */
 package org.openelis.modules.editNote.client;
 
@@ -47,10 +57,9 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Window;
 
-public class EditNoteScreen extends Screen implements
-                                          HasActionHandlers<EditNoteScreen.Action> {
+public class EditNoteScreen extends Screen implements HasActionHandlers<EditNoteScreen.Action> {
 
-    private NoteViewDO        managerNoteDO, screenNoteDO;
+    private NoteViewDO managerNoteDO, screenNoteDO;
 
     public enum Action {
         COMMIT, ABORT
@@ -68,7 +77,7 @@ public class EditNoteScreen extends Screen implements
     public EditNoteScreen() throws Exception {
         // Call base to get ScreenDef and draw screen
         super("OpenELISServlet?service=org.openelis.modules.editNote.server.EditNoteService");
-        
+
         // Setup link between Screen and widget Handlers
         initialize();
 
@@ -80,16 +89,16 @@ public class EditNoteScreen extends Screen implements
     private void initialize() {
 
         tree = (TreeWidget)def.getWidget("noteTree");
-        addScreenHandler(tree,new ScreenEventHandler<ArrayList<TreeDataItem>>() {
+        addScreenHandler(tree, new ScreenEventHandler<ArrayList<TreeDataItem>>() {
             public void onStateChange(StateChangeEvent<State> event) {
                 tree.enable(true);
             }
         });
-        
+
         tree.addLeafOpenedHandler(new LeafOpenedHandler() {
             public void onLeafOpened(LeafOpenedEvent event) {
                 final TreeDataItem row = event.getItem();
-                if (!row.isLoaded()) {
+                if ( !row.isLoaded()) {
                     buildTree(row, find((Integer)row.key));
                     row.checkForChildren(false);
 
@@ -99,16 +108,16 @@ public class EditNoteScreen extends Screen implements
 
         tree.addSelectionHandler(new SelectionHandler<TreeDataItem>() {
             public void onSelection(SelectionEvent<TreeDataItem> event) {
-                //TreeRow selectedRow = event.getSelectedItem();
+                // TreeRow selectedRow = event.getSelectedItem();
                 TreeDataItem item = event.getSelectedItem();
 
                 if ("note".equals(item.leafType))
                     preview.setValue((String)item.data, true);
                 else
-                    preview.setValue(null,true);
+                    preview.setValue(null, true);
             }
         });
-        
+
         subject = (TextBox)def.getWidget("subject");
         addScreenHandler(subject, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
@@ -120,11 +129,11 @@ public class EditNoteScreen extends Screen implements
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                if (screenNoteDO != null){
-                    if("N".equals(screenNoteDO.getIsExternal())){
+                if (screenNoteDO != null) {
+                    if ("N".equals(screenNoteDO.getIsExternal())) {
                         subject.setVisible(true);
                         subject.setFocus(true);
-                    }else{
+                    } else {
                         subject.setVisible(false);
                         text.setFocus(true);
                     }
@@ -198,7 +207,7 @@ public class EditNoteScreen extends Screen implements
         findButton = (AppButton)def.getWidget("findButton");
         addScreenHandler(findButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-                if("".equals(search.getValue()))
+                if ("".equals(search.getValue()))
                     buildTree();
                 else
                     buildTree(find());
@@ -233,49 +242,53 @@ public class EditNoteScreen extends Screen implements
     }
 
     private ArrayList<StandardNoteDO> find() {
-        Query<StandardNoteDO> query = new Query();
-        ArrayList<QueryData> list = new ArrayList<QueryData>();
-        QueryData a, b;
-        a = new QueryData();
-        a.type = QueryData.Type.STRING;
-        a.query = search.getValue();
-        a.key = meta.getName();
-        list.add(a);
+        QueryData field;
+        Query<StandardNoteDO> query;
+        ArrayList<QueryData> fields;
+        
+        fields = new ArrayList<QueryData>();
 
-        b = new QueryData();
-        b.type = QueryData.Type.STRING;
-        b.query = search.getValue();
-        b.key = meta.getDescription();
-        list.add(b);
+        field = new QueryData();
+        field.type = QueryData.Type.STRING;
+        field.query = search.getValue();
+        field.key = meta.getName();
+        fields.add(field);
 
-        query.fields = list;
+        field = new QueryData();
+        field.type = QueryData.Type.STRING;
+        field.query = search.getValue();
+        field.key = meta.getDescription();
+        fields.add(field);
 
-        return query(query);
+        query = new Query<StandardNoteDO>();
+        query.setFields(fields);
+
+        return executeQuery(query);
     }
 
     private ArrayList<StandardNoteDO> find(Integer typeId) {
-        Query<StandardNoteDO> query = new Query();
-        ArrayList<QueryData> list = new ArrayList<QueryData>();
-        QueryData field = new QueryData();
+        Query<StandardNoteDO> query;
+        QueryData field;
+        
+        field = new QueryData();
         field.type = QueryData.Type.INTEGER;
         field.query = String.valueOf(typeId);
         field.key = meta.getTypeId();
-        list.add(field);
+        
+        query = new Query<StandardNoteDO>();
+        query.setFields(field);
 
-        query.fields = list;
-
-        return query(query);
+        return executeQuery(query);
     }
 
-    private ArrayList<StandardNoteDO> query(Query<StandardNoteDO> query) {
+    private ArrayList<StandardNoteDO> executeQuery(Query<StandardNoteDO> query) {
         window.setBusy("Querying...");
 
         try {
-            Query<StandardNoteDO> q = service.call("query", query);
+            query = service.call("query", query);
             window.clearStatus();
 
-            return q.results;
-
+            return query.getResults();
         } catch (Exception e) {
             e.printStackTrace();
             Window.alert(e.getMessage());
@@ -288,16 +301,16 @@ public class EditNoteScreen extends Screen implements
         String tmpValue;
         int cursorIndex = text.getCursorPos();
         text.setFocus(true);
-        tmpValue = text.getText().substring(0, cursorIndex) + preview.getText()
-                   + text.getText().substring(cursorIndex);
+        tmpValue = text.getText().substring(0, cursorIndex) + preview.getText() +
+                   text.getText().substring(cursorIndex);
         text.setValue(tmpValue, true);
         text.setSelectionRange(cursorIndex, preview.getText().length());
     }
 
     public void commit() {
-        if(validate()){
+        if (validate()) {
             managerNoteDO.copy(screenNoteDO);
-            
+
             ActionEvent.fire(this, Action.COMMIT, null);
             clearErrors();
             window.close();
@@ -309,71 +322,69 @@ public class EditNoteScreen extends Screen implements
         clearErrors();
         window.close();
     }
-    
+
     protected boolean validate() {
         boolean valid = true;
-        if(screenNoteDO != null){
-            if("N".equals(screenNoteDO.getIsExternal())){
-                if(subject.getValue().trim().length() == 0){
+        if (screenNoteDO != null) {
+            if ("N".equals(screenNoteDO.getIsExternal())) {
+                if (subject.getValue().trim().length() == 0) {
                     subject.addError(consts.get("fieldRequiredException"));
                     valid = false;
                 }
             }
-            
-            if(text.getValue().trim().length() == 0){
+
+            if (text.getValue().trim().length() == 0) {
                 text.addError(consts.get("fieldRequiredException"));
                 valid = false;
             }
         }
-        
+
         window.setError(consts.get("correctErrors"));
         return valid;
     }
 
     private void buildTree(ArrayList<StandardNoteDO> noteList) {
-          Integer oldTypeId, currentTypeId;
-          TreeDataItem catNode = null, noteNode = null;
-          StandardNoteDO note;
-        
-          if(tree.numRows() > 0)
-              tree.clear();
-          
-          oldTypeId = null;
-          for(int i=0; i<noteList.size(); i++){
-              note = noteList.get(i); 
-              currentTypeId = note.getTypeId();
-              
-              if(!currentTypeId.equals(oldTypeId)){
-                 oldTypeId = currentTypeId;
-                 DictionaryDO dictDO = DictionaryCache.getEntryFromId(currentTypeId);
-                 
-                 catNode = new TreeDataItem(1);
-                 catNode.leafType = "category";
-                 catNode.key = dictDO.getId();
-                 catNode.cells.get(0).value = dictDO.getEntry();
-                 catNode.open = true;
-                 tree.addRow(catNode);
-              }
-              
-              noteNode = new TreeDataItem(1);
-              noteNode.leafType = "note";
-              noteNode.key = screenNoteDO.getId();
-              noteNode.cells.get(0).value = note.getName() + " : "
-                                                 + note.getDescription();
-              noteNode.data = note.getText();
-              tree.addChildItem(catNode, noteNode);
-          }
+        Integer oldTypeId, currentTypeId;
+        TreeDataItem catNode = null, noteNode = null;
+        StandardNoteDO note;
+
+        if (tree.numRows() > 0)
+            tree.clear();
+
+        oldTypeId = null;
+        for (int i = 0; i < noteList.size(); i++ ) {
+            note = noteList.get(i);
+            currentTypeId = note.getTypeId();
+
+            if ( !currentTypeId.equals(oldTypeId)) {
+                oldTypeId = currentTypeId;
+                DictionaryDO dictDO = DictionaryCache.getEntryFromId(currentTypeId);
+
+                catNode = new TreeDataItem(1);
+                catNode.leafType = "category";
+                catNode.key = dictDO.getId();
+                catNode.cells.get(0).value = dictDO.getEntry();
+                catNode.open = true;
+                tree.addRow(catNode);
+            }
+
+            noteNode = new TreeDataItem(1);
+            noteNode.leafType = "note";
+            noteNode.key = screenNoteDO.getId();
+            noteNode.cells.get(0).value = note.getName() + " : " + note.getDescription();
+            noteNode.data = note.getText();
+            tree.addChildItem(catNode, noteNode);
+        }
     }
 
     private void buildTree(TreeDataItem row, ArrayList<StandardNoteDO> noteList) {
-        for (int i = 0; i < noteList.size(); i++) {
+        for (int i = 0; i < noteList.size(); i++ ) {
             StandardNoteDO noteDO = noteList.get(i);
 
             TreeDataItem treeModelItem = new TreeDataItem(1);
             treeModelItem.leafType = "note";
             treeModelItem.key = noteDO.getId();
-            treeModelItem.cells.get(0).value = noteDO.getName() + " : "
-                                               + noteDO.getDescription();
+            treeModelItem.cells.get(0).value = noteDO.getName() + " : " + noteDO.getDescription();
             treeModelItem.data = noteDO.getText();
 
             tree.addChildItem(row, treeModelItem);
@@ -381,14 +392,14 @@ public class EditNoteScreen extends Screen implements
     }
 
     private void buildTree() {
-        if(tree.numRows() > 0)
+        if (tree.numRows() > 0)
             tree.clear();
-        
+
         if (categoryList == null)
             categoryList = DictionaryCache.getListByCategorySystemName("standard_note_type");
 
         ArrayList<TreeDataItem> treeList = new ArrayList<TreeDataItem>();
-        for (int i = 0; i < categoryList.size(); i++) {
+        for (int i = 0; i < categoryList.size(); i++ ) {
             DictionaryDO dictDO = categoryList.get(i);
 
             TreeDataItem treeModelItem = new TreeDataItem(1);
@@ -404,22 +415,21 @@ public class EditNoteScreen extends Screen implements
     }
 
     /*
-     * public void loadQuery(Query<StandardNoteDO> query) { ArrayList<StandardNoteDO> resultList = query.results;
-     * 
-     * if(resultList == null || resultList.size() == 0) { window.setDone("No records found"); }else window.setDone(consts.get("queryingComplete"));
-     * 
-     * }
+     * public void loadQuery(Query<StandardNoteDO> query) {
+     * ArrayList<StandardNoteDO> resultList = query.results; if(resultList ==
+     * null || resultList.size() == 0) { window.setDone("No records found");
+     * }else window.setDone(consts.get("queryingComplete")); }
      */
 
-    public void setScreenState(State state){
+    public void setScreenState(State state) {
         setState(state);
     }
-    
+
     public void setNote(NoteViewDO note) {
         screenNoteDO = new NoteViewDO();
         screenNoteDO.copy(note);
         managerNoteDO = note;
-        
+
         buildTree();
         DataChangeEvent.fire(this);
     }

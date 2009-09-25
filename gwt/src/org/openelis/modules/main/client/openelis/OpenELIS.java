@@ -729,7 +729,12 @@ public class OpenELIS extends Screen implements ClickHandler {
 			public void onClick(ClickEvent event) {
 				GWT.runAsync(new RunAsyncCallback() {
 					public void onSuccess() {
-						browser.addScreen(new SystemVariableScreen());
+                        try {
+                            browser.addScreen(new SystemVariableScreen());
+                        }catch(Exception e){
+                            e.printStackTrace();
+                            Window.alert(e.getMessage());
+                        }
 					}
 					public void onFailure(Throwable caught) {
 						caught.printStackTrace();
