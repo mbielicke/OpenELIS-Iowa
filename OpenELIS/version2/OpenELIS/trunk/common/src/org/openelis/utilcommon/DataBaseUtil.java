@@ -25,7 +25,10 @@
 */
 package org.openelis.utilcommon;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+
 import org.openelis.gwt.common.Datetime;
 
 public class DataBaseUtil {
@@ -100,6 +103,14 @@ public class DataBaseUtil {
         return dt;
     }
     
+    /*
+     * Convenience method to see if two objects are the different
+     */
+    
+    public static boolean isDifferent(Object a, Object b) {
+        return (a == null && b != null) || (a != null && !a.equals(b));
+    }
+    
     public static String formatStorageLocation(String storageName, String StorageLocation, String storageUnitDesc){
         return formatStorageLocation(storageName, StorageLocation, storageUnitDesc, null);
     }
@@ -118,5 +129,19 @@ public class DataBaseUtil {
         }
         
         return returnString;
+    }
+    
+    /*
+     * For paged result list, this method returns a subList of the query list
+     * starting at first for max number of results.
+     */
+    public static List subList(List query, int first, int max){
+        int to;
+        
+        if (query == null || query.isEmpty() || first >= query.size())
+            return null;
+
+        to = Math.max(first+max, query.size());
+        return new ArrayList(query.subList(first, to));
     }
 }
