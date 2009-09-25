@@ -1,3 +1,7 @@
+
+
+
+
 <!--
 Exhibit A - UIRF Open-source Based Public Software License.
   
@@ -24,10 +28,16 @@ Alternatively, the contents of this file marked
 license ("UIRF Software License"), in which case the provisions of a
 UIRF Software License are applicable instead of those above. 
   -->
-<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-                xmlns:xalan="http://xml.apache.org/xalan"
-                xmlns:resource="xalan://org.openelis.util.UTFResource"
-                xmlns:locale="xalan://java.util.Locale" 
+<xsl:stylesheet 
+version="1.0"
+  extension-element-prefixes="resource"
+  xmlns:locale="xalan://java.util.Locale"
+  xmlns:resource="xalan://org.openelis.util.UTFResource"
+  xmlns:xalan="http://xml.apache.org/xalan"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+  xsi:noNamespaceSchemaLocation="http://openelis.uhl.uiowa.edu/schema/ScreenSchema.xsd"
+  xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd"
                 xmlns:meta="xalan://org.openelis.metamap.TestMetaMap" 
                 xmlns:addTestMeta="xalan://org.openelis.metamap.TestMeta" 
                 xmlns:label="xalan://org.openelis.meta.LabelMeta"
@@ -44,8 +54,7 @@ UIRF Software License are applicable instead of those above.
                 xmlns:testWrksht="xalan://org.openelis.metamap.TestWorksheetMetaMap" 
                 xmlns:testWrkshtAna="xalan://org.openelis.metamap.TestWorksheetAnalyteMetaMap" 
                 xmlns:testWrkshtItm="xalan://org.openelis.metamap.TestWorksheetItemMetaMap"
-                xmlns:wsscript="xalan://org.openelis.meta.ScriptletMeta"
-                extension-element-prefixes="resource" version="2.0">
+                xmlns:wsscript="xalan://org.openelis.meta.ScriptletMeta">
   <xsl:import href="IMPORT/aToZOneColumn.xsl" />
   <xalan:component prefix="resource">
     <xalan:script lang="javaclass" src="xalan://org.openelis.util.UTFResource" />
