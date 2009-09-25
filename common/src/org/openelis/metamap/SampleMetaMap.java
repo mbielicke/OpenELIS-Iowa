@@ -72,12 +72,8 @@ public class SampleMetaMap extends SampleMeta implements MetaMap {
         return SAMPLE_QA_EVENT;
     }
     
-    public String buildFrom(String where) {
-        return "sample";
-    }
-
     public boolean hasColumn(String columnName) {
-        if(columnName.startsWith(path+"sampleItem."))
+        if(columnName.startsWith("sampleItem."))
             return SAMPLE_ITEM.hasColumn(columnName);
         if(columnName.startsWith("sampleOrganization."))
             return SAMPLE_ORGANIZATION.hasColumn(columnName);
@@ -86,4 +82,25 @@ public class SampleMetaMap extends SampleMeta implements MetaMap {
         return super.hasColumn(columnName);
     }      
 
+    public String buildFrom(String name) {
+        String from;
+
+        from = "Sample s ";
+        if (name.indexOf("sampleProject.") > -1)
+            from += ", IN (s.sampleProject) sampleProject ";
+        if (name.indexOf("sampleOrganization.") > -1)
+            from += ", IN (s.sampleOrganization) sampleOrganization ";
+        if (name.indexOf("sampleItem.") > -1)
+            from += ", IN (s.sampleItem) sampleItem";
+        if (name.indexOf("analysis.") > -1)
+            from += ", IN (sampleItem.analysis) analysis";
+        if (name.indexOf("test.") > -1)
+            from += ", IN (analysis.test) test";
+        if (name.indexOf("method.") > -1)
+            from += ", IN (test.method) method ";
+        if (name.indexOf("section.") > -1)
+            from += ", IN (analysis.section) section ";
+
+        return from;
+    }
 }

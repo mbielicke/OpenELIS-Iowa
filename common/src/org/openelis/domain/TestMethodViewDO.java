@@ -40,7 +40,8 @@ public class TestMethodViewDO extends DataObject {
     private static final long serialVersionUID = 1L;
     
     protected Integer testId, methodId;
-    protected String testName, testDescription, methodName, methodDescription;    
+    protected String testName, testDescription, methodName, methodDescription,
+                     isActive;    
     protected Datetime activeBegin, activeEnd;
 
     public TestMethodViewDO() {
@@ -59,13 +60,14 @@ public class TestMethodViewDO extends DataObject {
     public TestMethodViewDO(Integer testId, String testName, 
                             String testDescription,Integer methodId,
                             String methodName,String methodDescription,
-                            Date activeBegin, Date activeEnd){
+                            String isActive, Date activeBegin, Date activeEnd){
         setTestId(testId);
         setTestName(testName);
         setMethodId(methodId);
         setMethodName(methodName);
         setTestDescription(testDescription);
         setMethodDescription(methodDescription);
+        setIsActive(isActive);
         setActiveBegin(DataBaseUtil.toYD(activeBegin));
         setActiveEnd(DataBaseUtil.toYD(activeEnd));
     }
@@ -118,6 +120,14 @@ public class TestMethodViewDO extends DataObject {
         this.methodDescription = DataBaseUtil.trim(methodDescription);
     }
     
+    public String getIsActive() {
+        return isActive;
+    }
+
+    public void setIsActive(String isActive) {
+        this.isActive = isActive;
+    }
+
     public Datetime getActiveBegin() {
         return activeBegin;
     }
