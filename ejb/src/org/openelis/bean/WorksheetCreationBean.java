@@ -39,7 +39,7 @@ import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.metamap.WorksheetCreationMetaMap;
 import org.openelis.remote.WorksheetCreationRemote;
-import org.openelis.util.QueryBuilder;
+import org.openelis.util.QueryBuilderV2;
 import org.openelis.utils.GetPage;
 
 @Stateless
@@ -61,11 +61,11 @@ public class WorksheetCreationBean implements WorksheetCreationRemote {
                                      int max) throws Exception {
 	    ArrayList<WorksheetCreationViewDO> returnList;
         StringBuffer sb;
-        QueryBuilder qb;
+        QueryBuilderV2 qb;
         Query query;
         
         sb = new StringBuffer();
-        qb = new QueryBuilder();
+        qb = new QueryBuilderV2();
         
         qb.setMeta(WorksheetCreationMetaMap);
 
@@ -80,7 +80,7 @@ public class WorksheetCreationBean implements WorksheetCreationRemote {
 
         // this method is going to throw an exception if a column doesn't match
 
-        qb.addNewWhere(fields);
+        qb.addWhere(fields);
 
         qb.setOrderBy(WorksheetCreationMetaMap.SAMPLE.getAccessionNumber());
 
@@ -92,7 +92,7 @@ public class WorksheetCreationBean implements WorksheetCreationRemote {
             query.setMaxResults(first + max);
 
         // ***set the parameters in the query
-        qb.setNewQueryParams(query, fields);
+        qb.setQueryParams(query, fields);
 
         returnList = (ArrayList<WorksheetCreationViewDO>)GetPage.getPage(query.getResultList(),
                                                                          first,
