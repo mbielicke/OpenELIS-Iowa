@@ -37,7 +37,7 @@ import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.WorksheetCreationViewDO;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.data.QueryData;
-import org.openelis.metamap.SampleMetaMap;
+import org.openelis.metamap.WorksheetCreationMetaMap;
 import org.openelis.remote.WorksheetCreationRemote;
 import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
@@ -51,7 +51,7 @@ public class WorksheetCreationBean implements WorksheetCreationRemote {
 	@PersistenceContext(name = "openelis")
     private EntityManager manager;
     
-    private static final SampleMetaMap SampleMetaMap = new SampleMetaMap();
+    private static final WorksheetCreationMetaMap WorksheetCreationMetaMap = new WorksheetCreationMetaMap();
 
     public WorksheetCreationBean() {
     }
@@ -67,22 +67,22 @@ public class WorksheetCreationBean implements WorksheetCreationRemote {
         sb = new StringBuffer();
         qb = new QueryBuilder();
         
-        qb.setMeta(SampleMetaMap);
+        qb.setMeta(WorksheetCreationMetaMap);
 
         qb.setSelect("distinct new org.openelis.domain.WorksheetCreationViewDO(" +
-                     SampleMetaMap.SAMPLE_ITEM.ANALYSIS.getId()+", "+
-                     SampleMetaMap.getAccessionNumber()+", "+
-                     SampleMetaMap.SAMPLE_ITEM.ANALYSIS.TEST.getId()+", "+
-                     SampleMetaMap.SAMPLE_ITEM.ANALYSIS.TEST.METHOD.getId()+", "+
-                     SampleMetaMap.SAMPLE_ITEM.ANALYSIS.getSectionId()+", "+
-                     SampleMetaMap.SAMPLE_ITEM.ANALYSIS.getStatusId()+", "+
-                     SampleMetaMap.getReceivedDate()+") ");
+                     WorksheetCreationMetaMap.SAMPLE.SAMPLE_ITEM.ANALYSIS.getId()+", "+
+                     WorksheetCreationMetaMap.SAMPLE.getAccessionNumber()+", "+
+                     WorksheetCreationMetaMap.SAMPLE.SAMPLE_ITEM.ANALYSIS.TEST.getName()+", "+
+                     WorksheetCreationMetaMap.SAMPLE.SAMPLE_ITEM.ANALYSIS.TEST.METHOD.getName()+", "+
+                     WorksheetCreationMetaMap.SAMPLE.SAMPLE_ITEM.ANALYSIS.SECTION.getName()+", "+
+                     WorksheetCreationMetaMap.SAMPLE.SAMPLE_ITEM.ANALYSIS.getStatusId()+", "+
+                     WorksheetCreationMetaMap.SAMPLE.getReceivedDate()+") ");
 
         // this method is going to throw an exception if a column doesn't match
 
         qb.addNewWhere(fields);
 
-        qb.setOrderBy(SampleMetaMap.getAccessionNumber());
+        qb.setOrderBy(WorksheetCreationMetaMap.SAMPLE.getAccessionNumber());
 
         sb.append(qb.getEJBQL());
 
