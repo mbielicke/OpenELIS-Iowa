@@ -1,4 +1,3 @@
-
 <!--
 Exhibit A - UIRF Open-source Based Public Software License.
   
@@ -26,19 +25,31 @@ license ("UIRF Software License"), in which case the provisions of a
 UIRF Software License are applicable instead of those above. 
   -->
 
-<xsl:stylesheet extension-element-prefixes="resource" version="1.0" xmlns:addressMeta="xalan://org.openelis.meta.AddressMeta" xmlns:analysisMetaMap="xalan://org.openelis.metamap.AnalysisMetaMap" 
-xmlns:envMeta="xalan://org.openelis.metamap.SampleEnvironmentalMetaMap" xmlns:locale="xalan://java.util.Locale" xmlns:methodMeta="xalan://org.openelis.meta.MethodMeta" 
-xmlns:orgMeta="xalan://org.openelis.meta.OrganizationMeta" xmlns:projectMeta="xalan://org.openelis.meta.ProjectMeta" xmlns:resource="xalan://org.openelis.util.UTFResource" 
-xmlns:sampleItemMetaMap="xalan://org.openelis.metamap.SampleItemMetaMap" xmlns:sampleMetaMap="xalan://org.openelis.metamap.SampleMetaMap" 
+<xsl:stylesheet 
+version="1.0"
+  extension-element-prefixes="resource"
+  xmlns:locale="xalan://java.util.Locale"
+  xmlns:resource="xalan://org.openelis.util.UTFResource"
+  xmlns:xalan="http://xml.apache.org/xalan"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+  xsi:noNamespaceSchemaLocation="http://openelis.uhl.uiowa.edu/schema/ScreenSchema.xsd"
+  xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd"
+  xmlns:addressMeta="xalan://org.openelis.meta.AddressMeta" 
+  xmlns:analysisMetaMap="xalan://org.openelis.metamap.AnalysisMetaMap" 
+xmlns:envMeta="xalan://org.openelis.metamap.SampleEnvironmentalMetaMap" 
+xmlns:methodMeta="xalan://org.openelis.meta.MethodMeta" 
+xmlns:orgMeta="xalan://org.openelis.meta.OrganizationMeta" 
+xmlns:projectMeta="xalan://org.openelis.meta.ProjectMeta" 
+xmlns:sampleItemMetaMap="xalan://org.openelis.metamap.SampleItemMetaMap" 
+xmlns:sampleMetaMap="xalan://org.openelis.metamap.SampleMetaMap" 
 xmlns:sampleOrgMetaMap="xalan://org.openelis.metamap.SampleOrganizationMetaMap" 
 xmlns:sampleProjectMetaMap="xalan://org.openelis.metamap.SampleProjectMetaMap"
 xmlns:analysisQAEventMetaMap="xalan://org.openelis.metamap.AnalysisQaeventMetaMap"
 xmlns:sampleQAEventMetaMap="xalan://org.openelis.metamap.SampleQaeventMetaMap"
 xmlns:qaeventMeta="xalan://org.openelis.meta.QaeventMeta" 
-xmlns:testMetaMap="xalan://org.openelis.metamap.TestMetaMap" xmlns:sectionMeta="xalan://org.openelis.meta.SectionMeta" xmlns:xalan="http://xml.apache.org/xalan" 
-xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
-xsi:noNamespaceSchemaLocation="http://openelis.uhl.uiowa.edu/schema/ScreenSchema.xsd" xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd">
-  <xsl:import href="aToZOneColumn.xsl" />
+xmlns:testMetaMap="xalan://org.openelis.metamap.TestMetaMap" xmlns:sectionMeta="xalan://org.openelis.meta.SectionMeta">
+  <xsl:import href="IMPORT/aToZOneColumn.xsl" />
   <xalan:component prefix="resource">
     <xalan:script lang="javaclass" src="xalan://org.openelis.util.UTFResource" />
   </xalan:component>
@@ -189,7 +200,7 @@ xsi:noNamespaceSchemaLocation="http://openelis.uhl.uiowa.edu/schema/ScreenSchema
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'received')" />:
               </text>
-              <calendar key="{sampleMetaMap:getReceivedDate($sample)}" begin="0" end="2" width="110px" pattern="{resource:getString($constants,'dateTimePattern')}" tab="{sampleMetaMap:getStatusId($sample)},{sampleMetaMap:getCollectionTime($sample)}" />
+              <calendar key="{sampleMetaMap:getReceivedDate($sample)}" begin="0" end="4" width="110px" pattern="{resource:getString($constants,'dateTimePattern')}" tab="{sampleMetaMap:getStatusId($sample)},{sampleMetaMap:getCollectionTime($sample)}" />
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'status')" />:
               </text>
@@ -359,7 +370,7 @@ xsi:noNamespaceSchemaLocation="http://openelis.uhl.uiowa.edu/schema/ScreenSchema
           <TabPanel key="sampleItemTabPanel" height="170px">
             <tab key="tab0" text="{resource:getString($constants,'sampleItem')}">
               <VerticalPanel width="730px" height="170px">
-                <TablePanel padding="0" spacing="0" style="Form">
+                <TablePanel style="Form">
                   <row>
                     <text style="Prompt"><xsl:value-of select="resource:getString($constants,'sampleType')" />:</text>
                     <dropdown key="{sampleItemMetaMap:getTypeOfSampleId($sampleItem)}" width="150px" popWidth="150px" field="Integer" />
@@ -387,7 +398,7 @@ xsi:noNamespaceSchemaLocation="http://openelis.uhl.uiowa.edu/schema/ScreenSchema
             </tab>
             <tab key="tab1" text="{resource:getString($constants,'analysis')}">
               <VerticalPanel width="730px" height="170px">
-                <TablePanel padding="0" spacing="0" style="Form">
+                <TablePanel style="Form">
                   <row>
                     <text style="Prompt"><xsl:value-of select="resource:getString($constants,'test')" />:</text>
                     <autoComplete key="{testMetaMap:getName($test)}" width="150px" case="LOWER" popWidth="auto" field="Integer">

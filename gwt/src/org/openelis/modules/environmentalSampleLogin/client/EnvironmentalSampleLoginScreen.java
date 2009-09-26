@@ -41,6 +41,9 @@ import org.openelis.domain.SampleEnvironmentalDO;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.domain.SampleProjectViewDO;
+import org.openelis.domain.TestPrepDO;
+import org.openelis.domain.TestSectionViewDO;
+import org.openelis.domain.TestViewDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.RPC;
@@ -54,9 +57,11 @@ import org.openelis.gwt.event.GetMatchesEvent;
 import org.openelis.gwt.event.GetMatchesHandler;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
+import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
 import org.openelis.gwt.screen.deprecated.ScreenWindow;
+import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.CalendarLookUp;
@@ -77,12 +82,17 @@ import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.SampleEnvironmentalManager;
 import org.openelis.manager.SampleItemManager;
 import org.openelis.manager.SampleManager;
+import org.openelis.manager.TestManager;
+import org.openelis.manager.TestPrepManager;
 import org.openelis.metamap.SampleEnvironmentalMetaMap;
+import org.openelis.modules.environmentalSampleLogin.client.AnalysisTab.Action;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 import org.openelis.modules.sampleLocation.client.SampleLocationScreen;
 import org.openelis.modules.sampleOrganization.client.SampleOrganizationScreen;
 import org.openelis.modules.sampleProject.client.SampleProjectScreen;
+import org.openelis.modules.testPrepPicker.client.TestPrepPickerScreen;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
 import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
@@ -113,6 +123,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
     private QAEventsTab                qaEventsTab;
     
     
+    protected TestPrepPickerScreen prepPickerScreen;
     protected TextBox location;
     protected AutoComplete<Integer> project, reportTo, billTo;
     protected TreeWidget itemsTree;
@@ -130,7 +141,8 @@ public class EnvironmentalSampleLoginScreen extends Screen {
     
     public EnvironmentalSampleLoginScreen() throws Exception {
         //Call base to get ScreenDef and draw screen
-        super("OpenELISServlet?service=org.openelis.modules.environmentalSampleLogin.server.EnvironmentalSampleLoginService");
+        super((ScreenDefInt)GWT.create(EnvironmentalSampleLoginDef.class));
+        service = new ScreenService("OpenELISServlet?service=org.openelis.modules.environmentalSampleLogin.server.EnvironmentalSampleLoginService");
         manager = SampleManager.getInstance();
         manager.getSample().setDomain(SampleManager.ENVIRONMENTAL_DOMAIN_FLAG);
 
@@ -848,14 +860,45 @@ public class EnvironmentalSampleLoginScreen extends Screen {
         analysisTab.addActionHandler(new ActionHandler<AnalysisTab.Action>(){
             public void onAction(ActionEvent<AnalysisTab.Action> event) {
                 if(state != State.QUERY && event.getAction() == AnalysisTab.Action.CHANGED){
+                    updateTreeAnalysisRowAndCheckPrepTests();
+
+                }else if(event.getAction() == AnalysisTab.Action.SELECTED_TEST_PREP_ROW){
+                    int loggedInId = DictionaryCache.getIdFromSystemName("analysis_logged_in");
                     TreeDataItem selected = itemsTree.getSelection();
-                    int selectedIndex = itemsTree.getSelectedIndex();
+                    selected = selected.parent;
+                    SampleDataBundle selectedBundle = (SampleDataBundle)event.getData();
+                    AnalysisViewDO anDO = selectedBundle.analysisTestDO;
+                    anDO.setStatusId(loggedInId);
                     
+                    TreeDataItem newRow = itemsTree.createTreeItem("analysis");
+                    newRow.cells.get(0).value = formatTreeString(anDO.getTestName())+" : "+formatTreeString(anDO.getMethodName());
+                    newRow.cells.get(1).value = loggedInId;
+                    
+                    SampleDataBundle sampleItemData = (SampleDataBundle)selected.data;
+                    SampleItemViewDO itemDO = sampleItemData.sampleItemDO;
+                    int sampleItemIndex = sampleItemData.sampleItemManager.getIndex(itemDO);
+                    
+                    try{
+                        selectedBundle.sampleItemDO = sampleItemData.sampleItemDO;
+                        selectedBundle.sampleItemManager = sampleItemData.sampleItemManager;
+                        selectedBundle.analysisManager = sampleItemData.sampleItemManager.getAnalysisAt(sampleItemIndex);
+                        
+                        newRow.data = selectedBundle;
+                        
+                        itemsTree.addChildItem(selected, newRow);
+                        itemsTree.select(newRow);
+                    }catch(Exception e){
+                        Window.alert(e.getMessage());
+                        return;
+                    }
+                    
+                    /*
                     SampleDataBundle data = (SampleDataBundle)selected.data;
                     AnalysisViewDO aDO = data.analysisTestDO;
                     
                     itemsTree.setCell(selectedIndex, 0, formatTreeString(aDO.getTestName()) + " : " + formatTreeString(aDO.getMethodName()));
                     itemsTree.setCell(selectedIndex, 1, aDO.getStatusId());
+                    Window.alert("selected ROW!!!");*/
                 }
             }
         });
@@ -1185,7 +1228,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
 
     public void commitQuery(ArrayList<QueryData> qFields) {
         SampleEnvQuery query = new SampleEnvQuery();
-        query.fields = qFields;
+        query.setFields(qFields);
         window.setBusy(consts.get("querying"));
 
         service.call("query", query, new AsyncCallback<SampleEnvQuery>() {
@@ -1213,14 +1256,14 @@ public class EnvironmentalSampleLoginScreen extends Screen {
 
     private void loadQueryPage(SampleEnvQuery query) {
         window.setDone(consts.get("queryingComplete"));
-        if (query.results == null || query.results.size() == 0) {
+        if (query.getResults() == null || query.getResults().size() == 0) {
             setState(State.DEFAULT);
             window.setDone(consts.get("noRecordsFound"));
         } else
             window.setDone(consts.get("queryingComplete"));
-        query.model = new ArrayList<TableDataRow>();
-        for (IdNameDO entry : query.results) {
-            query.model.add(new TableDataRow(entry.getId(), entry.getName()));
+        query.setModel(new ArrayList<TableDataRow>());
+        for (IdNameDO entry : query.getResults()) {
+            query.getModel().add(new TableDataRow(entry.getId(), entry.getName()));
         }
         nav.setQuery(query);
     }
@@ -1354,6 +1397,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
         manager.getSample().setNextItemSequence(nextItemSequence+1);
         
         itemsTree.addRow(newRow);
+        itemsTree.select(newRow);
     }
     
     public void onAddTestButtonClick() {
@@ -1381,7 +1425,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
                                                          sampleItemData.sampleItemManager.getAnalysisAt(sampleItemIndex),aDO);
             newRow.data = data;
             itemsTree.addChildItem(selectedRow, newRow);
-
+            itemsTree.select(newRow);
         }catch(Exception e){
             Window.alert(e.getMessage());
             return;
@@ -1595,5 +1639,178 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             return "<>";
         
         return val;
+    }
+    
+    private void drawTestPrepScreen(TestPrepManager manager){
+        if (prepPickerScreen == null) {
+            try {
+                prepPickerScreen = new TestPrepPickerScreen();
+                prepPickerScreen.addActionHandler(new ActionHandler<TestPrepPickerScreen.Action>() {
+                    public void onAction(ActionEvent<TestPrepPickerScreen.Action> event) {
+                        if (event.getAction() == TestPrepPickerScreen.Action.SELECTED_PREP_ROW) {
+                            
+                            TableDataRow selectedRow = (TableDataRow)event.getData();
+                            Integer testId = (Integer)selectedRow.key;
+                            selectedPrepTest(testId);
+                        }
+                    }
+                });
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                Window.alert("error: " + e.getMessage());
+                return;
+            }
+        }
+
+        ScreenWindow modal = new ScreenWindow(null,
+                                              "Test Prep Picker Screen",
+                                              "testPrepPickerScreen",
+                                              "",
+                                              true,
+                                              false);
+        modal.setName(consts.get("prepTestPicker"));
+        modal.setContent(prepPickerScreen);
+        prepPickerScreen.setManager(manager);
+    }
+    
+    private void selectedPrepTest(Integer prepTestId){
+        TreeDataItem newPrepRow = createPrepRowTestId(prepTestId);
+        TreeDataItem selectedRow = itemsTree.getSelection();
+        if("analysis".equals(selectedRow.leafType))
+            selectedRow = selectedRow.parent;
+        
+        if(newPrepRow != null){
+            itemsTree.addChildItem(selectedRow, newPrepRow);
+            itemsTree.select(newPrepRow);
+        }
+        
+        updateTreeAnalysisRowAndCheckPrepTests();   
+    }
+    
+    private TreeDataItem createPrepRowTestId(Integer prepTestId){
+        ////////////
+        /*int loggedInId = DictionaryCache.getIdFromSystemName("analysis_logged_in");
+        TreeDataItem selected = itemsTree.getSelection();
+        selected = selected.parent;
+        SampleDataBundle selectedBundle = (SampleDataBundle)event.getData();
+        AnalysisViewDO anDO = selectedBundle.analysisTestDO;
+        anDO.setStatusId(loggedInId);
+        
+        TreeDataItem newRow = itemsTree.createTreeItem("analysis");
+        newRow.cells.get(0).value = formatTreeString(anDO.getTestName())+" : "+formatTreeString(anDO.getMethodName());
+        newRow.cells.get(1).value = loggedInId;
+        
+        SampleDataBundle sampleItemData = (SampleDataBundle)selected.data;
+        SampleItemViewDO itemDO = sampleItemData.sampleItemDO;
+        int sampleItemIndex = sampleItemData.sampleItemManager.getIndex(itemDO);
+        
+        try{
+            selectedBundle.sampleItemDO = sampleItemData.sampleItemDO;
+            selectedBundle.sampleItemManager = sampleItemData.sampleItemManager;
+            selectedBundle.analysisManager = sampleItemData.sampleItemManager.getAnalysisAt(sampleItemIndex);
+            
+            newRow.data = selectedBundle;
+            
+            itemsTree.addChildItem(selected, newRow);
+            itemsTree.select(newRow);
+        }catch(Exception e){
+            Window.alert(e.getMessage());
+            return;
+        }*/
+        ////////////////////////
+        int loggedInId = DictionaryCache.getIdFromSystemName("analysis_logged_in");
+        SampleDataBundle bundle, selectedBundle;
+        TreeDataItem selected = itemsTree.getSelection();
+        selected = selected.parent;
+        selectedBundle = (SampleDataBundle)selected.data;
+        
+        TreeDataItem newRow = new TreeDataItem(2);
+        newRow.leafType = "analysis";
+        newRow.checkForChildren(false);
+        
+        try{
+            TestManager testMan=null;
+            testMan = TestManager.findByIdWithPrepTest(prepTestId);
+            
+            if(testMan != null){
+                TestViewDO testDO = testMan.getTest();
+                bundle = new SampleDataBundle();
+                bundle.type = SampleDataBundle.Type.ANALYSIS;
+                
+                AnalysisViewDO analysis = new AnalysisViewDO();
+                bundle.analysisTestDO = analysis;
+                analysis.setStatusId(loggedInId);
+                analysis.setTestId(prepTestId);
+                analysis.setTestName(testDO.getName());
+                analysis.setMethodId(testDO.getMethodId());
+                analysis.setMethodName(testDO.getMethodName());
+                analysis.setIsReportable(testDO.getIsReportable());
+                analysis.setRevision(0);
+                
+                SampleItemViewDO itemDO = selectedBundle.sampleItemDO;
+                int sampleItemIndex = selectedBundle.sampleItemManager.getIndex(itemDO);
+                
+                bundle.sampleItemDO = selectedBundle.sampleItemDO;
+                bundle.sampleItemManager = selectedBundle.sampleItemManager;
+                bundle.analysisManager = selectedBundle.sampleItemManager.getAnalysisAt(sampleItemIndex);
+                bundle.testManager = testMan;
+                
+                //sections
+                TestSectionViewDO defaultDO = testMan.getTestSections().getDefaultSection();
+                
+                if(defaultDO != null){
+                    analysis.setSectionId(defaultDO.getSectionId());
+                    analysis.setSectionName(defaultDO.getSection());
+                    bundle.sectionsDropdownModel = null;
+                }else if(testMan.getTestSections().count() > 0){
+                    ArrayList<TestSectionViewDO> sections = testMan.getTestSections().getSections();
+                    bundle.sectionsDropdownModel = getSectionsModel(sections);
+                }
+                newRow.data = bundle;
+            }   
+        }catch(Exception e){
+            Window.alert(e.getMessage());
+            return null;
+        }
+            
+        return newRow;
+    }
+    
+    private void updateTreeAnalysisRowAndCheckPrepTests(){
+        TreeDataItem selected = itemsTree.getSelection();
+        int selectedIndex = itemsTree.getSelectedIndex();
+        
+        SampleDataBundle data = (SampleDataBundle)selected.data;
+        AnalysisViewDO aDO = data.analysisTestDO;
+        
+        itemsTree.setCell(selectedIndex, 0, formatTreeString(aDO.getTestName()) + " : " + formatTreeString(aDO.getMethodName()));
+        itemsTree.setCell(selectedIndex, 1, aDO.getStatusId());
+        
+        //check for prep tests
+        try{
+            TestPrepManager prepMan = data.testManager.getPrepTests();
+            if(prepMan.count() > 0){
+                TestPrepDO requiredTestPrepDO = prepMan.getRequiredTestPrep();
+                if(requiredTestPrepDO == null)
+                    drawTestPrepScreen(prepMan);
+                else
+                    selectedPrepTest(requiredTestPrepDO.getPrepTestId());
+            }
+        }catch(Exception e){
+            Window.alert(e.getMessage());
+        }
+    }
+    
+    private ArrayList<TableDataRow> getSectionsModel(ArrayList<TestSectionViewDO> sections) {
+        ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
+        model.add(new TableDataRow(null, ""));
+        
+        for(int i=0; i<sections.size(); i++){
+            TestSectionViewDO sectionDO = sections.get(i);
+            model.add(new TableDataRow(sectionDO.getSectionId(), sectionDO.getSection()));
+        }
+        
+        return model;
     }
 }
