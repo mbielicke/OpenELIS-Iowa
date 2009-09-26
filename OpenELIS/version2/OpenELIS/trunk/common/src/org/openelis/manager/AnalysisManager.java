@@ -38,7 +38,6 @@ public class AnalysisManager implements RPC, HasNotesInt {
     protected Integer                           sampleItemId, analysisReferenceId, analysisInternalReferenceTableId;
     protected ArrayList<AnalysisListItem>                   items, deletedList;
     
-    protected transient TestManager tests;
     protected transient static AnalysisManagerProxy proxy;
 
 
@@ -235,15 +234,7 @@ public class AnalysisManager implements RPC, HasNotesInt {
     public void setStorageAt(StorageManager storage, int i) {
         getItem(i).storage = storage;
     }
-    
-    public void setTests(TestManager tests){
-        this.tests = tests;
-    }
-    
-    public TestManager getTests(){
-        return tests;
-    }
-    
+   
     //item
     private AnalysisListItem getItem(int i) {
         return items.get(i);

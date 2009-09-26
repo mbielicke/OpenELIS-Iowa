@@ -27,6 +27,7 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
+import org.openelis.domain.TestPrepDO;
 import org.openelis.domain.TestPrepViewDO;
 import org.openelis.gwt.common.RPC;
 
@@ -109,6 +110,16 @@ public class TestPrepManager implements RPC {
                 deletedPreps = new ArrayList<TestPrepViewDO>();
             deletedPreps.add(prepTest);
         }        
+    }
+    
+    public TestPrepDO getRequiredTestPrep(){
+        for(int i=0; i<count(); i++){
+            TestPrepDO prepDO = preps.get(i);
+            if("N".equals(prepDO.getIsOptional()))
+                return prepDO;
+        }
+        
+        return null;
     }
     
     public TestPrepManager add() throws Exception {
