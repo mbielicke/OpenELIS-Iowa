@@ -24,18 +24,21 @@ Alternatively, the contents of this file marked
 license ("UIRF Software License"), in which case the provisions of a
 UIRF Software License are applicable instead of those above. 
 -->
-<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-                xmlns:xalan="http://xml.apache.org/xalan"
-                xmlns:resource="xalan://org.openelis.util.UTFResource"
-                xmlns:locale="xalan://java.util.Locale" 
-                xmlns:meta="xalan://org.openelis.metamap.OrganizationMetaMap" 
-                xmlns:addr="xalan://org.openelis.meta.AddressMeta"
-                xmlns:contact="xalan://org.openelis.metamap.OrganizationContactMetaMap"
-                xmlns:note="xalan://org.openelis.meta.NoteMeta"
-                xmlns:parent="xalan://org.openelis.meta.OrganizationMeta"
-                extension-element-prefixes="resource"
-
-                version="2.0">
+<xsl:stylesheet 
+  version="1.0"
+  extension-element-prefixes="resource"
+  xmlns:locale="xalan://java.util.Locale"
+  xmlns:resource="xalan://org.openelis.util.UTFResource"
+  xmlns:xalan="http://xml.apache.org/xalan"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+  xsi:noNamespaceSchemaLocation="http://openelis.uhl.uiowa.edu/schema/ScreenSchema.xsd"
+  xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd"
+  xmlns:meta="xalan://org.openelis.metamap.OrganizationMetaMap" 
+  xmlns:addr="xalan://org.openelis.meta.AddressMeta"
+  xmlns:contact="xalan://org.openelis.metamap.OrganizationContactMetaMap"
+  xmlns:note="xalan://org.openelis.meta.NoteMeta"
+  xmlns:parent="xalan://org.openelis.meta.OrganizationMeta">
   <xsl:import href="IMPORT/aToZOneColumn.xsl"/>
   <xalan:component prefix="resource">
     <xalan:script lang="javaclass" src="xalan://org.openelis.util.UTFResource"/>

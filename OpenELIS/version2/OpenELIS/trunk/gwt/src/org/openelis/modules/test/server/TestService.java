@@ -65,10 +65,10 @@ public class TestService {
         TestRemote remote = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
 
         try{    
-            query.results = new ArrayList<TestIdNameMethodNameDO>();
-            ArrayList<TestIdNameMethodNameDO> results = (ArrayList<TestIdNameMethodNameDO>)remote.query(query.fields,query.page*leftTableRowsPerPage,leftTableRowsPerPage);
+            query.setResults(new ArrayList<TestIdNameMethodNameDO>());
+            ArrayList<TestIdNameMethodNameDO> results = (ArrayList<TestIdNameMethodNameDO>)remote.query(query.getFields(),query.page*leftTableRowsPerPage,leftTableRowsPerPage);
             for(TestIdNameMethodNameDO result : results) {
-                query.results.add(result);
+                query.getResults().add(result);
             }
         }catch(LastPageException e) {
             throw new LastPageException(openElisConstants.getString("lastPageException"));
@@ -140,6 +140,13 @@ public class TestService {
     public TestManager fetchWithAnalytesAndResults(Integer testId) throws Exception {
         TestManagerRemote remote = (TestManagerRemote)EJBFactory.lookup("openelis/TestManagerBean/remote");
         TestManager man = remote.fetchWithAnalytesAndResults(testId);
+        
+        return man;
+    }
+    
+    public TestManager fetchWithPrepTests(Integer testId) throws Exception {
+        TestManagerRemote remote = (TestManagerRemote)EJBFactory.lookup("openelis/TestManagerBean/remote");
+        TestManager man = remote.fetchWithPrepTests(testId);
         
         return man;
     }

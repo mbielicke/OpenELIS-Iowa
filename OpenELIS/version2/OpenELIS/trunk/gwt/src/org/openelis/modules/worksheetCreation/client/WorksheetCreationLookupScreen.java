@@ -326,9 +326,9 @@ public class WorksheetCreationLookupScreen extends Screen {
         WorksheetCreationQuery query;
 
         query = new WorksheetCreationQuery();
-        query.fields = getQueryFields();
+        query.setFields(getQueryFields());
 
-        if (query.fields.size() > 0) {
+        if (query.getFields().size() > 0) {
             window.setBusy(consts.get("querying"));
     
             service.call("query", query, new AsyncCallback<WorksheetCreationQuery>() {
@@ -357,16 +357,16 @@ public class WorksheetCreationLookupScreen extends Screen {
         
         window.setDone(consts.get("queryingComplete"));
 
-        if (query.results == null || query.results.size() == 0) {
+        if (query.getResults() == null || query.getResults().size() == 0) {
             window.setDone(consts.get("noRecordsFound"));
         } else {
             window.setDone(consts.get("queryingComplete"));
         }
 
         model = new ArrayList<TableDataRow>();
-        query.model = new ArrayList<TableDataRow>();
-        for (i = 0; i < query.results.size(); i++) {
-            analysisRow = query.results.get(i);
+        query.setModel(new ArrayList<TableDataRow>());
+        for (i = 0; i < query.getResults().size(); i++) {
+            analysisRow = query.getResults().get(i);
 
             dictDo = DictionaryCache.getEntryFromId(analysisRow.getStatusId());
             

@@ -1004,11 +1004,8 @@ public class TestScreen extends Screen {
             }
             
             public void onStateChange(StateChangeEvent<State> event) {
-                if(EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState()) &&
-                                     security.hasSelectPermission())
-                    azButtons.unlock();
-                else
-                    azButtons.lock();
+                azButtons.enable(EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState()) &&
+                                 security.hasSelectPermission());
             }
 
         });
@@ -1278,7 +1275,7 @@ public class TestScreen extends Screen {
     
     public void commitQuery(ArrayList<QueryData> qFields) {
         Query<TestIdNameMethodNameDO> query = new Query<TestIdNameMethodNameDO>();
-        query.fields = qFields;
+        query.setFields(qFields);
         window.setBusy("Querying...");
 
         service.call("query", query, new AsyncCallback<Query<TestIdNameMethodNameDO>>() {
@@ -1342,13 +1339,13 @@ public class TestScreen extends Screen {
 
     private void loadQueryPage(Query<TestIdNameMethodNameDO> query) {
         window.setDone(consts.get("queryingComplete"));
-        if (query.results == null || query.results.size() == 0) {
+        if (query.getResults() == null || query.getResults().size() == 0) {
             window.setDone("No records found");
         } else
             window.setDone(consts.get("queryingComplete"));
-        query.model = new ArrayList<TableDataRow>();
-        for (TestIdNameMethodNameDO entry : query.results) {
-            query.model.add(new TableDataRow(entry.getId(), entry.getTestName()+","+entry.getMethodName()));
+        query.setModel(new ArrayList<TableDataRow>());
+        for (TestIdNameMethodNameDO entry : query.getResults()) {
+            query.getModel().add(new TableDataRow(entry.getId(), entry.getTestName()+","+entry.getMethodName()));
         }
         nav.setQuery(query);
         //ActionEvent.fire(this, Action.NEW_PAGE, query);

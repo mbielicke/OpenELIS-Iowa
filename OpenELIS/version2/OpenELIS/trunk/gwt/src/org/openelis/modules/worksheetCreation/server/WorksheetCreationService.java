@@ -55,10 +55,10 @@ public class WorksheetCreationService {
         remote = (WorksheetCreationRemote)EJBFactory.lookup("openelis/WorksheetCreationBean/remote");
 
         try {    
-            query.results = new ArrayList<WorksheetCreationViewDO>();
-            results = (ArrayList<WorksheetCreationViewDO>)remote.query(query.fields,0,500);
+            query.setResults(new ArrayList<WorksheetCreationViewDO>());
+            results = (ArrayList<WorksheetCreationViewDO>)remote.query(query.getFields(),0,500);
             for (WorksheetCreationViewDO result : results) {
-                query.results.add(result);
+                query.getResults().add(result);
             }
         } catch (LastPageException e) {
             throw new LastPageException(openElisConstants.getString("noRecordsFound"));
