@@ -28,10 +28,12 @@ package org.openelis.metamap;
 import org.openelis.gwt.common.MetaMap;
 import org.openelis.meta.TestMeta;
 import org.openelis.meta.TestReflexMeta;
+import org.openelis.meta.TestResultMeta;
 
 public class TestReflexMetaMap extends TestReflexMeta implements MetaMap {
 
    public TestMeta ADD_TEST;
+   public TestResultMeta TEST_RESULT;
    public TestAnalyteMetaMap TEST_ANALYTE;
     
    public String buildFrom(String where) {        
@@ -41,18 +43,22 @@ public class TestReflexMetaMap extends TestReflexMeta implements MetaMap {
    public TestReflexMetaMap(){
        super();
        ADD_TEST = new TestMeta(path+"addTest.");
-       TEST_ANALYTE = new TestAnalyteMetaMap("path.testAnalyte.");
+       TEST_RESULT = new TestResultMeta(path+"testResult.");
+       TEST_ANALYTE = new TestAnalyteMetaMap(path+"testAnalyte.");
    }
    
    public TestReflexMetaMap(String path){
        super(path);
        ADD_TEST = new TestMeta(path+"addTest.");
+       TEST_RESULT = new TestResultMeta(path+"testResult.");
        TEST_ANALYTE = new TestAnalyteMetaMap(path+"testAnalyte.");
    }
    
    public boolean hasColumn(String name){        
        if(name.startsWith(path+"addTest."))
            return ADD_TEST.hasColumn(name);
+       if(name.startsWith(path+"testResult."))
+           return TEST_RESULT.hasColumn(name);
        if(name.startsWith(path+"testAnalyte."))
            return TEST_ANALYTE.hasColumn(name);
        return super.hasColumn(name);
@@ -62,7 +68,11 @@ public class TestReflexMetaMap extends TestReflexMeta implements MetaMap {
        return ADD_TEST;
    }
    
-   public TestAnalyteMetaMap getTestAnalyte(){
+   public TestResultMeta getTestResult() {
+       return TEST_RESULT;
+   }
+   
+   public TestAnalyteMetaMap getTestAnalyte() {
        return TEST_ANALYTE;
    }
    
