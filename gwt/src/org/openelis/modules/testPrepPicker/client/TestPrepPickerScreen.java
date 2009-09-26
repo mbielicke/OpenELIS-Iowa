@@ -27,7 +27,6 @@ package org.openelis.modules.testPrepPicker.client;
 
 import java.util.ArrayList;
 
-import org.openelis.domain.TestPrepDO;
 import org.openelis.domain.TestPrepViewDO;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
@@ -40,6 +39,8 @@ import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableWidget;
+import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
+import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
 import org.openelis.manager.TestPrepManager;
 
 import com.google.gwt.core.client.GWT;
@@ -47,7 +48,10 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
 
 public class TestPrepPickerScreen extends Screen implements HasActionHandlers<TestPrepPickerScreen.Action>{
-   public enum Action {CHANGED};
+   public enum Action {SELECTED_PREP_ROW};
+   
+   protected TableWidget prepTestTable;
+   
     private TestPrepManager manager;
     
     public TestPrepPickerScreen() throws Exception {
@@ -61,7 +65,7 @@ public class TestPrepPickerScreen extends Screen implements HasActionHandlers<Te
     }
 
     private void initialize() {
-        final TableWidget prepTestTable = (TableWidget)def.getWidget("prepTestTable");
+        prepTestTable = (TableWidget)def.getWidget("prepTestTable");
         addScreenHandler(prepTestTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
             public void onDataChange(DataChangeEvent event) {
                 prepTestTable.load(getTableModel());
@@ -70,6 +74,12 @@ public class TestPrepPickerScreen extends Screen implements HasActionHandlers<Te
             public void onStateChange(StateChangeEvent<State> event) {
                 prepTestTable.enable(true);
             }
+        });
+        
+        prepTestTable.addBeforeCellEditedHandler(new BeforeCellEditedHandler(){
+           public void onBeforeCellEdited(BeforeCellEditedEvent event) {
+               event.cancel();
+            } 
         });
 
         final AppButton commitButton = (AppButton)def.getWidget("commit");
@@ -97,8 +107,14 @@ public class TestPrepPickerScreen extends Screen implements HasActionHandlers<Te
     }
     
     private void commit(){
-        if(validate())
+        if(validate()){
+            TableDataRow selectedRow = prepTestTable.getSelection();
+            
             window.close();
+            
+            if(selectedRow != null)
+                ActionEvent.fire(this, Action.SELECTED_PREP_ROW, selectedRow);
+        }
     }
     
     private void abort(){
@@ -122,10 +138,11 @@ public class TestPrepPickerScreen extends Screen implements HasActionHandlers<Te
                 TestPrepViewDO prepRow = (TestPrepViewDO)manager.getPrepAt(iter);
             
                TableDataRow row = new TableDataRow(2);
-               row.key = prepRow.getId();
+               row.key = prepRow.getPrepTestId();
 
                row.cells.get(0).value = prepRow.getPrepTestName()+", "+prepRow.getMethodName();
                row.cells.get(1).value = prepRow.getIsOptional();
+               
                model.add(row);
             }
         } catch (Exception e) {

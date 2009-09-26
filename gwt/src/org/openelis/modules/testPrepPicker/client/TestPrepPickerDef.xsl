@@ -27,7 +27,7 @@
                 xsi:noNamespaceSchemaLocation="http://openelis.uhl.uiowa.edu/schema/ScreenSchema.xsd"
                 xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd"
                 version="1.0">
-  <xsl:import href="http://openelis.uhl.uiowa.edu/schema/button.xsl"/>
+  <xsl:import href="IMPORT/button.xsl"/>
   <xalan:component prefix="resource">
     <xalan:script lang="javaclass" src="xalan://org.openelis.util.UTFResource"/>
   </xalan:component>

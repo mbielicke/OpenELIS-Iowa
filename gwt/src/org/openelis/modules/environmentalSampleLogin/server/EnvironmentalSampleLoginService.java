@@ -50,10 +50,10 @@ public class EnvironmentalSampleLoginService {
         SampleEnvironmentalRemote remote = (SampleEnvironmentalRemote)EJBFactory.lookup("openelis/SampleEnvironmentalBean/remote");
 
         try{    
-            query.results = new ArrayList<IdNameDO>();
-            ArrayList<IdNameDO> results = (ArrayList<IdNameDO>)remote.query(query.fields,query.page*leftTableRowsPerPage,leftTableRowsPerPage);
+            query.setResults(new ArrayList<IdNameDO>());
+            ArrayList<IdNameDO> results = (ArrayList<IdNameDO>)remote.query(query.getFields(),query.page*leftTableRowsPerPage,leftTableRowsPerPage);
             for(IdNameDO result : results) {
-                query.results.add(result);
+                query.getResults().add(result);
             }
         }catch(LastPageException e) {
             throw new LastPageException(openElisConstants.getString("lastPageException"));

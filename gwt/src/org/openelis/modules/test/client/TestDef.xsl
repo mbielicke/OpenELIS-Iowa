@@ -1,7 +1,3 @@
-
-
-
-
 <!--
 Exhibit A - UIRF Open-source Based Public Software License.
   
@@ -47,6 +43,9 @@ version="1.0"
                 xmlns:testAnalyte="xalan://org.openelis.metamap.TestAnalyteMetaMap"
                 xmlns:testPrep="xalan://org.openelis.metamap.TestPrepMetaMap"
                 xmlns:testRef="xalan://org.openelis.metamap.TestReflexMetaMap"
+                xmlns:testRefRes="xalan://org.openelis.meta.TestResultMeta"
+                xmlns:testRefTana="xalan://org.openelis.metamap.TestAnalyteMetaMap"
+                xmlns:testRefAna="xalan://org.openelis.meta.AnalyteMeta"
                 xmlns:testResult="xalan://org.openelis.metamap.TestResultMetaMap"
                 xmlns:testSection="xalan://org.openelis.metamap.TestSectionMetaMap"
                 xmlns:testTOS="xalan://org.openelis.metamap.TestTypeOfSampleMetaMap"
@@ -89,6 +88,15 @@ version="1.0"
   <xalan:component prefix="testRef">
     <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.TestReflexMetaMap" />
   </xalan:component>
+  <xalan:component prefix="testRefRes">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.TestResultMeta" />
+  </xalan:component>
+  <xalan:component prefix="testRefTana">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.TestAnalyteMetaMap" />
+  </xalan:component>
+  <xalan:component prefix="testRefAna">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.AnalyteMeta" />
+  </xalan:component>
   <xalan:component prefix="testWrksht">
     <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.TestWorksheetMetaMap" />
   </xalan:component>
@@ -122,8 +130,11 @@ version="1.0"
     <xsl:variable name="tp" select="meta:getTestPrep($test)" />
     <xsl:variable name="pt" select="testPrep:getPrepTest($tp)" />
     <xsl:variable name="tos" select="meta:getTestTypeOfSample($test)" />
-    <xsl:variable name="tref" select="meta:getTestReflex($test)" />
+    <xsl:variable name="tref" select="meta:getTestReflex($test)" />    
     <xsl:variable name="at" select="testRef:getAddTest($tref)" />
+    <xsl:variable name="trefr" select="testRef:getTestResult($tref)" />
+    <xsl:variable name="trefta" select="testRef:getTestAnalyte($tref)" />
+    <xsl:variable name="trefa" select="testRefTana:getAnalyte($trefta)" />
     <xsl:variable name="tws" select="meta:getTestWorksheet($test)" />
     <xsl:variable name="wss" select="testWrksht:getScriptlet($tws)" />
     <xsl:variable name="twsi" select="meta:getTestWorksheetItem($test)" />
@@ -140,9 +151,8 @@ version="1.0"
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
     <screen id="Test" name="{resource:getString($constants,'test')}" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">      
         <HorizontalPanel padding="0" spacing="0">
-<!--left table goes here -->
           <CollapsePanel height='530px' key='collapsePanel' style='LeftSidePanel'>
-            <resultsTable height='425px' key='azTable' showError='false' width='100%'>
+            <resultsTable height='425px' key='azTable'  width='100%'>
               <buttonGroup key='atozButtons'>
                 <xsl:call-template name='aToZLeftPanelButtons' />
               </buttonGroup>
@@ -154,7 +164,6 @@ version="1.0"
             </resultsTable>
           </CollapsePanel>
           <VerticalPanel padding="0" spacing="0">
-<!--button panel code-->
             <AbsolutePanel spacing="0" style="ButtonPanelContainer">
              <HorizontalPanel>
                 <xsl:call-template name="queryButton">
@@ -201,8 +210,7 @@ version="1.0"
                   </xsl:with-param>
                 </xsl:call-template>
                 </HorizontalPanel>
-            </AbsolutePanel>
-<!--end button panel-->
+            </AbsolutePanel>            
             <HorizontalPanel padding="0" spacing="0" style="WhiteContentPanel">
               <VerticalPanel>
                 <TablePanel style="Form">
@@ -216,19 +224,19 @@ version="1.0"
                     <text style="Prompt">
                       <xsl:value-of select="resource:getString($constants,'name')" />:
                     </text>
-                    <textbox key="{meta:getName($test)}" width="145px" case="lower" max="20" tab="{method:getName($mt)},{meta:getId($test)}" field="String" required="true" />
+                    <textbox key="{meta:getName($test)}" width="145px"  max="20" tab="{method:getName($mt)},{meta:getId($test)}" field="String" required="true" />
                     <text style="Prompt">
                       <xsl:value-of select="resource:getString($constants,'method')" />:
                     </text>
                     <widget>
-                      <autoComplete key="{method:getName($mt)}" width="145px" case="mixed" tab="{meta:getId($test)}, {meta:getName($test)}" field="Integer" required="true" cat="method">
+                      <autoComplete key="{method:getName($mt)}" width="145px" tab="{meta:getId($test)}, {meta:getName($test)}" field="Integer" required="true">
                         <col width="145"  />
                       </autoComplete>
                     </widget>
                   </row>
                 </TablePanel>
-                <VerticalPanel height="10px" />
-                <TabPanel key="testTabPanel" width="635px" halign="center">
+                <VerticalPanel height="10px"/>
+                <TabPanel key="testTabPanel" width="660px">
                   <tab key="detailsTab" text="{resource:getString($constants,'testDetails')}">
                     <VerticalPanel padding="0" spacing="0">
                       <TablePanel style="Form">
@@ -298,13 +306,13 @@ version="1.0"
                               <text style="Prompt">
                                 <xsl:value-of select='resource:getString($constants,"beginDate")' />:
                               </text>
-                              <calendar key="{meta:getActiveBegin($test)}" begin="0" end="2" width="90px" tab="{meta:getActiveEnd($test)},{meta:getIsActive($test)}" field="Date" required="true" />
+                              <calendar key="{meta:getActiveBegin($test)}" begin="0" end="2" width="90px" tab="{meta:getActiveEnd($test)},{meta:getIsActive($test)}"  required="true" />
                             </row>
                             <row>
                               <text style="Prompt">
                                 <xsl:value-of select='resource:getString($constants,"endDate")' />:
                               </text>
-                              <calendar key="{meta:getActiveEnd($test)}" begin="0" end="2" width="90px" tab="{label:getName($lbl)},{meta:getActiveBegin($test)}" field="Date" required="true" />
+                              <calendar key="{meta:getActiveEnd($test)}" begin="0" end="2" width="90px" tab="{label:getName($lbl)},{meta:getActiveBegin($test)}"  required="true" />
                             </row>
                           </TablePanel>
                         </VerticalPanel>
@@ -320,7 +328,7 @@ version="1.0"
                                 <xsl:value-of select='resource:getString($constants,"type")' />:
                               </text>
                               <widget>
-                                <autoComplete key="{label:getName($lbl)}" width="224px" case="lower" tab="{meta:getLabelQty($test)},{meta:getActiveEnd($test)}" field="Integer" cat="label">
+                                <autoComplete key="{label:getName($lbl)}" width="224px"  tab="{meta:getLabelQty($test)},{meta:getActiveEnd($test)}" field="Integer" >
                                   <col width="224"/>
                                 </autoComplete>
                               </widget>
@@ -331,11 +339,11 @@ version="1.0"
                               </text>
                               <textbox key="{meta:getLabelQty($test)}" width="50px" tab="{meta:getIsReportable($test)},{label:getName($lbl)}" field="Integer" />
                             </row>
-                            <row>
+                            <!-- <row>
                               <widget>
                                 <VerticalPanel height="54px" />
                               </widget>
-                            </row>
+                            </row> -->
                           </TablePanel>
                         </VerticalPanel>
                         <HorizontalPanel width="1px" />
@@ -346,15 +354,15 @@ version="1.0"
                           <widget valign="bottom">
                             <table key="sectionTable" width="auto" maxRows="2" showScroll="ALWAYS" tab="removeTestSectionButton,{meta:getIsReportable($test)}" title="">
                               <col key="{testSection:getSectionId($ts)}" width="119" sort="false" header="{resource:getString($constants,'name')}">
-                                <dropdown width="85" case="mixed" field="Integer" required="true" />
+                                <dropdown width="85" case="MIXED" field="Integer" required="true" />
                               </col>
                               <col key="{testSection:getFlagId($ts)}" width="119" sort="false" header="{resource:getString($constants,'options')}">
-                                <dropdown width="110" case="mixed" field="Integer" />
+                                <dropdown width="110" case="MIXED" field="Integer" />
                               </col>
                             </table>
                           </widget>
-                          <HorizontalPanel style="WhiteContentPanel">
-                            <widget halign="center" style="WhiteContentPanel">
+                          <HorizontalPanel style="TableFooterPanel">
+                            <widget halign="center" >
                               <appButton key="addSectionButton" style="Button">
                                 <HorizontalPanel>
                                   <AbsolutePanel style="AddRowButtonImage" />
@@ -364,8 +372,8 @@ version="1.0"
                                 </HorizontalPanel>
                               </appButton>
                             </widget>
-                            <widget halign="center" style="WhiteContentPanel">
-                              <appButton key="removeSectionButton" style="Button" tab="{meta:getRevisionMethodId($test)},sectionTable">
+                            <widget halign="center" >
+                              <appButton key="removeSectionButton" style="Button">
                                 <HorizontalPanel>
                                   <AbsolutePanel style="RemoveRowButtonImage" />
                                   <text>
@@ -379,7 +387,7 @@ version="1.0"
                       </HorizontalPanel>
                       <TablePanel style="Form">
                         <row>
-                          <text halign="right" style="Prompt">
+                          <text  style="Prompt">
                             <xsl:value-of select='resource:getString($constants,"testReportable")' />:
                           </text>
                           <check key="{meta:getIsReportable($test)}" tab="sectionTable,{meta:getLabelQty($test)}" required="true" />
@@ -389,10 +397,10 @@ version="1.0"
                             <xsl:value-of select="resource:getString($constants,'revisionMethod')" />:
                           </text>
                           <dropdown key="{meta:getRevisionMethodId($test)}" width="190px" tab="{meta:getSortingMethodId($test)},removeTestSectionButton" field="Integer" />
-                          <text halign="left" style="Prompt">
+                          <text style="Prompt">
                             <xsl:value-of select="resource:getString($constants,'testTrailer')" />:
                           </text>
-                          <autoComplete key="{testTrailer:getName($tt)}" width="180px" case="lower" tab="{meta:getTestFormatId($test)},{meta:getReportingSequence($test)}" field="Integer" required="false" cat="trailer">
+                          <autoComplete key="{testTrailer:getName($tt)}" width="180px" case="LOWER" tab="{meta:getTestFormatId($test)},{meta:getReportingSequence($test)}" field="Integer" required="false">
                             <col width="180"/>
                           </autoComplete>
                         </row>
@@ -404,17 +412,17 @@ version="1.0"
                           <text style="Prompt">
                             <xsl:value-of select="resource:getString($constants,'testFormat')" />:
                           </text>
-                          <dropdown key="{meta:getTestFormatId($test)}" width="180px" tab="{script:getName($scpt)},{testTrailer:getName($tt)}" field="Integer" />
+                          <dropdown key="{meta:getTestFormatId($test)}" width="180px" tab="{script:getName($scpt)},{testTrailer:getName($tt)}" field="Integer"/>
                         </row>
                         <row>
                           <text style="Prompt">
                             <xsl:value-of select="resource:getString($constants,'reportingMethod')" />:
                           </text>
-                          <dropdown key="{meta:getReportingMethodId($test)}" width="190px" tab="{meta:getReportingSequence($test)},{meta:getSortingMethodId($test)}" field="Integer" />
+                          <dropdown key="{meta:getReportingMethodId($test)}" width="190px" tab="{meta:getReportingSequence($test)},{meta:getSortingMethodId($test)}" field="Integer"/>
                           <text style="Prompt">
                             <xsl:value-of select="resource:getString($constants,'scriptlet')" />:
                           </text>
-                          <autoComplete key="{script:getName($scpt)}" width="180px" case="lower" tab="{meta:getDescription($test)},{meta:getTestFormatId($test)}" field="Integer" cat="scriptlet">
+                          <autoComplete key="{script:getName($scpt)}" width="180px" case="LOWER" tab="{meta:getDescription($test)},{meta:getTestFormatId($test)}" field="Integer">
                             <col width="180"/>
                           </autoComplete>
                         </row>
@@ -422,7 +430,7 @@ version="1.0"
                           <text style="Prompt">
                             <xsl:value-of select="resource:getString($constants,'reportingSequence')" />:
                           </text>
-                          <textbox key="{meta:getReportingSequence($test)}" width="80px" tab="{testTrailer:getName($tt)},{meta:getReportingMethodId($test)}" field="Integer" />
+                          <textbox key="{meta:getReportingSequence($test)}" width="80px" tab="{testTrailer:getName($tt)},{meta:getReportingMethodId($test)}" field="Integer"/>
                         </row>
                       </TablePanel>
                       <VerticalPanel height="36px" />
@@ -432,18 +440,18 @@ version="1.0"
                     <VerticalPanel>
                       <HorizontalPanel>
                         <widget valign="top">
-                          <table key="sampleTypeTable" width="auto" maxRows="21" showScroll="ALWAYS" showError="false" title="">
+                          <table key="sampleTypeTable" width="auto" maxRows="21" showScroll="ALWAYS" title="">
                             <col key="{testTOS:getTypeOfSampleId($tos)}" width="290" sort="false" header="{resource:getString($constants,'sampleType')}">
-                              <dropdown width="285" popWidth = "285" case="mixed" field="Integer" required="true" />
+                              <dropdown width="285" popWidth = "285" case="MIXED" field="Integer" required="true" />
                             </col>
                             <col key="{testTOS:getUnitOfMeasureId($tos)}" width="291" sort="false" header="{resource:getString($constants,'unitOfMeasure')}">
-                              <dropdown width="286" popWidth = "286" case="mixed" field="Integer" />
+                              <dropdown width="286" popWidth = "286" case="MIXED" field="Integer" />
                             </col>
                           </table>
                         </widget>
                       </HorizontalPanel>
-                      <HorizontalPanel style="WhiteContentPanel">
-                        <widget halign="center" style="WhiteContentPanel">
+                      <HorizontalPanel style="TableFooterPanel">
+                        <widget halign="center">
                           <appButton key="addSampleTypeButton" style="Button">
                             <HorizontalPanel>
                               <AbsolutePanel style="AddRowButtonImage" />
@@ -453,7 +461,7 @@ version="1.0"
                             </HorizontalPanel>
                           </appButton>
                         </widget>
-                        <widget halign="center" style="WhiteContentPanel">
+                        <widget halign="center">
                           <appButton key="removeSampleTypeButton" style="Button">
                             <HorizontalPanel>
                               <AbsolutePanel style="RemoveRowButtonImage" />
@@ -472,55 +480,55 @@ version="1.0"
                       <HorizontalPanel>
                         <HorizontalPanel width="455px">
                           <widget valign="top">
-                            <table key="analyteTable" width="420px" maxRows="10" showScroll="ALWAYS" drag="default" drop="default" targets="analyteTable">
+                            <table key="analyteTable" width="420px" maxRows="10" showScroll="ALWAYS">
                               <col key="analyteLookup" width="150" sort="false" header="1">
-                                <autoComplete width="125px" case="mixed" popWidth="auto" field="Integer" autoCall="AnalyteAndResultTab" cat="analyte">
-                                  <col width="300" field="Integer" required="true" header="Name" />
+                                <autoComplete width="125px" case="MIXED" popWidth="auto" field="Integer">
+                                  <col width="300" header="Name" />
                                 </autoComplete>
                               </col>
-                              <col key="{testAnalyte:getResultGroup($tana)}" width="150" sort="false" header="2">
-                                <autoComplete key="analyteLookup" width="125px" case="mixed" popWidth="auto" field="Integer" autoCall="AnalyteAndResultTab">
-                                  <col width="150" field="Integer" header="Name" />
+                              <col key="analyteLookup2" width="150" sort="false" header="2">
+                                <autoComplete key="analyteLookup" width="125px" case="MIXED" popWidth="auto" field="Integer">
+                                  <col width="150" header="Name" />
                                 </autoComplete>
                               </col>
-                              <col key="analyteLookup2" width="150" sort="false" header="3">
-                                <autoComplete key="analyteLookup" width="125px" case="mixed" popWidth="auto" field="Integer" autoCall="AnalyteAndResultTab">
-                                  <col width="300" field="Integer" header="Name" />
+                              <col key="analyteLookup3" width="150" sort="false" header="3">
+                                <autoComplete key="analyteLookup" width="125px" case="MIXED" popWidth="auto" field="Integer">
+                                  <col width="300" header="Name" />
                                 </autoComplete>
                               </col>
-                              <col key="analyteLookup3" width="150" sort="false" header="4">
-                                <autoComplete key="analyteLookup" width="125px" case="mixed" popWidth="auto" field="Integer" autoCall="AnalyteAndResultTab">
-                                  <col width="150" field="Integer" header="Name" />
+                              <col key="analyteLookup4" width="150" sort="false" header="4">
+                                <autoComplete key="analyteLookup" width="125px" case="MIXED" popWidth="auto" field="Integer">
+                                  <col width="150"  header="Name" />
                                 </autoComplete>
                               </col>
-                              <col key="analyteLookup4" width="150" sort="false" header="5">
-                                <autoComplete key="analyteLookup" width="125px" case="mixed" popWidth="auto" field="Integer" autoCall="AnalyteAndResultTab">
-                                  <col width="150" field="Integer" header="Name" />
+                              <col key="analyteLookup5" width="150" sort="false" header="5">
+                                <autoComplete key="analyteLookup" width="125px" case="MIXED" popWidth="auto" field="Integer">
+                                  <col width="150"  header="Name" />
                                 </autoComplete>
                               </col>
-                              <col key="analyteLookup5" width="150" sort="false" header="6">
-                                <autoComplete key="analyteLookup" width="125px" case="mixed" popWidth="auto" field="Integer" autoCall="AnalyteAndResultTab">
-                                  <col width="150" field="Integer" header="Name" />
+                              <col key="analyteLookup6" width="150" sort="false" header="6">
+                                <autoComplete key="analyteLookup" width="125px" case="MIXED" popWidth="auto" field="Integer">
+                                  <col width="150"  header="Name" />
                                 </autoComplete>
                               </col>
-                              <col key="analyteLookup6" width="150" sort="false" header="7">
-                                <autoComplete key="analyteLookup" width="125px" case="mixed" popWidth="auto" field="Integer" autoCall="AnalyteAndResultTab">
-                                  <col width="150" field="Integer" header="Name" />
+                              <col key="analyteLookup7" width="150" sort="false" header="7">
+                                <autoComplete key="analyteLookup" width="125px" case="MIXED" popWidth="auto" field="Integer">
+                                  <col width="150" header="Name" />
                                 </autoComplete>
                               </col>
-                              <col key="analyteLookup7" width="150" sort="false" header="8">
-                                <autoComplete key="analyteLookup" width="125px" case="mixed" popWidth="auto" field="Integer" autoCall="AnalyteAndResultTab">
-                                  <col width="150" field="Integer" header="Name" />
+                              <col key="analyteLookup8" width="150" sort="false" header="8">
+                                <autoComplete key="analyteLookup" width="125px" case="MIXED" popWidth="auto" field="Integer">
+                                  <col width="150" header="Name" />
                                 </autoComplete>
                               </col>
-                              <col key="analyteLookup8" width="150" sort="false" header="9">
-                                <autoComplete key="analyteLookup" width="125px" case="mixed" popWidth="auto" field="Integer" autoCall="AnalyteAndResultTab">
-                                  <col width="150" field="Integer" header="Name" />
+                              <col key="analyteLookup9" width="150" sort="false" header="9">
+                                <autoComplete key="analyteLookup" width="125px" case="MIXED" popWidth="auto" field="Integer">
+                                  <col width="150" header="Name" />
                                 </autoComplete>
                               </col>
-                              <col key="analyteLookup9" width="150" sort="false" header="10">
-                                <autoComplete key="analyteLookup" width="125px" case="mixed" popWidth="auto" field="Integer" autoCall="AnalyteAndResultTab">
-                                  <col width="150" field="Integer" header="Name" />
+                              <col key="analyteLookup10" width="150" sort="false" header="10">
+                                <autoComplete key="analyteLookup" width="125px" case="MIXED" popWidth="auto" field="Integer">
+                                  <col width="150" header="Name" />
                                 </autoComplete>
                               </col>
                             </table>
@@ -547,69 +555,66 @@ version="1.0"
                                 <xsl:value-of select="resource:getString($constants,'scriptlet')" />:
                               </text>
                               <widget colspan="4">
-                                <autoComplete key="{testAnalyte:getScriptletId($tana)}" width="100px" case="lower" field="Integer" cat="scriptlet">
+                                <autoComplete key="{testAnalyte:getScriptletId($tana)}" width="100px" case="LOWER" field="Integer">
                                   <col width="165" header="Name" />
                                 </autoComplete>
                               </widget>
                             </row>
-                          </TablePanel>
-                          <!-- <VerticalPanel height="85px"/> -->
-                          <VerticalPanel>
-                            <HorizontalPanel style="WhiteContentPanel">
-                              <widget halign="left" style="WhiteContentPanel">
+                          </TablePanel>                          
+                          <HorizontalPanel style="TableFooterPanel">
+                          	<VerticalPanel>
+                          	 <widget halign="left">
                                 <appButton key="addAnalyteButton" style="Button">
                                   <HorizontalPanel>
                                     <AbsolutePanel style="AddRowButtonImage" />
-                                    <text>+ Analyte</text>
+                                    <text><xsl:value-of select="resource:getString($constants,'addAnalyte')" /></text>
                                   </HorizontalPanel>
                                 </appButton>
                               </widget>
-                              <widget halign="left" style="WhiteContentPanel">
-                                <appButton key="removeAnalyteButton" style="Button">
-                                  <HorizontalPanel>
-                                    <AbsolutePanel style="WhiteContentPanel" />
-                                    <text>- Analyte</text>
-                                  </HorizontalPanel>
-                                </appButton>
-                              </widget>
-                            </HorizontalPanel>
-                            <HorizontalPanel>
-                              <widget halign="left" style="WhiteContentPanel">
+                              <widget halign="left">
                                 <appButton key="addHeaderButton" style="Button">
                                   <HorizontalPanel>
-                                    <AbsolutePanel style="WhiteContentPanel" />
-                                    <text>+ Header</text>
+                                    <AbsolutePanel style="AddRowButtonImage" />
+                                    <text><xsl:value-of select="resource:getString($constants,'addHeader')" /></text>
                                   </HorizontalPanel>
                                 </appButton>
                               </widget>
-                              <widget halign="left" style="WhiteContentPanel">
+                              <widget halign="left">
+                                <appButton key="addColumnButton" style="Button">
+                                  <HorizontalPanel>
+                                    <AbsolutePanel style="AddColumnButtonImage" />
+                                    <text><xsl:value-of select="resource:getString($constants,'addColumn')" /></text>
+                                  </HorizontalPanel>
+                                </appButton>
+                              </widget>
+                          	</VerticalPanel>
+                          	<VerticalPanel>
+                          	 <widget halign="left">
+                                <appButton key="removeAnalyteButton" style="Button">
+                                  <HorizontalPanel>
+                                    <AbsolutePanel style="RemoveRowButtonImage" />
+                                    <text><xsl:value-of select="resource:getString($constants,'removeAnalyte')" /></text>
+                                  </HorizontalPanel>
+                                </appButton>
+                              </widget>
+                              <widget halign="left">
                                 <appButton key="removeHeaderButton" style="Button">
                                   <HorizontalPanel>
                                     <AbsolutePanel style="RemoveRowButtonImage"/>
-                                    <text>- Header</text>
+                                    <text><xsl:value-of select="resource:getString($constants,'removeHeader')" /></text>
                                   </HorizontalPanel>
                                 </appButton>
                               </widget>
-                            </HorizontalPanel>
-                            <HorizontalPanel>
-                              <widget halign="left" style="WhiteContentPanel">
-                                <appButton key="addColumnButton" style="Button">
-                                  <HorizontalPanel>
-                                    <AbsolutePanel style="ButtonPanelButton" />
-                                    <text>+ Column</text>
-                                  </HorizontalPanel>
-                                </appButton>
-                              </widget>
-                              <widget halign="left" style="WhiteContentPanel">
+                              <widget halign="left">
                                 <appButton key="removeColumnButton" style="Button">
                                   <HorizontalPanel>
-                                    <AbsolutePanel style="ButtonPanelButton" />
-                                    <text>- Column</text>
+                                    <AbsolutePanel style="RemoveColumnButtonImage" />
+                                    <text><xsl:value-of select="resource:getString($constants,'removeColumn')" /></text>
                                   </HorizontalPanel>
                                 </appButton>
                               </widget>
-                            </HorizontalPanel>
-                          </VerticalPanel>
+                          	</VerticalPanel>
+                          </HorizontalPanel>
                         </VerticalPanel>
                       </HorizontalPanel>
                
@@ -617,58 +622,58 @@ version="1.0"
                       <VerticalPanel width = "545px"> 
                       <ScrollTabBar key="resultTabPanel" width = "545px"/>                                                                                            
                           <widget valign="top">
-                            <table key="resultTable" width="520px" maxRows="7" showScroll="ALWAYS" showError="false" title="">
+                            <table key="resultTable" width="520px" maxRows="7" showScroll="ALWAYS" title="">
                               <col key="{testResult:getUnitOfMeasureId($tr)}" width="50" sort="true" header="{resource:getString($constants,'unit')}">
-                                <dropdown width="75" case="mixed" field="Integer" />
+                                <dropdown width="75" case="MIXED" field="Integer" />
                               </col>
                               <col key="{testResult:getTypeId($tr)}" width="55" sort="true" header="{resource:getString($constants,'type')}">
-                                <dropdown width="75" case="mixed" field="Integer" required="true" />
+                                <dropdown width="75" case="MIXED" field="Integer" required="true" />
                               </col>
                               <col key="{testResult:getValue($tr)}" width="200" sort="true" header="{resource:getString($constants,'value')}">
-                                <textbox case="mixed" field="String" />
+                                <textbox case="MIXED" field="String" />
                               </col>
                               <col key="{testResult:getFlagsId($tr)}" width="110" sort="true" header="{resource:getString($constants,'flags')}">
-                                <dropdown width="115" case="mixed" field="Integer" />
+                                <dropdown width="115" case="MIXED" field="Integer" />
                               </col>
                               <col key="{testResult:getSignificantDigits($tr)}" width="40" header="{resource:getString($constants,'significantDigits')}">
-                                <textbox case="mixed" field="Integer" />
+                                <textbox case="MIXED" field="Integer" />
                               </col>
                               <col key="{testResult:getRoundingMethodId($tr)}" width="90" header="{resource:getString($constants,'roundingMethod')}">
-                                <dropdown width="95" case="mixed" field="Integer" />
+                                <dropdown width="95" case="MIXED" field="Integer" />
                               </col>
                             </table>
                           </widget>
                         </VerticalPanel>
-                        <VerticalPanel>
+                        <VerticalPanel style="TableFooterPanel">
                           <VerticalPanel height = "30px"/>	
-                          <widget halign="center" style="WhiteContentPanel">
+                          <widget halign="center">
                             <appButton key="addResultTabButton" style="Button">
                               <HorizontalPanel>
-                                <AbsolutePanel style="ButtonPanelButton"/>
-                                <text>+ Group</text>
+                                <AbsolutePanel style="AddTabButtonImage"/>
+                                <text><xsl:value-of select="resource:getString($constants,'addGroup')" /></text>
                               </HorizontalPanel>
                             </appButton>
                           </widget>
-                          <widget halign="center" style="WhiteContentPanel">
+                          <widget halign="center">
                             <appButton key="addTestResultButton" style="Button">
                               <HorizontalPanel>
                                 <AbsolutePanel style="AddRowButtonImage" />
-                                <text>+ Row</text>
+                                <text><xsl:value-of select="resource:getString($constants,'addRowTest')" /></text>
                               </HorizontalPanel>
                             </appButton>
                           </widget>
-                          <widget halign="center" style="WhiteContentPanel">
+                          <widget halign="center">
                             <appButton key="removeTestResultButton" style="Button">
                               <HorizontalPanel>
                                 <AbsolutePanel style="RemoveRowButtonImage" />
-                                <text>- Row</text>
+                                <text><xsl:value-of select="resource:getString($constants,'removeRowTest')" /></text>
                               </HorizontalPanel>
                             </appButton>
                           </widget>
-                          <widget halign="center" style="WhiteContentPanel">
+                          <widget halign="center">
                             <appButton key="dictionaryLookUpButton" style="Button">
                               <HorizontalPanel>
-                                <AbsolutePanel style="ButtonPanelButton" />
+                                <AbsolutePanel style="DictionaryButtonImage" />
                                 <text>
                                   <xsl:value-of select='resource:getString($constants,"dictionary")' />
                                 </text>
@@ -685,20 +690,20 @@ version="1.0"
                         <VerticalPanel padding="0" spacing="0">
                           <HorizontalPanel>
                             <widget valign="top">
-                              <table key="testPrepTable" width="auto" maxRows="9" showScroll="ALWAYS" manager="this" showError="false" title="">
+                              <table key="testPrepTable" width="auto" maxRows="9" showScroll="ALWAYS"  title="">
                                 <col key="{prepTestMeta:getName($pt)}" width="489" header="{resource:getString($constants,'prepTestMethod')}">
-                                  <autoComplete width="470" case="mixed" field="Integer" cat="testMethod">
-                                    <col width="470" field="Integer" header="Name" />
+                                  <autoComplete width="470" field="Integer" >
+                                    <col width="470"  header="Name" />
                                   </autoComplete>
                                 </col>
-                                <col key="{testPrep:getIsOptional($tp)}" width ="10" header="{resource:getString($constants,'optional')}">
+                                <col key="{testPrep:getIsOptional($tp)}" width ="70" header="{resource:getString($constants,'optional')}">
                                   <check />
                                 </col>
                               </table>
                             </widget>
                           </HorizontalPanel>
-                          <HorizontalPanel style="WhiteContentPanel">
-                            <widget halign="center" style="WhiteContentPanel">
+                          <HorizontalPanel style="TableFooterPanel">
+                            <widget halign="center">
                               <appButton key="addPrepTestButton" style="Button">
                                 <HorizontalPanel>
                                   <AbsolutePanel style="AddRowButtonImage" />
@@ -710,7 +715,7 @@ version="1.0"
                                 </HorizontalPanel>
                               </appButton>
                             </widget>
-                            <widget halign="center" style="WhiteContentPanel">
+                            <widget halign="center">
                               <appButton  key="removePrepTestButton" style="Button">
                                 <HorizontalPanel>
                                   <AbsolutePanel style="RemoveRowButtonImage" />
@@ -726,30 +731,30 @@ version="1.0"
                           <VerticalPanel height="10px" />
                           <HorizontalPanel>
                             <widget valign="top">
-                              <table key="testReflexTable" width="auto" maxRows="9" showScroll="ALWAYS" manager="this" showError="false" title="">
-                                <col key="{testRef:getAddTestId($tref)}" width="150" header="{resource:getString($constants,'reflexiveTest')}">
-                                  <autoComplete width="150px" case="mixed" required="true">
+                              <table key="testReflexTable" width="auto" maxRows="9" showScroll="ALWAYS"  title="">
+                                <col key="{addTestMeta:getName($at)}" width="150" header="{resource:getString($constants,'reflexiveTest')}">
+                                  <autoComplete width="150px" case="MIXED" required="true">
                                     <col width="160" header="Name" />
                                   </autoComplete>
                                 </col>
-                                <col key="{testRef:getTestAnalyteId($tref)}" width="181" sort="false" header="{resource:getString($constants,'testAnalyte')}">
-                                 <autoComplete width="181" case="mixed" popWidth="auto" required="true" autoCall="PrepTestAndReflexTestTab">
-                                   <col width="181" field="Integer"  />
+                                <col key="{testRefAna:getName($trefa)}" width="181" sort="false" header="{resource:getString($constants,'testAnalyte')}">
+                                 <autoComplete width="181" case="MIXED" popWidth="auto" required="true">
+                                   <col width="181"/>
                                  </autoComplete>
                                 </col>
-                                <col key="{testRef:getTestResultId($tref)}" width="140" header="{resource:getString($constants,'result')}">
-                                 <autoComplete width="140" case="mixed" popWidth="auto" required="true" autoCall="PrepTestAndReflexTestTab">
-                                   <col width="140" field="Integer" />
+                                <col key="{testRefRes:getValue($trefr)}" width="140" header="{resource:getString($constants,'result')}">
+                                 <autoComplete width="140" case="MIXED" popWidth="auto" required="true">
+                                   <col width="140"/>
                                  </autoComplete>
                                 </col>
                                 <col key="{testRef:getFlagsId($tref)}" width="104" header="{resource:getString($constants,'flags')}">
-                                  <dropdown width="200" case="mixed" field="Integer" popWidth="300" required="true" />
+                                  <dropdown width="200" case="MIXED" field="Integer" popWidth="300" required="true" />
                                 </col>
                               </table>
                             </widget>
                           </HorizontalPanel>
-                          <HorizontalPanel style="WhiteContentPanel">
-                            <widget halign="center" style="WhiteContentPanel">
+                          <HorizontalPanel style="TableFooterPanel">
+                            <widget halign="center">
                               <appButton  key="addReflexTestButton" style="Button">
                                 <HorizontalPanel>
                                   <AbsolutePanel style="AddRowButtonImage" />
@@ -761,7 +766,7 @@ version="1.0"
                                 </HorizontalPanel>
                               </appButton>
                             </widget>
-                            <widget halign="center" style="WhiteContentPanel">
+                            <widget halign="center">
                               <appButton key="removeReflexTestButton" style="Button">
                                 <HorizontalPanel>
                                   <AbsolutePanel style="RemoveRowButtonImage" />
@@ -787,7 +792,7 @@ version="1.0"
                               <xsl:value-of select="resource:getString($constants,'numberFormat')" />:
                             </text>
                             <widget colspan="4">
-                              <dropdown key="{testWrksht:getFormatId($tws)}" width="145px" case="mixed" tab="{testWrksht:getBatchCapacity($tws)}, {wsscript:getName($wss)}" field="Integer" />
+                              <dropdown key="{testWrksht:getFormatId($tws)}" width="145px" case="MIXED" tab="{testWrksht:getBatchCapacity($tws)}, {wsscript:getName($wss)}" field="Integer" />
                             </widget>
                           </row>
                           <row>
@@ -811,8 +816,8 @@ version="1.0"
                               <xsl:value-of select="resource:getString($constants,'scriptlet')" />:
                             </text>
                             <widget colspan="3">
-                              <autoComplete key="{wsscript:getName($wss)}" width="235px" case="lower" field="Integer" cat="scriptlet">
-                                <widths>235</widths>
+                              <autoComplete key="{wsscript:getName($wss)}" width="235px"  field="Integer" >
+                                <col width="235"/>
                               </autoComplete>
                             </widget>
                           </row>
@@ -824,23 +829,23 @@ version="1.0"
                         </text>
                         <HorizontalPanel>
                           <widget valign="top">
-                            <table key="worksheetTable" width="auto" maxRows="7" showScroll="ALWAYS" tab="removeWSItemButton, {testWrksht:getScriptletId($tws)}" manager="this" showError="false" title="">
+                            <table key="worksheetTable" width="auto" maxRows="7" showScroll="ALWAYS" tab="removeWSItemButton, {testWrksht:getScriptletId($tws)}" title="">
                               <col key="{testWrkshtItm:getPosition($twsi)}" width="74" header="{resource:getString($constants,'position')}">
                                 <textbox field="Integer" />
                               </col>
                               <col key="{testWrkshtItm:getTypeId($twsi)}" width="147" header="{resource:getString($constants,'type')}">
-                                <dropdown width="140" case="mixed" field="Integer" required="true" />
+                                <dropdown width="140" case="MIXED" field="Integer" required="true" />
                               </col>
                               <col key="{testWrkshtItm:getQcName($twsi)}" width="347" header="{resource:getString($constants,'qcName')}">
-                                <autoComplete width="340" case="mixed" field="String" >
+                                <autoComplete width="340" case="MIXED" field="String" >
                                   <col width="350" header="Name" />
                                 </autoComplete>
                               </col>
                             </table>
                           </widget>
                         </HorizontalPanel>
-                        <HorizontalPanel style="WhiteContentPanel">
-                          <widget halign="center" style="WhiteContentPanel">
+                        <HorizontalPanel style="TableFooterPanel">
+                          <widget halign="center">
                             <appButton action = "action" key="addWSItemButton" style="Button">
                               <HorizontalPanel>
                                 <AbsolutePanel style="AddRowButtonImage" />
@@ -852,8 +857,8 @@ version="1.0"
                               </HorizontalPanel>
                             </appButton>
                           </widget>
-                          <widget halign="center" style="WhiteContentPanel">
-                            <appButton key="removeWSItemButton" style="Button" tab="worksheetTable, worksheetAnalyteTable" action="removeRow">
+                          <widget halign="center">
+                            <appButton key="removeWSItemButton" style="Button" action="removeRow">
                               <HorizontalPanel>
                                 <AbsolutePanel style="RemoveRowButtonImage" />
                                 <widget>
@@ -881,25 +886,25 @@ version="1.0"
                                 <textbox field="Integer" required = "true"/>
                               </col>
                               <col key="{testWrkshtAna:getFlagId($twsa)}" width="72" header="{resource:getString($constants,'flag')}">
-                                <dropdown width="140" case="mixed" field="Integer" />
+                                <dropdown width="140" case="MIXED" field="Integer" />
                               </col>
                             </table>
                           </widget>                                               
                         </HorizontalPanel>
-                        <HorizontalPanel style="WhiteContentPanel">
-                              <widget halign="left" style="WhiteContentPanel">
+                        <HorizontalPanel style="TableFooterPanel">
+                              <widget halign="left">
                                 <appButton key="addWSAnalyteButton" style="Button">
                                   <HorizontalPanel>
                                     <AbsolutePanel style="AddRowButtonImage" />
-                                    <text>+ Analyte</text>
+                                    <text><xsl:value-of select='resource:getString($constants,"addAnalyte")'/></text>
                                   </HorizontalPanel>
                                 </appButton>
                               </widget>
-                              <widget halign="left" style="WhiteContentPanel">
+                              <widget halign="left">
                                 <appButton key="removeWSAnalyteButton" style="Button">
                                   <HorizontalPanel>
-                                    <AbsolutePanel style="WhiteContentPanel" />
-                                    <text>- Analyte</text>
+                                    <AbsolutePanel style="RemoveRowButtonImage" />
+                                    <text><xsl:value-of select='resource:getString($constants,"removeAnalyte")'/></text>
                                   </HorizontalPanel>
                                 </appButton>
                               </widget>
