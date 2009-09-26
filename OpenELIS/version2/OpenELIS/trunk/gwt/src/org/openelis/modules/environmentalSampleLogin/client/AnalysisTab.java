@@ -33,7 +33,9 @@ import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.domain.TestMethodViewDO;
+import org.openelis.domain.TestPrepDO;
 import org.openelis.domain.TestSectionViewDO;
+import org.openelis.domain.TestViewDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
@@ -55,6 +57,7 @@ import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.TestManager;
+import org.openelis.manager.TestPrepManager;
 import org.openelis.metamap.SampleMetaMap;
 import org.openelis.modules.testPrepPicker.client.TestPrepPickerScreen;
 
@@ -63,7 +66,7 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Window;
 
 public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab.Action> {
-    public enum Action {CHANGED};
+    public enum Action {CHANGED,SELECTED_TEST_PREP_ROW};
     private boolean loaded;
     
     private SampleMetaMap meta;
@@ -75,6 +78,7 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
     protected Dropdown<Integer> sectionId;
     protected CheckBox isReportable;
     
+    protected SampleDataBundle bundle;
     protected AnalysisManager manager;
     protected AnalysisViewDO analysis;
     protected SampleItemViewDO sampleItem;
@@ -90,7 +94,8 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
         initialize();
        
         setStatusesModel(DictionaryCache.getListByCategorySystemName("analysis_status"));
-        setSectionsModel(new ArrayList());
+        ArrayList<TableDataRow> sections = getSectionsModel(new ArrayList());
+        sectionId.setModel(sections);
     }
     
     private void initialize() {
@@ -106,12 +111,12 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
                 try{
                     TestManager testMan=null;
                     TableDataRow selectedRow = test.getSelection();
-                    //SampleTestMethodDO testDO=null;
                     
-                    if(selectedRow != null){
+                    if(selectedRow.key != null){
                         testMan = TestManager.findByIdWithPrepTest(event.getValue());
-                        manager.setTests(testMan);
-                    }
+                        bundle.testManager = testMan;
+                    }else
+                        method.setSelections(new ArrayList());
                     
                     analysis.setTestId(event.getValue());
                     
@@ -129,18 +134,31 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
                         TestSectionViewDO defaultDO = testMan.getTestSections().getDefaultSection();
                         
                         if(defaultDO != null){
-                            setSectionsModel(defaultDO.getSectionId(), defaultDO.getSection());
+                            sectionId.setModel(getSectionsModel(defaultDO.getSectionId(), defaultDO.getSection()));
                             sectionId.setSelection(defaultDO.getSectionId());
+                            bundle.sectionsDropdownModel = null;
                         }else if(testMan.getTestSections().count() > 0){
-                            setSectionsModel(testMan.getTestSections().getSections());
+                            ArrayList<TableDataRow> sections = getSectionsModel(testMan.getTestSections().getSections());
+                            sectionId.setModel(sections);
                             sectionId.setSelections(null);
+                            
+                            if(bundle != null)
+                                bundle.sectionsDropdownModel = sections;
                         }
                         
+                        //fire changed before we check for prep tests
+                        ActionEvent.fire(anTab, Action.CHANGED, null);
+                        
+                        /*
                         //test pre requirement code
-                        drawTestPrepScreen();
+                        if(testMan.getPrepTests().count() > 0){
+                            TestPrepDO requiredTestPrepDO = testMan.getPrepTests().getRequiredTestPrep();
+                            if(requiredTestPrepDO == null)
+                                drawTestPrepScreen(manager.getTests().getPrepTests());
+                            else
+                                selectedPrepTest(requiredTestPrepDO.getPrepTestId());
+                        }*/
                     }
-                    
-                    ActionEvent.fire(anTab, Action.CHANGED, null);
                 }catch(Exception e){
                     Window.alert(e.getMessage());
                 }
@@ -256,9 +274,13 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
         addScreenHandler(sectionId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 if(analysis.getSectionId() != null)
-                    setSectionsModel(analysis.getSectionId(), analysis.getSectionName());
-                else
-                    setSectionsModel(new ArrayList());
+                    sectionId.setModel(getSectionsModel(analysis.getSectionId(), analysis.getSectionName()));
+                else{
+                    if(bundle != null && bundle.sectionsDropdownModel != null)
+                        sectionId.setModel(bundle.sectionsDropdownModel);
+                    else
+                        sectionId.setModel(getSectionsModel(new ArrayList()));
+                }
                 
                 sectionId.setSelection(analysis.getSectionId());
             }
@@ -353,15 +375,15 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
         statusId.setModel(model);
     }
     
-    private void setSectionsModel(Integer id, String sectionName) {
+    private ArrayList<TableDataRow> getSectionsModel(Integer id, String sectionName) {
         ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
         model.add(new TableDataRow(id, sectionName));
          
-        sectionId.setModel(model);
+        return model;
     }
     
-    private void setSectionsModel(ArrayList<TestSectionViewDO> sections) {
+    private ArrayList<TableDataRow> getSectionsModel(ArrayList<TestSectionViewDO> sections) {
         ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
         
@@ -369,22 +391,25 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
             TestSectionViewDO sectionDO = sections.get(i);
             model.add(new TableDataRow(sectionDO.getSectionId(), sectionDO.getSection()));
         }
-         
-        sectionId.setModel(model);
+        
+        return model;
     }
     
-    private void drawTestPrepScreen(){
+    private void drawTestPrepScreen(TestPrepManager manager){
         if (prepPickerScreen == null) {
             try {
+                final AnalysisTab anTab = this;
                 prepPickerScreen = new TestPrepPickerScreen();
-                /*editNote.addActionHandler(new ActionHandler<EditNoteScreen.Action>() {
-                    public void onAction(ActionEvent<EditNoteScreen.Action> event) {
-                        if (event.getAction() == EditNoteScreen.Action.COMMIT) {
-                            loaded = false;
-                            draw();
+                prepPickerScreen.addActionHandler(new ActionHandler<TestPrepPickerScreen.Action>() {
+                    public void onAction(ActionEvent<TestPrepPickerScreen.Action> event) {
+                        if (event.getAction() == TestPrepPickerScreen.Action.SELECTED_PREP_ROW) {
+                            
+                            TableDataRow selectedRow = (TableDataRow)event.getData();
+                            Integer testId = (Integer)selectedRow.key;
+                            selectedPrepTest(testId);
                         }
                     }
-                });*/
+                });
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -401,29 +426,72 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
                                               false);
         modal.setName(consts.get("prepTestPicker"));
         modal.setContent(prepPickerScreen);
-        try{
-            prepPickerScreen.setManager(manager.getTests().getPrepTests());
-        }catch(Exception e){
-            Window.alert(e.getMessage());
-        }
-/*
-        NoteDO note = null;
+        prepPickerScreen.setManager(manager);
+    }
+    
+    private void selectedPrepTest(Integer prepTestId){
+        SampleDataBundle bundle = createSampleBundleFromPrepTestId(prepTestId);
+        AnalysisTab anTab = this;
+        
+        //fire event for first test prep
+        if(bundle != null)
+            ActionEvent.fire(anTab, Action.SELECTED_TEST_PREP_ROW, bundle);
         
         try{
-        if(isExternal)
-            note = manager.getExternalEditingNote();
-        else
-            note = manager.getInternalEditingNote();
+            //check to see if there is a prep test for this prep test
+            TestManager testMan=TestManager.findByIdWithPrepTest(prepTestId);
+            if(testMan != null && testMan.getPrepTests().count() > 0){
+                TestPrepDO requiredTestPrepDO = testMan.getPrepTests().getRequiredTestPrep();
+                if(requiredTestPrepDO == null)
+                    drawTestPrepScreen(testMan.getPrepTests());
+                else
+                    selectedPrepTest(prepTestId);
+                    ActionEvent.fire(anTab, Action.SELECTED_TEST_PREP_ROW, createSampleBundleFromPrepTestId(requiredTestPrepDO.getPrepTestId()));
+            }
+            
         }catch(Exception e ){
-            e.printStackTrace();
-            Window.alert("error!");
+            Window.alert(e.getMessage());
+        }   
+    }
+    
+    private SampleDataBundle createSampleBundleFromPrepTestId(Integer prepTestId){
+        SampleDataBundle bundle = null;
+        try{
+            TestManager testMan=null;
+            testMan = TestManager.findByIdWithPrepTest(prepTestId);
+            
+            if(testMan != null){
+                TestViewDO testDO = testMan.getTest();
+                bundle = new SampleDataBundle();
+                bundle.type = SampleDataBundle.Type.ANALYSIS;
+                
+                AnalysisViewDO analysis = new AnalysisViewDO();
+                bundle.analysisTestDO = analysis;
+                analysis.setTestId(prepTestId);
+                analysis.setTestName(testDO.getName());
+                analysis.setMethodId(testDO.getMethodId());
+                analysis.setMethodName(testDO.getMethodName());
+                analysis.setIsReportable(testDO.getIsReportable());
+                analysis.setRevision(0);
+                
+                //sections
+                TestSectionViewDO defaultDO = testMan.getTestSections().getDefaultSection();
+                
+                if(defaultDO != null){
+                    analysis.setSectionId(defaultDO.getSectionId());
+                    analysis.setSectionName(defaultDO.getSection());
+                    bundle.sectionsDropdownModel = null;
+                }else if(testMan.getTestSections().count() > 0){
+                    ArrayList<TestSectionViewDO> sections = testMan.getTestSections().getSections();
+                    bundle.sectionsDropdownModel = getSectionsModel(sections);
+                }
+            }   
+        }catch(Exception e){
+            Window.alert(e.getMessage());
+            return null;
         }
-        note.setSystemUser(userName);
-        note.setSystemUserId(userId);
-        note.setTimestamp(Datetime.getInstance(Datetime.YEAR, Datetime.SECOND));
-        editNote.setNote(note);
-        editNote.setScreenState(State.DEFAULT);
-        */
+            
+        return bundle;
     }
     
     public void setData(SampleDataBundle data) {
@@ -439,11 +507,14 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
             if(state == State.ADD || state == State.UPDATE)
                 StateChangeEvent.fire(this, State.UPDATE);
         }
-        
+        bundle = data;
         loaded = false;
     }
      
      public void draw(){
+         if(analysis == null)
+             analysis = new AnalysisViewDO();
+         
          if(!loaded)
              DataChangeEvent.fire(this);
          
