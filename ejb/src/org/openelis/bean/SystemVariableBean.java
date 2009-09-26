@@ -26,7 +26,7 @@
 package org.openelis.bean;
 
 import java.util.ArrayList;
-
+import java.util.List;
 import javax.annotation.Resource;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
@@ -88,7 +88,7 @@ public class SystemVariableBean implements SystemVariableRemote {
     public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception {
         Query query;
         QueryBuilderV2 builder;
-        ArrayList<IdNameVO> list;
+        List list;
 
         builder = new QueryBuilderV2();
 
@@ -101,7 +101,7 @@ public class SystemVariableBean implements SystemVariableRemote {
         query = manager.createQuery(builder.getEJBQL());
         query.setMaxResults(first + max);
 
-        list = (ArrayList<IdNameVO>)query.getResultList();
+        list = query.getResultList();
         if (list.isEmpty())
             throw new NotFoundException();
 
@@ -109,7 +109,7 @@ public class SystemVariableBean implements SystemVariableRemote {
         if (list == null)
             throw new LastPageException();
 
-        return list;
+        return (ArrayList<IdNameVO>)list;
     }
 
     public SystemVariableDO add(SystemVariableDO data) throws Exception {
