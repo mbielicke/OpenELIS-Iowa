@@ -54,6 +54,7 @@ import org.openelis.local.OrganizationLocal;
 import org.openelis.metamap.OrganizationMetaMap;
 import org.openelis.remote.OrganizationRemote;
 import org.openelis.util.QueryBuilder;
+import org.openelis.util.QueryBuilderV2;
 import org.openelis.utils.GetPage;
 import org.openelis.utils.ReferenceTableCache;
 
@@ -88,7 +89,7 @@ public class OrganizationBean implements OrganizationRemote, OrganizationLocal {
                                      int first,
                                      int max) throws Exception {
         StringBuffer sb = new StringBuffer();
-        QueryBuilder qb = new QueryBuilder();
+        QueryBuilderV2 qb = new QueryBuilderV2();
 
         qb.setMeta(OrgMeta);
 
@@ -99,7 +100,7 @@ public class OrganizationBean implements OrganizationRemote, OrganizationLocal {
 
         // this method is going to throw an exception if a column doesnt match
 
-        qb.addNewWhere(fields);
+        qb.constructWhere(fields);
 
         qb.setOrderBy(OrgMeta.getName());
 
@@ -111,7 +112,7 @@ public class OrganizationBean implements OrganizationRemote, OrganizationLocal {
             query.setMaxResults(first + max);
 
         // ***set the parameters in the query
-        qb.setNewQueryParams(query, fields);
+        QueryBuilderV2.setQueryParams(query, fields);
 
         ArrayList<IdNameDO> returnList = (ArrayList<IdNameDO>)GetPage.getPage(query.getResultList(),
                                                                               first,
