@@ -111,7 +111,38 @@ public class DataBaseUtil {
     public static boolean isDifferent(Object a, Object b) {
         return (a == null && b != null) || (a != null && !a.equals(b));
     }
+    
+    /*
+     * For paged result list, this method returns a subList of the query list
+     * starting at first for max number of results.
+     */
+    public static List subList(List query, int first, int max) {
+        int to;
+        Iterator e;
+        ArrayList list;
 
+        if (query == null || query.isEmpty() || first >= query.size())
+            return null;
+
+        to = Math.min(first + max, query.size());
+        list = new ArrayList(to - first);
+        e = query.listIterator(first);
+        for (; first < to; first++ )
+            list.add(e.next());
+
+        return list;
+    }
+
+    /**
+     * Convert a List to ArrayList 
+     */
+    public static ArrayList toArrayList(List from) {
+        return new ArrayList(from);
+    }
+    
+    //
+    // move this to somewhere else
+    //
     public static String formatStorageLocation(String storageName,
                                                String StorageLocation,
                                                String storageUnitDesc) {
@@ -133,26 +164,5 @@ public class DataBaseUtil {
         }
 
         return returnString;
-    }
-
-    /*
-     * For paged result list, this method returns a subList of the query list
-     * starting at first for max number of results.
-     */
-    public static List subList(List query, int first, int max) {
-        int to;
-        Iterator e;
-        ArrayList list;
-
-        if (query == null || query.isEmpty() || first >= query.size())
-            return null;
-
-        to = Math.min(first + max, query.size());
-        list = new ArrayList(to - first);
-        e = query.listIterator(first);
-        for (; first < to; first++ )
-            list.add(e.next());
-
-        return list;
     }
 }
