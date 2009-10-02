@@ -60,17 +60,29 @@ UIRF Software License are applicable instead of those above.
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
     <screen id="SystemVariable" name="{resource:getString($constants,'systemVariable')}">
       <HorizontalPanel padding="0" spacing="0">
-        <CollapsePanel key="collapsePanel" height="225px" style="LeftSidePanel">
-          <resultsTable key="azTable" width="300px">
+        <CollapsePanel key="collapsePanel" style="LeftSidePanel">
+          <HorizontalPanel width="225px">
             <buttonGroup key="atozButtons">
               <xsl:call-template name="aToZLeftPanelButtons" />
             </buttonGroup>
-            <table width="auto" maxRows="9">
-              <col width="175" header="resource:getString($constants,'name')">
-                <label />
-              </col>
-            </table>
-          </resultsTable>
+            <VerticalPanel>
+              <table key="atozTable" width="auto" maxRows="9">
+                <col width="175" header="{resource:getString($constants,'name')}">
+                  <label />
+                </col>
+              </table>
+              <widget halign="center">
+              <HorizontalPanel >
+                <appButton key="atozPrev" style="Button">
+                  <AbsolutePanel style="prevNavIndex" />
+                </appButton>
+                <appButton key="atozNext" style="Button">
+                  <AbsolutePanel style="nextNavIndex" />
+                </appButton>
+              </HorizontalPanel>
+                </widget>
+            </VerticalPanel>
+          </HorizontalPanel>
         </CollapsePanel>
         <VerticalPanel padding="0" spacing="0">
 
@@ -125,7 +137,7 @@ UIRF Software License are applicable instead of those above.
 
 <!--end button panel-->
 
-          <VerticalPanel width="620px" height="225px" padding="0" spacing="0" style="WhiteContentPanel">
+          <VerticalPanel width="620px" height="210px" padding="0" spacing="0" style="WhiteContentPanel">
             <TablePanel style="Form">
               <row>
                 <text style="Prompt">
