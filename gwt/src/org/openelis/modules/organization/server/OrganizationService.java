@@ -29,33 +29,19 @@ import java.util.ArrayList;
 
 import org.openelis.common.AutocompleteRPC;
 import org.openelis.domain.IdNameDO;
-import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.server.ServiceUtils;
+import org.openelis.gwt.common.data.Query;
 import org.openelis.manager.OrganizationContactManager;
 import org.openelis.manager.OrganizationManager;
-import org.openelis.modules.organization.client.OrgQuery;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.OrganizationManagerRemote;
 import org.openelis.remote.OrganizationRemote;
-import org.openelis.server.constants.Constants;
-import org.openelis.util.SessionManager;
-import org.openelis.util.UTFResource;
 
 public class OrganizationService {
 
 	private static final int rowPP = 18;
     
-	private UTFResource openElisConstants= UTFResource.getBundle((String)SessionManager.getSession().getAttribute("locale"));
-	
-	public OrgQuery query(OrgQuery query) throws Exception {
-        try {
-            query.setResults(remote().query(query.getFields(), query.getPage() * rowPP, rowPP));
-        } catch (LastPageException e) {
-            throw new LastPageException(openElisConstants.getString("lastPageException"));
-        } catch (Exception e) {
-            throw new Exception(e.getMessage());
-        }
-        return query;
+	public ArrayList<IdNameDO> query(Query query) throws Exception {
+            return remote().query(query.getFields(), query.getPage() * rowPP, rowPP);
     }
 
 	public OrganizationManager fetch(Integer orgId) throws Exception {

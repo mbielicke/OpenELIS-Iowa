@@ -26,10 +26,13 @@ import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameDO;
 import org.openelis.domain.OrganizationVO;
 import org.openelis.domain.OrganizationViewDO;
+import org.openelis.domain.SystemVariableDO;
+import org.openelis.exception.InconsistencyException;
 import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.SecurityModule;
 import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.gwt.event.BeforeGetMatchesEvent;
 import org.openelis.gwt.event.BeforeGetMatchesHandler;
@@ -41,6 +44,7 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
+import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
@@ -78,7 +82,7 @@ public class OrganizationScreen extends Screen implements BeforeGetMatchesHandle
 
     private SecurityModule       security;
 
-    private OrganizationMetaMap  OrgMeta       = new OrganizationMetaMap();
+    private OrganizationMetaMap  meta       = new OrganizationMetaMap();
 
     ScreenNavigator nav;
     
@@ -86,66 +90,24 @@ public class OrganizationScreen extends Screen implements BeforeGetMatchesHandle
         // Call base to get ScreenDef and draw screen
     	super((ScreenDefInt)GWT.create(OrganizationDef.class));
         service = new ScreenService("OpenELISServlet?service=org.openelis.modules.organization.server.OrganizationService");
-        manager = OrganizationManager.getInstance();
 
-        nav = new ScreenNavigator<OrgQuery>(this) {
-            public void getSelection(RPC entry) {
-                fetch(((IdNameDO)entry).getId());
-            }
-            public void loadPage(OrgQuery query) {
-                loadQueryPage(query);
-            }
-        };
-        OrgMeta = new OrganizationMetaMap();
-        
         security = OpenELIS.security.getModule("organization");
+        if (security == null)
+            throw new InconsistencyException("Error: Missing security module entry 'organization'; No permission to this screen.");
 
         // Setup link between Screen and widget Handlers
         initialize();
 
-        // Create the Handler for the Contacts tab passing in the ScreenDef
-        contactsTab = new ContactsTab(def);
-
-        // Create the Handler for the Notes tab passing in the ScreenDef;
-        notesTab = new NotesTab(def, "notesPanel", "standardNoteButton", false);
-
-        // Set up tabs to recieve State Change events from the main Screen.
-        addScreenHandler(contactsTab, new ScreenEventHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
-                contactsTab.setManager(manager);
-
-                if (tab == Tabs.CONTACTS)
-                    drawTabs();
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                contactsTab.setState(event.getState());
-            }
-        });
-
-        addScreenHandler(notesTab, new ScreenEventHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
-                notesTab.setManager(manager);
-
-                if (tab == Tabs.NOTES)
-                    drawTabs();
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                notesTab.setState(event.getState());
-            }
-        });
-        // Setup service used by screen
-
-        // Initialize Screen
+        manager = OrganizationManager.getInstance();
         setState(State.DEFAULT);
         setCountriesModel();
         setStatesModel();
+        DataChangeEvent.fire(this);
     }
 
     private void initialize() {
 
-        final TextBox name = (TextBox)def.getWidget(OrgMeta.getName());
+        final TextBox name = (TextBox)def.getWidget(meta.getName());
         addScreenHandler(name, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 name.setValue(manager.getOrganizationAddress().getName());
@@ -165,7 +127,7 @@ public class OrganizationScreen extends Screen implements BeforeGetMatchesHandle
             }
         });
 
-        final TextBox street = (TextBox)def.getWidget(OrgMeta.ADDRESS.getStreetAddress());
+        final TextBox street = (TextBox)def.getWidget(meta.ADDRESS.getStreetAddress());
         addScreenHandler(street, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 street.setValue(manager.getOrganizationAddress()
@@ -186,7 +148,7 @@ public class OrganizationScreen extends Screen implements BeforeGetMatchesHandle
             }
         });
 
-        final TextBox id = (TextBox)def.getWidget(OrgMeta.getId());
+        final TextBox id = (TextBox)def.getWidget(meta.getId());
         addScreenHandler(id, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 id.setValue(getString(manager.getOrganizationAddress()
@@ -207,7 +169,7 @@ public class OrganizationScreen extends Screen implements BeforeGetMatchesHandle
             }
         });
 
-        final TextBox multipleUnit = (TextBox)def.getWidget(OrgMeta.getAddress()
+        final TextBox multipleUnit = (TextBox)def.getWidget(meta.getAddress()
                                                                    .getMultipleUnit());
         addScreenHandler(multipleUnit, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
@@ -231,7 +193,7 @@ public class OrganizationScreen extends Screen implements BeforeGetMatchesHandle
             }
         });
 
-        final TextBox city = (TextBox)def.getWidget(OrgMeta.getAddress()
+        final TextBox city = (TextBox)def.getWidget(meta.getAddress()
                                                            .getCity());
         addScreenHandler(city, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
@@ -253,7 +215,7 @@ public class OrganizationScreen extends Screen implements BeforeGetMatchesHandle
             }
         });
 
-        final TextBox zipCode = (TextBox)def.getWidget(OrgMeta.getAddress()
+        final TextBox zipCode = (TextBox)def.getWidget(meta.getAddress()
                                                               .getZipCode());
         addScreenHandler(zipCode, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
@@ -275,7 +237,7 @@ public class OrganizationScreen extends Screen implements BeforeGetMatchesHandle
             }
         });
 
-        final Dropdown<String> state = (Dropdown<String>)def.getWidget(OrgMeta.getAddress()
+        final Dropdown<String> state = (Dropdown<String>)def.getWidget(meta.getAddress()
                                                                               .getState());
         addScreenHandler(state, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
@@ -297,7 +259,7 @@ public class OrganizationScreen extends Screen implements BeforeGetMatchesHandle
             }
         });
 
-        final Dropdown<String> country = (Dropdown<String>)def.getWidget(OrgMeta.getAddress()
+        final Dropdown<String> country = (Dropdown<String>)def.getWidget(meta.getAddress()
                                                                                 .getCountry());
         addScreenHandler(country, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
@@ -319,7 +281,7 @@ public class OrganizationScreen extends Screen implements BeforeGetMatchesHandle
             }
         });
 
-        final CheckBox isActive = (CheckBox)def.getWidget(OrgMeta.getIsActive());
+        final CheckBox isActive = (CheckBox)def.getWidget(meta.getIsActive());
         addScreenHandler(isActive, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 isActive.setValue(manager.getOrganizationAddress()
@@ -337,7 +299,7 @@ public class OrganizationScreen extends Screen implements BeforeGetMatchesHandle
             }
         });
 
-        final AutoComplete<Integer> parentOrg = (AutoComplete)def.getWidget(OrgMeta.getParentOrganization()
+        final AutoComplete<Integer> parentOrg = (AutoComplete)def.getWidget(meta.getParentOrganization()
                                                                                    .getName());
         addScreenHandler(parentOrg, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
@@ -510,6 +472,48 @@ public class OrganizationScreen extends Screen implements BeforeGetMatchesHandle
                 window.clearStatus();
             }
         });
+
+        // Create the Handler for the Contacts tab passing in the ScreenDef
+        contactsTab = new ContactsTab(def);
+        addScreenHandler(contactsTab, new ScreenEventHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                contactsTab.setManager(manager);
+
+                if (tab == Tabs.CONTACTS)
+                    drawTabs();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                contactsTab.setState(event.getState());
+            }
+        });
+
+        // Create the Handler for the Notes tab passing in the ScreenDef;
+        notesTab = new NotesTab(def, "notesPanel", "standardNoteButton", false);
+        addScreenHandler(notesTab, new ScreenEventHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                notesTab.setManager(manager);
+
+                if (tab == Tabs.NOTES)
+                    drawTabs();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                notesTab.setState(event.getState());
+            }
+        });
+
+/*        
+        nav = new ScreenNavigator<OrgQuery>(this) {
+            public void getSelection(RPC entry) {
+                fetch(((IdNameDO)entry).getId());
+            }
+            public void loadPage(OrgQuery query) {
+                loadQueryPage(query);
+            }
+        };
+*/    
+
     }
 
     protected void query() {
@@ -641,7 +645,7 @@ public class OrganizationScreen extends Screen implements BeforeGetMatchesHandle
     private void getOrganizations(String query) {
         if (state == State.DISPLAY || state == State.DEFAULT) {
             QueryData qField = new QueryData();
-            qField.key = OrgMeta.getName();
+            qField.key = meta.getName();
             qField.query = query;
             qField.type = QueryData.Type.STRING;
             commitQuery(qField);
@@ -701,6 +705,7 @@ public class OrganizationScreen extends Screen implements BeforeGetMatchesHandle
     }
 
     public void commitQuery(ArrayList<QueryData> qFields) {
+/*
         OrgQuery query = new OrgQuery();
 //        query.fields = qFields;
         window.setBusy(consts.get("querying"));
@@ -717,9 +722,10 @@ public class OrganizationScreen extends Screen implements BeforeGetMatchesHandle
                     Window.alert(caught.getMessage());
             }
         });
+*/
     }
 
-    public void loadQuery(OrgQuery query) {
+    public void loadQuery(Query query) {
         manager = OrganizationManager.getInstance();
         DataChangeEvent.fire(this);
 
@@ -728,9 +734,9 @@ public class OrganizationScreen extends Screen implements BeforeGetMatchesHandle
         //ActionEvent.fire(this, Action.NEW_MODEL, query);
     }
 
-    private void loadQueryPage(OrgQuery query) {
+    private void loadQueryPage(Query query) {
         ArrayList<TableDataRow> model;
-        
+/*        
         window.setDone(consts.get("queryingComplete"));
         if (query.getResults() == null) {
             window.setDone(consts.get("noRecordsFound"));
@@ -745,6 +751,7 @@ public class OrganizationScreen extends Screen implements BeforeGetMatchesHandle
         
         query.setModel(model);
         nav.setQuery(query);
+*/
     }
 
     private void setCountriesModel() {
@@ -753,7 +760,7 @@ public class OrganizationScreen extends Screen implements BeforeGetMatchesHandle
         for (DictionaryDO resultDO : (ArrayList<DictionaryDO>)DictionaryCache.getListByCategorySystemName("country")) {
             model.add(new TableDataRow(resultDO.getEntry(), resultDO.getEntry()));
         }
-        ((Dropdown<String>)def.getWidget(OrgMeta.ADDRESS.getCountry())).setModel(model);
+        ((Dropdown<String>)def.getWidget(meta.ADDRESS.getCountry())).setModel(model);
     }
 
     private void setStatesModel() {
@@ -762,7 +769,7 @@ public class OrganizationScreen extends Screen implements BeforeGetMatchesHandle
         for (DictionaryDO resultDO : (ArrayList<DictionaryDO>)DictionaryCache.getListByCategorySystemName("state")) {
             model.add(new TableDataRow(resultDO.getEntry(), resultDO.getEntry()));
         }
-        ((Dropdown<String>)def.getWidget(OrgMeta.ADDRESS.getState())).setModel(model);
+        ((Dropdown<String>)def.getWidget(meta.ADDRESS.getState())).setModel(model);
     }
 
     private void drawTabs() {
