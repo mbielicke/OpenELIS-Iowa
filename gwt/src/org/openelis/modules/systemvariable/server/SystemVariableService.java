@@ -26,30 +26,22 @@
 
 package org.openelis.modules.systemvariable.server;
 
+import java.util.ArrayList;
+
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.SystemVariableDO;
-import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.SystemVariableRemote;
-import org.openelis.util.SessionManager;
-import org.openelis.util.UTFResource;
 
 public class SystemVariableService {
 
-    private static final int rowPP = 18;
-    private UTFResource      openElisConstants = UTFResource.getBundle((String)SessionManager
-                                                            .getSession().getAttribute("locale"));
+    private static final int rowPP = 9;
 
-    public Query<IdNameVO> query(Query<IdNameVO> query) throws Exception {
-        try {
-            query.setResults(remote().query(query.getFields(), query.getPage() * rowPP, rowPP));
-        } catch (LastPageException e) {
-            throw new LastPageException(openElisConstants.getString("lastPageException"));
-        } catch (Exception e) {
-            throw new Exception(e.getMessage());
-        }
-        return query;
+    public ArrayList<IdNameVO> query(Query query) throws Exception {
+        ArrayList<IdNameVO> x;
+        x = remote().query(query.getFields(), query.getPage() * rowPP, rowPP);
+        return x;
     }
 
     public SystemVariableDO fetchById(Integer id) throws Exception {
