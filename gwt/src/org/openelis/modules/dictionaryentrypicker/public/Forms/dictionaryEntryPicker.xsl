@@ -24,9 +24,12 @@ Alternatively, the contents of this file marked
 license ("UIRF Software License"), in which case the provisions of a
 UIRF Software License are applicable instead of those above. 
 -->
-<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-                xmlns:xalan="http://xml.apache.org/xalan"
+<xsl:stylesheet xmlns:xalan="http://xml.apache.org/xalan"
                 xmlns:resource="xalan://org.openelis.util.UTFResource"
+                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  				xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+  				xsi:noNamespaceSchemaLocation="http://openelis.uhl.uiowa.edu/schema/ScreenSchema.xsd"
+  				xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd"
                 xmlns:locale="xalan://java.util.Locale"
                 extension-element-prefixes="resource"
                 version="1.0">
@@ -42,32 +45,29 @@ UIRF Software License are applicable instead of those above.
   <xsl:variable name="language"><xsl:value-of select="locale"/></xsl:variable>
   <xsl:variable name="props"><xsl:value-of select="props"/></xsl:variable>
   <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))"/>
- <screen id="DictionaryEntryPicker" name="{resource:getString($constants,'dictionaryEntrySelection')}" serviceUrl="OpenElisService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">	
-		<HorizontalPanel style="WhiteContentPanel" spacing="0">
+ <screen id="DictionaryEntryPicker" name="{resource:getString($constants,'dictionaryEntrySelection')}" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">	
+		<VerticalPanel>
+		<HorizontalPanel spacing="0">
 			<!--left table goes here -->
-			 <buttonGroup key='atozButtons'>
+			 <buttonGroup height = "100%" key='atozButtons'>
                 <xsl:call-template name='aToZLeftPanelButtons' />
               </buttonGroup>							
-		<HorizontalPanel width = "5px"/>
-		<VerticalPanel style="WhiteContentPanel" spacing="0" width="300px">
+		<!-- <HorizontalPanel width = "5px"/> -->
+		<VerticalPanel>
+		 <VerticalPanel style="WhiteContentPanel" spacing="0">
 		 
-         <TablePanel style = "Form" spacing="0"> 
+         <TablePanel style = "Form"> 
          <row>
           <text style="Prompt"><xsl:value-of select="resource:getString($constants,'selectCategory')"/>:</text>
           <widget colspan = "3">	 		
-		   <dropdown key="category" popWidth = "250" width="250" showError="false" enabledStates="default"/>				  
+		   <dropdown key="category" popWidth = "245" width="245" />				  
 		  </widget> 
 		 </row> 
-		 <row>
-		  <widget> 
-		   <VerticalPanel height = "5px"/>
-		  </widget> 
-		 </row>
 		<row>
 		  <text style="Prompt"><xsl:value-of select="resource:getString($constants,'enterSearch')"/>:</text>
 		  
-		   <textbox key="findTextBox" width="120px" showError="false" enabledStates="default"/>
-		   <appButton action="find" onclick="this" style="Button" key="findButton" showError="false" enabledStates="default">
+		   <textbox key="findTextBox" width="120px" />
+		   <appButton action="find" style="Button" key="findButton" >
 			<HorizontalPanel>
             	<AbsolutePanel style="FindButtonImage"/>
                 <text><xsl:value-of select='resource:getString($constants,"find")'/></text>
@@ -75,30 +75,20 @@ UIRF Software License are applicable instead of those above.
 		   </appButton>		   
 		</row>
 	   </TablePanel>	
-		 
+		</VerticalPanel> 
+		<VerticalPanel spacing="0">
 		 <widget>
-							<table maxRows = "14" width = "auto" key="dictEntTable" multiSelect = "true" title="" showError="false" showScroll="ALWAYS">
-								<col key="entry" width="320" sort="false" header="{resource:getString($constants,'entry')}">
-                                	<label width="320" case="mixed"/>
+							<table maxRows = "17" width = "auto" key="dictEntTable" multiSelect = "true" title="" showScroll="ALWAYS">
+								<col key="entry" width="357" sort="false" header="{resource:getString($constants,'entry')}">
+                                	<label width="357"/>
                                 </col>
 							</table>
 							
-	     </widget>						
-							
-	  <!-- <AbsolutePanel spacing="0" style="BottomButtonPanelContainer" align="center">
-		              <HorizontalPanel>
-		                <xsl:call-template name="commitButton">
-		                  <xsl:with-param name="language">
-		                    <xsl:value-of select="language"/>
-		                  </xsl:with-param>
-		                </xsl:call-template>
-		                <xsl:call-template name="abortButton">
-		                  <xsl:with-param name="language">
-		                    <xsl:value-of select="language"/>
-		                  </xsl:with-param>
-		                </xsl:call-template>
-		              </HorizontalPanel>
-		            </AbsolutePanel> -->
+	     </widget>	
+	     </VerticalPanel>		     
+   </VerticalPanel>	   
+  </HorizontalPanel>  
+  <VerticalPanel spacing="0" width="402px">								
 		            <AbsolutePanel spacing="0" style="BottomButtonPanelContainer" align="center">
 		             <HorizontalPanel>
                                 <widget halign="center">
@@ -127,8 +117,8 @@ UIRF Software License are applicable instead of those above.
                               </widget>
                      </HorizontalPanel>
                     </AbsolutePanel>		            
-   </VerticalPanel>	
-  </HorizontalPanel>  				
+    </VerticalPanel>
+  </VerticalPanel>					
 </screen>
   </xsl:template>
 </xsl:stylesheet>					

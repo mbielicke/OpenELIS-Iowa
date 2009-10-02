@@ -38,6 +38,8 @@ import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableWidget;
+import org.openelis.gwt.widget.table.event.CellEditedEvent;
+import org.openelis.gwt.widget.table.event.CellEditedHandler;
 import org.openelis.manager.TestAnalyteManager;
 
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -80,6 +82,37 @@ public class TestAnalytePickerScreen extends Screen implements HasActionHandlers
             public void onStateChange(StateChangeEvent<State> event) {
                 testAnalyteTable.enable(true);                
             }
+        });
+        
+        testAnalyteTable.addCellEditedHandler(new CellEditedHandler(){
+            public void onCellUpdated(CellEditedEvent event) {
+                int row, col;                
+                TableDataRow trow;
+                String val;
+                TestAnalyteViewDO anaDO;
+                Integer group;
+                
+                row = event.getRow();
+                col = event.getCell();
+                
+                if(col != 1)
+                    return;
+                    
+                trow = testAnalyteTable.getRow(row);
+                val = (String)trow.cells.get(col).getValue();                
+                group = testAnalyteManager.getAnalyteAt(row, 0).getRowGroup();
+                
+                for(int i = 0; i < testAnalyteManager.rowCount(); i++) {
+                    anaDO = testAnalyteManager.getAnalyteAt(i, 0);
+                    if(group.equals(anaDO.getRowGroup()))                        
+                        testAnalyteTable.setCell(i, col, val);
+                }
+                                
+                if("Y".equals(val))
+                    window.setDone(consts.get("additionalAnalytesAdded"));                
+                    
+            }
+            
         });
 
 
@@ -131,6 +164,7 @@ public class TestAnalytePickerScreen extends Screen implements HasActionHandlers
         ArrayList<TableDataRow> model;
         TestAnalyteViewDO anaDO;
         TableDataRow row;
+        String name;
         
         model = new ArrayList<TableDataRow>();
         
@@ -140,11 +174,14 @@ public class TestAnalytePickerScreen extends Screen implements HasActionHandlers
         for(int i = 0; i < testAnalyteManager.rowCount(); i++) {            
             anaDO = testAnalyteManager.getAnalyteAt(i, 0);
             row = new TableDataRow(2);
-            row.key = anaDO.getId();
-            row.cells.get(0).setValue(anaDO.getAnalyteName());
-            row.cells.get(1).setValue("N");
+            name = anaDO.getAnalyteName();
+            if(name != null && !"".equals(name)) {
+                row.key = anaDO.getId();
+                row.cells.get(0).setValue(name);
+                row.cells.get(1).setValue("N");
             
-            model.add(row);
+                model.add(row);
+            }
         }
         
         return model;

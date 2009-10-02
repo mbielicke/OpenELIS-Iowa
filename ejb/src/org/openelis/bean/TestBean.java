@@ -30,10 +30,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.annotation.Resource;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
-import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
@@ -42,11 +40,10 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
-import org.openelis.domain.DictionaryIdEntrySysNameDO;
-import org.openelis.domain.IdNameDO;
 import org.openelis.domain.TestAnalyteDO;
 import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.domain.TestDO;
+import org.openelis.domain.TestMethodViewDO;
 import org.openelis.domain.TestPrepViewDO;
 import org.openelis.domain.TestReflexViewDO;
 import org.openelis.domain.TestResultDO;
@@ -81,9 +78,10 @@ import org.openelis.local.LockLocal;
 import org.openelis.local.TestLocal;
 import org.openelis.metamap.TestMetaMap;
 import org.openelis.metamap.TestSectionMetaMap;
-import org.openelis.metamap.TestWorksheetAnalyteMetaMap;
 import org.openelis.remote.TestRemote;
 import org.openelis.util.QueryBuilder;
+import org.openelis.util.QueryBuilderV2;
+import org.openelis.utilcommon.DataBaseUtil;
 import org.openelis.utilcommon.InconsistentException;
 import org.openelis.utilcommon.NumericRange;
 import org.openelis.utilcommon.ParseException;
@@ -99,9 +97,6 @@ public class TestBean implements TestRemote, TestLocal {
 
     @PersistenceContext(name = "openelis")
     private EntityManager            manager;
-
-    @Resource
-    private SessionContext           ctx;
 
     @EJB
     private LockLocal                lockBean;
@@ -137,81 +132,7 @@ public class TestBean implements TestRemote, TestLocal {
         List<TestReflexViewDO> testRefDOList = query.getResultList();
         return testRefDOList;
     }
-
-    public List getTestResultsForTestAnalyte(Integer testId, Integer analyteId) {
-        List<IdNameDO> idValues = null;
-        Integer intVal = null;
-        String val = null;
-        IdNameDO idnDO = null;
-
-        Query query = manager.createNamedQuery("TestResult.IdValueByTestAnalyteId");
-        query.setParameter("testId", testId);
-        query.setParameter("analyteId", analyteId);
-        idValues = query.getResultList();
-
-        for (int i = 0; i < idValues.size(); i++ ) {
-            idnDO = idValues.get(i);
-            val = idnDO.getName();
-            try {
-                intVal = Integer.parseInt(val);
-                query = manager.createNamedQuery("Dictionary.EntryById");
-                query.setParameter("id", intVal);
-                val = (String)query.getSingleResult();
-                idnDO.setName(val);
-            } catch (NumberFormatException ex) {
-                ex.printStackTrace();
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        }
-        return idValues;
-    }
-
-    public HashMap<Integer, List<IdNameDO>> getAnalyteResultsMap(Integer testId) {
-        Query query = manager.createNamedQuery("TestAnalyte.TestAnalyteByTestId");
-        query.setParameter("testId", testId);
-        List<TestAnalyte> analyteList = query.getResultList();
-        HashMap<Integer, List<IdNameDO>> listMap = new HashMap<Integer, List<IdNameDO>>();
-        for (int iter = 0; iter < analyteList.size(); iter++ ) {
-            TestAnalyte ta = analyteList.get(iter);
-            Integer id = ta.getId();
-            listMap.put(id, getTestResultsForTestAnalyte(testId, id));
-        }
-        return listMap;
-    }
-
-    public HashMap<Integer, List<Integer>> getResultGroupAnalytesMap(Integer testId) {
-        Query query = manager.createNamedQuery("TestAnalyte.TestAnalytesByResultGroupAndTestId");
-        query.setParameter("testId", testId);
-        List<Integer[]> analyteList = query.getResultList();
-        HashMap<Integer, List<Integer>> listMap = new HashMap<Integer, List<Integer>>();
-        List<Integer> anaList = null;
-        for (int iter = 0; iter < analyteList.size(); iter++ ) {
-            Object[] ta = analyteList.get(iter);
-            Integer rg = (Integer)ta[0];
-            Integer anaId = (Integer)ta[1];
-
-            if (rg != null && rg > 0) {
-                if (listMap.get(rg) != null) {
-                    listMap.get(rg).add(anaId);
-                } else {
-                    anaList = new ArrayList<Integer>();
-                    anaList.add(anaId);
-                    listMap.put(rg, anaList);
-                }
-            }
-
-        }
-        return listMap;
-    }
-
-    public List<IdNameDO> getTestResultsforTest(Integer testId) {
-        Query query = manager.createNamedQuery("TestResult.IdValueByTestId");
-        query.setParameter("testId", testId);
-        List<IdNameDO> resultsList = query.getResultList();
-        return resultsList;
-    }
-
+    
     public TestWorksheetViewDO getTestWorksheet(Integer testId) {
         Query query = manager.createNamedQuery("TestWorksheet.TestWorksheetDOByTestId");
         query.setParameter("testId", testId);
@@ -296,49 +217,9 @@ public class TestBean implements TestRemote, TestLocal {
         List<TestSectionViewDO> list = query.getResultList();
 
         if (list == null || list.size() == 0)
-            throw new NotFoundException();
+            throw new NotFoundException("noSectionsForTest");
 
         return (ArrayList<TestSectionViewDO>)list;
-    }
-
-    /**
-     * This method returns the data for the test results that belong to a test
-     * with id "testId" and a specific result group of that test specified by
-     * "resultGroup"
-     */
-    public List<TestResultDO> getTestResults(Integer testId, Integer resultGroup) {
-        List<TestResultDO> list;
-        TestResultDO resDO;
-        Integer typeId, val;
-        String sysName, entry;
-        Query query;
-
-        list = null;
-        query = manager.createNamedQuery("TestResult.TestResultDOList");
-        query.setParameter("testId", testId);
-        query.setParameter("resultGroup", resultGroup);
-        try {
-            list = query.getResultList();
-
-            for (Iterator iter = list.iterator(); iter.hasNext();) {
-                resDO = (TestResultDO)iter.next();
-                typeId = resDO.getTypeId();
-                query = manager.createNamedQuery("Dictionary.SystemNameById");
-                query.setParameter("id", typeId);
-                sysName = (String)query.getSingleResult();
-                if ("test_res_type_dictionary".equals(sysName)) {
-                    val = Integer.parseInt(resDO.getValue());
-                    query = manager.createNamedQuery("Dictionary.EntryById");
-                    query.setParameter("id", val);
-                    entry = (String)query.getSingleResult();
-                    resDO.setValue(entry);
-                }
-
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-        return list;
     }
 
     /**
@@ -393,86 +274,39 @@ public class TestBean implements TestRemote, TestLocal {
         return listCollection;
     }
 
-    public List query(ArrayList<QueryData> fields, int first, int max) throws Exception {
-        StringBuffer sb = new StringBuffer();
-        QueryBuilder qb = new QueryBuilder();
-        qb.setMeta(TestMeta);
+    public ArrayList<TestMethodViewDO> query(ArrayList<QueryData> fields, int first, int max) throws Exception {
+        Query query;        
+        QueryBuilderV2 builder;
+        List returnList;
+        
+        builder = new QueryBuilderV2();
+        builder.setMeta(TestMeta);
 
-        qb.setSelect("distinct new org.openelis.domain.TestIdNameMethodNameDO(" + TestMeta.getId() +
-                     ", " + (TestMeta.getName() + ", " + TestMeta.getMethod().getName()) + ") ");
+        builder.setSelect("distinct new org.openelis.domain.TestMethodViewDO(" + TestMeta.getId() +
+                     ", " + (TestMeta.getName() + ", " + TestMeta.getDescription() +
+                     ", " + TestMeta.getMethod().getId() +
+                     ", " + TestMeta.getMethod().getName() +
+                     ", " + TestMeta.getMethod().getDescription()) + ") ");
 
-        qb.addNewWhere(fields);
-        qb.setOrderBy(TestMeta.getName() + ", " + TestMeta.getMethod().getName());
+        builder.constructWhere(fields);
+        builder.setOrderBy(TestMeta.getName() + ", " + TestMeta.getMethod().getName());
+        
+        query = manager.createQuery(builder.getEJBQL());
 
-        sb.append(qb.getEJBQL());
-        Query query = manager.createQuery(sb.toString());
+        query.setMaxResults(first + max);
+        QueryBuilderV2.setQueryParams(query, fields);
 
-        if (first > -1 && max > -1)
-            query.setMaxResults(first + max);
+        returnList = query.getResultList();
 
-        // ***set the parameters in the query
-        qb.setNewQueryParams(query, fields);
+        if (returnList.isEmpty())
+            throw new NotFoundException();
 
-        List returnList = GetPage.getPage(query.getResultList(), first, max);
+        returnList = (ArrayList<TestMethodViewDO>)DataBaseUtil.subList(returnList, first, max);
 
         if (returnList == null)
             throw new LastPageException();
-        else
-            return returnList;
-    }
-
-    public List<IdNameDO> getAnalyteIdNamesByTestId(Integer testId) {
-        Query query = manager.createNamedQuery("TestAnalyte.IdName");
-        query.setParameter("testId", testId);
-        List testAnalytesList = query.getResultList();
-        return testAnalytesList;
-    }
-
-    public List getTestWSItemTypeDropDownValues() {
-        Query query = null;
-        List<DictionaryIdEntrySysNameDO> qlist, rlist;
-        DictionaryIdEntrySysNameDO qDO = null;
-
-        rlist = null;
-        try {
-            query = manager.createNamedQuery("Dictionary.SystemNamesByCatSysName");
-            query.setParameter("systemName", "test_worksheet_item_type");
-            qlist = query.getResultList();
-            rlist = new ArrayList<DictionaryIdEntrySysNameDO>(qlist.size());
-
-            for (int iter = 0; iter < qlist.size(); iter++ ) {
-                qDO = qlist.get(iter);
-                if ("pos_fixed".equals(qDO.getSystemName())) {
-                    rlist.add(0, qDO);
-                } else if ("pos_duplicate".equals(qDO.getSystemName())) {
-                    rlist.add(1, qDO);
-                } else if ("pos_random".equals(qDO.getSystemName())) {
-                    rlist.add(2, qDO);
-                } else if ("pos_last_of_well".equals(qDO.getSystemName())) {
-                    rlist.add(3, qDO);
-                } else if ("pos_last_of_run".equals(qDO.getSystemName())) {
-                    rlist.add(4, qDO);
-                } else if ("pos_last_of_well_&_run".equals(qDO.getSystemName())) {
-                    rlist.add(5, qDO);
-                }
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-        return rlist;
-    }
-
-    public List<IdNameDO> getUnitsOfMeasureForTest(Integer testId) {
-        List testumList = null;
-        try {
-            Query query = manager.createNamedQuery("TestTypeOfSample.DictEntriesForUnitsByTestId");
-            query.setParameter("testId", testId);
-            testumList = query.getResultList();
-
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-        return testumList;
+        
+        return (ArrayList<TestMethodViewDO>)returnList;
     }
 
     public List getTestAutoCompleteByName(String name, int maxResults) {
@@ -1553,7 +1387,7 @@ public class TestBean implements TestRemote, TestLocal {
             }
             try {
                 if (refDO.getAddTestId() == null) {
-                    fieldName = TestMeta.getTestReflex().getAddTestId();
+                    fieldName = TestMeta.getTestReflex().getAddTest().getName();
                     throw new InconsistentException("fieldRequiredException");
                 }
 
@@ -1563,7 +1397,7 @@ public class TestBean implements TestRemote, TestLocal {
                 }
 
                 if (refDO.getTestResultId() == null) {
-                    fieldName = TestMeta.getTestReflex().getTestResultId();
+                    fieldName = TestMeta.getTestReflex().getTestResult().getValue();
                     throw new InconsistentException("fieldRequiredException");
                 }
 
@@ -1575,11 +1409,11 @@ public class TestBean implements TestRemote, TestLocal {
                 if ( !idsList.contains(ids)) {
                     idsList.add(ids);
                 } else {
-                    fieldName = TestMeta.getTestReflex().getAddTestId();
+                    fieldName = TestMeta.getTestReflex().getAddTest().getName();
                     throw new InconsistentException("fieldUniqueOnlyException");
                 }
 
-                fieldName = TestMeta.getTestReflex().getTestResultId();
+                fieldName = TestMeta.getTestReflex().getTestResult().getValue();
                 validateAnalyteResultMapping(anaListValid, resListValid, anaResGrpMap,
                                              resGrpRsltMap, refDO);
             } catch (InconsistentException ex) {

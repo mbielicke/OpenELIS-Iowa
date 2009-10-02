@@ -39,7 +39,7 @@ public class TestAnalyteMetaMap extends TestAnalyteMeta implements MetaMap {
 
     public TestAnalyteMetaMap() {
         super();
-        ANALYTE = new AnalyteMeta("path.analyte.");
+        ANALYTE = new AnalyteMeta(path+"analyte.");
     }
    
     public TestAnalyteMetaMap(String path){

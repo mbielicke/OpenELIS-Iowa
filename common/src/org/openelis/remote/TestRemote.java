@@ -25,6 +25,7 @@
  */
 package org.openelis.remote;
 
+import org.openelis.domain.TestMethodViewDO;
 import org.openelis.gwt.common.data.QueryData;
 
 import java.util.ArrayList;
@@ -35,7 +36,7 @@ import javax.ejb.Remote;
 @Remote
 public interface TestRemote {
 
-    public List query(ArrayList<QueryData> fields, int first, int max) throws Exception;
+    public ArrayList<TestMethodViewDO> query(ArrayList<QueryData> fields, int first, int max) throws Exception;
 
     public List getTestAutoCompleteByName(String name, int maxResults);
 

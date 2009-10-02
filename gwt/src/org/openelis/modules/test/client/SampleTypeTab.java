@@ -37,6 +37,7 @@ import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
+import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.table.TableDataRow;
@@ -69,7 +70,8 @@ public class SampleTypeTab extends Screen {
         sampleTypeTable = (TableWidget)def.getWidget("sampleTypeTable");
         addScreenHandler(sampleTypeTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
             public void onDataChange(DataChangeEvent event) {                
-                sampleTypeTable.load(getTableModel());
+                if(state != State.QUERY)
+                    sampleTypeTable.load(getTableModel());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -186,6 +188,10 @@ public class SampleTypeTab extends Screen {
             sampletype.setId(null);
             sampletype.setTestId(null);
         }
+    }
+    
+    protected void finishEditing() {
+        sampleTypeTable.finishEditing();
     }
     
     private ArrayList<TableDataRow> getTableModel() {

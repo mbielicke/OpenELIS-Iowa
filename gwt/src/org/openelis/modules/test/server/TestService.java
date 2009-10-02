@@ -29,8 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openelis.common.AutocompleteRPC;
-import org.openelis.domain.TestIdNameMethodNameDO;
-import org.openelis.gwt.common.LastPageException;
+import org.openelis.domain.TestMethodViewDO;
 import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.server.ServiceUtils;
@@ -51,136 +50,77 @@ import org.openelis.remote.TestManagerRemote;
 import org.openelis.remote.TestRemote;
 import org.openelis.remote.TestTrailerRemote;
 import org.openelis.server.constants.Constants;
-import org.openelis.util.SessionManager;
-import org.openelis.util.UTFResource;
 
 public class TestService {
     
-    private static final int leftTableRowsPerPage = 27; 
+    private static final int rowPP = 26;         
     
-    private UTFResource openElisConstants= UTFResource.getBundle((String)SessionManager.getSession().getAttribute("locale"));
-    
-    public Query<TestIdNameMethodNameDO> query(Query<TestIdNameMethodNameDO> query) throws Exception {
-
-        TestRemote remote = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
-
-        try{    
-            query.setResults(new ArrayList<TestIdNameMethodNameDO>());
-            ArrayList<TestIdNameMethodNameDO> results = (ArrayList<TestIdNameMethodNameDO>)remote.query(query.getFields(),query.page*leftTableRowsPerPage,leftTableRowsPerPage);
-            for(TestIdNameMethodNameDO result : results) {
-                query.getResults().add(result);
-            }
-        }catch(LastPageException e) {
-            throw new LastPageException(openElisConstants.getString("lastPageException"));
-        }catch(Exception e){
-            e.printStackTrace();
-            throw new Exception(e.getMessage());
-        }
-        return query;
+    public ArrayList<TestMethodViewDO> query(Query query) throws Exception {
+        return testRemote().query(query.getFields(), query.getPage() * rowPP, rowPP);
     }
 
     public TestManager fetch(Integer testId) throws Exception {
-        TestManagerRemote remote = (TestManagerRemote)EJBFactory.lookup("openelis/TestManagerBean/remote");
-        
-        return remote.fetch(testId);
+        return managerRemote().fetch(testId);
     }
-    
-    
+        
     public TestTypeOfSampleManager fetchSampleTypeByTestId(Integer testId) throws Exception{
-        TestManagerRemote remote = (TestManagerRemote)EJBFactory.lookup("openelis/TestManagerBean/remote");
-        return remote.fetchSampleTypeByTestId(testId);
+        return managerRemote().fetchSampleTypeByTestId(testId);
     }
     
     public TestAnalyteManager fetchTestAnalytesByTestId(Integer testId) throws Exception{       
-        TestManagerRemote remote = (TestManagerRemote)EJBFactory.lookup("openelis/TestManagerBean/remote");
-        return remote.fetchTestAnalytesByTestId(testId);
+        return managerRemote().fetchTestAnalytesByTestId(testId);
     }
     
     public TestResultManager fetchTestResultsByTestId(Integer testId) throws Exception{       
-        TestManagerRemote remote = (TestManagerRemote)EJBFactory.lookup("openelis/TestManagerBean/remote");
-        return remote.fetchTestResultsByTestId(testId);
+        return managerRemote().fetchTestResultsByTestId(testId);
     }
     
     public TestPrepManager fetchPrepTestsByTestId(Integer testId) throws Exception{
-        TestManagerRemote remote = (TestManagerRemote)EJBFactory.lookup("openelis/TestManagerBean/remote");
-        return remote.fetchPrepTestsByTestId(testId);
+        return managerRemote().fetchPrepTestsByTestId(testId);
     }
     
     public TestReflexManager fetchReflexiveTestsByTestId(Integer testId) throws Exception{
-        TestManagerRemote remote = (TestManagerRemote)EJBFactory.lookup("openelis/TestManagerBean/remote");
-        return remote.fetchReflexiveTestsByTestId(testId);
+        return managerRemote().fetchReflexiveTestsByTestId(testId);
     }
     
     public TestWorksheetManager fetchWorksheetByTestId(Integer testId) throws Exception{
-        TestManagerRemote remote = (TestManagerRemote)EJBFactory.lookup("openelis/TestManagerBean/remote");
-        return remote.fetchWorksheetByTestId(testId);
+        return managerRemote().fetchWorksheetByTestId(testId);
     }
     
-    public TestManager add(TestManager man) throws Exception {
-        TestManagerRemote remote = (TestManagerRemote)EJBFactory.lookup("openelis/TestManagerBean/remote");
-        
-        return remote.add(man);
-        
+    public TestManager add(TestManager man) throws Exception {    
+        return managerRemote().add(man);        
     }
     
-    public TestManager update(TestManager man) throws Exception {
-        TestManagerRemote remote = (TestManagerRemote)EJBFactory.lookup("openelis/TestManagerBean/remote");
-                
-        return remote.update(man);        
-        
+    public TestManager update(TestManager man) throws Exception {               
+        return managerRemote().update(man);                
     }
     
-    public TestManager fetchWithSampleTypes(Integer testId) throws Exception {
-        TestManagerRemote remote = (TestManagerRemote)EJBFactory.lookup("openelis/TestManagerBean/remote");
-        TestManager man = remote.fetchWithSampleTypes(testId);
-        
-        return man;
+    public TestManager fetchWithSampleTypes(Integer testId) throws Exception {       
+        return managerRemote().fetchWithSampleTypes(testId);
     }
     
-    public TestManager fetchWithAnalytesAndResults(Integer testId) throws Exception {
-        TestManagerRemote remote = (TestManagerRemote)EJBFactory.lookup("openelis/TestManagerBean/remote");
-        TestManager man = remote.fetchWithAnalytesAndResults(testId);
-        
-        return man;
+    public TestManager fetchWithAnalytesAndResults(Integer testId) throws Exception {     
+        return managerRemote().fetchWithAnalytesAndResults(testId);
     }
     
     public TestManager fetchWithPrepTests(Integer testId) throws Exception {
-        TestManagerRemote remote = (TestManagerRemote)EJBFactory.lookup("openelis/TestManagerBean/remote");
-        TestManager man = remote.fetchWithPrepTests(testId);
-        
-        return man;
+        return managerRemote().fetchWithPrepTests(testId);
     }
     
-    public TestManager fetchWithPrepTestsAndReflexTests(Integer testId) throws Exception {
-        TestManagerRemote remote = (TestManagerRemote)EJBFactory.lookup("openelis/TestManagerBean/remote");
-        TestManager man = remote.fetchWithPrepTestsAndReflexTests(testId);
-        
-        return man;
+    public TestManager fetchWithPrepTestsAndReflexTests(Integer testId) throws Exception {        
+        return managerRemote().fetchWithPrepTestsAndReflexTests(testId);
     }
     
-    public TestManager fetchWithWorksheet(Integer testId) throws Exception {
-        TestManagerRemote remote = (TestManagerRemote)EJBFactory.lookup("openelis/TestManagerBean/remote");
-        TestManager man = remote.fetchWithWorksheet(testId);
-        
-        return man;
+    public TestManager fetchWithWorksheet(Integer testId) throws Exception {        
+        return managerRemote().fetchWithWorksheet(testId);
     } 
     
-    public TestManager fetchForUpdate(Integer testId) throws Exception {
-        //remote interface to call TestBean
-        TestManagerRemote remote = (TestManagerRemote)EJBFactory.lookup("openelis/TestManagerBean/remote");
-        
-        TestManager man = remote.fetchForUpdate(testId);
-        
-        return man;
+    public TestManager fetchForUpdate(Integer testId) throws Exception {        
+        return managerRemote().fetchForUpdate(testId);
     }
     
-    public TestManager abort(Integer orgId) throws Exception {
-        //remote interface to call the TestBean
-        TestManagerRemote remote = (TestManagerRemote)EJBFactory.lookup("openelis/TestManagerBean/remote");
-        
-        TestManager man = remote.abortUpdate(orgId);
-        
-        return man;
+    public TestManager abort(Integer orgId) throws Exception {        
+        return managerRemote().abortUpdate(orgId);
     } 
     
     public String getScreen() throws Exception {
@@ -188,82 +128,77 @@ public class TestService {
     }     
     
     public AutocompleteRPC getAnalyteMatches(AutocompleteRPC rpc) {
-        ArrayList<RPC> entries;
-        AnalyteRemote aremote;
-        
-        aremote = (AnalyteRemote)EJBFactory.lookup("openelis/AnalyteBean/remote");
-        entries = (ArrayList<RPC>)aremote.autoCompleteLookupByName(rpc.match.trim() + "%", 10);
-        rpc.model = (ArrayList<RPC>)entries;        
+        rpc.model = (ArrayList<RPC>)analyteRemote().autoCompleteLookupByName(rpc.match.trim() + "%", 10);        
 
         return rpc;
     } 
     
     public AutocompleteRPC getMethodMatches(AutocompleteRPC rpc) {
-        ArrayList<RPC> entries;       
-        MethodRemote mremote;        
-        
-        mremote = (MethodRemote)EJBFactory.lookup("openelis/MethodBean/remote");
-        entries = (ArrayList<RPC>)mremote.autoCompleteLookupByName(rpc.match.trim() + "%", 10);
-        rpc.model = (ArrayList<RPC>)entries;        
+        rpc.model = (ArrayList<RPC>)methodRemote().autoCompleteLookupByName(rpc.match.trim() + "%", 10);        
         
         return rpc;
     }
     
     public AutocompleteRPC getQCNameMatches(AutocompleteRPC rpc) {
         List entries;       
-        QcRemote qremote;
        
-        qremote = (QcRemote)EJBFactory.lookup("openelis/QcBean/remote");
-        entries = qremote.qcAutocompleteByName(rpc.match.trim() + "%", 10);
+        entries = qcRemote().qcAutocompleteByName(rpc.match.trim() + "%", 10);
         rpc.model = (ArrayList<RPC>)entries;       
  
         return rpc;
     }  
     
     public AutocompleteRPC getTestMethodMatches(AutocompleteRPC rpc) {
-        ArrayList<RPC> entries;
-        TestRemote tremote;
-
-        tremote = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
-        entries = (ArrayList<RPC>)tremote.getTestAutoCompleteByName(rpc.match.trim() + "%", 10);
-        rpc.model = (ArrayList<RPC>)entries;               
-
+        rpc.model = (ArrayList<RPC>)testRemote().getTestAutoCompleteByName(rpc.match.trim() + "%", 10);               
         return rpc;
     } 
     
     public AutocompleteRPC getScriptletMatches(AutocompleteRPC rpc) {
-        ArrayList<RPC> entries;
-        ScriptletRemote sremote;
-        
-        sremote = (ScriptletRemote)EJBFactory.lookup("openelis/ScriptletBean/remote");
-        entries = (ArrayList<RPC>)sremote.getScriptletAutoCompleteByName(rpc.match.trim() + "%",
-                                                         10);
-        rpc.model = (ArrayList<RPC>)entries;        
-
+        rpc.model = (ArrayList<RPC>)scriptletRemote().getScriptletAutoCompleteByName(rpc.match.trim() + "%",10);        
         return rpc;
     }
     
     public AutocompleteRPC getTrailerMatches(AutocompleteRPC rpc) {
-        ArrayList<RPC> entries;
-        TestTrailerRemote ttremote;
-
-        ttremote = (TestTrailerRemote)EJBFactory.lookup("openelis/TestTrailerBean/remote");
-        entries = (ArrayList<RPC>)ttremote.getTestTrailerAutoCompleteByName(rpc.match.trim()    + "%",
-                                                                10);
-        rpc.model = (ArrayList<RPC>)entries;
+        rpc.model = (ArrayList<RPC>)trailerRemote().getTestTrailerAutoCompleteByName(rpc.match.trim()+ "%",10);
         return rpc;
     }
     
     public AutocompleteRPC getLabelMatches(AutocompleteRPC rpc) {
-        ArrayList<RPC> entries;        
-        LabelRemote lremote;
-
-        lremote = (LabelRemote)EJBFactory.lookup("openelis/LabelBean/remote");
-        entries = (ArrayList<RPC>)lremote.getLabelAutoCompleteByName(rpc.match.trim() + "%", 10);
-        rpc.model = (ArrayList<RPC>)entries;        
+        rpc.model = (ArrayList<RPC>)labelRemote().getLabelAutoCompleteByName(rpc.match.trim() + "%", 10);        
 
         return rpc;
     }
     
+    private TestRemote testRemote() {
+        return (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
+    }
+    
+    private TestManagerRemote managerRemote() {
+        return (TestManagerRemote)EJBFactory.lookup("openelis/TestManagerBean/remote");   
+    }
+    
+    private AnalyteRemote analyteRemote() {
+        return (AnalyteRemote)EJBFactory.lookup("openelis/AnalyteBean/remote");
+    } 
+    
+    private MethodRemote methodRemote() {
+        return (MethodRemote)EJBFactory.lookup("openelis/MethodBean/remote");
+    } 
+    
+    private QcRemote qcRemote() {
+        return (QcRemote)EJBFactory.lookup("openelis/QcBean/remote");
+    }
+    
+    private ScriptletRemote scriptletRemote() {
+        return (ScriptletRemote)EJBFactory.lookup("openelis/ScriptletBean/remote");
+    }
+    
+    private TestTrailerRemote trailerRemote() {
+        return (TestTrailerRemote)EJBFactory.lookup("openelis/TestTrailerBean/remote");
+    }
+    
+    private LabelRemote labelRemote() {
+        return (LabelRemote)EJBFactory.lookup("openelis/LabelBean/remote");
+    }
     
 }

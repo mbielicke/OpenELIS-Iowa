@@ -42,10 +42,8 @@ UIRF Software License are applicable instead of those above.
   <xsl:variable name="language"><xsl:value-of select="locale"/></xsl:variable>
   <xsl:variable name="props"><xsl:value-of select="props"/></xsl:variable>
   <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))"/>
- <screen id="TestAnalytePicker" name="{resource:getString($constants,'testAnalyteSelection')}" serviceUrl="OpenElisService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">	
-		<HorizontalPanel style="WhiteContentPanel" spacing="0">					
-		<HorizontalPanel width = "5px"/>
-		<VerticalPanel style="WhiteContentPanel" spacing="0" width="400px">		          
+ <screen id="TestAnalytePicker" name="{resource:getString($constants,'testAnalyteSelection')}" serviceUrl="OpenElisService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">			
+		<VerticalPanel spacing="0">		          
 		 
 		 <widget>
 							<table maxRows = "14" width = "auto" key="testAnalyteTable" title="" showError="false" showScroll="ALWAYS">
@@ -59,20 +57,6 @@ UIRF Software License are applicable instead of those above.
 							
 	     </widget>						
 							
-	  <!-- <AbsolutePanel spacing="0" style="BottomButtonPanelContainer" align="center">
-		              <HorizontalPanel>
-		                <xsl:call-template name="commitButton">
-		                  <xsl:with-param name="language">
-		                    <xsl:value-of select="language"/>
-		                  </xsl:with-param>
-		                </xsl:call-template>
-		                <xsl:call-template name="abortButton">
-		                  <xsl:with-param name="language">
-		                    <xsl:value-of select="language"/>
-		                  </xsl:with-param>
-		                </xsl:call-template>
-		              </HorizontalPanel>
-		            </AbsolutePanel>-->
 		            <AbsolutePanel spacing="0" style="BottomButtonPanelContainer" align="center">
 		             <HorizontalPanel>
                                 <widget halign="center">
@@ -101,8 +85,7 @@ UIRF Software License are applicable instead of those above.
                               </widget>
                      </HorizontalPanel>
                     </AbsolutePanel>
-   </VerticalPanel>	
-  </HorizontalPanel>  				
+   </VerticalPanel>				
 </screen>
   </xsl:template>
 </xsl:stylesheet>
