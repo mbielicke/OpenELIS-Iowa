@@ -45,11 +45,11 @@ import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
-import org.openelis.gwt.screen.deprecated.ScreenWindow;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.Dropdown;
+import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableWidget;
@@ -189,7 +189,8 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
         worksheetTable = (TableWidget)def.getWidget("worksheetTable");
         addScreenHandler(worksheetTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
             public void onDataChange(DataChangeEvent event) {
-                worksheetTable.load(getWSItemsModel());
+                if(state != State.QUERY)
+                    worksheetTable.load(getWSItemsModel());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -298,7 +299,8 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
         worksheetAnalyteTable = (TableWidget)def.getWidget("worksheetAnalyteTable");
         addScreenHandler(worksheetAnalyteTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
             public void onDataChange(DataChangeEvent event) {
-                worksheetAnalyteTable.load(getWSAnalytesModel());
+                if(state != State.QUERY)
+                    worksheetAnalyteTable.load(getWSAnalytesModel());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -371,7 +373,7 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
                         return;
                     }
                 //}
-                modal = new ScreenWindow(null,"Test Analyte LookUp","testAnalytePickerScreen","",true,false);
+                modal = new ScreenWindow("Test Analyte LookUp","testAnalytePickerScreen","",true,false);
                 modal.setName(consts.get("testAnalyteSelection"));
                 modal.setContent(testAnalytePicker);
                 testAnalytePicker.setScreenState(State.DEFAULT);
@@ -418,14 +420,13 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
         if(!loaded) { 
             try {
                 if(state == State.UPDATE || state == State.ADD)   
-                    analyteManager = manager.getTestAnalytes();                 
-                    
-                worksheetManager = manager.getTestWorksheet();
+                    analyteManager = manager.getTestAnalytes();                   
+                worksheetManager = manager.getTestWorksheet();                
                 DataChangeEvent.fire(this);
             } catch(Exception ex) {
                 ex.printStackTrace();
             }
-        }       
+        }           
         loaded = true;       
     }
     
@@ -437,13 +438,14 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
               
         if(event.getAction() == Action.ANALYTE_CHANGED) {
             anaDO = (TestAnalyteViewDO)event.getData();
-            setAnalyteErrors(anaDO.getId(), anaDO.getAnalyteName(),"analyteNameChanged");
+            setAnalyteErrors(anaDO.getId(), anaDO.getAnalyteName(),"analyteNameChanged",true);
         } else if(event.getAction() == Action.ANALYTE_DELETED) {
             anaDO = (TestAnalyteViewDO)event.getData();
-            setAnalyteErrors(anaDO.getId(), anaDO.getAnalyteName(),"analyteDeleted");
+            setAnalyteErrors(anaDO.getId(), anaDO.getAnalyteName(),"analyteDeleted",false);
         }         
         
     }
+    
     
     protected void clearKeys(TestWorksheetManager twm) {
         TestWorksheetItemDO item;
@@ -465,7 +467,7 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
             ana.setTestId(null);
             ana.setTestAnalyteId(ana.getTestAnalyteId()*(-1));
         }
-    }
+    }   
 
     private void setWorksheetAnalyteFlags() {
         ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
@@ -554,18 +556,20 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
     }
     
     
-    private void setAnalyteErrors(Integer id,String name,String key) {
+    private void setAnalyteErrors(Integer id,String name,String key,boolean matchLabel) {
         TableDataRow trow;
         String val;
         Integer data;
-        
-        for(int i = 0; i < worksheetAnalyteTable.numRows(); i++) {
+
+        for (int i = 0; i < worksheetAnalyteTable.numRows(); i++ ) {
             trow = worksheetAnalyteTable.getRow(i);
             val = (String)trow.cells.get(0).getValue();
-            data = (Integer)trow.data; 
-                
-            if(data.equals(id) && !(val.equals(name))) 
-                worksheetAnalyteTable.setCellError(i, 0, consts.get(key));            
+            data = (Integer)trow.data;
+
+            if (data.equals(id)) {
+                if ((matchLabel && ! (val.equals(name))) || !matchLabel)
+                    worksheetAnalyteTable.setCellError(i, 0, consts.get(key));
+            }
         }
     }
 

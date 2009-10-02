@@ -88,6 +88,19 @@ public class TestAnalyteManager implements RPC {
         addRowAt(rowCount()-1,isNewGroup,referPrev,id);        
     }
     
+    /** 
+     * This method adds a new list of TestAnalyteViewDO at the position in the grid
+     * specified by "row". The boolean "isNewGroup" is required to determine whether 
+     * the new list will belong to an existing group or is it the first list in 
+     * a new group. The boolean "referPrev" is required to determine whether or not
+     * the list should have some data like the test analyte's id and result group
+     * copied from the next list in the grid or the previous one. Unless the new
+     * list is to be added at the end of an exiting group, the value of this 
+     * argument will be false because in all the other cases, either nothing will
+     * needed to be copied because it's added to a new group or it's added before
+     * another list in an existing group, in which case the data from the next
+     * list will be copied.     
+     */
     public void addRowAt(int row,boolean isNewGroup,boolean referPrev,Integer id) {              
         ArrayList<TestAnalyteViewDO> currlist;                                                                   
         
@@ -264,7 +277,8 @@ public class TestAnalyteManager implements RPC {
      *  
      * 
      */
-    private ArrayList<TestAnalyteViewDO> createNewDataListAt(int row, boolean isNewGroup,boolean referPrev,Integer id) {
+    private ArrayList<TestAnalyteViewDO> createNewDataListAt(int row, boolean isNewGroup,
+                                                             boolean referPrev,Integer id) {
         TestAnalyteViewDO prevDO,currDO;        
         ArrayList<TestAnalyteViewDO> prevlist,currlist;        
         

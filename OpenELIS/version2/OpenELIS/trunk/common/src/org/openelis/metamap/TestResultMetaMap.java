@@ -4,12 +4,10 @@ import org.openelis.gwt.common.MetaMap;
 import org.openelis.meta.TestResultMeta;
 
 public class TestResultMetaMap extends TestResultMeta implements MetaMap {
-
+    
     public String buildFrom(String where) {        
         return "TestResult ";
-    }
-    
-    private static final String tableName = "resultTable";
+    }   
 
     public TestResultMetaMap() {
       super();  
@@ -21,9 +19,5 @@ public class TestResultMetaMap extends TestResultMeta implements MetaMap {
     
     public boolean hasColumn(String name){        
         return super.hasColumn(name);
-    }
-
-    public static String getTableName() {
-        return tableName;
     }
 }

@@ -28,7 +28,6 @@ package org.openelis.modules.test.client;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.Set;
 
 import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.SectionCache;
@@ -37,14 +36,17 @@ import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameDO;
 import org.openelis.domain.SectionViewDO;
 import org.openelis.domain.TestDO;
-import org.openelis.domain.TestIdNameMethodNameDO;
+import org.openelis.domain.TestMethodViewDO;
 import org.openelis.domain.TestSectionViewDO;
 import org.openelis.domain.TestViewDO;
+import org.openelis.exception.InconsistencyException;
+import org.openelis.exception.NotFoundException;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.GridFieldErrorException;
+import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.SecurityModule;
 import org.openelis.gwt.common.TableFieldErrorException;
@@ -119,7 +121,6 @@ public class TestScreen extends Screen {
     private TableWidget sectionTable; 
     
     public TestScreen() throws Exception{
-        //super("OpenELISServlet?service=org.openelis.modules.test.server.TestService");
         super((ScreenDefInt)GWT.create(TestDef.class));
         service = new ScreenService("OpenELISServlet?service=org.openelis.modules.test.server.TestService");
         manager = TestManager.getInstance();        
@@ -127,23 +128,16 @@ public class TestScreen extends Screen {
         TestMeta = new TestMetaMap();
         
         security = OpenELIS.security.getModule("test");
-
+        if (security == null)
+            throw new InconsistencyException("Error: Missing security module entry 'test'; No permission to this screen.");
+        
         // Setup link between Screen and widget Handlers
         initialize();    
         setState(State.DEFAULT);
         DataChangeEvent.fire(this);               
     }
 
-    private void initialize() {
-        
-        nav = new ScreenNavigator<Query<TestIdNameMethodNameDO>>(this) {
-            public void getSelection(RPC entry) {
-                fetch(((TestIdNameMethodNameDO)entry).getId());
-            }
-            public void loadPage(Query<TestIdNameMethodNameDO> query) {
-                loadQueryPage(query);
-            }
-        };
+    private void initialize() {        
         
         // Create the Handler for SampleTypeTab passing in the ScreenDef
         sampleTypeTab = new SampleTypeTab(def);
@@ -558,7 +552,8 @@ public class TestScreen extends Screen {
         sectionTable = (TableWidget)def.getWidget("sectionTable");
         addScreenHandler(sectionTable,new ScreenEventHandler<ArrayList<TableDataRow>>() {
             public void onDataChange(DataChangeEvent event) {
-                sectionTable.load(getTableModel());
+                if(state != State.QUERY)
+                    sectionTable.load(getTableModel());
             }
             public void onStateChange(StateChangeEvent<State> event) {
                 sectionTable.enable(EnumSet.of(State.ADD,State.UPDATE,State.QUERY).contains(event.getState()));
@@ -993,21 +988,6 @@ public class TestScreen extends Screen {
             public void onStateChange(StateChangeEvent<State> event) {
                 duplicate.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
-        }); 
-
-        // Get AZ buttons and setup Screen listeners and call to for query
-        final ButtonGroup azButtons = (ButtonGroup)def.getWidget("atozButtons");
-        addScreenHandler(azButtons, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                String baction = ((AppButton)event.getSource()).action;
-                getTests(baction.substring(6, baction.length()));
-            }
-            
-            public void onStateChange(StateChangeEvent<State> event) {
-                azButtons.enable(EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState()) &&
-                                 security.hasSelectPermission());
-            }
-
         });
         
         // Get TabPanel and set Tab Selection Handlers
@@ -1029,6 +1009,78 @@ public class TestScreen extends Screen {
                 window.setBusy("Loading...");
                 drawTabs();
                 window.clearStatus();
+            }
+        });
+        
+        //
+        // left hand navigation panel
+        //
+        nav = new ScreenNavigator(def) {
+            public void executeQuery(final Query query) {
+                window.setBusy(consts.get("querying"));
+
+                service.callList("query", query, new AsyncCallback<ArrayList<TestMethodViewDO>>() {
+                    public void onSuccess(ArrayList<TestMethodViewDO> result) {
+                        setQueryResult(result);
+                    }
+
+                    public void onFailure(Throwable error) {
+                        setQueryResult(null);
+                        if (error instanceof NotFoundException) {
+                            window.setDone(consts.get("noRecordsFound"));
+                            setState(State.DEFAULT);
+                        } else if (error instanceof LastPageException) {
+                            window.setError("No more records in this direction");
+                        } else {
+                            Window.alert("Error: Test call query failed; " + error.getMessage());
+                            window.setError(consts.get("queryFailed"));
+                        }
+                    }
+                });
+            }
+
+            public boolean fetch(RPC entry) {
+                return fetchById(((TestMethodViewDO)entry).getTestId());
+            }
+
+            public ArrayList<TableDataRow> getModel() {
+                ArrayList<TestMethodViewDO> result;
+                ArrayList<TableDataRow> model;
+
+                result = nav.getQueryResult();
+                model = new ArrayList<TableDataRow>();
+                if (result != null) {
+                    for (TestMethodViewDO entry : result)
+                        model.add(new TableDataRow(entry.getTestId(), 
+                                                   entry.getTestName()+","+
+                                                   entry.getMethodName()));
+                }
+                return model;
+            }
+        };
+
+        final ButtonGroup atoz = (ButtonGroup)def.getWidget("atozButtons");
+        addScreenHandler(atoz, new ScreenEventHandler<Object>() {
+            public void onStateChange(StateChangeEvent<State> event) {
+                boolean enable;
+                enable = EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState()) &&
+                         security.hasSelectPermission();
+                atoz.enable(enable);
+                nav.enable(enable);
+            }
+
+            public void onClick(ClickEvent event) {
+                Query query;
+                QueryData field;
+
+                field = new QueryData();
+                field.key = TestMeta.getName();
+                field.query = ((AppButton)event.getSource()).action;
+                field.type = QueryData.Type.STRING;
+
+                query = new Query();
+                query.setFields(field);
+                nav.setQuery(query);
             }
         });
         
@@ -1068,18 +1120,28 @@ public class TestScreen extends Screen {
         if (tab == Tabs.SAMPLE_TYPES) {
             sampleTypeTab.draw();
         } else if (tab == Tabs.ANALYTES_RESULTS) {
+            prepAndReflexTab.finishEditing();
+            sampleTypeTab.finishEditing();
             analyteAndResultTab.draw();
         } else if (tab == Tabs.PREPS_REFLEXES) {
+            analyteAndResultTab.finishEditing();
             prepAndReflexTab.draw();
         } else if (tab == Tabs.WORKSHEET) {
+            analyteAndResultTab.finishEditing();
             worksheetLayoutTab.draw();
         }
     }
     
     protected void query() {
-        manager = TestManager.getInstance();
+        manager = TestManager.getInstance();    
         setState(Screen.State.QUERY);
-        DataChangeEvent.fire(this);        
+        DataChangeEvent.fire(this);       
+        
+        sampleTypeTab.draw();
+        analyteAndResultTab.draw();
+        prepAndReflexTab.draw();
+        worksheetLayoutTab.draw();
+        
         window.setDone(consts.get("enterFieldsToQuery"));
     }
     
@@ -1132,164 +1194,109 @@ public class TestScreen extends Screen {
         }
     }
 
-    protected void commit() {
-        if (state == State.UPDATE) {            
-            if (validate()) {
-                if (canCommitResultGroups()) {
-                    window.setBusy(consts.get("updating"));
-                    commitUpdate();
+    protected void commit() {        
+        if (!validate())
+            window.setError(consts.get("correctErrors"));
+        
+        if (state == State.QUERY) {                        
+            Query query;
+
+            query = new Query();
+            query.setFields(getQueryFields());
+            nav.setQuery(query);               
+        } else  if (state == State.ADD) {                       
+            if (canCommitResultGroups() && allowAnalytesEmpty()) {
+                window.setBusy(consts.get("adding"));
+                try {
+                    manager = manager.add();
+                    setState(State.DISPLAY);
+                    DataChangeEvent.fire(this);
+                    window.clearStatus();
+                } catch (ValidationErrorsList e) {
+                    showErrors(e);
+                } catch (Exception e) {
+                    Window.alert("commitAdd(): " + e.getMessage());
+                    window.clearStatus();
                 }
-            } else {
-                window.setError(consts.get("correctErrors"));
-            }
-        }
-        if (state == State.ADD) {           
-            if (validate()) {
-                if (canCommitResultGroups()) {
-                    window.setBusy(consts.get("adding"));
-                    commitAdd();
+            }            
+        }  else if (state == State.UPDATE) {                        
+            if (canCommitResultGroups() && allowAnalytesEmpty()) {
+                window.setBusy(consts.get("updating"));
+                try {
+                    manager = manager.update();
+                    setState(State.DISPLAY);
+                    DataChangeEvent.fire(this);
+                    window.clearStatus();
+                } catch (ValidationErrorsList e) {
+                    showErrors(e);
+                } catch (Exception e) {
+                    Window.alert("commitUpdate(): " + e.getMessage());
                 }
-            } else {
-                window.setError(consts.get("correctErrors"));
-            }
-        }
-        if (state == State.QUERY) {
-            if (validate()) {
-                ArrayList<QueryData> qFields = getQueryFields();
-                commitQuery(qFields);
-            } else {
-                window.setError(consts.get("correctErrors"));
-            }
-        }
+            }            
+        } 
+
     }
 
     protected void abort() {
-        if (state == State.UPDATE) {
-            window.setBusy("Canceling changes ...");
-
+        clearErrors();
+        window.setBusy(consts.get("cancelChanges"));
+        
+        if (state == State.QUERY) {
+            manager = TestManager.getInstance();
+            setState(State.DEFAULT);
+            DataChangeEvent.fire(this);
+            window.setDone(consts.get("queryAborted"));
+        } else if (state == State.ADD) {
+            manager = TestManager.getInstance();
+            setState(State.DEFAULT);
+            DataChangeEvent.fire(this);            
+            window.setDone(consts.get("addAborted"));
+        } else if (state == State.UPDATE) {            
             try {
-                manager = manager.abort();
-                clearErrors();
+                manager = manager.abort();                
                 setState(State.DISPLAY);
                 DataChangeEvent.fire(this);                                               
-                window.clearStatus();
+                window.setDone(consts.get("updateAborted"));
             } catch (Exception e) {
                 Window.alert(e.getMessage());
                 window.clearStatus();
             }
-
-        } else if (state == State.ADD) {
-            manager = TestManager.getInstance();
-            clearErrors();
-            setState(State.DEFAULT);
-            DataChangeEvent.fire(this);            
-            window.setDone(consts.get("addAborted"));
-        } else if (state == State.QUERY) {
-            manager = TestManager.getInstance();
-            clearErrors();
-            setState(State.DEFAULT);
-            DataChangeEvent.fire(this);
-            window.setDone(consts.get("queryAborted"));
+        } else {
+            window.clearStatus();
         }
     }
 
-    protected void fetch(Integer id) {
-        window.setBusy("Fetching ...");        
-        try {
-            if(tab == Tabs.DETAILS) {
-               manager = TestManager.findById(id);
-            } else if (tab == Tabs.SAMPLE_TYPES) {
-                manager = TestManager.findByIdWithSampleTypes(id);                
-            } else if (tab == Tabs.ANALYTES_RESULTS) {
-                manager = TestManager.findByIdWithAnalytesAndResults(id);
-            } else if (tab == Tabs.PREPS_REFLEXES) {
-                manager = TestManager.findByIdWithPrepTestAndReflexTests(id);
-            } else if (tab == Tabs.WORKSHEET) {
-                manager = TestManager.findByIdWithWorksheet(id);
+    protected boolean fetchById(Integer id) {
+        if (id == null) {
+            manager = TestManager.getInstance();
+            setState(State.DEFAULT);
+        } else {        
+            window.setBusy(consts.get("fetching"));
+            try {
+                if (tab == Tabs.DETAILS) {
+                    manager = TestManager.findById(id);
+                } else if (tab == Tabs.SAMPLE_TYPES) {
+                    manager = TestManager.findByIdWithSampleTypes(id);
+                } else if (tab == Tabs.ANALYTES_RESULTS) {
+                    manager = TestManager.findByIdWithAnalytesAndResults(id);
+                } else if (tab == Tabs.PREPS_REFLEXES) {
+                    manager = TestManager.findByIdWithPrepTestAndReflexTests(id);
+                } else if (tab == Tabs.WORKSHEET) {
+                    manager = TestManager.findByIdWithWorksheet(id);
+                }                
+            } catch (Exception e) {
+                e.printStackTrace();
+                setState(State.DEFAULT);
+                Window.alert(consts.get("fetchFailed") + e.getMessage());
+                window.clearStatus();
+                return false;
             }
-
-        } catch (Exception e) {
-            setState(Screen.State.DEFAULT);
-            Window.alert(consts.get("fetchFailed") + e.getMessage());
-            window.clearStatus();
-
-            return;
+            setState(State.DISPLAY);
         }
-
-        setState(Screen.State.DISPLAY);
         DataChangeEvent.fire(this);
         window.clearStatus();
-    }
-    
-    public void commitQuery(QueryData qField) {
-        ArrayList<QueryData> qList = new ArrayList<QueryData>();
-        qList.add(qField);
-        commitQuery(qList);
-    }
-
-    public ArrayList<QueryData> getQueryFields() {
-        ArrayList<QueryData> list = new ArrayList<QueryData>();
-        Set<String> keys = def.getWidgets().keySet();
-        for (String key : keys) {
-            if (def.getWidget(key) instanceof HasField) {
-                ((HasField)def.getWidget(key)).getQuery(list, key);
-            }
-        }
-        return list;
-    }
-
-    public void commitAdd() {        
-        window.setBusy("Committing ....");
-        try {
-            manager = manager.add();
-            setState(Screen.State.DISPLAY);
-            DataChangeEvent.fire(this);
-            window.clearStatus();
-        } catch (ValidationErrorsList e) {
-            showErrors(e);
-
-        } catch (Exception e) {
-            Window.alert("commitAdd(): " + e.getMessage());
-            e.printStackTrace();
-            window.clearStatus();
-        }
-    }
-
-    public void commitUpdate() {
-        window.setBusy("Committing ....");
-        try {
-            manager = manager.update();
-            setState(Screen.State.DISPLAY);
-            DataChangeEvent.fire(this);
-            window.clearStatus();
-        } catch (ValidationErrorsList e) {
-            showErrors(e);
-
-        } catch (Exception e) {
-            Window.alert("commitUpdate(): " + e.getMessage());
-            e.printStackTrace();
-            window.clearStatus();
-
-        }
-    }
-    
-    public void commitQuery(ArrayList<QueryData> qFields) {
-        Query<TestIdNameMethodNameDO> query = new Query<TestIdNameMethodNameDO>();
-        query.setFields(qFields);
-        window.setBusy("Querying...");
-
-        service.call("query", query, new AsyncCallback<Query<TestIdNameMethodNameDO>>() {
-            public void onSuccess(Query<TestIdNameMethodNameDO> query) {
-                loadQuery(query);
-            }
-
-            public void onFailure(Throwable caught) {
-                if (caught instanceof ValidationErrorsList)
-                    showErrors((ValidationErrorsList)caught);
-                else
-                    Window.alert(caught.getMessage());
-            }
-        });
+        
+        return true;
     }
     
     protected void showErrors(ValidationErrorsList errors) {
@@ -1318,44 +1325,11 @@ public class TestScreen extends Screen {
         }
         window.setError(consts.get("correctErrors"));
     }
-
-    public void loadQuery(Query<TestIdNameMethodNameDO> query) {
-        manager = TestManager.getInstance();
-        DataChangeEvent.fire(this);
-
-        loadQueryPage(query);
-    }
-        
-    
-    private void getTests(String query) {
-        if (state == State.DISPLAY || state == State.DEFAULT) {
-            QueryData qField = new QueryData();
-            qField.key = TestMeta.getName();
-            qField.query = query;
-            qField.type = QueryData.Type.STRING;
-            commitQuery(qField);
-        }
-    }
-
-    private void loadQueryPage(Query<TestIdNameMethodNameDO> query) {
-        window.setDone(consts.get("queryingComplete"));
-        if (query.getResults() == null || query.getResults().size() == 0) {
-            window.setDone("No records found");
-        } else
-            window.setDone(consts.get("queryingComplete"));
-        query.setModel(new ArrayList<TableDataRow>());
-        for (TestIdNameMethodNameDO entry : query.getResults()) {
-            query.getModel().add(new TableDataRow(entry.getId(), entry.getTestName()+","+entry.getMethodName()));
-        }
-        nav.setQuery(query);
-        //ActionEvent.fire(this, Action.NEW_PAGE, query);
-    }
     
     private void duplicate() {               
         try {
             manager = TestManager.findById(manager.getTest().getId()); 
-                        
-            
+                                    
             sampleTypeTab.setManager(manager);            
             analyteAndResultTab.setManager(manager);                        
             prepAndReflexTab.setManager(manager);                        
@@ -1375,7 +1349,7 @@ public class TestScreen extends Screen {
             prepAndReflexTab.draw();
             worksheetLayoutTab.draw();   
             
-            setState(Screen.State.ADD);
+            setState(State.ADD);
             DataChangeEvent.fire(this);  
             
             window.setDone(consts.get("enterInformationPressCommit"));
@@ -1500,15 +1474,38 @@ public class TestScreen extends Screen {
         list = getEmptyResultGroups(trm); 
         size = list.size();        
         if(size > 0) {    
-           commit = Window.confirm(consts.get("resultGroupsEmpty"));
-           if(commit) {
-               for(i = 0; i < size; i++) {
-                   trm.removeResultGroup(list.get(i));
-               }               
-           }        
+            commit = Window.confirm(consts.get("resultGroupsEmpty"));
+            if(commit) {
+                for(i = 0; i < size; i++) {
+                    trm.removeResultGroup(list.get(i));
+                }               
+            }        
         }
         return commit;
     }
+    
+    private boolean allowAnalytesEmpty() {
+        int anasize,ressize;
+        boolean allow;
+        
+        anasize = 0;
+        ressize = 0;
+        allow = true;
+        try{
+            anasize = manager.getTestAnalytes().rowCount();
+            ressize = manager.getTestResults().groupCount();
+            
+            if(anasize == 0 && ressize > 0) {
+                allow = Window.confirm(consts.get("resultNoAnalytes"));
+            } 
+                
+        } catch(Exception ex) {
+            ex.printStackTrace();
+        }
+        
+        return allow;
+    }
+    
            
     private ArrayList<Integer> getEmptyResultGroups(TestResultManager trm) {
         ArrayList<Integer> empList;        
@@ -1556,5 +1553,4 @@ public class TestScreen extends Screen {
             section.setTestId(null);
         }
     }       
-
 }
