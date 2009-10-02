@@ -91,24 +91,30 @@ public class SystemVariableBean implements SystemVariableRemote {
         List list;
 
         builder = new QueryBuilderV2();
+System.out.println("before meta");
 
         builder.setMeta(meta);
-        builder.setSelect("distinct new org.openelis.domain.IdNameDO(" + meta.getId() + ", " +
+        builder.setSelect("distinct new org.openelis.domain.IdNameVO(" + meta.getId() + ", " +
                           meta.getName() + ") ");
-        builder.addWhere(fields);
+        builder.constructWhere(fields);
         builder.setOrderBy(meta.getName());
+
+System.out.println("before manager");
 
         query = manager.createQuery(builder.getEJBQL());
         query.setMaxResults(first + max);
-
+        builder.setQueryParams(query, fields);
+        System.out.println("before query.getresultlist");
         list = query.getResultList();
+System.out.println("before list.isempty"+list.isEmpty());
         if (list.isEmpty())
             throw new NotFoundException();
-
+System.out.println("before sublist");
         list = (ArrayList<IdNameVO>)DataBaseUtil.subList(list, first, max);
+System.out.println("after sublist");
         if (list == null)
             throw new LastPageException();
-
+System.out.println("before return");
         return (ArrayList<IdNameVO>)list;
     }
 
@@ -125,7 +131,7 @@ public class SystemVariableBean implements SystemVariableRemote {
 
         manager.persist(entity);
         data.setId(entity.getId());
-        
+
         return data;
     }
 
@@ -145,7 +151,7 @@ public class SystemVariableBean implements SystemVariableRemote {
         entity.setValue(data.getValue());
 
         lockBean.giveUpLock(systemVariableRefTableId, data.getId());
-        
+
         return data;
     }
 
@@ -175,7 +181,7 @@ public class SystemVariableBean implements SystemVariableRemote {
     }
 
     private void checkSecurity(ModuleFlags flag) throws Exception {
-        SecurityInterceptor.applySecurity(ctx.getCallerPrincipal().getName(),
-                                          "system_variable", flag);
+        SecurityInterceptor.applySecurity(ctx.getCallerPrincipal().getName(), "system_variable",
+                                          flag);
     }
 }
