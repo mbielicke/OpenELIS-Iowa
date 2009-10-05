@@ -59,9 +59,7 @@ public class SampleDO extends DataObject {
         setReceivedDate(DataBaseUtil.toYM(receivedDate));
         setReceivedById(receivedById);
         setCollectionDate(DataBaseUtil.toYD(collectionDate));
-        //System.out.println(collectionTime.toString());
         setCollectionTime(DataBaseUtil.toHM(collectionTime));
-        //System.out.println(this.collectionTime.toString());
         setStatusId(statusId);
         setPackageId(packageId);
         setClientReference(clientReference);
