@@ -49,19 +49,19 @@ import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
-@NamedQueries({@NamedQuery(name = "Dictionary.Dictionary", query = "select distinct new org.openelis.domain.DictionaryViewDO(d.id, d.categoryId, d.relatedEntryId, " +
+@NamedQueries({@NamedQuery(name = "Dictionary.Dictionary", query = "select distinct new org.openelis.domain.DictionaryViewDO(d.id,d.sortOrder, d.categoryId, d.relatedEntryId, " +
                            "d.systemName,d.isActive,  d.localAbbrev, d.entry, dre.entry)" +                                                                                                  
                            "  from  Dictionary d left join d.relatedEntry dre  where d.categoryId = :id " +
                            " order by d.entry "),
-@NamedQuery(name = "Dictionary.DictionaryByEntrySystemName", query = "select distinct new org.openelis.domain.DictionaryDO(d.id, d.categoryId, d.relatedEntryId, " +
+@NamedQuery(name = "Dictionary.DictionaryByEntrySystemName", query = "select distinct new org.openelis.domain.DictionaryDO(d.id,d.sortOrder, d.categoryId, d.relatedEntryId, " +
                            " d.systemName,d.isActive,  d.localAbbrev, d.entry)" +                                                                                                  
                            " from  Dictionary d where d.systemName = :name " +
                            " order by d.entry "),
-@NamedQuery(name = "Dictionary.DictionaryByEntryId", query = "select distinct new org.openelis.domain.DictionaryDO(d.id, d.categoryId, d.relatedEntryId, " +
+@NamedQuery(name = "Dictionary.DictionaryByEntryId", query = "select distinct new org.openelis.domain.DictionaryDO(d.id,d.sortOrder, d.categoryId, d.relatedEntryId, " +
                            " d.systemName,d.isActive,  d.localAbbrev, d.entry)" +                                                                                                  
                            " from  Dictionary d where d.id = :id " +
                            " order by d.entry "),
-@NamedQuery(name = "Dictionary.EntriesByCategoryName", query = "select distinct new org.openelis.domain.DictionaryDO(d.id, d.categoryId, d.relatedEntryId, " +
+@NamedQuery(name = "Dictionary.EntriesByCategoryName", query = "select distinct new org.openelis.domain.DictionaryDO(d.id,d.sortOrder, d.categoryId, d.relatedEntryId, " +
                            " d.systemName,d.isActive,  d.localAbbrev, d.entry)" +                                                                                                  
                            " from  Dictionary d left join d.category c where c.systemName = :name " +
                            " order by d.entry "),
@@ -94,7 +94,10 @@ public class Dictionary implements Auditable, Cloneable {
   private Integer id;             
 
   @Column(name="category_id")
-  private Integer categoryId;             
+  private Integer categoryId;   
+  
+  @Column(name="sort_order")
+  private Integer sortOrder;
 
   @Column(name="related_entry_id")
   private Integer relatedEntryId;             
@@ -141,6 +144,12 @@ public class Dictionary implements Auditable, Cloneable {
     if((categoryId == null && this.categoryId != null) || 
        (categoryId != null && !categoryId.equals(this.categoryId)))
       this.categoryId = categoryId;
+  }
+  
+  public void setSortOrder(Integer sortOrder) {
+      if((sortOrder == null && this.sortOrder != null) || 
+         (sortOrder != null && !sortOrder.equals(this.sortOrder)))
+          this.sortOrder = sortOrder;
   }
 
   public Integer getRelatedEntryId() {
