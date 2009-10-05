@@ -26,6 +26,7 @@
 package org.openelis.bean;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -36,8 +37,10 @@ import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.IdNameDO;
+import org.openelis.domain.IdNameVO;
 import org.openelis.domain.SampleEnvironmentalDO;
 import org.openelis.entity.SampleEnvironmental;
+import org.openelis.exception.NotFoundException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.AddressLocal;
@@ -46,6 +49,8 @@ import org.openelis.manager.SampleManager;
 import org.openelis.metamap.SampleEnvironmentalMetaMap;
 import org.openelis.remote.SampleEnvironmentalRemote;
 import org.openelis.util.QueryBuilder;
+import org.openelis.util.QueryBuilderV2;
+import org.openelis.utilcommon.DataBaseUtil;
 import org.openelis.utils.GetPage;
 
 @Stateless
@@ -68,16 +73,17 @@ public class SampleEnvironmentalBean implements SampleEnvironmentalRemote, Sampl
         return envDO;
     }
 
-    public ArrayList<IdNameDO> query(ArrayList<QueryData> fields, int first, int max) throws Exception {
+    public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception {
         StringBuffer sb = new StringBuffer();
-        QueryBuilder qb = new QueryBuilder();
-
+        QueryBuilderV2 qb = new QueryBuilderV2();
+        List list;
+        
         qb.setMeta(Meta);
       
-        qb.setSelect("distinct new org.openelis.domain.IdNameDO("+Meta.SAMPLE.getId()+") ");
+        qb.setSelect("distinct new org.openelis.domain.IdNameVO("+Meta.SAMPLE.getId()+", '') ");
        
         //this method is going to throw an exception if a column doesnt match
-        qb.addNewWhere(fields);     
+        qb.constructWhere(fields);     
         
         qb.addWhere(Meta.SAMPLE.getDomain() + " = '" + SampleManager.ENVIRONMENTAL_DOMAIN_FLAG + "'");
 
@@ -91,14 +97,21 @@ public class SampleEnvironmentalBean implements SampleEnvironmentalRemote, Sampl
          query.setMaxResults(first+max);
         
 //      ***set the parameters in the query
-        qb.setNewQueryParams(query, fields);
+        qb.setQueryParams(query, fields);
         
         ArrayList<IdNameDO> returnList = (ArrayList<IdNameDO>)GetPage.getPage(query.getResultList(), first, max);
         
-        if(returnList == null)
-         throw new LastPageException();
-        else
-         return returnList;
+        list = query.getResultList();
+        
+        if (list.isEmpty())
+            throw new NotFoundException();
+
+        list = (ArrayList<IdNameVO>)DataBaseUtil.subList(list, first, max);
+        
+        if (list == null)
+            throw new LastPageException();
+
+        return (ArrayList<IdNameVO>)list;
     }
     
     public void add(SampleEnvironmentalDO envSampleDO) {
