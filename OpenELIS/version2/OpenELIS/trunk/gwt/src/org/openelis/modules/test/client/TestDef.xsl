@@ -150,14 +150,14 @@ version="1.0"
     </xsl:variable>
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
     <screen id="Test" name="{resource:getString($constants,'test')}" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">      
-        <HorizontalPanel height = "604" padding="0" spacing="0">
+        <HorizontalPanel padding="0" spacing="0">
         <CollapsePanel key="collapsePanel" style="LeftSidePanel">
           <HorizontalPanel width="225px">
             <buttonGroup key="atozButtons">
               <xsl:call-template name="aToZLeftPanelButtons" />
             </buttonGroup>
             <VerticalPanel>
-              <table key="atozTable" width="auto" maxRows="26">
+              <table key="atozTable" width="auto" maxRows="23">
                 <col width="175" header="{resource:getString($constants,'nameMethod')}">
                   <label />
                 </col>
@@ -173,7 +173,7 @@ version="1.0"
               </HorizontalPanel>
              </widget>
             </VerticalPanel>
-          </HorizontalPanel>
+          </HorizontalPanel>          
         </CollapsePanel>
           <VerticalPanel padding="0" spacing="0">
             <AbsolutePanel spacing="0" style="ButtonPanelContainer">
@@ -437,14 +437,14 @@ version="1.0"
                           <textbox key="{meta:getReportingSequence($test)}" width="80px" tab="{testTrailer:getName($tt)},{meta:getReportingMethodId($test)}" field="Integer"/>
                         </row>
                       </TablePanel>
-                      <VerticalPanel height="102px" />
+                      <VerticalPanel height="84px" />
                     </VerticalPanel>
                   </tab>
                   <tab key="sampleTypeTab" text="{resource:getString($constants,'sampleType')}">
                     <VerticalPanel>
                       <HorizontalPanel>
                         <widget valign="top">
-                          <table key="sampleTypeTable" width="auto" maxRows="21" showScroll="ALWAYS" title="">
+                          <table key="sampleTypeTable" width="auto" maxRows="19" showScroll="ALWAYS" title="">
                             <col key="{testTOS:getTypeOfSampleId($tos)}" width="300" sort="false" header="{resource:getString($constants,'sampleType')}">
                               <dropdown width="300" popWidth = "300" case="MIXED" field="Integer" required="true" />
                             </col>
@@ -476,12 +476,12 @@ version="1.0"
                           </appButton>
                         </widget>
                       </HorizontalPanel>
-                      <VerticalPanel height="20px" />
+                      <VerticalPanel height="10px" />
                     </VerticalPanel>
                   </tab>
                   <tab key="analyteTab" text="{resource:getString($constants,'analytesResults')}">
                   <VerticalPanel padding="0" spacing="0">
-                          <table key="analyteTable" width="604px" maxRows="9" showScroll="ALWAYS">
+                          <table key="analyteTable" width="604px" maxRows="8" showScroll="ALWAYS">
                               <col key="analyteLookup" width="152" sort="false">
                                 <autoComplete width="125px" case="MIXED" popWidth="auto" field="Integer">
                                   <col width="300"/>
@@ -568,7 +568,7 @@ version="1.0"
                       <VerticalPanel> 
                       <ScrollTabBar key="resultTabPanel" width = "602px"/>                                                                                            
                           <widget valign="top">
-                            <table key="resultTable" width="auto" maxRows="9" showScroll="ALWAYS" title="">
+                            <table key="resultTable" width="auto" maxRows="8" showScroll="ALWAYS" title="">
                               <col key="{testResult:getUnitOfMeasureId($tr)}" width="75" sort="true" header="{resource:getString($constants,'unit')}">
                                 <dropdown width="75" case="MIXED" field="Integer" />
                               </col>
@@ -624,7 +624,7 @@ version="1.0"
                     	</widget>
                     	</row>
                     	</TablePanel>
-                    	<VerticalPanel height="7px" />
+                    	<VerticalPanel height="1px" />
                         </VerticalPanel>
                         </tab>
                   <tab key="prepAndReflexTab" text="{resource:getString($constants,'prepAndReflex')}">
@@ -633,7 +633,7 @@ version="1.0"
                         <VerticalPanel padding="0" spacing="0">
                           <HorizontalPanel>
                             <widget valign="top">
-                              <table key="testPrepTable" width="auto" maxRows="9" showScroll="ALWAYS"  title="">
+                              <table key="testPrepTable" width="auto" maxRows="7" showScroll="ALWAYS"  title="">
                                 <col key="{prepTestMeta:getName($pt)}" width="527" header="{resource:getString($constants,'prepTestMethod')}">
                                   <autoComplete width="525" field="Integer" >
                                     <col width="525" />
@@ -723,7 +723,7 @@ version="1.0"
                           </HorizontalPanel>
                         </VerticalPanel>
                       </VerticalPanel>
-                      <VerticalPanel height="16px" />
+                      <VerticalPanel height="4px" /> 
                     </VerticalPanel>
                   </tab>
                   <tab key="worksheetTab" text="{resource:getString($constants,'worksheetLayout')}">
@@ -772,7 +772,7 @@ version="1.0"
                         </text>
                         <HorizontalPanel>
                           <widget valign="top">
-                            <table key="worksheetTable" width="auto" maxRows="7" showScroll="ALWAYS" tab="removeWSItemButton, {testWrksht:getScriptletId($tws)}" title="">
+                            <table key="worksheetTable" width="auto" maxRows="6" showScroll="ALWAYS" tab="removeWSItemButton, {testWrksht:getScriptletId($tws)}" title="">
                               <col key="{testWrkshtItm:getPosition($twsi)}" width="63" header="{resource:getString($constants,'position')}">
                                 <textbox field="Integer" />
                               </col>
@@ -820,7 +820,7 @@ version="1.0"
                         </text>
                         <HorizontalPanel>
                           <widget valign="top">
-                            <table key="worksheetAnalyteTable" width="auto" maxRows="6" showScroll="ALWAYS" tab="removeWSItemButton, {testWrksht:getScriptletId($tws)}" title="">
+                            <table key="worksheetAnalyteTable" width="auto" maxRows="5" showScroll="ALWAYS" tab="removeWSItemButton, {testWrksht:getScriptletId($tws)}" title="">
                               <col key="{testWrkshtAna:getAnalyteId($twsa)}" width="400" header="{resource:getString($constants,'analyte')}">
                                 <label field="String" />
                               </col>                             
@@ -851,9 +851,9 @@ version="1.0"
                                 </appButton>
                               </widget>
                             </HorizontalPanel>    
-                      </VerticalPanel>  
-                      <VerticalPanel height = "4px"/>                    
-                    </VerticalPanel>                    
+                      </VerticalPanel>
+                      <VerticalPanel height="4px" />                         
+                    </VerticalPanel>                                       
                   </tab>
                 </TabPanel>
               </VerticalPanel>

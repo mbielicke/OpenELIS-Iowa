@@ -1040,7 +1040,10 @@ public class TestScreen extends Screen {
             }
 
             public boolean fetch(RPC entry) {
-                return fetchById(((TestMethodViewDO)entry).getTestId());
+                if(entry != null)
+                    return fetchById(((TestMethodViewDO)entry).getTestId());
+                else 
+                    return fetchById(null);
             }
 
             public ArrayList<TableDataRow> getModel() {
@@ -1195,8 +1198,10 @@ public class TestScreen extends Screen {
     }
 
     protected void commit() {        
-        if (!validate())
+        if (!validate() && state != State.QUERY) {
             window.setError(consts.get("correctErrors"));
+            return;
+        }
         
         if (state == State.QUERY) {                        
             Query query;
@@ -1231,6 +1236,7 @@ public class TestScreen extends Screen {
                     showErrors(e);
                 } catch (Exception e) {
                     Window.alert("commitUpdate(): " + e.getMessage());
+                    window.clearStatus();
                 }
             }            
         } 
