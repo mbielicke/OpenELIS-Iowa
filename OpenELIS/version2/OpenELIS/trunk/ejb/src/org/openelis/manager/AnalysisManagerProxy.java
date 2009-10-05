@@ -26,6 +26,7 @@
 package org.openelis.manager;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.naming.InitialContext;
 
@@ -51,77 +52,166 @@ public class AnalysisManagerProxy {
     }
     
     public AnalysisManager add(AnalysisManager man) throws Exception {
-        System.out.println("inside analysis add");
-        Integer anRefId, anIntRefId;
-        AnalysisLocal al = getAnalysisLocal();
-        
+        HashMap<Integer, Integer> idHash = new HashMap<Integer, Integer>();
         AnalysisViewDO analysisDO;
-        anRefId = ReferenceTableCache.getReferenceTable("analysis");
-        anIntRefId = ReferenceTableCache.getReferenceTable("analysis_internal_note");
         
-        for(int i=0; i<man.count(); i++){
-            analysisDO = man.getAnalysisAt(i);
-            analysisDO.setSampleItemId(man.getSampleItemId());
-            
-            al.add(analysisDO);
-            
-            man.getQAEventAt(i).setAnalysisId(analysisDO.getId());
-            man.getQAEventAt(i).add();
-            
-            man.getInternalNotesAt(i).setReferenceId(analysisDO.getId());
-            man.getInternalNotesAt(i).setReferenceTableId(anIntRefId);
-            man.getInternalNotesAt(i).add();
-            
-            man.getExternalNoteAt(i).setReferenceId(analysisDO.getId());
-            man.getExternalNoteAt(i).setReferenceTableId(anRefId);
-            man.getExternalNoteAt(i).add();
-            
-            man.getStorageAt(i).setReferenceId(analysisDO.getId());
-            man.getStorageAt(i).setReferenceTableId(anRefId);
-            man.getStorageAt(i).add();
-        }
+        boolean notDone = false;
+        do{
+            notDone = false;
+            for(int i=0; i<man.count(); i++){
+                analysisDO = man.getAnalysisAt(i);
+
+                if(analysisDO.getPreAnalysisId() == null){
+                    if(!idHash.containsKey(analysisDO.getId())){
+                        Integer oldId = analysisDO.getId();
+                        add(man, analysisDO, i);
+
+                        idHash.put(oldId, analysisDO.getId());
+                        idHash.put(analysisDO.getId(), null);
+                    }
+                }else if(analysisDO.getPreAnalysisId() < 0){
+                    Integer prepId = idHash.get(analysisDO.getPreAnalysisId());
+                    
+                    if(prepId != null){
+                        Integer oldId = analysisDO.getId();
+                        analysisDO.setPreAnalysisId(prepId);
+                        add(man, analysisDO, i);
+                        
+                        idHash.put(oldId, analysisDO.getId());
+                        idHash.put(analysisDO.getId(), null);
+                    }else
+                        notDone = true;
+                }else if(!idHash.containsKey(analysisDO.getId())){
+                    Integer prepId = idHash.get(analysisDO.getPreAnalysisId());
+                    if(prepId == null){
+                        Integer oldId = analysisDO.getId();
+                        
+                        add(man, analysisDO, i);
+                        
+                        idHash.put(oldId, analysisDO.getId());
+                        
+                        if(!oldId.equals(analysisDO.getId()))
+                            idHash.put(analysisDO.getId(), null);
+                   }
+                }
+            }
+        }while(notDone);
         
         return man;
     }
     
     public AnalysisManager update(AnalysisManager man) throws Exception {
+        HashMap<Integer, Integer> idHash = new HashMap<Integer, Integer>();
+        AnalysisViewDO analysisDO;
+        
+        boolean notDone = false;
+        do{
+            notDone = false;
+            for(int i=0; i<man.count(); i++){
+                analysisDO = man.getAnalysisAt(i);
+
+                if(analysisDO.getPreAnalysisId() == null){
+                    if(!idHash.containsKey(analysisDO.getId())){
+                        Integer oldId, newId;
+                        
+                        oldId = analysisDO.getId();
+                        update(man, analysisDO, i);
+                        newId = analysisDO.getId();
+                        
+                        idHash.put(oldId, newId);
+                        idHash.put(newId, newId);
+                    }
+                }else if(analysisDO.getPreAnalysisId() < 0){
+                    Integer prepId = idHash.get(analysisDO.getPreAnalysisId());
+                    
+                    if(prepId != null){
+                        Integer oldId, newId;
+                        
+                        oldId = analysisDO.getId();
+                        analysisDO.setPreAnalysisId(prepId);
+                        update(man, analysisDO, i);
+                        newId = analysisDO.getId();
+                        
+                        idHash.put(oldId, newId);
+                        idHash.put(newId, newId);
+                    }else
+                        notDone = true;
+                }else if(!idHash.containsKey(analysisDO.getId())){
+                    Integer prepId = idHash.get(analysisDO.getPreAnalysisId());
+                    if(prepId == null){
+                        Integer oldId, newId;
+                        
+                        oldId = analysisDO.getId();
+                        update(man, analysisDO, i);
+                        newId = analysisDO.getId();
+                        
+                        idHash.put(oldId, newId);
+                        
+                        if(!oldId.equals(analysisDO.getId()))
+                            idHash.put(newId, newId);
+                   }
+                }
+            }
+        }while(notDone);
+        
+        return man;
+    }
+    
+    private void add(AnalysisManager man, AnalysisViewDO analysisDO, int i) throws Exception {
         Integer anRefId, anIntRefId;
         AnalysisLocal al = getAnalysisLocal();
         
-        AnalysisViewDO analysisDO;
         anRefId = ReferenceTableCache.getReferenceTable("analysis");
         anIntRefId = ReferenceTableCache.getReferenceTable("analysis_internal_note");
         
-        for(int j=0; j<man.deleteCount(); j++)
-            al.delete(man.getDeletedAt(j).analysis);
+        analysisDO.setSampleItemId(man.getSampleItemId());
+        al.add(analysisDO);
         
-        for(int i=0; i<man.count(); i++){
-            analysisDO = man.getAnalysisAt(i);
-            
-            if(analysisDO.getId() == null){
-                analysisDO.setSampleItemId(man.getSampleItemId());
-                al.add(analysisDO);
-            }else
-                al.update(analysisDO);
-            
-            man.getQAEventAt(i).setAnalysisId(analysisDO.getId());
-            man.getQAEventAt(i).update();
-            
-            man.getInternalNotesAt(i).setReferenceId(analysisDO.getId());
-            man.getInternalNotesAt(i).setReferenceTableId(anIntRefId);
-            man.getInternalNotesAt(i).update();
-            
-            man.getExternalNoteAt(i).setReferenceId(analysisDO.getId());
-            man.getExternalNoteAt(i).setReferenceTableId(anRefId);
-            man.getExternalNoteAt(i).update();
-            
-            man.getStorageAt(i).setReferenceId(analysisDO.getId());
-            man.getStorageAt(i).setReferenceTableId(anRefId);
-            man.getStorageAt(i).update();
-        }
-
-        return man;
+        man.getQAEventAt(i).setAnalysisId(analysisDO.getId());
+        man.getQAEventAt(i).add();
+        
+        man.getInternalNotesAt(i).setReferenceId(analysisDO.getId());
+        man.getInternalNotesAt(i).setReferenceTableId(anIntRefId);
+        man.getInternalNotesAt(i).add();
+        
+        man.getExternalNoteAt(i).setReferenceId(analysisDO.getId());
+        man.getExternalNoteAt(i).setReferenceTableId(anRefId);
+        man.getExternalNoteAt(i).add();
+        
+        man.getStorageAt(i).setReferenceId(analysisDO.getId());
+        man.getStorageAt(i).setReferenceTableId(anRefId);
+        man.getStorageAt(i).add();
     }
+    
+    private void update(AnalysisManager man, AnalysisViewDO analysisDO, int i) throws Exception {
+        Integer anRefId, anIntRefId;
+        AnalysisLocal al = getAnalysisLocal();
+        
+        anRefId = ReferenceTableCache.getReferenceTable("analysis");
+        anIntRefId = ReferenceTableCache.getReferenceTable("analysis_internal_note");
+
+        if(analysisDO.getId() == null){
+            analysisDO.setSampleItemId(man.getSampleItemId());
+            al.add(analysisDO);
+        }else
+            al.update(analysisDO);
+        
+        man.getQAEventAt(i).setAnalysisId(analysisDO.getId());
+        man.getQAEventAt(i).update();
+        
+        man.getInternalNotesAt(i).setReferenceId(analysisDO.getId());
+        man.getInternalNotesAt(i).setReferenceTableId(anIntRefId);
+        man.getInternalNotesAt(i).update();
+        
+        man.getExternalNoteAt(i).setReferenceId(analysisDO.getId());
+        man.getExternalNoteAt(i).setReferenceTableId(anRefId);
+        man.getExternalNoteAt(i).update();
+        
+        man.getStorageAt(i).setReferenceId(analysisDO.getId());
+        man.getStorageAt(i).setReferenceTableId(anRefId);
+        man.getStorageAt(i).update();
+    }
+        
     
     public void validate(AnalysisManager man, ValidationErrorsList errorsList) throws Exception {
         

@@ -54,6 +54,7 @@ import org.openelis.local.LockLocal;
 import org.openelis.metamap.StorageLocationMetaMap;
 import org.openelis.remote.StorageLocationRemote;
 import org.openelis.util.QueryBuilder;
+import org.openelis.utilcommon.DataBaseUtil;
 import org.openelis.utils.GetPage;
 import org.openelis.utils.ReferenceTableCache;
 
@@ -85,14 +86,14 @@ public class StorageLocationBean implements StorageLocationRemote{
         lockBean =  (LockLocal)ctx.lookup("ejb/Lock");
     }
     
-	public List autoCompleteLookupByName(String name, int maxResults) {
+	public ArrayList autoCompleteLookupByName(String name, int maxResults) {
 		Query query = null;
 		query = manager.createNamedQuery("StorageLocation.AutoCompleteByName");
 		query.setParameter("name",name);
         query.setParameter("loc",name);
         query.setParameter("desc",name);
 		query.setMaxResults(maxResults);
-		return query.getResultList();
+		return DataBaseUtil.toArrayList(query.getResultList());
 	}
 
     @RolesAllowed("storagelocation-delete")

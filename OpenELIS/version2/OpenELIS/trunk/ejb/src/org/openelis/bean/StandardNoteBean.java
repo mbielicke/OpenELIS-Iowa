@@ -44,6 +44,7 @@ import javax.persistence.Query;
 import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.StandardNoteDO;
 import org.openelis.entity.StandardNote;
+import org.openelis.exception.NotFoundException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.ValidationErrorsList;
@@ -56,6 +57,8 @@ import org.openelis.local.LockLocal;
 import org.openelis.metamap.StandardNoteMetaMap;
 import org.openelis.remote.StandardNoteRemote;
 import org.openelis.util.QueryBuilder;
+import org.openelis.util.QueryBuilderV2;
+import org.openelis.utilcommon.DataBaseUtil;
 import org.openelis.utils.GetPage;
 import org.openelis.utils.ReferenceTableCache;
 
@@ -188,10 +191,11 @@ public class StandardNoteBean implements StandardNoteRemote{
 		return standardNote.getId();
 	}
     
-    public List<StandardNoteDO> newQuery(ArrayList<QueryData> fields) throws Exception {
+    public ArrayList<StandardNoteDO> newQuery(ArrayList<QueryData> fields) throws Exception {
         StringBuffer sb = new StringBuffer();
-        QueryBuilder qb = new QueryBuilder();
-
+        QueryBuilderV2 qb = new QueryBuilderV2();
+        List list;
+        
         qb.setMeta(StandardNoteMap);
 
         qb.setSelect("new org.openelis.domain.StandardNoteDO(" + StandardNoteMap.getId()+", "+
@@ -218,14 +222,18 @@ public class StandardNoteBean implements StandardNoteRemote{
 
         Query query = manager.createQuery(sb.toString());
         
-        qb.setNewQueryParams(query, fields);
+        qb.setQueryParams(query, fields);
         
-        List<StandardNoteDO> returnList = query.getResultList();
+        list = query.getResultList();
         
-        if (returnList == null)
-            return new ArrayList<StandardNoteDO>();
-        else
-            return returnList;
+        if (list.isEmpty())
+            throw new NotFoundException();
+        list = (ArrayList<StandardNoteDO>)DataBaseUtil.subList(list, 0, 1000);
+        
+        if (list == null)
+            throw new LastPageException();
+        
+        return (ArrayList<StandardNoteDO>)list;
     }
     
     public List queryForType(HashMap fields) throws Exception {
