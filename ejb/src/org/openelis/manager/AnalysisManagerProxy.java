@@ -112,47 +112,39 @@ public class AnalysisManagerProxy {
 
                 if(analysisDO.getPreAnalysisId() == null){
                     if(!idHash.containsKey(analysisDO.getId())){
-                        Integer oldId, newId;
-                        
-                        oldId = analysisDO.getId();
+                        Integer oldId = analysisDO.getId();
                         update(man, analysisDO, i);
-                        newId = analysisDO.getId();
-                        
-                        idHash.put(oldId, newId);
-                        idHash.put(newId, newId);
+
+                        idHash.put(oldId, analysisDO.getId());
+                        idHash.put(analysisDO.getId(), null);
                     }
                 }else if(analysisDO.getPreAnalysisId() < 0){
                     Integer prepId = idHash.get(analysisDO.getPreAnalysisId());
                     
                     if(prepId != null){
-                        Integer oldId, newId;
-                        
-                        oldId = analysisDO.getId();
+                        Integer oldId = analysisDO.getId();
                         analysisDO.setPreAnalysisId(prepId);
                         update(man, analysisDO, i);
-                        newId = analysisDO.getId();
                         
-                        idHash.put(oldId, newId);
-                        idHash.put(newId, newId);
+                        idHash.put(oldId, analysisDO.getId());
+                        idHash.put(analysisDO.getId(), null);
                     }else
                         notDone = true;
                 }else if(!idHash.containsKey(analysisDO.getId())){
                     Integer prepId = idHash.get(analysisDO.getPreAnalysisId());
                     if(prepId == null){
-                        Integer oldId, newId;
+                        Integer oldId = analysisDO.getId();
                         
-                        oldId = analysisDO.getId();
                         update(man, analysisDO, i);
-                        newId = analysisDO.getId();
                         
-                        idHash.put(oldId, newId);
+                        idHash.put(oldId, analysisDO.getId());
                         
                         if(!oldId.equals(analysisDO.getId()))
-                            idHash.put(newId, newId);
+                            idHash.put(analysisDO.getId(), null);
                    }
                 }
             }
-        }while(notDone);
+       }while(notDone);
         
         return man;
     }
