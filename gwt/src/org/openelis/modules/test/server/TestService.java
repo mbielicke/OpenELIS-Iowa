@@ -53,7 +53,7 @@ import org.openelis.server.constants.Constants;
 
 public class TestService {
     
-    private static final int rowPP = 26;         
+    private static final int rowPP = 23;         
     
     public ArrayList<TestMethodViewDO> query(Query query) throws Exception {
         return testRemote().query(query.getFields(), query.getPage() * rowPP, rowPP);
