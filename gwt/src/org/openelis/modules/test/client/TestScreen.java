@@ -63,6 +63,7 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
+import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.AppButton;
@@ -987,6 +988,18 @@ public class TestScreen extends Screen {
 
             public void onStateChange(StateChangeEvent<State> event) {
                 duplicate.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+        
+        final MenuItem history = (MenuItem)def.getWidget("history");
+        addScreenHandler(history, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {               
+                Window.alert("clicked history");
+                //history();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                history.enable(EnumSet.of(State.DISPLAY, State.UPDATE).contains(event.getState()));
             }
         });
         

@@ -28,14 +28,20 @@ package org.openelis.modules.environmentalSampleLogin.client;
 import java.util.ArrayList;
 import java.util.EnumSet;
 
+import org.openelis.common.AutocompleteRPC;
+import org.openelis.domain.StorageLocationAutoDO;
 import org.openelis.domain.StorageViewDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.event.DataChangeEvent;
+import org.openelis.gwt.event.GetMatchesEvent;
+import org.openelis.gwt.event.GetMatchesHandler;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
+import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.gwt.widget.table.event.CellEditedEvent;
@@ -56,6 +62,7 @@ public class StorageTab extends Screen {
     protected SampleDataBundle data;
 
     public StorageTab(ScreenDefInt def) {
+        service = new ScreenService("OpenELISServlet?service=org.openelis.modules.storage.server.StorageService");
         setDef(def);
         
         initialize();
@@ -127,6 +134,34 @@ public class StorageTab extends Screen {
                 }
             }
         });
+        
+        final AutoComplete<Integer> location = ((AutoComplete<Integer>)storageTable.columns.get(1).colWidget);
+        location.addGetMatchesHandler(new GetMatchesHandler(){
+            public void onGetMatches(GetMatchesEvent event) {
+                AutocompleteRPC rpc = new AutocompleteRPC();
+                rpc.match = event.getMatch();
+                try {
+                    rpc = service.call("getStorageMatches", rpc);
+                    ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
+                        
+                    for (int i=0; i<rpc.model.size(); i++){
+                        StorageLocationAutoDO autoDO = (StorageLocationAutoDO)rpc.model.get(i);
+                        
+                        TableDataRow row = new TableDataRow(1);
+                        row.key = autoDO.getId();
+                        row.cells.get(0).value = autoDO.getLocation();
+
+                        model.add(row);
+                    } 
+                    
+                    location.showAutoMatches(model);
+                        
+                }catch(Exception e) {
+                    Window.alert(e.getMessage());                     
+                }
+                
+            }
+        });
 
         final AppButton addStorageButton = (AppButton)def.getWidget("addStorageButton");
         addScreenHandler(addStorageButton, new ScreenEventHandler<Object>() {
@@ -188,12 +223,13 @@ public class StorageTab extends Screen {
         return model;
     }
     
+    
     public void setData(SampleDataBundle data) {
         this.data = data;
         manager = null;
         loaded = false;
     }
-
+    
     public void draw(){
         int i;
         try{
@@ -201,15 +237,20 @@ public class StorageTab extends Screen {
                 if(data.type == SampleDataBundle.Type.ANALYSIS){
                     i = data.analysisManager.getIndex(data.analysisTestDO);
                     manager = data.analysisManager.getStorageAt(i);
+                    StateChangeEvent.fire(this, State.UPDATE);
                     
                 }else if(data.type == SampleDataBundle.Type.SAMPLE_ITEM){
                     i = data.sampleItemManager.getIndex(data.sampleItemDO);
                     manager = data.sampleItemManager.getStorageAt(i);
+                    StateChangeEvent.fire(this, State.UPDATE);
                     
+                }else{
+                    manager = StorageManager.getInstance();
+                    StateChangeEvent.fire(this, State.DEFAULT);
                 }
-                
-                DataChangeEvent.fire(this);
             }
+            
+            DataChangeEvent.fire(this);
 
         }catch(Exception e){
             Window.alert(e.getMessage());

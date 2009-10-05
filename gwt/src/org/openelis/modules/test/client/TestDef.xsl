@@ -216,11 +216,22 @@ version="1.0"
                   </xsl:with-param>
                 </xsl:call-template>
                 <xsl:call-template name="buttonPanelDivider" />
-                <xsl:call-template name="optionsButton">
-                  <xsl:with-param name="language">
-                    <xsl:value-of select="language" />
-                  </xsl:with-param>
-                </xsl:call-template>
+                <menuPanel key="optionsMenu" layout="vertical" style="topBarItemHolder">
+    			<menuItem>
+        			<menuDisplay>
+	    				<appButton action="option" style="ButtonPanelButton">
+							<HorizontalPanel>
+	        					<text><xsl:value-of select='resource:getString($constants,"options")'/></text>
+		    					<AbsolutePanel style="OptionsButtonImage" width="20px" height="20px"/>
+			  				</HorizontalPanel>
+						</appButton>
+					</menuDisplay>
+					<menuPanel style="topMenuContainer" layout="vertical" position="below">
+						<xsl:call-template name="duplicateRecordMenuItem"/>
+						<xsl:call-template name="historyMenuItem"/>
+			  		</menuPanel>
+	    		</menuItem>
+			</menuPanel>
                 </HorizontalPanel>
             </AbsolutePanel>            
             <HorizontalPanel padding="0" spacing="0" style="WhiteContentPanel">

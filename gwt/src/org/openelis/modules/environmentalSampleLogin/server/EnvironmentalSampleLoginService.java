@@ -28,39 +28,22 @@ package org.openelis.modules.environmentalSampleLogin.server;
 import java.util.ArrayList;
 
 import org.openelis.common.AutocompleteRPC;
-import org.openelis.domain.IdNameDO;
-import org.openelis.gwt.common.LastPageException;
+import org.openelis.domain.IdNameVO;
+import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.server.ServiceUtils;
-import org.openelis.modules.environmentalSampleLogin.client.SampleEnvQuery;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.OrganizationRemote;
 import org.openelis.remote.ProjectRemote;
 import org.openelis.remote.SampleEnvironmentalRemote;
 import org.openelis.remote.SampleRemote;
 import org.openelis.server.constants.Constants;
-import org.openelis.util.SessionManager;
-import org.openelis.util.UTFResource;
 
 public class EnvironmentalSampleLoginService {
 
-    private UTFResource openElisConstants= UTFResource.getBundle((String)SessionManager.getSession().getAttribute("locale"));
-    private static final int leftTableRowsPerPage = 12;
+    private static final int rowPP = 12;
     
-    public SampleEnvQuery query(SampleEnvQuery query) throws Exception {
-        SampleEnvironmentalRemote remote = (SampleEnvironmentalRemote)EJBFactory.lookup("openelis/SampleEnvironmentalBean/remote");
-
-        try{    
-            query.setResults(new ArrayList<IdNameDO>());
-            ArrayList<IdNameDO> results = (ArrayList<IdNameDO>)remote.query(query.getFields(),query.page*leftTableRowsPerPage,leftTableRowsPerPage);
-            for(IdNameDO result : results) {
-                query.getResults().add(result);
-            }
-        }catch(LastPageException e) {
-            throw new LastPageException(openElisConstants.getString("lastPageException"));
-        }catch(Exception e){
-            throw new Exception(e.getMessage());
-        }
-        return query;
+    public ArrayList<IdNameVO> query(Query query) throws Exception {
+        return remote().query(query.getFields(), query.getPage() * rowPP, rowPP);
     }
     
     public String getScreen() throws Exception {
@@ -84,5 +67,9 @@ public class EnvironmentalSampleLoginService {
         rpc.model = (ArrayList)remote.autoCompleteLookupByName(rpc.match+"%", 10);
         
         return rpc;
+    }
+    
+    private SampleEnvironmentalRemote remote() {
+        return (SampleEnvironmentalRemote)EJBFactory.lookup("openelis/SampleEnvironmentalBean/remote");
     }
 }

@@ -39,7 +39,7 @@ UIRF Software License are applicable instead of those above.
   xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd"
   xmlns:meta="xalan://org.openelis.metamap.SystemVariableMetaMap">
 
-  <xsl:import href="IMPORT/aToZTwoColumns.xsl" />
+  <xsl:import href="IMPORT/aToZOneColumn.xsl" />
   <xalan:component prefix="resource">
     <xalan:script lang="javaclass" src="xalan://org.openelis.util.UTFResource" />
   </xalan:component>
@@ -66,7 +66,7 @@ UIRF Software License are applicable instead of those above.
               <xsl:call-template name="aToZLeftPanelButtons" />
             </buttonGroup>
             <VerticalPanel>
-              <table key="atozTable" width="auto" maxRows="9">
+              <table key="atozTable" width="auto" maxRows="18">
                 <col width="175" header="{resource:getString($constants,'name')}">
                   <label />
                 </col>

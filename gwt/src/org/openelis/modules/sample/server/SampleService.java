@@ -41,14 +41,9 @@ public class SampleService {
     }
     
     public SampleManager fetchWithItemsAnalyses(Integer sampleId) throws Exception {
-        try{
         SampleManagerRemote remote = (SampleManagerRemote)EJBFactory.lookup("openelis/SampleManagerBean/remote");
         
         return remote.fetchWithItemsAnalysis(sampleId);
-        }catch(Exception e){
-            e.printStackTrace();
-            throw e;
-        }
     }
 
     public SampleManager fetchByAccessionNumber(Integer accessionNumber) throws Exception {
@@ -98,11 +93,6 @@ public class SampleService {
     //sample item methods
     public SampleItemManager fetchSampleItemsBySampleId(Integer sampleId) throws Exception {
         SampleManagerRemote remote = (SampleManagerRemote)EJBFactory.lookup("openelis/SampleManagerBean/remote");
-        try{
         return remote.fetchSampleItemsBySampleId(sampleId);
-        }catch(Exception e){
-            e.printStackTrace();
-            throw e;
-        }
     }
 }

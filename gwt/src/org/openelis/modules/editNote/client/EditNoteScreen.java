@@ -31,6 +31,8 @@ import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.StandardNoteDO;
+import org.openelis.exception.NotFoundException;
+import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.gwt.event.ActionEvent;
@@ -44,7 +46,6 @@ import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.TextArea;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.tree.TreeDataItem;
-import org.openelis.gwt.widget.tree.TreeRow;
 import org.openelis.gwt.widget.tree.TreeWidget;
 import org.openelis.gwt.widget.tree.event.LeafOpenedEvent;
 import org.openelis.gwt.widget.tree.event.LeafOpenedHandler;
@@ -56,6 +57,7 @@ import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class EditNoteScreen extends Screen implements HasActionHandlers<EditNoteScreen.Action> {
 
@@ -99,7 +101,7 @@ public class EditNoteScreen extends Screen implements HasActionHandlers<EditNote
             public void onLeafOpened(LeafOpenedEvent event) {
                 final TreeDataItem row = event.getItem();
                 if ( !row.isLoaded()) {
-                    buildTree(row, find((Integer)row.key));
+                    find(row, (Integer)row.key);
                     row.checkForChildren(false);
 
                 }
@@ -210,7 +212,7 @@ public class EditNoteScreen extends Screen implements HasActionHandlers<EditNote
                 if ("".equals(search.getValue()))
                     buildTree();
                 else
-                    buildTree(find());
+                    find();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -241,9 +243,9 @@ public class EditNoteScreen extends Screen implements HasActionHandlers<EditNote
         });
     }
 
-    private ArrayList<StandardNoteDO> find() {
+    private void find() {
         QueryData field;
-        Query<StandardNoteDO> query;
+        Query query;
         ArrayList<QueryData> fields;
         
         fields = new ArrayList<QueryData>();
@@ -260,14 +262,14 @@ public class EditNoteScreen extends Screen implements HasActionHandlers<EditNote
         field.key = meta.getDescription();
         fields.add(field);
 
-        query = new Query<StandardNoteDO>();
+        query = new Query();
         query.setFields(fields);
 
-        return executeQuery(query);
+        executeQuery(query, null);
     }
 
-    private ArrayList<StandardNoteDO> find(Integer typeId) {
-        Query<StandardNoteDO> query;
+    private void find(TreeDataItem row, Integer typeId) {
+        Query query;
         QueryData field;
         
         field = new QueryData();
@@ -275,26 +277,36 @@ public class EditNoteScreen extends Screen implements HasActionHandlers<EditNote
         field.query = String.valueOf(typeId);
         field.key = meta.getTypeId();
         
-        query = new Query<StandardNoteDO>();
+        query = new Query();
         query.setFields(field);
 
-        return executeQuery(query);
+        executeQuery(query, row);
     }
 
-    private ArrayList<StandardNoteDO> executeQuery(Query<StandardNoteDO> query) {
-        window.setBusy("Querying...");
+    private void executeQuery(Query query, final TreeDataItem row) {
+        window.setBusy("querying");
 
-        try {
-            query = service.call("query", query);
-            window.clearStatus();
+        service.callList("query", query, new AsyncCallback<ArrayList<StandardNoteDO>>() {
+            public void onSuccess(ArrayList<StandardNoteDO> result) {
+                if(row == null)
+                    buildTree(result);
+                else
+                    buildTree(row,result);
+            }
 
-            return query.getResults();
-        } catch (Exception e) {
-            e.printStackTrace();
-            Window.alert(e.getMessage());
-            window.clearStatus();
-            return null;
-        }
+            public void onFailure(Throwable error) {
+                buildTree(null);
+                if (error instanceof NotFoundException) {
+                    window.setDone(consts.get("noRecordsFound"));
+                    setState(State.DEFAULT);
+                } else if (error instanceof LastPageException) {
+                    window.setError("No more records in this direction");
+                } else {
+                    Window.alert("Error: EditNote call query failed; " + error.getMessage());
+                    window.setError(consts.get("queryFailed"));
+                }
+            }
+        });
     }
 
     private void paste() {
