@@ -193,6 +193,7 @@ public class CategoryBean implements CategoryRemote,CategoryLocal {
                     dictionary.setLocalAbbrev(dictDO.getLocalAbbrev());
                     dictionary.setRelatedEntryId(dictDO.getRelatedEntryId());
                     dictionary.setSystemName(dictDO.getSystemName());
+                    dictionary.setSortOrder(dictDO.getSortOrder());
 
                     if (dictionary.getId() == null) {
                         manager.persist(dictionary);

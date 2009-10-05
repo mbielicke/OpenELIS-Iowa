@@ -11,9 +11,9 @@ public class DictionaryViewDO extends DictionaryDO {
         
     }
     
-    public DictionaryViewDO(Integer id, Integer categoryId, Integer relatedEntryId, String systemName,
+    public DictionaryViewDO(Integer id,Integer sortOrder, Integer categoryId, Integer relatedEntryId, String systemName,
                             String isActive, String localAbbrev, String entry, String relatedEntryName){
-        super(id, categoryId, relatedEntryId, systemName, isActive, localAbbrev, entry);
+        super(id,sortOrder,categoryId, relatedEntryId, systemName, isActive, localAbbrev, entry);
         setRelatedEntryName(relatedEntryName);
         
     }

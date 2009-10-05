@@ -35,16 +35,17 @@ public class DictionaryDO extends DataObject {
 
     private static final long serialVersionUID = 1L;
 
-    protected Integer         id, categoryId, relatedEntryId;
+    protected Integer         id, sortOrder,categoryId, relatedEntryId;
     protected String          systemName, isActive, localAbbrev, entry;
 
     public DictionaryDO() {
     }
 
-    public DictionaryDO(Integer id, Integer categoryId, Integer relatedEntryId, String systemName,
+    public DictionaryDO(Integer id,Integer sortOrder,Integer categoryId, Integer relatedEntryId, String systemName,
                         String isActive, String localAbbrev, String entry) {
         setId(id);
         setCategoryId(categoryId);
+        setSortOrder(sortOrder);
         setRelatedEntryId(relatedEntryId);
         setSystemName(systemName);
         setIsActive(isActive);
@@ -68,6 +69,15 @@ public class DictionaryDO extends DataObject {
 
     public void setCategoryId(Integer categoryId) {
         this.categoryId = categoryId;
+        _changed = true;
+    }
+    
+    public Integer getSortOrder() {
+        return sortOrder;
+    }
+
+    public void setSortOrder(Integer sortOrder) {
+        this.sortOrder = sortOrder;
         _changed = true;
     }
 
@@ -115,4 +125,5 @@ public class DictionaryDO extends DataObject {
         this.entry = DataBaseUtil.trim(entry);
         _changed = true;
     }
+    
 }

@@ -39,6 +39,7 @@ public class DictionaryMeta implements Meta {
 	private static final String
               ID					="id",
               CATEGORY_ID					="categoryId",
+              SORT_ORDER                    ="sortOrder",              
               RELATED_ENTRY_ID					="relatedEntryId",
               SYSTEM_NAME					="systemName",
               IS_ACTIVE					="isActive",
@@ -46,7 +47,7 @@ public class DictionaryMeta implements Meta {
               ENTRY					="entry";
 
   	private static final String[] columnNames = {
-  	  ID,CATEGORY_ID,RELATED_ENTRY_ID,SYSTEM_NAME,IS_ACTIVE,LOCAL_ABBREV,ENTRY};
+  	  ID,SORT_ORDER,CATEGORY_ID,RELATED_ENTRY_ID,SYSTEM_NAME,IS_ACTIVE,LOCAL_ABBREV,ENTRY};
   	  
 	private HashSet<String> columnHashList;
     
@@ -86,6 +87,10 @@ public class DictionaryMeta implements Meta {
     public String getCategoryId() {
         return path + CATEGORY_ID;
     } 
+    
+    public String sortOrder() {
+        return path + SORT_ORDER;
+    }
 
     public String getRelatedEntryId() {
         return path + RELATED_ENTRY_ID;

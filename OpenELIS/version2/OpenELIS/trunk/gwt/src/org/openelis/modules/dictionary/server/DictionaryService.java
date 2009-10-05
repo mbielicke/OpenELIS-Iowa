@@ -324,7 +324,8 @@ public class DictionaryService implements AppScreenFormServiceInt<DictionaryForm
              dictDO.setLocalAbbrev(((String)(row.cells[2]).getValue()));
              dictDO.setEntry((String)(row.cells[3]).getValue());                                    
              dictDO.setRelatedEntryId((Integer)((DropDownField)row.cells[4]).getSelectedKey());                                                     
-             dictDO.setCategoryId(categoryId);                               
+             dictDO.setCategoryId(categoryId);  
+             dictDO.setSortOrder(i);
              dictDOList.add(dictDO);             
        }
         
