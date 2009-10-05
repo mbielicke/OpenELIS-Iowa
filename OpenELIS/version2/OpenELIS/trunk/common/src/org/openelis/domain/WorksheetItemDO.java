@@ -23,17 +23,53 @@
  * which case the provisions of a UIRF Software License are applicable instead
  * of those above.
  */
-package org.openelis.remote;
+package org.openelis.domain;
 
-import org.openelis.domain.WorksheetCreationVO;
-import org.openelis.gwt.common.data.QueryData;
+import org.openelis.utilcommon.DataBaseUtil;
 
-import java.util.ArrayList;
+/**
+ * Class represents the fields in database table system_variable.
+ */
 
-import javax.ejb.Remote;
+public class WorksheetItemDO extends DataObject {
 
-@Remote
-public interface WorksheetCreationRemote {
+    private static final long serialVersionUID = 1L;
 
-    public ArrayList<WorksheetCreationVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception;
+    protected Integer  id, worksheetId, position;
+
+    public WorksheetItemDO() {
+    }
+
+    public WorksheetItemDO(Integer id, Integer worksheetId, Integer position) {
+        setId(id);
+        setWorksheetId(worksheetId);
+        setPosition(position);
+        _changed = false;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+        _changed = true;
+    }
+
+    public Integer getWorksheetId() {
+        return worksheetId;
+    }
+
+    public void setWorksheetId(Integer worksheetId) {
+        this.worksheetId = worksheetId;
+    }
+
+    public Integer getPosition() {
+        return position;
+    }
+
+    public void setPosition(Integer position) {
+        this.position = position;
+    }
+
 }

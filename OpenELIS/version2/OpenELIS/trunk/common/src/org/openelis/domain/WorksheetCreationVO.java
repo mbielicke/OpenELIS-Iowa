@@ -31,19 +31,19 @@ import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.RPC;
 import org.openelis.utilcommon.DataBaseUtil;
 
-public class WorksheetCreationViewDO implements RPC {
+public class WorksheetCreationVO implements RPC {
     private static final long serialVersionUID = 1L;
 
     protected Integer  analysisId, accessionNumber, statusId;
     protected String   testName, methodName, sectionName;
     protected Datetime receivedDate;
 
-    public WorksheetCreationViewDO() {
+    public WorksheetCreationVO() {
 
     }
 
     // analysis, accession number, test, method, section, status and received
-    public WorksheetCreationViewDO(Integer analysisId, Integer accessionNumber,
+    public WorksheetCreationVO(Integer analysisId, Integer accessionNumber,
                                    String testName, String methodName, String sectionName,
                                    Integer statusId, Date receivedDate) {
         setAnalysisId(analysisId);
