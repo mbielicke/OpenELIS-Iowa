@@ -54,7 +54,7 @@ public interface StorageLocationRemote {
 	 public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception;
 	 
 //	auto complete lookup
-	 public List autoCompleteLookupByName(String name, int maxResults);
+	 public ArrayList autoCompleteLookupByName(String name, int maxResults);
 	 
 	 public void deleteStorageLoc(Integer StorageLocId) throws Exception;
 	 

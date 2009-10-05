@@ -55,7 +55,7 @@ public interface StandardNoteRemote {
 	 //method to query for standard notes
 	 public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception;
      
-	 public List<StandardNoteDO> newQuery(ArrayList<QueryData> fields) throws Exception;
+	 public ArrayList<StandardNoteDO> newQuery(ArrayList<QueryData> fields) throws Exception;
 	 
      //method to query for standard notes
      public List queryForType(HashMap fields) throws Exception;

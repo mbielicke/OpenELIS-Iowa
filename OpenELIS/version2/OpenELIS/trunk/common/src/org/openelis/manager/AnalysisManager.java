@@ -240,6 +240,16 @@ public class AnalysisManager implements RPC, HasNotesInt {
         return items.get(i);
     }
     
+    public Integer getAnalysisIdByTestId(Integer testId){
+        Integer id = null;
+        
+        for(int i=0; i<count(); i++){
+            
+        }
+        
+        return id;
+    }
+    
     // service methods
     public AnalysisManager add() throws Exception {
         return proxy().add(this);
