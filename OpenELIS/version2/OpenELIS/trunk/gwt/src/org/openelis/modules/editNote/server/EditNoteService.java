@@ -36,13 +36,10 @@ import org.openelis.server.constants.Constants;
 
 public class EditNoteService {
 
-    public Query<StandardNoteDO> query(Query<StandardNoteDO> query) throws Exception {
-        try{    
-            query.setResults((ArrayList<StandardNoteDO>)remote().newQuery(query.getFields()));
-        }catch(Exception e){
-            throw new Exception(e.getMessage());
-        }
-        return query;
+    public ArrayList<StandardNoteDO> query(Query query) throws Exception {
+        ArrayList<StandardNoteDO> x;
+        x = remote().newQuery(query.getFields());
+        return x;
     }
     
     public String getScreen() throws Exception {

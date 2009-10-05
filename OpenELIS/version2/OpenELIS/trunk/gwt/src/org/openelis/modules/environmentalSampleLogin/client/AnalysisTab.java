@@ -33,9 +33,7 @@ import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.domain.TestMethodViewDO;
-import org.openelis.domain.TestPrepDO;
 import org.openelis.domain.TestSectionViewDO;
-import org.openelis.domain.TestViewDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
@@ -47,7 +45,6 @@ import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
-import org.openelis.gwt.screen.deprecated.ScreenWindow;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.CalendarLookUp;
@@ -57,9 +54,7 @@ import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.TestManager;
-import org.openelis.manager.TestPrepManager;
 import org.openelis.metamap.SampleMetaMap;
-import org.openelis.modules.testPrepPicker.client.TestPrepPickerScreen;
 
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -72,7 +67,6 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
     private SampleMetaMap meta;
     
     private Screen parentScreen;
-    protected TestPrepPickerScreen prepPickerScreen;
     
     protected AutoComplete<Integer> test, method;
     protected Dropdown<Integer> sectionId;
@@ -83,8 +77,8 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
     protected AnalysisViewDO analysis;
     protected SampleItemViewDO sampleItem;
     protected Dropdown<Integer> statusId;
-
-    public AnalysisTab(ScreenDefInt def, Screen parentScreen) {
+    
+        public AnalysisTab(ScreenDefInt def, Screen parentScreen) {
         service = new ScreenService("OpenELISServlet?service=org.openelis.modules.analysis.server.AnalysisService");
         setDef(def);
         this.parentScreen = parentScreen;
@@ -136,6 +130,8 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
                         if(defaultDO != null){
                             sectionId.setModel(getSectionsModel(defaultDO.getSectionId(), defaultDO.getSection()));
                             sectionId.setSelection(defaultDO.getSectionId());
+                            analysis.setSectionId(defaultDO.getSectionId());
+                            analysis.setSectionName(defaultDO.getSection());
                             bundle.sectionsDropdownModel = null;
                         }else if(testMan.getTestSections().count() > 0){
                             ArrayList<TableDataRow> sections = getSectionsModel(testMan.getTestSections().getSections());
@@ -148,16 +144,6 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
                         
                         //fire changed before we check for prep tests
                         ActionEvent.fire(anTab, Action.CHANGED, null);
-                        
-                        /*
-                        //test pre requirement code
-                        if(testMan.getPrepTests().count() > 0){
-                            TestPrepDO requiredTestPrepDO = testMan.getPrepTests().getRequiredTestPrep();
-                            if(requiredTestPrepDO == null)
-                                drawTestPrepScreen(manager.getTests().getPrepTests());
-                            else
-                                selectedPrepTest(requiredTestPrepDO.getPrepTestId());
-                        }*/
                     }
                 }catch(Exception e){
                     Window.alert(e.getMessage());
@@ -394,106 +380,7 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
         
         return model;
     }
-    
-    private void drawTestPrepScreen(TestPrepManager manager){
-        if (prepPickerScreen == null) {
-            try {
-                final AnalysisTab anTab = this;
-                prepPickerScreen = new TestPrepPickerScreen();
-                prepPickerScreen.addActionHandler(new ActionHandler<TestPrepPickerScreen.Action>() {
-                    public void onAction(ActionEvent<TestPrepPickerScreen.Action> event) {
-                        if (event.getAction() == TestPrepPickerScreen.Action.SELECTED_PREP_ROW) {
-                            
-                            TableDataRow selectedRow = (TableDataRow)event.getData();
-                            Integer testId = (Integer)selectedRow.key;
-                            selectedPrepTest(testId);
-                        }
-                    }
-                });
-
-            } catch (Exception e) {
-                e.printStackTrace();
-                Window.alert("error: " + e.getMessage());
-                return;
-            }
-        }
-
-        ScreenWindow modal = new ScreenWindow(null,
-                                              "Test Prep Picker Screen",
-                                              "testPrepPickerScreen",
-                                              "",
-                                              true,
-                                              false);
-        modal.setName(consts.get("prepTestPicker"));
-        modal.setContent(prepPickerScreen);
-        prepPickerScreen.setManager(manager);
-    }
-    
-    private void selectedPrepTest(Integer prepTestId){
-        SampleDataBundle bundle = createSampleBundleFromPrepTestId(prepTestId);
-        AnalysisTab anTab = this;
         
-        //fire event for first test prep
-        if(bundle != null)
-            ActionEvent.fire(anTab, Action.SELECTED_TEST_PREP_ROW, bundle);
-        
-        try{
-            //check to see if there is a prep test for this prep test
-            TestManager testMan=TestManager.findByIdWithPrepTest(prepTestId);
-            if(testMan != null && testMan.getPrepTests().count() > 0){
-                TestPrepDO requiredTestPrepDO = testMan.getPrepTests().getRequiredTestPrep();
-                if(requiredTestPrepDO == null)
-                    drawTestPrepScreen(testMan.getPrepTests());
-                else
-                    selectedPrepTest(prepTestId);
-                    ActionEvent.fire(anTab, Action.SELECTED_TEST_PREP_ROW, createSampleBundleFromPrepTestId(requiredTestPrepDO.getPrepTestId()));
-            }
-            
-        }catch(Exception e ){
-            Window.alert(e.getMessage());
-        }   
-    }
-    
-    private SampleDataBundle createSampleBundleFromPrepTestId(Integer prepTestId){
-        SampleDataBundle bundle = null;
-        try{
-            TestManager testMan=null;
-            testMan = TestManager.findByIdWithPrepTest(prepTestId);
-            
-            if(testMan != null){
-                TestViewDO testDO = testMan.getTest();
-                bundle = new SampleDataBundle();
-                bundle.type = SampleDataBundle.Type.ANALYSIS;
-                
-                AnalysisViewDO analysis = new AnalysisViewDO();
-                bundle.analysisTestDO = analysis;
-                analysis.setTestId(prepTestId);
-                analysis.setTestName(testDO.getName());
-                analysis.setMethodId(testDO.getMethodId());
-                analysis.setMethodName(testDO.getMethodName());
-                analysis.setIsReportable(testDO.getIsReportable());
-                analysis.setRevision(0);
-                
-                //sections
-                TestSectionViewDO defaultDO = testMan.getTestSections().getDefaultSection();
-                
-                if(defaultDO != null){
-                    analysis.setSectionId(defaultDO.getSectionId());
-                    analysis.setSectionName(defaultDO.getSection());
-                    bundle.sectionsDropdownModel = null;
-                }else if(testMan.getTestSections().count() > 0){
-                    ArrayList<TestSectionViewDO> sections = testMan.getTestSections().getSections();
-                    bundle.sectionsDropdownModel = getSectionsModel(sections);
-                }
-            }   
-        }catch(Exception e){
-            Window.alert(e.getMessage());
-            return null;
-        }
-            
-        return bundle;
-    }
-    
     public void setData(SampleDataBundle data) {
         if(data.type == SampleDataBundle.Type.SAMPLE_ITEM){
             analysis = new AnalysisViewDO();

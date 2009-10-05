@@ -406,6 +406,7 @@ public class SystemVariableScreen extends Screen {
             DataChangeEvent.fire(this);
             window.setDone(consts.get("queryAborted"));
         } else if (state == State.ADD) {
+            data = new SystemVariableDO();
             setState(State.DEFAULT);
             DataChangeEvent.fire(this);
             window.setDone(consts.get("addAborted"));

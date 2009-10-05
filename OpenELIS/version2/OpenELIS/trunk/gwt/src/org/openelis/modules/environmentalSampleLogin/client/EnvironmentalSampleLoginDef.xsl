@@ -171,6 +171,22 @@ xmlns:testMetaMap="xalan://org.openelis.metamap.TestMetaMap" xmlns:sectionMeta="
                 <xsl:value-of select="language" />
               </xsl:with-param>
             </xsl:call-template>
+            <xsl:call-template name="buttonPanelDivider" />
+   			<menuPanel key="optionsMenu" layout="vertical" style="topBarItemHolder">
+    			<menuItem>
+        			<menuDisplay>
+	    				<appButton action="option" style="ButtonPanelButton">
+							<HorizontalPanel>
+	        					<text><xsl:value-of select='resource:getString($constants,"options")'/></text>
+		    					<AbsolutePanel style="OptionsButtonImage" width="20px" height="20px"/>
+			  				</HorizontalPanel>
+						</appButton>
+					</menuDisplay>
+					<menuPanel style="topMenuContainer" layout="vertical" position="below">
+						<xsl:call-template name="historyMenuItem"/>
+			  		</menuPanel>
+	    		</menuItem>
+			</menuPanel>
           </HorizontalPanel>
         </AbsolutePanel>
 
@@ -260,7 +276,7 @@ xmlns:testMetaMap="xalan://org.openelis.metamap.TestMetaMap" xmlns:sectionMeta="
               	<row>
 	                <tree key="itemsTestsTree" width="auto" maxRows="4" showScroll="ALWAYS" tab="{projectMeta:getName($project)},{envMeta:getSamplingLocation($env)}">
 	                  <header>
-	                    <col width="280" header="{resource:getString($constants,'itemTests')}" />
+	                    <col width="280" header="{resource:getString($constants,'itemAnalyses')}" />
 	                    <col width="130" header="{resource:getString($constants,'typeStatus')}" />
 	                  </header>
 	                  <leaf key="sampleItem">
@@ -292,11 +308,11 @@ xmlns:testMetaMap="xalan://org.openelis.metamap.TestMetaMap" xmlns:sectionMeta="
 		                      </text>
 		                    </HorizontalPanel>
 		                  </appButton>
-		                  <appButton key="addTestButton" style="Button" action="addTest">
+		                  <appButton key="addAnalysisButton" style="Button" action="addAnalysis">
 		                    <HorizontalPanel>
 		                      <AbsolutePanel style="AddRowButtonImage" />
 		                      <text>
-		                        <xsl:value-of select="resource:getString($constants,'addTest')" />
+		                        <xsl:value-of select="resource:getString($constants,'addAnalysis')" />
 		                      </text>
 		                    </HorizontalPanel>
 		                  </appButton>
@@ -367,9 +383,8 @@ xmlns:testMetaMap="xalan://org.openelis.metamap.TestMetaMap" xmlns:sectionMeta="
               </TablePanel>
             </VerticalPanel>
           </HorizontalPanel>
-          <TabPanel key="sampleItemTabPanel" height="170px">
+          <TabPanel key="sampleItemTabPanel" height="170px" width="715px">
             <tab key="tab0" text="{resource:getString($constants,'sampleItem')}">
-              <VerticalPanel width="730px" height="170px">
                 <TablePanel style="Form">
                   <row>
                     <text style="Prompt"><xsl:value-of select="resource:getString($constants,'sampleType')" />:</text>
@@ -394,10 +409,8 @@ xmlns:testMetaMap="xalan://org.openelis.metamap.TestMetaMap" xmlns:sectionMeta="
                     <dropdown key="{sampleItemMetaMap:getUnitOfMeasureId($sampleItem)}" width="150px" popWidth="150px" field="Integer" />
                   </row>
                 </TablePanel>
-              </VerticalPanel>
             </tab>
             <tab key="tab1" text="{resource:getString($constants,'analysis')}">
-              <VerticalPanel width="730px" height="170px">
                 <TablePanel style="Form">
                   <row>
                     <text style="Prompt"><xsl:value-of select="resource:getString($constants,'test')" />:</text>
@@ -436,10 +449,9 @@ xmlns:testMetaMap="xalan://org.openelis.metamap.TestMetaMap" xmlns:sectionMeta="
                     <calendar key="{analysisMetaMap:getPrintedDate($analysis)}" begin="0" end="2" pattern="{resource:getString($constants,'dateTimePattern')}" />
                   </row>
                 </TablePanel>
-              </VerticalPanel>
             </tab>
             <tab key="tab2" text="{resource:getString($constants,'testResults')}">
-              <VerticalPanel width="730px" height="170px">
+              <VerticalPanel>
 
 <!--						-->
 
@@ -637,20 +649,20 @@ xmlns:testMetaMap="xalan://org.openelis.metamap.TestMetaMap" xmlns:sectionMeta="
             <tab key="tab5" text="{resource:getString($constants,'storage')}">
               <TablePanel height="170px">
               <row>
-                <table key="storageTable" width="auto" maxRows="6" showScroll="ALWAYS" title="">
+                <table key="storageTable" width="auto" maxRows="5" showScroll="ALWAYS" title="">
                   <col width="155" header="{resource:getString($constants,'user')}">
                     <label />
                   </col>
                   <col width="230" header="{resource:getString($constants,'location')}">
-                    <autoComplete key="" width="210px" case="LOWER" popWidth="auto" field="Integer">
-                      <col width="180" header="{resource:getString($constants,'name')}" />
+                    <autoComplete key="" width="215px" case="LOWER" popWidth="auto" field="Integer">
+                      <col width="240" header="{resource:getString($constants,'name')}" />
                     </autoComplete>
                   </col>
-                  <col width="130" header="{resource:getString($constants,'checkIn')}">
-                    <calendar key="" begin="0" end="2" width="110" pattern="{resource:getString($constants,'dateTimePattern')}" />
+                  <col width="135" header="{resource:getString($constants,'checkIn')}">
+                    <calendar key="" begin="0" end="4" width="110" pattern="{resource:getString($constants,'dateTimePattern')}" />
                   </col>
-                  <col width="130" header="{resource:getString($constants,'checkOut')}">
-                    <calendar key="" begin="0" end="2" width="110" pattern="{resource:getString($constants,'dateTimePattern')}" />
+                  <col width="135" header="{resource:getString($constants,'checkOut')}">
+                    <calendar key="" begin="0" end="4" width="110" pattern="{resource:getString($constants,'dateTimePattern')}" />
                   </col>
                 </table>
                 </row>
@@ -682,8 +694,8 @@ xmlns:testMetaMap="xalan://org.openelis.metamap.TestMetaMap" xmlns:sectionMeta="
               <HorizontalPanel width="100%" height="170px">
               	<TablePanel padding="0" spacing="0" style="TabSubForm">
               	<row>
-	                 <table key="sampleQATable" title="" width="auto" maxRows="6" showScroll="ALWAYS">
-	                  <col width="185" header="{resource:getString($constants,'sampleQAEvent')}">
+	                 <table key="sampleQATable" title="" width="auto" maxRows="5" showScroll="ALWAYS">
+	                  <col width="175" header="{resource:getString($constants,'sampleQAEvent')}">
 	                  	<autoComplete key="{qaeventMeta:getName($sampleQA)}" width="165px" case="LOWER" popWidth="auto" field="Integer">
                       		<col width="100" header="{resource:getString($constants,'name')}" />
                       		<col width="150" header="{resource:getString($constants,'desc')}" />
@@ -724,8 +736,8 @@ xmlns:testMetaMap="xalan://org.openelis.metamap.TestMetaMap" xmlns:sectionMeta="
               <AbsolutePanel style="Divider"/>
               <TablePanel padding="0" spacing="0" style="TabSubForm">
               <row>
-                 <table key="analysisQATable" title="" width="auto" maxRows="6" showScroll="ALWAYS">
-                  <col width="185" header="{resource:getString($constants,'analysisQAEvent')}">
+                 <table key="analysisQATable" title="" width="auto" maxRows="5" showScroll="ALWAYS">
+                  <col width="175" header="{resource:getString($constants,'analysisQAEvent')}">
                     	<autoComplete key="{qaeventMeta:getName($analysisQA)}" width="165px" case="LOWER" popWidth="auto" field="Integer">
                       		<col width="100" header="{resource:getString($constants,'name')}" />
                       		<col width="150" header="{resource:getString($constants,'desc')}" />
