@@ -28,41 +28,55 @@ package org.openelis.modules.worksheetCreation.server;
 import java.util.ArrayList;
 
 import org.openelis.common.AutocompleteRPC;
-import org.openelis.domain.WorksheetCreationViewDO;
-import org.openelis.gwt.common.LastPageException;
-import org.openelis.modules.worksheetCreation.client.WorksheetCreationQuery;
+import org.openelis.domain.WorksheetCreationVO;
+import org.openelis.gwt.common.data.Query;
+import org.openelis.manager.WorksheetManager;
 import org.openelis.persistence.EJBFactory;
+import org.openelis.remote.SectionRemote;
 import org.openelis.remote.TestRemote;
+import org.openelis.remote.WorksheetRemote;
 import org.openelis.remote.WorksheetCreationRemote;
-import org.openelis.util.SessionManager;
-import org.openelis.util.UTFResource;
+import org.openelis.remote.WorksheetManagerRemote;
 
 public class WorksheetCreationService {
 
-    private UTFResource openElisConstants = UTFResource.getBundle((String)SessionManager.getSession().getAttribute("locale"));
-
     public AutocompleteRPC getTestMethodMatches(AutocompleteRPC rpc) throws Exception {
-        TestRemote remote = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
-        rpc.model = (ArrayList)remote.getTestWithActiveAutoCompleteByName(rpc.match+"%", 10);
+        rpc.model = (ArrayList)testRemote().getTestWithActiveAutoCompleteByName(rpc.match+"%", 10);
         
         return rpc;
     }
 
-    public WorksheetCreationQuery query(WorksheetCreationQuery query) throws Exception {
-        ArrayList<WorksheetCreationViewDO> results;
-        WorksheetCreationRemote            remote;
+    public AutocompleteRPC getSectionMatches(AutocompleteRPC rpc) throws Exception {
+        rpc.model = (ArrayList)sectionRemote().getAutoCompleteSectionByName(rpc.match+"%", 10);
         
-        remote = (WorksheetCreationRemote)EJBFactory.lookup("openelis/WorksheetCreationBean/remote");
+        return rpc;
+    }
 
-        try {    
-            query.setResults(new ArrayList<WorksheetCreationViewDO>());
-            results = (ArrayList<WorksheetCreationViewDO>)remote.query(query.getFields(),0,500);
-            for (WorksheetCreationViewDO result : results) {
-                query.getResults().add(result);
-            }
-        } catch (LastPageException e) {
-            throw new LastPageException(openElisConstants.getString("noRecordsFound"));
-        }
-        return query;
+    public ArrayList<WorksheetCreationVO> query(Query query) throws Exception {
+        return creationRemote().query(query.getFields(), 0, 500);
+    }
+
+    public WorksheetManager add(WorksheetManager man) throws Exception {
+        return remoteManager().add(man);
+    }
+    
+    private TestRemote testRemote() {
+        return (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
+    }
+    
+    private SectionRemote sectionRemote() {
+        return (SectionRemote)EJBFactory.lookup("openelis/SectionBean/remote");
+    }
+    
+    private WorksheetRemote remote() {
+        return (WorksheetRemote)EJBFactory.lookup("openelis/WorksheetBean/remote");
+    }
+    
+    private WorksheetCreationRemote creationRemote() {
+        return (WorksheetCreationRemote)EJBFactory.lookup("openelis/WorksheetCreationBean/remote");
+    }
+    
+    private WorksheetManagerRemote remoteManager() {
+        return (WorksheetManagerRemote)EJBFactory.lookup("openelis/WorksheetManagerBean/remote");
     }
 }

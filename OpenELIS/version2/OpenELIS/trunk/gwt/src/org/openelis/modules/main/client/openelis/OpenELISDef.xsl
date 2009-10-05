@@ -36,8 +36,7 @@ UIRF Software License are applicable instead of those above.
   xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd"
                 xmlns:service="xalan://org.openelis.gwt.server.ServiceUtils"
                 xmlns:so="xalan://org.openelis.gwt.common.SecurityModule"
-                xmlns:fn="http://www.w3.org/2005/xpath-functions" 
-              >
+                xmlns:fn="http://www.w3.org/2005/xpath-functions">
 
   <xalan:component prefix="resource">
     <xalan:script lang="javaclass" src="xalan://org.openelis.util.UTFResource"/>
