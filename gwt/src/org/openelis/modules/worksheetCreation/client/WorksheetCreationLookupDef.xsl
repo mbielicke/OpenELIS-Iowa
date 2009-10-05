@@ -36,9 +36,10 @@ UIRF Software License are applicable instead of those above.
   xsi:noNamespaceSchemaLocation="http://openelis.uhl.uiowa.edu/schema/ScreenSchema.xsd"
   xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd"
   xmlns:analysisMetaMap="xalan://org.openelis.metamap.AnalysisMetaMap"
-  xmlns:methodMeta="xalan://org.openelis.metamap.MethodMeta"
+  xmlns:methodMeta="xalan://org.openelis.meta.MethodMeta"
   xmlns:sampleItemMetaMap="xalan://org.openelis.metamap.SampleItemMetaMap"
   xmlns:sampleMetaMap="xalan://org.openelis.metamap.SampleMetaMap"
+  xmlns:sectionMeta="xalan://org.openelis.meta.SectionMeta"
   xmlns:testMetaMap="xalan://org.openelis.metamap.TestMetaMap">
 
   <xalan:component prefix="resource">
@@ -59,6 +60,9 @@ UIRF Software License are applicable instead of those above.
   <xalan:component prefix="sampleItemMetaMap">
     <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.SampleItemMetaMap" />
   </xalan:component>
+  <xalan:component prefix="sectionMeta">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.SectionMeta" />
+  </xalan:component>
   <xalan:component prefix="testMetaMap">
     <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.TestMetaMap" />
   </xalan:component>
@@ -68,6 +72,7 @@ UIRF Software License are applicable instead of those above.
     <xsl:variable name="analysis" select="sampleItemMetaMap:getAnalysis($sampleItem)" />
     <xsl:variable name="test" select="analysisMetaMap:getTest($analysis)" />
     <xsl:variable name="method" select="testMetaMap:getMethod($test)" />
+    <xsl:variable name="section" select="analysisMetaMap:getSection($analysis)" />
     <xsl:variable name="language">
       <xsl:value-of select="locale" />
     </xsl:variable>
@@ -82,27 +87,47 @@ UIRF Software License are applicable instead of those above.
             <text style="Prompt">
               <xsl:value-of select="resource:getString($constants,'test')" />:
             </text>
-            <autoComplete key="{testMetaMap:getId($test)}" width="150px" case="LOWER" popWidth="auto" tab="{sampleMetaMap:getAccessionNumber($sample)},analysisTable" field="Integer">
+            <autoComplete key="{testMetaMap:getId($test)}" width="150px" case="LOWER" popWidth="auto" tab="{sectionMeta:getId($section)},analysisTable" field="Integer">
               <col width="150" header="Test" />
               <col width="150" header="Method" />
               <col width="200" header="Description" />
-              <col width="200" header="Active Begin" />
-              <col width="200" header="Active End" />
+              <col width="200" header="Begin Date" />
+              <col width="200" header="End Date" />
             </autoComplete>
             <text style="Prompt">
               <xsl:value-of select="resource:getString($constants,'method')" />:
             </text>
             <textbox key="{methodMeta:getName($method)}" width="150px" case="LOWER" field="String" />
+            <text style="Prompt">
+              <xsl:value-of select="resource:getString($constants,'section')" />:
+            </text>
+            <autoComplete key="{sectionMeta:getId($section)}" width="150px" case="LOWER" popWidth="auto" tab="{sampleMetaMap:getAccessionNumber($sample)},testMetaMap:getId($test)" field="Integer">
+              <col width="150" header="Section" />
+            </autoComplete>
           </row>
           <row>
             <text style="Prompt">
               <xsl:value-of select="resource:getString($constants,'accessionNum')" />:
             </text>
-            <textbox key="{sampleMetaMap:getAccessionNumber($sample)}" width="75px" tab="{analysisMetaMap:getStatusId($analysis)},{testMetaMap:getName($test)}" field="Integer" required="true" />
+            <textbox key="{sampleMetaMap:getAccessionNumber($sample)}" width="75px" tab="{analysisMetaMap:getStatusId($analysis)},{sectionMeta:getId($section)}" field="Integer" required="true" />
             <text style="Prompt">
               <xsl:value-of select="resource:getString($constants,'status')" />:
             </text>
-            <dropdown key="{analysisMetaMap:getStatusId($analysis)}" width="110px" popWidth="110px" tab="{sampleMetaMap:getReceivedDate($sample)},{sampleMetaMap:getAccessionNumber($sample)}" field="Integer" required="true" />
+            <dropdown key="{analysisMetaMap:getStatusId($analysis)}" width="110px" popWidth="110px" tab="{sampleItemMetaMap:getTypeOfSampleId($sampleItem)},{sampleMetaMap:getAccessionNumber($sample)}" field="Integer" required="true" />
+            <text style="Prompt">
+              <xsl:value-of select="resource:getString($constants,'sampleType')" />:
+            </text>
+            <dropdown key="{sampleItemMetaMap:getTypeOfSampleId($sampleItem)}" width="150px" popWidth="150" tab="{sampleMetaMap:getReceivedDate($sample)},analysisMetaMap:getStatusId($analysis)" field="Integer" />
+          </row>
+          <row>
+            <text style="Prompt">
+              <xsl:value-of select="resource:getString($constants,'received')" />:
+            </text>
+            <calendar key="{sampleMetaMap:getReceivedDate($sample)}" begin="0" end="4" width="110px" pattern="{resource:getString($constants,'dateTimePattern')}" tab="{sampleMetaMap:getEnteredDate($sample)},{sampleItemMetaMap:getTypeOfSampleId($sampleItem)}" />
+            <text style="Prompt">
+              <xsl:value-of select="resource:getString($constants,'entered')" />:
+            </text>
+            <calendar key="{sampleMetaMap:getEnteredDate($sample)}" begin="0" end="4" width="110px" pattern="{resource:getString($constants,'dateTimePattern')}" tab="analysisTable,{sampleMetaMap:getReceivedDate($sample)}" />
             <appButton key="findButton" style="Button" action="find">
               <HorizontalPanel>
                 <AbsolutePanel style="FindButtonImage" />
@@ -111,16 +136,6 @@ UIRF Software License are applicable instead of those above.
                 </text>
               </HorizontalPanel>
             </appButton>
-          </row>
-          <row>
-            <text style="Prompt">
-              <xsl:value-of select="resource:getString($constants,'received')" />:
-            </text>
-            <calendar key="{sampleMetaMap:getReceivedDate($sample)}" begin="0" end="4" width="110px" pattern="{resource:getString($constants,'dateTimePattern')}" tab="{sampleMetaMap:getEnteredDate($sample)},{analysisMetaMap:getStatusId($analysis)}" />
-            <text style="Prompt">
-              <xsl:value-of select="resource:getString($constants,'entered')" />:
-            </text>
-            <calendar key="{sampleMetaMap:getEnteredDate($sample)}" begin="0" end="4" width="110px" pattern="{resource:getString($constants,'dateTimePattern')}" tab="analysisTable,{sampleMetaMap:getReceivedDate($sample)}" />
           </row>
         </TablePanel>
         <table key="analysesTable" width="auto" maxRows="9" showScroll="ALWAYS" tab="{testMetaMap:getId($test)},{sampleMetaMap:getEnteredDate($sample)}" title="">
@@ -143,8 +158,8 @@ UIRF Software License are applicable instead of those above.
             <calendar pattern="{resource:getString($constants,'dateTimePattern')}" begin="0" end="4"/>
           </col>
         </table>
-        <HorizontalPanel style="WhiteContentPanel">
-          <widget halign="center" style="WhiteContentPanel">
+        <widget style="TableFooterPanel">
+          <HorizontalPanel>
             <appButton key="addButton" style="Button" action="add">
               <HorizontalPanel>
                 <AbsolutePanel style="AddRowButtonImage" />
@@ -153,15 +168,16 @@ UIRF Software License are applicable instead of those above.
                 </text>
               </HorizontalPanel>
             </appButton>
-          </widget>
-          <widget halign="center" style="WhiteContentPanel">
             <appButton key="selectAllButton" style="Button" action="selectAll">
-              <text>
-                <xsl:value-of select="resource:getString($constants,'selectAll')" />
-              </text>
+              <HorizontalPanel>
+                <AbsolutePanel style="SelectAllButtonImage" />
+                <text>
+                  <xsl:value-of select="resource:getString($constants,'selectAll')" />
+                </text>
+              </HorizontalPanel>
             </appButton>
-          </widget>
-        </HorizontalPanel>
+          </HorizontalPanel>
+        </widget>
       </VerticalPanel>
     </screen>
   </xsl:template>
