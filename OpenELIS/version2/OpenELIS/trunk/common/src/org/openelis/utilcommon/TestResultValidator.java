@@ -27,6 +27,8 @@ package org.openelis.utilcommon;
 
 import java.util.Date;
 
+import org.openelis.exception.ParseException;
+
 public class TestResultValidator {
     
     public static void validateDate(String value) throws ParseException{                                

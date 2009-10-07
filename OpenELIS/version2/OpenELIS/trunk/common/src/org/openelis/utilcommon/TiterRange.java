@@ -25,6 +25,8 @@
 */
 package org.openelis.utilcommon;
 
+import org.openelis.exception.ParseException;
+
 /**
  * This class is used to manage a titer range. Titer ranges have a minimum and
  * a maximum arbitrary value in the format 1:32, 1:64, and 2:4 etc.

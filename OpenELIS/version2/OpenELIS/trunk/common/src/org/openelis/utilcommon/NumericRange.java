@@ -25,6 +25,8 @@
 */
 package org.openelis.utilcommon;
 
+import org.openelis.exception.ParseException;
+
 /**
  * This class is used to manage a number range. Number ranges have a minimum and
  * a maximum value such as 10,20.
