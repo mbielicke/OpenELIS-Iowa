@@ -25,27 +25,30 @@
 */
 package org.openelis.remote;
 
-import org.openelis.domain.MethodDO;
-import org.openelis.gwt.common.data.deprecated.AbstractField;
-
 import java.util.ArrayList;
-import java.util.List;
 
 import javax.ejb.Remote;
 
+import org.openelis.domain.IdNameDO;
+import org.openelis.domain.IdNameVO;
+import org.openelis.domain.MethodDO;
+import org.openelis.gwt.common.data.QueryData;
+
 @Remote
 public interface MethodRemote {
-    
-    public MethodDO getMethod(Integer methodId);
-    
-    public MethodDO getMethodAndUnlock(Integer methodId,String session);
-    
-    public MethodDO getMethodAndLock(Integer methodId,String session)throws Exception;
-    
-    public Integer updateMethod(MethodDO methodDO) throws Exception;
-    
-    public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception;
-    
-    public List autoCompleteLookupByName(String name, int maxResults);   
+
+    public MethodDO fetchById(Integer id) throws Exception;
+
+    public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception;
+
+    public MethodDO add(MethodDO data) throws Exception;
+
+    public MethodDO update(MethodDO data) throws Exception;
+
+    public MethodDO fetchForUpdate(Integer id) throws Exception;
+
+    public MethodDO abortUpdate(Integer id) throws Exception;
+
+    public ArrayList<IdNameDO> autoCompleteLookupByName(String name, int maxResults);
 
 }
