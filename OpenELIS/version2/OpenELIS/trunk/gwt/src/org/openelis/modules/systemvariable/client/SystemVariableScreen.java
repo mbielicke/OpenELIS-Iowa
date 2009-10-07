@@ -29,11 +29,11 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.SystemVariableDO;
-import org.openelis.exception.InconsistencyException;
-import org.openelis.exception.NotFoundException;
 import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.LastPageException;
+import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.RPC;
+import org.openelis.gwt.common.SecurityException;
 import org.openelis.gwt.common.SecurityModule;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
@@ -49,34 +49,51 @@ import org.openelis.modules.main.client.openelis.OpenELIS;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class SystemVariableScreen extends Screen {
     private SystemVariableDO      data;
     private SystemVariableMetaMap meta = new SystemVariableMetaMap();
-    private ScreenNavigator       nav;
-
     private SecurityModule        security;
 
+    private AppButton             queryButton, previousButton, nextButton, addButton, updateButton,
+                                  deleteButton, commitButton, abortButton;
+    private TextBox               name, value;
+    private ButtonGroup           atoz;
+    private ScreenNavigator       nav;
+
     public SystemVariableScreen() throws Exception {
-        // Call base to get ScreenDef and draw screen
         super((ScreenDefInt)GWT.create(SystemVariableDef.class));
         service = new ScreenService("OpenELISServlet?service=org.openelis.modules.systemvariable.server.SystemVariableService");
 
-        // security = OpenELIS.security.getModule("system_variable");
-        security = OpenELIS.security.getModule("organization");
+        security = OpenELIS.security.getModule("systemvariable");
         if (security == null)
-            throw new InconsistencyException("Error: Missing security module entry 'system_variable'; No permission to this screen.");
+            throw new SecurityException("screenPermException", "System Variable Screen");
 
         // Setup link between Screen and widget Handlers
         initialize();
 
         data = new SystemVariableDO();
+
+        DeferredCommand.addCommand(new Command() {
+            public void execute() {
+                postConstructor();
+            }
+        });
+    }
+
+    /**
+     * This method is called to set the initial state of widgets after the
+     * screen is attached to the browser. It is usually called in deferred command.
+     */
+    private void postConstructor() {
         setState(State.DEFAULT);
         DataChangeEvent.fire(this);
     }
-
+    
     /**
      * Setup state and data change handles for every widget on the screen
      */
@@ -84,7 +101,7 @@ public class SystemVariableScreen extends Screen {
         //
         // button panel buttons
         //
-        final AppButton queryButton = (AppButton)def.getWidget("query");
+        queryButton = (AppButton)def.getWidget("query");
         addScreenHandler(queryButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 query();
@@ -99,7 +116,7 @@ public class SystemVariableScreen extends Screen {
             }
         });
 
-        final AppButton previousButton = (AppButton)def.getWidget("previous");
+        previousButton = (AppButton)def.getWidget("previous");
         addScreenHandler(previousButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 previous();
@@ -110,7 +127,7 @@ public class SystemVariableScreen extends Screen {
             }
         });
 
-        final AppButton nextButton = (AppButton)def.getWidget("next");
+        nextButton = (AppButton)def.getWidget("next");
         addScreenHandler(nextButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 next();
@@ -121,50 +138,50 @@ public class SystemVariableScreen extends Screen {
             }
         });
 
-        final AppButton addButton = (AppButton)def.getWidget("add");
+        addButton = (AppButton)def.getWidget("add");
         addScreenHandler(addButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 add();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                if (event.getState() == State.ADD)
-                    addButton.changeState(ButtonState.LOCK_PRESSED);
                 addButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY)
                                         .contains(event.getState()) &&
                                  security.hasAddPermission());
+                if (event.getState() == State.ADD)
+                    addButton.changeState(ButtonState.LOCK_PRESSED);
             }
         });
 
-        final AppButton updateButton = (AppButton)def.getWidget("update");
+        updateButton = (AppButton)def.getWidget("update");
         addScreenHandler(updateButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 update();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                if (event.getState() == State.UPDATE)
-                    updateButton.changeState(ButtonState.LOCK_PRESSED);
                 updateButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()) &&
                                     security.hasUpdatePermission());
+                if (event.getState() == State.UPDATE)
+                    updateButton.changeState(ButtonState.LOCK_PRESSED);
             }
         });
 
-        final AppButton deleteButton = (AppButton)def.getWidget("delete");
+        deleteButton = (AppButton)def.getWidget("delete");
         addScreenHandler(deleteButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 delete();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                if (event.getState() == State.DELETE)
-                    deleteButton.changeState(ButtonState.LOCK_PRESSED);
                 deleteButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()) &&
                                     security.hasDeletePermission());
+                if (event.getState() == State.DELETE)
+                    deleteButton.changeState(ButtonState.LOCK_PRESSED);
             }
         });
 
-        final AppButton commitButton = (AppButton)def.getWidget("commit");
+        commitButton = (AppButton)def.getWidget("commit");
         addScreenHandler(commitButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 commit();
@@ -176,7 +193,7 @@ public class SystemVariableScreen extends Screen {
             }
         });
 
-        final AppButton abortButton = (AppButton)def.getWidget("abort");
+        abortButton = (AppButton)def.getWidget("abort");
         addScreenHandler(abortButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 abort();
@@ -191,7 +208,7 @@ public class SystemVariableScreen extends Screen {
         //
         // screen fields
         //
-        final TextBox name = (TextBox)def.getWidget(meta.getName());
+        name = (TextBox)def.getWidget(meta.getName());
         addScreenHandler(name, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 name.setValue(data.getName());
@@ -205,10 +222,13 @@ public class SystemVariableScreen extends Screen {
                 name.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
                                    .contains(event.getState()));
                 name.setQueryMode(event.getState() == State.QUERY);
+                if (event.getState() == State.ADD || event.getState() == State.UPDATE)
+                    name.setFocus(true);
+
             }
         });
 
-        final TextBox value = (TextBox)def.getWidget(meta.getValue());
+        value = (TextBox)def.getWidget(meta.getValue());
         addScreenHandler(value, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 value.setValue(data.getValue());
@@ -245,7 +265,8 @@ public class SystemVariableScreen extends Screen {
                         } else if (error instanceof LastPageException) {
                             window.setError("No more records in this direction");
                         } else {
-                            Window.alert("Error: SystemVariable call query failed; " + error.getMessage());
+                            Window.alert("Error: SystemVariable call query failed; " +
+                                         error.getMessage());
                             window.setError(consts.get("queryFailed"));
                         }
                     }
@@ -253,7 +274,7 @@ public class SystemVariableScreen extends Screen {
             }
 
             public boolean fetch(RPC entry) {
-                return fetchById((entry==null)?null:((IdNameVO)entry).getId());
+                return fetchById( (entry == null) ? null : ((IdNameVO)entry).getId());
             }
 
             public ArrayList<TableDataRow> getModel() {
@@ -270,7 +291,7 @@ public class SystemVariableScreen extends Screen {
             }
         };
 
-        final ButtonGroup atoz = (ButtonGroup)def.getWidget("atozButtons");
+        atoz = (ButtonGroup)def.getWidget("atozButtons");
         addScreenHandler(atoz, new ScreenEventHandler<Object>() {
             public void onStateChange(StateChangeEvent<State> event) {
                 boolean enable;
@@ -328,15 +349,12 @@ public class SystemVariableScreen extends Screen {
         try {
             data = service.call("fetchForUpdate", data.getId());
 
-            window.clearStatus();
             setState(State.UPDATE);
             DataChangeEvent.fire(this);
-        } catch (EntityLockedException e) {
-            window.clearStatus();
-            Window.alert(e.getMessage());
         } catch (Exception e) {
             Window.alert(e.getMessage());
         }
+        window.clearStatus();
     }
 
     protected void delete() {
@@ -345,20 +363,24 @@ public class SystemVariableScreen extends Screen {
         try {
             data = service.call("fetchForUpdate", data.getId());
 
-            window.clearStatus();
             setState(State.DELETE);
             DataChangeEvent.fire(this);
-        } catch (EntityLockedException e) {
-            window.clearStatus();
-            Window.alert(e.getMessage());
         } catch (Exception e) {
             Window.alert(e.getMessage());
         }
+        window.clearStatus();
     }
 
     protected void commit() {
-        if ( !validate())
+        //
+        // set the focus to null so every field will commit its data.
+        //
+        name.setFocus(false);
+
+        if ( !validate()) {
             window.setError(consts.get("correctErrors"));
+            return;
+        }
 
         if (state == State.QUERY) {
             Query query;
@@ -373,7 +395,7 @@ public class SystemVariableScreen extends Screen {
 
                 setState(State.DISPLAY);
                 DataChangeEvent.fire(this);
-                window.clearStatus();
+                window.setDone(consts.get("addingComplete"));
             } catch (ValidationErrorsList e) {
                 showErrors(e);
             } catch (Exception e) {
@@ -387,11 +409,25 @@ public class SystemVariableScreen extends Screen {
 
                 setState(State.DISPLAY);
                 DataChangeEvent.fire(this);
-                window.clearStatus();
+                window.setDone(consts.get("updatingComplete"));
             } catch (ValidationErrorsList e) {
                 showErrors(e);
             } catch (Exception e) {
                 Window.alert("commitUpdate(): " + e.getMessage());
+                window.clearStatus();
+            }
+        } else if (state == State.DELETE) {
+            window.setBusy(consts.get("deleting"));
+            try {
+                service.call("delete", data.getId());
+
+                fetchById(null);
+                window.setDone(consts.get("deleteComplete"));
+            } catch (ValidationErrorsList e) {
+                showErrors(e);
+            } catch (Exception e) {
+                Window.alert("commitDelete(): " + e.getMessage());
+                window.clearStatus();
             }
         }
     }
@@ -401,34 +437,30 @@ public class SystemVariableScreen extends Screen {
         window.setBusy(consts.get("cancelChanges"));
 
         if (state == State.QUERY) {
-            data = new SystemVariableDO();
-            setState(State.DEFAULT);
-            DataChangeEvent.fire(this);
+            fetchById(null);
             window.setDone(consts.get("queryAborted"));
         } else if (state == State.ADD) {
-            data = new SystemVariableDO();
-            setState(State.DEFAULT);
-            DataChangeEvent.fire(this);
+            fetchById(null);
             window.setDone(consts.get("addAborted"));
         } else if (state == State.UPDATE) {
             try {
-                service.call("abortUpdate", data.getId());
+                data = service.call("abortUpdate", data.getId());
+                setState(State.DISPLAY);
+                DataChangeEvent.fire(this);
             } catch (Exception e) {
                 Window.alert(e.getMessage());
-                fetchById(data.getId());
+                fetchById(null);
             }
-            setState(State.DISPLAY);
-            DataChangeEvent.fire(this);
             window.setDone(consts.get("updateAborted"));
         } else if (state == State.DELETE) {
             try {
-                service.call("abortUpdate", data.getId());
+                data = service.call("abortUpdate", data.getId());
+                setState(State.DISPLAY);
+                DataChangeEvent.fire(this);
             } catch (Exception e) {
                 Window.alert(e.getMessage());
-                fetchById(data.getId());
+                fetchById(null);
             }
-            setState(State.DISPLAY);
-            DataChangeEvent.fire(this);
             window.setDone(consts.get("deleteAborted"));
         } else {
             window.clearStatus();
@@ -443,14 +475,17 @@ public class SystemVariableScreen extends Screen {
             window.setBusy(consts.get("fetching"));
             try {
                 data = service.call("fetchById", id);
+                setState(State.DISPLAY);
+            } catch (NotFoundException e) {
+                fetchById(null);
+                window.setDone(consts.get("noRecordsFound"));
+                return false;
             } catch (Exception e) {
+                fetchById(null);
                 e.printStackTrace();
-                setState(State.DEFAULT);
                 Window.alert(consts.get("fetchFailed") + e.getMessage());
-                window.clearStatus();
                 return false;
             }
-            setState(State.DISPLAY);
         }
         DataChangeEvent.fire(this);
         window.clearStatus();

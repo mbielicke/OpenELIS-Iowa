@@ -73,10 +73,10 @@ UIRF Software License are applicable instead of those above.
               </table>
               <widget halign="center">
               <HorizontalPanel >
-                <appButton key="atozPrev" style="Button">
+                <appButton key="atozPrev" style="Button" enable="false">
                   <AbsolutePanel style="prevNavIndex" />
                 </appButton>
-                <appButton key="atozNext" style="Button">
+                <appButton key="atozNext" style="Button" enable="false">
                   <AbsolutePanel style="nextNavIndex" />
                 </appButton>
               </HorizontalPanel>
@@ -143,13 +143,13 @@ UIRF Software License are applicable instead of those above.
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"name")' />:
                 </text>
-                <textbox key="{meta:getName($sv)}" width="215px" case="LOWER" max="30" tab="{meta:getValue($sv)},{meta:getValue($sv)}" />
+                <textbox key="{meta:getName($sv)}" width="215px" case="LOWER" max="30" required="true" tab="{meta:getValue($sv)},{meta:getValue($sv)}" />
               </row>
               <row>
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"value")' />:
                 </text>
-                <textbox key="{meta:getValue($sv)}" width="425px" case="MIXED" tab="{meta:getName($sv)},{meta:getName($sv)}" />
+                <textbox key="{meta:getValue($sv)}" width="425px" case="MIXED" required="true" tab="{meta:getName($sv)},{meta:getName($sv)}" />
               </row>
             </TablePanel>
           </VerticalPanel>

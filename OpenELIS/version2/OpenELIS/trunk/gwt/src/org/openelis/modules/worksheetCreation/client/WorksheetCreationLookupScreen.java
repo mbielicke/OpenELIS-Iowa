@@ -40,7 +40,7 @@ import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.TestMethodViewDO;
 import org.openelis.domain.WorksheetCreationVO;
-import org.openelis.exception.NotFoundException;
+import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.SecurityModule;
 import org.openelis.gwt.common.data.Query;

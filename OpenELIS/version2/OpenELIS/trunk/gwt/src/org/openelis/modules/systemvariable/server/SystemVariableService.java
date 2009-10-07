@@ -30,6 +30,8 @@ import java.util.ArrayList;
 
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.SystemVariableDO;
+import org.openelis.gwt.common.DatabaseException;
+import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.SystemVariableRemote;
@@ -39,33 +41,59 @@ public class SystemVariableService {
     private static final int rowPP = 9;
 
     public ArrayList<IdNameVO> query(Query query) throws Exception {
-        ArrayList<IdNameVO> x;
-        x = remote().query(query.getFields(), query.getPage() * rowPP, rowPP);
-        return x;
+        try {
+            return remote().query(query.getFields(), query.getPage() * rowPP, rowPP);
+        } catch (RuntimeException e) {
+            throw new DatabaseException(e);
+        }
     }
 
     public SystemVariableDO fetchById(Integer id) throws Exception {
-        return remote().fetchById(id);
+        try {
+            return remote().fetchById(id);
+        } catch (RuntimeException e) {
+            throw new DatabaseException(e);
+        }
     }
 
     public SystemVariableDO add(SystemVariableDO data) throws Exception {
-        return remote().add(data);
+        try {
+            return remote().add(data);
+        } catch (RuntimeException e) {
+            throw new DatabaseException(e);
+        }
     }
     
     public SystemVariableDO update(SystemVariableDO data) throws Exception {
-        return remote().update(data);
+        try {
+            return remote().update(data);
+        } catch (RuntimeException e) {
+            throw new DatabaseException(e);
+        }
     }
     
     public SystemVariableDO fetchForUpdate(Integer id) throws Exception {
-        return remote().fetchForUpdate(id);
+        try {
+            return remote().fetchForUpdate(id);
+        } catch (RuntimeException e) {
+            throw new DatabaseException(e);
+        }
     }
     
     public void delete(Integer id) throws Exception {
-        remote().delete(id);
+        try {
+            remote().delete(id);
+        } catch (RuntimeException e) {
+            throw new DatabaseException(e);
+        }
     }
     
     public SystemVariableDO abortUpdate(Integer id) throws Exception {
-        return remote().abortUpdate(id);
+        try {
+            return remote().abortUpdate(id);
+        } catch (RuntimeException e) {
+            throw new DatabaseException(e);
+        }
     }
 
     private SystemVariableRemote remote() {
