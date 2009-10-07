@@ -23,10 +23,10 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.utilcommon;
+package org.openelis.exception;
 
 /**
- * This excepiton is thrown when the range for a numeric or titer value is invalid.
+ * This exception is thrown when the range for a numeric or titer value is invalid.
  * Valid numeric ranges are of the format min,max such as 5,20; and valid titer
  * ranges are of the format min:max where min and max are arbitrary concentrations. 
  */

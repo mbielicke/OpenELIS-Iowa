@@ -26,8 +26,8 @@
 package org.openelis.manager;
 
 import org.openelis.domain.OrganizationViewDO;
-import org.openelis.exception.InconsistencyException;
-import org.openelis.exception.NotFoundException;
+import org.openelis.gwt.common.InconsistencyException;
+import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.RPC;
 
 public class OrganizationManager implements RPC, HasNotesInt {

@@ -28,7 +28,7 @@ package org.openelis.manager;
 import java.util.ArrayList;
 
 import org.openelis.domain.SampleItemViewDO;
-import org.openelis.exception.NotFoundException;
+import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.ValidationErrorsList;
 

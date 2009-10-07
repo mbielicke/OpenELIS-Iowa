@@ -23,12 +23,14 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.utilcommon;
+package org.openelis.exception;
 
 public class InconsistentException extends Exception {
 
     /**
-     * 
+     * This exception is thrown when inconsistent internal state has been 
+     * discovered. This could be due to user error or incorrect program
+     * logic.
      */
     private static final long serialVersionUID = 1L;
 
