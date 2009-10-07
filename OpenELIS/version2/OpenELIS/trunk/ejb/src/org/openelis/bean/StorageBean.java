@@ -37,7 +37,7 @@ import javax.persistence.Query;
 import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.StorageViewDO;
 import org.openelis.entity.Storage;
-import org.openelis.exception.NotFoundException;
+import org.openelis.gwt.common.NotFoundException;
 import org.openelis.local.LoginLocal;
 import org.openelis.local.StorageLocal;
 

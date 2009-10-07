@@ -34,15 +34,20 @@ import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
+import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.SystemVariableDO;
 import org.openelis.entity.SystemVariable;
-import org.openelis.exception.NotFoundException;
+import org.openelis.gwt.common.DatabaseException;
+import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.LastPageException;
+import org.openelis.gwt.common.NotFoundException;
+import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.SecurityModule.ModuleFlags;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.LockLocal;
@@ -78,10 +83,31 @@ public class SystemVariableBean implements SystemVariableRemote {
         Query query;
         SystemVariableDO data;
 
-        query = manager.createNamedQuery("SystemVariable.SystemVariable");
+        query = manager.createNamedQuery("SystemVariable.FindById");
         query.setParameter("id", id);
-        data = (SystemVariableDO)query.getSingleResult();
+        try {
+            data = (SystemVariableDO)query.getSingleResult();
+        } catch (NoResultException e) {
+            throw new NotFoundException();
+        } catch (Exception e) {
+            throw new DatabaseException(e);
+        }
+        return data;
+    }
 
+    public SystemVariableDO fetchByName(String name) throws Exception {
+        Query query;
+        SystemVariableDO data;
+
+        query = manager.createNamedQuery("SystemVariable.FindByName");
+        query.setParameter("name", name);
+        try {
+            data = (SystemVariableDO)query.getSingleResult();
+        } catch (NoResultException e) {
+            throw new NotFoundException();
+        } catch (Exception e) {
+            throw new DatabaseException(e);
+        }
         return data;
     }
 
@@ -91,30 +117,23 @@ public class SystemVariableBean implements SystemVariableRemote {
         List list;
 
         builder = new QueryBuilderV2();
-System.out.println("before meta");
-
         builder.setMeta(meta);
         builder.setSelect("distinct new org.openelis.domain.IdNameVO(" + meta.getId() + ", " +
                           meta.getName() + ") ");
         builder.constructWhere(fields);
         builder.setOrderBy(meta.getName());
 
-System.out.println("before manager");
-
         query = manager.createQuery(builder.getEJBQL());
         query.setMaxResults(first + max);
         builder.setQueryParams(query, fields);
-        System.out.println("before query.getresultlist");
+
         list = query.getResultList();
-System.out.println("before list.isempty"+list.isEmpty());
         if (list.isEmpty())
             throw new NotFoundException();
-System.out.println("before sublist");
         list = (ArrayList<IdNameVO>)DataBaseUtil.subList(list, first, max);
-System.out.println("after sublist");
         if (list == null)
             throw new LastPageException();
-System.out.println("before return");
+
         return (ArrayList<IdNameVO>)list;
     }
 
@@ -122,6 +141,8 @@ System.out.println("before return");
         SystemVariable entity;
 
         checkSecurity(ModuleFlags.ADD);
+
+        validate(data);
 
         manager.setFlushMode(FlushModeType.COMMIT);
 
@@ -142,6 +163,8 @@ System.out.println("before return");
             return data;
 
         checkSecurity(ModuleFlags.UPDATE);
+
+        validate(data);
 
         lockBean.validateLock(systemVariableRefTableId, data.getId());
 
@@ -180,8 +203,33 @@ System.out.println("before return");
         lockBean.giveUpLock(systemVariableRefTableId, id);
     }
 
+    public void validate(SystemVariableDO data) throws Exception {
+        ValidationErrorsList list;
+
+        list = new ValidationErrorsList();
+
+        if (data.getName() == null || data.getName().length() == 0) {
+            list.add(new FieldErrorException("fieldRequiredException", meta.getName()));
+        } else {
+            SystemVariableDO dup;
+            
+            try {
+                dup = fetchByName(data.getName());
+                if (! dup.getId().equals(data.getId()))
+                    list.add(new FieldErrorException("fieldUniqueException", meta.getName()));
+            } catch (NotFoundException ignE) {
+            }
+        }
+
+        if (data.getValue() == null || data.getValue().length() == 0)
+            list.add(new FieldErrorException("fieldRequiredException", meta.getValue()));
+
+        if (list.size() > 0)
+            throw list;
+    }
+
     private void checkSecurity(ModuleFlags flag) throws Exception {
-        SecurityInterceptor.applySecurity(ctx.getCallerPrincipal().getName(), "system_variable",
-                                          flag);
+        SecurityInterceptor.applySecurity(ctx.getCallerPrincipal().getName(), 
+                                          "systemvariable", flag);
     }
 }

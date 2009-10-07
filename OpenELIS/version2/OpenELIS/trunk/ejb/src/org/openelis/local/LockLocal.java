@@ -32,22 +32,19 @@ public interface LockLocal {
     
     public boolean isLocked(Integer table, Integer row);
     
+    public boolean isLocked(Integer table, Integer row, String session);
+
     public Integer getLock(Integer table, Integer row) throws Exception;
     
-    public void giveUpLock(Integer table, Integer row);
-    
-    public boolean isLocked(Integer table, Integer row, String session);
-    
     public Integer getLock(Integer table, Integer row, String session) throws Exception;
-    
+
+    public void giveUpLock(Integer table, Integer row);
+            
     public void giveUpLock(Integer table, Integer row, String session);
-    
-    public void giveUpUserLocks();
-    
-    public Integer getSystemUserId();
     
     public void validateLock(Integer table, Integer row) throws Exception;
     
     public void validateLock(Integer table, Integer row, String session) throws Exception; 
 
+    public Integer getSystemUserId();
 }

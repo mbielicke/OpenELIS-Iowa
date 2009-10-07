@@ -36,7 +36,7 @@ import javax.persistence.Query;
 import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.entity.SampleOrganization;
-import org.openelis.exception.NotFoundException;
+import org.openelis.gwt.common.NotFoundException;
 import org.openelis.local.SampleOrganizationLocal;
 
 @Stateless
