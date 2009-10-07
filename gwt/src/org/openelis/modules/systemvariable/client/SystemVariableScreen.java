@@ -109,7 +109,7 @@ public class SystemVariableScreen extends Screen {
 
             public void onStateChange(StateChangeEvent<State> event) {
                 if (event.getState() == State.QUERY)
-                    queryButton.changeState(ButtonState.LOCK_PRESSED);
+                    queryButton.setState(ButtonState.LOCK_PRESSED);
                 queryButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY)
                                           .contains(event.getState()) &&
                                    security.hasSelectPermission());
@@ -149,7 +149,7 @@ public class SystemVariableScreen extends Screen {
                                         .contains(event.getState()) &&
                                  security.hasAddPermission());
                 if (event.getState() == State.ADD)
-                    addButton.changeState(ButtonState.LOCK_PRESSED);
+                    addButton.setState(ButtonState.LOCK_PRESSED);
             }
         });
 
@@ -163,7 +163,7 @@ public class SystemVariableScreen extends Screen {
                 updateButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()) &&
                                     security.hasUpdatePermission());
                 if (event.getState() == State.UPDATE)
-                    updateButton.changeState(ButtonState.LOCK_PRESSED);
+                    updateButton.setState(ButtonState.LOCK_PRESSED);
             }
         });
 
@@ -177,7 +177,7 @@ public class SystemVariableScreen extends Screen {
                 deleteButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()) &&
                                     security.hasDeletePermission());
                 if (event.getState() == State.DELETE)
-                    deleteButton.changeState(ButtonState.LOCK_PRESSED);
+                    deleteButton.setState(ButtonState.LOCK_PRESSED);
             }
         });
 
