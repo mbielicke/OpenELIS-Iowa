@@ -895,7 +895,7 @@ public class TestScreen extends Screen {
                                 security.hasSelectPermission())
                     queryButton.enable(true);
                 else if (event.getState() == State.QUERY)
-                    queryButton.changeState(ButtonState.LOCK_PRESSED);
+                    queryButton.setState(ButtonState.LOCK_PRESSED);
                 else
                     queryButton.enable(false);
             }
@@ -911,7 +911,7 @@ public class TestScreen extends Screen {
                 if (EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState()))
                     addButton.enable(true);
                 else if (EnumSet.of(State.ADD).contains(event.getState()))
-                    addButton.changeState(ButtonState.LOCK_PRESSED);
+                    addButton.setState(ButtonState.LOCK_PRESSED);
                 else
                     addButton.enable(false);
             }
@@ -928,7 +928,7 @@ public class TestScreen extends Screen {
                                 security.hasUpdatePermission())
                     updateButton.enable(true);
                 else if (EnumSet.of(State.UPDATE).contains(event.getState()))
-                    updateButton.changeState(ButtonState.LOCK_PRESSED);
+                    updateButton.setState(ButtonState.LOCK_PRESSED);
                 else
                     updateButton.enable(false);
 

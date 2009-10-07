@@ -36,7 +36,7 @@ import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.WorksheetCreationVO;
-import org.openelis.exception.NotFoundException;
+import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.metamap.WorksheetCreationMetaMap;
