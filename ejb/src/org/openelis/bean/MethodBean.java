@@ -25,26 +25,11 @@
  */
 package org.openelis.bean;
 
-import org.jboss.annotation.security.SecurityDomain;
-import org.openelis.domain.MethodDO;
-import org.openelis.entity.Method;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.data.deprecated.AbstractField;
-import org.openelis.local.LockLocal;
-import org.openelis.metamap.MethodMetaMap;
-import org.openelis.remote.MethodRemote;
-import org.openelis.util.QueryBuilder;
-import org.openelis.utils.GetPage;
-import org.openelis.utils.ReferenceTableCache;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Resource;
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
@@ -53,7 +38,29 @@ import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
+import org.jboss.annotation.security.SecurityDomain;
+import org.openelis.domain.IdNameDO;
+import org.openelis.domain.IdNameVO;
+import org.openelis.domain.MethodDO;
+import org.openelis.entity.Method;
+import org.openelis.gwt.common.Datetime;
+import org.openelis.gwt.common.FieldErrorException;
+import org.openelis.gwt.common.FormErrorException;
+import org.openelis.gwt.common.LastPageException;
+import org.openelis.gwt.common.NotFoundException;
+import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.gwt.common.SecurityModule.ModuleFlags;
+import org.openelis.gwt.common.data.QueryData;
+import org.openelis.local.LockLocal;
+import org.openelis.metamap.MethodMetaMap;
+import org.openelis.remote.MethodRemote;
+import org.openelis.util.QueryBuilderV2;
+import org.openelis.utilcommon.DataBaseUtil;
+import org.openelis.utils.ReferenceTableCache;
+import org.openelis.utils.SecurityInterceptor;
+
 @Stateless
+@RolesAllowed("method-select")
 @SecurityDomain("openelis")
 public class MethodBean implements MethodRemote {
 
@@ -74,51 +81,26 @@ public class MethodBean implements MethodRemote {
         methodRefTableId = ReferenceTableCache.getReferenceTable("method");
     } 
     
-    public MethodDO getMethod(Integer methodId) {
+    public MethodDO fetchById(Integer id) {
         Query query = manager.createNamedQuery("Method.MethodById");
-        query.setParameter("id", methodId);
+        query.setParameter("id",id);
         MethodDO methodDO = (MethodDO)query.getSingleResult();
         return methodDO;
     }
-
-    public MethodDO getMethodAndLock(Integer methodId, String session) throws Exception {
-        lockBean.getLock(methodRefTableId, methodId);
-
-        return getMethod(methodId);
-    }
-
-    public MethodDO getMethodAndUnlock(Integer methodId, String session) {
-        lockBean.giveUpLock(methodRefTableId, methodId);
-
-        return getMethod(methodId);
-    }
-
-    public List autoCompleteLookupByName(String name, int maxResults) {
-        Query query = null;
-        List entryList = null;
-        query = manager.createNamedQuery("Method.AutoCompleteByName");        
-        query.setParameter("name", name);
-        query.setMaxResults(maxResults);
-        try {
-            entryList = (List)query.getResultList();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-        return entryList;
-    }
-
-    public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception {
+    
+    public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception {
         StringBuffer sb = new StringBuffer();
-        QueryBuilder qb = new QueryBuilder();
+        QueryBuilderV2 qb = new QueryBuilderV2();
+        List list;
 
         qb.setMeta(MethodMeta);
 
-        qb.setSelect("distinct new org.openelis.domain.IdNameDO(" + MethodMeta.getId()
+        qb.setSelect("distinct new org.openelis.domain.IdNameVO(" + MethodMeta.getId()
                      + ", "
                      + MethodMeta.getName()
                      + ") ");
 
-        qb.addWhere(fields);
+        qb.constructWhere(fields);
 
         qb.setOrderBy(MethodMeta.getName());
 
@@ -129,55 +111,100 @@ public class MethodBean implements MethodRemote {
         if (first > -1 && max > -1)
             query.setMaxResults(first + max);
 
-        qb.setQueryParams(query);
+        QueryBuilderV2.setQueryParams(query, fields);
 
-        List returnList = GetPage.getPage(query.getResultList(), first, max);
-        if (returnList == null)
+        list = query.getResultList();
+        if (list.isEmpty())
+            throw new NotFoundException();
+        list = (ArrayList<IdNameVO>)DataBaseUtil.subList(list, first, max);
+        if (list == null)
             throw new LastPageException();
-        else
-            return returnList;
+
+        return (ArrayList<IdNameVO>)list;
+    }
+    
+    public MethodDO add(MethodDO data) throws Exception {
+    	Method entity;
+    	
+        Integer methodId = data.getId();
+
+        checkSecurity(ModuleFlags.ADD);
+                    
+        validateMethod(data);
+
+        manager.setFlushMode(FlushModeType.COMMIT);
+       
+        entity = new Method();
+        entity.setActiveBegin(data.getActiveBegin());
+        entity.setActiveEnd(data.getActiveEnd());
+        entity.setDescription(data.getDescription());
+        entity.setIsActive(data.getIsActive());
+        entity.setName(data.getName());
+        entity.setReportingDescription(data.getReportingDescription());
+
+        manager.persist(entity);
+        data.setId(entity.getId());
+
+        return data;
+
     }
 
-    public Integer updateMethod(MethodDO methodDO) throws Exception {
+    public MethodDO update(MethodDO data) throws Exception {
+    	Method entity;
+    	
+    	if( !data.isChanged())
+    		return data;
+    	
+    	checkSecurity(ModuleFlags.UPDATE);
+    	
+        validateMethod(data);
+    	
+        lockBean.validateLock(methodRefTableId, data.getId());
+           
+        manager.setFlushMode(FlushModeType.COMMIT);
+        
+        entity = manager.find(Method.class, data.getId());
+        entity.setActiveBegin(data.getActiveBegin());
+        entity.setActiveEnd(data.getActiveEnd());
+        entity.setDescription(data.getDescription());
+        entity.setIsActive(data.getIsActive());
+        entity.setName(data.getName());
+        entity.setReportingDescription(data.getReportingDescription());
+
+        lockBean.giveUpLock(methodRefTableId, data.getId());            
+        
+        return data;
+    }
+    
+    public MethodDO fetchForUpdate(Integer id) throws Exception {
+        lockBean.getLock(methodRefTableId, id);
+        return fetchById(id);
+    }
+    
+    public MethodDO abortUpdate(Integer id) {
+        lockBean.giveUpLock(methodRefTableId, id);
+        return fetchById(id);
+    }
+
+    public ArrayList<IdNameDO> autoCompleteLookupByName(String name, int maxResults) {
+        Query query = null;
+        ArrayList<IdNameDO> entryList = null;
+        query = manager.createNamedQuery("Method.AutoCompleteByName");        
+        query.setParameter("name", name);
+        query.setMaxResults(maxResults);
         try {
-            Integer methodId = methodDO.getId();
-
-            if (methodId != null) {
-                // we need to call lock one more time to make sure their lock
-                // didnt expire and someone else grabbed the record
-                lockBean.validateLock(methodRefTableId, methodId);
-            }
-            
-            validateMethod(methodDO);
-
-            manager.setFlushMode(FlushModeType.COMMIT);
-            Method method = null;           
-
-            if (methodId == null) {
-                method = new Method();
-            } else {
-                method = manager.find(Method.class, methodId);
-            }
-
-            method.setActiveBegin(methodDO.getActiveBegin());
-            method.setActiveEnd(methodDO.getActiveEnd());
-            method.setDescription(methodDO.getDescription());
-            method.setIsActive(methodDO.getIsActive());
-            method.setName(methodDO.getName());
-            method.setReportingDescription(methodDO.getReportingDescription());
-
-            if (method.getId() == null) {
-                manager.persist(method);
-            }
-
-            lockBean.giveUpLock(methodRefTableId, method.getId());
-            return method.getId();
+            entryList = (ArrayList<IdNameDO>)query.getResultList();
         } catch (Exception ex) {
             ex.printStackTrace();
-            throw ex;
         }
+        return entryList;
     }
-
+    
+    private void checkSecurity(ModuleFlags flag) throws Exception {
+        SecurityInterceptor.applySecurity(ctx.getCallerPrincipal().getName(), 
+                                          "method", flag);
+    }
+    
     private void validateMethod(MethodDO methodDO) throws Exception {
         ValidationErrorsList exceptionList;
         boolean checkDuplicate, overlap;

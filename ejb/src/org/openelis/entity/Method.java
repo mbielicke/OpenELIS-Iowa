@@ -48,14 +48,25 @@ import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+
+import org.openelis.utilcommon.DataBaseUtil;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
-@NamedQueries({@NamedQuery(name = "Method.MethodIdName",query = "select distinct new org.openelis.domain.IdNameDO(m.id, m.name) " + "  from Method m order by m.name"),
-               @NamedQuery(name = "Method.MethodById",query = "select distinct new org.openelis.domain.MethodDO(m.id,m.name,m.description," +
-                    "m.reportingDescription,m.isActive,m.activeBegin, m.activeEnd) " + "  from Method m where m.id = :id"),
-               @NamedQuery(name = "Method.MethodByName", query = "from Method m where m.name = :name order by m.name"),
-               @NamedQuery(name = "Method.AutoCompleteByName", query = "select distinct new org.openelis.domain.IdNameDO(m.id, m.name) from Method m where m.name like :name and m.isActive = 'Y' order by m.name ")})
+@NamedQueries({
+	@NamedQuery(name = "Method.MethodIdName",
+	            query = "select distinct new org.openelis.domain.IdNameDO(m.id, m.name) " + 
+	                    "from Method m order by m.name"),
+    @NamedQuery(name = "Method.MethodById",
+                query = "select distinct new org.openelis.domain.MethodDO(m.id,m.name,m.description," +
+                        "m.reportingDescription,m.isActive,m.activeBegin, m.activeEnd) " + 
+            		    "from Method m where m.id = :id"),
+    @NamedQuery(name = "Method.MethodByName", 
+     	        query = "from Method m where m.name = :name order by m.name"),
+    @NamedQuery(name = "Method.AutoCompleteByName", 
+            	query = "select distinct new org.openelis.domain.IdNameDO(m.id, m.name) "+
+            	        "from Method m where m.name like :name and m.isActive = 'Y' order by m.name ")
+})
                
 @Entity
 @Table(name="method")
@@ -97,8 +108,7 @@ public class Method implements Auditable, Cloneable {
     return id;
   }
   protected void setId(Integer id) {
-    if((id == null && this.id != null) || 
-       (id != null && !id.equals(this.id)))
+    if(DataBaseUtil.isDifferent(id,this.id))
       this.id = id;
   }
 
@@ -106,36 +116,33 @@ public class Method implements Auditable, Cloneable {
     return name;
   }
   public void setName(String name) {
-    if((name == null && this.name != null) || 
-       (name != null && !name.equals(this.name)))
-      this.name = name;
+	if(DataBaseUtil.isDifferent(name,this.name))
+		this.name = name;
   }
 
   public String getDescription() {
     return description;
   }
+  
   public void setDescription(String description) {
-    if((description == null && this.description != null) || 
-       (description != null && !description.equals(this.description)))
-      this.description = description;
+	  if(DataBaseUtil.isDifferent(description,this.description))
+		  this.description = description;
   }
 
   public String getReportingDescription() {
     return reportingDescription;
   }
   public void setReportingDescription(String reportingDescription) {
-    if((reportingDescription == null && this.reportingDescription != null) || 
-       (reportingDescription != null && !reportingDescription.equals(this.reportingDescription)))
-      this.reportingDescription = reportingDescription;
+	  if(DataBaseUtil.isDifferent(reportingDescription,this.reportingDescription))
+		  this.reportingDescription = reportingDescription;
   }
 
   public String getIsActive() {
     return isActive;
   }
   public void setIsActive(String isActive) {
-    if((isActive == null && this.isActive != null) || 
-       (isActive != null && !isActive.equals(this.isActive)))
-      this.isActive = isActive;
+	  if(DataBaseUtil.isDifferent(isActive,this.isActive))
+		  this.isActive = isActive;
   }
 
   public Datetime getActiveBegin() {
@@ -144,9 +151,8 @@ public class Method implements Auditable, Cloneable {
     return new Datetime(Datetime.YEAR ,Datetime. DAY,activeBegin);
   }
   public void setActiveBegin (Datetime active_begin){
-      if((active_begin == null && this.activeBegin != null) || (active_begin != null && this.activeBegin == null) ||
-        (active_begin != null && !active_begin.equals(new Datetime(Datetime.YEAR, Datetime.DAY, this.activeBegin))))
-      this.activeBegin = active_begin.getDate();
+	  if(DataBaseUtil.isDifferent(active_begin,this.activeBegin))
+		  this.activeBegin = active_begin.getDate();
   }
 
   public Datetime getActiveEnd() {
@@ -155,9 +161,8 @@ public class Method implements Auditable, Cloneable {
     return new Datetime(Datetime.YEAR ,Datetime. DAY,activeEnd);
   }
   public void setActiveEnd (Datetime active_end){
-      if((active_end == null && this.activeEnd != null) || (active_end != null && this.activeEnd == null) ||
-        (active_end != null && !active_end.equals(new Datetime(Datetime.YEAR, Datetime.DAY, this.activeEnd))))
-      this.activeEnd = active_end.getDate();
+	  if(DataBaseUtil.isDifferent(active_end,this.activeEnd))
+		  this.activeEnd = active_end.getDate();
   }
 
   
@@ -173,17 +178,11 @@ public class Method implements Auditable, Cloneable {
       Element root = doc.getDocumentElement();
       
       AuditUtil.getChangeXML(id,original.id,doc,"id");
-
       AuditUtil.getChangeXML(name,original.name,doc,"name");
-
       AuditUtil.getChangeXML(description,original.description,doc,"description");
-
       AuditUtil.getChangeXML(reportingDescription,original.reportingDescription,doc,"reporting_description");
-
       AuditUtil.getChangeXML(isActive,original.isActive,doc,"is_active");
-
       AuditUtil.getChangeXML(activeBegin,original.activeBegin,doc,"active_begin");
-
       AuditUtil.getChangeXML(activeEnd,original.activeEnd,doc,"active_end");
 
       if(root.hasChildNodes())
@@ -197,11 +196,13 @@ public class Method implements Auditable, Cloneable {
   public String getTableName() {
     return "method";
   }
-public Collection<MethodAnalyte> getMethodAnalyte() {
-    return methodAnalyte;
-}
-public void setMethodAnalyte(Collection<MethodAnalyte> methodAnalyte) {
-    this.methodAnalyte = methodAnalyte;
-}
+  
+  public Collection<MethodAnalyte> getMethodAnalyte() {
+	  return methodAnalyte;
+  }
+ 
+  public void setMethodAnalyte(Collection<MethodAnalyte> methodAnalyte) {
+	  this.methodAnalyte = methodAnalyte;
+  }
   
 }   
