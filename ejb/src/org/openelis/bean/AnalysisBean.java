@@ -38,7 +38,7 @@ import javax.persistence.Query;
 import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.entity.Analysis;
-import org.openelis.exception.NotFoundException;
+import org.openelis.gwt.common.NotFoundException;
 import org.openelis.local.AnalysisLocal;
 
 @Stateless

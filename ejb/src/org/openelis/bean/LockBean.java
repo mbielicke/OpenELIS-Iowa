@@ -1,21 +1,30 @@
 /**
  * Exhibit A - UIRF Open-source Based Public Software License.
  * 
- * The contents of this file are subject to the UIRF Open-source Based Public Software License(the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at openelis.uhl.uiowa.edu
+ * The contents of this file are subject to the UIRF Open-source Based Public
+ * Software License(the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * openelis.uhl.uiowa.edu
  * 
- * Software distributed under the License is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for the specific language governing rights and limitations under the License.
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+ * the specific language governing rights and limitations under the License.
  * 
  * The Original Code is OpenELIS code.
  * 
- * The Initial Developer of the Original Code is The University of Iowa. Portions created by The University of Iowa are Copyright 2006-2008. All Rights Reserved.
+ * The Initial Developer of the Original Code is The University of Iowa.
+ * Portions created by The University of Iowa are Copyright 2006-2008. All
+ * Rights Reserved.
  * 
  * Contributor(s): ______________________________________.
  * 
- * Alternatively, the contents of this file marked "Separately-Licensed" may be used under the terms of a UIRF Software license ("UIRF Software License"), in which case the provisions of a UIRF Software License are applicable instead of those above.
+ * Alternatively, the contents of this file marked "Separately-Licensed" may be
+ * used under the terms of a UIRF Software license ("UIRF Software License"), in
+ * which case the provisions of a UIRF Software License are applicable instead
+ * of those above.
  */
 package org.openelis.bean;
 
-import org.apache.log4j.Logger;
 import org.openelis.entity.Lock;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.EntityLockedException;
@@ -27,10 +36,8 @@ import org.openelis.security.local.SystemUserUtilLocal;
 import java.util.Calendar;
 import java.util.Date;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.ejb.EJB;
-import javax.ejb.EJBs;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -39,101 +46,94 @@ import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-@EJBs( {@EJB(name = "ejb/Login", beanInterface = LoginLocal.class),
-        @EJB(name = "ejb/SystemUser", beanInterface = SystemUserUtilLocal.class)})
 @Stateless
-// @SecurityDomain("ttSecurity")
 public class LockBean implements LockLocal {
 
-    private LoginLocal          login;
-    private SystemUserUtilLocal sysUser;
-
-    @PostConstruct
-    private void init() {
-        login = (LoginLocal)ctx.lookup("ejb/Login");
-        sysUser = (SystemUserUtilLocal)ctx.lookup("ejb/SystemUser");
-    }
-
     @PersistenceContext
-    private EntityManager  manager;
+    private EntityManager       manager;
 
     @Resource
-    private SessionContext ctx;
+    private SessionContext      ctx;
 
-    private Logger         log = Logger.getLogger(this.getClass());
+    @EJB
+    private LoginLocal          login;
 
-    public boolean isLocked(Integer table, Integer row) {
-        return isLocked(table, row, "");
-    }
+    @EJB //(name="ejb/SystemUser",beanInterface=SystemUserUtilLocal.class)
+    private SystemUserUtilLocal sysUser;
 
     /**
-     * This method returns true if an unexpred lock is found in the table and false if no lock or an expired lock is found.
+     * This method returns true if an un-expired lock is found in the table and
+     * false if no lock or an expired lock is found.
      */
+    public boolean isLocked(Integer table, Integer row) {
+        return isLocked(table, row, null);
+    }
+
     public boolean isLocked(Integer table, Integer row, String session) {
-        Lock lock = checkForLock(table, row);
-        if (lock != null && lock.getExpires()
-                                .getDate()
-                                .after(Calendar.getInstance().getTime())
-            && !lock.getSystemUserId().equals(getSystemUserId())
-            && (lock.getSessionId() == null || "".equals(lock.getSessionId()) || !lock.getSessionId()
-                                                                                      .equals(session)))
+        Lock lock;
+        
+        lock = checkForLock(table, row);
+        if (lock != null &&
+            lock.getExpires().getDate().after(new Date()) &&
+            !lock.getSystemUserId().equals(getSystemUserId()) &&
+            (lock.getSessionId() == null || "".equals(lock.getSessionId()) || 
+            !lock.getSessionId().equals(session)))
             return true;
         return false;
     }
 
+    /**
+     * This method will look for a lock in the table for the specific user and
+     * entity. If none found we assume that they let the lock expire and someone
+     * else locked and possible changed the data. If a lock is found we can say
+     * that it is either still a valid lock or no one else has changed the data
+     * since the first user locker.
+     */
     public void validateLock(Integer table, Integer row) throws Exception {
         validateLock(table, row, "");
     }
 
-    /**
-     * This method will look for a lock in the table for the specific user and entity. If none found we assume that they let the lock expire and someone else locked and possible changed the data. If a lock is found we can say that it is either still a valid lock or no one else has changed the data since the first user locker.
-     * 
-     * @param table
-     * @param row
-     * @param sessionId
-     * @throws Exception
-     */
     public void validateLock(Integer table, Integer row, String sessionId) throws Exception {
         Lock lock = null;
         try {
-            Query query = manager.createQuery("from Lock where referenceTableId = " + table
-                                              + " and referenceId = "
-                                              + row
-                                              + " and systemUserId = "
-                                              + getSystemUserId()
-                                              + " and sessionId = '"
-                                              + sessionId
-                                              + "'");
+            Query query = manager.createQuery("from Lock where referenceTableId = " + table +
+                                              " and referenceId = " + row + " and systemUserId = " +
+                                              getSystemUserId() + " and sessionId = '" + sessionId +
+                                              "'");
             lock = (Lock)query.getSingleResult();
         } catch (Exception e) {
 
         }
         if (lock == null)
-            throw new EntityLockedException("Your Lock on this entity has expired and it is possible that the data your are trying to commit may now be stale.  Please press abort and and try your update again.");
+            throw new EntityLockedException("expiredLockException");
     }
 
+    /**
+     * This method will check for an existing valid lock by another user. If
+     * this is locked by the calling user it will refresh the lock.
+     */
     public Integer getLock(Integer table, Integer row) throws Exception {
         return getLock(table, row, "");
     }
 
-    /**
-     * This method will check for an existing valid lock by another user. If this is locked by the calling user it will refresh the lock.
-     */
     public Integer getLock(Integer table, Integer row, String session) throws Exception {
-        Lock lock = checkForLock(table, row);
+        Lock lock;
+        String name;
+        SystemUserDO user;
+        
+        lock = checkForLock(table, row);
         if (lock != null) {
-            if (lock.getExpires().getDate().after(Calendar.getInstance()
-                                                          .getTime()) && !lock.getSystemUserId()
-                                                                              .equals(getSystemUserId())
-                && (lock.getSessionId() == null || "".equals(lock.getSessionId()) || !lock.getSessionId()
-                                                                                          .equals(session))) {
-                SystemUserDO user = (SystemUserDO)sysUser.getSystemUser(lock.getSystemUserId());
-                throw new EntityLockedException("Entity Locked by " + user.getFirstName()
-                                                + " "
-                                                + user.getLastName()
-                                                + ".  Lock will expire at "
-                                                + lock.getExpires().toString()
-                                                + ".");
+            if (lock.getExpires().getDate().after(Calendar.getInstance().getTime()) &&
+                !lock.getSystemUserId().equals(getSystemUserId()) &&
+                (lock.getSessionId() == null || "".equals(lock.getSessionId()) || 
+                !lock.getSessionId().equals(session))) {
+                user = (SystemUserDO)sysUser.getSystemUser(lock.getSystemUserId());
+                if (user.getLastName() == null || user.getLastName().length() == 0) 
+                    name = user.getLoginName().trim();
+                else
+                    name = user.getFirstName().trim() + " " + user.getLastName().trim();
+                throw new EntityLockedException("entityLockException", name,
+                                                lock.getExpires().toString());
             } else {
                 manager.remove(lock);
                 manager.flush();
@@ -149,20 +149,16 @@ public class LockBean implements LockLocal {
         Date expires = cal.getTime();
         lock.setExpires(new Datetime(Datetime.YEAR, Datetime.MINUTE, expires));
         manager.persist(lock);
+
         return lock.getId();
     }
 
     /**
      * Returns a lock for this entity by any user.
-     * 
-     * @param table
-     * @param row
-     * @return
      */
     private Lock checkForLock(Integer table, Integer row) {
-        Query query = manager.createQuery("from Lock where referenceTableId = " + table
-                                          + " and referenceId = "
-                                          + row);
+        Query query = manager.createQuery("from Lock where referenceTableId = " + table +
+                                          " and referenceId = " + row);
         try {
             return (Lock)query.getSingleResult();
         } catch (Exception e) {
@@ -170,37 +166,31 @@ public class LockBean implements LockLocal {
         }
     }
 
+    /**
+     * This method will remove the given lock from the table.
+     */
     public void giveUpLock(Integer table, Integer row) {
         giveUpLock(table, row, "");
     }
 
-    /**
-     * This method will remove the given lock from the table.
-     */
     public void giveUpLock(Integer table, Integer row, String session) {
         manager.setFlushMode(FlushModeType.COMMIT);
         try {
-            Query query = manager.createQuery("from Lock where referenceTableId = " + table
-                                              + " and referenceId = "
-                                              + row
-                                              + " and systemUserId = "
-                                              + getSystemUserId()
-                                              + " and sessionId = '"
-                                              + session
-                                              + "'");
+            Query query = manager.createQuery("from Lock where referenceTableId = " + table +
+                                              " and referenceId = " + row + " and systemUserId = " +
+                                              getSystemUserId() + " and sessionId = '" + session +
+                                              "'");
             Lock lock = (Lock)query.getSingleResult();
             manager.remove(lock);
         } catch (EntityNotFoundException e) {
-            
-        }catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public void giveUpUserLocks() {
-
-    }
-
+    /**
+     * @private
+     */
     public Integer getSystemUserId() {
         try {
             return login.getSystemUserId();

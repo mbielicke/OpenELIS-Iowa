@@ -37,6 +37,7 @@ import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -45,9 +46,14 @@ import org.openelis.utilcommon.DataBaseUtil;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
-@NamedQuery( name = "SystemVariable.SystemVariable",
-            query = "select new org.openelis.domain.SystemVariableDO(id, name, value)"
-                  + " from SystemVariable where id = :id")
+@NamedQueries({
+    @NamedQuery( name = "SystemVariable.FindById",
+                query = "select new org.openelis.domain.SystemVariableDO(id, name, value)"
+                      + " from SystemVariable where id = :id"),
+    @NamedQuery( name = "SystemVariable.FindByName",
+                query = "select new org.openelis.domain.SystemVariableDO(id, name, value)"
+                      + " from SystemVariable where name = :name")})                     
+
 @Entity
 @Table(name = "system_variable")
 @EntityListeners( {AuditUtil.class})

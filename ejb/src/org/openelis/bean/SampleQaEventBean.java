@@ -36,7 +36,7 @@ import javax.persistence.Query;
 import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.SampleQaEventViewDO;
 import org.openelis.entity.SampleQaevent;
-import org.openelis.exception.NotFoundException;
+import org.openelis.gwt.common.NotFoundException;
 import org.openelis.local.SampleQAEventLocal;
 
 @Stateless

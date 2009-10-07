@@ -38,7 +38,7 @@ import javax.persistence.Query;
 import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.entity.SampleItem;
-import org.openelis.exception.NotFoundException;
+import org.openelis.gwt.common.NotFoundException;
 import org.openelis.local.LockLocal;
 import org.openelis.local.SampleItemLocal;
 
