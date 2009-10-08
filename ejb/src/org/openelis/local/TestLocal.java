@@ -94,7 +94,7 @@ public interface TestLocal {
     public void addTestWorksheetAnalyte(TestWorksheetAnalyteViewDO analyte) throws Exception;
     public void deleteTestWorksheetAnalyte(TestWorksheetAnalyteViewDO deletedAnalyteAt) throws Exception;
     
-    public void validateTest(TestViewDO test, List<TestSectionViewDO> sections,
+    public void validate(TestViewDO test, List<TestSectionViewDO> sections,
                              List<TestTypeOfSampleDO> sampleTypes,
                              ArrayList<ArrayList<TestAnalyteViewDO>> analytes,
                              ArrayList<ArrayList<TestResultDO>> results,

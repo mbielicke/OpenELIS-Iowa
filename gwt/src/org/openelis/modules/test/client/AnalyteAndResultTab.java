@@ -88,32 +88,38 @@ import com.google.gwt.user.client.Window;
 
 public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,BeforeGetMatchesHandler,
                                                            HasActionHandlers<AnalyteAndResultTab.Action> {
-    private TestManager manager;
-    private TestMetaMap TestMeta;
+    public enum Action {
+        ANALYTE_CHANGED,ANALYTE_DELETED,RESULT_CHANGED,RESULT_DELETED
+    };
     
-    private TestAnalyteManager testAnalyteManager;
-    private TestResultManager testResultManager;
-    private TestTypeOfSampleManager sampleTypeManager;
+    private TestManager                        manager;
+    private TestMetaMap                        TestMeta;
     
-    private AnalyteAndResultTab source;
-    private TestAnalyteDisplayManager displayManager;
+    private TestAnalyteManager                 testAnalyteManager;
+    private TestResultManager                  testResultManager;
+    private TestTypeOfSampleManager            sampleTypeManager;
     
-    private DictionaryEntryPickerScreen dictEntryPicker; 
+    private AnalyteAndResultTab                source;
+    private TestAnalyteDisplayManager          displayManager;
     
-    private TableWidget analyteTable, resultTable;
-    private Dropdown<Integer> typeId;       
-    private Dropdown<String> tableActions;
-    private ScrollableTabBar resultTabPanel;
-    private CheckBox isReportable;
-    private AutoComplete<Integer> scriptlet;  
+    private DictionaryEntryPickerScreen        dictEntryPicker; 
     
-    private ArrayList<GridFieldErrorException> resultErrorList;
+    private TableWidget                        analyteTable, resultTable;
+    private Dropdown<Integer>                  typeId;       
+    private Dropdown<String>                   tableActions;
+    private ScrollableTabBar                   resultTabPanel;
+    private CheckBox                           isReportable;
+    private AutoComplete<Integer>              scriptlet;  
+    private AppButton                          addButton,removeButton,addResultTabButton,
+                                               dictionaryLookUpButton,addTestResultButton,
+                                               removeTestResultButton;
     
-    public enum Action {ANALYTE_CHANGED,ANALYTE_DELETED,RESULT_CHANGED,RESULT_DELETED};
+    private ArrayList<GridFieldErrorException> resultErrorList;   
             
-    private boolean addAnalyteRow,dropdownsInited,loaded,headerAddedInTheMiddle,canAddRemoveColumn;
+    private boolean                            addAnalyteRow,dropdownsInited,loaded,
+                                               headerAddedInTheMiddle,canAddRemoveColumn;
     
-    private int anaSelCol,tempId;  
+    private int                                anaSelCol,tempId;  
     
     public AnalyteAndResultTab(ScreenDefInt def,ScreenService service) {
         setDef(def);
@@ -136,9 +142,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
         
         resultErrorList = null;
         
-        canAddRemoveColumn = false;
-        
-        final AnalyteAndResultTab anaResTab = this;
+        canAddRemoveColumn = false;               
         
         analyteTable = (TableWidget)def.getWidget("analyteTable");
         addScreenHandler(analyteTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
@@ -311,7 +315,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
                             anaDO = displayManager.getTestAnalyteAt(r, col);
                             anaDO.setAnalyteId(key);
                             anaDO.setAnalyteName(auto.getTextBoxDisplay());
-                            ActionEvent.fire(anaResTab, Action.ANALYTE_CHANGED, anaDO);
+                            ActionEvent.fire(source, Action.ANALYTE_CHANGED, anaDO);
                         } else {
                             //
                             // otherwise we need to set the key as the result group
@@ -454,7 +458,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
                     anaDO = testAnalyteManager.getAnalyteAt(dindex, 0);
                     testAnalyteManager.removeRowAt(dindex);
                     displayManager.setDataGrid(testAnalyteManager.getAnalytes());
-                    ActionEvent.fire(anaResTab, Action.ANALYTE_DELETED, anaDO);
+                    ActionEvent.fire(source, Action.ANALYTE_DELETED, anaDO);
                 }
             }
         });
@@ -655,7 +659,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
             }                        
         });        
         
-        final AppButton addButton = (AppButton)def.getWidget("addButton");
+        addButton = (AppButton)def.getWidget("addButton");
         addScreenHandler(addButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 analyteTable.finishEditing();
@@ -673,7 +677,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
             }
         });
 
-        final AppButton removeButton = (AppButton)def.getWidget("removeButton");
+        removeButton = (AppButton)def.getWidget("removeButton");
         addScreenHandler(removeButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 analyteTable.finishEditing();
@@ -802,7 +806,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
                             value = (String)val;
                         }                       
                         result.setValue(value);
-                        ActionEvent.fire(anaResTab, Action.RESULT_CHANGED, result);
+                        ActionEvent.fire(source, Action.RESULT_CHANGED, result);
                         break;
                     case 3:                
                         result.setFlagsId((Integer)val);
@@ -840,11 +844,11 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
                 
                 testResultManager.removeResultAt(selTab+1, row);
                 
-                ActionEvent.fire(anaResTab, Action.RESULT_DELETED, resDO);
+                ActionEvent.fire(source, Action.RESULT_DELETED, resDO);
             }
         });
 
-        final AppButton addResultTabButton = (AppButton)def.getWidget("addResultTabButton");
+        addResultTabButton = (AppButton)def.getWidget("addResultTabButton");
         addScreenHandler(addResultTabButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 int count;
@@ -864,7 +868,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
             }
         });
 
-        final AppButton removeTestResultButton = (AppButton)def.getWidget("removeTestResultButton");
+        removeTestResultButton = (AppButton)def.getWidget("removeTestResultButton");
         addScreenHandler(removeTestResultButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                int ar;
@@ -886,7 +890,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
             }
         });
 
-        final AppButton addTestResultButton = (AppButton)def.getWidget("addTestResultButton");
+        addTestResultButton = (AppButton)def.getWidget("addTestResultButton");
         addScreenHandler(addTestResultButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {         
                 int numTabs;
@@ -912,7 +916,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
             }
         });
 
-        final AppButton dictionaryLookUpButton = (AppButton)def.getWidget("dictionaryLookUpButton");
+        dictionaryLookUpButton = (AppButton)def.getWidget("dictionaryLookUpButton");
         addScreenHandler(dictionaryLookUpButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 ScreenWindow modal;                                

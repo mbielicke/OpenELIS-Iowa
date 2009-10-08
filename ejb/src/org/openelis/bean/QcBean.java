@@ -44,11 +44,11 @@ import org.openelis.domain.QcAnalyteViewDO;
 import org.openelis.domain.QcViewDO;
 import org.openelis.entity.Qc;
 import org.openelis.entity.QcAnalyte;
-import org.openelis.exception.InconsistentException;
 import org.openelis.exception.ParseException;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
+import org.openelis.gwt.common.InconsistencyException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
@@ -445,7 +445,7 @@ public class QcBean implements QcRemote {
                     if (!dictList.contains(entryId))
                         dictList.add(entryId);
                     else
-                        throw new InconsistentException("qcDictEntryNotUniqueException");                                              
+                        throw new InconsistencyException("qcDictEntryNotUniqueException");                                              
                 } else {
                     fieldName = QcMeta.getQcAnalyte().getTypeId();
                     throw new ParseException("fieldRequiredException");
@@ -453,7 +453,7 @@ public class QcBean implements QcRemote {
             } catch (ParseException ex) {                 
                 exc = new TableFieldErrorException(ex.getMessage(), i,fieldName);
                 exceptionList.add(exc); 
-            } catch (InconsistentException ex) {               
+            } catch (InconsistencyException ex) {               
                 exc = new TableFieldErrorException(ex.getMessage(), i,fieldName);
                 exceptionList.add(exc);
             }                                                
@@ -461,26 +461,26 @@ public class QcBean implements QcRemote {
     }
     
     private void addNumericIfNoOverLap(List<NumericRange> nrList,
-                                       NumericRange nr) throws InconsistentException{
+                                       NumericRange nr) throws InconsistencyException{
          NumericRange lr;                  
          
          for(int i = 0; i < nrList.size(); i++) {
              lr = nrList.get(i);
              if(lr.isOverlapping(nr))                    
-                 throw new InconsistentException("qcNumRangeOverlapException");             
+                 throw new InconsistencyException("qcNumRangeOverlapException");             
          }
          
          nrList.add(nr);         
     }
     
     private void addTiterIfNoOverLap(List<TiterRange> trList,
-                                       TiterRange tr) throws InconsistentException{
+                                       TiterRange tr) throws InconsistencyException{
          TiterRange lr;                  
          
          for(int i = 0; i < trList.size(); i++) {
              lr = trList.get(i);
              if(lr.isOverlapping(tr))                    
-                 throw new InconsistentException("qcTiterRangeOverlapException");             
+                 throw new InconsistencyException("qcTiterRangeOverlapException");             
          }
          
          trList.add(tr);         

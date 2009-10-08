@@ -37,7 +37,6 @@ import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
-import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.table.TableDataRow;
@@ -56,9 +55,10 @@ import com.google.gwt.user.client.Window;
 
 public class SampleTypeTab extends Screen {
     private TestManager manager;
-    private boolean dropdownsInited, loaded;        
+    private boolean     dropdownsInited, loaded;        
     
     private TableWidget sampleTypeTable;
+    private AppButton   addSampleTypeButton,removeSampleTypeButton;
     
     public SampleTypeTab(ScreenDefInt def) {
         setDef(def);
@@ -128,7 +128,7 @@ public class SampleTypeTab extends Screen {
             }
         });
 
-        final AppButton addSampleTypeButton = (AppButton)def.getWidget("addSampleTypeButton");
+        addSampleTypeButton = (AppButton)def.getWidget("addSampleTypeButton");
         addScreenHandler(addSampleTypeButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 sampleTypeTable.addRow();
@@ -145,7 +145,7 @@ public class SampleTypeTab extends Screen {
             }
         });
 
-        final AppButton removeSampleTypeButton = (AppButton)def.getWidget("removeSampleTypeButton");
+        removeSampleTypeButton = (AppButton)def.getWidget("removeSampleTypeButton");
         addScreenHandler(removeSampleTypeButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 int selectedRow = sampleTypeTable.getSelectedIndex();

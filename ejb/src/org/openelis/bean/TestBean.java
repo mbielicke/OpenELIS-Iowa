@@ -30,8 +30,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.annotation.Resource;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
+import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
@@ -65,15 +67,16 @@ import org.openelis.entity.TestTypeOfSample;
 import org.openelis.entity.TestWorksheet;
 import org.openelis.entity.TestWorksheetAnalyte;
 import org.openelis.entity.TestWorksheetItem;
-import org.openelis.exception.InconsistentException;
 import org.openelis.exception.ParseException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.GridFieldErrorException;
+import org.openelis.gwt.common.InconsistencyException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.gwt.common.SecurityModule.ModuleFlags;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.CategoryLocal;
 import org.openelis.local.LockLocal;
@@ -81,14 +84,13 @@ import org.openelis.local.TestLocal;
 import org.openelis.metamap.TestMetaMap;
 import org.openelis.metamap.TestSectionMetaMap;
 import org.openelis.remote.TestRemote;
-import org.openelis.util.QueryBuilder;
 import org.openelis.util.QueryBuilderV2;
 import org.openelis.utilcommon.DataBaseUtil;
 import org.openelis.utilcommon.NumericRange;
 import org.openelis.utilcommon.TestResultValidator;
 import org.openelis.utilcommon.TiterRange;
-import org.openelis.utils.GetPage;
 import org.openelis.utils.ReferenceTableCache;
+import org.openelis.utils.SecurityInterceptor;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -97,6 +99,9 @@ public class TestBean implements TestRemote, TestLocal {
 
     @PersistenceContext(name = "openelis")
     private EntityManager            manager;
+    
+    @Resource
+    private SessionContext           ctx;
 
     @EJB
     private LockLocal                lockBean;
@@ -217,7 +222,7 @@ public class TestBean implements TestRemote, TestLocal {
         List<TestSectionViewDO> list = query.getResultList();
 
         if (list == null || list.size() == 0)
-            throw new NotFoundException("noSectionsForTest");
+            throw new NotFoundException("Test has no sections assigned to it.");
 
         return (ArrayList<TestSectionViewDO>)list;
     }
@@ -273,7 +278,7 @@ public class TestBean implements TestRemote, TestLocal {
         }
         return listCollection;
     }
-
+    
     public ArrayList<TestMethodViewDO> query(ArrayList<QueryData> fields, int first, int max) throws Exception {
         Query query;        
         QueryBuilderV2 builder;
@@ -287,25 +292,19 @@ public class TestBean implements TestRemote, TestLocal {
                      ", " + TestMeta.getMethod().getId() +
                      ", " + TestMeta.getMethod().getName() +
                      ", " + TestMeta.getMethod().getDescription()) + ") ");
-
         builder.constructWhere(fields);
         builder.setOrderBy(TestMeta.getName() + ", " + TestMeta.getMethod().getName());
         
         query = manager.createQuery(builder.getEJBQL());
-
         query.setMaxResults(first + max);
         QueryBuilderV2.setQueryParams(query, fields);
 
         returnList = query.getResultList();
-
         if (returnList.isEmpty())
             throw new NotFoundException();
-
         returnList = (ArrayList<TestMethodViewDO>)DataBaseUtil.subList(returnList, first, max);
-
         if (returnList == null)
-            throw new LastPageException();
-        
+            throw new LastPageException();        
         return (ArrayList<TestMethodViewDO>)returnList;
     }
 
@@ -356,6 +355,8 @@ public class TestBean implements TestRemote, TestLocal {
     public void add(TestDO testDO) throws Exception {
         Test test;
 
+        checkSecurity(ModuleFlags.ADD);
+        
         manager.setFlushMode(FlushModeType.COMMIT);
 
         test = new Test();
@@ -392,15 +393,16 @@ public class TestBean implements TestRemote, TestLocal {
     public void update(TestDO testDO) throws Exception {
         Test test;
 
-        lockBean.validateLock(testRefTableId, testDO.getId());
-
         if(!testDO.isChanged()) {            
             lockBean.giveUpLock(testRefTableId, testDO.getId());
             return;        
         }
         
+        checkSecurity(ModuleFlags.UPDATE);
+        
+        lockBean.validateLock(testRefTableId, testDO.getId());
+        
         manager.setFlushMode(FlushModeType.COMMIT);
-
         test = manager.find(Test.class, testDO.getId());
 
         test.setName(testDO.getName());
@@ -472,7 +474,7 @@ public class TestBean implements TestRemote, TestLocal {
 
     }
 
-    public void validateTest(TestViewDO testDO,
+    public void validate(TestViewDO testDO,
                              List<TestSectionViewDO> sections,
                              List<TestTypeOfSampleDO> sampleTypes,
                              ArrayList<ArrayList<TestAnalyteViewDO>> analytes,
@@ -1265,19 +1267,19 @@ public class TestBean implements TestRemote, TestLocal {
                         TestResultValidator.validateDate(value);
                         if (hasDateType) {
                             fieldName = TestMeta.getTestResult().getTypeId();
-                            throw new InconsistentException("testMoreThanOneDateTypeException");
+                            throw new InconsistencyException("testMoreThanOneDateTypeException");
                         }
                         hasDateType = true;
                     } else if (dtId.equals(typeId)) {                        
                         if (hasDateType) {
                             fieldName = TestMeta.getTestResult().getTypeId();
-                            throw new InconsistentException("testMoreThanOneDateTypeException");
+                            throw new InconsistencyException("testMoreThanOneDateTypeException");
                         }
                         hasDateType = true;
                     } else if (timeId.equals(typeId)) {                        
                         if (hasDateType) {
                             fieldName = TestMeta.getTestResult().getTypeId();
-                            throw new InconsistentException("testMoreThanOneDateTypeException");
+                            throw new InconsistencyException("testMoreThanOneDateTypeException");
                         }
                         hasDateType = true;
                     } else if (dictId.equals(typeId)) {
@@ -1288,12 +1290,12 @@ public class TestBean implements TestRemote, TestLocal {
                         if (!dictList.contains(entryId))
                             dictList.add(entryId);
                         else
-                            throw new InconsistentException("testDictEntryNotUniqueException");
+                            throw new InconsistencyException("testDictEntryNotUniqueException");
                     } else if (defId.equals(typeId)) {
                         if (unitsWithDefault.indexOf(unitId) == -1)
                             unitsWithDefault.add(unitId);
                         else
-                            throw new InconsistentException(
+                            throw new InconsistencyException(
                                                             "testMoreThanOneDefaultForUnitException");
                     } 
                 } catch (ParseException ex) {
@@ -1301,7 +1303,7 @@ public class TestBean implements TestRemote, TestLocal {
                                                                   "resultTable"));
                     valid = false;
 
-                } catch (InconsistentException ex) {
+                } catch (InconsistencyException ex) {
                     exceptionList.add(new GridFieldErrorException(ex.getMessage(), i, j, fieldName,
                                                                   "resultTable"));
                     valid = false;
@@ -1388,35 +1390,35 @@ public class TestBean implements TestRemote, TestLocal {
             try {
                 if (refDO.getAddTestId() == null) {
                     fieldName = TestMeta.getTestReflex().getAddTest().getName();
-                    throw new InconsistentException("fieldRequiredException");
+                    throw new InconsistencyException("fieldRequiredException");
                 }
 
                 if (refDO.getTestAnalyteId() == null) {
                     fieldName = TestMeta.getTestReflex().getTestAnalyteId();
-                    throw new InconsistentException("fieldRequiredException");
+                    throw new InconsistencyException("fieldRequiredException");
                 }
 
                 if (refDO.getTestResultId() == null) {
                     fieldName = TestMeta.getTestReflex().getTestResult().getValue();
-                    throw new InconsistentException("fieldRequiredException");
+                    throw new InconsistencyException("fieldRequiredException");
                 }
 
                 if (refDO.getFlagsId() == null) {
                     fieldName = TestMeta.getTestReflex().getFlagsId();
-                    throw new InconsistentException("fieldRequiredException");
+                    throw new InconsistencyException("fieldRequiredException");
                 }
 
                 if ( !idsList.contains(ids)) {
                     idsList.add(ids);
                 } else {
                     fieldName = TestMeta.getTestReflex().getAddTest().getName();
-                    throw new InconsistentException("fieldUniqueOnlyException");
+                    throw new InconsistencyException("fieldUniqueOnlyException");
                 }
 
                 fieldName = TestMeta.getTestReflex().getTestResult().getValue();
                 validateAnalyteResultMapping(anaListValid, resListValid, anaResGrpMap,
                                              resGrpRsltMap, refDO);
-            } catch (InconsistentException ex) {
+            } catch (InconsistencyException ex) {
                 addErrorToTableField(ex.getMessage(), "testReflexTable", fieldName,
                                      i, exceptionList);
             }
@@ -1831,7 +1833,7 @@ public class TestBean implements TestRemote, TestLocal {
 
     private void addTiterIfNoOverLap(HashMap<Integer, List<TiterRange>> trMap,
                                      Integer unitId,
-                                     TiterRange tr) throws InconsistentException {
+                                     TiterRange tr) throws InconsistencyException {
         TiterRange lr;
         List<TiterRange> trList;
 
@@ -1840,7 +1842,7 @@ public class TestBean implements TestRemote, TestLocal {
             for (int i = 0; i < trList.size(); i++ ) {
                 lr = trList.get(i);
                 if (lr.isOverlapping(tr))
-                    throw new InconsistentException("testTiterRangeOverlapException");
+                    throw new InconsistencyException("testTiterRangeOverlapException");
             }
             trList.add(tr);
         } else {
@@ -1852,7 +1854,7 @@ public class TestBean implements TestRemote, TestLocal {
 
     private void addNumericIfNoOverLap(HashMap<Integer, List<NumericRange>> nrMap,
                                        Integer unitId,
-                                       NumericRange nr) throws InconsistentException {
+                                       NumericRange nr) throws InconsistencyException {
         NumericRange lr;
         List<NumericRange> nrList;
 
@@ -1861,7 +1863,7 @@ public class TestBean implements TestRemote, TestLocal {
             for (int i = 0; i < nrList.size(); i++ ) {
                 lr = nrList.get(i);
                 if (lr.isOverlapping(nr))
-                    throw new InconsistentException("testNumRangeOverlapException");
+                    throw new InconsistencyException("testNumRangeOverlapException");
             }
             nrList.add(nr);
         } else {
@@ -1881,7 +1883,7 @@ public class TestBean implements TestRemote, TestLocal {
                                               boolean resListValid,
                                               HashMap<Integer, Integer> anaResGrpMap,
                                               HashMap<Integer, List<Integer>> resGrpRsltMap,
-                                              TestReflexViewDO refDO) throws InconsistentException {
+                                              TestReflexViewDO refDO) throws InconsistencyException {
         Integer rg, resId, anaId;
         List<Integer> resIdList;
 
@@ -1899,16 +1901,15 @@ public class TestBean implements TestRemote, TestLocal {
         if (rg != null) {
             //
             // if the list obtained from anaResGrpMap does not contain the
-            // test result id in refDO then that implies that this the test
-            // result
+            // test result id in refDO then that implies that this test result
             // doesn't belong to the result group selected for the test analyte
             // and thus an exception is thrown containing this message.
             //
             resIdList = resGrpRsltMap.get(rg);
             if (resIdList == null)
-                throw new InconsistentException("resultDoesntBelongToAnalyteException");
+                throw new InconsistencyException("resultDoesntBelongToAnalyteException");
             else if ( !resIdList.contains(resId))
-                throw new InconsistentException("resultDoesntBelongToAnalyteException");
+                throw new InconsistencyException("resultDoesntBelongToAnalyteException");
         }
     }
 
@@ -1942,4 +1943,8 @@ public class TestBean implements TestRemote, TestLocal {
         return false;
     }
 
+    private void checkSecurity(ModuleFlags flag) throws Exception {
+        SecurityInterceptor.applySecurity(ctx.getCallerPrincipal().getName(), 
+                                          "test", flag);
+    }
 }
