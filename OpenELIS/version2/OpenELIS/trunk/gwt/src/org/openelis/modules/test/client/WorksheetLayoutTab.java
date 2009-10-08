@@ -72,19 +72,23 @@ import com.google.gwt.user.client.Window;
 
 public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteAndResultTab.Action>{
 
-    private TestManager manager;
-    private TestAnalyteManager analyteManager;
-    private TestWorksheetManager worksheetManager;
+    private TestManager             manager;
+    private TestAnalyteManager      analyteManager;
+    private TestWorksheetManager    worksheetManager;
     
-    private WorksheetLayoutTab source;
+    private WorksheetLayoutTab      source;
     private TestAnalytePickerScreen testAnalytePicker; 
     
-    private TestMetaMap TestMeta;   
+    private TestMetaMap             TestMeta;   
     
-    private boolean loaded,dropdownsInited;
+    private boolean                 loaded,dropdownsInited;
     
-    private Dropdown<Integer> formatId;    
-    private TableWidget worksheetAnalyteTable, worksheetTable;
+    private Dropdown<Integer>       formatId;    
+    private TableWidget             worksheetAnalyteTable, worksheetTable;
+    private AppButton               addWSItemButton,removeWSItemButton,
+                                    addWSAnalyteButton,removeWSAnalyteButton;
+    private TextBox<Integer>        batchCapacity,totalCapacity;
+    private AutoComplete            scriptlet,qcname; 
     
     public WorksheetLayoutTab(ScreenDefInt def,ScreenService service) {
         setDef(def);
@@ -113,7 +117,7 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
             }
         });
 
-        final TextBox<Integer> batchCapacity = (TextBox)def.getWidget(TestMeta.getTestWorksheet().getBatchCapacity());
+        batchCapacity = (TextBox)def.getWidget(TestMeta.getTestWorksheet().getBatchCapacity());
         addScreenHandler(batchCapacity, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 batchCapacity.setValue(worksheetManager.getWorksheet().getBatchCapacity());
@@ -129,7 +133,7 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
             }
         });
 
-        final TextBox<Integer> totalCapacity = (TextBox)def.getWidget(TestMeta.getTestWorksheet().getTotalCapacity());
+        totalCapacity = (TextBox)def.getWidget(TestMeta.getTestWorksheet().getTotalCapacity());
         addScreenHandler(totalCapacity, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 totalCapacity.setValue(worksheetManager.getWorksheet().getTotalCapacity());
@@ -145,7 +149,7 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
             }
         });
 
-        final AutoComplete<Integer> scriptlet = (AutoComplete)def.getWidget(TestMeta.getTestWorksheet().getScriptlet().getName());
+        scriptlet = (AutoComplete)def.getWidget(TestMeta.getTestWorksheet().getScriptlet().getName());
         addScreenHandler(scriptlet, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 scriptlet.setSelection(worksheetManager.getWorksheet().getScriptletId(), worksheetManager.getWorksheet().getScriptletName());
@@ -153,6 +157,7 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
                 worksheetManager.getWorksheet().setScriptletId(event.getValue());
+                worksheetManager.getWorksheet().setScriptletName(scriptlet.getTextBoxDisplay());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -199,8 +204,7 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
             }
         });
         
-        final AutoComplete<String> qcname = (AutoComplete<String>)worksheetTable.columns.get(2).getColumnWidget();
-            
+        qcname = (AutoComplete<String>)worksheetTable.columns.get(2).getColumnWidget();            
         qcname.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
                 AutocompleteRPC trpc;
@@ -263,7 +267,7 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
             }
         });
 
-        final AppButton addWSItemButton = (AppButton)def.getWidget("addWSItemButton");
+        addWSItemButton = (AppButton)def.getWidget("addWSItemButton");
         addScreenHandler(addWSItemButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 worksheetTable.addRow();
@@ -280,7 +284,7 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
             }
         });
 
-        final AppButton removeWSItemButton = (AppButton)def.getWidget("removeWSItemButton");
+        removeWSItemButton = (AppButton)def.getWidget("removeWSItemButton");
         addScreenHandler(removeWSItemButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 int selectedRow = worksheetTable.getSelectedIndex();
@@ -337,7 +341,7 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
             }
         });
         
-        final AppButton addWSAnalyteButton = (AppButton)def.getWidget("addWSAnalyteButton");
+        addWSAnalyteButton = (AppButton)def.getWidget("addWSAnalyteButton");
         addScreenHandler(addWSAnalyteButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 ScreenWindow modal;
@@ -387,7 +391,7 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
             }
         });
 
-        final AppButton removeWSAnalyteButton = (AppButton)def.getWidget("removeWSAnalyteButton");
+        removeWSAnalyteButton = (AppButton)def.getWidget("removeWSAnalyteButton");
         addScreenHandler(removeWSAnalyteButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 int ar = worksheetAnalyteTable.activeRow;

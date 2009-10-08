@@ -44,10 +44,10 @@ import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.GridFieldErrorException;
-import org.openelis.gwt.common.InconsistencyException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.RPC;
+import org.openelis.gwt.common.SecurityException;
 import org.openelis.gwt.common.SecurityModule;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
@@ -63,7 +63,6 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
-import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.AppButton;
@@ -96,6 +95,8 @@ import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.TabPanel;
@@ -106,39 +107,156 @@ public class TestScreen extends Screen {
         DETAILS, SAMPLE_TYPES, ANALYTES_RESULTS, PREPS_REFLEXES,WORKSHEET
     };
 
-    protected Tabs tab = Tabs.DETAILS;    
+    protected Tabs                   tab = Tabs.DETAILS;    
    
-    private TestMetaMap TestMeta;     
-    private TestManager manager;    
-    private SampleTypeTab sampleTypeTab;
-    private AnalyteAndResultTab analyteAndResultTab;
+    private TestMetaMap              TestMeta = new TestMetaMap();     
+    private TestManager              manager;    
+    private SampleTypeTab            sampleTypeTab;
+    private AnalyteAndResultTab      analyteAndResultTab;
     private PrepTestAndReflexTestTab prepAndReflexTab; 
-    private WorksheetLayoutTab worksheetLayoutTab; 
-  
-    private SecurityModule security;
+    private WorksheetLayoutTab       worksheetLayoutTab;   
+    private SecurityModule           security;
     
-    ScreenNavigator nav;
+    private ScreenNavigator          nav;    
+    private TableWidget              sectionTable;     
+    private TextBox                  id,name,description,reportingDescription,
+                                     reportingSequence,timeTaMax,timeTaAverage,
+                                     timeTaWarning,timeTransit,timeHolding,labelQty;    
+    private AppButton                queryButton, previousButton, nextButton, 
+                                     addButton, updateButton, commitButton, 
+                                     abortButton,removeSection, addSection;
+    private Dropdown<Integer>        sortingMethod,reportingMethod,testFormat,revisionMethod;
+    private AutoComplete<Integer>    testTrailer, scriptlet, method,label;
+    private MenuItem                 duplicate,history; 
+    private TabPanel                 tabs;
+    private ButtonGroup              atoz;
+    private CheckBox                 isActive,isReportable;
+    private CalendarLookUp           activeBegin,activeEnd;
     
-    private TableWidget sectionTable; 
     
     public TestScreen() throws Exception{
         super((ScreenDefInt)GWT.create(TestDef.class));
-        service = new ScreenService("OpenELISServlet?service=org.openelis.modules.test.server.TestService");
-        manager = TestManager.getInstance();        
-        
-        TestMeta = new TestMetaMap();
+        service = new ScreenService("OpenELISServlet?service=org.openelis.modules.test.server.TestService");               
         
         security = OpenELIS.security.getModule("test");
         if (security == null)
-            throw new InconsistencyException("Error: Missing security module entry 'test'; No permission to this screen.");
+            throw new SecurityException("screenPermException", "Test Screen");
         
         // Setup link between Screen and widget Handlers
         initialize();    
-        setState(State.DEFAULT);
-        DataChangeEvent.fire(this);               
+        
+        manager = TestManager.getInstance();
+
+        DeferredCommand.addCommand(new Command() {
+            public void execute() {
+                postConstructor();
+            }
+        });
     }
 
-    private void initialize() {        
+    /**
+     * This method is called to set the initial state of widgets after the
+     * screen is attached to the browser. It is usually called in deferred command.
+     */
+    private void postConstructor() {
+        setState(State.DEFAULT);
+        DataChangeEvent.fire(this);
+    }
+
+    private void initialize() {    
+        //
+        // button panel buttons
+        //
+        queryButton = (AppButton)def.getWidget("query");
+        addScreenHandler(queryButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                query();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                if (event.getState() == State.QUERY)
+                    queryButton.setState(ButtonState.LOCK_PRESSED);
+                queryButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY)
+                                          .contains(event.getState()) &&
+                                   security.hasSelectPermission());
+            }
+        });
+        
+        previousButton = (AppButton)def.getWidget("previous");
+        addScreenHandler(previousButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                previous();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                previousButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+        
+        nextButton = (AppButton)def.getWidget("next");
+        addScreenHandler(nextButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                next();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                nextButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+
+        addButton = (AppButton)def.getWidget("add");
+        addScreenHandler(addButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                add();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                addButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY)
+                                 .contains(event.getState()) &&
+                          security.hasAddPermission());
+                if (event.getState() == State.ADD)
+                    addButton.setState(ButtonState.LOCK_PRESSED);
+            }
+        });
+
+        updateButton = (AppButton)def.getWidget("update");
+        addScreenHandler(updateButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                update();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                updateButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()) &&
+                                    security.hasUpdatePermission());
+                if (event.getState() == State.UPDATE)
+                    updateButton.setState(ButtonState.LOCK_PRESSED);
+
+            }
+        });
+
+        commitButton = (AppButton)def.getWidget("commit");
+        addScreenHandler(commitButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                commit();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                commitButton.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                    .contains(event.getState()));
+            }
+        });
+
+        abortButton = (AppButton)def.getWidget("abort");
+        addScreenHandler(abortButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                abort();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                abortButton.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                   .contains(event.getState()));
+            }
+        });
         
         // Create the Handler for SampleTypeTab passing in the ScreenDef
         sampleTypeTab = new SampleTypeTab(def);
@@ -204,7 +322,7 @@ public class TestScreen extends Screen {
         
         analyteAndResultTab.addActionHandler(worksheetLayoutTab);
         
-        final TextBox id = (TextBox)def.getWidget(TestMeta.getId());
+        id = (TextBox)def.getWidget(TestMeta.getId());
         addScreenHandler(id, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 id.setValue(getString(manager.getTest().getId()));
@@ -223,7 +341,7 @@ public class TestScreen extends Screen {
             }
         });
         
-        final TextBox name = (TextBox)def.getWidget(TestMeta.getName());
+        name = (TextBox)def.getWidget(TestMeta.getName());
         addScreenHandler(name, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 name.setValue(manager.getTest().getName());
@@ -243,8 +361,7 @@ public class TestScreen extends Screen {
             }
         });
         
-        final AutoComplete<Integer> method = (AutoComplete)def.getWidget(TestMeta.getMethod()
-                                                                                   .getName());
+        method = (AutoComplete)def.getWidget(TestMeta.getMethod().getName());
         addScreenHandler(method, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 TestViewDO testDO = manager.getTest();
@@ -253,8 +370,8 @@ public class TestScreen extends Screen {
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
-                manager.getTest()
-                       .setMethodId(event.getValue());
+                manager.getTest().setMethodId(event.getValue());
+                manager.getTest().setMethodName(method.getTextBoxDisplay());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -295,7 +412,7 @@ public class TestScreen extends Screen {
         });
         
 
-        final TextBox description = (TextBox)def.getWidget(TestMeta.getDescription());
+        description = (TextBox)def.getWidget(TestMeta.getDescription());
         addScreenHandler(description, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 description.setValue(manager.getTest().getDescription());
@@ -314,7 +431,7 @@ public class TestScreen extends Screen {
         });
         
 
-        final TextBox reportingDescription = (TextBox)def.getWidget(TestMeta.getReportingDescription());
+        reportingDescription = (TextBox)def.getWidget(TestMeta.getReportingDescription());
         addScreenHandler(reportingDescription, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 reportingDescription.setValue(manager.getTest().getReportingDescription());
@@ -332,7 +449,7 @@ public class TestScreen extends Screen {
             }
         });
         
-        final TextBox timeTaMax = (TextBox)def.getWidget(TestMeta.getTimeTaMax());
+        timeTaMax = (TextBox)def.getWidget(TestMeta.getTimeTaMax());
         addScreenHandler(timeTaMax, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 timeTaMax.setValue(getString(manager.getTest().getTimeTaMax()));
@@ -352,7 +469,7 @@ public class TestScreen extends Screen {
         });
         
         
-        final TextBox timeTaAverage = (TextBox)def.getWidget(TestMeta.getTimeTaAverage());
+        timeTaAverage = (TextBox)def.getWidget(TestMeta.getTimeTaAverage());
         addScreenHandler(timeTaAverage, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 timeTaAverage.setValue(getString(manager.getTest().getTimeTaAverage()));
@@ -371,7 +488,7 @@ public class TestScreen extends Screen {
             }
         });
         
-        final TextBox timeTaWarning = (TextBox)def.getWidget(TestMeta.getTimeTaWarning());
+        timeTaWarning = (TextBox)def.getWidget(TestMeta.getTimeTaWarning());
         addScreenHandler(timeTaWarning, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 timeTaWarning.setValue(getString(manager.getTest().getTimeTaWarning()));
@@ -390,7 +507,7 @@ public class TestScreen extends Screen {
             }
         });
         
-        final TextBox timeTransit = (TextBox)def.getWidget(TestMeta.getTimeTransit());
+        timeTransit = (TextBox)def.getWidget(TestMeta.getTimeTransit());
         addScreenHandler(timeTransit, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 timeTransit.setValue(getString(manager.getTest().getTimeTransit()));
@@ -409,7 +526,7 @@ public class TestScreen extends Screen {
             }
         });
         
-        final TextBox timeHolding = (TextBox)def.getWidget(TestMeta.getTimeHolding());
+        timeHolding = (TextBox)def.getWidget(TestMeta.getTimeHolding());
         addScreenHandler(timeHolding, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 timeHolding.setValue(getString(manager.getTest().getTimeHolding()));
@@ -428,7 +545,7 @@ public class TestScreen extends Screen {
             }
         });
                 
-        final CheckBox isActive = (CheckBox)def.getWidget(TestMeta.getIsActive());
+        isActive = (CheckBox)def.getWidget(TestMeta.getIsActive());
         addScreenHandler(isActive, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 isActive.setValue(manager.getTest()
@@ -446,7 +563,7 @@ public class TestScreen extends Screen {
             }
         });
         
-        final CalendarLookUp activeBegin = (CalendarLookUp)def.getWidget(TestMeta.getActiveBegin());
+        activeBegin = (CalendarLookUp)def.getWidget(TestMeta.getActiveBegin());
         addScreenHandler(activeBegin, new ScreenEventHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
                 activeBegin.setValue(manager.getTest().getActiveBegin());
@@ -464,7 +581,7 @@ public class TestScreen extends Screen {
             }
         });
 
-        final CalendarLookUp activeEnd = (CalendarLookUp)def.getWidget(TestMeta.getActiveEnd());
+        activeEnd = (CalendarLookUp)def.getWidget(TestMeta.getActiveEnd());
         addScreenHandler(activeEnd, new ScreenEventHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
                 activeEnd.setValue(manager.getTest().getActiveEnd());
@@ -482,8 +599,7 @@ public class TestScreen extends Screen {
             }
         });        
         
-        final AutoComplete<Integer> label = (AutoComplete)def.getWidget(TestMeta.getLabel()
-                                                                        .getName());
+        label = (AutoComplete)def.getWidget(TestMeta.getLabel().getName());
         addScreenHandler(label, new ScreenEventHandler<Integer>() {
           public void onDataChange(DataChangeEvent event) {
               TestViewDO testDO = manager.getTest();
@@ -492,6 +608,7 @@ public class TestScreen extends Screen {
         
           public void onValueChange(ValueChangeEvent<Integer> event) {
               manager.getTest().setLabelId(event.getValue());
+              manager.getTest().setLabelName(label.getTextBoxDisplay());
           }
         
           public void onStateChange(StateChangeEvent<State> event) {
@@ -531,7 +648,7 @@ public class TestScreen extends Screen {
             
         });        
      
-        final TextBox labelQty = (TextBox)def.getWidget(TestMeta.getLabelQty());
+        labelQty = (TextBox)def.getWidget(TestMeta.getLabelQty());
         addScreenHandler(labelQty, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 labelQty.setValue(getString(manager.getTest().getLabelQty()));
@@ -639,7 +756,7 @@ public class TestScreen extends Screen {
             }
         }); 
         
-        final AppButton removeSection = (AppButton)def.getWidget("removeSectionButton");
+        removeSection = (AppButton)def.getWidget("removeSectionButton");
         addScreenHandler(removeSection,new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 int selectedRow = sectionTable.getSelectedIndex();
@@ -656,7 +773,7 @@ public class TestScreen extends Screen {
             
         });
         
-        final AppButton addSection = (AppButton)def.getWidget("addSectionButton");
+        addSection = (AppButton)def.getWidget("addSectionButton");
         addScreenHandler(addSection,new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 sectionTable.addRow();
@@ -675,7 +792,7 @@ public class TestScreen extends Screen {
         });
     
     
-        final CheckBox isReportable = (CheckBox)def.getWidget(TestMeta.getIsReportable());
+        isReportable = (CheckBox)def.getWidget(TestMeta.getIsReportable());
         addScreenHandler(isReportable, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 isReportable.setValue(manager.getTest()
@@ -693,8 +810,7 @@ public class TestScreen extends Screen {
             }
         });
         
-        final Dropdown<Integer> revisionMethod = 
-            (Dropdown<Integer>)def.getWidget(TestMeta.getRevisionMethodId());
+        revisionMethod = (Dropdown<Integer>)def.getWidget(TestMeta.getRevisionMethodId());
         addScreenHandler(revisionMethod, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 revisionMethod.setSelection(manager.getTest().getRevisionMethodId());
@@ -711,8 +827,7 @@ public class TestScreen extends Screen {
             }
         });
         
-        final Dropdown<Integer> sortingMethod = 
-            (Dropdown<Integer>)def.getWidget(TestMeta.getSortingMethodId());
+        sortingMethod = (Dropdown<Integer>)def.getWidget(TestMeta.getSortingMethodId());
         addScreenHandler(sortingMethod, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 sortingMethod.setSelection(manager.getTest().getSortingMethodId());
@@ -729,8 +844,7 @@ public class TestScreen extends Screen {
             }
         });  
         
-        final Dropdown<Integer> reportingMethod = 
-            (Dropdown<Integer>)def.getWidget(TestMeta.getReportingMethodId());
+        reportingMethod = (Dropdown<Integer>)def.getWidget(TestMeta.getReportingMethodId());
         addScreenHandler(reportingMethod, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 reportingMethod.setSelection(manager.getTest().getReportingMethodId());
@@ -747,7 +861,7 @@ public class TestScreen extends Screen {
             }
         });      
         
-        final TextBox reportingSequence = (TextBox)def.getWidget(TestMeta.getReportingSequence());
+        reportingSequence = (TextBox)def.getWidget(TestMeta.getReportingSequence());
         addScreenHandler(reportingSequence, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 reportingSequence.setValue(getString(manager.getTest().getReportingSequence()));
@@ -766,7 +880,7 @@ public class TestScreen extends Screen {
             }
         });
         
-        final AutoComplete<Integer> testTrailer = (AutoComplete)def.getWidget(TestMeta.getTestTrailer()
+        testTrailer = (AutoComplete)def.getWidget(TestMeta.getTestTrailer()
                                                                         .getName());
         addScreenHandler(testTrailer, new ScreenEventHandler<Integer>() {
           public void onDataChange(DataChangeEvent event) {
@@ -777,6 +891,7 @@ public class TestScreen extends Screen {
         
           public void onValueChange(ValueChangeEvent<Integer> event) {
               manager.getTest().setTestTrailerId(event.getValue());
+              manager.getTest().setTrailerName(testTrailer.getTextBoxDisplay());
           }
         
           public void onStateChange(StateChangeEvent<State> event) {
@@ -816,8 +931,7 @@ public class TestScreen extends Screen {
             
         });
 
-        final Dropdown<Integer> testFormat = 
-            (Dropdown<Integer>)def.getWidget(TestMeta.getTestFormatId());
+        testFormat = (Dropdown<Integer>)def.getWidget(TestMeta.getTestFormatId());
         addScreenHandler(testFormat, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 testFormat.setSelection(manager.getTest().getTestFormatId());
@@ -834,7 +948,7 @@ public class TestScreen extends Screen {
             }
         });
         
-        final AutoComplete<Integer> scriptlet = (AutoComplete)def.getWidget(TestMeta.getScriptlet()
+        scriptlet = (AutoComplete)def.getWidget(TestMeta.getScriptlet()
                                                                               .getName());
         addScreenHandler(scriptlet, new ScreenEventHandler<Integer>() {
           public void onDataChange(DataChangeEvent event) {
@@ -845,6 +959,7 @@ public class TestScreen extends Screen {
         
           public void onValueChange(ValueChangeEvent<Integer> event) {
               manager.getTest().setScriptletId(event.getValue());
+              manager.getTest().setScriptletName(scriptlet.getTextBoxDisplay());
           }
          
           public void onStateChange(StateChangeEvent<State> event) {
@@ -883,104 +998,8 @@ public class TestScreen extends Screen {
             }
             
         });        
-        
-        final AppButton queryButton = (AppButton)def.getWidget("query");
-        addScreenHandler(queryButton, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                query();
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                if(EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState()) && 
-                                security.hasSelectPermission())
-                    queryButton.enable(true);
-                else if (event.getState() == State.QUERY)
-                    queryButton.setState(ButtonState.LOCK_PRESSED);
-                else
-                    queryButton.enable(false);
-            }
-        });
-
-        final AppButton addButton = (AppButton)def.getWidget("add");
-        addScreenHandler(addButton, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                add();
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                if (EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState()))
-                    addButton.enable(true);
-                else if (EnumSet.of(State.ADD).contains(event.getState()))
-                    addButton.setState(ButtonState.LOCK_PRESSED);
-                else
-                    addButton.enable(false);
-            }
-        });
-
-        final AppButton updateButton = (AppButton)def.getWidget("update");
-        addScreenHandler(updateButton, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                update();
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                if (EnumSet.of(State.DISPLAY).contains(event.getState()) && 
-                                security.hasUpdatePermission())
-                    updateButton.enable(true);
-                else if (EnumSet.of(State.UPDATE).contains(event.getState()))
-                    updateButton.setState(ButtonState.LOCK_PRESSED);
-                else
-                    updateButton.enable(false);
-
-            }
-        });
-
-        final AppButton nextButton = (AppButton)def.getWidget("next");
-        addScreenHandler(nextButton, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                next();
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                nextButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
-            }
-        });
-
-        final AppButton prevButton = (AppButton)def.getWidget("previous");
-        addScreenHandler(prevButton, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                previous();
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                prevButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
-            }
-        });
-
-        final AppButton commitButton = (AppButton)def.getWidget("commit");
-        addScreenHandler(commitButton, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                commit();
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                commitButton.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE).contains(event.getState()));
-            }
-        });
-
-        final AppButton abortButton = (AppButton)def.getWidget("abort");
-        addScreenHandler(abortButton, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                abort();
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                abortButton.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE).contains(event.getState()));
-            }
-        });
-        
-        //MenuPanel options = (MenuPanel)def.getWidget("optionsMenu");           
-        final MenuItem duplicate = (MenuItem)def.getWidget("duplicateRecord");
+               
+        duplicate = (MenuItem)def.getWidget("duplicateRecord");
         addScreenHandler(duplicate, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {               
                 duplicate();
@@ -991,10 +1010,10 @@ public class TestScreen extends Screen {
             }
         });
         
-        final MenuItem history = (MenuItem)def.getWidget("history");
+        history = (MenuItem)def.getWidget("history");
         addScreenHandler(history, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {               
-                Window.alert("clicked history");
+                //Window.alert("clicked history");
                 //history();
             }
 
@@ -1004,7 +1023,7 @@ public class TestScreen extends Screen {
         });
         
         // Get TabPanel and set Tab Selection Handlers
-        final TabPanel tabs = (TabPanel)def.getWidget("testTabPanel");
+        tabs = (TabPanel)def.getWidget("testTabPanel");
         tabs.addSelectionHandler(new SelectionHandler<Integer>() {
             public void onSelection(SelectionEvent<Integer> event) {
                 int tabIndex = event.getSelectedItem().intValue();
@@ -1075,7 +1094,7 @@ public class TestScreen extends Screen {
             }
         };
 
-        final ButtonGroup atoz = (ButtonGroup)def.getWidget("atozButtons");
+        atoz = (ButtonGroup)def.getWidget("atozButtons");
         addScreenHandler(atoz, new ScreenEventHandler<Object>() {
             public void onStateChange(StateChangeEvent<State> event) {
                 boolean enable;
@@ -1210,9 +1229,14 @@ public class TestScreen extends Screen {
         }
     }
 
-    protected void commit() {        
-        if (!validate() && state != State.QUERY) {
-            window.setError(consts.get("correctErrors"));
+    protected void commit() { 
+        //
+        // set the focus to null so every field will commit its data.
+        //
+        name.setFocus(false);
+        
+        if (!validate()) {
+            window.setError(consts.get("correctErrors"));                           
             return;
         }
         
@@ -1227,9 +1251,10 @@ public class TestScreen extends Screen {
                 window.setBusy(consts.get("adding"));
                 try {
                     manager = manager.add();
+                    
                     setState(State.DISPLAY);
                     DataChangeEvent.fire(this);
-                    window.clearStatus();
+                    window.setDone(consts.get("addingComplete"));
                 } catch (ValidationErrorsList e) {
                     showErrors(e);
                 } catch (Exception e) {
@@ -1244,7 +1269,7 @@ public class TestScreen extends Screen {
                     manager = manager.update();
                     setState(State.DISPLAY);
                     DataChangeEvent.fire(this);
-                    window.clearStatus();
+                    window.setDone(consts.get("updatingComplete"));
                 } catch (ValidationErrorsList e) {
                     showErrors(e);
                 } catch (Exception e) {
@@ -1259,27 +1284,23 @@ public class TestScreen extends Screen {
     protected void abort() {
         clearErrors();
         window.setBusy(consts.get("cancelChanges"));
-        
+       
         if (state == State.QUERY) {
-            manager = TestManager.getInstance();
-            setState(State.DEFAULT);
-            DataChangeEvent.fire(this);
+            fetchById(null);
             window.setDone(consts.get("queryAborted"));
         } else if (state == State.ADD) {
-            manager = TestManager.getInstance();
-            setState(State.DEFAULT);
-            DataChangeEvent.fire(this);            
+            fetchById(null);
             window.setDone(consts.get("addAborted"));
         } else if (state == State.UPDATE) {            
             try {
                 manager = manager.abort();                
                 setState(State.DISPLAY);
-                DataChangeEvent.fire(this);                                               
-                window.setDone(consts.get("updateAborted"));
+                DataChangeEvent.fire(this);                                 
             } catch (Exception e) {
                 Window.alert(e.getMessage());
-                window.clearStatus();
+                fetchById(null);
             }
+            window.setDone(consts.get("updateAborted"));
         } else {
             window.clearStatus();
         }
@@ -1304,10 +1325,9 @@ public class TestScreen extends Screen {
                     manager = TestManager.findByIdWithWorksheet(id);
                 }                
             } catch (Exception e) {
+                fetchById(null);
                 e.printStackTrace();
-                setState(State.DEFAULT);
                 Window.alert(consts.get("fetchFailed") + e.getMessage());
-                window.clearStatus();
                 return false;
             }
             setState(State.DISPLAY);

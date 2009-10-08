@@ -70,6 +70,9 @@ public class TestResultManager implements RPC {
         this.testId = testId;
     }    
     
+    /**
+     * This method returns the number of result groups maintained by this manager.
+     */
     public int groupCount(){
         if(results == null)
             return 0;
@@ -77,6 +80,16 @@ public class TestResultManager implements RPC {
         return results.size();
     }
     
+    /**
+     * This method returns the TestResultDO stored in the result group 
+     * specified by the argument "group" and at the index "row" in the group.
+     * It should be noted that "group" starts at one and NOT zero as it mirrors
+     * the data as seen on the screen by the user and not how it is maintained
+     * by the manager. When result groups are created or assigned to test analytes,
+     * on the Test screen, they numbering always starts with one.
+     * The argument "row" however starts at zero as this index is always hidden
+     * from the user.
+     */
     public TestResultDO getResultAt(int group, int row) {
         ArrayList<TestResultDO> list;
         
@@ -91,6 +104,10 @@ public class TestResultManager implements RPC {
         return null;
     }
     
+    /**
+     * This method returns the size of the result group for the index "group". 
+     * As noted earlier the index "group" starts at one.
+     */
     public int getResultGroupSize(int group) {        
         if(results == null || group <= 0 || group-1 >= results.size())
             return 0;
@@ -98,6 +115,11 @@ public class TestResultManager implements RPC {
         return results.get(group-1).size();
     }
     
+    /**
+     * This method adds a TestResultDO at the end of the result group specified 
+     * by the argument "group" and sets the id of the DO to the argument "id".
+     * The argument "group" is an index that begins at one. 
+     */
     public void addResult(int group,Integer id) {
         TestResultDO result;
         if(results == null || group <= 0 || group-1 >= results.size())
@@ -108,6 +130,11 @@ public class TestResultManager implements RPC {
         results.get(group-1).add(result);
     }
     
+    /**
+     * This method adds a TestResultDO at the index "row" of the result group specified 
+     * by the argument "group" and sets the id of the DO to the argument "id".
+     * The argument "group" is an index that begins at one. 
+     */
     public void addResultAt(int group,int row,Integer id) {
         ArrayList<TestResultDO> list;
         TestResultDO result;
