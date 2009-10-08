@@ -200,7 +200,7 @@ public class TestService {
     } 
     
     public AutocompleteRPC getMethodMatches(AutocompleteRPC rpc) {
-        rpc.model = (ArrayList<RPC>)methodRemote().autoCompleteLookupByName(rpc.match.trim() + "%", 10);        
+        rpc.model = (ArrayList)methodRemote().autoCompleteLookupByName(rpc.match.trim() + "%", 10);        
         
         return rpc;
     }
