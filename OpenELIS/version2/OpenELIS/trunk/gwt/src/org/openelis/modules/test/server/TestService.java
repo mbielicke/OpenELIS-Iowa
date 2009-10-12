@@ -33,7 +33,6 @@ import org.openelis.domain.TestMethodViewDO;
 import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.manager.TestAnalyteManager;
 import org.openelis.manager.TestManager;
 import org.openelis.manager.TestPrepManager;
@@ -185,9 +184,9 @@ public class TestService {
         }
     }
     
-    public TestManager abort(Integer orgId) throws Exception {        
+    public TestManager abort(Integer testId) throws Exception {        
         try {
-            return managerRemote().abortUpdate(orgId);
+            return managerRemote().abortUpdate(testId);
         } catch (RuntimeException e) {
             throw new DatabaseException(e);
         }

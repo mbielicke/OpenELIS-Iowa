@@ -219,7 +219,7 @@ public class TestManagerProxy {
 
         tl = getTestLocal();
 
-        tl.validateTest(man.getTest(),
+        tl.validate(man.getTest(),
                         man.getTestSections().getSections(),
                         man.getSampleTypes().getTypes(),
                         man.getTestAnalytes().getAnalytes(),

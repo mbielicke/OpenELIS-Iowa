@@ -1169,7 +1169,7 @@ public class TestScreen extends Screen {
     
     protected void query() {
         manager = TestManager.getInstance();    
-        setState(Screen.State.QUERY);
+        setState(State.QUERY);
         DataChangeEvent.fire(this);       
         
         sampleTypeTab.draw();
@@ -1194,7 +1194,7 @@ public class TestScreen extends Screen {
         test = manager.getTest();        
         test.setIsActive("N");
         test.setIsReportable("N");    
-        setState(Screen.State.ADD);
+        setState(State.ADD);
         DataChangeEvent.fire(this);        
         window.setDone(consts.get("enterInformationPressCommit"));
     }
@@ -1217,19 +1217,16 @@ public class TestScreen extends Screen {
             sampleTypeTab.draw();
             analyteAndResultTab.draw();
             prepAndReflexTab.draw();
-            worksheetLayoutTab.draw();            
-            
-            window.clearStatus();            
-        } catch (EntityLockedException e) {
-            window.clearStatus();
-            Window.alert(e.getMessage());
+            worksheetLayoutTab.draw();                               
         } catch (Exception e) {
-            e.printStackTrace();
             Window.alert(e.getMessage());
         }
+        
+        window.clearStatus();
     }
 
     protected void commit() { 
+        Query query;
         //
         // set the focus to null so every field will commit its data.
         //
@@ -1241,8 +1238,6 @@ public class TestScreen extends Screen {
         }
         
         if (state == State.QUERY) {                        
-            Query query;
-
             query = new Query();
             query.setFields(getQueryFields());
             nav.setQuery(query);               
@@ -1475,21 +1470,15 @@ public class TestScreen extends Screen {
         if (manager == null)
             return model;
         tsm = manager.getTestSections();
-        try {
-            for (int iter = 0; iter < tsm.count(); iter++) {
-                sectionDO = tsm.getSectionAt(iter);
-
-                row = new TableDataRow(2);
-                row.key = sectionDO.getId();
-
-                row.cells.get(0).value = sectionDO.getSectionId();
-                row.cells.get(1).value = sectionDO.getFlagId();
-                model.add(row);
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
+        for (int iter = 0; iter < tsm.count(); iter++) {
+            sectionDO = tsm.getSectionAt(iter);
+            
+            row = new TableDataRow(2);
+            row.key = sectionDO.getId();
+            
+            row.cells.get(0).value = sectionDO.getSectionId();
+            row.cells.get(1).value = sectionDO.getFlagId();
+            model.add(row);
         }
 
         return model;
