@@ -104,19 +104,30 @@ public class DataBaseUtil {
         return dt;
     }
 
-    /*
-     * Convenience method to see if two objects are the different
+    /**
+     * Compares the two parameters to see if they are different
+     * @return true if object is the same; otherwise false
      */
-
     public static boolean isDifferent(Object a, Object b) {
         return (a == null && b != null) || (a != null && !a.equals(b));
     }
+    
+    /**
+     * Checks the parameter to see if its null or its length is 0.
+     * @return true if object is empty; otherwise false
+     */
+    public static boolean isEmpty(Object a) {
+        if (a instanceof String)
+            return ((String)a).length() == 0;
+        return a == null;
+    }
+    
     
     /*
      * For paged result list, this method returns a subList of the query list
      * starting at first for max number of results.
      */
-    public static List subList(List query, int first, int max) {
+    public static ArrayList subList(List query, int first, int max) {
         int to;
         Iterator e;
         ArrayList list;
@@ -137,6 +148,8 @@ public class DataBaseUtil {
      * Convert a List to ArrayList 
      */
     public static ArrayList toArrayList(List from) {
+        if (from instanceof ArrayList)
+            return (ArrayList) from;
         return new ArrayList(from);
     }
     
