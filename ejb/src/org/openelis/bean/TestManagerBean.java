@@ -68,12 +68,12 @@ public class TestManagerBean implements TestManagerRemote {
     }    
 
     public TestManager add(TestManager man) throws Exception {        
-            man.validate();
+        man.validate();
 
-            UserTransaction ut = ctx.getUserTransaction();
-            ut.begin();
-            man.add();
-            ut.commit();
+        UserTransaction ut = ctx.getUserTransaction();
+        ut.begin();
+        man.add();
+        ut.commit();
           
         return man;
     }

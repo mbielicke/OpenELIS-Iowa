@@ -496,16 +496,16 @@ public class TestBean implements TestRemote, TestLocal {
         resGrpRsltMap = new HashMap<Integer, List<Integer>>();
         
         validateTest(exceptionList, testDO);
-        validateTestSections(exceptionList, sections);
+        validateSections(exceptionList, sections);
         validateTypeOfSample(exceptionList, sampleTypes);
-        anaListValid = validateTestAnalyte(exceptionList,analytes,results,anaResGrpMap);
+        anaListValid = validateAnalyte(exceptionList,analytes,results,anaResGrpMap);
         resListValid = validateResult(exceptionList,results,sampleTypes,resGrpRsltMap);
-        validateTestPrep(exceptionList, prepTests);
-        validateTestReflex(exceptionList,reflexTests,anaListValid,resListValid,
+        validatePrep(exceptionList, prepTests);
+        validateReflex(exceptionList,reflexTests,anaListValid,resListValid,
                            anaResGrpMap,resGrpRsltMap);
-        validateTestWorksheet(exceptionList, worksheet);
-        validateTestWorksheetItems(exceptionList, items, worksheet);
-        validateTestWorksheetAnalytes(exceptionList,wsanalytes);
+        validateWorksheet(exceptionList, worksheet);
+        validateWorksheetItems(exceptionList, items, worksheet);
+        validateWorksheetAnalytes(exceptionList,wsanalytes);
         if (exceptionList.size() > 0)
             throw exceptionList;
 
@@ -1106,7 +1106,7 @@ public class TestBean implements TestRemote, TestLocal {
         }
     }
 
-    private boolean validateTestAnalyte(ValidationErrorsList exceptionList,
+    private boolean validateAnalyte(ValidationErrorsList exceptionList,
                                      ArrayList<ArrayList<TestAnalyteViewDO>> grid,
                                      ArrayList<ArrayList<TestResultDO>> results,
                                      HashMap<Integer, Integer> anaResGrpMap) {
@@ -1315,7 +1315,7 @@ public class TestBean implements TestRemote, TestLocal {
         return valid;
     }
 
-    private void validateTestPrep(ValidationErrorsList exceptionList,
+    private void validatePrep(ValidationErrorsList exceptionList,
                                   List<TestPrepViewDO> testPrepDOList) {
         List<Integer> testPrepIdList;
         TableFieldErrorException exc;
@@ -1361,7 +1361,7 @@ public class TestBean implements TestRemote, TestLocal {
         }
     }
 
-    private void validateTestReflex(ValidationErrorsList exceptionList,
+    private void validateReflex(ValidationErrorsList exceptionList,
                                     List<TestReflexViewDO> testReflexDOList,
                                     boolean anaListValid,
                                     boolean resListValid,
@@ -1426,7 +1426,7 @@ public class TestBean implements TestRemote, TestLocal {
         }
     }
 
-    private void validateTestWorksheet(ValidationErrorsList exceptionList,
+    private void validateWorksheet(ValidationErrorsList exceptionList,
                                        TestWorksheetDO worksheetDO) {
         boolean checkForMultiple = true;
         
@@ -1485,7 +1485,7 @@ public class TestBean implements TestRemote, TestLocal {
         }
     }
 
-    private void validateTestWorksheetItems(ValidationErrorsList exceptionList,
+    private void validateWorksheetItems(ValidationErrorsList exceptionList,
                                             List<TestWorksheetItemDO> itemDOList,
                                             TestWorksheetDO worksheetDO) {
         Integer bc, tc, position, batchId, totalId, formatId, fixedId, duplId;
@@ -1523,7 +1523,7 @@ public class TestBean implements TestRemote, TestLocal {
             worksheetDO.setBatchCapacity(bc);
             worksheetDO.setFormatId(formatId);
             worksheetDO.setTotalCapacity(tc);
-            validateTestWorksheet(exceptionList, worksheetDO);
+            validateWorksheet(exceptionList, worksheetDO);
         }
 
         posList = new ArrayList<Integer>();
@@ -1649,7 +1649,7 @@ public class TestBean implements TestRemote, TestLocal {
         }
     }
 
-    private void validateTestWorksheetAnalytes(ValidationErrorsList exceptionList,
+    private void validateWorksheetAnalytes(ValidationErrorsList exceptionList,
                                                ArrayList<TestWorksheetAnalyteViewDO> twsaDOList) {
         TestWorksheetAnalyteDO twsaDO;
         Integer repeat,anaId;
@@ -1681,7 +1681,7 @@ public class TestBean implements TestRemote, TestLocal {
 
     }
 
-    private void validateTestSections(ValidationErrorsList exceptionList,
+    private void validateSections(ValidationErrorsList exceptionList,
                                       List<TestSectionViewDO> sectionDOList) {
         Integer defId, askId, matchId, flagId, sectId;
         List<Integer> idList;
