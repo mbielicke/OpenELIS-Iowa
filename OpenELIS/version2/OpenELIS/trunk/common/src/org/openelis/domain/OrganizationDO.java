@@ -38,10 +38,10 @@ public class OrganizationDO extends DataObject {
 
     protected Integer         id, parentOrganizationId;
     protected String          name, isActive;
-    protected AddressDO       addressDO;
+    protected AddressDO       address;
 
     public OrganizationDO() {
-        addressDO = new AddressDO();
+        address = new AddressDO();
     }
 
     public OrganizationDO(Integer id, Integer parentOrganizationId, String name, String isActive,
@@ -53,7 +53,7 @@ public class OrganizationDO extends DataObject {
         setParentOrganizationId(parentOrganizationId);
         setName(name);
         setIsActive(isActive);
-        addressDO = new AddressDO(addressId, multipleUnit, streetAddress, city, state, zipCode,
+        address = new AddressDO(addressId, multipleUnit, streetAddress, city, state, zipCode,
                                   workPhone, homePhone, cellPhone, faxPhone, email, country);
         _changed = false;
     }
@@ -94,7 +94,7 @@ public class OrganizationDO extends DataObject {
         _changed = true;
     }
 
-    public AddressDO getAddressDO() {
-        return addressDO;
+    public AddressDO getAddress() {
+        return address;
     }
 }
