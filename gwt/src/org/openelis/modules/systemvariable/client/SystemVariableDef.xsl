@@ -66,7 +66,7 @@ UIRF Software License are applicable instead of those above.
               <xsl:call-template name="aToZLeftPanelButtons" />
             </buttonGroup>
             <VerticalPanel>
-              <table key="atozTable" width="auto" maxRows="18">
+              <table key="atozTable" width="auto" maxRows="9">
                 <col width="175" header="{resource:getString($constants,'name')}">
                   <label />
                 </col>

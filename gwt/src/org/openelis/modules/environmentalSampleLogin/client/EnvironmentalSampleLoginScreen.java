@@ -34,7 +34,7 @@ import org.openelis.common.AutocompleteRPC;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
-import org.openelis.domain.OrganizationVO;
+import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.ProjectDO;
 import org.openelis.domain.SampleEnvironmentalDO;
 import org.openelis.domain.SampleItemViewDO;
@@ -1593,14 +1593,14 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
                 
             for (int i=0; i<rpc.model.size(); i++){
-                OrganizationVO autoDO = (OrganizationVO)rpc.model.get(i);
+                OrganizationDO autoDO = (OrganizationDO)rpc.model.get(i);
                 
                 TableDataRow row = new TableDataRow(4);
                 row.key = autoDO.getId();
                 row.cells.get(0).value = autoDO.getName();
-                row.cells.get(1).value = autoDO.getStreetAddress();
-                row.cells.get(2).value = autoDO.getCity();
-                row.cells.get(3).value = autoDO.getState();
+                row.cells.get(1).value = autoDO.getAddress().getStreetAddress();
+                row.cells.get(2).value = autoDO.getAddress().getCity();
+                row.cells.get(3).value = autoDO.getAddress().getState();
   
                 model.add(row);
             } 

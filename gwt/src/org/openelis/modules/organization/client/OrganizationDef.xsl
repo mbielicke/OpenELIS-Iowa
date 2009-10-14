@@ -1,30 +1,32 @@
- <!--
-Exhibit A - UIRF Open-source Based Public Software License.
 
+<!--
+Exhibit A - UIRF Open-source Based Public Software License.
+  
 The contents of this file are subject to the UIRF Open-source Based
 Public Software License(the "License"); you may not use this file except
 in compliance with the License. You may obtain a copy of the License at
 openelis.uhl.uiowa.edu
-
+  
 Software distributed under the License is distributed on an "AS IS"
 basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
 License for the specific language governing rights and limitations
 under the License.
-
+  
 The Original Code is OpenELIS code.
-
+  
 The Initial Developer of the Original Code is The University of Iowa.
 Portions created by The University of Iowa are Copyright 2006-2008. All
 Rights Reserved.
-
+  
 Contributor(s): ______________________________________.
-
+  
 Alternatively, the contents of this file marked
 "Separately-Licensed" may be used under the terms of a UIRF Software
 license ("UIRF Software License"), in which case the provisions of a
 UIRF Software License are applicable instead of those above. 
--->
-<xsl:stylesheet 
+  -->
+
+<xsl:stylesheet
   version="1.0"
   extension-element-prefixes="resource"
   xmlns:locale="xalan://java.util.Locale"
@@ -34,279 +36,323 @@ UIRF Software License are applicable instead of those above.
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   xsi:noNamespaceSchemaLocation="http://openelis.uhl.uiowa.edu/schema/ScreenSchema.xsd"
   xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd"
-  xmlns:meta="xalan://org.openelis.metamap.OrganizationMetaMap" 
   xmlns:addr="xalan://org.openelis.meta.AddressMeta"
   xmlns:contact="xalan://org.openelis.metamap.OrganizationContactMetaMap"
+  xmlns:meta="xalan://org.openelis.metamap.OrganizationMetaMap"
   xmlns:note="xalan://org.openelis.meta.NoteMeta"
   xmlns:parent="xalan://org.openelis.meta.OrganizationMeta">
-  <xsl:import href="IMPORT/aToZOneColumn.xsl"/>
+
+  <xsl:import href="IMPORT/aToZOneColumn.xsl" />
   <xalan:component prefix="resource">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.util.UTFResource"/>
+    <xalan:script lang="javaclass" src="xalan://org.openelis.util.UTFResource" />
   </xalan:component>
   <xalan:component prefix="locale">
-    <xalan:script lang="javaclass" src="xalan://java.util.Locale"/>
+    <xalan:script lang="javaclass" src="xalan://java.util.Locale" />
   </xalan:component>
   <xalan:component prefix="meta">
-
-    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.OrganizationMetaMap"/>
+    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.OrganizationMetaMap" />
   </xalan:component>
   <xalan:component prefix="addr">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.AddressMeta"/>
+    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.AddressMeta" />
   </xalan:component>
   <xalan:component prefix="contact">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.OrganizationContactMetaMap"/>
+    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.OrganizationContactMetaMap" />
   </xalan:component>
   <xalan:component prefix="note">
-
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.NoteMeta"/>
+    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.NoteMeta" />
   </xalan:component>
   <xalan:component prefix="parent">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.OrganizationMeta"/>
+    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.OrganizationMeta" />
   </xalan:component>
   <xsl:template match="doc">
-    <xsl:variable name="org" select="meta:new()"/>
-    <xsl:variable name="addr" select="meta:getAddress($org)"/>
-    <xsl:variable name="cont" select="meta:getOrganizationContact($org)"/>
-
-    <xsl:variable name="parent" select="meta:getParentOrganization($org)"/>
-    <xsl:variable name="note" select="meta:getNote($org)"/>
-    <xsl:variable name="contAddr" select="contact:getAddress($cont)"/>
+    <xsl:variable name="org" select="meta:new()" />
+    <xsl:variable name="addr" select="meta:getAddress($org)" />
+    <xsl:variable name="cont" select="meta:getOrganizationContact($org)" />
+    <xsl:variable name="parent" select="meta:getParentOrganization($org)" />
+    <xsl:variable name="note" select="meta:getNote($org)" />
+    <xsl:variable name="contAddr" select="contact:getAddress($cont)" />
     <xsl:variable name="language">
-      <xsl:value-of select="locale"/>
+      <xsl:value-of select="locale" />
     </xsl:variable>
     <xsl:variable name="props">
-      <xsl:value-of select="props"/>
+      <xsl:value-of select="props" />
     </xsl:variable>
 
-    <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))"/>
-    <screen id="Organization" name="{resource:getString($constants,'organization')}">                 
+<!-- main screen -->
 
-        <HorizontalPanel padding="0" spacing="0">
-          <!--left table goes here -->
-          <CollapsePanel key="collapsePanel" height="440px" style="LeftSidePanel">
-              <resultsTable height="425px" width="100%" key="azTable">
-                 <buttonGroup key="atozButtons">
-                   <xsl:call-template name="aToZLeftPanelButtons"/>
-                 </buttonGroup>
-                 <table maxRows="18" width="auto">
-                   <col header="{resource:getString($constants,'name')}" width="175"> 
-                     <label/>
-                   </col>
-                 </table>
-              </resultsTable>
-          </CollapsePanel>
-          <VerticalPanel spacing="0" padding="0">
-            <!--button panel code-->
-            <AbsolutePanel spacing="0" style="ButtonPanelContainer">
-              <HorizontalPanel>
-                <xsl:call-template name="queryButton">
-                  <xsl:with-param name="language">
-                    <xsl:value-of select="language"/>
-                  </xsl:with-param>
-                </xsl:call-template>
-                <xsl:call-template name="previousButton">
-                  <xsl:with-param name="language">
-                    <xsl:value-of select="language"/>
-                  </xsl:with-param>
-                </xsl:call-template>
-                <xsl:call-template name="nextButton">
-                  <xsl:with-param name="language">
-                    <xsl:value-of select="language"/>
-                  </xsl:with-param>
-                </xsl:call-template>
-                <xsl:call-template name="buttonPanelDivider"/>
-                <xsl:call-template name="addButton">
-                  <xsl:with-param name="language">
-                    <xsl:value-of select="language"/>
-                  </xsl:with-param>
-                </xsl:call-template>
-                <xsl:call-template name="updateButton">
-                  <xsl:with-param name="language">
-                    <xsl:value-of select="language"/>
-                  </xsl:with-param>
-                </xsl:call-template>
-                <xsl:call-template name="buttonPanelDivider"/>
-                <xsl:call-template name="commitButton">
-                  <xsl:with-param name="language">
-                    <xsl:value-of select="language"/>
-                  </xsl:with-param>
-                </xsl:call-template>
-                <xsl:call-template name="abortButton">
-                  <xsl:with-param name="language">
-                    <xsl:value-of select="language"/>
-                  </xsl:with-param>
-                </xsl:call-template>
-              </HorizontalPanel>
-            </AbsolutePanel>
-            <!--end button panel-->
-            <VerticalPanel spacing="0" padding="0" style="WhiteContentPanel">
-              <TablePanel style="Form">
-                <row>
-                  <text style="Prompt"><xsl:value-of select="resource:getString($constants,'id')"/>:</text>
-                  <textbox key="{meta:getId($org)}" tab="{meta:getName($org)},{meta:getIsActive($org)}" width="75px" field="Integer"/>
-                </row>
+    <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
+    <screen id="Organization" name="{resource:getString($constants,'organization')}">
+      <HorizontalPanel padding="0" spacing="0">
 
-                <row>
-                  <text style="Prompt"><xsl:value-of select="resource:getString($constants,'name')"/>:</text>
-                  <textbox case="upper" key="{meta:getName($org)}" max="40" tab="{addr:getMultipleUnit($addr)},{meta:getId($org)}" width="225px" field="String" required="true" />
-                  <text style="Prompt"><xsl:value-of select="resource:getString($constants,'city')"/>:</text>
-                  <widget colspan="3">
-                    <textbox case="upper" key="{addr:getCity($addr)}" max="30" tab="{addr:getState($addr)},{addr:getStreetAddress($addr)}" width="212px" field="String" required="true"/>
-                  </widget>
-                </row>
+<!--left table goes here -->
 
-                <row>
-                  <text style="Prompt"><xsl:value-of select="resource:getString($constants,'aptSuite')"/>:</text>
-                  <textbox case="upper" key="{addr:getMultipleUnit($addr)}" max="30" tab="{addr:getStreetAddress($addr)},{meta:getName($org)}" width="212px" field="String"/>
-                  <text style="Prompt"><xsl:value-of select="resource:getString($constants,'state')"/>:</text>
-                  <dropdown case="upper" key="{addr:getState($addr)}" tab="{addr:getZipCode($addr)},{addr:getCity($addr)}" width="40px" field="String" popWidth="40px"/>
-                  <text style="Prompt"><xsl:value-of select="resource:getString($constants,'zipcode')"/>:</text>
-                  <textbox key="{addr:getZipCode($addr)}" mask="99999-9999" tab="{addr:getCountry($addr)},{addr:getState($addr)}" width="70" field="String"/>
+        <CollapsePanel key="collapsePanel" style="LeftSidePanel">
+          <HorizontalPanel width="225px">
+            <buttonGroup key="atozButtons">
+              <xsl:call-template name="aToZLeftPanelButtons" />
+            </buttonGroup>
+            <VerticalPanel>
+              <table key="atozTable" width="auto" maxRows="18">
+                <col width="175" header="{resource:getString($constants,'name')}">
+                  <label />
+                </col>
+              </table>
+              <widget halign="center">
+                <HorizontalPanel>
+                  <appButton key="atozPrev" style="Button" enable="false">
+                    <AbsolutePanel style="prevNavIndex" />
+                  </appButton>
+                  <appButton key="atozNext" style="Button" enable="false">
+                    <AbsolutePanel style="nextNavIndex" />
+                  </appButton>
+                </HorizontalPanel>
+              </widget>
+            </VerticalPanel>
+          </HorizontalPanel>
+        </CollapsePanel>
+        <VerticalPanel padding="0" spacing="0">
 
-                </row>
-                <row>
-                  <text style="Prompt"><xsl:value-of select="resource:getString($constants,'address')"/>:</text>
-                  <textbox case="upper" key="{addr:getStreetAddress($addr)}" max="30" tab="{addr:getCity($addr)},{addr:getMultipleUnit($addr)}" width="212px" field="String" required="true"/>
-                  <text style="Prompt"><xsl:value-of select="resource:getString($constants,'country')"/>:</text>
-                  <widget colspan="3">
-                    <dropdown case="mixed" key="{addr:getCountry($addr)}" tab="{parent:getName($parent)},{addr:getZipCode($addr)}" width="175px" popWidth="175px" field="String" required="true"/>
-                  </widget>
+<!--button panel code-->
 
-                </row>
-                <row>
-                  <text style="Prompt"><xsl:value-of select="resource:getString($constants,'parentOrganization')"/>:</text>
-                  <autoComplete case="upper" key="{parent:getName($parent)}" field="Integer" tab="{meta:getIsActive($org)},{addr:getCountry($addr)}" width="241px" popWidth="auto">
-                      <col header="Name" width="180"/>
-                      <col header="Street" width="110"/>
-                      <col header="City" width="100"/>
-                      <col header="St" width="20"/>
-                  </autoComplete>
-                  <text style="Prompt"><xsl:value-of select="resource:getString($constants,'active')"/>:</text>
-                  <widget colspan="3">
-                    <check key="{meta:getIsActive($org)}" tab="contactsTable,{parent:getName($parent)}"/>
-                  </widget>
-                </row>
-              </TablePanel>
-              <!-- TAB PANEL -->
-              <TabPanel key="orgTabPanel">
-                <!-- TAB 1 -->
-                <tab key="contactsTab" text="{resource:getString($constants,'contact')}">
-                  <VerticalPanel  width="610px" padding="0" spacing="0">
-                    <widget valign="top">
-                      <table key="contactsTable" maxRows="9" showScroll="ALWAYS" title="" width="574px" tab="{meta:getId($org)},{meta:getIsActive($org)}">
-                          <col key="{contact:getContactTypeId($cont)}" header="{resource:getString($constants,'type')}" width="106" sort="true">
-                              <dropdown case="mixed" width="90" field="Integer" required="true"/>
-                          </col>
-                          <col key="{contact:getName($cont)}" header="{resource:getString($constants,'contactName')}" width="130" sort="true">   
-                            <textbox  case="upper" field="String" max="40" required="true"/>
-                          </col>
-                          <col key="{addr:getMultipleUnit($contAddr)}" header="{resource:getString($constants,'aptSuite')}" width="130" sort="true">
-                              <textbox  case="upper" field="String" max="30"/>
-                          </col>
-                          <col key="{addr:getStreetAddress($contAddr)}" header="{resource:getString($constants,'address')}" width="130" sort="true">
-                            <textbox  case="upper" field="String" max="40"/>
-                          </col>
-                          <col key="{addr:getCity($contAddr)}" header="{resource:getString($constants,'city')}" width="130" sort="true">
-                              <textbox  case="upper" field="String" max="30"/>
-                          </col>
-                          <col key="{addr:getState($contAddr)}" header="{resource:getString($constants,'state')}" width="56" sort="true">
-                             <dropdown case="upper" width="40px" field="String"/>
-                          </col>
-                          <col key="{addr:getZipCode($contAddr)}" header="{resource:getString($constants,'zipcode')}" width="68" sort="true">
-                              <textbox mask="99999-9999"  case="mixed" field="String"/>
-                          </col>
-                          <col key="{addr:getCountry($contAddr)}" header="{resource:getString($constants,'country')}" width="126" sort="true">
-                              <dropdown  case="mixed" width="110px" field="String"/>
-                          </col>
-                          <col key="{addr:getWorkPhone($contAddr)}" header="{resource:getString($constants,'workNumber')}" width="100" sort="true">
-                              <textbox case="mixed" field="String"/>
-                          </col>
-                          <col key="{addr:getHomePhone($contAddr)}" header="{resource:getString($constants,'homeNumber')}" width="90" sort="true">
-                              <textbox case="mixed" field="String"/>
-                          </col>
-                          <col key="{addr:getCellPhone($contAddr)}" header="{resource:getString($constants,'cellNumber')}" width="90" sort="true">
-                            <textbox  case="mixed" field="String"/>
-                          </col>
-                          <col key="{addr:getFaxPhone($contAddr)}" header="{resource:getString($constants,'faxNumber')}" width="90" sort="true">
-                            <textbox case="mixed" field="String"/>
-                          </col>
-                          <col key="{addr:getEmail($contAddr)}" header="{resource:getString($constants,'email')}" width="150" sort="true">
-                            <textbox case="mixed" field="String"/>
-                          </col>
-                      </table>
-                    </widget>
-                    <HorizontalPanel style="WhiteContentPanel">
-                      <widget halign="center" style="WhiteContentPanel">
-                      <appButton action="addContact" key="addContactButton" style="Button">
-                        <HorizontalPanel>
-                          <AbsolutePanel style="AddRowButtonImage"/>
-                          <text><xsl:value-of select="resource:getString($constants,'addRow')"/></text>
-                        </HorizontalPanel>
-                      </appButton>
-                      </widget>
-                      <widget halign="center" style="WhiteContentPanel">
-                      <appButton action="removeContact" key="removeContactButton" style="Button">
-                        <HorizontalPanel>
-                          <AbsolutePanel style="RemoveRowButtonImage"/>
-                          <text><xsl:value-of select="resource:getString($constants,'removeRow')"/></text>
-                        </HorizontalPanel>
+          <AbsolutePanel spacing="0" style="ButtonPanelContainer">
+            <HorizontalPanel>
+              <xsl:call-template name="queryButton">
+                <xsl:with-param name="language">
+                  <xsl:value-of select="language" />
+                </xsl:with-param>
+              </xsl:call-template>
+              <xsl:call-template name="previousButton">
+                <xsl:with-param name="language">
+                  <xsl:value-of select="language" />
+                </xsl:with-param>
+              </xsl:call-template>
+              <xsl:call-template name="nextButton">
+                <xsl:with-param name="language">
+                  <xsl:value-of select="language" />
+                </xsl:with-param>
+              </xsl:call-template>
+              <xsl:call-template name="buttonPanelDivider" />
+              <xsl:call-template name="addButton">
+                <xsl:with-param name="language">
+                  <xsl:value-of select="language" />
+                </xsl:with-param>
+              </xsl:call-template>
+              <xsl:call-template name="updateButton">
+                <xsl:with-param name="language">
+                  <xsl:value-of select="language" />
+                </xsl:with-param>
+              </xsl:call-template>
+              <xsl:call-template name="buttonPanelDivider" />
+              <xsl:call-template name="commitButton">
+                <xsl:with-param name="language">
+                  <xsl:value-of select="language" />
+                </xsl:with-param>
+              </xsl:call-template>
+              <xsl:call-template name="abortButton">
+                <xsl:with-param name="language">
+                  <xsl:value-of select="language" />
+                </xsl:with-param>
+              </xsl:call-template>
+            </HorizontalPanel>
+          </AbsolutePanel>
 
-                      </appButton>
-                      </widget>
-                    </HorizontalPanel>
-                  </VerticalPanel>
-                  <!-- END TAB 1 -->
-                </tab>
-                <!-- START TAB 2 -->
-                <tab key="identifierTab" text="{resource:getString($constants,'identifier')}">
-                  <VerticalPanel padding="0" spacing="0">
+<!--end button panel-->
+
+          <VerticalPanel padding="0" spacing="0" style="WhiteContentPanel">
+            <TablePanel style="Form">
+              <row>
+                <text style="Prompt">
+                  <xsl:value-of select="resource:getString($constants,'id')" />:
+                </text>
+                <textbox key="{meta:getId($org)}" width="75px" tab="{meta:getName($org)},{meta:getIsActive($org)}" field="Integer" />
+              </row>
+              <row>
+                <text style="Prompt">
+                  <xsl:value-of select="resource:getString($constants,'name')" />:
+                </text>
+                <textbox key="{meta:getName($org)}" width="225px" case="UPPER" max="40" tab="{addr:getMultipleUnit($addr)},{meta:getId($org)}" field="String" required="true" />
+                <text style="Prompt">
+                  <xsl:value-of select="resource:getString($constants,'city')" />:
+                </text>
+                <widget colspan="3">
+                  <textbox key="{addr:getCity($addr)}" width="212px" case="UPPER" max="30" tab="{addr:getState($addr)},{addr:getStreetAddress($addr)}" field="String" required="true" />
+                </widget>
+              </row>
+              <row>
+                <text style="Prompt">
+                  <xsl:value-of select="resource:getString($constants,'aptSuite')" />:
+                </text>
+                <textbox key="{addr:getMultipleUnit($addr)}" width="212px" case="UPPER" max="30" tab="{addr:getStreetAddress($addr)},{meta:getName($org)}" field="String" />
+                <text style="Prompt">
+                  <xsl:value-of select="resource:getString($constants,'state')" />:
+                </text>
+                <dropdown key="{addr:getState($addr)}" width="40px" case="UPPER" popWidth="40px" tab="{addr:getZipCode($addr)},{addr:getCity($addr)}" field="String" />
+                <text style="Prompt">
+                  <xsl:value-of select="resource:getString($constants,'zipcode')" />:
+                </text>
+                <textbox key="{addr:getZipCode($addr)}" width="70" mask="99999-9999" tab="{addr:getCountry($addr)},{addr:getState($addr)}" field="String" />
+              </row>
+              <row>
+                <text style="Prompt">
+                  <xsl:value-of select="resource:getString($constants,'address')" />:
+                </text>
+                <textbox key="{addr:getStreetAddress($addr)}" width="212px" case="UPPER" max="30" tab="{addr:getCity($addr)},{addr:getMultipleUnit($addr)}" field="String" required="true" />
+                <text style="Prompt">
+                  <xsl:value-of select="resource:getString($constants,'country')" />:
+                </text>
+                <widget colspan="3">
+                  <dropdown key="{addr:getCountry($addr)}" width="175px" popWidth="175px" tab="{parent:getName($parent)},{addr:getZipCode($addr)}" field="String" required="true" />
+                </widget>
+              </row>
+              <row>
+                <text style="Prompt">
+                  <xsl:value-of select="resource:getString($constants,'parentOrganization')" />:
+                </text>
+                <autoComplete key="{parent:getName($parent)}" width="241px" case="UPPER" popWidth="auto" tab="{meta:getIsActive($org)},{addr:getCountry($addr)}" field="Integer">
+                  <col width="180" header="Name" />
+                  <col width="110" header="Street" />
+                  <col width="100" header="City" />
+                  <col width="20" header="St" />
+                </autoComplete>
+                <text style="Prompt">
+                  <xsl:value-of select="resource:getString($constants,'active')" />:
+                </text>
+                <widget colspan="3">
+                  <check key="{meta:getIsActive($org)}" tab="contactsTable,{parent:getName($parent)}" />
+                </widget>
+              </row>
+            </TablePanel>
+
+<!-- TAB PANEL -->
+
+            <TabPanel key="tabPanel">
+
+<!-- TAB 1 -->
+
+              <tab key="contactsTab" text="{resource:getString($constants,'contact')}">
+                <VerticalPanel width="610px" padding="0" spacing="0">
                   <widget valign="top">
-                    <table key="identifierstsTable" maxRows="9" showScroll="ALWAYS" title="" width="auto">
-                        <col key="{contact:getName($cont)}" header="{resource:getString($constants,'identifier')}" width="267" sort="true" filter="false" align="left">
-                          <textbox case="mixed" required="true" field="String"/>
-                        </col>
-                        <col key="{addr:getMultipleUnit($contAddr)}" header="{resource:getString($constants,'value')}" width="298" sort="true" filter="false" align="left"> 
-                           <textbox case="mixed" required="true" field="String"/>
-                        </col>
-                     </table>
+                    <table key="contactsTable" width="574px" maxRows="9" showScroll="ALWAYS" tab="{meta:getId($org)},{meta:getIsActive($org)}" title="">
+                      <col key="{contact:getContactTypeId($cont)}" width="106" sort="true" header="{resource:getString($constants,'type')}">
+                        <dropdown width="90" field="Integer" required="true" />
+                      </col>
+                      <col key="{contact:getName($cont)}" width="130" sort="true" header="{resource:getString($constants,'contactName')}">
+                        <textbox case="UPPER" max="40" field="String" required="true" />
+                      </col>
+                      <col key="{addr:getMultipleUnit($contAddr)}" width="130" sort="true" header="{resource:getString($constants,'aptSuite')}">
+                        <textbox case="UPPER" max="30" field="String" />
+                      </col>
+                      <col key="{addr:getStreetAddress($contAddr)}" width="130" sort="true" header="{resource:getString($constants,'address')}">
+                        <textbox case="UPPER" max="40" field="String" />
+                      </col>
+                      <col key="{addr:getCity($contAddr)}" width="130" sort="true" header="{resource:getString($constants,'city')}">
+                        <textbox case="UPPER" max="30" field="String" />
+                      </col>
+                      <col key="{addr:getState($contAddr)}" width="56" sort="true" header="{resource:getString($constants,'state')}">
+                        <dropdown width="40px" case="UPPER" field="String" />
+                      </col>
+                      <col key="{addr:getZipCode($contAddr)}" width="68" sort="true" header="{resource:getString($constants,'zipcode')}">
+                        <textbox mask="99999-9999" field="String" />
+                      </col>
+                      <col key="{addr:getCountry($contAddr)}" width="126" sort="true" header="{resource:getString($constants,'country')}">
+                        <dropdown width="110px" field="String" />
+                      </col>
+                      <col key="{addr:getWorkPhone($contAddr)}" width="100" sort="true" header="{resource:getString($constants,'workNumber')}">
+                        <textbox field="String" />
+                      </col>
+                      <col key="{addr:getHomePhone($contAddr)}" width="90" sort="true" header="{resource:getString($constants,'homeNumber')}">
+                        <textbox field="String" />
+                      </col>
+                      <col key="{addr:getCellPhone($contAddr)}" width="90" sort="true" header="{resource:getString($constants,'cellNumber')}">
+                        <textbox field="String" />
+                      </col>
+                      <col key="{addr:getFaxPhone($contAddr)}" width="90" sort="true" header="{resource:getString($constants,'faxNumber')}">
+                        <textbox field="String" />
+                      </col>
+                      <col key="{addr:getEmail($contAddr)}" width="150" sort="true" header="{resource:getString($constants,'email')}">
+                        <textbox field="String" />
+                      </col>
+                    </table>
+                  </widget>
+                  <HorizontalPanel style="WhiteContentPanel">
+                    <widget halign="center" style="WhiteContentPanel">
+                      <appButton key="addContactButton" style="Button" action="addContact">
+                        <HorizontalPanel>
+                          <AbsolutePanel style="AddRowButtonImage" />
+                          <text>
+                            <xsl:value-of select="resource:getString($constants,'addRow')" />
+                          </text>
+                        </HorizontalPanel>
+                      </appButton>
                     </widget>
                     <widget halign="center" style="WhiteContentPanel">
-                      <appButton action="removeIdentifierRow" key="removeIdentifierButton" style="Button">
+                      <appButton key="removeContactButton" style="Button" action="removeContact">
                         <HorizontalPanel>
-                          <AbsolutePanel style="RemoveRowButtonImage"/>
-                          <text><xsl:value-of select="resource:getString($constants,'removeRow')"/></text>
+                          <AbsolutePanel style="RemoveRowButtonImage" />
+                          <text>
+                            <xsl:value-of select="resource:getString($constants,'removeRow')" />
+                          </text>
                         </HorizontalPanel>
                       </appButton>
                     </widget>
-                    <HorizontalPanel height="18px"/>
-                  </VerticalPanel>
-                </tab>
-                <!-- END TAB 2 -->
-                <!-- start TAB 3 -->
-                <tab key="notesTab" text="{resource:getString($constants,'note')}">
-                  <VerticalPanel height="164px" key="secMod3" padding="0" spacing="0" width="100%">
-					<TablePanel key="noteFormPanel" padding="0" spacing="0" style="Form">
-                      <row>
-                      <notes key="notesPanel" width="545px" height="200px"/>
-<!--                          <HorizontalPanel style="notesPanelContainer">-->
-<!--                            <ScrollPanel height="178px" key="notesPanel" overflowX="auto" overflowY="scroll" style="NotesPanel" valign="top" width="545px"/>-->
-<!--                          </HorizontalPanel>-->
-                      </row>
-                       <row>
-                        <appButton action="standardNote" key="standardNoteButton" style="Button">
-                          <HorizontalPanel>
-                            <AbsolutePanel style="StandardNoteButtonImage"/>
-                            <text><xsl:value-of select="resource:getString($constants,'addNote')"/></text>
-                          </HorizontalPanel>
-                        </appButton>
-                      </row>
-                    </TablePanel>
-                  </VerticalPanel>
-                </tab>
-              </TabPanel>
-            </VerticalPanel>
+                  </HorizontalPanel>
+                </VerticalPanel>
+
+              </tab>
+
+<!-- TAB 2 -->
+
+              <tab key="identifiersTab" text="{resource:getString($constants,'identifier')}">
+                <VerticalPanel padding="0" spacing="0">
+                  <widget valign="top">
+                    <table key="identifierstsTable" width="auto" maxRows="9" showScroll="ALWAYS" title="">
+                      <col key="{contact:getName($cont)}" width="267" align="left" filter="false" sort="true" header="{resource:getString($constants,'identifier')}">
+                        <textbox field="String" required="true" />
+                      </col>
+                      <col key="{addr:getMultipleUnit($contAddr)}" width="298" align="left" filter="false" sort="true" header="{resource:getString($constants,'value')}">
+                        <textbox field="String" required="true" />
+                      </col>
+                    </table>
+                  </widget>
+                  <widget halign="center" style="WhiteContentPanel">
+                    <appButton key="removeIdentifierButton" style="Button" action="removeIdentifierRow">
+                      <HorizontalPanel>
+                        <AbsolutePanel style="RemoveRowButtonImage" />
+                        <text>
+                          <xsl:value-of select="resource:getString($constants,'removeRow')" />
+                        </text>
+                      </HorizontalPanel>
+                    </appButton>
+                  </widget>
+                  <HorizontalPanel height="18px" />
+                </VerticalPanel>
+              </tab>
+
+<!-- TAB 3 -->
+
+              <tab key="notesTab" text="{resource:getString($constants,'note')}">
+                <VerticalPanel key="secMod3" width="100%" height="164px" padding="0" spacing="0">
+                  <TablePanel key="noteFormPanel" padding="0" spacing="0" style="Form">
+                    <row>
+                      <notes key="notesPanel" width="545px" height="200px" />
+                    </row>
+                    <row>
+                      <appButton key="standardNoteButton" style="Button" action="standardNote">
+                        <HorizontalPanel>
+                          <AbsolutePanel style="StandardNoteButtonImage" />
+                          <text>
+                            <xsl:value-of select="resource:getString($constants,'addNote')" />
+                          </text>
+                        </HorizontalPanel>
+                      </appButton>
+                    </row>
+                  </TablePanel>
+                </VerticalPanel>
+              </tab>
+            </TabPanel>
           </VerticalPanel>
-        </HorizontalPanel>
+        </VerticalPanel>
+      </HorizontalPanel>
     </screen>
   </xsl:template>
 </xsl:stylesheet>
