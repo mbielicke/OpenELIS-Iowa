@@ -224,7 +224,6 @@ public class SystemVariableScreen extends Screen {
                 name.setQueryMode(event.getState() == State.QUERY);
                 if (event.getState() == State.ADD || event.getState() == State.UPDATE)
                     name.setFocus(true);
-
             }
         });
 
@@ -307,7 +306,7 @@ public class SystemVariableScreen extends Screen {
 
                 field = new QueryData();
                 field.key = meta.getName();
-                field.query = ((AppButton)event.getSource()).action;
+                field.query = ((AppButton)event.getSource()).getAction();
                 field.type = QueryData.Type.STRING;
 
                 query = new Query();

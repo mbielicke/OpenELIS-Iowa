@@ -31,7 +31,6 @@ import java.util.ArrayList;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.SystemVariableDO;
 import org.openelis.gwt.common.DatabaseException;
-import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.SystemVariableRemote;
@@ -40,17 +39,17 @@ public class SystemVariableService {
 
     private static final int rowPP = 9;
 
-    public ArrayList<IdNameVO> query(Query query) throws Exception {
+    public SystemVariableDO fetchById(Integer id) throws Exception {
         try {
-            return remote().query(query.getFields(), query.getPage() * rowPP, rowPP);
+            return remote().fetchById(id);
         } catch (RuntimeException e) {
             throw new DatabaseException(e);
         }
     }
 
-    public SystemVariableDO fetchById(Integer id) throws Exception {
+    public ArrayList<IdNameVO> query(Query query) throws Exception {
         try {
-            return remote().fetchById(id);
+            return remote().query(query.getFields(), query.getPage() * rowPP, rowPP);
         } catch (RuntimeException e) {
             throw new DatabaseException(e);
         }

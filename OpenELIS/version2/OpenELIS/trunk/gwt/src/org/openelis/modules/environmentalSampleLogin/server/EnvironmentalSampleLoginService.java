@@ -30,46 +30,47 @@ import java.util.ArrayList;
 import org.openelis.common.AutocompleteRPC;
 import org.openelis.domain.IdNameVO;
 import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.OrganizationRemote;
 import org.openelis.remote.ProjectRemote;
 import org.openelis.remote.SampleEnvironmentalRemote;
 import org.openelis.remote.SampleRemote;
-import org.openelis.server.constants.Constants;
 
 public class EnvironmentalSampleLoginService {
 
     private static final int rowPP = 12;
     
     public ArrayList<IdNameVO> query(Query query) throws Exception {
-        return remote().query(query.getFields(), query.getPage() * rowPP, rowPP);
-    }
-    
-    public String getScreen() throws Exception {
-        return ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/environmentalSampleLogin.xsl");      
+        return environmentalRemote().query(query.getFields(), query.getPage() * rowPP, rowPP);
     }
     
     public void validateAccessionNumber(Integer accessionNumber) throws Exception {
-        SampleRemote remote = (SampleRemote)EJBFactory.lookup("openelis/SampleBean/remote");
-        
-        remote.validateAccessionNumber(accessionNumber);
+        sampleRemote().validateAccessionNumber(accessionNumber);
     }
     
     public AutocompleteRPC getProjectMatches(AutocompleteRPC rpc) throws Exception {
-        ProjectRemote remote = (ProjectRemote)EJBFactory.lookup("openelis/ProjectBean/remote");
-        rpc.model = (ArrayList)remote.autoCompleteLookupByName(rpc.match+"%", 10);
+        rpc.model = (ArrayList)projectRemote().autoCompleteLookupByName(rpc.match+"%", 10);
         return rpc;
     }
     
     public AutocompleteRPC getOrganizationMatches(AutocompleteRPC rpc) throws Exception {
-        OrganizationRemote remote = (OrganizationRemote)EJBFactory.lookup("openelis/OrganizationBean/remote");
-        rpc.model = (ArrayList)remote.autoCompleteLookupByName(rpc.match+"%", 10);
-        
+        rpc.model = (ArrayList)organizationRemote().fetchActiveByName(rpc.match+"%", 10);
         return rpc;
     }
     
-    private SampleEnvironmentalRemote remote() {
+    private ProjectRemote projectRemote() {
+        return (ProjectRemote)EJBFactory.lookup("openelis/ProjectBean/remote");
+    }
+
+    private SampleRemote sampleRemote() {
+        return (SampleRemote)EJBFactory.lookup("openelis/SampleBean/remote");
+    }
+
+    private OrganizationRemote organizationRemote() {
+        return (OrganizationRemote)EJBFactory.lookup("openelis/OrganizationBean/remote");
+    }
+
+    private SampleEnvironmentalRemote environmentalRemote() {
         return (SampleEnvironmentalRemote)EJBFactory.lookup("openelis/SampleEnvironmentalBean/remote");
     }
 }

@@ -59,7 +59,7 @@ public class DictionaryCache {
     }
     
     
-    public static ArrayList getListByCategorySystemName(String systemName){
+    public static ArrayList<DictionaryDO> getListByCategorySystemName(String systemName){
        if(instance == null)
             instance = new DictionaryCache();
         
@@ -164,7 +164,7 @@ public class DictionaryCache {
     }
     
     
-    protected ArrayList getListFromCategorySystemName(final String systemName) {
+    protected ArrayList<DictionaryDO> getListFromCategorySystemName(final String systemName) {
         ArrayList<DictionaryDO> list = categoryNameList.get(systemName);
         
         if(list == null){

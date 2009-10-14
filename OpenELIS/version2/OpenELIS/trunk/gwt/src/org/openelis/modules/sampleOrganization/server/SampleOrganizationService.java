@@ -41,7 +41,7 @@ public class SampleOrganizationService {
 
     public AutocompleteRPC getOrganizationMatches(AutocompleteRPC rpc) throws Exception {
         OrganizationRemote remote = (OrganizationRemote)EJBFactory.lookup("openelis/OrganizationBean/remote");
-        rpc.model = (ArrayList)remote.autoCompleteLookupByName(rpc.match+"%", 10);
+        rpc.model = (ArrayList)remote.fetchActiveByName(rpc.match+"%", 10);
         return rpc;
     }
 }

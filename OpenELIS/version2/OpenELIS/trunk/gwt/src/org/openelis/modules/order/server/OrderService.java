@@ -40,7 +40,7 @@ import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.OrderAddAutoFillDO;
 import org.openelis.domain.OrderDO;
 import org.openelis.domain.OrderItemDO;
-import org.openelis.domain.OrganizationVO;
+import org.openelis.domain.OrganizationDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
@@ -517,35 +517,35 @@ public class OrderService implements AppScreenFormServiceInt<OrderForm, OrderQue
     private TableDataModel<TableDataRow<Integer>> getOrganizationMatches(String match){
         OrganizationRemote remote = (OrganizationRemote)EJBFactory.lookup("openelis/OrganizationBean/remote");
         TableDataModel<TableDataRow<Integer>> dataModel = new TableDataModel<TableDataRow<Integer>>();
-        List autoCompleteList;
+        List<OrganizationDO> autoCompleteList;
     
         try{
             int id = Integer.parseInt(match); //this will throw an exception if it isnt an id
             //lookup by id...should only bring back 1 result
-            autoCompleteList = remote.autoCompleteLookupById(id);
+            autoCompleteList = remote.fetchActiveById(id);
             
         }catch(NumberFormatException e){
             //it isnt an id
             //lookup by name
-            autoCompleteList = remote.autoCompleteLookupByName(match+"%", 10);
+            autoCompleteList = remote.fetchActiveByName(match+"%", 10);
         }
         
         for(int i=0; i < autoCompleteList.size(); i++){
-            OrganizationVO resultDO = (OrganizationVO) autoCompleteList.get(i);
+            OrganizationDO resultDO = autoCompleteList.get(i);
             //org id
             Integer orgId = resultDO.getId();
             //org name
             String name = resultDO.getName();
             //org apt suite #
-            String aptSuite = resultDO.getAptSuite();
+            String aptSuite = resultDO.getAddress().getMultipleUnit();
             //org street address
-            String address = resultDO.getStreetAddress();
+            String address = resultDO.getAddress().getStreetAddress();
             //org city
-            String city = resultDO.getCity();
+            String city = resultDO.getAddress().getCity();
             //org state
-            String state = resultDO.getState();
+            String state = resultDO.getAddress().getState();
             //org zipcode
-            String zipCode = resultDO.getZipCode();
+            String zipCode = resultDO.getAddress().getZipCode();
             
             TableDataRow<Integer> data = new TableDataRow<Integer>(orgId,
                                                                    new FieldType[] {

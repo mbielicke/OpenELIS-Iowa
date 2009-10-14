@@ -31,7 +31,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.openelis.domain.IdNameDO;
-import org.openelis.domain.OrganizationVO;
+import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.SectionViewDO;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
@@ -199,7 +199,7 @@ public class SectionService implements
         TableDataModel<TableDataRow<Integer>> dataModel;
         List autoCompleteList;
         int id,i;
-        OrganizationVO resultDO;
+        OrganizationDO resultDO;
         Integer orgId;        
         String name,address,city,state;
         TableDataRow<Integer> data;
@@ -214,25 +214,25 @@ public class SectionService implements
             try{
                 id = Integer.parseInt(match); //this will throw an exception if it isnt an id
                 //lookup by id...should only bring back 1 result
-                autoCompleteList = oremote.autoCompleteLookupById(id);
+                autoCompleteList = oremote.fetchActiveById(id);
                 
             }catch(NumberFormatException e){
                 //it isnt an id lookup by name
-                autoCompleteList = oremote.autoCompleteLookupByName(match+"%", 10);
+                autoCompleteList = oremote.fetchActiveByName(match+"%", 10);
             }
             
             for(i=0; i < autoCompleteList.size(); i++){
-                resultDO = (OrganizationVO) autoCompleteList.get(i);
+                resultDO = (OrganizationDO) autoCompleteList.get(i);
                 //org id
                 orgId = resultDO.getId();
                 //org name
                 name = resultDO.getName();
                 //org street address
-                address = resultDO.getStreetAddress();
+                address = resultDO.getAddress().getStreetAddress();
                 //org city
-                city = resultDO.getCity();
+                city = resultDO.getAddress().getCity();
                 //org state
-                state = resultDO.getState();
+                state = resultDO.getAddress().getState();
                 
                 data = new TableDataRow<Integer>(orgId,new FieldType[] {new StringObject(name),
                                                                         new StringObject(address),
