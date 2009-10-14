@@ -36,11 +36,11 @@ import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
-import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.IdNameVO;
+import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.SystemVariableDO;
 import org.openelis.entity.SystemVariable;
 import org.openelis.gwt.common.DatabaseException;
@@ -72,18 +72,16 @@ public class SystemVariableBean implements SystemVariableRemote {
     @EJB
     private LockLocal                          lockBean;
 
-    private static int                         systemVariableRefTableId;
     private static final SystemVariableMetaMap meta = new SystemVariableMetaMap();
 
     public SystemVariableBean() {
-        systemVariableRefTableId = ReferenceTableCache.getReferenceTable("system_variable");
     }
 
     public SystemVariableDO fetchById(Integer id) throws Exception {
         Query query;
         SystemVariableDO data;
 
-        query = manager.createNamedQuery("SystemVariable.FindById");
+        query = manager.createNamedQuery("SystemVariable.FetchById");
         query.setParameter("id", id);
         try {
             data = (SystemVariableDO)query.getSingleResult();
@@ -99,7 +97,7 @@ public class SystemVariableBean implements SystemVariableRemote {
         Query query;
         SystemVariableDO data;
 
-        query = manager.createNamedQuery("SystemVariable.FindByName");
+        query = manager.createNamedQuery("SystemVariable.FetchByName");
         query.setParameter("name", name);
         try {
             data = (SystemVariableDO)query.getSingleResult();
@@ -166,25 +164,25 @@ public class SystemVariableBean implements SystemVariableRemote {
 
         validate(data);
 
-        lockBean.validateLock(systemVariableRefTableId, data.getId());
+        lockBean.validateLock(ReferenceTable.SYSTEM_VARIABLE, data.getId());
 
         manager.setFlushMode(FlushModeType.COMMIT);
         entity = manager.find(SystemVariable.class, data.getId());
         entity.setName(data.getName());
         entity.setValue(data.getValue());
 
-        lockBean.giveUpLock(systemVariableRefTableId, data.getId());
+        lockBean.giveUpLock(ReferenceTable.SYSTEM_VARIABLE, data.getId());
 
         return data;
     }
 
     public SystemVariableDO fetchForUpdate(Integer id) throws Exception {
-        lockBean.getLock(systemVariableRefTableId, id);
+        lockBean.getLock(ReferenceTable.SYSTEM_VARIABLE, id);
         return fetchById(id);
     }
 
     public SystemVariableDO abortUpdate(Integer id) throws Exception {
-        lockBean.giveUpLock(systemVariableRefTableId, id);
+        lockBean.giveUpLock(ReferenceTable.SYSTEM_VARIABLE, id);
         return fetchById(id);
     }
 
@@ -193,14 +191,14 @@ public class SystemVariableBean implements SystemVariableRemote {
 
         checkSecurity(ModuleFlags.DELETE);
 
-        lockBean.validateLock(systemVariableRefTableId, id);
+        lockBean.validateLock(ReferenceTable.SYSTEM_VARIABLE, id);
 
         manager.setFlushMode(FlushModeType.COMMIT);
         entity = manager.find(SystemVariable.class, id);
         if (entity != null)
             manager.remove(entity);
 
-        lockBean.giveUpLock(systemVariableRefTableId, id);
+        lockBean.giveUpLock(ReferenceTable.SYSTEM_VARIABLE, id);
     }
 
     public void validate(SystemVariableDO data) throws Exception {
@@ -208,7 +206,7 @@ public class SystemVariableBean implements SystemVariableRemote {
 
         list = new ValidationErrorsList();
 
-        if (data.getName() == null || data.getName().length() == 0) {
+        if (DataBaseUtil.isEmpty(data.getName())) {
             list.add(new FieldErrorException("fieldRequiredException", meta.getName()));
         } else {
             SystemVariableDO dup;
@@ -221,7 +219,7 @@ public class SystemVariableBean implements SystemVariableRemote {
             }
         }
 
-        if (data.getValue() == null || data.getValue().length() == 0)
+        if (DataBaseUtil.isEmpty(data.getValue()))
             list.add(new FieldErrorException("fieldRequiredException", meta.getValue()));
 
         if (list.size() > 0)
