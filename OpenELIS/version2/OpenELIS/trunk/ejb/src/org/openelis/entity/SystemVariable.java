@@ -47,10 +47,10 @@ import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
 @NamedQueries({
-    @NamedQuery( name = "SystemVariable.FindById",
+    @NamedQuery( name = "SystemVariable.FetchById",
                 query = "select new org.openelis.domain.SystemVariableDO(id, name, value)"
                       + " from SystemVariable where id = :id"),
-    @NamedQuery( name = "SystemVariable.FindByName",
+    @NamedQuery( name = "SystemVariable.FetchByName",
                 query = "select new org.openelis.domain.SystemVariableDO(id, name, value)"
                       + " from SystemVariable where name = :name")})                     
 

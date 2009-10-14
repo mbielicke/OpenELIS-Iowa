@@ -1,28 +1,28 @@
-/** Exhibit A - UIRF Open-source Based Public Software License.
-* 
-* The contents of this file are subject to the UIRF Open-source Based
-* Public Software License(the "License"); you may not use this file except
-* in compliance with the License. You may obtain a copy of the License at
-* openelis.uhl.uiowa.edu
-* 
-* Software distributed under the License is distributed on an "AS IS"
-* basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
-* License for the specific language governing rights and limitations
-* under the License.
-* 
-* The Original Code is OpenELIS code.
-* 
-* The Initial Developer of the Original Code is The University of Iowa.
-* Portions created by The University of Iowa are Copyright 2006-2008. All
-* Rights Reserved.
-* 
-* Contributor(s): ______________________________________.
-* 
-* Alternatively, the contents of this file marked
-* "Separately-Licensed" may be used under the terms of a UIRF Software
-* license ("UIRF Software License"), in which case the provisions of a
-* UIRF Software License are applicable instead of those above. 
-*/
+/**
+ * Exhibit A - UIRF Open-source Based Public Software License.
+ * 
+ * The contents of this file are subject to the UIRF Open-source Based Public
+ * Software License(the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * openelis.uhl.uiowa.edu
+ * 
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+ * the specific language governing rights and limitations under the License.
+ * 
+ * The Original Code is OpenELIS code.
+ * 
+ * The Initial Developer of the Original Code is The University of Iowa.
+ * Portions created by The University of Iowa are Copyright 2006-2008. All
+ * Rights Reserved.
+ * 
+ * Contributor(s): ______________________________________.
+ * 
+ * Alternatively, the contents of this file marked "Separately-Licensed" may be
+ * used under the terms of a UIRF Software license ("UIRF Software License"), in
+ * which case the provisions of a UIRF Software License are applicable instead
+ * of those above.
+ */
 package org.openelis.bean;
 
 import java.util.ArrayList;
@@ -33,15 +33,18 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
-import org.openelis.domain.IdNameDO;
+import org.openelis.domain.IdNameVO;
 import org.openelis.domain.OrganizationContactDO;
+import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.OrganizationViewDO;
 import org.openelis.entity.Organization;
 import org.openelis.entity.OrganizationContact;
+import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;
@@ -53,248 +56,222 @@ import org.openelis.local.LockLocal;
 import org.openelis.local.OrganizationLocal;
 import org.openelis.metamap.OrganizationMetaMap;
 import org.openelis.remote.OrganizationRemote;
-import org.openelis.util.QueryBuilder;
 import org.openelis.util.QueryBuilderV2;
-import org.openelis.utils.GetPage;
+import org.openelis.utilcommon.DataBaseUtil;
 import org.openelis.utils.ReferenceTableCache;
 
-@Stateless
 
+@Stateless
 @SecurityDomain("openelis")
 @RolesAllowed("organization-select")
 public class OrganizationBean implements OrganizationRemote, OrganizationLocal {
 
-	@PersistenceContext(name = "openelis")
-    private EntityManager manager;
-	
-	@EJB private AddressLocal addressBean;
-    @EJB private LockLocal lockBean;
-    
-    private static int orgRefTableId;
-    private static final OrganizationMetaMap OrgMeta = new OrganizationMetaMap();
-    
-    public OrganizationBean(){
-        orgRefTableId = ReferenceTableCache.getReferenceTable("organization");
+    @PersistenceContext(name = "openelis")
+    private EntityManager                    manager;
+
+    @EJB
+    private AddressLocal                     addressBean;
+
+    private static final OrganizationMetaMap meta = new OrganizationMetaMap();
+
+    public OrganizationBean() {
     }
-    
-	public OrganizationViewDO fetchById(Integer organizationId) throws Exception {		
-		Query query = manager.createNamedQuery("Organization.OrganizationAndAddress");
-		query.setParameter("id", organizationId);
-		OrganizationViewDO orgAddressDO = (OrganizationViewDO) query.getSingleResult();
 
-        return orgAddressDO;
-	}
-	
-	public ArrayList<IdNameDO> query(ArrayList<QueryData> fields,
-                                     int first,
-                                     int max) throws Exception {
-        StringBuffer sb = new StringBuffer();
-        QueryBuilderV2 qb = new QueryBuilderV2();
+    public OrganizationViewDO fetchById(Integer id) throws Exception {
+        Query query;
+        OrganizationViewDO data;
+        
+        query = manager.createNamedQuery("Organization.FetchById");
+        query.setParameter("id", id);
+        try {
+            data = (OrganizationViewDO)query.getSingleResult();
+        } catch (NoResultException e) {
+            throw new NotFoundException();
+        } catch (Exception e) {
+            throw new DatabaseException(e);
+        }
+        return data;
+    }
 
-        qb.setMeta(OrgMeta);
+    public ArrayList<OrganizationDO> fetchActiveById(Integer id) {
+        Query query;
+        
+        query = manager.createNamedQuery("Organization.FetchActiveById");
+        query.setParameter("id", id);
 
-        qb.setSelect("distinct new org.openelis.domain.IdNameDO(" + OrgMeta.getId()
-                     + ", "
-                     + OrgMeta.getName()
-                     + ") ");
+        return DataBaseUtil.toArrayList(query.getResultList());
+    }
 
-        // this method is going to throw an exception if a column doesnt match
+    public ArrayList<OrganizationDO> fetchActiveByName(String name, int max) {
+        Query query;
+        
+        query = manager.createNamedQuery("Organization.FetchActiveByName");
+        query.setParameter("name", name);
+        query.setMaxResults(max);
 
-        qb.constructWhere(fields);
+        return DataBaseUtil.toArrayList(query.getResultList());
+    }
 
-        qb.setOrderBy(OrgMeta.getName());
+    public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception {
+        Query query;
+        QueryBuilderV2 builder;
+        List list;
 
-        sb.append(qb.getEJBQL());
+        builder = new QueryBuilderV2();
+        builder.setMeta(meta);
+        builder.setSelect("distinct new org.openelis.domain.IdNameVO(" + meta.getId() + ", " +
+                          meta.getName() + ") ");
+        builder.constructWhere(fields);
+        builder.setOrderBy(meta.getName());
 
-        Query query = manager.createQuery(sb.toString());
+        query = manager.createQuery(builder.getEJBQL());
+        query.setMaxResults(first + max);
+        builder.setQueryParams(query, fields);
 
-        if (first > -1 && max > -1)
-            query.setMaxResults(first + max);
-
-        // ***set the parameters in the query
-        QueryBuilderV2.setQueryParams(query, fields);
-
-        ArrayList<IdNameDO> returnList = (ArrayList<IdNameDO>)GetPage.getPage(query.getResultList(),
-                                                                              first,
-                                                                              max);
-
-        if (returnList == null)
+        list = query.getResultList();
+        if (list.isEmpty())
+            throw new NotFoundException();
+        list = (ArrayList<IdNameVO>)DataBaseUtil.subList(list, first, max);
+        if (list == null)
             throw new LastPageException();
-        else
-            return returnList;
-    }
-	
-	public void add(OrganizationViewDO organizationDO){
-         manager.setFlushMode(FlushModeType.COMMIT);
-         Organization organization = new Organization();
-        
-        //send the address to the update address bean
-        addressBean.add(organizationDO.getAddressDO());
-        
-        //update organization
-        organization.setAddressId(organizationDO.getAddressDO().getId());
-        
-        organization.setIsActive(organizationDO.getIsActive());
-        organization.setName(organizationDO.getName());
-        organization.setParentOrganizationId(organizationDO.getParentOrganizationId());
-                
-        manager.persist(organization);
-        
-        organizationDO.setId(organization.getId());
-    }
-    
-    public void update(OrganizationViewDO organizationDO) throws Exception {
-        lockBean.validateLock(orgRefTableId, organizationDO.getId());
-        
-         manager.setFlushMode(FlushModeType.COMMIT);
-         Organization organization = manager.find(Organization.class, organizationDO.getId());
 
-        //send the address to the update address bean
-        addressBean.update(organizationDO.getAddressDO());
-        
-        //update organization
-        organization.setIsActive(organizationDO.getIsActive());
-        organization.setName(organizationDO.getName());
-        organization.setParentOrganizationId(organizationDO.getParentOrganizationId());
-        
-        lockBean.giveUpLock(orgRefTableId, organization.getId());                                  
+        return (ArrayList<IdNameVO>)list;
     }
-    
-    public void addContact(OrganizationContactDO contactDO) throws Exception{
-        System.out.println("inside add contact!!");
+
+
+    public OrganizationViewDO add(OrganizationViewDO data) {
+        Organization entity;
+        
         manager.setFlushMode(FlushModeType.COMMIT);
         
-        OrganizationContact orgContact = new OrganizationContact();
-    
-        //send the contact address to the address bean
-        addressBean.add(contactDO.getAddressDO());
-            
-        orgContact.setContactTypeId(contactDO.getContactTypeId());
-        orgContact.setName(contactDO.getName());
-        orgContact.setOrganizationId(contactDO.getOrganizationId());
-        orgContact.setAddressId(contactDO.getAddressDO().getId());
+        // first insert the address so we can reference its id
+        addressBean.add(data.getAddress());
+        entity = new Organization();
+        entity.setAddressId(data.getAddress().getId());
+        entity.setIsActive(data.getIsActive());
+        entity.setName(data.getName());
+        entity.setParentOrganizationId(data.getParentOrganizationId());
+
+        manager.persist(data);
+        data.setId(entity.getId());
         
-        manager.persist(orgContact);
-        contactDO.setId(orgContact.getId());
+        return data;
     }
 
-    public void updateContact(OrganizationContactDO contactDO) throws Exception{
-        System.out.println("inside org bean updateContact");
+    public OrganizationViewDO update(OrganizationViewDO data) throws Exception {
+        Organization entity;
+        
+        if (!data.isChanged())
+            return data;
+        
         manager.setFlushMode(FlushModeType.COMMIT);
-        
-        OrganizationContact orgContact = manager.find(OrganizationContact.class, contactDO.getId());
+        addressBean.update(data.getAddress());
+        entity = manager.find(Organization.class, data.getId());
+        entity.setIsActive(data.getIsActive());
+        entity.setName(data.getName());
+        entity.setParentOrganizationId(data.getParentOrganizationId());
 
-        //send the contact address to the address bean
-        addressBean.update(contactDO.getAddressDO());
-            
-        orgContact.setContactTypeId(contactDO.getContactTypeId());
-        orgContact.setName(contactDO.getName());
-        orgContact.setOrganizationId(contactDO.getOrganizationId());
-        orgContact.setAddressId(contactDO.getAddressDO().getId());
-        
-    }
-    
-    public void deleteContact(OrganizationContactDO contactDO) throws Exception{
-        manager.setFlushMode(FlushModeType.COMMIT);
-        
-        OrganizationContact orgContact = manager.find(OrganizationContact.class, contactDO.getId());
-        
-        addressBean.delete(contactDO.getAddressDO());
-        
-        if(orgContact != null)
-            manager.remove(orgContact);
+        return data;
     }
 
-	public List<OrganizationContactDO> fetchContactsById(Integer organizationId) throws Exception {
-		Query query = manager.createNamedQuery("OrganizationContact.ContactsByOrgId");
-		query.setParameter("id", organizationId);
-		
-		List contactsList = query.getResultList();
-		
-		if(contactsList.size() == 0)
-		    throw new NotFoundException();
-		
-        return contactsList;
-	}
-	
-	public List autoCompleteLookupById(Integer id){
-		Query query = null;
-		query = manager.createNamedQuery("Organization.AutoCompleteById");
-		query.setParameter("id",id);
-		return query.getResultList();
-	}
-	
-	public List autoCompleteLookupByName(String orgName, int maxResults){
-		Query query = null;
-		query = manager.createNamedQuery("Organization.AutoCompleteByName");
-		query.setParameter("name",orgName);
-		query.setMaxResults(maxResults);
-		return query.getResultList();
-	}
-	
-	public void validateOrganization(OrganizationViewDO organizationDO, List contacts) throws Exception {
-	    ValidationErrorsList list = new ValidationErrorsList();
-		//name required
-		if(organizationDO.getName() == null || "".equals(organizationDO.getName())){
-		    list.add(new FieldErrorException("fieldRequiredException",OrgMeta.getName()));
-		}
-		
-		//street address required
-		if(organizationDO.getAddressDO().getStreetAddress() == null || "".equals(organizationDO.getAddressDO().getStreetAddress())){
-		    list.add(new FieldErrorException("fieldRequiredException",OrgMeta.ADDRESS.getStreetAddress()));
-		}
+    public void validate(OrganizationViewDO data, ArrayList<OrganizationContactDO> contacts) throws Exception {
+        ValidationErrorsList list;
+        
+        list = new ValidationErrorsList();
 
-		//city required
-		if(organizationDO.getAddressDO().getCity() == null || "".equals(organizationDO.getAddressDO().getCity())){
-		    list.add(new FieldErrorException("fieldRequiredException",OrgMeta.ADDRESS.getCity()));
-		}
+        if (DataBaseUtil.isEmpty(data.getName()))
+            list.add(new FieldErrorException("fieldRequiredException", meta.getName()));
 
-		//zipcode required
-		if(organizationDO.getAddressDO().getZipCode() == null || "".equals(organizationDO.getAddressDO().getZipCode())){
-		    list.add(new FieldErrorException("fieldRequiredException",OrgMeta.ADDRESS.getZipCode()));
-		}
-		
-		//country required
-		if(organizationDO.getAddressDO().getCountry() == null || "".equals(organizationDO.getAddressDO().getCountry())){
-		    list.add(new FieldErrorException("fieldRequiredException",OrgMeta.ADDRESS.getCountry()));
-		}	
-		
-		for(int i=0; i<contacts.size();i++)       
-            validateContactAndAddress((OrganizationContactDO)contacts.get(i), i, list);
-		
-		if(list.size() > 0)
+        if (DataBaseUtil.isEmpty(data.getAddress().getStreetAddress()))
+            list.add(new FieldErrorException("fieldRequiredException", meta.ADDRESS.getStreetAddress()));
+
+        if (DataBaseUtil.isEmpty(data.getAddress().getCity()))
+            list.add(new FieldErrorException("fieldRequiredException", meta.ADDRESS.getCity()));
+
+        if (DataBaseUtil.isEmpty(data.getAddress().getZipCode()))
+            list.add(new FieldErrorException("fieldRequiredException", meta.ADDRESS.getZipCode()));
+
+        if (DataBaseUtil.isEmpty(data.getAddress().getCountry()))
+            list.add(new FieldErrorException("fieldRequiredException", meta.ADDRESS.getCountry()));
+
+        for (int i = 0; i < contacts.size(); i++ )
+            validateContact(contacts.get(i), i, list);
+
+        if (list.size() > 0)
             throw list;
-	}
-	
-	private void validateContactAndAddress(OrganizationContactDO orgContactDO, int rowIndex, ValidationErrorsList exceptionList){
-		//contact type required
-		if(orgContactDO.getContactTypeId() == null || "".equals(orgContactDO.getContactTypeId())){
-			exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex, OrgMeta.ORGANIZATION_CONTACT.getContactTypeId(),"contactsTable"));
-		}
+    }
 
-		//name required
-		if(orgContactDO.getName() == null || "".equals(orgContactDO.getName())){
-			exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex, OrgMeta.ORGANIZATION_CONTACT.getName(),"contactsTable"));
-		}
-		
-		//street address required
-		if(orgContactDO.getAddressDO().getStreetAddress() == null || "".equals(orgContactDO.getAddressDO().getStreetAddress())){
-			exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex, OrgMeta.ORGANIZATION_CONTACT.ADDRESS.getStreetAddress(),"contactsTable"));
-		}
-		
-		//city required
-		if(orgContactDO.getAddressDO().getCity() == null || "".equals(orgContactDO.getAddressDO().getCity())){
-			exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex, OrgMeta.ORGANIZATION_CONTACT.ADDRESS.getCity(),"contactsTable"));	
-		}
-		
-		//zipcode required
-		if(orgContactDO.getAddressDO().getZipCode() == null || "".equals(orgContactDO.getAddressDO().getZipCode())){
-			exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex, OrgMeta.ORGANIZATION_CONTACT.ADDRESS.getZipCode(),"contactsTable"));
-		}
-		
-		//country required
-		if(orgContactDO.getAddressDO().getCountry() == null || "".equals(orgContactDO.getAddressDO().getCountry())){
-			exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex, OrgMeta.ORGANIZATION_CONTACT.ADDRESS.getCountry(),"contactsTable"));
-		}		
-	}	
+    /*
+     * Routines for organization contact support
+     */
+
+    public ArrayList<OrganizationContactDO> fetchContactByOrganizationId(Integer id) throws Exception {
+        Query query;
+        List list; 
+        
+        query = manager.createNamedQuery("OrganizationContact.FetchByOrganizationId");
+        query.setParameter("id", id);
+
+        list = query.getResultList();
+        if (list.isEmpty())
+            throw new NotFoundException();
+        
+        return DataBaseUtil.toArrayList(list);
+    }
+
+    public OrganizationContactDO addContact(OrganizationContactDO data) throws Exception {
+        OrganizationContact entity;
+
+        manager.setFlushMode(FlushModeType.COMMIT);
+
+        addressBean.add(data.getAddressDO());
+        entity = new OrganizationContact();
+        entity.setAddressId(data.getAddressDO().getId());
+        entity.setOrganizationId(data.getOrganizationId());
+        entity.setContactTypeId(data.getContactTypeId());
+        entity.setName(data.getName());
+
+        manager.persist(entity);
+        data.setId(entity.getId());
+        
+        return data;
+    }
+
+    public OrganizationContactDO updateContact(OrganizationContactDO data) throws Exception {
+        OrganizationContact entity;
+
+        if (!data.isChanged())
+            return data;
+
+        manager.setFlushMode(FlushModeType.COMMIT);
+
+        addressBean.update(data.getAddressDO());
+        entity = manager.find(OrganizationContact.class, data.getId());
+        entity.setContactTypeId(data.getContactTypeId());
+        entity.setName(data.getName());
+
+        return data;
+    }
+
+    public void deleteContact(OrganizationContactDO data) throws Exception {
+        OrganizationContact entity;
+
+        manager.setFlushMode(FlushModeType.COMMIT);
+
+        addressBean.delete(data.getAddressDO());
+        entity = manager.find(OrganizationContact.class, data.getId());
+        if (entity != null)
+            manager.remove(entity);
+    }
+
+    private void validateContact(OrganizationContactDO data, int row, ValidationErrorsList exceptionList) {
+        if (DataBaseUtil.isEmpty(data.getContactTypeId()))
+            exceptionList.add(new TableFieldErrorException("fieldRequiredException",
+                               row, meta.ORGANIZATION_CONTACT.getContactTypeId(),
+                               "contactsTable"));
+        if (DataBaseUtil.isEmpty(data.getName()))
+            exceptionList.add(new TableFieldErrorException("fieldRequiredException", 
+                               row, meta.ORGANIZATION_CONTACT.getName(),
+                               "contactsTable"));
+    }
 }
