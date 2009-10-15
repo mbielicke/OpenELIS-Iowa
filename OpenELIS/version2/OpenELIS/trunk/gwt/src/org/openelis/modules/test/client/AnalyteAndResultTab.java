@@ -166,7 +166,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
                 TableDataRow set,vset;
                 
                 row = event.getRow();
-                col = event.getCell();                                              
+                col = event.getCol();                                              
                 anaSelCol = col;
                 enableAnalyteWidgets(true);
                 try {                    
@@ -273,7 +273,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
                 
 
                 r = event.getRow();
-                col = event.getCell();
+                col = event.getCol();
                 row = analyteTable.getRow(r);
                 value = (TableDataRow)row.cells.get(col).value;
                 key = (Integer)value.key;    
@@ -750,7 +750,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
                 int row,col,group;                
 
                 row = event.getRow();
-                col = event.getCell();                
+                col = event.getCol();                
                 group = resultTabPanel.getTabBar().getSelectedTab();
                 
                 switch(col) {
@@ -778,7 +778,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
                 String sysName,value;
 
                 row = event.getRow();
-                col = event.getCell();
+                col = event.getCol();
                 val = resultTable.getRow(row).cells.get(col).getValue();
                 group = resultTabPanel.getTabBar().getSelectedTab();
                 result = testResultManager.getResultAt(group+1, row);

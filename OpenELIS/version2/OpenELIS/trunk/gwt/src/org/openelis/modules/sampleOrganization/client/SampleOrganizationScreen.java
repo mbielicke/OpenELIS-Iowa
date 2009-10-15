@@ -102,7 +102,7 @@ public class SampleOrganizationScreen  extends Screen implements HasActionHandle
             public void onCellUpdated(CellEditedEvent event) {
                 int row,col;
                 row = event.getRow();
-                col = event.getCell();
+                col = event.getCol();
                 SampleOrganizationViewDO orgDO;
                 TableDataRow tableRow = sampleOrganizationTable.getRow(row);
                 try{

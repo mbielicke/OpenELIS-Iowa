@@ -64,7 +64,7 @@ public class IdentifiersTab extends Screen {
                     return;
 
                 r = event.getRow();
-                c = event.getCell();
+                c = event.getCol();
                 row = table.getRow(r);
 
                 try {

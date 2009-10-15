@@ -93,7 +93,7 @@ public class TestAnalytePickerScreen extends Screen implements HasActionHandlers
                 Integer group;
                 
                 row = event.getRow();
-                col = event.getCell();
+                col = event.getCol();
                 
                 if(col != 1)
                     return;

@@ -104,7 +104,7 @@ public class QAEventsTab extends Screen {
                 Object val;
 
                 r = event.getRow();
-                c = event.getCell();
+                c = event.getCol();
                 
                 val = sampleQATable.getRow(r).cells.get(c).value;
                 
@@ -231,7 +231,7 @@ public class QAEventsTab extends Screen {
                 Object val;
 
                 r = event.getRow();
-                c = event.getCell();
+                c = event.getCol();
                 
                 val = sampleQATable.getRow(r).cells.get(c).value;
                 

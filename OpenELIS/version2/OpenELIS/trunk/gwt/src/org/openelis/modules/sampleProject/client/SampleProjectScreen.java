@@ -98,7 +98,7 @@ public class SampleProjectScreen extends Screen implements HasActionHandlers<Sam
             public void onCellUpdated(CellEditedEvent event) {
                 int row,col;
                 row = event.getRow();
-                col = event.getCell();
+                col = event.getCol();
                 SampleProjectViewDO projectDO;
                 TableDataRow tableRow = sampleProjectTable.getRow(row);
                 try{
