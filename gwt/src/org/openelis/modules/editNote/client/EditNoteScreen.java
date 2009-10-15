@@ -292,10 +292,15 @@ public class EditNoteScreen extends Screen implements HasActionHandlers<EditNote
                     buildTree(result);
                 else
                     buildTree(row,result);
+                window.clearStatus();
             }
 
             public void onFailure(Throwable error) {
-                buildTree(null);
+                if(row == null)
+                    buildTree(null);
+                else
+                    buildTree(row, null);
+                
                 if (error instanceof NotFoundException) {
                     window.setDone(consts.get("noRecordsFound"));
                     setState(State.DEFAULT);
@@ -336,7 +341,8 @@ public class EditNoteScreen extends Screen implements HasActionHandlers<EditNote
     }
 
     protected boolean validate() {
-        boolean valid = true;
+        return true;
+        /*boolean valid = true;
         if (screenNoteDO != null) {
             if ("N".equals(screenNoteDO.getIsExternal())) {
                 if (subject.getValue().trim().length() == 0) {
@@ -352,7 +358,7 @@ public class EditNoteScreen extends Screen implements HasActionHandlers<EditNote
         }
 
         window.setError(consts.get("correctErrors"));
-        return valid;
+        return valid;*/
     }
 
     private void buildTree(ArrayList<StandardNoteDO> noteList) {
@@ -362,7 +368,10 @@ public class EditNoteScreen extends Screen implements HasActionHandlers<EditNote
 
         if (tree.numRows() > 0)
             tree.clear();
-
+        
+        if(noteList == null)
+            return;
+        
         oldTypeId = null;
         for (int i = 0; i < noteList.size(); i++ ) {
             note = noteList.get(i);
@@ -390,6 +399,9 @@ public class EditNoteScreen extends Screen implements HasActionHandlers<EditNote
     }
 
     private void buildTree(TreeDataItem row, ArrayList<StandardNoteDO> noteList) {
+        if(noteList == null)
+            return; 
+        
         for (int i = 0; i < noteList.size(); i++ ) {
             StandardNoteDO noteDO = noteList.get(i);
 
@@ -425,13 +437,6 @@ public class EditNoteScreen extends Screen implements HasActionHandlers<EditNote
 
         tree.load(treeList);
     }
-
-    /*
-     * public void loadQuery(Query<StandardNoteDO> query) {
-     * ArrayList<StandardNoteDO> resultList = query.results; if(resultList ==
-     * null || resultList.size() == 0) { window.setDone("No records found");
-     * }else window.setDone(consts.get("queryingComplete")); }
-     */
 
     public void setScreenState(State state) {
         setState(state);

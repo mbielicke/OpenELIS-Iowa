@@ -159,7 +159,7 @@ public class DictionaryEntryPickerScreen extends Screen implements
                 String baction;
                 
                 baction = ((AppButton)event.getSource()).action;
-                findTextBox.setText(baction.substring(6, baction.length()));
+                findTextBox.setText(baction);
                 executeQuery();
             }
             

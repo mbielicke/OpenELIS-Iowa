@@ -39,6 +39,7 @@ import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
+import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
@@ -58,18 +59,22 @@ import com.google.gwt.user.client.Window;
 public class StorageTab extends Screen {
     private boolean loaded;
     
+    protected TableWidget storageTable;
+    protected Screen parentScreen;
+    
     protected StorageManager manager;
     protected SampleDataBundle data;
 
-    public StorageTab(ScreenDefInt def) {
+    public StorageTab(ScreenDefInt def, Screen parentScreen) {
         service = new ScreenService("OpenELISServlet?service=org.openelis.modules.storage.server.StorageService");
         setDef(def);
+        this.parentScreen = parentScreen;
         
         initialize();
     }
     
     private void initialize() {
-        final TableWidget storageTable = (TableWidget)def.getWidget("storageTable");
+        storageTable = (TableWidget)def.getWidget("storageTable");
         addScreenHandler(storageTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
             public void onDataChange(DataChangeEvent event) {
                 storageTable.load(getTableModel());
@@ -80,7 +85,7 @@ public class StorageTab extends Screen {
                 storageTable.setQueryMode(event.getState() == State.QUERY);
             }
         });
-
+        
         storageTable.addCellEditedHandler(new CellEditedHandler() {
             public void onCellUpdated(CellEditedEvent event) {
                 int row,col;
@@ -96,19 +101,32 @@ public class StorageTab extends Screen {
                 }
                     
                 Object val = tableRow.cells.get(col).value;
+                Datetime checkin, checkout;
                 
                 switch (col){
                     case 0:
                             storageDO.setSystemUserId((Integer)val);
                             break;
                     case 1:
-                            storageDO.setStorageLocationId((Integer)val);
+                            storageDO.setStorageLocationId((Integer)((TableDataRow)val).key);
                             break;
                     case 2:
                             storageDO.setCheckin((Datetime)val);
+                            
+                            checkin = (Datetime)tableRow.cells.get(2).value;
+                            checkout = (Datetime)tableRow.cells.get(3).value;
+                            
+                            if(checkin != null && checkout != null && checkout.compareTo(checkin) <= 0)
+                                storageTable.setCellError(row, col, consts.get("checkinDateAfterCheckoutDateException"));
                             break;
                     case 3:
                             storageDO.setCheckout((Datetime)val);
+                            
+                            checkin = (Datetime)tableRow.cells.get(2).value;
+                            checkout = (Datetime)tableRow.cells.get(3).value;
+                            
+                            if(checkin != null && checkout != null && checkout.compareTo(checkin) <= 0)
+                                storageTable.setCellError(row, col, consts.get("checkinDateAfterCheckoutDateException"));
                             break;
                 }
             }
@@ -117,7 +135,11 @@ public class StorageTab extends Screen {
         storageTable.addRowAddedHandler(new RowAddedHandler() {
             public void onRowAdded(RowAddedEvent event) {
                 try{
-                    manager.addStorage(new StorageViewDO());
+                    TableDataRow selectedRow = storageTable.getRow(0);
+                    StorageViewDO storageDO = new StorageViewDO();
+                    storageDO.setCheckin((Datetime)selectedRow.cells.get(2).value);
+                    
+                    manager.addStorage(storageDO);
                 }catch(Exception e){
                     Window.alert(e.getMessage());
                 }
@@ -166,10 +188,17 @@ public class StorageTab extends Screen {
         final AppButton addStorageButton = (AppButton)def.getWidget("addStorageButton");
         addScreenHandler(addStorageButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-                storageTable.addRow();
-                storageTable.selectRow(storageTable.numRows()-1);
+                Datetime date = Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE);
+                
+                if(storageTable.numRows() > 0 && storageTable.getCell(0, 3).value == null)
+                    storageTable.setCell(0, 3, date);
+                
+                TableDataRow newRow = new TableDataRow(4);
+                newRow.cells.get(2).value = date;
+                storageTable.addRow(0, newRow);
+                storageTable.selectRow(0);
                 storageTable.scrollToSelection();
-                storageTable.startEditing(storageTable.numRows()-1, 0);
+                storageTable.startEditing(0, 1);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -237,12 +266,16 @@ public class StorageTab extends Screen {
                 if(data.type == SampleDataBundle.Type.ANALYSIS){
                     i = data.analysisManager.getIndex(data.analysisTestDO);
                     manager = data.analysisManager.getStorageAt(i);
-                    StateChangeEvent.fire(this, State.UPDATE);
+                    
+                    if(state == State.ADD || state == State.UPDATE)
+                        StateChangeEvent.fire(this, State.UPDATE);
                     
                 }else if(data.type == SampleDataBundle.Type.SAMPLE_ITEM){
                     i = data.sampleItemManager.getIndex(data.sampleItemDO);
                     manager = data.sampleItemManager.getStorageAt(i);
-                    StateChangeEvent.fire(this, State.UPDATE);
+                    
+                    if(state == State.ADD || state == State.UPDATE)
+                        StateChangeEvent.fire(this, State.UPDATE);
                     
                 }else{
                     manager = StorageManager.getInstance();
@@ -258,4 +291,24 @@ public class StorageTab extends Screen {
         
         loaded = true;
      }
+    
+    public boolean validate() {
+        if(!loaded)
+            return true;
+        
+        Datetime checkout,checkin;
+        boolean returnValue = true;
+        
+        for(int i=0; i<storageTable.numRows(); i++){
+            checkin = (Datetime)storageTable.getObject(i, 2);
+            checkout = (Datetime)storageTable.getObject(i, 3);
+            
+            if(checkin != null && checkout != null && checkout.compareTo(checkin) <= 0){
+                storageTable.setCellError(i, 3, consts.get("checkinDateAfterCheckoutDateException"));
+                returnValue = false;
+            }
+        }
+
+        return returnValue;
+    }
 }

@@ -119,8 +119,8 @@ public class DictionaryScreen extends OpenELISScreenForm<DictionaryForm,Query<Ta
     public void performCommand(Enum action, Object obj) {        
         if(obj instanceof AppButton) {
             String query = ((AppButton)obj).action;
-            if (query.indexOf("query:") != -1)
-                getCategories(query.substring(6));
+            if (query.indexOf("*") != -1)
+                getCategories(query);
             else                         
                 super.performCommand(action, obj);            
          }  else {                         
