@@ -26,6 +26,7 @@
 package org.openelis.manager;
 
 import org.openelis.domain.OrganizationViewDO;
+import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.RPC;
 
@@ -33,7 +34,6 @@ public class OrganizationManager implements RPC, HasNotesInt {
 
     private static final long                           serialVersionUID = 1L;
 
-    protected Integer                                   referenceTable;
     protected OrganizationViewDO                        organization;
     protected OrganizationContactManager                contacts;
     protected NoteManager                               notes;
@@ -114,9 +114,9 @@ public class OrganizationManager implements RPC, HasNotesInt {
     public NoteManager getNotes() throws Exception {
         
         if (notes == null) {
-            if (organization.getId() != null && referenceTable != null) {
+            if (organization.getId() != null) {
                 try {
-                    notes = NoteManager.findByRefTableRefId(referenceTable, organization.getId());
+                    notes = NoteManager.findByRefTableRefId(ReferenceTable.ORGANIZATION, organization.getId());
                 } catch (NotFoundException e) {
                     // ignore
                 } catch (Exception e) {
@@ -144,14 +144,6 @@ public class OrganizationManager implements RPC, HasNotesInt {
                 contacts = OrganizationContactManager.getInstance();
         }
         return contacts;
-    }
-
-    protected Integer getReferenceTable() {
-        return referenceTable;
-    }
-
-    protected void setReferenceTable(Integer referenceTable) {
-        this.referenceTable = referenceTable;
     }
 
     private static OrganizationManagerProxy proxy() {
