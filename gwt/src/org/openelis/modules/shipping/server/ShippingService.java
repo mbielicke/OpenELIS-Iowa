@@ -68,6 +68,8 @@ import org.openelis.util.FormUtil;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
 
+import com.google.gwt.user.client.Window;
+
 public class ShippingService implements AppScreenFormServiceInt<ShippingForm, Query<TableDataRow<Integer>>>, AutoCompleteServiceInt {
 
 	private UTFResource openElisConstants = UTFResource.getBundle((String) SessionManager.getSession().getAttribute("locale"));
@@ -619,18 +621,26 @@ System.out.println("after shipping items");
 		OrganizationRemote remote = (OrganizationRemote) EJBFactory
 				.lookup("openelis/OrganizationBean/remote");
 		TableDataModel<TableDataRow<Integer>> dataModel = new TableDataModel<TableDataRow<Integer>>();
-		List autoCompleteList;
+		List autoCompleteList = null;
+		Integer id;
 
 		try {
-			int id = Integer.parseInt(match); // this will throw an exception
-												// if it isnt an id
+			id = Integer.parseInt(match);
+			// this will throw an exception if it isnt an id
 			// lookup by id...should only bring back 1 result
-			autoCompleteList = remote.fetchActiveById(id);
-
 		} catch (NumberFormatException e) {
-			// it isnt an id
-			// lookup by name
-			autoCompleteList = remote.fetchActiveByName(match + "%", 10);
+		    id = null;
+		}
+
+		try {
+		    if (id != null) {
+		        autoCompleteList = new ArrayList(1);
+		        autoCompleteList.add(remote.fetchActiveById(id));
+		    } else {
+		        autoCompleteList = remote.fetchActiveByName(match + "%", 10);
+		    }
+		} catch (Exception e) {
+		    Window.alert(e.getMessage());
 		}
 
 		for (int i = 0; i < autoCompleteList.size(); i++) {
