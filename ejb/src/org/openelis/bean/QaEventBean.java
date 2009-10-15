@@ -26,6 +26,7 @@
 package org.openelis.bean;
 
 import org.jboss.annotation.security.SecurityDomain;
+import org.openelis.domain.QaEventDO;
 import org.openelis.domain.QaEventViewDO;
 import org.openelis.entity.QaEvent;
 import org.openelis.gwt.common.FieldErrorException;
@@ -37,6 +38,7 @@ import org.openelis.local.LockLocal;
 import org.openelis.metamap.QaEventMetaMap;
 import org.openelis.remote.QaEventRemote;
 import org.openelis.util.QueryBuilder;
+import org.openelis.utilcommon.DataBaseUtil;
 import org.openelis.utils.GetPage;
 import org.openelis.utils.ReferenceTableCache;
 import org.openelis.utils.SecurityInterceptor;
@@ -51,6 +53,7 @@ import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
+import javax.persistence.NamedQuery;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
@@ -170,12 +173,34 @@ public class QaEventBean implements QaEventRemote{
         return getQaEvent(qaEventId);
     }
     
-    public List autoCompleteLookupByName(String match, int numberOfResults) {
-        Query query = null;
-        query = manager.createNamedQuery("QaEvent.AutoCompleteByName");
-        query.setParameter("name",match);
+    public ArrayList<QaEventDO> fetchAllCommon(){
+        Query query = manager.createNamedQuery("QaEvent.FetchAllCommon");
+        
+        return DataBaseUtil.toArrayList(query.getResultList());
+    }
+    
+    public ArrayList<QaEventDO> fetchTestSpecificById(Integer testId){
+        Query query = manager.createNamedQuery("QaEvent.FetchAllTestSpecific");
+        query.setParameter("testId", testId);
+        
+        return DataBaseUtil.toArrayList(query.getResultList());
+    }
+    
+    public ArrayList<QaEventDO> fetchCommonByName(String name, int numberOfResults){
+        Query query = manager.createNamedQuery("QaEvent.FetchCommonByName");
+        query.setParameter("name", name);
         query.setMaxResults(numberOfResults);
-        return query.getResultList();
+        
+        return DataBaseUtil.toArrayList(query.getResultList());
+    }
+    
+    public ArrayList<QaEventDO> fetchTestSpecificByName(String name, Integer testId, int numberOfResults){
+        Query query = manager.createNamedQuery("QaEvent.FetchTestSpecificByName");
+        query.setParameter("name", name);
+        query.setParameter("testId", testId);
+        query.setMaxResults(numberOfResults);
+        
+        return DataBaseUtil.toArrayList(query.getResultList());    
     }
     
     private void validateQaEvent(QaEventViewDO qaEventDO) throws Exception{

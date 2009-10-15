@@ -48,12 +48,10 @@ import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 @NamedQueries({@NamedQuery(name = "TestAnalyte.TestAnalyteByAnalyteId", query = "select t.id from TestAnalyte t where t.analyteId = :id"),
-               @NamedQuery(name = "TestAnalyte.TestAnalyteByTestId", query = "from TestAnalyte ta where ta.testId = :testId"),
-               @NamedQuery(name = "TestAnalyte.IdName", query = "select distinct new org.openelis.domain.IdNameDO(a.id, a.name) from TestAnalyte ta left join ta.analyte a where ta.testId = :testId order by a.name"),
                @NamedQuery(name = "TestAnalyte.TestAnalyteDOListByTestId", query = "select distinct new org.openelis.domain.TestAnalyteViewDO(ta.id,ta.testId,ta.sortOrder,ta.rowGroup,ta.isColumn,ta.analyteId,ta.typeId,ta.isReportable,ta.resultGroup,ta.scriptletId,a.name,s.name)" +
                     "                  from TestAnalyte ta left join ta.scriptlet s left join ta.analyte a where ta.testId = :testId order by ta.sortOrder"),
-               @NamedQuery(name = "TestAnalyte.TestAnalytesByResultGroupAndTestId", query = "select ta.resultGroup, ta.id from TestAnalyte ta  where ta.testId = :testId " +
-                    " group by ta.resultGroup, ta.id order by ta.resultGroup, ta.id")})
+               @NamedQuery(name = "TestAnalyte.AnalyteByTestId", query = "select distinct new org.openelis.domain.AnalyteDO(a.id,a.name,a.isActive,a.parentAnalyteId,a.externalId) " +
+                    "                  from TestAnalyte ta left join ta.analyte a where ta.testId = :testId")})
 @Entity
 @Table(name="test_analyte")
 @EntityListeners({AuditUtil.class})
