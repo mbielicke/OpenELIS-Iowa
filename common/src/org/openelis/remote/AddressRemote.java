@@ -31,5 +31,5 @@ import org.openelis.domain.AddressDO;
 
 @Remote
 public interface AddressRemote {
-    public AddressDO getAddress(Integer addressId);
+    public AddressDO fetchById(Integer id) throws Exception;
 }

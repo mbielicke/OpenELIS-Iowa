@@ -33,9 +33,9 @@ import org.openelis.gwt.common.data.QueryData;
 
 @Remote
 public interface OrganizationRemote {
-    public ArrayList<OrganizationDO> fetchActiveById(Integer id);
+    public OrganizationDO fetchActiveById(Integer id) throws Exception;
 
-    public ArrayList<OrganizationDO> fetchActiveByName(String name, int max);
+    public ArrayList<OrganizationDO> fetchActiveByName(String name, int max) throws Exception;
 
     public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception;
 }
