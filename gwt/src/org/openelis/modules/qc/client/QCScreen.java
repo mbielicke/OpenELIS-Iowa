@@ -152,8 +152,8 @@ public class QCScreen extends OpenELISScreenForm<QCForm, Query<TableDataRow<Inte
         String query;
         if(obj instanceof AppButton) {
             query = ((AppButton)obj).action;
-            if (query.indexOf("query:") != -1)
-                getQCs(query.substring(6));
+            if (query.indexOf("*") != -1)
+                getQCs(query);
             else                         
                 super.performCommand(action, obj);            
          }  /*else if(action == DictionaryEntryPickerScreen.Action.COMMIT) {              
