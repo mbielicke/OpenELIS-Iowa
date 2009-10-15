@@ -245,7 +245,7 @@ public class TestBean implements TestRemote, TestLocal {
         listCollection = new ArrayList<List<TestResultDO>>();
         resultGroup = 1;
         while (resultGroup != null) {
-            query = manager.createNamedQuery("TestResult.TestResultDOList");
+            query = manager.createNamedQuery("TestResult.FetchByTestIdResultGroup");
             query.setParameter("testId", testId);
             query.setParameter("resultGroup", resultGroup);
 
@@ -628,7 +628,7 @@ public class TestBean implements TestRemote, TestLocal {
         listCollection = new ArrayList<ArrayList<TestResultDO>>();
         resultGroup = 1;
         while (resultGroup != null) {
-            query = manager.createNamedQuery("TestResult.TestResultDOList");
+            query = manager.createNamedQuery("TestResult.FetchByTestIdResultGroup");
             query.setParameter("testId", testId);
             query.setParameter("resultGroup", resultGroup);
 

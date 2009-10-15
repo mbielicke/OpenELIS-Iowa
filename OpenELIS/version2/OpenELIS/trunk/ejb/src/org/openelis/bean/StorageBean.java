@@ -60,7 +60,7 @@ public class StorageBean implements StorageLocal{
         storage.setReferenceId(storageDO.getReferenceId());
         storage.setReferenceTableId(storageDO.getReferenceTableId());
         storage.setStorageLocationId(storageDO.getStorageLocationId());
-        storage.setSystemUserId(storageDO.getSystemUserId());
+        storage.setSystemUserId(login.getSystemUserId());
         
         manager.persist(storage);
         storageDO.setId(storage.getId());

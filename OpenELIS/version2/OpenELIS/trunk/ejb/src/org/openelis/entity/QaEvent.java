@@ -55,9 +55,19 @@ import org.openelis.utils.Auditable;
 @NamedQueries({@NamedQuery(name = "QaEvent.QaEvent", query = "select new org.openelis.domain.QaEventViewDO(q.id, q.name, q.description,t.id,q.typeId,q.isBillable, " + 
                            " q.reportingSequence, q.reportingText, t.name,m.id, m.name)" +                                                                                                  
                            "  from QaEvent q left join q.test t left join t.method m where q.id = :id"),
-               @NamedQuery(name = "QaEvent.AutoCompleteByName", query = "select new org.openelis.domain.QaEventAutoDO(q.id, q.name, q.description, q.typeId, q.isBillable) " + 
-                                                             " from QaEvent q where q.name like :name order by q.name"),
-               @NamedQuery(name = "QaEvent.IdByTestId", query = "select q.id from QaEvent q where q.testId = :testId")})
+               @NamedQuery(name = "QaEvent.IdByTestId", query = "select q.id from QaEvent q where q.testId = :testId"),
+               @NamedQuery(name = "QaEvent.FetchAllTestSpecific", query = "select new org.openelis.domain.QaEventDO(q.id,q.name,q.description,q.testId,q.typeId, " + 
+                           " q.isBillable,q.reportingSequence, '') from QaEvent q where q.testId = :testId or " + 
+                           " (q.testId is null and q.name not in (select q2.name from QaEvent q2 where q2.testId=:testId)) " + 
+                           " order by q.name"),
+               @NamedQuery(name = "QaEvent.FetchAllCommon", query = "select new org.openelis.domain.QaEventDO(q.id,q.name,q.description,q.testId,q.typeId, " + 
+                           " q.isBillable,q.reportingSequence, '') from QaEvent q where q.testId is null order by q.name"),
+               @NamedQuery(name = "QaEvent.FetchTestSpecificByName", query = "select new org.openelis.domain.QaEventDO(q.id,q.name,q.description,q.testId,q.typeId, " + 
+                                       " q.isBillable,q.reportingSequence, '') from QaEvent q where q.testId = :testId or " + 
+                                       " (q.testId is null and q.name not in (select q2.name from QaEvent q2 where q2.testId=:testId)) " + 
+                                       " and q.name like :name order by q.name"),
+               @NamedQuery(name = "QaEvent.FetchCommonByName", query = "select new org.openelis.domain.QaEventDO(q.id,q.name,q.description,q.testId,q.typeId, " + 
+                                                   " q.isBillable,q.reportingSequence, '') from QaEvent q where q.testId is null and q.name like :name order by q.name")})
                
 public class QaEvent implements Auditable, Cloneable {
   

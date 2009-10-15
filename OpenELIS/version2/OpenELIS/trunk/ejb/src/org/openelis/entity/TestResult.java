@@ -45,15 +45,12 @@ import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
-@NamedQueries({@NamedQuery(name = "TestResult.IdByTestId", query = "select tr.id from TestResult tr where tr.testId = :testId"),
-               @NamedQuery(name = "TestResult.IdValueByTestAnalyteId", query = "select distinct new org.openelis.domain.IdNameDO(tr.id,tr.value) " +
-                        " from TestResult tr, TestAnalyte ta where tr.testId = :testId" +
-                        " and tr.resultGroup = ta.resultGroup and ta.id = :analyteId"),
-               @NamedQuery(name = "TestResult.IdValueByTestId", query = "select distinct new org.openelis.domain.IdNameDO(tr.id,tr.value) " +
-                                    " from TestResult tr where tr.testId = :testId order by tr.value "),
-               @NamedQuery(name = "TestResult.TestResultDOList", query = "select distinct new org.openelis.domain.TestResultDO(tr.id,tr.testId,tr.resultGroup,"+
+@NamedQueries({@NamedQuery(name = "TestResult.FetchByTestIdResultGroup", query = "select distinct new org.openelis.domain.TestResultDO(tr.id,tr.testId,tr.resultGroup,"+
                         " tr.sortOrder,tr.unitOfMeasureId,tr.typeId,tr.value,tr.significantDigits,tr.roundingMethodId,tr.flagsId)  from TestResult tr " +
-                        " where tr.testId = :testId and tr.resultGroup = :resultGroup order by tr.sortOrder "),               
+                        " where tr.testId = :testId and tr.resultGroup = :resultGroup order by tr.sortOrder "),      
+               @NamedQuery(name = "TestResult.FetchByTestId", query = "select distinct new org.openelis.domain.TestResultDO(tr.id,tr.testId,tr.resultGroup,"+
+                        " tr.sortOrder,tr.unitOfMeasureId,tr.typeId,tr.value,tr.significantDigits,tr.roundingMethodId,tr.flagsId)  from TestResult tr " +
+                        " where tr.testId = :testId order by tr.sortOrder "),      
                @NamedQuery(name = "TestResult.ResultCountByValue", query = "select tr.id from TestResult tr where tr.value = :value")})
 @Entity
 @Table(name="test_result")
