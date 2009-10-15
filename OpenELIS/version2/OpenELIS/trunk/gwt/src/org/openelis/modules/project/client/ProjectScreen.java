@@ -125,8 +125,8 @@ public class ProjectScreen extends OpenELISScreenForm<ProjectForm, Query<TableDa
     public void performCommand(Enum action, Object obj) {        
         if(obj instanceof AppButton) {
             String query = ((AppButton)obj).action;
-            if (query.indexOf("query:") != -1)
-                getProjects(query.substring(6));
+            if (query.indexOf("*") != -1)
+                getProjects(query);
             else                         
                 super.performCommand(action, obj);            
          }  else {                         

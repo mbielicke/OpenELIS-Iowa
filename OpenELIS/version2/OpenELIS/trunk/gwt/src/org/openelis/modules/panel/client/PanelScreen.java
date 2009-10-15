@@ -91,8 +91,8 @@ public class PanelScreen extends OpenELISScreenForm<PanelForm,Query<TableDataRow
     public void performCommand(Enum action, Object obj) {
         if (obj instanceof AppButton) {
             String baction = ((AppButton)obj).action;
-            if (baction.startsWith("query:")) {
-                getPanels(baction.substring(6, baction.length()));
+            if (baction.indexOf("*") > -1) {
+                getPanels(baction);
             }else
                 super.performCommand(action, obj);
          } else {                       

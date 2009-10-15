@@ -31,19 +31,20 @@ import java.util.List;
 
 import org.openelis.common.AutocompleteRPC;
 import org.openelis.domain.IdNameTestMethodDO;
+import org.openelis.domain.QaEventDO;
 import org.openelis.domain.QaEventViewDO;
 import org.openelis.domain.TestMethodViewDO;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.deprecated.AbstractField;
 import org.openelis.gwt.common.data.deprecated.FieldType;
 import org.openelis.gwt.common.data.deprecated.StringObject;
 import org.openelis.gwt.common.data.deprecated.TableDataModel;
 import org.openelis.gwt.common.data.deprecated.TableDataRow;
 import org.openelis.gwt.common.deprecated.Form;
-import org.openelis.gwt.common.deprecated.Query;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.deprecated.AppScreenFormServiceInt;
 import org.openelis.gwt.services.deprecated.AutoCompleteServiceInt;
@@ -61,7 +62,7 @@ import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
 
 
-public class QAEventService implements AppScreenFormServiceInt<QAEventForm, Query<TableDataRow<Integer>>>,
+public class QAEventService implements AppScreenFormServiceInt<QAEventForm, org.openelis.gwt.common.deprecated.Query<TableDataRow<Integer>>>,
                                        AutoCompleteServiceInt {
     
     private static final long serialVersionUID = 1L;
@@ -69,7 +70,7 @@ public class QAEventService implements AppScreenFormServiceInt<QAEventForm, Quer
     
     private UTFResource openElisConstants= UTFResource.getBundle((String)SessionManager.getSession().getAttribute("locale"));
     
-    public Query<TableDataRow<Integer>> commitQuery(Query<TableDataRow<Integer>> query) throws Exception {
+    public org.openelis.gwt.common.deprecated.Query<TableDataRow<Integer>> commitQuery(org.openelis.gwt.common.deprecated.Query<TableDataRow<Integer>> query) throws Exception {
         List qaEventNames = new ArrayList();
 
         QaEventRemote remote = (QaEventRemote)EJBFactory.lookup("openelis/QaEventBean/remote"); 
@@ -298,9 +299,23 @@ public class QAEventService implements AppScreenFormServiceInt<QAEventForm, Quer
     
     public AutocompleteRPC getQAEventMatches(AutocompleteRPC rpc){
         QaEventRemote remote = (QaEventRemote)EJBFactory.lookup("openelis/QaEventBean/remote");
+        //rpc.model = (ArrayList)remote.autoCompleteLookupByName(rpc.match+"%", 10);
+        return rpc;
+    }
+    /*
+    public ArrayList<QaEventDO> getQAEventMatches(Query query){
+        QaEventRemote remote = (QaEventRemote)EJBFactory.lookup("openelis/QaEventBean/remote");
+        
+        if(query.getFields().size())
         rpc.model = (ArrayList)remote.autoCompleteLookupByName(rpc.match+"%", 10);
         return rpc;
     }
+    
+    public ArrayList<QaEventViewDO> getListOfQaevents(){
+        QaEventRemote remote = (QaEventRemote)EJBFactory.lookup("openelis/QaEventBean/remote");
+        return remote.getAllQaevents();
+    }*/
+    
     //qa event manager methods
     public SampleQaEventManager fetchBySampleId(Integer sampleId) throws Exception {
         SampleQAEventManagerRemote remote = (SampleQAEventManagerRemote)EJBFactory.lookup("openelis/SampleQAEventManagerBean/remote");

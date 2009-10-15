@@ -88,8 +88,8 @@ public class ProviderScreen extends OpenELISScreenForm<ProviderForm,Query<TableD
     public void performCommand(Enum action, Object obj) {
         if(obj instanceof AppButton) {
             String query = ((AppButton)obj).action;
-            if (query.indexOf("query:") != -1)
-                getProviders(query.substring(6));
+            if (query.indexOf("*") != -1)
+                getProviders(query);
             else                         
                 super.performCommand(action, obj);            
          }  else {                         
