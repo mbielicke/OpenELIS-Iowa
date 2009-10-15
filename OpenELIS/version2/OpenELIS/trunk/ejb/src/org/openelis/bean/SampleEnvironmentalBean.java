@@ -36,7 +36,6 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
-import org.openelis.domain.IdNameDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.SampleEnvironmentalDO;
 import org.openelis.entity.SampleEnvironmental;
@@ -48,10 +47,8 @@ import org.openelis.local.SampleEnvironmentalLocal;
 import org.openelis.manager.SampleManager;
 import org.openelis.metamap.SampleEnvironmentalMetaMap;
 import org.openelis.remote.SampleEnvironmentalRemote;
-import org.openelis.util.QueryBuilder;
 import org.openelis.util.QueryBuilderV2;
 import org.openelis.utilcommon.DataBaseUtil;
-import org.openelis.utils.GetPage;
 
 @Stateless
 
@@ -63,58 +60,44 @@ public class SampleEnvironmentalBean implements SampleEnvironmentalRemote, Sampl
     
     @EJB private AddressLocal addressBean;
    
-    private static final SampleEnvironmentalMetaMap Meta = new SampleEnvironmentalMetaMap();
+    private static final SampleEnvironmentalMetaMap meta = new SampleEnvironmentalMetaMap();
     
-    public SampleEnvironmentalDO fetchBySampleId(Integer sampleId) throws Exception {
-        Query query = manager.createNamedQuery("SampleEnvironmental.SampleEnvironmentalBySampleId");
-        query.setParameter("id", sampleId);
+    public SampleEnvironmentalDO fetchBySampleId(Integer id) throws Exception {
+        Query query;
         
-        SampleEnvironmentalDO envDO = (SampleEnvironmentalDO) query.getSingleResult();
-        return envDO;
+        query = manager.createNamedQuery("SampleEnvironmental.FetchBySampleId");
+        query.setParameter("id", id);
+
+        return (SampleEnvironmentalDO) query.getSingleResult();
     }
 
     public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception {
-        StringBuffer sb = new StringBuffer();
-        QueryBuilderV2 qb = new QueryBuilderV2();
+        Query query;
+        QueryBuilderV2 builder;
         List list;
-        
-        qb.setMeta(Meta);
-      
-        qb.setSelect("distinct new org.openelis.domain.IdNameVO("+Meta.SAMPLE.getId()+", '') ");
-       
-        //this method is going to throw an exception if a column doesnt match
-        qb.constructWhere(fields);     
-        
-        qb.addWhere(Meta.SAMPLE.getDomain() + " = '" + SampleManager.ENVIRONMENTAL_DOMAIN_FLAG + "'");
 
-        //qb.setOrderBy(Meta.SAMPLE.getAccessionNumber());
-       
-        sb.append(qb.getEJBQL());
+        builder = new QueryBuilderV2();
+        builder.setMeta(meta);
+        builder.setSelect("distinct new org.openelis.domain.IdNameVO(" + meta.getId() + ",'') ");
+        builder.constructWhere(fields);
+        builder.addWhere(meta.SAMPLE.getDomain() + "='" + SampleManager.ENVIRONMENTAL_DOMAIN_FLAG + "'");
+        builder.setOrderBy(meta.getId());
 
-        Query query = manager.createQuery(sb.toString());
-        
-        if(first > -1 && max > -1)
-         query.setMaxResults(first+max);
-        
-//      ***set the parameters in the query
-        qb.setQueryParams(query, fields);
-        
-        ArrayList<IdNameDO> returnList = (ArrayList<IdNameDO>)GetPage.getPage(query.getResultList(), first, max);
-        
+        query = manager.createQuery(builder.getEJBQL());
+        query.setMaxResults(first + max);
+        builder.setQueryParams(query, fields);
+
         list = query.getResultList();
-        
         if (list.isEmpty())
             throw new NotFoundException();
-
         list = (ArrayList<IdNameVO>)DataBaseUtil.subList(list, first, max);
-        
         if (list == null)
             throw new LastPageException();
 
         return (ArrayList<IdNameVO>)list;
     }
     
-    public void add(SampleEnvironmentalDO envSampleDO) {
+    public void add(SampleEnvironmentalDO envSampleDO) throws Exception {
         manager.setFlushMode(FlushModeType.COMMIT);
 
         SampleEnvironmental environmental = new SampleEnvironmental();
@@ -134,7 +117,7 @@ public class SampleEnvironmentalBean implements SampleEnvironmentalRemote, Sampl
         envSampleDO.setId(environmental.getId());
     }
 
-    public void update(SampleEnvironmentalDO envSampleDO) {
+    public void update(SampleEnvironmentalDO envSampleDO) throws Exception {
         manager.setFlushMode(FlushModeType.COMMIT);
         
         SampleEnvironmental environmental = manager.find(SampleEnvironmental.class, envSampleDO.getId());
@@ -150,7 +133,6 @@ public class SampleEnvironmentalBean implements SampleEnvironmentalRemote, Sampl
         environmental.setSamplingLocation(envSampleDO.getSamplingLocation());
     }
 
-    public void validateDomain() throws Exception {
-        
+    public void validate() throws Exception {
     }
 }

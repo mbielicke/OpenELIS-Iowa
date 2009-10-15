@@ -37,7 +37,7 @@ import org.openelis.domain.OrganizationViewDO;
 public interface OrganizationLocal {
     public OrganizationViewDO fetchById(Integer id) throws Exception;
 
-    public OrganizationViewDO add(OrganizationViewDO data);
+    public OrganizationViewDO add(OrganizationViewDO data) throws Exception;
 
     public OrganizationViewDO update(OrganizationViewDO data) throws Exception;
 

@@ -36,12 +36,12 @@ import javax.persistence.PersistenceContext;
 import javax.transaction.UserTransaction;
 
 import org.jboss.annotation.security.SecurityDomain;
+import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.SecurityModule.ModuleFlags;
 import org.openelis.local.LockLocal;
 import org.openelis.manager.OrganizationContactManager;
 import org.openelis.manager.OrganizationManager;
 import org.openelis.remote.OrganizationManagerRemote;
-import org.openelis.utils.ReferenceTableCache;
 import org.openelis.utils.SecurityInterceptor;
 
 @Stateless
@@ -51,18 +51,13 @@ import org.openelis.utils.SecurityInterceptor;
 
 public class OrganizationManagerBean implements OrganizationManagerRemote {
 
-    @PersistenceContext(name = "openelis")
-
     @Resource
     private SessionContext ctx;
 
     @EJB
     private LockLocal      lockBean;
 
-    private static int     orgRefTableId;
-
     public OrganizationManagerBean() {
-        orgRefTableId = ReferenceTableCache.getReferenceTable("organization");
     }
 
     public OrganizationManager fetchById(Integer id) throws Exception {
@@ -83,7 +78,7 @@ public class OrganizationManagerBean implements OrganizationManagerRemote {
 
     public OrganizationManager add(OrganizationManager man) throws Exception {
         UserTransaction ut;
-        
+
         checkSecurity(ModuleFlags.ADD);
 
         man.validate();
@@ -98,28 +93,28 @@ public class OrganizationManagerBean implements OrganizationManagerRemote {
 
     public OrganizationManager update(OrganizationManager man) throws Exception {
         UserTransaction ut;
-
+        
         checkSecurity(ModuleFlags.UPDATE);
 
         man.validate();
 
         ut = ctx.getUserTransaction();
         ut.begin();
-        lockBean.validateLock(orgRefTableId, man.getOrganization().getId());        
+        lockBean.validateLock(ReferenceTable.ORGANIZATION, man.getOrganization().getId());        
         man.update();
-        lockBean.giveUpLock(orgRefTableId, man.getOrganization().getId());
+        lockBean.giveUpLock(ReferenceTable.ORGANIZATION, man.getOrganization().getId());
         ut.commit();
 
         return man;
     }
 
     public OrganizationManager fetchForUpdate(Integer id) throws Exception {
-        lockBean.getLock(orgRefTableId, id);
+        lockBean.getLock(ReferenceTable.ORGANIZATION, id);
         return fetchById(id);
     }
 
     public OrganizationManager abortUpdate(Integer id) throws Exception {
-        lockBean.giveUpLock(orgRefTableId, id);
+        lockBean.giveUpLock(ReferenceTable.ORGANIZATION, id);
         return fetchById(id);
     }
 
