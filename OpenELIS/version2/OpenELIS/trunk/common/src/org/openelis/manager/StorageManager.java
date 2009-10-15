@@ -29,6 +29,7 @@ import java.util.ArrayList;
 
 import org.openelis.domain.StorageViewDO;
 import org.openelis.exception.MultipleNoteException;
+import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.ValidationErrorsList;
 
@@ -62,16 +63,8 @@ public class StorageManager implements RPC {
     public StorageViewDO getStorageAt(int i) {
         return storageList.get(i);
     }
+  
     public void addStorage(StorageViewDO storage) throws Exception {
-        //you can only add 1 storage record at a time.  This checks to see if we 
-        //already have an uncommited storage record.
-        for(int i=0; i<count(); i++){
-            StorageViewDO storageDO = getStorageAt(i);
-            
-            if(storageDO.getId() == null)
-                throw new MultipleNoteException();
-        }
-        
         if(storageList == null)
             storageList = new ArrayList<StorageViewDO>();
         
