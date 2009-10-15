@@ -234,6 +234,42 @@ public class AnalysisManager implements RPC, HasNotesInt {
     public void setStorageAt(StorageManager storage, int i) {
         getItem(i).storage = storage;
     }
+    
+    //analysis test result
+    public AnalysisResultManager getAnalysisResultAt(int i) throws Exception {
+        AnalysisListItem item = getItem(i);
+
+        if (item.analysisResult == null) {
+            if(item.analysis != null){
+                if(item.analysis.getId() != null && item.analysis.getId() > -1){
+                    try{
+                        item.analysisResult = AnalysisResultManager.fetchAnalysisId(item.analysis.getId());
+                    }catch(NotFoundException e){
+                        //ignore
+                    }catch(Exception e){
+                        throw e;
+                    }
+                }else if(item.analysis.getTestId() != null){
+                    try{
+                        item.analysisResult = AnalysisResultManager.fetchByTestId(item.analysis.getTestId());
+                    }catch(NotFoundException e){
+                        //ignore
+                    }catch(Exception e){
+                        throw e;
+                    }
+                }
+            }
+        }
+            
+        if(item.analysisResult == null)
+            item.analysisResult = AnalysisResultManager.getInstance();
+    
+        return item.analysisResult;
+    }
+    
+    public void setAnalysisResultAt(AnalysisResultManager analysisResult, int i) {
+        getItem(i).analysisResult = analysisResult;
+    }
    
     //item
     private AnalysisListItem getItem(int i) {
