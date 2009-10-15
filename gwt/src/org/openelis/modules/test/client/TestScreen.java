@@ -686,12 +686,11 @@ public class TestScreen extends Screen {
                 String systemName;
                 TestSectionManager tsm;
                 TestSectionViewDO sectionDO;
-                TableDataRow tableRow;
                 
                 row = event.getRow();
-                col = event.getCell();
-                tableRow = sectionTable.getRow(row);
+                col = event.getCol();
                 tsm = manager.getTestSections();
+                val = (Integer)sectionTable.getObject(row, col);
                 
                 try{
                     sectionDO = tsm.getSectionAt(row);
@@ -700,8 +699,6 @@ public class TestScreen extends Screen {
                     return;
                 }
                     
-                val = (Integer)tableRow.cells.get(col).value;
-                
                 switch (col){
                     case 0:
                             sectionDO.setSectionId(val);                            

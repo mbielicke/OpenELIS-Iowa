@@ -85,7 +85,7 @@ public class StorageTab extends Screen {
             public void onCellUpdated(CellEditedEvent event) {
                 int row,col;
                 row = event.getRow();
-                col = event.getCell();
+                col = event.getCol();
                 StorageViewDO storageDO;
                 TableDataRow tableRow = storageTable.getRow(row);
                 try{

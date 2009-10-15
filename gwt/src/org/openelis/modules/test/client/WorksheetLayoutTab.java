@@ -232,16 +232,16 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
 
         worksheetTable.addCellEditedHandler(new CellEditedHandler() {
             public void onCellUpdated(CellEditedEvent event) {
-                int r, col;
+                int r, c;
                 Object val;
                 TestWorksheetItemDO item;
 
                 r = event.getRow();
-                col = event.getCell();
+                c = event.getCol();
                 
-                val = worksheetTable.getRow(r).cells.get(col).value;
+                val = worksheetTable.getObject(r,c);
                 item = worksheetManager.getItemAt(r);
-                switch(col) {
+                switch(c) {
                     case 0:
                         item.setPosition((Integer)val);
                         break;
@@ -320,7 +320,7 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
                 TestWorksheetAnalyteViewDO anaDO;
                 
                 r = event.getRow();
-                col = event.getCell();
+                col = event.getCol();
 
                 val = (Integer)worksheetAnalyteTable.getRow(r).cells.get(col).value;
                 anaDO = worksheetManager.getAnalyteAt(r);

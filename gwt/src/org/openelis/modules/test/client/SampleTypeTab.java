@@ -87,8 +87,8 @@ public class SampleTypeTab extends Screen {
                 TestTypeOfSampleDO sampleTypeDO;
                 
                 row = event.getRow();
-                col = event.getCell();                         
-                val = (Integer)sampleTypeTable.getRow(row).cells.get(col).value;                
+                col = event.getCol();                         
+                val = (Integer)sampleTypeTable.getObject(row, col);
                 try{
                     sampleTypeDO = manager.getSampleTypes().getTypeAt(row);
                 }catch(Exception e){

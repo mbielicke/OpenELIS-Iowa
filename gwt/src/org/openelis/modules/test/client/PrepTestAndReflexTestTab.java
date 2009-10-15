@@ -118,7 +118,7 @@ public class PrepTestAndReflexTestTab extends Screen implements GetMatchesHandle
                 String names[];
 
                 r = event.getRow();
-                c = event.getCell();
+                c = event.getCol();
                 
                 val = testPrepTable.getRow(r).cells.get(c).getValue(); 
                 
@@ -227,7 +227,7 @@ public class PrepTestAndReflexTestTab extends Screen implements GetMatchesHandle
                 TableDataCell tdc;
                                 
                 row = event.getRow();
-                col = event.getCell();                
+                col = event.getCol();                
                 if(col == 2) {                    
                     val = (TableDataRow)testReflexTable.getRow(row).cells.get(1).getValue();
                     tdc = testReflexTable.getCell(row, 1);                    
@@ -250,7 +250,7 @@ public class PrepTestAndReflexTestTab extends Screen implements GetMatchesHandle
                 String names[];
                 
                 row = event.getRow();
-                col = event.getCell();
+                col = event.getCol();
                 val = testReflexTable.getRow(row).cells.get(col).getValue();
                 try{
                     refDO = manager.getReflexTests().getReflexAt(row);
