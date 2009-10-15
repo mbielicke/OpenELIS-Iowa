@@ -41,7 +41,9 @@ import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.HasActionHandlers;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
+import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
+import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.TextArea;
 import org.openelis.gwt.widget.TextBox;
@@ -50,7 +52,9 @@ import org.openelis.gwt.widget.tree.TreeWidget;
 import org.openelis.gwt.widget.tree.event.LeafOpenedEvent;
 import org.openelis.gwt.widget.tree.event.LeafOpenedHandler;
 import org.openelis.metamap.StandardNoteMetaMap;
+import org.openelis.modules.organization.client.OrganizationDef;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
@@ -77,19 +81,15 @@ public class EditNoteScreen extends Screen implements HasActionHandlers<EditNote
     private StandardNoteMetaMap       meta = new StandardNoteMetaMap();
 
     public EditNoteScreen() throws Exception {
-        // Call base to get ScreenDef and draw screen
-        super("OpenELISServlet?service=org.openelis.modules.editNote.server.EditNoteService");
+        super((ScreenDefInt)GWT.create(EditNoteDef.class));
+        service = new ScreenService("OpenELISServlet?service=org.openelis.modules.editNote.server.EditNoteService");
 
         // Setup link between Screen and widget Handlers
         initialize();
-
-        // Initialize Screen
         setState(State.DEFAULT);
-
     }
 
     private void initialize() {
-
         tree = (TreeWidget)def.getWidget("noteTree");
         addScreenHandler(tree, new ScreenEventHandler<ArrayList<TreeDataItem>>() {
             public void onStateChange(StateChangeEvent<State> event) {
@@ -247,7 +247,7 @@ public class EditNoteScreen extends Screen implements HasActionHandlers<EditNote
         QueryData field;
         Query query;
         ArrayList<QueryData> fields;
-        
+
         fields = new ArrayList<QueryData>();
 
         field = new QueryData();
@@ -271,12 +271,12 @@ public class EditNoteScreen extends Screen implements HasActionHandlers<EditNote
     private void find(TreeDataItem row, Integer typeId) {
         Query query;
         QueryData field;
-        
+
         field = new QueryData();
         field.type = QueryData.Type.INTEGER;
         field.query = String.valueOf(typeId);
         field.key = meta.getTypeId();
-        
+
         query = new Query();
         query.setFields(field);
 
@@ -288,19 +288,19 @@ public class EditNoteScreen extends Screen implements HasActionHandlers<EditNote
 
         service.callList("query", query, new AsyncCallback<ArrayList<StandardNoteDO>>() {
             public void onSuccess(ArrayList<StandardNoteDO> result) {
-                if(row == null)
+                if (row == null)
                     buildTree(result);
                 else
-                    buildTree(row,result);
+                    buildTree(row, result);
                 window.clearStatus();
             }
 
             public void onFailure(Throwable error) {
-                if(row == null)
+                if (row == null)
                     buildTree(null);
                 else
                     buildTree(row, null);
-                
+
                 if (error instanceof NotFoundException) {
                     window.setDone(consts.get("noRecordsFound"));
                     setState(State.DEFAULT);
@@ -342,23 +342,15 @@ public class EditNoteScreen extends Screen implements HasActionHandlers<EditNote
 
     protected boolean validate() {
         return true;
-        /*boolean valid = true;
-        if (screenNoteDO != null) {
-            if ("N".equals(screenNoteDO.getIsExternal())) {
-                if (subject.getValue().trim().length() == 0) {
-                    subject.addError(consts.get("fieldRequiredException"));
-                    valid = false;
-                }
-            }
-
-            if (text.getValue().trim().length() == 0) {
-                text.addError(consts.get("fieldRequiredException"));
-                valid = false;
-            }
-        }
-
-        window.setError(consts.get("correctErrors"));
-        return valid;*/
+        /*
+         * boolean valid = true; if (screenNoteDO != null) { if
+         * ("N".equals(screenNoteDO.getIsExternal())) { if
+         * (subject.getValue().trim().length() == 0) {
+         * subject.addError(consts.get("fieldRequiredException")); valid =
+         * false; } } if (text.getValue().trim().length() == 0) {
+         * text.addError(consts.get("fieldRequiredException")); valid = false; }
+         * } window.setError(consts.get("correctErrors")); return valid;
+         */
     }
 
     private void buildTree(ArrayList<StandardNoteDO> noteList) {
@@ -368,10 +360,10 @@ public class EditNoteScreen extends Screen implements HasActionHandlers<EditNote
 
         if (tree.numRows() > 0)
             tree.clear();
-        
-        if(noteList == null)
+
+        if (noteList == null)
             return;
-        
+
         oldTypeId = null;
         for (int i = 0; i < noteList.size(); i++ ) {
             note = noteList.get(i);
@@ -399,9 +391,9 @@ public class EditNoteScreen extends Screen implements HasActionHandlers<EditNote
     }
 
     private void buildTree(TreeDataItem row, ArrayList<StandardNoteDO> noteList) {
-        if(noteList == null)
-            return; 
-        
+        if (noteList == null)
+            return;
+
         for (int i = 0; i < noteList.size(); i++ ) {
             StandardNoteDO noteDO = noteList.get(i);
 

@@ -95,6 +95,7 @@ public class OrganizationScreen extends Screen {
     private ScreenNavigator       nav;
 
     private ContactsTab           contactsTab;
+    private IdentifiersTab        identifiersTab;
     private NotesTab              notesTab;
     private Tabs                  tab;
 
@@ -492,6 +493,19 @@ public class OrganizationScreen extends Screen {
             }
         });
 
+        identifiersTab = new IdentifiersTab(def);
+        addScreenHandler(identifiersTab, new ScreenEventHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                identifiersTab.setManager(manager);
+                if (tab == Tabs.IDENTIFIERS)
+                    drawTabs();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                identifiersTab.setState(event.getState());
+            }
+        });
+
         notesTab = new NotesTab(def, "notesPanel", "standardNoteButton", false);
         addScreenHandler(notesTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
@@ -707,7 +721,7 @@ public class OrganizationScreen extends Screen {
             window.setDone(consts.get("addAborted"));
         } else if (state == State.UPDATE) {
             try {
-                manager.abortUpdate();
+                manager = manager.abortUpdate();
                 setState(State.DISPLAY);
                 DataChangeEvent.fire(this);
             } catch (Exception e) {
@@ -761,10 +775,9 @@ public class OrganizationScreen extends Screen {
             case CONTACTS:
                 contactsTab.draw();
                 break;
-// TODO
-//            case IDENTIFIERS:
-//                identifiersTab.draw();
-//                break;
+            case IDENTIFIERS:
+                identifiersTab.draw();
+                break;
             case NOTES:
                 notesTab.draw();
                 break;
