@@ -57,7 +57,6 @@ public class ContactsTab extends Screen {
             public void onCellUpdated(CellEditedEvent event) {
                 int r, c;
                 Object val;
-                TableDataRow row;
                 OrganizationContactDO data;
 
                 if (state == State.QUERY)
@@ -65,7 +64,7 @@ public class ContactsTab extends Screen {
 
                 r = event.getRow();
                 c = event.getCol();
-                row = table.getRow(r);
+                val = table.getObject(r,c);
 
                 try {
                     data = manager.getContacts().getContactAt(r);
@@ -73,8 +72,6 @@ public class ContactsTab extends Screen {
                     Window.alert(e.getMessage());
                     return;
                 }
-
-                val = row.cells.get(c).value;
 
                 switch (c) {
                     case 0:

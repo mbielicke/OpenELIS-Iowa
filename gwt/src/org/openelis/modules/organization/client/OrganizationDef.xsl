@@ -92,7 +92,7 @@ UIRF Software License are applicable instead of those above.
               <xsl:call-template name="aToZLeftPanelButtons" />
             </buttonGroup>
             <VerticalPanel>
-              <table key="atozTable" width="auto" maxRows="18">
+              <table key="atozTable" width="auto" maxRows="18" style="atozTable">
                 <col width="175" header="{resource:getString($constants,'name')}">
                   <label />
                 </col>
@@ -225,57 +225,55 @@ UIRF Software License are applicable instead of those above.
 
 <!-- TAB PANEL -->
 
-            <TabPanel key="tabPanel">
+            <TabPanel key="tabPanel" width="605" height="285">
 
 <!-- TAB 1 -->
 
               <tab key="contactsTab" text="{resource:getString($constants,'contact')}">
-                <VerticalPanel width="610px" padding="0" spacing="0">
-                  <widget valign="top">
-                    <table key="contactsTable" width="574px" maxRows="9" showScroll="ALWAYS" tab="{meta:getId($org)},{meta:getIsActive($org)}" title="">
-                      <col key="{contact:getContactTypeId($cont)}" width="106" sort="true" header="{resource:getString($constants,'type')}">
-                        <dropdown width="90" field="Integer" required="true" />
-                      </col>
-                      <col key="{contact:getName($cont)}" width="130" sort="true" header="{resource:getString($constants,'contactName')}">
-                        <textbox case="UPPER" max="40" field="String" required="true" />
-                      </col>
-                      <col key="{addr:getMultipleUnit($contAddr)}" width="130" sort="true" header="{resource:getString($constants,'aptSuite')}">
-                        <textbox case="UPPER" max="30" field="String" />
-                      </col>
-                      <col key="{addr:getStreetAddress($contAddr)}" width="130" sort="true" header="{resource:getString($constants,'address')}">
-                        <textbox case="UPPER" max="40" field="String" />
-                      </col>
-                      <col key="{addr:getCity($contAddr)}" width="130" sort="true" header="{resource:getString($constants,'city')}">
-                        <textbox case="UPPER" max="30" field="String" />
-                      </col>
-                      <col key="{addr:getState($contAddr)}" width="56" sort="true" header="{resource:getString($constants,'state')}">
-                        <dropdown width="40px" case="UPPER" field="String" />
-                      </col>
-                      <col key="{addr:getZipCode($contAddr)}" width="68" sort="true" header="{resource:getString($constants,'zipcode')}">
-                        <textbox mask="99999-9999" field="String" />
-                      </col>
-                      <col key="{addr:getCountry($contAddr)}" width="126" sort="true" header="{resource:getString($constants,'country')}">
-                        <dropdown width="110px" field="String" />
-                      </col>
-                      <col key="{addr:getWorkPhone($contAddr)}" width="100" sort="true" header="{resource:getString($constants,'workNumber')}">
-                        <textbox field="String" />
-                      </col>
-                      <col key="{addr:getHomePhone($contAddr)}" width="90" sort="true" header="{resource:getString($constants,'homeNumber')}">
-                        <textbox field="String" />
-                      </col>
-                      <col key="{addr:getCellPhone($contAddr)}" width="90" sort="true" header="{resource:getString($constants,'cellNumber')}">
-                        <textbox field="String" />
-                      </col>
-                      <col key="{addr:getFaxPhone($contAddr)}" width="90" sort="true" header="{resource:getString($constants,'faxNumber')}">
-                        <textbox field="String" />
-                      </col>
-                      <col key="{addr:getEmail($contAddr)}" width="150" sort="true" header="{resource:getString($constants,'email')}">
-                        <textbox field="String" />
-                      </col>
-                    </table>
-                  </widget>
-                  <HorizontalPanel style="WhiteContentPanel">
-                    <widget halign="center" style="WhiteContentPanel">
+                <VerticalPanel padding="0" spacing="0">
+                  <table key="contactsTable" width="589px" maxRows="9" showScroll="ALWAYS" tab="{meta:getId($org)},{meta:getIsActive($org)}">
+                    <col key="{contact:getContactTypeId($cont)}" width="106" header="{resource:getString($constants,'type')}">
+                      <dropdown width="90" field="Integer" required="true" />
+                    </col>
+                    <col key="{contact:getName($cont)}" width="130" header="{resource:getString($constants,'contactName')}">
+                      <textbox case="UPPER" max="40" field="String" required="true" />
+                    </col>
+                    <col key="{addr:getMultipleUnit($contAddr)}" width="130" header="{resource:getString($constants,'aptSuite')}">
+                      <textbox case="UPPER" max="30" field="String" />
+                    </col>
+                    <col key="{addr:getStreetAddress($contAddr)}" width="130" header="{resource:getString($constants,'address')}">
+                      <textbox case="UPPER" max="40" field="String" />
+                    </col>
+                    <col key="{addr:getCity($contAddr)}" width="130" header="{resource:getString($constants,'city')}">
+                      <textbox case="UPPER" max="30" field="String" />
+                    </col>
+                    <col key="{addr:getState($contAddr)}" width="56" header="{resource:getString($constants,'state')}">
+                      <dropdown width="40px" case="UPPER" field="String" />
+                    </col>
+                    <col key="{addr:getZipCode($contAddr)}" width="68" header="{resource:getString($constants,'zipcode')}">
+                      <textbox mask="99999-9999" field="String" />
+                    </col>
+                    <col key="{addr:getCountry($contAddr)}" width="126" header="{resource:getString($constants,'country')}">
+                      <dropdown width="110px" field="String" />
+                    </col>
+                    <col key="{addr:getWorkPhone($contAddr)}" width="100" header="{resource:getString($constants,'workNumber')}">
+                      <textbox field="String" />
+                    </col>
+                    <col key="{addr:getHomePhone($contAddr)}" width="90" header="{resource:getString($constants,'homeNumber')}">
+                      <textbox field="String" />
+                    </col>
+                    <col key="{addr:getCellPhone($contAddr)}" width="90" header="{resource:getString($constants,'cellNumber')}">
+                      <textbox field="String" />
+                    </col>
+                    <col key="{addr:getFaxPhone($contAddr)}" width="90" header="{resource:getString($constants,'faxNumber')}">
+                      <textbox field="String" />
+                    </col>
+                    <col key="{addr:getEmail($contAddr)}" width="150" header="{resource:getString($constants,'email')}">
+                      <textbox field="String" />
+                    </col>
+                  </table>
+                  <widget style="TableButtonFooter">
+                    <HorizontalPanel>
                       <appButton key="addContactButton" style="Button">
                         <HorizontalPanel>
                           <AbsolutePanel style="AddRowButtonImage" />
@@ -284,8 +282,6 @@ UIRF Software License are applicable instead of those above.
                           </text>
                         </HorizontalPanel>
                       </appButton>
-                    </widget>
-                    <widget halign="center" style="WhiteContentPanel">
                       <appButton key="removeContactButton" style="Button">
                         <HorizontalPanel>
                           <AbsolutePanel style="RemoveRowButtonImage" />
@@ -294,8 +290,8 @@ UIRF Software License are applicable instead of those above.
                           </text>
                         </HorizontalPanel>
                       </appButton>
-                    </widget>
-                  </HorizontalPanel>
+                    </HorizontalPanel>
+                  </widget>
                 </VerticalPanel>
 
               </tab>
@@ -304,18 +300,16 @@ UIRF Software License are applicable instead of those above.
 
               <tab key="identifiersTab" text="{resource:getString($constants,'identifier')}">
                 <VerticalPanel padding="0" spacing="0">
-                  <widget valign="top">
-                    <table key="identifiersTable" width="auto" maxRows="9" showScroll="ALWAYS" title="">
-                      <col key="UNK1" width="267" align="left" filter="false" sort="true" header="{resource:getString($constants,'identifier')}">
-                        <textbox field="String" required="true" />
-                      </col>
-                      <col key="UNK2" width="298" align="left" filter="false" sort="true" header="{resource:getString($constants,'value')}">
-                        <textbox field="String" required="true" />
-                      </col>
-                    </table>
-                  </widget>
-                  <HorizontalPanel style="WhiteContentPanel">
-                    <widget halign="center" style="WhiteContentPanel">
+                  <table key="identifiersTable" width="589px" maxRows="9" showScroll="ALWAYS">
+                    <col key="UNK1" width="300" align="left" header="{resource:getString($constants,'identifier')}">
+                      <textbox field="String" required="true" />
+                    </col>
+                    <col key="UNK2" width="287" align="left" header="{resource:getString($constants,'value')}">
+                      <textbox field="String" required="true" />
+                    </col>
+                  </table>
+                  <widget style="TableButtonFooter">
+                    <HorizontalPanel>
                       <appButton key="addIdentifierButton" style="Button">
                         <HorizontalPanel>
                           <AbsolutePanel style="AddRowButtonImage" />
@@ -324,8 +318,6 @@ UIRF Software License are applicable instead of those above.
                           </text>
                         </HorizontalPanel>
                       </appButton>
-                    </widget>
-                    <widget halign="center" style="WhiteContentPanel">
                       <appButton key="removeIdentifierButton" style="Button">
                         <HorizontalPanel>
                           <AbsolutePanel style="RemoveRowButtonImage" />
@@ -334,30 +326,24 @@ UIRF Software License are applicable instead of those above.
                           </text>
                         </HorizontalPanel>
                       </appButton>
-                    </widget>
-                  </HorizontalPanel>
+                    </HorizontalPanel>
+                  </widget>
                 </VerticalPanel>
               </tab>
 
 <!-- TAB 3 -->
 
               <tab key="notesTab" text="{resource:getString($constants,'note')}">
-                <VerticalPanel key="secMod3" width="100%" height="164px" padding="0" spacing="0">
-                  <TablePanel key="noteFormPanel" padding="0" spacing="0" style="Form">
-                    <row>
-                      <notes key="notesPanel" width="545px" height="200px" />
-                    </row>
-                    <row>
-                      <appButton key="standardNoteButton" style="Button">
-                        <HorizontalPanel>
-                          <AbsolutePanel style="StandardNoteButtonImage" />
-                          <text>
-                            <xsl:value-of select="resource:getString($constants,'addNote')" />
-                          </text>
-                        </HorizontalPanel>
-                      </appButton>
-                    </row>
-                  </TablePanel>
+                <VerticalPanel padding="0" spacing="0">
+                  <notes key="notesPanel" width="604" height="247" />
+                  <appButton key="standardNoteButton" style="Button">
+                    <HorizontalPanel>
+                      <AbsolutePanel style="StandardNoteButtonImage" />
+                      <text>
+                        <xsl:value-of select="resource:getString($constants,'addNote')" />
+                      </text>
+                    </HorizontalPanel>
+                  </appButton>
                 </VerticalPanel>
               </tab>
             </TabPanel>
