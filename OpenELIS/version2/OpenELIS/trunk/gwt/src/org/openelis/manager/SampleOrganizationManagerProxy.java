@@ -26,6 +26,8 @@
 package org.openelis.manager;
 
 import org.openelis.cache.DictionaryCache;
+import org.openelis.domain.SampleOrganizationDO;
+import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.services.ScreenService;
 
@@ -56,6 +58,23 @@ public class SampleOrganizationManagerProxy {
     }
     
     public void validate(SampleOrganizationManager man, ValidationErrorsList errorsList) throws Exception {
+        int numBillTo, numReportTo;
         
+        numBillTo = 0;
+        numReportTo = 0;
+        for(int i=0; i<man.count(); i++){
+            SampleOrganizationDO orgDO = man.getOrganizationAt(i);
+            if(DictionaryCache.getIdFromSystemName("org_bill_to").equals(orgDO.getTypeId()))
+                numBillTo++;
+            
+            if(DictionaryCache.getIdFromSystemName("org_report_to").equals(orgDO.getTypeId()))
+                numReportTo++;
+        }
+        
+        if(numBillTo > 1)
+            errorsList.add(new FormErrorException("multipleBillToException"));
+        
+        if(numReportTo > 1)
+            errorsList.add(new FormErrorException("multipleReportToException"));
     }
 }

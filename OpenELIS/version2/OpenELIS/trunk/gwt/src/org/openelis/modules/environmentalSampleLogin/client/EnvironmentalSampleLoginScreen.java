@@ -40,14 +40,13 @@ import org.openelis.domain.SampleEnvironmentalDO;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.domain.SampleProjectViewDO;
-import org.openelis.domain.SystemVariableDO;
 import org.openelis.domain.TestPrepDO;
 import org.openelis.domain.TestSectionViewDO;
 import org.openelis.domain.TestViewDO;
-import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.LastPageException;
+import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.SecurityModule;
 import org.openelis.gwt.common.ValidationErrorsList;
@@ -62,7 +61,6 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
-import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
@@ -164,7 +162,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
         
         sampleNotesTab = new SampleNotesTab(def, "sampleExtNotesPanel", "sampleExtNoteButton", "sampleIntNotesPanel", "sampleIntNoteButton");
         
-        storageTab = new StorageTab(def);
+        storageTab = new StorageTab(def, this);
         
         qaEventsTab = new QAEventsTab(def);
         
@@ -181,7 +179,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
     }
     
     private void initialize() {
-        final TextBox accessionNumber = (TextBox)def.getWidget(Meta.SAMPLE.getAccessionNumber());
+        final TextBox<Integer> accessionNumber = (TextBox<Integer>)def.getWidget(Meta.SAMPLE.getAccessionNumber());
         addScreenHandler(accessionNumber, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 accessionNumber.setValue(getString(manager.getSample().getAccessionNumber()));
@@ -214,7 +212,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             }
         });
         
-        final TextBox orderNumber = (TextBox)def.getWidget("orderNumber");
+        final TextBox<Integer> orderNumber = (TextBox<Integer>)def.getWidget("orderNumber");
         addScreenHandler(orderNumber, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 //orderNumber.setValue(getString(manager.getSample().getorgetAccessionNumber()));
@@ -1145,8 +1143,10 @@ public class EnvironmentalSampleLoginScreen extends Screen {
     }
 
     protected void commit() {
-        if ( !validate())
+        if ( !validate()){
             window.setError(consts.get("correctErrors"));
+            return;
+        }
 
         if (state == State.QUERY) {
             Query query;
@@ -1544,7 +1544,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
                 row.toggle();
                 row.key = itemDO.getId();
                 //container
-                row.cells.get(0).value = itemDO.getItemSequence()+" - "+itemDO.getContainer();
+                row.cells.get(0).value = itemDO.getItemSequence()+" - "+formatTreeString(itemDO.getContainer());
                 //source,type
                 row.cells.get(1).value = itemDO.getTypeOfSample();
                 
@@ -1567,7 +1567,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
                     treeModelItem.leafType = "analysis";
                     
                     treeModelItem.key = aDO.getId();
-                    treeModelItem.cells.get(0).value = aDO.getTestName() + " : " + aDO.getMethodName();
+                    treeModelItem.cells.get(0).value = formatTreeString(aDO.getTestName()) + " : " + formatTreeString(aDO.getMethodName());
                     treeModelItem.cells.get(1).value = aDO.getStatusId();
                     
                     SampleDataBundle aData = new SampleDataBundle(sim, itemDO, am, aDO);
@@ -1790,6 +1790,12 @@ public class EnvironmentalSampleLoginScreen extends Screen {
         }
         
         return model;
+    }
+    
+    protected boolean validate() {
+        boolean valid = super.validate();
+        
+        return (storageTab.validate() && valid);
     }
     
     private int getNextTempId() {

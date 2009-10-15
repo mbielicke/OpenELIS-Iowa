@@ -56,8 +56,8 @@ public class AnalyteScreen extends OpenELISScreenForm<AnalyteForm,Query<TableDat
     public void performCommand(Enum action, Object obj) {
         if(obj instanceof AppButton){
             String actionString = ((AppButton)obj).action;
-            if(actionString.startsWith("query:")){
-                getAnalytes(actionString.substring(6, actionString.length()));
+            if(actionString.indexOf("*") > -1){
+                getAnalytes(actionString);
             }else 
                 super.performCommand(action, obj);
         }else{

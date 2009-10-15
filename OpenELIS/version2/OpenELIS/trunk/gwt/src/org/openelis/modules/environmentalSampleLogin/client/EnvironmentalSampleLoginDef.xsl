@@ -383,7 +383,7 @@ xmlns:testMetaMap="xalan://org.openelis.metamap.TestMetaMap" xmlns:sectionMeta="
               </TablePanel>
             </VerticalPanel>
           </HorizontalPanel>
-          <TabPanel key="sampleItemTabPanel" height="170px" width="715px">
+          <TabPanel key="sampleItemTabPanel" height="236px" width="715px">
             <tab key="tab0" text="{resource:getString($constants,'sampleItem')}">
                 <TablePanel style="Form">
                   <row>
@@ -451,119 +451,81 @@ xmlns:testMetaMap="xalan://org.openelis.metamap.TestMetaMap" xmlns:sectionMeta="
                 </TablePanel>
             </tab>
             <tab key="tab2" text="{resource:getString($constants,'testResults')}">
-              <VerticalPanel>
-
-<!--						-->
-
-
-<!--							
-<table maxRows="6" width="auto">
-  -->
-
-
-<!--						     
-<headers>Analyte,Result1,Result2,Result3
-</headers>
-  -->
-
-
-<!--						     
-<widths>175,100,100,100
-</widths>
-  -->
-
-
-<!--						     
-<editors>
-  -->
-
-
-<!--						       
-<label/>
-  -->
-
-
-<!--						       
-<label/>
-  -->
-
-
-<!--						       
-<label/>
-  -->
-
-
-<!--						       
-<label/>
-  -->
-
-
-<!--						     
-</editors>
-  -->
-
-
-<!--						     
-<fields>
-  -->
-
-
-<!--						       
-<string/>
-  -->
-
-
-<!--						       
-<string/>
-  -->
-
-
-<!--						       
-<string/>
-  -->
-
-
-<!--						       
-<string/>
-  -->
-
-
-<!--						     
-</fields>
-  -->
-
-
-<!--						     
-<sorts>true,true,true,true
-</sorts>
-  -->
-
-
-<!--							
-<filters>false,false,false,false
-</filters>
-  -->
-
-
-<!--							
-<colAligns>left,left,left,left
-</colAligns>
-  -->
-
-
-<!--						   
-</table>
-  -->
-</VerticalPanel>
+				<TablePanel padding="0" spacing="0">
+	              <row>
+	                <table key="testResultsTable" width="695" maxRows="8" showScroll="ALWAYS" title="">
+	                  <col width="150">
+	                    <label />
+	                  </col>
+	                  <col width="150">
+	                    <label />
+	                  </col>
+	                  <col width="150">
+	                    <label />
+	                  </col>
+	                  <col width="150">
+	                    <label />
+	                  </col>
+	                  <col width="150">
+	                    <label />
+	                  </col>
+	                  <col width="150">
+	                    <label />
+	                  </col>
+	                  <col width="150">
+	                    <label />
+	                  </col>
+	                  <col width="150">
+	                    <label />
+	                  </col>
+	                  <col width="150">
+	                    <label />
+	                  </col>
+	                  <col width="150">
+	                    <label />
+	                  </col>
+	                </table>
+	                </row>
+	                <row>
+	                <widget style="TableButtonFooter">
+	                <HorizontalPanel>
+	                  <appButton key="addResultButton" style="Button" action="addResult">
+	                    <HorizontalPanel>
+	                      <AbsolutePanel style="AddRowButtonImage" />
+	                      <text>
+	                        <xsl:value-of select="resource:getString($constants,'addRow')" />
+	                      </text>
+	                    </HorizontalPanel>
+	                  </appButton>
+	                  <appButton key="removeResultButton" style="Button" action="removeResult">
+	                    <HorizontalPanel>
+	                      <AbsolutePanel style="RemoveRowButtonImage" />
+	                      <text>
+	                        <xsl:value-of select="resource:getString($constants,'removeRow')" />
+	                      </text>
+	                    </HorizontalPanel>
+	                  </appButton>
+	                  <appButton key="duplicateResultButton" style="Button" action="duplicateResult">
+	                    <HorizontalPanel>
+	                      <AbsolutePanel style="DuplicateRowButtonImage" />
+	                      <text>
+	                        <xsl:value-of select="resource:getString($constants,'duplicateRecord')" />
+	                      </text>
+	                    </HorizontalPanel>
+	                  </appButton>
+	                </HorizontalPanel>
+	                </widget>
+	                </row>
+	                </TablePanel>
             </tab>
             <tab key="tab3" text="{resource:getString($constants,'analysisNotes')}">
-            <HorizontalPanel>
+            <HorizontalPanel width="100%" height="100%" padding="0" spacing="0">
             <TablePanel padding="0" spacing="0" style="TabSubForm">
                 <row>
 		            <text style="Title"><xsl:value-of select="resource:getString($constants,'external')" />:</text>
 		        </row>
 		        <row>
-		        	<notes key="anExNotesPanel" width="340px" height="120px" />
+		        	<notes key="anExNotesPanel" width="350px" height="190px" />
 		        </row>
 		        <row>
 			        <widget style="TableButtonFooter">
@@ -584,7 +546,7 @@ xmlns:testMetaMap="xalan://org.openelis.metamap.TestMetaMap" xmlns:sectionMeta="
 			    	<text style="Title"><xsl:value-of select="resource:getString($constants,'internal')" />:</text>    
 			    </row>
 		     	<row>
-           			<notes key="anIntNotesPanel" width="340px" height="120px" />
+           			<notes key="anIntNotesPanel" width="350px" height="190px" />
            		</row>
                   <row>
 		              <widget style="TableButtonFooter">
@@ -602,13 +564,13 @@ xmlns:testMetaMap="xalan://org.openelis.metamap.TestMetaMap" xmlns:sectionMeta="
                 </HorizontalPanel>
             </tab>
             <tab key="tab4" text="{resource:getString($constants,'sampleNotes')}">
-             <HorizontalPanel>
+             <HorizontalPanel width="100%" height="100%" padding="0" spacing="0">
             <TablePanel padding="0" spacing="0" style="TabSubForm">
             	<row>
             		<text style="Title"><xsl:value-of select="resource:getString($constants,'external')" />:</text>
             	</row>
             	<row>
-            		<notes key="sampleExtNotesPanel" width="340px" height="120px" />
+            		<notes key="sampleExtNotesPanel" width="350px" height="190px" />
             	</row>
             	<row>
 	            	<widget style="TableButtonFooter">
@@ -629,7 +591,7 @@ xmlns:testMetaMap="xalan://org.openelis.metamap.TestMetaMap" xmlns:sectionMeta="
         		    <text style="Title"><xsl:value-of select="resource:getString($constants,'internal')" />:</text>    
                 </row>
                 <row>
-               		<notes key="sampleIntNotesPanel" width="340px" height="120px" />
+               		<notes key="sampleIntNotesPanel" width="350px" height="190px" />
                   </row>
                   <row>
 	               	<widget style="TableButtonFooter">
@@ -647,22 +609,22 @@ xmlns:testMetaMap="xalan://org.openelis.metamap.TestMetaMap" xmlns:sectionMeta="
                 </HorizontalPanel>
             </tab>
             <tab key="tab5" text="{resource:getString($constants,'storage')}">
-              <TablePanel height="170px">
+              <TablePanel padding="0" spacing="0">
               <row>
-                <table key="storageTable" width="auto" maxRows="5" showScroll="ALWAYS" title="">
+                <table key="storageTable" width="auto" maxRows="8" showScroll="ALWAYS" title="">
                   <col width="155" header="{resource:getString($constants,'user')}">
                     <label />
                   </col>
-                  <col width="230" header="{resource:getString($constants,'location')}">
-                    <autoComplete key="" width="215px" case="LOWER" popWidth="auto" field="Integer">
+                  <col width="260" header="{resource:getString($constants,'location')}">
+                    <autoComplete key="" width="215px" case="LOWER" popWidth="auto" field="Integer" required="true">
                       <col width="240" header="{resource:getString($constants,'name')}" />
                     </autoComplete>
                   </col>
                   <col width="135" header="{resource:getString($constants,'checkIn')}">
-                    <calendar key="" begin="0" end="4" width="110" pattern="{resource:getString($constants,'dateTimePattern')}" />
+                    <calendar key="" begin="0" end="4" width="110" pattern="{resource:getString($constants,'dateTimePattern')}" required="true"/>
                   </col>
                   <col width="135" header="{resource:getString($constants,'checkOut')}">
-                    <calendar key="" begin="0" end="4" width="110" pattern="{resource:getString($constants,'dateTimePattern')}" />
+                    <calendar key="" begin="0" end="4" width="110" pattern="{resource:getString($constants,'dateTimePattern')}"/>
                   </col>
                 </table>
                 </row>
@@ -691,12 +653,12 @@ xmlns:testMetaMap="xalan://org.openelis.metamap.TestMetaMap" xmlns:sectionMeta="
                 </TablePanel>
             </tab>
             <tab key="tab6" text="{resource:getString($constants,'qaEvents')}">
-              <HorizontalPanel width="100%" height="170px">
+              <HorizontalPanel height="100%" spacing="0" padding="0">
               	<TablePanel padding="0" spacing="0" style="TabSubForm">
               	<row>
-	                 <table key="sampleQATable" title="" width="auto" maxRows="5" showScroll="ALWAYS">
+	                 <table key="sampleQATable" title="" width="auto" maxRows="8" showScroll="ALWAYS">
 	                  <col width="175" header="{resource:getString($constants,'sampleQAEvent')}">
-	                  	<autoComplete key="{qaeventMeta:getName($sampleQA)}" width="165px" case="LOWER" popWidth="auto" field="Integer">
+	                  	<autoComplete key="{qaeventMeta:getName($sampleQA)}" width="165px" case="LOWER" popWidth="auto" field="Integer"> <!-- required="true">-->
                       		<col width="100" header="{resource:getString($constants,'name')}" />
                       		<col width="150" header="{resource:getString($constants,'desc')}" />
                       		<col width="80" header="{resource:getString($constants,'type')}" />
@@ -713,7 +675,7 @@ xmlns:testMetaMap="xalan://org.openelis.metamap.TestMetaMap" xmlns:sectionMeta="
                 <row>
                 <widget style="TableButtonFooter">
 	                <HorizontalPanel>
-	                  <appButton key="addSampleQAButton" style="Button" action="addStorage">
+	                  <appButton key="addSampleQAButton" style="Button" action="addQA">
 	                    <HorizontalPanel>
 	                      <AbsolutePanel style="AddRowButtonImage" />
 	                      <text>
@@ -721,11 +683,19 @@ xmlns:testMetaMap="xalan://org.openelis.metamap.TestMetaMap" xmlns:sectionMeta="
 	                      </text>
 	                    </HorizontalPanel>
 	                  </appButton>
-	                  <appButton key="removeSampleQAButton" style="Button" action="removeStorage">
+	                  <appButton key="removeSampleQAButton" style="Button" action="removeQA">
 	                    <HorizontalPanel>
 	                      <AbsolutePanel style="RemoveRowButtonImage" />
 	                      <text>
 	                        <xsl:value-of select="resource:getString($constants,'removeRow')" />
+	                      </text>
+	                    </HorizontalPanel>
+	                  </appButton>
+	                   <appButton key="sampleQAPicker" style="Button" action="samplePickQA">
+	                    <HorizontalPanel>
+	                      <AbsolutePanel style="PickerButtonImage" />
+	                      <text>
+	                        <xsl:value-of select="resource:getString($constants,'qaEvents')" />
 	                      </text>
 	                    </HorizontalPanel>
 	                  </appButton>
@@ -736,9 +706,9 @@ xmlns:testMetaMap="xalan://org.openelis.metamap.TestMetaMap" xmlns:sectionMeta="
               <AbsolutePanel style="Divider"/>
               <TablePanel padding="0" spacing="0" style="TabSubForm">
               <row>
-                 <table key="analysisQATable" title="" width="auto" maxRows="5" showScroll="ALWAYS">
+                 <table key="analysisQATable" title="" width="auto" maxRows="8" showScroll="ALWAYS">
                   <col width="175" header="{resource:getString($constants,'analysisQAEvent')}">
-                    	<autoComplete key="{qaeventMeta:getName($analysisQA)}" width="165px" case="LOWER" popWidth="auto" field="Integer">
+                    	<autoComplete key="{qaeventMeta:getName($analysisQA)}" width="165px" case="LOWER" popWidth="auto" field="Integer"><!-- required="true">-->
                       		<col width="100" header="{resource:getString($constants,'name')}" />
                       		<col width="150" header="{resource:getString($constants,'desc')}" />
                       		<col width="80" header="{resource:getString($constants,'type')}" />
@@ -755,7 +725,7 @@ xmlns:testMetaMap="xalan://org.openelis.metamap.TestMetaMap" xmlns:sectionMeta="
                 <row>
                 <widget style="TableButtonFooter">
                 <HorizontalPanel>
-                  <appButton key="addAanalysisQAButton" style="Button" action="addStorage">
+                  <appButton key="addAnalysisQAButton" style="Button" action="addStorage">
                     <HorizontalPanel>
                       <AbsolutePanel style="AddRowButtonImage" />
                       <text>
@@ -771,6 +741,14 @@ xmlns:testMetaMap="xalan://org.openelis.metamap.TestMetaMap" xmlns:sectionMeta="
                       </text>
                     </HorizontalPanel>
                   </appButton>
+                  <appButton key="analysisQAPicker" style="Button" action="analysisPickQA">
+	                    <HorizontalPanel>
+	                      <AbsolutePanel style="PickerButtonImage" />
+	                      <text>
+	                        <xsl:value-of select="resource:getString($constants,'qaEvents')" />
+	                      </text>
+	                    </HorizontalPanel>
+	                  </appButton>
                 </HorizontalPanel>
                 </widget>
                 </row>
@@ -778,8 +756,8 @@ xmlns:testMetaMap="xalan://org.openelis.metamap.TestMetaMap" xmlns:sectionMeta="
                 </HorizontalPanel>
             </tab>
             <tab key="tab7" text="Aux Data">
-              <HorizontalPanel width="100%" height="170px">
-                <TablePanel>
+              <HorizontalPanel width="100%" padding="0" spacing="0">
+                <TablePanel padding="0" spacing="0">
                 <row>
                  <table key="auxValsTable" title="" width="auto" maxRows="5" showScroll="ALWAYS">
                   <col width="250" header="{resource:getString($constants,'name')}">
@@ -819,7 +797,6 @@ xmlns:testMetaMap="xalan://org.openelis.metamap.TestMetaMap" xmlns:sectionMeta="
                     <label />
                   </col>
                 </table>
-                
                 </VerticalPanel>
               </HorizontalPanel>
             </tab>

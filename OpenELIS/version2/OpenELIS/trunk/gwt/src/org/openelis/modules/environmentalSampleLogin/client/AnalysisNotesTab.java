@@ -35,9 +35,9 @@ import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
-import org.openelis.gwt.screen.deprecated.ScreenWindow;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.NotesPanel;
+import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.HasNotesInt;
 import org.openelis.manager.NoteManager;
@@ -108,8 +108,7 @@ public class AnalysisNotesTab extends NotesTab {
                     }
                 }
 
-                ScreenWindow modal = new ScreenWindow(null,
-                                                      "Edit Note Screen",
+                ScreenWindow modal = new ScreenWindow("Edit Note Screen",
                                                       "editNoteScreen",
                                                       "",
                                                       true,

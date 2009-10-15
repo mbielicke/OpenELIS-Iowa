@@ -99,8 +99,8 @@ public class InventoryItemScreen extends OpenELISScreenForm<InventoryItemForm, Q
 	public void performCommand(Enum action, Object obj) {
         if(obj instanceof AppButton){
            String baction = ((AppButton)obj).action;
-           if(baction.startsWith("query:")){
-               getInventories(baction.substring(6, baction.length()), ((AppButton)obj));      
+           if(baction.indexOf("*") > -1){
+               getInventories(baction, ((AppButton)obj));      
            }else
                super.performCommand(action, obj);
         }else{

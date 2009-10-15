@@ -129,8 +129,8 @@ public class InstrumentScreen extends OpenELISScreenForm<InstrumentForm, Query<T
     public void performCommand(Enum action, Object obj) {        
         if(obj instanceof AppButton) {
             String query = ((AppButton)obj).action;
-            if (query.indexOf("query:") != -1)
-                getInstruments(query.substring(6));
+            if (query.indexOf("*") != -1)
+                getInstruments(query);
             else                         
                 super.performCommand(action, obj);            
          }  else {                         
