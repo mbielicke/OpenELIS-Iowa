@@ -66,8 +66,8 @@ public class StandardNoteScreen extends OpenELISScreenForm<StandardNoteForm,Quer
     public void performCommand(Enum action, Object obj) {
         if(obj instanceof AppButton){
            String baction = ((AppButton)obj).action;
-           if(baction.startsWith("query:")){
-        	   getStandardNotes(baction.substring(6, baction.length()));      
+           if(baction.indexOf("*") > -1){
+        	   getStandardNotes(baction);      
            }else
                super.performCommand(action,obj);
         }else{

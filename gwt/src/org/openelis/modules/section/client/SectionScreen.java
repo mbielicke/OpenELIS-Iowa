@@ -85,8 +85,8 @@ public class SectionScreen extends OpenELISScreenForm<SectionForm, Query<TableDa
     public void performCommand(Enum action, Object obj) {        
         if(obj instanceof AppButton) {
             String query = ((AppButton)obj).action;
-            if (query.indexOf("query:") != -1)
-                getSections(query.substring(6));
+            if (query.indexOf("*") != -1)
+                getSections(query);
             else                         
                 super.performCommand(action, obj);            
          }  else {                         
