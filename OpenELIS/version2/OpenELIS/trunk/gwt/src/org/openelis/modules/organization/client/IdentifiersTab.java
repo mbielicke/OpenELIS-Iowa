@@ -26,14 +26,14 @@ import org.openelis.manager.OrganizationManager;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.Window;
 
-public class ContactsTab extends Screen {
+public class IdentifiersTab extends Screen {
 
     private OrganizationManager manager;
     private TableWidget         table;
     private AppButton           removeButton, addButton;
     private boolean             loaded;
 
-    public ContactsTab(ScreenDefInt def) {
+    public IdentifiersTab(ScreenDefInt def) {
         setDef(def);
         initialize();
         

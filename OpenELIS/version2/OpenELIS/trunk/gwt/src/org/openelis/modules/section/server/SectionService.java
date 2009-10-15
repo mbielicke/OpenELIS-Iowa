@@ -56,6 +56,8 @@ import org.openelis.util.FormUtil;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
 
+import com.google.gwt.user.client.Window;
+
 public class SectionService implements
                            AppScreenFormServiceInt<SectionForm, Query<TableDataRow<Integer>>>,
                            AutoCompleteServiceInt {
@@ -197,10 +199,10 @@ public class SectionService implements
                                      HashMap<String, FieldType> params) throws Exception {
         OrganizationRemote oremote;
         TableDataModel<TableDataRow<Integer>> dataModel;
-        List autoCompleteList;
-        int id,i;
+        List autoCompleteList = null;
+        int i;
         OrganizationDO resultDO;
-        Integer orgId;        
+        Integer orgId, id;        
         String name,address,city,state;
         TableDataRow<Integer> data;
         SectionRemote sremote;
@@ -211,14 +213,24 @@ public class SectionService implements
         
         if("organization".equals(cat)) {
             oremote = (OrganizationRemote)EJBFactory.lookup("openelis/OrganizationBean/remote");
+
             try{
-                id = Integer.parseInt(match); //this will throw an exception if it isnt an id
+                //this will throw an exception if it isnt an id
                 //lookup by id...should only bring back 1 result
-                autoCompleteList = oremote.fetchActiveById(id);
-                
+                id = Integer.parseInt(match);
             }catch(NumberFormatException e){
-                //it isnt an id lookup by name
-                autoCompleteList = oremote.fetchActiveByName(match+"%", 10);
+                id = null;
+            }
+            
+            try {
+                if (id != null) {
+                    autoCompleteList = new ArrayList<OrganizationDO>(1);
+                    autoCompleteList.add(oremote.fetchActiveById(id));
+                } else {
+                    autoCompleteList = oremote.fetchActiveByName(match+"%", 10);
+                }
+            } catch (Exception e) {
+                Window.alert(e.getMessage());
             }
             
             for(i=0; i < autoCompleteList.size(); i++){

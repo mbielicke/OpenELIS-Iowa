@@ -1333,7 +1333,7 @@ public class TestScreen extends Screen {
         return true;
     }
     
-    protected void showErrors(ValidationErrorsList errors) {
+    public void showErrors(ValidationErrorsList errors) {
         for (Exception ex : errors.getErrorList()) {
             if (ex instanceof TableFieldErrorException) {                               
                 if(ex instanceof GridFieldErrorException) {

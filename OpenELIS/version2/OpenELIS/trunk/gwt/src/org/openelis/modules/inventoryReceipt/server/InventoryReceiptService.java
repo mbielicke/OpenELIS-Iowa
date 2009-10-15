@@ -83,6 +83,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import com.google.gwt.user.client.Window;
+
 public class InventoryReceiptService implements AppScreenFormServiceInt<InventoryReceiptForm, InventoryReceiptQuery>, AutoCompleteServiceInt {
 
     private static final InventoryReceiptMetaMap InventoryReceiptMeta = new InventoryReceiptMetaMap();
@@ -470,19 +472,29 @@ public class InventoryReceiptService implements AppScreenFormServiceInt<Inventor
     private TableDataModel<TableDataRow<Integer>> getOrganizationMatches(String match){
         OrganizationRemote remote = (OrganizationRemote)EJBFactory.lookup("openelis/OrganizationBean/remote");
         TableDataModel<TableDataRow<Integer>> dataModel = new TableDataModel<TableDataRow<Integer>>();
-        List<OrganizationDO> autoCompleteList;
-    
-        try{
-            int id = Integer.parseInt(match); //this will throw an exception if it isnt an id
-            //lookup by id...should only bring back 1 result
-            autoCompleteList = remote.fetchActiveById(id);
-            
-        }catch(NumberFormatException e){
-            //it isnt an id
-            //lookup by name
-            autoCompleteList = remote.fetchActiveByName(match+"%", 10);
+
+        List<OrganizationDO> autoCompleteList = null;
+        Integer id;
+
+        try {
+            id = Integer.parseInt(match);
+            // this will throw an exception if it isnt an id
+            // lookup by id...should only bring back 1 result
+        } catch (NumberFormatException e) {
+            id = null;
         }
-        
+
+        try {
+            if (id != null) {
+                autoCompleteList = new ArrayList(1);
+                autoCompleteList.add(remote.fetchActiveById(id));
+            } else {
+                autoCompleteList = remote.fetchActiveByName(match + "%", 10);
+            }
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+        }
+
         for(OrganizationDO resultDO : autoCompleteList){
             //org id
             Integer orgId = resultDO.getId();

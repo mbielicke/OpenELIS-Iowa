@@ -276,7 +276,7 @@ UIRF Software License are applicable instead of those above.
                   </widget>
                   <HorizontalPanel style="WhiteContentPanel">
                     <widget halign="center" style="WhiteContentPanel">
-                      <appButton key="addContactButton" style="Button" action="addContact">
+                      <appButton key="addContactButton" style="Button">
                         <HorizontalPanel>
                           <AbsolutePanel style="AddRowButtonImage" />
                           <text>
@@ -286,7 +286,7 @@ UIRF Software License are applicable instead of those above.
                       </appButton>
                     </widget>
                     <widget halign="center" style="WhiteContentPanel">
-                      <appButton key="removeContactButton" style="Button" action="removeContact">
+                      <appButton key="removeContactButton" style="Button">
                         <HorizontalPanel>
                           <AbsolutePanel style="RemoveRowButtonImage" />
                           <text>
@@ -305,26 +305,37 @@ UIRF Software License are applicable instead of those above.
               <tab key="identifiersTab" text="{resource:getString($constants,'identifier')}">
                 <VerticalPanel padding="0" spacing="0">
                   <widget valign="top">
-                    <table key="identifierstsTable" width="auto" maxRows="9" showScroll="ALWAYS" title="">
-                      <col key="{contact:getName($cont)}" width="267" align="left" filter="false" sort="true" header="{resource:getString($constants,'identifier')}">
+                    <table key="identifiersTable" width="auto" maxRows="9" showScroll="ALWAYS" title="">
+                      <col key="UNK1" width="267" align="left" filter="false" sort="true" header="{resource:getString($constants,'identifier')}">
                         <textbox field="String" required="true" />
                       </col>
-                      <col key="{addr:getMultipleUnit($contAddr)}" width="298" align="left" filter="false" sort="true" header="{resource:getString($constants,'value')}">
+                      <col key="UNK2" width="298" align="left" filter="false" sort="true" header="{resource:getString($constants,'value')}">
                         <textbox field="String" required="true" />
                       </col>
                     </table>
                   </widget>
-                  <widget halign="center" style="WhiteContentPanel">
-                    <appButton key="removeIdentifierButton" style="Button" action="removeIdentifierRow">
-                      <HorizontalPanel>
-                        <AbsolutePanel style="RemoveRowButtonImage" />
-                        <text>
-                          <xsl:value-of select="resource:getString($constants,'removeRow')" />
-                        </text>
-                      </HorizontalPanel>
-                    </appButton>
-                  </widget>
-                  <HorizontalPanel height="18px" />
+                  <HorizontalPanel style="WhiteContentPanel">
+                    <widget halign="center" style="WhiteContentPanel">
+                      <appButton key="addIdentifierButton" style="Button">
+                        <HorizontalPanel>
+                          <AbsolutePanel style="AddRowButtonImage" />
+                          <text>
+                            <xsl:value-of select="resource:getString($constants,'addRow')" />
+                          </text>
+                        </HorizontalPanel>
+                      </appButton>
+                    </widget>
+                    <widget halign="center" style="WhiteContentPanel">
+                      <appButton key="removeIdentifierButton" style="Button">
+                        <HorizontalPanel>
+                          <AbsolutePanel style="RemoveRowButtonImage" />
+                          <text>
+                            <xsl:value-of select="resource:getString($constants,'removeRow')" />
+                          </text>
+                        </HorizontalPanel>
+                      </appButton>
+                    </widget>
+                  </HorizontalPanel>
                 </VerticalPanel>
               </tab>
 
@@ -337,7 +348,7 @@ UIRF Software License are applicable instead of those above.
                       <notes key="notesPanel" width="545px" height="200px" />
                     </row>
                     <row>
-                      <appButton key="standardNoteButton" style="Button" action="standardNote">
+                      <appButton key="standardNoteButton" style="Button">
                         <HorizontalPanel>
                           <AbsolutePanel style="StandardNoteButtonImage" />
                           <text>

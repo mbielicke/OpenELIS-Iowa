@@ -432,6 +432,8 @@ public class SystemVariableScreen extends Screen {
     }
 
     protected void abort() {
+        name.setFocus(false);
+
         clearErrors();
         window.setBusy(consts.get("cancelChanges"));
 

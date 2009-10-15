@@ -32,6 +32,7 @@ import org.openelis.domain.IdNameVO;
 import org.openelis.domain.OrganizationDO;
 import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.data.Query;
+import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.manager.OrganizationContactManager;
 import org.openelis.manager.OrganizationManager;
 import org.openelis.persistence.EJBFactory;
@@ -118,14 +119,17 @@ public class OrganizationService {
         }
     }
 
-    public ArrayList<OrganizationDO> parentMatch(Query query) {
+    public ArrayList<OrganizationDO> fetchByIdOrName(Query query) throws Exception {
         int id;
         String value;
+        ArrayList<OrganizationDO> list;
         
         value = query.getFields().get(0).query;
         try {
             id = Integer.parseInt(value);
-            return remote().fetchActiveById(id);
+            list = new ArrayList<OrganizationDO>(1);
+            list.add(remote().fetchActiveById(id));
+            return list;
         } catch (NumberFormatException e) {
             return remote().fetchActiveByName(value+"%", 10);
         }

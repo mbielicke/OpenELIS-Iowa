@@ -48,6 +48,7 @@ import org.openelis.gwt.common.SecurityModule;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
+import org.openelis.gwt.common.data.QueryData.Type;
 import org.openelis.gwt.event.BeforeGetMatchesEvent;
 import org.openelis.gwt.event.BeforeGetMatchesHandler;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -66,6 +67,7 @@ import org.openelis.gwt.widget.ButtonGroup;
 import org.openelis.gwt.widget.CheckBox;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.HasField;
+import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataRow;
@@ -136,9 +138,9 @@ public class OrganizationScreen extends Screen {
         manager = OrganizationManager.getInstance();
 
         setState(State.DEFAULT);
-        DataChangeEvent.fire(this);
-
         initializeDropdowns();
+
+        DataChangeEvent.fire(this);
     }
 
     /**
@@ -402,19 +404,23 @@ public class OrganizationScreen extends Screen {
             public void onGetMatches(GetMatchesEvent event) {
                 Query query;
                 QueryData field;
+                QueryFieldUtil parser;
                 TableDataRow row;
                 OrganizationDO data;
                 ArrayList<OrganizationDO> list;
                 ArrayList<TableDataRow> model;
 
                 query = new Query();
+                parser = new QueryFieldUtil();
+                parser.parse(event.getMatch());
+
                 field = new QueryData();
-                field.query = event.getMatch();
+                field.query = parser.getParameter().get(0);
                 query.setFields(field);
 
                 window.setBusy();
                 try {
-                    list = service.callList("parentMatch", query);
+                    list = service.callList("fetchByIdOrName", query);
                     model = new ArrayList<TableDataRow>();
                     for (int i = 0; i < list.size(); i++ ) {
                         row = new TableDataRow(4);
@@ -689,6 +695,7 @@ public class OrganizationScreen extends Screen {
     }
 
     protected void abort() {
+        id.setFocus(false);
         clearErrors();
         window.setBusy(consts.get("cancelChanges"));
 
