@@ -137,11 +137,10 @@ public class TestPrepPickerScreen extends Screen implements HasActionHandlers<Te
             for(int iter = 0;iter < manager.count(); iter++) {
                 TestPrepViewDO prepRow = (TestPrepViewDO)manager.getPrepAt(iter);
             
-               TableDataRow row = new TableDataRow(2);
+               TableDataRow row = new TableDataRow(1);
                row.key = prepRow.getPrepTestId();
 
                row.cells.get(0).value = prepRow.getPrepTestName()+", "+prepRow.getMethodName();
-               row.cells.get(1).value = prepRow.getIsOptional();
                
                model.add(row);
             }

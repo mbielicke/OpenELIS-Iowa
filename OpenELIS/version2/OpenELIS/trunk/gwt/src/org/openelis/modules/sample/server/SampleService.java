@@ -42,8 +42,12 @@ public class SampleService {
     
     public SampleManager fetchWithItemsAnalyses(Integer sampleId) throws Exception {
         SampleManagerRemote remote = (SampleManagerRemote)EJBFactory.lookup("openelis/SampleManagerBean/remote");
-        
+        try{
         return remote.fetchWithItemsAnalysis(sampleId);
+        }catch(Exception e){
+            e.printStackTrace();
+            throw e;
+        }
     }
 
     public SampleManager fetchByAccessionNumber(Integer accessionNumber) throws Exception {

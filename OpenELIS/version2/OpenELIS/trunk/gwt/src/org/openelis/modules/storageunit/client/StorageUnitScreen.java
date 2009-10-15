@@ -60,8 +60,8 @@ public class StorageUnitScreen extends OpenELISScreenForm<StorageUnitForm,Query<
 	 public void performCommand(Enum action, Object obj) {
 	        if(obj instanceof AppButton){
 	           String baction = ((AppButton)obj).action;
-	           if(baction.startsWith("query:")){
-	        	   getStorageUnits(baction.substring(6, baction.length()));      
+	           if(baction.indexOf("*") > -1){
+	        	   getStorageUnits(baction);      
 	           }else
                    super.performCommand(action, obj);
 	        }else{

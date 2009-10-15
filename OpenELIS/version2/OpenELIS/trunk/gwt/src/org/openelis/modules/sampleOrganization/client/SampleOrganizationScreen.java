@@ -34,6 +34,7 @@ import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.SampleOrganizationDO;
 import org.openelis.domain.SampleOrganizationViewDO;
+import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -237,8 +238,10 @@ public class SampleOrganizationScreen  extends Screen implements HasActionHandle
     
     public void commit() {
         sampleOrganizationTable.finishEditing();
-        ActionEvent.fire(this, Action.COMMIT, null);
-        window.close();
+        if(validate()){
+            ActionEvent.fire(this, Action.COMMIT, null);
+            window.close();
+        }
     }
     
     private ArrayList<TableDataRow> getTableModel() {
@@ -294,6 +297,22 @@ public class SampleOrganizationScreen  extends Screen implements HasActionHandle
     
     public void setScreenState(State state){
         setState(state);
+    }
+    
+    protected boolean validate() {
+        boolean superValue = super.validate();
+        
+        try{
+            manager.validate();
+        }catch(ValidationErrorsList e){
+            showErrors(e);
+            return false;
+        }catch(Exception e){
+            Window.alert(e.getMessage());
+            return false;
+        }
+        
+        return superValue;
     }
     
     public HandlerRegistration addActionHandler(ActionHandler<Action> handler) {

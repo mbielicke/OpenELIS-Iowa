@@ -57,8 +57,8 @@ public class TestTrailerScreen extends OpenELISScreenForm<TestTrailerForm,Query<
 	 public void performCommand(Enum action, Object obj) {
 	        if(obj instanceof AppButton){
 	           String baction = ((AppButton)obj).action;
-	           if(baction.startsWith("query:")){
-	        	   getTestTrailers(baction.substring(6, baction.length()));      
+	           if(baction.indexOf("*") > -1){
+	        	   getTestTrailers(baction);      
 	           }else
                    super.performCommand(action, obj);
 	        }else{
