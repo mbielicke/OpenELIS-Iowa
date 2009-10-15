@@ -52,13 +52,11 @@ import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.AddressLocal;
-import org.openelis.local.LockLocal;
 import org.openelis.local.OrganizationLocal;
 import org.openelis.metamap.OrganizationMetaMap;
 import org.openelis.remote.OrganizationRemote;
 import org.openelis.util.QueryBuilderV2;
 import org.openelis.utilcommon.DataBaseUtil;
-import org.openelis.utils.ReferenceTableCache;
 
 
 @Stateless
@@ -73,9 +71,6 @@ public class OrganizationBean implements OrganizationRemote, OrganizationLocal {
     private AddressLocal                     addressBean;
 
     private static final OrganizationMetaMap meta = new OrganizationMetaMap();
-
-    public OrganizationBean() {
-    }
 
     public OrganizationViewDO fetchById(Integer id) throws Exception {
         Query query;
@@ -93,13 +88,13 @@ public class OrganizationBean implements OrganizationRemote, OrganizationLocal {
         return data;
     }
 
-    public ArrayList<OrganizationDO> fetchActiveById(Integer id) {
+    public OrganizationDO fetchActiveById(Integer id) throws Exception {
         Query query;
         
         query = manager.createNamedQuery("Organization.FetchActiveById");
         query.setParameter("id", id);
 
-        return DataBaseUtil.toArrayList(query.getResultList());
+        return (OrganizationDO) query.getSingleResult();
     }
 
     public ArrayList<OrganizationDO> fetchActiveByName(String name, int max) {
@@ -139,7 +134,7 @@ public class OrganizationBean implements OrganizationRemote, OrganizationLocal {
     }
 
 
-    public OrganizationViewDO add(OrganizationViewDO data) {
+    public OrganizationViewDO add(OrganizationViewDO data) throws Exception {
         Organization entity;
         
         manager.setFlushMode(FlushModeType.COMMIT);
@@ -152,7 +147,7 @@ public class OrganizationBean implements OrganizationRemote, OrganizationLocal {
         entity.setName(data.getName());
         entity.setParentOrganizationId(data.getParentOrganizationId());
 
-        manager.persist(data);
+        manager.persist(entity);
         data.setId(entity.getId());
         
         return data;
@@ -194,8 +189,9 @@ public class OrganizationBean implements OrganizationRemote, OrganizationLocal {
         if (DataBaseUtil.isEmpty(data.getAddress().getCountry()))
             list.add(new FieldErrorException("fieldRequiredException", meta.ADDRESS.getCountry()));
 
-        for (int i = 0; i < contacts.size(); i++ )
-            validateContact(contacts.get(i), i, list);
+        if (contacts != null)
+            for (int i = 0; i < contacts.size(); i++ )
+                validateContact(contacts.get(i), i, list);
 
         if (list.size() > 0)
             throw list;
@@ -258,7 +254,7 @@ public class OrganizationBean implements OrganizationRemote, OrganizationLocal {
 
         manager.setFlushMode(FlushModeType.COMMIT);
 
-        addressBean.delete(data.getAddressDO());
+        addressBean.delete(data.getAddressDO().getId());
         entity = manager.find(OrganizationContact.class, data.getId());
         if (entity != null)
             manager.remove(entity);

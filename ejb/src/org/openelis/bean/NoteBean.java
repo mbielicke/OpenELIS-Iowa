@@ -67,20 +67,6 @@ public class NoteBean implements NoteRemote, NoteLocal {
         return list;
     }
     
-    public void update(NoteViewDO noteDO) throws Exception {
-        manager.setFlushMode(FlushModeType.COMMIT);
-        
-        Note note = manager.find(Note.class, noteDO.getId());
-
-        note.setIsExternal(noteDO.getIsExternal());
-        note.setReferenceId(noteDO.getReferenceId());
-        note.setReferenceTableId(noteDO.getReferenceTableId());
-        note.setSubject(noteDO.getSubject());
-        note.setSystemUserId(login.getSystemUserId());
-        note.setText(noteDO.getText());
-        note.setTimestamp(Datetime.getInstance());
-    }
-    
     public void add(NoteViewDO noteDO) throws Exception {
         manager.setFlushMode(FlushModeType.COMMIT);
         
@@ -97,5 +83,22 @@ public class NoteBean implements NoteRemote, NoteLocal {
         manager.persist(note);
         
         noteDO.setId(note.getId());
+    }
+
+    public void update(NoteViewDO noteDO) throws Exception {
+        if (! noteDO.isChanged())
+            return;
+
+        manager.setFlushMode(FlushModeType.COMMIT);
+        
+        Note note = manager.find(Note.class, noteDO.getId());
+
+        note.setIsExternal(noteDO.getIsExternal());
+        note.setReferenceId(noteDO.getReferenceId());
+        note.setReferenceTableId(noteDO.getReferenceTableId());
+        note.setSubject(noteDO.getSubject());
+        note.setSystemUserId(login.getSystemUserId());
+        note.setText(noteDO.getText());
+        note.setTimestamp(Datetime.getInstance());
     }
 }

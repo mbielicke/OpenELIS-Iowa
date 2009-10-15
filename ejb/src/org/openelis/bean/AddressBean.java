@@ -25,16 +25,17 @@
 */
 package org.openelis.bean;
 
-import java.util.List;
-
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.openelis.domain.AddressDO;
 import org.openelis.entity.Address;
+import org.openelis.gwt.common.DatabaseException;
+import org.openelis.gwt.common.NotFoundException;
 import org.openelis.local.AddressLocal;
 import org.openelis.remote.AddressRemote;
 
@@ -44,63 +45,79 @@ public class AddressBean implements AddressRemote, AddressLocal {
     @PersistenceContext(unitName = "openelis")
     EntityManager manager;
 
-    public void add(AddressDO addressDO) {
+    public AddressDO fetchById(Integer id) throws Exception {
+        Query query;
+        AddressDO data;
+        
+        query = manager.createNamedQuery("Address.FetchById");
+        query.setParameter("id", id);
+        
+        try {
+            data = (AddressDO)query.getSingleResult();
+        } catch (NoResultException e) {
+            throw new NotFoundException();
+        } catch (Exception e) {
+            throw new DatabaseException(e);
+        }
+        return data;
+    }
+
+    public AddressDO add(AddressDO data) throws Exception {
+        Address entity;
+
         manager.setFlushMode(FlushModeType.COMMIT);
 
-        Address address = new Address();
+        entity = new Address();
 
-        address.setCellPhone(addressDO.getCellPhone());
-        address.setCity(addressDO.getCity());
-        address.setCountry(addressDO.getCountry());
-        address.setEmail(addressDO.getEmail());
-        address.setFaxPhone(addressDO.getFaxPhone());
-        address.setHomePhone(addressDO.getHomePhone());
-        address.setMultipleUnit(addressDO.getMultipleUnit());
-        address.setState(addressDO.getState());
-        address.setStreetAddress(addressDO.getStreetAddress());
-        address.setWorkPhone(addressDO.getWorkPhone());
-        address.setZipCode(addressDO.getZipCode());
+        entity.setCellPhone(data.getCellPhone());
+        entity.setCity(data.getCity());
+        entity.setCountry(data.getCountry());
+        entity.setEmail(data.getEmail());
+        entity.setFaxPhone(data.getFaxPhone());
+        entity.setHomePhone(data.getHomePhone());
+        entity.setMultipleUnit(data.getMultipleUnit());
+        entity.setState(data.getState());
+        entity.setStreetAddress(data.getStreetAddress());
+        entity.setWorkPhone(data.getWorkPhone());
+        entity.setZipCode(data.getZipCode());
 
-        manager.persist(address);
+        manager.persist(entity);
 
-        addressDO.setId(address.getId());
+        data.setId(entity.getId());
+        return data;
     }
 
-    public void update(AddressDO addressDO) {
+    public AddressDO update(AddressDO data) throws Exception {
+        Address entity;
+       
+        if (! data.isChanged()) 
+            return data;
+
         manager.setFlushMode(FlushModeType.COMMIT);
 
-        Address address = manager.find(Address.class, addressDO.getId());
+        entity = manager.find(Address.class, data.getId());
+        entity.setCellPhone(data.getCellPhone());
+        entity.setCity(data.getCity());
+        entity.setCountry(data.getCountry());
+        entity.setEmail(data.getEmail());
+        entity.setFaxPhone(data.getFaxPhone());
+        entity.setHomePhone(data.getHomePhone());
+        entity.setMultipleUnit(data.getMultipleUnit());
+        entity.setState(data.getState());
+        entity.setStreetAddress(data.getStreetAddress());
+        entity.setWorkPhone(data.getWorkPhone());
+        entity.setZipCode(data.getZipCode());
 
-        address.setCellPhone(addressDO.getCellPhone());
-        address.setCity(addressDO.getCity());
-        address.setCountry(addressDO.getCountry());
-        address.setEmail(addressDO.getEmail());
-        address.setFaxPhone(addressDO.getFaxPhone());
-        address.setHomePhone(addressDO.getHomePhone());
-        address.setMultipleUnit(addressDO.getMultipleUnit());
-        address.setState(addressDO.getState());
-        address.setStreetAddress(addressDO.getStreetAddress());
-        address.setWorkPhone(addressDO.getWorkPhone());
-        address.setZipCode(addressDO.getZipCode());
+        return data;
     }
 
-    public void delete(AddressDO addressDO) {
+    public void delete(Integer id) throws Exception {
+        Address entity;
+        
         manager.setFlushMode(FlushModeType.COMMIT);
 
-        Address address = manager.find(Address.class, addressDO.getId());
+        entity = manager.find(Address.class, id);
 
-        manager.remove(address);
+        manager.remove(entity);
     }
-
-    public AddressDO getAddress(Integer addressId) {
-        Query query = manager.createNamedQuery("Address.AddressById");
-        query.setParameter("id", addressId);
-        List resultList = query.getResultList();
-
-        if (resultList.size() > 0)
-            return (AddressDO)resultList.get(0);
-
-        return null;
-    }
-
 }
