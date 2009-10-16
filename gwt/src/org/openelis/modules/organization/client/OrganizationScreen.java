@@ -506,7 +506,7 @@ public class OrganizationScreen extends Screen {
             }
         });
 
-        notesTab = new NotesTab(def, "notesPanel", "standardNoteButton", false);
+        notesTab = new NotesTab(def, "notesPanel", "standardNoteButton", false, this);
         addScreenHandler(notesTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                 notesTab.setManager(manager);

@@ -63,10 +63,9 @@ import com.google.gwt.user.client.Window;
 public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab.Action> {
     public enum Action {CHANGED,SELECTED_TEST_PREP_ROW};
     private boolean loaded;
+    private Screen parentScreen;
     
     private SampleMetaMap meta;
-    
-    private Screen parentScreen;
     
     protected AutoComplete<Integer> test, method;
     protected Dropdown<Integer> sectionId;

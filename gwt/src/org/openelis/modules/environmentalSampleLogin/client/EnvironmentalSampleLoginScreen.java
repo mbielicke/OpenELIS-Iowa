@@ -152,19 +152,19 @@ public class EnvironmentalSampleLoginScreen extends Screen {
         //FIXME change this when we can add the module
         security = OpenELIS.security.getModule("organization");
         
-        sampleItemTab = new SampleItemTab(def);
+        sampleItemTab = new SampleItemTab(def, this);
         
         analysisTab = new AnalysisTab(def, this);
         
-        testResultsTab = new TestResultsTab(def);
+        testResultsTab = new TestResultsTab(def, this);
         
-        analysisNotesTab = new AnalysisNotesTab(def, "anExNotesPanel", "anExNoteButton", "anIntNotesPanel", "anIntNoteButton");
+        analysisNotesTab = new AnalysisNotesTab(def, "anExNotesPanel", "anExNoteButton", "anIntNotesPanel", "anIntNoteButton", this);
         
-        sampleNotesTab = new SampleNotesTab(def, "sampleExtNotesPanel", "sampleExtNoteButton", "sampleIntNotesPanel", "sampleIntNoteButton");
+        sampleNotesTab = new SampleNotesTab(def, "sampleExtNotesPanel", "sampleExtNoteButton", "sampleIntNotesPanel", "sampleIntNoteButton", this);
         
         storageTab = new StorageTab(def, this);
         
-        qaEventsTab = new QAEventsTab(def);
+        qaEventsTab = new QAEventsTab(def, this);
         
         // Setup link between Screen and widget Handlers
         initialize();
@@ -1226,6 +1226,8 @@ public class EnvironmentalSampleLoginScreen extends Screen {
     protected boolean fetchById(Integer id) {
         if (id == null) {
             manager = SampleManager.getInstance();
+            manager.getSample().setDomain(SampleManager.ENVIRONMENTAL_DOMAIN_FLAG);
+            
             setState(State.DEFAULT);
         }else{
             window.setBusy(consts.get("fetching"));

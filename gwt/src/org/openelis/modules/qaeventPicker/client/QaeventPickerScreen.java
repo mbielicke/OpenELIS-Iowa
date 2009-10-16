@@ -28,7 +28,9 @@ package org.openelis.modules.qaeventPicker.client;
 import java.util.ArrayList;
 import java.util.EnumSet;
 
-import org.openelis.domain.QaEventViewDO;
+import org.openelis.domain.QaEventDO;
+import org.openelis.gwt.common.data.Query;
+import org.openelis.gwt.common.data.QueryData;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -44,7 +46,6 @@ import org.openelis.gwt.widget.table.TableRow;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
-import org.openelis.modules.testPrepPicker.client.TestPrepPickerScreen.Action;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -55,11 +56,14 @@ import com.google.gwt.user.client.Window;
 
 public class QaeventPickerScreen extends Screen implements HasActionHandlers<QaeventPickerScreen.Action>{
     public enum Action {COMMIT};
-    
-    protected ArrayList<QaEventViewDO> qaEvents;
+    public enum Type {SAMPLE, ANALYSIS};
+    protected Integer testId;
+    protected Type type;
+    protected ArrayList<QaEventDO> qaEvents;
     
     private AppButton commitButton, abortButton;
     private TableWidget prepTestTable;
+    
     
     public QaeventPickerScreen() throws Exception {
         super((ScreenDefInt)GWT.create(QaeventPickerDef.class));
@@ -69,17 +73,6 @@ public class QaeventPickerScreen extends Screen implements HasActionHandlers<Qae
 
         // Initialize Screen
         setState(State.DEFAULT);
-        
-        try{
-        //if the qa events list hasnt been created. create it
-        if(qaEvents == null)
-            qaEvents = service.callList("getListOfQaevents");
-        }catch (Throwable e) {
-            e.printStackTrace();
-            Window.alert(e.getMessage());
-        }
-        
-        DataChangeEvent.fire(this);
     }
 
     private void initialize() {
@@ -138,8 +131,6 @@ public class QaeventPickerScreen extends Screen implements HasActionHandlers<Qae
         if(selections.size() > 0)
             ActionEvent.fire(this, Action.COMMIT, selections);
         
-        Window.alert(""+selections.size());
-        
         window.close();
     }
     
@@ -154,7 +145,7 @@ public class QaeventPickerScreen extends Screen implements HasActionHandlers<Qae
             return model;
 
         for(int i=0; i<qaEvents.size(); i++) {
-            QaEventViewDO qaEventDO = qaEvents.get(i);
+            QaEventDO qaEventDO = qaEvents.get(i);
         
            TableDataRow row = new TableDataRow(4);
            row.key = qaEventDO.getId();
@@ -170,7 +161,48 @@ public class QaeventPickerScreen extends Screen implements HasActionHandlers<Qae
         return model;
     }
     
+    public void draw(){
+        try{
+            qaEvents = new ArrayList<QaEventDO>();
+            
+            if(type == Type.ANALYSIS && testId != null){
+                Query query;
+                QueryData field;
+    
+                field = new QueryData();
+                field.query = testId.toString();
+                field.type = QueryData.Type.INTEGER;
+    
+                query = new Query();
+                query.setFields(field);
+                qaEvents = service.callList("getListOfQaevents", query);
+            }else if(type == Type.SAMPLE)
+                qaEvents = service.callList("getListOfQaevents");
+            
+            DataChangeEvent.fire(this);
+        }catch (Throwable e) {
+            e.printStackTrace();
+            Window.alert(e.getMessage());
+        }
+    }
+    
     public HandlerRegistration addActionHandler(ActionHandler<Action> handler) {
         return addHandler(handler, ActionEvent.getType());
+    }
+
+    public Type getType() {
+        return type;
+    }
+
+    public void setType(Type type) {
+        this.type = type;
+    }
+
+    public Integer getTestId() {
+        return testId;
+    }
+
+    public void setTestId(Integer testId) {
+        this.testId = testId;
     }
 }

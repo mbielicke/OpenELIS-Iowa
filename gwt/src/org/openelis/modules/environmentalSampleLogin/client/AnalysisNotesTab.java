@@ -33,6 +33,7 @@ import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.StateChangeEvent;
+import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.widget.AppButton;
@@ -59,14 +60,14 @@ public class AnalysisNotesTab extends NotesTab {
     protected NotesPanel internalNotesPanel;
     protected EditNoteScreen internalEditNote;
     
-    public AnalysisNotesTab(ScreenDefInt def, String notesPanelKey, String editButtonKey, boolean isExternal) {
-        super(def, notesPanelKey, editButtonKey, isExternal);
+    public AnalysisNotesTab(ScreenDefInt def, String notesPanelKey, String editButtonKey, boolean isExternal, Screen parentScreen) {
+        super(def, notesPanelKey, editButtonKey, isExternal, parentScreen);
     }
     
     public AnalysisNotesTab(ScreenDefInt def, String externalNotesPanelKey, String externalEditButtonKey,
-                          String internalNotesPanelKey, String internalEditButtonKey) {
+                          String internalNotesPanelKey, String internalEditButtonKey, Screen parentScreen) {
    
-       super(def, externalNotesPanelKey, externalEditButtonKey, true);
+       super(def, externalNotesPanelKey, externalEditButtonKey, true, parentScreen);
        
        this.internalNotesPanelKey = internalNotesPanelKey;
        this.internalEditButtonKey = internalEditButtonKey;
