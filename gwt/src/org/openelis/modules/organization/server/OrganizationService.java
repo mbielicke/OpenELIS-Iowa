@@ -44,7 +44,7 @@ import org.openelis.remote.OrganizationRemote;
  */
 public class OrganizationService {
 
-    private static final int rowPP = 18;
+    private static final int rowPP = 20;
 
     public OrganizationManager fetchById(Integer id) throws Exception {
         try {

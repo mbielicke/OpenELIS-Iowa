@@ -169,11 +169,10 @@ public class OrganizationBean implements OrganizationRemote, OrganizationLocal {
         return data;
     }
 
-    public void validate(OrganizationViewDO data, ArrayList<OrganizationContactDO> contacts) throws Exception {
+    public void validate(OrganizationViewDO data) throws Exception {
         ValidationErrorsList list;
         
         list = new ValidationErrorsList();
-
         if (DataBaseUtil.isEmpty(data.getName()))
             list.add(new FieldErrorException("fieldRequiredException", meta.getName()));
 
@@ -186,88 +185,7 @@ public class OrganizationBean implements OrganizationRemote, OrganizationLocal {
         if (DataBaseUtil.isEmpty(data.getAddress().getZipCode()))
             list.add(new FieldErrorException("fieldRequiredException", meta.ADDRESS.getZipCode()));
 
-        if (DataBaseUtil.isEmpty(data.getAddress().getCountry()))
-            list.add(new FieldErrorException("fieldRequiredException", meta.ADDRESS.getCountry()));
-
-        if (contacts != null)
-            for (int i = 0; i < contacts.size(); i++ )
-                validateContact(contacts.get(i), i, list);
-
         if (list.size() > 0)
             throw list;
-    }
-
-    /*
-     * Routines for organization contact support
-     */
-
-    public ArrayList<OrganizationContactDO> fetchContactByOrganizationId(Integer id) throws Exception {
-        Query query;
-        List list; 
-        
-        query = manager.createNamedQuery("OrganizationContact.FetchByOrganizationId");
-        query.setParameter("id", id);
-
-        list = query.getResultList();
-        if (list.isEmpty())
-            throw new NotFoundException();
-        
-        return DataBaseUtil.toArrayList(list);
-    }
-
-    public OrganizationContactDO addContact(OrganizationContactDO data) throws Exception {
-        OrganizationContact entity;
-
-        manager.setFlushMode(FlushModeType.COMMIT);
-
-        addressBean.add(data.getAddressDO());
-        entity = new OrganizationContact();
-        entity.setAddressId(data.getAddressDO().getId());
-        entity.setOrganizationId(data.getOrganizationId());
-        entity.setContactTypeId(data.getContactTypeId());
-        entity.setName(data.getName());
-
-        manager.persist(entity);
-        data.setId(entity.getId());
-        
-        return data;
-    }
-
-    public OrganizationContactDO updateContact(OrganizationContactDO data) throws Exception {
-        OrganizationContact entity;
-
-        if (!data.isChanged())
-            return data;
-
-        manager.setFlushMode(FlushModeType.COMMIT);
-
-        addressBean.update(data.getAddressDO());
-        entity = manager.find(OrganizationContact.class, data.getId());
-        entity.setContactTypeId(data.getContactTypeId());
-        entity.setName(data.getName());
-
-        return data;
-    }
-
-    public void deleteContact(OrganizationContactDO data) throws Exception {
-        OrganizationContact entity;
-
-        manager.setFlushMode(FlushModeType.COMMIT);
-
-        addressBean.delete(data.getAddressDO().getId());
-        entity = manager.find(OrganizationContact.class, data.getId());
-        if (entity != null)
-            manager.remove(entity);
-    }
-
-    private void validateContact(OrganizationContactDO data, int row, ValidationErrorsList exceptionList) {
-        if (DataBaseUtil.isEmpty(data.getContactTypeId()))
-            exceptionList.add(new TableFieldErrorException("fieldRequiredException",
-                               row, meta.ORGANIZATION_CONTACT.getContactTypeId(),
-                               "contactsTable"));
-        if (DataBaseUtil.isEmpty(data.getName()))
-            exceptionList.add(new TableFieldErrorException("fieldRequiredException", 
-                               row, meta.ORGANIZATION_CONTACT.getName(),
-                               "contactsTable"));
     }
 }
