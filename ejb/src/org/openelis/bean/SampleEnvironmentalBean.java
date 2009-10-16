@@ -78,16 +78,17 @@ public class SampleEnvironmentalBean implements SampleEnvironmentalRemote, Sampl
 
         builder = new QueryBuilderV2();
         builder.setMeta(meta);
-        builder.setSelect("distinct new org.openelis.domain.IdNameVO(" + meta.getId() + ",'') ");
+        builder.setSelect("distinct new org.openelis.domain.IdNameVO(" + meta.SAMPLE.getId() + ",'') ");
         builder.constructWhere(fields);
         builder.addWhere(meta.SAMPLE.getDomain() + "='" + SampleManager.ENVIRONMENTAL_DOMAIN_FLAG + "'");
-        builder.setOrderBy(meta.getId());
+        builder.setOrderBy(meta.SAMPLE.getId());
 
         query = manager.createQuery(builder.getEJBQL());
         query.setMaxResults(first + max);
         builder.setQueryParams(query, fields);
 
         list = query.getResultList();
+        
         if (list.isEmpty())
             throw new NotFoundException();
         list = (ArrayList<IdNameVO>)DataBaseUtil.subList(list, first, max);

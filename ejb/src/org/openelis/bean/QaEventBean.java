@@ -27,6 +27,7 @@ package org.openelis.bean;
 
 import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.QaEventDO;
+import org.openelis.domain.QaEventView;
 import org.openelis.domain.QaEventViewDO;
 import org.openelis.entity.QaEvent;
 import org.openelis.gwt.common.FieldErrorException;
@@ -186,7 +187,7 @@ public class QaEventBean implements QaEventRemote{
         return DataBaseUtil.toArrayList(query.getResultList());
     }
     
-    public ArrayList<QaEventDO> fetchCommonByName(String name, int numberOfResults){
+    public ArrayList<QaEventView> fetchCommonByName(String name, int numberOfResults){
         Query query = manager.createNamedQuery("QaEvent.FetchCommonByName");
         query.setParameter("name", name);
         query.setMaxResults(numberOfResults);
@@ -194,7 +195,7 @@ public class QaEventBean implements QaEventRemote{
         return DataBaseUtil.toArrayList(query.getResultList());
     }
     
-    public ArrayList<QaEventDO> fetchTestSpecificByName(String name, Integer testId, int numberOfResults){
+    public ArrayList<QaEventView> fetchTestSpecificByName(String name, Integer testId, int numberOfResults){
         Query query = manager.createNamedQuery("QaEvent.FetchTestSpecificByName");
         query.setParameter("name", name);
         query.setParameter("testId", testId);

@@ -31,6 +31,7 @@ import java.util.List;
 import javax.ejb.Remote;
 
 import org.openelis.domain.QaEventDO;
+import org.openelis.domain.QaEventView;
 import org.openelis.domain.QaEventViewDO;
 import org.openelis.gwt.common.data.deprecated.AbstractField;
 
@@ -48,9 +49,9 @@ public interface QaEventRemote {
     
     public ArrayList<QaEventDO> fetchTestSpecificById(Integer testId);
     
-    public ArrayList<QaEventDO> fetchCommonByName(String name, int numberOfResults);
+    public ArrayList<QaEventView> fetchCommonByName(String name, int numberOfResults);
     
-    public ArrayList<QaEventDO> fetchTestSpecificByName(String name, Integer testId, int numberOfResults);
+    public ArrayList<QaEventView> fetchTestSpecificByName(String name, Integer testId, int numberOfResults);
 
     //  commit a change to QaEvent, or insert a new provider
     public Integer updateQaEvent(QaEventViewDO qaEventDO)throws Exception;
