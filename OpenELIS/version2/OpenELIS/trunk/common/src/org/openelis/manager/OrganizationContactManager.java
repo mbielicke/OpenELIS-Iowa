@@ -105,6 +105,10 @@ public class OrganizationContactManager implements RPC {
         return proxy().update(this);
     }
 
+    public void validate() throws Exception {
+        proxy().validate(this);
+    }
+
     // friendly methods used by managers and proxies
     Integer getOrganizationId() {
         return organizationId;

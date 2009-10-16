@@ -30,7 +30,13 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.Datetime;
+import org.openelis.gwt.common.FieldErrorException;
+import org.openelis.gwt.common.FormErrorException;
+import org.openelis.gwt.common.GridFieldErrorException;
+import org.openelis.gwt.common.TableFieldErrorException;
+import org.openelis.gwt.common.ValidationErrorsList;
 
 public class DataBaseUtil {
 
@@ -106,14 +112,16 @@ public class DataBaseUtil {
 
     /**
      * Compares the two parameters to see if they are different
+     * 
      * @return true if object is the same; otherwise false
      */
     public static boolean isDifferent(Object a, Object b) {
         return (a == null && b != null) || (a != null && !a.equals(b));
     }
-    
+
     /**
      * Checks the parameter to see if its null or its length is 0.
+     * 
      * @return true if object is empty; otherwise false
      */
     public static boolean isEmpty(Object a) {
@@ -121,8 +129,7 @@ public class DataBaseUtil {
             return ((String)a).length() == 0;
         return a == null;
     }
-    
-    
+
     /*
      * For paged result list, this method returns a subList of the query list
      * starting at first for max number of results.
@@ -145,14 +152,77 @@ public class DataBaseUtil {
     }
 
     /**
-     * Convert a List to ArrayList 
+     * Convert a List to ArrayList
      */
     public static ArrayList toArrayList(List from) {
         if (from instanceof ArrayList)
-            return (ArrayList) from;
+            return (ArrayList)from;
         return new ArrayList(from);
     }
-    
+
+    /**
+     * Convenience methods to unwrap and merge error lists
+     */
+    public static void mergeException(ValidationErrorsList list, Exception e) {
+        if (e instanceof ValidationErrorsList) {
+            int i;
+            ArrayList<Exception> el;
+
+            el = ((ValidationErrorsList)e).getErrorList();
+            for (i = 0; i < el.size(); i++ )
+                mergeException(list, el.get(i));
+        } else if (e instanceof FieldErrorException) {
+            FieldErrorException fe;
+
+            fe = (FieldErrorException)e;
+            if (! isEmpty(fe.getFieldName()))
+                list.add(fe);
+            else
+                list.add(new FormErrorException(fe.getKey(), fe.getParams()));
+        } else {
+            list.add(new DatabaseException(e.getMessage()));
+        }
+    }
+
+    public static void mergeException(ValidationErrorsList list, Exception e, String table, int row) {
+        if (e instanceof ValidationErrorsList) {
+            int i;
+            ArrayList<Exception> el;
+
+            el = ((ValidationErrorsList)e).getErrorList();
+            for (i = 0; i < el.size(); i++ )
+                mergeException(list, el.get(i), table, row);
+        } else if (e instanceof FieldErrorException) {
+            FieldErrorException fe;
+
+            fe = (FieldErrorException)e;
+            list.add(new TableFieldErrorException(fe.getKey(), row, fe.getFieldName(), table,
+                                                  fe.getParams()));
+        } else {
+            list.add(new DatabaseException(e.getMessage()));
+        }
+    }
+
+    public static void mergeException(ValidationErrorsList list, Exception e, String table,
+                                      int key1, int key2) {
+        if (e instanceof ValidationErrorsList) {
+            int i;
+            ArrayList<Exception> el;
+
+            el = ((ValidationErrorsList)e).getErrorList();
+            for (i = 0; i < el.size(); i++ )
+                mergeException(list, el.get(i), table, key1, key2);
+        } else if (e instanceof FieldErrorException) {
+            FieldErrorException fe;
+
+            fe = (FieldErrorException)e;
+            list.add(new GridFieldErrorException(fe.getKey(), key1, key2, fe.getFieldName(), table,
+                                                 fe.getParams()));
+        } else {
+            list.add(new DatabaseException(e.getMessage()));
+        }
+    }
+
     //
     // move this to somewhere else
     //

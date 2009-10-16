@@ -25,12 +25,7 @@
  */
 package org.openelis.local;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.ejb.Local;
-
-import org.openelis.domain.OrganizationContactDO;
 import org.openelis.domain.OrganizationViewDO;
 
 @Local
@@ -41,13 +36,5 @@ public interface OrganizationLocal {
 
     public OrganizationViewDO update(OrganizationViewDO data) throws Exception;
 
-    public void validate(OrganizationViewDO data, ArrayList<OrganizationContactDO> contacts) throws Exception;
-
-    public ArrayList<OrganizationContactDO> fetchContactByOrganizationId(Integer id) throws Exception;
-
-    public OrganizationContactDO updateContact(OrganizationContactDO data) throws Exception;
-
-    public OrganizationContactDO addContact(OrganizationContactDO data) throws Exception;
-
-    public void deleteContact(OrganizationContactDO data) throws Exception;
+    public void validate(OrganizationViewDO data) throws Exception;
 }

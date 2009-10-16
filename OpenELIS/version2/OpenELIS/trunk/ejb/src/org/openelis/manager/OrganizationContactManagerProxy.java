@@ -30,8 +30,10 @@ import java.util.ArrayList;
 import javax.naming.InitialContext;
 
 import org.openelis.domain.OrganizationContactDO;
-import org.openelis.local.OrganizationLocal;
+import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.local.OrganizationContactLocal;
 import org.openelis.manager.OrganizationContactManager;
+import org.openelis.utilcommon.DataBaseUtil;
 
 public class OrganizationContactManagerProxy {
 
@@ -39,7 +41,7 @@ public class OrganizationContactManagerProxy {
         OrganizationContactManager cm;
         ArrayList<OrganizationContactDO> contacts;
 
-        contacts = local().fetchContactByOrganizationId(id);
+        contacts = local().fetchByOrganizationId(id);
         cm = OrganizationContactManager.getInstance();
         cm.setOrganizationId(id);
         cm.setContacts(contacts);
@@ -48,45 +50,62 @@ public class OrganizationContactManagerProxy {
     }
 
     public OrganizationContactManager add(OrganizationContactManager man) throws Exception {
-        OrganizationLocal ol;
+        OrganizationContactLocal cl;
         OrganizationContactDO contact;
 
-        ol = local();
+        cl = local();
         for (int i = 0; i < man.count(); i++ ) {
             contact = man.getContactAt(i);
             contact.setOrganizationId(man.getOrganizationId());
-            ol.addContact(contact);
+            cl.add(contact);
         }
 
         return man;
     }
 
     public OrganizationContactManager update(OrganizationContactManager man) throws Exception {
-        OrganizationLocal ol;
+        OrganizationContactLocal cl;
         OrganizationContactDO contact;
 
-        ol = local();
+        cl = local();
         for (int j = 0; j < man.deleteCount(); j++ )
-            ol.deleteContact(man.getDeletedAt(j));
+            cl.delete(man.getDeletedAt(j));
 
         for (int i = 0; i < man.count(); i++ ) {
             contact = man.getContactAt(i);
 
             if (contact.getId() == null) {
                 contact.setOrganizationId(man.getOrganizationId());
-                ol.addContact(contact);
+                cl.add(contact);
             } else {
-                ol.updateContact(contact);
+                cl.update(contact);
             }
         }
 
         return man;
     }
+    
+    public void validate(OrganizationContactManager man) throws Exception {
+        ValidationErrorsList list;
+        OrganizationContactLocal cl;
 
-    private OrganizationLocal local() {
+        cl = local();
+        list = new ValidationErrorsList();
+        for (int i = 0; i < man.count(); i++ ) {
+            try {
+                cl.validate(man.getContactAt(i));
+            } catch (Exception e) {
+                DataBaseUtil.mergeException(list, e, "contactTable", i);
+            }
+        }
+        if (list.size() > 0)
+            throw list;
+    }
+
+    private OrganizationContactLocal local() {
         try {
             InitialContext ctx = new InitialContext();
-            return (OrganizationLocal)ctx.lookup("openelis/OrganizationBean/local");
+            return (OrganizationContactLocal)ctx.lookup("openelis/OrganizationContactBean/local");
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return null;

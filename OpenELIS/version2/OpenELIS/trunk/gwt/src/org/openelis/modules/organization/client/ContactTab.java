@@ -26,14 +26,14 @@ import org.openelis.manager.OrganizationManager;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.Window;
 
-public class ContactsTab extends Screen {
+public class ContactTab extends Screen {
 
     private OrganizationManager manager;
     private TableWidget         table;
     private AppButton           removeButton, addButton;
     private boolean             loaded;
 
-    public ContactsTab(ScreenDefInt def) {
+    public ContactTab(ScreenDefInt def) {
         setDef(def);
         initialize();
         
@@ -41,7 +41,7 @@ public class ContactsTab extends Screen {
     }
 
     private void initialize() {
-        table = (TableWidget)def.getWidget("contactsTable");
+        table = (TableWidget)def.getWidget("contactTable");
         addScreenHandler(table, new ScreenEventHandler<ArrayList<TableDataRow>>() {
             public void onDataChange(DataChangeEvent event) {
                 table.load(getTableModel());

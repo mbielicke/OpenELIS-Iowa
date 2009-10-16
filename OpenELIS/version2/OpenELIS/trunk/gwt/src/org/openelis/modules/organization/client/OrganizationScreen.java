@@ -77,6 +77,8 @@ import org.openelis.modules.main.client.openelis.OpenELIS;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
+import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -94,8 +96,8 @@ public class OrganizationScreen extends Screen {
     private ButtonGroup           atoz;
     private ScreenNavigator       nav;
 
-    private ContactsTab           contactsTab;
-    private IdentifiersTab        identifiersTab;
+    private ContactTab            contactTab;
+    private IdentifierTab         identifierTab;
     private NotesTab              notesTab;
     private Tabs                  tab;
 
@@ -465,13 +467,13 @@ public class OrganizationScreen extends Screen {
         // tabs
         //
         tabPanel = (TabPanel)def.getWidget("tabPanel");
-        tabPanel.addSelectionHandler(new SelectionHandler<Integer>() {
-            public void onSelection(SelectionEvent<Integer> event) {
+        tabPanel.addBeforeSelectionHandler(new BeforeSelectionHandler<Integer>() {
+            public void onBeforeSelection(BeforeSelectionEvent<Integer> event) {
                 int i;
 
                 // tab screen order should be the same as enum or this will
                 // not work
-                i = event.getSelectedItem().intValue();
+                i = event.getItem().intValue();
                 tab = Tabs.values()[i];
 
                 window.setBusy();
@@ -480,29 +482,29 @@ public class OrganizationScreen extends Screen {
             }
         });
 
-        contactsTab = new ContactsTab(def);
-        addScreenHandler(contactsTab, new ScreenEventHandler<Object>() {
+        contactTab = new ContactTab(def);
+        addScreenHandler(contactTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
-                contactsTab.setManager(manager);
+                contactTab.setManager(manager);
                 if (tab == Tabs.CONTACTS)
                     drawTabs();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                contactsTab.setState(event.getState());
+                contactTab.setState(event.getState());
             }
         });
 
-        identifiersTab = new IdentifiersTab(def);
-        addScreenHandler(identifiersTab, new ScreenEventHandler<Object>() {
+        identifierTab = new IdentifierTab(def);
+        addScreenHandler(identifierTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
-                identifiersTab.setManager(manager);
+                identifierTab.setManager(manager);
                 if (tab == Tabs.IDENTIFIERS)
                     drawTabs();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                identifiersTab.setState(event.getState());
+                identifierTab.setState(event.getState());
             }
         });
 
@@ -623,9 +625,9 @@ public class OrganizationScreen extends Screen {
         DataChangeEvent.fire(this);
 
         // clear all the tabs
-        contactsTab.draw();
+        contactTab.draw();
         notesTab.draw();
-        // TODO identifiersTab.draw();
+        identifierTab.draw();
         window.setDone(consts.get("enterFieldsToQuery"));
     }
 
@@ -773,10 +775,10 @@ public class OrganizationScreen extends Screen {
     private void drawTabs() {
         switch (tab) {
             case CONTACTS:
-                contactsTab.draw();
+                contactTab.draw();
                 break;
             case IDENTIFIERS:
-                identifiersTab.draw();
+                identifierTab.draw();
                 break;
             case NOTES:
                 notesTab.draw();

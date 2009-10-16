@@ -29,7 +29,9 @@ import javax.naming.InitialContext;
 
 import org.openelis.domain.OrganizationViewDO;
 import org.openelis.domain.ReferenceTable;
+import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.OrganizationLocal;
+import org.openelis.utilcommon.DataBaseUtil;
 
 public class OrganizationManagerProxy {
 
@@ -92,7 +94,7 @@ public class OrganizationManagerProxy {
     public OrganizationManager update(OrganizationManager man) throws Exception {
         Integer id;
         OrganizationLocal ol;
-        
+
         ol = local();
         ol.update(man.getOrganization());
         id = man.getOrganization().getId();
@@ -118,7 +120,22 @@ public class OrganizationManagerProxy {
     }
 
     public void validate(OrganizationManager man) throws Exception {
-        local().validate(man.getOrganization(), man.getContacts().getContacts());
+        ValidationErrorsList list;
+        
+        list = new ValidationErrorsList();
+        try {
+            local().validate(man.getOrganization());
+        } catch (Exception e) {
+            DataBaseUtil.mergeException(list, e);
+        }
+        try {
+            man.getContacts().validate();
+        } catch (Exception e) {
+            DataBaseUtil.mergeException(list, e);
+        }
+        
+        if (list.size() > 0)
+            throw list;
     }
 
     private OrganizationLocal local() {

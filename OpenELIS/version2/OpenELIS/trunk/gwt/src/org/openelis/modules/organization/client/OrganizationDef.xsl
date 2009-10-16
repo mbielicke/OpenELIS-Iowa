@@ -92,7 +92,7 @@ UIRF Software License are applicable instead of those above.
               <xsl:call-template name="aToZLeftPanelButtons" />
             </buttonGroup>
             <VerticalPanel>
-              <table key="atozTable" width="auto" maxRows="18" style="atozTable">
+              <table key="atozTable" width="auto" maxRows="20" style="atozTable">
                 <col width="175" header="{resource:getString($constants,'name')}">
                   <label />
                 </col>
@@ -218,7 +218,7 @@ UIRF Software License are applicable instead of those above.
                   <xsl:value-of select="resource:getString($constants,'active')" />:
                 </text>
                 <widget colspan="3">
-                  <check key="{meta:getIsActive($org)}" tab="contactsTable,{parent:getName($parent)}" />
+                  <check key="{meta:getIsActive($org)}" tab="contactTable,{parent:getName($parent)}" />
                 </widget>
               </row>
             </TablePanel>
@@ -229,9 +229,9 @@ UIRF Software License are applicable instead of those above.
 
 <!-- TAB 1 -->
 
-              <tab key="contactsTab" text="{resource:getString($constants,'contact')}">
+              <tab key="contactTab" text="{resource:getString($constants,'contact')}">
                 <VerticalPanel padding="0" spacing="0">
-                  <table key="contactsTable" width="589px" maxRows="9" showScroll="ALWAYS" tab="{meta:getId($org)},{meta:getIsActive($org)}">
+                  <table key="contactTable" width="589px" maxRows="10" showScroll="ALWAYS" tab="{meta:getId($org)},{meta:getIsActive($org)}">
                     <col key="{contact:getContactTypeId($cont)}" width="106" header="{resource:getString($constants,'type')}">
                       <dropdown width="90" field="Integer" required="true" />
                     </col>
@@ -298,9 +298,9 @@ UIRF Software License are applicable instead of those above.
 
 <!-- TAB 2 -->
 
-              <tab key="identifiersTab" text="{resource:getString($constants,'identifier')}">
+              <tab key="identifierTab" text="{resource:getString($constants,'identifier')}">
                 <VerticalPanel padding="0" spacing="0">
-                  <table key="identifiersTable" width="589px" maxRows="9" showScroll="ALWAYS">
+                  <table key="identifierTable" width="589px" maxRows="10" showScroll="ALWAYS">
                     <col key="UNK1" width="300" align="left" header="{resource:getString($constants,'identifier')}">
                       <textbox field="String" required="true" />
                     </col>

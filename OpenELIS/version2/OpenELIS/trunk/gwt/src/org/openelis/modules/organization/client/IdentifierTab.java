@@ -23,20 +23,20 @@ import org.openelis.manager.OrganizationManager;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.Window;
 
-public class IdentifiersTab extends Screen {
+public class IdentifierTab extends Screen {
 
     private OrganizationManager manager;
     private TableWidget         table;
     private AppButton           removeButton, addButton;
     private boolean             loaded;
 
-    public IdentifiersTab(ScreenDefInt def) {
+    public IdentifierTab(ScreenDefInt def) {
         setDef(def);
         initialize();
     }
 
     private void initialize() {
-        table = (TableWidget)def.getWidget("identifiersTable");
+        table = (TableWidget)def.getWidget("identifierTable");
         addScreenHandler(table, new ScreenEventHandler<ArrayList<TableDataRow>>() {
             public void onDataChange(DataChangeEvent event) {
                 table.load(getTableModel());

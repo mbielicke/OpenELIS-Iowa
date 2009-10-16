@@ -23,32 +23,21 @@
  * which case the provisions of a UIRF Software License are applicable instead
  * of those above.
  */
-package org.openelis.manager;
+package org.openelis.local;
 
-import org.openelis.gwt.services.ScreenService;
+import java.util.ArrayList;
+import javax.ejb.Local;
+import org.openelis.domain.OrganizationContactDO;
 
-public class OrganizationContactManagerProxy {
-    protected static final String ORG_MANAGER_SERVICE_URL = "org.openelis.modules.organization.server.OrganizationService";
-    protected ScreenService       service;
+@Local
+public interface OrganizationContactLocal {
+    public ArrayList<OrganizationContactDO> fetchByOrganizationId(Integer id) throws Exception;
 
-    public OrganizationContactManagerProxy() {
-        service = new ScreenService("OpenELISServlet?service=" + ORG_MANAGER_SERVICE_URL);
-    }
+    public OrganizationContactDO add(OrganizationContactDO data) throws Exception;
 
-    public OrganizationContactManager fetchByOrganizationId(Integer orgId) throws Exception {
-        return service.call("fetchContactByOrganizationId", orgId);
-    }
+    public OrganizationContactDO update(OrganizationContactDO data) throws Exception;
 
-    public OrganizationContactManager add(OrganizationContactManager man) throws Exception {
-        assert false : "not supported";
-        return null;
-    }
+    public void delete(OrganizationContactDO data) throws Exception;
 
-    public OrganizationContactManager update(OrganizationContactManager man) throws Exception {
-        assert false : "not supported";
-        return null;
-    }
-    
-    public void validate(OrganizationContactManager man) throws Exception {
-    }
+    public void validate(OrganizationContactDO data) throws Exception;
 }
