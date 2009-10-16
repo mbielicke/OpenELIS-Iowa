@@ -32,6 +32,7 @@ import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.StateChangeEvent;
+import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.widget.AppButton;
@@ -54,9 +55,9 @@ public class SampleNotesTab extends NotesTab {
     protected EditNoteScreen internalEditNote;
     
     public SampleNotesTab(ScreenDefInt def, String externalNotesPanelKey, String externalEditButtonKey,
-                               String internalNotesPanelKey, String internalEditButtonKey) {
+                               String internalNotesPanelKey, String internalEditButtonKey, Screen parentScreen) {
         
-        super(def, externalNotesPanelKey, externalEditButtonKey, true);
+        super(def, externalNotesPanelKey, externalEditButtonKey, true, parentScreen);
         
         this.internalNotesPanelKey = internalNotesPanelKey;
         this.internalEditButtonKey = internalEditButtonKey;

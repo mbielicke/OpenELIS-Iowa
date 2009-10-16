@@ -30,9 +30,12 @@ public class NotesTab extends Screen {
     protected Integer          userId;
     protected String notesPanelKey, editButtonKey;
     protected boolean          loaded, isExternal;
+    protected Screen parentScreen;
 
-    public NotesTab(ScreenDefInt def, String notesPanelKey, String editButtonKey, boolean isExternal) {
+    public NotesTab(ScreenDefInt def, String notesPanelKey, String editButtonKey, boolean isExternal, Screen parentScreen) {
         setDef(def);
+        this.parentScreen = parentScreen;
+        
         userName = OpenELIS.security.getSystemUserName();
         userId = OpenELIS.security.getSystemUserId();
 

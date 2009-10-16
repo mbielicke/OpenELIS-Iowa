@@ -39,7 +39,6 @@ import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
-import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
@@ -58,9 +57,9 @@ import com.google.gwt.user.client.Window;
 
 public class StorageTab extends Screen {
     private boolean loaded;
+    protected Screen parentScreen;
     
     protected TableWidget storageTable;
-    protected Screen parentScreen;
     
     protected StorageManager manager;
     protected SampleDataBundle data;

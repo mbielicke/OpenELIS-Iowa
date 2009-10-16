@@ -653,24 +653,41 @@ xmlns:testMetaMap="xalan://org.openelis.metamap.TestMetaMap" xmlns:sectionMeta="
                 </TablePanel>
             </tab>
             <tab key="tab6" text="{resource:getString($constants,'qaEvents')}">
-              <HorizontalPanel height="100%" spacing="0" padding="0">
-              	<TablePanel padding="0" spacing="0" style="TabSubForm">
+              	<TablePanel padding="0" spacing="0" height="100%" style="TabSubForm">
               	<row>
 	                 <table key="sampleQATable" title="" width="auto" maxRows="8" showScroll="ALWAYS">
 	                  <col width="175" header="{resource:getString($constants,'sampleQAEvent')}">
-	                  	<autoComplete key="{qaeventMeta:getName($sampleQA)}" width="165px" case="LOWER" popWidth="auto" field="Integer"> <!-- required="true">-->
+	                  	<autoComplete width="165px" case="LOWER" popWidth="auto" field="Integer"> <!-- required="true">-->
                       		<col width="100" header="{resource:getString($constants,'name')}" />
                       		<col width="150" header="{resource:getString($constants,'desc')}" />
                       		<col width="80" header="{resource:getString($constants,'type')}" />
                     	</autoComplete>
 	                  </col>
 	                  <col width="90" header="{resource:getString($constants,'type')}">
-		                  <dropdown key="{sampleQAEventMetaMap:getTypeId($sampleQAE)}" width="75px" popWidth="75px" field="Integer"/>
+		                  <dropdown width="75px" popWidth="75px" field="Integer"/>
 	                  </col>
 	                  <col width="60" header="{resource:getString($constants,'billable')}">
-	                  	<check key="{sampleQAEventMetaMap:getIsBillable($sampleQAE)}"/>
+	                  	<check/>
 	                  </col>
 	                </table>
+	                <widget rowspan="3">
+	                	<AbsolutePanel style="Divider"/>
+	                </widget>
+	                <table key="analysisQATable" title="" width="auto" maxRows="8" showScroll="ALWAYS">
+                  		<col width="175" header="{resource:getString($constants,'analysisQAEvent')}">
+                    	<autoComplete width="165px" case="LOWER" popWidth="auto" field="Integer"><!-- required="true">-->
+                      		<col width="100" header="{resource:getString($constants,'name')}" />
+                      		<col width="150" header="{resource:getString($constants,'desc')}" />
+                      		<col width="80" header="{resource:getString($constants,'type')}" />
+                    	</autoComplete>
+	                  </col>
+	                  <col width="90" header="{resource:getString($constants,'type')}">
+		                  <dropdown width="75px" popWidth="75px" field="Integer"/>
+	                  </col>
+	                  <col width="60" header="{resource:getString($constants,'billable')}">
+	                  	<check/>
+	                  </col>
+                </table>
                 </row>
                 <row>
                 <widget style="TableButtonFooter">
@@ -701,28 +718,6 @@ xmlns:testMetaMap="xalan://org.openelis.metamap.TestMetaMap" xmlns:sectionMeta="
 	                  </appButton>
 	                </HorizontalPanel>
 	                </widget>
-	                </row>
-	                </TablePanel>
-              <AbsolutePanel style="Divider"/>
-              <TablePanel padding="0" spacing="0" style="TabSubForm">
-              <row>
-                 <table key="analysisQATable" title="" width="auto" maxRows="8" showScroll="ALWAYS">
-                  <col width="175" header="{resource:getString($constants,'analysisQAEvent')}">
-                    	<autoComplete key="{qaeventMeta:getName($analysisQA)}" width="165px" case="LOWER" popWidth="auto" field="Integer"><!-- required="true">-->
-                      		<col width="100" header="{resource:getString($constants,'name')}" />
-                      		<col width="150" header="{resource:getString($constants,'desc')}" />
-                      		<col width="80" header="{resource:getString($constants,'type')}" />
-                    	</autoComplete>
-	                  </col>
-	                  <col width="90" header="{resource:getString($constants,'type')}">
-		                  <dropdown key="{analysisQAEventMetaMap:getTypeId($analysisQAE)}" width="75px" popWidth="75px" field="Integer"/>
-	                  </col>
-	                  <col width="60" header="{resource:getString($constants,'billable')}">
-	                  	<check key="{analysisQAEventMetaMap:getIsBillable($analysisQAE)}"/>
-	                  </col>
-                </table>
-                </row>
-                <row>
                 <widget style="TableButtonFooter">
                 <HorizontalPanel>
                   <appButton key="addAnalysisQAButton" style="Button" action="addStorage">
@@ -753,7 +748,7 @@ xmlns:testMetaMap="xalan://org.openelis.metamap.TestMetaMap" xmlns:sectionMeta="
                 </widget>
                 </row>
 				</TablePanel>  
-                </HorizontalPanel>
+<!--                </HorizontalPanel>-->
             </tab>
             <tab key="tab7" text="Aux Data">
               <HorizontalPanel width="100%" padding="0" spacing="0">

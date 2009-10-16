@@ -31,7 +31,9 @@ import java.util.List;
 
 import org.openelis.common.AutocompleteRPC;
 import org.openelis.domain.IdNameTestMethodDO;
+import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.QaEventDO;
+import org.openelis.domain.QaEventView;
 import org.openelis.domain.QaEventViewDO;
 import org.openelis.domain.TestMethodViewDO;
 import org.openelis.gwt.common.FieldErrorException;
@@ -297,24 +299,36 @@ public class QAEventService implements AppScreenFormServiceInt<QAEventForm, org.
         return dataModel;       
     }
     
-    public AutocompleteRPC getQAEventMatches(AutocompleteRPC rpc){
+    
+    public ArrayList<QaEventView> getQAEventMatches(Query query){
         QaEventRemote remote = (QaEventRemote)EJBFactory.lookup("openelis/QaEventBean/remote");
-        //rpc.model = (ArrayList)remote.autoCompleteLookupByName(rpc.match+"%", 10);
-        return rpc;
-    }
-    /*
-    public ArrayList<QaEventDO> getQAEventMatches(Query query){
-        QaEventRemote remote = (QaEventRemote)EJBFactory.lookup("openelis/QaEventBean/remote");
+        ArrayList<QaEventView> list;
+        String value;
+        Integer id;
         
-        if(query.getFields().size())
-        rpc.model = (ArrayList)remote.autoCompleteLookupByName(rpc.match+"%", 10);
-        return rpc;
+        if(query.getFields().size() == 1){
+            value = query.getFields().get(0).query;
+            list = remote.fetchCommonByName(value+"%", 10);
+        }else{
+            value = query.getFields().get(0).query;
+            id = new Integer(query.getFields().get(1).query);
+            list = remote.fetchTestSpecificByName(value+"%", id, 10);
+        }
+        
+        return list;
     }
     
-    public ArrayList<QaEventViewDO> getListOfQaevents(){
+    public ArrayList<QaEventDO> getListOfQaevents(){
         QaEventRemote remote = (QaEventRemote)EJBFactory.lookup("openelis/QaEventBean/remote");
-        return remote.getAllQaevents();
-    }*/
+        return remote.fetchAllCommon();
+    }
+    
+    public ArrayList<QaEventDO> getListOfQaevents(Query query){
+        QaEventRemote remote = (QaEventRemote)EJBFactory.lookup("openelis/QaEventBean/remote");
+        Integer testId = new Integer(query.getFields().get(0).query);
+        
+        return remote.fetchTestSpecificById(testId);
+    }
     
     //qa event manager methods
     public SampleQaEventManager fetchBySampleId(Integer sampleId) throws Exception {
