@@ -62,12 +62,12 @@ import org.openelis.utils.Auditable;
                            " order by q.name"),
                @NamedQuery(name = "QaEvent.FetchAllCommon", query = "select new org.openelis.domain.QaEventDO(q.id,q.name,q.description,q.testId,q.typeId, " + 
                            " q.isBillable,q.reportingSequence, '') from QaEvent q where q.testId is null order by q.name"),
-               @NamedQuery(name = "QaEvent.FetchTestSpecificByName", query = "select new org.openelis.domain.QaEventDO(q.id,q.name,q.description,q.testId,q.typeId, " + 
-                                       " q.isBillable,q.reportingSequence, '') from QaEvent q where q.testId = :testId or " + 
-                                       " (q.testId is null and q.name not in (select q2.name from QaEvent q2 where q2.testId=:testId)) " + 
+               @NamedQuery(name = "QaEvent.FetchTestSpecificByName", query = "select new org.openelis.domain.QaEventView(q.id,q.name,q.description,q.typeId, d.entry, " + 
+                                       " q.isBillable) from QaEvent q, Dictionary d where q.typeId=d.id and (q.testId = :testId or " + 
+                                       " (q.testId is null and q.name not in (select q2.name from QaEvent q2 where q2.testId=:testId))) " + 
                                        " and q.name like :name order by q.name"),
-               @NamedQuery(name = "QaEvent.FetchCommonByName", query = "select new org.openelis.domain.QaEventDO(q.id,q.name,q.description,q.testId,q.typeId, " + 
-                                                   " q.isBillable,q.reportingSequence, '') from QaEvent q where q.testId is null and q.name like :name order by q.name")})
+               @NamedQuery(name = "QaEvent.FetchCommonByName", query = "select new org.openelis.domain.QaEventView(q.id,q.name,q.description,q.typeId, d.entry, " + 
+                                                   " q.isBillable) from QaEvent q, Dictionary d where q.typeId=d.id and q.testId is null and q.name like :name order by q.name")})
                
 public class QaEvent implements Auditable, Cloneable {
   

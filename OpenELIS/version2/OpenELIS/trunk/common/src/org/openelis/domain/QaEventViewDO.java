@@ -39,6 +39,7 @@ public class QaEventViewDO extends QaEventDO {
 
     protected Integer         methodId;
     protected String          testName, methodName;
+    protected String          typeName;
 
     public QaEventViewDO() {
     }
