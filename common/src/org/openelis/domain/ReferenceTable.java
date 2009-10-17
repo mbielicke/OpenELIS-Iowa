@@ -94,9 +94,9 @@ public class ReferenceTable {
                             AUX_DATA =                       64,
                             ORDER_CUSTOMER_NOTE =            65,
                             ORDER_SHIPPING_NOTE =            66,
-                            INVENTORY_X_ADJUST =             71,
                             INVENTORY_X_USE =                68,
                             INVENTORY_X_PUT =                70,
+                            INVENTORY_X_ADJUST =             71,
                             INVENTORY_ADJUSTMENT =           72,
                             SHIPPING =                       73,
                             SHIPPING_TRACKING =              74,
@@ -108,5 +108,6 @@ public class ReferenceTable {
                             INVENTORY_ITEM_MANUFACTURING =   82,
                             SAMPLE_INTERNAL_NOTE =           83,
                             ANALYSIS_INTERNAL_NOTE =         84,
-                            SAMPLE_QAEVENT =                 85;
+                            SAMPLE_QAEVENT =                 85,
+                            WORKSHEET =                      86;
 }

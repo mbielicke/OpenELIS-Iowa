@@ -47,6 +47,10 @@ public class WorksheetMetaMap extends WorksheetMeta implements MetaMap {
         return new WorksheetMetaMap();
     }
     
+    public WorksheetItemMetaMap getWorksheetItem() {
+        return WORKSHEET_ITEM;
+    }
+    
     public boolean hasColumn(String columnName) {
         if (columnName.startsWith("worksheetItems."))
             return WORKSHEET_ITEM.hasColumn(columnName);

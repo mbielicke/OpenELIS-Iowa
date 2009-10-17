@@ -25,32 +25,29 @@
  */
 package org.openelis.domain;
 
-import java.util.Date;
-
-import org.openelis.gwt.common.Datetime;
-import org.openelis.utilcommon.DataBaseUtil;
-
 /**
  * Class represents the fields in database table system_variable.
  */
 
-public class WorksheetDO extends DataObject {
+public class WorksheetAnalyteDO extends DataObject {
 
     private static final long serialVersionUID = 1L;
 
-    protected Integer  id, systemUserId, statusId, formatId;
-    protected Datetime createdDate;
+    protected Integer id, worksheetAnalysisId, sortOrder, analyteId, resultId;
+    protected String  value;
 
-    public WorksheetDO() {
+    public WorksheetAnalyteDO() {
     }
 
-    public WorksheetDO(Integer id, Date createdDate, Integer systemUserId,
-                       Integer statusId, Integer formatId) {
+    public WorksheetAnalyteDO(Integer id, Integer worksheetAnalysisId,
+                              Integer sortOrder, Integer analyteId,
+                              String value, Integer resultId) {
         setId(id);
-        setCreatedDate(DataBaseUtil.toYM(createdDate));
-        setSystemUserId(systemUserId);
-        setStatusId(statusId);
-        setFormatId(formatId);
+        setWorksheetAnalysisId(worksheetAnalysisId);
+        setSortOrder(sortOrder);
+        setAnalyteId(analyteId);
+        setValue(value);
+        setResultId(resultId);
         _changed = false;
     }
 
@@ -63,39 +60,48 @@ public class WorksheetDO extends DataObject {
         _changed = true;
     }
 
-    public Datetime getCreatedDate() {
-        return createdDate;
+    public Integer getWorksheetAnalysisId() {
+        return worksheetAnalysisId;
     }
 
-    public void setCreatedDate(Datetime createdDate) {
-        this.createdDate = DataBaseUtil.toYD(createdDate);
+    public void setWorksheetAnalysisId(Integer worksheetAnalysisId) {
+        this.worksheetAnalysisId = worksheetAnalysisId;
         _changed = true;
     }
 
-    public Integer getSystemUserId() {
-        return systemUserId;
+    public Integer getSortOrder() {
+        return sortOrder;
     }
 
-    public void setSystemUserId(Integer systemUserId) {
-        this.systemUserId = systemUserId;
+    public void setSortOrder(Integer sortOrder) {
+        this.sortOrder = sortOrder;
         _changed = true;
     }
 
-    public Integer getStatusId() {
-        return statusId;
+    public Integer getAnalyteId() {
+        return analyteId;
     }
 
-    public void setStatusId(Integer statusId) {
-        this.statusId = statusId;
+    public void setAnalyteId(Integer analyteId) {
+        this.analyteId = analyteId;
         _changed = true;
     }
 
-    public Integer getFormatId() {
-        return formatId;
+    public Integer getResultId() {
+        return resultId;
     }
 
-    public void setFormatId(Integer formatId) {
-        this.formatId = formatId;
+    public void setResultId(Integer resultId) {
+        this.resultId = resultId;
+        _changed = true;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
         _changed = true;
     }
 }

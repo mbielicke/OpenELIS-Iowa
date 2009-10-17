@@ -34,9 +34,10 @@ import org.openelis.utilcommon.DataBaseUtil;
 public class WorksheetCreationVO implements RPC {
     private static final long serialVersionUID = 1L;
 
-    protected Integer  analysisId, accessionNumber, statusId;
-    protected String   testName, methodName, sectionName;
-    protected Datetime receivedDate;
+    protected Integer  analysisId, accessionNumber, statusId, testId;
+    protected String   domain, envDescription, /*projectName,*/ testName, methodName,
+                       sectionName;
+    protected Datetime collectionDate, receivedDate;
 
     public WorksheetCreationVO() {
 
@@ -44,14 +45,21 @@ public class WorksheetCreationVO implements RPC {
 
     // analysis, accession number, test, method, section, status and received
     public WorksheetCreationVO(Integer analysisId, Integer accessionNumber,
-                                   String testName, String methodName, String sectionName,
-                                   Integer statusId, Date receivedDate) {
+                               String domain, String description, //String projectName,
+                               Integer testId, String testName, String methodName,
+                               String sectionName, Integer statusId,
+                               Date collectionDate, Date receivedDate) {
         setAnalysisId(analysisId);
         setAccessionNumber(accessionNumber);
+        setDomain(domain);
+        setEnvDescription(description);
+//        setProjectName(projectName);
+        setTestId(testId);
         setTestName(testName);
         setMethodName(methodName);
         setSectionName(sectionName);
         setStatusId(statusId);
+        setCollectionDate(DataBaseUtil.toYD(collectionDate));
         setReceivedDate(DataBaseUtil.toYM(receivedDate));
     }
 
@@ -69,6 +77,38 @@ public class WorksheetCreationVO implements RPC {
 
     public void setAccessionNumber(Integer accessionNumber) {
         this.accessionNumber = accessionNumber;
+    }
+
+    public String getDomain() {
+        return domain;
+    }
+
+    public void setDomain(String domain) {
+        this.domain = domain;
+    }
+
+    public String getEnvDescription() {
+        return envDescription;
+    }
+
+    public void setEnvDescription(String description) {
+        this.envDescription = description;
+    }
+/*
+    public String getProjectName() {
+        return projectName;
+    }
+
+    public void setProjectName(String projectName) {
+        this.projectName = projectName;
+    }
+*/
+    public Integer getTestId() {
+        return testId;
+    }
+
+    public void setTestId(Integer testId) {
+        this.testId = testId;
     }
 
     public String getTestName() {
@@ -103,11 +143,31 @@ public class WorksheetCreationVO implements RPC {
         this.statusId = statusId;
     }
 
+    public Datetime getCollectionDate() {
+        return collectionDate;
+    }
+
+    public void setCollectionDate(Datetime collectionDate) {
+        this.collectionDate = DataBaseUtil.toYD(collectionDate);
+    }
+
     public Datetime getReceivedDate() {
         return receivedDate;
     }
 
     public void setReceivedDate(Datetime receivedDate) {
         this.receivedDate = DataBaseUtil.toYM(receivedDate);
+    }
+    
+    public String getDescription() {
+        String description;
+        
+        description = "";
+        if ("E".equals(getDomain()))
+            description = getEnvDescription();
+//        else if ("C".equals(getDomain()))
+//            description = getLastName()+", "+getFirstName();
+        
+        return description;
     }
 }

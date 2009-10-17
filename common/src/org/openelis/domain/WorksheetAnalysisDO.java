@@ -25,32 +25,25 @@
  */
 package org.openelis.domain;
 
-import java.util.Date;
-
-import org.openelis.gwt.common.Datetime;
-import org.openelis.utilcommon.DataBaseUtil;
-
 /**
  * Class represents the fields in database table system_variable.
  */
 
-public class WorksheetDO extends DataObject {
+public class WorksheetAnalysisDO extends DataObject {
 
     private static final long serialVersionUID = 1L;
 
-    protected Integer  id, systemUserId, statusId, formatId;
-    protected Datetime createdDate;
+    protected Integer id, worksheetItemId, referenceId, referenceTableId;
 
-    public WorksheetDO() {
+    public WorksheetAnalysisDO() {
     }
 
-    public WorksheetDO(Integer id, Date createdDate, Integer systemUserId,
-                       Integer statusId, Integer formatId) {
+    public WorksheetAnalysisDO(Integer id, Integer worksheetItemId,
+                               Integer referenceId, Integer referenceTableId) {
         setId(id);
-        setCreatedDate(DataBaseUtil.toYM(createdDate));
-        setSystemUserId(systemUserId);
-        setStatusId(statusId);
-        setFormatId(formatId);
+        setWorksheetItemId(worksheetItemId);
+        setReferenceId(referenceId);
+        setReferenceTableId(referenceTableId);
         _changed = false;
     }
 
@@ -63,39 +56,30 @@ public class WorksheetDO extends DataObject {
         _changed = true;
     }
 
-    public Datetime getCreatedDate() {
-        return createdDate;
+    public Integer getWorksheetItemId() {
+        return worksheetItemId;
     }
 
-    public void setCreatedDate(Datetime createdDate) {
-        this.createdDate = DataBaseUtil.toYD(createdDate);
+    public void setWorksheetItemId(Integer worksheetItemId) {
+        this.worksheetItemId = worksheetItemId;
         _changed = true;
     }
 
-    public Integer getSystemUserId() {
-        return systemUserId;
+    public Integer getReferenceId() {
+        return referenceId;
     }
 
-    public void setSystemUserId(Integer systemUserId) {
-        this.systemUserId = systemUserId;
+    public void setReferenceId(Integer referenceId) {
+        this.referenceId = referenceId;
         _changed = true;
     }
 
-    public Integer getStatusId() {
-        return statusId;
+    public Integer getReferenceTableId() {
+        return referenceTableId;
     }
 
-    public void setStatusId(Integer statusId) {
-        this.statusId = statusId;
-        _changed = true;
-    }
-
-    public Integer getFormatId() {
-        return formatId;
-    }
-
-    public void setFormatId(Integer formatId) {
-        this.formatId = formatId;
+    public void setReferenceTableId(Integer referenceTableId) {
+        this.referenceTableId = referenceTableId;
         _changed = true;
     }
 }

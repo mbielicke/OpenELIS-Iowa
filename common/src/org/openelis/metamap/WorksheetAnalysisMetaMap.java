@@ -30,8 +30,6 @@ import org.openelis.meta.WorksheetAnalysisMeta;
 
 public class WorksheetAnalysisMetaMap extends WorksheetAnalysisMeta implements MetaMap {
     
-//    public WorksheetItemMetaMap WORKSHEET_ITEM;
-    
     public WorksheetAnalysisMetaMap() {
         super("wa.");
     }

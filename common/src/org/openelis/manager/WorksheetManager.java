@@ -25,18 +25,18 @@
  */
 package org.openelis.manager;
 
-import org.openelis.domain.WorksheetViewDO;
-import org.openelis.gwt.common.InconsistencyException;
+import org.openelis.domain.ReferenceTable;
+import org.openelis.domain.WorksheetDO;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.RPC;
 
 public class WorksheetManager implements RPC, HasNotesInt {
 
     private static final long      serialVersionUID = 1L;
-//    protected WorksheetItemManager items;
+
+    protected WorksheetDO          worksheet;
+    protected WorksheetItemManager items;
     protected NoteManager          notes;
-    protected WorksheetViewDO      worksheet;
-    protected Integer              worksheetReferenceTable;
 
     protected transient static WorksheetManagerProxy proxy;
 
@@ -46,7 +46,8 @@ public class WorksheetManager implements RPC, HasNotesInt {
      */
     protected WorksheetManager() {
         worksheet = null;
-        notes = null;
+        items     = null;
+        notes     = null;
     }
 
     /**
@@ -54,92 +55,35 @@ public class WorksheetManager implements RPC, HasNotesInt {
      * also created.
      */
     public static WorksheetManager getInstance() {
-        WorksheetManager wm;
+        WorksheetManager manager;
 
-        wm = new WorksheetManager();
-        wm.worksheet = new WorksheetViewDO();
+        manager = new WorksheetManager();
+        manager.worksheet = new WorksheetDO();
 
-        return wm;
+        return manager;
     }
 
-    public static WorksheetManager findById(Integer id) throws Exception {
-        return proxy().fetch(id);
-    }
-/*
-    public static WorksheetManager findByIdWithItems(Integer id) throws Exception {
-        return proxy().fetchWithItems(id);
-    }
-*/
-    public static WorksheetManager findByIdWithNotes(Integer id) throws Exception {
-        return proxy().fetchWithNotes(id);
-    }
-
-    public WorksheetManager fetchForUpdate() throws Exception {
-        if (worksheet.getId() == null)
-            throw new InconsistencyException("worksheet id is null");
-
-        return proxy().fetchForUpdate(worksheet.getId());
-    }
-
-    // getters/setters
-/*
-    public WorksheetItemManager getItems() throws Exception {
-        if (items == null) {
-            if (worksheet.getId() != null) {
-                try {
-                    items = WorksheetItemManager.findByWorksheetId(worksheet.getId());
-                } catch (NotFoundException e) {
-                    // ignore
-                } catch (Exception e) {
-                    throw e;
-                }
-            }
-        }
-
-        if (items == null)
-            items = WorksheetItemManager.getInstance();
-
-        return items;
-    }
-*/
-    public NoteManager getNotes() throws Exception {
-        if (notes == null) {
-            if (worksheet.getId() != null && worksheetReferenceTable != null) {
-                try {
-                    notes = NoteManager.findByRefTableRefId(worksheetReferenceTable,
-                                                            worksheet.getId());
-
-                } catch (NotFoundException e) {
-                    // ignore
-                } catch (Exception e) {
-                    throw e;
-                }
-            }
-        }
-
-        if (notes == null)
-            notes = NoteManager.getInstance();
-
-        return notes;
-    }
-
-    public WorksheetViewDO getWorksheet() {
+    public WorksheetDO getWorksheet() {
         return worksheet;
     }
 
-    public void setWorksheet(WorksheetViewDO worksheet) {
+    public void setWorksheet(WorksheetDO worksheet) {
         this.worksheet = worksheet;
     }
     
-    public Integer getWorksheetReferenceTable() {
-        return worksheetReferenceTable;
-    }
-
-    public void setWorksheetReferenceTable(Integer worksheetReferenceTable) {
-        this.worksheetReferenceTable = worksheetReferenceTable;
-    }
-
     // service methods
+    public static WorksheetManager fetchById(Integer id) throws Exception {
+        return proxy().fetchById(id);
+    }
+
+    public static WorksheetManager fetchWithItems(Integer id) throws Exception {
+        return proxy().fetchWithItems(id);
+    }
+
+    public static WorksheetManager fetchWithNotes(Integer id) throws Exception {
+        return proxy().fetchWithNotes(id);
+    }
+
     public WorksheetManager add() throws Exception {
         return proxy().add(this);
 
@@ -150,12 +94,54 @@ public class WorksheetManager implements RPC, HasNotesInt {
 
     }
 
-    public WorksheetManager abort() throws Exception {
-        return proxy().abort(worksheet.getId());
+    public WorksheetManager fetchForUpdate() throws Exception {
+        return proxy().fetchForUpdate(worksheet.getId());
+    }
+
+    public WorksheetManager abortUpdate() throws Exception {
+        return proxy().abortUpdate(worksheet.getId());
     }
 
     public void validate() throws Exception {
         proxy().validate(this);
+    }
+
+    //
+    // other managers
+    //
+    public WorksheetItemManager getItems() throws Exception {
+        if (items == null) {
+            if (worksheet.getId() != null) {
+                try {
+                    items = WorksheetItemManager.fetchByWorksheetId(worksheet.getId());
+                } catch (NotFoundException e) {
+                    // ignore
+                } catch (Exception e) {
+                    throw e;
+                }
+            }
+            if (items == null)
+                items = WorksheetItemManager.getInstance();
+        }
+        return items;
+    }
+
+    public NoteManager getNotes() throws Exception {
+        if (notes == null) {
+            if (worksheet.getId() != null) {
+                try {
+                    notes = NoteManager.findByRefTableRefId(ReferenceTable.WORKSHEET,
+                                                            worksheet.getId());
+                } catch (NotFoundException e) {
+                    // ignore
+                } catch (Exception e) {
+                    throw e;
+                }
+            }
+            if (notes == null)
+                notes = NoteManager.getInstance();
+        }
+        return notes;
     }
 
     private static WorksheetManagerProxy proxy() {
