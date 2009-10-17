@@ -42,8 +42,6 @@ public interface ResultLocal {
                                        HashMap<Integer, TestResultDO> testResultList,
                                        HashMap<Integer, AnalyteDO> analyteList) throws Exception;
     public void fetchByAnalysisId(Integer analysisId, ArrayList<ArrayList<ResultViewDO>> results,
-                                  HashMap<Integer, TestAnalyteViewDO> testAnalyteList, 
-                                  HashMap<Integer, TestResultDO> testResultList, 
                                   HashMap<Integer, AnalyteDO> analyteList) throws Exception;
     
     public void add(TestAnalyteViewDO itemDO);

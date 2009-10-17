@@ -5,21 +5,31 @@ package org.openelis.entity;
   * Result Entity POJO for database 
   */
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.util.XMLUtil;
-
-import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+
+import org.openelis.util.XMLUtil;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
+@NamedQueries({@NamedQuery(name = "Result.FetchByAnalysisId", query = "select new org.openelis.domain.ResultViewDO(r.id,r.analysisId,r.testAnalyteId,r.testResultId, " + 
+                        " r.isColumn, r.sortOrder, r.isReportable, r.analyteId, r.typeId, r.value, a.name, ta.rowGroup) "+
+                        " from Result r LEFT JOIN r.analyte a LEFT JOIN r.testAnalyte ta where r.analysisId = :id"),
+               @NamedQuery(name = "Result.ResultByAnalyteId", query = "select r.id from Result r where r.analyteId = :id"),
+               @NamedQuery(name = "Result.AnalyteByAnalysisId", query = "select new org.openelis.domain.AnalyteDO(a.id,a.name,a.isActive,a.parentAnalyteId,a.externalId) "+
+                        " from Result r LEFT JOIN r.analyte a where r.analysisId = :id")})
 
 @Entity
 @Table(name="result")
@@ -58,6 +68,13 @@ public class Result implements Auditable, Cloneable {
   @Column(name="value")
   private String value;             
 
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "analyte_id", insertable = false, updatable = false)
+  private Analyte analyte;
+  
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "test_analyte_id", insertable = false, updatable = false)
+  private TestAnalyte testAnalyte;
 
   @Transient
   private Result original;
@@ -187,5 +204,17 @@ public class Result implements Auditable, Cloneable {
   public String getTableName() {
     return "result";
   }
+public Analyte getAnalyte() {
+    return analyte;
+}
+public void setAnalyte(Analyte analyte) {
+    this.analyte = analyte;
+}
+public TestAnalyte getTestAnalyte() {
+    return testAnalyte;
+}
+public void setTestAnalyte(TestAnalyte testAnalyte) {
+    this.testAnalyte = testAnalyte;
+}
   
 }   

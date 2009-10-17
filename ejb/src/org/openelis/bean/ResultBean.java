@@ -61,6 +61,11 @@ public class ResultBean implements ResultLocal {
         
     }
 
+    public void update(TestAnalyteViewDO itemDO) {
+        // TODO Auto-generated method stub
+        
+    }
+    
     public void delete(TestAnalyteViewDO itemDO) {
         // TODO Auto-generated method stub
         
@@ -70,7 +75,6 @@ public class ResultBean implements ResultLocal {
                                   HashMap<Integer, TestAnalyteViewDO> testAnalyteList, 
                                   HashMap<Integer, TestResultDO> testResultList,
                                   HashMap<Integer, AnalyteDO> analyteList) throws Exception {
-        System.out.println("inside fetch by test");
         List<TestAnalyteViewDO> testAnalytes = null;
         List<TestResultDO> testResults = null;
         List<AnalyteDO> analytes = null;
@@ -158,15 +162,60 @@ public class ResultBean implements ResultLocal {
     }
     
     public void fetchByAnalysisId(Integer analysisId, ArrayList<ArrayList<ResultViewDO>> results,
-                                  HashMap<Integer, TestAnalyteViewDO> testAnalyteList, 
-                                  HashMap<Integer, TestResultDO> testResultList,
                                   HashMap<Integer, AnalyteDO> analyteList) throws Exception {
-        System.out.println("inside fetch by analysis");
-    }
-
-    public void update(TestAnalyteViewDO itemDO) {
-        // TODO Auto-generated method stub
+        List<AnalyteDO> analytes = null;
+        List<ResultViewDO> rslts = null;
         
-    }
+        //get analytes by analysis id
+        Query query = manager.createNamedQuery("Result.AnalyteByAnalysisId");
+        query.setParameter("id", analysisId);
+        analytes = query.getResultList();
+        
+        //get results by analysis id
+        query = manager.createNamedQuery("Result.FetchByAnalysisId");
+        query.setParameter("id", analysisId);
+        rslts = query.getResultList();
+        
+        //convert the lists to hashmaps
+        analyteList.clear();
+        AnalyteDO analyteDO;
+        for(int k=0; k<analytes.size(); k++){
+            analyteDO = analytes.get(k);
+            analyteList.put(analyteDO.getId(), analyteDO);
+        }
+        
+        //build the grid
+        int i, j, rg;
+        ResultViewDO rdo;
+        ArrayList<ResultViewDO> ar;
 
+        j = -1;
+        ar = null;
+        results.clear();
+
+        if (rslts == null || rslts.size() == 0)
+            throw new NotFoundException();
+
+        for (i = 0; i < rslts.size(); i++ ) {
+            rdo = rslts.get(i);
+            
+            rg = rdo.getRowGroup();
+
+            if (j != rg) {
+                ar = new ArrayList<ResultViewDO>(1);
+                ar.add(rdo);
+                results.add(ar);
+                j = rg;
+                continue;
+            }
+            if ("N".equals(rdo.getIsColumn())) {
+                ar = new ArrayList<ResultViewDO>(1);
+                ar.add(rdo);
+                results.add(ar);
+                continue;
+            }
+
+            ar.add(rdo);
+        }
+    }
 }

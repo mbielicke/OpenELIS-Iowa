@@ -36,6 +36,7 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.table.TableColumn;
 import org.openelis.gwt.widget.table.TableDataCell;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableWidget;
@@ -47,16 +48,21 @@ import org.openelis.gwt.widget.table.event.RowDeletedEvent;
 import org.openelis.gwt.widget.table.event.RowDeletedHandler;
 import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.AnalysisResultManager;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.HasAlignment;
 
 public class TestResultsTab extends Screen {
     private boolean                 loaded;
     private Screen parentScreen;
     
-    private AppButton               addResultButton, removeResultButton, duplicateResultButton;
-    private TableWidget             testResultsTable;
+    protected AppButton               addResultButton, removeResultButton, duplicateResultButton;
+    protected TableWidget             testResultsTable;
+    private ArrayList<TableColumn> resultTableCols;
+    
 
     protected AnalysisResultManager manager;
     private ResultDisplayManager    displayManager;
@@ -145,7 +151,7 @@ MISSING TABLE COL!!! USING OLD TABLE FORMAT?
     }
     
     private ArrayList<TableDataRow> getTableModel() {
-        int m,c,len;
+        int m,c,len, numberOfCols;
         ArrayList<TableDataRow> model;
         TableDataRow hrow,row;
         ResultViewDO resultDO;
@@ -154,6 +160,9 @@ MISSING TABLE COL!!! USING OLD TABLE FORMAT?
         model = new ArrayList<TableDataRow>();
         if (manager == null || displayManager == null)
             return model; 
+        
+        numberOfCols = displayManager.maxColumnCount();
+        resizeResultTable(numberOfCols);
                
         hrow = null;
         headerFilled = false;
@@ -161,13 +170,13 @@ MISSING TABLE COL!!! USING OLD TABLE FORMAT?
         for(m = 0; m < displayManager.rowCount(); m++) {
             if(displayManager.isHeaderRow(m)) {
                 m++;
-                hrow = createHeaderRow(10); //TODO this wont be hardcoded later
+                hrow = createHeaderRow(numberOfCols);
                 model.add(hrow);
                 headerFilled = false;              
             }
             
             len = displayManager.columnCount(m);
-            row =  new TableDataRow(10);
+            row =  new TableDataRow(numberOfCols);
             row.data = new Boolean(false);
             for(c = 0; c < len; c++) {                        
                 resultDO = displayManager.getResultAt(m,c);
@@ -210,6 +219,43 @@ MISSING TABLE COL!!! USING OLD TABLE FORMAT?
         
         return row;
     } 
+    
+    private void resizeResultTable(int numOfCols){
+        if(resultTableCols == null)
+            resultTableCols = (ArrayList<TableColumn>)testResultsTable.columns.clone();
+        testResultsTable.columns.clear();
+        testResultsTable.clear();
+        
+        for(int i = 0; i < numOfCols; i++) {
+            testResultsTable.addColumn(resultTableCols.get(i));
+            /*
+            column = new TableColumn();
+            column.controller = testResultsTable;
+            //column.setKey("");
+            //column.setHeader("");
+            //testResultsTable.showHeader = true;
+            column.setCurrentWidth(150);
+            //column.setSortable(true);
+            //column.setFilterable(true);
+            //column.setQuerayable(true);
+            column.setAlign(HasAlignment.ALIGN_LEFT);
+
+            NodeList editor = col.getChildNodes();
+            for(int j = 0; j < editor.getLength(); j++){
+                if(editor.item(j).getNodeType() == Node.ELEMENT_NODE) {
+                    int child = ++count;
+                    if(!createWidget(editor.item(j),child)){
+                        count--;
+                        continue;
+                    }
+                    //sw.println("if(wid"+child+" instanceof HasBlurHandlers)");
+                    //sw.println("((HasBlurHandlers)wid"+child+").addBlurHandler(wid"+id+");");
+                    sw.println("column"+id+"_"+i+".setColumnWidget(wid"+child+");");
+                    break;
+                }
+            testResultsTable.columns.add(column);*/
+        }
+    }
     
     public void setData(SampleDataBundle data) {
         if(SampleDataBundle.Type.ANALYSIS == data.type){
