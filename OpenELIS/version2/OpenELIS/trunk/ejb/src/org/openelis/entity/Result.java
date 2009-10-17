@@ -1,28 +1,4 @@
-/** Exhibit A - UIRF Open-source Based Public Software License.
-* 
-* The contents of this file are subject to the UIRF Open-source Based
-* Public Software License(the "License"); you may not use this file except
-* in compliance with the License. You may obtain a copy of the License at
-* openelis.uhl.uiowa.edu
-* 
-* Software distributed under the License is distributed on an "AS IS"
-* basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
-* License for the specific language governing rights and limitations
-* under the License.
-* 
-* The Original Code is OpenELIS code.
-* 
-* The Initial Developer of the Original Code is The University of Iowa.
-* Portions created by The University of Iowa are Copyright 2006-2008. All
-* Rights Reserved.
-* 
-* Contributor(s): ______________________________________.
-* 
-* Alternatively, the contents of this file marked
-* "Separately-Licensed" may be used under the terms of a UIRF Software
-* license ("UIRF Software License"), in which case the provisions of a
-* UIRF Software License are applicable instead of those above. 
-*/
+
 package org.openelis.entity;
 
 /**
@@ -40,14 +16,10 @@ import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
-
-@NamedQueries({@NamedQuery(name = "Result.ResultByAnalyteId", query = "select r.id from Result r where r.analyteId = :id")})
 
 @Entity
 @Table(name="result")
@@ -61,6 +33,15 @@ public class Result implements Auditable, Cloneable {
 
   @Column(name="analysis_id")
   private Integer analysisId;             
+
+  @Column(name="test_analyte_id")
+  private Integer testAnalyteId;             
+
+  @Column(name="test_result_id")
+  private Integer testResultId;             
+
+  @Column(name="is_column")
+  private String isColumn;             
 
   @Column(name="sort_order")
   private Integer sortOrder;             
@@ -76,12 +57,6 @@ public class Result implements Auditable, Cloneable {
 
   @Column(name="value")
   private String value;             
-
-  @Column(name="test_result_id")
-  private Integer testResultId;             
-
-  @Column(name="quant_limit")
-  private String quantLimit;             
 
 
   @Transient
@@ -104,6 +79,33 @@ public class Result implements Auditable, Cloneable {
     if((analysisId == null && this.analysisId != null) || 
        (analysisId != null && !analysisId.equals(this.analysisId)))
       this.analysisId = analysisId;
+  }
+
+  public Integer getTestAnalyteId() {
+    return testAnalyteId;
+  }
+  public void setTestAnalyteId(Integer testAnalyteId) {
+    if((testAnalyteId == null && this.testAnalyteId != null) || 
+       (testAnalyteId != null && !testAnalyteId.equals(this.testAnalyteId)))
+      this.testAnalyteId = testAnalyteId;
+  }
+
+  public Integer getTestResultId() {
+    return testResultId;
+  }
+  public void setTestResultId(Integer testResultId) {
+    if((testResultId == null && this.testResultId != null) || 
+       (testResultId != null && !testResultId.equals(this.testResultId)))
+      this.testResultId = testResultId;
+  }
+
+  public String getIsColumn() {
+    return isColumn;
+  }
+  public void setIsColumn(String isColumn) {
+    if((isColumn == null && this.isColumn != null) || 
+       (isColumn != null && !isColumn.equals(this.isColumn)))
+      this.isColumn = isColumn;
   }
 
   public Integer getSortOrder() {
@@ -151,24 +153,6 @@ public class Result implements Auditable, Cloneable {
       this.value = value;
   }
 
-  public Integer getTestResultId() {
-    return testResultId;
-  }
-  public void setTestResultId(Integer testResultId) {
-    if((testResultId == null && this.testResultId != null) || 
-       (testResultId != null && !testResultId.equals(this.testResultId)))
-      this.testResultId = testResultId;
-  }
-
-  public String getQuantLimit() {
-    return quantLimit;
-  }
-  public void setQuantLimit(String quantLimit) {
-    if((quantLimit == null && this.quantLimit != null) || 
-       (quantLimit != null && !quantLimit.equals(this.quantLimit)))
-      this.quantLimit = quantLimit;
-  }
-
   
   public void setClone() {
     try {
@@ -182,22 +166,15 @@ public class Result implements Auditable, Cloneable {
       Element root = doc.getDocumentElement();
       
       AuditUtil.getChangeXML(id,original.id,doc,"id");
-
       AuditUtil.getChangeXML(analysisId,original.analysisId,doc,"analysis_id");
-
-      AuditUtil.getChangeXML(sortOrder,original.sortOrder,doc,"sort_order_id");
-
-      AuditUtil.getChangeXML(isReportable,original.isReportable,doc,"is_reportable");
-
-      AuditUtil.getChangeXML(analyteId,original.analyteId,doc,"analyte_id");
-
-      AuditUtil.getChangeXML(typeId,original.typeId,doc,"type_id");
-
-      AuditUtil.getChangeXML(value,original.value,doc,"value");
-
+      AuditUtil.getChangeXML(testAnalyteId,original.testAnalyteId,doc,"test_analyte_id");
       AuditUtil.getChangeXML(testResultId,original.testResultId,doc,"test_result_id");
-
-      AuditUtil.getChangeXML(quantLimit,original.quantLimit,doc,"quant_limit");
+      AuditUtil.getChangeXML(isColumn,original.isColumn,doc,"is_column");
+      AuditUtil.getChangeXML(sortOrder,original.sortOrder,doc,"sort_order");
+      AuditUtil.getChangeXML(isReportable,original.isReportable,doc,"is_reportable");
+      AuditUtil.getChangeXML(analyteId,original.analyteId,doc,"analyte_id");
+      AuditUtil.getChangeXML(typeId,original.typeId,doc,"type_id");
+      AuditUtil.getChangeXML(value,original.value,doc,"value");
 
       if(root.hasChildNodes())
         return XMLUtil.toString(doc);
