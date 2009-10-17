@@ -86,6 +86,21 @@ public class ResultDisplayManager {
         }
     }
     
+    public int maxColumnCount(){
+        int count, tmpCount;
+        refreshIndexes();               
+        count = 0;
+        
+        for(int i=0; i<indexes.size(); i++){
+            tmpCount=columnCount(i)+1;
+            
+            if(tmpCount > count)
+                count = tmpCount;
+        }
+        
+        return count;
+    }
+    
     public int getDataRowIndex(int row) {
         int index;
         refreshIndexes();
