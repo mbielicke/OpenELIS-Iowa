@@ -27,107 +27,112 @@ package org.openelis.manager;
 
 import javax.naming.InitialContext;
 
-import org.openelis.domain.WorksheetViewDO;
+import org.openelis.domain.ReferenceTable;
+import org.openelis.domain.WorksheetDO;
+import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.WorksheetLocal;
-import org.openelis.utils.ReferenceTableCache;
+import org.openelis.utilcommon.DataBaseUtil;
 
 public class WorksheetManagerProxy {
 
-    public WorksheetManager add(WorksheetManager worksheetManager) throws Exception {
-        Integer worksheetId, worksheetRefId;
-        WorksheetLocal worksheetLocal;
+    public WorksheetManager fetchById(Integer id) throws Exception {
+        WorksheetLocal   local;
+        WorksheetManager manager;
+        WorksheetDO      data;
 
-        worksheetId    = worksheetManager.getWorksheet().getId();
-        worksheetRefId = ReferenceTableCache.getReferenceTable("worksheet");
-        worksheetLocal = getWorksheetLocal();
+        local   = local();
+        data    = local.fetchById(id);
+        manager = WorksheetManager.getInstance();
 
-//        worksheetManager.getItems().setWorksheetId(worksheetId);
-//        worksheetManager.getItems().add();
+        manager.setWorksheet(data);
 
-        worksheetManager.getNotes().setReferenceId(worksheetId);
-        worksheetManager.getNotes().setReferenceTableId(worksheetRefId);
-        worksheetManager.getNotes().add();
-
-        return worksheetManager;
+        return manager;
     }
 
-    public WorksheetManager update(WorksheetManager worksheetManager) throws Exception {
-        Integer worksheetId, worksheetRefId;
-        WorksheetLocal worksheetLocal;
+    public WorksheetManager fetchWithItems(Integer id) throws Exception {
+        WorksheetManager manager;
 
-        worksheetLocal = getWorksheetLocal();
+        manager = fetchById(id);
+        manager.getItems();
 
-        worksheetId = worksheetManager.getWorksheet().getId();
-        worksheetRefId = worksheetManager.getWorksheetReferenceTable();
-
-//        worksheetManager.getItems().setWorksheetId(worksheetId);
-//        worksheetManager.getItems().update();
-
-        worksheetManager.getNotes().setReferenceId(worksheetId);
-        worksheetManager.getNotes().setReferenceTableId(worksheetRefId);
-        worksheetManager.getNotes().update();
-
-        return worksheetManager;
+        return manager;
     }
 
-    public WorksheetManager fetch(Integer worksheetId) throws Exception {
-        WorksheetLocal worksheetLocal;
-        WorksheetManager worksheetManager;
-        WorksheetViewDO worksheetDO;
+    public WorksheetManager fetchWithNotes(Integer id) throws Exception {
+        WorksheetManager manager;
 
-        worksheetLocal = getWorksheetLocal();
-        worksheetDO = worksheetLocal.fetchById(worksheetId);
+        manager = fetchById(id);
+        manager.getNotes();
 
-        worksheetManager = WorksheetManager.getInstance();
-        worksheetManager.setWorksheet(worksheetDO);
-        worksheetManager.setWorksheetReferenceTable(ReferenceTableCache.getReferenceTable("worksheet"));
-
-        return worksheetManager;
+        return manager;
     }
 
-    public WorksheetManager fetchWithItems(Integer worksheetId) throws Exception {
-        WorksheetManager worksheetManager;
+    public WorksheetManager add(WorksheetManager manager) throws Exception {
+        Integer        id;
+        WorksheetLocal local;
 
-        worksheetManager = fetch(worksheetId);
-        worksheetManager.setWorksheetReferenceTable(ReferenceTableCache.getReferenceTable("worksheet"));
+        local = local();
+        local.add(manager.getWorksheet());
+        id = manager.getWorksheet().getId();
 
-//        worksheetManager.getItems();
+        manager.getItems().setWorksheetId(id);
+        manager.getItems().add();
 
-        return worksheetManager;
+        manager.getNotes().setReferenceId(id);
+        manager.getNotes().setReferenceTableId(ReferenceTable.WORKSHEET);
+        manager.getNotes().add();
+
+        return manager;
     }
 
-    public WorksheetManager fetchWithNotes(Integer worksheetId) throws Exception {
-        WorksheetManager worksheetManager;
+    public WorksheetManager update(WorksheetManager manager) throws Exception {
+        Integer        id;
+        WorksheetLocal local;
 
-        worksheetManager = fetch(worksheetId);
-        worksheetManager.setWorksheetReferenceTable(ReferenceTableCache.getReferenceTable("worksheet"));
+        local = local();
+        local.update(manager.getWorksheet());
+        id = manager.getWorksheet().getId();
+        
+        manager.getItems().setWorksheetId(id);
+        manager.getItems().update();
 
-        worksheetManager.getNotes();
+        manager.getNotes().setReferenceId(id);
+        manager.getNotes().setReferenceTableId(ReferenceTable.WORKSHEET);
+        manager.getNotes().update();
 
-        return worksheetManager;
+        return manager;
     }
 
-    public WorksheetManager fetchWithIdentifiers(Integer worksheetId) throws Exception {
+    public WorksheetManager fetchForUpdate(WorksheetManager manager) throws Exception {
+        assert false : "not supported";
         return null;
     }
 
-    public WorksheetManager fetchForUpdate(WorksheetManager man) throws Exception {
-        throw new UnsupportedOperationException();
+    public WorksheetManager abortUpdate(Integer id) throws Exception {
+        assert false : "not supported";
+        return null;
     }
 
-    public WorksheetManager abort(Integer worksheetId) throws Exception {
-        throw new UnsupportedOperationException();
+    public void validate(WorksheetManager manager) throws Exception {
+        ValidationErrorsList list;
+        
+        list = new ValidationErrorsList();
+        try {
+            local().validate(manager.getWorksheet());
+        } catch (Exception e) {
+            DataBaseUtil.mergeException(list, e);
+        }
+        try {
+            manager.getItems().validate();
+        } catch (Exception e) {
+            DataBaseUtil.mergeException(list, e);
+        }
+        
+        if (list.size() > 0)
+            throw list;
     }
 
-    public void validate(WorksheetManager worksheetManager) throws Exception {
-        WorksheetLocal worksheetLocal;
-
-        worksheetLocal = getWorksheetLocal();
-//        worksheetLocal.validateWorksheet(worksheetManager.getWorksheet(),
-//                                         worksheetManager.getItems().getItems());
-    }
-
-    private WorksheetLocal getWorksheetLocal(){
+    private WorksheetLocal local(){
         InitialContext ctx;
         
         try {

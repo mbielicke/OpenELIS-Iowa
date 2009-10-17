@@ -7,19 +7,25 @@ package org.openelis.entity;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.openelis.gwt.common.Datetime;
 import org.openelis.util.XMLUtil;
 
-import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
+
+@NamedQueries({
+    @NamedQuery( name = "WorksheetAnalysis.FetchByWorksheetItemId",
+                query = "select new org.openelis.domain.WorksheetAnalysisDO(wa.id,"+
+                        "wa.worksheetItemId,wa.referenceId,wa.referenceTableId) "+
+                        "from WorksheetItem wa where wa.worksheetItemId = :id")})
 
 @Entity
 @Table(name="worksheet_analysis")

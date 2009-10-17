@@ -10,20 +10,27 @@ import org.w3c.dom.Element;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.util.XMLUtil;
 
+import java.util.Collection;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
-@NamedQueries({@NamedQuery(name = "Worksheet.WorksheetById", query = "from Worksheet ws where ws.id = :id")})
+@NamedQueries({
+    @NamedQuery( name = "Worksheet.WorksheetById",
+                query = "select new org.openelis.domain.WorksheetDO(id, createdDate, systemUserId, statusId, formatId"
+                      + " from Worksheet where id = :id")})
 
 @Entity
 @Table(name="worksheet")
@@ -47,14 +54,13 @@ public class Worksheet implements Auditable, Cloneable {
   @Column(name="format_id")
   private Integer formatId;             
 
-  @Column(name="test_id")
-  private Integer testId;             
-
+  @OneToMany(fetch = FetchType.LAZY)
+  @JoinColumn(name = "worksheet_id")
+  private Collection<WorksheetItem> worksheetItem;
 
   @Transient
   private Worksheet original;
 
-  
   public Integer getId() {
     return id;
   }
@@ -102,16 +108,13 @@ public class Worksheet implements Auditable, Cloneable {
       this.formatId = formatId;
   }
 
-  public Integer getTestId() {
-    return testId;
+  public Collection<WorksheetItem> getWorksheetItem() {
+      return worksheetItem;
   }
-  public void setTestId(Integer testId) {
-    if((testId == null && this.testId != null) || 
-       (testId != null && !testId.equals(this.testId)))
-      this.testId = testId;
+  public void setWorksheetItem(Collection<WorksheetItem> worksheetItem) {
+      this.worksheetItem = worksheetItem;
   }
-
-  
+    
   public void setClone() {
     try {
       original = (Worksheet)this.clone();
@@ -133,8 +136,6 @@ public class Worksheet implements Auditable, Cloneable {
 
       AuditUtil.getChangeXML(formatId,original.formatId,doc,"format_id");
 
-      AuditUtil.getChangeXML(testId,original.testId,doc,"test_id");
-
       if(root.hasChildNodes())
         return XMLUtil.toString(doc);
     }catch(Exception e){
@@ -146,5 +147,4 @@ public class Worksheet implements Auditable, Cloneable {
   public String getTableName() {
     return "worksheet";
   }
-  
 }   

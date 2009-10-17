@@ -5,21 +5,32 @@ package org.openelis.entity;
   * WorksheetItem Entity POJO for database 
   */
 
+import java.util.Collection;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.openelis.gwt.common.Datetime;
 import org.openelis.util.XMLUtil;
 
-import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
+
+@NamedQueries({
+    @NamedQuery( name = "WorksheetItem.FetchByWorksheetId",
+                query = "select new org.openelis.domain.WorksheetItemDO(wi.id,"+
+                		"wi.worksheetId,wi.position) from WorksheetItem wi "+
+                		"where wi.worksheetId = :id")})
 
 @Entity
 @Table(name="worksheet_item")
@@ -37,10 +48,12 @@ public class WorksheetItem implements Auditable, Cloneable {
   @Column(name="position")
   private Integer position;             
 
-
+  @OneToMany(fetch = FetchType.LAZY)
+  @JoinColumn(name = "worksheet_item_id")
+  private Collection<WorksheetAnalysis> worksheetAnalysis;
+  
   @Transient
   private WorksheetItem original;
-
   
   public Integer getId() {
     return id;
@@ -69,6 +82,12 @@ public class WorksheetItem implements Auditable, Cloneable {
       this.position = position;
   }
 
+  public Collection<WorksheetAnalysis> getWorksheetAnalysis() {
+      return worksheetAnalysis;
+  }
+  public void setWorksheetAnalysis(Collection<WorksheetAnalysis> worksheetAnalysis) {
+      this.worksheetAnalysis = worksheetAnalysis;
+  }
   
   public void setClone() {
     try {
@@ -98,5 +117,4 @@ public class WorksheetItem implements Auditable, Cloneable {
   public String getTableName() {
     return "worksheet_item";
   }
-  
 }   
