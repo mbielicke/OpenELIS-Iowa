@@ -31,6 +31,9 @@ import java.util.Set;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -38,8 +41,11 @@ import org.openelis.cache.DictionaryCache;
 import org.openelis.common.AutocompleteRPC;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.TestMethodViewDO;
+import org.openelis.domain.TestWorksheetDO;
 import org.openelis.domain.WorksheetCreationVO;
+import org.openelis.domain.WorksheetItemDO;
 import org.openelis.gwt.common.Datetime;
+import org.openelis.gwt.common.SecurityException;
 import org.openelis.gwt.common.SecurityModule;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.QueryData;
@@ -48,6 +54,7 @@ import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.GetMatchesEvent;
 import org.openelis.gwt.event.GetMatchesHandler;
+import org.openelis.gwt.event.HasActionHandlers;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
@@ -73,66 +80,93 @@ import org.openelis.manager.WorksheetManager;
 import org.openelis.metamap.WorksheetMetaMap;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 
-public class WorksheetCreationScreen extends Screen {
+public class WorksheetCreationScreen extends Screen implements HasActionHandlers<WorksheetCreationScreen.Action> {
 
-    private SecurityModule   security;
-    private WorksheetManager manager;
-    private WorksheetMetaMap worksheetMetaMap;
+    private SecurityModule                   security;
+    private WorksheetCreationScreen          source;
+    private WorksheetManager                 manager;
+    private WorksheetMetaMap                 meta;
 
-    protected TextBox                       worksheetId;
-    protected TableWidget                   worksheetItemTable;
-    protected WorksheetCreationLookupScreen wcLookupScreen;
+    private AppButton                        saveButton, exitButton,
+                                             insertQCButton, removeRowButton;
+
+    protected ArrayList<Integer>             testIds;
+    protected ArrayList<WorksheetCreationVO> analysisItems;
+    protected TableWidget                    worksheetItemTable;
+    protected TextBox<Integer>               worksheetId;
+    protected WorksheetCreationLookupScreen  wcLookupScreen;
+    
+    public enum Action {
+        ITEMS_CHANGED
+    };
     
     public WorksheetCreationScreen() throws Exception {
-        // Call base to get ScreenDef and draw screen
         super((ScreenDefInt)GWT.create(WorksheetCreationDef.class));
-        
-        security = OpenELIS.security.getModule("worksheet");
-
-        manager = WorksheetManager.getInstance();
-        
-        worksheetMetaMap = new WorksheetMetaMap();
-
-        // Setup service used by screen
         service = new ScreenService("OpenELISServlet?service=org.openelis.modules.worksheetCreation.server.WorksheetCreationService");
+
+        security = OpenELIS.security.getModule("worksheet");
+        if (security == null)
+            throw new SecurityException("screenPermException", "Worksheet Creation Screen");
+
+        meta   = new WorksheetMetaMap();
 
         // Setup link between Screen and widget Handlers
         initialize();
 
-        // Initialize Screen
-        setState(State.DEFAULT);
-//        setState(State.ADD);
-        
-        openLookupWindow();
+        DeferredCommand.addCommand(new Command() {
+            public void execute() {
+                postConstructor();
+            }
+        });
     }
     
+    /**
+     * This method is called to set the initial state of widgets after the
+     * screen is attached to the browser. It is usually called in deferred
+     * command.
+     */
+    private void postConstructor() {
+        analysisItems = new ArrayList<WorksheetCreationVO>();
+        manager       = WorksheetManager.getInstance();
+        source        = this;
+        testIds       = new ArrayList<Integer>();
+
+        setState(State.DEFAULT);
+        openLookupWindow();
+
+        DataChangeEvent.fire(this);
+    }
+
+    /**
+     * Setup state and data change handles for every widget on the screen
+     */
     private void initialize() {
-        final TextBox worksheetNumber = (TextBox)def.getWidget(worksheetMetaMap.getId());
-        addScreenHandler(worksheetNumber, new ScreenEventHandler<Integer>() {
+        worksheetId = (TextBox)def.getWidget(meta.getId());
+        addScreenHandler(worksheetId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                worksheetNumber.setValue(manager.getWorksheet().getId());
+                worksheetId.setValue(manager.getWorksheet().getId());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                worksheetNumber.enable(false);
+                worksheetId.enable(false);
             }
         });
 
-        final AppButton saveButton = (AppButton)def.getWidget("saveButton");
+        saveButton = (AppButton)def.getWidget("saveButton");
         addScreenHandler(saveButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 save();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                saveButton.enable(true);
+                saveButton.enable(false);
             }
         });
 
-        final AppButton exitButton = (AppButton)def.getWidget("exitButton");
+        exitButton = (AppButton)def.getWidget("exitButton");
         addScreenHandler(exitButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 exit();
@@ -146,6 +180,7 @@ public class WorksheetCreationScreen extends Screen {
         worksheetItemTable = (TableWidget)def.getWidget("worksheetItemTable");
         addScreenHandler(worksheetItemTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
             public void onDataChange(DataChangeEvent event) {
+                worksheetItemTable.load(getTableModel());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -171,24 +206,23 @@ public class WorksheetCreationScreen extends Screen {
             }
         });
 
-        final AppButton insertQCButton = (AppButton)def.getWidget("insertQCButton");
+        insertQCButton = (AppButton)def.getWidget("insertQCButton");
         addScreenHandler(insertQCButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                insertQCButton.enable(true);
+                insertQCButton.enable(false);
             }
         });
 
-        final AppButton removeRowButton = (AppButton)def.getWidget("removeRowButton");
+        removeRowButton = (AppButton)def.getWidget("removeRowButton");
         addScreenHandler(removeRowButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-                worksheetItemTable.selectAll();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                removeRowButton.enable(true);
+                removeRowButton.enable(false);
             }
         });   
     }
@@ -199,29 +233,40 @@ public class WorksheetCreationScreen extends Screen {
         if (wcLookupScreen == null) {
             try {
                 wcLookupScreen = new WorksheetCreationLookupScreen();
-/*
                 wcLookupScreen.addActionHandler(new ActionHandler<WorksheetCreationLookupScreen.Action>() {
                     public void onAction(ActionEvent<WorksheetCreationLookupScreen.Action> event) {
-                        ArrayList<TableDataRow> model;
-                        TableDataRow            row;
+                        ArrayList<TableDataRow> model, newModel;
+                        DictionaryDO        dictDo;
+                        TableDataRow        row, newRow;
+                        WorksheetCreationVO data;
 
                         if (event.getAction() == WorksheetCreationLookupScreen.Action.ADD) {
                             model = (ArrayList<TableDataRow>)event.getData();
-                            if(model != null) {
-                                for(int i = 0; i < model.size(); i++) {
-                                    row = model.get(i);                                                   
-                                    testResultManager.addResultAt(selTab+1,resultTable.numRows(),getNextTempId());
-                                    resDO = testResultManager.getResultAt(selTab+1,resultTable.numRows());
-                                    dictId = DictionaryCache.getIdFromSystemName("test_res_type_dictionary");
-                                    resDO.setValue((String)row.cells.get(0).getValue());
-                                    resDO.setTypeId(dictId);                                           
+                            if (model != null) {
+                                for (int i = 0; i < model.size(); i++) {
+                                    row  = model.get(i);
+                                    data = (WorksheetCreationVO)row.data;
+                                    
+                                    if (!testIds.contains(data.getTestId()))
+                                        testIds.add(data.getTestId());
+                                    
+                                    analysisItems.add(data);
                                 }
-                                DataChangeEvent.fire(source, resultTable);
+                                
+                                saveButton.enable(true);
+                                insertQCButton.enable(true);
+                                
+                                if (testIds.size() > 1) {
+                                    Window.alert(consts.get("multipleTestsOnWorksheet"));
+                                    // TODO -- Clear QC Template
+                                } else {
+                                    loadQCTemplate(testIds.get(0));
+                                }
+                                
                             }
                         }
                     }
                 });
-*/
             } catch (Exception e) {
                 e.printStackTrace();
                 Window.alert("error: " + e.getMessage());
@@ -240,4 +285,52 @@ public class WorksheetCreationScreen extends Screen {
 
     protected void exit() {
     }
+
+    private void loadQCTemplate(Integer testId) {
+        // TODO -- Retrieve worksheet template information for specified test
+        buildQCWorksheet();
+    }
+    
+    private void buildQCWorksheet() {
+        // TODO -- Implement loading of QCs from the specified test definition
+    }
+    
+    private void sort() {
+        // TODO -- Implement sorting of the added analyses
+        mergeAnalysesAndQCs();
+    }
+    
+    private void mergeAnalysesAndQCs() {
+        // TODO -- Implement merging of sorted analyses with the QC template
+        DataChangeEvent.fire(source, worksheetItemTable);
+    }
+    
+    private ArrayList<TableDataRow> getTableModel() {
+        int i;
+        ArrayList<TableDataRow> model;
+        TableDataRow row;
+        WorksheetItemDO data;
+        
+        model = new ArrayList<TableDataRow>();
+        if (manager == null)
+            return model;
+
+        try {
+            for (i = 0; i < manager.getItems().count(); i++) {
+                data = (WorksheetItemDO)manager.getItems().getItemAt(i);
+
+                row = new TableDataRow(13);
+                row.cells.get(0).value = data.getPosition();
+                model.add(row);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+        return model;
+    }
+
+    public HandlerRegistration addActionHandler(ActionHandler<WorksheetCreationScreen.Action> handler) {
+        return addHandler(handler, ActionEvent.getType());
+    }        
 }

@@ -31,17 +31,22 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import org.openelis.cache.DictionaryCache;
+import org.openelis.cache.SectionCache;
 import org.openelis.common.AutocompleteRPC;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
+import org.openelis.domain.SectionViewDO;
 import org.openelis.domain.TestMethodViewDO;
 import org.openelis.domain.WorksheetCreationVO;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.Datetime;
+import org.openelis.gwt.common.SecurityException;
 import org.openelis.gwt.common.SecurityModule;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
@@ -78,40 +83,89 @@ public class WorksheetCreationLookupScreen extends Screen
                                            implements HasActionHandlers<WorksheetCreationLookupScreen.Action> {
 
     private SecurityModule           security;
-    private WorksheetCreationMetaMap worksheetMetaMap;
+    private WorksheetCreationMetaMap meta;
 
-    protected AutoComplete<Integer> testId, sectionId;
-    protected TextBox               methodName;
-    protected Dropdown<Integer>     statusId, typeOfSampleId;
+    protected AppButton             findButton, addButton, selectAllButton;
+    protected AutoComplete<Integer> testId;
+    protected CalendarLookUp        receivedDate, enteredDate;
+    protected Dropdown<Integer>     sectionId, statusId, typeOfSampleId;
     protected TableWidget           analysesTable;
+    protected TextBox               methodName;
+    protected TextBox<Integer>      accessionNumber;
     
     public enum Action {
         ADD
     };
 
     public WorksheetCreationLookupScreen() throws Exception {
-        // Call base to get ScreenDef and draw screen
         super((ScreenDefInt)GWT.create(WorksheetCreationLookupDef.class));
-        
-        worksheetMetaMap = new WorksheetCreationMetaMap();
-
-        security = OpenELIS.security.getModule("worksheet");
-
-        // Setup service used by screen
         service = new ScreenService("OpenELISServlet?service=org.openelis.modules.worksheetCreation.server.WorksheetCreationService");
+        
+        security = OpenELIS.security.getModule("worksheet");
+        if (security == null)
+            throw new SecurityException("screenPermException", "System Variable Screen");
 
-        // Setup link between Screen and widget Handlers
+        meta = new WorksheetCreationMetaMap();
+
         initialize();
 
-        // Initialize Screen
-        setState(State.DEFAULT);
-        setState(State.QUERY);
-        setStatusesModel(DictionaryCache.getListByCategorySystemName("analysis_status"));
-        setSampleTypesModel(DictionaryCache.getListByCategorySystemName("type_of_sample"));
+        DeferredCommand.addCommand(new Command() {
+            public void execute() {
+                postConstructor();
+            }
+        });
     }
     
+    /**
+     * This method is called to set the initial state of widgets after the
+     * screen is attached to the browser. It is usually called in deferred command.
+     */
+    private void postConstructor() {
+        ArrayList<DictionaryDO> dictList;
+        ArrayList<SectionViewDO> sectList;
+        ArrayList<TableDataRow> model;
+
+        setState(State.DEFAULT);
+        setState(State.QUERY);
+
+        //
+        // load analysis status dropdown model
+        //
+        sectList  = SectionCache.getSectionList();
+        model = new ArrayList<TableDataRow>();
+        model.add(new TableDataRow(null, ""));
+        for (SectionViewDO resultDO : sectList)
+            model.add(new TableDataRow(resultDO.getId(),resultDO.getName()));
+        sectionId.setModel(model);
+        
+        //
+        // load analysis status dropdown model
+        //
+        dictList  = DictionaryCache.getListByCategorySystemName("analysis_status");
+        model = new ArrayList<TableDataRow>();
+        model.add(new TableDataRow(null, ""));
+        for (DictionaryDO resultDO : dictList)
+            model.add(new TableDataRow(resultDO.getId(),resultDO.getEntry()));
+        statusId.setModel(model);
+        
+        //
+        // load type of sample dropdown model
+        //
+        dictList  = DictionaryCache.getListByCategorySystemName("type_of_sample");
+        model = new ArrayList<TableDataRow>();
+        model.add(new TableDataRow(null, ""));
+        for (DictionaryDO resultDO : dictList)
+            model.add(new TableDataRow(resultDO.getId(),resultDO.getEntry()));
+        typeOfSampleId.setModel(model);
+
+        DataChangeEvent.fire(this);
+}
+    
     private void initialize() {
-        testId = (AutoComplete)def.getWidget(worksheetMetaMap.SAMPLE.SAMPLE_ITEM.ANALYSIS.TEST.getId());
+        //
+        // screen fields and buttons
+        //
+        testId = (AutoComplete)def.getWidget(meta.SAMPLE.SAMPLE_ITEM.ANALYSIS.TEST.getId());
         addScreenHandler(testId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
             }
@@ -121,7 +175,7 @@ public class WorksheetCreationLookupScreen extends Screen
                 
                 //set the method
                 if (selectedRow != null && selectedRow.key != null)
-                    methodName.setValue(selectedRow.cells.get(1).value);
+                    methodName.setValue((String)selectedRow.cells.get(1).value);
                 else
                     methodName.setValue(null);
             }
@@ -168,7 +222,7 @@ public class WorksheetCreationLookupScreen extends Screen
             } 
         });
 
-        methodName = (TextBox)def.getWidget(worksheetMetaMap.SAMPLE.SAMPLE_ITEM.ANALYSIS.TEST.METHOD.getName());
+        methodName = (TextBox)def.getWidget(meta.SAMPLE.SAMPLE_ITEM.ANALYSIS.TEST.METHOD.getName());
         addScreenHandler(methodName, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
             }
@@ -181,7 +235,7 @@ public class WorksheetCreationLookupScreen extends Screen
             }
         });
 
-        sectionId = (AutoComplete)def.getWidget(worksheetMetaMap.SAMPLE.SAMPLE_ITEM.ANALYSIS.SECTION.getId());
+        sectionId = (Dropdown)def.getWidget(meta.SAMPLE.SAMPLE_ITEM.ANALYSIS.SECTION.getId());
         addScreenHandler(sectionId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
             }
@@ -191,40 +245,11 @@ public class WorksheetCreationLookupScreen extends Screen
 
             public void onStateChange(StateChangeEvent<State> event) {
                 sectionId.enable(true);
+                sectionId.setQueryMode(true);
             }
         });
 
-        sectionId.addGetMatchesHandler(new GetMatchesHandler() {
-            public void onGetMatches(GetMatchesEvent event) {
-                AutocompleteRPC rpc;
-                TableDataRow    row;
-
-                rpc       = new AutocompleteRPC();
-                rpc.match = event.getMatch();
-                
-                try {
-                    rpc = service.call("getSectionMatches", rpc);
-                    ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
-                        
-                    for (int i = 0; i < rpc.model.size(); i++) {
-                        IdNameVO autoVO = (IdNameVO)rpc.model.get(i);
-                        
-                        row = new TableDataRow(1);
-                        row.key = autoVO.getId();
-                        row.cells.get(0).value = autoVO.getName();
-                        
-                        model.add(row);
-                    } 
-                    
-                    sectionId.showAutoMatches(model);
-                        
-                } catch(Exception e) {
-                    Window.alert(e.getMessage());                     
-                }
-            } 
-        });
-
-        final TextBox accessionNumber = (TextBox)def.getWidget(worksheetMetaMap.SAMPLE.getAccessionNumber());
+        accessionNumber = (TextBox)def.getWidget(meta.SAMPLE.getAccessionNumber());
         addScreenHandler(accessionNumber, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
             }
@@ -238,7 +263,7 @@ public class WorksheetCreationLookupScreen extends Screen
             }
         });
 
-        statusId = (Dropdown)def.getWidget(worksheetMetaMap.SAMPLE.SAMPLE_ITEM.ANALYSIS.getStatusId());
+        statusId = (Dropdown)def.getWidget(meta.SAMPLE.SAMPLE_ITEM.ANALYSIS.getStatusId());
         addScreenHandler(statusId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
             }
@@ -252,7 +277,7 @@ public class WorksheetCreationLookupScreen extends Screen
             }
         });
 
-        typeOfSampleId = (Dropdown)def.getWidget(worksheetMetaMap.SAMPLE.SAMPLE_ITEM.getTypeOfSampleId());
+        typeOfSampleId = (Dropdown)def.getWidget(meta.SAMPLE.SAMPLE_ITEM.getTypeOfSampleId());
         addScreenHandler(typeOfSampleId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
             }
@@ -262,10 +287,11 @@ public class WorksheetCreationLookupScreen extends Screen
 
             public void onStateChange(StateChangeEvent<State> event) {
                 typeOfSampleId.enable(true);
+                typeOfSampleId.setQueryMode(true);
             }
         });
 
-        final CalendarLookUp receivedDate = (CalendarLookUp)def.getWidget(worksheetMetaMap.SAMPLE.getReceivedDate());
+        receivedDate = (CalendarLookUp)def.getWidget(meta.SAMPLE.getReceivedDate());
         addScreenHandler(receivedDate, new ScreenEventHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
             }
@@ -279,7 +305,7 @@ public class WorksheetCreationLookupScreen extends Screen
             }
         });
 
-        final CalendarLookUp enteredDate = (CalendarLookUp)def.getWidget(worksheetMetaMap.SAMPLE.getEnteredDate());
+        enteredDate = (CalendarLookUp)def.getWidget(meta.SAMPLE.getEnteredDate());
         addScreenHandler(enteredDate, new ScreenEventHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
             }
@@ -293,7 +319,7 @@ public class WorksheetCreationLookupScreen extends Screen
             }
         });
 
-        final AppButton findButton = (AppButton)def.getWidget("findButton");
+        findButton = (AppButton)def.getWidget("findButton");
         addScreenHandler(findButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 executeQuery();
@@ -304,6 +330,9 @@ public class WorksheetCreationLookupScreen extends Screen
             }
         });
 
+        //
+        // analysis search results table
+        //
         analysesTable = (TableWidget)def.getWidget("analysesTable");
         addScreenHandler(analysesTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
             public void onDataChange(DataChangeEvent event) {
@@ -333,7 +362,7 @@ public class WorksheetCreationLookupScreen extends Screen
             }
         });
 
-        final AppButton addButton = (AppButton)def.getWidget("addButton");
+        addButton = (AppButton)def.getWidget("addButton");
         addScreenHandler(addButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 addAnalyses();
@@ -344,7 +373,7 @@ public class WorksheetCreationLookupScreen extends Screen
             }
         });
 
-        final AppButton selectAllButton = (AppButton)def.getWidget("selectAllButton");
+        selectAllButton = (AppButton)def.getWidget("selectAllButton");
         addScreenHandler(selectAllButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 analysesTable.selectAll();
@@ -357,7 +386,8 @@ public class WorksheetCreationLookupScreen extends Screen
     }
 
     //
-    // Needs to be moved to the base screen code
+    // overriding AutoComplete's getQuery to return the id of the
+    // selection instead of the text
     //
     public ArrayList<QueryData> getQueryFields() {
         ArrayList<QueryData> list;
@@ -367,10 +397,6 @@ public class WorksheetCreationLookupScreen extends Screen
 
         list = new ArrayList<QueryData>();
         for (String key : def.getWidgets().keySet()) {
-            //
-            // overriding AutoComplete's getQuery to return the id of the
-            // selection instead of the text
-            //
             if (def.getWidget(key) instanceof AutoComplete) {
                 row = ((AutoComplete)def.getWidget(key)).getSelection();
                 if(row != null && row.key != null) {
@@ -392,6 +418,11 @@ public class WorksheetCreationLookupScreen extends Screen
 
     protected void executeQuery() {
         Query query;
+
+        if (!validate()) {
+            window.setError(consts.get("correctErrors"));
+            return;
+        }
 
         query = new Query();
         query.setFields(getQueryFields());
@@ -430,54 +461,40 @@ public class WorksheetCreationLookupScreen extends Screen
 
         if (list == null || list.size() == 0) {
             window.setDone(consts.get("noRecordsFound"));
+            
+            analysesTable.clear();
         } else {
             window.setDone(consts.get("queryingComplete"));
+
+            model = new ArrayList<TableDataRow>();
+            for (i = 0; i < list.size(); i++) {
+                analysisRow = list.get(i);
+
+                dictDo = DictionaryCache.getEntryFromId(analysisRow.getStatusId());
+                
+                row = new TableDataRow(8);
+                row.key = analysisRow.getAnalysisId();
+                row.cells.get(0).value = analysisRow.getAccessionNumber();
+                row.cells.get(1).value = analysisRow.getDescription();
+//                row.cells.get(2).value = analysisRow.getProjectName();
+                row.cells.get(2).value = analysisRow.getTestName();
+                row.cells.get(3).value = analysisRow.getMethodName();
+                row.cells.get(4).value = analysisRow.getSectionName();
+                if (dictDo != null)
+                    row.cells.get(5).value = dictDo.getEntry();          
+                row.cells.get(6).value = analysisRow.getCollectionDate();
+                row.cells.get(7).value = analysisRow.getReceivedDate();
+                row.data = analysisRow;
+
+                model.add(row);
+            }
+
+            analysesTable.load(model);
         }
-
-        model = new ArrayList<TableDataRow>();
-        for (i = 0; i < list.size(); i++) {
-            analysisRow = list.get(i);
-
-            dictDo = DictionaryCache.getEntryFromId(analysisRow.getStatusId());
-            
-            row = new TableDataRow(6);
-            row.key = analysisRow.getAnalysisId();
-            row.cells.get(0).value = analysisRow.getAccessionNumber();
-            row.cells.get(1).value = analysisRow.getTestName();
-            row.cells.get(2).value = analysisRow.getMethodName();
-            row.cells.get(3).value = analysisRow.getSectionName();
-            if (dictDo != null)
-                row.cells.get(4).value = dictDo.getEntry();          
-            row.cells.get(5).value = analysisRow.getReceivedDate();
-
-            model.add(row);
-        }
-
-        analysesTable.load(model);
     }
     
     protected void addAnalyses() {
         ActionEvent.fire(this, Action.ADD, analysesTable.getSelections());
-    }
-
-    private void setStatusesModel(ArrayList<DictionaryDO> list) {
-        ArrayList<TableDataRow> model;
-        
-        model = new ArrayList<TableDataRow>();
-        model.add(new TableDataRow(null, ""));
-        for (DictionaryDO resultDO : list)
-            model.add(new TableDataRow(resultDO.getId(),resultDO.getEntry()));
-        statusId.setModel(model);
-    }
-
-    private void setSampleTypesModel(ArrayList<DictionaryDO> list) {
-        ArrayList<TableDataRow> model;
-        
-        model = new ArrayList<TableDataRow>();
-        model.add(new TableDataRow(null, ""));
-        for (DictionaryDO resultDO : list)
-            model.add(new TableDataRow(resultDO.getId(),resultDO.getEntry()));
-        typeOfSampleId.setModel(model);
     }
 
     public HandlerRegistration addActionHandler(ActionHandler<Action> handler) {

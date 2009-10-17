@@ -106,26 +106,26 @@ UIRF Software License are applicable instead of those above.
 	        </appButton>
           </row>
         </TablePanel>
-        <table key="worksheetItemTable" width="auto" maxRows="9" showScroll="ALWAYS" tab="{worksheetMetaMap:getId($worksheet)},{worksheetMetaMap:getId($worksheet)}" title="">
-          <col width="106" header="{resource:getString($constants,'wellNumber')}">
+        <table key="worksheetItemTable" width="800px" maxRows="9" showScroll="ALWAYS" tab="{worksheetMetaMap:getId($worksheet)},{worksheetMetaMap:getId($worksheet)}" title="">
+          <col width="50" header="{resource:getString($constants,'wellNumber')}">
             <label />
           </col>
-          <col width="130" header="{resource:getString($constants,'QC')}">
+          <col width="50" header="{resource:getString($constants,'QC')}">
             <label />
           </col>
-          <col width="130" header="{resource:getString($constants,'accessionNum')}">
+          <col width="90" header="{resource:getString($constants,'accessionNum')}">
             <label />
           </col>
-          <col width="130" header="{resource:getString($constants,'description')}">
+          <col width="150" header="{resource:getString($constants,'description')}">
             <label />
           </col>
-          <col width="130" header="{resource:getString($constants,'status')}">
+          <col width="75" header="{resource:getString($constants,'status')}">
             <label />
           </col>
-          <col width="130" header="{resource:getString($constants,'collected')}">
-            <calendar pattern="{resource:getString($constants,'dateTimePattern')}" begin="0" end="4"/>
+          <col width="75" header="{resource:getString($constants,'collected')}">
+            <calendar pattern="{resource:getString($constants,'datePattern')}" begin="0" end="2"/>
           </col>
-          <col width="130" header="{resource:getString($constants,'received')}">
+          <col width="100" header="{resource:getString($constants,'received')}">
             <calendar pattern="{resource:getString($constants,'dateTimePattern')}" begin="0" end="4"/>
           </col>
         </table>

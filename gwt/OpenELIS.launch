@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<launchConfiguration type="org.eclipse.jdt.launching.localJavaApplication">
+<?xml version="1.0" encoding="UTF-8"?><launchConfiguration type="org.eclipse.jdt.launching.localJavaApplication">
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
 <listEntry value="/OpenELIS-GWT"/>
 </listAttribute>
@@ -10,6 +9,10 @@
 <mapAttribute key="org.eclipse.debug.core.environmentVariables">
 <mapEntry key="IMPORT" value="${workspace_loc}/OpenELIS-Lib/src/org/openelis/gwt/public/Forms"/>
 </mapAttribute>
+<listAttribute key="org.eclipse.debug.ui.favoriteGroups">
+<listEntry value="org.eclipse.debug.ui.launchGroup.run"/>
+<listEntry value="org.eclipse.debug.ui.launchGroup.debug"/>
+</listAttribute>
 <listAttribute key="org.eclipse.jdt.launching.CLASSPATH">
 <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&lt;runtimeClasspathEntry containerPath=&quot;org.eclipse.jdt.launching.JRE_CONTAINER&quot; javaProject=&quot;OpenELIS-GWT&quot; path=&quot;1&quot; type=&quot;4&quot;/&gt;&#10;"/>
 <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&lt;runtimeClasspathEntry internalArchive=&quot;/OpenELIS-Lib-tools/gwt-linux-2.0.0/gwt-dev-oophm.jar&quot; path=&quot;3&quot; type=&quot;2&quot;/&gt;&#10;"/>

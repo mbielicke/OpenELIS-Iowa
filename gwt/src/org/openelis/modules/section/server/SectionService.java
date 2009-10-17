@@ -31,6 +31,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.openelis.domain.IdNameDO;
+import org.openelis.domain.IdNameVO;
 import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.SectionViewDO;
 import org.openelis.gwt.common.FieldErrorException;
@@ -206,7 +207,7 @@ public class SectionService implements
         String name,address,city,state;
         TableDataRow<Integer> data;
         SectionRemote sremote;
-        IdNameDO sectDO;
+        IdNameVO sectVO;
  
         
         dataModel = new TableDataModel<TableDataRow<Integer>>();
@@ -261,9 +262,9 @@ public class SectionService implements
             
             for (i = 0; i < autoCompleteList.size(); i++) {
 
-                sectDO = (IdNameDO)autoCompleteList.get(i);
-                id = sectDO.getId();
-                name = sectDO.getName();
+                sectVO = (IdNameVO)autoCompleteList.get(i);
+                id = sectVO.getId();
+                name = sectVO.getName();
 
                 data = new TableDataRow<Integer>(id, new StringObject(name));
                 dataModel.add(data);
