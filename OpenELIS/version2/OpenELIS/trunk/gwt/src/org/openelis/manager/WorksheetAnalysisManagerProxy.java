@@ -27,45 +27,28 @@ package org.openelis.manager;
 
 import org.openelis.gwt.services.ScreenService;
 
-
-public class WorksheetManagerProxy {
-
+public class WorksheetAnalysisManagerProxy {
     protected static final String WORKSHEET_MANAGER_SERVICE_URL = "org.openelis.modules.worksheet.server.WorksheetService";
     protected ScreenService service;
     
-    public WorksheetManagerProxy(){
+    public WorksheetAnalysisManagerProxy(){
         service = new ScreenService("OpenELISServlet?service="+WORKSHEET_MANAGER_SERVICE_URL);
     }
-    
-    public WorksheetManager fetchById(Integer worksheetId) throws Exception {
-        return service.call("fetchById", worksheetId);
-    }
-    
-    public WorksheetManager fetchWithItems(Integer worksheetId) throws Exception {
-        return service.call("fetchWithItems", worksheetId);
-    }
-    
-    public WorksheetManager fetchWithNotes(Integer worksheetId) throws Exception {
-        return service.call("fetchWithNotes", worksheetId);
-    }
-    
-    public WorksheetManager add(WorksheetManager man) throws Exception {
-        return service.call("add",man);
+
+    public WorksheetAnalysisManager fetchByWorksheetItemId(Integer worksheetId) throws Exception {
+        return service.call("fetchWorksheeetAnalysisByWorksheetItemId", worksheetId);
     }
 
-    public WorksheetManager update(WorksheetManager man) throws Exception {
-        return service.call("update", man);
+    public WorksheetAnalysisManager add(WorksheetAnalysisManager manager) throws Exception {
+        assert false : "not supported";
+        return null;
     }
 
-    public WorksheetManager fetchForUpdate(Integer worksheetId) throws Exception {
-        return service.call("fetchForUpdate", worksheetId);
+    public WorksheetAnalysisManager update(WorksheetAnalysisManager manager) throws Exception {
+        assert false : "not supported";
+        return null;
     }
     
-    public WorksheetManager abortUpdate(Integer worksheetId) throws Exception {
-        return service.call("abortUpdate", worksheetId);
-    }
-    
-    public void validate(WorksheetManager man) throws Exception {
-        
+    public void validate(WorksheetAnalysisManager manager) throws Exception {
     }
 }

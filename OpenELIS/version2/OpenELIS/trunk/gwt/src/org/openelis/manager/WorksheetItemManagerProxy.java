@@ -27,45 +27,27 @@ package org.openelis.manager;
 
 import org.openelis.gwt.services.ScreenService;
 
-
-public class WorksheetManagerProxy {
-
+public class WorksheetItemManagerProxy {
     protected static final String WORKSHEET_MANAGER_SERVICE_URL = "org.openelis.modules.worksheet.server.WorksheetService";
     protected ScreenService service;
     
-    public WorksheetManagerProxy(){
+    public WorksheetItemManagerProxy(){
         service = new ScreenService("OpenELISServlet?service="+WORKSHEET_MANAGER_SERVICE_URL);
     }
-    
-    public WorksheetManager fetchById(Integer worksheetId) throws Exception {
-        return service.call("fetchById", worksheetId);
+
+    public WorksheetItemManager fetchByWorksheetId(Integer worksheetId) throws Exception {
+        return service.call("fetchWorksheetItemByWorksheetId", worksheetId);
     }
-    
-    public WorksheetManager fetchWithItems(Integer worksheetId) throws Exception {
-        return service.call("fetchWithItems", worksheetId);
-    }
-    
-    public WorksheetManager fetchWithNotes(Integer worksheetId) throws Exception {
-        return service.call("fetchWithNotes", worksheetId);
-    }
-    
-    public WorksheetManager add(WorksheetManager man) throws Exception {
-        return service.call("add",man);
+    public WorksheetItemManager add(WorksheetItemManager manager) throws Exception {
+        assert false : "not supported";
+        return null;
     }
 
-    public WorksheetManager update(WorksheetManager man) throws Exception {
-        return service.call("update", man);
-    }
-
-    public WorksheetManager fetchForUpdate(Integer worksheetId) throws Exception {
-        return service.call("fetchForUpdate", worksheetId);
+    public WorksheetItemManager update(WorksheetItemManager manager) throws Exception {
+        assert false : "not supported";
+        return null;
     }
     
-    public WorksheetManager abortUpdate(Integer worksheetId) throws Exception {
-        return service.call("abortUpdate", worksheetId);
-    }
-    
-    public void validate(WorksheetManager man) throws Exception {
-        
+    public void validate(WorksheetItemManager manager) throws Exception {
     }
 }
