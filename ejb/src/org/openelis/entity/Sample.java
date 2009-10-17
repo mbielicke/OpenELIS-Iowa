@@ -39,6 +39,8 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -110,6 +112,16 @@ public class Sample implements Auditable, Cloneable {
   @Column(name="released_date")
   private Date releasedDate;
   
+  //sample environmental
+  @OneToMany(fetch = FetchType.LAZY)
+  @JoinColumn(name = "sample_id")
+  private Collection<SampleEnvironmental> sampleEnvironmental;
+  
+  //sample human
+  @OneToMany(fetch = FetchType.LAZY)
+  @JoinColumn(name = "sample_id")
+  private Collection<SampleHuman> sampleHuman;
+  
   //sample organizations
   @OneToMany(fetch = FetchType.LAZY)
   @JoinColumn(name = "sample_id")
@@ -119,6 +131,13 @@ public class Sample implements Auditable, Cloneable {
   @OneToMany(fetch = FetchType.LAZY)
   @JoinColumn(name = "sample_id")
   private Collection<SampleProject> sampleProject;
+  
+  //projects
+  @ManyToMany(fetch = FetchType.LAZY)
+  @JoinTable(name="sample_project",
+             joinColumns={@JoinColumn(name="sample_id")},
+             inverseJoinColumns={@JoinColumn(name="project_id")})
+  private Collection<Project> project;
   
   //sample items
   @OneToMany(fetch = FetchType.LAZY)
@@ -322,28 +341,46 @@ public class Sample implements Auditable, Cloneable {
   public String getTableName() {
     return "sample";
   }
-public Collection<SampleItem> getSampleItem() {
+  public Collection<SampleItem> getSampleItem() {
     return sampleItem;
-}
-public void setSampleItem(Collection<SampleItem> sampleItem) {
+  }
+  public void setSampleItem(Collection<SampleItem> sampleItem) {
     this.sampleItem = sampleItem;
-}
-public Collection<SampleOrganization> getSampleOrganization() {
+  }
+  public Collection<SampleEnvironmental> getSampleEnvironmental() {
+    return sampleEnvironmental;
+  }
+  public void setSampleEnvironmental(Collection<SampleEnvironmental> sampleEnvironmental) {
+    this.sampleEnvironmental = sampleEnvironmental;
+  }
+  public Collection<SampleHuman> getSampleHuman() {
+    return sampleHuman;
+  }
+  public void setSampleHuman(Collection<SampleHuman> sampleHuman) {
+    this.sampleHuman = sampleHuman;
+  }
+  public Collection<SampleOrganization> getSampleOrganization() {
     return sampleOrganization;
-}
-public void setSampleOrganization(Collection<SampleOrganization> sampleOrganization) {
+  }
+  public void setSampleOrganization(Collection<SampleOrganization> sampleOrganization) {
     this.sampleOrganization = sampleOrganization;
-}
-public Collection<SampleProject> getSampleProject() {
+  }
+  public Collection<SampleProject> getSampleProject() {
     return sampleProject;
-}
-public void setSampleProject(Collection<SampleProject> sampleProject) {
+  }
+  public void setSampleProject(Collection<SampleProject> sampleProject) {
     this.sampleProject = sampleProject;
-}
-public Collection<SampleQaevent> getSampleQAEvent() {
+  }
+  public Collection<SampleQaevent> getSampleQAEvent() {
     return sampleQAEvent;
-}
-public void setSampleQAEvent(Collection<SampleQaevent> sampleQAEvent) {
+  }
+  public void setSampleQAEvent(Collection<SampleQaevent> sampleQAEvent) {
     this.sampleQAEvent = sampleQAEvent;
-}
+  }
+  public Collection<Project> getProject() {
+      return project;
+  }
+  public void setProject(Collection<Project> project) {
+      this.project = project;
+  }
 }   

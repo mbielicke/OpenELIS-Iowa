@@ -50,7 +50,7 @@ import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
 @NamedQueries({ @NamedQuery(name = "Section.SectionDOList", query = "select distinct new org.openelis.domain.SectionViewDO(s.id,s.parentSectionId,s.name,s.description,s.isExternal,o.id,ps.name,o.name) from Section s left join s.organization o left join s.parentSection ps order by s.name"),
-                @NamedQuery(name = "Section.AutoByName", query = "select distinct new org.openelis.domain.IdNameDO(s.id, s.name) from Section s where s.name like :name order by s.name"),
+                @NamedQuery(name = "Section.AutoByName", query = "select distinct new org.openelis.domain.IdNameVO(s.id, s.name) from Section s where s.name like :name order by s.name"),
                 @NamedQuery(name = "Section.SectionDOById", query = "select distinct new org.openelis.domain.SectionViewDO(s.id,s.parentSectionId,s.name,s.description,s.isExternal,o.id,ps.name,o.name) from Section s left join s.organization o left join s.parentSection ps where s.id = :id"),
                 @NamedQuery(name = "Section.SectionsByName", query = "from Section s where s.name = :name" )})
                 

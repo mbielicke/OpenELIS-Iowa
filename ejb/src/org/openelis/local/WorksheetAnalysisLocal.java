@@ -25,17 +25,21 @@
 */
 package org.openelis.local;
 
+import java.util.ArrayList;
+
 import javax.ejb.Local;
 
-import org.openelis.domain.WorksheetDO;
+import org.openelis.domain.WorksheetAnalysisDO;
 
 @Local
-public interface WorksheetLocal {
-    public WorksheetDO fetchById(Integer id) throws Exception;
+public interface WorksheetAnalysisLocal {
+    public ArrayList<WorksheetAnalysisDO> fetchByWorksheetItemId(Integer id) throws Exception;
 
-    public WorksheetDO add(WorksheetDO data);
+    public WorksheetAnalysisDO add(WorksheetAnalysisDO data) throws Exception;
 
-    public WorksheetDO update(WorksheetDO data) throws Exception;
+    public WorksheetAnalysisDO update(WorksheetAnalysisDO data) throws Exception;
 
-    public void validate(WorksheetDO data) throws Exception;
+    public void delete(WorksheetAnalysisDO data) throws Exception;
+
+    public void validate(WorksheetAnalysisDO data) throws Exception;
 }

@@ -60,7 +60,7 @@ public class WorksheetCreationBean implements WorksheetCreationRemote {
 
     public ArrayList<WorksheetCreationVO> query(ArrayList<QueryData> fields, 
                                                 int first, int max) throws Exception {
-        List           list;
+        List           list = null;
         Query          query;
         QueryBuilderV2 builder;
 
@@ -69,22 +69,36 @@ public class WorksheetCreationBean implements WorksheetCreationRemote {
         builder.setSelect("distinct new org.openelis.domain.WorksheetCreationVO("+
                           WorksheetCreationMetaMap.SAMPLE.SAMPLE_ITEM.ANALYSIS.getId()+", "+
                           WorksheetCreationMetaMap.SAMPLE.getAccessionNumber()+", "+
+                          WorksheetCreationMetaMap.SAMPLE.getDomain()+", "+
+                          WorksheetCreationMetaMap.SAMPLE_ENVIRONMENTAL.getDescription()+", "+
+//                          WorksheetCreationMetaMap.SAMPLE_HUMAN.PATIENT.getLastName()+", "+
+//                          WorksheetCreationMetaMap.SAMPLE_HUMAN.PATIENT.getFirstName()+", "+
+//                          WorksheetCreationMetaMap.SAMPLE.SAMPLE_PROJECT.PROJECT.getName()+", " +
+                          WorksheetCreationMetaMap.SAMPLE.SAMPLE_ITEM.ANALYSIS.TEST.getId()+", " +
                           WorksheetCreationMetaMap.SAMPLE.SAMPLE_ITEM.ANALYSIS.TEST.getName()+", " +
                           WorksheetCreationMetaMap.SAMPLE.SAMPLE_ITEM.ANALYSIS.TEST.METHOD.getName()+", "+
                           WorksheetCreationMetaMap.SAMPLE.SAMPLE_ITEM.ANALYSIS.SECTION.getName()+", "+
                           WorksheetCreationMetaMap.SAMPLE.SAMPLE_ITEM.ANALYSIS.getStatusId()+", "+
+                          WorksheetCreationMetaMap.SAMPLE.getCollectionDate()+", "+
                           WorksheetCreationMetaMap.SAMPLE.getReceivedDate()+") ");
         builder.constructWhere(fields);
+        
+//        builder.addWhere(WorksheetCreationMetaMap.SAMPLE.SAMPLE_PROJECT.getIsPermanent() + " = 'Y'");
+        
         builder.setOrderBy(WorksheetCreationMetaMap.SAMPLE.getAccessionNumber());
 
-        query = manager.createQuery(builder.getEJBQL());
-        query.setMaxResults(first + max);
+        try {
+            query = manager.createQuery(builder.getEJBQL());
+            query.setMaxResults(first + max);
 
-        builder.setQueryParams(query, fields);
+            builder.setQueryParams(query, fields);
 
-        list = DataBaseUtil.toArrayList(query.getResultList());
-        if (list.isEmpty())
-            throw new NotFoundException();
+            list = DataBaseUtil.toArrayList(query.getResultList());
+            if (list.isEmpty())
+                throw new NotFoundException();
+        } catch (Exception anyE) {
+            anyE.printStackTrace();
+        }
 
         return (ArrayList<WorksheetCreationVO>)list;
     }
