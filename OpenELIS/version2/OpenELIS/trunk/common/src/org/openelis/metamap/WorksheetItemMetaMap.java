@@ -58,7 +58,7 @@ public class WorksheetItemMetaMap extends WorksheetItemMeta implements MetaMap {
         
         from = "WorksheetItem wi ";
         if (name.indexOf("worksheetAnalyses.") > -1)
-            from += ", IN (wi.worksheetAnalyses) worksheetAnalyses ";
+            from += ", IN (wi.worksheetAnalysis) worksheetAnalyses ";
         return from;
     }
 }

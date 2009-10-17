@@ -33,14 +33,25 @@ public class WorksheetCreationMetaMap implements MetaMap {
     }
     
     public SampleMetaMap SAMPLE = new SampleMetaMap("sample.");
+    public SampleEnvironmentalMetaMap SAMPLE_ENVIRONMENTAL = new SampleEnvironmentalMetaMap("sampleEnvironmental.");
     
     public SampleMetaMap getSample(){
         return SAMPLE;
     }
     
+    public SampleEnvironmentalMetaMap getSampleEnvironmental(){
+        return SAMPLE_ENVIRONMENTAL;
+    }
+    
     public boolean hasColumn(String columnName) {
         if(columnName.startsWith("sample."))
             return SAMPLE.hasColumn(columnName);
+        if(columnName.startsWith("sampleEnvironmental."))
+            return SAMPLE_ENVIRONMENTAL.hasColumn(columnName);
+        if(columnName.startsWith("sampleProject."))
+            return SAMPLE.SAMPLE_PROJECT.hasColumn(columnName);
+        if(columnName.startsWith("project."))
+            return SAMPLE.SAMPLE_PROJECT.PROJECT.hasColumn(columnName);
         if(columnName.startsWith("sampleItem."))
             return SAMPLE.SAMPLE_ITEM.hasColumn(columnName);
         if(columnName.startsWith("analysis."))
@@ -58,21 +69,13 @@ public class WorksheetCreationMetaMap implements MetaMap {
         String from;
 
         from = "Sample sample "+
-               ", IN (sample.sampleItem) sampleItem"+
-               ", IN (sampleItem.analysis) analysis";
-/*
-        from = "Sample sample ";
-        if (name.indexOf("sampleItem.") > -1)
-            from += ", IN (sample.sampleItem) sampleItem";
-        if (name.indexOf("analysis.") > -1 ||
-            name.indexOf("section.") > -1 ||
-            name.indexOf("test.") > -1 ||
-            name.indexOf("method.") > -1) {
-            if (name.indexOf("sampleItem.") == -1)
-                from += ", IN (sample.sampleItem) sampleItem";
-            from += ", IN (sampleItem.analysis) analysis";
-        }
-*/        
+               " LEFT JOIN sample.sampleEnvironmental sampleEnvironmental "+
+//               " LEFT JOIN sample.sampleProject sampleProject "+
+//               " LEFT JOIN sample.project project "+
+//               " LEFT JOIN sampleProject.project project "+
+               ", IN (sample.sampleItem) sampleItem "+
+               ", IN (sampleItem.analysis) analysis ";
+
         return from;
     }
 

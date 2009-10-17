@@ -24,16 +24,13 @@
 * UIRF Software License are applicable instead of those above. 
 */
 package org.openelis.remote;
+
 import java.util.ArrayList;
-import java.util.List;
-
 import javax.ejb.Remote;
-
-import org.openelis.domain.IdNameVO;
+import org.openelis.domain.WorksheetDO;
 import org.openelis.gwt.common.data.QueryData;
 
 @Remote
 public interface WorksheetRemote {
-	 public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception;
-	 public List autoCompleteLookupById(Integer id);
+    public ArrayList<WorksheetDO> query(ArrayList<QueryData> fields, int first, int max) throws Exception;
 }
