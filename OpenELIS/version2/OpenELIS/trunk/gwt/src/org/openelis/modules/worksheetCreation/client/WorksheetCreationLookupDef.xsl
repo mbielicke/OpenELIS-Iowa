@@ -101,9 +101,7 @@ UIRF Software License are applicable instead of those above.
             <text style="Prompt">
               <xsl:value-of select="resource:getString($constants,'section')" />:
             </text>
-            <autoComplete key="{sectionMeta:getId($section)}" width="150px" case="LOWER" popWidth="auto" tab="{sampleMetaMap:getAccessionNumber($sample)},testMetaMap:getId($test)" field="Integer">
-              <col width="150" header="Section" />
-            </autoComplete>
+            <dropdown key="{sectionMeta:getId($section)}" width="150px" popWidth="150px" tab="{sampleMetaMap:getAccessionNumber($sample)},testMetaMap:getId($test)" field="Integer" />
           </row>
           <row>
             <text style="Prompt">
@@ -117,7 +115,7 @@ UIRF Software License are applicable instead of those above.
             <text style="Prompt">
               <xsl:value-of select="resource:getString($constants,'sampleType')" />:
             </text>
-            <dropdown key="{sampleItemMetaMap:getTypeOfSampleId($sampleItem)}" width="150px" popWidth="150" tab="{sampleMetaMap:getReceivedDate($sample)},analysisMetaMap:getStatusId($analysis)" field="Integer" />
+            <dropdown key="{sampleItemMetaMap:getTypeOfSampleId($sampleItem)}" width="150px" popWidth="150px" tab="{sampleMetaMap:getReceivedDate($sample)},analysisMetaMap:getStatusId($analysis)" field="Integer" />
           </row>
           <row>
             <text style="Prompt">
