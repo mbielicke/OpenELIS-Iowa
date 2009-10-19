@@ -280,9 +280,10 @@ public class SystemVariableScreen extends Screen {
                 ArrayList<IdNameVO> result;
                 ArrayList<TableDataRow> model;
 
+                model = null;
                 result = nav.getQueryResult();
-                model = new ArrayList<TableDataRow>();
                 if (result != null) {
+                    model = new ArrayList<TableDataRow>();
                     for (IdNameVO entry : result)
                         model.add(new TableDataRow(entry.getId(), entry.getName()));
                 }

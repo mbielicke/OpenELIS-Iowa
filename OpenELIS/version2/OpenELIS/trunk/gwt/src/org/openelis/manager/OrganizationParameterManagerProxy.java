@@ -27,47 +27,28 @@ package org.openelis.manager;
 
 import org.openelis.gwt.services.ScreenService;
 
-public class OrganizationManagerProxy {
-
+public class OrganizationParameterManagerProxy {
     protected static final String ORG_MANAGER_SERVICE_URL = "org.openelis.modules.organization.server.OrganizationService";
     protected ScreenService       service;
 
-    public OrganizationManagerProxy() {
+    public OrganizationParameterManagerProxy() {
         service = new ScreenService("OpenELISServlet?service=" + ORG_MANAGER_SERVICE_URL);
     }
 
-    public OrganizationManager fetchById(Integer id) throws Exception {
-        return service.call("fetchById", id);
+    public OrganizationParameterManager fetchByOrganizationId(Integer orgId) throws Exception {
+        return service.call("fetchParameterByOrganizationId", orgId);
     }
 
-    public OrganizationManager fetchWithContacts(Integer id) throws Exception {
-        return service.call("fetchWithContacts", id);
+    public OrganizationParameterManager add(OrganizationParameterManager man) throws Exception {
+        assert false : "not supported";
+        return null;
     }
 
-    public OrganizationManager fetchWithNotes(Integer id) throws Exception {
-        return service.call("fetchWithNotes", id);
+    public OrganizationParameterManager update(OrganizationParameterManager man) throws Exception {
+        assert false : "not supported";
+        return null;
     }
-
-    public OrganizationManager fetchWithParameters(Integer id) throws Exception {
-        return service.call("fetchWithParameters", id);
-    }
-
-    public OrganizationManager add(OrganizationManager man) throws Exception {
-        return service.call("add", man);
-    }
-
-    public OrganizationManager update(OrganizationManager man) throws Exception {
-        return service.call("update", man);
-    }
-
-    public OrganizationManager fetchForUpdate(Integer id) throws Exception {
-        return service.call("fetchForUpdate", id);
-    }
-
-    public OrganizationManager abortUpdate(Integer id) throws Exception {
-        return service.call("abortUpdate", id);
-    }
-
-    public void validate(OrganizationManager man) throws Exception {
+    
+    public void validate(OrganizationParameterManager man) throws Exception {
     }
 }
