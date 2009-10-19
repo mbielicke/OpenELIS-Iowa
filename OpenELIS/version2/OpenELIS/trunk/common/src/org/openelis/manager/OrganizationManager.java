@@ -36,6 +36,7 @@ public class OrganizationManager implements RPC, HasNotesInt {
 
     protected OrganizationViewDO                        organization;
     protected OrganizationContactManager                contacts;
+    protected OrganizationParameterManager              parameters;
     protected NoteManager                               notes;
 
     protected transient static OrganizationManagerProxy proxy;
@@ -80,12 +81,12 @@ public class OrganizationManager implements RPC, HasNotesInt {
         return proxy().fetchWithContacts(id);
     }
 
-    public static OrganizationManager fetchWithNotes(Integer id) throws Exception {
-        return proxy().fetchWithNotes(id);
+    public static OrganizationManager fetchWithParameters(Integer id) throws Exception {
+        return proxy().fetchWithParameters(id);
     }
 
-    public static OrganizationManager fetchWithIdentifiers(Integer id) throws Exception {
-        return proxy().fetchWithIdentifiers(id);
+    public static OrganizationManager fetchWithNotes(Integer id) throws Exception {
+        return proxy().fetchWithNotes(id);
     }
 
     public OrganizationManager add() throws Exception {
@@ -111,24 +112,6 @@ public class OrganizationManager implements RPC, HasNotesInt {
     //
     // other managers
     //
-    public NoteManager getNotes() throws Exception {
-        
-        if (notes == null) {
-            if (organization.getId() != null) {
-                try {
-                    notes = NoteManager.findByRefTableRefId(ReferenceTable.ORGANIZATION, organization.getId());
-                } catch (NotFoundException e) {
-                    // ignore
-                } catch (Exception e) {
-                    throw e;
-                }
-            }
-            if (notes == null)
-                notes = NoteManager.getInstance();
-        }
-        return notes;
-    }
-
     public OrganizationContactManager getContacts() throws Exception {
         if (contacts == null) {
             if (organization.getId() != null) {
@@ -144,6 +127,40 @@ public class OrganizationManager implements RPC, HasNotesInt {
                 contacts = OrganizationContactManager.getInstance();
         }
         return contacts;
+    }
+
+    public OrganizationParameterManager getParameters() throws Exception {
+        if (parameters == null) {
+            if (organization.getId() != null) {
+                try {
+                    parameters = OrganizationParameterManager.fetchByOrganizationId(organization.getId());
+                } catch (NotFoundException e) {
+                    // ignore
+                } catch (Exception e) {
+                    throw e;
+                }
+            }
+            if (parameters == null)
+                parameters = OrganizationParameterManager.getInstance();
+        }
+        return parameters;
+    }
+
+    public NoteManager getNotes() throws Exception {
+        if (notes == null) {
+            if (organization.getId() != null) {
+                try {
+                    notes = NoteManager.findByRefTableRefId(ReferenceTable.ORGANIZATION, organization.getId());
+                } catch (NotFoundException e) {
+                    // ignore
+                } catch (Exception e) {
+                    throw e;
+                }
+            }
+            if (notes == null)
+                notes = NoteManager.getInstance();
+        }
+        return notes;
     }
 
     private static OrganizationManagerProxy proxy() {
