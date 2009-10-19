@@ -78,10 +78,7 @@ public class CategoryBean implements CategoryRemote, CategoryLocal {
     private SessionContext          ctx;
 
     @EJB
-    private LockLocal               lockBean;
-    
-    @EJB
-    private JMSMessageProducerLocal jmsProducer;
+    private LockLocal               lockBean;    
 
     private static CategoryMetaMap  CatMeta = new CategoryMetaMap();
 
@@ -151,7 +148,6 @@ public class CategoryBean implements CategoryRemote, CategoryLocal {
     
     public void update(CategoryDO catDO) throws Exception {
         Category category;
-        DictionaryCacheMessage msg;
         
         if (!catDO.isChanged()) {
             lockBean.giveUpLock(catRefTableId, catDO.getId());
@@ -170,13 +166,7 @@ public class CategoryBean implements CategoryRemote, CategoryLocal {
         category.setSectionId(catDO.getSection());
         category.setSystemName(catDO.getSystemName());
 
-        lockBean.giveUpLock(catRefTableId, catDO.getId());
-        
-        //invalidate the cache
-        msg = new DictionaryCacheMessage();
-        msg.setCatDO(catDO);
-        msg.action = DictionaryCacheMessage.Action.UPDATED;
-        jmsProducer.writeMessage(msg);
+        lockBean.giveUpLock(catRefTableId, catDO.getId());                
     }
     
     public void validate(CategoryDO categoryDO, ArrayList<DictionaryViewDO> entries)throws Exception {
