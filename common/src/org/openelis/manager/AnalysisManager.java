@@ -25,6 +25,7 @@
 */
 package org.openelis.manager;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import org.openelis.domain.AnalysisViewDO;
@@ -325,4 +326,14 @@ public class AnalysisManager implements RPC, HasNotesInt {
     AnalysisListItem getDeletedAt(int i) {
         return deletedList.get(i);
     }       
+    
+    static class AnalysisListItem implements RPC {
+        private static final long serialVersionUID = 1L;
+
+        AnalysisResultManager     analysisResult;
+        AnalysisViewDO            analysis;
+        AnalysisQaEventManager    qaEvents;
+        NoteManager               analysisInternalNotes, analysisExternalNote;
+        StorageManager            storage;
+    }
 }

@@ -229,4 +229,12 @@ public class SampleItemManager implements RPC {
     SampleItemListItem getDeletedAt(int i) {
         return deletedList.get(i);
     }    
+    
+    static class SampleItemListItem implements RPC {
+        private static final long serialVersionUID = 1L;
+
+        SampleItemViewDO    sampleItem;
+        StorageManager  storage;
+        AnalysisManager analysis;
+    }
 }
