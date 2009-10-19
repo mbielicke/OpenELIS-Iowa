@@ -67,11 +67,12 @@ public class OrganizationManagerProxy {
         return m;
     }
 
-    public OrganizationManager fetchWithIdentifiers(Integer id) throws Exception {
+    public OrganizationManager fetchWithParameters(Integer id) throws Exception {
         OrganizationManager m;
 
         m = fetchById(id);
-
+        m.getParameters();
+        
         return m;
     }
 
@@ -82,8 +83,13 @@ public class OrganizationManagerProxy {
         ol = local();
         ol.add(man.getOrganization());
         id = man.getOrganization().getId();
+
         man.getContacts().setOrganizationId(id);
         man.getContacts().add();
+
+        man.getParameters().setOrganizationId(id);
+        man.getParameters().add();
+
         man.getNotes().setReferenceId(id);
         man.getNotes().setReferenceTableId(ReferenceTable.ORGANIZATION);
         man.getNotes().add();
@@ -101,6 +107,9 @@ public class OrganizationManagerProxy {
 
         man.getContacts().setOrganizationId(id);
         man.getContacts().update();
+
+        man.getParameters().setOrganizationId(id);
+        man.getParameters().update();
 
         man.getNotes().setReferenceId(id);
         man.getNotes().setReferenceTableId(ReferenceTable.ORGANIZATION);
@@ -130,6 +139,11 @@ public class OrganizationManagerProxy {
         }
         try {
             man.getContacts().validate();
+        } catch (Exception e) {
+            DataBaseUtil.mergeException(list, e);
+        }
+        try {
+            man.getParameters().validate();
         } catch (Exception e) {
             DataBaseUtil.mergeException(list, e);
         }

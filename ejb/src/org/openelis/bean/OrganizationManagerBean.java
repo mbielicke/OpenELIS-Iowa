@@ -41,6 +41,7 @@ import org.openelis.gwt.common.SecurityModule.ModuleFlags;
 import org.openelis.local.LockLocal;
 import org.openelis.manager.OrganizationContactManager;
 import org.openelis.manager.OrganizationManager;
+import org.openelis.manager.OrganizationParameterManager;
 import org.openelis.remote.OrganizationManagerRemote;
 import org.openelis.utils.SecurityInterceptor;
 
@@ -68,8 +69,8 @@ public class OrganizationManagerBean implements OrganizationManagerRemote {
         return OrganizationManager.fetchWithContacts(id);
     }
 
-    public OrganizationManager fetchWithIdentifiers(Integer id) throws Exception {
-        return OrganizationManager.fetchWithIdentifiers(id);
+    public OrganizationManager fetchWithParameters(Integer id) throws Exception {
+        return OrganizationManager.fetchWithParameters(id);
     }
 
     public OrganizationManager fetchWithNotes(Integer id) throws Exception {
@@ -122,6 +123,10 @@ public class OrganizationManagerBean implements OrganizationManagerRemote {
         return OrganizationContactManager.fetchByOrganizationId(id);
     }
     
+    public OrganizationParameterManager fetchParameterByOrganizationId(Integer id) throws Exception {
+        return OrganizationParameterManager.fetchByOrganizationId(id);
+    }
+
     private void checkSecurity(ModuleFlags flag) throws Exception {
         SecurityInterceptor.applySecurity(ctx.getCallerPrincipal().getName(), 
                                           "organization", flag);
