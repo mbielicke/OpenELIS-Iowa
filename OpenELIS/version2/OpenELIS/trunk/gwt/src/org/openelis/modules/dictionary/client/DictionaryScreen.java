@@ -1,305 +1,725 @@
-/** Exhibit A - UIRF Open-source Based Public Software License.
-* 
-* The contents of this file are subject to the UIRF Open-source Based
-* Public Software License(the "License"); you may not use this file except
-* in compliance with the License. You may obtain a copy of the License at
-* openelis.uhl.uiowa.edu
-* 
-* Software distributed under the License is distributed on an "AS IS"
-* basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
-* License for the specific language governing rights and limitations
-* under the License.
-* 
-* The Original Code is OpenELIS code.
-* 
-* The Initial Developer of the Original Code is The University of Iowa.
-* Portions created by The University of Iowa are Copyright 2006-2008. All
-* Rights Reserved.
-* 
-* Contributor(s): ______________________________________.
-* 
-* Alternatively, the contents of this file marked
-* "Separately-Licensed" may be used under the terms of a UIRF Software
-* license ("UIRF Software License"), in which case the provisions of a
-* UIRF Software License are applicable instead of those above. 
-*/
+/**
+ * Exhibit A - UIRF Open-source Based Public Software License.
+ * 
+ * The contents of this file are subject to the UIRF Open-source Based Public
+ * Software License(the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * openelis.uhl.uiowa.edu
+ * 
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+ * the specific language governing rights and limitations under the License.
+ * 
+ * The Original Code is OpenELIS code.
+ * 
+ * The Initial Developer of the Original Code is The University of Iowa.
+ * Portions created by The University of Iowa are Copyright 2006-2008. All
+ * Rights Reserved.
+ * 
+ * Contributor(s): ______________________________________.
+ * 
+ * Alternatively, the contents of this file marked "Separately-Licensed" may be
+ * used under the terms of a UIRF Software license ("UIRF Software License"), in
+ * which case the provisions of a UIRF Software License are applicable instead
+ * of those above.
+ */
 package org.openelis.modules.dictionary.client;
 
-
 import java.util.ArrayList;
+import java.util.EnumSet;
 
 import org.openelis.cache.SectionCache;
-import org.openelis.domain.SectionDO;
-import org.openelis.gwt.common.data.deprecated.KeyListManager;
-import org.openelis.gwt.common.data.deprecated.QueryStringField;
-import org.openelis.gwt.common.data.deprecated.StringField;
-import org.openelis.gwt.common.data.deprecated.StringObject;
-import org.openelis.gwt.common.data.deprecated.TableDataModel;
-import org.openelis.gwt.common.data.deprecated.TableDataRow;
-import org.openelis.gwt.common.deprecated.Form;
-import org.openelis.gwt.common.deprecated.Query;
-import org.openelis.gwt.screen.deprecated.CommandChain;
-import org.openelis.gwt.screen.deprecated.ScreenInputWidget;
-import org.openelis.gwt.widget.deprecated.AppButton;
-import org.openelis.gwt.widget.deprecated.ButtonPanel;
-import org.openelis.gwt.widget.deprecated.Dropdown;
-import org.openelis.gwt.widget.deprecated.ResultsTable;
-import org.openelis.gwt.widget.deprecated.AppButton.ButtonState;
-import org.openelis.gwt.widget.table.deprecated.TableManager;
-import org.openelis.gwt.widget.table.deprecated.TableWidget;
-import org.openelis.gwt.widget.table.deprecated.event.SourcesTableWidgetEvents;
-import org.openelis.gwt.widget.table.deprecated.event.TableWidgetListener;
+import org.openelis.common.AutocompleteRPC;
+import org.openelis.domain.DictionaryViewDO;
+import org.openelis.domain.IdNameVO;
+import org.openelis.domain.SectionViewDO;
+import org.openelis.gwt.common.LastPageException;
+import org.openelis.gwt.common.NotFoundException;
+import org.openelis.gwt.common.RPC;
+import org.openelis.gwt.common.SecurityException;
+import org.openelis.gwt.common.SecurityModule;
+import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.gwt.common.data.Query;
+import org.openelis.gwt.common.data.QueryData;
+import org.openelis.gwt.event.DataChangeEvent;
+import org.openelis.gwt.event.GetMatchesEvent;
+import org.openelis.gwt.event.GetMatchesHandler;
+import org.openelis.gwt.event.StateChangeEvent;
+import org.openelis.gwt.screen.Screen;
+import org.openelis.gwt.screen.ScreenDefInt;
+import org.openelis.gwt.screen.ScreenEventHandler;
+import org.openelis.gwt.screen.ScreenNavigator;
+import org.openelis.gwt.services.ScreenService;
+import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.AutoComplete;
+import org.openelis.gwt.widget.ButtonGroup;
+import org.openelis.gwt.widget.Dropdown;
+import org.openelis.gwt.widget.TextBox;
+import org.openelis.gwt.widget.AppButton.ButtonState;
+import org.openelis.gwt.widget.table.TableDataRow;
+import org.openelis.gwt.widget.table.TableWidget;
+import org.openelis.gwt.widget.table.event.CellEditedEvent;
+import org.openelis.gwt.widget.table.event.CellEditedHandler;
+import org.openelis.gwt.widget.table.event.RowAddedEvent;
+import org.openelis.gwt.widget.table.event.RowAddedHandler;
+import org.openelis.gwt.widget.table.event.RowDeletedEvent;
+import org.openelis.gwt.widget.table.event.RowDeletedHandler;
+import org.openelis.gwt.widget.table.event.RowMovedEvent;
+import org.openelis.gwt.widget.table.event.RowMovedHandler;
+import org.openelis.manager.DictionaryManager;
 import org.openelis.metamap.CategoryMetaMap;
-import org.openelis.modules.main.client.OpenELISScreenForm;
+import org.openelis.modules.main.client.openelis.OpenELIS;
 
+import com.allen_sauer.gwt.dnd.client.DragEndEvent;
+import com.allen_sauer.gwt.dnd.client.DragHandler;
+import com.allen_sauer.gwt.dnd.client.DragStartEvent;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.rpc.SyncCallback;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.Widget;
 
-public class DictionaryScreen extends OpenELISScreenForm<DictionaryForm,Query<TableDataRow<Integer>>> implements ClickListener,
-                                                                    TableManager,
-                                                                    TableWidgetListener{
+public class DictionaryScreen extends Screen implements GetMatchesHandler, DragHandler {
+    private DictionaryManager manager;
+    private CategoryMetaMap   meta = new CategoryMetaMap();
+    private SecurityModule    security;
 
-    private TableWidget dictEntryController = null;
-    private AppButton removeEntryButton = null;    
-    private KeyListManager keyList = new KeyListManager();
+    private TextBox           name, description, systemName;
+    private AppButton         queryButton, previousButton, nextButton, addButton, updateButton,
+                              commitButton, abortButton, removeEntryButton, addEntryButton;
+    private Dropdown<Integer> sectionId;
+    private TableWidget       dictEntTable;
+    private ButtonGroup       atoz;
+    private ScreenNavigator   nav;
+    
+    public DictionaryScreen() throws Exception {
+        super((ScreenDefInt)GWT.create(DictionaryDef.class));
+        service = new ScreenService("OpenELISServlet?service=org.openelis.modules.dictionary.server.DictionaryService");
 
-    private Dropdown displaySection = null;
+        security = OpenELIS.security.getModule("dictionary");
+        if (security == null)
+            throw new SecurityException("screenPermException", "Dictionary Screen");
+
+        // Setup link between Screen and widget Handlers
+        initialize();
+
+        manager = DictionaryManager.getInstance();
+
+        DeferredCommand.addCommand(new Command() {
+            public void execute() {
+                postConstructor();
+            }
+        });
+    }
+
+    /**
+     * This method is called to set the initial state of widgets after the
+     * screen is attached to the browser. It is usually called in deferred
+     * command.
+     */
+    private void postConstructor() {
+        setState(State.DEFAULT);
+        DataChangeEvent.fire(this);
+    }
+
+    private void initialize() {
+        AutoComplete<Integer> relEntry;        
         
-    private CategoryMetaMap CatMap = new CategoryMetaMap();
-    public DictionaryScreen() {
-        super("org.openelis.modules.dictionary.server.DictionaryService");
-        query = new Query<TableDataRow<Integer>>();
-        getScreen(new DictionaryForm());        
-    }
-    
-    public void afterDraw(boolean success) {       
-        ResultsTable atozTable;
-        ButtonPanel atozButtons;
-        ButtonPanel bpanel;
-        ArrayList cache;
-        TableDataModel<TableDataRow> model;
-        CommandChain chain;
-        
-        atozTable = (ResultsTable) getWidget("azTable");
-        atozButtons = (ButtonPanel)getWidget("atozButtons");
-        bpanel = (ButtonPanel)getWidget("buttons");
-        chain = new CommandChain();
-        
-        chain.addCommand(this);
-        chain.addCommand(keyList);
-        chain.addCommand(bpanel);
-        chain.addCommand(atozTable);
-        chain.addCommand(atozButtons);
-        
-        //((CollapsePanel)getWidget("collapsePanel")).addChangeListener(atozTable);
-               
-        dictEntryController = ((TableWidget)getWidget("dictEntTable"));
-
-        dictEntryController.addTableWidgetListener(this);
-
-        startWidget = (ScreenInputWidget)widgets.get(CatMap.getName());
-        removeEntryButton = (AppButton)getWidget("removeEntryButton");
-                
-        displaySection = (Dropdown)getWidget(CatMap.getSectionId());       
-                     
-        //override the callbacks
-        updateChain.add(afterUpdate);
-        commitUpdateChain.add(commitUpdateCallback);
-        commitAddChain.add(commitAddCallback);
-        super.afterDraw(success);
-        
-        cache = SectionCache.getSectionList();
-        model = getSectionList(cache);
-        displaySection.setModel(model);
-    }
-    
-    public void performCommand(Enum action, Object obj) {        
-        if(obj instanceof AppButton) {
-            String query = ((AppButton)obj).action;
-            if (query.indexOf("*") != -1)
-                getCategories(query);
-            else                         
-                super.performCommand(action, obj);            
-         }  else {                         
-            super.performCommand(action, obj);
-        }        
-    }
-
-    public void onClick(Widget sender) {
-        if(sender == removeEntryButton)  
-           onRemoveRowButtonClick();            
-     }    
-
-    public void query() {
-        super.query();
-        removeEntryButton.changeState(ButtonState.DISABLED);
-        dictEntryController.model.enableAutoAdd(false);         
-    }
-    
-    public void add() {
-        super.add();
-        dictEntryController.model.enableAutoAdd(true); 
-    }
-    
-    public void abort() {
-        dictEntryController.model.enableAutoAdd(false); 
-        super.abort();
-    }
-    
-    protected SyncCallback<DictionaryForm> afterUpdate = new SyncCallback<DictionaryForm>() {
-        public void onFailure(Throwable caught) {
-            Window.alert(caught.getMessage());
-        }
-
-        public void onSuccess(DictionaryForm result) {
-            dictEntryController.model.enableAutoAdd(true);             
-        }
-    };   
-
-    protected SyncCallback<DictionaryForm> commitUpdateCallback = new SyncCallback<DictionaryForm>() {
-        public void onSuccess(DictionaryForm result) {
-            if (form.status != Form.Status.invalid)                                
-                dictEntryController.model.enableAutoAdd(false); 
-        }
-
-        public void onFailure(Throwable caught) {
-            handleError(caught);
-        }
-    };
-
-    protected SyncCallback<DictionaryForm> commitAddCallback = new SyncCallback<DictionaryForm>() {
-        public void onSuccess(DictionaryForm result) {
-            if (form.status != Form.Status.invalid)                                
-                dictEntryController.model.enableAutoAdd(false); 
-        }
-
-        public void onFailure(Throwable caught) {
-            handleError(caught);
-        }
-    };
-    
-    private void getCategories(String query) {
-        if (state == State.DISPLAY || state == State.DEFAULT) {
-            QueryStringField qField = new QueryStringField(CatMap.getName());
-            qField.setValue(query);
-            commitQuery(qField);
-        }
-    }
-    
-    private void onRemoveRowButtonClick(){
-      int index = dictEntryController.modelIndexList[dictEntryController.activeRow];  
-      if(index > -1)  
-          dictEntryController.model.deleteRow(index);       
-    }     
-            
-
-    public boolean canAdd(TableWidget widget,TableDataRow set, int row) {        
-        return false;
-    }
-
-
-    public boolean canAutoAdd(TableWidget widget,TableDataRow row) {
-        String s,e ; 
-        s = (String)row.cells[1].getValue();
-        e = (String)row.cells[3].getValue();        
-        return  ((e!= null && !e.trim().equals("")) || 
-                        (s!= null && !s.trim().equals("")));
-    }
-
-
-    public boolean canDelete(TableWidget widget,TableDataRow set, int row) {        
-        return false;
-    }
-
-
-    public boolean canEdit(TableWidget widget, TableDataRow set, int row, int col) {        
-        if(state == State.UPDATE || state == State.ADD|| state == State.QUERY)
-            return true;       
-        return false;
-    }
-
-    public boolean canSelect(TableWidget widget, TableDataRow set, int row) {
-        if(state == State.UPDATE || state == State.ADD|| state == State.QUERY)
-            return true;       
-        return false;
-     }
-    
-   /**
-    * In the specific context of this class, the code in this method is used to make sure 
-    * that if a user is trying to change a dictionary entry that has been added 
-    * as a result for a test then the user gets notified about this issue and the
-    * new value for the entry is set in the row only after the user explicitly consents
-    * to do so.    
-    */
-    public void finishedEditing(SourcesTableWidgetEvents sender, int row, int col) {
-        if(col == 3)  {
-            TableDataRow<Integer> set = dictEntryController.model.getRow(row) ;
-            final int currRow = row;
-       
-            DictionaryEntryTextRPC detrpc = null;                                    
-            if(set.key != null) {
-                detrpc = new DictionaryEntryTextRPC();
-                detrpc.id = set.key;  
-                detrpc.entryText = ((StringField)set.cells[3]).getValue();
-                //
-                // find out how many test results will be affected if the previous 
-                // entry is changed to the new one and if at least one result will be
-                // affected then show the alert
-                //
-                screenService.call("getNumResultsAffected",detrpc,
-                                   new AsyncCallback<DictionaryEntryTextRPC>() {
-                                    public void onSuccess(DictionaryEntryTextRPC result) {
-                                        if(result != null && result.count > 0) {                                            
-                                            boolean ok = Window.confirm(consts.get("entryAddedAsResultValue"));
-                                            if(!ok) {                                                 
-                                                    dictEntryController.model.setCell(currRow, 3, result.entryText);
-                                                    dictEntryController.model.refresh();  
-                                               } 
-                                             } 
-                                            }                                                                                                  
-                                            public void onFailure(Throwable caught) {
-                                                Window.alert(caught.getMessage());
-                                                window.clearStatus();
-                                            }
-                                        });
+        queryButton = (AppButton)def.getWidget("query");
+        addScreenHandler(queryButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                query();
             }
 
-      } 
+            public void onStateChange(StateChangeEvent<State> event) {
+                queryButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY)
+                                          .contains(event.getState()) &&
+                                   security.hasSelectPermission());
+                if (event.getState() == State.QUERY)
+                    queryButton.setState(ButtonState.LOCK_PRESSED);
+            }
+        });
+
+        previousButton = (AppButton)def.getWidget("previous");
+        addScreenHandler(previousButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                previous();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                previousButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+
+        nextButton = (AppButton)def.getWidget("next");
+        addScreenHandler(nextButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                next();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                nextButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+
+        addButton = (AppButton)def.getWidget("add");
+        addScreenHandler(addButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                add();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                addButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY)
+                                        .contains(event.getState()) &&
+                                 security.hasAddPermission());
+                if (event.getState() == State.ADD)
+                    addButton.setState(ButtonState.LOCK_PRESSED);
+            }
+        });
+
+        updateButton = (AppButton)def.getWidget("update");
+        addScreenHandler(updateButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                update();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                updateButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()) &&
+                                    security.hasUpdatePermission());
+                if (event.getState() == State.UPDATE)
+                    updateButton.setState(ButtonState.LOCK_PRESSED);
+            }
+        });
+
+        commitButton = (AppButton)def.getWidget("commit");
+        addScreenHandler(commitButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                commit();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                commitButton.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
+                                           .contains(event.getState()));
+            }
+        });
+
+        abortButton = (AppButton)def.getWidget("abort");
+        addScreenHandler(abortButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                abort();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                abortButton.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
+                                          .contains(event.getState()));
+            }
+        });
+
+        name = (TextBox)def.getWidget(meta.getName());
+        addScreenHandler(name, new ScreenEventHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                name.setValue(manager.getCategory().getName());
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                manager.getCategory().setName(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                name.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
+                                   .contains(event.getState()));
+                name.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+
+        description = (TextBox)def.getWidget(meta.getDescription());
+        addScreenHandler(description, new ScreenEventHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                description.setValue(manager.getCategory().getDescription());
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                manager.getCategory().setDescription(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                description.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
+                                          .contains(event.getState()));
+                description.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+
+        sectionId = (Dropdown)def.getWidget(meta.getSectionId());
+        addScreenHandler(sectionId, new ScreenEventHandler<Integer>() {
+            public void onDataChange(DataChangeEvent event) {
+                sectionId.setSelection(manager.getCategory().getSection());
+            }
+
+            public void onValueChange(ValueChangeEvent<Integer> event) {
+                manager.getCategory().setSection(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                sectionId.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
+                                        .contains(event.getState()));
+                sectionId.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+
+        systemName = (TextBox)def.getWidget(meta.getSystemName());
+        addScreenHandler(systemName, new ScreenEventHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                systemName.setValue(manager.getCategory().getSystemName());
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                manager.getCategory().setSystemName(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                systemName.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
+                                         .contains(event.getState()));
+                systemName.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+
+        dictEntTable = (TableWidget)def.getWidget("dictEntTable");
+        addScreenHandler(dictEntTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
+            public void onDataChange(DataChangeEvent event) {
+                if(state != State.QUERY)
+                    dictEntTable.load(getTableModel());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                dictEntTable.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                           .contains(event.getState()));
+                dictEntTable.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+
+        dictEntTable.addCellEditedHandler(new CellEditedHandler() {
+            public void onCellUpdated(CellEditedEvent event) {
+                int r, c;
+                Object val;
+                DictionaryViewDO entry;
+                TableDataRow row;
+
+                r = event.getRow();
+                c = event.getCol();
+                val = dictEntTable.getRow(r).cells.get(c).getValue();
+                entry = manager.getEntryAt(r);
+
+                switch (c) {
+                    case 0:
+                        entry.setIsActive((String)val);
+                        break;
+                    case 1:
+                        entry.setSystemName((String)val);
+                        break;
+                    case 2:
+                        entry.setLocalAbbrev((String)val);
+                        break;
+                    case 3:
+                        entry.setEntry(validateTextAgainstTestResults(entry.getId(),
+                                                                      entry.getEntry(),
+                                                                      (String)val, r));
+                        break;
+                    case 4:
+                        row = (TableDataRow)val;
+                        entry.setRelatedEntryId((Integer)row.key);
+                        entry.setRelatedEntryName((String)row.cells.get(0).getValue());
+                        break;
+                }
+            }
+        });
+
+        dictEntTable.addRowAddedHandler(new RowAddedHandler() {
+            public void onRowAdded(RowAddedEvent event) {
+                DictionaryViewDO entry;
+                
+                entry = new DictionaryViewDO();
+                entry.setIsActive("Y");
+                manager.addEntry(entry);                                
+            }
+        });
+
+        dictEntTable.addRowDeletedHandler(new RowDeletedHandler() {
+            public void onRowDeleted(RowDeletedEvent event) {
+                manager.removeEntryAt(event.getIndex());
+            }
+        });
+        
+        dictEntTable.addRowMovedHandler(new RowMovedHandler() {
+            public void onRowMoved(RowMovedEvent event) {                
+                manager.moveEntry(event.getOldIndex(),event.getNewIndex());                
+            }
+            
+        });
+
+        relEntry = (AutoComplete<Integer>)dictEntTable.columns.get(4).getColumnWidget();
+        relEntry.addGetMatchesHandler(this);                    
+        
+        removeEntryButton = (AppButton)def.getWidget("removeEntryButton");
+        addScreenHandler(removeEntryButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                int selectedRow = dictEntTable.getSelectedIndex();
+                if (selectedRow > -1 && dictEntTable.numRows() > 0) {
+                    dictEntTable.deleteRow(selectedRow);
+                }
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                removeEntryButton.enable(EnumSet.of(State.ADD, State.UPDATE)
+                                                .contains(event.getState()));
+            }
+        });
+
+        addEntryButton = (AppButton)def.getWidget("addEntryButton");
+        addScreenHandler(addEntryButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                dictEntTable.addRow();
+                dictEntTable.selectRow(dictEntTable.numRows() - 1);
+                dictEntTable.scrollToSelection();
+                dictEntTable.setCell(dictEntTable.numRows() - 1, 0, "Y");
+                dictEntTable.startEditing(dictEntTable.numRows() - 1, 3);
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                addEntryButton.enable(EnumSet.of(State.ADD, State.UPDATE)
+                                             .contains(event.getState()));
+            }
+        });
+
+        //
+        // left hand navigation panel
+        //
+        nav = new ScreenNavigator(def) {
+            public void executeQuery(final Query query) {
+                window.setBusy(consts.get("querying"));
+
+                service.callList("query", query, new AsyncCallback<ArrayList<IdNameVO>>() {
+                    public void onSuccess(ArrayList<IdNameVO> result) {
+                        setQueryResult(result);
+                    }
+
+                    public void onFailure(Throwable error) {
+                        setQueryResult(null);
+                        if (error instanceof NotFoundException) {
+                            window.setDone(consts.get("noRecordsFound"));
+                            setState(State.DEFAULT);
+                        } else if (error instanceof LastPageException) {
+                            window.setError("No more records in this direction");
+                        } else {
+                            Window.alert("Error: Dictionary call query failed; " +
+                                         error.getMessage());
+                            window.setError(consts.get("queryFailed"));
+                        }
+                    }
+                });
+            }
+
+            public boolean fetch(RPC entry) {
+                return fetchByCategoryId( (entry == null) ? null : ((IdNameVO)entry).getId());
+            }
+
+            public ArrayList<TableDataRow> getModel() {
+                ArrayList<IdNameVO> result;
+                ArrayList<TableDataRow> model;
+
+                result = nav.getQueryResult();
+                model = new ArrayList<TableDataRow>();
+                if (result != null) {
+                    for (IdNameVO entry : result)
+                        model.add(new TableDataRow(entry.getId(), entry.getName()));
+                }
+                return model;
+            }
+        };
+
+        atoz = (ButtonGroup)def.getWidget("atozButtons");
+        addScreenHandler(atoz, new ScreenEventHandler<Object>() {
+            public void onStateChange(StateChangeEvent<State> event) {
+                boolean enable;
+                enable = EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState()) &&
+                         security.hasSelectPermission();
+                atoz.enable(enable);
+                nav.enable(enable);
+            }
+
+            public void onClick(ClickEvent event) {
+                Query query;
+                QueryData field;
+
+                field = new QueryData();
+                field.key = meta.getName();
+                field.query = ((AppButton)event.getSource()).action;
+                field.type = QueryData.Type.STRING;
+
+                query = new Query();
+                query.setFields(field);
+                nav.setQuery(query);
+            }
+        });
+
+        setSectionModel();
+
     }
 
-    public void startEditing(SourcesTableWidgetEvents sender, int row, int col) {
-        // TODO Auto-generated method stub
-        
-    }
+    public void onGetMatches(GetMatchesEvent event) {
+        AutocompleteRPC trpc;
+        ArrayList<TableDataRow> model;
+        TableDataRow row;
+        IdNameVO autoDO;
 
-    public void stopEditing(SourcesTableWidgetEvents sender, int row, int col) {
-        // TODO Auto-generated method stub
-        
-    }
-    
-    private TableDataModel<TableDataRow> getSectionList(ArrayList list){
-        TableDataModel<TableDataRow> m = new TableDataModel<TableDataRow>();
-        TableDataRow<Integer> row;
-        SectionDO sectDO;
-        
-        if(list == null)
-            return m;
-        
-        m = new TableDataModel<TableDataRow>();
-        m.add(new TableDataRow<Integer>(null,new StringObject("")));
-        
-        for(int i=0; i<list.size(); i++){
-            row = new TableDataRow<Integer>(1);
-            sectDO = (SectionDO)list.get(i);
-            row.key = sectDO.getId();
-            row.cells[0] = new StringObject(sectDO.getName());
-            m.add(row);
+        trpc = new AutocompleteRPC();
+        trpc.match = event.getMatch();
+        try {
+            trpc = service.call("getRelatedEntryMatches", trpc);
+            model = new ArrayList<TableDataRow>();
+            for (int i = 0; i < trpc.model.size(); i++ ) {
+                autoDO = (IdNameVO)trpc.model.get(i);
+                row = new TableDataRow(autoDO.getId(), autoDO.getName());
+                model.add(row);
+            }
+            ((AutoComplete)event.getSource()).showAutoMatches(model);
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
         }
+
+    }   
+
+    public void onDragEnd(DragEndEvent event) {
         
-        return m;
     }
     
+    public void onDragStart(DragStartEvent event) {
+        
+    }
+    
+    public void onPreviewDragEnd(DragEndEvent event) {  
+        
+    }
+    
+    public void onPreviewDragStart(DragStartEvent event) {
+        
+    }
+    protected void query() {
+        manager = DictionaryManager.getInstance();
+        setState(State.QUERY);
+        DataChangeEvent.fire(this);
+        window.setDone(consts.get("enterFieldsToQuery"));
+    }
+
+    protected void previous() {
+        nav.previous();
+    }
+
+    protected void next() {
+        nav.next();
+    }
+
+    protected void add() {
+        manager = DictionaryManager.getInstance();
+        setState(State.ADD);
+        DataChangeEvent.fire(this);
+        enableDragAndDrop(true);
+        window.setDone(consts.get("enterInformationPressCommit"));
+    }
+
+    protected void update() {
+        window.setBusy("Locking Record for update...");
+
+        try {
+            manager = manager.fetchForUpdate();
+
+            setState(State.UPDATE);
+            DataChangeEvent.fire(this);
+            enableDragAndDrop(true);
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+        }
+
+        window.clearStatus();
+    }
+
+    protected void commit() {
+        Query query;
+        //
+        // set the focus to null so every field will commit its data.
+        //
+        name.setFocus(false);
+
+        if (!validate()) {
+            window.setError(consts.get("correctErrors"));
+            return;
+        }
+
+        if (state == State.QUERY) {
+            query = new Query();
+            query.setFields(getQueryFields());
+            nav.setQuery(query);
+        } else if (state == State.ADD) {
+            window.setBusy(consts.get("adding"));
+            try {
+                manager = manager.add();
+
+                setState(State.DISPLAY);
+                DataChangeEvent.fire(this);
+                window.setDone(consts.get("addingComplete"));
+                enableDragAndDrop(false);
+            } catch (ValidationErrorsList e) {
+                showErrors(e);
+            } catch (Exception e) {
+                Window.alert("commitAdd(): " + e.getMessage());
+                window.clearStatus();
+            }
+        } else if (state == State.UPDATE) {
+            window.setBusy(consts.get("updating"));
+            try {
+                manager = manager.update();
+                setState(State.DISPLAY);
+                DataChangeEvent.fire(this);
+                window.setDone(consts.get("updatingComplete"));
+                enableDragAndDrop(false);
+            } catch (ValidationErrorsList e) {
+                showErrors(e);
+            } catch (Exception e) {
+                Window.alert("commitUpdate(): " + e.getMessage());
+                window.clearStatus();
+            }
+        }
+
+    }
+
+    protected void abort() {
+        clearErrors();
+        window.setBusy(consts.get("cancelChanges"));
+
+        if (state == State.QUERY) {
+            fetchByCategoryId(null);
+            window.setDone(consts.get("queryAborted"));
+        } else if (state == State.ADD) {
+            fetchByCategoryId(null);
+            window.setDone(consts.get("addAborted"));
+            enableDragAndDrop(false);
+        } else if (state == State.UPDATE) {
+            try {
+                manager = manager.abortUpdate();
+                setState(State.DISPLAY);
+                DataChangeEvent.fire(this);
+                enableDragAndDrop(false);
+            } catch (Exception e) {
+                Window.alert(e.getMessage());
+                fetchByCategoryId(null);
+            }
+            window.setDone(consts.get("updateAborted"));
+        } else {
+            window.clearStatus();
+        }
+
+    }
+
+    protected boolean fetchByCategoryId(Integer id) {
+        if (id == null) {
+            manager = DictionaryManager.getInstance();
+            setState(State.DEFAULT);
+        } else {
+            window.setBusy(consts.get("fetching"));
+            try {
+                window.setBusy(consts.get("fetching"));
+                manager = DictionaryManager.fetchByCategoryId(id);
+            } catch (Exception e) {
+                fetchByCategoryId(null);
+                e.printStackTrace();
+                Window.alert(consts.get("fetchFailed") + e.getMessage());
+                return false;
+            }
+            setState(State.DISPLAY);
+        }
+        DataChangeEvent.fire(this);
+        window.clearStatus();
+
+        return true;
+    }
+
+    private ArrayList<TableDataRow> getTableModel() {
+        ArrayList<TableDataRow> model;
+        DictionaryViewDO entry;
+        TableDataRow row;
+
+        model = new ArrayList<TableDataRow>();
+        if (manager == null)
+            return model;
+
+        for (int i = 0; i < manager.count(); i++ ) {
+            entry = manager.getEntryAt(i);
+
+            row = new TableDataRow(5);
+            row.key = entry.getId();
+            row.data = entry.getCategoryId();
+            
+            row.cells.get(0).setValue(entry.getIsActive());
+            row.cells.get(1).setValue(entry.getSystemName());
+            row.cells.get(2).setValue(entry.getLocalAbbrev());
+            row.cells.get(3).setValue(entry.getEntry());
+            row.cells.get(4).setValue(new TableDataRow(entry.getRelatedEntryId(),
+                                                       entry.getRelatedEntryName()));
+            model.add(row);
+        }
+
+        return model;
+    }
+
+    private void setSectionModel() {
+        ArrayList<TableDataRow> model;
+        ArrayList<SectionViewDO> list;
+
+        model = new ArrayList<TableDataRow>();
+        list = SectionCache.getSectionList();
+
+        model.add(new TableDataRow(null, ""));
+        for (SectionViewDO section : list) {
+            model.add(new TableDataRow(section.getId(), section.getName()));
+        }
+
+        sectionId.setModel(model);
+    }
+
+    private String validateTextAgainstTestResults(Integer key,String oldEntry,
+                                                String entry,
+                                                int row) {
+        DictionaryEntryTextRPC detrpc;
+        boolean ok;
+
+        if (key == null || entry == null || entry.length() == 0)
+            return oldEntry;
+
+        detrpc = new DictionaryEntryTextRPC();
+        detrpc.entryText = entry;
+        detrpc.id = key;
+        try {
+            detrpc = service.call("getNumResultsAffected", detrpc);
+            if (detrpc.count > 0) {
+                ok = Window.confirm(consts.get("entryAddedAsResultValue"));
+                if (!ok) {                    
+                    dictEntTable.setCell(row, 3, oldEntry);
+                    return oldEntry;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return entry; 
+    }
+    
+    private void enableDragAndDrop(boolean enable) {          
+        dictEntTable.enableDrag(enable);
+        dictEntTable.enableDrop(enable);
+        if(enable) {
+            dictEntTable.addTarget(dictEntTable);
+            dictEntTable.addDragHandler(this);
+        } 
+    }
 }
