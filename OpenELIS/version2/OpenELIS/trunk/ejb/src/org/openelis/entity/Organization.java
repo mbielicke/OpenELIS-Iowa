@@ -102,6 +102,10 @@ public class Organization implements Auditable, Cloneable {
     @JoinColumn(name = "organization_id")
     private Collection<OrganizationContact> organizationContact;
 
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "organization_id")
+    private Collection<OrganizationParameter> organizationParameter;
+
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "address_id", insertable = false, updatable = false)
     private Address                         address;
@@ -168,6 +172,14 @@ public class Organization implements Auditable, Cloneable {
 
     public void setOrganizationContact(Collection<OrganizationContact> organizationContact) {
         this.organizationContact = organizationContact;
+    }
+
+    public Collection<OrganizationParameter> getOrganizationParameter() {
+        return organizationParameter;
+    }
+
+    public void setOrganizationParameter(Collection<OrganizationParameter> organizationParameter) {
+        this.organizationParameter = organizationParameter;
     }
 
     public Collection<Note> getNote() {
