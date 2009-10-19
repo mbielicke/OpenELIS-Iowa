@@ -29,8 +29,8 @@ import org.openelis.utils.Auditable;
 
 @NamedQueries({
     @NamedQuery( name = "Worksheet.WorksheetById",
-                query = "select new org.openelis.domain.WorksheetDO(id, createdDate, systemUserId, statusId, formatId"
-                      + " from Worksheet where id = :id")})
+                query = "select new org.openelis.domain.WorksheetDO(w.id,w.createdDate,w.systemUserId,w.statusId,w.formatId) "+
+                        "from Worksheet w where w.id = :id")})
 
 @Entity
 @Table(name="worksheet")

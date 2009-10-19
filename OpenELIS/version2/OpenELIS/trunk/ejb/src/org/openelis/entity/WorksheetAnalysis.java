@@ -23,9 +23,8 @@ import org.openelis.utils.Auditable;
 
 @NamedQueries({
     @NamedQuery( name = "WorksheetAnalysis.FetchByWorksheetItemId",
-                query = "select new org.openelis.domain.WorksheetAnalysisDO(wa.id,"+
-                        "wa.worksheetItemId,wa.referenceId,wa.referenceTableId) "+
-                        "from WorksheetItem wa where wa.worksheetItemId = :id")})
+                query = "select new org.openelis.domain.WorksheetAnalysisDO(wa.id,wa.worksheetItemId,wa.referenceId,wa.referenceTableId) "+
+                        "from WorksheetAnalysis wa where wa.worksheetItemId = :id")})
 
 @Entity
 @Table(name="worksheet_analysis")
