@@ -32,6 +32,8 @@ import javax.naming.InitialContext;
 import org.openelis.domain.CategoryDO;
 import org.openelis.domain.DictionaryViewDO;
 import org.openelis.local.CategoryLocal;
+import org.openelis.local.JMSMessageProducerLocal;
+import org.openelis.messages.DictionaryCacheMessage;
 
 public class DictionaryManagerProxy {
     
@@ -71,13 +73,19 @@ public class DictionaryManagerProxy {
     public DictionaryManager update(DictionaryManager man) throws Exception {
         DictionaryViewDO entry;
         int i;
-
-        local().update(man.getCategory());
+        DictionaryCacheMessage msg;
+        CategoryDO catDO;
+        boolean sendMessage;
         
-        man.setCategoryId(man.getCategory().getId());
+        catDO = man.getCategory();
+        sendMessage = false;
+        
+        local().update(catDO);       
+        man.setCategoryId(catDO.getId());
         
         for(i = 0; i < man.deleteCount(); i++){
             local().deleteDictionary(man.getDeletedAt(i));
+            sendMessage = true;
         }
         
         for(i = 0; i < man.count(); i++) {
@@ -87,10 +95,21 @@ public class DictionaryManagerProxy {
             if(entry.getId() == null) {
                 entry.setCategoryId(man.getCategoryId());
                 local().addDictionary(entry);
+                sendMessage = true;
             } else {               
                 local().updateDictionary(entry);
+                if(entry.isChanged())
+                    sendMessage = true;
             }
-        }               
+        }     
+        
+        if(sendMessage) {            
+            //invalidate the cache
+            msg = new DictionaryCacheMessage();
+            msg.setCatDO(catDO);
+            msg.action = DictionaryCacheMessage.Action.UPDATED;
+            jmsLocal().writeMessage(msg);
+        }
         
         return man;
     }   
@@ -109,10 +128,20 @@ public class DictionaryManagerProxy {
         local().validate(man.getCategory(), man.getEntries());
     }
     
-    private CategoryLocal local(){
+    private CategoryLocal local() {
         try{
             InitialContext ctx = new InitialContext();
             return (CategoryLocal)ctx.lookup("openelis/CategoryBean/local");
+        } catch(Exception e){
+            System.out.println(e.getMessage());
+            return null;
+       }
+    }
+    
+    private JMSMessageProducerLocal jmsLocal() {
+        try{
+            InitialContext ctx = new InitialContext();
+            return (JMSMessageProducerLocal)ctx.lookup("openelis/JMSMessageProducerBean/local");
         } catch(Exception e){
             System.out.println(e.getMessage());
             return null;
