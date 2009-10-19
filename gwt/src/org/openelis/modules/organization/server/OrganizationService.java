@@ -27,14 +27,13 @@ package org.openelis.modules.organization.server;
 
 import java.util.ArrayList;
 
-import org.openelis.common.AutocompleteRPC;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.OrganizationDO;
 import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.manager.OrganizationContactManager;
 import org.openelis.manager.OrganizationManager;
+import org.openelis.manager.OrganizationParameterManager;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.OrganizationManagerRemote;
 import org.openelis.remote.OrganizationRemote;
@@ -70,9 +69,9 @@ public class OrganizationService {
         }
     }
 
-    public OrganizationManager fetchWithIdentifiers(Integer id) throws Exception {
+    public OrganizationManager fetchWithParameters(Integer id) throws Exception {
         try {
-            return remoteManager().fetchWithIdentifiers(id);
+            return remoteManager().fetchWithParameters(id);
         } catch (RuntimeException e) {
             throw new DatabaseException(e);
         }
@@ -136,7 +135,7 @@ public class OrganizationService {
     }
 
     //
-    // support for OrganizationContactManager
+    // support for OrganizationContactManager and OrganizationParameterManager
     //
     public OrganizationContactManager fetchContactByOrganizationId(Integer id) throws Exception {
         try {
@@ -146,6 +145,14 @@ public class OrganizationService {
         }
     }
     
+    public OrganizationParameterManager fetchParameterByOrganizationId(Integer id) throws Exception {
+        try {
+            return remoteManager().fetchParameterByOrganizationId(id);
+        } catch (RuntimeException e) {
+            throw new DatabaseException(e);
+        }
+    }
+
     private OrganizationRemote remote() {
         return (OrganizationRemote)EJBFactory.lookup("openelis/OrganizationBean/remote");
     }

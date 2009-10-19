@@ -37,6 +37,7 @@ UIRF Software License are applicable instead of those above.
   xsi:noNamespaceSchemaLocation="http://openelis.uhl.uiowa.edu/schema/ScreenSchema.xsd"
   xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd"
   xmlns:addr="xalan://org.openelis.meta.AddressMeta"
+  xmlns:parameter="xalan://org.openelis.metamap.OrganizationParameterMeta"
   xmlns:contact="xalan://org.openelis.metamap.OrganizationContactMetaMap"
   xmlns:meta="xalan://org.openelis.metamap.OrganizationMetaMap"
   xmlns:note="xalan://org.openelis.meta.NoteMeta"
@@ -58,6 +59,9 @@ UIRF Software License are applicable instead of those above.
   <xalan:component prefix="contact">
     <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.OrganizationContactMetaMap" />
   </xalan:component>
+  <xalan:component prefix="parameter">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.OrganizationParameterMeta" />
+  </xalan:component>
   <xalan:component prefix="note">
     <xalan:script lang="javaclass" src="xalan://org.openelis.meta.NoteMeta" />
   </xalan:component>
@@ -68,6 +72,7 @@ UIRF Software License are applicable instead of those above.
     <xsl:variable name="org" select="meta:new()" />
     <xsl:variable name="addr" select="meta:getAddress($org)" />
     <xsl:variable name="cont" select="meta:getOrganizationContact($org)" />
+    <xsl:variable name="param" select="meta:getOrganizationParameter($org)" />
     <xsl:variable name="parent" select="meta:getParentOrganization($org)" />
     <xsl:variable name="note" select="meta:getNote($org)" />
     <xsl:variable name="contAddr" select="contact:getAddress($cont)" />
@@ -231,12 +236,12 @@ UIRF Software License are applicable instead of those above.
 
               <tab key="contactTab" text="{resource:getString($constants,'contact')}">
                 <VerticalPanel padding="0" spacing="0">
-                  <table key="contactTable" width="589px" maxRows="10" showScroll="ALWAYS" tab="{meta:getId($org)},{meta:getIsActive($org)}">
+                  <table key="contactTable" width="587px" maxRows="10" showScroll="ALWAYS" tab="{meta:getId($org)},{meta:getIsActive($org)}">
                     <col key="{contact:getContactTypeId($cont)}" width="106" header="{resource:getString($constants,'type')}">
                       <dropdown width="90" field="Integer" required="true" />
                     </col>
                     <col key="{contact:getName($cont)}" width="130" header="{resource:getString($constants,'contactName')}">
-                      <textbox case="UPPER" max="40" field="String" required="true" />
+                      <textbox max="40" field="String" required="true" />
                     </col>
                     <col key="{addr:getMultipleUnit($contAddr)}" width="130" header="{resource:getString($constants,'aptSuite')}">
                       <textbox case="UPPER" max="30" field="String" />
@@ -298,19 +303,19 @@ UIRF Software License are applicable instead of those above.
 
 <!-- TAB 2 -->
 
-              <tab key="identifierTab" text="{resource:getString($constants,'identifier')}">
+              <tab key="parameterTab" text="{resource:getString($constants,'parameter')}">
                 <VerticalPanel padding="0" spacing="0">
-                  <table key="identifierTable" width="589px" maxRows="10" showScroll="ALWAYS">
-                    <col key="UNK1" width="300" align="left" header="{resource:getString($constants,'identifier')}">
-                      <textbox field="String" required="true" />
+                  <table key="parameterTable" width="587px" maxRows="10" showScroll="ALWAYS" tab="{meta:getId($org)},{meta:getIsActive($org)}">
+                    <col key="{parameter:getTypeId($param)}" width="300" align="left" header="{resource:getString($constants,'type')}">
+                      <dropdown width="300" field="Integer" required="true" />
                     </col>
-                    <col key="UNK2" width="287" align="left" header="{resource:getString($constants,'value')}">
-                      <textbox field="String" required="true" />
+                    <col key="{parameter:getValue($param)}" width="287" align="left" header="{resource:getString($constants,'value')}">
+                      <textbox field="String" max="80" required="true" />
                     </col>
                   </table>
                   <widget style="TableButtonFooter">
                     <HorizontalPanel>
-                      <appButton key="addIdentifierButton" style="Button">
+                      <appButton key="addParameterButton" style="Button">
                         <HorizontalPanel>
                           <AbsolutePanel style="AddRowButtonImage" />
                           <text>
@@ -318,7 +323,7 @@ UIRF Software License are applicable instead of those above.
                           </text>
                         </HorizontalPanel>
                       </appButton>
-                      <appButton key="removeIdentifierButton" style="Button">
+                      <appButton key="removeParameterButton" style="Button">
                         <HorizontalPanel>
                           <AbsolutePanel style="RemoveRowButtonImage" />
                           <text>

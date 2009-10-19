@@ -97,7 +97,7 @@ public class OrganizationScreen extends Screen {
     private ScreenNavigator       nav;
 
     private ContactTab            contactTab;
-    private IdentifierTab         identifierTab;
+    private ParameterTab          parameterTab;
     private NotesTab              notesTab;
     private Tabs                  tab;
 
@@ -110,7 +110,7 @@ public class OrganizationScreen extends Screen {
     private TabPanel              tabPanel;
 
     private enum Tabs {
-        CONTACTS, IDENTIFIERS, NOTES
+        CONTACTS, PARAMETERS, NOTES
     };
 
     public OrganizationScreen() throws Exception {
@@ -482,7 +482,7 @@ public class OrganizationScreen extends Screen {
             }
         });
 
-        contactTab = new ContactTab(def);
+        contactTab = new ContactTab(window, def);
         addScreenHandler(contactTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                 contactTab.setManager(manager);
@@ -495,16 +495,16 @@ public class OrganizationScreen extends Screen {
             }
         });
 
-        identifierTab = new IdentifierTab(def);
-        addScreenHandler(identifierTab, new ScreenEventHandler<Object>() {
+        parameterTab = new ParameterTab(window, def);
+        addScreenHandler(parameterTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
-                identifierTab.setManager(manager);
-                if (tab == Tabs.IDENTIFIERS)
+                parameterTab.setManager(manager);
+                if (tab == Tabs.PARAMETERS)
                     drawTabs();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                identifierTab.setState(event.getState());
+                parameterTab.setState(event.getState());
             }
         });
 
@@ -557,9 +557,10 @@ public class OrganizationScreen extends Screen {
                 ArrayList<IdNameVO> result;
                 ArrayList<TableDataRow> model;
 
+                model = null;
                 result = nav.getQueryResult();
-                model = new ArrayList<TableDataRow>();
                 if (result != null) {
+                    model = new ArrayList<TableDataRow>();
                     for (IdNameVO entry : result)
                         model.add(new TableDataRow(entry.getId(), entry.getName()));
                 }
@@ -627,7 +628,7 @@ public class OrganizationScreen extends Screen {
         // clear all the tabs
         contactTab.draw();
         notesTab.draw();
-        identifierTab.draw();
+        parameterTab.draw();
         window.setDone(consts.get("enterFieldsToQuery"));
     }
 
@@ -747,8 +748,8 @@ public class OrganizationScreen extends Screen {
                     case CONTACTS:
                         manager = OrganizationManager.fetchWithContacts(id);
                         break;
-                    case IDENTIFIERS:
-                        manager = OrganizationManager.fetchWithIdentifiers(id);
+                    case PARAMETERS:
+                        manager = OrganizationManager.fetchWithParameters(id);
                         break;
                     case NOTES:
                         manager = OrganizationManager.fetchWithNotes(id);
@@ -777,8 +778,8 @@ public class OrganizationScreen extends Screen {
             case CONTACTS:
                 contactTab.draw();
                 break;
-            case IDENTIFIERS:
-                identifierTab.draw();
+            case PARAMETERS:
+                parameterTab.draw();
                 break;
             case NOTES:
                 notesTab.draw();

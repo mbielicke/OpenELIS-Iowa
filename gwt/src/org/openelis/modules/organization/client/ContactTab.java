@@ -13,6 +13,7 @@ import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.Dropdown;
+import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.gwt.widget.table.event.CellEditedEvent;
@@ -33,7 +34,8 @@ public class ContactTab extends Screen {
     private AppButton           removeButton, addButton;
     private boolean             loaded;
 
-    public ContactTab(ScreenDefInt def) {
+    public ContactTab(ScreenWindow window, ScreenDefInt def) {
+        setWindow(window);
         setDef(def);
         initialize();
         
@@ -223,8 +225,8 @@ public class ContactTab extends Screen {
                 model.add(row);
             }
         } catch (Exception e) {
+            Window.alert(e.getMessage());
             e.printStackTrace();
-            return null;
         }
         return model;
     }
