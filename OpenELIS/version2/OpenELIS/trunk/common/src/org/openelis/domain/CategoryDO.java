@@ -95,4 +95,8 @@ public class CategoryDO extends DataObject {
         this.section = section;
         _changed = true;
     }
+    
+    public boolean isChanged() {
+        return _changed;
+    }
 }

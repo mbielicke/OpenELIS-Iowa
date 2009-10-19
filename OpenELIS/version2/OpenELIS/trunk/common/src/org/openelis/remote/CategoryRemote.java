@@ -30,35 +30,22 @@ import java.util.List;
 
 import javax.ejb.Remote;
 
-import org.openelis.domain.CategoryDO;
 import org.openelis.domain.DictionaryDO;
+import org.openelis.domain.DictionaryViewDO;
+import org.openelis.domain.IdNameVO;
 import org.openelis.gwt.common.data.QueryData;
-import org.openelis.gwt.common.data.deprecated.AbstractField;
 
 @Remote
 public interface CategoryRemote {
     
-    //  method to return category without performing locking
-    public CategoryDO getCategory(Integer categoryId);
-    
     public List getCategoryList();
     
-    public CategoryDO getCategoryAndUnlock(Integer categoryId, String session);
-    
-    public CategoryDO getCategoryAndLock(Integer categoryId, String session)throws Exception;
-    
-    // commit a change to category, or insert a new category
-    public Integer updateCategory(CategoryDO categoryDO, List dictEntries)throws Exception;
-    
     //  method to query for category
-    public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception;
-    
-     //  method to return just dictionary entries
-    public List getDictionaryEntries(Integer categoryId);   
+    public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception;     
     
     public ArrayList getDictionaryListByPatternAndCategory(ArrayList<QueryData> fields);
         
-    public List getMatchingEntries(String entry,int maxResults);
+    public ArrayList<IdNameVO> autoCompleteByEntry(String entry,int maxResults);
     
     public Integer getEntryIdForSystemName(String systemName);
     
@@ -66,7 +53,7 @@ public interface CategoryRemote {
     
     public String getSystemNameForEntryId(Integer entryId);
     
-    public DictionaryDO getDictionaryDOByEntryId(Integer entryId);
+    public DictionaryViewDO getDictionaryDOByEntryId(Integer entryId);
     
     public List getListByCategoryName(String categoryName);
     
@@ -74,13 +61,9 @@ public interface CategoryRemote {
     
     public Integer getCategoryId(String systemName); 
     
-    public List getDropdownValues(Integer categoryId);
+    public ArrayList<Integer> getDictionaryIdListByEntry(String entry);
     
-    public List getDropdownAbbreviations(Integer categoryId);
-    
-    public List getIdEntrySystemNames(Integer categoryId);        
+    public List getDropdownValues(Integer categoryId);   
     
     public Integer getNumResultsAffected(String entry, Integer id);
-    
-    public String getEntryById(Integer id);
 }
