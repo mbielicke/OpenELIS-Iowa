@@ -23,27 +23,31 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.modules.result.server;
+package org.openelis.manager;
 
-import org.openelis.domain.AnalysisDO;
-import org.openelis.manager.AnalysisResultManager;
-import org.openelis.persistence.EJBFactory;
-import org.openelis.remote.ResultManagerRemote;
+import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.gwt.services.ScreenService;
 
-public class ResultService {
-    public AnalysisResultManager fetchByAnalysisIdForDisplay(Integer analysisId) throws Exception {
-        return remote().fetchByAnalysisIdForDisplay(analysisId);
+public class AuxFieldManagerProxy {
+    protected static final String AUXILIARY_SERVICE_URL = "org.openelis.modules.auxiliary.server.AuxiliaryService";
+    protected ScreenService service;
+    
+    public AuxFieldManagerProxy(){
+        service = new ScreenService("OpenELISServlet?service="+AUXILIARY_SERVICE_URL);
+    }
+    public AuxFieldManager fetchByAuxFieldGroupId(Integer auxFieldGroupId) throws Exception {
+        return service.call("fetchByAuxFieldGroupId", auxFieldGroupId);
     }
     
-    public AnalysisResultManager fetchByAnalysisId(AnalysisDO anDO) throws Exception {
-        return remote().fetchByAnalysisId(anDO.getId(), anDO.getTestId());
+    public AuxFieldManager add(AuxFieldManager man) throws Exception {
+        throw new UnsupportedOperationException();
     }
     
-    public AnalysisResultManager fetchNewByTestId(Integer testId) throws Exception {
-        return remote().fetchByTestId(testId);
+    public AuxFieldManager update(AuxFieldManager man) throws Exception {
+        throw new UnsupportedOperationException();    
     }
     
-    private ResultManagerRemote remote() {
-        return (ResultManagerRemote)EJBFactory.lookup("openelis/ResultManagerBean/remote");
+    public void validate(AuxFieldManager man, ValidationErrorsList errorsList) throws Exception {
+        
     }
 }

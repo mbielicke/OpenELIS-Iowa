@@ -25,7 +25,6 @@
 */
 package org.openelis.manager;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 
 import org.openelis.domain.SampleItemViewDO;

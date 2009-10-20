@@ -55,13 +55,18 @@ import org.openelis.gwt.common.deprecated.Query;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.gwt.services.deprecated.AppScreenFormServiceInt;
 import org.openelis.gwt.services.deprecated.AutoCompleteServiceInt;
+import org.openelis.manager.AuxFieldGroupManager;
+import org.openelis.manager.AuxFieldManager;
+import org.openelis.manager.AuxFieldValueManager;
 import org.openelis.modules.auxiliary.client.AuxiliaryForm;
 import org.openelis.modules.auxiliary.client.AuxiliaryGeneralPurposeRPC;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.AnalyteRemote;
+import org.openelis.remote.AuxFieldGroupManagerRemote;
 import org.openelis.remote.AuxiliaryRemote;
 import org.openelis.remote.CategoryRemote;
 import org.openelis.remote.MethodRemote;
+import org.openelis.remote.OrganizationManagerRemote;
 import org.openelis.remote.ScriptletRemote;
 import org.openelis.server.constants.Constants;
 import org.openelis.util.FormUtil;
@@ -531,5 +536,33 @@ public class AuxiliaryService implements
         }    
         
     }
-
+    
+    //manager methods
+    public AuxFieldGroupManager fetchGroupById(Integer id) throws Exception {
+        return remoteManager().fetchById(id);
+    }
+    
+    public AuxFieldGroupManager fetchGroupByIdWithFields(Integer id) throws Exception {
+        return remoteManager().fetchWithFields(id);
+    }
+    
+    public AuxFieldGroupManager fetchForUpdate(Integer id) throws Exception {
+        return remoteManager().fetchForUpdate(id);
+    }
+    
+    public AuxFieldGroupManager abortUpdate(Integer id) throws Exception {
+        return remoteManager().abortUpdate(id);
+    }
+    
+    public AuxFieldManager fetchByAuxFieldGroupId(Integer auxFieldGroupId) throws Exception {
+        return remoteManager().fetchFieldByGroupId(auxFieldGroupId);
+    }
+    
+    public AuxFieldValueManager fetchByAuxFieldId(Integer auxFieldId) throws Exception {
+        return remoteManager().fetchFieldValueByFieldId(auxFieldId);
+    }
+    
+    private AuxFieldGroupManagerRemote remoteManager() {
+        return (AuxFieldGroupManagerRemote)EJBFactory.lookup("openelis/AuxFieldGroupManagerBean/remote");
+    }
 }

@@ -48,12 +48,9 @@ import org.openelis.gwt.widget.table.event.RowDeletedEvent;
 import org.openelis.gwt.widget.table.event.RowDeletedHandler;
 import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.AnalysisResultManager;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.HasAlignment;
 
 public class TestResultsTab extends Screen {
     private boolean                 loaded;
@@ -184,7 +181,8 @@ MISSING TABLE COL!!! USING OLD TABLE FORMAT?
                 if(c == 0) {
                     row.cells.get(0).setValue(resultDO.getAnalyte());
                     //row.cells.get(0).setValue(new TableDataRow(resultDO.getAnalyteId(),resultDO.getAnalyte()));
-                    //RESULT SOMETIME...row.cells.get(1).setValue(new TableDataRow(resultDO.getResultGroup(),String.valueOf(anaDO.getResultGroup())));
+                    //RESULT SOMETIME...
+                    row.cells.get(1).setValue(resultDO.getValue());
                     continue;
                 }                        
                 
@@ -193,7 +191,7 @@ MISSING TABLE COL!!! USING OLD TABLE FORMAT?
                     //hrow.cells.get(c+1).setValue(new TableDataRow(resultDO.getAnalyteId(),resultDO.getAnalyte()));
                 }
                 
-                //RESULT SOMETIME...row.cells.get(c+1).setValue(new TableDataRow(anaDO.getResultGroup(),String.valueOf(anaDO.getResultGroup())));
+                row.cells.get(c+1).setValue(resultDO.getValue());
             }
             headerFilled = true;
             model.add(row);
@@ -221,12 +219,21 @@ MISSING TABLE COL!!! USING OLD TABLE FORMAT?
     } 
     
     private void resizeResultTable(int numOfCols){
+        TableColumn col;
+        int width=200;
+        
+        
         if(resultTableCols == null)
             resultTableCols = (ArrayList<TableColumn>)testResultsTable.columns.clone();
         testResultsTable.columns.clear();
         testResultsTable.clear();
         
+       if(numOfCols < 5)
+           width=(new Integer(testResultsTable.width)-(numOfCols*2)) / numOfCols;
+        
         for(int i = 0; i < numOfCols; i++) {
+            col = resultTableCols.get(i);
+            col.setCurrentWidth(width);
             testResultsTable.addColumn(resultTableCols.get(i));
             /*
             column = new TableColumn();
@@ -279,8 +286,12 @@ MISSING TABLE COL!!! USING OLD TABLE FORMAT?
                 else{
                     int index = analysisMan.getIndex(anDO);
                     
-                    if(index != -1)
-                        manager = analysisMan.getAnalysisResultAt(index);
+                    if(index != -1){
+                        if(state == State.ADD || state == State.UPDATE)
+                            manager = analysisMan.getAnalysisResultAt(index);
+                        else
+                            manager = analysisMan.getDisplayAnalysisResultAt(index);
+                    }
                 }
                 
                 displayManager = new ResultDisplayManager();
