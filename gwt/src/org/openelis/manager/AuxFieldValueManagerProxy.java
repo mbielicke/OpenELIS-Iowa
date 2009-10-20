@@ -23,27 +23,33 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.modules.result.server;
+package org.openelis.manager;
 
-import org.openelis.domain.AnalysisDO;
-import org.openelis.manager.AnalysisResultManager;
-import org.openelis.persistence.EJBFactory;
-import org.openelis.remote.ResultManagerRemote;
+import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.gwt.services.ScreenService;
 
-public class ResultService {
-    public AnalysisResultManager fetchByAnalysisIdForDisplay(Integer analysisId) throws Exception {
-        return remote().fetchByAnalysisIdForDisplay(analysisId);
+public class AuxFieldValueManagerProxy {
+    protected static final String AUXILIARY_SERVICE_URL = "org.openelis.modules.auxiliary.server.AuxiliaryService";
+    protected ScreenService service;
+    
+    public AuxFieldValueManagerProxy(){
+        service = new ScreenService("OpenELISServlet?service="+AUXILIARY_SERVICE_URL);
     }
     
-    public AnalysisResultManager fetchByAnalysisId(AnalysisDO anDO) throws Exception {
-        return remote().fetchByAnalysisId(anDO.getId(), anDO.getTestId());
+    public AuxFieldValueManager fetchByAuxFieldId(Integer auxFieldId) throws Exception {
+        return service.call("fetchByAuxFieldId", auxFieldId);
+        
     }
     
-    public AnalysisResultManager fetchNewByTestId(Integer testId) throws Exception {
-        return remote().fetchByTestId(testId);
+    public AuxFieldValueManager add(AuxFieldValueManager man) throws Exception {
+        throw new UnsupportedOperationException();
     }
     
-    private ResultManagerRemote remote() {
-        return (ResultManagerRemote)EJBFactory.lookup("openelis/ResultManagerBean/remote");
+    public AuxFieldValueManager update(AuxFieldValueManager man) throws Exception {
+        throw new UnsupportedOperationException();    
+    }
+    
+    public void validate(AuxFieldValueManager man, ValidationErrorsList errorsList) throws Exception {
+        
     }
 }

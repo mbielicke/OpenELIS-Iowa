@@ -454,34 +454,34 @@ xmlns:testMetaMap="xalan://org.openelis.metamap.TestMetaMap" xmlns:sectionMeta="
 				<TablePanel padding="0" spacing="0">
 	              <row>
 	                <table key="testResultsTable" width="695" maxRows="8" showScroll="ALWAYS" title="">
-	                  <col width="150">
+	                  <col width="200">
 	                    <label />
 	                  </col>
-	                  <col width="150">
+	                  <col width="200">
 	                    <label />
 	                  </col>
-	                  <col width="150">
+	                  <col width="200">
 	                    <label />
 	                  </col>
-	                  <col width="150">
+	                  <col width="200">
 	                    <label />
 	                  </col>
-	                  <col width="150">
+	                  <col width="200">
 	                    <label />
 	                  </col>
-	                  <col width="150">
+	                  <col width="200">
 	                    <label />
 	                  </col>
-	                  <col width="150">
+	                  <col width="200">
 	                    <label />
 	                  </col>
-	                  <col width="150">
+	                  <col width="200">
 	                    <label />
 	                  </col>
-	                  <col width="150">
+	                  <col width="200">
 	                    <label />
 	                  </col>
-	                  <col width="150">
+	                  <col width="200">
 	                    <label />
 	                  </col>
 	                </table>
@@ -754,16 +754,16 @@ xmlns:testMetaMap="xalan://org.openelis.metamap.TestMetaMap" xmlns:sectionMeta="
               <HorizontalPanel width="100%" padding="0" spacing="0">
                 <TablePanel padding="0" spacing="0">
                 <row>
-                 <table key="auxValsTable" title="" width="auto" maxRows="5" showScroll="ALWAYS">
-                  <col width="250" header="{resource:getString($constants,'name')}">
-                    <label />
-                  </col>
-                </table>
+	                 <table key="auxGroupsTable" title="" width="auto" maxRows="8" showScroll="ALWAYS">
+	                  <col width="175" header="{resource:getString($constants,'auxGroup')}">
+	                    <label />
+	                  </col>
+	                </table>
                 </row>
                 <row>
                 <widget style="TableButtonFooter">
                 <HorizontalPanel>
-                  <appButton key="addauxButton" style="Button" action="addStorage">
+                  <appButton key="addAuxButton" style="Button" action="addStorage">
                     <HorizontalPanel>
                       <AbsolutePanel style="AddRowButtonImage" />
                       <text>
@@ -771,7 +771,7 @@ xmlns:testMetaMap="xalan://org.openelis.metamap.TestMetaMap" xmlns:sectionMeta="
                       </text>
                     </HorizontalPanel>
                   </appButton>
-                  <appButton key="removeauxButton" style="Button" action="removeStorage">
+                  <appButton key="removeAuxButton" style="Button" action="removeStorage">
                     <HorizontalPanel>
                       <AbsolutePanel style="RemoveRowButtonImage" />
                       <text>
@@ -784,14 +784,37 @@ xmlns:testMetaMap="xalan://org.openelis.metamap.TestMetaMap" xmlns:sectionMeta="
                 </row>
                 </TablePanel>
                 <VerticalPanel>
-                 <table key="auxVals2Table" title="" width="auto" maxRows="5" showScroll="ALWAYS">
-                  <col width="125" header="{resource:getString($constants,'name')}">
-                    <label />
-                  </col>
-                  <col width="125" header="{resource:getString($constants,'value')}">
-                    <label />
-                  </col>
-                </table>
+	                 <table key="auxValsTable" title="" width="auto" maxRows="7" showScroll="ALWAYS">
+	                 <col width="55" header="{resource:getString($constants,'analyteReportable')}">
+	                 <check/>
+	                 </col>
+	                  <col width="210" header="{resource:getString($constants,'name')}">
+	                    <label />
+	                  </col>
+	                  <col width="210" header="{resource:getString($constants,'value')}">
+	                    <label />
+	                  </col>
+	                </table>
+	            <TablePanel style="Form">
+                <row>
+	                <text style="Prompt">
+	                	<xsl:value-of select="resource:getString($constants,'method')" />:
+	              	</text>
+              		<textbox key="auxMethod" width="150px"/>
+              		<text style="Prompt">
+	                	<xsl:value-of select="resource:getString($constants,'unit')" />:
+	              	</text>
+              		<textbox key="auxUnits" width="150px"/>
+                </row>
+                <row>
+	                <text style="Prompt">
+	                	<xsl:value-of select="resource:getString($constants,'desc')" />:
+	              	</text>
+	              	<widget colspan="3">
+              			<textbox key="auxDesc" width="400px"/>
+              		</widget>
+                </row>
+                </TablePanel>
                 </VerticalPanel>
               </HorizontalPanel>
             </tab>

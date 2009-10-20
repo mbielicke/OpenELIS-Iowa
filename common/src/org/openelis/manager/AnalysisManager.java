@@ -25,7 +25,6 @@
 */
 package org.openelis.manager;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 
 import org.openelis.domain.AnalysisViewDO;
@@ -244,7 +243,7 @@ public class AnalysisManager implements RPC, HasNotesInt {
             if(item.analysis != null){
                 if(item.analysis.getId() != null && item.analysis.getId() > -1){
                     try{
-                        item.analysisResult = AnalysisResultManager.fetchAnalysisId(item.analysis.getId());
+                        item.analysisResult = AnalysisResultManager.fetchAnalysisId(item.analysis.getId(), item.analysis.getTestId());
                     }catch(NotFoundException e){
                         //ignore
                     }catch(Exception e){
@@ -253,6 +252,29 @@ public class AnalysisManager implements RPC, HasNotesInt {
                 }else if(item.analysis.getTestId() != null){
                     try{
                         item.analysisResult = AnalysisResultManager.fetchByTestId(item.analysis.getTestId());
+                    }catch(NotFoundException e){
+                        //ignore
+                    }catch(Exception e){
+                        throw e;
+                    }
+                }
+            }
+        }
+            
+        if(item.analysisResult == null)
+            item.analysisResult = AnalysisResultManager.getInstance();
+    
+        return item.analysisResult;
+    }
+    
+    public AnalysisResultManager getDisplayAnalysisResultAt(int i) throws Exception {
+        AnalysisListItem item = getItem(i);
+
+        if (item.analysisResult == null) {
+            if(item.analysis != null){
+                if(item.analysis.getId() != null && item.analysis.getId() > -1){
+                    try{
+                        item.analysisResult = AnalysisResultManager.fetchAnalysisIdForDisplay(item.analysis.getId());
                     }catch(NotFoundException e){
                         //ignore
                     }catch(Exception e){
