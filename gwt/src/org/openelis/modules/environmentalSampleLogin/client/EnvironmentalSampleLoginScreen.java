@@ -1165,6 +1165,9 @@ public class EnvironmentalSampleLoginScreen extends Screen {
                 window.clearStatus();
             } catch (ValidationErrorsList e) {
                 showErrors(e);
+                
+                if(e.hasWarnings())
+                    showWarningsDialog(e);
             } catch (Exception e) {
                 Window.alert("commitAdd(): " + e.getMessage());
                 window.clearStatus();
@@ -1173,6 +1176,42 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             window.setBusy(consts.get("updating"));
             try {
                 manager.validate();
+                manager = manager.update();
+
+                setState(Screen.State.DISPLAY);
+                DataChangeEvent.fire(this);
+                window.clearStatus();
+            } catch (ValidationErrorsList e) {
+                showErrors(e);
+                
+                if(e.hasWarnings())
+                    showWarningsDialog(e);
+            } catch (Exception e) {
+                Window.alert("commitUpdate(): " + e.getMessage());
+            }
+        }
+    }
+    
+    protected void commitWithWarnings() {
+        manager.getSample().setStatusId(DictionaryCache.getIdFromSystemName("sample_error"));
+        
+        if (state == State.ADD) {
+            window.setBusy(consts.get("adding"));
+            try {
+                manager = manager.add();
+
+                setState(Screen.State.DISPLAY);
+                DataChangeEvent.fire(this);
+                window.clearStatus();
+            } catch (ValidationErrorsList e) {
+                showErrors(e);
+            } catch (Exception e) {
+                Window.alert("commitAdd(): " + e.getMessage());
+                window.clearStatus();
+            }
+        } else if (state == State.UPDATE) {
+            window.setBusy(consts.get("updating"));
+            try {
                 manager = manager.update();
 
                 setState(Screen.State.DISPLAY);
