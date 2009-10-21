@@ -1342,13 +1342,13 @@ public class TestScreen extends Screen {
                     }
                 } else {
                     TableFieldErrorException tfe = (TableFieldErrorException)ex;
-                    ((TableWidget)def.getWidget(tfe.getTableKey())).setCellError(tfe.getRowIndex(),
+                    ((TableWidget)def.getWidget(tfe.getTableKey())).setCellException(tfe.getRowIndex(),
                                                                                  tfe.getFieldName(),
-                                                                                 tfe.getMessage());
+                                                                                 tfe);
                 }
             } else if(ex instanceof FieldErrorException){
                 FieldErrorException fe = (FieldErrorException)ex;
-                ((HasField)def.getWidget(fe.getFieldName())).addError(fe.getMessage());
+                ((HasField)def.getWidget(fe.getFieldName())).addException(fe);
             } else if (ex instanceof FormErrorException) {
                 window.setError(ex.getMessage());
                 return;

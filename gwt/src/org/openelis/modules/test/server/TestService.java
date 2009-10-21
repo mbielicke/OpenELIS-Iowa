@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openelis.common.AutocompleteRPC;
+import org.openelis.domain.IdNameVO;
 import org.openelis.domain.TestMethodViewDO;
 import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.RPC;
@@ -219,8 +220,8 @@ public class TestService {
     } 
     
     public AutocompleteRPC getScriptletMatches(AutocompleteRPC rpc) {
-        rpc.model = (ArrayList<RPC>)scriptletRemote().getScriptletAutoCompleteByName(rpc.match.trim() + "%",10);        
-        return rpc;
+        //rpc.model = (ArrayList<IdNameVO>)scriptletRemote().findByName(rpc.match.trim() + "%",10);        
+        return null;
     }
     
     public AutocompleteRPC getTrailerMatches(AutocompleteRPC rpc) {
