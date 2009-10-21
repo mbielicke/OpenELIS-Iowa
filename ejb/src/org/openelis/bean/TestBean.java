@@ -1226,11 +1226,10 @@ public class TestBean implements TestRemote, TestLocal {
                     query.setParameter("id", unitId);
                     unitText = (String)query.getResultList().get(0);
 
-                    exceptionList.add(new GridFieldErrorException("illegalUnitOfMeasureException:" +
-                                                                  unitText, i, j,
+                    exceptionList.add(new GridFieldErrorException("illegalUnitOfMeasureException", i, j,
                                                                   TestMeta.getTestResult()
                                                                           .getUnitOfMeasureId(),
-                                                                  "resultTable"));    
+                                                                  "resultTable",unitText));    
                     valid = false;
                     continue;
                 }
