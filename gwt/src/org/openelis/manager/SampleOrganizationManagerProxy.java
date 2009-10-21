@@ -27,14 +27,17 @@ package org.openelis.manager;
 
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.SampleOrganizationDO;
+import org.openelis.gwt.common.FieldErrorWarning;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.FormErrorWarning;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.services.ScreenService;
+import org.openelis.metamap.SampleEnvironmentalMetaMap;
 
 public class SampleOrganizationManagerProxy {
     protected static final String SAMPLE_SERVICE_URL = "org.openelis.modules.sample.server.SampleService";
     protected ScreenService service;
+    protected SampleEnvironmentalMetaMap META = new SampleEnvironmentalMetaMap();
     
     public SampleOrganizationManagerProxy(){
         service = new ScreenService("OpenELISServlet?service="+SAMPLE_SERVICE_URL);
@@ -79,7 +82,7 @@ public class SampleOrganizationManagerProxy {
             errorsList.add(new FormErrorException("multipleReportToException"));
         
         if(numReportTo == 0)
-            errorsList.add(new FormErrorWarning("multipleBillToException"));
+            errorsList.add(new FieldErrorWarning("multipleBillToException",META.SAMPLE.SAMPLE_ORGANIZATION.ORGANIZATION.getName()));
             
         if(numBillTo == 0)
             errorsList.add(new FormErrorWarning("multipleBillToException"));
