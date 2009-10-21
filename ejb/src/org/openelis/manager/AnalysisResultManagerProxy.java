@@ -30,48 +30,45 @@ import java.util.HashMap;
 
 import javax.naming.InitialContext;
 
-import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.AnalyteDO;
 import org.openelis.domain.ResultViewDO;
-import org.openelis.domain.TestAnalyteViewDO;
-import org.openelis.domain.TestResultDO;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.AnalysisLocal;
 import org.openelis.local.ResultLocal;
-import org.openelis.utils.ReferenceTableCache;
 
 public class AnalysisResultManagerProxy {
-    public AnalysisResultManager fetchByAnalysisId(Integer analysisId) throws Exception {
-        return null;
-        /*
-        ArrayList<ArrayList<TestAnalyteViewDO>> grid = 
-            (ArrayList<ArrayList<TestAnalyteViewDO>>)local().fetchByAnalysisId(analysisId);
-        AnalysisResultManager arm = AnalysisResultManager.getInstance();
-        arm.setResults(grid);
+    
+    public AnalysisResultManager fetchByAnalysisIdForDisplay(Integer analysisId) throws Exception {
+        ArrayList<ArrayList<ResultViewDO>> results = new ArrayList<ArrayList<ResultViewDO>>();
         
-        arm.setAnalysisId(analysisId);
-
-        return arm;*/
+        local().fetchByAnalysisIdForDisplay(analysisId, results);
+        AnalysisResultManager man = AnalysisResultManager.getInstance();
+        man.setResults(results);
+        
+        return man;
+    }
+    
+    public AnalysisResultManager fetchByAnalysisId(Integer analysisId, Integer testId) throws Exception {
+        ArrayList<ArrayList<ResultViewDO>> results = new ArrayList<ArrayList<ResultViewDO>>();
+        HashMap<Integer, AnalyteDO> analyteList = new HashMap<Integer, AnalyteDO>();
+        
+        local().fetchByAnalysisId(analysisId, results, analyteList);
+        AnalysisResultManager man = AnalysisResultManager.getInstance();
+        man.setResults(results);
+        man.setAnalyteList(analyteList);
+        man.setTestManager(TestManager.findByIdWithAnalytesAndResults(testId));
+        
+        return man;
     }
     
     public AnalysisResultManager fetchNewByTestId(Integer testId) throws Exception {
-        System.out.println("1");
         ArrayList<ArrayList<ResultViewDO>> results = new ArrayList<ArrayList<ResultViewDO>>();
-        System.out.println("2");
-        HashMap<Integer, TestAnalyteViewDO> testAnalyteList = new HashMap<Integer, TestAnalyteViewDO>();
-        System.out.println("3");
-        HashMap<Integer, TestResultDO> testResultList = new HashMap<Integer, TestResultDO>();
-        System.out.println("4");
         HashMap<Integer, AnalyteDO> analyteList = new HashMap<Integer, AnalyteDO>();
-        System.out.println("5");
-        System.out.println("["+results+"]");
-        local().fetchByTestIdNoResults(testId, results, testAnalyteList, testResultList, analyteList);
-        System.out.println("["+results+"]");
+        
+        local().fetchByTestIdNoResults(testId, results, analyteList);
         AnalysisResultManager man = AnalysisResultManager.getInstance();
         man.setResults(results);
-        man.setTestAnalyteList(testAnalyteList);
-        man.setTestResultList(testResultList);
         man.setAnalyteList(analyteList);
+        man.setTestManager(TestManager.findByIdWithAnalytesAndResults(testId));
         
         return man;
     }
