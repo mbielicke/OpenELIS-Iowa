@@ -32,6 +32,7 @@ import org.openelis.common.AutocompleteRPC;
 import org.openelis.domain.StorageLocationAutoDO;
 import org.openelis.domain.StorageViewDO;
 import org.openelis.gwt.common.Datetime;
+import org.openelis.gwt.common.LocalizedException;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.GetMatchesEvent;
 import org.openelis.gwt.event.GetMatchesHandler;
@@ -116,7 +117,7 @@ public class StorageTab extends Screen {
                             checkout = (Datetime)tableRow.cells.get(3).value;
                             
                             if(checkin != null && checkout != null && checkout.compareTo(checkin) <= 0)
-                                storageTable.setCellError(row, col, consts.get("checkinDateAfterCheckoutDateException"));
+                                storageTable.setCellException(row, col, new LocalizedException("checkinDateAfterCheckoutDateException"));
                             break;
                     case 3:
                             storageDO.setCheckout((Datetime)val);
@@ -125,7 +126,7 @@ public class StorageTab extends Screen {
                             checkout = (Datetime)tableRow.cells.get(3).value;
                             
                             if(checkin != null && checkout != null && checkout.compareTo(checkin) <= 0)
-                                storageTable.setCellError(row, col, consts.get("checkinDateAfterCheckoutDateException"));
+                                storageTable.setCellException(row, col, new LocalizedException("checkinDateAfterCheckoutDateException"));
                             break;
                 }
             }
@@ -303,7 +304,7 @@ public class StorageTab extends Screen {
             checkout = (Datetime)storageTable.getObject(i, 3);
             
             if(checkin != null && checkout != null && checkout.compareTo(checkin) <= 0){
-                storageTable.setCellError(i, 3, consts.get("checkinDateAfterCheckoutDateException"));
+                storageTable.setCellException(i, 3, new LocalizedException("checkinDateAfterCheckoutDateException"));
                 returnValue = false;
             }
         }
