@@ -37,6 +37,7 @@ import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.domain.TestResultDO;
 import org.openelis.domain.TestTypeOfSampleDO;
 import org.openelis.gwt.common.GridFieldErrorException;
+import org.openelis.gwt.common.LocalizedException;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.BeforeGetMatchesEvent;
@@ -1071,7 +1072,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
         int dindex,trindex,col,i;
         String field,message;
         TableDataRow trow;
-        ArrayList<String> errors;
+        ArrayList<LocalizedException> errors;
         
         
         dindex = error.getRowIndex();
@@ -1088,20 +1089,20 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
         }
         
         if(TestMeta.getTestAnalyte().getResultGroup().equals(field)) {
-            errors = analyteTable.getCell(trindex, col+1).getErrors();
+            errors = analyteTable.getCell(trindex, col+1).getExceptions();
             if(errors == null || !errors.contains(message))
-                analyteTable.setCellError(trindex, col+1, message);
+                analyteTable.setCellException(trindex, col+1, error);
         } else if(col == 0){
-            errors = analyteTable.getCell(trindex, col).getErrors();
+            errors = analyteTable.getCell(trindex, col).getExceptions();
             if(errors == null || !errors.contains(message))
-                analyteTable.setCellError(trindex, col, message);
+                analyteTable.setCellException(trindex, col, error);
         } else {
             for(i = trindex-1; i > -1; i--) {            
                 trow = analyteTable.getRow(i); 
-                errors = analyteTable.getCell(i, col+1).getErrors();                
+                errors = analyteTable.getCell(i, col+1).getExceptions();                
                 if((Boolean)trow.data) { 
                     if((errors == null || !errors.contains(message))) {                               
-                        analyteTable.setCellError(i, col+1, message);
+                        analyteTable.setCellException(i, col+1, error);
                     }
                     break;                                      
               }
@@ -1508,7 +1509,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
         for(i = 0; i < resultTable.numRows(); i++) {
             row = resultTable.getRow(i);
             for(j = 0; j < row.cells.size(); j++) {
-                resultTable.clearCellError(i, j);
+                resultTable.clearCellExceptions(i, j);
             }
         }
         
@@ -1518,15 +1519,15 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
             if (exc.getRowIndex() == group) {
                 if(message.indexOf("illegalUnitOfMeasureException") != -1) {
                     unit = message.split(":");
-                    resultTable.setCellError(exc.getColumnIndex(),
+                    resultTable.setCellException(exc.getColumnIndex(),
                                              exc.getFieldName(),
-                                             consts.get("illegalUnitOfMeasureException")+unit[1]);
+                                             new LocalizedException("illegalUnitOfMeasureException",unit[1]));
                     
                     
                 } else {      
-                    resultTable.setCellError(exc.getColumnIndex(),
+                    resultTable.setCellException(exc.getColumnIndex(),
                                               exc.getFieldName(),
-                                              exc.getMessage());
+                                              exc);
                 }
             }
         }
@@ -1591,11 +1592,11 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
                 resultTable.setCell(row,2,finalValue);
                 return finalValue;                
             } else {
-                resultTable.setCellError(row,2, consts.get("illegalNumericFormatException"));
+                resultTable.setCellException(row,2, new LocalizedException("illegalNumericFormatException"));
                 addToResltErrorList(selTab,row,TestMeta.getTestResult().getValue(),"illegalNumericFormatException"); 
             }    
         }  else {
-            resultTable.setCellError(row,2,consts.get("fieldRequiredException"));  
+            resultTable.setCellException(row,2,new LocalizedException("fieldRequiredException"));  
             addToResltErrorList(selTab,row,TestMeta.getTestResult().getValue(),"fieldRequiredException"); 
         }
         resultTable.setCell(row,2,value);
@@ -1636,11 +1637,11 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
             }
             
             if (!valid) {                                            
-                resultTable.setCellError(row,2, consts.get("illegalTiterFormatException"));
+                resultTable.setCellException(row,2, new LocalizedException("illegalTiterFormatException"));
                 addToResltErrorList(selTab,row,TestMeta.getTestResult().getValue(),"illegalTiterFormatException");   
             }
         }  else {
-            resultTable.setCellError(row,2,consts.get("fieldRequiredException"));  
+            resultTable.setCellException(row,2,new LocalizedException("fieldRequiredException"));  
             addToResltErrorList(selTab,row,TestMeta.getTestResult().getValue(),"fieldRequiredException");
         }
         resultTable.setCell(row,2,value); 

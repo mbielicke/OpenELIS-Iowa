@@ -37,6 +37,7 @@ import org.openelis.domain.TestMethodViewDO;
 import org.openelis.domain.TestPrepViewDO;
 import org.openelis.domain.TestReflexViewDO;
 import org.openelis.domain.TestResultDO;
+import org.openelis.gwt.common.LocalizedException;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -231,7 +232,7 @@ public class PrepTestAndReflexTestTab extends Screen implements GetMatchesHandle
                 if(col == 2) {                    
                     val = (TableDataRow)testReflexTable.getRow(row).cells.get(1).getValue();
                     tdc = testReflexTable.getCell(row, 1);                    
-                    if(val == null || val.key == null || tdc.getErrors() != null) {
+                    if(val == null || val.key == null || tdc.getExceptions() != null) {
                         Window.alert(consts.get("selectAnaBeforeRes"));
                         event.cancel();
                     }
@@ -629,7 +630,7 @@ public class PrepTestAndReflexTestTab extends Screen implements GetMatchesHandle
             
             if(id.equals(arow.key)) {
                if((matchLabel && !(val.equals(name))) || !matchLabel) {                   
-                   testReflexTable.setCellError(i, 1, consts.get(key));
+                   testReflexTable.setCellException(i, 1, new LocalizedException(key));
                    arow = new TableDataRow(null,"");
                    trow.cells.get(1).setValue(arow);
                } 
@@ -648,7 +649,7 @@ public class PrepTestAndReflexTestTab extends Screen implements GetMatchesHandle
 
             if(id.equals(rrow.key)) {
                 if ((matchLabel && !(val.equals(value))) || !matchLabel) {
-                    testReflexTable.setCellError(i, 2, consts.get(key));
+                    testReflexTable.setCellException(i, 2, new LocalizedException(key));
                     rrow = new TableDataRow(null, "");
                     trow.cells.get(2).setValue(rrow);
                 }

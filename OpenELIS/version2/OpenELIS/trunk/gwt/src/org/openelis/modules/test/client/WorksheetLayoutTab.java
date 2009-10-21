@@ -36,6 +36,7 @@ import org.openelis.domain.IdNameDO;
 import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.domain.TestWorksheetAnalyteViewDO;
 import org.openelis.domain.TestWorksheetItemDO;
+import org.openelis.gwt.common.LocalizedException;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -572,7 +573,7 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
 
             if (data.equals(id)) {
                 if ((matchLabel && ! (val.equals(name))) || !matchLabel)
-                    worksheetAnalyteTable.setCellError(i, 0, consts.get(key));
+                    worksheetAnalyteTable.setCellException(i, 0, new LocalizedException(key));
             }
         }
     }
