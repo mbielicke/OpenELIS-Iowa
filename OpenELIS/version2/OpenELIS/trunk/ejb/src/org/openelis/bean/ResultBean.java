@@ -43,6 +43,7 @@ import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.domain.TestResultDO;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.local.ResultLocal;
+import org.openelis.manager.TestManager;
 
 @Stateless
 
@@ -72,14 +73,13 @@ public class ResultBean implements ResultLocal {
     }
 
     public void fetchByTestIdNoResults(Integer testId, ArrayList<ArrayList<ResultViewDO>> results,
-                                  HashMap<Integer, TestAnalyteViewDO> testAnalyteList, 
-                                  HashMap<Integer, TestResultDO> testResultList,
                                   HashMap<Integer, AnalyteDO> analyteList) throws Exception {
         List<TestAnalyteViewDO> testAnalytes = null;
         List<TestResultDO> testResults = null;
         List<AnalyteDO> analytes = null;
         
         //get test_analytes by test id
+        /*
         Query query = manager.createNamedQuery("TestAnalyte.TestAnalyteDOListByTestId");
         query.setParameter("testId", testId);
         testAnalytes = query.getResultList();
@@ -88,14 +88,15 @@ public class ResultBean implements ResultLocal {
         query = manager.createNamedQuery("TestResult.FetchByTestId");
         query.setParameter("testId", testId);
         testResults = query.getResultList();
+        */
         
         //get analytes for test
-        query = manager.createNamedQuery("TestAnalyte.AnalyteByTestId");
+        Query query = manager.createNamedQuery("TestAnalyte.AnalyteByTestId");
         query.setParameter("testId", testId);
         analytes = query.getResultList();
         
         //convert the lists to hashmaps
-        testAnalyteList.clear();
+        /*testAnalyteList.clear();
         TestAnalyteViewDO testAnalyteDO;
         for(int i=0; i <testAnalytes.size(); i++){
             testAnalyteDO = testAnalytes.get(i);
@@ -107,7 +108,7 @@ public class ResultBean implements ResultLocal {
         for(int j=0; j<testResults.size(); j++){
             testResultDO = testResults.get(j);
             testResultList.put(testResultDO.getId(), testResultDO);
-        }
+        }*/
         
         analyteList.clear();
         AnalyteDO analyteDO;
@@ -161,11 +162,65 @@ public class ResultBean implements ResultLocal {
         }
     }
     
+    public void fetchByAnalysisIdForDisplay(Integer analysisId, ArrayList<ArrayList<ResultViewDO>> results) throws Exception {
+        List<ResultViewDO> rslts;
+        
+        rslts = null;
+        //get results by analysis id
+        Query query = manager.createNamedQuery("Result.FetchByAnalysisId");
+        query.setParameter("id", analysisId);
+        rslts = query.getResultList();
+        
+        //build the grid
+        int i, j, rg;
+        ResultViewDO rdo;
+        ArrayList<ResultViewDO> ar;
+
+        j = -1;
+        ar = null;
+        results.clear();
+
+        if (rslts == null || rslts.size() == 0)
+            throw new NotFoundException();
+
+        for (i = 0; i < rslts.size(); i++ ) {
+            rdo = rslts.get(i);
+            
+            rg = rdo.getRowGroup();
+
+            if (j != rg) {
+                ar = new ArrayList<ResultViewDO>(1);
+                ar.add(rdo);
+                results.add(ar);
+                j = rg;
+                continue;
+            }
+            if ("N".equals(rdo.getIsColumn())) {
+                ar = new ArrayList<ResultViewDO>(1);
+                ar.add(rdo);
+                results.add(ar);
+                continue;
+            }
+
+            ar.add(rdo);
+        }
+    }
+    
     public void fetchByAnalysisId(Integer analysisId, ArrayList<ArrayList<ResultViewDO>> results,
                                   HashMap<Integer, AnalyteDO> analyteList) throws Exception {
         List<AnalyteDO> analytes = null;
         List<ResultViewDO> rslts = null;
+        /*
+        //get test_analytes by test id
+        Query query = manager.createNamedQuery("TestAnalyte.TestAnalyteDOListByTestId");
+        query.setParameter("testId", testId);
+        testAnalytes = query.getResultList();
         
+        //get test_results by test id
+        query = manager.createNamedQuery("TestResult.FetchByTestId");
+        query.setParameter("testId", testId);
+        testResults = query.getResultList();
+        */
         //get analytes by analysis id
         Query query = manager.createNamedQuery("Result.AnalyteByAnalysisId");
         query.setParameter("id", analysisId);
@@ -198,7 +253,6 @@ public class ResultBean implements ResultLocal {
 
         for (i = 0; i < rslts.size(); i++ ) {
             rdo = rslts.get(i);
-            
             rg = rdo.getRowGroup();
 
             if (j != rg) {

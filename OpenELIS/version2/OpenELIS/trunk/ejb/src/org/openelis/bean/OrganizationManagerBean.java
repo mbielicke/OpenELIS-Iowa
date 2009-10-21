@@ -32,7 +32,6 @@ import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
-import javax.persistence.PersistenceContext;
 import javax.transaction.UserTransaction;
 
 import org.jboss.annotation.security.SecurityDomain;
@@ -57,9 +56,6 @@ public class OrganizationManagerBean implements OrganizationManagerRemote {
 
     @EJB
     private LockLocal      lockBean;
-
-    public OrganizationManagerBean() {
-    }
 
     public OrganizationManager fetchById(Integer id) throws Exception {
         return OrganizationManager.fetchById(id);
