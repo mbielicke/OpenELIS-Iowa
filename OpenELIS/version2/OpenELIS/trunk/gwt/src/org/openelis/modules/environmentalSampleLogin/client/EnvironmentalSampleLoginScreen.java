@@ -1166,7 +1166,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             } catch (ValidationErrorsList e) {
                 showErrors(e);
                 
-                if(e.hasWarnings())
+                if(!e.hasErrors() && e.hasWarnings())
                     showWarningsDialog(e);
             } catch (Exception e) {
                 Window.alert("commitAdd(): " + e.getMessage());
@@ -1184,7 +1184,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             } catch (ValidationErrorsList e) {
                 showErrors(e);
                 
-                if(e.hasWarnings())
+                if(!e.hasErrors() && e.hasWarnings())
                     showWarningsDialog(e);
             } catch (Exception e) {
                 Window.alert("commitUpdate(): " + e.getMessage());

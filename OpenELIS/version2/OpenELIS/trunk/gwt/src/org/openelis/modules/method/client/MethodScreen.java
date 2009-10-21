@@ -31,6 +31,7 @@ import java.util.EnumSet;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.MethodDO;
 import org.openelis.gwt.common.Datetime;
+import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.RPC;
@@ -526,7 +527,7 @@ public class MethodScreen extends Screen {
     protected boolean validate() {
     	boolean valid = super.validate();
     	if(activeEnd.getFieldValue() != null && activeEnd.getFieldValue().compareTo(activeBegin.getFieldValue()) <= 0){
-    		activeEnd.addError(consts.get("endDateAfterBeginDateException"));
+    		activeEnd.addException(new FieldErrorException("endDateAfterBeginDateException",META.getActiveEnd()));
     		return false;
     	}
     	return valid;
