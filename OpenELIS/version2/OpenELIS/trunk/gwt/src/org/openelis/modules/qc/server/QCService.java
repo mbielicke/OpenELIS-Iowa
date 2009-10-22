@@ -241,7 +241,7 @@ public class QCService implements
             dataModel = getInvItemAutocompleteModel(items);
         } else if("preparedBy".equals(cat)) {
             remote = (SystemUserUtilRemote)EJBFactory.lookup("openelis/SystemUserUtilBean/remote");
-            users = remote.systemUserAutocompleteByName(match.trim() + "%", 10);
+            users = remote.findSystemUserByLogin(match.trim() + "%", 10);
             dataModel = getPrepByAutocompleteModel(users);
         } else if("analyte".equals(cat)) {
             anaRemote = (AnalyteRemote)EJBFactory.lookup("openelis/AnalyteBean/remote");

@@ -25,7 +25,7 @@
 */
 package org.openelis.bean;
 
-import java.util.List;
+import java.util.ArrayList;
 
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -33,7 +33,9 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
+import org.openelis.domain.IdNameVO;
 import org.openelis.remote.ScriptletRemote;
+import org.openelis.utilcommon.DataBaseUtil;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -42,11 +44,13 @@ public class ScriptletBean implements ScriptletRemote {
     @PersistenceContext(name = "openelis")
     private EntityManager manager;
     
-    public List getScriptletAutoCompleteByName(String match, int maxResults) {
-        Query query = manager.createNamedQuery("Scriptlet.ScriptletAutoCompleteByName");
-        query.setParameter("name", match);       
+    
+    @SuppressWarnings("unchecked")
+	public ArrayList<IdNameVO> findByName(String match, int maxResults) {
+        Query query = manager.createNamedQuery("Scriptlet.ScriptletFindByName");
+        query.setParameter("name", match);
         query.setMaxResults(maxResults);
-        return query.getResultList();                        
+        return (ArrayList<IdNameVO>)DataBaseUtil.subList(query.getResultList(), 0, maxResults);
     }
 
 }

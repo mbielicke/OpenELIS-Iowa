@@ -47,7 +47,7 @@ import org.openelis.utils.Auditable;
 
 @NamedQueries({@NamedQuery(name = "Scriptlet.Scriptlet", query = "select distinct new org.openelis.domain.IdNameDO(script.id, script.name) from Scriptlet script  " +
                "order by script.name "),
-               @NamedQuery(name = "Scriptlet.ScriptletAutoCompleteByName", query = "select distinct new org.openelis.domain.IdNameDO(script.id, script.name) from Scriptlet script  " +
+               @NamedQuery(name = "Scriptlet.ScriptletFindByName", query = "select distinct new org.openelis.domain.IdNameVO(script.id, script.name) from Scriptlet script  " +
                "where script.name like :name order by script.name ")})
 
 @Entity

@@ -225,9 +225,9 @@ public class InstrumentService implements
 
         if ("scriptlet".equals(cat)) {
             sremote = (ScriptletRemote)EJBFactory.lookup("openelis/ScriptletBean/remote");
-            entries = sremote.getScriptletAutoCompleteByName(match.trim() + "%",
-                                                             10);
-            dataModel = getAutocompleteModel(entries);
+           // entries = sremote.findByName(match.trim() + "%",
+                                                            // 10);
+            //dataModel = getAutocompleteModel(entries);
         } else if ("testMethod".equals(cat)) {
             tremote = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
             tmlist = tremote.getTestAutoCompleteByName(match.trim() + "%", 10);

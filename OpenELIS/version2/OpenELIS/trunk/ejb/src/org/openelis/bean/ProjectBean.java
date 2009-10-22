@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Resource;
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
@@ -38,30 +39,33 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
-import org.openelis.domain.ProjectParameterDO;
+import org.openelis.domain.IdNameDO;
+import org.openelis.domain.IdNameVO;
 import org.openelis.domain.ProjectViewDO;
-import org.openelis.domain.SecuritySystemUserDO;
 import org.openelis.entity.Project;
-import org.openelis.entity.ProjectParameter;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.TableFieldErrorException;
+import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.data.deprecated.AbstractField;
+import org.openelis.gwt.common.SecurityModule.ModuleFlags;
+import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.LockLocal;
+import org.openelis.local.ProjectLocal;
 import org.openelis.metamap.ProjectMetaMap;
 import org.openelis.remote.ProjectRemote;
 import org.openelis.security.domain.SystemUserDO;
 import org.openelis.security.local.SystemUserUtilLocal;
-import org.openelis.util.QueryBuilder;
+import org.openelis.util.QueryBuilderV2;
+import org.openelis.utilcommon.DataBaseUtil;
 import org.openelis.utils.GetPage;
-import org.openelis.utils.ReferenceTableCache;
+import org.openelis.utils.SecurityInterceptor;
 
 @Stateless
+@RolesAllowed("project-select")
 @SecurityDomain("openelis")
-public class ProjectBean implements ProjectRemote {
+public class ProjectBean implements ProjectLocal, ProjectRemote {
 
     @PersistenceContext(name = "openelis")
     private EntityManager manager;
@@ -80,292 +84,198 @@ public class ProjectBean implements ProjectRemote {
     private static Integer projRefTableId;
     
     public ProjectBean() {
-        projRefTableId = ReferenceTableCache.getReferenceTable("project");
+ 
     }
     
-    public ProjectViewDO getProject(Integer projectId) {
-        ProjectViewDO projectDO;
+    public ProjectViewDO fetchById(Integer id) throws Exception {
+        ProjectViewDO data;
         Query query;
-        SystemUserDO userDO;
         
         query = manager.createNamedQuery("Project.ProjectById");
-        query.setParameter("id", projectId);
-        projectDO = (ProjectViewDO)query.getSingleResult(); 
-        userDO = sysUser.getSystemUser(projectDO.getOwnerId());
-        projectDO.setSystemUserName(userDO.getLoginName());
-        return projectDO;
-    }
-
-    public ProjectViewDO getProjectAndLock(Integer projectId, String session) throws Exception {
-        //SecurityInterceptor.applySecurity(ctx.getCallerPrincipal().getName(), "project", ModuleFlags.UPDATE);
+        query.setParameter("id", id);
+        data = (ProjectViewDO)query.getSingleResult(); 
+        
+        SystemUserDO user= sysUser.getSystemUser(data.getOwnerId());
+        data.setSystemUserName(user.getLoginName());
                 
-        lockBean.getLock(projRefTableId, projectId);
-        return getProject(projectId);
+        return data;
     }
 
-    public ProjectViewDO getProjectAndUnlock(Integer projectId, String session) {
-
-        lockBean.giveUpLock(projRefTableId, projectId);
-        return getProject(projectId);
-    }
-
-    public List<SecuritySystemUserDO> ownerAutocompleteByName(String loginName, int numResult){    
-        SecuritySystemUserDO secUserDO;
-        SystemUserDO userDO;
-        List<SystemUserDO> userDOList;
-        List<SecuritySystemUserDO> secUserDOList;
-                        
-        userDOList = sysUser.systemUserAutocompleteByLoginName(loginName,numResult);
-        secUserDOList = new ArrayList<SecuritySystemUserDO>();
-        for(int i=0; i < userDOList.size(); i++) {
-            userDO = userDOList.get(i);
-            secUserDO = new SecuritySystemUserDO(userDO.getId(),userDO.getLoginName(),
-                                                 userDO.getLastName(),userDO.getFirstName(),
-                                                 userDO.getInitials(),userDO.getIsEmployee(),
-                                                 userDO.getIsActive());
-            secUserDOList.add(secUserDO);
-        } 
-        return secUserDOList;        
-    }
-    
-    public List autoCompleteLookupByName(String projectName, Integer maxResults) {
-        Query query = manager.createNamedQuery("Project.ProjectByName");
-        query.setParameter("name", projectName);
-        query.setMaxResults(maxResults);
-    
-        return query.getResultList(); 
-    }
-
-    public List<ProjectParameterDO> getProjectParameters(Integer projectId) {
+    public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception {
+        QueryBuilderV2 qb;
+        List list;
         Query query;
         
-        query = manager.createNamedQuery("ProjectParameter.ProjectParameterByProjectId");
-        query.setParameter("projectId",projectId);        
-        return query.getResultList();
-    }
-
-    public Integer updateProject(ProjectViewDO projectDO,         
-                                 List<ProjectParameterDO> paramDOList) throws Exception {       
-        Integer projectId;
-        Project project;
-        ProjectParameterDO paramDO;
-        ProjectParameter param;
-        
-        projectId = projectDO.getId();
-        
-        if (projectId != null) {
-            // we need to call lock one more time to make sure their lock
-            // didnt expire and someone else grabbed the record
-            lockBean.validateLock(projRefTableId, projectId);
-        }
-
-        validateProject(projectDO, paramDOList);
-        
-        manager.setFlushMode(FlushModeType.COMMIT);
-        project = null;
-        
-        if(projectId == null) {
-            project = new Project();
-        } else {            
-            project = manager.find(Project.class,projectId);
-        } 
-        
-        project.setCompletedDate(projectDO.getCompletedDate());
-        project.setDescription(projectDO.getDescription());
-        project.setIsActive(projectDO.getIsActive());
-        project.setName(projectDO.getName());
-        project.setOwnerId(projectDO.getOwnerId());
-        project.setReferenceTo(projectDO.getReferenceTo());
-        project.setScriptletId(projectDO.getScriptletId());
-        project.setStartedDate(projectDO.getStartedDate());
-       
-        projectId = project.getId();
-        if(projectId == null) {
-            manager.persist(project);
-        }
-        
-        if(paramDOList != null) {
-            for(int i = 0; i < paramDOList.size(); i++) {
-                paramDO = paramDOList.get(i);
-                if(paramDO.getId() == null) 
-                    param = new ProjectParameter();
-                else
-                    param = manager.find(ProjectParameter.class, paramDO.getId());
-                
-                //these are commented out because the delete flag has been removed from the dos
-                //this will get fixed when the screen is rewritten
-             //   if (paramDO.getDelete() && paramDO.getId() != null) {                    
-             //       manager.remove(param);
-
-             //   } else if(!paramDO.getDelete()){
-                    param.setParameter(paramDO.getParameter());
-                    param.setOperationId(paramDO.getOperationId());
-                    param.setValue(paramDO.getValue());
-                    param.setProjectId(project.getId());
-                    
-                    if (param.getId() == null) {
-                        manager.persist(param);
-                    }
-             //   }
-            }
-        }
-        lockBean.giveUpLock(projRefTableId, projectId);        
-        return project.getId();
-    }
-
-    public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception {
-        StringBuffer sb;
-        QueryBuilder qb;
-        List returnList;
-        Query query;
-        
-        sb = new StringBuffer();
-        qb = new QueryBuilder();
+        qb = new QueryBuilderV2();
         
         qb.setMeta(ProjMeta);
 
-        qb.setSelect("distinct new org.openelis.domain.IdNameDO(" +ProjMeta.getId()
+        qb.setSelect("distinct new org.openelis.domain.IdNameVO(" +ProjMeta.getId()
                      + ", "
                      + ProjMeta.getName()
                      + ") ");               
         
-        qb.addWhere(fields);        
+        qb.constructWhere(fields);        
         qb.setOrderBy(ProjMeta.getName());
 
-        sb.append(qb.getEJBQL());                                
-        query = manager.createQuery(sb.toString());
+        query = manager.createQuery(qb.getEJBQL());
 
         if (first > -1 && max > -1)
             query.setMaxResults(first + max);
 
         // ***set the parameters in the query
-        qb.setQueryParams(query);
+        QueryBuilderV2.setQueryParams(query,fields);
 
-        returnList = GetPage.getPage(query.getResultList(), first, max);
+        list = GetPage.getPage(query.getResultList(), first, max);
 
-        if (returnList == null)
+        list = query.getResultList();
+        if (list.isEmpty())
+            throw new NotFoundException();
+        list = (ArrayList<IdNameVO>)DataBaseUtil.subList(list, first, max);
+        if (list == null)
             throw new LastPageException();
-        else
-            return returnList;
+
+        return (ArrayList<IdNameVO>)list;
     }
-    
+
+    public ProjectViewDO add(ProjectViewDO data) throws Exception {
         
-    private void validateProject(ProjectViewDO projectDO, 
-                                 List<ProjectParameterDO> paramDOList) throws Exception{
-        ValidationErrorsList exceptionList;
-        
-        exceptionList = new ValidationErrorsList();
-        validateProject(projectDO, exceptionList);        
-        validateProjectParameters(paramDOList, exceptionList);
-        
-        if(exceptionList.size() > 0) 
-            throw exceptionList;
-    }   
-    
-    private void validateProject(ProjectViewDO projectDO, ValidationErrorsList exceptionList) {
-        boolean checkDuplicate, overlap;
-        Datetime dcompleteDate, dstartDate,qcompleteDate, qstartDate;
-        Integer id;
-        String active;
-        int iter;
-        Query query;
         Project project;
-        List<Project> list;
-        
-        checkDuplicate = true;
-        dstartDate = projectDO.getStartedDate();
-        dcompleteDate = projectDO.getCompletedDate();
-        id = projectDO.getId();
-        active = projectDO.getIsActive();        
-        if (projectDO.getName() == null || "".equals(projectDO.getName())) {
-            exceptionList.add(new FieldErrorException("fieldRequiredException",
-                                                      ProjMeta.getName()));
-            checkDuplicate = false;
-        }
-        if (projectDO.getIsActive() == null) {
-            exceptionList.add(new FieldErrorException("fieldRequiredException",
-                                                      ProjMeta.getIsActive()));
-            checkDuplicate = false;
-        }
-        
-        if (projectDO.getOwnerId() == null) {
-            exceptionList.add(new FieldErrorException("fieldRequiredException",
-                                                      ProjMeta.getOwnerId()));
-            checkDuplicate = false;
-        }
 
-        if (checkDuplicate) {
-            if (dcompleteDate != null && dcompleteDate.before(dstartDate)) {
-                exceptionList.add(new FormErrorException("endDateAfterBeginDateException"));
-                return;
-            }
-            
-            query = manager.createNamedQuery("Project.ProjectListByName");
-            query.setParameter("name", projectDO.getName());
-            list = query.getResultList();
-            
-            for (iter = 0; iter < list.size(); iter++) {
-                overlap = false;
-                project = (Project)list.get(iter);
-                if (!project.getId().equals(id)) {
-                    if (project.getIsActive().equals(active)) {
-                        if ("Y".equals(active)) {
-                            exceptionList.add(new FormErrorException("projectActiveException"));
-                            break;
-                        }
-                        
-                        qcompleteDate = project.getCompletedDate();
-                        qstartDate = project.getStartedDate();                           
-                        if(qstartDate != null && qcompleteDate != null) {
-                            if (qstartDate.before(dcompleteDate) && (qcompleteDate.after(dstartDate))) {
-                                overlap = true;
-                            } else if (qstartDate.before(dstartDate) && (qcompleteDate.after(dcompleteDate))) {
-                                overlap = true;
-                            } else if (qstartDate.equals(dcompleteDate) || (qcompleteDate.equals(dstartDate))) {
-                                overlap = true;
-                            } else if (qstartDate.equals(dstartDate) || (qcompleteDate.equals(dcompleteDate))) {
-                                overlap = true;
-                            } 
-                        }
-                        if (overlap) 
-                            exceptionList.add(new FormErrorException("projectTimeOverlapException"));
-                        
+        checkSecurity(ModuleFlags.ADD);
+        
+        manager.setFlushMode(FlushModeType.COMMIT);
+        
+        project = new Project();        
+        project.setCompletedDate(data.getCompletedDate());
+        project.setDescription(data.getDescription());
+        project.setIsActive(data.getIsActive());
+        project.setName(data.getName());
+        project.setOwnerId(data.getOwnerId());
+        project.setReferenceTo(data.getReferenceTo());
+        project.setScriptletId(data.getScriptletId());
+        project.setStartedDate(data.getStartedDate());
+       
+        manager.persist(project);
+        data.setId(project.getId());
 
-                    }
-                }
-            } 
-        }
-    }       
-    
-    private void validateProjectParameters(List<ProjectParameterDO> paramDOList,
-                                           ValidationErrorsList exceptionList) {
-        ProjectParameterDO paramDO;
-        String param,value;
-        
-        if(paramDOList != null) {
-            for(int i = 0; i < paramDOList.size(); i++) {
-                paramDO = paramDOList.get(i);
-               // if(paramDO.getDelete())
-                 //   continue;
-                
-                param = paramDO.getParameter();
-                value = paramDO.getValue();
-                if(param == null || "".equals(param)) {
-                    exceptionList.add(new TableFieldErrorException("fieldRequiredException",i,
-                                                                   ProjMeta.getProjectParameter().getParameter()));
-                }
-                
-                if(value == null || "".equals(value)) {
-                    exceptionList.add(new TableFieldErrorException("fieldRequiredException",i,
-                                                                   ProjMeta.getProjectParameter().getValue()));
-                }
-                
-                if(paramDO.getOperationId() == null) {
-                    exceptionList.add(new TableFieldErrorException("fieldRequiredException",i,
-                                                                   ProjMeta.getProjectParameter().getOperationId()));
-                }
-            }
-        }
-        
+        return data;
     }
+
+    public ProjectViewDO update(ProjectViewDO data) throws Exception {
+    	Project project;
+
+        checkSecurity(ModuleFlags.UPDATE);
+        
+        manager.setFlushMode(FlushModeType.COMMIT);
+         
+        project = manager.find(Project.class,data.getId());
+        
+        project.setCompletedDate(data.getCompletedDate());
+        project.setDescription(data.getDescription());
+        project.setIsActive(data.getIsActive());
+        project.setName(data.getName());
+        project.setOwnerId(data.getOwnerId());
+        project.setReferenceTo(data.getReferenceTo());
+        project.setScriptletId(data.getScriptletId());
+        project.setStartedDate(data.getStartedDate());
+               
+        return data;
+    }
+
+    public ArrayList<IdNameDO> findByName(String name, int maxResults) {
+        Query query = manager.createNamedQuery("Project.ProjectByName");
+        query.setParameter("name", name);
+        query.setMaxResults(maxResults);
+    
+        return DataBaseUtil.toArrayList(query.getResultList()); 
+    }
+
+    public void validate(ProjectViewDO projectDO) throws ValidationErrorsList {
+    	boolean checkDuplicate, overlap;
+    	Datetime dcompleteDate, dstartDate,qcompleteDate, qstartDate;
+    	Integer id;
+    	String active;
+    	int iter;
+    	Query query;
+    	Project project;
+    	List<Project> list;
+    	ValidationErrorsList exceptionList = new ValidationErrorsList();
+
+    	checkDuplicate = true;
+    	dstartDate = projectDO.getStartedDate();
+    	dcompleteDate = projectDO.getCompletedDate();
+    	id = projectDO.getId();
+    	active = projectDO.getIsActive();        
+    	if (projectDO.getName() == null || "".equals(projectDO.getName())) {
+    		exceptionList.add(new FieldErrorException("fieldRequiredException",
+    				ProjMeta.getName()));
+    		checkDuplicate = false;
+    	}
+    	if (projectDO.getIsActive() == null) {
+    		exceptionList.add(new FieldErrorException("fieldRequiredException",
+    				ProjMeta.getIsActive()));
+    		checkDuplicate = false;
+    	}
+
+    	if (projectDO.getOwnerId() == null) {
+    		exceptionList.add(new FieldErrorException("fieldRequiredException",
+    				ProjMeta.getOwnerId()));
+    		checkDuplicate = false;
+    	}
+
+    	if (checkDuplicate) {
+    		if (dcompleteDate != null && dcompleteDate.before(dstartDate)) {
+    			exceptionList.add(new FieldErrorException("endDateAfterBeginDateException",
+    					              ProjMeta.getCompletedDate()));
+    			return;
+    		}
+
+    		query = manager.createNamedQuery("Project.ProjectListByName");
+    		query.setParameter("name", projectDO.getName());
+    		list = query.getResultList();
+
+    		for (iter = 0; iter < list.size(); iter++) {
+    			overlap = false;
+    			project = (Project)list.get(iter);
+    			if (!project.getId().equals(id)) {
+    				if (project.getIsActive().equals(active)) {
+    					if ("Y".equals(active)) {
+    						exceptionList.add(new FormErrorException("projectActiveException"));
+    						break;
+    					}
+
+    					qcompleteDate = project.getCompletedDate();
+    					qstartDate = project.getStartedDate();                           
+    					if(qstartDate != null && qcompleteDate != null) {
+    						if (qstartDate.before(dcompleteDate) && (qcompleteDate.after(dstartDate))) {
+    							overlap = true;
+    						} else if (qstartDate.before(dstartDate) && (qcompleteDate.after(dcompleteDate))) {
+    							overlap = true;
+    						} else if (qstartDate.equals(dcompleteDate) || (qcompleteDate.equals(dstartDate))) {
+    							overlap = true;
+    						} else if (qstartDate.equals(dstartDate) || (qcompleteDate.equals(dcompleteDate))) {
+    							overlap = true;
+    						} 
+    					}
+    					if (overlap) 
+    						exceptionList.add(new FormErrorException("projectTimeOverlapException"));
+
+
+    				}
+    			}
+    		} 
+    	}
+    	
+    	if(exceptionList.size() > 0)
+    		throw exceptionList;
+    }       
+
+
+    
+    private void checkSecurity(ModuleFlags flag) throws Exception {
+        SecurityInterceptor.applySecurity(ctx.getCallerPrincipal().getName(), 
+                                          "project", flag);
+    }
+
   }

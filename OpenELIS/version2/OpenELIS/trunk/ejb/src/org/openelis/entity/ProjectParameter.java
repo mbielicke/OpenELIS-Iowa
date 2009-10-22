@@ -42,11 +42,19 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+
+import org.openelis.utilcommon.DataBaseUtil;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
-@NamedQueries({@NamedQuery(name = "ProjectParameter.ProjectParameterByProjectId", query = "select distinct new org.openelis.domain.ProjectParameterDO(pp.id,pp.projectId,"+
-                              "pp.parameter,pp.operationId,pp.value) from ProjectParameter pp where pp.projectId = :projectId")})
+@NamedQueries({
+	@NamedQuery(name = "ProjectParameter.ProjectParameterByProjectId", 
+			    query = "select distinct new org.openelis.domain.ProjectParameterDO(pp.id,pp.projectId,"+
+                         "pp.parameter,pp.operationId,pp.value) from ProjectParameter pp where pp.projectId = :projectId"),
+    @NamedQuery(name = "ProjectParameter.ProjectParameterById",
+    		    query = "select distinct new org.openelis.domain.ProjectParameterDO(pp.id,pp.projectId,"+
+                         "pp.parameter,pp.operationId,pp.value) from ProjectParameter pp where pp.id = :id")
+})
 
 @Entity
 @Table(name="project_parameter")
@@ -79,8 +87,7 @@ public class ProjectParameter implements Auditable, Cloneable {
     return id;
   }
   protected void setId(Integer id) {
-    if((id == null && this.id != null) || 
-       (id != null && !id.equals(this.id)))
+    if(DataBaseUtil.isDifferent(id,this.id))
       this.id = id;
   }
 
@@ -88,8 +95,7 @@ public class ProjectParameter implements Auditable, Cloneable {
     return projectId;
   }
   public void setProjectId(Integer projectId) {
-    if((projectId == null && this.projectId != null) || 
-       (projectId != null && !projectId.equals(this.projectId)))
+    if(DataBaseUtil.isDifferent(projectId,this.projectId))
       this.projectId = projectId;
   }
 
@@ -97,8 +103,7 @@ public class ProjectParameter implements Auditable, Cloneable {
     return parameter;
   }
   public void setParameter(String parameter) {
-    if((parameter == null && this.parameter != null) || 
-       (parameter != null && !parameter.equals(this.parameter)))
+    if(DataBaseUtil.isDifferent(parameter,this.parameter))
       this.parameter = parameter;
   }
 
@@ -106,8 +111,7 @@ public class ProjectParameter implements Auditable, Cloneable {
     return operationId;
   }
   public void setOperationId(Integer operationId) {
-    if((operationId == null && this.operationId != null) || 
-       (operationId != null && !operationId.equals(this.operationId)))
+    if(DataBaseUtil.isDifferent(operationId,this.operationId))
       this.operationId = operationId;
   }
 
@@ -115,8 +119,7 @@ public class ProjectParameter implements Auditable, Cloneable {
     return value;
   }
   public void setValue(String value) {
-    if((value == null && this.value != null) || 
-       (value != null && !value.equals(this.value)))
+    if(DataBaseUtil.isDifferent(value,this.value))
       this.value = value;
   }
 
@@ -133,13 +136,9 @@ public class ProjectParameter implements Auditable, Cloneable {
       Element root = doc.getDocumentElement();
       
       AuditUtil.getChangeXML(id,original.id,doc,"id");
-
       AuditUtil.getChangeXML(projectId,original.projectId,doc,"project_id");
-
       AuditUtil.getChangeXML(parameter,original.parameter,doc,"parameter");
-
       AuditUtil.getChangeXML(operationId,original.operationId,doc,"operation_id");
-
       AuditUtil.getChangeXML(value,original.value,doc,"value");
 
       if(root.hasChildNodes())

@@ -35,6 +35,7 @@ import org.openelis.domain.AuxFieldGroupDO;
 import org.openelis.domain.AuxFieldValueDO;
 import org.openelis.domain.AuxFieldViewDO;
 import org.openelis.domain.IdNameDO;
+import org.openelis.domain.IdNameVO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
@@ -228,8 +229,8 @@ public class AuxiliaryService implements
             dataModel = getAutocompleteModel(entries);
         } else if(("scriptlet").equals(cat)) {
             sremote = (ScriptletRemote)EJBFactory.lookup("openelis/ScriptletBean/remote");
-            entries = sremote.getScriptletAutoCompleteByName(match.trim() + "%", 10);
-            dataModel = getAutocompleteModel(entries);
+            ArrayList<IdNameVO> scripts = sremote.findByName(match.trim() + "%", 10);
+            //dataModel = getAutocompleteModel(scripts);
         }
         
         return dataModel;

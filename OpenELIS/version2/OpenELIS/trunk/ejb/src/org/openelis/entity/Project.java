@@ -49,17 +49,23 @@ import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+
+import org.openelis.utilcommon.DataBaseUtil;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
 @NamedQueries( {
-    @NamedQuery(name = "Project.ProjectByName", query = "select new org.openelis.domain.ProjectDO(p.id, p.name, " + 
-                " p.description, p.startedDate, p.completedDate, p.isActive, p.referenceTo, p.ownerId, s.id) " + 
-                " from Project p left join p.scriptlet s where p.name like :name"),
-    @NamedQuery(name = "Project.ProjectById", query = "select new org.openelis.domain.ProjectViewDO(p.id, p.name, " + 
-                " p.description, p.startedDate, p.completedDate, p.isActive, p.referenceTo, p.ownerId, s.id,s.name, '') " + 
-                " from Project p left join p.scriptlet s where p.id = :id "),
-    @NamedQuery(name = "Project.ProjectListByName", query = "from Project p where p.name = :name order by p.name")            })
+    @NamedQuery(name = "Project.ProjectByName", 
+    		    query = "select new org.openelis.domain.ProjectDO(p.id, p.name, " + 
+                        " p.description, p.startedDate, p.completedDate, p.isActive, p.referenceTo, p.ownerId, s.id) " + 
+                        " from Project p left join p.scriptlet s where p.name like :name"),
+    @NamedQuery(name = "Project.ProjectById", 
+    		    query = "select new org.openelis.domain.ProjectViewDO(p.id, p.name, " + 
+                        " p.description, p.startedDate, p.completedDate, p.isActive, p.referenceTo, p.ownerId, s.id,s.name, '') " + 
+                        " from Project p left join p.scriptlet s where p.id = :id "),
+    @NamedQuery(name = "Project.ProjectListByName", 
+    		    query = "from Project p where p.name = :name order by p.name")            
+})
                 
 @Entity
 @Table(name="project")
@@ -102,6 +108,7 @@ public class Project implements Auditable, Cloneable {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "scriptlet_id",insertable = false, updatable = false)
   private Scriptlet scriptlet;
+  
 
   @Transient
   private Project original;
@@ -110,8 +117,7 @@ public class Project implements Auditable, Cloneable {
     return id;
   }
   protected void setId(Integer id) {
-    if((id == null && this.id != null) || 
-       (id != null && !id.equals(this.id)))
+    if(DataBaseUtil.isDifferent(this.id, id))
       this.id = id;
   }
 
@@ -119,8 +125,7 @@ public class Project implements Auditable, Cloneable {
     return name;
   }
   public void setName(String name) {
-    if((name == null && this.name != null) || 
-       (name != null && !name.equals(this.name)))
+    if(DataBaseUtil.isDifferent(this.name, name))
       this.name = name;
   }
 
@@ -128,8 +133,7 @@ public class Project implements Auditable, Cloneable {
     return description;
   }
   public void setDescription(String description) {
-    if((description == null && this.description != null) || 
-       (description != null && !description.equals(this.description)))
+    if(DataBaseUtil.isDifferent(this.description, description))
       this.description = description;
   }
 
@@ -138,9 +142,9 @@ public class Project implements Auditable, Cloneable {
       return null;
     return new Datetime(Datetime.YEAR ,Datetime. DAY,startedDate);
   }
+  
   public void setStartedDate (Datetime started_date){    
-    if((started_date == null && this.startedDate != null) || (started_date != null && this.startedDate == null) ||
-       (started_date != null && !started_date.equals(new Datetime(Datetime.YEAR, Datetime.DAY, this.startedDate)))) {
+    if(DataBaseUtil.isDifferent(this.startedDate, started_date)) {
         if(started_date != null)
             this.startedDate = started_date.getDate();
         else 
@@ -154,8 +158,7 @@ public class Project implements Auditable, Cloneable {
     return new Datetime(Datetime.YEAR ,Datetime. DAY,completedDate);
   }
   public void setCompletedDate (Datetime completed_date){    
-    if((completed_date == null && this.completedDate != null) || (completed_date != null && this.completedDate == null) ||
-       (completed_date != null && !completed_date.equals(new Datetime(Datetime.YEAR, Datetime.DAY, this.startedDate)))) {
+    if(DataBaseUtil.isDifferent(this.completedDate,completed_date)) {
         if(completed_date != null)
             this.completedDate = completed_date.getDate();
         else
@@ -167,8 +170,7 @@ public class Project implements Auditable, Cloneable {
     return isActive;
   }
   public void setIsActive(String isActive) {
-    if((isActive == null && this.isActive != null) || 
-       (isActive != null && !isActive.equals(this.isActive)))
+    if(DataBaseUtil.isDifferent(this.isActive, isActive))
       this.isActive = isActive;
   }
 
@@ -176,8 +178,7 @@ public class Project implements Auditable, Cloneable {
     return referenceTo;
   }
   public void setReferenceTo(String referenceTo) {
-    if((referenceTo == null && this.referenceTo != null) || 
-       (referenceTo != null && !referenceTo.equals(this.referenceTo)))
+    if(DataBaseUtil.isDifferent(this.referenceTo, referenceTo))
       this.referenceTo = referenceTo;
   }
 
@@ -185,8 +186,7 @@ public class Project implements Auditable, Cloneable {
     return ownerId;
   }
   public void setOwnerId(Integer ownerId) {
-    if((ownerId == null && this.ownerId != null) || 
-       (ownerId != null && !ownerId.equals(this.ownerId)))
+    if(DataBaseUtil.isDifferent(this.ownerId, ownerId))
       this.ownerId = ownerId;
   }
 
@@ -194,8 +194,7 @@ public class Project implements Auditable, Cloneable {
     return scriptletId;
   }
   public void setScriptletId(Integer scriptletId) {
-    if((scriptletId == null && this.scriptletId != null) || 
-       (scriptletId != null && !scriptletId.equals(this.scriptletId)))
+    if(DataBaseUtil.isDifferent(this.scriptletId, scriptletId))
       this.scriptletId = scriptletId;
   }
  
@@ -219,21 +218,13 @@ public class Project implements Auditable, Cloneable {
       Element root = doc.getDocumentElement();
       
       AuditUtil.getChangeXML(id,original.id,doc,"id");
-
       AuditUtil.getChangeXML(name,original.name,doc,"name");
-
       AuditUtil.getChangeXML(description,original.description,doc,"description");
-
       AuditUtil.getChangeXML(startedDate,original.startedDate,doc,"started_date");
-
       AuditUtil.getChangeXML(completedDate,original.completedDate,doc,"completed_date");
-
       AuditUtil.getChangeXML(isActive,original.isActive,doc,"is_active");
-
       AuditUtil.getChangeXML(referenceTo,original.referenceTo,doc,"reference_to");
-
       AuditUtil.getChangeXML(ownerId,original.ownerId,doc,"owner_id");
-
       AuditUtil.getChangeXML(scriptletId,original.scriptletId,doc,"scriptlet_id");
 
       if(root.hasChildNodes())
@@ -247,12 +238,14 @@ public class Project implements Auditable, Cloneable {
   public String getTableName() {
     return "project";
   }
-public Scriptlet getScriptlet() {
+  
+  public Scriptlet getScriptlet() {
     return scriptlet;
-}
-public void setScriptlet(Scriptlet scriptlet) {
+  }
+  
+  public void setScriptlet(Scriptlet scriptlet) {
     this.scriptlet = scriptlet;
-}
+  }
 
   
 }   

@@ -44,12 +44,12 @@ public class SystemUserUtilBean implements SystemUserUtilRemote {
     @EJB
     private SystemUserUtilLocal sysUser;
     
-    public List<SecuritySystemUserDO> systemUserAutocompleteByName(String loginName,
+    public ArrayList<SecuritySystemUserDO> findSystemUserByLogin(String loginName,
                                                                    int numResult) {
         SecuritySystemUserDO secUserDO;
         SystemUserDO userDO;
         List<SystemUserDO> userDOList;
-        List<SecuritySystemUserDO> secUserDOList;
+        ArrayList<SecuritySystemUserDO> secUserDOList;
                         
         userDOList = sysUser.systemUserAutocompleteByLoginName(loginName,numResult);
         secUserDOList = new ArrayList<SecuritySystemUserDO>();
