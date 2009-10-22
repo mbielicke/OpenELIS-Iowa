@@ -31,26 +31,17 @@ import java.util.List;
 import javax.ejb.Remote;
 
 import org.openelis.domain.IdNameDO;
-import org.openelis.domain.ProjectParameterDO;
-import org.openelis.domain.ProjectViewDO;
-import org.openelis.gwt.common.data.deprecated.AbstractField;
+import org.openelis.domain.IdNameVO;
+import org.openelis.domain.SecuritySystemUserDO;
+import org.openelis.gwt.common.data.QueryData;
 
 @Remote
 public interface ProjectRemote {
 
-    public ProjectViewDO getProject(Integer projectId);
-    
-    public ProjectViewDO getProjectAndUnlock(Integer projectId, String session);
-    
-    public ProjectViewDO getProjectAndLock(Integer projectId, String session)throws Exception;
-    
-    public Integer updateProject(ProjectViewDO projectDO,
-                                 List<ProjectParameterDO> projParamDOList)throws Exception;
-    
-    public List<IdNameDO> query(ArrayList<AbstractField> fields, int first, int max) throws Exception;    
-    
-    public List<ProjectParameterDO> getProjectParameters(Integer projectId);        
-    
-    public List autoCompleteLookupByName(String projectName, Integer maxResults);
+
+    public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception;
+
+    public ArrayList<IdNameDO> findByName(String name, int maxResults);
+ 
     
 }

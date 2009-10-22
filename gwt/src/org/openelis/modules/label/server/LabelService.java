@@ -260,10 +260,11 @@ public class LabelService implements AppScreenFormServiceInt<LabelForm,Query<Tab
         List<IdNameDO> entries;
         
         sremote = (ScriptletRemote)EJBFactory.lookup("openelis/ScriptletBean/remote");
-        entries = sremote.getScriptletAutoCompleteByName(match.trim() + "%", 10);
-        dataModel = getAutocompleteModel(entries);        
+        //entries = sremote.findByName(match.trim() + "%", 10);
+        //dataModel = getAutocompleteModel(entries);        
         
-        return dataModel;
+        //return dataModel;
+        return null;
     }
     
     private TableDataModel<TableDataRow<Integer>> getAutocompleteModel(List<IdNameDO> entries){

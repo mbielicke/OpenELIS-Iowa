@@ -23,16 +23,27 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.remote;
+package org.openelis.local;
 
 import java.util.ArrayList;
 
-import javax.ejb.Remote;
+import javax.ejb.Local;
 
 import org.openelis.domain.IdNameVO;
+import org.openelis.domain.ProjectViewDO;
+import org.openelis.gwt.common.data.QueryData;
 
-@Remote  
-public interface ScriptletRemote {
+@Local
+public interface ProjectLocal {
+
+    public ProjectViewDO fetchById(Integer id) throws Exception;
     
-    public ArrayList<IdNameVO> findByName(String match, int maxResults);
+    public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception;
+
+    public ProjectViewDO add(ProjectViewDO data) throws Exception;
+    
+    public ProjectViewDO update(ProjectViewDO data) throws Exception;
+    
+    public void validate(ProjectViewDO data) throws Exception;
+    
 }

@@ -89,7 +89,6 @@ public class MethodBean implements MethodRemote {
     }
     
     public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception {
-        StringBuffer sb = new StringBuffer();
         QueryBuilderV2 qb = new QueryBuilderV2();
         List list;
 
@@ -104,9 +103,7 @@ public class MethodBean implements MethodRemote {
 
         qb.setOrderBy(MethodMeta.getName());
 
-        sb.append(qb.getEJBQL());
-
-        Query query = manager.createQuery(sb.toString());
+        Query query = manager.createQuery(qb.getEJBQL());
 
         if (first > -1 && max > -1)
             query.setMaxResults(first + max);

@@ -44,8 +44,10 @@ UIRF Software License are applicable instead of those above.
     <inherits name="org.openelis.modules.buildKits.BuildKits"/>
     <inherits name="org.openelis.modules.clinicalSampleLogin.ClinicalSampleLogin"/>
     <inherits name="org.openelis.modules.dictionary.Dictionary"/>
+     
     <inherits name="org.openelis.modules.editNote.EditNote"/>
     <inherits name="org.openelis.modules.environmentalSampleLogin.EnvironmentalSampleLogin"/>
+   
     <inherits name="org.openelis.modules.favorites.Favorites"/>
     <inherits name="org.openelis.modules.fillOrder.FillOrder"/>
     <inherits name="org.openelis.modules.instrument.Instrument"/>
@@ -80,10 +82,11 @@ UIRF Software License are applicable instead of those above.
     <inherits name="org.openelis.modules.systemvariable.SystemVariable"/>        
     <inherits name="org.openelis.modules.testTrailer.TestTrailer"/>
     <inherits name="org.openelis.modules.test.Test"/>
-    <inherits name="org.openelis.modules.worksheetCreation.WorksheetCreation"/> 
+    <inherits name="org.openelis.modules.worksheetCreation.WorksheetCreation"/>
     <inherits name="org.openelis.modules.testPrepPicker.TestPrepPicker"/> 
     <inherits name="org.openelis.modules.dictionaryentrypicker.DictionaryEntryPicker"/>
     <inherits name="org.openelis.modules.testanalytepicker.TestAnalytePicker"/>
+    <inherits name="org.openelis.modules.scriptlet.Scriptlet"/>
     <inherits name="org.openelis.ELISCommon"/>     
     
     <source path="manager"/>
@@ -93,7 +96,7 @@ UIRF Software License are applicable instead of those above.
 	<!-- Specify the app entry point class.                   -->
 	<entry-point class='org.openelis.modules.main.client.OpenELIS'/>
 	
-	 
+	  
 	<set-property name="user.agent" value="gecko1_8" />
      
         <!-- <extend-property name="locale" values="cn"/>
