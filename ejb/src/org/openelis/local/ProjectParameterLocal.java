@@ -45,7 +45,7 @@ public interface ProjectParameterLocal {
     
     public ProjectParameterDO update(ProjectParameterDO data) throws Exception;
     
-    public void delete(Integer id) throws Exception;
+    public void delete(ProjectParameterDO id) throws Exception;
     
     public void validate(ProjectParameterDO param) throws Exception;
     

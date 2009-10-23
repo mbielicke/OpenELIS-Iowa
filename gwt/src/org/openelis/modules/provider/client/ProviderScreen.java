@@ -112,6 +112,9 @@ public class ProviderScreen extends Screen {
     
     private void postConstructor() {
     	tab = Tabs.ADDRESSES;
+    	
+    	addressesTab.setWindow(window);
+    	
     	manager = ProviderManager.getInstance();
     	
         setState(State.DEFAULT);
@@ -317,7 +320,7 @@ public class ProviderScreen extends Screen {
             }
         });
         
-        addressesTab = new AddressesTab(window,def);
+        addressesTab = new AddressesTab(def);
         addScreenHandler(addressesTab, new ScreenEventHandler<Object>() {
         	public void onDataChange(DataChangeEvent event){
         		addressesTab.setManager(manager);
