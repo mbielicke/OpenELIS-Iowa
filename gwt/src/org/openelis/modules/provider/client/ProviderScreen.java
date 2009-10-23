@@ -27,83 +27,566 @@ package org.openelis.modules.provider.client;
 
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 
 import org.openelis.cache.DictionaryCache;
+import org.openelis.common.NotesTab;
 import org.openelis.domain.DictionaryDO;
-import org.openelis.gwt.common.data.deprecated.DataObject;
-import org.openelis.gwt.common.data.deprecated.KeyListManager;
-import org.openelis.gwt.common.data.deprecated.QueryStringField;
-import org.openelis.gwt.common.data.deprecated.StringObject;
-import org.openelis.gwt.common.data.deprecated.TableDataModel;
-import org.openelis.gwt.common.data.deprecated.TableDataRow;
-import org.openelis.gwt.common.deprecated.Form;
-import org.openelis.gwt.common.deprecated.Query;
-import org.openelis.gwt.screen.deprecated.CommandChain;
-import org.openelis.gwt.screen.deprecated.ScreenTabPanel;
-import org.openelis.gwt.screen.deprecated.ScreenTableWidget;
-import org.openelis.gwt.screen.deprecated.ScreenTextArea;
-import org.openelis.gwt.screen.deprecated.ScreenTextBox;
-import org.openelis.gwt.screen.deprecated.ScreenVertical;
-import org.openelis.gwt.widget.deprecated.AppButton;
-import org.openelis.gwt.widget.deprecated.ButtonPanel;
-import org.openelis.gwt.widget.deprecated.Dropdown;
-import org.openelis.gwt.widget.deprecated.ResultsTable;
-import org.openelis.gwt.widget.table.deprecated.TableDropdown;
-import org.openelis.gwt.widget.table.deprecated.TableManager;
-import org.openelis.gwt.widget.table.deprecated.TableWidget;
+import org.openelis.domain.IdLastNameFirstNameDO;
+import org.openelis.gwt.common.LastPageException;
+import org.openelis.gwt.common.NotFoundException;
+import org.openelis.gwt.common.RPC;
+import org.openelis.gwt.common.SecurityModule;
+import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.gwt.common.data.Query;
+import org.openelis.gwt.common.data.QueryData;
+import org.openelis.gwt.event.DataChangeEvent;
+import org.openelis.gwt.event.StateChangeEvent;
+import org.openelis.gwt.screen.Screen;
+import org.openelis.gwt.screen.ScreenDefInt;
+import org.openelis.gwt.screen.ScreenEventHandler;
+import org.openelis.gwt.screen.ScreenNavigator;
+import org.openelis.gwt.services.ScreenService;
+import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.ButtonGroup;
+import org.openelis.gwt.widget.Dropdown;
+import org.openelis.gwt.widget.TextBox;
+import org.openelis.gwt.widget.AppButton.ButtonState;
+import org.openelis.gwt.widget.table.TableDataRow;
+import org.openelis.manager.ProviderManager;
 import org.openelis.metamap.ProviderMetaMap;
-import org.openelis.modules.main.client.OpenELISScreenForm;
+import org.openelis.modules.main.client.openelis.OpenELIS;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
+import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.rpc.SyncCallback;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.SourcesTabEvents;
-import com.google.gwt.user.client.ui.TabListener;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.TabPanel;
 
-public class ProviderScreen extends OpenELISScreenForm<ProviderForm,Query<TableDataRow<Integer>>> implements ClickListener, 
-                                                                  TabListener,
-                                                                  TableManager{
+public class ProviderScreen extends Screen {
          
-    private ScreenVertical svp = null;
-    private AppButton removeContactButton, standardNoteButton;
-    private ScreenTextBox provId = null; 
-    private TextBox lastName = null;
-    private ScreenTextArea noteArea = null;
-    private TableWidget provAddController = null;  
-    private Dropdown displayType = null;
-    private ScreenTabPanel tabPanel;
-    private KeyListManager keyList = new KeyListManager();       
+	private TextBox id, lastName, firstName, npi, middleName;
+	private AppButton queryButton, previousButton, nextButton, addButton, updateButton, commitButton, abortButton,  standardNoteButton;
+	private Dropdown<Integer> typeId;
+	private TabPanel provTabPanel;
+     
+    private ButtonGroup           atoz;
+    private ScreenNavigator       nav;
     
-    private ProviderMetaMap ProvMeta = new ProviderMetaMap(); 
+    private ProviderMetaMap META = new ProviderMetaMap();
+    private SecurityModule security;
     
-    public ProviderScreen(){
-        super("org.openelis.modules.provider.server.ProviderService");      
-        query = new Query<TableDataRow<Integer>>();
-        getScreen(new ProviderForm());        
+    private enum Tabs {
+    	ADDRESSES, NOTES
+    };
+    
+    private Tabs tab;
+    private AddressesTab          addressesTab;
+    private NotesTab              notesTab;
+    
+    private ProviderManager manager;
+    
+    public ProviderScreen() throws Exception {
+        super((ScreenDefInt)GWT.create(ProviderScreenDef.class));
+        service = new ScreenService("controller?service=org.openelis.modules.provider.server.ProviderService");
+        
+        security = OpenELIS.security.getModule("provider");
+        if(security == null)
+        	throw new org.openelis.gwt.common.SecurityException("screenPermException", "Provider Screen");
+        
+        initialize();
+        	
+        DeferredCommand.addCommand(new Command() {
+        	public void execute() {
+        		postConstructor();
+        	}
+        });
     }
     
-    public void performCommand(Enum action, Object obj) {
-        if(obj instanceof AppButton) {
-            String query = ((AppButton)obj).action;
-            if (query.indexOf("*") != -1)
-                getProviders(query);
-            else                         
-                super.performCommand(action, obj);            
-         }  else {                         
-            super.performCommand(action, obj);
+    private void postConstructor() {
+    	tab = Tabs.ADDRESSES;
+    	manager = ProviderManager.getInstance();
+    	
+        setState(State.DEFAULT);
+        initializeDropdowns();
+
+        DataChangeEvent.fire(this);
+    }
+    
+    private void initialize() {
+        queryButton = (AppButton)def.getWidget("query");
+        addScreenHandler(queryButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                query();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                queryButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState())
+                                     && security.hasSelectPermission());
+                if (event.getState() == State.QUERY)
+                    queryButton.setState(ButtonState.LOCK_PRESSED);
+            }
+        });
+
+        previousButton = (AppButton)def.getWidget("previous");
+        addScreenHandler(previousButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                previous();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                previousButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+
+        nextButton = (AppButton)def.getWidget("next");
+        addScreenHandler(nextButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                next();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                nextButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+
+        addButton = (AppButton)def.getWidget("add");
+        addScreenHandler(addButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                add();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                addButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState())
+                                     && security.hasAddPermission());
+                if (event.getState() == State.ADD)
+                    addButton.setState(ButtonState.LOCK_PRESSED);
+            }
+        });
+
+        updateButton = (AppButton)def.getWidget("update");
+        addScreenHandler(updateButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                update();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                updateButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState())
+                                     && security.hasUpdatePermission());
+                if (event.getState() == State.UPDATE)
+                    updateButton.setState(ButtonState.LOCK_PRESSED);
+            }
+        });
+
+        commitButton = (AppButton)def.getWidget("commit");
+        addScreenHandler(commitButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                commit();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                commitButton.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+            }
+        });
+
+        abortButton = (AppButton)def.getWidget("abort");
+        addScreenHandler(abortButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                abort();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                abortButton.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+            }
+        });
+
+        id = (TextBox)def.getWidget(META.getId());
+        addScreenHandler(id, new ScreenEventHandler<Integer>() {
+            public void onDataChange(DataChangeEvent event) {
+                id.setValue(manager.getProvider().getId());
+            }
+
+            public void onValueChange(ValueChangeEvent<Integer> event) {
+                manager.getProvider().setId(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                id.enable(EnumSet.of(State.QUERY).contains(event.getState()));
+                id.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+
+        lastName = (TextBox)def.getWidget(META.getLastName());
+        addScreenHandler(lastName, new ScreenEventHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                lastName.setValue(manager.getProvider().getLastName());
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                manager.getProvider().setLastName(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                lastName.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                lastName.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+
+        typeId = (Dropdown<Integer>)def.getWidget(META.getTypeId());
+        addScreenHandler(typeId, new ScreenEventHandler<Integer>() {
+            public void onDataChange(DataChangeEvent event) {
+                typeId.setSelection(manager.getProvider().getTypeId());
+            }
+
+            public void onValueChange(ValueChangeEvent<Integer> event) {
+                manager.getProvider().setTypeId(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                typeId.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                typeId.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+
+        firstName = (TextBox)def.getWidget(META.getFirstName());
+        addScreenHandler(firstName, new ScreenEventHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                firstName.setValue(manager.getProvider().getFirstName());
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                manager.getProvider().setFirstName(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                firstName.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                firstName.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+
+        npi = (TextBox)def.getWidget(META.getNpi());
+        addScreenHandler(npi, new ScreenEventHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                npi.setValue(manager.getProvider().getNpi());
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                manager.getProvider().setNpi(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                npi.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                npi.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+
+        middleName = (TextBox)def.getWidget(META.getMiddleName());
+        addScreenHandler(middleName, new ScreenEventHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                middleName.setValue(manager.getProvider().getMiddleName());
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                manager.getProvider().setMiddleName(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                middleName.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                middleName.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+
+        provTabPanel = (TabPanel)def.getWidget("provTabPanel");
+        provTabPanel.addBeforeSelectionHandler(new BeforeSelectionHandler<Integer>() {
+            public void onBeforeSelection(BeforeSelectionEvent<Integer> event) {
+                int i;
+
+                i = event.getItem().intValue();
+                tab = Tabs.values()[i];
+                
+                window.setBusy();
+                drawTabs();
+                window.clearStatus();
+            }
+        });
+        
+        addressesTab = new AddressesTab(window,def);
+        addScreenHandler(addressesTab, new ScreenEventHandler<Object>() {
+        	public void onDataChange(DataChangeEvent event){
+        		addressesTab.setManager(manager);
+        		if(tab == Tabs.ADDRESSES)
+        			drawTabs();
+        	}
+        	public void onStateChange(StateChangeEvent<State> event) {
+        		addressesTab.setState(event.getState());
+        	}
+        });
+        
+        notesTab = new NotesTab(def, "notesPanel", "standardNoteButton", false, this);
+        addScreenHandler(notesTab, new ScreenEventHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                notesTab.setManager(manager);
+                if (tab == Tabs.NOTES)
+                    drawTabs();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                notesTab.setState(event.getState());
+            }
+        });
+        
+        //
+        // left hand navigation panel
+        //
+        nav = new ScreenNavigator(def) {
+            public void executeQuery(final Query query) {
+                window.setBusy(consts.get("querying"));
+
+                service.callList("query", query, new AsyncCallback<ArrayList<IdLastNameFirstNameDO>>() {
+                    public void onSuccess(ArrayList<IdLastNameFirstNameDO> result) {
+                        setQueryResult(result);
+                    }
+
+                    public void onFailure(Throwable error) {
+                        setQueryResult(null);
+                        if (error instanceof NotFoundException) {
+                            window.setDone(consts.get("noRecordsFound"));
+                            setState(State.DEFAULT);
+                        } else if (error instanceof LastPageException) {
+                            window.setError("No more records in this direction");
+                        } else {
+                            Window.alert("Error: SystemVariable call query failed; " +
+                                         error.getMessage());
+                            window.setError(consts.get("queryFailed"));
+                        }
+                    }
+                });
+            }
+
+            public boolean fetch(RPC entry) {
+                return fetchById( (entry == null) ? null : ((IdLastNameFirstNameDO)entry).getId());
+            }
+
+            public ArrayList<TableDataRow> getModel() {
+                ArrayList<IdLastNameFirstNameDO> result;
+                ArrayList<TableDataRow> model;
+
+                model = null;
+                result = nav.getQueryResult();
+                if (result != null) {
+                    model = new ArrayList<TableDataRow>();
+                    for (IdLastNameFirstNameDO entry : result)
+                        model.add(new TableDataRow(entry.getId(), entry.getLastName(), entry.getFirstName()));
+                }
+                return model;
+            }
+        };
+
+        atoz = (ButtonGroup)def.getWidget("atozButtons");
+        addScreenHandler(atoz, new ScreenEventHandler<Object>() {
+            public void onStateChange(StateChangeEvent<State> event) {
+                boolean enable;
+                enable = EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState()) &&
+                         security.hasSelectPermission();
+                atoz.enable(enable);
+                nav.enable(enable);
+            }
+
+            public void onClick(ClickEvent event) {
+                Query query;
+                QueryData field;
+
+                field = new QueryData();
+                field.key = META.getLastName();
+                field.query = ((AppButton)event.getSource()).getAction();
+                field.type = QueryData.Type.STRING;
+
+                query = new Query();
+                query.setFields(field);
+                nav.setQuery(query);
+            }
+        });        
+    }
+    
+    private void initializeDropdowns() {
+        ArrayList<DictionaryDO> cache = DictionaryCache.getListByCategorySystemName("provider_type");
+        ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
+        model.add(new TableDataRow(null,""));
+        for(DictionaryDO d: cache) {
+        	model.add(new TableDataRow(d.getId(), d.getEntry()));
+        }
+        typeId.setModel(model);
+    }
+
+    protected void query() {
+        manager = ProviderManager.getInstance();
+
+        setState(Screen.State.QUERY);
+        DataChangeEvent.fire(this);
+
+        // clear all the tabs
+        addressesTab.draw();
+        notesTab.draw();
+        window.setDone(consts.get("enterFieldsToQuery"));
+    }
+
+    protected void previous() {
+        nav.previous();
+    }
+
+    protected void next() {
+        nav.next();
+    }
+
+    protected void add() {
+        manager = ProviderManager.getInstance();
+
+        setState(Screen.State.ADD);
+        DataChangeEvent.fire(this);
+        window.setDone(consts.get("enterInformationPressCommit"));
+    }
+
+    protected void update() {
+        window.setBusy(consts.get("lockForUpdate"));
+
+        try {
+            manager = manager.fetchForUpdate();
+
+            setState(State.UPDATE);
+            DataChangeEvent.fire(this);
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+        }
+        window.clearStatus();
+    }
+
+    public void commit() {
+        //
+        // set the focus to null so every field will commit its data.
+        //
+        id.setFocus(false);
+
+        if ( !validate()) {
+            window.setError(consts.get("correctErrors"));
+            return;
+        }
+
+        if (state == State.QUERY) {
+            Query query;
+
+            query = new Query();
+            query.setFields(getQueryFields());
+            nav.setQuery(query);
+        } else if (state == State.ADD) {
+            window.setBusy(consts.get("adding"));
+            try {
+                manager = manager.add();
+
+                setState(State.DISPLAY);
+                DataChangeEvent.fire(this);
+                window.setDone(consts.get("addingComplete"));
+            } catch (ValidationErrorsList e) {
+                showErrors(e);
+            } catch (Exception e) {
+                Window.alert("commitAdd(): " + e.getMessage());
+                window.clearStatus();
+            }
+        } else if (state == State.UPDATE) {
+            window.setBusy(consts.get("updating"));
+            try {
+                manager.update();
+
+                setState(State.DISPLAY);
+                DataChangeEvent.fire(this);
+                window.setDone(consts.get("updatingComplete"));
+            } catch (ValidationErrorsList e) {
+                showErrors(e);
+            } catch (Exception e) {
+                Window.alert("commitUpdate(): " + e.getMessage());
+                window.clearStatus();
+            }
         }
     }
 
-    public void onClick(Widget sender) {
-        if (sender == removeContactButton)
-            onRemoveRowButtonClick();
-        else if (sender == standardNoteButton)
-            onStandardNoteButtonClick();    
+    protected void abort() {
+        id.setFocus(false);
+        clearErrors();
+        window.setBusy(consts.get("cancelChanges"));
+
+        if (state == State.QUERY) {
+            fetchById(null);
+            window.setDone(consts.get("queryAborted"));
+        } else if (state == State.ADD) {
+            fetchById(null);
+            window.setDone(consts.get("addAborted"));
+        } else if (state == State.UPDATE) {
+            try {
+                manager = manager.abortUpdate();
+                setState(State.DISPLAY);
+                DataChangeEvent.fire(this);
+            } catch (Exception e) {
+                Window.alert(e.getMessage());
+                fetchById(null);
+            }
+            window.setDone(consts.get("updateAborted"));
+        } else {
+            window.clearStatus();
+        }
     }
 
+    protected boolean fetchById(Integer id) {
+        if (id == null) {
+            manager = ProviderManager.getInstance();
+            setState(State.DEFAULT);
+        } else {
+            window.setBusy(consts.get("fetching"));
+            try {
+                switch (tab) {
+                    case ADDRESSES:
+                        manager = ProviderManager.fetchWithAddresses(id);
+                        break;
+                    case NOTES:
+                        manager = ProviderManager.fetchWithNotes(id);
+                        break;
+                }
+                setState(State.DISPLAY);
+            } catch (NotFoundException e) {
+                fetchById(null);
+                window.setDone(consts.get("noRecordsFound"));
+                return false;
+            } catch (Exception e) {
+                fetchById(null);
+                e.printStackTrace();
+                Window.alert(consts.get("fetchFailed") + e.getMessage());
+                return false;
+            }
+        }
+        DataChangeEvent.fire(this);
+        window.clearStatus();
+
+        return true;
+    }
+    
+    private void drawTabs() {
+        switch (tab) {
+            case ADDRESSES:
+                addressesTab.draw();
+                break;
+            case NOTES:
+                notesTab.draw();
+                break;
+        }
+    }
+    
+
+/*
     public void afterDraw(boolean success) {
         ResultsTable atozTable = (ResultsTable)getWidget("azTable");
         ButtonPanel bpanel = (ButtonPanel)getWidget("buttons");
@@ -327,7 +810,7 @@ public class ProviderScreen extends OpenELISScreenForm<ProviderForm,Query<TableD
       
    
    private void onStandardNoteButtonClick(){
-       /*
+       
        ScreenWindow modal = new ScreenWindow(null,"Standard Note Screen",
                                              "standardNoteScreen","",true,false);
        modal.setName(consts.get("standardNote"));
@@ -335,7 +818,7 @@ public class ProviderScreen extends OpenELISScreenForm<ProviderForm,Query<TableD
                                                                                  .getSubject()),
                                                       (TextArea)getWidget(ProvMeta.getNote()
                                                                                   .getText())));
-                                                                                  */
+                                                                                  
     }
     
     private void onRemoveRowButtonClick(){
@@ -385,4 +868,5 @@ public class ProviderScreen extends OpenELISScreenForm<ProviderForm,Query<TableD
         
         return m;
     }
+ */
 }

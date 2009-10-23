@@ -30,6 +30,7 @@ import java.util.EnumSet;
 
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.DictionaryDO;
+import org.openelis.domain.IdLastNameFirstNameDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.ProjectParameterDO;
 import org.openelis.domain.SecuritySystemUserDO;

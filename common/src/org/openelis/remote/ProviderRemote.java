@@ -25,36 +25,16 @@
 */
 package org.openelis.remote;
 
-import org.openelis.domain.NoteViewDO;
-import org.openelis.domain.ProviderDO;
-import org.openelis.gwt.common.data.deprecated.AbstractField;
-
-
 import java.util.ArrayList;
-import java.util.List;
 
 import javax.ejb.Remote;
+
+import org.openelis.domain.IdLastNameFirstNameDO;
+import org.openelis.gwt.common.data.QueryData;
 
 @Remote
 public interface ProviderRemote {
     
-    //  method to return provider 
-    public ProviderDO getProvider(Integer providerId);
-        
-    public ProviderDO getProviderAndUnlock(Integer providerId, String session);
-    
-    public ProviderDO getProviderAndLock(Integer providerId, String session)throws Exception;
-    
-    //commit a change to provider, or insert a new provider
-    public Integer updateProvider(ProviderDO providerDO, NoteViewDO noteDO, List addresses) throws Exception;
-    
-    //method to return just notes
-    public List getProviderNotes(Integer providerId);
-    
-    //method to return just provider addresses
-    public List getProviderAddresses(Integer providerId);
-    
-     //method to query for provider
-    public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception;
+    public ArrayList<IdLastNameFirstNameDO> query(ArrayList<QueryData> fields, int first, int max) throws Exception;
         
 }

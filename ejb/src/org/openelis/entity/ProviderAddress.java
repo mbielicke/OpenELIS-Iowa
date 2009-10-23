@@ -29,13 +29,6 @@ package org.openelis.entity;
   * ProviderAddress Entity POJO for database 
   */
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.openelis.entity.Address;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.util.XMLUtil;
-
-import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -43,12 +36,23 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+
+import org.openelis.util.XMLUtil;
+import org.openelis.utilcommon.DataBaseUtil;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
+@NamedQuery(name = "ProviderAddress.FetchByProviderId", 
+		    query = "select new org.openelis.domain.ProviderAddressDO(pa.id, pa.location, pa.externalId, pa.providerId, " +
+		    		" a.id, a.multipleUnit,a.streetAddress, a.city, a.state, a.zipCode, a.workPhone, a.homePhone, "+
+		    		" a.cellPhone, a.faxPhone, a.email, a.country)"+" from ProviderAddress pa left join pa.address a "+
+        			" where pa.providerId = :id order by pa.location") 
 @Entity
 @Table(name="provider_address")
 @EntityListeners({AuditUtil.class})
@@ -83,8 +87,7 @@ public class ProviderAddress implements Auditable, Cloneable {
     return id;
   }
   protected void setId(Integer id) {
-    if((id == null && this.id != null) || 
-       (id != null && !id.equals(this.id)))
+    if(DataBaseUtil.isDifferent(id,this.id))
       this.id = id;
   }
 
@@ -92,8 +95,7 @@ public class ProviderAddress implements Auditable, Cloneable {
     return location;
   }
   public void setLocation(String location) {
-    if((location == null && this.location != null) || 
-       (location != null && !location.equals(this.location)))
+    if(DataBaseUtil.isDifferent(location,this.location))
       this.location = location;
   }
 
@@ -101,8 +103,7 @@ public class ProviderAddress implements Auditable, Cloneable {
     return externalId;
   }
   public void setExternalId(String externalId) {
-    if((externalId == null && this.externalId != null) || 
-       (externalId != null && !externalId.equals(this.externalId)))
+    if(DataBaseUtil.isDifferent(externalId,this.externalId))
       this.externalId = externalId;
   }
 
@@ -110,8 +111,7 @@ public class ProviderAddress implements Auditable, Cloneable {
     return providerId;
   }
   public void setProviderId(Integer providerId) {
-    if((providerId == null && this.providerId != null) || 
-       (providerId != null && !providerId.equals(this.providerId)))
+    if(DataBaseUtil.isDifferent(providerId,this.providerId))
       this.providerId = providerId;
   }
 
@@ -119,8 +119,7 @@ public class ProviderAddress implements Auditable, Cloneable {
     return addressId;
   }
   public void setAddressId(Integer addressId) {
-    if((addressId == null && this.addressId != null) || 
-       (addressId != null && !addressId.equals(this.addressId)))
+    if(DataBaseUtil.isDifferent(addressId,this.addressId))
       this.addressId = addressId;
   }
 
@@ -137,13 +136,9 @@ public class ProviderAddress implements Auditable, Cloneable {
       Element root = doc.getDocumentElement();
       
       AuditUtil.getChangeXML(id,original.id,doc,"id");
-
       AuditUtil.getChangeXML(location,original.location,doc,"location");
-
       AuditUtil.getChangeXML(externalId,original.externalId,doc,"external_id");
-
       AuditUtil.getChangeXML(providerId,original.providerId,doc,"provider_id");
-
       AuditUtil.getChangeXML(addressId,original.addressId,doc,"address_id");
 
       if(root.hasChildNodes())

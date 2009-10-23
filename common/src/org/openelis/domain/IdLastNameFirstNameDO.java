@@ -36,6 +36,10 @@ public class IdLastNameFirstNameDO implements RPC {
     protected String          lastName;
     protected String          firstName;
 
+    public IdLastNameFirstNameDO() {
+    	
+    }
+    
     public IdLastNameFirstNameDO(Integer id, String lastName, String firstName) {
         setId(id);
         setLastName(lastName);
