@@ -12,7 +12,7 @@ public class ProjectManager implements RPC {
         
     protected ProjectViewDO	projectView;
     protected ArrayList<ProjectParameterDO> projectParameters;
-    protected ArrayList<Integer> deleted;
+    protected ArrayList<ProjectParameterDO> deleted;
     
     protected transient static ProjectManagerProxy proxy;
     
@@ -54,8 +54,8 @@ public class ProjectManager implements RPC {
     public ProjectParameterDO removeProjectParamter(int index) {
     	if(projectParameters.get(index).getId() != null) {
     		if(deleted == null)
-    			deleted = new ArrayList<Integer>();
-    	   	deleted.add(projectParameters.get(index).getId());
+    			deleted = new ArrayList<ProjectParameterDO>();
+    	   	deleted.add(projectParameters.get(index));
     	}
     	return projectParameters.remove(index);
     }

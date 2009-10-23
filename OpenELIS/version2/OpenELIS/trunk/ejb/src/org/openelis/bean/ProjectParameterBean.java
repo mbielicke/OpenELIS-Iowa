@@ -84,12 +84,12 @@ public class ProjectParameterBean implements ProjectParameterLocal {
         return paramDO;
     }
     
-    public void delete(Integer id) throws Exception {
+    public void delete(ProjectParameterDO data) throws Exception {
     	ProjectParameter param;
     	
     	manager.setFlushMode(FlushModeType.COMMIT);
     	
-    	param = manager.find(ProjectParameter.class, id);
+    	param = manager.find(ProjectParameter.class, data.getId());
     	
     	manager.remove(param);
     }

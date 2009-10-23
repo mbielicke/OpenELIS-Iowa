@@ -67,8 +67,8 @@ public class ProjectManagerProxy {
     	}
     	
     	if(man.deleted != null) {
-    		for(Integer id : man.deleted) {
-    			paramLocal.delete(id);
+    		for(ProjectParameterDO data : man.deleted) {
+    			paramLocal.delete(data);
     		}	
     		man.deleted = null;
     	}

@@ -34,8 +34,7 @@ public class AddressesTab extends Screen {
 	private AppButton addAddressButton, removeAddressButton;
 	private boolean loaded;
 	
-	public AddressesTab(ScreenWindow window, ScreenDefInt def) {
-		setWindow(window);
+	public AddressesTab(ScreenDefInt def) {
 		setDef(def);
 		initialize();
 		initializeDropdowns();
