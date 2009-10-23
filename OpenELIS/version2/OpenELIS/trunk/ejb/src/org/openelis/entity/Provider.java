@@ -29,15 +29,8 @@ package org.openelis.entity;
   * Provider Entity POJO for database 
   */
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.openelis.entity.Note;
-import org.openelis.entity.ProviderAddress;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.util.XMLUtil;
-
 import java.util.Collection;
-import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -50,15 +43,19 @@ import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+
+import org.openelis.util.XMLUtil;
+import org.openelis.utilcommon.DataBaseUtil;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
-@NamedQueries({@NamedQuery(name = "Provider.Provider", query = "select new org.openelis.domain.ProviderDO(p.id,p.lastName,p.firstName,p.middleName,d.id,p.npi)" +                                                                                                  
-"  from Provider p, Dictionary d where d.id = p.typeId and p.id = :id"),
-@NamedQuery(name = "Provider.Addresses", query = "select new org.openelis.domain.ProviderAddressDO(pa.id, pa.location, pa.externalId, pa.providerId, " +
-            " a.id, a.multipleUnit,a.streetAddress, a.city, a.state, a.zipCode, a.workPhone, a.homePhone, "+
-            " a.cellPhone, a.faxPhone, a.email, a.country)"+" from ProviderAddress pa left join pa.address a "+
-            " where pa.providerId = :id order by pa.location")})               
+@NamedQueries({
+	@NamedQuery(name = "Provider.Provider", 
+			    query = "select new org.openelis.domain.ProviderDO(p.id,p.lastName,p.firstName,p.middleName,d.id,p.npi)" +                                                                                                  
+					    "  from Provider p, Dictionary d where d.id = p.typeId and p.id = :id")
+})
 
 @Entity
 @Table(name="provider")
@@ -101,8 +98,7 @@ public class Provider implements Auditable, Cloneable {
     return id;
   }
   protected void setId(Integer id) {
-    if((id == null && this.id != null) || 
-       (id != null && !id.equals(this.id)))
+    if(DataBaseUtil.isDifferent(id,this.id))
       this.id = id;
   }
 
@@ -110,8 +106,7 @@ public class Provider implements Auditable, Cloneable {
     return lastName;
   }
   public void setLastName(String lastName) {
-    if((lastName == null && this.lastName != null) || 
-       (lastName != null && !lastName.equals(this.lastName)))
+    if(DataBaseUtil.isDifferent(lastName,this.lastName))
       this.lastName = lastName;
   }
 
@@ -119,8 +114,7 @@ public class Provider implements Auditable, Cloneable {
     return firstName;
   }
   public void setFirstName(String firstName) {
-    if((firstName == null && this.firstName != null) || 
-       (firstName != null && !firstName.equals(this.firstName)))
+    if(DataBaseUtil.isDifferent(firstName,this.firstName))
       this.firstName = firstName;
   }
 
@@ -128,8 +122,7 @@ public class Provider implements Auditable, Cloneable {
     return middleName;
   }
   public void setMiddleName(String middleName) {
-    if((middleName == null && this.middleName != null) || 
-       (middleName != null && !middleName.equals(this.middleName)))
+    if(DataBaseUtil.isDifferent(middleName,this.middleName))
       this.middleName = middleName;
   }
 
@@ -137,8 +130,7 @@ public class Provider implements Auditable, Cloneable {
     return typeId;
   }
   public void setTypeId(Integer typeId) {
-    if((typeId == null && this.typeId != null) || 
-       (typeId != null && !typeId.equals(this.typeId)))
+    if(DataBaseUtil.isDifferent(typeId,this.typeId))
       this.typeId = typeId;
   }
 
@@ -146,8 +138,7 @@ public class Provider implements Auditable, Cloneable {
     return npi;
   }
   public void setNpi(String npi) {
-    if((npi == null && this.npi != null) || 
-       (npi != null && !npi.equals(this.npi)))
+    if(DataBaseUtil.isDifferent(npi,this.npi))
       this.npi = npi;
   }
 
@@ -164,15 +155,10 @@ public class Provider implements Auditable, Cloneable {
       Element root = doc.getDocumentElement();
       
       AuditUtil.getChangeXML(id,original.id,doc,"id");
-
       AuditUtil.getChangeXML(lastName,original.lastName,doc,"last_name");
-
       AuditUtil.getChangeXML(firstName,original.firstName,doc,"first_name");
-
       AuditUtil.getChangeXML(middleName,original.middleName,doc,"middle_name");
-
       AuditUtil.getChangeXML(typeId,original.typeId,doc,"type_id");
-
       AuditUtil.getChangeXML(npi,original.npi,doc,"npi");
 
       if(root.hasChildNodes())

@@ -26,52 +26,106 @@
 package org.openelis.modules.provider.server;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 
 import org.openelis.domain.IdLastNameFirstNameDO;
-import org.openelis.domain.NoteViewDO;
-import org.openelis.domain.ProviderAddressDO;
-import org.openelis.domain.ProviderDO;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.TableFieldErrorException;
-import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.data.deprecated.AbstractField;
-import org.openelis.gwt.common.data.deprecated.DropDownField;
-import org.openelis.gwt.common.data.deprecated.FieldType;
-import org.openelis.gwt.common.data.deprecated.IntegerObject;
-import org.openelis.gwt.common.data.deprecated.StringField;
-import org.openelis.gwt.common.data.deprecated.StringObject;
-import org.openelis.gwt.common.data.deprecated.TableDataModel;
-import org.openelis.gwt.common.data.deprecated.TableDataRow;
-import org.openelis.gwt.common.data.deprecated.TableField;
-import org.openelis.gwt.common.deprecated.Form;
-import org.openelis.gwt.common.deprecated.Query;
-import org.openelis.gwt.server.ServiceUtils;
-import org.openelis.gwt.services.deprecated.AppScreenFormServiceInt;
-import org.openelis.modules.provider.client.AddressesForm;
-import org.openelis.modules.provider.client.NotesForm;
-import org.openelis.modules.provider.client.ProviderForm;
+import org.openelis.gwt.common.DatabaseException;
+import org.openelis.gwt.common.data.Query;
+import org.openelis.manager.ProviderAddressManager;
+import org.openelis.manager.ProviderManager;
 import org.openelis.persistence.EJBFactory;
+import org.openelis.remote.ProviderManagerRemote;
 import org.openelis.remote.ProviderRemote;
-import org.openelis.server.constants.Constants;
-import org.openelis.util.FormUtil;
-import org.openelis.util.SessionManager;
-import org.openelis.util.UTFResource;
-import org.openelis.util.XMLUtil;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
 
-public class ProviderService implements AppScreenFormServiceInt<ProviderForm, Query<TableDataRow<Integer>>>{
+public class ProviderService {
     
-    private static final long serialVersionUID = 1L;
-    private static final int leftTableRowsPerPage = 18;
-     
-    private UTFResource openElisConstants= UTFResource.getBundle((String)SessionManager.getSession().getAttribute("locale"));
+    private static final int rowPP = 18;
+
+    public ProviderManager fetchById(Integer id) throws Exception {
+        try {
+            return remoteManager().fetchById(id);
+        } catch (RuntimeException e) {
+            throw new DatabaseException(e);
+        }
+    }
+
+    public ProviderManager fetchWithAddresses(Integer id) throws Exception {
+        try {
+            return remoteManager().fetchWithAddresses(id);
+        } catch (RuntimeException e) {
+            throw new DatabaseException(e);
+        }
+    }
+
+    public ProviderManager fetchWithNotes(Integer id) throws Exception {
+        try {
+            return remoteManager().fetchWithNotes(id);
+        } catch (RuntimeException e) {
+            throw new DatabaseException(e);
+        }
+    }
+
+    public ArrayList<IdLastNameFirstNameDO> query(Query query) throws Exception {
+        try {
+            return remote().query(query.getFields(), query.getPage() * rowPP, rowPP);
+        } catch (RuntimeException e) {
+            throw new DatabaseException(e);
+        }
+    }
+
+    public ProviderManager add(ProviderManager man) throws Exception {
+        try {
+            return remoteManager().add(man);
+        } catch (RuntimeException e) {
+            throw new DatabaseException(e);
+        }
+    }
+
+    public ProviderManager update(ProviderManager man) throws Exception {
+        try {
+            return remoteManager().update(man);
+        } catch (RuntimeException e) {
+            throw new DatabaseException(e);
+        }
+
+    }
+
+    public ProviderManager fetchForUpdate(Integer id) throws Exception {
+        try {
+            return remoteManager().fetchForUpdate(id);
+        } catch (RuntimeException e) {
+            throw new DatabaseException(e);
+        }
+    }
+
+    public ProviderManager abortUpdate(Integer id) throws Exception {
+        try {
+            return remoteManager().abortUpdate(id);
+        } catch (RuntimeException e) {
+            throw new DatabaseException(e);
+        }
+    }
+
+
+    //
+    // support for ProviderContactManager and ProviderParameterManager
+    //
+    public ProviderAddressManager fetchAddressByProviderId(Integer id) throws Exception {
+        try {
+            return remoteManager().fetchAddressByProviderId(id);
+        } catch (RuntimeException e) {
+            throw new DatabaseException(e);
+        }
+    }
+
+    private ProviderRemote remote() {
+        return (ProviderRemote)EJBFactory.lookup("openelis/ProviderBean/remote");
+    }
+
+    private ProviderManagerRemote remoteManager() {
+        return (ProviderManagerRemote)EJBFactory.lookup("openelis/ProviderManagerBean/remote");
+    }
+/*    
     
     public Query<TableDataRow<Integer>> commitQuery(Query<TableDataRow<Integer>> query) throws Exception {        
         List providers = new ArrayList();
@@ -574,4 +628,5 @@ public class ProviderService implements AppScreenFormServiceInt<ProviderForm, Qu
         }   
         form.status = Form.Status.invalid;
     }
+*/
 }
