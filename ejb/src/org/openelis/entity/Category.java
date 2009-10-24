@@ -55,12 +55,13 @@ import org.openelis.utils.Auditable;
 
 @NamedQueries( {@NamedQuery(name = "Category.FetchById", 
                             query = "select new org.openelis.domain.CategoryDO(c.id,c.systemName,c.name,c.description,c.sectionId)"
-                            + "  from Category c where c.id = :id"),
-                @NamedQuery(name = "Category.IdBySystemName",
-                            query = "select c.id from Category c where c.systemName = :systemName"),
-                @NamedQuery(name = "Category.IdName", 
-                            query = "select distinct new org.openelis.domain.IdNameDO(c.id, c.name) "
-                            + "  from Category c order by c.name")})
+                                  + "  from Category c where c.id = :id"),
+                @NamedQuery(name = "Category.FetchBySystemName",
+                            query = "select new org.openelis.domain.CategoryDO(c.id,c.systemName,c.name,c.description,c.sectionId)"
+                                  + "  from Category c where c.systemName = :systemName"),
+                @NamedQuery(name = "Category.FetchIdName", 
+                            query = "select distinct new org.openelis.domain.IdNameVO(c.id, c.name) "
+                                  + "  from Category c order by c.name")})
 @Entity
 @Table(name = "category")
 @EntityListeners( {AuditUtil.class})
@@ -134,6 +135,22 @@ public class Category implements Auditable, Cloneable {
         if (DataBaseUtil.isDifferent(sectionId, this.sectionId))
             this.sectionId = sectionId;
     }
+    
+    public Collection<Dictionary> getDictionary() {
+        return dictionary;
+    }
+
+    public void setDictionary(Collection<Dictionary> dictionary) {
+        this.dictionary = dictionary;
+    }
+
+    public Category getOriginal() {
+        return original;
+    }
+
+    public void setOriginal(Category original) {
+        this.original = original;
+    }
 
     public void setClone() {
         try {
@@ -163,22 +180,6 @@ public class Category implements Auditable, Cloneable {
 
     public String getTableName() {
         return "category";
-    }
-
-    public Collection<Dictionary> getDictionary() {
-        return dictionary;
-    }
-
-    public void setDictionary(Collection<Dictionary> dictionary) {
-        this.dictionary = dictionary;
-    }
-
-    public Category getOriginal() {
-        return original;
-    }
-
-    public void setOriginal(Category original) {
-        this.original = original;
     }
 
 }

@@ -221,7 +221,7 @@ public class AnalyteBean implements AnalyteRemote{
 		}
 		
 		//make sure no tests are pointing to this record
-		query = manager.createNamedQuery("TestAnalyte.TestAnalyteByAnalyteId");
+		query = manager.createNamedQuery("TestAnalyte.FetchByAnalyteId");
 		query.setParameter("id", analyteId);
 		linkedRecords = query.getResultList();
 

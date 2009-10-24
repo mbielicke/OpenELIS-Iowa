@@ -25,35 +25,18 @@
 */
 package org.openelis.local;
 
-import java.util.ArrayList;
-
 import javax.ejb.Local;
 
-import org.openelis.domain.CategoryDO;
-import org.openelis.domain.DictionaryDO;
-import org.openelis.domain.DictionaryViewDO;
+import org.openelis.domain.TestWorksheetViewDO;
 
 @Local
-public interface CategoryLocal {
+public interface TestWorksheetLocal {
 
-    public CategoryDO fetchById(Integer id) throws Exception;
+    public TestWorksheetViewDO fetchByTestId(Integer testId) throws Exception;
     
-    public Integer getEntryIdForSystemName(String systemName);
+    public TestWorksheetViewDO add(TestWorksheetViewDO data) throws Exception;
     
-    public Integer getEntryIdForEntry(String entry);
+    public TestWorksheetViewDO update(TestWorksheetViewDO data) throws Exception;
     
-    public String getSystemNameForEntryId(Integer entryId);    
-    
-    public DictionaryDO getDictionaryDOBySystemName(String systemName);
-
-    public ArrayList<DictionaryViewDO> getEntries(Integer categoryId) throws Exception;
-    
-    public DictionaryViewDO getDictionaryDOByEntryId(Integer entryId);
-    
-    public CategoryDO add(CategoryDO category) throws Exception;
-    
-    public CategoryDO update(CategoryDO category) throws Exception;    
-    
-    public void validate(CategoryDO category) throws Exception;   
-    
+    public void validate(TestWorksheetViewDO testWorksheetViewDO) throws Exception;    
 }

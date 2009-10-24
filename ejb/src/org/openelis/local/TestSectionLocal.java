@@ -29,31 +29,18 @@ import java.util.ArrayList;
 
 import javax.ejb.Local;
 
-import org.openelis.domain.CategoryDO;
-import org.openelis.domain.DictionaryDO;
-import org.openelis.domain.DictionaryViewDO;
+import org.openelis.domain.TestSectionViewDO;
 
 @Local
-public interface CategoryLocal {
+public interface TestSectionLocal {
 
-    public CategoryDO fetchById(Integer id) throws Exception;
+    public ArrayList<TestSectionViewDO> fetchByTestId(Integer testId) throws Exception;
     
-    public Integer getEntryIdForSystemName(String systemName);
+    public TestSectionViewDO add(TestSectionViewDO sectDO) throws Exception;
     
-    public Integer getEntryIdForEntry(String entry);
+    public TestSectionViewDO update(TestSectionViewDO sectDO) throws Exception;
     
-    public String getSystemNameForEntryId(Integer entryId);    
+    public void delete(TestSectionViewDO sectDO) throws Exception;
     
-    public DictionaryDO getDictionaryDOBySystemName(String systemName);
-
-    public ArrayList<DictionaryViewDO> getEntries(Integer categoryId) throws Exception;
-    
-    public DictionaryViewDO getDictionaryDOByEntryId(Integer entryId);
-    
-    public CategoryDO add(CategoryDO category) throws Exception;
-    
-    public CategoryDO update(CategoryDO category) throws Exception;    
-    
-    public void validate(CategoryDO category) throws Exception;   
-    
+    public void validate(TestSectionViewDO section) throws Exception;
 }

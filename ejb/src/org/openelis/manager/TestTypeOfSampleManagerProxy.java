@@ -30,34 +30,48 @@ import java.util.ArrayList;
 import javax.naming.InitialContext;
 
 import org.openelis.domain.TestTypeOfSampleDO;
-import org.openelis.local.TestLocal;
+import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.local.TestTypeOfSampleLocal;
+import org.openelis.utilcommon.DataBaseUtil;
 
-public class TestTypeOfSampleManagerProxy {
+public class TestTypeOfSampleManagerProxy {   
+    
+    public TestTypeOfSampleManager fetchByTestId(Integer testId) throws Exception {
+        ArrayList<TestTypeOfSampleDO> sampleTypes;
+        TestTypeOfSampleManager ttsm;
+                       
+        sampleTypes = local().fetchByTestId(testId);
+        ttsm = TestTypeOfSampleManager.getInstance();
+        ttsm.setTypes(sampleTypes);
+        ttsm.setTestId(testId);
+        
+        return ttsm;       
+    }
     
     public TestTypeOfSampleManager add(TestTypeOfSampleManager man) throws Exception {
-        TestLocal tl; 
+        TestTypeOfSampleLocal tl; 
         TestTypeOfSampleDO sampleType;
         int i;
         
-        tl = getTestLocal();         
+        tl = local();         
         
         for(i = 0; i < man.count(); i++){
             sampleType = man.getTypeAt(i);
             
             sampleType.setTestId(man.getTestId());
-            tl.addSampleType(sampleType);            
+            tl.add(sampleType);            
         }
         return man;
     }
     
     public TestTypeOfSampleManager update(TestTypeOfSampleManager man) throws Exception {
-        TestLocal tl; 
+        TestTypeOfSampleLocal tl; 
         TestTypeOfSampleDO sampleType;
         int i;
         
-        tl = getTestLocal(); 
+        tl = local(); 
         for(i = 0; i < man.deleteCount(); i++){
-            tl.deleteSampleType(man.getDeletedAt(i));
+            tl.delete(man.getDeletedAt(i));
         }
         
         for(i = 0; i < man.count(); i++){
@@ -65,33 +79,37 @@ public class TestTypeOfSampleManagerProxy {
             
             if(sampleType.getId() == null){
                 sampleType.setTestId(man.getTestId());
-                tl.addSampleType(sampleType);
+                tl.add(sampleType);
             }else
-                tl.updateSampleType(sampleType);
+                tl.update(sampleType);
         }
 
         return man;
-    }    
+    }   
     
-    public TestTypeOfSampleManager fetchByTestId(Integer testId) throws Exception {
-        TestLocal tl;
-        ArrayList<TestTypeOfSampleDO> sampleTypes;
-        TestTypeOfSampleManager ttsm;
-        
-        tl = getTestLocal();                        
-        sampleTypes = tl.fetchSampleTypesById(testId);
-        ttsm = TestTypeOfSampleManager.getInstance();
-        ttsm.setTypes(sampleTypes);
-        ttsm.setTestId(testId);
-        
-        return ttsm;
-        
+    public void validate(TestTypeOfSampleManager man) throws Exception {
+        ValidationErrorsList list;
+        TestTypeOfSampleDO typeDO;        
+        TestTypeOfSampleLocal sl;
+
+        list = new ValidationErrorsList();
+        sl = local();
+        for (int i = 0; i < man.count(); i++ ) {
+            typeDO = man.getTypeAt(i);
+            
+            try {
+                sl.validate(typeDO);
+            } catch (Exception e) {
+                DataBaseUtil.mergeException(list, e, "sampleTypeTable", i);
+            }
+
+        }
     }
     
-    private TestLocal getTestLocal(){
+    private TestTypeOfSampleLocal local(){
         try{
             InitialContext ctx = new InitialContext();
-            return (TestLocal)ctx.lookup("openelis/TestBean/local");
+            return (TestTypeOfSampleLocal)ctx.lookup("openelis/TestTypeOfSampleBean/local");
         }catch(Exception e){
              System.out.println(e.getMessage());
              return null;

@@ -69,21 +69,15 @@ import org.openelis.utils.Auditable;
                             + " d.systemName,d.isActive,  d.localAbbrev, d.entry)"
                             + " from  Dictionary d left join d.category c where c.systemName = :name"
                             + " order by d.sortOrder "),            
-                @NamedQuery(name = "Dictionary.DropdownValues",
-                            query = "select new org.openelis.domain.IdNameDO(d.id, d.entry) from Dictionary d where "
+                @NamedQuery(name = "Dictionary.FetchIdNameByCategoryId",
+                            query = "select new org.openelis.domain.IdNameVO(d.id, d.entry) from Dictionary d where "
                             + " d.isActive='Y' and d.categoryId = :id order by d.sortOrder"),             
-                @NamedQuery(name = "Dictionary.AutoCompleteByEntry",
+                @NamedQuery(name = "Dictionary.FetchIdNameByEntry",
                             query = "select new org.openelis.domain.IdNameVO(d.id, d.entry) from Dictionary d where d.entry like :entry order by d.entry"),
-                @NamedQuery(name = "Dictionary.IdBySystemName",
-                            query = "select d.id from Dictionary d where d.systemName = :systemName"),
-                @NamedQuery(name = "Dictionary.IdByEntry",
-                            query = "select d.id from Dictionary d where d.entry = :entry"),
-                @NamedQuery(name = "Dictionary.CategoryIdBySystemName",
-                            query = "select d.categoryId from Dictionary d where d.systemName = :systemName"),                
-                @NamedQuery(name = "Dictionary.SystemNameById",
-                            query = "select d.systemName from Dictionary d where d.id = :id"),
-                @NamedQuery(name = "Dictionary.EntryById",
-                            query = "select d.entry from Dictionary d where d.id = :id")})
+                @NamedQuery(name = "Dictionary.FetchByEntry",
+                            query = "select distinct new org.openelis.domain.DictionaryDO(d.id,d.sortOrder, d.categoryId, d.relatedEntryId, " +
+                                    " d.systemName,d.isActive,  d.localAbbrev, d.entry) "
+                                  + " from  Dictionary d where d.entry = :entry")})
 @Entity
 @Table(name = "dictionary")
 @EntityListeners( {AuditUtil.class})
@@ -193,6 +187,22 @@ public class Dictionary implements Auditable, Cloneable {
         if (DataBaseUtil.isDifferent(entry, this.entry))
             this.entry = entry;
     }
+    
+    public Dictionary getRelatedEntry() {
+        return relatedEntry;
+    }
+
+    public void setRelatedEntry(Dictionary relatedEntryRow) {
+        this.relatedEntry = relatedEntryRow;
+    }
+
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
+    }
 
     public void setClone() {
         try {
@@ -224,22 +234,6 @@ public class Dictionary implements Auditable, Cloneable {
 
     public String getTableName() {
         return "dictionary";
-    }
-
-    public Dictionary getRelatedEntry() {
-        return relatedEntry;
-    }
-
-    public void setRelatedEntry(Dictionary relatedEntryRow) {
-        this.relatedEntry = relatedEntryRow;
-    }
-
-    public Category getCategory() {
-        return category;
-    }
-
-    public void setCategory(Category category) {
-        this.category = category;
     }
 
 }

@@ -26,38 +26,56 @@
 package org.openelis.manager;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.naming.InitialContext;
 
 import org.openelis.domain.TestPrepViewDO;
-import org.openelis.local.TestLocal;
+import org.openelis.gwt.common.TableFieldErrorException;
+import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.local.TestPrepLocal;
+import org.openelis.metamap.TestMetaMap;
+import org.openelis.utilcommon.DataBaseUtil;
 
 public class TestPrepManagerProxy {
+    
+    private static final TestMetaMap meta = new TestMetaMap();
 
+    public TestPrepManager fetchByTestId(Integer testId) throws Exception {
+        TestPrepManager tpm;
+        ArrayList<TestPrepViewDO> prepTests;
+                
+        prepTests = local().fetchByTestId(testId);
+        tpm = TestPrepManager.getInstance();
+        tpm.setPreps(prepTests);
+        return tpm;
+        
+    }
+    
     public TestPrepManager add(TestPrepManager man) throws Exception {        
-        TestLocal tl;
+        TestPrepLocal tl;
         TestPrepViewDO prepTest;
         
-        tl = getTestLocal();         
+        tl = local();         
         
         for(int i=0; i<man.count(); i++){
             prepTest = man.getPrepAt(i);
             prepTest.setTestId(man.getTestId());
             
-            tl.addPrepTest(prepTest);
+            tl.add(prepTest);
         }
         
         return man;
     }
     
     public TestPrepManager update(TestPrepManager man) throws Exception {        
-        TestLocal tl;
+        TestPrepLocal tl;
         TestPrepViewDO prepTest;
         
-        tl = getTestLocal(); 
+        tl = local(); 
         
         for(int i = 0; i < man.deleteCount(); i++) {
-            tl.deletePrepTest(man.getDeletedAt(i));
+            tl.delete(man.getDeletedAt(i));
         }
         
         for(int i=0; i<man.count(); i++){
@@ -65,31 +83,67 @@ public class TestPrepManagerProxy {
             
             if(prepTest.getId() == null){
                 prepTest.setTestId(man.getTestId());
-                tl.addPrepTest(prepTest);
+                tl.add(prepTest);
             }else
-                tl.updatePrepTest(prepTest);
+                tl.update(prepTest);
         }
         
         return man;
     }
     
-    public TestPrepManager fetchByTestId(Integer testId) throws Exception {
-        TestPrepManager tpm;
-        TestLocal tl;
-        ArrayList<TestPrepViewDO> prepTests;
+    
+    public void validate(TestPrepManager man) throws Exception {
+        ValidationErrorsList list;
+        List<Integer> testPrepIdList;
+        TableFieldErrorException exc;
+        TestPrepViewDO prepDO;
+        Integer prepId;
+        int numReq, i;
+        TestPrepLocal pl;
+
+        testPrepIdList = new ArrayList<Integer>();
+        numReq = 0;
+        list = new ValidationErrorsList();        
+        pl = local();
         
-        tl = getTestLocal();
-        prepTests = tl.fetchPrepTestsById(testId);
-        tpm = TestPrepManager.getInstance();
-        tpm.setPreps(prepTests);
-        return tpm;
+        for (i = 0; i < man.count(); i++ ) {
+            prepDO = man.getPrepAt(i);
+            prepId = prepDO.getPrepTestId();
+            
+            try {
+                pl.validate(prepDO);
+            } catch (Exception e) {
+                DataBaseUtil.mergeException(list, e, "testPrepTable", i);
+            }
+            
+            if (!testPrepIdList.contains(prepId)) {
+                testPrepIdList.add(prepId);
+            } else {
+                exc = new TableFieldErrorException("fieldUniqueOnlyException", i,
+                                                   meta.TEST_PREP.getPrepTest()
+                                                   .getName(),"testPrepTable");
+                list.add(exc);
+            }
+            
+            if ( !"Y".equals(prepDO.getIsOptional())) {
+                if (numReq >= 1) {
+                    exc = new TableFieldErrorException("moreThanOnePrepTestOptionalException", i,
+                                                       meta.TEST_PREP.getPrepTest()
+                                                       .getName(),"testPrepTable");
+                    list.add(exc);
+                }
+                numReq++ ;
+            }
+        }
         
+        if(list.size() > 0)
+            throw list;
     }
     
-    private TestLocal getTestLocal(){
+    private TestPrepLocal local(){
         try{
             InitialContext ctx = new InitialContext();
-            return (TestLocal)ctx.lookup("openelis/TestBean/local");
+            return (TestPrepLocal)ctx.lookup("openelis/TestPrepBean/local");
         }catch(Exception e){
              System.out.println(e.getMessage());
              return null;

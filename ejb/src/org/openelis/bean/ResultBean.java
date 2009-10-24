@@ -80,7 +80,7 @@ public class ResultBean implements ResultLocal {
         
         //get test_analytes by test id
         /*
-        Query query = manager.createNamedQuery("TestAnalyte.TestAnalyteDOListByTestId");
+        Query query = manager.createNamedQuery("TestAnalyte.FetchByTestId");
         query.setParameter("testId", testId);
         testAnalytes = query.getResultList();
         
@@ -91,7 +91,7 @@ public class ResultBean implements ResultLocal {
         */
         
         //get analytes for test
-        Query query = manager.createNamedQuery("TestAnalyte.AnalyteByTestId");
+        Query query = manager.createNamedQuery("Analyte.FetchByTest");
         query.setParameter("testId", testId);
         analytes = query.getResultList();
         
@@ -212,7 +212,7 @@ public class ResultBean implements ResultLocal {
         List<ResultViewDO> rslts = null;
         /*
         //get test_analytes by test id
-        Query query = manager.createNamedQuery("TestAnalyte.TestAnalyteDOListByTestId");
+        Query query = manager.createNamedQuery("TestAnalyte.FetchByTestId");
         query.setParameter("testId", testId);
         testAnalytes = query.getResultList();
         

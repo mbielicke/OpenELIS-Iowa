@@ -38,6 +38,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
+import org.openelis.domain.DictionaryViewDO;
 import org.openelis.domain.IdNameDO;
 import org.openelis.domain.IdNameLotNumberDO;
 import org.openelis.domain.QcAnalyteViewDO;
@@ -112,6 +113,7 @@ public class QcBean implements QcRemote {
         List results;
         Integer typeId;
         String systemName,value;
+        DictionaryViewDO snDO,entDO;
         
         query = manager.createNamedQuery("QcAnalyte.QcAnalyteDOsByQcId");
         query.setParameter("id", qcId);     
@@ -120,17 +122,19 @@ public class QcBean implements QcRemote {
             qcaDO = qcAnaDOList.get(i);
             typeId = qcaDO.getTypeId();
                        
-            query = manager.createNamedQuery("Dictionary.SystemNameById");
+            query = manager.createNamedQuery("Dictionary.FetchById");
             query.setParameter("id", typeId);                    
             results = query.getResultList();
-            systemName = (String)results.get(0);
+            snDO = (DictionaryViewDO)results.get(0);
+            systemName = (String)snDO.getSystemName();
             
             if("qc_analyte_dictionary".equals(systemName)) {
-                query = manager.createNamedQuery("Dictionary.EntryById");
+                query = manager.createNamedQuery("Dictionary.FetchById");
                 value = qcaDO.getValue();
                 query.setParameter("id", Integer.parseInt(value));
-                results = query.getResultList();                        
-                value = (String)results.get(0);
+                results = query.getResultList();
+                entDO = (DictionaryViewDO)results.get(0);
+                value = (String)entDO.getEntry();
                 qcaDO.setValue(value);
             }
         }
@@ -255,10 +259,10 @@ public class QcBean implements QcRemote {
                     typeId = qcaDO.getTypeId();
                     qca.setTypeId(typeId);
                     
-                    query = manager.createNamedQuery("Dictionary.SystemNameById");
+                    query = manager.createNamedQuery("Dictionary.FetchById");
                     query.setParameter("id", typeId);                    
                     results = query.getResultList();
-                    systemName = (String)results.get(0);
+                    systemName = ((DictionaryViewDO)results.get(0)).getSystemName();
                     
                     if("qc_analyte_dictionary".equals(systemName)) {                                               
                         dictId = categoryBean.getEntryIdForEntry(qcaDO.getValue());

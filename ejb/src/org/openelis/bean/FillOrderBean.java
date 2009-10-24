@@ -26,6 +26,7 @@
 package org.openelis.bean;
 
 import org.jboss.annotation.security.SecurityDomain;
+import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.FillOrderDO;
 import org.openelis.domain.NoteViewDO;
 import org.openelis.entity.InventoryLocation;
@@ -197,9 +198,10 @@ public class FillOrderBean implements FillOrderRemote {
         
         ArrayList<Integer> orderIds = new ArrayList<Integer>();
         //shipping reference table id
-        Query query = manager.createNamedQuery("Dictionary.IdBySystemName");
-        query.setParameter("systemName","order_status_processed");
-        Integer processedStatusValue = (Integer)query.getResultList().get(0);
+        Query query = manager.createNamedQuery("Dictionary.FetchBySystemName");
+        query.setParameter("name","order_status_processed");
+        DictionaryDO dictDO = (DictionaryDO)query.getResultList().get(0); 
+        Integer processedStatusValue = dictDO.getId();
         
         manager.setFlushMode(FlushModeType.COMMIT);
         

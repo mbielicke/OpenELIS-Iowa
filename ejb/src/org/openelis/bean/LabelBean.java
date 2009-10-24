@@ -188,7 +188,7 @@ public class LabelBean implements LabelRemote {
         } else {
             tests = null;
             try{               
-                query = manager.createNamedQuery("Test.IdByLabel");
+                query = manager.createNamedQuery("Label.FetchTestForDeleteCheck");
                 query.setParameter("id", labelDO.getId());
                 tests = query.getResultList();
             }catch(NoResultException nrex){
