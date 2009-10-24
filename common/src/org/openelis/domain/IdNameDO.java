@@ -32,7 +32,7 @@ import org.openelis.utilcommon.DataBaseUtil;
  * display, and some auto complete fields. The fields are considered read/display
  * and do not get committed to the database.
  */
-
+@Deprecated
 public class IdNameDO extends DataObject {
 
     private static final long serialVersionUID = 1L;

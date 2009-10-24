@@ -1,24 +1,24 @@
 package org.openelis.metamap;
 
 import org.openelis.gwt.common.MetaMap;
-import org.openelis.meta.QaeventMeta;
+import org.openelis.meta.QaEventMeta;
 import org.openelis.meta.SampleQaeventMeta;
 
 public class SampleQaeventMetaMap extends SampleQaeventMeta implements MetaMap {
 
     public SampleQaeventMetaMap(){
         super("sampleQaEvent.");
-        QA_EVENT = new QaeventMeta(path+"qaEvent.");
+        QA_EVENT = new QaEventMeta(path+"qaEvent.");
     }
     
     public SampleQaeventMetaMap(String path){
         super(path);
-        QA_EVENT = new QaeventMeta(path+"qaEvent.");
+        QA_EVENT = new QaEventMeta(path+"qaEvent.");
     }
     
-    protected QaeventMeta QA_EVENT;
+    protected QaEventMeta QA_EVENT;
     
-    public QaeventMeta getQaevent(){
+    public QaEventMeta getQaevent(){
         return QA_EVENT;
     }
     

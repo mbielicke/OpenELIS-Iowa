@@ -27,7 +27,7 @@ package org.openelis.domain;
 
 import org.openelis.gwt.common.RPC;
 import org.openelis.utilcommon.DataBaseUtil;
-
+@Deprecated
 public class IdNameTestMethodDO implements RPC {
 
     private static final long serialVersionUID = 1L;

@@ -26,37 +26,32 @@
 package org.openelis.remote;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import javax.ejb.Remote;
 
-import org.openelis.domain.QaEventDO;
-import org.openelis.domain.QaEventView;
+import org.openelis.domain.QaEventVO;
 import org.openelis.domain.QaEventViewDO;
-import org.openelis.gwt.common.data.deprecated.AbstractField;
+import org.openelis.gwt.common.data.QueryData;
 
 @Remote
 public interface QaEventRemote {
    
-    // method to return QaEvent 
-    public QaEventViewDO getQaEvent(Integer qaEventId);
-    
-    public QaEventViewDO getQaEventAndUnlock(Integer qaEventId, String session);
-    
-    public QaEventViewDO getQaEventAndLock(Integer qaEventId, String session) throws Exception;    
-     
-    public ArrayList<QaEventDO> fetchAllCommon();
-    
-    public ArrayList<QaEventDO> fetchTestSpecificById(Integer testId);
-    
-    public ArrayList<QaEventView> fetchCommonByName(String name, int numberOfResults);
-    
-    public ArrayList<QaEventView> fetchTestSpecificByName(String name, Integer testId, int numberOfResults);
+    public QaEventViewDO fetchById(Integer id) throws Exception;
 
-    //  commit a change to QaEvent, or insert a new provider
-    public Integer updateQaEvent(QaEventViewDO qaEventDO)throws Exception;
+    public ArrayList<QaEventVO> fetchByName(String name) throws Exception;
+
+    public ArrayList<QaEventVO> fetchByTestId(Integer id) throws Exception;
+
+    public ArrayList<QaEventVO> fetchByCommon() throws Exception;
     
-    //  method to query for QaEvent
-    public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception;
+    public ArrayList<QaEventVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception;
+
+    public QaEventViewDO add(QaEventViewDO data) throws Exception;
+
+    public QaEventViewDO update(QaEventViewDO data) throws Exception;
+
+    public QaEventViewDO fetchForUpdate(Integer id) throws Exception;
+
+    public QaEventViewDO abortUpdate(Integer id) throws Exception;
 }
 
