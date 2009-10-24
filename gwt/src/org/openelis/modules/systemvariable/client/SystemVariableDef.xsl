@@ -61,7 +61,7 @@ UIRF Software License are applicable instead of those above.
     <screen id="SystemVariable" name="{resource:getString($constants,'systemVariable')}">
       <HorizontalPanel padding="0" spacing="0">
         <CollapsePanel key="collapsePanel" style="LeftSidePanel">
-          <HorizontalPanel width="225px">
+          <HorizontalPanel width="225">
             <buttonGroup key="atozButtons">
               <xsl:call-template name="aToZLeftPanelButtons" />
             </buttonGroup>
@@ -137,19 +137,19 @@ UIRF Software License are applicable instead of those above.
 
 <!--end button panel-->
 
-          <VerticalPanel width="620px" height="210px" padding="0" spacing="0" style="WhiteContentPanel">
+          <VerticalPanel width="620" height="210" padding="0" spacing="0" style="WhiteContentPanel">
             <TablePanel style="Form">
               <row>
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"name")' />:
                 </text>
-                <textbox key="{meta:getName($sv)}" width="215px" case="LOWER" max="30" required="true" tab="{meta:getValue($sv)},{meta:getValue($sv)}" />
+                <textbox key="{meta:getName($sv)}" width="215" case="LOWER" max="30" required="true" tab="{meta:getValue($sv)},{meta:getValue($sv)}" />
               </row>
               <row>
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"value")' />:
                 </text>
-                <textbox key="{meta:getValue($sv)}" width="425px" case="MIXED" required="true" tab="{meta:getName($sv)},{meta:getName($sv)}" />
+                <textbox key="{meta:getValue($sv)}" width="425" case="MIXED" required="true" tab="{meta:getName($sv)},{meta:getName($sv)}" />
               </row>
             </TablePanel>
           </VerticalPanel>

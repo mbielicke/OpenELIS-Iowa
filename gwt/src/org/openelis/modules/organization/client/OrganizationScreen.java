@@ -138,6 +138,10 @@ public class OrganizationScreen extends Screen {
      */
     private void postConstructor() {
         tab = Tabs.CONTACTS;
+        contactTab.setWindow(window);
+        parameterTab.setWindow(window);
+        notesTab.setWindow(window);
+        
         manager = OrganizationManager.getInstance();
 
         setState(State.DEFAULT);
@@ -275,7 +279,7 @@ public class OrganizationScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                name.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
+                name.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                    .contains(event.getState()));
                 name.setQueryMode(event.getState() == State.QUERY);
                 if (event.getState() == State.ADD || event.getState() == State.UPDATE)
@@ -294,7 +298,7 @@ public class OrganizationScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                city.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
+                city.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                    .contains(event.getState()));
                 city.setQueryMode(event.getState() == State.QUERY);
             }
@@ -311,7 +315,7 @@ public class OrganizationScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                multipleUnit.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
+                multipleUnit.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                            .contains(event.getState()));
                 multipleUnit.setQueryMode(event.getState() == State.QUERY);
             }
@@ -328,7 +332,7 @@ public class OrganizationScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                stateCode.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
+                stateCode.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                         .contains(event.getState()));
                 stateCode.setQueryMode(event.getState() == State.QUERY);
             }
@@ -345,7 +349,7 @@ public class OrganizationScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                zipCode.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
+                zipCode.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                       .contains(event.getState()));
                 zipCode.setQueryMode(event.getState() == State.QUERY);
             }
@@ -362,7 +366,7 @@ public class OrganizationScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                streetAddress.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
+                streetAddress.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                             .contains(event.getState()));
                 streetAddress.setQueryMode(event.getState() == State.QUERY);
             }
@@ -379,7 +383,7 @@ public class OrganizationScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                country.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
+                country.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                       .contains(event.getState()));
                 country.setQueryMode(event.getState() == State.QUERY);
             }
@@ -398,7 +402,7 @@ public class OrganizationScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                parentName.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
+                parentName.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                          .contains(event.getState()));
                 parentName.setQueryMode(event.getState() == State.QUERY);
             }
@@ -457,7 +461,7 @@ public class OrganizationScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                isActive.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
+                isActive.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                        .contains(event.getState()));
                 isActive.setQueryMode(event.getState() == State.QUERY);
             }
@@ -482,7 +486,7 @@ public class OrganizationScreen extends Screen {
             }
         });
 
-        contactTab = new ContactTab(window, def);
+        contactTab = new ContactTab(def);
         addScreenHandler(contactTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                 contactTab.setManager(manager);
@@ -495,7 +499,7 @@ public class OrganizationScreen extends Screen {
             }
         });
 
-        parameterTab = new ParameterTab(window, def);
+        parameterTab = new ParameterTab(def);
         addScreenHandler(parameterTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                 parameterTab.setManager(manager);

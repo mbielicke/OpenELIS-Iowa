@@ -32,7 +32,7 @@ import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.AnalysisQaEventViewDO;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.DictionaryDO;
-import org.openelis.domain.QaEventView;
+import org.openelis.domain.QaEventVO;
 import org.openelis.domain.SampleQaEventViewDO;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
@@ -127,11 +127,11 @@ public class QAEventsTab extends Screen {
                 switch (c) {
                     case 0:
                         TableDataRow selectedRow = sampleQaEvent.getSelection();
-                        QaEventView qaEvent;
+                        QaEventVO qaEvent;
                         
-                        qaEvent = new QaEventView();
+                        qaEvent = new QaEventVO();
                         if (selectedRow.key != null)
-                            qaEvent = (QaEventView)selectedRow.data;
+                            qaEvent = (QaEventVO)selectedRow.data;
 
                         sampleQATable.setCell(sampleQATable.getSelectedIndex(), 1, qaEvent.getTypeId());
                         sampleQATable.setCell(sampleQATable.getSelectedIndex(), 2, qaEvent.getIsBillable());
@@ -170,8 +170,8 @@ public class QAEventsTab extends Screen {
                 QueryData field;
                 QueryFieldUtil parser;
                 TableDataRow row;
-                QaEventView data;
-                ArrayList<QaEventView> list;
+                QaEventVO data;
+                ArrayList<QaEventVO> list;
                 ArrayList<TableDataRow> model;
 
                 query = new Query();
@@ -194,7 +194,7 @@ public class QAEventsTab extends Screen {
                         row.key = data.getId();
                         row.cells.get(0).value = data.getName();
                         row.cells.get(1).value = data.getDescription();
-                        row.cells.get(2).value = data.getType();
+                        row.cells.get(2).value = data.getTypeId();
                         row.data = data;
 
                         model.add(row);
@@ -339,9 +339,9 @@ public class QAEventsTab extends Screen {
                 QueryData field;
                 QueryFieldUtil parser;
                 TableDataRow row;
-                QaEventView data;
+                QaEventVO data;
                 ArrayList<QueryData> fields;
-                ArrayList<QaEventView> list;
+                ArrayList<QaEventVO> list;
                 ArrayList<TableDataRow> model;
 
                 query = new Query();
@@ -370,7 +370,7 @@ public class QAEventsTab extends Screen {
                         row.key = data.getId();
                         row.cells.get(0).value = data.getName();
                         row.cells.get(1).value = data.getDescription();
-                        row.cells.get(2).value = data.getType();
+                        row.cells.get(2).value = data.getTypeId();
                         row.data = data;
 
                         model.add(row);
