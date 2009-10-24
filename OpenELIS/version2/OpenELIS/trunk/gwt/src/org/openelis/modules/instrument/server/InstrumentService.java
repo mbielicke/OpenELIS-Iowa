@@ -34,7 +34,7 @@ import org.openelis.domain.IdNameDO;
 import org.openelis.domain.IdNameSerialNumberDO;
 import org.openelis.domain.InstrumentLogDO;
 import org.openelis.domain.InstrumentViewDO;
-import org.openelis.domain.TestMethodViewDO;
+import org.openelis.domain.TestMethodVO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
@@ -217,7 +217,7 @@ public class InstrumentService implements
         AnalyteRemote aremote;
         TableDataModel<TableDataRow<Integer>> dataModel;
         List<IdNameDO> entries;
-        List<TestMethodViewDO> tmlist;
+        List<TestMethodVO> tmlist;
         ScriptletRemote sremote;
         TestRemote tremote;
 
@@ -230,7 +230,7 @@ public class InstrumentService implements
             //dataModel = getAutocompleteModel(entries);
         } else if ("testMethod".equals(cat)) {
             tremote = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
-            tmlist = tremote.getTestAutoCompleteByName(match.trim() + "%", 10);
+            tmlist = tremote.fetchByName(match.trim() + "%", 10);
             dataModel = getTestMethodAutocompleteModel(tmlist);
         }
 
@@ -253,17 +253,17 @@ public class InstrumentService implements
         return dataModel;
     }
 
-    private TableDataModel<TableDataRow<Integer>> getTestMethodAutocompleteModel(List<TestMethodViewDO> entries) {
+    private TableDataModel<TableDataRow<Integer>> getTestMethodAutocompleteModel(List<TestMethodVO> entries) {
         TableDataModel<TableDataRow<Integer>> dataModel;
         TableDataRow<Integer> data;
         Integer itemId;
-        TestMethodViewDO resultDO;
+        TestMethodVO resultDO;
         String name, method, tdesc, mdesc;
 
         dataModel = new TableDataModel<TableDataRow<Integer>>();
 
         for (int i = 0; i < entries.size(); i++) {
-            resultDO = (TestMethodViewDO)entries.get(i);
+            resultDO = (TestMethodVO)entries.get(i);
 
             itemId = resultDO.getTestId();
             name = resultDO.getTestName();

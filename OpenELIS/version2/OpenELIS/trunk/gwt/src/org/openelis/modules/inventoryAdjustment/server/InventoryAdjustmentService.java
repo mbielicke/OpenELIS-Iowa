@@ -31,6 +31,7 @@ import java.util.List;
 
 import org.openelis.domain.IdNameDO;
 import org.openelis.domain.IdNameDateDO;
+import org.openelis.domain.IdNameVO;
 import org.openelis.domain.InventoryAdjLocationAutoDO;
 import org.openelis.domain.InventoryAdjustmentAddAutoFillDO;
 import org.openelis.domain.InventoryAdjustmentChildDO;
@@ -378,9 +379,9 @@ public class InventoryAdjustmentService implements AppScreenFormServiceInt<Inven
         if(cat.equals("itemStores"))
             id = remote.getCategoryId("inventory_item_stores");
         
-        List<IdNameDO> entries = new ArrayList<IdNameDO>();
+        List<IdNameVO> entries = new ArrayList<IdNameVO>();
         if(id > -1)
-            entries = (List<IdNameDO>)remote.getDropdownValues(id);
+            entries = (List<IdNameVO>)remote.getDropdownValues(id);
         
         
         //we need to build the model to return
@@ -390,7 +391,7 @@ public class InventoryAdjustmentService implements AppScreenFormServiceInt<Inven
             returnModel.add(new TableDataRow<Integer>(0,new StringObject("")));
         }
         
-        for(IdNameDO resultDO : entries) { 
+        for(IdNameVO resultDO : entries) { 
             returnModel.add(new TableDataRow<Integer>(resultDO.getId(),new StringObject(resultDO.getName())));
         }       
         

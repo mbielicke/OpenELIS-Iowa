@@ -41,7 +41,7 @@ import org.openelis.remote.WorksheetManagerRemote;
 public class WorksheetCreationService {
 
     public AutocompleteRPC getTestMethodMatches(AutocompleteRPC rpc) throws Exception {
-        rpc.model = (ArrayList)testRemote().getTestWithActiveAutoCompleteByName(rpc.match+"%", 10);
+        rpc.model = (ArrayList)testRemote().fetchActiveByName(rpc.match+"%", 10);
         
         return rpc;
     }

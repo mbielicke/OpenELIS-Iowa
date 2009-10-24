@@ -40,7 +40,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.common.AutocompleteRPC;
 import org.openelis.domain.DictionaryDO;
-import org.openelis.domain.TestMethodViewDO;
+import org.openelis.domain.TestMethodVO;
 import org.openelis.domain.TestWorksheetDO;
 import org.openelis.domain.WorksheetCreationVO;
 import org.openelis.domain.WorksheetItemDO;

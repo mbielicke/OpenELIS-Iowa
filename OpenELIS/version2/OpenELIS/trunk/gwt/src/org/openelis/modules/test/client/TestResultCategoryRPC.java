@@ -23,30 +23,19 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.manager;
+package org.openelis.modules.test.client;
 
-import org.openelis.gwt.services.ScreenService;
+import java.util.ArrayList;
+
+import org.openelis.domain.DictionaryDO;
+import org.openelis.gwt.common.RPC;
 
 
-public class TestSectionManagerProxy {
+public class TestResultCategoryRPC implements RPC {
+
+    private static final long serialVersionUID = 1L;
     
-    protected static final String TEST_MANAGER_SERVICE_URL = "org.openelis.modules.test.server.TestService";
-    protected ScreenService service;
-    
-    public TestSectionManagerProxy() {
-        service = new ScreenService("OpenELISServlet?service="+TEST_MANAGER_SERVICE_URL);
-    }
-    
-    public TestSectionManager add(TestSectionManager man) throws Exception {
-        assert false : "not supported";
-        return null;
-    }
-    
-    public TestSectionManager update(TestSectionManager man) throws Exception {
-        assert false : "not supported";
-        return null;
-    }
-    
-    public void validate(TestSectionManager man) throws Exception {        
-    }
+    public String resultValue;
+    public ArrayList<DictionaryDO> dictIdList;
+
 }

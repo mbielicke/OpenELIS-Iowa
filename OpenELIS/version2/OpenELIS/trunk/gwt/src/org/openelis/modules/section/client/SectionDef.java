@@ -23,32 +23,10 @@
  * which case the provisions of a UIRF Software License are applicable instead
  * of those above.
  */
-package org.openelis.manager;
+package org.openelis.modules.section.client;
 
-import org.openelis.gwt.services.ScreenService;
+import org.openelis.gwt.screen.ScreenDefInt;
 
-public class TestTypeOfSampleManagerProxy {
-    protected static final String TEST_MANAGER_SERVICE_URL = "org.openelis.modules.test.server.TestService";
-    protected ScreenService       service;
+public interface SectionDef extends ScreenDefInt {
 
-    public TestTypeOfSampleManagerProxy() {
-        service = new ScreenService("OpenELISServlet?service=" + TEST_MANAGER_SERVICE_URL);
-    }
-
-    public TestTypeOfSampleManager fetchByTestId(Integer testId) throws Exception {
-        return service.call("fetchSampleTypeByTestId", testId);
-    }
-
-    public TestTypeOfSampleManager add(TestTypeOfSampleManager man) throws Exception {
-        assert false : "not supported";
-        return null;
-    }
-
-    public TestTypeOfSampleManager update(TestTypeOfSampleManager man) throws Exception {
-        assert false : "not supported";
-        return null;
-    }
-
-    public void validate(TestTypeOfSampleManager man) throws Exception {
-    }
 }

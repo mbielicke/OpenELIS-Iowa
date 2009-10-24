@@ -32,11 +32,15 @@ import java.util.List;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.TestTypeOfSampleDO;
+import org.openelis.gwt.event.ActionEvent;
+import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
+import org.openelis.gwt.event.HasActionHandlers;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
+import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.table.TableDataRow;
@@ -49,38 +53,50 @@ import org.openelis.gwt.widget.table.event.RowDeletedEvent;
 import org.openelis.gwt.widget.table.event.RowDeletedHandler;
 import org.openelis.manager.TestManager;
 import org.openelis.manager.TestTypeOfSampleManager;
+import org.openelis.modules.test.client.AnalyteAndResultTab.Action;
 
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Window;
 
-public class SampleTypeTab extends Screen {
-    private TestManager manager;
-    private boolean     dropdownsInited, loaded;        
+public class SampleTypeTab extends Screen implements HasActionHandlers<SampleTypeTab.Action>{
     
-    private TableWidget sampleTypeTable;
-    private AppButton   addSampleTypeButton,removeSampleTypeButton;
+    public enum Action {
+        UNIT_CHANGED,UNIT_DELETED;
+    };
+    
+    private TestManager manager;
+    private boolean     loaded;        
+    
+    private SampleTypeTab source;
+    private TableWidget table;
+    private AppButton   addButton,removeButton;
     
     public SampleTypeTab(ScreenDefInt def) {
         setDef(def);
-        initialize();          
+        initialize();  
+        
+        initializeDropdowns();
     }
 
     private void initialize() {                
-
-        sampleTypeTable = (TableWidget)def.getWidget("sampleTypeTable");
-        addScreenHandler(sampleTypeTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
+        
+        source = this;
+        
+        table = (TableWidget)def.getWidget("sampleTypeTable");
+        addScreenHandler(table, new ScreenEventHandler<ArrayList<TableDataRow>>() {
             public void onDataChange(DataChangeEvent event) {                
                 if(state != State.QUERY)
-                    sampleTypeTable.load(getTableModel());
+                    table.load(getTableModel());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                sampleTypeTable.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
-                sampleTypeTable.setQueryMode(event.getState() == State.QUERY);
+                table.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                table.setQueryMode(event.getState() == State.QUERY);
             }
         });
 
-        sampleTypeTable.addCellEditedHandler(new CellEditedHandler() {
+        table.addCellEditedHandler(new CellEditedHandler() {
             public void onCellUpdated(CellEditedEvent event) {
                 int row, col;
                 Integer val;
@@ -88,7 +104,7 @@ public class SampleTypeTab extends Screen {
                 
                 row = event.getRow();
                 col = event.getCol();                         
-                val = (Integer)sampleTypeTable.getObject(row, col);
+                val = (Integer)table.getRow(row).cells.get(col).value;                
                 try{
                     sampleTypeDO = manager.getSampleTypes().getTypeAt(row);
                 }catch(Exception e){
@@ -102,12 +118,13 @@ public class SampleTypeTab extends Screen {
                         break;
                     case 1:
                         sampleTypeDO.setUnitOfMeasureId(val);
+                        ActionEvent.fire(source, Action.UNIT_CHANGED, sampleTypeDO);
                         break;
                 }
             }
         });
 
-        sampleTypeTable.addRowAddedHandler(new RowAddedHandler() {
+        table.addRowAddedHandler(new RowAddedHandler() {
             public void onRowAdded(RowAddedEvent event) {
                 try{ 
                     manager.getSampleTypes().addType(new TestTypeOfSampleDO());
@@ -118,80 +135,73 @@ public class SampleTypeTab extends Screen {
             }
         });
 
-        sampleTypeTable.addRowDeletedHandler(new RowDeletedHandler() {
+        table.addRowDeletedHandler(new RowDeletedHandler() {
             public void onRowDeleted(RowDeletedEvent event) {
+                TestTypeOfSampleDO typeDO;
+                int index;
                 try{
-                    manager.getSampleTypes().removeTypeAt(event.getIndex());
+                    index = event.getIndex();
+                    typeDO = manager.getSampleTypes().getTypeAt(index);
+                    manager.getSampleTypes().removeTypeAt(index);
+                    ActionEvent.fire(source, Action.UNIT_DELETED, typeDO);
                 }catch(Exception e){
                     Window.alert(e.getMessage());
                 }
             }
         });
 
-        addSampleTypeButton = (AppButton)def.getWidget("addSampleTypeButton");
-        addScreenHandler(addSampleTypeButton, new ScreenEventHandler<Object>() {
+        addButton = (AppButton)def.getWidget("addSampleTypeButton");
+        addScreenHandler(addButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-                sampleTypeTable.addRow();
-                sampleTypeTable.selectRow(sampleTypeTable.numRows()-1);
-                sampleTypeTable.scrollToSelection();
-                sampleTypeTable.startEditing(sampleTypeTable.numRows()-1, 0);
+                table.addRow();
+                table.selectRow(table.numRows()-1);
+                table.scrollToSelection();
+                table.startEditing(table.numRows()-1, 0);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                if(event.getState() == State.ADD || event.getState() == State.UPDATE)
-                    addSampleTypeButton.enable(true);
-                else
-                    addSampleTypeButton.enable(false);
+                addButton.enable(EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()));
             }
         });
 
-        removeSampleTypeButton = (AppButton)def.getWidget("removeSampleTypeButton");
-        addScreenHandler(removeSampleTypeButton, new ScreenEventHandler<Object>() {
+        removeButton = (AppButton)def.getWidget("removeSampleTypeButton");
+        addScreenHandler(removeButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-                int selectedRow = sampleTypeTable.getSelectedIndex();
-                if (selectedRow > -1 && sampleTypeTable.numRows() > 0) {
-                    sampleTypeTable.deleteRow(selectedRow);
-                }
+                int i;
+                
+                i = table.getSelectedIndex();
+                if (i > -1 && table.numRows() > 0) 
+                    table.deleteRow(i);                    
+                
             }
             public void onStateChange(StateChangeEvent<State> event) {
-                if(event.getState() == State.ADD || event.getState() == State.UPDATE)
-                    removeSampleTypeButton.enable(true);
-                else
-                    removeSampleTypeButton.enable(false);
+                removeButton.enable(EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()));
             }
         });
 
     }
     
-    public void setManager(TestManager manager) {
-        this.manager = manager;
-        loaded = false;
-        if(!dropdownsInited) {
-            setSampleTypes();
-            setUnitsOfMeasure();
-            dropdownsInited = true;
-        }
-    }
-    
-    public void draw(){
-        if(!loaded)
-            DataChangeEvent.fire(this);
+    private void initializeDropdowns() { 
+        ArrayList<TableDataRow> model;
+        List<DictionaryDO> list;
         
-        loaded = true;
-    }
-    
-    protected void clearKeys(TestTypeOfSampleManager ttsm) {
-        TestTypeOfSampleDO sampletype;
-        
-        for(int i = 0; i < ttsm.count(); i++) {
-            sampletype = ttsm.getTypeAt(i);
-            sampletype.setId(null);
-            sampletype.setTestId(null);
-        }
-    }
-    
-    protected void finishEditing() {
-        sampleTypeTable.finishEditing();
+        model = new ArrayList<TableDataRow>();
+        list = DictionaryCache.getListByCategorySystemName("type_of_sample");
+        model.add(new TableDataRow(null, ""));
+        for(DictionaryDO resultDO :  list){
+            model.add(new TableDataRow(resultDO.getId(),resultDO.getEntry()));
+        } 
+        ((Dropdown)table.columns.get(0).getColumnWidget()).setModel(model);
+
+
+        model = new ArrayList<TableDataRow>();
+        list = DictionaryCache.getListByCategorySystemName("unit_of_measure");
+        model.add(new TableDataRow(null, ""));
+        for(DictionaryDO resultDO :  list){
+            model.add(new TableDataRow(resultDO.getId(),resultDO.getEntry()));
+        } 
+        ((Dropdown)table.columns.get(1).getColumnWidget()).setModel(model);
+            
     }
     
     private ArrayList<TableDataRow> getTableModel() {
@@ -224,27 +234,35 @@ public class SampleTypeTab extends Screen {
     
         return model;
     }
-
-    private void setSampleTypes() {
-        ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
-        List<DictionaryDO> list = DictionaryCache.getListByCategorySystemName("type_of_sample");
-        model.add(new TableDataRow(null, ""));
-        for(DictionaryDO resultDO :  list){
-            model.add(new TableDataRow(resultDO.getId(),resultDO.getEntry()));
-        } 
-        ((Dropdown)sampleTypeTable.columns.get(0).getColumnWidget()).setModel(model);
+    
+    public void setManager(TestManager manager) {
+        this.manager = manager;
+        loaded = false;
+    }
+    
+    public void draw(){
+        if(!loaded)
+            DataChangeEvent.fire(this);
         
+        loaded = true;
+    }
+    
+    public HandlerRegistration addActionHandler(ActionHandler<SampleTypeTab.Action> handler) {
+        return addHandler(handler, ActionEvent.getType());
+    } 
+    
+    protected void clearKeys(TestTypeOfSampleManager ttsm) {
+        TestTypeOfSampleDO sampletype;
+        
+        for(int i = 0; i < ttsm.count(); i++) {
+            sampletype = ttsm.getTypeAt(i);
+            sampletype.setId(null);
+            sampletype.setTestId(null);
+        }
+    }
+    
+    protected void finishEditing() {
+        table.finishEditing();
     }
 
-    private void setUnitsOfMeasure() {
-        ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
-        List<DictionaryDO> list = DictionaryCache.getListByCategorySystemName("unit_of_measure");
-        model.add(new TableDataRow(null, ""));
-        for(DictionaryDO resultDO :  list){
-            model.add(new TableDataRow(resultDO.getId(),resultDO.getEntry()));
-        } 
-        ((Dropdown)sampleTypeTable.columns.get(1).getColumnWidget()).setModel(model);
-        
-    }       
-    
 }

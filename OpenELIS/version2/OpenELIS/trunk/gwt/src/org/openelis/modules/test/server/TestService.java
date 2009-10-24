@@ -28,11 +28,9 @@ package org.openelis.modules.test.server;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openelis.common.AutocompleteRPC;
-import org.openelis.domain.IdNameVO;
-import org.openelis.domain.TestMethodViewDO;
+import org.openelis.domain.IdNameDO;
+import org.openelis.domain.TestMethodVO;
 import org.openelis.gwt.common.DatabaseException;
-import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.manager.TestAnalyteManager;
 import org.openelis.manager.TestManager;
@@ -41,8 +39,10 @@ import org.openelis.manager.TestReflexManager;
 import org.openelis.manager.TestResultManager;
 import org.openelis.manager.TestTypeOfSampleManager;
 import org.openelis.manager.TestWorksheetManager;
+import org.openelis.modules.test.client.TestResultCategoryRPC;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.AnalyteRemote;
+import org.openelis.remote.CategoryRemote;
 import org.openelis.remote.LabelRemote;
 import org.openelis.remote.MethodRemote;
 import org.openelis.remote.QcRemote;
@@ -50,13 +50,13 @@ import org.openelis.remote.ScriptletRemote;
 import org.openelis.remote.TestManagerRemote;
 import org.openelis.remote.TestRemote;
 import org.openelis.remote.TestTrailerRemote;
-import org.openelis.server.constants.Constants;
+import org.openelis.utilcommon.DataBaseUtil;
 
 public class TestService {
     
     private static final int rowPP = 23;         
     
-    public ArrayList<TestMethodViewDO> query(Query query) throws Exception {
+    public ArrayList<TestMethodVO> query(Query query) throws Exception {
         try {
             return testRemote().query(query.getFields(), query.getPage() * rowPP, rowPP);
         } catch (RuntimeException e) {
@@ -64,9 +64,9 @@ public class TestService {
         }
     }
 
-    public TestManager fetch(Integer testId) throws Exception {
+    public TestManager fetchById(Integer testId) throws Exception {
         try {
-            return managerRemote().fetch(testId);
+            return managerRemote().fetchById(testId);
         } catch (RuntimeException e) {
             throw new DatabaseException(e);
         }
@@ -80,7 +80,7 @@ public class TestService {
         }
     }
     
-    public TestAnalyteManager fetchTestAnalytesByTestId(Integer testId) throws Exception{       
+    public TestAnalyteManager fetchTestAnalyteByTestId(Integer testId) throws Exception{       
         try {
             return managerRemote().fetchTestAnalytesByTestId(testId);
         } catch (RuntimeException e) {
@@ -88,7 +88,7 @@ public class TestService {
         }
     }
     
-    public TestResultManager fetchTestResultsByTestId(Integer testId) throws Exception{       
+    public TestResultManager fetchTestResultByTestId(Integer testId) throws Exception{       
         try {
             return managerRemote().fetchTestResultsByTestId(testId);
         } catch (RuntimeException e) {
@@ -104,7 +104,7 @@ public class TestService {
         }
     }
     
-    public TestReflexManager fetchReflexiveTestsByTestId(Integer testId) throws Exception{
+    public TestReflexManager fetchReflexiveTestByTestId(Integer testId) throws Exception{
         try {
             return managerRemote().fetchReflexiveTestsByTestId(testId);
         } catch (RuntimeException e) {
@@ -165,6 +165,7 @@ public class TestService {
         try {
             return managerRemote().add(man);      
         } catch (RuntimeException e) {
+            e.printStackTrace();
             throw new DatabaseException(e);
         }
     }
@@ -185,7 +186,7 @@ public class TestService {
         }
     }
     
-    public TestManager abort(Integer testId) throws Exception {        
+    public TestManager abortUpdate(Integer testId) throws Exception {        
         try {
             return managerRemote().abortUpdate(testId);
         } catch (RuntimeException e) {
@@ -193,47 +194,61 @@ public class TestService {
         }
     } 
     
-    public AutocompleteRPC getAnalyteMatches(AutocompleteRPC rpc) {
-        rpc.model = (ArrayList<RPC>)analyteRemote().autoCompleteLookupByName(rpc.match.trim() + "%", 10);        
-
-        return rpc;
+    public List<IdNameDO> getAnalyteMatches(Query query) {
+        String value;
+        
+        value = query.getFields().get(0).query;                
+        return analyteRemote().autoCompleteLookupByName(value+ "%", 10);
     } 
     
-    public AutocompleteRPC getMethodMatches(AutocompleteRPC rpc) {
-        rpc.model = (ArrayList)methodRemote().autoCompleteLookupByName(rpc.match.trim() + "%", 10);        
+    public List<IdNameDO> getMethodMatches(Query query) {
+        String value;
         
-        return rpc;
+        value = query.getFields().get(0).query;
+        return methodRemote().autoCompleteLookupByName(value+ "%", 10);               
     }
     
-    public AutocompleteRPC getQCNameMatches(AutocompleteRPC rpc) {
-        List entries;       
-       
-        entries = qcRemote().qcAutocompleteByName(rpc.match.trim() + "%", 10);
-        rpc.model = (ArrayList<RPC>)entries;       
- 
-        return rpc;
+    public List<IdNameDO> getQCNameMatches(Query query) {       
+        String value;
+        
+        value = query.getFields().get(0).query;        
+        return qcRemote().qcAutocompleteByName(value + "%", 10);
     }  
     
-    public AutocompleteRPC getTestMethodMatches(AutocompleteRPC rpc) {
-        rpc.model = (ArrayList<RPC>)testRemote().getTestAutoCompleteByName(rpc.match.trim() + "%", 10);               
-        return rpc;
+    public List<TestMethodVO> findByName(Query query) {       
+        String value;
+        
+        value = query.getFields().get(0).query;          
+        return testRemote().fetchByName(value + "%", 10);
     } 
     
-    public AutocompleteRPC getScriptletMatches(AutocompleteRPC rpc) {
-        //rpc.model = (ArrayList<IdNameVO>)scriptletRemote().findByName(rpc.match.trim() + "%",10);        
+    public List<IdNameDO> getScriptletMatches(Query query) {
+        //String value;
+        
+        //value = query.getFields().get(0).query;            
+        //return scriptletRemote().getScriptletAutoCompleteByName(value + "%",10);                
         return null;
     }
     
-    public AutocompleteRPC getTrailerMatches(AutocompleteRPC rpc) {
-        rpc.model = (ArrayList<RPC>)trailerRemote().getTestTrailerAutoCompleteByName(rpc.match.trim()+ "%",10);
-        return rpc;
+    public List<IdNameDO> getTrailerMatches(Query query) {
+        String value;
+        
+        value = query.getFields().get(0).query;
+        return trailerRemote().getTestTrailerAutoCompleteByName(value+ "%",10);        
     }
     
-    public AutocompleteRPC getLabelMatches(AutocompleteRPC rpc) {
-        rpc.model = (ArrayList<RPC>)labelRemote().getLabelAutoCompleteByName(rpc.match.trim() + "%", 10);        
-
-        return rpc;
-    }
+    public List<IdNameDO> getLabelMatches(Query query) {
+        String value;
+        
+        value = query.getFields().get(0).query;
+        return labelRemote().getLabelAutoCompleteByName(value+ "%",10);               
+    }   
+    
+    public TestResultCategoryRPC getDictIdForResultValue(TestResultCategoryRPC rpc) {
+        rpc.dictIdList = categoryRemote().getDictionaryListByEntry(DataBaseUtil.trim(rpc.resultValue));
+        
+        return rpc; 
+    } 
     
     private TestRemote testRemote() {
         return (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
@@ -265,6 +280,10 @@ public class TestService {
     
     private LabelRemote labelRemote() {
         return (LabelRemote)EJBFactory.lookup("openelis/LabelBean/remote");
+    }
+    
+    private CategoryRemote categoryRemote() {
+        return (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
     }
     
 }

@@ -29,6 +29,7 @@ package org.openelis.modules.dictionaryentrypicker.client;
 import java.util.ArrayList;
 
 import org.openelis.domain.IdNameDO;
+import org.openelis.domain.IdNameVO;
 import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.data.QueryData;
 
@@ -36,7 +37,8 @@ public class DictionaryEntryPickerDataRPC implements RPC {
 
     private static final long serialVersionUID = 1L;
     
-    public ArrayList<IdNameDO> categoryModel,dictionaryTableModel; 
+    public ArrayList<IdNameDO> dictionaryTableModel; 
+    public ArrayList<IdNameVO> categoryModel;
     public ArrayList<QueryData> fields;
     
 }
