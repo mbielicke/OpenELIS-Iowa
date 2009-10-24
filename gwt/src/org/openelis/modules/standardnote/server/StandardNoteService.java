@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.openelis.domain.IdNameDO;
+import org.openelis.domain.IdNameVO;
 import org.openelis.domain.StandardNoteDO;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
@@ -255,7 +256,7 @@ public class StandardNoteService implements AppScreenFormServiceInt<StandardNote
 			id = remote.getCategoryId("standard_note_type");
 		}
 		
-		List<IdNameDO> entries = new ArrayList();
+		List<IdNameVO> entries = new ArrayList();
 		if(id != null)
 			entries = remote.getDropdownValues(id);
 		
@@ -267,7 +268,7 @@ public class StandardNoteService implements AppScreenFormServiceInt<StandardNote
     		returnModel.add(new TableDataRow<Integer>(0,new StringObject("")));
         }
         
-		for(IdNameDO resultDO : entries){
+		for(IdNameVO resultDO : entries){
 			returnModel.add(new TableDataRow<Integer>(resultDO.getId(),new StringObject(resultDO.getName())));
 		}		
 		

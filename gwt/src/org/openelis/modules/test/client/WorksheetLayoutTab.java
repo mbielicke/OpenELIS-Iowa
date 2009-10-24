@@ -33,10 +33,13 @@ import org.openelis.cache.DictionaryCache;
 import org.openelis.common.AutocompleteRPC;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameDO;
+import org.openelis.domain.IdNameVO;
 import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.domain.TestWorksheetAnalyteViewDO;
 import org.openelis.domain.TestWorksheetItemDO;
 import org.openelis.gwt.common.LocalizedException;
+import org.openelis.gwt.common.data.Query;
+import org.openelis.gwt.common.data.QueryData;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -46,10 +49,12 @@ import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
+import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.Dropdown;
+import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableDataRow;
@@ -82,7 +87,7 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
     
     private TestMetaMap             TestMeta;   
     
-    private boolean                 loaded,dropdownsInited;
+    private boolean                 loaded;
     
     private Dropdown<Integer>       formatId;    
     private TableWidget             worksheetAnalyteTable, worksheetTable;
@@ -90,13 +95,18 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
                                     addWSAnalyteButton,removeWSAnalyteButton;
     private TextBox<Integer>        batchCapacity,totalCapacity;
     private AutoComplete            scriptlet,qcname; 
+    private ScreenService           scriptletService;
     
-    public WorksheetLayoutTab(ScreenDefInt def,ScreenService service) {
+    public WorksheetLayoutTab(ScreenDefInt def,
+                              ScreenService service,ScreenService scriptletService) {
         setDef(def);
         
         TestMeta = new TestMetaMap();
         this.service = service;
-        initialize();          
+        this.scriptletService = scriptletService;
+        initialize();        
+        
+        initializeDropdowns();
     }
 
     private void initialize() {        
@@ -169,25 +179,21 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
         
         scriptlet.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
-                AutocompleteRPC trpc;
                 ArrayList<TableDataRow> model;
-                TableDataRow row;
-                IdNameDO autoDO;
-                
-                trpc = new AutocompleteRPC(); 
-                trpc.match = event.getMatch();                
+                ArrayList<IdNameVO> scripts;               
+
+                window.setBusy();                
                 try {
-                    trpc = service.call("getScriptletMatches",trpc);
+                    scripts = scriptletService.callList("findByName",event.getMatch()+"%");
                     model = new ArrayList<TableDataRow>();
-                    for(int i = 0; i < trpc.model.size(); i++) {
-                        autoDO = (IdNameDO)trpc.model.get(i);
-                        row = new TableDataRow(autoDO.getId(),autoDO.getName());
-                        model.add(row);
+                    for(IdNameVO script : scripts) {
+                        model.add(new TableDataRow(script.getId(),script.getName()));
                     }
                     scriptlet.showAutoMatches(model);
                 }catch(Exception e) {
                     Window.alert(e.getMessage());                     
-                }                            
+                }           
+                window.clearStatus();
             }
             
         });
@@ -233,16 +239,16 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
 
         worksheetTable.addCellEditedHandler(new CellEditedHandler() {
             public void onCellUpdated(CellEditedEvent event) {
-                int r, c;
+                int r, col;
                 Object val;
                 TestWorksheetItemDO item;
 
                 r = event.getRow();
-                c = event.getCol();
+                col = event.getCol();
                 
-                val = worksheetTable.getObject(r,c);
+                val = worksheetTable.getObject(r,col);
                 item = worksheetManager.getItemAt(r);
-                switch(c) {
+                switch(col) {
                     case 0:
                         item.setPosition((Integer)val);
                         break;
@@ -278,26 +284,22 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
             }
 
             public void onStateChange(StateChangeEvent<State> event) {               
-                if(event.getState() == State.ADD || event.getState() == State.UPDATE)
-                    addWSItemButton.enable(true);
-                else
-                    addWSItemButton.enable(false);
+                addWSItemButton.enable(EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()));
             }
         });
 
         removeWSItemButton = (AppButton)def.getWidget("removeWSItemButton");
         addScreenHandler(removeWSItemButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-                int selectedRow = worksheetTable.getSelectedIndex();
-                if (selectedRow > -1) 
-                    worksheetTable.deleteRow(selectedRow);   
+                int r;
+                
+                r = worksheetTable.getSelectedIndex();
+                if (r > -1 && worksheetTable.numRows() > 0) 
+                    worksheetTable.deleteRow(r);   
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                if(event.getState() == State.ADD || event.getState() == State.UPDATE)
-                    removeWSItemButton.enable(true);
-                else
-                    removeWSItemButton.enable(false);
+                removeWSItemButton.enable(EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()));
             }
         });
 
@@ -385,10 +387,7 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
             }
 
             public void onStateChange(StateChangeEvent<State> event) {               
-                if(event.getState() == State.ADD || event.getState() == State.UPDATE)
-                    addWSAnalyteButton.enable(true);
-                else
-                    addWSAnalyteButton.enable(false);
+                addWSAnalyteButton.enable(EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()));
             }
         });
 
@@ -401,24 +400,14 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                if(event.getState() == State.ADD || event.getState() == State.UPDATE)
-                    removeWSAnalyteButton.enable(true);
-                else
-                    removeWSAnalyteButton.enable(false);
+                removeWSAnalyteButton.enable(EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()));
             }
         });
     }
     
     public void setManager(TestManager manager) {
         this.manager = manager;
-        loaded = false;
-        
-        if(!dropdownsInited) {
-            setWorksheetFormats();
-            setWorksheetItemTypes();
-            setWorksheetAnalyteFlags();
-            dropdownsInited = true;
-        }
+        loaded = false;     
     }
     
     public void draw(){
@@ -473,32 +462,29 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
             ana.setTestAnalyteId(ana.getTestAnalyteId()*(-1));
         }
     }   
-
-    private void setWorksheetAnalyteFlags() {
-        ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
-        List<DictionaryDO> list = DictionaryCache.getListByCategorySystemName("test_worksheet_analyte_flags");
+    
+    private void initializeDropdowns() {
+        ArrayList<TableDataRow> model;
+        List<DictionaryDO> list;
+        
+        model = new ArrayList<TableDataRow>();
+        list = DictionaryCache.getListByCategorySystemName("test_worksheet_analyte_flags");
         model.add(new TableDataRow(null, ""));
         for(DictionaryDO resultDO :  list){
             model.add(new TableDataRow(resultDO.getId(),resultDO.getEntry()));
         } 
         ((Dropdown)worksheetAnalyteTable.columns.get(2).getColumnWidget()).setModel(model);
         
-    }
-
-    private void setWorksheetItemTypes() {
-        ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
-        List<DictionaryDO> list = DictionaryCache.getListByCategorySystemName("test_worksheet_item_type");
+        model = new ArrayList<TableDataRow>();
+        list = DictionaryCache.getListByCategorySystemName("test_worksheet_item_type");
         model.add(new TableDataRow(null, ""));
         for(DictionaryDO resultDO :  list){
             model.add(new TableDataRow(resultDO.getId(),resultDO.getEntry()));
         } 
         ((Dropdown)worksheetTable.columns.get(1).getColumnWidget()).setModel(model);
         
-    }
-
-    private void setWorksheetFormats() {
-        ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
-        List<DictionaryDO> list = DictionaryCache.getListByCategorySystemName("test_worksheet_format");
+        model = new ArrayList<TableDataRow>();
+        list = DictionaryCache.getListByCategorySystemName("test_worksheet_format");
         model.add(new TableDataRow(null, ""));
         for(DictionaryDO resultDO :  list){
             model.add(new TableDataRow(resultDO.getId(),resultDO.getEntry()));

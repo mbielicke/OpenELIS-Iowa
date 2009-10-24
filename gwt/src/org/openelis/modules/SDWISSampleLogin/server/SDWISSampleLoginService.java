@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openelis.domain.IdNameDO;
+import org.openelis.domain.IdNameVO;
 import org.openelis.gwt.common.data.deprecated.StringObject;
 import org.openelis.gwt.common.data.deprecated.TableDataModel;
 import org.openelis.gwt.common.data.deprecated.TableDataRow;
@@ -126,7 +127,7 @@ public class SDWISSampleLoginService implements AppScreenFormServiceInt<SDWISSam
         else if(cat.equals("leadSampleType"))
             id = remote.getCategoryId("sdwis_lead_sample_type");
         
-        List<IdNameDO> entries = new ArrayList();
+        List<IdNameVO> entries = new ArrayList();
         if(id != null)
             entries = remote.getDropdownValues(id);
         
@@ -138,7 +139,7 @@ public class SDWISSampleLoginService implements AppScreenFormServiceInt<SDWISSam
             returnModel.add(new TableDataRow<String>(" ",new StringObject(" ")));
         }
 
-        for(IdNameDO resultDO : entries) {
+        for(IdNameVO resultDO : entries) {
             returnModel.add(new TableDataRow<String>(resultDO.getName(),new StringObject(resultDO.getName())));
             
         }       

@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openelis.domain.IdNameDO;
+import org.openelis.domain.IdNameVO;
 import org.openelis.gwt.common.data.deprecated.StringObject;
 import org.openelis.gwt.common.data.deprecated.TableDataModel;
 import org.openelis.gwt.common.data.deprecated.TableDataRow;
@@ -119,7 +120,7 @@ public class PTSampleLoginService implements AppScreenFormServiceInt<PTSampleLog
         else if(cat.equals("ptDepartments"))
             id = remote.getCategoryId("pt_department_names");
         
-        List<IdNameDO> entries = new ArrayList();
+        List<IdNameVO> entries = new ArrayList();
         if(id != null)
             entries = remote.getDropdownValues(id);
         
@@ -129,7 +130,7 @@ public class PTSampleLoginService implements AppScreenFormServiceInt<PTSampleLog
         if(entries.size() > 0){ 
             returnModel.add(new TableDataRow<String>("",new StringObject("")));
         }
-        for(IdNameDO resultDO : entries){
+        for(IdNameVO resultDO : entries){
             returnModel.add(new TableDataRow<String>(resultDO.getName(),new StringObject(resultDO.getName())));
         }       
         

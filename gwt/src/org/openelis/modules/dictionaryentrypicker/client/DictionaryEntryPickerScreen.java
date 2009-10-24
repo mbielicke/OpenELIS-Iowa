@@ -28,6 +28,7 @@ package org.openelis.modules.dictionaryentrypicker.client;
 import java.util.ArrayList;
 
 import org.openelis.domain.IdNameDO;
+import org.openelis.domain.IdNameVO;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
@@ -205,7 +206,7 @@ public class DictionaryEntryPickerScreen extends Screen implements
             rpc = service.call("getCategoryModel",rpc);
             model = new ArrayList<TableDataRow>();
             model.add(new TableDataRow(null,""));
-            for(IdNameDO autoDO : rpc.categoryModel) {
+            for(IdNameVO autoDO : rpc.categoryModel) {
                 row = new TableDataRow(1);
                 row.key = autoDO.getId();
                 row.cells.get(0).value = autoDO.getName();

@@ -47,4 +47,7 @@ public class TestPrepManagerProxy {
     public TestPrepManager fetchByTestId(Integer testId) throws Exception {
         return service.call("fetchPrepTestsByTestId", testId);
     } 
+    
+    public void validate(TestPrepManager man) throws Exception {        
+    }
 }

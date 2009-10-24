@@ -1749,7 +1749,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
         
         try{
             TestManager testMan=null;
-            testMan = TestManager.findByIdWithPrepTest(prepTestId);
+            testMan = TestManager.fetchWithPrepTests(prepTestId);
             
             if(testMan != null){
                 TestViewDO testDO = testMan.getTest();

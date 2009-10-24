@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.openelis.domain.IdNameDO;
+import org.openelis.domain.IdNameVO;
 import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.ShippingAddAutoFillDO;
@@ -419,7 +420,7 @@ System.out.println("after shipping items");
 		else if (cat.equals("shippingMethod"))
 			id = remote.getCategoryId("shippingMethod");
 
-		List<IdNameDO> entries = new ArrayList();
+		List<IdNameVO> entries = new ArrayList();
 		if (id != null)
 			entries = remote.getDropdownValues(id);
 
@@ -431,7 +432,7 @@ System.out.println("after shipping items");
 			returnModel.add(new TableDataRow<Integer>(0, new StringObject("")));
 		}
 
-		for(IdNameDO resultDO : entries) {
+		for(IdNameVO resultDO : entries) {
 			returnModel.add(new TableDataRow<Integer>(resultDO.getId(),
 					new StringObject(resultDO.getName())));
 		}

@@ -42,7 +42,7 @@ import org.openelis.common.AutocompleteRPC;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.SectionViewDO;
-import org.openelis.domain.TestMethodViewDO;
+import org.openelis.domain.TestMethodVO;
 import org.openelis.domain.WorksheetCreationVO;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.Datetime;
@@ -198,7 +198,7 @@ public class WorksheetCreationLookupScreen extends Screen
                     ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
                         
                     for (int i = 0; i < rpc.model.size(); i++) {
-                        TestMethodViewDO autoDO = (TestMethodViewDO)rpc.model.get(i);
+                        TestMethodVO autoDO = (TestMethodVO)rpc.model.get(i);
                         
                         row = new TableDataRow(5);
                         row.key = autoDO.getTestId();

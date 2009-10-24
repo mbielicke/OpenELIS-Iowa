@@ -35,7 +35,7 @@ import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.QaEventDO;
 import org.openelis.domain.QaEventView;
 import org.openelis.domain.QaEventViewDO;
-import org.openelis.domain.TestMethodViewDO;
+import org.openelis.domain.TestMethodVO;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
@@ -265,19 +265,19 @@ public class QAEventService implements AppScreenFormServiceInt<QAEventForm, org.
                                      String match,
                                      HashMap<String, FieldType> params) throws Exception {
         TestRemote tremote;
-        List<TestMethodViewDO> tmlist;
+        List<TestMethodVO> tmlist;
         TableDataModel<TableDataRow<Integer>> dataModel;
         
         tremote = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
-        tmlist = tremote.getTestAutoCompleteByName(match.trim() + "%", 10);
+        tmlist = tremote.fetchByName(match.trim() + "%", 10);
         dataModel = getTestMethodAutoCompleteModel(tmlist);
         return dataModel;
     }
     
-    private TableDataModel<TableDataRow<Integer>> getTestMethodAutoCompleteModel(List<TestMethodViewDO> autoCompleteList){
+    private TableDataModel<TableDataRow<Integer>> getTestMethodAutoCompleteModel(List<TestMethodVO> autoCompleteList){
         TableDataModel<TableDataRow<Integer>> dataModel;
         TableDataRow<Integer> data;
-        TestMethodViewDO resultDO;
+        TestMethodVO resultDO;
         Integer testId;
         String testName;
         String methodName;
@@ -285,7 +285,7 @@ public class QAEventService implements AppScreenFormServiceInt<QAEventForm, org.
         dataModel = new TableDataModel<TableDataRow<Integer>>();
         
         for(int i=0; i < autoCompleteList.size(); i++){
-            resultDO = (TestMethodViewDO) autoCompleteList.get(i);
+            resultDO = (TestMethodVO) autoCompleteList.get(i);
             testId = resultDO.getTestId();
             testName = resultDO.getTestName();
             methodName = resultDO.getMethodName();

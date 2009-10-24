@@ -36,16 +36,8 @@ public class TestManagerProxy {
         service = new ScreenService("OpenELISServlet?service="+TEST_MANAGER_SERVICE_URL);
     }
     
-    public TestManager add(TestManager man) throws Exception {
-        return service.call("add",man);
-    }
-    
-    public TestManager update(TestManager man) throws Exception {        
-        return service.call("update",man);        
-    }
-    
-    public TestManager fetch(Integer testId) throws Exception {
-        return service.call("fetch", testId);
+    public TestManager fetchById(Integer testId) throws Exception {
+        return service.call("fetchById", testId);
     }
     
     public TestManager fetchWithSampleTypes(Integer testId) throws Exception {
@@ -68,15 +60,22 @@ public class TestManagerProxy {
         return service.call("fetchWithWorksheet", testId);
     }
     
+    public TestManager add(TestManager man) throws Exception {
+        return service.call("add",man);
+    }
+    
+    public TestManager update(TestManager man) throws Exception {        
+        return service.call("update",man);        
+    }
+    
     public TestManager fetchForUpdate(Integer testId) throws Exception {
         return service.call("fetchForUpdate",testId);
     }
     
-    public TestManager abort(Integer testId) throws Exception {
-        return service.call("abort", testId);
+    public TestManager abortUpdate(Integer testId) throws Exception {
+        return service.call("abortUpdate", testId);
     }
     
-    public void validate(TestManager man) throws Exception {
-        
+    public void validate(TestManager man) throws Exception {        
     }
 }

@@ -28,6 +28,7 @@ package org.openelis.modules.dictionaryentrypicker.server;
 import java.util.ArrayList;
 
 import org.openelis.domain.IdNameDO;
+import org.openelis.domain.IdNameVO;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.modules.dictionaryentrypicker.client.DictionaryEntryPickerDataRPC;
 import org.openelis.persistence.EJBFactory;
@@ -57,7 +58,7 @@ public class DictionaryEntryPickerService {
     
     public DictionaryEntryPickerDataRPC getCategoryModel(DictionaryEntryPickerDataRPC rpc) {
         CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");        
-        rpc.categoryModel = (ArrayList<IdNameDO>)remote.getCategoryList();
+        rpc.categoryModel = (ArrayList<IdNameVO>)remote.getCategoryList();
         return rpc;
     }
    

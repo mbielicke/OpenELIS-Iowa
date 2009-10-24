@@ -32,7 +32,7 @@ import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.SampleItemViewDO;
-import org.openelis.domain.TestMethodViewDO;
+import org.openelis.domain.TestMethodVO;
 import org.openelis.domain.TestSectionViewDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.event.ActionEvent;
@@ -106,7 +106,7 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
                     TableDataRow selectedRow = test.getSelection();
                     
                     if(selectedRow.key != null){
-                        testMan = TestManager.findByIdWithPrepTest(event.getValue());
+                        testMan = TestManager.fetchWithPrepTests(event.getValue());
                         bundle.testManager = testMan;
                     }else
                         method.setSelections(new ArrayList());
@@ -169,7 +169,7 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
                        ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
                            
                        for (int i=0; i<rpc.model.size(); i++){
-                           TestMethodViewDO autoDO = (TestMethodViewDO)rpc.model.get(i);
+                           TestMethodVO autoDO = (TestMethodVO)rpc.model.get(i);
                            
                            TableDataRow row = new TableDataRow(3);
                            row.key = autoDO.getTestId();

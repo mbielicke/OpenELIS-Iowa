@@ -57,8 +57,7 @@ public class DictionaryManagerProxy {
         return service.call("abortUpdate", categoryId);
     }
     
-    public void validate(DictionaryManager man) throws Exception {
-        
+    public void validate(DictionaryManager man) throws Exception {        
     }
 
 }

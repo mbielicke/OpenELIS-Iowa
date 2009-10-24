@@ -47,7 +47,7 @@ public class AnalysisService {
     
     public AnalysisAutoCompleteRPC getTestMethodMatches(AnalysisAutoCompleteRPC rpc) throws Exception {
         TestRemote remote = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
-        rpc.model = (ArrayList)remote.getTestAutoCompleteByNameSampleItemType(rpc.match+"%", rpc.sampleItemType, 10);
+        rpc.model = (ArrayList)remote.fetchByNameSampleItemType(rpc.match+"%", rpc.sampleItemType, 10);
         
         return rpc;
     }

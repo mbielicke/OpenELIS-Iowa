@@ -498,52 +498,52 @@ UIRF Software License are applicable instead of those above.
                 <tab key="analyteTab" text="{resource:getString($constants,'analytesResults')}">
                   <VerticalPanel padding="0" spacing="0">
                     <table key="analyteTable" width="604px" maxRows="8" showScroll="ALWAYS">
-                      <col key="analyteLookup" width="152" sort="false">
+                      <col key="analyteLookup" header = "1" width="152" sort="false">
                         <autoComplete width="125px" case="MIXED" popWidth="auto" field="Integer">
                           <col width="300" />
                         </autoComplete>
                       </col>
-                      <col key="analyteLookup2" width="150" sort="false">
+                      <col key="analyteLookup2" header = "2" width="150" sort="false">
                         <autoComplete key="analyteLookup" width="125px" case="MIXED" popWidth="auto" field="Integer">
                           <col width="150" />
                         </autoComplete>
                       </col>
-                      <col key="analyteLookup3" width="150" sort="false">
+                      <col key="analyteLookup3" header = "3" width="150" sort="false">
                         <autoComplete key="analyteLookup" width="125px" case="MIXED" popWidth="auto" field="Integer">
                           <col width="300" />
                         </autoComplete>
                       </col>
-                      <col key="analyteLookup4" width="150" sort="false">
+                      <col key="analyteLookup4" header = "4" width="150" sort="false">
                         <autoComplete key="analyteLookup" width="125px" case="MIXED" popWidth="auto" field="Integer">
                           <col width="150" />
                         </autoComplete>
                       </col>
-                      <col key="analyteLookup5" width="150" sort="false">
+                      <col key="analyteLookup5" header = "5" width="150" sort="false">
                         <autoComplete key="analyteLookup" width="125px" case="MIXED" popWidth="auto" field="Integer">
                           <col width="150" />
                         </autoComplete>
                       </col>
-                      <col key="analyteLookup6" width="150" sort="false">
+                      <col key="analyteLookup6" header = "6" width="150" sort="false">
                         <autoComplete key="analyteLookup" width="125px" case="MIXED" popWidth="auto" field="Integer">
                           <col width="150" />
                         </autoComplete>
                       </col>
-                      <col key="analyteLookup7" width="150" sort="false">
+                      <col key="analyteLookup7" header = "7" width="150" sort="false">
                         <autoComplete key="analyteLookup" width="125px" case="MIXED" popWidth="auto" field="Integer">
                           <col width="150" />
                         </autoComplete>
                       </col>
-                      <col key="analyteLookup8" width="150" sort="false">
+                      <col key="analyteLookup8" header = "8" width="150" sort="false">
                         <autoComplete key="analyteLookup" width="125px" case="MIXED" popWidth="auto" field="Integer">
                           <col width="150" />
                         </autoComplete>
                       </col>
-                      <col key="analyteLookup9" width="150" sort="false">
+                      <col key="analyteLookup9" header = "9" width="150" sort="false">
                         <autoComplete key="analyteLookup" width="125px" case="MIXED" popWidth="auto" field="Integer">
                           <col width="150" />
                         </autoComplete>
                       </col>
-                      <col key="analyteLookup10" width="150" sort="false">
+                      <col key="analyteLookup10" header = "10" width="150" sort="false">
                         <autoComplete key="analyteLookup" width="125px" case="MIXED" popWidth="auto" field="Integer">
                           <col width="150" />
                         </autoComplete>

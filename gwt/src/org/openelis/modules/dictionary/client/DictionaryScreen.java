@@ -69,6 +69,7 @@ import org.openelis.gwt.widget.table.event.RowMovedHandler;
 import org.openelis.manager.DictionaryManager;
 import org.openelis.metamap.CategoryMetaMap;
 import org.openelis.modules.main.client.openelis.OpenELIS;
+import org.openelis.utilcommon.DataBaseUtil;
 
 import com.allen_sauer.gwt.dnd.client.DragEndEvent;
 import com.allen_sauer.gwt.dnd.client.DragHandler;
@@ -96,7 +97,7 @@ public class DictionaryScreen extends Screen implements GetMatchesHandler, DragH
     
     public DictionaryScreen() throws Exception {
         super((ScreenDefInt)GWT.create(DictionaryDef.class));
-        service = new ScreenService("OpenELISServlet?service=org.openelis.modules.dictionary.server.DictionaryService");
+        service = new ScreenService("controller?service=org.openelis.modules.dictionary.server.DictionaryService");
 
         security = OpenELIS.security.getModule("dictionary");
         if (security == null)
@@ -693,8 +694,8 @@ public class DictionaryScreen extends Screen implements GetMatchesHandler, DragH
         DictionaryEntryTextRPC detrpc;
         boolean ok;
 
-        if (key == null || entry == null || entry.length() == 0)
-            return oldEntry;
+        if (key == null || DataBaseUtil.isEmpty(oldEntry))
+            return entry;
 
         detrpc = new DictionaryEntryTextRPC();
         detrpc.entryText = entry;

@@ -32,7 +32,7 @@ import java.util.List;
 import org.openelis.domain.IdNameDO;
 import org.openelis.domain.PanelDO;
 import org.openelis.domain.PanelItemDO;
-import org.openelis.domain.TestMethodSectionNamesDO;
+import org.openelis.domain.PanelVO;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
@@ -197,9 +197,9 @@ public class PanelService implements AppScreenFormServiceInt<PanelForm, Query<Ta
     private TableDataModel<TableDataRow<String>> getTestMethodNames(){
        PanelRemote remote = (PanelRemote)EJBFactory.lookup("openelis/PanelBean/remote");
        TableDataModel<TableDataRow<String>> model = new TableDataModel<TableDataRow<String>>();
-       List<TestMethodSectionNamesDO> list = remote.getTestMethodNames();
+       List<PanelVO> list = remote.getTestMethodNames();
        for(int iter = 0; iter < list.size(); iter++){
-           TestMethodSectionNamesDO tmsDO = list.get(iter);
+           PanelVO tmsDO = list.get(iter);
            model.add(new TableDataRow<String>(tmsDO.getTestName().trim()+","+tmsDO.getMethodName().trim()+","+tmsDO.getSectionName(),
                                               new FieldType[] {
                                                                new StringObject(tmsDO.getTestName()),                              
