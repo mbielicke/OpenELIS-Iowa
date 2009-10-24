@@ -23,13 +23,16 @@
  * which case the provisions of a UIRF Software License are applicable instead
  * of those above.
  */
-package org.openelis.modules.systemvariable.client;
+
+package org.openelis.modules.qaevent.client;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
-import org.openelis.domain.IdNameVO;
-import org.openelis.domain.SystemVariableDO;
-import org.openelis.gwt.common.EntityLockedException;
+
+import org.openelis.cache.DictionaryCache;
+import org.openelis.domain.DictionaryDO;
+import org.openelis.domain.QaEventVO;
+import org.openelis.domain.QaEventViewDO;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.RPC;
@@ -44,7 +47,7 @@ import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.*;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataRow;
-import org.openelis.metamap.SystemVariableMetaMap;
+import org.openelis.metamap.QaEventMetaMap;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -54,24 +57,29 @@ import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
-public class SystemVariableScreen extends Screen {
-    private SystemVariableDO      data;
-    private SystemVariableMetaMap meta = new SystemVariableMetaMap();
+public class QaEventScreen extends Screen {
+    private QaEventViewDO         data;
+    private QaEventMetaMap        meta = new QaEventMetaMap();
     private SecurityModule        security;
 
-    private AppButton             queryButton, previousButton, nextButton, addButton, updateButton,
-                                  deleteButton, commitButton, abortButton;
-    private TextBox               name, value;
+    private TextBox               name, description, reportingSequence;
+    private CheckBox              isBillable;
+    private AppButton             queryButton, previousButton, nextButton, addButton, 
+                                  updateButton, commitButton, abortButton;
+    private Dropdown<Integer>     typeId;
+    private AutoComplete<Integer> testName;
+    private TextArea              reportingText;
+
     private ButtonGroup           atoz;
     private ScreenNavigator       nav;
 
-    public SystemVariableScreen() throws Exception {
-        super((ScreenDefInt)GWT.create(SystemVariableDef.class));
-        service = new ScreenService("OpenELISServlet?service=org.openelis.modules.systemvariable.server.SystemVariableService");
+    public QaEventScreen() throws Exception {
+        super((ScreenDefInt)GWT.create(QaEventDef.class));
+        service = new ScreenService("OpenELISServlet?service=org.openelis.modules.qaevent.server.QaEventService");
 
-        security = OpenELIS.security.getModule("systemvariable");
+        security = OpenELIS.security.getModule("qaevent");
         if (security == null)
-            throw new SecurityException("screenPermException", "System Variable Screen");
+            throw new SecurityException("screenPermException", "QA Event Screen");
 
         // Setup link between Screen and widget Handlers
         initialize();
@@ -88,9 +96,11 @@ public class SystemVariableScreen extends Screen {
      * screen is attached to the browser. It is usually called in deferred command.
      */
     private void postConstructor() {
-        data = new SystemVariableDO();
+        data = new QaEventViewDO();
 
         setState(State.DEFAULT);
+        initializeDropdowns();
+
         DataChangeEvent.fire(this);
     }
     
@@ -167,20 +177,6 @@ public class SystemVariableScreen extends Screen {
             }
         });
 
-        deleteButton = (AppButton)def.getWidget("delete");
-        addScreenHandler(deleteButton, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                delete();
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                deleteButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()) &&
-                                    security.hasDeletePermission());
-                if (event.getState() == State.DELETE)
-                    deleteButton.setState(ButtonState.LOCK_PRESSED);
-            }
-        });
-
         commitButton = (AppButton)def.getWidget("commit");
         addScreenHandler(commitButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
@@ -188,7 +184,7 @@ public class SystemVariableScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                commitButton.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
+                commitButton.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                            .contains(event.getState()));
             }
         });
@@ -200,7 +196,7 @@ public class SystemVariableScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                abortButton.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
+                abortButton.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                           .contains(event.getState()));
             }
         });
@@ -219,30 +215,109 @@ public class SystemVariableScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                name.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
-                                   .contains(event.getState()));
+                name.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
                 name.setQueryMode(event.getState() == State.QUERY);
                 if (event.getState() == State.ADD || event.getState() == State.UPDATE)
                     name.setFocus(true);
             }
         });
 
-        value = (TextBox)def.getWidget(meta.getValue());
-        addScreenHandler(value, new ScreenEventHandler<String>() {
+        description = (TextBox)def.getWidget(meta.getDescription());
+        addScreenHandler(description, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                value.setValue(data.getValue());
+                description.setValue(data.getDescription());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
-                data.setValue(event.getValue());
+                data.setDescription(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                value.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
-                                    .contains(event.getState()));
-                value.setQueryMode(event.getState() == State.QUERY);
+                description.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                description.setQueryMode(event.getState() == State.QUERY);
             }
         });
+
+        typeId = (Dropdown)def.getWidget(meta.getTypeId());
+        addScreenHandler(typeId, new ScreenEventHandler<Integer>() {
+            public void onDataChange(DataChangeEvent event) {
+                typeId.setSelection(data.getTypeId());
+            }
+
+            public void onValueChange(ValueChangeEvent<Integer> event) {
+                data.setTypeId(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                typeId.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                typeId.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+
+        testName = (AutoComplete)def.getWidget(meta.getTest().getName());
+        addScreenHandler(testName, new ScreenEventHandler<Integer>() {
+            public void onDataChange(DataChangeEvent event) {
+                testName.setSelection(data.getTestId(), data.getTestName());
+            }
+
+            public void onValueChange(ValueChangeEvent<Integer> event) {
+                data.setTestId(event.getValue());
+                data.setTestName(testName.getTextBoxDisplay());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                testName.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                testName.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+
+        isBillable = (CheckBox)def.getWidget(meta.getIsBillable());
+        addScreenHandler(isBillable, new ScreenEventHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                isBillable.setValue(data.getIsBillable());
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                data.setIsBillable(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                isBillable.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                isBillable.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+
+        reportingSequence = (TextBox)def.getWidget(meta.getReportingSequence());
+        addScreenHandler(reportingSequence, new ScreenEventHandler<Integer>() {
+            public void onDataChange(DataChangeEvent event) {
+                reportingSequence.setValue(data.getReportingSequence());
+            }
+
+            public void onValueChange(ValueChangeEvent<Integer> event) {
+                data.setReportingSequence(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                reportingSequence.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                reportingSequence.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+        
+        reportingText = (TextArea)def.getWidget(meta.getReportingText());
+        addScreenHandler(reportingText, new ScreenEventHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                reportingText.setValue(data.getReportingText());
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                data.setReportingText(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                reportingText.enable(EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));
+            }
+        });
+
 
         //
         // left hand navigation panel
@@ -251,8 +326,8 @@ public class SystemVariableScreen extends Screen {
             public void executeQuery(final Query query) {
                 window.setBusy(consts.get("querying"));
 
-                service.callList("query", query, new AsyncCallback<ArrayList<IdNameVO>>() {
-                    public void onSuccess(ArrayList<IdNameVO> result) {
+                service.callList("query", query, new AsyncCallback<ArrayList<QaEventVO>>() {
+                    public void onSuccess(ArrayList<QaEventVO> result) {
                         setQueryResult(result);
                     }
 
@@ -264,7 +339,7 @@ public class SystemVariableScreen extends Screen {
                         } else if (error instanceof LastPageException) {
                             window.setError("No more records in this direction");
                         } else {
-                            Window.alert("Error: SystemVariable call query failed; " +
+                            Window.alert("Error: QAEvent call query failed; " +
                                          error.getMessage());
                             window.setError(consts.get("queryFailed"));
                         }
@@ -273,19 +348,19 @@ public class SystemVariableScreen extends Screen {
             }
 
             public boolean fetch(RPC entry) {
-                return fetchById( (entry == null) ? null : ((IdNameVO)entry).getId());
+                return fetchById( (entry == null) ? null : ((QaEventVO)entry).getId());
             }
 
             public ArrayList<TableDataRow> getModel() {
-                ArrayList<IdNameVO> result;
+                ArrayList<QaEventVO> result;
                 ArrayList<TableDataRow> model;
 
                 model = null;
                 result = nav.getQueryResult();
                 if (result != null) {
                     model = new ArrayList<TableDataRow>();
-                    for (IdNameVO entry : result)
-                        model.add(new TableDataRow(entry.getId(), entry.getName()));
+                    for (QaEventVO entry : result)
+                        model.add(new TableDataRow(entry.getId(), entry.getName(), entry.getTestName()));
                 }
                 return model;
             }
@@ -317,11 +392,24 @@ public class SystemVariableScreen extends Screen {
         });
     }
 
+    private void initializeDropdowns() {
+        DictionaryDO dict;
+        ArrayList<TableDataRow> model;
+
+        // type dropdown
+        model = new ArrayList<TableDataRow>();
+        model.add(new TableDataRow(null, ""));
+        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("qaevent_type"))
+            model.add(new TableDataRow(d.getId(), d.getEntry()));
+
+        typeId.setModel(model);
+    }
+
     /*
      * basic button methods
      */
     protected void query() {
-        data = new SystemVariableDO();
+        data = new QaEventViewDO();
         setState(State.QUERY);
         DataChangeEvent.fire(this);
         window.setDone(consts.get("enterFieldsToQuery"));
@@ -336,7 +424,7 @@ public class SystemVariableScreen extends Screen {
     }
 
     protected void add() {
-        data = new SystemVariableDO();
+        data = new QaEventViewDO();
 
         setState(State.ADD);
         DataChangeEvent.fire(this);
@@ -350,20 +438,6 @@ public class SystemVariableScreen extends Screen {
             data = service.call("fetchForUpdate", data.getId());
 
             setState(State.UPDATE);
-            DataChangeEvent.fire(this);
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-        }
-        window.clearStatus();
-    }
-
-    protected void delete() {
-        window.setBusy(consts.get("lockForUpdate"));
-
-        try {
-            data = service.call("fetchForUpdate", data.getId());
-
-            setState(State.DELETE);
             DataChangeEvent.fire(this);
         } catch (Exception e) {
             Window.alert(e.getMessage());
@@ -416,19 +490,6 @@ public class SystemVariableScreen extends Screen {
                 Window.alert("commitUpdate(): " + e.getMessage());
                 window.clearStatus();
             }
-        } else if (state == State.DELETE) {
-            window.setBusy(consts.get("deleting"));
-            try {
-                service.call("delete", data.getId());
-
-                fetchById(null);
-                window.setDone(consts.get("deleteComplete"));
-            } catch (ValidationErrorsList e) {
-                showErrors(e);
-            } catch (Exception e) {
-                Window.alert("commitDelete(): " + e.getMessage());
-                window.clearStatus();
-            }
         }
     }
 
@@ -454,16 +515,6 @@ public class SystemVariableScreen extends Screen {
                 fetchById(null);
             }
             window.setDone(consts.get("updateAborted"));
-        } else if (state == State.DELETE) {
-            try {
-                data = service.call("abortUpdate", data.getId());
-                setState(State.DISPLAY);
-                DataChangeEvent.fire(this);
-            } catch (Exception e) {
-                Window.alert(e.getMessage());
-                fetchById(null);
-            }
-            window.setDone(consts.get("deleteAborted"));
         } else {
             window.clearStatus();
         }
@@ -471,7 +522,7 @@ public class SystemVariableScreen extends Screen {
 
     protected boolean fetchById(Integer id) {
         if (id == null) {
-            data = new SystemVariableDO();
+            data = new QaEventViewDO();
             setState(State.DEFAULT);
         } else {
             window.setBusy(consts.get("fetching"));
