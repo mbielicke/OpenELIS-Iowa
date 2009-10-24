@@ -12,23 +12,36 @@ import org.openelis.manager.TestWorksheetManager;
 
 @Remote
 public interface TestManagerRemote {
-    public TestManager update(TestManager man) throws Exception;
-    public TestManager add(TestManager man) throws Exception;
-    public TestManager fetch(Integer orgId) throws Exception;
-    public TestManager fetchWithSampleTypes(Integer testId) throws Exception; 
+    public TestManager fetchById(Integer orgId) throws Exception;
+
+    public TestManager fetchWithSampleTypes(Integer testId) throws Exception;
+
     public TestManager fetchWithAnalytesAndResults(Integer testId) throws Exception;
+
     public TestManager fetchWithPrepTests(Integer testId) throws Exception;
+
     public TestManager fetchWithPrepTestsAndReflexTests(Integer testId) throws Exception;
+
     public TestManager fetchWithWorksheet(Integer testId) throws Exception;
-    
-    public TestTypeOfSampleManager fetchSampleTypeByTestId(Integer testId)throws Exception;    
-    public TestAnalyteManager fetchTestAnalytesByTestId(Integer testId) throws Exception;
-    public TestResultManager fetchTestResultsByTestId(Integer testId) throws Exception;
-    public TestPrepManager fetchPrepTestsByTestId(Integer testId) throws Exception;
-    public TestReflexManager fetchReflexiveTestsByTestId(Integer testId) throws Exception;
-    public TestWorksheetManager fetchWorksheetByTestId(Integer testId) throws Exception;
-       
+
+    public TestManager update(TestManager man) throws Exception;
+
+    public TestManager add(TestManager man) throws Exception;
+
     public TestManager fetchForUpdate(Integer orgId) throws Exception;
-    public TestManager abortUpdate(Integer orgId) throws Exception;        
-          
+
+    public TestManager abortUpdate(Integer orgId) throws Exception;
+
+    public TestTypeOfSampleManager fetchSampleTypeByTestId(Integer testId) throws Exception;
+
+    public TestAnalyteManager fetchTestAnalytesByTestId(Integer testId) throws Exception;
+
+    public TestResultManager fetchTestResultsByTestId(Integer testId) throws Exception;
+
+    public TestPrepManager fetchPrepTestsByTestId(Integer testId) throws Exception;
+
+    public TestReflexManager fetchReflexiveTestsByTestId(Integer testId) throws Exception;
+
+    public TestWorksheetManager fetchWorksheetByTestId(Integer testId) throws Exception;
+
 }

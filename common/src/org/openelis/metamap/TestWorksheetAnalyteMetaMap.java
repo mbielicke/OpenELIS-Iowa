@@ -48,8 +48,5 @@ public class TestWorksheetAnalyteMetaMap extends TestWorksheetAnalyteMeta implem
         return super.hasColumn(name);
     }
     
-    public static String getTableName(){
-        return "TestWorksheetAnalyte";
-    }
 
 }

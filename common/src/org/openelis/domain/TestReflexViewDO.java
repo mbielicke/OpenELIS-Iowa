@@ -38,7 +38,8 @@ public class TestReflexViewDO extends TestReflexDO {
 
     private static final long serialVersionUID = 1L;
 
-    protected String          addTestName, addMethodName, testAnalyteName, testResultValue;
+    protected String          addTestName, addMethodName, testAnalyteName, testResultValue;    
+    protected Integer         testResultTypeId;
 
     public TestReflexViewDO() {
     }
@@ -46,12 +47,14 @@ public class TestReflexViewDO extends TestReflexDO {
     public TestReflexViewDO(Integer id, Integer testId, Integer testAnalyteId,
                                   Integer testResultId, Integer flagsId, Integer addTestId,
                                   String addTestName, String addMethodName,
-                                  String testAnalyteName,String testResultValue) {
+                                  String testAnalyteName,String testResultValue,
+                                  Integer testResultTypeId) {
         super(id, testId, testAnalyteId, testResultId, flagsId, addTestId);
         setAddTestName(addTestName);
         setAddMethodName(addMethodName);
         setTestAnalyteName(testAnalyteName);
         setTestResultValue(testResultValue);
+        setTestResultTypeId(testResultTypeId);
     }
 
     public String getAddTestName() {
@@ -84,5 +87,13 @@ public class TestReflexViewDO extends TestReflexDO {
 
     public void setTestResultValue(String testResultValue) {
         this.testResultValue = testResultValue;
+    }
+
+    public Integer getTestResultTypeId() {
+        return testResultTypeId;
+    }
+
+    public void setTestResultTypeId(Integer testResultTypeId) {
+        this.testResultTypeId = testResultTypeId;
     }
 }

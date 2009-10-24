@@ -38,7 +38,7 @@ import org.openelis.gwt.common.data.QueryData;
 @Remote
 public interface CategoryRemote {
     
-    public List getCategoryList();
+    public List<IdNameVO> getCategoryList();
     
     //  method to query for category
     public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception;     
@@ -61,9 +61,9 @@ public interface CategoryRemote {
     
     public Integer getCategoryId(String systemName); 
     
-    public ArrayList<Integer> getDictionaryIdListByEntry(String entry);
+    public ArrayList<DictionaryDO> getDictionaryListByEntry(String entry);
     
-    public List getDropdownValues(Integer categoryId);   
+    public ArrayList<IdNameVO> getDropdownValues(Integer categoryId);   
     
     public Integer getNumResultsAffected(String entry, Integer id);
 }

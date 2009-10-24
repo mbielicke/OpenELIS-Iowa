@@ -30,7 +30,9 @@ import java.util.List;
 
 import javax.ejb.Remote;
 
+import org.openelis.domain.IdNameVO;
 import org.openelis.domain.SectionViewDO;
+import org.openelis.gwt.common.data.QueryData;
 import org.openelis.gwt.common.data.deprecated.AbstractField;
 
 @Remote
@@ -48,5 +50,19 @@ public interface SectionRemote {
     
     public List query(ArrayList<AbstractField> fields, int first, int max)throws Exception;
     
-    public List<SectionViewDO> getSectionDOList();    
+    public List<SectionViewDO> getSectionDOList();
+
+    public SectionViewDO fetchById(Integer id) throws Exception;
+
+    public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int rowPP) throws Exception;
+
+    public SectionViewDO add(SectionViewDO data) throws Exception;
+
+    public SectionViewDO update(SectionViewDO data) throws Exception;
+
+    public SectionViewDO fetchForUpdate(Integer id) throws Exception;
+
+    public SectionViewDO abortUpdate(Integer id) throws Exception;
+
+    public ArrayList<IdNameVO> fetchByName(String string, int maxResults) throws Exception; 
 }
