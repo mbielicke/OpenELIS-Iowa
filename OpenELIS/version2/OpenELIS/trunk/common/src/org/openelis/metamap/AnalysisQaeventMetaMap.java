@@ -2,23 +2,23 @@ package org.openelis.metamap;
 
 import org.openelis.gwt.common.MetaMap;
 import org.openelis.meta.AnalysisQaeventMeta;
-import org.openelis.meta.QaeventMeta;
+import org.openelis.meta.QaEventMeta;
 
 public class AnalysisQaeventMetaMap extends AnalysisQaeventMeta implements MetaMap {
 
     public AnalysisQaeventMetaMap(){
         super("analysisQaEvent.");
-        QA_EVENT = new QaeventMeta(path+"qaEvent.");
+        QA_EVENT = new QaEventMeta(path+"qaEvent.");
     }
     
     public AnalysisQaeventMetaMap(String path){
         super(path);
-        QA_EVENT = new QaeventMeta(path+"qaEvent.");
+        QA_EVENT = new QaEventMeta(path+"qaEvent.");
     }
     
-    protected QaeventMeta QA_EVENT;
+    protected QaEventMeta QA_EVENT;
     
-    public QaeventMeta getQaevent(){
+    public QaEventMeta getQaevent(){
         return QA_EVENT;
     }
     

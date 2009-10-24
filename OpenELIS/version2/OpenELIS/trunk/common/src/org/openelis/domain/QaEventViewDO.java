@@ -37,7 +37,6 @@ public class QaEventViewDO extends QaEventDO {
 
     private static final long serialVersionUID = 1L;
 
-    protected Integer         methodId;
     protected String          testName, methodName;
     protected String          typeName;
 
@@ -46,10 +45,9 @@ public class QaEventViewDO extends QaEventDO {
 
     public QaEventViewDO(Integer id, String name, String description, Integer testId,
                          Integer typeId, String isBillable, Integer reportingSequence,
-                         String reportingText, String testName, Integer methodId, String methodName) {
+                         String reportingText, String testName, String methodName) {
         super(id, name, description, testId, typeId, isBillable, reportingSequence, reportingText);
         setTestName(testName);
-        setMethodId(methodId);
         setMethodName(methodName);
     }
 
@@ -59,14 +57,6 @@ public class QaEventViewDO extends QaEventDO {
 
     public void setTestName(String testName) {
         this.testName = DataBaseUtil.trim(testName);
-    }
-
-    public Integer getMethodId() {
-        return methodId;
-    }
-
-    public void setMethodId(Integer methodId) {
-        this.methodId = methodId;
     }
 
     public String getMethodName() {
