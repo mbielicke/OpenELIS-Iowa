@@ -27,7 +27,7 @@ package org.openelis.domain;
 
 import org.openelis.gwt.common.RPC;
 
-public class TestMethodSectionNamesDO implements RPC {
+public class PanelVO implements RPC {
     private static final long serialVersionUID = 1L;
 
     protected Integer         testId;
@@ -35,11 +35,11 @@ public class TestMethodSectionNamesDO implements RPC {
     protected String          methodName;
     protected String          sectionName;
 
-    public TestMethodSectionNamesDO() {
+    public PanelVO() {
 
     }
 
-    public TestMethodSectionNamesDO(Integer testId,
+    public PanelVO(Integer testId,
                                     String testName,
                                     String methodName,
                                     String sectionName) {

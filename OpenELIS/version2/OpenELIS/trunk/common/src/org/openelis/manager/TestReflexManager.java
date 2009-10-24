@@ -27,6 +27,7 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import org.openelis.domain.TestReflexViewDO;
 import org.openelis.gwt.common.RPC;
@@ -37,36 +38,18 @@ public class TestReflexManager implements RPC {
     
     protected Integer testId;
     protected ArrayList<TestReflexViewDO> reflexes;
-    protected ArrayList<TestReflexViewDO> deletedReflexes;
+    protected ArrayList<TestReflexViewDO> deleted;
     
     protected transient static TestReflexManagerProxy proxy;
     
     protected TestReflexManager() {
-        reflexes = null;
     }
     
     /**
      * Creates a new instance of this object.
      */
-    public static TestReflexManager getInstance() {
-        TestReflexManager trm;
-        
-        trm = new TestReflexManager();
-        trm.reflexes = new ArrayList<TestReflexViewDO>();
-        
-        return trm;
-    }
-    
-    public static TestReflexManager findByTestId(Integer testId) throws Exception {
-        return proxy().fetchByTestId(testId);
-    }
-    
-    public Integer getTestId() {
-        return testId;
-    }
-
-    public void setTestId(Integer testId) {
-        this.testId = testId;
+    public static TestReflexManager getInstance() {        
+        return new TestReflexManager();
     }
     
     public int count(){
@@ -74,27 +57,27 @@ public class TestReflexManager implements RPC {
             return 0;
         
         return reflexes.size();
-    } 
-
+    }
+    
     public TestReflexViewDO getReflexAt(int i) {
         return reflexes.get(i);
     }
     
     public void setReflexAt(TestReflexViewDO reflexTest, int i) {
+        if(reflexes == null)
+            reflexes = new ArrayList<TestReflexViewDO>();
         reflexes.set(i, reflexTest);
     }
     
     public void addReflex(TestReflexViewDO reflexTest) {
         if(reflexes == null)
-            reflexes = new ArrayList<TestReflexViewDO>();
-        
+            reflexes = new ArrayList<TestReflexViewDO>();        
         reflexes.add(reflexTest);
     }
     
     public void addReflexAt(TestReflexViewDO reflexTest, int i) {
         if(reflexes == null)
-            reflexes = new ArrayList<TestReflexViewDO>();
-        
+            reflexes = new ArrayList<TestReflexViewDO>();        
         reflexes.add(i,reflexTest);
     }
     
@@ -106,10 +89,14 @@ public class TestReflexManager implements RPC {
 
         reflexTest = reflexes.remove(i);
         if(reflexTest.getId() != null) {
-            if (deletedReflexes == null)
-                deletedReflexes = new ArrayList<TestReflexViewDO>();
-            deletedReflexes.add(reflexTest);
+            if (deleted == null)
+                deleted = new ArrayList<TestReflexViewDO>();
+            deleted.add(reflexTest);
         }        
+    }
+    
+    public static TestReflexManager fetchByTestId(Integer testId) throws Exception {
+        return proxy().fetchByTestId(testId);
     }
     
     public TestReflexManager add(HashMap<Integer,Integer> analyteMap,
@@ -121,6 +108,20 @@ public class TestReflexManager implements RPC {
                                     HashMap<Integer,Integer> resultMap) throws Exception {
         return proxy().update(this,analyteMap,resultMap);                
     }
+    
+    public void validate(boolean analyteValid,boolean resultValid,
+                         HashMap<Integer, Integer> anaResGrpMap,
+                         HashMap<Integer, List<Integer>> resGrpRsltMap) throws Exception{        
+        proxy().validate(this,analyteValid,resultValid,anaResGrpMap,resGrpRsltMap);        
+    }
+    
+    Integer getTestId() {
+        return testId;
+    }
+
+    void setTestId(Integer testId) {
+        this.testId = testId;
+    }   
 
     ArrayList<TestReflexViewDO> getReflexes() {
         return reflexes;
@@ -131,14 +132,14 @@ public class TestReflexManager implements RPC {
     }
     
     int deleteCount(){
-        if(deletedReflexes == null)
+        if(deleted == null)
             return 0;
         
-        return deletedReflexes.size();
+        return deleted.size();
     }
         
     TestReflexViewDO getDeletedAt(int i) {
-        return deletedReflexes.get(i);
+        return deleted.get(i);
     }
     
     private static TestReflexManagerProxy proxy() {

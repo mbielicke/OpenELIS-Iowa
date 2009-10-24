@@ -49,9 +49,6 @@ public class TestWorksheetManager implements RPC {
      * This is a protected constructor
      */
     protected TestWorksheetManager() {
-        worksheet = null;
-        items = null;
-        analytes = null;
     }
     
     /**
@@ -61,54 +58,46 @@ public class TestWorksheetManager implements RPC {
         TestWorksheetManager twm;
         
         twm = new TestWorksheetManager();
-        twm.worksheet = new TestWorksheetViewDO();
-        twm.items = new ArrayList<TestWorksheetItemDO>();
-        twm.analytes = new ArrayList<TestWorksheetAnalyteViewDO>();        
+        twm.worksheet = new TestWorksheetViewDO();      
         return twm;
     }
     
-    public static TestWorksheetManager findByTestId(Integer testId) throws Exception {       
-        return proxy().fetchByTestId(testId);
-    } 
-    
-    public Integer getTestId() {
-        return testId;
+    public int itemCount(){
+        if(items == null)
+            return 0;        
+        return items.size();
     }
-
-    public void setTestId(Integer testId) {
-        this.testId = testId;
-    }    
+    
+    public int analyteCount() {
+        if(analytes == null) 
+            return 0;
+        
+        return analytes.size();
+    }
     
     public TestWorksheetViewDO getWorksheet() {
         return worksheet;
     }    
-    
-    public int itemCount(){
-        if(items == null)
-            return 0;
-        
-        return items.size();
-    }
-    
+       
     public TestWorksheetItemDO getItemAt(int i) {
         return items.get(i);
     }
     
     public void setItemAt(TestWorksheetItemDO item, int i) {
+        if(items == null)
+            items = new ArrayList<TestWorksheetItemDO>();
         items.set(i,item);
     }
     
     public void addItem(TestWorksheetItemDO item) {
         if(items == null)
-            items = new ArrayList<TestWorksheetItemDO>();
-        
+            items = new ArrayList<TestWorksheetItemDO>();        
         items.add(item);
     }
     
     public void addItemAt(TestWorksheetItemDO item, int i) {
         if(items == null)
-            items = new ArrayList<TestWorksheetItemDO>();
-        
+            items = new ArrayList<TestWorksheetItemDO>();        
         items.add(i,item);
     }
     
@@ -127,18 +116,13 @@ public class TestWorksheetManager implements RPC {
         }
     }   
     
-    public int analyteCount() {
-        if(analytes == null) 
-            return 0;
-        
-        return analytes.size();
-    }
-    
     public TestWorksheetAnalyteViewDO getAnalyteAt(int i) {
         return analytes.get(i);
     }
     
     public void setAnalyteAt(TestWorksheetAnalyteViewDO analyte, int i) {
+        if(analytes == null)
+            analytes = new ArrayList<TestWorksheetAnalyteViewDO>();
         analytes.set(i,analyte);
     }
     
@@ -150,8 +134,7 @@ public class TestWorksheetManager implements RPC {
     
     public void addAnalyteAt(TestWorksheetAnalyteViewDO analyte, int i) {
         if(analytes == null)
-            analytes = new ArrayList<TestWorksheetAnalyteViewDO>();
-        
+            analytes = new ArrayList<TestWorksheetAnalyteViewDO>();        
         analytes.add(i,analyte);
     }
     
@@ -169,6 +152,10 @@ public class TestWorksheetManager implements RPC {
         }
     }
     
+    public static TestWorksheetManager fetchByTestId(Integer testId) throws Exception {       
+        return proxy().fetchByTestId(testId);
+    } 
+    
     public TestWorksheetManager add(HashMap<Integer,Integer> anaIdMap) throws Exception {
         return proxy().add(this, anaIdMap);
     }
@@ -176,6 +163,18 @@ public class TestWorksheetManager implements RPC {
     public TestWorksheetManager update(HashMap<Integer,Integer> anaIdMap) throws Exception {
         return proxy().update(this,anaIdMap);
     }
+    
+    public void validate() throws Exception { 
+        proxy().validate(this);
+    }
+    
+    Integer getTestId() {
+        return testId;
+    }
+
+    public void setTestId(Integer testId) {
+        this.testId = testId;
+    }       
     
     void setWorksheet(TestWorksheetViewDO testWorksheet) {
         this.worksheet = testWorksheet;

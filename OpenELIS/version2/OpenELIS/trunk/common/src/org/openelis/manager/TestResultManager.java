@@ -27,8 +27,9 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
-import org.openelis.domain.TestResultDO;
+import org.openelis.domain.TestResultViewDO;
 import org.openelis.gwt.common.RPC;
 
 
@@ -37,13 +38,12 @@ public class TestResultManager implements RPC {
     private static final long serialVersionUID = 1L;
     
     protected Integer testId;
-    protected ArrayList<ArrayList<TestResultDO>> results;    
-    protected ArrayList<TestResultDO> deletedResults;   
+    protected ArrayList<ArrayList<TestResultViewDO>> results;    
+    protected ArrayList<TestResultViewDO> deletedResults;   
     
     protected transient static TestResultManagerProxy proxy;
     
     protected TestResultManager() {
-        results = null;
     }
 
     /**
@@ -53,22 +53,10 @@ public class TestResultManager implements RPC {
         TestResultManager trm;
         
         trm = new TestResultManager();
-        trm.results = new ArrayList<ArrayList<TestResultDO>>();
+        trm.results = new ArrayList<ArrayList<TestResultViewDO>>();
         
         return trm;
     }
-    
-    public static TestResultManager findByTestId(Integer testId) throws Exception {
-        return proxy().fetchByTestId(testId);
-    }
-
-    public Integer getTestId() {
-        return testId;
-    }
-
-    public void setTestId(Integer testId) {
-        this.testId = testId;
-    }    
     
     /**
      * This method returns the number of result groups maintained by this manager.
@@ -78,30 +66,6 @@ public class TestResultManager implements RPC {
             return 0;
         
         return results.size();
-    }
-    
-    /**
-     * This method returns the TestResultDO stored in the result group 
-     * specified by the argument "group" and at the index "row" in the group.
-     * It should be noted that "group" starts at one and NOT zero as it mirrors
-     * the data as seen on the screen by the user and not how it is maintained
-     * by the manager. When result groups are created or assigned to test analytes,
-     * on the Test screen, they numbering always starts with one.
-     * The argument "row" however starts at zero as this index is always hidden
-     * from the user.
-     */
-    public TestResultDO getResultAt(int group, int row) {
-        ArrayList<TestResultDO> list;
-        
-        if(group <= 0 || row < 0 || group-1 >= results.size())
-            return null;
-        
-        list = results.get(group-1);
-        
-        if(row < list.size())
-            return list.get(row);
-        
-        return null;
     }
     
     /**
@@ -116,34 +80,58 @@ public class TestResultManager implements RPC {
     }
     
     /**
-     * This method adds a TestResultDO at the end of the result group specified 
+     * This method returns the TestResultViewDO stored in the result group 
+     * specified by the argument "group" and at the index "row" in the group.
+     * It should be noted that "group" starts at one and NOT zero as it mirrors
+     * the data as seen on the screen by the user and not how it is maintained
+     * by the manager. When result groups are created or assigned to test analytes,
+     * on the Test screen, they numbering always starts with one.
+     * The argument "row" however starts at zero as this index is always hidden
+     * from the user.
+     */
+    public TestResultViewDO getResultAt(int group, int row) {
+        ArrayList<TestResultViewDO> list;
+        
+        if(group <= 0 || row < 0 || group-1 >= results.size())
+            return null;
+        
+        list = results.get(group-1);
+        
+        if(row < list.size())
+            return list.get(row);
+        
+        return null;
+    }   
+    
+    /**
+     * This method adds a TestResultViewDO at the end of the result group specified 
      * by the argument "group" and sets the id of the DO to the argument "id".
      * The argument "group" is an index that begins at one. 
      */
     public void addResult(int group,Integer id) {
-        TestResultDO result;
+        TestResultViewDO result;
         if(results == null || group <= 0 || group-1 >= results.size())
             return;
    
-        result = new TestResultDO();
+        result = new TestResultViewDO();
         result.setId(id);
         results.get(group-1).add(result);
     }
     
     /**
-     * This method adds a TestResultDO at the index "row" of the result group specified 
+     * This method adds a TestResultViewDO at the index "row" of the result group specified 
      * by the argument "group" and sets the id of the DO to the argument "id".
      * The argument "group" is an index that begins at one. 
      */
     public void addResultAt(int group,int row,Integer id) {
-        ArrayList<TestResultDO> list;
-        TestResultDO result;
+        ArrayList<TestResultViewDO> list;
+        TestResultViewDO result;
         
         if(row < 0 || results == null || group <= 0 || group-1 >= results.size())
             return;
         
         list = results.get(group-1);
-        result = new TestResultDO();
+        result = new TestResultViewDO();
         result.setId(id);
         if (row < list.size()) {        
             list.add(row, result);
@@ -154,14 +142,14 @@ public class TestResultManager implements RPC {
     
     public void addResultGroup() {        
         if(results == null)
-            results = new ArrayList<ArrayList<TestResultDO>>();
+            results = new ArrayList<ArrayList<TestResultViewDO>>();
         
-        results.add(new ArrayList<TestResultDO>());
+        results.add(new ArrayList<TestResultViewDO>());
     }
     
     public void removeResultAt(int group, int row) {
-        ArrayList<TestResultDO> list;
-        TestResultDO testResult;
+        ArrayList<TestResultViewDO> list;
+        TestResultViewDO testResult;
         
         if(row < 0 || results == null || group <= 0 || group-1 >= results.size())
             return;
@@ -175,7 +163,7 @@ public class TestResultManager implements RPC {
         
         if(testResult.getId() > 0) {
             if(deletedResults == null)
-                deletedResults = new ArrayList<TestResultDO>();
+                deletedResults = new ArrayList<TestResultViewDO>();
             
             deletedResults.add(testResult);
         }
@@ -191,6 +179,10 @@ public class TestResultManager implements RPC {
         results.remove(group-1);
     }
     
+    public static TestResultManager fetchByTestId(Integer testId) throws Exception {
+        return proxy().fetchByTestId(testId);
+    }
+    
     public TestResultManager add(HashMap<Integer,Integer> idMap) throws Exception {
         return proxy().add(this,idMap);
     }
@@ -198,13 +190,26 @@ public class TestResultManager implements RPC {
     public TestResultManager update(HashMap<Integer,Integer> idMap) throws Exception {
         return proxy().update(this,idMap);
     }
+    
+    public void validate(TestTypeOfSampleManager ttsm,HashMap<Integer,
+                         List<Integer>> resGrpRsltMap) throws Exception {
+        proxy().validate(this,ttsm,resGrpRsltMap);
+    }
 
-    ArrayList<ArrayList<TestResultDO>> getResults() {
+    Integer getTestId() {
+        return testId;
+    }
+
+    void setTestId(Integer testId) {
+        this.testId = testId;
+    }       
+
+    ArrayList<ArrayList<TestResultViewDO>> getResults() {
         return results;
     }
 
-    void setResults(ArrayList<ArrayList<TestResultDO>> testResults) {
-        this.results = testResults;
+    void setResults(ArrayList<ArrayList<TestResultViewDO>> results) {
+        this.results = results;
     }
     
     int deleteCount(){
@@ -214,7 +219,7 @@ public class TestResultManager implements RPC {
         return deletedResults.size();
     }
     
-    TestResultDO getDeletedAt(int i) {
+    TestResultViewDO getDeletedAt(int i) {
         return deletedResults.get(i);
     }
     
