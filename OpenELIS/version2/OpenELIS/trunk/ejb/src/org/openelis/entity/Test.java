@@ -51,28 +51,44 @@ import org.w3c.dom.Element;
 
 import org.openelis.gwt.common.Datetime;
 import org.openelis.util.XMLUtil;
+import org.openelis.utilcommon.DataBaseUtil;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
-@NamedQueries({@NamedQuery(name = "Test.IdByTestTrailer", query = "select t.id from Test t where t.testTrailerId = :id"),
-    @NamedQuery(name = "Test.IdByLabel", query =  "select distinct t.id from Test t where t.labelId = :id"),
-    @NamedQuery(name = "Test.Test", query = "select distinct new org.openelis.domain.TestViewDO(t.id, t.name,t.description,t.reportingDescription," 
-        + "t.methodId,t.isActive,t.activeBegin,t.activeEnd,t.isReportable,"
-        + "t.timeTransit,t.timeHolding,t.timeTaAverage,t.timeTaWarning,t.timeTaMax,t.labelId,"
-        + "t.labelQty,t.testTrailerId,t.scriptletId,t.testFormatId,t.revisionMethodId,"
-        + "t.reportingMethodId,t.sortingMethodId,t.reportingSequence,m.name,l.name,tt.name,s.name) "
-        + " from Test t left join t.scriptlet s left join t.testTrailer tt left join t.label l left join t.method m where t.id = :id"),                                                    
-    @NamedQuery(name = "Test.IdName", query = "select distinct new org.openelis.domain.IdNameDO(t.id, t.name) " + "  from Test t left join t.method order by t.name "),
-    @NamedQuery(name = "Test.TestByName", query = "from Test t where t.name = :name order by t.name"),
-    @NamedQuery(name = "Test.TestIdNameMethodSectionNames", query = "select distinct new org.openelis.domain.TestMethodSectionNamesDO(t.id,t.name,m.name,s.name)" 
-             + "  from Test t left join t.method m left join t.testSection ts left join ts.section s where t.isActive = :isActive order by t.name,m.name,s.name "),
-    @NamedQuery(name = "Test.TestMethodAutoByName", query = "select new org.openelis.domain.TestMethodViewDO(t.id, t.name,t.description, m.id, m.name,m.description)from Test t LEFT JOIN t.method m " +
-   		                " where t.name like :name and t.isActive='Y' order by t.name"),
-    @NamedQuery(name = "Test.TestMethodActiveAutoByName", query = "select new org.openelis.domain.TestMethodViewDO(t.id, t.name,t.description, m.id, m.name,m.description,t.isActive,t.activeBegin,t.activeEnd)from Test t LEFT JOIN t.method m " +
-                     " where t.name like :name order by t.name, t.activeEnd desc"),
-    @NamedQuery(name = "Test.TestMethodAutoByNameSampleItemType", query = "select distinct new org.openelis.domain.TestMethodViewDO(t.id, t.name, t.description, m.id, m.name, m.description) " + 
-                        " from Test t left join t.method m LEFT JOIN t.testTypeOfSample type where t.name like :name and type.typeOfSampleId = :typeId and t.isActive='Y' order by t.name"),
-    @NamedQuery(name = "Test.TestListByMethodId", query = "from Test t where t.methodId = :id and t.isActive = 'Y'")})
+@NamedQueries({
+    @NamedQuery(name = "Test.FetchById",
+                query = "select distinct new org.openelis.domain.TestViewDO(t.id, t.name,t.description,t.reportingDescription," +
+                        "t.methodId,t.isActive,t.activeBegin,t.activeEnd,t.isReportable,"+
+                        "t.timeTransit,t.timeHolding,t.timeTaAverage,t.timeTaWarning,t.timeTaMax,t.labelId,"+
+                        "t.labelQty,t.testTrailerId,t.scriptletId,t.testFormatId,t.revisionMethodId,"+
+                        "t.reportingMethodId,t.sortingMethodId,t.reportingSequence,m.name,l.name,tt.name,s.name) "
+                      + " from Test t left join t.scriptlet s left join t.testTrailer tt left join t.label l left join t.method m where t.id = :id"),                                                    
+    @NamedQuery(name = "Test.FetchByName",
+                query = "select distinct new org.openelis.domain.TestViewDO(t.id, t.name,t.description,t.reportingDescription," +
+                        "t.methodId,t.isActive,t.activeBegin,t.activeEnd,t.isReportable,"+
+                        "t.timeTransit,t.timeHolding,t.timeTaAverage,t.timeTaWarning,t.timeTaMax,t.labelId,"+
+                        "t.labelQty,t.testTrailerId,t.scriptletId,t.testFormatId,t.revisionMethodId,"+
+                        "t.reportingMethodId,t.sortingMethodId,t.reportingSequence,m.name,l.name,tt.name,s.name) "
+                      + " from Test t left join t.scriptlet s left join t.testTrailer tt left join t.label l left join t.method m where t.name = :name order by t.name"),
+    @NamedQuery(name = "Test.FetchTestMethodSectionNames",
+                query = "select distinct new org.openelis.domain.PanelVO(t.id,t.name,m.name,s.name)"
+                      + "  from Test t left join t.method m left join t.testSection ts left join ts.section s where t.isActive = :isActive order by t.name,m.name,s.name "),
+    @NamedQuery(name = "Test.FetchWithMethodByName", 
+                query = "select new org.openelis.domain.TestMethodVO(t.id, t.name,t.description, m.id, m.name,m.description)"
+                      + " from Test t LEFT JOIN t.method m where t.name like :name and t.isActive='Y' order by t.name"),
+    @NamedQuery(name = "Test.FetchActiveByName",
+                query = "select new org.openelis.domain.TestMethodVO(t.id, t.name,t.description, m.id, m.name,m.description,t.isActive,t.activeBegin,t.activeEnd)"
+                      + " from Test t LEFT JOIN t.method m where t.name like :name order by t.name, t.activeEnd desc"),
+    @NamedQuery(name = "Test.FetchByNameSampleItemType",
+                query = "select distinct new org.openelis.domain.TestMethodVO(t.id, t.name, t.description, m.id, m.name, m.description) "
+                      + " from Test t left join t.method m LEFT JOIN t.testTypeOfSample type where t.name like :name and type.typeOfSampleId = :typeId and t.isActive='Y' order by t.name"),
+    @NamedQuery(name = "Test.FetchByMethod",
+                query = "select distinct new org.openelis.domain.TestViewDO(t.id, t.name,t.description,t.reportingDescription," +
+                        "t.methodId,t.isActive,t.activeBegin,t.activeEnd,t.isReportable,"+
+                        "t.timeTransit,t.timeHolding,t.timeTaAverage,t.timeTaWarning,t.timeTaMax,t.labelId,"+
+                        "t.labelQty,t.testTrailerId,t.scriptletId,t.testFormatId,t.revisionMethodId,"+
+                        "t.reportingMethodId,t.sortingMethodId,t.reportingSequence,m.name,l.name,tt.name,s.name) "
+                      + " from Test t left join t.scriptlet s left join t.testTrailer tt left join t.label l left join t.method m where t.methodId = :id and t.isActive = 'Y'")})
     
 
 @Entity
@@ -207,7 +223,7 @@ public class Test implements Auditable, Cloneable {
     }
 
     protected void setId(Integer id) {
-        if ( (id == null && this.id != null) || (id != null && !id.equals(this.id)))
+        if (DataBaseUtil.isDifferent(id, this.id))
             this.id = id;
     }
 
@@ -216,7 +232,7 @@ public class Test implements Auditable, Cloneable {
     }
 
     public void setName(String name) {
-        if ( (name == null && this.name != null) || (name != null && !name.equals(this.name)))
+        if (DataBaseUtil.isDifferent(name,this.name))
             this.name = name;
     }
 
@@ -225,8 +241,7 @@ public class Test implements Auditable, Cloneable {
     }
 
     public void setDescription(String description) {
-        if ( (description == null && this.description != null) ||
-            (description != null && !description.equals(this.description)))
+        if (DataBaseUtil.isDifferent(description,this.description))
             this.description = description;
     }
 
@@ -235,8 +250,7 @@ public class Test implements Auditable, Cloneable {
     }
 
     public void setReportingDescription(String reportingDescription) {
-        if ( (reportingDescription == null && this.reportingDescription != null) ||
-            (reportingDescription != null && !reportingDescription.equals(this.reportingDescription)))
+        if (DataBaseUtil.isDifferent(reportingDescription,this.reportingDescription))
             this.reportingDescription = reportingDescription;
     }
 
@@ -245,8 +259,7 @@ public class Test implements Auditable, Cloneable {
     }
 
     public void setMethodId(Integer methodId) {
-        if ( (methodId == null && this.methodId != null) ||
-            (methodId != null && !methodId.equals(this.methodId)))
+        if (DataBaseUtil.isDifferent(methodId,this.methodId))
             this.methodId = methodId;
     }
 
@@ -255,8 +268,7 @@ public class Test implements Auditable, Cloneable {
     }
 
     public void setIsActive(String isActive) {
-        if ( (isActive == null && this.isActive != null) ||
-            (isActive != null && !isActive.equals(this.isActive)))
+        if (DataBaseUtil.isDifferent(isActive,this.isActive))
             this.isActive = isActive;
     }
 
@@ -293,8 +305,7 @@ public class Test implements Auditable, Cloneable {
     }
 
     public void setIsReportable(String isReportable) {
-        if ( (isReportable == null && this.isReportable != null) ||
-            (isReportable != null && !isReportable.equals(this.isReportable)))
+        if (DataBaseUtil.isDifferent(isReportable,this.isReportable))
             this.isReportable = isReportable;
     }
 
@@ -303,8 +314,7 @@ public class Test implements Auditable, Cloneable {
     }
 
     public void setTimeTransit(Integer timeTransit) {
-        if ( (timeTransit == null && this.timeTransit != null) ||
-            (timeTransit != null && !timeTransit.equals(this.timeTransit)))
+        if (DataBaseUtil.isDifferent(timeTransit,this.timeTransit))
             this.timeTransit = timeTransit;
     }
 
@@ -313,8 +323,7 @@ public class Test implements Auditable, Cloneable {
     }
 
     public void setTimeHolding(Integer timeHolding) {
-        if ( (timeHolding == null && this.timeHolding != null) ||
-            (timeHolding != null && !timeHolding.equals(this.timeHolding)))
+        if (DataBaseUtil.isDifferent(timeHolding,this.timeHolding))
             this.timeHolding = timeHolding;
     }
 
@@ -323,8 +332,7 @@ public class Test implements Auditable, Cloneable {
     }
 
     public void setTimeTaAverage(Integer timeTaAverage) {
-        if ( (timeTaAverage == null && this.timeTaAverage != null) ||
-            (timeTaAverage != null && !timeTaAverage.equals(this.timeTaAverage)))
+        if (DataBaseUtil.isDifferent(timeTaAverage,this.timeTaAverage))
             this.timeTaAverage = timeTaAverage;
     }
 
@@ -333,8 +341,7 @@ public class Test implements Auditable, Cloneable {
     }
 
     public void setTimeTaWarning(Integer timeTaWarning) {
-        if ( (timeTaWarning == null && this.timeTaWarning != null) ||
-            (timeTaWarning != null && !timeTaWarning.equals(this.timeTaWarning)))
+        if (DataBaseUtil.isDifferent(timeTaWarning,this.timeTaWarning))
             this.timeTaWarning = timeTaWarning;
     }
 
@@ -343,8 +350,7 @@ public class Test implements Auditable, Cloneable {
     }
 
     public void setTimeTaMax(Integer timeTaMax) {
-        if ( (timeTaMax == null && this.timeTaMax != null) ||
-            (timeTaMax != null && !timeTaMax.equals(this.timeTaMax)))
+        if (DataBaseUtil.isDifferent(timeTaMax,this.timeTaMax))
             this.timeTaMax = timeTaMax;
     }
 
@@ -353,8 +359,7 @@ public class Test implements Auditable, Cloneable {
     }
 
     public void setLabelId(Integer labelId) {
-        if ( (labelId == null && this.labelId != null) ||
-            (labelId != null && !labelId.equals(this.labelId)))
+        if (DataBaseUtil.isDifferent(labelId,this.labelId))
             this.labelId = labelId;
     }
 
@@ -363,8 +368,7 @@ public class Test implements Auditable, Cloneable {
     }
 
     public void setLabelQty(Integer labelQty) {
-        if ( (labelQty == null && this.labelQty != null) ||
-            (labelQty != null && !labelQty.equals(this.labelQty)))
+        if (DataBaseUtil.isDifferent(labelQty,this.labelQty))
             this.labelQty = labelQty;
     }
 
@@ -373,8 +377,7 @@ public class Test implements Auditable, Cloneable {
     }
 
     public void setTestTrailerId(Integer testTrailerId) {
-        if ( (testTrailerId == null && this.testTrailerId != null) ||
-            (testTrailerId != null && !testTrailerId.equals(this.testTrailerId)))
+        if (DataBaseUtil.isDifferent(testTrailerId,this.testTrailerId))
             this.testTrailerId = testTrailerId;
     }
 
@@ -383,8 +386,7 @@ public class Test implements Auditable, Cloneable {
     }
 
     public void setScriptletId(Integer scriptletId) {
-        if ( (scriptletId == null && this.scriptletId != null) ||
-            (scriptletId != null && !scriptletId.equals(this.scriptletId)))
+        if (DataBaseUtil.isDifferent(scriptletId,this.scriptletId))
             this.scriptletId = scriptletId;
     }
 
@@ -393,8 +395,7 @@ public class Test implements Auditable, Cloneable {
     }
 
     public void setTestFormatId(Integer testFormatId) {
-        if ( (testFormatId == null && this.testFormatId != null) ||
-            (testFormatId != null && !testFormatId.equals(this.testFormatId)))
+        if (DataBaseUtil.isDifferent(testFormatId,this.testFormatId))
             this.testFormatId = testFormatId;
     }
 
@@ -403,8 +404,7 @@ public class Test implements Auditable, Cloneable {
     }
 
     public void setRevisionMethodId(Integer revisionMethodId) {
-        if ( (revisionMethodId == null && this.revisionMethodId != null) ||
-            (revisionMethodId != null && !revisionMethodId.equals(this.revisionMethodId)))
+        if (DataBaseUtil.isDifferent(revisionMethodId,this.revisionMethodId))
             this.revisionMethodId = revisionMethodId;
     }
 
@@ -413,8 +413,7 @@ public class Test implements Auditable, Cloneable {
     }
 
     public void setReportingMethodId(Integer reportingMethodId) {
-        if ( (reportingMethodId == null && this.reportingMethodId != null) ||
-            (reportingMethodId != null && !reportingMethodId.equals(this.reportingMethodId)))
+        if (DataBaseUtil.isDifferent(reportingMethodId,this.reportingMethodId))
             this.reportingMethodId = reportingMethodId;
     }
 
@@ -423,8 +422,7 @@ public class Test implements Auditable, Cloneable {
     }
 
     public void setSortingMethodId(Integer sortingMethodId) {
-        if ( (sortingMethodId == null && this.sortingMethodId != null) ||
-            (sortingMethodId != null && !sortingMethodId.equals(this.sortingMethodId)))
+        if (DataBaseUtil.isDifferent(sortingMethodId,this.sortingMethodId))
             this.sortingMethodId = sortingMethodId;
     }
 
@@ -433,58 +431,8 @@ public class Test implements Auditable, Cloneable {
     }
 
     public void setReportingSequence(Integer reportingSequence) {
-        if ( (reportingSequence == null && this.reportingSequence != null) ||
-            (reportingSequence != null && !reportingSequence.equals(this.reportingSequence)))
+        if (DataBaseUtil.isDifferent(reportingSequence,this.reportingSequence))
             this.reportingSequence = reportingSequence;
-    }
-
-    public void setClone() {
-        try {
-            original = (Test)this.clone();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public String getChangeXML() {
-        try {
-            Document doc = XMLUtil.createNew("change");
-            Element root = doc.getDocumentElement();
-
-            AuditUtil.getChangeXML(id, original.id, doc, "id");
-            AuditUtil.getChangeXML(name, original.name, doc, "name");
-            AuditUtil.getChangeXML(description, original.description, doc, "description");
-            AuditUtil.getChangeXML(reportingDescription, original.reportingDescription, doc, "reporting_description");
-            AuditUtil.getChangeXML(methodId, original.methodId, doc, "method_id");
-            AuditUtil.getChangeXML(isActive, original.isActive, doc, "is_active");
-            AuditUtil.getChangeXML(activeBegin, original.activeBegin, doc, "active_begin");
-            AuditUtil.getChangeXML(activeEnd, original.activeEnd, doc, "active_end");
-            AuditUtil.getChangeXML(isReportable, original.isReportable, doc, "is_reportable");
-            AuditUtil.getChangeXML(timeTransit, original.timeTransit, doc, "time_transit");
-            AuditUtil.getChangeXML(timeHolding, original.timeHolding, doc, "time_holding");
-            AuditUtil.getChangeXML(timeTaAverage, original.timeTaAverage, doc, "time_ta_average");
-            AuditUtil.getChangeXML(timeTaWarning, original.timeTaWarning, doc, "time_ta_warning");
-            AuditUtil.getChangeXML(timeTaMax, original.timeTaMax, doc, "time_ta_max");
-            AuditUtil.getChangeXML(labelId, original.labelId, doc, "label_id");
-            AuditUtil.getChangeXML(labelQty, original.labelQty, doc, "label_qty");
-            AuditUtil.getChangeXML(testTrailerId, original.testTrailerId, doc, "test_trailer_id");
-            AuditUtil.getChangeXML(scriptletId, original.scriptletId, doc, "scriptlet_id");
-            AuditUtil.getChangeXML(testFormatId, original.testFormatId, doc, "test_format_id");
-            AuditUtil.getChangeXML(revisionMethodId, original.revisionMethodId, doc, "revision_method_id");
-            AuditUtil.getChangeXML(reportingMethodId, original.reportingMethodId, doc, "reporting_method_id");
-            AuditUtil.getChangeXML(sortingMethodId, original.sortingMethodId, doc, "sorting_method_id");
-            AuditUtil.getChangeXML(reportingSequence, original.reportingSequence, doc, "reporting_sequence");
-
-            if (root.hasChildNodes())
-                return XMLUtil.toString(doc);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    public String getTableName() {
-        return "test";
     }
 
     public Method getMethod() {
@@ -581,6 +529,55 @@ public class Test implements Auditable, Cloneable {
 
     public void setLabel(Label label) {
         this.label = label;
+    }
+
+    public void setClone() {
+        try {
+            original = (Test)this.clone();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public String getChangeXML() {
+        try {
+            Document doc = XMLUtil.createNew("change");
+            Element root = doc.getDocumentElement();
+
+            AuditUtil.getChangeXML(id, original.id, doc, "id");
+            AuditUtil.getChangeXML(name, original.name, doc, "name");
+            AuditUtil.getChangeXML(description, original.description, doc, "description");
+            AuditUtil.getChangeXML(reportingDescription, original.reportingDescription, doc, "reporting_description");
+            AuditUtil.getChangeXML(methodId, original.methodId, doc, "method_id");
+            AuditUtil.getChangeXML(isActive, original.isActive, doc, "is_active");
+            AuditUtil.getChangeXML(activeBegin, original.activeBegin, doc, "active_begin");
+            AuditUtil.getChangeXML(activeEnd, original.activeEnd, doc, "active_end");
+            AuditUtil.getChangeXML(isReportable, original.isReportable, doc, "is_reportable");
+            AuditUtil.getChangeXML(timeTransit, original.timeTransit, doc, "time_transit");
+            AuditUtil.getChangeXML(timeHolding, original.timeHolding, doc, "time_holding");
+            AuditUtil.getChangeXML(timeTaAverage, original.timeTaAverage, doc, "time_ta_average");
+            AuditUtil.getChangeXML(timeTaWarning, original.timeTaWarning, doc, "time_ta_warning");
+            AuditUtil.getChangeXML(timeTaMax, original.timeTaMax, doc, "time_ta_max");
+            AuditUtil.getChangeXML(labelId, original.labelId, doc, "label_id");
+            AuditUtil.getChangeXML(labelQty, original.labelQty, doc, "label_qty");
+            AuditUtil.getChangeXML(testTrailerId, original.testTrailerId, doc, "test_trailer_id");
+            AuditUtil.getChangeXML(scriptletId, original.scriptletId, doc, "scriptlet_id");
+            AuditUtil.getChangeXML(testFormatId, original.testFormatId, doc, "test_format_id");
+            AuditUtil.getChangeXML(revisionMethodId, original.revisionMethodId, doc, "revision_method_id");
+            AuditUtil.getChangeXML(reportingMethodId, original.reportingMethodId, doc, "reporting_method_id");
+            AuditUtil.getChangeXML(sortingMethodId, original.sortingMethodId, doc, "sorting_method_id");
+            AuditUtil.getChangeXML(reportingSequence, original.reportingSequence, doc, "reporting_sequence");
+
+            if (root.hasChildNodes())
+                return XMLUtil.toString(doc);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    
+    public String getTableName() {
+        return "test";
     }
 
 }

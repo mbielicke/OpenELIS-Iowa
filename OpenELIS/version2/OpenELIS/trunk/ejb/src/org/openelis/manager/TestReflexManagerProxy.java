@@ -27,22 +27,40 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import javax.naming.InitialContext;
 
 import org.openelis.domain.TestReflexViewDO;
-import org.openelis.local.TestLocal;
+import org.openelis.gwt.common.InconsistencyException;
+import org.openelis.gwt.common.TableFieldErrorException;
+import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.local.TestReflexLocal;
+import org.openelis.metamap.TestMetaMap;
+import org.openelis.utilcommon.DataBaseUtil;
 
 public class TestReflexManagerProxy {
+    
+    private static final TestMetaMap meta = new TestMetaMap();
+    
+    public TestReflexManager fetchByTestId(Integer testId) throws Exception {
+        TestReflexManager trm;        
+        ArrayList<TestReflexViewDO> reflexTests;    
+                
+        reflexTests = local().fetchByTestId(testId);
+        trm = TestReflexManager.getInstance();
+        trm.setReflexes(reflexTests);
+        return trm;
+    }
     
     public TestReflexManager add(TestReflexManager man,
                                  HashMap<Integer,Integer> analyteMap,
                                  HashMap<Integer,Integer> resultMap) throws Exception {
-        TestLocal tl;
+        TestReflexLocal tl;
         TestReflexViewDO reflexTest;
         Integer anaId, resId;
         
-        tl = getTestLocal();         
+        tl = local();         
         
         for(int i=0; i < man.count(); i++) {
             reflexTest = man.getReflexAt(i);
@@ -57,7 +75,7 @@ public class TestReflexManagerProxy {
             if(resId < 0)
                 reflexTest.setTestResultId(resultMap.get(resId));
             
-            tl.addReflexTest(reflexTest);
+            tl.add(reflexTest);
         }
         
         return man;
@@ -66,14 +84,14 @@ public class TestReflexManagerProxy {
     public TestReflexManager update(TestReflexManager man,
                                     HashMap<Integer,Integer> analyteMap,
                                     HashMap<Integer,Integer> resultMap) throws Exception {
-        TestLocal tl;
+        TestReflexLocal tl;
         TestReflexViewDO reflexTest;
         Integer anaId, resId;
         
-        tl = getTestLocal(); 
+        tl = local(); 
                 
         for(int i = 0; i < man.deleteCount(); i++) {            
-            tl.deleteReflexTest(man.getDeletedAt(i));
+            tl.delete(man.getDeletedAt(i));
         }
         
         for(int i=0; i<man.count(); i++){
@@ -90,34 +108,125 @@ public class TestReflexManagerProxy {
             
             if(reflexTest.getId() == null){                
                 reflexTest.setTestId(man.getTestId());             
-                tl.addReflexTest(reflexTest);
+                tl.add(reflexTest);
             } else {                
-                tl.updateReflexTest(reflexTest);
+                tl.update(reflexTest);
             }
         }
         
         return man;
     }
     
-    public TestReflexManager fetchByTestId(Integer testId) throws Exception {
-        TestReflexManager trm;
-        TestLocal tl;
-        ArrayList<TestReflexViewDO> reflexTests;    
+    public void validate(TestReflexManager trm,
+                         boolean anaListValid,boolean resListValid,
+                         HashMap<Integer, Integer> anaResGrpMap,
+                         HashMap<Integer, List<Integer>> resGrpRsltMap) throws Exception{
+        TestReflexViewDO refDO;
+        List<List<Integer>> idsList;
+        List<Integer> ids;
+        int i;
+        String fieldName;
+        ArrayList<TestReflexViewDO> testReflexDOList;
+        ValidationErrorsList list;
+        TestReflexLocal rl;
+
+        fieldName = null;
+        idsList = new ArrayList<List<Integer>>();
+        testReflexDOList = trm.getReflexes();
+        list = new ValidationErrorsList();
+        rl = local();
+
+        if(testReflexDOList == null)
+            return;
         
-        tl = getTestLocal();
-        reflexTests = tl.fetchReflexTestsById(testId);
-        trm = TestReflexManager.getInstance();
-        trm.setReflexes(reflexTests);
-        return trm;
+        for (i = 0; i < testReflexDOList.size(); i++ ) {
+            refDO = testReflexDOList.get(i);
+
+            ids = new ArrayList<Integer>();
+
+            if (refDO.getAddTestId() != null && refDO.getTestAnalyteId() != null &&
+                refDO.getTestResultId() != null) {
+                ids.add(refDO.getAddTestId());
+                ids.add(refDO.getTestAnalyteId());
+                ids.add(refDO.getTestResultId());
+            }
+                    
+            try {
+                rl.validate(refDO);                        
+            
+                if (!idsList.contains(ids)) {
+                    idsList.add(ids);
+                } else {
+                    fieldName = meta.TEST_REFLEX.getAddTest().getName();
+                    throw new InconsistencyException("fieldUniqueOnlyException");
+                }
+                
+                fieldName = meta.TEST_REFLEX.getTestResult().getValue();
+                validateAnalyteResultMapping(anaListValid, resListValid, anaResGrpMap,
+                                             resGrpRsltMap, refDO);
+            } catch (InconsistencyException ex) {
+                list.add(new TableFieldErrorException(ex.getMessage(),i,
+                                                      fieldName,"testReflexTable"));
+                
+                
+            } catch (Exception ex) {
+                DataBaseUtil.mergeException(list, ex, "testReflexTable", i);
+            }
+        }
+        
+        if(list.size() > 0)
+            throw list;
+        
     }
     
-    private TestLocal getTestLocal(){
+    private TestReflexLocal local(){
         try{
             InitialContext ctx = new InitialContext();
-            return (TestLocal)ctx.lookup("openelis/TestBean/local");
+            return (TestReflexLocal)ctx.lookup("openelis/TestReflexBean/local");
         }catch(Exception e){
              System.out.println(e.getMessage());
              return null;
         }
     }
+    
+    /**
+     * This method validates whether the test result id and test analyte id in
+     * "refDO" form a valid mapping such that the test result id belongs to the
+     * result group that has been selected for the test analyte represented by
+     * its id
+     */
+    private void validateAnalyteResultMapping(boolean anaListValid,
+                                              boolean resListValid,
+                                              HashMap<Integer, Integer> anaResGrpMap,
+                                              HashMap<Integer, List<Integer>> resGrpRsltMap,
+                                              TestReflexViewDO refDO) throws InconsistencyException {
+        Integer rg, resId, anaId;
+        List<Integer> resIdList;
+
+        resId = refDO.getTestResultId();
+        anaId = refDO.getTestAnalyteId();
+
+        if (!anaListValid || !resListValid)
+            return;
+
+        //
+        // find the result group selected for the test analyte from anaResGrpMap
+        // using its id set in refDO,
+        //        
+        rg = anaResGrpMap.get(anaId);
+        if (rg != null) {
+            //
+            // if the list obtained from anaResGrpMap does not contain the
+            // test result id in refDO then that implies that this test result
+            // doesn't belong to the result group selected for the test analyte
+            // and thus an exception is thrown containing this message.
+            //
+            resIdList = resGrpRsltMap.get(rg);
+            if (resIdList == null)
+                throw new InconsistencyException("resultDoesntBelongToAnalyteException");
+            else if ( !resIdList.contains(resId))
+                throw new InconsistencyException("resultDoesntBelongToAnalyteException");
+        }
+    }
+    
 }

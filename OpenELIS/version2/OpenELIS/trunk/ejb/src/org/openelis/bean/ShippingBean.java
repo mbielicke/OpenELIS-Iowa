@@ -42,6 +42,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
+import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.ShippingAddAutoFillDO;
 import org.openelis.domain.ShippingDO;
@@ -101,13 +102,14 @@ public class ShippingBean implements ShippingRemote{
     }
 
     public ShippingAddAutoFillDO getAddAutoFillValues() throws Exception {
-        ShippingAddAutoFillDO autoFillDO = new ShippingAddAutoFillDO();
+        ShippingAddAutoFillDO autoFillDO = new ShippingAddAutoFillDO();       
         //status integer
-        Query query = manager.createNamedQuery("Dictionary.IdBySystemName");
-        query.setParameter("systemName", "shipping_status_processed");
+        Query query = manager.createNamedQuery("Dictionary.FetchBySystemName");
+        query.setParameter("name", "shipping_status_processed");
 
         //default to shipped status
-        autoFillDO.setStatus((Integer)query.getSingleResult());
+        DictionaryDO dictDO = (DictionaryDO)query.getSingleResult();
+        autoFillDO.setStatus(dictDO.getId());
 
         //default to today
         autoFillDO.setProcessedDate(new Date());

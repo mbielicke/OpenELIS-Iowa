@@ -191,7 +191,7 @@ public class TestTrailerBean implements TestTrailerRemote{
 		//make sure no tests are pointing to this record
 		//getTestByTestTrailerId
 		Query query = null;
-		query = manager.createNamedQuery("Test.IdByTestTrailer");
+		query = manager.createNamedQuery("TestTrailer.FetchTestForDeleteCheck");
 		query.setParameter("id", testTrailerId);
 		List linkedRecords = query.getResultList();
 

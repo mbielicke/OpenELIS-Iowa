@@ -51,7 +51,13 @@ import org.openelis.utils.Auditable;
 @NamedQueries({@NamedQuery(name = "Label.Label", query = "select new org.openelis.domain.LabelViewDO(l.id,l.name,l.description,l.printerTypeId,s.id, s.name)" +                                                                                                  
                                                   "  from Label l left join l.scriptlet s where l.id = :id"),
                @NamedQuery(name = "Label.LabelIdName", query = "select distinct new org.openelis.domain.IdNameDO(l.id, l.name) " + "  from Label l order by l.name"),
-               @NamedQuery(name = "Label.AutocompleteByName", query = "select distinct new org.openelis.domain.IdNameDO(l.id, l.name) " + "  from Label l where l.name like :name order by l.name")})
+               @NamedQuery(name = "Label.AutocompleteByName", query = "select distinct new org.openelis.domain.IdNameDO(l.id, l.name) " + "  from Label l where l.name like :name order by l.name"),
+               @NamedQuery(name = "Label.FetchTestForDeleteCheck", query = "select distinct new org.openelis.domain.TestViewDO(t.id, t.name,t.description,t.reportingDescription," +
+                           "t.methodId,t.isActive,t.activeBegin,t.activeEnd,t.isReportable,"+
+                           "t.timeTransit,t.timeHolding,t.timeTaAverage,t.timeTaWarning,t.timeTaMax,t.labelId,"+
+                           "t.labelQty,t.testTrailerId,t.scriptletId,t.testFormatId,t.revisionMethodId,"+
+                           "t.reportingMethodId,t.sortingMethodId,t.reportingSequence,m.name,l.name,tt.name,s.name) "
+                         + " from Test t left join t.scriptlet s left join t.testTrailer tt left join t.label l left join t.method m where t.testTrailerId = :id")})
 
 
 @Entity

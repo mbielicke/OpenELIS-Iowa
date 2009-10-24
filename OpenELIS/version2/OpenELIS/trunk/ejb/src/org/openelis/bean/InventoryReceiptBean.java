@@ -27,6 +27,7 @@ package org.openelis.bean;
 
 import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.BuildKitDO;
+import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.InventoryLocationDO;
 import org.openelis.domain.InventoryReceiptDO;
 import org.openelis.entity.InventoryLocation;
@@ -454,6 +455,7 @@ public class InventoryReceiptBean implements InventoryReceiptRemote{
         }
         
         Integer completedStatusValue = null;
+        DictionaryDO dictDO;
         //we need to run a query to see if we should set the order to completed
         for(int j=0; j < orderIds.size(); j++){
             Query query = manager.createNamedQuery("InventoryReceipt.OrdersNotCompletedCanceled");
@@ -467,9 +469,10 @@ public class InventoryReceiptBean implements InventoryReceiptRemote{
                 //if the size is 0 we need to set this order to completed
                 if(query.getResultList().size() == 0){
                     if(completedStatusValue == null){
-                        query = manager.createNamedQuery("Dictionary.IdBySystemName");
-                        query.setParameter("systemName","order_status_processed");
-                        completedStatusValue = (Integer)query.getResultList().get(0);
+                        query = manager.createNamedQuery("Dictionary.FetchBySystemName");
+                        query.setParameter("name","order_status_processed");
+                        dictDO = (DictionaryDO)query.getResultList().get(0);
+                        completedStatusValue = dictDO.getId();
                     }
                     
                     Order order = manager.find(Order.class, orderIds.get(j));
@@ -494,9 +497,10 @@ public class InventoryReceiptBean implements InventoryReceiptRemote{
             return;
         
         //create a new internal order record only on add
-        Query query = manager.createNamedQuery("Dictionary.IdBySystemName");
-        query.setParameter("systemName","order_status_processed");
-        Integer completedStatusValue = (Integer)query.getResultList().get(0);
+        Query query = manager.createNamedQuery("Dictionary.FetchBySystemName");
+        query.setParameter("name","order_status_processed");
+        DictionaryDO dictDO = (DictionaryDO)query.getResultList().get(0);
+        Integer completedStatusValue = dictDO.getId();
         
         Order internalOrder = null;
         if(((InventoryReceiptDO)inventoryTransfers.get(0)).getOrderNumber() != null)

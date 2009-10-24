@@ -44,6 +44,7 @@ import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.AuxFieldGroupDO;
 import org.openelis.domain.AuxFieldValueDO;
 import org.openelis.domain.AuxFieldViewDO;
+import org.openelis.domain.DictionaryViewDO;
 import org.openelis.entity.AuxField;
 import org.openelis.entity.AuxFieldGroup;
 import org.openelis.entity.AuxFieldValue;
@@ -95,6 +96,7 @@ public class AuxiliaryBean implements AuxiliaryRemote {
         AuxFieldValueDO valueDO;
         Integer typeId,val;
         String sysName,entry;       
+        DictionaryViewDO snDO, entDO;
         
         Query query = manager.createNamedQuery("AuxFieldValue.AuxFieldValueDOList");
         query.setParameter("auxFieldId", auxFieldId);        
@@ -102,15 +104,17 @@ public class AuxiliaryBean implements AuxiliaryRemote {
             for (Iterator iter = auxfieldValues.iterator(); iter.hasNext();) {
                  valueDO = (AuxFieldValueDO)iter.next();
                  typeId = valueDO.getTypeId();
-                 query = manager.createNamedQuery("Dictionary.SystemNameById");             
+                 query = manager.createNamedQuery("Dictionary.FetchById");             
                  query.setParameter("id", typeId);
                  try {
-                     sysName = (String)query.getSingleResult();
+                     snDO = (DictionaryViewDO)query.getSingleResult();
+                     sysName = snDO.getSystemName();
                      if("aux_dictionary".equals(sysName)) {
                          val = Integer.parseInt(valueDO.getValue());
-                         query = manager.createNamedQuery("Dictionary.EntryById");
+                         query = manager.createNamedQuery("Dictionary.FetchById");
                          query.setParameter("id", val);
-                         entry = (String)query.getSingleResult();
+                         entDO = (DictionaryViewDO)query.getSingleResult();
+                         entry = entDO.getEntry();
                          valueDO.setValue(entry);  
                      } 
                  } catch(Exception ex) {

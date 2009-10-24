@@ -42,6 +42,7 @@ import javax.persistence.Query;
 import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.BuildKitComponentDO;
 import org.openelis.domain.BuildKitDO;
+import org.openelis.domain.DictionaryDO;
 import org.openelis.entity.InventoryLocation;
 import org.openelis.entity.InventoryReceipt;
 import org.openelis.entity.InventoryReceiptOrderItem;
@@ -101,9 +102,10 @@ public class BuildKitsBean implements BuildKitsRemote{
         lockRecords(kitComponents);
         
         //create a new internal order record only on add
-        Query query = manager.createNamedQuery("Dictionary.IdBySystemName");
-        query.setParameter("systemName","order_status_processed");
-        Integer completedStatusValue = (Integer)query.getResultList().get(0);
+        Query query = manager.createNamedQuery("Dictionary.FetchBySystemName");
+        query.setParameter("name","order_status_processed");
+        DictionaryDO dictDO = (DictionaryDO)query.getResultList().get(0);
+        Integer completedStatusValue = dictDO.getId();
         
         Order internalOrder = null;
         if(kitDO.getOrderId() != null)

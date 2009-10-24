@@ -43,6 +43,7 @@ import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.BillToReportToDO;
+import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.OrderAddAutoFillDO;
 import org.openelis.domain.OrderDO;
@@ -249,11 +250,12 @@ public class OrderBean implements OrderRemote{
     }
 
     public OrderAddAutoFillDO getAddAutoFillValues() throws Exception{
-        OrderAddAutoFillDO autoFillDO = new OrderAddAutoFillDO();
+        OrderAddAutoFillDO autoFillDO = new OrderAddAutoFillDO();        
         //status integer
-        Query query = manager.createNamedQuery("Dictionary.IdBySystemName");
-        query.setParameter("systemName", "order_status_pending");
-        autoFillDO.setStatus((Integer)query.getSingleResult());
+        Query query = manager.createNamedQuery("Dictionary.FetchBySystemName");
+        query.setParameter("name", "order_status_pending");
+        DictionaryDO dictDO = (DictionaryDO)query.getSingleResult();
+        autoFillDO.setStatus(dictDO.getId());
         //order date
         autoFillDO.setOrderedDate(new Date());
         //requested by string

@@ -35,16 +35,23 @@ import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
+import org.openelis.domain.IdNameVO;
+import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.SectionViewDO;
 import org.openelis.entity.Section;
+import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
+import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.gwt.common.SecurityModule.ModuleFlags;
+import org.openelis.gwt.common.data.QueryData;
 import org.openelis.gwt.common.data.deprecated.AbstractField;
 import org.openelis.local.JMSMessageProducerLocal;
 import org.openelis.local.LockLocal;
@@ -52,8 +59,10 @@ import org.openelis.messages.SectionCacheMessage;
 import org.openelis.metamap.SectionMetaMap;
 import org.openelis.remote.SectionRemote;
 import org.openelis.util.QueryBuilder;
+import org.openelis.utilcommon.DataBaseUtil;
 import org.openelis.utils.GetPage;
 import org.openelis.utils.ReferenceTableCache;
+import org.openelis.utils.SecurityInterceptor;
 
 @Stateless
 
@@ -163,7 +172,7 @@ public class SectionBean implements SectionRemote {
             lockBean.validateLock(sectRefTableId, sectId);
         }
 
-        validateSection(sectionDO);
+        validate(sectionDO);
         
         manager.setFlushMode(FlushModeType.COMMIT);
         section = null;
@@ -193,7 +202,7 @@ public class SectionBean implements SectionRemote {
         return section.getId();
     }
     
-    private void validateSection(SectionViewDO sectionDO) throws Exception{
+    private void validate(SectionViewDO sectionDO) throws Exception{
         String name;
         ValidationErrorsList exceptionList;
         Query query;
@@ -234,6 +243,110 @@ public class SectionBean implements SectionRemote {
         
         if(exceptionList.size() > 0)
             throw exceptionList;
+    }
+
+    public SectionViewDO abortUpdate(Integer id) throws Exception {
+        lockBean.giveUpLock(ReferenceTable.SECTION, id);
+        return fetchById(id);
+    }
+
+    public SectionViewDO add(SectionViewDO data) throws Exception {
+        Section section;
+        SectionCacheMessage msg;
+        
+        checkSecurity(ModuleFlags.ADD);
+
+        validate(data);
+        
+        manager.setFlushMode(FlushModeType.COMMIT);
+        
+        section = new Section();
+        
+        section.setDescription(data.getDescription());    
+        section.setOrganizationId(data.getOrganizationId());
+        section.setName(data.getName());
+        section.setIsExternal(data.getIsExternal());
+        section.setParentSectionId(data.getParentSectionId());
+        manager.persist(section);
+        
+        data.setId(section.getId());
+        
+        //invalidate the cache
+        msg = new SectionCacheMessage();        
+        msg.action = SectionCacheMessage.Action.UPDATED;
+        jmsProducer.writeMessage(msg);
+        return data;
+    }
+
+    public SectionViewDO fetchById(Integer id) throws Exception {
+        SectionViewDO data;
+        Query query;
+        
+        query = manager.createNamedQuery("Section.SectionDOById");
+        query.setParameter("id", id);
+        try {
+            data = (SectionViewDO)query.getSingleResult();
+        } catch (NoResultException e) {
+            throw new NotFoundException();
+        } catch (Exception e) {
+            throw new DatabaseException(e);
+        }
+        return data;
+    }
+
+    public SectionViewDO fetchForUpdate(Integer id) throws Exception {
+        lockBean.getLock(ReferenceTable.SECTION, id);
+        return fetchById(id);
+    }
+
+    public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max)
+                                                                                     throws Exception {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public SectionViewDO update(SectionViewDO data) throws Exception {        
+        Section section;
+        SectionCacheMessage msg;
+        
+        if (!data.isChanged())
+            return data;
+        
+        checkSecurity(ModuleFlags.UPDATE);
+
+        validate(data);
+        
+        lockBean.validateLock(ReferenceTable.SECTION, data.getId());
+        manager.setFlushMode(FlushModeType.COMMIT);
+        
+        section = manager.find(Section.class, data.getId());
+        
+        section.setDescription(data.getDescription());    
+        section.setOrganizationId(data.getOrganizationId());
+        section.setName(data.getName());
+        section.setIsExternal(data.getIsExternal());
+        section.setParentSectionId(data.getParentSectionId());
+        
+        lockBean.giveUpLock(ReferenceTable.SECTION, data.getId());     
+        
+        //invalidate the cache
+        msg = new SectionCacheMessage();        
+        msg.action = SectionCacheMessage.Action.UPDATED;
+        jmsProducer.writeMessage(msg);
+        return data;
+    }
+
+    public ArrayList<IdNameVO> fetchByName(String name, int maxResults) throws Exception {
+        Query query = manager.createNamedQuery("Section.AutoByName");
+        query.setParameter("name", name);       
+        query.setMaxResults(maxResults);
+
+        return DataBaseUtil.toArrayList(query.getResultList());
+    }
+    
+    private void checkSecurity(ModuleFlags flag) throws Exception {
+        SecurityInterceptor.applySecurity(ctx.getCallerPrincipal().getName(), 
+                                          "systemvariable", flag);
     }
 
 }

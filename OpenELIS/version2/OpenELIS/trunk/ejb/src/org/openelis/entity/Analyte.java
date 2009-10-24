@@ -54,7 +54,9 @@ import org.openelis.utils.Auditable;
 @NamedQuery(name = "Analyte.UpdateNameCompare", query = "select a.id from Analyte a where a.name = :name and a.id != :id"),
 @NamedQuery(name = "Analyte.AddNameCompare", query = "select a.id from Analyte a where a.name = :name"),
 @NamedQuery(name = "Analyte.AutoCompleteByName", query = "select new org.openelis.domain.IdNameDO(a.id, a.name) " +
-     " from Analyte a where a.name like :name and a.isActive = 'Y' order by a.name")})
+     " from Analyte a where a.name like :name and a.isActive = 'Y' order by a.name"),
+@NamedQuery(name =  "Analyte.FetchByTest", query = "select distinct new org.openelis.domain.AnalyteDO(a.id,a.name,a.isActive,a.parentAnalyteId,a.externalId) "
+         + " from TestAnalyte ta left join ta.analyte a where ta.testId = :testId")})
      
 @Entity
 @Table(name="analyte")

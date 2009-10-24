@@ -231,7 +231,7 @@ public class MethodBean implements MethodRemote {
                                                       MethodMeta.getIsActive()));
             checkDuplicate = false;
         } else if("N".equals(active)) {
-            query = manager.createNamedQuery("Test.TestListByMethodId");
+            query = manager.createNamedQuery("Test.FetchByMethod");
             query.setParameter("id", methodDO.getId());
             list = query.getResultList();
             if(list.size() > 0) {

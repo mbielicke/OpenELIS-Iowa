@@ -55,7 +55,7 @@ public class AnalysisResultManagerProxy {
         AnalysisResultManager man = AnalysisResultManager.getInstance();
         man.setResults(results);
         man.setAnalyteList(analyteList);
-        man.setTestManager(TestManager.findByIdWithAnalytesAndResults(testId));
+        man.setTestManager(TestManager.fetchWithAnalytesAndResults(testId));
         
         return man;
     }
@@ -68,7 +68,7 @@ public class AnalysisResultManagerProxy {
         AnalysisResultManager man = AnalysisResultManager.getInstance();
         man.setResults(results);
         man.setAnalyteList(analyteList);
-        man.setTestManager(TestManager.findByIdWithAnalytesAndResults(testId));
+        man.setTestManager(TestManager.fetchWithAnalytesAndResults(testId));
         
         return man;
     }
