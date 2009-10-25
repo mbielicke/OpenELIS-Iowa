@@ -118,19 +118,17 @@ public class OrganizationService {
         }
     }
 
-    public ArrayList<OrganizationDO> fetchByIdOrName(Query query) throws Exception {
+    public ArrayList<OrganizationDO> fetchByIdOrName(String search) throws Exception {
         int id;
-        String value;
         ArrayList<OrganizationDO> list;
         
-        value = query.getFields().get(0).query;
         try {
-            id = Integer.parseInt(value);
+            id = Integer.parseInt(search);
             list = new ArrayList<OrganizationDO>(1);
             list.add(remote().fetchActiveById(id));
             return list;
         } catch (NumberFormatException e) {
-            return remote().fetchActiveByName(value+"%", 10);
+            return remote().fetchActiveByName(search+"%", 10);
         }
     }
 
