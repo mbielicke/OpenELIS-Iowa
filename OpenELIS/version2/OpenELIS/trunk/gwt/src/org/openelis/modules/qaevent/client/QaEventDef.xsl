@@ -167,7 +167,9 @@ UIRF Software License are applicable instead of those above.
                 <xsl:value-of select='resource:getString($constants,"test")' />:
               </text>
               <autoComplete key="{testMeta:getName($test)}" width="140" case="LOWER" popWidth="auto" tab="{meta:getIsBillable($qae)},{meta:getTypeId($qae)}" field="Integer">
-                <col width="140" />
+                <col width="100" header="{resource:getString($constants,'test')}" />
+                <col width="100" header="{resource:getString($constants,'method')}" />
+                <col width="250" header="{resource:getString($constants,'description')}" />
               </autoComplete>
             </row>
             <row>

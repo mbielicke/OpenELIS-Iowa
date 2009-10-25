@@ -31,8 +31,10 @@ import java.util.EnumSet;
 
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.DictionaryDO;
+import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.QaEventVO;
 import org.openelis.domain.QaEventViewDO;
+import org.openelis.domain.TestMethodVO;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.RPC;
@@ -72,10 +74,13 @@ public class QaEventScreen extends Screen {
 
     private ButtonGroup           atoz;
     private ScreenNavigator       nav;
+    
+    private ScreenService         testService;
 
     public QaEventScreen() throws Exception {
         super((ScreenDefInt)GWT.create(QaEventDef.class));
         service = new ScreenService("OpenELISServlet?service=org.openelis.modules.qaevent.server.QaEventService");
+        testService = new ScreenService("OpenELISServlet?service=org.openelis.modules.test.server.TestService");
 
         security = OpenELIS.security.getModule("qaevent");
         if (security == null)
@@ -270,6 +275,34 @@ public class QaEventScreen extends Screen {
                 testName.setQueryMode(event.getState() == State.QUERY);
             }
         });
+        testName.addGetMatchesHandler(new GetMatchesHandler() {
+            public void onGetMatches(GetMatchesEvent event) {
+                QueryFieldUtil parser;
+                TestMethodVO data;
+                ArrayList<TestMethodVO> list;
+                ArrayList<TableDataRow> model;
+
+                parser = new QueryFieldUtil();
+                parser.parse(event.getMatch());
+
+                window.setBusy();
+                try {
+                    list = testService.callList("fetchByName", parser.getParameter().get(0));
+                    model = new ArrayList<TableDataRow>();
+                    for (int i = 0; i < list.size(); i++ ) {
+                        data = list.get(i);
+                        model.add(new TableDataRow(data.getTestId(), data.getTestName(),
+                                                   data.getMethodName(), data.getTestDescription()));
+                    }
+                    testName.showAutoMatches(model);
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                    Window.alert(e.getMessage());
+                }
+                window.clearStatus();
+            }
+        });
+
 
         isBillable = (CheckBox)def.getWidget(meta.getIsBillable());
         addScreenHandler(isBillable, new ScreenEventHandler<String>() {

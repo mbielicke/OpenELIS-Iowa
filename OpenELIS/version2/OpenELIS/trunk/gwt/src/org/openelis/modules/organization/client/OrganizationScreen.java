@@ -27,19 +27,12 @@ package org.openelis.modules.organization.client;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
-import java.util.Set;
 
 import org.openelis.cache.DictionaryCache;
-import org.openelis.common.AutocompleteRPC;
 import org.openelis.common.NotesTab;
 import org.openelis.domain.DictionaryDO;
-import org.openelis.domain.IdNameDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.OrganizationDO;
-import org.openelis.domain.OrganizationViewDO;
-import org.openelis.domain.SystemVariableDO;
-import org.openelis.gwt.common.EntityLockedException;
-import org.openelis.gwt.common.InconsistencyException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.RPC;
@@ -48,9 +41,6 @@ import org.openelis.gwt.common.SecurityModule;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
-import org.openelis.gwt.common.data.QueryData.Type;
-import org.openelis.gwt.event.BeforeGetMatchesEvent;
-import org.openelis.gwt.event.BeforeGetMatchesHandler;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.GetMatchesEvent;
 import org.openelis.gwt.event.GetMatchesHandler;
@@ -59,14 +49,12 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
-import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.ButtonGroup;
 import org.openelis.gwt.widget.CheckBox;
 import org.openelis.gwt.widget.Dropdown;
-import org.openelis.gwt.widget.HasField;
 import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.AppButton.ButtonState;
@@ -79,8 +67,6 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
 import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
-import com.google.gwt.event.logical.shared.SelectionEvent;
-import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
@@ -409,25 +395,18 @@ public class OrganizationScreen extends Screen {
         });
         parentName.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
-                Query query;
-                QueryData field;
                 QueryFieldUtil parser;
                 TableDataRow row;
                 OrganizationDO data;
                 ArrayList<OrganizationDO> list;
                 ArrayList<TableDataRow> model;
 
-                query = new Query();
                 parser = new QueryFieldUtil();
                 parser.parse(event.getMatch());
 
-                field = new QueryData();
-                field.query = parser.getParameter().get(0);
-                query.setFields(field);
-
                 window.setBusy();
                 try {
-                    list = service.callList("fetchByIdOrName", query);
+                    list = service.callList("fetchByIdOrName", parser.getParameter().get(0));
                     model = new ArrayList<TableDataRow>();
                     for (int i = 0; i < list.size(); i++ ) {
                         row = new TableDataRow(4);
