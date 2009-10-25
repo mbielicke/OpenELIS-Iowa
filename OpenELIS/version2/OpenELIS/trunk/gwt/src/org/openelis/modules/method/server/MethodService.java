@@ -45,6 +45,14 @@ public class MethodService  {
             throw new DatabaseException(e);
         }
     }
+    
+    public ArrayList<IdNameVO> findByName(String name) throws Exception {
+    	try {
+    		return remote().findByName(name, 10);
+    	}catch(RuntimeException e) {
+    		throw new DatabaseException(e);
+    	}
+    }
 
     public MethodDO fetchById(Integer id) throws Exception {
         try {

@@ -26,32 +26,29 @@
 package org.openelis.remote;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import javax.ejb.Remote;
 
 import org.openelis.domain.AnalyteViewDO;
-import org.openelis.gwt.common.data.deprecated.AbstractField;
+import org.openelis.domain.IdNameVO;
+import org.openelis.gwt.common.data.QueryData;
 
 @Remote
 public interface AnalyteRemote {
-	//commit a change to analyte, or insert a new analyte
-	public Integer updateAnalyte(AnalyteViewDO analyteDO, String session) throws Exception;
-	
-	//method to return a whole analyte
-	public AnalyteViewDO getAnalyte(Integer analyteId);
-	
-	//method to return a whole analyte and lock it
-	public AnalyteViewDO getAnalyteAndLock(Integer analyteId, String session) throws Exception;
-	
-	//method to return a whole analyte and unlock it
-	public AnalyteViewDO getAnalyteAndUnlock(Integer analyteId, String session);
-	
-	 //method to query for analytes
-	 public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception;
+    public AnalyteViewDO fetchById(Integer id) throws Exception;
+
+    public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception;
+
+    public AnalyteViewDO add(AnalyteViewDO data) throws Exception;
+
+    public AnalyteViewDO update(AnalyteViewDO data) throws Exception;
+
+    public AnalyteViewDO fetchForUpdate(Integer id) throws Exception;
+
+    public AnalyteViewDO abortUpdate(Integer id) throws Exception;
+
+    public void delete(Integer id) throws Exception;
+    
+	public ArrayList<IdNameVO> findByName(String name, int maxResults);
 	 
-	 //auto complete lookup
-	 public List autoCompleteLookupByName(String name, int maxResults);
-	 
-	 public void deleteAnalyte(Integer analyteId, String session) throws Exception;
 }

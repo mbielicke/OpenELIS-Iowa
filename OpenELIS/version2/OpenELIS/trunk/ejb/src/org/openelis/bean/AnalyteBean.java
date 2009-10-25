@@ -28,183 +28,192 @@ package org.openelis.bean;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
-import javax.ejb.EJBs;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.AnalyteViewDO;
+import org.openelis.domain.IdNameVO;
+import org.openelis.domain.ReferenceTable;
 import org.openelis.entity.Analyte;
+import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
+import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.data.deprecated.AbstractField;
+import org.openelis.gwt.common.SecurityModule.ModuleFlags;
+import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.LockLocal;
 import org.openelis.metamap.AnalyteMetaMap;
 import org.openelis.remote.AnalyteRemote;
-import org.openelis.util.QueryBuilder;
-import org.openelis.utils.GetPage;
-import org.openelis.utils.ReferenceTableCache;
+import org.openelis.util.QueryBuilderV2;
+import org.openelis.utilcommon.DataBaseUtil;
+import org.openelis.utils.SecurityInterceptor;
 
 @Stateless
-@EJBs({
-    @EJB(name="ejb/Lock",beanInterface=LockLocal.class),
-})
 @SecurityDomain("openelis")
 @RolesAllowed("analyte-select")
-public class AnalyteBean implements AnalyteRemote{
+
+public class AnalyteBean implements AnalyteRemote {
 
 	@PersistenceContext(name = "openelis")
     private EntityManager manager;
 	
 	@Resource
 	private SessionContext ctx;
+	
+	@EJB
+	private LockLocal lockBean; 
     
     private static final AnalyteMetaMap Meta = new AnalyteMetaMap();
-	private static int analyteRefTableId;
-    private LockLocal lockBean;
-   
-    public AnalyteBean(){
-        analyteRefTableId = ReferenceTableCache.getReferenceTable("analyte");
-    }
-    
-    @PostConstruct
-    private void init()
-    {
-        lockBean =  (LockLocal)ctx.lookup("ejb/Lock");
-    }
-    
-	public List autoCompleteLookupByName(String name, int maxResults) {
+	
+    public AnalyteViewDO fetchById(Integer analyteId) throws Exception{
+		Query query;
+		AnalyteViewDO data;
+		
+		query = manager.createNamedQuery("Analyte.findById");
+		query.setParameter("id", analyteId);
+        try {
+            data = (AnalyteViewDO)query.getSingleResult();
+        } catch (NoResultException e) {
+            throw new NotFoundException();
+        } catch (Exception e) {
+            throw new DatabaseException(e);
+        }
+        return data;
+	}   
+      
+	@SuppressWarnings("unchecked")
+	public ArrayList<IdNameVO> findByName(String name, int maxResults) {
 		Query query = null;
-		query = manager.createNamedQuery("Analyte.AutoCompleteByName");
+		
+		query = manager.createNamedQuery("Analyte.findByName");
+		
 		query.setParameter("name",name);
 		query.setMaxResults(maxResults);
-		return query.getResultList();
-	}
-
-    @RolesAllowed("analyte-delete")
-	public void deleteAnalyte(Integer analyteId, String session) throws Exception {
-		lockBean.getLock(analyteRefTableId, analyteId, session);
         
-		manager.setFlushMode(FlushModeType.COMMIT);
-		Analyte analyte = null;
+		return DataBaseUtil.toArrayList(query.getResultList());
+	}
+	
+	@SuppressWarnings("unchecked")
+	public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception {
 		
-		//validate the analyte record
-		validateForDelete(analyteId);
-        
-		//then we need to delete it
-		try {
-			analyte = manager.find(Analyte.class, analyteId);
-            	if(analyte != null)
-            		manager.remove(analyte);
-            	
-		} catch (Exception e) {
-            e.printStackTrace();
-        }
-		
-		lockBean.giveUpLock(analyteRefTableId, analyteId, session);
-	}
-
-	public AnalyteViewDO getAnalyte(Integer analyteId) {
-		Query query = manager.createNamedQuery("Analyte.Analyte");
-		query.setParameter("id", analyteId);
-		AnalyteViewDO analyteRecord = (AnalyteViewDO) query.getResultList().get(0);// getting first analyte record
-
-        return analyteRecord;
-	}
-
-   @RolesAllowed("analyte-update")
-	public AnalyteViewDO getAnalyteAndLock(Integer analyteId, String session) throws Exception {
-		lockBean.getLock(analyteRefTableId, analyteId, session);
-        
-        return getAnalyte(analyteId);
-	}
-
-	public AnalyteViewDO getAnalyteAndUnlock(Integer analyteId, String session) {
-		lockBean.giveUpLock(analyteRefTableId, analyteId, session);
-		
-        return getAnalyte(analyteId);
-	}
-
-
-	public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception {
-		StringBuffer sb = new StringBuffer();
-		QueryBuilder qb = new QueryBuilder();
+		QueryBuilderV2 qb = new QueryBuilderV2();
 		
 		qb.setMeta(Meta);
 		
-		qb.setSelect("distinct new org.openelis.domain.IdNameDO("+Meta.getId()+", "+Meta.getName() + ") ");
+		qb.setSelect("distinct new org.openelis.domain.IdNameVO("+Meta.getId()+", "+Meta.getName() + ") ");
 	        
 //	      this method is going to throw an exception if a column doesnt match
-		 qb.addWhere(fields);      
+		 qb.constructWhere(fields);      
 
 	     qb.setOrderBy(Meta.getName());
         
-	     sb.append(qb.getEJBQL());
-
-         Query query = manager.createQuery(sb.toString());
-        
-         if(first > -1 && max > -1)
-        	 query.setMaxResults(first+max);
+         Query query = manager.createQuery(qb.getEJBQL());
+         query.setMaxResults(first+max);
          
 //       ***set the parameters in the query
-         qb.setQueryParams(query);
+         QueryBuilderV2.setQueryParams(query,fields);
          
-         List returnList = GetPage.getPage(query.getResultList(), first, max);
-         
-         if(returnList == null)
-        	 throw new LastPageException();
-         else
-        	 return returnList;
+         List list = query.getResultList();
+         if (list.isEmpty())
+             throw new NotFoundException();
+         list = (ArrayList<IdNameVO>)DataBaseUtil.subList(list, first, max);
+         if (list == null)
+             throw new LastPageException();
+
+         return (ArrayList<IdNameVO>)list;
+	}
+	
+	public AnalyteViewDO add(AnalyteViewDO data) throws Exception {
+		Analyte entity;
+
+		checkSecurity(ModuleFlags.ADD);
+		
+		validate(data);
+		
+		manager.setFlushMode(FlushModeType.COMMIT);
+		
+		entity = new Analyte();
+        entity.setExternalId(data.getExternalId());
+        entity.setIsActive(data.getIsActive());
+        entity.setName(data.getName());
+        entity.setParentAnalyteId(data.getParentAnalyteId());
+        
+        manager.persist(entity);
+        data.setId(entity.getId());
+		
+		return data;
 	}
 
-    @RolesAllowed("analyte-update")
-	public Integer updateAnalyte(AnalyteViewDO analyteDO, String session) throws Exception{
+	public AnalyteViewDO update(AnalyteViewDO data) throws Exception {
+        Analyte entity;
         
-        validateAnalyte(analyteDO);
+        checkSecurity(ModuleFlags.UPDATE);
         
-        if(analyteDO.getId() != null){
-            lockBean.validateLock(analyteRefTableId, analyteDO.getId(),session);
-        }
+        validate(data);
+        
+        lockBean.validateLock(ReferenceTable.ANALYTE, data.getId());
         
 		manager.setFlushMode(FlushModeType.COMMIT);
-		Analyte analyte = null;
         
-        if (analyteDO.getId() == null)
-         	analyte = new Analyte();
-        else
-          	analyte = manager.find(Analyte.class, analyteDO.getId());
-            
-        analyte.setExternalId(analyteDO.getExternalId());
-        analyte.setIsActive(analyteDO.getIsActive());
-        analyte.setName(analyteDO.getName());
-        analyte.setParentAnalyteId(analyteDO.getParentAnalyteId());
-         
-        if (analyte.getId() == null) {
-	      	manager.persist(analyte);
-        }
-         
-        lockBean.giveUpLock(analyteRefTableId,analyte.getId()); 
+
+      	entity = manager.find(Analyte.class, data.getId());
+        entity.setExternalId(data.getExternalId());
+        entity.setIsActive(data.getIsActive());
+        entity.setName(data.getName());
+        entity.setParentAnalyteId(data.getParentAnalyteId());
+                  
+        lockBean.giveUpLock(ReferenceTable.ANALYTE, data.getId()); 
 		    
-		return analyte.getId();
+		return data;
+		
 	}
+	
+	public void delete(Integer id) throws Exception {
+        Analyte entity;
+
+        checkSecurity(ModuleFlags.DELETE);
+        
+        validateForDelete(id);
+
+        lockBean.validateLock(ReferenceTable.ANALYTE, id);
+
+        manager.setFlushMode(FlushModeType.COMMIT);
+        entity = manager.find(Analyte.class, id);
+        if (entity != null)
+            manager.remove(entity);
+
+        lockBean.giveUpLock(ReferenceTable.ANALYTE, id);
+	}
+
+	public AnalyteViewDO fetchForUpdate(Integer id) throws Exception {
+		lockBean.getLock(ReferenceTable.ANALYTE, id); 
+        return fetchById(id);
+	}
+
+	public AnalyteViewDO abortUpdate(Integer id) throws Exception{
+		lockBean.giveUpLock(ReferenceTable.ANALYTE, id);
+        return fetchById(id);
+	}
+
     
-	public void validateForDelete(Integer analyteId) throws Exception{
+	public void validateForDelete(Integer id) throws Exception{
         ValidationErrorsList list = new ValidationErrorsList();
 
         //make sure no analytes are pointing to this record
 		Query query = null;
 		query = manager.createNamedQuery("Analyte.AnalyteByParentId");
-		query.setParameter("id", analyteId);
+		query.setParameter("id", id);
 		List linkedRecords = query.getResultList();
 
 		if(linkedRecords.size() > 0){
@@ -213,7 +222,7 @@ public class AnalyteBean implements AnalyteRemote{
 		
 		//make sure no results are pointing to this record
 		query = manager.createNamedQuery("Result.ResultByAnalyteId");
-		query.setParameter("id", analyteId);
+		query.setParameter("id", id);
 		linkedRecords = query.getResultList();
 
 		if(linkedRecords.size() > 0){
@@ -222,7 +231,7 @@ public class AnalyteBean implements AnalyteRemote{
 		
 		//make sure no tests are pointing to this record
 		query = manager.createNamedQuery("TestAnalyte.FetchByAnalyteId");
-		query.setParameter("id", analyteId);
+		query.setParameter("id", id);
 		linkedRecords = query.getResultList();
 
 		if(linkedRecords.size() > 0){
@@ -231,7 +240,7 @@ public class AnalyteBean implements AnalyteRemote{
 		
 		//make sure no methods are pointing to this record
 		query = manager.createNamedQuery("MethodAnalyte.MethodAnalyteByAnalyteId");
-		query.setParameter("id", analyteId);
+		query.setParameter("id", id);
 		linkedRecords = query.getResultList();
 
 		if(linkedRecords.size() > 0){
@@ -240,7 +249,7 @@ public class AnalyteBean implements AnalyteRemote{
 		
 		//make sure no qcs are pointing to this record
 		query = manager.createNamedQuery("QCAnalyte.QCAnalyteByAnalyteId");
-		query.setParameter("id", analyteId);
+		query.setParameter("id", id);
 		linkedRecords = query.getResultList();
 
 		if(linkedRecords.size() > 0){
@@ -252,7 +261,7 @@ public class AnalyteBean implements AnalyteRemote{
 		
 		//make sure no aux fields are pointing to this record
 		query = manager.createNamedQuery("AuxField.AuxFieldByAnalyteId");
-		query.setParameter("id", analyteId);
+		query.setParameter("id", id);
 		linkedRecords = query.getResultList();
 
 		if(linkedRecords.size() > 0){
@@ -263,7 +272,7 @@ public class AnalyteBean implements AnalyteRemote{
             throw list;
 	}
 
-	private void validateAnalyte(AnalyteViewDO analyteDO) throws Exception{
+	private void validate(AnalyteViewDO analyteDO) throws Exception{
         ValidationErrorsList list = new ValidationErrorsList();
 		//name required	
 		if(analyteDO.getName() == null || "".equals(analyteDO.getName())){
@@ -289,4 +298,9 @@ public class AnalyteBean implements AnalyteRemote{
         if(list.size() > 0)
             throw list;
 	}
+	
+    private void checkSecurity(ModuleFlags flag) throws Exception {
+        SecurityInterceptor.applySecurity(ctx.getCallerPrincipal().getName(), 
+                                          "analyte", flag);
+    }
 }

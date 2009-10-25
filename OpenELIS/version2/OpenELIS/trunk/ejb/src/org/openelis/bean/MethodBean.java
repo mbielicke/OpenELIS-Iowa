@@ -39,7 +39,6 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
-import org.openelis.domain.IdNameDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.MethodDO;
 import org.openelis.entity.Method;
@@ -183,18 +182,15 @@ public class MethodBean implements MethodRemote {
         return fetchById(id);
     }
 
-    public ArrayList<IdNameDO> autoCompleteLookupByName(String name, int maxResults) {
+    @SuppressWarnings("unchecked")
+	public ArrayList<IdNameVO> findByName(String name, int maxResults) {
         Query query = null;
-        ArrayList<IdNameDO> entryList = null;
-        query = manager.createNamedQuery("Method.AutoCompleteByName");        
+        
+        query = manager.createNamedQuery("Method.findByName");        
         query.setParameter("name", name);
         query.setMaxResults(maxResults);
-        try {
-            entryList = (ArrayList<IdNameDO>)query.getResultList();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-        return entryList;
+        
+        return DataBaseUtil.toArrayList(query.getResultList());
     }
     
     private void checkSecurity(ModuleFlags flag) throws Exception {
