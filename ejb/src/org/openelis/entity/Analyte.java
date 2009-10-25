@@ -45,18 +45,33 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+
+import org.openelis.utilcommon.DataBaseUtil;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
-@NamedQueries({@NamedQuery(name = "Analyte.Analyte", query = "select new org.openelis.domain.AnalyteViewDO(a.id,a.name,a.isActive,a.parentAnalyteId,a.externalId,p.name) from " + 
-" Analyte a left join a.parentAnalyte p where a.id = :id"),
-@NamedQuery(name = "Analyte.AnalyteByParentId", query = "select a.id from Analyte a where a.parentAnalyteId = :id"),
-@NamedQuery(name = "Analyte.UpdateNameCompare", query = "select a.id from Analyte a where a.name = :name and a.id != :id"),
-@NamedQuery(name = "Analyte.AddNameCompare", query = "select a.id from Analyte a where a.name = :name"),
-@NamedQuery(name = "Analyte.AutoCompleteByName", query = "select new org.openelis.domain.IdNameDO(a.id, a.name) " +
-     " from Analyte a where a.name like :name and a.isActive = 'Y' order by a.name"),
-@NamedQuery(name =  "Analyte.FetchByTest", query = "select distinct new org.openelis.domain.AnalyteDO(a.id,a.name,a.isActive,a.parentAnalyteId,a.externalId) "
-         + " from TestAnalyte ta left join ta.analyte a where ta.testId = :testId")})
+@NamedQueries({
+	
+	@NamedQuery(name = "Analyte.findById", 
+			    query = "select new org.openelis.domain.AnalyteViewDO(a.id,a.name,a.isActive,a.parentAnalyteId,a.externalId,p.name) from " + 
+					    " Analyte a left join a.parentAnalyte p where a.id = :id"),
+
+	@NamedQuery(name = "Analyte.AnalyteByParentId", 
+			    query = "select a.id from Analyte a where a.parentAnalyteId = :id"),
+    
+	@NamedQuery(name = "Analyte.UpdateNameCompare", 
+    		    query = "select a.id from Analyte a where a.name = :name and a.id != :id"),
+    
+    @NamedQuery(name = "Analyte.AddNameCompare", 
+    		    query = "select a.id from Analyte a where a.name = :name"),
+    
+    @NamedQuery(name = "Analyte.findByName", 
+    		    query = "select new org.openelis.domain.IdNameVO(a.id, a.name) " +
+                        " from Analyte a where a.name like :name and a.isActive = 'Y' order by a.name"),
+    @NamedQuery(name =  "Analyte.FetchByTest", 
+                query = "select distinct new org.openelis.domain.AnalyteDO(a.id,a.name,a.isActive,a.parentAnalyteId,a.externalId) " +
+                        " from TestAnalyte ta left join ta.analyte a where ta.testId = :testId")                        
+})
      
 @Entity
 @Table(name="analyte")
@@ -93,8 +108,7 @@ public class Analyte implements Auditable, Cloneable {
     return id;
   }
   protected void setId(Integer id) {
-    if((id == null && this.id != null) || 
-       (id != null && !id.equals(this.id)))
+    if(DataBaseUtil.isDifferent(id,this.id))
       this.id = id;
   }
 
@@ -102,8 +116,7 @@ public class Analyte implements Auditable, Cloneable {
     return name;
   }
   public void setName(String name) {
-    if((name == null && this.name != null) || 
-       (name != null && !name.equals(this.name)))
+    if(DataBaseUtil.isDifferent(name,this.name))
       this.name = name;
   }
 
@@ -111,8 +124,7 @@ public class Analyte implements Auditable, Cloneable {
     return isActive;
   }
   public void setIsActive(String isActive) {
-    if((isActive == null && this.isActive != null) || 
-       (isActive != null && !isActive.equals(this.isActive)))
+    if(DataBaseUtil.isDifferent(isActive,this.isActive))
       this.isActive = isActive;
   }
 
@@ -120,8 +132,7 @@ public class Analyte implements Auditable, Cloneable {
     return parentAnalyteId;
   }
   public void setParentAnalyteId(Integer parentAnalyteId) {
-    if((parentAnalyteId == null && this.parentAnalyteId != null) || 
-       (parentAnalyteId != null && !parentAnalyteId.equals(this.parentAnalyteId)))
+    if(DataBaseUtil.isDifferent(parentAnalyteId,this.parentAnalyteId))
       this.parentAnalyteId = parentAnalyteId;
   }
 
@@ -129,8 +140,7 @@ public class Analyte implements Auditable, Cloneable {
     return externalId;
   }
   public void setExternalId(String externalId) {
-    if((externalId == null && this.externalId != null) || 
-       (externalId != null && !externalId.equals(this.externalId)))
+    if(DataBaseUtil.isDifferent(externalId,this.externalId))
       this.externalId = externalId;
   }
 
@@ -147,13 +157,9 @@ public class Analyte implements Auditable, Cloneable {
       Element root = doc.getDocumentElement();
       
       AuditUtil.getChangeXML(id,original.id,doc,"id");
-
       AuditUtil.getChangeXML(name,original.name,doc,"name");
-
       AuditUtil.getChangeXML(isActive,original.isActive,doc,"is_active");
-
       AuditUtil.getChangeXML(parentAnalyteId,original.parentAnalyteId,doc,"parent_analyte_id");
-
       AuditUtil.getChangeXML(externalId,original.externalId,doc,"external_id");
 
       if(root.hasChildNodes())

@@ -214,19 +214,19 @@ public class AuxiliaryService implements
     public TableDataModel getMatches(String cat,TableDataModel model,String match,
                                 HashMap<String, FieldType> params) throws Exception {
         TableDataModel<TableDataRow<Integer>> dataModel = null;
-        List<IdNameDO> entries;
+        List<IdNameVO> entries;
         ScriptletRemote sremote;
         AnalyteRemote aremote;
         MethodRemote mremote;
         
         if(("analyte").equals(cat)) {
             aremote = (AnalyteRemote)EJBFactory.lookup("openelis/AnalyteBean/remote");
-            entries = aremote.autoCompleteLookupByName(match.trim() + "%", 10);
-            dataModel = getAutocompleteModel(entries);
+            entries = aremote.findByName(match.trim() + "%", 10);
+            //dataModel = getAutocompleteModel(entries);
         } else if(("method").equals(cat)) {
             mremote = (MethodRemote)EJBFactory.lookup("openelis/MethodBean/remote");
-            entries = mremote.autoCompleteLookupByName(match.trim() + "%", 10);
-            dataModel = getAutocompleteModel(entries);
+            entries = mremote.findByName(match.trim() + "%", 10);
+            //dataModel = getAutocompleteModel(entries);
         } else if(("scriptlet").equals(cat)) {
             sremote = (ScriptletRemote)EJBFactory.lookup("openelis/ScriptletBean/remote");
             ArrayList<IdNameVO> scripts = sremote.findByName(match.trim() + "%", 10);

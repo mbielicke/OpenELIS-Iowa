@@ -32,6 +32,7 @@ import java.util.List;
 
 import org.openelis.domain.IdNameDO;
 import org.openelis.domain.IdNameLotNumberDO;
+import org.openelis.domain.IdNameVO;
 import org.openelis.domain.InventoryItemAutoDO;
 import org.openelis.domain.QcAnalyteViewDO;
 import org.openelis.domain.QcViewDO;
@@ -227,7 +228,7 @@ public class QCService implements
     public TableDataModel getMatches(String cat,TableDataModel model,String match,
                                      HashMap<String, FieldType> params) throws Exception {
         TableDataModel<TableDataRow<Integer>> dataModel;
-        List<IdNameDO> analytes;
+        List<IdNameVO> analytes;
         List<InventoryItemAutoDO> items;
         List<SecuritySystemUserDO> users;
         InventoryItemRemote invRemote;
@@ -245,8 +246,8 @@ public class QCService implements
             dataModel = getPrepByAutocompleteModel(users);
         } else if("analyte".equals(cat)) {
             anaRemote = (AnalyteRemote)EJBFactory.lookup("openelis/AnalyteBean/remote");
-            analytes = anaRemote.autoCompleteLookupByName(match.trim() + "%", 10);
-            dataModel = getAutocompleteModel(analytes);
+            analytes = anaRemote.findByName(match.trim() + "%", 10);
+           //dataModel = getAutocompleteModel(analytes);
         }
         return dataModel;
     }

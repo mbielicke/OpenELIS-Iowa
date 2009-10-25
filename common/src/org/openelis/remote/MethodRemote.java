@@ -49,6 +49,6 @@ public interface MethodRemote {
 
     public MethodDO abortUpdate(Integer id) throws Exception;
 
-    public ArrayList<IdNameDO> autoCompleteLookupByName(String name, int maxResults);
+    public ArrayList<IdNameVO> findByName(String name, int maxResults);
 
 }
