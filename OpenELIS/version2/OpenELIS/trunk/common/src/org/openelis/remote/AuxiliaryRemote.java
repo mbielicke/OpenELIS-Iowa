@@ -56,5 +56,6 @@ public interface AuxiliaryRemote {
                                                  String session) throws Exception ;
 
   public List getMatchingEntries(String name,int maxResults,String cat);
-
+  
+  public ArrayList<AuxFieldGroupDO> fetchActive();
 }

@@ -53,9 +53,12 @@ import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
 @NamedQueries({ @NamedQuery(name = "AuxFieldGroup.AuxFieldGroupByName", query = "from AuxFieldGroup afg where afg.name = :name order by afg.name"),
-    @NamedQuery(name = "AuxFieldGroup.AuxFieldGroupDO", query = "select distinct new org.openelis.domain.AuxFieldGroupDO(afg.id,afg.name,afg.description,"+                            
-                        " afg.isActive,afg.activeBegin,afg.activeEnd) " +
-                        " from AuxFieldGroup afg where afg.id = :id ")})            
+                @NamedQuery(name = "AuxFieldGroup.AuxFieldGroupDO", query = "select distinct new org.openelis.domain.AuxFieldGroupDO(afg.id,afg.name,afg.description,"+                            
+                            " afg.isActive,afg.activeBegin,afg.activeEnd) " +
+                            " from AuxFieldGroup afg where afg.id = :id "),
+                @NamedQuery(name = "AuxFieldGroup.FetchByActive", query = "select distinct new org.openelis.domain.AuxFieldGroupDO(afg.id,afg.name,afg.description,"+                            
+                            " afg.isActive,afg.activeBegin,afg.activeEnd) " +
+                            " from AuxFieldGroup afg where afg.isActive = 'Y' order by afg.name")})            
             
 @Entity
 @Table(name="aux_field_group")

@@ -61,6 +61,7 @@ import org.openelis.local.LockLocal;
 import org.openelis.metamap.AuxFieldGroupMetaMap;
 import org.openelis.metamap.AuxFieldMetaMap;
 import org.openelis.remote.AuxiliaryRemote;
+import org.openelis.utilcommon.DataBaseUtil;
 import org.openelis.utilcommon.NumericRange;
 import org.openelis.util.QueryBuilder;
 import org.openelis.utilcommon.TestResultValidator;
@@ -126,7 +127,7 @@ public class AuxiliaryBean implements AuxiliaryRemote {
     }
 
     public List<AuxFieldViewDO> getAuxFields(Integer auxFieldGroupId) {
-        Query query = manager.createNamedQuery("AuxField.AuxFieldDOList");
+        Query query = manager.createNamedQuery("AuxField.FetchAllByGroupId");
         query.setParameter("auxFieldGroupId", auxFieldGroupId);
         List<AuxFieldViewDO> auxfields = query.getResultList();
         return auxfields;
@@ -403,6 +404,12 @@ public class AuxiliaryBean implements AuxiliaryRemote {
         else
             return returnList;
     }   
+    
+    public ArrayList<AuxFieldGroupDO> fetchActive(){
+        Query query = manager.createNamedQuery("AuxFieldGroup.FetchAllActive");
+        
+        return DataBaseUtil.toArrayList(query.getResultList());
+    }
     
     private void validateAuxiliary(AuxFieldGroupDO auxFieldGroupDO,
                                              List<AuxFieldViewDO> auxFields) throws Exception{
