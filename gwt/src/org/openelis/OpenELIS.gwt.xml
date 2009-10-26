@@ -39,6 +39,7 @@ UIRF Software License are applicable instead of those above.
     <inherits name='com.allen_sauer.gwt.dnd.gwt-dnd'/> 
     <inherits name="org.openelis.modules.main.Main"/>
     <inherits name="org.openelis.modules.analyte.Analyte"/>
+    <inherits name="org.openelis.modules.auxGroupPicker.AuxGroupPicker"/>
     <inherits name="org.openelis.modules.animalSampleLogin.AnimalSampleLogin"/>
     <inherits name="org.openelis.modules.auxiliary.Auxiliary"/>
     <inherits name="org.openelis.modules.buildKits.BuildKits"/>
