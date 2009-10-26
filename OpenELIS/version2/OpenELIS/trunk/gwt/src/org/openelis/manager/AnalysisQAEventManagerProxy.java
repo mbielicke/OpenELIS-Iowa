@@ -29,11 +29,11 @@ import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.services.ScreenService;
 
 public class AnalysisQAEventManagerProxy {
-    protected static final String QA_EVENT_SERVICE_URL = "org.openelis.modules.qaevent.server.QAEventService";
+    protected static final String ANALYSIS_SERVICE_URL = "org.openelis.modules.analysis.server.AnalysisService";
     protected ScreenService service;
     
     public AnalysisQAEventManagerProxy(){
-        service = new ScreenService("OpenELISServlet?service="+QA_EVENT_SERVICE_URL);
+        service = new ScreenService("OpenELISServlet?service="+ANALYSIS_SERVICE_URL);
     }
     
     public AnalysisQaEventManager fetchByAnalysisId(Integer analysisId) throws Exception {

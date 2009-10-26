@@ -538,6 +538,11 @@ public class AuxiliaryService implements
         
     }
     
+    public ArrayList<AuxFieldGroupDO> fetchActive(){
+        AuxiliaryRemote remote = (AuxiliaryRemote)EJBFactory.lookup("openelis/AuxiliaryBean/remote");
+        return remote.fetchActive();
+    }
+    
     //manager methods
     public AuxFieldGroupManager fetchGroupById(Integer id) throws Exception {
         return remoteManager().fetchById(id);
