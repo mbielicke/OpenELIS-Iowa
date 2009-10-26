@@ -29,7 +29,6 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.SystemVariableDO;
-import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.RPC;
@@ -67,7 +66,7 @@ public class SystemVariableScreen extends Screen {
 
     public SystemVariableScreen() throws Exception {
         super((ScreenDefInt)GWT.create(SystemVariableDef.class));
-        service = new ScreenService("OpenELISServlet?service=org.openelis.modules.systemvariable.server.SystemVariableService");
+        service = new ScreenService("controller?service=org.openelis.modules.systemvariable.server.SystemVariableService");
 
         security = OpenELIS.security.getModule("systemvariable");
         if (security == null)
