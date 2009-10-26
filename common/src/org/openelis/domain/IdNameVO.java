@@ -39,7 +39,7 @@ public class IdNameVO implements RPC {
     private static final long serialVersionUID = 1L;
 
     protected Integer         id;
-    protected String          name;
+    protected String          name, description;
 
     public IdNameVO() {
     }
@@ -47,6 +47,12 @@ public class IdNameVO implements RPC {
     public IdNameVO(Integer id, String name) {
         setId(id);
         setName(name);
+    }
+
+    public IdNameVO(Integer id, String name, String description) {
+        setId(id);
+        setName(name);
+        setDescription(description);
     }
 
     public Integer getId() {
@@ -63,5 +69,13 @@ public class IdNameVO implements RPC {
 
     public void setName(String name) {
         this.name = DataBaseUtil.trim(name);
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = DataBaseUtil.trim(description);
     }
 }
