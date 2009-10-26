@@ -52,23 +52,18 @@ import org.openelis.utils.Auditable;
 
 @NamedQueries({
 	
-	@NamedQuery(name = "Analyte.findById", 
+	@NamedQuery(name = "Analyte.fetchById", 
 			    query = "select new org.openelis.domain.AnalyteViewDO(a.id,a.name,a.isActive,a.parentAnalyteId,a.externalId,p.name) from " + 
 					    " Analyte a left join a.parentAnalyte p where a.id = :id"),
 
-	@NamedQuery(name = "Analyte.AnalyteByParentId", 
+	@NamedQuery(name = "Analyte.fetchByParentId", 
 			    query = "select a.id from Analyte a where a.parentAnalyteId = :id"),
-    
-	@NamedQuery(name = "Analyte.UpdateNameCompare", 
-    		    query = "select a.id from Analyte a where a.name = :name and a.id != :id"),
-    
-    @NamedQuery(name = "Analyte.AddNameCompare", 
-    		    query = "select a.id from Analyte a where a.name = :name"),
-    
-    @NamedQuery(name = "Analyte.findByName", 
+        
+    @NamedQuery(name = "Analyte.fetchByName", 
     		    query = "select new org.openelis.domain.IdNameVO(a.id, a.name) " +
                         " from Analyte a where a.name like :name and a.isActive = 'Y' order by a.name"),
-    @NamedQuery(name =  "Analyte.FetchByTest", 
+    
+    @NamedQuery(name =  "Analyte.fetchByTest", 
                 query = "select distinct new org.openelis.domain.AnalyteDO(a.id,a.name,a.isActive,a.parentAnalyteId,a.externalId) " +
                         " from TestAnalyte ta left join ta.analyte a where ta.testId = :testId")                        
 })

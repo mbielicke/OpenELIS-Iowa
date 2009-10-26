@@ -34,6 +34,7 @@ import javax.ejb.EJB;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.EntityNotFoundException;
 import javax.persistence.FlushModeType;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
@@ -80,7 +81,7 @@ public class AnalyteBean implements AnalyteRemote {
 		Query query;
 		AnalyteViewDO data;
 		
-		query = manager.createNamedQuery("Analyte.findById");
+		query = manager.createNamedQuery("Analyte.fetchById");
 		query.setParameter("id", analyteId);
         try {
             data = (AnalyteViewDO)query.getSingleResult();
@@ -93,10 +94,10 @@ public class AnalyteBean implements AnalyteRemote {
 	}   
       
 	@SuppressWarnings("unchecked")
-	public ArrayList<IdNameVO> findByName(String name, int maxResults) {
+	public ArrayList<IdNameVO> fetchByName(String name, int maxResults) {
 		Query query = null;
 		
-		query = manager.createNamedQuery("Analyte.findByName");
+		query = manager.createNamedQuery("Analyte.fetchByName");
 		
 		query.setParameter("name",name);
 		query.setMaxResults(maxResults);
@@ -106,25 +107,25 @@ public class AnalyteBean implements AnalyteRemote {
 	
 	@SuppressWarnings("unchecked")
 	public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception {
+		Query query;
+		QueryBuilderV2 qb;
+		List list;
 		
-		QueryBuilderV2 qb = new QueryBuilderV2();
+		qb = new QueryBuilderV2();
 		
 		qb.setMeta(Meta);
 		
 		qb.setSelect("distinct new org.openelis.domain.IdNameVO("+Meta.getId()+", "+Meta.getName() + ") ");
 	        
-//	      this method is going to throw an exception if a column doesnt match
 		 qb.constructWhere(fields);      
 
 	     qb.setOrderBy(Meta.getName());
         
-         Query query = manager.createQuery(qb.getEJBQL());
+         query = manager.createQuery(qb.getEJBQL());
          query.setMaxResults(first+max);
-         
-//       ***set the parameters in the query
          QueryBuilderV2.setQueryParams(query,fields);
          
-         List list = query.getResultList();
+         list = query.getResultList();
          if (list.isEmpty())
              throw new NotFoundException();
          list = (ArrayList<IdNameVO>)DataBaseUtil.subList(list, first, max);
@@ -272,31 +273,31 @@ public class AnalyteBean implements AnalyteRemote {
             throw list;
 	}
 
-	private void validate(AnalyteViewDO analyteDO) throws Exception{
-        ValidationErrorsList list = new ValidationErrorsList();
-		//name required	
-		if(analyteDO.getName() == null || "".equals(analyteDO.getName())){
+	private void validate(AnalyteViewDO data) throws Exception {
+		Analyte analyte;
+		Query query;
+        ValidationErrorsList list;
+        
+        list = new ValidationErrorsList();
+		
+        //name required	
+		if(data.getName() == null || "".equals(data.getName())){
 			list.add(new FieldErrorException("fieldRequiredException",Meta.getName()));
 		}
-		
-		//name not duplicate
-		//need to make sure to take update into account...
-		Query query = null;
-		//its an add if its null
-		if(analyteDO.getId() == null){
-			query = manager.createNamedQuery("Analyte.AddNameCompare");
-			query.setParameter("name", analyteDO.getName());
-		}else{
-			query = manager.createNamedQuery("Analyte.UpdateNameCompare");
-			query.setParameter("name", analyteDO.getName());
-			query.setParameter("id",analyteDO.getId());
+	
+		try {
+			query = manager.createQuery("from Analyte where name = :name");
+			query.setParameter("name", data.getName());
+			analyte = (Analyte)query.getSingleResult();
+			if(data.getId() == null || !data.getId().equals(analyte.getId()))
+				list.add(new FieldErrorException("fieldUniqueException",Meta.getName()));
+		}catch(EntityNotFoundException e) {
+			//Do nothing here, this is what we expect and do not want this 
+			//exception thrown.
 		}
-		
-		if(query.getResultList().size() > 0)
-			list.add(new FieldErrorException("fieldUniqueException",Meta.getName()));
-        
+			
         if(list.size() > 0)
-            throw list;
+             throw list;
 	}
 	
     private void checkSecurity(ModuleFlags flag) throws Exception {
