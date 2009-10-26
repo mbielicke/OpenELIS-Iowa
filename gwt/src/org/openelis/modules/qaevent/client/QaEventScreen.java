@@ -31,7 +31,7 @@ import java.util.EnumSet;
 
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.DictionaryDO;
-import org.openelis.domain.OrganizationDO;
+import org.openelis.domain.IdNameVO;
 import org.openelis.domain.QaEventVO;
 import org.openelis.domain.QaEventViewDO;
 import org.openelis.domain.TestMethodVO;
@@ -79,8 +79,8 @@ public class QaEventScreen extends Screen {
 
     public QaEventScreen() throws Exception {
         super((ScreenDefInt)GWT.create(QaEventDef.class));
-        service = new ScreenService("OpenELISServlet?service=org.openelis.modules.qaevent.server.QaEventService");
-        testService = new ScreenService("OpenELISServlet?service=org.openelis.modules.test.server.TestService");
+        service = new ScreenService("controller?service=org.openelis.modules.qaevent.server.QaEventService");
+        testService = new ScreenService("controller?service=org.openelis.modules.test.server.TestService");
 
         security = OpenELIS.security.getModule("qaevent");
         if (security == null)
@@ -381,19 +381,19 @@ public class QaEventScreen extends Screen {
             }
 
             public boolean fetch(RPC entry) {
-                return fetchById( (entry == null) ? null : ((QaEventVO)entry).getId());
+                return fetchById( (entry == null) ? null : ((IdNameVO)entry).getId());
             }
 
             public ArrayList<TableDataRow> getModel() {
-                ArrayList<QaEventVO> result;
+                ArrayList<IdNameVO> result;
                 ArrayList<TableDataRow> model;
 
                 model = null;
                 result = nav.getQueryResult();
                 if (result != null) {
                     model = new ArrayList<TableDataRow>();
-                    for (QaEventVO entry : result)
-                        model.add(new TableDataRow(entry.getId(), entry.getName(), entry.getTestName()));
+                    for (IdNameVO entry : result)
+                        model.add(new TableDataRow(entry.getId(), entry.getName(), entry.getDescription()));
                 }
                 return model;
             }
@@ -426,7 +426,6 @@ public class QaEventScreen extends Screen {
     }
 
     private void initializeDropdowns() {
-        DictionaryDO dict;
         ArrayList<TableDataRow> model;
 
         // type dropdown

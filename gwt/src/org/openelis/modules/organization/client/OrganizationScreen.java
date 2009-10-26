@@ -101,7 +101,7 @@ public class OrganizationScreen extends Screen {
 
     public OrganizationScreen() throws Exception {
         super((ScreenDefInt)GWT.create(OrganizationDef.class));
-        service = new ScreenService("OpenELISServlet?service=org.openelis.modules.organization.server.OrganizationService");
+        service = new ScreenService("controller?service=org.openelis.modules.organization.server.OrganizationService");
 
         security = OpenELIS.security.getModule("organization");
         if (security == null)

@@ -27,6 +27,7 @@ package org.openelis.modules.qaevent.server;
 
 import java.util.ArrayList;
 
+import org.openelis.domain.IdNameVO;
 import org.openelis.domain.QaEventVO;
 import org.openelis.domain.QaEventViewDO;
 import org.openelis.gwt.common.DatabaseException;
@@ -62,7 +63,7 @@ public class QaEventService {
         }
     }
 
-    public ArrayList<QaEventVO> query(Query query) throws Exception {
+    public ArrayList<IdNameVO> query(Query query) throws Exception {
         try {
             return remote().query(query.getFields(), query.getPage() * rowPP, rowPP);
         } catch (RuntimeException e) {
