@@ -63,7 +63,6 @@ import com.google.gwt.user.client.Window;
 public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab.Action> {
     public enum Action {CHANGED,SELECTED_TEST_PREP_ROW};
     private boolean loaded;
-    private Screen parentScreen;
     
     private SampleMetaMap meta;
     
@@ -77,11 +76,9 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
     protected SampleItemViewDO sampleItem;
     protected Dropdown<Integer> statusId;
     
-        public AnalysisTab(ScreenDefInt def, Screen parentScreen) {
+        public AnalysisTab(ScreenDefInt def) {
         service = new ScreenService("OpenELISServlet?service=org.openelis.modules.analysis.server.AnalysisService");
         setDef(def);
-        this.parentScreen = parentScreen;
-        
         meta = new SampleMetaMap("sample.");
         
         initialize();
@@ -162,7 +159,7 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
                rpc.sampleItemType = sampleItem.getTypeOfSampleId();
                
                if(rpc.sampleItemType == null){
-                   parentScreen.window.setError(consts.get("sampleItemTypeRequired"));
+                   window.setError(consts.get("sampleItemTypeRequired"));
                }else{
                    try {
                        rpc = service.call("getTestMethodMatches", rpc);

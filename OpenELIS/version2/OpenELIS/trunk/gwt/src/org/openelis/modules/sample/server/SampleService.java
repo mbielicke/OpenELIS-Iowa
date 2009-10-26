@@ -29,74 +29,66 @@ import org.openelis.manager.SampleItemManager;
 import org.openelis.manager.SampleManager;
 import org.openelis.manager.SampleOrganizationManager;
 import org.openelis.manager.SampleProjectManager;
+import org.openelis.manager.SampleQaEventManager;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.SampleManagerRemote;
+import org.openelis.remote.SampleQAEventManagerRemote;
 
 public class SampleService {
     //sample methods
     public SampleManager fetch(Integer sampleId) throws Exception {
-        SampleManagerRemote remote = (SampleManagerRemote)EJBFactory.lookup("openelis/SampleManagerBean/remote");
-      
-        return remote.fetch(sampleId);
+        return remote().fetch(sampleId);
     }
     
     public SampleManager fetchWithItemsAnalyses(Integer sampleId) throws Exception {
-        SampleManagerRemote remote = (SampleManagerRemote)EJBFactory.lookup("openelis/SampleManagerBean/remote");
-        try{
-        return remote.fetchWithItemsAnalysis(sampleId);
-        }catch(Exception e){
-            e.printStackTrace();
-            throw e;
-        }
+        return remote().fetchWithItemsAnalysis(sampleId);
     }
 
     public SampleManager fetchByAccessionNumber(Integer accessionNumber) throws Exception {
-        SampleManagerRemote remote = (SampleManagerRemote)EJBFactory.lookup("openelis/SampleManagerBean/remote");
-        
-        return remote.fetchByAccessionNumber(accessionNumber);
+        return remote().fetchByAccessionNumber(accessionNumber);
     }
 
     public SampleManager add(SampleManager man) throws Exception {
-        SampleManagerRemote remote = (SampleManagerRemote)EJBFactory.lookup("openelis/SampleManagerBean/remote");
-        
-        return remote.add(man);
+        return remote().add(man);
     }
 
     public SampleManager update(SampleManager man) throws Exception {
-        SampleManagerRemote remote = (SampleManagerRemote)EJBFactory.lookup("openelis/SampleManagerBean/remote");
-        
-        return remote.update(man);
+        return remote().update(man);
     }
     
     public SampleManager fetchForUpdate(Integer sampleId) throws Exception {
-        SampleManagerRemote remote = (SampleManagerRemote)EJBFactory.lookup("openelis/SampleManagerBean/remote");
-        
-        return remote.fetchForUpdate(sampleId);
+        return remote().fetchForUpdate(sampleId);
     }
     
     public SampleManager abort(Integer sampleId) throws Exception {
-        SampleManagerRemote remote = (SampleManagerRemote)EJBFactory.lookup("openelis/SampleManagerBean/remote");
-        
-        return remote.abortUpdate(sampleId);
+        return remote().abortUpdate(sampleId);
     }
     
     //sample org methods
     public SampleOrganizationManager fetchSampleOrganizationsBySampleId(Integer sampleId) throws Exception {
-        SampleManagerRemote remote = (SampleManagerRemote)EJBFactory.lookup("openelis/SampleManagerBean/remote");
-        
-        return remote.fetchSampleOrgsBySampleId(sampleId);
+        return remote().fetchSampleOrgsBySampleId(sampleId);
     }
     
     //sample project methods
     public SampleProjectManager fetchSampleprojectsBySampleId(Integer sampleId) throws Exception {
-        SampleManagerRemote remote = (SampleManagerRemote)EJBFactory.lookup("openelis/SampleManagerBean/remote");
-        
-        return remote.fetchSampleProjectsBySampleId(sampleId);
+        return remote().fetchSampleProjectsBySampleId(sampleId);
     }
     
     //sample item methods
     public SampleItemManager fetchSampleItemsBySampleId(Integer sampleId) throws Exception {
-        SampleManagerRemote remote = (SampleManagerRemote)EJBFactory.lookup("openelis/SampleManagerBean/remote");
-        return remote.fetchSampleItemsBySampleId(sampleId);
+        return remote().fetchSampleItemsBySampleId(sampleId);
+    }
+    
+    //sample qa method
+    public SampleQaEventManager fetchBySampleId(Integer sampleId) throws Exception {
+        return qaRemote().fetchBySampleId(sampleId);
+    }
+    
+    private SampleManagerRemote remote(){
+        return (SampleManagerRemote)EJBFactory.lookup("openelis/SampleManagerBean/remote");
+    }
+    
+    private SampleQAEventManagerRemote qaRemote(){
+        return (SampleQAEventManagerRemote)EJBFactory.lookup("openelis/SampleQAEventManagerBean/remote");
     }
 }

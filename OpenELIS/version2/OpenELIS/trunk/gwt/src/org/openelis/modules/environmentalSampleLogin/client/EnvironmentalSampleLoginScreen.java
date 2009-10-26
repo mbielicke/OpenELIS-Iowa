@@ -108,10 +108,10 @@ public class EnvironmentalSampleLoginScreen extends Screen {
 
     public enum Tabs {
         SAMPLE_ITEM, ANALYSIS, TEST_RESULT, ANALYSIS_NOTES, SAMPLE_NOTES,
-        STORAGE, QA_EVENTS
+        STORAGE, QA_EVENTS, AUX_DATA
     };
 
-    protected Tabs                     tab = Tabs.SAMPLE_ITEM;
+    protected Tabs                     tab;
 
     private SampleItemTab              sampleItemTab;
     private AnalysisTab                analysisTab;
@@ -120,7 +120,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
     private SampleNotesTab             sampleNotesTab;
     private StorageTab                 storageTab;
     private QAEventsTab                qaEventsTab;
-    
+    private AuxDataTab                 auxDataTab;
     
     protected TestPrepPickerScreen prepPickerScreen;
     protected TextBox location;
@@ -152,29 +152,42 @@ public class EnvironmentalSampleLoginScreen extends Screen {
         //FIXME change this when we can add the module
         security = OpenELIS.security.getModule("organization");
         
-        sampleItemTab = new SampleItemTab(def, this);
-        
-        analysisTab = new AnalysisTab(def, this);
-        
-        testResultsTab = new TestResultsTab(def, this);
-        
-        analysisNotesTab = new AnalysisNotesTab(def, "anExNotesPanel", "anExNoteButton", "anIntNotesPanel", "anIntNoteButton", this);
-        
-        sampleNotesTab = new SampleNotesTab(def, "sampleExtNotesPanel", "sampleExtNoteButton", "sampleIntNotesPanel", "sampleIntNoteButton", this);
-        
-        storageTab = new StorageTab(def, this);
-        
-        qaEventsTab = new QAEventsTab(def, this);
-        
         // Setup link between Screen and widget Handlers
         initialize();
         
+        DataChangeEvent.fire(this);
+        DeferredCommand.addCommand(new Command() {
+            public void execute() {
+                postConstructor();
+            }
+        });
+    }
+
+    /**
+     * This method is called to set the initial state of widgets after the
+     * screen is attached to the browser. It is usually called in deferred
+     * command.
+     */
+    private void postConstructor() {
+        tab = Tabs.SAMPLE_ITEM;
+        manager = SampleManager.getInstance();
+        manager.getSample().setDomain(SampleManager.ENVIRONMENTAL_DOMAIN_FLAG);
+
+        setState(State.DEFAULT);
+      
         //setup the dropdowns
         setStatusModel();
         setAnalysisStatusModel();
+
+        sampleItemTab.setWindow(window);
+        analysisTab.setWindow(window);
+        testResultsTab.setWindow(window);
+        analysisNotesTab.setWindow(window);
+        sampleNotesTab.setWindow(window);
+        storageTab.setWindow(window);
+        qaEventsTab.setWindow(window);
+        auxDataTab.setWindow(window);
         
-        //Initialize Screen
-        setState(State.DEFAULT);
         DataChangeEvent.fire(this);
     }
     
@@ -792,6 +805,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
         };
         
         // Set up tabs to recieve State Change events from the main Screen.
+        sampleItemTab = new SampleItemTab(def);
         addScreenHandler(sampleItemTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                 sampleItemTab.setData(new SampleDataBundle());
@@ -805,6 +819,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             }
         });
         
+        analysisTab = new AnalysisTab(def);
         addScreenHandler(analysisTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                 analysisTab.setData(new SampleDataBundle());
@@ -818,6 +833,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             }
         });
         
+        testResultsTab = new TestResultsTab(def);
         addScreenHandler(testResultsTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                     testResultsTab.setData(new SampleDataBundle());
@@ -831,6 +847,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             }
         });
         
+        analysisNotesTab = new AnalysisNotesTab(def, "anExNotesPanel", "anExNoteButton", "anIntNotesPanel", "anIntNoteButton");
         addScreenHandler(analysisNotesTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                 analysisNotesTab.setData(new SampleDataBundle());
@@ -844,6 +861,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             }
         });
                 
+        sampleNotesTab = new SampleNotesTab(def, "sampleExtNotesPanel", "sampleExtNoteButton", "sampleIntNotesPanel", "sampleIntNoteButton");
         addScreenHandler(sampleNotesTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                 sampleNotesTab.setManager(manager);
@@ -857,6 +875,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             }
         });
         
+        storageTab = new StorageTab(def);
         addScreenHandler(storageTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                     storageTab.setData(new SampleDataBundle());
@@ -870,6 +889,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             }
         });
 
+        qaEventsTab = new QAEventsTab(def);
         addScreenHandler(qaEventsTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                     qaEventsTab.setData(new SampleDataBundle());
@@ -881,6 +901,21 @@ public class EnvironmentalSampleLoginScreen extends Screen {
 
             public void onStateChange(StateChangeEvent<State> event) {
                 qaEventsTab.setState(event.getState());
+            }
+        });
+        
+        auxDataTab = new AuxDataTab(def);
+        addScreenHandler(auxDataTab, new ScreenEventHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                    //auxDataTab.setData(new SampleDataBundle());
+                    //auxDataTab.setManager(manager);
+
+                    if (tab == Tabs.AUX_DATA)
+                        drawTabs();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                auxDataTab.setState(event.getState());
             }
         });
         
@@ -1065,6 +1100,8 @@ public class EnvironmentalSampleLoginScreen extends Screen {
                     tab = Tabs.STORAGE;
                 else if (tabIndex == Tabs.QA_EVENTS.ordinal())
                     tab = Tabs.QA_EVENTS;
+                else if (tabIndex == Tabs.AUX_DATA.ordinal())
+                    tab = Tabs.AUX_DATA;
                 
                 window.setBusy(consts.get("loadingMessage"));
                 
@@ -1544,6 +1581,8 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             storageTab.draw();
         else if (tab == Tabs.QA_EVENTS)
             qaEventsTab.draw();
+        else if (tab == Tabs.AUX_DATA)
+            auxDataTab.draw();
     }
     
     private SampleEnvironmentalManager getEnvManager(){
