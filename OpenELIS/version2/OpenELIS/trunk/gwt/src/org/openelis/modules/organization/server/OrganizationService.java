@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.OrganizationDO;
 import org.openelis.gwt.common.DatabaseException;
+import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.manager.OrganizationContactManager;
 import org.openelis.manager.OrganizationManager;
@@ -126,10 +127,14 @@ public class OrganizationService {
             id = Integer.parseInt(search);
             list = new ArrayList<OrganizationDO>(1);
             list.add(remote().fetchActiveById(id));
-            return list;
         } catch (NumberFormatException e) {
-            return remote().fetchActiveByName(search+"%", 10);
+            list = remote().fetchActiveByName(search+"%", 10);
+        } catch (NotFoundException e) {
+            list = new ArrayList<OrganizationDO>(0);
+        } catch (RuntimeException e) {
+            throw new DatabaseException(e);
         }
+        return list;
     }
 
     //
