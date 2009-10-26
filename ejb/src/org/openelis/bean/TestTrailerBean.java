@@ -28,226 +28,214 @@ package org.openelis.bean;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
-import javax.ejb.EJBs;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
+import org.openelis.domain.IdNameVO;
+import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.TestTrailerDO;
 import org.openelis.entity.TestTrailer;
+import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
+import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.data.deprecated.AbstractField;
+import org.openelis.gwt.common.SecurityModule.ModuleFlags;
+import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.LockLocal;
 import org.openelis.metamap.TestTrailerMetaMap;
 import org.openelis.remote.TestTrailerRemote;
-import org.openelis.util.QueryBuilder;
-import org.openelis.utils.GetPage;
-import org.openelis.utils.ReferenceTableCache;
+import org.openelis.util.QueryBuilderV2;
+import org.openelis.utilcommon.DataBaseUtil;
+import org.openelis.utils.SecurityInterceptor;
 
 @Stateless
-@EJBs({
-    @EJB(name="ejb/Lock",beanInterface=LockLocal.class)
-})
 @SecurityDomain("openelis")
 @RolesAllowed("testtrailer-select")
 public class TestTrailerBean implements TestTrailerRemote{
 
-	@PersistenceContext(name = "openelis")
-    private EntityManager manager;
+    @PersistenceContext(name = "openelis")
+    private EntityManager                      manager;
 
-	@Resource
-	private SessionContext ctx;
-	
-    private LockLocal lockBean;
-    private static int testTrailerRefTableId;
-    private static final TestTrailerMetaMap TestTrailerMap = new TestTrailerMetaMap();
+    @Resource
+    private SessionContext                     ctx;
 
-    public TestTrailerBean(){
-        testTrailerRefTableId = ReferenceTableCache.getReferenceTable("test_trailer");
-    }
-    
-    @PostConstruct
-    private void init()
-    {
-        lockBean =  (LockLocal)ctx.lookup("ejb/Lock");
-    }
-    
-    @RolesAllowed("testtrailer-delete")
-	public void deleteTestTrailer(Integer testTrailerId) throws Exception {
-    	lockBean.validateLock(testTrailerRefTableId, testTrailerId);
-        
-        validateForDelete(testTrailerId);
-        
-		manager.setFlushMode(FlushModeType.COMMIT);
-		TestTrailer testTrailer = null;
-		
-		//then we need to delete it
-		try {
-			testTrailer = manager.find(TestTrailer.class, testTrailerId);
-            	if(testTrailer != null)
-            		manager.remove(testTrailer);
-            	
-		} catch (Exception e) {
-            e.printStackTrace();
-        }	
-		
-		lockBean.giveUpLock(testTrailerRefTableId, testTrailerId);
+    @EJB
+    private LockLocal                          lockBean;
+
+    private static final TestTrailerMetaMap meta = new TestTrailerMetaMap();
+
+    public TestTrailerBean() {
     }
 
-	public TestTrailerDO getTestTrailer(Integer testTrailerId) {
-		Query query = manager.createNamedQuery("TestTrailer.TestTrailer");
-		query.setParameter("id", testTrailerId);
-		TestTrailerDO testTrailerRecord = (TestTrailerDO) query.getResultList().get(0);// getting first storage unit record
+    public TestTrailerDO fetchById(Integer id) throws Exception {
+        Query query;
+        TestTrailerDO data;
 
-        return testTrailerRecord;
-	}
-
-    @RolesAllowed("testtrailer-update")
-	public TestTrailerDO getTestTrailerAndLock(Integer testTrailerId, String session) throws Exception {
-		lockBean.getLock(testTrailerRefTableId, testTrailerId);
-        
-        return getTestTrailer(testTrailerId);
-	}
-
-	public TestTrailerDO getTestTrailerAndUnlock(Integer testTrailerId, String session) {
-		lockBean.giveUpLock(testTrailerRefTableId, testTrailerId);
-		
-        return getTestTrailer(testTrailerId);
-	}
-
-	public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception {
-		StringBuffer sb = new StringBuffer();
-		QueryBuilder qb = new QueryBuilder();
-		
-		qb.setMeta(TestTrailerMap);
-		
-		 qb.setSelect("distinct new org.openelis.domain.IdNameDO("+TestTrailerMap.getId()+", "+TestTrailerMap.getName() + ") ");
-	        
-//	      this method is going to throw an exception if a column doesnt match
-		 qb.addWhere(fields);      
-
-	     qb.setOrderBy(TestTrailerMap.getName());
-        
-	     sb.append(qb.getEJBQL());
-
-         Query query = manager.createQuery(sb.toString());
-        
-         if(first > -1 && max > -1)
-        	 query.setMaxResults(first+max);
-         
-//       ***set the parameters in the query
-         qb.setQueryParams(query);
-         
-         List returnList = GetPage.getPage(query.getResultList(), first, max);
-         
-         if(returnList == null)
-        	 throw new LastPageException();
-         else
-        	 return returnList;
-	}
-
-   @RolesAllowed("testtrailer-update")
-	public Integer updateTestTrailer(TestTrailerDO testTrailerDO) throws Exception{
-        if(testTrailerDO.getId() != null)
-            lockBean.validateLock(testTrailerRefTableId, testTrailerDO.getId());
-        
-        validateTestTrailer(testTrailerDO);
-        
-		manager.setFlushMode(FlushModeType.COMMIT);
-		TestTrailer testTrailer = null;
-        
-        if (testTrailerDO.getId() == null)
-        	testTrailer = new TestTrailer();
-        else
-        	testTrailer = manager.find(TestTrailer.class, testTrailerDO.getId());
-        
-        testTrailer.setDescription(testTrailerDO.getDescription());
-        testTrailer.setName(testTrailerDO.getName());
-        testTrailer.setText(testTrailerDO.getText());
-        
-        if (testTrailer.getId() == null) {
-        	manager.persist(testTrailer);
+        query = manager.createNamedQuery("TestTrailer.FetchById");
+        query.setParameter("id", id);
+        try {
+            data = (TestTrailerDO)query.getSingleResult();
+        } catch (NoResultException e) {
+            throw new NotFoundException();
+        } catch (Exception e) {
+            throw new DatabaseException(e);
         }
-     
-        lockBean.giveUpLock(testTrailerRefTableId, testTrailer.getId()); 
-		    
-		return testTrailer.getId();
-	}
+        return data;
+    }
 
-	public void validateForDelete(Integer testTrailerId) throws Exception {
-	    ValidationErrorsList list = new ValidationErrorsList();
-	    
-		//make sure no tests are pointing to this record
-		//getTestByTestTrailerId
-		Query query = null;
-		query = manager.createNamedQuery("TestTrailer.FetchTestForDeleteCheck");
-		query.setParameter("id", testTrailerId);
-		List linkedRecords = query.getResultList();
+    public ArrayList<IdNameVO> fetchByName(String name, int max) throws Exception {
+        Query query;
 
-		if(linkedRecords.size() > 0){
-		    list.add(new FormErrorException("testTrailerTestDeleteException"));
-		}
-		
-		if(list.size() > 0)
+        query = manager.createNamedQuery("TestTrailer.FetchByName");
+        query.setParameter("name", name);
+        query.setMaxResults(max);
+
+        return DataBaseUtil.toArrayList(query.getResultList());
+    }
+
+    public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception {
+        Query query;
+        QueryBuilderV2 builder;
+        List list;
+
+        builder = new QueryBuilderV2();
+        builder.setMeta(meta);
+        builder.setSelect("distinct new org.openelis.domain.IdNameVO(" + meta.getId() + ", " +
+                          meta.getName() + ") ");
+        builder.constructWhere(fields);
+        builder.setOrderBy(meta.getName());
+
+        query = manager.createQuery(builder.getEJBQL());
+        query.setMaxResults(first + max);
+        builder.setQueryParams(query, fields);
+
+        list = query.getResultList();
+        if (list.isEmpty())
+            throw new NotFoundException();
+        list = DataBaseUtil.subList(list, first, max);
+        if (list == null)
+            throw new LastPageException();
+
+        return (ArrayList<IdNameVO>)list;
+    }
+
+    public TestTrailerDO add(TestTrailerDO data) throws Exception {
+        TestTrailer entity;
+
+        checkSecurity(ModuleFlags.ADD);
+
+        validate(data);
+
+        manager.setFlushMode(FlushModeType.COMMIT);
+
+        entity = new TestTrailer();
+        entity.setName(data.getName());
+        entity.setDescription(data.getDescription());
+        entity.setText(data.getText());
+
+        manager.persist(entity);
+        data.setId(entity.getId());
+
+        return data;
+    }
+
+    public TestTrailerDO update(TestTrailerDO data) throws Exception {
+        TestTrailer entity;
+
+        if ( !data.isChanged())
+            return data;
+
+        checkSecurity(ModuleFlags.UPDATE);
+
+        validate(data);
+
+        lockBean.validateLock(ReferenceTable.TEST_TRAILER, data.getId());
+
+        manager.setFlushMode(FlushModeType.COMMIT);
+        entity = manager.find(TestTrailer.class, data.getId());
+        entity.setName(data.getName());
+        entity.setDescription(data.getDescription());
+        entity.setText(data.getText());
+
+        lockBean.giveUpLock(ReferenceTable.TEST_TRAILER, data.getId());
+
+        return data;
+    }
+
+    public TestTrailerDO fetchForUpdate(Integer id) throws Exception {
+        lockBean.getLock(ReferenceTable.TEST_TRAILER, id);
+        return fetchById(id);
+    }
+
+    public TestTrailerDO abortUpdate(Integer id) throws Exception {
+        lockBean.giveUpLock(ReferenceTable.TEST_TRAILER, id);
+        return fetchById(id);
+    }
+
+    public void delete(Integer id) throws Exception {
+        Query query;
+        List<Long> list;
+        TestTrailer entity;
+
+        checkSecurity(ModuleFlags.DELETE);
+
+        lockBean.validateLock(ReferenceTable.TEST_TRAILER, id);
+
+        // reference check
+        query = manager.createNamedQuery("TestTrailer.ReferenceCount");
+        query.setParameter("id", id);
+        list = query.getResultList();
+        for (Long i : list) {
+            if (i > 0)
+                throw new FormErrorException("testTrailerDeleteException");
+        }
+
+        manager.setFlushMode(FlushModeType.COMMIT);
+        entity = manager.find(TestTrailer.class, id);
+        if (entity != null)
+            manager.remove(entity);
+
+        lockBean.giveUpLock(ReferenceTable.TEST_TRAILER, id);
+    }
+
+    public void validate(TestTrailerDO data) throws Exception {
+        ValidationErrorsList list;
+
+        list = new ValidationErrorsList();
+
+        if (DataBaseUtil.isEmpty(data.getName())) {
+            list.add(new FieldErrorException("fieldRequiredException", meta.getName()));
+        } else {
+            ArrayList<IdNameVO> dups;
+            
+            dups = fetchByName(data.getName(), 1);
+            if (dups.size() > 0 && ! dups.get(0).getId().equals(data.getId()))
+                list.add(new FieldErrorException("fieldUniqueException", meta.getName()));
+        }
+
+        if (DataBaseUtil.isEmpty(data.getDescription()))
+            list.add(new FieldErrorException("fieldRequiredException", meta.getDescription()));
+
+        if (DataBaseUtil.isEmpty(data.getText()))
+            list.add(new FieldErrorException("fieldRequiredException", meta.getText()));
+
+        if (list.size() > 0)
             throw list;
-	}
-	
-	private void validateTestTrailer(TestTrailerDO testTrailerDO) throws Exception {
-	    ValidationErrorsList list = new ValidationErrorsList();
-	    
-		//name required	
-		if(testTrailerDO.getName() == null || "".equals(testTrailerDO.getName())){
-		    list.add(new FieldErrorException("fieldRequiredException",TestTrailerMap.getName()));
-		}
-		
-		//name not duplicate
-		//need to make sure to take update into account...old name versus new name...
-		Query query = null;
-		//if null then it is an add
-		if(testTrailerDO.getId() == null){
-			query = manager.createNamedQuery("TestTrailer.AddNameCompare");
-			query.setParameter("name", testTrailerDO.getName());
-		}else{
-			query = manager.createNamedQuery("TestTrailer.UpdateNameCompare");
-			query.setParameter("name", testTrailerDO.getName());
-			query.setParameter("id",testTrailerDO.getId());
-		}
-		
-		if(query.getResultList().size() > 0)
-		    list.add(new FieldErrorException("fieldUniqueException",TestTrailerMap.getName()));
-		
-		
-		//description required
-		if(testTrailerDO.getDescription() == null || "".equals(testTrailerDO.getDescription())){
-		    list.add(new FieldErrorException("fieldRequiredException",TestTrailerMap.getDescription()));
-		}
-		
-		//text required
-		if(testTrailerDO.getText()== null || "".equals(testTrailerDO.getText())){
-		    list.add(new FieldErrorException("fieldRequiredException",TestTrailerMap.getText()));
-		}
-		
-		if(list.size() > 0)
-            throw list;
-	}
+    }
 
-    public List getTestTrailerAutoCompleteByName(String match, int maxResults) {
-        Query query = null;
-        query = manager.createNamedQuery("TestTrailer.AutocompleteByName");
-        query.setParameter("name", match);
-        query.setMaxResults(maxResults);
-        
-        return query.getResultList();
+    private void checkSecurity(ModuleFlags flag) throws Exception {
+        SecurityInterceptor.applySecurity(ctx.getCallerPrincipal().getName(), 
+                                          "testtrailer", flag);
     }
 }

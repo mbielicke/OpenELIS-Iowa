@@ -27,6 +27,7 @@ package org.openelis.bean;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.annotation.Resource;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
@@ -55,7 +56,6 @@ import org.openelis.metamap.SystemVariableMetaMap;
 import org.openelis.remote.SystemVariableRemote;
 import org.openelis.util.QueryBuilderV2;
 import org.openelis.utilcommon.DataBaseUtil;
-import org.openelis.utils.ReferenceTableCache;
 import org.openelis.utils.SecurityInterceptor;
 
 @Stateless
@@ -93,20 +93,15 @@ public class SystemVariableBean implements SystemVariableRemote {
         return data;
     }
 
-    public SystemVariableDO fetchByName(String name) throws Exception {
+    public ArrayList<SystemVariableDO> fetchByName(String name, int max) throws Exception {
         Query query;
         SystemVariableDO data;
 
         query = manager.createNamedQuery("SystemVariable.FetchByName");
         query.setParameter("name", name);
-        try {
-            data = (SystemVariableDO)query.getSingleResult();
-        } catch (NoResultException e) {
-            throw new NotFoundException();
-        } catch (Exception e) {
-            throw new DatabaseException(e);
-        }
-        return data;
+        query.setMaxResults(max);
+
+        return DataBaseUtil.toArrayList(query.getResultList());
     }
 
     public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception {
@@ -209,14 +204,11 @@ public class SystemVariableBean implements SystemVariableRemote {
         if (DataBaseUtil.isEmpty(data.getName())) {
             list.add(new FieldErrorException("fieldRequiredException", meta.getName()));
         } else {
-            SystemVariableDO dup;
+            ArrayList<SystemVariableDO> dups;
             
-            try {
-                dup = fetchByName(data.getName());
-                if (! dup.getId().equals(data.getId()))
-                    list.add(new FieldErrorException("fieldUniqueException", meta.getName()));
-            } catch (NotFoundException ignE) {
-            }
+            dups = fetchByName(data.getName(), 1);
+            if (dups.size() > 0 && ! dups.get(0).getId().equals(data.getId()))
+                list.add(new FieldErrorException("fieldUniqueException", meta.getName()));
         }
 
         if (DataBaseUtil.isEmpty(data.getValue()))
