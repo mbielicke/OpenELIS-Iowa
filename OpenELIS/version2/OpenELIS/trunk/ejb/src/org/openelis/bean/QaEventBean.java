@@ -26,6 +26,7 @@
 package org.openelis.bean;
 
 import org.jboss.annotation.security.SecurityDomain;
+import org.openelis.domain.IdNameVO;
 import org.openelis.domain.QaEventDO;
 import org.openelis.domain.QaEventVO;
 import org.openelis.domain.QaEventViewDO;
@@ -113,27 +114,21 @@ public class QaEventBean implements QaEventRemote {
     public ArrayList<QaEventVO> fetchByCommon() throws Exception {
         Query query;
 
-        query = manager.createNamedQuery("QaEvent.FetchByName");
+        query = manager.createNamedQuery("QaEvent.FetchByCommon");
         return DataBaseUtil.toArrayList(query.getResultList());
     }
 
-    public ArrayList<QaEventVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception {
+    public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception {
         Query query;
         QueryBuilderV2 builder;
         List list;
 
         builder = new QueryBuilderV2();
         builder.setMeta(meta);
-        builder.setSelect("distinct new org.openelis.domain.QaEventVO(" +
+        builder.setSelect("distinct new org.openelis.domain.IdNameVO(" +
                           meta.getId() + "," +
                           meta.getName() + "," +
-                          meta.getDescription() + "," +
-                          meta.getTestId() + "," +
-                          meta.getTypeId() + "," +
-                          meta.getIsBillable() + "," +
-                          meta.getReportingSequence() + "," +
-                          meta.getTest().getName() + "," +
-                          meta.getTest().getMethod().getName() + ")");
+                          meta.getTest().getName() + ")");
         builder.constructWhere(fields);
         builder.setOrderBy(meta.getName() + "," + meta.getTest().getName());
 
@@ -144,11 +139,11 @@ public class QaEventBean implements QaEventRemote {
         list = query.getResultList();
         if (list.isEmpty())
             throw new NotFoundException();
-        list = (ArrayList<QaEventVO>)DataBaseUtil.subList(list, first, max);
+        list = (ArrayList<IdNameVO>)DataBaseUtil.subList(list, first, max);
         if (list == null)
             throw new LastPageException();
 
-        return (ArrayList<QaEventVO>)list;
+        return (ArrayList<IdNameVO>)list;
     }
 
     public QaEventViewDO add(QaEventViewDO data) throws Exception {

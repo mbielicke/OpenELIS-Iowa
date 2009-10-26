@@ -94,7 +94,11 @@ public class OrganizationBean implements OrganizationRemote, OrganizationLocal {
         query = manager.createNamedQuery("Organization.FetchActiveById");
         query.setParameter("id", id);
 
-        return (OrganizationDO) query.getSingleResult();
+        try {
+            return (OrganizationDO) query.getSingleResult();
+        } catch (NoResultException e) {
+            throw new NotFoundException();
+        }
     }
 
     public ArrayList<OrganizationDO> fetchActiveByName(String name, int max) {
