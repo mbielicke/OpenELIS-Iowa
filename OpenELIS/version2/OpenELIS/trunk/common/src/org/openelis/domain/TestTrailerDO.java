@@ -55,7 +55,7 @@ public class TestTrailerDO extends DataObject {
 
     public void setId(Integer id) {
         this.id = id;
-        _changed = false;
+        _changed = true;
     }
 
     public String getName() {
@@ -64,7 +64,7 @@ public class TestTrailerDO extends DataObject {
 
     public void setName(String name) {
         this.name = DataBaseUtil.trim(name);
-        _changed = false;
+        _changed = true;
     }
 
     public String getDescription() {
@@ -73,7 +73,7 @@ public class TestTrailerDO extends DataObject {
 
     public void setDescription(String description) {
         this.description = DataBaseUtil.trim(description);
-        _changed = false;
+        _changed = true;
     }
 
     public String getText() {
@@ -82,6 +82,6 @@ public class TestTrailerDO extends DataObject {
 
     public void setText(String text) {
         this.text = DataBaseUtil.trim(text);
-        _changed = false;
+        _changed = true;
     }
 }
