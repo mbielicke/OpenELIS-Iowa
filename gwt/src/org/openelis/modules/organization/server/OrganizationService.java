@@ -54,6 +54,24 @@ public class OrganizationService {
         }
     }
 
+    public ArrayList<OrganizationDO> fetchByIdOrName(String search) throws Exception {
+        int id;
+        ArrayList<OrganizationDO> list;
+        
+        try {
+            id = Integer.parseInt(search);
+            list = new ArrayList<OrganizationDO>(1);
+            list.add(remote().fetchActiveById(id));
+        } catch (NumberFormatException e) {
+            list = remote().fetchActiveByName(search+"%", 10);
+        } catch (NotFoundException e) {
+            list = new ArrayList<OrganizationDO>(0);
+        } catch (RuntimeException e) {
+            throw new DatabaseException(e);
+        }
+        return list;
+    }
+
     public OrganizationManager fetchWithContacts(Integer id) throws Exception {
         try {
             return remoteManager().fetchWithContacts(id);
@@ -117,24 +135,6 @@ public class OrganizationService {
         } catch (RuntimeException e) {
             throw new DatabaseException(e);
         }
-    }
-
-    public ArrayList<OrganizationDO> fetchByIdOrName(String search) throws Exception {
-        int id;
-        ArrayList<OrganizationDO> list;
-        
-        try {
-            id = Integer.parseInt(search);
-            list = new ArrayList<OrganizationDO>(1);
-            list.add(remote().fetchActiveById(id));
-        } catch (NumberFormatException e) {
-            list = remote().fetchActiveByName(search+"%", 10);
-        } catch (NotFoundException e) {
-            list = new ArrayList<OrganizationDO>(0);
-        } catch (RuntimeException e) {
-            throw new DatabaseException(e);
-        }
-        return list;
     }
 
     //
