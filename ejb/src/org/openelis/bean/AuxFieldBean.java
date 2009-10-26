@@ -54,7 +54,7 @@ public class AuxFieldBean implements AuxFieldLocal {
         Query query;
         ArrayList<AuxFieldViewDO> data;
         
-        query = manager.createNamedQuery("AuxField.AuxFieldDOList");
+        query = manager.createNamedQuery("AuxField.FetchAllActiveByGroupId");
         query.setParameter("auxFieldGroupId", id);
         try {
             data = DataBaseUtil.toArrayList(query.getResultList());
