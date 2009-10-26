@@ -406,7 +406,7 @@ public class AuxiliaryBean implements AuxiliaryRemote {
     }   
     
     public ArrayList<AuxFieldGroupDO> fetchActive(){
-        Query query = manager.createNamedQuery("AuxFieldGroup.FetchAllActive");
+        Query query = manager.createNamedQuery("AuxFieldGroup.FetchActive");
         
         return DataBaseUtil.toArrayList(query.getResultList());
     }
