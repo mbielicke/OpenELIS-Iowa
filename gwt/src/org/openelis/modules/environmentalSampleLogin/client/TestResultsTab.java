@@ -54,8 +54,7 @@ import com.google.gwt.user.client.Window;
 
 public class TestResultsTab extends Screen {
     private boolean                 loaded;
-    private Screen parentScreen;
-    
+
     protected AppButton               addResultButton, removeResultButton, duplicateResultButton;
     protected TableWidget             testResultsTable;
     private ArrayList<TableColumn> resultTableCols;
@@ -67,9 +66,8 @@ public class TestResultsTab extends Screen {
     protected AnalysisManager       analysisMan;
     protected AnalysisViewDO        anDO;
 
-    public TestResultsTab(ScreenDefInt def, Screen parentScreen) {
+    public TestResultsTab(ScreenDefInt def) {
         setDef(def);
-        this.parentScreen = parentScreen;
         
         initialize();
     }

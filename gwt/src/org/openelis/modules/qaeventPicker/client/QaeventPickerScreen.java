@@ -29,8 +29,7 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 
 import org.openelis.domain.QaEventDO;
-import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.common.data.QueryData;
+import org.openelis.domain.QaEventVO;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -59,7 +58,7 @@ public class QaeventPickerScreen extends Screen implements HasActionHandlers<Qae
     public enum Type {SAMPLE, ANALYSIS};
     protected Integer testId;
     protected Type type;
-    protected ArrayList<QaEventDO> qaEvents;
+    protected ArrayList<QaEventVO> qaEvents;
     
     private AppButton commitButton, abortButton;
     private TableWidget prepTestTable;
@@ -67,7 +66,7 @@ public class QaeventPickerScreen extends Screen implements HasActionHandlers<Qae
     
     public QaeventPickerScreen() throws Exception {
         super((ScreenDefInt)GWT.create(QaeventPickerDef.class));
-        service = new ScreenService("OpenELISServlet?service=org.openelis.modules.qaevent.server.QAEventService");
+        service = new ScreenService("OpenELISServlet?service=org.openelis.modules.qaevent.server.QaEventService");
         // Setup link between Screen and widget Handlers
         initialize();
 
@@ -145,15 +144,13 @@ public class QaeventPickerScreen extends Screen implements HasActionHandlers<Qae
             return model;
 
         for(int i=0; i<qaEvents.size(); i++) {
-            QaEventDO qaEventDO = qaEvents.get(i);
+            QaEventVO qaEventDO = qaEvents.get(i);
         
-           TableDataRow row = new TableDataRow(4);
-           row.key = qaEventDO.getId();
-
-           row.cells.get(0).value = qaEventDO.getName();
-           row.cells.get(1).value = qaEventDO.getDescription();
-           row.cells.get(2).value = qaEventDO.getTypeId();
-           row.cells.get(3).value = qaEventDO.getIsBillable();
+           TableDataRow row = new TableDataRow(qaEventDO.getId(), 
+                                               qaEventDO.getName(), 
+                                               qaEventDO.getDescription(), 
+                                               qaEventDO.getTypeId(), 
+                                               qaEventDO.getIsBillable());
            
            model.add(row);
         }
@@ -163,21 +160,12 @@ public class QaeventPickerScreen extends Screen implements HasActionHandlers<Qae
     
     public void draw(){
         try{
-            qaEvents = new ArrayList<QaEventDO>();
+            qaEvents = new ArrayList<QaEventVO>();
             
-            if(type == Type.ANALYSIS && testId != null){
-                Query query;
-                QueryData field;
-    
-                field = new QueryData();
-                field.query = testId.toString();
-                field.type = QueryData.Type.INTEGER;
-    
-                query = new Query();
-                query.setFields(field);
-                qaEvents = service.callList("getListOfQaevents", query);
-            }else if(type == Type.SAMPLE)
-                qaEvents = service.callList("getListOfQaevents");
+            if(type == Type.ANALYSIS && testId != null)
+                qaEvents = service.callList("fetchByTestId", testId);
+            else if(type == Type.SAMPLE)
+                qaEvents = service.callList("fetchByCommon");
             
             DataChangeEvent.fire(this);
         }catch (Throwable e) {

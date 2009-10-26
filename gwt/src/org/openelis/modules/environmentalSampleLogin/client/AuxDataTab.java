@@ -28,6 +28,10 @@ package org.openelis.modules.environmentalSampleLogin.client;
 import java.util.ArrayList;
 import java.util.EnumSet;
 
+import org.openelis.domain.AuxFieldDO;
+import org.openelis.domain.AuxFieldViewDO;
+import org.openelis.gwt.event.ActionEvent;
+import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
@@ -35,96 +39,39 @@ import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.gwt.widget.table.event.CellEditedEvent;
 import org.openelis.gwt.widget.table.event.CellEditedHandler;
-import org.openelis.gwt.widget.table.event.RowAddedEvent;
-import org.openelis.gwt.widget.table.event.RowAddedHandler;
-import org.openelis.gwt.widget.table.event.RowDeletedEvent;
-import org.openelis.gwt.widget.table.event.RowDeletedHandler;
+import org.openelis.manager.AuxFieldManager;
+import org.openelis.modules.auxGroupPicker.client.AuxGroupPickerScreen;
 
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.user.client.Window;
 
 public class AuxDataTab extends Screen {
     private boolean loaded;
-    protected Screen parentScreen;
     
-    protected TableWidget auxGroupsTable, auxValsTable;
+    protected AuxGroupPickerScreen auxGroupScreen;
+    protected TableWidget auxValsTable;
     protected AppButton addAuxButton, removeAuxButton;
     protected TextBox auxMethod, auxUnits, auxDesc;
     
     //protected StorageManager manager;
     
-    public AuxDataTab(ScreenDefInt def, Screen parentScreen) {
+    public AuxDataTab(ScreenDefInt def) {
         service = new ScreenService("OpenELISServlet?service=org.openelis.modules.auxiliary.server.AuxiliaryService");
         setDef(def);
-        this.parentScreen = parentScreen;
         
         initialize();
     }
     
     private void initialize() {
-        auxGroupsTable = (TableWidget)def.getWidget("auxGroupsTable");
-        addScreenHandler(auxGroupsTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
-            public void onDataChange(DataChangeEvent event) {
-                //auxGroupsTable.load(); // FIXME load(model)
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                auxGroupsTable.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
-                auxGroupsTable.setQueryMode(event.getState() == State.QUERY);
-            }
-        });
-
-        auxGroupsTable.addCellEditedHandler(new CellEditedHandler() {
-            public void onCellUpdated(CellEditedEvent event) {
-                int r, c;
-                Object val;
-
-              //  val = auxGroupsTable.getObject(r,c);
-
-// FIXME missing table col!!! using old table format?
-
-            }
-        });
-
-        auxGroupsTable.addRowAddedHandler(new RowAddedHandler() {
-            public void onRowAdded(RowAddedEvent event) {
-                // FIXME add row added handler
-            }
-        });
-
-        auxGroupsTable.addRowDeletedHandler(new RowDeletedHandler() {
-            public void onRowDeleted(RowDeletedEvent event) {
-                // FIXME add row delete handler;
-            }
-        });
-
-        addAuxButton = (AppButton)def.getWidget("addAuxButton");
-        addScreenHandler(addAuxButton, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                // FIXME add on click handler
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                addAuxButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
-            }
-        });
-
-        removeAuxButton = (AppButton)def.getWidget("removeAuxButton");
-        addScreenHandler(removeAuxButton, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                // FIXME add on click handler
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                removeAuxButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
-            }
-        });
-
         auxValsTable = (TableWidget)def.getWidget("auxValsTable");
         addScreenHandler(auxValsTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
             public void onDataChange(DataChangeEvent event) {
@@ -136,30 +83,62 @@ public class AuxDataTab extends Screen {
                 auxValsTable.setQueryMode(event.getState() == State.QUERY);
             }
         });
-
-        auxValsTable.addCellEditedHandler(new CellEditedHandler() {
+        
+        auxValsTable.addCellEditedHandler(new CellEditedHandler(){
             public void onCellUpdated(CellEditedEvent event) {
-                int r, c;
-                Object val;
+                // TODO Auto-generated method stub
+                
+            }
+        });
+        /*
+        auxValsTable.addSelectionHandler(new SelectionHandler<TableRow>(){
+           public void onSelection(SelectionEvent<TableRow> event) {
+               event.cancel();
+           } 
+        });*/
+        
+        addAuxButton = (AppButton)def.getWidget("addAuxButton");
+        addScreenHandler(addAuxButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                if (auxGroupScreen == null) {
+                    try{
+                    auxGroupScreen = new AuxGroupPickerScreen();
+                    }catch(Exception e){
+                        Window.alert(e.getMessage());
+                    }
+                    auxGroupScreen.addActionHandler(new ActionHandler<AuxGroupPickerScreen.Action>() {
+                        public void onAction(ActionEvent<AuxGroupPickerScreen.Action> event) {
+                            groupsSelectedFromLookup((ArrayList<AuxFieldManager>)event.getData());
+                        }
+                    });
+                }
 
-              //  val = auxValsTable.getObject(r,c);
+                ScreenWindow modal = new ScreenWindow("Aux Group Selection", "auxGroupScreen", "",
+                                                      true, false);
+                modal.setName(consts.get("auxGroupSelection"));
+                //qaEventScreen.setType(QaeventPickerScreen.Type.SAMPLE);
+                //qaEventScreen.draw();
+                modal.setContent(auxGroupScreen);
+                auxGroupScreen.draw();
+            }
 
-// FIXME missing table col!!! using old table format?
-
+            public void onStateChange(StateChangeEvent<State> event) {
+                addAuxButton.enable(EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()));
             }
         });
 
-        auxValsTable.addRowAddedHandler(new RowAddedHandler() {
-            public void onRowAdded(RowAddedEvent event) {
-                // FIXME add row added handler
+        removeAuxButton = (AppButton)def.getWidget("removeAuxButton");
+        addScreenHandler(removeAuxButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                if(Window.confirm(consts.get("removeAuxMessage")))
+                    Window.alert("yes");
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                removeAuxButton.enable(EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()));
             }
         });
 
-        auxValsTable.addRowDeletedHandler(new RowDeletedHandler() {
-            public void onRowDeleted(RowDeletedEvent event) {
-                // FIXME add row delete handler;
-            }
-        });
 
         auxMethod = (TextBox)def.getWidget("auxMethod");
         addScreenHandler(auxMethod, new ScreenEventHandler<String>() {
@@ -172,8 +151,7 @@ public class AuxDataTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                auxMethod.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE,State.DELETE).contains(event.getState()));
-                auxMethod.setQueryMode(event.getState() == State.QUERY);
+                auxMethod.enable(false);
             }
         });
 
@@ -188,8 +166,7 @@ public class AuxDataTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                auxUnits.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE,State.DELETE).contains(event.getState()));
-                auxUnits.setQueryMode(event.getState() == State.QUERY);
+                auxUnits.enable(false);
             }
         });
 
@@ -204,9 +181,38 @@ public class AuxDataTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                auxDesc.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE,State.DELETE).contains(event.getState()));
-                auxDesc.setQueryMode(event.getState() == State.QUERY);
+                auxDesc.enable(false);
             }
         });
+    }
+    
+    private void groupsSelectedFromLookup(ArrayList<AuxFieldManager> fields){
+        AuxFieldManager man;
+        AuxFieldViewDO fieldDO;
+        TableDataRow row;
+        
+        auxValsTable.fireEvents(false);
+        for(int i=0; i<fields.size(); i++){
+            man = fields.get(i);
+            
+            for(int j=0; j<man.count(); j++){
+                fieldDO = man.getAuxFieldAt(j);
+                
+                row = new TableDataRow(3);
+                row.cells.get(0).value = fieldDO.getIsReportable();
+                row.cells.get(1).value = fieldDO.getAnalyteName();
+                //TODO not sure right now...row.cells.get(2).value = fieldDO.get;
+                auxValsTable.addRow(row);
+            }
+        }
+        auxValsTable.fireEvents(true);
+    }
+    
+    public void setData(){
+        
+    }
+    
+    public void draw(){
+        
     }
 }

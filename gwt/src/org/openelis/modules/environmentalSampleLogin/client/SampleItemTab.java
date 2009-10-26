@@ -50,17 +50,15 @@ import com.google.gwt.event.shared.HandlerRegistration;
 public class SampleItemTab extends Screen implements HasActionHandlers<SampleItemTab.Action> {
     public enum Action {CHANGED};
     private boolean loaded;
-    private Screen parentScreen;
     
     private SampleMetaMap meta;
     protected SampleItemViewDO sampleItem;
     protected Dropdown<Integer> typeOfSampleId, sourceOfSampleId, containerId, unitOfMeasureId;
 
-    public SampleItemTab(ScreenDefInt def, Screen parentScreen) {
+    public SampleItemTab(ScreenDefInt def) {
         setDef(def);
         
         meta = new SampleMetaMap("sample.");
-        this.parentScreen = parentScreen;
         
         initialize();
         

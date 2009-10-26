@@ -58,17 +58,15 @@ import com.google.gwt.user.client.Window;
 
 public class StorageTab extends Screen {
     private boolean loaded;
-    protected Screen parentScreen;
-    
+
     protected TableWidget storageTable;
     
     protected StorageManager manager;
     protected SampleDataBundle data;
 
-    public StorageTab(ScreenDefInt def, Screen parentScreen) {
+    public StorageTab(ScreenDefInt def) {
         service = new ScreenService("OpenELISServlet?service=org.openelis.modules.storage.server.StorageService");
         setDef(def);
-        this.parentScreen = parentScreen;
         
         initialize();
     }
