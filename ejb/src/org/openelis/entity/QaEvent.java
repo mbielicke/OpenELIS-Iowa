@@ -62,7 +62,7 @@ import org.openelis.utils.Auditable;
                 query = "select new org.openelis.domain.QaEventVO(q.id,q.name,q.description,q.testId," +
                         "q.typeId,q.isBillable,q.reportingSequence,t.name,m.name)"
                       + " from QaEvent q left join q.test t left join q.test.method m where q.name = :name"),
-    @NamedQuery( name = "QaEvent.FetchByTest",
+    @NamedQuery( name = "QaEvent.FetchByTestId",
                 query = "select new org.openelis.domain.QaEventVO(q.id,q.name,q.description,q.testId," +
                 		"q.typeId,q.isBillable,q.reportingSequence,t.name,m.name)"
                       + " from QaEvent q left join q.test t left join t.method m where q.testId = :testId" +
