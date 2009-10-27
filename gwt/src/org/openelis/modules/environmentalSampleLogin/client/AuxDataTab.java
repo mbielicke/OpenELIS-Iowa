@@ -28,33 +28,35 @@ package org.openelis.modules.environmentalSampleLogin.client;
 import java.util.ArrayList;
 import java.util.EnumSet;
 
-import org.openelis.domain.AuxFieldDO;
 import org.openelis.domain.AuxFieldViewDO;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
+import org.openelis.gwt.event.GetMatchesEvent;
+import org.openelis.gwt.event.GetMatchesHandler;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
+import org.openelis.gwt.widget.table.TableColumn;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.gwt.widget.table.event.CellEditedEvent;
 import org.openelis.gwt.widget.table.event.CellEditedHandler;
+import org.openelis.manager.AuxDataManager;
 import org.openelis.manager.AuxFieldManager;
 import org.openelis.modules.auxGroupPicker.client.AuxGroupPickerScreen;
 
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.logical.shared.SelectionEvent;
-import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.user.client.Window;
 
-public class AuxDataTab extends Screen {
+public class AuxDataTab extends Screen implements GetMatchesHandler{
     private boolean loaded;
     
     protected AuxGroupPickerScreen auxGroupScreen;
@@ -62,7 +64,7 @@ public class AuxDataTab extends Screen {
     protected AppButton addAuxButton, removeAuxButton;
     protected TextBox auxMethod, auxUnits, auxDesc;
     
-    //protected StorageManager manager;
+    protected AuxDataManager manager;
     
     public AuxDataTab(ScreenDefInt def) {
         service = new ScreenService("OpenELISServlet?service=org.openelis.modules.auxiliary.server.AuxiliaryService");
@@ -83,6 +85,10 @@ public class AuxDataTab extends Screen {
                 auxValsTable.setQueryMode(event.getState() == State.QUERY);
             }
         });
+        
+        //TODO add matches handler to value col
+      //  AutoComplete<Integer> ac = (AutoComplete<Integer>)auxValsTable.columns.get(2).getColumnWidget();
+      //  ac.addGetMatchesHandler(this);
         
         auxValsTable.addCellEditedHandler(new CellEditedHandler(){
             public void onCellUpdated(CellEditedEvent event) {
@@ -208,11 +214,20 @@ public class AuxDataTab extends Screen {
         auxValsTable.fireEvents(true);
     }
     
-    public void setData(){
+    public void onGetMatches(GetMatchesEvent event) {
+        // TODO Auto-generated method stub
         
     }
     
+    public void setManager(AuxDataManager manager){
+        this.manager = manager;
+        loaded = false;
+    }
+    
     public void draw(){
-        
+        if(!loaded){
+            DataChangeEvent.fire(this);
+            loaded = true;
+        }
     }
 }
