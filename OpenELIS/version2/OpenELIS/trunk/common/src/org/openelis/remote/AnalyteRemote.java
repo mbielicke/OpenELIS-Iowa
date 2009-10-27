@@ -49,6 +49,6 @@ public interface AnalyteRemote {
 
     public void delete(Integer id) throws Exception;
     
-	public ArrayList<IdNameVO> findByName(String name, int maxResults);
+	public ArrayList<IdNameVO> fetchByName(String name, int maxResults);
 	 
 }
