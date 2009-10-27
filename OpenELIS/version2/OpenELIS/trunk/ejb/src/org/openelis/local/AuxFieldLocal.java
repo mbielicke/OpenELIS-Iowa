@@ -27,10 +27,14 @@ package org.openelis.local;
 
 import java.util.ArrayList;
 
+import javax.ejb.Local;
+
 import org.openelis.domain.AuxFieldViewDO;
 
+@Local
 public interface AuxFieldLocal {
     public ArrayList<AuxFieldViewDO> fetchById(Integer id) throws Exception;
+    public ArrayList<AuxFieldViewDO> fetchByGroupId(Integer groupId) throws Exception;
     public AuxFieldViewDO add(AuxFieldViewDO data) throws Exception;
     public AuxFieldViewDO update(AuxFieldViewDO data) throws Exception;
 }

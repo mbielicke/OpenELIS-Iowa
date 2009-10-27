@@ -53,7 +53,12 @@ import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
-@NamedQueries({@NamedQuery(name = "AuxField.FetchAllByGroupId", query = "select distinct new org.openelis.domain.AuxFieldViewDO(af.id, af.auxFieldGroupId, af.sortOrder,"+
+@NamedQueries({@NamedQuery(name = "AuxField.FetchById", query = "select distinct new org.openelis.domain.AuxFieldViewDO(af.id, af.auxFieldGroupId, af.sortOrder,"+
+                           " af.analyteId,af.description,af.methodId,af.unitOfMeasureId,af.isRequired,"+
+                           " af.isActive,af.isReportable,s.id,a.name,m.name,s.name) " +
+                           " from AuxField af left join af.scriptlet s left join af.analyte a left join af.method m where " + 
+                           " af.id = :id"),
+               @NamedQuery(name = "AuxField.FetchAllByGroupId", query = "select distinct new org.openelis.domain.AuxFieldViewDO(af.id, af.auxFieldGroupId, af.sortOrder,"+
                        " af.analyteId,af.description,af.methodId,af.unitOfMeasureId,af.isRequired,"+
                        " af.isActive,af.isReportable,s.id,a.name,m.name,s.name) " +
                        " from AuxField af left join af.scriptlet s left join af.analyte a left join af.method m where af.auxFieldGroupId = :auxFieldGroupId order by af.sortOrder "),

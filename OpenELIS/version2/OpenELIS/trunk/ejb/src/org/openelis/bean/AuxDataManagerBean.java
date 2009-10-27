@@ -23,17 +23,29 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.local;
+package org.openelis.bean;
 
-import java.util.ArrayList;
+import javax.ejb.Stateless;
+import javax.ejb.TransactionManagement;
+import javax.ejb.TransactionManagementType;
 
-import javax.ejb.Local;
+import org.jboss.annotation.security.SecurityDomain;
+import org.openelis.manager.AuxDataManager;
+import org.openelis.remote.AuxDataManagerRemote;
 
-import org.openelis.domain.AuxFieldValueDO;
+@Stateless
+@SecurityDomain("openelis")
+//@RolesAllowed("organization-select")
+@TransactionManagement(TransactionManagementType.BEAN)
 
-@Local
-public interface AuxFieldValueLocal {
-    public ArrayList<AuxFieldValueDO> fetchById(Integer id) throws Exception;
-    public AuxFieldValueDO add(AuxFieldValueDO data) throws Exception;
-    public AuxFieldValueDO update(AuxFieldValueDO data) throws Exception;
+public class AuxDataManagerBean implements AuxDataManagerRemote {
+    
+    public AuxDataManager fetchById(Integer referenceId, Integer referenceTableId) throws Exception {
+        return AuxDataManager.fetchById(referenceId, referenceTableId);
+    }
+
+    public AuxDataManager fetchByIdWithFields(Integer referenceId, Integer referenceTableId)
+                                                                                            throws Exception {
+        return AuxDataManager.fetchByIdWithFields(referenceId, referenceTableId);
+    }
 }

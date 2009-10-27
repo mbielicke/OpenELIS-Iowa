@@ -53,9 +53,25 @@ public class AuxFieldBean implements AuxFieldLocal {
     public ArrayList<AuxFieldViewDO> fetchById(Integer id) throws Exception {
         Query query;
         ArrayList<AuxFieldViewDO> data;
-        
+
+        query = manager.createNamedQuery("AuxField.FetchById");
+        query.setParameter("id", id);
+        try {
+            data = DataBaseUtil.toArrayList(query.getResultList());
+        } catch (NoResultException e) {
+            throw new NotFoundException();
+        } catch (Exception e) {
+            throw new DatabaseException(e);
+        }
+        return data;
+    }
+    
+    public ArrayList<AuxFieldViewDO> fetchByGroupId(Integer groupId) throws Exception {
+        Query query;
+        ArrayList<AuxFieldViewDO> data;
+
         query = manager.createNamedQuery("AuxField.FetchAllActiveByGroupId");
-        query.setParameter("auxFieldGroupId", id);
+        query.setParameter("auxFieldGroupId", groupId);
         try {
             data = DataBaseUtil.toArrayList(query.getResultList());
         } catch (NoResultException e) {

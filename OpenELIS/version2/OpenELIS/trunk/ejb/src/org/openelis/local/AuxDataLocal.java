@@ -29,11 +29,12 @@ import java.util.ArrayList;
 
 import javax.ejb.Local;
 
-import org.openelis.domain.AuxFieldValueDO;
+import org.openelis.domain.AuxDataDO;
 
 @Local
-public interface AuxFieldValueLocal {
-    public ArrayList<AuxFieldValueDO> fetchById(Integer id) throws Exception;
-    public AuxFieldValueDO add(AuxFieldValueDO data) throws Exception;
-    public AuxFieldValueDO update(AuxFieldValueDO data) throws Exception;
+public interface AuxDataLocal {
+    public ArrayList<AuxDataDO> fetchById(Integer referenceId, Integer referenceTableId) throws Exception;
+    public AuxDataDO add(AuxDataDO data) throws Exception;
+    public AuxDataDO update(AuxDataDO data) throws Exception;
+    public void delete(AuxDataDO data) throws Exception;
 }

@@ -23,17 +23,29 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.local;
+package org.openelis.manager;
 
-import java.util.ArrayList;
+import org.openelis.gwt.common.ValidationErrorsList;
 
-import javax.ejb.Local;
-
-import org.openelis.domain.AuxFieldValueDO;
-
-@Local
-public interface AuxFieldValueLocal {
-    public ArrayList<AuxFieldValueDO> fetchById(Integer id) throws Exception;
-    public AuxFieldValueDO add(AuxFieldValueDO data) throws Exception;
-    public AuxFieldValueDO update(AuxFieldValueDO data) throws Exception;
+public class AuxDataManagerProxy {
+    
+    public AuxDataManager fetchById(Integer referenceId, Integer referenceTableId) throws Exception {
+        return null;
+    }
+    
+    public AuxDataManager fetchWithFields(Integer referenceId, Integer referenceTableId) throws Exception {
+        return null;
+    }
+    
+    public AuxDataManager add(AuxDataManager man) throws Exception {
+        return null;
+    }
+    
+    public AuxDataManager update(AuxDataManager man) throws Exception {
+        return null;
+    }
+    
+    public void validate(AuxDataManager man, ValidationErrorsList errorsList) throws Exception {
+        
+    }
 }
