@@ -29,13 +29,6 @@ package org.openelis.entity;
   * StandardNote Entity POJO for database 
   */
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.openelis.entity.Dictionary;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.util.XMLUtil;
-
-import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -48,12 +41,13 @@ import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+
+import org.openelis.util.XMLUtil;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
-@NamedQueries({@NamedQuery(name = "StandardNote.StandardNote", query = "select new org.openelis.domain.StandardNoteDO(s.id,s.name,s.description,s.typeId,s.text) from StandardNote s where s.id = :id"),
-    @NamedQuery(name = "StandardNote.StandardNoteByType", query = "select new org.openelis.domain.StandardNoteDO(s.id,s.name,s.description,s.typeId,s.text) from StandardNote s where "+
-                      " (s.name like :name OR s.description like :desc) and s.typeId = :type order by s.name"),
-    @NamedQuery(name = "StandardNote.TypeByNameDesc", query="SELECT distinct new org.openelis.domain.IdNameDO(d.id, d.entry) " + "FROM StandardNote s LEFT JOIN s.dictionary d WHERE (s.name like :name OR s.description like :desc) ORDER BY d.entry")})
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+@NamedQueries({@NamedQuery(name = "StandardNote.StandardNote", query = "select new org.openelis.domain.StandardNoteDO(s.id,s.name,s.description,s.typeId,s.text) from StandardNote s where s.id = :id")})
             
     
 @Entity

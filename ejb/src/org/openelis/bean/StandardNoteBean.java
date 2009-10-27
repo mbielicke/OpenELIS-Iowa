@@ -235,35 +235,6 @@ public class StandardNoteBean implements StandardNoteRemote{
         
         return (ArrayList<StandardNoteDO>)list;
     }
-    
-    public List queryForType(HashMap fields) throws Exception {
-        Query query = manager.createNamedQuery("StandardNote.TypeByNameDesc");
-        
-        query.setParameter("name", ((QueryStringField)fields.get(StandardNoteMap.getName())).getParameter().get(0));
-        query.setParameter("desc", ((QueryStringField)fields.get(StandardNoteMap.getDescription())).getParameter().get(0));
-        
-        List returnList = query.getResultList();
-        
-        if(returnList == null)
-         throw new LastPageException();
-        else
-         return returnList;
-    }
-    
-    public List getStandardNoteByType(HashMap fields) throws Exception{
-    	Query query = manager.createNamedQuery("StandardNote.StandardNoteByType");
-        
-        query.setParameter("name", ((QueryStringField)fields.get(StandardNoteMap.getName())).getParameter().get(0));
-        query.setParameter("desc", ((QueryStringField)fields.get(StandardNoteMap.getDescription())).getParameter().get(0));
-        query.setParameter("type", new Integer(((String)((QueryIntegerField)fields.get(StandardNoteMap.getTypeId())).getValue()).trim()));
-        
-        List returnList = query.getResultList();
-        
-        if(returnList == null)
-         throw new LastPageException();
-        else
-         return returnList;
-    }
 
 	private void validateStandardNote(StandardNoteDO standardNoteDO) throws Exception{
 	    ValidationErrorsList list = new ValidationErrorsList();

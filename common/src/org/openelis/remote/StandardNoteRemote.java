@@ -26,7 +26,6 @@
 package org.openelis.remote;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import javax.ejb.Remote;
@@ -49,16 +48,10 @@ public interface StandardNoteRemote {
 	//method to lock and return a whole standard note
 	public StandardNoteDO getStandardNoteAndLock(Integer standardNoteId, String session) throws Exception;
 	
-    //method to return a whole standard note by type
-    public List getStandardNoteByType(HashMap fields) throws Exception;
-	
 	 //method to query for standard notes
 	 public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception;
      
 	 public ArrayList<StandardNoteDO> newQuery(ArrayList<QueryData> fields) throws Exception;
-	 
-     //method to query for standard notes
-     public List queryForType(HashMap fields) throws Exception;
 	 
 	 public void deleteStandardNote(Integer standardNoteId) throws Exception;
 }
