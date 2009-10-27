@@ -7,7 +7,7 @@ public class AuxDataDO extends DataObject {
     
     protected Integer id;
     protected Integer sortOrder;
-    protected Integer auxFieldGroupId;
+    protected Integer auxFieldId;
     protected Integer referenceId;
     protected Integer referenceTableId;
     protected String isReportable;
@@ -18,11 +18,11 @@ public class AuxDataDO extends DataObject {
         
     }
     
-    public AuxDataDO(Integer id, Integer sortOrder, Integer auxFieldGroupId, Integer referenceId,
+    public AuxDataDO(Integer id, Integer sortOrder, Integer auxFieldId, Integer referenceId,
                      Integer referenceTableId, String isReportable, Integer typeId, String value){
         setId(id);
         setSortOrder(sortOrder);
-        setAuxFieldGroupId(auxFieldGroupId);
+        setAuxFieldId(auxFieldId);
         setReferenceId(referenceId);
         setReferenceTableId(referenceTableId);
         setIsReportable(isReportable);
@@ -50,12 +50,12 @@ public class AuxDataDO extends DataObject {
         _changed = true;
     }
 
-    public Integer getAuxFieldGroupId() {
-        return auxFieldGroupId;
+    public Integer getAuxFieldId() {
+        return auxFieldId;
     }
 
-    public void setAuxFieldGroupId(Integer auxFieldGroupId) {
-        this.auxFieldGroupId = auxFieldGroupId;
+    public void setAuxFieldId(Integer auxFieldId) {
+        this.auxFieldId = auxFieldId;
         _changed = true;
     }
 

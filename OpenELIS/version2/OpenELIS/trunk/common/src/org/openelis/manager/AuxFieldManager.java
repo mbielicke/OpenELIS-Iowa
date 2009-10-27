@@ -28,6 +28,10 @@ public class AuxFieldManager implements RPC {
         return afm;
     }
 
+    public static AuxFieldManager fetchById(Integer id) throws Exception {
+        return proxy().fetchById(id);
+    }
+    
     /**
      * Creates a new instance of this object with the specified auxiliary field
      * id. Use this function to load an instance of this object from database.

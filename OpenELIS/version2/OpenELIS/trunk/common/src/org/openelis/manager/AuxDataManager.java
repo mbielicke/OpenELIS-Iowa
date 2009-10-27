@@ -3,80 +3,85 @@ package org.openelis.manager;
 import java.util.ArrayList;
 
 import org.openelis.domain.AuxDataDO;
-import org.openelis.domain.AuxFieldGroupDO;
-import org.openelis.domain.AuxFieldViewDO;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.ValidationErrorsList;
 
 public class AuxDataManager implements RPC {
 
-    private static final long                            serialVersionUID = 1L;
-/*
-    protected ArrayList<AuxDataListItem> items, deletedList;
-    
-    protected transient static AuxFieldGroupManagerProxy proxy;
+    private static final long                      serialVersionUID = 1L;
 
-    public static AuxFieldGroupManager getInstance() {
-        AuxFieldGroupManager afgm;
+    protected ArrayList<AuxDataListItem>           items, deletedList;
+    protected Integer                              referenceId, referenceTableId;
 
-        afgm = new AuxFieldGroupManager();
-        afgm.group = new AuxFieldGroupDO();
+    protected transient static AuxDataManagerProxy proxy;
 
-        return afgm;
+    public static AuxDataManager getInstance() {
+        AuxDataManager adm;
+
+        adm = new AuxDataManager();
+        adm.items = new ArrayList<AuxDataListItem>();
+
+        return adm;
     }
 
-    public static AuxFieldGroupManager fetchById(Integer id) throws Exception {
-        return proxy().fetchById(id);
+    public static AuxDataManager fetchById(Integer referenceId, Integer referenceTableId)
+                                                                                         throws Exception {
+        return proxy().fetchById(referenceId, referenceTableId);
     }
 
-    public static AuxFieldGroupManager fetchWithFields(Integer id) throws Exception {
-        return proxy().fetchWithFields(id);
+    public static AuxDataManager fetchByIdWithFields(Integer referenceId, Integer referenceTableId)
+                                                                                               throws Exception {
+        return proxy().fetchWithFields(referenceId, referenceTableId);
     }
 
-    public AuxFieldGroupDO getGroup() {
-        return group;
+    public Integer getReferenceId() {
+        return referenceId;
     }
 
-    public void setGroup(AuxFieldGroupDO group) {
-        this.group = group;
+    public void setReferenceId(Integer referenceId) {
+        this.referenceId = referenceId;
+    }
+
+    public Integer getReferenceTableId() {
+        return referenceTableId;
+    }
+
+    public void setReferenceTableId(Integer referenceTableId) {
+        this.referenceTableId = referenceTableId;
     }
 
     //
     // other managers
     //
-    public AuxFieldManager getFields() throws Exception {
-        if (fields == null) {
-            if (group.getId() != null) {
+    public AuxFieldManager getFieldsAt(int i) throws Exception {
+        AuxDataListItem item = items.get(i);
+        if (item.fields == null) {
+            if (item.data != null && item.data.getAuxFieldId() != null) {
                 try {
-                    fields = AuxFieldManager.fetchByAuxFieldGroupId(group.getId());
+                    item.fields = AuxFieldManager.fetchById(item.data.getAuxFieldId());
+
                 } catch (NotFoundException e) {
                     // ignore
                 } catch (Exception e) {
                     throw e;
                 }
             }
-            if (fields == null)
-                fields = AuxFieldManager.getInstance();
         }
-        return fields;
+
+        if (item.fields == null)
+            item.fields = AuxFieldManager.getInstance();
+
+        return item.fields;
     }
 
     // service methods
-    public AuxFieldGroupManager add() throws Exception {
+    public AuxDataManager add() throws Exception {
         return proxy().add(this);
     }
 
-    public AuxFieldGroupManager update() throws Exception {
+    public AuxDataManager update() throws Exception {
         return proxy().update(this);
-    }
-
-    public AuxFieldGroupManager fetchForUpdate() throws Exception {
-        return proxy().fetchForUpdate(group.getId());
-    }
-
-    public AuxFieldGroupManager abortUpdate() throws Exception {
-        return proxy().abortUpdate(group.getId());
     }
 
     public void validate() throws Exception {
@@ -92,9 +97,9 @@ public class AuxDataManager implements RPC {
         proxy().validate(this, errorsList);
     }
 
-    private static AuxFieldGroupManagerProxy proxy() {
+    private static AuxDataManagerProxy proxy() {
         if (proxy == null)
-            proxy = new AuxFieldGroupManagerProxy();
+            proxy = new AuxDataManagerProxy();
 
         return proxy;
     }
@@ -103,6 +108,6 @@ public class AuxDataManager implements RPC {
         private static final long serialVersionUID = 1L;
 
         AuxDataDO                 data;
-        AuxFieldGroupManager      groups;
-    }*/
+        AuxFieldManager           fields;
+    }
 }
