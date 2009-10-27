@@ -34,13 +34,28 @@ import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.AuxFieldLocal;
 
 public class AuxFieldManagerProxy {
+    public AuxFieldManager fetchById(Integer id) throws Exception {
+        AuxFieldLocal l;
+        ArrayList<AuxFieldViewDO> data;
+        AuxFieldManager m;
+
+        l = local();
+        data = l.fetchById(id);
+        m = AuxFieldManager.getInstance();
+        
+        for(int i=0; i<data.size(); i++)
+            m.addAuxField(data.get(i));
+
+        return m;
+    }
+    
     public AuxFieldManager fetchByAuxFieldGroupId(Integer auxFieldGroupId) throws Exception {
         AuxFieldLocal l;
         ArrayList<AuxFieldViewDO> data;
         AuxFieldManager m;
 
         l = local();
-        data = l.fetchById(auxFieldGroupId);
+        data = l.fetchByGroupId(auxFieldGroupId);
         m = AuxFieldManager.getInstance();
         m.setAuxFieldGroupId(auxFieldGroupId);
         
