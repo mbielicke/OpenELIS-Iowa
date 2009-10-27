@@ -86,7 +86,7 @@ public class AnalyteScreen extends Screen {
 	public AnalyteScreen() throws Exception {                
         super((ScreenDefInt)GWT.create(AnalyteScreenDef.class));
         service = new ScreenService("controller?service=org.openelis.modules.analyte.server.AnalyteService");
-        security = OpenELIS.security.getModule("project");
+        security = OpenELIS.security.getModule("analyte");
         if (security == null)
             throw new SecurityException("screenPermException", "Analyte Screen");
 

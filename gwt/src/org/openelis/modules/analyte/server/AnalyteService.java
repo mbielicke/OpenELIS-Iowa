@@ -95,7 +95,7 @@ public class AnalyteService {
     
     public ArrayList<IdNameVO> findByName(String name) throws Exception {
     	try {
-    		return remote().findByName(name,10);
+    		return remote().fetchByName(name,10);
     	}catch(RuntimeException e) {
     		throw new DatabaseException(e);
     	}

@@ -221,7 +221,7 @@ public class AuxiliaryService implements
         
         if(("analyte").equals(cat)) {
             aremote = (AnalyteRemote)EJBFactory.lookup("openelis/AnalyteBean/remote");
-            entries = aremote.findByName(match.trim() + "%", 10);
+            entries = aremote.fetchByName(match.trim() + "%", 10);
             //dataModel = getAutocompleteModel(entries);
         } else if(("method").equals(cat)) {
             mremote = (MethodRemote)EJBFactory.lookup("openelis/MethodBean/remote");
