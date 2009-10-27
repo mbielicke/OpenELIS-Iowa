@@ -27,34 +27,43 @@ package org.openelis.manager;
 
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.services.ScreenService;
+import org.openelis.modules.auxiliary.client.AuxiliaryServiceParams;
 
-public class AuxFieldManagerProxy {
+public class AuxDataManagerProxy {
     protected static final String AUXILIARY_SERVICE_URL = "org.openelis.modules.auxiliary.server.AuxiliaryService";
     protected ScreenService service;
     
-    public AuxFieldManagerProxy(){
+    public AuxDataManagerProxy(){
         service = new ScreenService("OpenELISServlet?service="+AUXILIARY_SERVICE_URL);
     }
     
-    public AuxFieldManager fetchById(Integer id) throws Exception {
-        return service.call("fetchAuxFieldById", id);
+    public AuxDataManager fetchById(Integer referenceId, Integer referenceTableId) throws Exception {
+        AuxiliaryServiceParams p = new AuxiliaryServiceParams();
+        p.referenceId = referenceId;
+        p.referenceTableId = referenceTableId;
+        
+        return service.call("", p);
     }
     
-    public AuxFieldManager fetchByAuxFieldGroupId(Integer auxFieldGroupId) throws Exception {
-        return service.call("fetchByAuxFieldGroupId", auxFieldGroupId);
+    public AuxDataManager fetchWithFields(Integer referenceId, Integer referenceTableId) throws Exception {
+        AuxiliaryServiceParams p = new AuxiliaryServiceParams();
+        p.referenceId = referenceId;
+        p.referenceTableId = referenceTableId;
+        
+        return service.call("", p);
     }
     
-    public AuxFieldManager add(AuxFieldManager man) throws Exception {
+    public AuxDataManager add(AuxDataManager man) throws Exception {
         assert false : "not supported";
         return null;
     }
     
-    public AuxFieldManager update(AuxFieldManager man) throws Exception {
+    public AuxDataManager update(AuxDataManager man) throws Exception {
         assert false : "not supported";
         return null;
     }
     
-    public void validate(AuxFieldManager man, ValidationErrorsList errorsList) throws Exception {
+    public void validate(AuxDataManager man, ValidationErrorsList errorsList) throws Exception {
         
     }
 }
