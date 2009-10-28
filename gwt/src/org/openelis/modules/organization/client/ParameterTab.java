@@ -111,7 +111,7 @@ public class ParameterTab extends Screen {
             public void onClick(ClickEvent event) {
                 int r;
 
-                r = table.getSelectedIndex();
+                r = table.getSelectedRow();
                 if (r > -1 && table.numRows() > 0)
                     table.deleteRow(r);
             }
@@ -146,7 +146,7 @@ public class ParameterTab extends Screen {
         model.add(new TableDataRow(null, ""));
         for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("parameter_type"))
             model.add(new TableDataRow(d.getId(), d.getEntry()));
-        ((Dropdown<Integer>)table.columns.get(0).getColumnWidget()).setModel(model);
+        ((Dropdown<Integer>)table.getColumns().get(0).getColumnWidget()).setModel(model);
     }
 
     private ArrayList<TableDataRow> getTableModel() {

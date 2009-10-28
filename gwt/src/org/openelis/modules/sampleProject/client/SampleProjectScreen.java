@@ -93,7 +93,7 @@ public class SampleProjectScreen extends Screen implements HasActionHandlers<Sam
             }
         });
 
-        final AutoComplete<Integer> project = ((AutoComplete<Integer>)sampleProjectTable.columns.get(0).colWidget);
+        final AutoComplete<Integer> project = ((AutoComplete<Integer>)sampleProjectTable.getColumns().get(0).colWidget);
         sampleProjectTable.addCellEditedHandler(new CellEditedHandler() {
             public void onCellUpdated(CellEditedEvent event) {
                 int row,col;
@@ -118,7 +118,7 @@ public class SampleProjectScreen extends Screen implements HasActionHandlers<Sam
                         if(selectedRow.key != null)
                             des = (String)selectedRow.cells.get(1).value;
                             
-                        sampleProjectTable.setCell(sampleProjectTable.getSelectedIndex(), 1, des);
+                        sampleProjectTable.setCell(sampleProjectTable.getSelectedRow(), 1, des);
                         
                         projectDO.setProjectId((Integer)selectedRow.key);
                         projectDO.setProjectName((String)selectedRow.cells.get(0).value);
@@ -173,7 +173,7 @@ public class SampleProjectScreen extends Screen implements HasActionHandlers<Sam
         final AppButton projectRemoveButton = (AppButton)def.getWidget("projectRemoveButton");
         addScreenHandler(projectRemoveButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-                int selectedRow = sampleProjectTable.getSelectedIndex();
+                int selectedRow = sampleProjectTable.getSelectedRow();
                 if (selectedRow > -1 && sampleProjectTable.numRows() > 0) {
                     sampleProjectTable.deleteRow(selectedRow);
                 }

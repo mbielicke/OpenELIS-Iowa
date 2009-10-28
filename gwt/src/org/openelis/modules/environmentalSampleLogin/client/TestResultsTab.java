@@ -222,12 +222,12 @@ MISSING TABLE COL!!! USING OLD TABLE FORMAT?
         
         
         if(resultTableCols == null)
-            resultTableCols = (ArrayList<TableColumn>)testResultsTable.columns.clone();
-        testResultsTable.columns.clear();
+            resultTableCols = (ArrayList<TableColumn>)testResultsTable.getColumns().clone();
+        testResultsTable.getColumns().clear();
         testResultsTable.clear();
         
        if(numOfCols < 5)
-           width=(new Integer(testResultsTable.width)-(numOfCols*2)) / numOfCols;
+           width=(new Integer(testResultsTable.getTableWidth())-(numOfCols*2)) / numOfCols;
         
         for(int i = 0; i < numOfCols; i++) {
             col = resultTableCols.get(i);

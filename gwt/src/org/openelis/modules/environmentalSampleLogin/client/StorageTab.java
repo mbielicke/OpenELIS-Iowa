@@ -155,7 +155,7 @@ public class StorageTab extends Screen {
             }
         });
         
-        final AutoComplete<Integer> location = ((AutoComplete<Integer>)storageTable.columns.get(1).colWidget);
+        final AutoComplete<Integer> location = ((AutoComplete<Integer>)storageTable.getColumns().get(1).colWidget);
         location.addGetMatchesHandler(new GetMatchesHandler(){
             public void onGetMatches(GetMatchesEvent event) {
                 AutocompleteRPC rpc = new AutocompleteRPC();
@@ -207,7 +207,7 @@ public class StorageTab extends Screen {
         final AppButton removeStorageButton = (AppButton)def.getWidget("removeStorageButton");
         addScreenHandler(removeStorageButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-                int selectedRow = storageTable.getSelectedIndex();
+                int selectedRow = storageTable.getSelectedRow();
                 if (selectedRow > -1 && storageTable.numRows() > 0) {
                     storageTable.deleteRow(selectedRow);
                 }

@@ -483,7 +483,7 @@ public class ProjectScreen extends Screen {
         removeParameterButton = (AppButton)def.getWidget("removeParameterButton");
         addScreenHandler(removeParameterButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-            	parameterTable.deleteRow(parameterTable.getSelectedIndex());
+            	parameterTable.deleteRow(parameterTable.getSelectedRow());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -563,7 +563,7 @@ public class ProjectScreen extends Screen {
         });
         
         ArrayList<TableDataRow> model = getDictionaryIdEntryList(DictionaryCache.getListByCategorySystemName("project_parameter_operations"));
-        ((Dropdown)parameterTable.columns.get(1).getColumnWidget()).setModel(model);
+        ((Dropdown)parameterTable.getColumns().get(1).getColumnWidget()).setModel(model);
     }
     
     private void query() {

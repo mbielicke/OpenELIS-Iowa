@@ -142,7 +142,7 @@ public class QAEventsTab extends Screen {
         final AppButton removeSampleQAButton = (AppButton)def.getWidget("removeSampleQAButton");
         addScreenHandler(removeSampleQAButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-                int selectedRow = sampleQATable.getSelectedIndex();
+                int selectedRow = sampleQATable.getSelectedRow();
                 if (selectedRow > -1 && sampleQATable.numRows() > 0) {
                     sampleQATable.deleteRow(selectedRow);
                 }
@@ -230,7 +230,7 @@ public class QAEventsTab extends Screen {
         final AppButton removeAnalysisQAButton = (AppButton)def.getWidget("removeAnalysisQAButton");
         addScreenHandler(removeAnalysisQAButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-                int selectedRow = analysisQATable.getSelectedIndex();
+                int selectedRow = analysisQATable.getSelectedRow();
 
                 if (selectedRow > -1 && analysisQATable.numRows() > 0) {
                     analysisQATable.deleteRow(selectedRow);
@@ -389,8 +389,8 @@ public class QAEventsTab extends Screen {
         for (DictionaryDO resultDO : list) {
             model.add(new TableDataRow(resultDO.getId(), resultDO.getEntry()));
         }
-        ((Dropdown<Integer>)sampleQATable.columns.get(1).getColumnWidget()).setModel(model);
-        ((Dropdown<Integer>)analysisQATable.columns.get(1).getColumnWidget()).setModel(model);
+        ((Dropdown<Integer>)sampleQATable.getColumns().get(1).getColumnWidget()).setModel(model);
+        ((Dropdown<Integer>)analysisQATable.getColumns().get(1).getColumnWidget()).setModel(model);
     }
 
     public void setData(SampleDataBundle data) {
