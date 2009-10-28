@@ -98,7 +98,7 @@ public class SampleOrganizationScreen  extends Screen implements HasActionHandle
             }
         });
 
-        final AutoComplete<Integer> organization = ((AutoComplete<Integer>)sampleOrganizationTable.columns.get(2).colWidget);
+        final AutoComplete<Integer> organization = ((AutoComplete<Integer>)sampleOrganizationTable.getColumns().get(2).colWidget);
         sampleOrganizationTable.addCellEditedHandler(new CellEditedHandler() {
             public void onCellUpdated(CellEditedEvent event) {
                 int row,col;
@@ -134,13 +134,13 @@ public class SampleOrganizationScreen  extends Screen implements HasActionHandle
                             state = (String)selectedRow.cells.get(3).value;
                         }
 
-                        sampleOrganizationTable.setCell(sampleOrganizationTable.getSelectedIndex(),
+                        sampleOrganizationTable.setCell(sampleOrganizationTable.getSelectedRow(),
                                                         1,
                                                         id);
-                        sampleOrganizationTable.setCell(sampleOrganizationTable.getSelectedIndex(),
+                        sampleOrganizationTable.setCell(sampleOrganizationTable.getSelectedRow(),
                                                         3,
                                                         city);
-                        sampleOrganizationTable.setCell(sampleOrganizationTable.getSelectedIndex(),
+                        sampleOrganizationTable.setCell(sampleOrganizationTable.getSelectedRow(),
                                                         4,
                                                         state);
 
@@ -198,7 +198,7 @@ public class SampleOrganizationScreen  extends Screen implements HasActionHandle
         final AppButton organizationRemoveButton = (AppButton)def.getWidget("organizationRemoveButton");
         addScreenHandler(organizationRemoveButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-                int selectedRow = sampleOrganizationTable.getSelectedIndex();
+                int selectedRow = sampleOrganizationTable.getSelectedRow();
                 if (selectedRow > -1 && sampleOrganizationTable.numRows() > 0) {
                     sampleOrganizationTable.deleteRow(selectedRow);
                 }
@@ -282,7 +282,7 @@ public class SampleOrganizationScreen  extends Screen implements HasActionHandle
         for(DictionaryDO resultDO :  list){
             model.add(new TableDataRow(resultDO.getId(),resultDO.getEntry()));
         } 
-        ((Dropdown<Integer>)sampleOrganizationTable.columns.get(0).getColumnWidget()).setModel(model);
+        ((Dropdown<Integer>)sampleOrganizationTable.getColumns().get(0).getColumnWidget()).setModel(model);
     }
     
     public void setManager(SampleOrganizationManager man){

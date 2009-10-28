@@ -211,7 +211,7 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
             }
         });
         
-        qcname = (AutoComplete<String>)worksheetTable.columns.get(2).getColumnWidget();            
+        qcname = (AutoComplete<String>)worksheetTable.getColumns().get(2).getColumnWidget();            
         qcname.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
                 AutocompleteRPC trpc;
@@ -293,7 +293,7 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
             public void onClick(ClickEvent event) {
                 int r;
                 
-                r = worksheetTable.getSelectedIndex();
+                r = worksheetTable.getSelectedRow();
                 if (r > -1 && worksheetTable.numRows() > 0) 
                     worksheetTable.deleteRow(r);   
             }
@@ -394,7 +394,7 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
         removeWSAnalyteButton = (AppButton)def.getWidget("removeWSAnalyteButton");
         addScreenHandler(removeWSAnalyteButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-                int ar = worksheetAnalyteTable.activeRow;
+                int ar = worksheetAnalyteTable.getSelectedRow();
                 if(ar != -1)
                     worksheetAnalyteTable.deleteRow(ar);
             }
@@ -473,7 +473,7 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
         for(DictionaryDO resultDO :  list){
             model.add(new TableDataRow(resultDO.getId(),resultDO.getEntry()));
         } 
-        ((Dropdown)worksheetAnalyteTable.columns.get(2).getColumnWidget()).setModel(model);
+        ((Dropdown)worksheetAnalyteTable.getColumns().get(2).getColumnWidget()).setModel(model);
         
         model = new ArrayList<TableDataRow>();
         list = DictionaryCache.getListByCategorySystemName("test_worksheet_item_type");
@@ -481,7 +481,7 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
         for(DictionaryDO resultDO :  list){
             model.add(new TableDataRow(resultDO.getId(),resultDO.getEntry()));
         } 
-        ((Dropdown)worksheetTable.columns.get(1).getColumnWidget()).setModel(model);
+        ((Dropdown)worksheetTable.getColumns().get(1).getColumnWidget()).setModel(model);
         
         model = new ArrayList<TableDataRow>();
         list = DictionaryCache.getListByCategorySystemName("test_worksheet_format");

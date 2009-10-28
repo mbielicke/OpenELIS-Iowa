@@ -703,7 +703,7 @@ public class TestScreen extends Screen {
             public void onClick(ClickEvent event) {
                 int r;
                 
-                r = table.getSelectedIndex();
+                r = table.getSelectedRow();
                 if (r > -1 && table.numRows() > 0)
                     table.deleteRow(r);
             }
@@ -1167,7 +1167,7 @@ public class TestScreen extends Screen {
         revisionMethod.setModel(model);
 
         model = new ArrayList<TableDataRow>();
-        column = table.columns.get(1);
+        column = table.getColumns().get(1);
         list = DictionaryCache.getListByCategorySystemName("test_section_flags");
         model.add(new TableDataRow(null, ""));
         for (DictionaryDO resultDO : list) {
@@ -1176,7 +1176,7 @@ public class TestScreen extends Screen {
         ((Dropdown<Integer>)column.getColumnWidget()).setModel(model);
 
         model = new ArrayList<TableDataRow>();
-        column = table.columns.get(0);
+        column = table.getColumns().get(0);
         sectList = SectionCache.getSectionList();
         model.add(new TableDataRow(null, ""));
         for (SectionViewDO resultDO : sectList) {

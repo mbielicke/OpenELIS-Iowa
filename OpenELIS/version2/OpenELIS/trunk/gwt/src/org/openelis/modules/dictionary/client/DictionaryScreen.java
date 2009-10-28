@@ -359,13 +359,13 @@ public class DictionaryScreen extends Screen implements GetMatchesHandler, DragH
             
         });
 
-        relEntry = (AutoComplete<Integer>)dictEntTable.columns.get(4).getColumnWidget();
+        relEntry = (AutoComplete<Integer>)dictEntTable.getColumns().get(4).getColumnWidget();
         relEntry.addGetMatchesHandler(this);                    
         
         removeEntryButton = (AppButton)def.getWidget("removeEntryButton");
         addScreenHandler(removeEntryButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-                int selectedRow = dictEntTable.getSelectedIndex();
+                int selectedRow = dictEntTable.getSelectedRow();
                 if (selectedRow > -1 && dictEntTable.numRows() > 0) {
                     dictEntTable.deleteRow(selectedRow);
                 }

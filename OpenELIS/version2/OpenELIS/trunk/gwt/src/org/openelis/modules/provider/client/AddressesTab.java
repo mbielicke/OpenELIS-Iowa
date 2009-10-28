@@ -147,7 +147,7 @@ public class AddressesTab extends Screen {
         removeAddressButton = (AppButton)def.getWidget("removeAddressButton");
         addScreenHandler(removeAddressButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-            	int r = providerAddressTable.getSelectedIndex();
+            	int r = providerAddressTable.getSelectedRow();
             	providerAddressTable.deleteRow(r);
             }
 
@@ -162,13 +162,13 @@ public class AddressesTab extends Screen {
         model.add(new TableDataRow(null, ""));
         for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("state"))
             model.add(new TableDataRow(d.getEntry(), d.getEntry()));
-        ((Dropdown<String>)providerAddressTable.columns.get(5).getColumnWidget()).setModel(model);
+        ((Dropdown<String>)providerAddressTable.getColumns().get(5).getColumnWidget()).setModel(model);
 
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
         for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("country"))
             model.add(new TableDataRow(d.getEntry(), d.getEntry()));
-        ((Dropdown<String>)providerAddressTable.columns.get(7).getColumnWidget()).setModel(model);		
+        ((Dropdown<String>)providerAddressTable.getColumns().get(7).getColumnWidget()).setModel(model);		
 	}
 	
     private ArrayList<TableDataRow> getTableModel() {

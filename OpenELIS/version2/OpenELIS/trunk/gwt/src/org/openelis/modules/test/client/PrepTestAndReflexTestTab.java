@@ -175,7 +175,7 @@ public class PrepTestAndReflexTestTab extends Screen implements GetMatchesHandle
             }
         });
         
-        columns = testPrepTable.columns;        
+        columns = testPrepTable.getColumns();        
         ac = (AutoComplete<Integer>)columns.get(0).getColumnWidget();            
         ac.addGetMatchesHandler(this);
        
@@ -198,7 +198,7 @@ public class PrepTestAndReflexTestTab extends Screen implements GetMatchesHandle
             public void onClick(ClickEvent event) {
                 int i;
                 
-                i = testPrepTable.getSelectedIndex();                
+                i = testPrepTable.getSelectedRow();                
                 if (i > -1 && testPrepTable.numRows() > 0) 
                     testPrepTable.deleteRow(i);
                 
@@ -308,7 +308,7 @@ public class PrepTestAndReflexTestTab extends Screen implements GetMatchesHandle
             }
         });
 
-        columns = testReflexTable.columns;        
+        columns = testReflexTable.getColumns();        
         ac = (AutoComplete<Integer>)columns.get(0).getColumnWidget();            
         ac.addGetMatchesHandler(this);
         
@@ -353,7 +353,7 @@ public class PrepTestAndReflexTestTab extends Screen implements GetMatchesHandle
                 String value;
                 Integer dictId;
                                 
-                ar = testReflexTable.activeRow;                
+                ar = testReflexTable.getSelectedRow();                
                 trow =  testReflexTable.getRow(ar);               
                 arow = (TableDataRow)trow.cells.get(1).getValue();
                 
@@ -418,7 +418,7 @@ public class PrepTestAndReflexTestTab extends Screen implements GetMatchesHandle
         removeReflexTestButton = (AppButton)def.getWidget("removeReflexTestButton");
         addScreenHandler(removeReflexTestButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-                int selectedRow = testReflexTable.getSelectedIndex();
+                int selectedRow = testReflexTable.getSelectedRow();
                 if (selectedRow > -1) 
                     testReflexTable.deleteRow(selectedRow);
             }
@@ -611,7 +611,7 @@ public class PrepTestAndReflexTestTab extends Screen implements GetMatchesHandle
         for(DictionaryDO resultDO :  list){
             model.add(new TableDataRow(resultDO.getId(),resultDO.getEntry()));
         } 
-        ((Dropdown)testReflexTable.columns.get(3).getColumnWidget()).setModel(model);
+        ((Dropdown)testReflexTable.getColumns().get(3).getColumnWidget()).setModel(model);
     }
     
     private Integer getResultGroupForTestAnalyte(Integer taId) {

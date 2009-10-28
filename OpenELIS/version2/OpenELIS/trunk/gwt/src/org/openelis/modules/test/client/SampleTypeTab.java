@@ -169,7 +169,7 @@ public class SampleTypeTab extends Screen implements HasActionHandlers<SampleTyp
             public void onClick(ClickEvent event) {
                 int i;
                 
-                i = table.getSelectedIndex();
+                i = table.getSelectedRow();
                 if (i > -1 && table.numRows() > 0) 
                     table.deleteRow(i);                    
                 
@@ -191,7 +191,7 @@ public class SampleTypeTab extends Screen implements HasActionHandlers<SampleTyp
         for(DictionaryDO resultDO :  list){
             model.add(new TableDataRow(resultDO.getId(),resultDO.getEntry()));
         } 
-        ((Dropdown)table.columns.get(0).getColumnWidget()).setModel(model);
+        ((Dropdown)table.getColumns().get(0).getColumnWidget()).setModel(model);
 
 
         model = new ArrayList<TableDataRow>();
@@ -200,7 +200,7 @@ public class SampleTypeTab extends Screen implements HasActionHandlers<SampleTyp
         for(DictionaryDO resultDO :  list){
             model.add(new TableDataRow(resultDO.getId(),resultDO.getEntry()));
         } 
-        ((Dropdown)table.columns.get(1).getColumnWidget()).setModel(model);
+        ((Dropdown)table.getColumns().get(1).getColumnWidget()).setModel(model);
             
     }
     

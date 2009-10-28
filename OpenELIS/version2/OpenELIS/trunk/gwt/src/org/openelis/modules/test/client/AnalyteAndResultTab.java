@@ -288,7 +288,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
                 row = analyteTable.getRow(r);
                 value = (TableDataRow)row.cells.get(col).value;
                 key = (Integer)value.key;    
-                auto = (AutoComplete<Integer>)analyteTable.columns.get(col).getColumnWidget();
+                auto = (AutoComplete<Integer>)analyteTable.getColumns().get(col).getColumnWidget();
                 
                 try {                                                                                              
                     if((Boolean)row.data) {                        
@@ -501,11 +501,11 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
             public void onDataChange(DataChangeEvent event) {                      
                 TestAnalyteViewDO anaDO;                                              
                 
-                if(displayManager != null && analyteTable.activeRow != -1) {                    
+                if(displayManager != null && analyteTable.getSelectedRow() != -1) {                    
                     if(anaSelCol == 0)
-                        anaDO = displayManager.getTestAnalyteAt(analyteTable.activeRow, anaSelCol);
+                        anaDO = displayManager.getTestAnalyteAt(analyteTable.getSelectedRow(), anaSelCol);
                     else 
-                        anaDO = displayManager.getTestAnalyteAt(analyteTable.activeRow, anaSelCol-1);
+                        anaDO = displayManager.getTestAnalyteAt(analyteTable.getSelectedRow(), anaSelCol-1);
                                         
                     if(anaDO != null)
                         typeId.setSelection(anaDO.getTypeId());
@@ -521,7 +521,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
                 TableDataRow row;
                 int i,ar;
                 
-                ar = analyteTable.activeRow;
+                ar = analyteTable.getSelectedRow();
                 if(ar != -1  && anaSelCol != -1) {
                     row =  analyteTable.getRow(ar);
                     if((Boolean)row.data) {
@@ -552,11 +552,11 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
             public void onDataChange(DataChangeEvent event) {
                 TestAnalyteViewDO anaDO;                   
                 
-                if(displayManager != null && analyteTable.activeRow != -1) {                                                      
+                if(displayManager != null && analyteTable.getSelectedRow() != -1) {                                                      
                     if(anaSelCol == 0)
-                        anaDO = displayManager.getTestAnalyteAt(analyteTable.activeRow, anaSelCol);
+                        anaDO = displayManager.getTestAnalyteAt(analyteTable.getSelectedRow(), anaSelCol);
                     else 
-                        anaDO = displayManager.getTestAnalyteAt(analyteTable.activeRow, anaSelCol-1);
+                        anaDO = displayManager.getTestAnalyteAt(analyteTable.getSelectedRow(), anaSelCol-1);
                                         
                     if(anaDO != null)
                         isReportable.setValue(anaDO.getIsReportable());
@@ -572,7 +572,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
                 TableDataRow row;
                 int i,ar;
                 
-                ar = analyteTable.activeRow;
+                ar = analyteTable.getSelectedRow();
                 if(ar != -1  && anaSelCol != -1) {
                     row =  analyteTable.getRow(ar);
                     if((Boolean)row.data) {
@@ -604,11 +604,11 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
             public void onDataChange(DataChangeEvent event) {
                 TestAnalyteViewDO anaDO;
                 
-                if(displayManager != null && analyteTable.activeRow != -1) {
+                if(displayManager != null && analyteTable.getSelectedRow() != -1) {
                         if(anaSelCol == 0)
-                            anaDO = displayManager.getTestAnalyteAt(analyteTable.activeRow, anaSelCol);
+                            anaDO = displayManager.getTestAnalyteAt(analyteTable.getSelectedRow(), anaSelCol);
                         else 
-                            anaDO = displayManager.getTestAnalyteAt(analyteTable.activeRow, anaSelCol-1);                       
+                            anaDO = displayManager.getTestAnalyteAt(analyteTable.getSelectedRow(), anaSelCol-1);                       
                         if(anaDO != null)
                             scriptlet.setSelection(anaDO.getScriptletId(),anaDO.getScriptletName());
                         else
@@ -622,7 +622,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
                 TableDataRow row;
                 int i,ar;
                 
-                ar = analyteTable.activeRow;
+                ar = analyteTable.getSelectedRow();
                 if(ar != -1  && anaSelCol != -1) {
                     row =  analyteTable.getRow(ar);
                     if((Boolean)row.data) {
@@ -901,7 +901,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
             public void onClick(ClickEvent event) {
                int ar;
                
-               ar = resultTable.activeRow;
+               ar = resultTable.getSelectedRow();
                
                if(ar == -1)
                    return;
@@ -1225,7 +1225,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
         typeId.setModel(model);
               
         model = new ArrayList<TableDataRow>();
-        column =  resultTable.columns.get(1);
+        column =  resultTable.getColumns().get(1);
         list = DictionaryCache.getListByCategorySystemName("test_result_type");        
         model.add(new TableDataRow(null, ""));
         for (DictionaryDO resultDO : list) {
@@ -1234,7 +1234,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
         ((Dropdown<Integer>)column.getColumnWidget()).setModel(model);
     
         model = new ArrayList<TableDataRow>();
-        column =  resultTable.columns.get(3);
+        column =  resultTable.getColumns().get(3);
         list = DictionaryCache.getListByCategorySystemName("test_result_flags");        
         model.add(new TableDataRow(null, ""));
         for (DictionaryDO resultDO : list) {
@@ -1243,7 +1243,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
         ((Dropdown<Integer>)column.getColumnWidget()).setModel(model);
     
         model = new ArrayList<TableDataRow>();
-        column =  resultTable.columns.get(5);
+        column =  resultTable.getColumns().get(5);
         list = DictionaryCache.getListByCategorySystemName("rounding_method");        
         model.add(new TableDataRow(null, ""));
         for (DictionaryDO resultDO : list) {
@@ -1272,7 +1272,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
         Integer unitId;
         
         model = new ArrayList<TableDataRow>();
-        column =  resultTable.columns.get(0);
+        column =  resultTable.getColumns().get(0);
         
         model.add(new TableDataRow(null, ""));
         
@@ -1297,8 +1297,8 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
     private boolean isAnalyteQuery() {
         TableDataRow row;
         int ac;        
-        row = analyteTable.getRow(analyteTable.activeRow);
-        ac = analyteTable.activeCell;
+        row = analyteTable.getRow(analyteTable.getSelectedRow());
+        ac = analyteTable.getSelectedCol();
         if(((Boolean)row.data && ac > 1) || 
                         (!(Boolean)row.data && ac == 0))
             return true;
@@ -1310,7 +1310,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
         AutoComplete<Integer> ac;
         ArrayList<TableColumn> columns;
         
-        columns = analyteTable.columns;
+        columns = analyteTable.getColumns();
         for(int i = 0; i < columns.size(); i++) {
             ac = (AutoComplete<Integer>)columns.get(i).getColumnWidget();
             ac.addBeforeGetMatchesHandler(this);
@@ -1677,7 +1677,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
         int ar;
         TableDataRow addrow;
         
-        ar = analyteTable.activeRow;
+        ar = analyteTable.getSelectedRow();
         addrow = new TableDataRow(10);
         addrow.data = new Boolean(false);
         if(ar == -1 || ar == analyteTable.numRows()-1) {            
@@ -1697,12 +1697,11 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
         int ar;
         TableDataRow row;
         
-        ar = analyteTable.activeRow;
+        ar = analyteTable.getSelectedRow();
         if(ar != -1) {
             row = analyteTable.getRow(ar);
             if(!(Boolean)row.data) {                        
                 analyteTable.deleteRow(ar);
-                analyteTable.activeRow = -1;
                 analyteTable.refresh();
             }
         }
@@ -1715,12 +1714,12 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
         if(!canAddRemoveColumn) 
             Window.alert(consts.get("cantAddColumn"));
         
-        if(anaSelCol != -1 && analyteTable.activeRow != -1) {
-            index = displayManager.getDataRowIndex(analyteTable.activeRow);
+        if(anaSelCol != -1 && analyteTable.getSelectedRow() != -1) {
+            index = displayManager.getDataRowIndex(analyteTable.getSelectedRow());
             testAnalyteManager.addColumnAt(index, anaSelCol-1, null);
             displayManager.setDataGrid(testAnalyteManager.getAnalytes());
             
-            ar = analyteTable.activeRow;               
+            ar = analyteTable.getSelectedRow();               
             
             shiftDataInRowToTheRight(ar);
             //shiftDataAboveToTheRight(ar);
@@ -1737,7 +1736,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
         if(!canAddRemoveColumn) 
             Window.alert(consts.get("cantRemoveColumn"));
         
-        ar = analyteTable.activeRow;
+        ar = analyteTable.getSelectedRow();
         if(anaSelCol != -1 && ar != -1) {                                                                                              
             shiftDataInRowToTheLeft(ar);                   
             shiftDataBelowToTheLeft(ar);        
@@ -1756,7 +1755,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
         int ar,num;
         TableDataRow row;
         
-        ar = analyteTable.activeRow;
+        ar = analyteTable.getSelectedRow();
         num = analyteTable.numRows(); 
         
         if(ar == -1 || ar == num-1) {
@@ -1788,7 +1787,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
         int ar;
         TableDataRow row;
         
-        ar = analyteTable.activeRow;                
+        ar = analyteTable.getSelectedRow();                
         
         if(ar != -1) {
             row = analyteTable.getRow(ar);                    
@@ -1801,7 +1800,6 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
                     
                     analyteTable.deleteRow(ar);
                 }
-                analyteTable.activeRow = -1;
             }
         }
     }    
