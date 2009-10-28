@@ -81,7 +81,7 @@ public class AnalyteBean implements AnalyteRemote {
 		Query query;
 		AnalyteViewDO data;
 		
-		query = manager.createNamedQuery("Analyte.fetchById");
+		query = manager.createNamedQuery("Analyte.FetchById");
 		query.setParameter("id", analyteId);
         try {
             data = (AnalyteViewDO)query.getSingleResult();
@@ -97,7 +97,7 @@ public class AnalyteBean implements AnalyteRemote {
 	public ArrayList<IdNameVO> fetchByName(String name, int maxResults) {
 		Query query = null;
 		
-		query = manager.createNamedQuery("Analyte.fetchByName");
+		query = manager.createNamedQuery("Analyte.FetchByName");
 		
 		query.setParameter("name",name);
 		query.setMaxResults(maxResults);
@@ -117,22 +117,22 @@ public class AnalyteBean implements AnalyteRemote {
 		
 		qb.setSelect("distinct new org.openelis.domain.IdNameVO("+Meta.getId()+", "+Meta.getName() + ") ");
 	        
-		 qb.constructWhere(fields);      
+		qb.constructWhere(fields);      
 
-	     qb.setOrderBy(Meta.getName());
+	    qb.setOrderBy(Meta.getName());
         
-         query = manager.createQuery(qb.getEJBQL());
-         query.setMaxResults(first+max);
-         QueryBuilderV2.setQueryParams(query,fields);
+        query = manager.createQuery(qb.getEJBQL());
+        query.setMaxResults(first+max);
+        QueryBuilderV2.setQueryParams(query,fields);
          
-         list = query.getResultList();
-         if (list.isEmpty())
-             throw new NotFoundException();
-         list = (ArrayList<IdNameVO>)DataBaseUtil.subList(list, first, max);
-         if (list == null)
-             throw new LastPageException();
+        list = query.getResultList();
+        if (list.isEmpty())
+            throw new NotFoundException();
+        list = (ArrayList<IdNameVO>)DataBaseUtil.subList(list, first, max);
+        if (list == null)
+            throw new LastPageException();
 
-         return (ArrayList<IdNameVO>)list;
+        return (ArrayList<IdNameVO>)list;
 	}
 	
 	public AnalyteViewDO add(AnalyteViewDO data) throws Exception {
@@ -209,81 +209,32 @@ public class AnalyteBean implements AnalyteRemote {
 
     
 	public void validateForDelete(Integer id) throws Exception{
-        ValidationErrorsList list = new ValidationErrorsList();
-
-        //make sure no analytes are pointing to this record
-		Query query = null;
-		query = manager.createNamedQuery("Analyte.AnalyteByParentId");
-		query.setParameter("id", id);
-		List linkedRecords = query.getResultList();
-
-		if(linkedRecords.size() > 0){
-            list.add(new FormErrorException("analyteDeleteException"));
-		}
-		
-		//make sure no results are pointing to this record
-		query = manager.createNamedQuery("Result.ResultByAnalyteId");
-		query.setParameter("id", id);
-		linkedRecords = query.getResultList();
-
-		if(linkedRecords.size() > 0){
-            list.add(new FormErrorException("analyteResultDeleteException"));
-		}
-		
-		//make sure no tests are pointing to this record
-		query = manager.createNamedQuery("TestAnalyte.FetchByAnalyteId");
-		query.setParameter("id", id);
-		linkedRecords = query.getResultList();
-
-		if(linkedRecords.size() > 0){
-            list.add(new FormErrorException("analyteTestDeleteException"));
-		}
-		
-		//make sure no methods are pointing to this record
-		query = manager.createNamedQuery("MethodAnalyte.MethodAnalyteByAnalyteId");
-		query.setParameter("id", id);
-		linkedRecords = query.getResultList();
-
-		if(linkedRecords.size() > 0){
-            list.add(new FormErrorException("analyteMethodDeleteException"));
-		}
-		
-		//make sure no qcs are pointing to this record
-		query = manager.createNamedQuery("QCAnalyte.QCAnalyteByAnalyteId");
-		query.setParameter("id", id);
-		linkedRecords = query.getResultList();
-
-		if(linkedRecords.size() > 0){
-            list.add(new FormErrorException("analyteQCDeleteException"));
-		}
-		
-		//make sure no worksheets are pointing to this record
-		//FIXME table doesnt exist currently so this will have to be added later
-		
-		//make sure no aux fields are pointing to this record
-		query = manager.createNamedQuery("AuxField.AuxFieldByAnalyteId");
-		query.setParameter("id", id);
-		linkedRecords = query.getResultList();
-
-		if(linkedRecords.size() > 0){
-            list.add(new FormErrorException("analyteAuxFieldDeleteException"));
-		}
+		Query query; 
+        ValidationErrorsList list;
+        List result;
         
-        if(list.size() > 0)
-            throw list;
+        list = new ValidationErrorsList();
+        
+        query = manager.createNamedQuery("Analyte.ReferenceCheck");
+        query.setParameter("id",id);
+        result = query.getResultList();
+        
+        if(result.size() > 0) {
+        	list.add(new FormErrorException("analyteDeleteException"));
+        	throw list;
+        }
+                
 	}
 
-	private void validate(AnalyteViewDO data) throws Exception {
+	public void validate(AnalyteViewDO data) throws Exception {
 		Analyte analyte;
 		Query query;
         ValidationErrorsList list;
         
         list = new ValidationErrorsList();
 		
-        //name required	
-		if(data.getName() == null || "".equals(data.getName())){
+		if(DataBaseUtil.isEmpty(data.getName()))
 			list.add(new FieldErrorException("fieldRequiredException",Meta.getName()));
-		}
 	
 		try {
 			query = manager.createQuery("from Analyte where name = :name");
@@ -292,6 +243,9 @@ public class AnalyteBean implements AnalyteRemote {
 			if(data.getId() == null || !data.getId().equals(analyte.getId()))
 				list.add(new FieldErrorException("fieldUniqueException",Meta.getName()));
 		}catch(EntityNotFoundException e) {
+			//Do nothing here, this is what we expect and do not want this 
+			//exception thrown.
+		}catch(NoResultException e) {
 			//Do nothing here, this is what we expect and do not want this 
 			//exception thrown.
 		}

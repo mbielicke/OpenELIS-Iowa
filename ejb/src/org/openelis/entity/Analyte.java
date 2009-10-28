@@ -31,9 +31,11 @@ package org.openelis.entity;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.openelis.meta.AnalyteMeta;
 import org.openelis.util.XMLUtil;
 
 import javax.persistence.Column;
+import javax.persistence.ColumnResult;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.FetchType;
@@ -41,8 +43,10 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedNativeQuery;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.SqlResultSetMapping;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -52,27 +56,45 @@ import org.openelis.utils.Auditable;
 
 @NamedQueries({
 	
-	@NamedQuery(name = "Analyte.fetchById", 
+	@NamedQuery(name = "Analyte.FetchById", 
 			    query = "select new org.openelis.domain.AnalyteViewDO(a.id,a.name,a.isActive,a.parentAnalyteId,a.externalId,p.name) from " + 
 					    " Analyte a left join a.parentAnalyte p where a.id = :id"),
 
-	@NamedQuery(name = "Analyte.fetchByParentId", 
+	@NamedQuery(name = "Analyte.FetchByParentId", 
 			    query = "select a.id from Analyte a where a.parentAnalyteId = :id"),
         
-    @NamedQuery(name = "Analyte.fetchByName", 
+    @NamedQuery(name = "Analyte.FetchByName", 
     		    query = "select new org.openelis.domain.IdNameVO(a.id, a.name) " +
                         " from Analyte a where a.name like :name and a.isActive = 'Y' order by a.name"),
     
-    @NamedQuery(name =  "Analyte.fetchByTest", 
+    @NamedQuery(name =  "Analyte.FetchByTest", 
                 query = "select distinct new org.openelis.domain.AnalyteDO(a.id,a.name,a.isActive,a.parentAnalyteId,a.externalId) " +
-                        " from TestAnalyte ta left join ta.analyte a where ta.testId = :testId")                        
+                        " from TestAnalyte ta left join ta.analyte a where ta.testId = :testId")
 })
      
+@NamedNativeQuery(name = "Analyte.ReferenceCheck",
+    		      query = "select parent_analyte_id as ANALYTE_ID from analyte where parent_analyte_id = :id " +
+    		      		  "UNION " +
+    		      		  "select analyte_id as ANALYTE_ID from result where analyte_id = :id " +
+    		      		  "UNION " +
+    		      		  "select analyte_id as ANALYTE_ID from test_analyte where analyte_id = :id " +
+    		      		  "UNION " +
+    		      		  "select analyte_id as ANALYTE_ID from qc_analyte where analyte_id = :id " +
+    		      		  "UNION " +
+    		      		  "select analyte_id as ANALYTE_ID from aux_field where analyte_id = :id " +
+    		      		  "UNION " +
+    		      		  "select analyte_id as ANALYTE_ID from worksheet_analyte where analyte_id = :id " +
+    		      		  "UNION " +
+    		      		  "select analyte_id as ANALYTE_ID from instrument_analyte where analyte_id = :id",
+    		      resultSetMapping="Analyte.ReferenceCheckMapping")
+@SqlResultSetMapping(name="Analyte.ReferenceCheckMapping",
+		             columns={@ColumnResult(name="ANALYTE_ID")})
 @Entity
 @Table(name="analyte")
 @EntityListeners({AuditUtil.class})
 public class Analyte implements Auditable, Cloneable {
   
+	
   @Id
   @GeneratedValue
   @Column(name="id")
@@ -97,6 +119,7 @@ public class Analyte implements Auditable, Cloneable {
 
   @Transient
   private Analyte original;
+ 
 
   
   public Integer getId() {
@@ -139,7 +162,6 @@ public class Analyte implements Auditable, Cloneable {
       this.externalId = externalId;
   }
 
-  
   public void setClone() {
     try {
       original = (Analyte)this.clone();

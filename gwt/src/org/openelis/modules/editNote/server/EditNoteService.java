@@ -38,7 +38,7 @@ public class EditNoteService {
 
     public ArrayList<StandardNoteDO> query(Query query) throws Exception {
         ArrayList<StandardNoteDO> x;
-        x = remote().newQuery(query.getFields());
+        x = remote().queryNote(query.getFields(),0,1000);
         return x;
     }
     
