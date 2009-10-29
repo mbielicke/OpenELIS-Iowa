@@ -26,32 +26,29 @@
 package org.openelis.remote;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import javax.ejb.Remote;
 
+import org.openelis.domain.IdNameVO;
 import org.openelis.domain.StandardNoteDO;
 import org.openelis.gwt.common.data.QueryData;
-import org.openelis.gwt.common.data.deprecated.AbstractField;
 
 @Remote
 public interface StandardNoteRemote {
-	//commit a change to a standard note, or insert a new standard note
-	public Integer updateStandardNote(StandardNoteDO standardNoteDO) throws Exception;
-	
-	//method to return a whole standard note
-	public StandardNoteDO getStandardNote(Integer standardNoteId);
-	
-	//method to unlock and return a whole standard note
-	public StandardNoteDO getStandardNoteAndUnlock(Integer standardNoteId, String session);
-	
-	//method to lock and return a whole standard note
-	public StandardNoteDO getStandardNoteAndLock(Integer standardNoteId, String session) throws Exception;
-	
-	 //method to query for standard notes
-	 public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception;
-     
-	 public ArrayList<StandardNoteDO> newQuery(ArrayList<QueryData> fields) throws Exception;
-	 
-	 public void deleteStandardNote(Integer standardNoteId) throws Exception;
+    public StandardNoteDO fetchById(Integer id) throws Exception;
+
+    public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception;
+
+    public StandardNoteDO add(StandardNoteDO data) throws Exception;
+
+    public StandardNoteDO update(StandardNoteDO data) throws Exception;
+
+    public StandardNoteDO fetchForUpdate(Integer id) throws Exception;
+
+    public StandardNoteDO abortUpdate(Integer id) throws Exception;
+
+    public void delete(Integer id) throws Exception;
+    
+    public ArrayList<StandardNoteDO> queryNote(ArrayList<QueryData> field, int first, int max) throws Exception;
+    
 }
