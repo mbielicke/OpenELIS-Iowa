@@ -184,7 +184,7 @@ public class SectionScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                commitButton.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE,State.DELETE).contains(event.getState()));
+                commitButton.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
             }
         });
 
@@ -195,7 +195,7 @@ public class SectionScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                abortButton.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE,State.DELETE).contains(event.getState()));
+                abortButton.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
             }
         });
 
@@ -212,6 +212,8 @@ public class SectionScreen extends Screen {
             public void onStateChange(StateChangeEvent<State> event) {
                 name.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
                 name.setQueryMode(event.getState() == State.QUERY);
+                if (event.getState() == State.ADD || event.getState() == State.UPDATE)
+                    name.setFocus(true);
             }
         });
 
@@ -248,7 +250,7 @@ public class SectionScreen extends Screen {
         });
 
         organizationName = (AutoComplete)def.getWidget(meta.getOrganization().getName());
-        addScreenHandler(name, new ScreenEventHandler<Integer>() {
+        addScreenHandler(organizationName, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 organizationName.setSelection(data.getOrganizationId(),
                                   data.getOrganizationName());
@@ -266,7 +268,7 @@ public class SectionScreen extends Screen {
         });
 
         parentName = (AutoComplete)def.getWidget(meta.getParentSection().getName());
-        addScreenHandler(name, new ScreenEventHandler<Integer>() {
+        addScreenHandler(parentName, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 parentName.setSelection(data.getParentSectionId(),
                                         data.getParentSectionName());
@@ -283,27 +285,53 @@ public class SectionScreen extends Screen {
             }
         });    
         
+        parentName.addGetMatchesHandler(new GetMatchesHandler() {
+            public void onGetMatches(GetMatchesEvent event) {
+                QueryFieldUtil parser;
+                TableDataRow row;
+                IdNameVO data;
+                ArrayList<IdNameVO> list;
+                ArrayList<TableDataRow> model;
+
+                parser = new QueryFieldUtil();
+                parser.parse(event.getMatch());
+
+                window.setBusy();
+                try {
+                    list = service.callList("fetchByName", parser.getParameter().get(0));
+                    model = new ArrayList<TableDataRow>();
+                    for (int i = 0; i < list.size(); i++ ) {
+                        row = new TableDataRow(4);
+                        data = list.get(i);
+
+                        row.key = data.getId();
+                        row.cells.get(0).value = data.getName();
+
+                        model.add(row);
+                    }
+                    parentName.showAutoMatches(model);
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                    Window.alert(e.getMessage());
+                }
+                window.clearStatus();
+            }
+        });
+        
         organizationName.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
-                Query query;
-                QueryData field;
                 QueryFieldUtil parser;
                 TableDataRow row;
                 OrganizationDO data;
                 ArrayList<OrganizationDO> list;
                 ArrayList<TableDataRow> model;
 
-                query = new Query();
                 parser = new QueryFieldUtil();
                 parser.parse(event.getMatch());
 
-                field = new QueryData();
-                field.query = parser.getParameter().get(0);
-                query.setFields(field);
-
                 window.setBusy();
                 try {
-                    list = organizationService.callList("fetchByIdOrName", query);
+                    list = organizationService.callList("fetchByIdOrName", parser.getParameter().get(0));
                     model = new ArrayList<TableDataRow>();
                     for (int i = 0; i < list.size(); i++ ) {
                         row = new TableDataRow(4);
@@ -439,20 +467,6 @@ public class SectionScreen extends Screen {
         window.clearStatus();
     }
 
-    protected void delete() {
-        window.setBusy(consts.get("lockForUpdate"));
-
-        try {
-            data = service.call("fetchForUpdate", data.getId());
-
-            setState(State.DELETE);
-            DataChangeEvent.fire(this);
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-        }
-        window.clearStatus();
-    }
-
     protected void commit() {
         //
         // set the focus to null so every field will commit its data.
@@ -498,20 +512,7 @@ public class SectionScreen extends Screen {
                 Window.alert("commitUpdate(): " + e.getMessage());
                 window.clearStatus();
             }
-        } else if (state == State.DELETE) {
-            window.setBusy(consts.get("deleting"));
-            try {
-                service.call("delete", data.getId());
-
-                fetchById(null);
-                window.setDone(consts.get("deleteComplete"));
-            } catch (ValidationErrorsList e) {
-                showErrors(e);
-            } catch (Exception e) {
-                Window.alert("commitDelete(): " + e.getMessage());
-                window.clearStatus();
-            }
-        }
+        } 
     }
 
     protected void abort() {
@@ -536,17 +537,7 @@ public class SectionScreen extends Screen {
                 fetchById(null);
             }
             window.setDone(consts.get("updateAborted"));
-        } else if (state == State.DELETE) {
-            try {
-                data = service.call("abortUpdate", data.getId());
-                setState(State.DISPLAY);
-                DataChangeEvent.fire(this);
-            } catch (Exception e) {
-                Window.alert(e.getMessage());
-                fetchById(null);
-            }
-            window.setDone(consts.get("deleteAborted"));
-        } else {
+        }  else {
             window.clearStatus();
         }
     }

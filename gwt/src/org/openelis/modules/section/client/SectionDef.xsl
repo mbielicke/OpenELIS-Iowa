@@ -65,9 +65,8 @@ UIRF Software License are applicable instead of those above.
       <xsl:value-of select="props" />
     </xsl:variable>
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
-    <screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Section" name="{resource:getString($constants,'labSection')}">
+    <screen id="Section" name="{resource:getString($constants,'labSection')}">
       <HorizontalPanel padding="0" spacing="0">
-<!--left table goes here -->
         <CollapsePanel key="collapsePanel" style="LeftSidePanel">
           <HorizontalPanel width="225px">
             <buttonGroup key="atozButtons">
@@ -95,6 +94,7 @@ UIRF Software License are applicable instead of those above.
         <VerticalPanel padding="0" spacing="0">
 <!--button panel code-->
           <AbsolutePanel spacing="0" style="ButtonPanelContainer">
+            <HorizontalPanel>
             <xsl:call-template name="queryButton">
               <xsl:with-param name="language">
                 <xsl:value-of select="language" />
@@ -132,9 +132,10 @@ UIRF Software License are applicable instead of those above.
                 <xsl:value-of select="language" />
               </xsl:with-param>
             </xsl:call-template>
+            </HorizontalPanel>
           </AbsolutePanel>
 <!--end button panel-->
-          <VerticalPanel width="620px" height="235px" padding="0" spacing="0" style="WhiteContentPanel">
+          <VerticalPanel width="620" height="235" padding="0" spacing="0" style="WhiteContentPanel">
             <TablePanel style="Form">
               <row>
                 <text style="Prompt">
@@ -163,7 +164,7 @@ UIRF Software License are applicable instead of those above.
                   <xsl:value-of select="resource:getString($constants,'organization')" />:
                 </text>
                 <widget>
-                  <autoComplete key="{org:getName($o)}" width="285px" case="LOWER" popWidth="auto" tab="{parentSect:getName($psect)},{meta:getIsExternal($sect)}" field="Integer">
+                  <autoComplete key="{org:getName($o)}" width="285px" case="UPPER" popWidth="auto" tab="{parentSect:getName($psect)},{meta:getIsExternal($sect)}" field="Integer">
                     <col width="180" header="{resource:getString($constants,'name')}" />
                     <col width="110" header="{resource:getString($constants,'street')}" />
                     <col width="100" header="{resource:getString($constants,'city')}" />

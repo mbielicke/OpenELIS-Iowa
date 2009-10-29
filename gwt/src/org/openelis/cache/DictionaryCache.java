@@ -30,6 +30,7 @@ import java.util.HashMap;
 
 import org.openelis.cache.server.DictionaryCacheRPC;
 import org.openelis.domain.DictionaryDO;
+import org.openelis.domain.DictionaryViewDO;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 

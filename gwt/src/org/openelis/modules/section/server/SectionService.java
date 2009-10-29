@@ -29,8 +29,8 @@ import java.util.ArrayList;
 
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.SectionViewDO;
-import org.openelis.domain.SystemVariableDO;
 import org.openelis.gwt.common.DatabaseException;
+import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.SectionRemote;
@@ -92,12 +92,13 @@ public class SectionService {
         return (SectionRemote)EJBFactory.lookup("openelis/SectionBean/remote"); 
     }
     
-    public ArrayList<IdNameVO> fetchByName(Query query) throws Exception {             
-        String value;
- 
-        value = query.getFields().get(0).query;        
-        
-        return remote().fetchByName(value+"%", 10);   
+    public ArrayList<IdNameVO> fetchByName(String search) throws Exception {       
+        try {
+            return remote().fetchByName(search+"%", 10);   
+        } catch (RuntimeException e) {
+            throw new DatabaseException(e);
+        }
+    
     }
     
 }

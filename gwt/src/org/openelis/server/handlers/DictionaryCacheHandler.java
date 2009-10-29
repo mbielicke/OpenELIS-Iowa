@@ -29,11 +29,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.openelis.domain.DictionaryDO;
+import org.openelis.domain.DictionaryDO;
 import org.openelis.messages.DictionaryCacheMessage;
 import org.openelis.persistence.CachingManager;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.persistence.MessageHandler;
-import org.openelis.remote.CategoryRemote;
+import org.openelis.remote.DictionaryRemote;
 
 public class DictionaryCacheHandler implements MessageHandler<DictionaryCacheMessage> {
     
@@ -61,32 +62,36 @@ public class DictionaryCacheHandler implements MessageHandler<DictionaryCacheMes
     }
     
     public static DictionaryDO getDictionaryDOFromSystemName(String systemName) {
-        CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
-        HashMap<String, DictionaryDO> tableHash = (HashMap<String, DictionaryDO>)CachingManager.getElement("InitialData", "dictSystemNameValues");
-        HashMap<Integer, DictionaryDO> idHash = (HashMap<Integer, DictionaryDO>)CachingManager.getElement("InitialData", "dictIdValues");
+        DictionaryRemote remote = (DictionaryRemote)EJBFactory.lookup("openelis/DictionaryBean/remote");
+        HashMap<String, DictionaryDO> tableHash = (HashMap<String, DictionaryDO>)CachingManager.getElement("InitialData","dictSystemNameValues");
+        HashMap<Integer, DictionaryDO> idHash = (HashMap<Integer, DictionaryDO>)CachingManager.getElement("InitialData","dictIdValues");
         DictionaryDO dictDO;
-        if(tableHash == null){
+        if (tableHash == null) {
             tableHash = new HashMap<String, DictionaryDO>();
             idHash = new HashMap<Integer, DictionaryDO>();
         }
-        
+
         dictDO = tableHash.get(systemName);
-        if(dictDO == null){
-            dictDO = remote.getDictionaryDOBySystemName(systemName);
-            
-            if(dictDO != null){
-                tableHash.put(systemName, dictDO);
-                idHash.put(dictDO.getId(), dictDO);
-                CachingManager.putElement("InitialData", "dictSystemNameValues", tableHash);
-                CachingManager.putElement("InitialData", "dictIdValues", idHash);
+        if (dictDO == null) {
+            try {
+                dictDO = remote.fetchBySystemName(systemName);
+
+                if (dictDO != null) {
+                    tableHash.put(systemName, dictDO);
+                    idHash.put(dictDO.getId(), dictDO);
+                    CachingManager.putElement("InitialData", "dictSystemNameValues", tableHash);
+                    CachingManager.putElement("InitialData", "dictIdValues", idHash);
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
             }
         }
-        
+
         return dictDO;
     }
     
     public static DictionaryDO getDictionaryDOFromId(Integer id) {
-        CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
+        DictionaryRemote remote = (DictionaryRemote)EJBFactory.lookup("openelis/DictionaryBean/remote");
         HashMap<String, DictionaryDO> tableHash = (HashMap<String, DictionaryDO>)CachingManager.getElement("InitialData", "dictSystemNameValues");
         HashMap<Integer, DictionaryDO> idHash = (HashMap<Integer, DictionaryDO>)CachingManager.getElement("InitialData", "dictIdValues");
         DictionaryDO dictDO;
@@ -97,21 +102,25 @@ public class DictionaryCacheHandler implements MessageHandler<DictionaryCacheMes
         
         dictDO = idHash.get(id);
         if(dictDO == null){
-            dictDO = remote.getDictionaryDOByEntryId(id);
-            
-            if(dictDO != null){
-                tableHash.put(dictDO.getSystemName(), dictDO);
-                idHash.put(id, dictDO);
-                CachingManager.putElement("InitialData", "dictSystemNameValues", tableHash);
-                CachingManager.putElement("InitialData", "dictIdValues", idHash);
+            try {
+                dictDO = remote.fetchById(id);
+                
+                if(dictDO != null){
+                    tableHash.put(dictDO.getSystemName(), dictDO);
+                    idHash.put(id, dictDO);
+                    CachingManager.putElement("InitialData", "dictSystemNameValues", tableHash);
+                    CachingManager.putElement("InitialData", "dictIdValues", idHash);
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
             }
-        }
+        } 
         
         return dictDO;
     }
     
     public static ArrayList getListByCategorySystemName(String categoryName) {
-        CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
+        DictionaryRemote remote = (DictionaryRemote)EJBFactory.lookup("openelis/DictionaryBean/remote");
         HashMap<String, ArrayList> listHash = (HashMap<String, ArrayList>)CachingManager.getElement("InitialData", "dictCategoryNameListValues");
         HashMap<String, DictionaryDO> tableHash = (HashMap<String, DictionaryDO>)CachingManager.getElement("InitialData", "dictSystemNameValues");
         HashMap<Integer, DictionaryDO> idHash = (HashMap<Integer, DictionaryDO>)CachingManager.getElement("InitialData", "dictIdValues");
@@ -128,21 +137,25 @@ public class DictionaryCacheHandler implements MessageHandler<DictionaryCacheMes
         returnList = listHash.get(categoryName);
         
         if(returnList == null){
-            returnList = (ArrayList)remote.getListByCategoryName(categoryName);
+            try {
+                returnList = (ArrayList)remote.fetchByCategorySystemName(categoryName);
             
-            if(returnList != null){
-                listHash.put(categoryName, returnList);
+                if(returnList != null){
+                    listHash.put(categoryName, returnList);
                 
-                //we need to iterate through this list and insert the entries into the other 2 lists
-                for(int i=0; i<returnList.size(); i++){
-                    DictionaryDO dictDO = (DictionaryDO)returnList.get(i);
-                    tableHash.put(dictDO.getSystemName(), dictDO);
-                    idHash.put(dictDO.getId(), dictDO);
+                    //we need to iterate through this list and insert the entries into the other 2 lists
+                    for(int i=0; i<returnList.size(); i++){
+                        DictionaryDO dictDO = (DictionaryDO)returnList.get(i);
+                        tableHash.put(dictDO.getSystemName(), dictDO);
+                        idHash.put(dictDO.getId(), dictDO);
+                    }
+                
+                    CachingManager.putElement("InitialData", "dictCategoryNameListValues", tableHash);
+                    CachingManager.putElement("InitialData", "dictSystemNameValues", tableHash);
+                    CachingManager.putElement("InitialData", "dictIdValues", idHash);
                 }
-                
-                CachingManager.putElement("InitialData", "dictCategoryNameListValues", tableHash);
-                CachingManager.putElement("InitialData", "dictSystemNameValues", tableHash);
-                CachingManager.putElement("InitialData", "dictIdValues", idHash);
+            } catch (Exception ex) {
+                ex.printStackTrace();
             }
         }
         

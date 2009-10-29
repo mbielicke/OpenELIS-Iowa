@@ -49,7 +49,7 @@ public class TestTrailerService {
 
     public ArrayList<IdNameVO> fetchByName(String search) throws Exception {
         try {
-            return remote().fetchByName(search, 10);
+            return remote().fetchByName(search+"%", 10);
         } catch (RuntimeException e) {
             throw new DatabaseException(e);
         }

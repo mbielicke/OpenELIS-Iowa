@@ -63,6 +63,7 @@ import org.openelis.modules.inventoryAdjustment.client.InventoryAdjustmentForm;
 import org.openelis.modules.inventoryAdjustment.client.InventoryAdjustmentItemAutoRPC;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.CategoryRemote;
+import org.openelis.remote.DictionaryRemote;
 import org.openelis.remote.InventoryAdjustmentRemote;
 import org.openelis.remote.InventoryItemRemote;
 import org.openelis.remote.InventoryReceiptRemote;
@@ -375,13 +376,24 @@ public class InventoryAdjustmentService implements AppScreenFormServiceInt<Inven
     private TableDataModel<TableDataRow<Integer>> getInitialModel(String cat){
         Integer id = null;
         CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
-
+        DictionaryRemote dictRemote = (DictionaryRemote)EJBFactory.lookup("openelis/DictionaryBean/remote");
+        
         if(cat.equals("itemStores"))
-            id = remote.getCategoryId("inventory_item_stores");
+            try {
+                id = (remote.fetchBySystemName("inventory_item_stores")).getId();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
         
         List<IdNameVO> entries = new ArrayList<IdNameVO>();
-        if(id > -1)
-            entries = (List<IdNameVO>)remote.getDropdownValues(id);
+        if(id > -1) {
+            try {
+                entries = dictRemote.fetchIdEntryByCategoryId(id);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+            
+        }
         
         
         //we need to build the model to return

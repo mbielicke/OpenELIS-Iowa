@@ -34,6 +34,8 @@ import java.util.List;
 import org.openelis.domain.AuxFieldGroupDO;
 import org.openelis.domain.AuxFieldValueDO;
 import org.openelis.domain.AuxFieldViewDO;
+import org.openelis.domain.DictionaryDO;
+import org.openelis.domain.DictionaryViewDO;
 import org.openelis.domain.IdNameDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.gwt.common.Datetime;
@@ -66,6 +68,7 @@ import org.openelis.remote.AnalyteRemote;
 import org.openelis.remote.AuxFieldGroupManagerRemote;
 import org.openelis.remote.AuxiliaryRemote;
 import org.openelis.remote.CategoryRemote;
+import org.openelis.remote.DictionaryRemote;
 import org.openelis.remote.MethodRemote;
 import org.openelis.remote.OrganizationManagerRemote;
 import org.openelis.remote.ScriptletRemote;
@@ -256,20 +259,20 @@ public class AuxiliaryService implements
     }
     
     public AuxiliaryGeneralPurposeRPC getEntryIdForSystemName(AuxiliaryGeneralPurposeRPC rpc) {
-        CategoryRemote remote =  (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
+        DictionaryRemote remote =  (DictionaryRemote)EJBFactory.lookup("openelis/DictionaryBean/remote");                            
         try{
-            rpc.key = remote.getEntryIdForSystemName(rpc.stringValue);
-          }catch(Exception ex) {
-              ex.printStackTrace();              
-          }
+            rpc.key = (remote.fetchBySystemName(rpc.stringValue)).getId();            
+        }catch(Exception ex) {
+            ex.printStackTrace();              
+        }
            
           return rpc;
     }
     
     public AuxiliaryGeneralPurposeRPC getCategorySystemName(AuxiliaryGeneralPurposeRPC rpc) { 
-      CategoryRemote remote =  (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");        
+      DictionaryRemote remote =  (DictionaryRemote)EJBFactory.lookup("openelis/DictionaryBean/remote");       
       try{
-          rpc.stringValue = remote.getSystemNameForEntryId(rpc.key);
+          rpc.stringValue = (remote.fetchById(rpc.key)).getSystemName();
        }catch(Exception ex) {
         ex.printStackTrace();
      }
@@ -277,9 +280,12 @@ public class AuxiliaryService implements
    }
     
     public AuxiliaryGeneralPurposeRPC getEntryIdForEntryText(AuxiliaryGeneralPurposeRPC rpc){
-        CategoryRemote remote =  (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
+        DictionaryRemote remote =  (DictionaryRemote)EJBFactory.lookup("openelis/DictionaryBean/remote"); 
+        List<DictionaryDO> list;
+        
         try{
-            rpc.key = remote.getEntryIdForEntry(rpc.stringValue);
+            list = remote.fetchByEntry(rpc.stringValue);            
+            rpc.key = list.get(0).getId();
           }catch(Exception ex) {
               ex.printStackTrace();              
           }

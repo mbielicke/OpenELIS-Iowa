@@ -29,10 +29,9 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 
 import org.openelis.cache.SectionCache;
-import org.openelis.common.AutocompleteRPC;
 import org.openelis.domain.DictionaryViewDO;
 import org.openelis.domain.IdNameVO;
-import org.openelis.domain.SectionViewDO;
+import org.openelis.domain.SectionDO;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.RPC;
@@ -54,6 +53,7 @@ import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.ButtonGroup;
 import org.openelis.gwt.widget.Dropdown;
+import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataRow;
@@ -201,7 +201,7 @@ public class DictionaryScreen extends Screen implements GetMatchesHandler, DragH
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                commitButton.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
+                commitButton.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                            .contains(event.getState()));
             }
         });
@@ -213,7 +213,7 @@ public class DictionaryScreen extends Screen implements GetMatchesHandler, DragH
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                abortButton.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
+                abortButton.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                           .contains(event.getState()));
             }
         });
@@ -229,9 +229,11 @@ public class DictionaryScreen extends Screen implements GetMatchesHandler, DragH
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                name.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
+                name.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                    .contains(event.getState()));
                 name.setQueryMode(event.getState() == State.QUERY);
+                if (event.getState() == State.ADD || event.getState() == State.UPDATE)
+                    name.setFocus(true);
             }
         });
 
@@ -246,7 +248,7 @@ public class DictionaryScreen extends Screen implements GetMatchesHandler, DragH
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                description.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
+                description.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                           .contains(event.getState()));
                 description.setQueryMode(event.getState() == State.QUERY);
             }
@@ -255,15 +257,15 @@ public class DictionaryScreen extends Screen implements GetMatchesHandler, DragH
         sectionId = (Dropdown)def.getWidget(meta.getSectionId());
         addScreenHandler(sectionId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                sectionId.setSelection(manager.getCategory().getSection());
+                sectionId.setSelection(manager.getCategory().getSectionId());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
-                manager.getCategory().setSection(event.getValue());
+                manager.getCategory().setSectionId(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                sectionId.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
+                sectionId.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                         .contains(event.getState()));
                 sectionId.setQueryMode(event.getState() == State.QUERY);
             }
@@ -280,7 +282,7 @@ public class DictionaryScreen extends Screen implements GetMatchesHandler, DragH
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                systemName.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
+                systemName.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                          .contains(event.getState()));
                 systemName.setQueryMode(event.getState() == State.QUERY);
             }
@@ -365,9 +367,15 @@ public class DictionaryScreen extends Screen implements GetMatchesHandler, DragH
         removeEntryButton = (AppButton)def.getWidget("removeEntryButton");
         addScreenHandler(removeEntryButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-                int selectedRow = dictEntTable.getSelectedRow();
-                if (selectedRow > -1 && dictEntTable.numRows() > 0) {
-                    dictEntTable.deleteRow(selectedRow);
+                int r;
+                
+                r = dictEntTable.getSelectedRow();
+                
+                if (r > -1 && dictEntTable.numRows() > 0) {
+                    if(validateForDelete(manager.getEntryAt(r)))
+                        dictEntTable.deleteRow(r);
+                    else 
+                        Window.alert(consts.get("dictionaryDeleteException"));
                 }
             }
 
@@ -469,26 +477,30 @@ public class DictionaryScreen extends Screen implements GetMatchesHandler, DragH
     }
 
     public void onGetMatches(GetMatchesEvent event) {
-        AutocompleteRPC trpc;
-        ArrayList<TableDataRow> model;
+        QueryFieldUtil parser;
         TableDataRow row;
-        IdNameVO autoDO;
+        ArrayList<TableDataRow> model;
+        ArrayList<IdNameVO> list;
+        IdNameVO data;
 
-        trpc = new AutocompleteRPC();
-        trpc.match = event.getMatch();
+        parser = new QueryFieldUtil();
+        parser.parse(event.getMatch());
+
+        window.setBusy();
         try {
-            trpc = service.call("getRelatedEntryMatches", trpc);
+            list = service.callList("fetchIdEntryByEntry", parser.getParameter().get(0));
             model = new ArrayList<TableDataRow>();
-            for (int i = 0; i < trpc.model.size(); i++ ) {
-                autoDO = (IdNameVO)trpc.model.get(i);
-                row = new TableDataRow(autoDO.getId(), autoDO.getName());
+            for (int i = 0; i < list.size(); i++ ) {
+                data = (IdNameVO)list.get(i);
+                row = new TableDataRow(data.getId(), data.getName());
                 model.add(row);
             }
             ((AutoComplete)event.getSource()).showAutoMatches(model);
         } catch (Exception e) {
             Window.alert(e.getMessage());
         }
-
+        
+        window.clearStatus();
     }   
 
     public void onDragEnd(DragEndEvent event) {
@@ -595,9 +607,11 @@ public class DictionaryScreen extends Screen implements GetMatchesHandler, DragH
     }
 
     protected void abort() {
+        name.setFocus(false);
+        
         clearErrors();
         window.setBusy(consts.get("cancelChanges"));
-
+        
         if (state == State.QUERY) {
             fetchByCategoryId(null);
             window.setDone(consts.get("queryAborted"));
@@ -675,13 +689,13 @@ public class DictionaryScreen extends Screen implements GetMatchesHandler, DragH
 
     private void setSectionModel() {
         ArrayList<TableDataRow> model;
-        ArrayList<SectionViewDO> list;
+        ArrayList<SectionDO> list;
 
         model = new ArrayList<TableDataRow>();
         list = SectionCache.getSectionList();
 
         model.add(new TableDataRow(null, ""));
-        for (SectionViewDO section : list) {
+        for (SectionDO section : list) {
             model.add(new TableDataRow(section.getId(), section.getName()));
         }
 
@@ -691,15 +705,15 @@ public class DictionaryScreen extends Screen implements GetMatchesHandler, DragH
     private String validateTextAgainstTestResults(Integer key,String oldEntry,
                                                 String entry,
                                                 int row) {
-        DictionaryEntryTextRPC detrpc;
+        DictionaryRPC detrpc;
         boolean ok;
 
         if (key == null || DataBaseUtil.isEmpty(oldEntry))
             return entry;
 
-        detrpc = new DictionaryEntryTextRPC();
+        detrpc = new DictionaryRPC();
         detrpc.entryText = entry;
-        detrpc.id = key;
+        
         try {
             detrpc = service.call("getNumResultsAffected", detrpc);
             if (detrpc.count > 0) {
@@ -722,5 +736,28 @@ public class DictionaryScreen extends Screen implements GetMatchesHandler, DragH
             dictEntTable.addTarget(dictEntTable);
             dictEntTable.addDragHandler(this);
         } 
+    }
+    
+    private boolean validateForDelete(DictionaryViewDO data) {
+        DictionaryRPC rpc;
+        
+        rpc = new DictionaryRPC();
+        
+        if(data.getId() == null)
+            return true;
+        
+        rpc.data = data;
+        rpc.valid = true;
+        
+        try {
+            window.setBusy(consts.get("validatingDelete"));
+            rpc = (DictionaryRPC)service.call("validateDelete", rpc);            
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            e.printStackTrace();
+        }
+        
+        window.clearStatus();
+        return rpc.valid;
     }
 }

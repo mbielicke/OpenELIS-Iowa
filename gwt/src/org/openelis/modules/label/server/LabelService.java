@@ -25,12 +25,15 @@
 */
 package org.openelis.modules.label.server;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
 import org.openelis.domain.IdNameDO;
+import org.openelis.domain.IdNameVO;
 import org.openelis.domain.LabelViewDO;
+import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
@@ -265,6 +268,16 @@ public class LabelService implements AppScreenFormServiceInt<LabelForm,Query<Tab
         
         //return dataModel;
         return null;
+    }
+    
+    public ArrayList<IdNameVO> fetchByName(String search) throws Exception {
+        LabelRemote remote = (LabelRemote)EJBFactory.lookup("openelis/LabelBean/remote"); 
+        
+        try {
+            return remote.fetchByName(search+"%",10);            
+        }catch(RuntimeException e) {
+            throw new DatabaseException(e);
+        }
     }
     
     private TableDataModel<TableDataRow<Integer>> getAutocompleteModel(List<IdNameDO> entries){

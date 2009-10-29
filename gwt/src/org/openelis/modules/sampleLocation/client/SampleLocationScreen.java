@@ -30,6 +30,7 @@ import java.util.EnumSet;
 
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.DictionaryDO;
+import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.SampleEnvironmentalDO;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;

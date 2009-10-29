@@ -30,6 +30,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
+import org.openelis.domain.DictionaryDO;
+import org.openelis.domain.DictionaryViewDO;
 import org.openelis.domain.IdNameDO;
 import org.openelis.domain.IdNameLotNumberDO;
 import org.openelis.domain.IdNameVO;
@@ -37,6 +39,7 @@ import org.openelis.domain.InventoryItemAutoDO;
 import org.openelis.domain.QcAnalyteViewDO;
 import org.openelis.domain.QcViewDO;
 import org.openelis.domain.SecuritySystemUserDO;
+import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
@@ -59,6 +62,7 @@ import org.openelis.modules.qc.client.QCGeneralPurposeRPC;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.AnalyteRemote;
 import org.openelis.remote.CategoryRemote;
+import org.openelis.remote.DictionaryRemote;
 import org.openelis.remote.InventoryItemRemote;
 import org.openelis.remote.QcRemote;
 import org.openelis.remote.SystemUserUtilRemote;
@@ -215,12 +219,15 @@ public class QCService implements
 
     
     public QCGeneralPurposeRPC getEntryIdForEntryText(QCGeneralPurposeRPC rpc) {
-        CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
-        try {
-            rpc.key = remote.getEntryIdForEntry(rpc.stringValue);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
+        DictionaryRemote remote = (DictionaryRemote)EJBFactory.lookup("openelis/DictionaryBean/remote");
+        List<DictionaryDO> list;
+        
+        try{
+            list = remote.fetchByEntry(rpc.stringValue);            
+            rpc.key = list.get(0).getId();
+          }catch(Exception ex) {
+              ex.printStackTrace();              
+          }
 
         return rpc;
     }
@@ -316,7 +323,18 @@ public class QCService implements
         }       
         
         return dataModel;
-    } 
+    }  
+    
+    public ArrayList<IdNameVO> fetchByName(String search) throws Exception {
+        QcRemote remote;
+        
+        remote = (QcRemote)EJBFactory.lookup("openelis/QcBean/remote");
+        try {
+            return remote.fetchByName(search+"%", 10);            
+        } catch (RuntimeException e) {
+            throw new DatabaseException(e);
+        } 
+    }
     
     private QcViewDO getQcDOFromRPC(QCForm rpc) {
         QcViewDO qcDO;

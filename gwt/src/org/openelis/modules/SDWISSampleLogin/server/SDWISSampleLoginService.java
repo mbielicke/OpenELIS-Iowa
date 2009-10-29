@@ -40,6 +40,7 @@ import org.openelis.modules.SDWISSampleLogin.client.SDWISSampleLoginForm;
 import org.openelis.persistence.CachingManager;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.CategoryRemote;
+import org.openelis.remote.DictionaryRemote;
 import org.openelis.server.constants.Constants;
 
 public class SDWISSampleLoginService implements AppScreenFormServiceInt<SDWISSampleLoginForm, Query<TableDataRow<Integer>>>{
@@ -117,19 +118,30 @@ public class SDWISSampleLoginService implements AppScreenFormServiceInt<SDWISSam
     public TableDataModel<TableDataRow<String>> getInitialModel(String cat){
         Integer id = null;
         CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
+        DictionaryRemote dictRemote = (DictionaryRemote)EJBFactory.lookup("openelis/DictionaryBean/remote");
         
-        if(cat.equals("statuses"))
-            id = remote.getCategoryId("sample_status");
-        else if(cat.equals("sampleType"))
-            id = remote.getCategoryId("sdwis_sample_type");
-        else if(cat.equals("category"))
-            id = remote.getCategoryId("sdwis_sample_category");
-        else if(cat.equals("leadSampleType"))
-            id = remote.getCategoryId("sdwis_lead_sample_type");
+        try {
+            if (cat.equals("statuses"))
+                id = (remote.fetchBySystemName("sample_status")).getId();
+            else if (cat.equals("sampleType"))
+                id = (remote.fetchBySystemName("sdwis_sample_type")).getId();
+            else if (cat.equals("category"))
+                id = (remote.fetchBySystemName("sdwis_sample_category")).getId();
+            else if (cat.equals("leadSampleType"))
+                id = (remote.fetchBySystemName("sdwis_lead_sample_type")).getId();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
         
         List<IdNameVO> entries = new ArrayList();
-        if(id != null)
-            entries = remote.getDropdownValues(id);
+        if(id != null) {            
+            try {
+                entries = dictRemote.fetchIdEntryByCategoryId(id);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+            
+        }
         
         //we need to build the model to return
         TableDataModel<TableDataRow<String>> returnModel = new TableDataModel<TableDataRow<String>>();

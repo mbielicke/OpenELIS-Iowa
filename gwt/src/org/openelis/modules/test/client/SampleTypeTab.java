@@ -31,6 +31,7 @@ import java.util.List;
 
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.DictionaryDO;
+import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.TestTypeOfSampleDO;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;

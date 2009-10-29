@@ -38,13 +38,16 @@ import org.openelis.manager.TestReflexManager;
 import org.openelis.manager.TestResultManager;
 import org.openelis.manager.TestTypeOfSampleManager;
 import org.openelis.manager.TestWorksheetManager;
+import org.openelis.modules.test.client.TestResultCategoryRPC;
 import org.openelis.persistence.EJBFactory;
+import org.openelis.remote.DictionaryRemote;
 import org.openelis.remote.TestManagerRemote;
 import org.openelis.remote.TestRemote;
+import org.openelis.utilcommon.DataBaseUtil;
 
 public class TestService {
 
-    private static final int rowPP = 23;
+    private static final int rowPP = 24;
 
     public TestManager fetchById(Integer testId) throws Exception {
         try {
@@ -187,7 +190,17 @@ public class TestService {
             throw new DatabaseException(e);
         }
     }
-
+    
+    public TestResultCategoryRPC getDictIdForResultValue(TestResultCategoryRPC rpc) {
+        try {
+            rpc.dictIdList = dictRemote().fetchByEntry(DataBaseUtil.trim(rpc.resultValue));
+        } catch(Exception ex) {
+            ex.printStackTrace();
+        }
+        
+        return rpc; 
+    } 
+    
     private TestRemote remote() {
         return (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
     }
@@ -195,4 +208,10 @@ public class TestService {
     private TestManagerRemote managerRemote() {
         return (TestManagerRemote)EJBFactory.lookup("openelis/TestManagerBean/remote");
     }
+    
+    private DictionaryRemote dictRemote() {
+        return (DictionaryRemote)EJBFactory.lookup("openelis/DictionaryBean/remote");
+    }
+    
+    
 }

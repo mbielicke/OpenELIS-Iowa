@@ -30,6 +30,7 @@ import java.util.EnumSet;
 
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.DictionaryDO;
+import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdLastNameFirstNameDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.ProjectParameterDO;
@@ -369,7 +370,7 @@ public class ProjectScreen extends Screen {
 
 			public void onGetMatches(GetMatchesEvent event) {
 				try {
-					ArrayList<IdNameVO> scripts = scriptletService.callList("findByName",event.getMatch()+"%");
+					ArrayList<IdNameVO> scripts = scriptletService.callList("fetchByName",event.getMatch()+"%");
 					ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
 					for(IdNameVO script : scripts) {
 						model.add(new TableDataRow(script.getId(),script.getName()));

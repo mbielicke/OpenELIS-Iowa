@@ -41,7 +41,7 @@ import org.openelis.cache.SectionCache;
 import org.openelis.common.AutocompleteRPC;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
-import org.openelis.domain.SectionViewDO;
+import org.openelis.domain.SectionDO;
 import org.openelis.domain.TestMethodVO;
 import org.openelis.domain.WorksheetCreationVO;
 import org.openelis.gwt.common.NotFoundException;
@@ -122,7 +122,7 @@ public class WorksheetCreationLookupScreen extends Screen
      */
     private void postConstructor() {
         ArrayList<DictionaryDO> dictList;
-        ArrayList<SectionViewDO> sectList;
+        ArrayList<SectionDO> sectList;
         ArrayList<TableDataRow> model;
 
         setState(State.DEFAULT);
@@ -134,7 +134,7 @@ public class WorksheetCreationLookupScreen extends Screen
         sectList  = SectionCache.getSectionList();
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        for (SectionViewDO resultDO : sectList)
+        for (SectionDO resultDO : sectList)
             model.add(new TableDataRow(resultDO.getId(),resultDO.getName()));
         sectionId.setModel(model);
         

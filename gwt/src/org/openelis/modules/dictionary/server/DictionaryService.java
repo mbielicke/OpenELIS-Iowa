@@ -27,15 +27,16 @@ package org.openelis.modules.dictionary.server;
 
 import java.util.ArrayList;
 
-import org.openelis.common.AutocompleteRPC;
 import org.openelis.domain.IdNameVO;
 import org.openelis.gwt.common.DatabaseException;
+import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.manager.DictionaryManager;
-import org.openelis.modules.dictionary.client.DictionaryEntryTextRPC;
+import org.openelis.modules.dictionary.client.DictionaryRPC;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.CategoryRemote;
 import org.openelis.remote.DictionaryManagerRemote;
+import org.openelis.remote.DictionaryRemote;
 
 public class DictionaryService {
 
@@ -89,15 +90,25 @@ public class DictionaryService {
         }
     } 
     
-    public AutocompleteRPC getRelatedEntryMatches(AutocompleteRPC rpc) {
-        rpc.model = (ArrayList)remote().autoCompleteByEntry(rpc.match.trim() + "%", 10);
+    public ArrayList<IdNameVO> fetchIdEntryByEntry(String entry) throws Exception { 
+        return dictRemote().fetchIdEntryByEntry(entry + "%", 10);
+    }
+    
+    public DictionaryRPC validateDelete(DictionaryRPC rpc) throws Exception {
+        try {
+             dictRemote().validateForDelete(rpc.data);
+        } catch (RuntimeException e) {
+            throw new DatabaseException(e);
+        } catch (ValidationErrorsList e) {
+            rpc.valid = false;
+        }
         
         return rpc;
     }
     
-    public DictionaryEntryTextRPC getNumResultsAffected(DictionaryEntryTextRPC rpc) {    
+    public DictionaryRPC getNumResultsAffected(DictionaryRPC rpc) {    
         try {
-            rpc.count = remote().getNumResultsAffected(rpc.entryText,rpc.id);
+           // rpc.count = dictRemote().getNumResultsAffected(rpc.entryText,rpc.id);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -106,6 +117,10 @@ public class DictionaryService {
     
     private CategoryRemote remote() {
         return (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
+    }
+    
+    private DictionaryRemote dictRemote() {
+        return (DictionaryRemote)EJBFactory.lookup("openelis/DictionaryBean/remote");
     }
     
     private DictionaryManagerRemote remoteManager() {
