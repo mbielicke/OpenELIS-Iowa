@@ -43,11 +43,19 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.openelis.util.XMLUtil;
+import org.openelis.utilcommon.DataBaseUtil;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-@NamedQueries({@NamedQuery(name = "StandardNote.StandardNote", query = "select new org.openelis.domain.StandardNoteDO(s.id,s.name,s.description,s.typeId,s.text) from StandardNote s where s.id = :id")})
+@NamedQueries({
+	@NamedQuery(name = "StandardNote.fetchById", 
+			    query = "select new org.openelis.domain.StandardNoteDO(s.id,s.name,s.description,s.typeId,s.text) from StandardNote s where s.id = :id"),
+
+    @NamedQuery(name = "StandardNote.fetchByType", 
+    		    query = "select new org.openelis.domain.StandardNoteDO(s.id,s.name,s.description,s.typeId,s.text) from StandardNote s where "+
+                      " (s.name like :name OR s.description like :desc) and s.typeId = :type order by s.name")
+})
             
     
 @Entity
@@ -84,8 +92,7 @@ public class StandardNote implements Auditable, Cloneable {
     return id;
   }
   protected void setId(Integer id) {
-    if((id == null && this.id != null) || 
-       (id != null && !id.equals(this.id)))
+    if(DataBaseUtil.isDifferent(id,this.id))
       this.id = id;
   }
 
@@ -93,17 +100,16 @@ public class StandardNote implements Auditable, Cloneable {
     return name;
   }
   public void setName(String name) {
-    if((name == null && this.name != null) || 
-       (name != null && !name.equals(this.name)))
+    if(DataBaseUtil.isDifferent(name,this.name))
       this.name = name;
   }
 
   public String getDescription() {
     return description;
   }
+  
   public void setDescription(String description) {
-    if((description == null && this.description != null) || 
-       (description != null && !description.equals(this.description)))
+    if(DataBaseUtil.isDifferent(description,this.description))
       this.description = description;
   }
 
@@ -111,8 +117,7 @@ public class StandardNote implements Auditable, Cloneable {
     return typeId;
   }
   public void setTypeId(Integer typeId) {
-    if((typeId == null && this.typeId != null) || 
-       (typeId != null && !typeId.equals(this.typeId)))
+    if(DataBaseUtil.isDifferent(typeId,this.typeId))
       this.typeId = typeId;
   }
 
@@ -120,8 +125,7 @@ public class StandardNote implements Auditable, Cloneable {
     return text;
   }
   public void setText(String text) {
-    if((text == null && this.text != null) || 
-       (text != null && !text.equals(this.text)))
+    if(DataBaseUtil.isDifferent(text,this.text))
       this.text = text;
   }
 
@@ -138,13 +142,9 @@ public class StandardNote implements Auditable, Cloneable {
       Element root = doc.getDocumentElement();
       
       AuditUtil.getChangeXML(id,original.id,doc,"id");
-
       AuditUtil.getChangeXML(name,original.name,doc,"name");
-
       AuditUtil.getChangeXML(description,original.description,doc,"description");
-
       AuditUtil.getChangeXML(typeId,original.typeId,doc,"type_id");
-
       AuditUtil.getChangeXML(text,original.text,doc,"text");
 
       if(root.hasChildNodes())

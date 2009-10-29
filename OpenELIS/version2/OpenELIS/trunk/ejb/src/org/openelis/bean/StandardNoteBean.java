@@ -26,14 +26,11 @@
 package org.openelis.bean;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
-import javax.ejb.EJBs;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -42,32 +39,27 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
+import org.openelis.domain.IdNameVO;
+import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.StandardNoteDO;
 import org.openelis.entity.StandardNote;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.gwt.common.SecurityModule.ModuleFlags;
 import org.openelis.gwt.common.data.QueryData;
-import org.openelis.gwt.common.data.deprecated.AbstractField;
-import org.openelis.gwt.common.data.deprecated.QueryField;
-import org.openelis.gwt.common.data.deprecated.QueryIntegerField;
-import org.openelis.gwt.common.data.deprecated.QueryStringField;
 import org.openelis.local.LockLocal;
 import org.openelis.metamap.StandardNoteMetaMap;
 import org.openelis.remote.StandardNoteRemote;
-import org.openelis.util.QueryBuilder;
 import org.openelis.util.QueryBuilderV2;
 import org.openelis.utilcommon.DataBaseUtil;
-import org.openelis.utils.GetPage;
-import org.openelis.utils.ReferenceTableCache;
+import org.openelis.utils.SecurityInterceptor;
 
 @Stateless
-@EJBs({
-    @EJB(name="ejb/Lock",beanInterface=LockLocal.class)
-})
 @SecurityDomain("openelis")
 @RolesAllowed("standardnote-select")
+
 public class StandardNoteBean implements StandardNoteRemote{
 
 	@PersistenceContext(name = "openelis")
@@ -76,190 +68,185 @@ public class StandardNoteBean implements StandardNoteRemote{
 	@Resource
 	private SessionContext ctx;
 	
-    private LockLocal lockBean;
-    private static int standardNoteRefTableId;
+	@EJB
+	private LockLocal lockBean;
+	
     private static final StandardNoteMetaMap StandardNoteMap = new StandardNoteMetaMap();
     
-    public StandardNoteBean(){
-        standardNoteRefTableId = ReferenceTableCache.getReferenceTable("standard_note");
-    }
-    
-    @PostConstruct
-    private void init()
-    {
-        lockBean =  (LockLocal)ctx.lookup("ejb/Lock");
-    }
-
-    @RolesAllowed("standardnote-delete")
-	public void deleteStandardNote(Integer standardNoteId) throws Exception {
-    	lockBean.getLock(standardNoteRefTableId, standardNoteId);
-        
-		manager.setFlushMode(FlushModeType.COMMIT);
-		StandardNote standardNote = null;
-        
-		//we delete it
-		try {
-			standardNote = manager.find(StandardNote.class, standardNoteId);
-            	if(standardNote != null)
-            		manager.remove(standardNote);
-            	
-		} catch (Exception e) {
-            e.printStackTrace();
-        }	
+	public StandardNoteDO fetchById(Integer id) {
+		Query query;
+		StandardNoteDO data;
 		
-		lockBean.giveUpLock(standardNoteRefTableId, standardNoteId);
-	}
+		query = manager.createNamedQuery("StandardNote.FetchById");
 
-	public StandardNoteDO getStandardNote(Integer standardNoteId) {		
-		Query query = manager.createNamedQuery("StandardNote.StandardNote");
-		query.setParameter("id", standardNoteId);
-		StandardNoteDO standardNoteRecord = (StandardNoteDO) query.getResultList().get(0);// getting first storage unit record
+		query.setParameter("id", id);
+		data = (StandardNoteDO) query.getSingleResult();
 
-        return standardNoteRecord;
+        return data;
 	}
 	
-    @RolesAllowed("standardnote-update")
-	public StandardNoteDO getStandardNoteAndLock(Integer standardNoteId, String session) throws Exception{
-		lockBean.getLock(standardNoteRefTableId, standardNoteId);
-        
-        return getStandardNote(standardNoteId);
-	}
-	
-	public StandardNoteDO getStandardNoteAndUnlock(Integer standardNoteId, String session) {
-        lockBean.giveUpLock(standardNoteRefTableId, standardNoteId);
+	@SuppressWarnings("unchecked")
+	public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception {
+		Query query; 
+		QueryBuilderV2 builder;
+		List list;
 		
-		return getStandardNote(standardNoteId);
-	}
+		builder = new QueryBuilderV2();
+		
+        builder.setMeta(StandardNoteMap);
+		
+		builder.setSelect("distinct new org.openelis.domain.IdNameVO(" + StandardNoteMap.getId() + ", " + StandardNoteMap.getName() + ") ");
+		
+        builder.constructWhere(fields);      
 
-	public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception {
-		StringBuffer sb = new StringBuffer();
-		QueryBuilder qb = new QueryBuilder();
-		
-        qb.setMeta(StandardNoteMap);
-		
-		qb.setSelect("distinct new org.openelis.domain.IdNameDO(" + StandardNoteMap.getId() + ", " + StandardNoteMap.getName() + ") ");
-		
-//		this method is going to throw an exception if a column doesnt match
-        qb.addWhere(fields);      
-
-        qb.setOrderBy(StandardNoteMap.getName());
+        builder.setOrderBy(StandardNoteMap.getName());
         
-        sb.append(qb.getEJBQL());
-        
-        Query query = manager.createQuery(sb.toString());
+        query = manager.createQuery(builder.getEJBQL());
        
-        if(first > -1 && max > -1)
-       	 query.setMaxResults(first+max);
+        query.setMaxResults(first+max);
         
-//      ***set the parameters in the query
-        qb.setQueryParams(query);
-        
-        List returnList = GetPage.getPage(query.getResultList(), first, max);
-        
-        if(returnList == null)
-       	 throw new LastPageException();
-        else
-       	 return returnList;
-	}
-
-    @RolesAllowed("standardnote-update")
-	public Integer updateStandardNote(StandardNoteDO standardNoteDO) throws Exception{
-        if(standardNoteDO.getId() != null)
-            lockBean.validateLock(standardNoteRefTableId, standardNoteDO.getId());
-        
-        validateStandardNote(standardNoteDO);
-        
-		manager.setFlushMode(FlushModeType.COMMIT);
-		StandardNote standardNote = null;
-        
-        if (standardNoteDO.getId() == null)
-           	standardNote = new StandardNote();
-        else
-         	standardNote = manager.find(StandardNote.class, standardNoteDO.getId());
-            
-        standardNote.setDescription(standardNoteDO.getDescription());
-        standardNote.setName(standardNoteDO.getName());
-        standardNote.setText(standardNoteDO.getText());
-        standardNote.setTypeId(standardNoteDO.getTypeId());
-         
-        if (standardNote.getId() == null) {
-	       	manager.persist(standardNote);
-        }
-         
-        lockBean.giveUpLock(standardNoteRefTableId, standardNote.getId()); 
-		    
-		return standardNote.getId();
-	}
-    
-    public ArrayList<StandardNoteDO> newQuery(ArrayList<QueryData> fields) throws Exception {
-        StringBuffer sb = new StringBuffer();
-        QueryBuilderV2 qb = new QueryBuilderV2();
-        List list;
-        
-        qb.setMeta(StandardNoteMap);
-
-        qb.setSelect("new org.openelis.domain.StandardNoteDO(" + StandardNoteMap.getId()+", "+
-                     StandardNoteMap.getName()+", "+
-                     StandardNoteMap.getDescription()+", "+
-                     StandardNoteMap.getTypeId()+", "+
-                     StandardNoteMap.getText()+") ");
-        
-        String whereClause = " WHERE ";
-        if(fields.size() == 2){
-            QueryField f = new QueryField();
-            f.setValue(fields.get(0).query);
-            whereClause += " (" + QueryBuilder.getQueryNoOperand(f, StandardNoteMap.getName()) + " OR " + 
-            QueryBuilder.getQueryNoOperand(f, StandardNoteMap.getDescription())+")";
-        }else{
-            QueryField f = new QueryField();
-            f.setValue(fields.get(0).query);
-            whereClause += QueryBuilder.getQueryNoOperand(f, StandardNoteMap.getTypeId());
-        }
-        
-        qb.setOrderBy(StandardNoteMap.getTypeId()+", "+StandardNoteMap.getName());
-
-        sb.append(qb.getSelectClause()).append(qb.getFromClause(whereClause)).append(whereClause).append(qb.getOrderBy());
-
-        Query query = manager.createQuery(sb.toString());
-        
-        qb.setQueryParams(query, fields);
+        QueryBuilderV2.setQueryParams(query,fields);
         
         list = query.getResultList();
-        
         if (list.isEmpty())
             throw new NotFoundException();
-        list = (ArrayList<StandardNoteDO>)DataBaseUtil.subList(list, 0, 1000);
-        
+        list = (ArrayList<IdNameVO>)DataBaseUtil.subList(list, first, max);
         if (list == null)
             throw new LastPageException();
-        
-        return (ArrayList<StandardNoteDO>)list;
-    }
 
-	private void validateStandardNote(StandardNoteDO standardNoteDO) throws Exception{
+        return (ArrayList<IdNameVO>)list;
+	}
+    
+	@SuppressWarnings("unchecked")
+	public ArrayList<StandardNoteDO> queryNote(ArrayList<QueryData> fields, int first, int max) throws Exception {
+		Query query; 
+		QueryBuilderV2 builder;
+		List list;
+		
+		builder = new QueryBuilderV2();
+		
+        builder.setMeta(StandardNoteMap);
+		
+		builder.setSelect("distinct new org.openelis.domain.StandardNoteDO(" + StandardNoteMap.getId() + ", " 
+				                                                             + StandardNoteMap.getName() + ","
+				                                                             + StandardNoteMap.getDescription() + ","
+				                                                             + StandardNoteMap.getTypeId() + "," 
+				                                                             + StandardNoteMap.getText()+") ");
+		
+        builder.constructWhere(fields);      
+
+        builder.setOrderBy(StandardNoteMap.getName());
+        
+        query = manager.createQuery(builder.getEJBQL());
+       
+        query.setMaxResults(first+max);
+        
+        QueryBuilderV2.setQueryParams(query,fields);
+        
+        list = query.getResultList();
+        if (list.isEmpty())
+            throw new NotFoundException();
+        list = (ArrayList<StandardNoteDO>)DataBaseUtil.subList(list, first, max);
+        if (list == null)
+            throw new LastPageException();
+
+        return (ArrayList<StandardNoteDO>)list;
+	}
+	
+	public StandardNoteDO add(StandardNoteDO data) throws Exception{
+		StandardNote entity;
+		
+		checkSecurity(ModuleFlags.ADD);
+		
+		validate(data);
+		
+		manager.setFlushMode(FlushModeType.COMMIT);
+        
+        entity = new StandardNote();
+            
+        entity.setDescription(data.getDescription());
+        entity.setName(data.getName());
+        entity.setText(data.getText());
+        entity.setTypeId(data.getTypeId());
+         
+      	manager.persist(entity);
+      	data.setId(entity.getId());
+         		    
+		return data;
+	}
+	
+	public StandardNoteDO update(StandardNoteDO data) throws Exception{
+		StandardNote entity;
+		
+		checkSecurity(ModuleFlags.ADD);
+		
+		validate(data);
+		
+		lockBean.validateLock(ReferenceTable.STANDARD_NOTE, data.getId());
+		
+		manager.setFlushMode(FlushModeType.COMMIT);
+        
+        entity = manager.find(StandardNote.class, data.getId());
+            
+        entity.setDescription(data.getDescription());
+        entity.setName(data.getName());
+        entity.setText(data.getText());
+        entity.setTypeId(data.getTypeId());
+                  		    
+      	lockBean.giveUpLock(ReferenceTable.STANDARD_NOTE, data.getId());
+      	 
+		return data;
+	}
+	
+	public StandardNoteDO fetchForUpdate(Integer id) throws Exception {
+		lockBean.getLock(ReferenceTable.STANDARD_NOTE, id);
+		return fetchById(id);
+	}
+	
+	public StandardNoteDO abortUpdate(Integer id) throws Exception {
+		lockBean.giveUpLock(ReferenceTable.STANDARD_NOTE, id);
+		return fetchById(id);
+	}
+	
+	
+	public void delete(Integer id) throws Exception {
+		StandardNote entity;
+		
+        checkSecurity(ModuleFlags.DELETE);
+        
+        lockBean.validateLock(ReferenceTable.STANDARD_NOTE, id);
+
+        manager.setFlushMode(FlushModeType.COMMIT);
+        entity = manager.find(StandardNote.class, id);
+        if (entity != null)
+            manager.remove(entity);
+
+        lockBean.giveUpLock(ReferenceTable.ANALYTE, id);
+	}
+
+
+
+	private void validate(StandardNoteDO standardNoteDO) throws Exception{
 	    ValidationErrorsList list = new ValidationErrorsList();
 	    
-		//name required (duplicates allowed)
-		if(standardNoteDO.getName() == null || "".equals(standardNoteDO.getName())){
+		if(DataBaseUtil.isEmpty(standardNoteDO.getName()))
 		    list.add(new FieldErrorException("fieldRequiredException",StandardNoteMap.getName()));
-		}
 		
-		//description required
-		if(standardNoteDO.getDescription() == null || "".equals(standardNoteDO.getDescription())){
+		if(DataBaseUtil.isEmpty(standardNoteDO.getDescription()))
 		    list.add(new FieldErrorException("fieldRequiredException",StandardNoteMap.getDescription()));
-		}
 		
-		//type required
-		if(standardNoteDO.getTypeId() == null || "".equals(standardNoteDO.getTypeId())){
+		if(DataBaseUtil.isEmpty(standardNoteDO.getTypeId()))
 		    list.add(new FieldErrorException("fieldRequiredException",StandardNoteMap.getTypeId()));
-		}
 		
-		//text required
-		if(standardNoteDO.getText() == null || "".equals(standardNoteDO.getText())){
+		if(DataBaseUtil.isEmpty(standardNoteDO.getText()))
 		    list.add(new FieldErrorException("fieldRequiredException",StandardNoteMap.getText()));
-		}
 		
 		if(list.size() > 0)
             throw list;
 	}
+    
+	private void checkSecurity(ModuleFlags flag) throws Exception {
+        SecurityInterceptor.applySecurity(ctx.getCallerPrincipal().getName(), 
+                                          "standardnote", flag);
+    }
 }
