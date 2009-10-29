@@ -81,9 +81,13 @@ public class MethodBean implements MethodRemote {
     } 
     
     public MethodDO fetchById(Integer id) {
-        Query query = manager.createNamedQuery("Method.MethodById");
+    	Query query;
+    	MethodDO methodDO;
+    	
+        query = manager.createNamedQuery("Method.FetchById");
         query.setParameter("id",id);
-        MethodDO methodDO = (MethodDO)query.getSingleResult();
+        methodDO = (MethodDO)query.getSingleResult();
+        
         return methodDO;
     }
     
@@ -186,7 +190,7 @@ public class MethodBean implements MethodRemote {
 	public ArrayList<IdNameVO> findByName(String name, int maxResults) {
         Query query = null;
         
-        query = manager.createNamedQuery("Method.findByName");        
+        query = manager.createNamedQuery("Method.FetchActiveByName");        
         query.setParameter("name", name);
         query.setMaxResults(maxResults);
         
@@ -257,7 +261,7 @@ public class MethodBean implements MethodRemote {
         }               
 
         if (checkDuplicate) {
-            query = manager.createNamedQuery("Method.MethodByName");
+            query = manager.createNamedQuery("Method.FetchEntityByName");
             query.setParameter("name", methodDO.getName());
             list = query.getResultList();
 

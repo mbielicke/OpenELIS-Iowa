@@ -39,7 +39,6 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
-import org.openelis.domain.IdNameDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.ProjectViewDO;
 import org.openelis.entity.Project;
@@ -91,7 +90,7 @@ public class ProjectBean implements ProjectLocal, ProjectRemote {
         ProjectViewDO data;
         Query query;
         
-        query = manager.createNamedQuery("Project.ProjectById");
+        query = manager.createNamedQuery("Project.FetchDOById");
         query.setParameter("id", id);
         data = (ProjectViewDO)query.getSingleResult(); 
         
@@ -183,8 +182,10 @@ public class ProjectBean implements ProjectLocal, ProjectRemote {
         return data;
     }
 
-    public ArrayList<IdNameDO> findByName(String name, int maxResults) {
-        Query query = manager.createNamedQuery("Project.ProjectByName");
+    public ArrayList<ProjectViewDO> fetchByName(String name, int maxResults) {
+        Query query;
+        
+        query = manager.createNamedQuery("Project.FetchActiveByName");
         query.setParameter("name", name);
         query.setMaxResults(maxResults);
     
@@ -231,7 +232,7 @@ public class ProjectBean implements ProjectLocal, ProjectRemote {
     			return;
     		}
 
-    		query = manager.createNamedQuery("Project.ProjectListByName");
+    		query = manager.createNamedQuery("Project.FetchEntityByName");
     		query.setParameter("name", projectDO.getName());
     		list = query.getResultList();
 

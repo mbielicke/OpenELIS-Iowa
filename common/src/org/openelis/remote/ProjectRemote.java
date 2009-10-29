@@ -26,13 +26,11 @@
 package org.openelis.remote;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import javax.ejb.Remote;
 
-import org.openelis.domain.IdNameDO;
 import org.openelis.domain.IdNameVO;
-import org.openelis.domain.SecuritySystemUserDO;
+import org.openelis.domain.ProjectViewDO;
 import org.openelis.gwt.common.data.QueryData;
 
 @Remote
@@ -41,7 +39,7 @@ public interface ProjectRemote {
 
     public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception;
 
-    public ArrayList<IdNameDO> findByName(String name, int maxResults);
+    public ArrayList<ProjectViewDO> fetchByName(String name, int maxResults);
  
     
 }

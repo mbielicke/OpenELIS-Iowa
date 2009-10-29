@@ -468,7 +468,7 @@ public class AnalyteScreen extends Screen {
         } else if (state == State.DELETE) {
             window.setBusy(consts.get("deleting"));
             try {
-                service.call("delete", data.getId());
+                service.call("delete", data);
 
                 fetchById(null);
                 window.setDone(consts.get("deleteComplete"));

@@ -49,7 +49,7 @@ public class EnvironmentalSampleLoginService {
     }
     
     public AutocompleteRPC getProjectMatches(AutocompleteRPC rpc) throws Exception {
-        rpc.model = (ArrayList)projectRemote().findByName(rpc.match+"%", 10);
+        rpc.model = (ArrayList)projectRemote().fetchByName(rpc.match+"%", 10);
         return rpc;
     }
     
