@@ -209,19 +209,19 @@ public class StandardNoteBean implements StandardNoteRemote{
 	}
 	
 	
-	public void delete(Integer id) throws Exception {
+	public void delete(StandardNoteDO data) throws Exception {
 		StandardNote entity;
 		
         checkSecurity(ModuleFlags.DELETE);
         
-        lockBean.validateLock(ReferenceTable.STANDARD_NOTE, id);
+        lockBean.validateLock(ReferenceTable.STANDARD_NOTE, data.getId());
 
         manager.setFlushMode(FlushModeType.COMMIT);
-        entity = manager.find(StandardNote.class, id);
+        entity = manager.find(StandardNote.class, data);
         if (entity != null)
             manager.remove(entity);
 
-        lockBean.giveUpLock(ReferenceTable.ANALYTE, id);
+        lockBean.giveUpLock(ReferenceTable.ANALYTE, data.getId());
 	}
 
 

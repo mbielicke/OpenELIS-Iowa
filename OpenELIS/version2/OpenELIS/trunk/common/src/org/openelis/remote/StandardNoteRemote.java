@@ -47,7 +47,7 @@ public interface StandardNoteRemote {
 
     public StandardNoteDO abortUpdate(Integer id) throws Exception;
 
-    public void delete(Integer id) throws Exception;
+    public void delete(StandardNoteDO data) throws Exception;
     
     public ArrayList<StandardNoteDO> queryNote(ArrayList<QueryData> field, int first, int max) throws Exception;
     

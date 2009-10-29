@@ -61,36 +61,38 @@ public class ProviderBean implements ProviderRemote, ProviderLocal {
     private static final ProviderMetaMap ProvMeta = new ProviderMetaMap(); 
     
     public ProviderDO fetchById(Integer providerId) {                 
+        Query query;
+        ProviderDO provider;
         
-        Query query = manager.createNamedQuery("Provider.Provider");
+        query = manager.createNamedQuery("Provider.FetchById");
         query.setParameter("id", providerId);
-        ProviderDO provider = (ProviderDO) query.getSingleResult();// getting provider 
+        provider = (ProviderDO) query.getSingleResult();// getting provider 
 
         return provider;
     }
 
     @SuppressWarnings("unchecked")
 	public ArrayList<IdLastNameFirstNameDO> query (ArrayList<QueryData> fields, int first, int max) throws Exception {                         
-        
+       Query query;
        QueryBuilderV2 qb = new QueryBuilderV2();
+       List list;
                 
        qb.setMeta(ProvMeta);
         
        qb.setSelect("distinct new org.openelis.domain.IdLastNameFirstNameDO("+ProvMeta.getId()+", "+ProvMeta.getLastName()+", "+ProvMeta.getFirstName() + ") ");
        
        
-       //this method is going to throw an exception if a column doesnt match
        qb.constructWhere(fields);   
        
        qb.setOrderBy(ProvMeta.getLastName()+", "+ProvMeta.getFirstName());       
           
-       Query query = manager.createQuery(qb.getEJBQL());
+       query = manager.createQuery(qb.getEJBQL());
        
        query.setMaxResults(first+max);
        
        QueryBuilderV2.setQueryParams(query,fields);
        
-       List list = query.getResultList();
+       list = query.getResultList();
        if (list.isEmpty())
            throw new NotFoundException();
        list = (ArrayList<IdLastNameFirstNameDO>)DataBaseUtil.subList(list, first, max);

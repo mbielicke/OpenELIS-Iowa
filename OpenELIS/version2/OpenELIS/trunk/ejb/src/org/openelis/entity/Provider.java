@@ -52,7 +52,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 @NamedQueries({
-	@NamedQuery(name = "Provider.Provider", 
+	@NamedQuery(name = "Provider.FetchById", 
 			    query = "select new org.openelis.domain.ProviderDO(p.id,p.lastName,p.firstName,p.middleName,d.id,p.npi)" +                                                                                                  
 					    "  from Provider p, Dictionary d where d.id = p.typeId and p.id = :id")
 })

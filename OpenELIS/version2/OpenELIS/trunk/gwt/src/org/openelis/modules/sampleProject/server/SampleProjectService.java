@@ -40,7 +40,7 @@ public class SampleProjectService {
 
     public AutocompleteRPC getProjectMatches(AutocompleteRPC rpc) throws Exception {
         ProjectRemote remote = (ProjectRemote)EJBFactory.lookup("openelis/ProjectBean/remote");
-        rpc.model = (ArrayList)remote.findByName(rpc.match+"%", 10);
+        rpc.model = (ArrayList)remote.fetchByName(rpc.match+"%", 10);
         return rpc;
     }
 }

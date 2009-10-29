@@ -47,7 +47,7 @@ public interface AnalyteRemote {
 
     public AnalyteViewDO abortUpdate(Integer id) throws Exception;
 
-    public void delete(Integer id) throws Exception;
+    public void delete(AnalyteViewDO data) throws Exception;
     
 	public ArrayList<IdNameVO> fetchByName(String name, int maxResults);
 	 

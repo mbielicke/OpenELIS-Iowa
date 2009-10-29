@@ -180,21 +180,21 @@ public class AnalyteBean implements AnalyteRemote {
 		
 	}
 	
-	public void delete(Integer id) throws Exception {
+	public void delete(AnalyteViewDO data) throws Exception {
         Analyte entity;
 
         checkSecurity(ModuleFlags.DELETE);
         
-        validateForDelete(id);
+        validateForDelete(data.getId());
 
-        lockBean.validateLock(ReferenceTable.ANALYTE, id);
+        lockBean.validateLock(ReferenceTable.ANALYTE, data.getId());
 
         manager.setFlushMode(FlushModeType.COMMIT);
-        entity = manager.find(Analyte.class, id);
+        entity = manager.find(Analyte.class, data.getId());
         if (entity != null)
             manager.remove(entity);
 
-        lockBean.giveUpLock(ReferenceTable.ANALYTE, id);
+        lockBean.giveUpLock(ReferenceTable.ANALYTE, data.getId());
 	}
 
 	public AnalyteViewDO fetchForUpdate(Integer id) throws Exception {
