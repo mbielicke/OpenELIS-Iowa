@@ -35,15 +35,20 @@ import org.openelis.entity.Dictionary;
 import org.openelis.util.XMLUtil;
 
 import javax.persistence.Column;
+import javax.persistence.ColumnResult;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.NamedNativeQueries;
+import javax.persistence.NamedNativeQuery;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
+import javax.persistence.SqlResultSetMapping;
+import javax.persistence.SqlResultSetMappings;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -52,32 +57,126 @@ import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
 @NamedQueries( {@NamedQuery(name = "Dictionary.FetchByCategoryId",
-                            query = "select distinct new org.openelis.domain.DictionaryViewDO(d.id,d.sortOrder, d.categoryId, d.relatedEntryId, "
-                            + "d.systemName,d.isActive,  d.localAbbrev, d.entry, dre.entry)"
-                            + "  from  Dictionary d left join d.relatedEntry dre  where d.categoryId = :id "
-                            + " order by d.sortOrder "),
+                            query = "select distinct new org.openelis.domain.DictionaryViewDO(d.id,d.sortOrder, " +
+                            		"d.categoryId, d.relatedEntryId, d.systemName,d.isActive,  d.localAbbrev, d.entry, dre.entry) "
+                                  + "from  Dictionary d left join d.relatedEntry dre  where d.categoryId = :id order by d.sortOrder "),
                 @NamedQuery(name = "Dictionary.FetchBySystemName",
-                            query = "select distinct new org.openelis.domain.DictionaryDO(d.id,d.sortOrder, d.categoryId, d.relatedEntryId, "
-                            + " d.systemName,d.isActive,  d.localAbbrev, d.entry)"
-                            + " from  Dictionary d where d.systemName = :name "),
+                            query = "select distinct new org.openelis.domain.DictionaryDO(d.id,d.sortOrder, d.categoryId, d.relatedEntryId, " +
+                                    " d.systemName,d.isActive,  d.localAbbrev, d.entry)"
+                                  + " from  Dictionary d where d.systemName = :name "),
                 @NamedQuery(name = "Dictionary.FetchById",
-                            query = "select distinct new org.openelis.domain.DictionaryViewDO(d.id,d.sortOrder, d.categoryId, d.relatedEntryId, "
-                            + " d.systemName,d.isActive,  d.localAbbrev, d.entry, dre.entry)"
-                            + " from  Dictionary d left join d.relatedEntry dre where d.id = :id"),
+                            query = "select distinct new org.openelis.domain.DictionaryViewDO(d.id,d.sortOrder, d.categoryId, d.relatedEntryId, " +
+                                    " d.systemName,d.isActive,  d.localAbbrev, d.entry, dre.entry)"
+                                  + " from  Dictionary d left join d.relatedEntry dre where d.id = :id"),
                 @NamedQuery(name = "Dictionary.FetchByCategorySystemName",
-                            query = "select distinct new org.openelis.domain.DictionaryDO(d.id,d.sortOrder, d.categoryId, d.relatedEntryId, "
-                            + " d.systemName,d.isActive,  d.localAbbrev, d.entry)"
-                            + " from  Dictionary d left join d.category c where c.systemName = :name"
-                            + " order by d.sortOrder "),            
-                @NamedQuery(name = "Dictionary.FetchIdNameByCategoryId",
+                            query = "select distinct new org.openelis.domain.DictionaryDO(d.id,d.sortOrder, d.categoryId, d.relatedEntryId, " +
+                                    " d.systemName,d.isActive,  d.localAbbrev, d.entry)"
+                                  + " from  Dictionary d left join d.category c where c.systemName = :name order by d.sortOrder "),            
+                @NamedQuery(name = "Dictionary.FetchIdEntryByCategoryId",
                             query = "select new org.openelis.domain.IdNameVO(d.id, d.entry) from Dictionary d where "
-                            + " d.isActive='Y' and d.categoryId = :id order by d.sortOrder"),             
-                @NamedQuery(name = "Dictionary.FetchIdNameByEntry",
+                                  + " d.isActive='Y' and d.categoryId = :id order by d.sortOrder"),             
+                @NamedQuery(name = "Dictionary.FetchIdEntryByEntry",
                             query = "select new org.openelis.domain.IdNameVO(d.id, d.entry) from Dictionary d where d.entry like :entry order by d.entry"),
                 @NamedQuery(name = "Dictionary.FetchByEntry",
                             query = "select distinct new org.openelis.domain.DictionaryDO(d.id,d.sortOrder, d.categoryId, d.relatedEntryId, " +
                                     " d.systemName,d.isActive,  d.localAbbrev, d.entry) "
                                   + " from  Dictionary d where d.entry = :entry")})
+                                  
+ @NamedNativeQueries({@NamedNativeQuery(name = "Dictionary.ReferenceCheckForId",     
+                  query = "select operation_id as DICTIONARY_ID from project_parameter where operation_id = :id " +
+                          "UNION " +
+                          "select type_id as DICTIONARY_ID from provider where type_id = :id " +
+                          "UNION " +
+                          "select type_id as DICTIONARY_ID from qaevent where type_id = :id " +
+                          "UNION " +
+                          "select type_id as DICTIONARY_ID from qc where type_id = :id " +
+                          "UNION " +
+                          "select type_id as DICTIONARY_ID from qc_analyte where type_id = :id " +
+                          "UNION " +
+                          "select type_id as DICTIONARY_ID from test_analyte where type_id = :id " +
+                          "UNION " +
+                          "select flags_id as DICTIONARY_ID from test_reflex where flags_id = :id "+
+                          "UNION " +
+                          "select unit_of_measure_id as DICTIONARY_ID from test_result where unit_of_measure_id = :id "+
+                          "UNION " +
+                          "select type_id as DICTIONARY_ID from test_result where type_id = :id "+
+                          "UNION " +
+                          "select rounding_method_id as DICTIONARY_ID from test_result where rounding_method_id = :id "+
+                          "UNION " +
+                          "select flags_id as DICTIONARY_ID from test_result where flags_id = :id "+
+                          "UNION " +
+                          "select flag_id as DICTIONARY_ID from test_section where flag_id = :id "+
+                          "UNION " +
+                          "select type_of_sample_id as DICTIONARY_ID from test_type_of_sample where type_of_sample_id = :id "+
+                          "UNION " +
+                          "select unit_of_measure_id as DICTIONARY_ID from test_type_of_sample where unit_of_measure_id = :id "+
+                          "UNION " +
+                          "select format_id as DICTIONARY_ID from test_worksheet where format_id = :id "+
+                          "UNION " +
+                          "select flag_id as DICTIONARY_ID from test_worksheet_analyte where flag_id = :id "+
+                          "UNION " +
+                          "select type_id as DICTIONARY_ID from test_worksheet_item where type_id = :id "+
+                          "UNION " +
+                          "select status_id as DICTIONARY_ID from worksheet where status_id = :id "+
+                          "UNION " +
+                          "select format_id as DICTIONARY_ID from worksheet where format_id = :id "+
+                          "UNION " +
+                          "select type_id as DICTIONARY_ID from worksheet_qc where type_id = :id "+
+                          "UNION " +
+                          "select contact_type_id as DICTIONARY_ID from organization_contact where contact_type_id = :id "+
+                          "UNION " +
+                          "select type_id as DICTIONARY_ID from organization_parameter where type_id = :id "+
+                          "UNION " +
+                          "select status_id as DICTIONARY_ID from analysis where status_id = :id "+
+                          "UNION " +
+                          "select unit_of_measure_id as DICTIONARY_ID from analysis where unit_of_measure_id = :id "+
+                          "UNION " +
+                          "select type_id as DICTIONARY_ID from analysis_qaevent where type_id = :id "+
+                          "UNION " +
+                          "select status_id as DICTIONARY_ID from sample where status_id = :id "+
+                          "UNION " +
+                          "select type_of_sample_id as DICTIONARY_ID from sample_item where type_of_sample_id = :id "+
+                          "UNION " +
+                          "select source_of_sample_id as DICTIONARY_ID from sample_item where source_of_sample_id = :id "+
+                          "UNION " +
+                          "select unit_of_measure_id as DICTIONARY_ID from sample_item where unit_of_measure_id = :id "+
+                          "UNION " +
+                          "select printer_type_id as DICTIONARY_ID from label where printer_type_id = :id "+
+                          "UNION " +
+                          "select type_id as DICTIONARY_ID from aux_data where type_id = :id "+
+                          "UNION " +
+                          "select unit_of_measure_id as DICTIONARY_ID from aux_field where unit_of_measure_id = :id "+
+                          "UNION " +
+                          "select type_id as DICTIONARY_ID from aux_field_value where type_id = :id "+
+                          "UNION " +
+                          "select type_id as DICTIONARY_ID from standard_note where type_id = :id ",                          
+                  resultSetMapping="Dictionary.ReferenceCheckForIdMapping"),
+                  @NamedNativeQuery(name = "Dictionary.ReferenceCheckForValue",     
+                              query = "select value as VALUE from test_result tr,dictionary d where value = :value and " +
+                              		  " tr.type_id = d.id and d.system_name = 'test_res_type_dictionary' " +
+                                      " UNION " +
+                                      "select value as VALUE from qc_analyte qca,dictionary d where value = :value and" +
+                                      " qca.type_id = d.id and d.system_name = 'qc_analyte_dictionary' " +
+                                      " UNION " +
+                                      "select value as VALUE from aux_field_value afv,dictionary d where value = :value and" +
+                                      " type_id = d.id and d.system_name = 'aux_dictionary' ",                          
+                  resultSetMapping="Dictionary.ReferenceCheckForValueMapping"),
+                  @NamedNativeQuery(name = "Dictionary.ReferenceCheckForStateCountry",     
+                                    query = "select state as VALUE from address where state = :value " +
+                                            "UNION " +
+                                            "select country as VALUE from address where country = :value ",                          
+                                    resultSetMapping="Dictionary.ReferenceCheckForStateCountryMapping")})
+                                    
+@SqlResultSetMappings({@SqlResultSetMapping(name="Dictionary.ReferenceCheckForIdMapping",
+                     columns={@ColumnResult(name="DICTIONARY_ID")}),
+@SqlResultSetMapping(name="Dictionary.ReferenceCheckForValueMapping",
+                     columns={@ColumnResult(name="VALUE")}),
+@SqlResultSetMapping(name="Dictionary.ReferenceCheckForStateCountryMapping",
+                     columns={@ColumnResult(name="VALUE")})})                     
+                     
+                     
+                     
+    
 @Entity
 @Table(name = "dictionary")
 @EntityListeners( {AuditUtil.class})

@@ -38,7 +38,6 @@ import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.CategoryDO;
-import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.DictionaryViewDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.entity.Category;
@@ -46,14 +45,11 @@ import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.CategoryLocal;
 import org.openelis.metamap.CategoryMetaMap;
-import org.openelis.metamap.DictionaryMetaMap;
 import org.openelis.remote.CategoryRemote;
-import org.openelis.util.QueryBuilder;
 import org.openelis.util.QueryBuilderV2;
 import org.openelis.utilcommon.DataBaseUtil;
 
@@ -86,198 +82,31 @@ public class CategoryBean implements CategoryRemote, CategoryLocal {
         return data;
     }
     
-    public List<IdNameVO> getCategoryList() {
+    public CategoryDO fetchBySystemName(String systemName) throws Exception {
+        Query query;
+        CategoryDO catDO;
+        
+        catDO = null;
+        query = manager.createNamedQuery("Category.FetchBySystemName");
+        query.setParameter("systemName", systemName);
+        try {
+            catDO = (CategoryDO)query.getSingleResult();        
+        } catch (NoResultException e) {
+            throw new NotFoundException();
+        } catch (Exception e) {
+            throw new DatabaseException(e);
+        }
+        return catDO;
+    }
+    
+    public List<IdNameVO> fetchIdName() throws Exception {
         Query query = manager.createNamedQuery("Category.FetchIdName");
         List idNameDOList = query.getResultList();
         return idNameDOList;
-    }
-
-    public ArrayList<DictionaryViewDO> getEntries(Integer categoryId) {
-        ArrayList<DictionaryViewDO> entries;
-        Query query;
-
-        query = manager.createNamedQuery("Dictionary.FetchByCategoryId");
-        query.setParameter("id", categoryId);
-
-        entries = (ArrayList<DictionaryViewDO>)query.getResultList();// getting
-        // list of
-        // dictionary entries
-
-        return entries;
-    }
-
-    public DictionaryDO getDictionaryDOBySystemName(String systemName) {
-        Query query = manager.createNamedQuery("Dictionary.FetchBySystemName");
-        query.setParameter("name", systemName);
-
-        List resultList = query.getResultList();
-
-        if (resultList.size() > 0)
-            return (DictionaryDO)resultList.get(0);
-        else
-            return null;
-    }
-
-    public DictionaryViewDO getDictionaryDOByEntryId(Integer entryId) {
-        Query query = manager.createNamedQuery("Dictionary.FetchById");
-        query.setParameter("id", entryId);
-
-        List resultList = query.getResultList();
-
-        if (resultList.size() > 0)
-            return (DictionaryViewDO)resultList.get(0);
-        else
-            return null;
-    }
-
-    public List getListByCategoryName(String categoryName) {
-        Query query = manager.createNamedQuery("Dictionary.FetchByCategorySystemName");
-        query.setParameter("name", categoryName);
-
-        return query.getResultList();
-    }
-
-    public ArrayList<IdNameVO> getDropdownValues(Integer categoryId) {
-        Query query = manager.createNamedQuery("Dictionary.FetchIdNameByCategoryId");
-        query.setParameter("id", categoryId);
-
-        return DataBaseUtil.toArrayList(query.getResultList());
-    }
-
-    public ArrayList<IdNameVO> autoCompleteByEntry(String entry, int maxResults) {
-        Query query = manager.createNamedQuery("Dictionary.FetchIdNameByEntry");
-        query.setParameter("entry", entry);
-        query.setMaxResults(maxResults);
-
-        ArrayList<IdNameVO> entryList = null;
-        try {
-            entryList = DataBaseUtil.toArrayList(query.getResultList());
-        } catch (Exception ex) {
-            ex.printStackTrace();
-
-        }
-        return entryList;
-    }
-
-    public Integer getEntryIdForSystemName(String systemName) {
-        Query query;
-        List<DictionaryDO> results;
-        query = manager.createNamedQuery("Dictionary.FetchBySystemName");
-        query.setParameter("name", systemName);
-        
-        results = query.getResultList();
-
-        if (results.size() == 0)
-            return null;
-
-        return results.get(0).getId();
-    }
-
-    public Integer getEntryIdForEntry(String entry) {
-        Query query = manager.createNamedQuery("Dictionary.FetchByEntry");
-        query.setParameter("entry", entry);
-        List<DictionaryDO> results;
-
-        results = query.getResultList();
-
-        if (results.size() == 0)
-            return null;
-
-        return results.get(0).getId();
-    }
-
-    public String getSystemNameForEntryId(Integer entryId) {
-        Query query = manager.createNamedQuery("Dictionary.FetchById");
-        query.setParameter("id", entryId);
-        List<DictionaryViewDO> results = null;
-
-        results = query.getResultList();
-
-        if (results.size() == 0)
-            return null;
-
-        return results.get(0).getSystemName();
-    }
-
-    public Integer getCategoryId(String systemName) {
-        Query query;
-        Integer categoryId;
-        CategoryDO catDO;
-        
-        query = manager.createNamedQuery("Category.FetchBySystemName");
-        query.setParameter("systemName", systemName);
-        categoryId = null;
-        try {
-            catDO = (CategoryDO)query.getSingleResult();
-            categoryId = catDO.getId();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-
-        }
-        return categoryId;
-    }
-
-    public ArrayList getDictionaryListByPatternAndCategory(ArrayList<QueryData> fields) {
-        StringBuffer sb = new StringBuffer();
-        QueryBuilder qb = new QueryBuilder();
-        DictionaryMetaMap dictMeta;
-        ArrayList returnList;
-
-        dictMeta = new DictionaryMetaMap();
-        qb.setMeta(dictMeta);
-
-        qb.setSelect("distinct new org.openelis.domain.IdNameDO(" + dictMeta.getId() + ", " +
-                     dictMeta.getEntry() + ") ");
-        try {
-            qb.addNewWhere(fields);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-
-        qb.setOrderBy(dictMeta.getEntry());
-
-        sb.append(qb.getEJBQL());
-        Query query = manager.createQuery(sb.toString());
-
-        // ***set the parameters in the query
-        qb.setNewQueryParams(query, fields);
-
-        returnList = (ArrayList<DictionaryViewDO>)query.getResultList();
-
-        return returnList;
-    }
-
-    public Integer getNumResultsAffected(String entry, Integer id) {
-        Integer count = null;
-        String oldVal = null;
-        DictionaryViewDO dictDO;
-        Query query = manager.createNamedQuery("TestResult.FetchByValue");
-        query.setParameter("value", id.toString());
-        count = query.getResultList().size();
-
-        if (count > 0) {
-            query = manager.createNamedQuery("Dictionary.FetchById");
-            query.setParameter("id", id);
-            dictDO = (DictionaryViewDO)query.getSingleResult();
-            oldVal = (String)dictDO.getEntry();
-            if (oldVal.trim().equals(entry.trim()))
-                count = 0;
-        }
-        return count;
-    }
-
-    public ArrayList<DictionaryDO> getDictionaryListByEntry(String entry) {
-        Query query;        
-
-        query = manager.createNamedQuery("Dictionary.FetchByEntry");
-        query.setParameter("entry", entry);
-
-        return DataBaseUtil.toArrayList(query.getResultList());
-    }
+    }    
     
 
-    public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max)
-                                                                                     throws Exception {
+    public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception {
         Query query;
         QueryBuilderV2 builder;
         List list;
@@ -314,7 +143,7 @@ public class CategoryBean implements CategoryRemote, CategoryLocal {
 
         category.setDescription(data.getDescription());
         category.setName(data.getName());
-        category.setSectionId(data.getSection());
+        category.setSectionId(data.getSectionId());
         category.setSystemName(data.getSystemName());
 
         manager.persist(category);
@@ -335,7 +164,7 @@ public class CategoryBean implements CategoryRemote, CategoryLocal {
 
         category.setDescription(data.getDescription());
         category.setName(data.getName());
-        category.setSectionId(data.getSection());
+        category.setSectionId(data.getSectionId());
         category.setSystemName(data.getSystemName());
 
         return data;
@@ -345,21 +174,27 @@ public class CategoryBean implements CategoryRemote, CategoryLocal {
         ValidationErrorsList list;
         Query query;
         Integer catId;
-        List<Integer> ids;
         String sysName, name;
 
         list = new ValidationErrorsList();
         
         sysName = data.getSystemName();
         name = data.getName();
+        catId = null;
         
         if (DataBaseUtil.isEmpty(sysName)) {
             list.add(new FieldErrorException("fieldRequiredException",
                                                       meta.getSystemName()));
         } else {
-            catId = getCategoryId(sysName);
+            query = manager.createNamedQuery("Category.FetchBySystemName");
+            query.setParameter("systemName", sysName);
+            try {
+               catId = ((CategoryDO)query.getSingleResult()).getId();
+            } catch (Exception e) {
+               e.printStackTrace();
+            }            
             
-            if (catId != null && !catId.equals(data.getId())) {
+            if (!DataBaseUtil.isEmpty(catId) && !catId.equals(data.getId())) {
                 list.add(new FieldErrorException("fieldUniqueException",
                                                           meta.getSystemName()));
             }
@@ -367,6 +202,9 @@ public class CategoryBean implements CategoryRemote, CategoryLocal {
 
         if (DataBaseUtil.isEmpty(name)) 
             list.add(new FieldErrorException("fieldRequiredException", meta.getName()));
+        
+        if (DataBaseUtil.isEmpty(data.getSectionId())) 
+            list.add(new FieldErrorException("fieldRequiredException", meta.getSectionId()));
         
         if(list.size() > 0)
             throw list;

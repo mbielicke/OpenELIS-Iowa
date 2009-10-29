@@ -59,7 +59,7 @@ import org.openelis.utils.Auditable;
    @NamedQuery(name =   "TestResult.FetchByValue",
                query =  "select distinct new org.openelis.domain.TestResultDO(tr.id,tr.testId,tr.resultGroup,"+
                         " tr.sortOrder,tr.unitOfMeasureId,tr.typeId,tr.value,tr.significantDigits,tr.roundingMethodId,tr.flagsId)"
-                      + " from TestResult tr where tr.value = :value")})
+                      + " from TestResult tr where tr.value = :value" )})
    
 @Entity
 @Table(name = "test_result")

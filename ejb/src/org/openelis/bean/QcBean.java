@@ -39,8 +39,8 @@ import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.DictionaryViewDO;
-import org.openelis.domain.IdNameDO;
 import org.openelis.domain.IdNameLotNumberDO;
+import org.openelis.domain.IdNameVO;
 import org.openelis.domain.QcAnalyteViewDO;
 import org.openelis.domain.QcViewDO;
 import org.openelis.entity.Qc;
@@ -54,13 +54,14 @@ import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.deprecated.AbstractField;
-import org.openelis.local.CategoryLocal;
+import org.openelis.local.DictionaryLocal;
 import org.openelis.local.LockLocal;
 import org.openelis.metamap.QcMetaMap;
 import org.openelis.remote.QcRemote;
 import org.openelis.security.domain.SystemUserDO;
 import org.openelis.security.local.SystemUserUtilLocal;
 import org.openelis.util.QueryBuilder;
+import org.openelis.utilcommon.DataBaseUtil;
 import org.openelis.utilcommon.NumericRange;
 import org.openelis.utilcommon.TiterRange;
 import org.openelis.utils.GetPage;
@@ -83,7 +84,7 @@ public class QcBean implements QcRemote {
     private SystemUserUtilLocal sysUser;    
     
     @EJB
-    private CategoryLocal categoryBean;
+    private DictionaryLocal dictionaryBean;
     
     private static QcMetaMap QcMeta = new QcMetaMap(); 
     
@@ -265,8 +266,8 @@ public class QcBean implements QcRemote {
                     systemName = ((DictionaryViewDO)results.get(0)).getSystemName();
                     
                     if("qc_analyte_dictionary".equals(systemName)) {                                               
-                        dictId = categoryBean.getEntryIdForEntry(qcaDO.getValue());
-                        qca.setValue(dictId.toString());
+                        //dictId = dictionaryBean.getEntryIdForEntry(qcaDO.getValue());
+                        //qca.setValue(dictId.toString());
                     } else {
                         qca.setValue(qcaDO.getValue());
                     }
@@ -282,16 +283,15 @@ public class QcBean implements QcRemote {
         return qc.getId();
     }
     
-    public List<IdNameDO> qcAutocompleteByName(String name, int numResult) {
-       List<IdNameDO> list;
-       Query query;
-       
-       query = manager.createNamedQuery("Qc.QcAutoCompleteByName");
-       query.setParameter("name", name);
-       query.setMaxResults(numResult);
-       list = query.getResultList();       
-       return list;
-    }
+    public ArrayList<IdNameVO> fetchByName(String name, int max) throws Exception {
+        Query query;
+        
+        query = manager.createNamedQuery("Qc.FetchByName");
+        query.setParameter("name", name);
+        query.setMaxResults(max);
+        
+        return  DataBaseUtil.toArrayList(query.getResultList());               
+     }
     
     private void validateQc(QcViewDO qcDO, List<QcAnalyteViewDO> qcAnaDOList) throws Exception {
         ValidationErrorsList exceptionList;
@@ -402,11 +402,19 @@ public class QcBean implements QcRemote {
         TableFieldErrorException exc;
         int i;                
         
-        value = null;             
-                 
-        dictId = categoryBean.getEntryIdForSystemName("qc_analyte_dictionary");                 
-        numId = categoryBean.getEntryIdForSystemName("qc_analyte_numeric");                
-        titerId = categoryBean.getEntryIdForSystemName("qc_analyte_titer");
+        value = null;  
+        dictId = null;
+        numId = null;
+        titerId = null;
+        entryId = null;
+        
+        try {
+            dictId = (dictionaryBean.fetchBySystemName("qc_analyte_dictionary")).getId();                 
+            numId = (dictionaryBean.fetchBySystemName("qc_analyte_numeric")).getId();                
+            titerId = (dictionaryBean.fetchBySystemName("qc_analyte_titer")).getId(); 
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         
         trlist = new ArrayList<TiterRange>();
         nrlist = new ArrayList<NumericRange>();
@@ -442,7 +450,7 @@ public class QcBean implements QcRemote {
                     tr = new TiterRange(value);
                     addTiterIfNoOverLap(trlist,tr);
                 } else if (dictId.equals(typeId)) {
-                    entryId = categoryBean.getEntryIdForEntry(value);
+                   // entryId = dictionaryBean.getEntryIdForEntry(value);
                     if (entryId == null)
                         throw new ParseException("illegalDictEntryException");
 

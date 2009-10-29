@@ -57,6 +57,7 @@ import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.deprecated.AbstractField;
 import org.openelis.local.CategoryLocal;
+import org.openelis.local.DictionaryLocal;
 import org.openelis.local.LockLocal;
 import org.openelis.metamap.AuxFieldGroupMetaMap;
 import org.openelis.metamap.AuxFieldMetaMap;
@@ -79,7 +80,7 @@ public class AuxiliaryBean implements AuxiliaryRemote {
     private SessionContext ctx;
     
     @EJB
-    private CategoryLocal categoryBean;
+    private DictionaryLocal dictionaryBean;
 
     @EJB
     private LockLocal lockBean;
@@ -442,16 +443,20 @@ public class AuxiliaryBean implements AuxiliaryRemote {
         nrList = new ArrayList<NumericRange>();
         exList = new ArrayList<Exception>();        
         
-        dictId = categoryBean.getEntryIdForSystemName("aux_dictionary");        
-        numId = categoryBean.getEntryIdForSystemName("aux_numeric");        
-        yesNoId = categoryBean.getEntryIdForSystemName("aux_yes_no");        
-        dateId = categoryBean.getEntryIdForSystemName("aux_date");        
-        dtId = categoryBean.getEntryIdForSystemName("aux_date_time");        
-        timeId = categoryBean.getEntryIdForSystemName("aux_time");        
-        alcId = categoryBean.getEntryIdForSystemName("aux_alpha_lower");        
-        amcId = categoryBean.getEntryIdForSystemName("aux_alpha_mixed");;        
-        aucId = categoryBean.getEntryIdForSystemName("aux_alpha_upper");
-         
+        try {
+            dictId = (dictionaryBean.fetchBySystemName("aux_dictionary")).getId();
+            numId = (dictionaryBean.fetchBySystemName("aux_numeric")).getId();
+            yesNoId = (dictionaryBean.fetchBySystemName("aux_yes_no")).getId();
+            dateId = (dictionaryBean.fetchBySystemName("aux_date")).getId();
+            dtId = (dictionaryBean.fetchBySystemName("aux_date_time")).getId();
+            timeId = (dictionaryBean.fetchBySystemName("aux_time")).getId();
+            alcId = (dictionaryBean.fetchBySystemName("aux_alpha_lower")).getId();
+            amcId = (dictionaryBean.fetchBySystemName("aux_alpha_mixed")).getId();
+            aucId = (dictionaryBean.fetchBySystemName("aux_alpha_upper")).getId();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
         typeName = AuxFieldGroupMeta.getAuxField().getAuxFieldValue().getTypeId();
         valueName = AuxFieldGroupMeta.getAuxField().getAuxFieldValue().getValue();
         hasDateType = false;

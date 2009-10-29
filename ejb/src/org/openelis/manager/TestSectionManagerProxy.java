@@ -35,6 +35,7 @@ import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.CategoryLocal;
+import org.openelis.local.DictionaryLocal;
 import org.openelis.local.TestSectionLocal;
 import org.openelis.metamap.TestMetaMap;
 import org.openelis.utilcommon.DataBaseUtil;
@@ -87,7 +88,7 @@ public class TestSectionManagerProxy {
         List<TestSectionViewDO> sectionDOList;
         TestSectionViewDO secDO;
         TestSectionLocal sl;
-        CategoryLocal cl;
+        DictionaryLocal dl;
         Integer defId, askId, matchId, flagId, sectId;
         List<Integer> idList;
         int size, numDef, numAsk, numMatch, numBlank, iter;
@@ -103,12 +104,12 @@ public class TestSectionManagerProxy {
             return;
         }
 
-        cl = categoryLocal();
+        dl = dictLocal();
         size = sectionDOList.size();
 
-        defId = cl.getEntryIdForSystemName("test_section_default");
-        askId = cl.getEntryIdForSystemName("test_section_ask");
-        matchId = cl.getEntryIdForSystemName("test_section_match");
+        defId = (dl.fetchBySystemName("test_section_default")).getId();
+        askId = (dl.fetchBySystemName("test_section_ask")).getId();
+        matchId = (dl.fetchBySystemName("test_section_match")).getId();
 
         numDef = 0;
         numAsk = 0;
@@ -213,10 +214,10 @@ public class TestSectionManagerProxy {
         }
     }
     
-    private CategoryLocal categoryLocal() {
+    private DictionaryLocal dictLocal() {
         try {
             InitialContext ctx = new InitialContext();
-            return (CategoryLocal)ctx.lookup("openelis/CategoryBean/local");
+            return (DictionaryLocal)ctx.lookup("openelis/DictionaryBean/local");
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return null;

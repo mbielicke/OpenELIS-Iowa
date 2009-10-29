@@ -25,6 +25,7 @@
 */
 package org.openelis.bean;
 
+import org.openelis.domain.IdNameVO;
 import org.openelis.domain.LabelViewDO;
 import org.openelis.entity.Label;
 import org.openelis.gwt.common.FieldErrorException;
@@ -37,6 +38,7 @@ import org.openelis.local.LockLocal;
 import org.openelis.metamap.LabelMetaMap;
 import org.openelis.remote.LabelRemote;
 import org.openelis.util.QueryBuilder;
+import org.openelis.utilcommon.DataBaseUtil;
 import org.openelis.utils.GetPage;
 import org.openelis.utils.ReferenceTableCache;
 import org.openelis.utils.SecurityInterceptor;
@@ -235,11 +237,23 @@ public class LabelBean implements LabelRemote {
     public List getLabelAutoCompleteByName(String match, int maxResults) {
         Query query;
         
-        query = manager.createNamedQuery("Label.AutocompleteByName");
+        query = manager.createNamedQuery("Label.FetchByName");
         query.setParameter("name", match);
         query.setMaxResults(maxResults);
         
         return query.getResultList();
+    }
+
+
+    public ArrayList<IdNameVO> fetchByName(String match, int max) throws Exception {
+        Query query;
+        
+        query = manager.createNamedQuery("Label.FetchByName");
+        query.setParameter("name", match);
+        query.setMaxResults(max);
+        
+        return DataBaseUtil.toArrayList(query.getResultList());
+        
     }    
     
 }

@@ -26,7 +26,6 @@
 package org.openelis.manager;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import javax.naming.InitialContext;
 
@@ -57,7 +56,7 @@ public class DictionaryManagerProxy {
         man.setCategory(catDO);
 
         try {
-            entries = (ArrayList<DictionaryViewDO>)catLocal().getEntries(categoryId);
+            entries = (ArrayList<DictionaryViewDO>)dictLocal().fetchByCategoryId(categoryId);
             man.entries = entries;
         } catch(NotFoundException e) {
             e.printStackTrace();
@@ -154,7 +153,7 @@ public class DictionaryManagerProxy {
             DataBaseUtil.mergeException(list, e);
         }
         
-        validateDictionary(list,man.getEntries(),man.getCategory().getId());
+        validateDictionary(list,man);
         
         if(list.size() > 0)
             throw list;
@@ -190,27 +189,38 @@ public class DictionaryManagerProxy {
         }
     }
 
-    private void validateDictionary(ValidationErrorsList list,
-                                    List<DictionaryViewDO> dictList,
-                                    Integer categoryId) {
+    private void validateDictionary(ValidationErrorsList list, DictionaryManager man) {
         ArrayList<String> systemNames, entries;
         DictionaryViewDO data;
         DictionaryDO dictDO;
-        CategoryLocal cl;
         DictionaryLocal dl;
         Integer catId;
         String systemName;
         String name;
+        ArrayList<DictionaryViewDO> dictList;
+        Integer categoryId;
+        int i;
 
         systemNames = new ArrayList<String>();
         entries = new ArrayList<String>();
         data = null;
-        cl = catLocal();
         dl = dictLocal();
         catId = null;
+        dictList = man.getEntries();
+        categoryId = man.getCategory().getId();
+        
 
-        for (int iter = 0; iter < dictList.size(); iter++ ) {
-            data = dictList.get(iter);
+        for(i = 0;  i < man.deleteCount(); i++) {
+            data = man.getDeletedAt(i);
+            try {
+                dl.validateForDelete(data);
+            } catch(Exception e) {
+                DataBaseUtil.mergeException(list, e);                
+            }
+        }
+        
+        for (i = 0; i < dictList.size(); i++ ) {
+            data = dictList.get(i);
             name = data.getEntry();
             systemName = data.getSystemName();
             
@@ -219,40 +229,40 @@ public class DictionaryManagerProxy {
                 if (!entries.contains(name)) {
                     entries.add(name);
                 } else {
-                    list.add(new TableFieldErrorException("fieldUniqueOnlyException", iter,
+                    list.add(new TableFieldErrorException("fieldUniqueOnlyException", i,
                                                           meta.getDictionary().getEntry(),
                                                           "dictEntTable"));
                 }
             } catch(Exception e) {
-                DataBaseUtil.mergeException(list, e, "dictEntTable", iter);                
+                DataBaseUtil.mergeException(list, e, "dictEntTable", i);                
             }           
 
             if (!DataBaseUtil.isEmpty(systemName)) {
                 if (!systemNames.contains(systemName)) {
-                    dictDO = cl.getDictionaryDOBySystemName(systemName);
-                    if (dictDO != null)
-                        catId = dictDO.getCategoryId();
-
-                    if (catId != null && !catId.equals(categoryId)) {
-                        list.add(new TableFieldErrorException("fieldUniqueException", iter,
+                   try {
+                    dictDO = dl.fetchBySystemName(systemName);
+                    
+                    catId = dictDO.getCategoryId();
+                   } catch (Exception e) {
+                       e.printStackTrace();
+                   }
+                   
+                   if (!DataBaseUtil.isEmpty(catId) && !catId.equals(categoryId)) {
+                        list.add(new TableFieldErrorException("fieldUniqueException", i,
                                                               meta.getDictionary().getSystemName(),
-                                                              "dictEntTable"));
-                    }
+                                                              "dictEntTable"));                        
+                   }
                     systemNames.add(systemName);
+                } else if (DataBaseUtil.isEmpty(data.getId())) {
+                        list.add(new TableFieldErrorException("fieldUniqueOnlyException", i,
+                                                              meta.getDictionary().getSystemName(),
+                                                              "dictEntTable"));                        
                 } else {
-                    if (data.getId() == null) {
-                        list.add(new TableFieldErrorException("fieldUniqueOnlyException", iter,
+                    list.add(new TableFieldErrorException("fieldUniqueException", i,
                                                               meta.getDictionary().getSystemName(),
-                                                              "dictEntTable"));
-                    } else {
-                        list.add(new TableFieldErrorException("fieldUniqueException", iter,
-                                                              meta.getDictionary().getSystemName(),
-                                                              "dictEntTable"));
-                    }
+                                                              "dictEntTable"));                    
                 }
-
-            }
+            }                    
         }
-
-    }
+    }    
 }

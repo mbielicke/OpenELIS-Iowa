@@ -32,6 +32,7 @@ import javax.ejb.Remote;
 
 import org.openelis.domain.IdNameDO;
 import org.openelis.domain.IdNameLotNumberDO;
+import org.openelis.domain.IdNameVO;
 import org.openelis.domain.QcAnalyteViewDO;
 import org.openelis.domain.QcViewDO;
 import org.openelis.gwt.common.data.deprecated.AbstractField;
@@ -51,5 +52,5 @@ public interface QcRemote {
     
     public List<IdNameLotNumberDO> query(ArrayList<AbstractField> fields, int first, int max) throws Exception;   
     
-    public List<IdNameDO> qcAutocompleteByName(String name, int numResult);
+    public ArrayList<IdNameVO> fetchByName(String name, int max) throws Exception;
 }

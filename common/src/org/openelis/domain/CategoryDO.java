@@ -35,19 +35,19 @@ public class CategoryDO extends DataObject {
 
     private static final long serialVersionUID = 1L;
 
-    protected Integer         id, section;
+    protected Integer         id, sectionId;
     protected String          systemName, name, description;
 
     public CategoryDO() {
     }
 
     public CategoryDO(Integer id, String systemName, String name, String description,
-                      Integer section) {
+                      Integer sectionId) {
         setId(id);
         setSystemName(systemName);
         setName(name);
         setDescription(description);
-        setSection(section);
+        setSectionId(sectionId);
         _changed = false;
     }
 
@@ -87,12 +87,12 @@ public class CategoryDO extends DataObject {
         _changed = true;
     }
 
-    public Integer getSection() {
-        return section;
+    public Integer getSectionId() {
+        return sectionId;
     }
 
-    public void setSection(Integer section) {
-        this.section = section;
+    public void setSectionId(Integer sectionId) {
+        this.sectionId = sectionId;
         _changed = true;
     }
     

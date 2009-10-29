@@ -45,6 +45,7 @@ import org.openelis.entity.TestResult;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.CategoryLocal;
+import org.openelis.local.DictionaryLocal;
 import org.openelis.local.TestResultLocal;
 import org.openelis.metamap.TestMetaMap;
 import org.openelis.utilcommon.DataBaseUtil;
@@ -180,18 +181,29 @@ public class TestResultBean implements TestResultLocal {
         ValidationErrorsList list;
         Integer numId, dictId, titerId, typeId, dateId, dtId, timeId, defId;
         String value, fieldName;
-        CategoryLocal cl;
+        DictionaryLocal dl;
 
         value = null;
-        cl = categoryLocal();
-
-        dictId = cl.getEntryIdForSystemName("test_res_type_dictionary");
-        numId = cl.getEntryIdForSystemName("test_res_type_numeric");
-        titerId = cl.getEntryIdForSystemName("test_res_type_titer");
-        dateId = cl.getEntryIdForSystemName("test_res_type_date");
-        dtId = cl.getEntryIdForSystemName("test_res_type_date_time");
-        timeId = cl.getEntryIdForSystemName("test_res_type_time");
-        defId = cl.getEntryIdForSystemName("test_res_type_default");
+        dl = dictLocal();
+        numId = null;
+        titerId = null;
+        dictId = null;
+        defId = null;
+        dtId = null;
+        timeId = null;
+        dateId = null;
+        
+        try {
+            dictId = (dl.fetchBySystemName("test_res_type_dictionary")).getId();
+            numId = (dl.fetchBySystemName("test_res_type_numeric")).getId();
+            titerId = (dl.fetchBySystemName("test_res_type_titer")).getId();
+            dateId = (dl.fetchBySystemName("test_res_type_date")).getId();
+            dtId = (dl.fetchBySystemName("test_res_type_date_time")).getId();
+            timeId = (dl.fetchBySystemName("test_res_type_time")).getId();
+            defId = (dl.fetchBySystemName("test_res_type_default")).getId();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
 
         list = new ValidationErrorsList();
 
@@ -234,10 +246,10 @@ public class TestResultBean implements TestResultLocal {
         return viewDO;
     }
 
-    private CategoryLocal categoryLocal() {
+    private DictionaryLocal dictLocal() {
         try {
             InitialContext ctx = new InitialContext();
-            return (CategoryLocal)ctx.lookup("openelis/CategoryBean/local");
+            return (DictionaryLocal)ctx.lookup("openelis/DictionaryBean/local");
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return null;

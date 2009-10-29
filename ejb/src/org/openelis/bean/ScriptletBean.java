@@ -50,7 +50,7 @@ public class ScriptletBean implements ScriptletRemote {
         Query query = manager.createNamedQuery("Scriptlet.ScriptletFindByName");
         query.setParameter("name", match);
         query.setMaxResults(maxResults);
-        return (ArrayList<IdNameVO>)DataBaseUtil.subList(query.getResultList(), 0, maxResults);
+        return DataBaseUtil.toArrayList(query.getResultList());
     }
 
 }
