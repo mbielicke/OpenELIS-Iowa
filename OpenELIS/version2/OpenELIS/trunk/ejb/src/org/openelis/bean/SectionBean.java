@@ -1,28 +1,28 @@
-/** Exhibit A - UIRF Open-source Based Public Software License.
-* 
-* The contents of this file are subject to the UIRF Open-source Based
-* Public Software License(the "License"); you may not use this file except
-* in compliance with the License. You may obtain a copy of the License at
-* openelis.uhl.uiowa.edu
-* 
-* Software distributed under the License is distributed on an "AS IS"
-* basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
-* License for the specific language governing rights and limitations
-* under the License.
-* 
-* The Original Code is OpenELIS code.
-* 
-* The Initial Developer of the Original Code is The University of Iowa.
-* Portions created by The University of Iowa are Copyright 2006-2008. All
-* Rights Reserved.
-* 
-* Contributor(s): ______________________________________.
-* 
-* Alternatively, the contents of this file marked
-* "Separately-Licensed" may be used under the terms of a UIRF Software
-* license ("UIRF Software License"), in which case the provisions of a
-* UIRF Software License are applicable instead of those above. 
-*/
+/**
+ * Exhibit A - UIRF Open-source Based Public Software License.
+ * 
+ * The contents of this file are subject to the UIRF Open-source Based Public
+ * Software License(the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * openelis.uhl.uiowa.edu
+ * 
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+ * the specific language governing rights and limitations under the License.
+ * 
+ * The Original Code is OpenELIS code.
+ * 
+ * The Initial Developer of the Original Code is The University of Iowa.
+ * Portions created by The University of Iowa are Copyright 2006-2008. All
+ * Rights Reserved.
+ * 
+ * Contributor(s): ______________________________________.
+ * 
+ * Alternatively, the contents of this file marked "Separately-Licensed" may be
+ * used under the terms of a UIRF Software license ("UIRF Software License"), in
+ * which case the provisions of a UIRF Software License are applicable instead
+ * of those above.
+ */
 package org.openelis.bean;
 
 import java.util.ArrayList;
@@ -42,6 +42,7 @@ import javax.persistence.Query;
 import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.ReferenceTable;
+import org.openelis.domain.SectionDO;
 import org.openelis.domain.SectionViewDO;
 import org.openelis.entity.Section;
 import org.openelis.gwt.common.DatabaseException;
@@ -52,237 +53,39 @@ import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.SecurityModule.ModuleFlags;
 import org.openelis.gwt.common.data.QueryData;
-import org.openelis.gwt.common.data.deprecated.AbstractField;
 import org.openelis.local.JMSMessageProducerLocal;
 import org.openelis.local.LockLocal;
 import org.openelis.messages.SectionCacheMessage;
 import org.openelis.metamap.SectionMetaMap;
 import org.openelis.remote.SectionRemote;
-import org.openelis.util.QueryBuilder;
+import org.openelis.util.QueryBuilderV2;
 import org.openelis.utilcommon.DataBaseUtil;
-import org.openelis.utils.GetPage;
-import org.openelis.utils.ReferenceTableCache;
 import org.openelis.utils.SecurityInterceptor;
 
 @Stateless
-
 @SecurityDomain("openelis")
-@RolesAllowed("test-select")
+@RolesAllowed("section-select")
 public class SectionBean implements SectionRemote {
 
     @PersistenceContext(name = "openelis")
-    private EntityManager manager;
+    private EntityManager               manager;
 
     @Resource
-    private SessionContext ctx;
-    
-    private static final SectionMetaMap SectMeta = new SectionMetaMap();
-    
+    private SessionContext              ctx;
+
+    private static final SectionMetaMap meta = new SectionMetaMap();
+
     @EJB
-    private LockLocal lockBean;
-    
+    private LockLocal                   lockBean;
+
     @EJB
-    private JMSMessageProducerLocal jmsProducer;
-    
-    private static Integer sectRefTableId;
-    
-    private SectionBean(){
-        sectRefTableId = ReferenceTableCache.getReferenceTable("section");
-    }
-    
-    public List getAutoCompleteSectionByName(String name, int maxResults) {
-        Query query = manager.createNamedQuery("Section.AutoByName");
-        query.setParameter("name", name);       
-        query.setMaxResults(maxResults);
-
-        return query.getResultList();
-    }
-
-    public SectionViewDO getSection(Integer sectionId) {
-        SectionViewDO sectionDO;
-        Query query;
-        
-        query = manager.createNamedQuery("Section.SectionDOById");
-        query.setParameter("id", sectionId);
-        sectionDO = (SectionViewDO)query.getSingleResult();
-        return sectionDO;
-    }
-
-    public SectionViewDO getSectionAndLock(Integer sectionId, String session) throws Exception {
-        lockBean.getLock(sectRefTableId, sectionId);
-        return getSection(sectionId);
-    }
-
-    public SectionViewDO getSectionAndUnlock(Integer sectionId, String session) {
-        lockBean.giveUpLock(sectRefTableId, sectionId);
-        return getSection(sectionId);
-    }
-
-    public List<SectionViewDO> getSectionDOList() {
-        Query query;
-        List<SectionViewDO> sections;
-        
-        query = manager.createNamedQuery("Section.SectionDOList");       
-        sections = query.getResultList();
-        return sections;
-    }
-
-    public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception {
-        StringBuffer sb = new StringBuffer();
-        QueryBuilder qb = new QueryBuilder();
-
-        qb.setMeta(SectMeta);
-
-        qb.setSelect("distinct new org.openelis.domain.IdNameDO(" + SectMeta.getId()
-                     + ", "
-                     + SectMeta.getName()
-                     + ") ");
-
-        qb.addWhere(fields);
-
-        qb.setOrderBy(SectMeta.getName());
-
-        sb.append(qb.getEJBQL());
-        
-        Query query = manager.createQuery(sb.toString());
-       
-        if(first > -1 && max > -1)
-         query.setMaxResults(first+max);
-        
-        qb.setQueryParams(query);
-        
-        List returnList = GetPage.getPage(query.getResultList(), first, max);
-        if(returnList == null)
-         throw new LastPageException();
-        else
-         return returnList; 
-    }
-
-    public Integer updateSection(SectionViewDO sectionDO) throws Exception {
-        Query query;
-        Integer sectReferenceId,sectId;
-        Section section;
-        SectionCacheMessage msg;
-        
-        sectId = sectionDO.getId();
-        
-        if (sectId != null) {
-            // we need to call lock one more time to make sure their lock
-            // didnt expire and someone else grabbed the record
-            lockBean.validateLock(sectRefTableId, sectId);
-        }
-
-        validate(sectionDO);
-        
-        manager.setFlushMode(FlushModeType.COMMIT);
-        section = null;
-        
-        if(sectId == null) {
-            section = new Section();
-        } else {
-            section = manager.find(Section.class, sectId);
-        }
-        
-        section.setDescription(sectionDO.getDescription());    
-        section.setOrganizationId(sectionDO.getOrganizationId());
-        section.setName(sectionDO.getName());
-        section.setIsExternal(sectionDO.getIsExternal());
-        section.setParentSectionId(sectionDO.getParentSectionId());
-        
-        sectId = section.getId();        
-        if(sectId == null) {
-            manager.persist(section);
-        }
-        lockBean.giveUpLock(sectRefTableId, sectId);     
-        
-        //invalidate the cache
-        msg = new SectionCacheMessage();        
-        msg.action = SectionCacheMessage.Action.UPDATED;
-        jmsProducer.writeMessage(msg);
-        return section.getId();
-    }
-    
-    private void validate(SectionViewDO sectionDO) throws Exception{
-        String name;
-        ValidationErrorsList exceptionList;
-        Query query;
-        List<Section> sections;
-        Section section;
-        int i;
-        Integer psecId;
-        
-        name = sectionDO.getName();
-        exceptionList = new ValidationErrorsList();
-        if(name == null || "".equals(name)) {
-            exceptionList.add(new FieldErrorException("fieldRequiredException",
-                                                      SectMeta.getName()));
-        } else {
-            query = manager.createNamedQuery("Section.SectionsByName");
-            query.setParameter("name", name);
-            sections = query.getResultList();
-            for(i = 0; i < sections.size();i++) {
-                section = sections.get(i);
-                if(!section.getId().equals(sectionDO.getId())) {
-                    exceptionList.add(new FieldErrorException("fieldUniqueException",
-                                                              SectMeta.getName()));
-                    break;
-                }
-                
-            }
-        }
-        
-        if("Y".equals(sectionDO.getIsExternal()) && sectionDO.getOrganizationId() == null){
-            exceptionList.add(new FormErrorException("orgNotSpecForExtSectionException"));
-        }
-        
-        psecId = sectionDO.getParentSectionId();
-        if(psecId != null && psecId.equals(sectionDO.getId())) {
-            exceptionList.add(new FieldErrorException("sectItsOwnParentException",
-                                                      SectMeta.getParentSectionId()));
-        }
-        
-        if(exceptionList.size() > 0)
-            throw exceptionList;
-    }
-
-    public SectionViewDO abortUpdate(Integer id) throws Exception {
-        lockBean.giveUpLock(ReferenceTable.SECTION, id);
-        return fetchById(id);
-    }
-
-    public SectionViewDO add(SectionViewDO data) throws Exception {
-        Section section;
-        SectionCacheMessage msg;
-        
-        checkSecurity(ModuleFlags.ADD);
-
-        validate(data);
-        
-        manager.setFlushMode(FlushModeType.COMMIT);
-        
-        section = new Section();
-        
-        section.setDescription(data.getDescription());    
-        section.setOrganizationId(data.getOrganizationId());
-        section.setName(data.getName());
-        section.setIsExternal(data.getIsExternal());
-        section.setParentSectionId(data.getParentSectionId());
-        manager.persist(section);
-        
-        data.setId(section.getId());
-        
-        //invalidate the cache
-        msg = new SectionCacheMessage();        
-        msg.action = SectionCacheMessage.Action.UPDATED;
-        jmsProducer.writeMessage(msg);
-        return data;
-    }
+    private JMSMessageProducerLocal     jmsProducer;
 
     public SectionViewDO fetchById(Integer id) throws Exception {
         SectionViewDO data;
         Query query;
-        
-        query = manager.createNamedQuery("Section.SectionDOById");
+
+        query = manager.createNamedQuery("Section.FetchById");
         query.setParameter("id", id);
         try {
             data = (SectionViewDO)query.getSingleResult();
@@ -294,59 +97,163 @@ public class SectionBean implements SectionRemote {
         return data;
     }
 
-    public SectionViewDO fetchForUpdate(Integer id) throws Exception {
-        lockBean.getLock(ReferenceTable.SECTION, id);
-        return fetchById(id);
+    public ArrayList<IdNameVO> fetchByName(String name, int maxResults) throws Exception {
+        Query query = manager.createNamedQuery("Section.FetchByName");
+        query.setParameter("name", name);
+        query.setMaxResults(maxResults);
+
+        return DataBaseUtil.toArrayList(query.getResultList());
+    }
+
+    public ArrayList<SectionDO> fetchList() throws Exception {
+        Query query;
+        List<SectionViewDO> sections;
+
+        query = manager.createNamedQuery("Section.FetchList");
+        sections = query.getResultList();
+        return DataBaseUtil.toArrayList(sections);
     }
 
     public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max)
                                                                                      throws Exception {
-        // TODO Auto-generated method stub
-        return null;
+        Query query;
+        QueryBuilderV2 builder;
+        List list;
+
+        builder = new QueryBuilderV2();
+        builder.setMeta(meta);
+
+        builder.setSelect("distinct new org.openelis.domain.IdNameVO(" + meta.getId() + ", " +
+                          meta.getName() + ") ");
+
+        builder.constructWhere(fields);
+        builder.setOrderBy(meta.getName());
+
+        query = manager.createQuery(builder.getEJBQL());
+        query.setMaxResults(first + max);
+        builder.setQueryParams(query, fields);
+
+        list = query.getResultList();
+        if (list.isEmpty())
+            throw new NotFoundException();
+        list = (ArrayList<IdNameVO>)DataBaseUtil.subList(list, first, max);
+        if (list == null)
+            throw new LastPageException();
+
+        return (ArrayList<IdNameVO>)list;
     }
 
-    public SectionViewDO update(SectionViewDO data) throws Exception {        
+    public SectionViewDO add(SectionViewDO data) throws Exception {
         Section section;
         SectionCacheMessage msg;
-        
-        if (!data.isChanged())
-            return data;
-        
-        checkSecurity(ModuleFlags.UPDATE);
+
+        checkSecurity(ModuleFlags.ADD);
 
         validate(data);
-        
-        lockBean.validateLock(ReferenceTable.SECTION, data.getId());
+
         manager.setFlushMode(FlushModeType.COMMIT);
-        
-        section = manager.find(Section.class, data.getId());
-        
-        section.setDescription(data.getDescription());    
+
+        section = new Section();
+
+        section.setDescription(data.getDescription());
         section.setOrganizationId(data.getOrganizationId());
         section.setName(data.getName());
         section.setIsExternal(data.getIsExternal());
         section.setParentSectionId(data.getParentSectionId());
-        
-        lockBean.giveUpLock(ReferenceTable.SECTION, data.getId());     
-        
-        //invalidate the cache
-        msg = new SectionCacheMessage();        
+        manager.persist(section);
+
+        data.setId(section.getId());
+
+        // invalidate the cache
+        msg = new SectionCacheMessage();
         msg.action = SectionCacheMessage.Action.UPDATED;
         jmsProducer.writeMessage(msg);
         return data;
     }
 
-    public ArrayList<IdNameVO> fetchByName(String name, int maxResults) throws Exception {
-        Query query = manager.createNamedQuery("Section.AutoByName");
-        query.setParameter("name", name);       
-        query.setMaxResults(maxResults);
+    public SectionViewDO update(SectionViewDO data) throws Exception {
+        Section section;
+        SectionCacheMessage msg;
 
-        return DataBaseUtil.toArrayList(query.getResultList());
+        if ( !data.isChanged())
+            return data;
+
+        checkSecurity(ModuleFlags.UPDATE);
+
+        validate(data);
+
+        lockBean.validateLock(ReferenceTable.SECTION, data.getId());
+        manager.setFlushMode(FlushModeType.COMMIT);
+
+        section = manager.find(Section.class, data.getId());
+
+        section.setDescription(data.getDescription());
+        section.setOrganizationId(data.getOrganizationId());
+        section.setName(data.getName());
+        section.setIsExternal(data.getIsExternal());
+        section.setParentSectionId(data.getParentSectionId());
+
+        lockBean.giveUpLock(ReferenceTable.SECTION, data.getId());
+
+        // invalidate the cache
+        msg = new SectionCacheMessage();
+        msg.action = SectionCacheMessage.Action.UPDATED;
+        jmsProducer.writeMessage(msg);
+        return data;
     }
-    
+
+    public SectionViewDO fetchForUpdate(Integer id) throws Exception {
+        lockBean.getLock(ReferenceTable.SECTION, id);
+        return fetchById(id);
+    }
+
+    public SectionViewDO abortUpdate(Integer id) throws Exception {
+        lockBean.giveUpLock(ReferenceTable.SECTION, id);
+        return fetchById(id);
+    }
+
+    private void validate(SectionViewDO data) throws Exception {
+        String name;
+        ValidationErrorsList exceptionList;
+        Query query;
+        List<IdNameVO> list;
+        IdNameVO sectDO;
+        int i;
+        Integer psecId;
+
+        name = data.getName();
+        exceptionList = new ValidationErrorsList();
+        if (DataBaseUtil.isEmpty(name)) {
+            exceptionList.add(new FieldErrorException("fieldRequiredException", meta.getName()));
+        } else {
+            query = manager.createNamedQuery("Section.FetchByName");
+            query.setParameter("name", name);
+            list = query.getResultList();
+            for (i = 0; i < list.size(); i++) {
+                sectDO = list.get(i);
+                if(!sectDO.getId().equals(data.getId())) {
+                    exceptionList.add(new FieldErrorException("fieldUniqueException", meta.getName()));
+                    break;
+                }
+            }
+        }
+
+        if ("Y".equals(data.getIsExternal()) && data.getOrganizationId() == null) {
+            exceptionList.add(new FormErrorException("orgNotSpecForExtSectionException"));
+        }
+
+        psecId = data.getParentSectionId();
+        if (psecId != null && psecId.equals(data.getId())) {
+            exceptionList.add(new FieldErrorException("sectItsOwnParentException",
+                                                      meta.getParentSection().getName()));
+        }
+
+        if (exceptionList.size() > 0)
+            throw exceptionList;
+    }
+
     private void checkSecurity(ModuleFlags flag) throws Exception {
-        SecurityInterceptor.applySecurity(ctx.getCallerPrincipal().getName(), 
-                                          "systemvariable", flag);
+        SecurityInterceptor.applySecurity(ctx.getCallerPrincipal().getName(), "section", flag);
     }
 
 }

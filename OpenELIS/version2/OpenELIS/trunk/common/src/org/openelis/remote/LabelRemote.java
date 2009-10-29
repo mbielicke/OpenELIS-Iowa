@@ -25,6 +25,7 @@
 */
 package org.openelis.remote;
 
+import org.openelis.domain.IdNameVO;
 import org.openelis.domain.LabelViewDO;
 import org.openelis.gwt.common.data.deprecated.AbstractField;
 
@@ -49,6 +50,6 @@ public interface LabelRemote {
     public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception;
     
     public void deleteLabel(LabelViewDO labelDO) throws Exception;
-    
-    public List getLabelAutoCompleteByName(String match,int maxResults);
+
+    public ArrayList<IdNameVO> fetchByName(String match,int max) throws Exception;
 }

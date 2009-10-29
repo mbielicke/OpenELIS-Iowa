@@ -43,6 +43,7 @@ import org.openelis.entity.TestReflex;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.CategoryLocal;
+import org.openelis.local.DictionaryLocal;
 import org.openelis.local.TestReflexLocal;
 import org.openelis.metamap.TestMetaMap;
 import org.openelis.utilcommon.DataBaseUtil;
@@ -65,7 +66,7 @@ public class TestReflexBean implements TestReflexLocal {
         String value;
         DictionaryViewDO dictDO;
         
-        dictId = categoryLocal().getEntryIdForSystemName("test_res_type_dictionary");
+        dictId = (dictLocal().fetchBySystemName("test_res_type_dictionary")).getId();
         
         query = manager.createNamedQuery("TestReflex.FetchByTestId");
         query.setParameter("testId", testId);
@@ -77,7 +78,7 @@ public class TestReflexBean implements TestReflexLocal {
                 continue;
             
             value = refDO.getTestResultValue();            
-            dictDO = categoryLocal().getDictionaryDOByEntryId(Integer.parseInt(value));
+            dictDO = dictLocal().fetchById(Integer.parseInt(value));
             refDO.setTestResultValue(dictDO.getEntry());
         }
         
@@ -164,10 +165,10 @@ public class TestReflexBean implements TestReflexLocal {
 
     }
     
-    private CategoryLocal categoryLocal() {
+    private DictionaryLocal dictLocal() {
         try {
             InitialContext ctx = new InitialContext();
-            return (CategoryLocal)ctx.lookup("openelis/CategoryBean/local");
+            return (DictionaryLocal)ctx.lookup("openelis/DictionaryBean/local");
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return null;

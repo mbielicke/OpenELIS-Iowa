@@ -38,6 +38,7 @@ import org.openelis.gwt.common.GridFieldErrorException;
 import org.openelis.gwt.common.InconsistencyException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.CategoryLocal;
+import org.openelis.local.DictionaryLocal;
 import org.openelis.local.TestResultLocal;
 import org.openelis.metamap.TestMetaMap;
 import org.openelis.utilcommon.DataBaseUtil;
@@ -130,22 +131,22 @@ public class TestResultManagerProxy {
         List<Integer> dictList, unitsWithDefault;
         List<Integer> resIdList;
         ArrayList<ArrayList<TestResultViewDO>> results;
-        CategoryLocal cl;
+        DictionaryLocal dl;
         TestResultLocal rl;
         
         list = new ValidationErrorsList();                
         value = null;
-        cl = categoryLocal();
+        dl = dictLocal();
         results = trm.getResults();
         rl = local();
         
-        dictId = cl.getEntryIdForSystemName("test_res_type_dictionary");
-        numId = cl.getEntryIdForSystemName("test_res_type_numeric");
-        titerId = cl.getEntryIdForSystemName("test_res_type_titer");
-        dateId = cl.getEntryIdForSystemName("test_res_type_date");
-        dtId = cl.getEntryIdForSystemName("test_res_type_date_time");
-        timeId = cl.getEntryIdForSystemName("test_res_type_time");
-        defId = cl.getEntryIdForSystemName("test_res_type_default");
+        dictId = (dl.fetchBySystemName("test_res_type_dictionary")).getId();
+        numId = (dl.fetchBySystemName("test_res_type_numeric")).getId();
+        titerId = (dl.fetchBySystemName("test_res_type_titer")).getId();
+        dateId = (dl.fetchBySystemName("test_res_type_date")).getId();
+        dtId = (dl.fetchBySystemName("test_res_type_date_time")).getId();
+        timeId = (dl.fetchBySystemName("test_res_type_time")).getId();
+        defId = (dl.fetchBySystemName("test_res_type_default")).getId();
 
         trMap = new HashMap<Integer, List<TiterRange>>();
         nrMap = new HashMap<Integer, List<NumericRange>>();
@@ -176,7 +177,7 @@ public class TestResultManagerProxy {
                 // their use is dependent on the unit
                 //
                 if (!unitIsValid(unitId, ttsm.getTypes())) {                    
-                    unitText = cl.getDictionaryDOByEntryId(unitId).getEntry();
+                    unitText = dl.fetchById(unitId).getEntry();
                     
                     list.add(new GridFieldErrorException("illegalUnitOfMeasureException", i, j,
                                                                   meta.TEST_RESULT
@@ -262,10 +263,10 @@ public class TestResultManagerProxy {
         }
     }
     
-    private CategoryLocal categoryLocal() {
+    private DictionaryLocal dictLocal() {
         try {
             InitialContext ctx = new InitialContext();
-            return (CategoryLocal)ctx.lookup("openelis/CategoryBean/local");
+            return (DictionaryLocal)ctx.lookup("openelis/DictionaryBean/local");
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return null;

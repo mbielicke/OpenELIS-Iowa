@@ -26,33 +26,22 @@
 package org.openelis.remote;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import javax.ejb.Remote;
 
 import org.openelis.domain.IdNameVO;
+import org.openelis.domain.SectionDO;
 import org.openelis.domain.SectionViewDO;
 import org.openelis.gwt.common.data.QueryData;
-import org.openelis.gwt.common.data.deprecated.AbstractField;
 
 @Remote
-public interface SectionRemote {
-
-    public List getAutoCompleteSectionByName(String name, int maxResults);
-    
-    public SectionViewDO getSection(Integer sectionId);
-    
-    public SectionViewDO getSectionAndUnlock(Integer sectionId, String session);
-    
-    public SectionViewDO getSectionAndLock(Integer sectionId, String session)throws Exception;
-    
-    public Integer updateSection(SectionViewDO sectionDO)throws Exception;
-    
-    public List query(ArrayList<AbstractField> fields, int first, int max)throws Exception;
-    
-    public List<SectionViewDO> getSectionDOList();
+public interface SectionRemote {        
 
     public SectionViewDO fetchById(Integer id) throws Exception;
+    
+    public ArrayList<IdNameVO> fetchByName(String string, int maxResults) throws Exception; 
+    
+    public ArrayList<SectionDO> fetchList() throws Exception;
 
     public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int rowPP) throws Exception;
 
@@ -63,6 +52,4 @@ public interface SectionRemote {
     public SectionViewDO fetchForUpdate(Integer id) throws Exception;
 
     public SectionViewDO abortUpdate(Integer id) throws Exception;
-
-    public ArrayList<IdNameVO> fetchByName(String string, int maxResults) throws Exception; 
 }

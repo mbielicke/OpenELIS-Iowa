@@ -56,7 +56,7 @@ import org.openelis.utils.Auditable;
                 "qc.source,qc.lotNumber,qc.preparedDate,qc.preparedVolume,qc.preparedUnitId,qc.preparedById,qc.usableDate,"+
                 "qc.expireDate,qc.isSingleUse) from Qc qc left join qc.inventoryItem inv where qc.id = :id " ),
                @NamedQuery(name = "Qc.QcByLotNumber", query = "from Qc qc where qc.lotNumber = :lotNumber "),
-               @NamedQuery(name = "Qc.QcAutoCompleteByName", query = "select new org.openelis.domain.IdNameDO(qc.id,qc.name) from Qc qc where qc.name like :name ")})
+               @NamedQuery(name = "Qc.FetchByName", query = "select new org.openelis.domain.IdNameVO(qc.id,qc.name) from Qc qc where qc.name like :name ")})
 
 @Entity
 @Table(name="qc")

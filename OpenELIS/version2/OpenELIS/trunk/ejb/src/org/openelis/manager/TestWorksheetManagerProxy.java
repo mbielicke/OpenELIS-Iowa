@@ -39,6 +39,7 @@ import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.CategoryLocal;
+import org.openelis.local.DictionaryLocal;
 import org.openelis.local.TestWorksheetAnalyteLocal;
 import org.openelis.local.TestWorksheetItemLocal;
 import org.openelis.local.TestWorksheetLocal;
@@ -272,10 +273,10 @@ public class TestWorksheetManagerProxy {
         }
     }
 
-    private CategoryLocal categoryLocal() {
+    private DictionaryLocal dictLocal() {
         try {
             InitialContext ctx = new InitialContext();
-            return (CategoryLocal)ctx.lookup("openelis/CategoryBean/local");
+            return (DictionaryLocal)ctx.lookup("openelis/DictionaryBean/local");
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return null;
@@ -301,6 +302,11 @@ public class TestWorksheetManagerProxy {
         tc = null;
         formatId = null;
         size = itemDOList.size();
+        batchId = null;
+        totalId = null;
+        fixedId = null;
+        duplId = null;
+        sysName= null;
 
         il = itemLocal();
         wl = worksheetLocal();
@@ -333,11 +339,14 @@ public class TestWorksheetManagerProxy {
         posList = new ArrayList<Integer>();
         checkPosition = false;
 
-        batchId = categoryLocal().getEntryIdForSystemName("batch");
-        totalId = categoryLocal().getEntryIdForSystemName("total");
-        fixedId = categoryLocal().getEntryIdForSystemName("pos_fixed");
-        duplId = categoryLocal().getEntryIdForSystemName("pos_duplicate");
-
+        try {
+            batchId = (dictLocal().fetchBySystemName("batch")).getId();
+            totalId = (dictLocal().fetchBySystemName("total")).getId();
+            fixedId = (dictLocal().fetchBySystemName("pos_fixed")).getId();
+            duplId = (dictLocal().fetchBySystemName("pos_duplicate")).getId();
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
         prevDO = null;
 
         for (i = 0; i < size; i++ ) {
@@ -403,7 +412,11 @@ public class TestWorksheetManagerProxy {
             }
 
             if (checkPosition) {
-                sysName = categoryLocal().getSystemNameForEntryId(currDO.getTypeId());
+                try {
+                    sysName = (dictLocal().fetchById((currDO.getTypeId())).getSystemName());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 if (position == null) {
                     if ("pos_duplicate".equals(sysName) || "".equals(sysName)) {
                         exceptionList.add(new TableFieldErrorException(

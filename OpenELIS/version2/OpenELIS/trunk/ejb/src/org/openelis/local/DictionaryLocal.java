@@ -29,11 +29,16 @@ import java.util.ArrayList;
 
 import javax.ejb.Local;
 
+import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.DictionaryViewDO;
 
 @Local
 public interface DictionaryLocal {
     public ArrayList<DictionaryViewDO> fetchByCategoryId(Integer id) throws Exception;    
+    
+    public DictionaryDO fetchBySystemName(String systemName) throws Exception;
+    
+    public DictionaryViewDO fetchById(Integer id) throws Exception;    
     
     public DictionaryViewDO add(DictionaryViewDO data) throws Exception;
     
@@ -41,6 +46,8 @@ public interface DictionaryLocal {
     
     public void delete(DictionaryViewDO data) throws Exception;
     
-    public void validate(DictionaryViewDO data) throws Exception;
+    public void validate(DictionaryViewDO data) throws Exception;    
+    
+    public void validateForDelete(DictionaryViewDO data) throws Exception;    
 
 }

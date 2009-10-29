@@ -26,21 +26,32 @@
 package org.openelis.remote;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import javax.ejb.Remote;
 
-import org.openelis.domain.CategoryDO;
+import org.openelis.domain.DictionaryDO;
+import org.openelis.domain.DictionaryViewDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.gwt.common.data.QueryData;
 
 @Remote
-public interface CategoryRemote {
+public interface DictionaryRemote {
+
+    public ArrayList<DictionaryDO> fetchByEntry(String entry) throws Exception;
     
-    public List<IdNameVO> fetchIdName() throws Exception;
+    public ArrayList<IdNameVO> fetchIdEntryByCategoryId(Integer categoryId) throws Exception;
     
-    public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception;            
+    public DictionaryDO fetchBySystemName(String systemName) throws Exception;   
     
-    public CategoryDO fetchBySystemName(String systemName) throws Exception;     
+    public DictionaryViewDO fetchById(Integer id) throws Exception;
     
+    public ArrayList<IdNameVO> fetchIdEntryByEntryAndCategoryId(ArrayList<QueryData> fields) throws Exception;
+    
+    public ArrayList<IdNameVO> fetchIdEntryByEntry(String entry,int maxResults) throws Exception;
+    
+    public ArrayList<DictionaryDO> fetchByCategorySystemName(String categorySystemName) throws Exception;
+    
+    public Integer getNumResultsAffected(String entry, Integer id) throws Exception;
+    
+    public void validateForDelete(DictionaryViewDO data) throws Exception; 
 }
