@@ -47,7 +47,7 @@ public class WorksheetCreationService {
     }
 
     public AutocompleteRPC getSectionMatches(AutocompleteRPC rpc) throws Exception {
-        rpc.model = (ArrayList)sectionRemote().getAutoCompleteSectionByName(rpc.match+"%", 10);
+        rpc.model = (ArrayList)sectionRemote().fetchByName(rpc.match+"%", 10);
         
         return rpc;
     }

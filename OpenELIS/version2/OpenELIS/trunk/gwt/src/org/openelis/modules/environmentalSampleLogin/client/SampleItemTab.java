@@ -30,6 +30,7 @@ import java.util.EnumSet;
 
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.DictionaryDO;
+import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
@@ -191,37 +192,37 @@ public class SampleItemTab extends Screen implements HasActionHandlers<SampleIte
         });
     }
     
-    private void setSampleTypesModel(ArrayList<DictionaryDO> list) {
+    private void setSampleTypesModel(ArrayList<DictionaryDO> arrayList) {
         ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        for(DictionaryDO resultDO :  list){
+        for(DictionaryDO resultDO :  arrayList){
             model.add(new TableDataRow(resultDO.getId(),resultDO.getEntry()));
         } 
         typeOfSampleId.setModel(model);
     }
     
-    private void setSourceModel(ArrayList<DictionaryDO> list) {
+    private void setSourceModel(ArrayList<DictionaryDO> arrayList) {
         ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        for(DictionaryDO resultDO :  list){
+        for(DictionaryDO resultDO :  arrayList){
             model.add(new TableDataRow(resultDO.getId(),resultDO.getEntry()));
         } 
         sourceOfSampleId.setModel(model);
     }
     
-    private void setContainersModel(ArrayList<DictionaryDO> list) {
+    private void setContainersModel(ArrayList<DictionaryDO> arrayList) {
         ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        for(DictionaryDO resultDO :  list){
+        for(DictionaryDO resultDO :  arrayList){
             model.add(new TableDataRow(resultDO.getId(),resultDO.getEntry()));
         } 
         containerId.setModel(model);
     }
     
-    private void setUnitsModel(ArrayList<DictionaryDO> list) {
+    private void setUnitsModel(ArrayList<DictionaryDO> arrayList) {
         ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        for(DictionaryDO resultDO :  list){
+        for(DictionaryDO resultDO :  arrayList){            
             model.add(new TableDataRow(resultDO.getId(),resultDO.getEntry()));
         } 
         unitOfMeasureId.setModel(model);

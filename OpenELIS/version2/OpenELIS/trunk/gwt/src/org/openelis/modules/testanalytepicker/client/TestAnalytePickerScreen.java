@@ -34,7 +34,10 @@ import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.HasActionHandlers;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
+import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
+import org.openelis.gwt.screen.Screen.State;
+import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableWidget;
@@ -42,12 +45,16 @@ import org.openelis.gwt.widget.table.event.CellEditedEvent;
 import org.openelis.gwt.widget.table.event.CellEditedHandler;
 import org.openelis.manager.TestAnalyteManager;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
 
 public class TestAnalytePickerScreen extends Screen implements HasActionHandlers<TestAnalytePickerScreen.Action>{
 
     protected TableWidget testAnalyteTable;
+    protected AppButton okButton,cancelButton;
     
     private ArrayList<TableDataRow> selectionList;
     private TestAnalyteManager testAnalyteManager;
@@ -57,17 +64,31 @@ public class TestAnalytePickerScreen extends Screen implements HasActionHandlers
     };
     
     public TestAnalytePickerScreen(TestAnalyteManager testAnalyteManager) throws Exception {
-        // Call base to get ScreenDef and draw screen
-        super("OpenELISServlet?service=org.openelis.modules.testanalytepicker.server.TestAnalytePickerService");
+        super((ScreenDefInt)GWT.create(TestAnalytePickerDef.class));
+        service = new ScreenService("controller?service=org.openelis.modules.testanalytepicker.server.TestAnalytePickerService");
 
         this.testAnalyteManager = testAnalyteManager;
         
         // Setup link between Screen and widget Handlers
         initialize();    
 
-        // Initialize Screen
+        DeferredCommand.addCommand(new Command() {
+            public void execute() {
+                postConstructor();
+            }
+        });
+   
+    }
+    
+    /**
+     * This method is called to set the initial state of widgets after the
+     * screen is attached to the browser. It is usually called in deferred
+     * command.
+     */
+    private void postConstructor() {
         setState(State.DEFAULT);
-        DataChangeEvent.fire(this);     
+        DataChangeEvent.fire(this);
+
     }
     
     private void initialize() {
@@ -116,7 +137,7 @@ public class TestAnalytePickerScreen extends Screen implements HasActionHandlers
         });
 
 
-        final AppButton okButton = (AppButton)def.getWidget("okButton");
+        okButton = (AppButton)def.getWidget("okButton");
         addScreenHandler(okButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 ok();
@@ -127,7 +148,7 @@ public class TestAnalytePickerScreen extends Screen implements HasActionHandlers
             }
         });
 
-        final AppButton cancelButton = (AppButton)def.getWidget("cancelButton");
+        cancelButton = (AppButton)def.getWidget("cancelButton");
         addScreenHandler(cancelButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 cancel();

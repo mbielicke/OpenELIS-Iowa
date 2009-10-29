@@ -26,16 +26,16 @@
 
 package org.openelis.modules.dictionary.client;
 
-import org.openelis.gwt.common.data.deprecated.TableDataModel;
-import org.openelis.gwt.common.data.deprecated.TableDataRow;
+import org.openelis.domain.DictionaryViewDO;
+import org.openelis.gwt.common.RPC;
 
-public class DictionaryRPC {//extends RPC<DictionaryForm, Integer> {
+public class DictionaryRPC implements RPC {
 
-    /**
-     * 
-     */
     private static final long serialVersionUID = 1L;
 
-    public TableDataModel<TableDataRow<Integer>> sections;
+    public DictionaryViewDO   data;
+    public Integer            count;
+    public String             entryText;    
+    public Boolean            valid; 
 
 }

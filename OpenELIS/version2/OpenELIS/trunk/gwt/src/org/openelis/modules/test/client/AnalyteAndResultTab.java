@@ -31,15 +31,13 @@ import java.util.List;
 
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.DictionaryDO;
-import org.openelis.domain.IdNameDO;
+import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.domain.TestResultViewDO;
 import org.openelis.domain.TestTypeOfSampleDO;
 import org.openelis.gwt.common.GridFieldErrorException;
 import org.openelis.gwt.common.LocalizedException;
-import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.common.data.QueryData;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.BeforeGetMatchesEvent;
@@ -126,15 +124,16 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
     
     private int                                anaSelCol,tempId;  
     
-    private ScreenService                      scriptletService;
+    private ScreenService                      scriptletService,analyteService;
     
     public AnalyteAndResultTab(ScreenDefInt def, ScreenService service,
-                               ScreenService scriptletService) {
+                               ScreenService scriptletService,ScreenService analyteService) {
         setDef(def);
         
         TestMeta = new TestMetaMap();
         this.service = service;
         this.scriptletService = scriptletService;
+        this.analyteService = analyteService;
         initialize();  
         
         initializeDropdowns();
@@ -659,7 +658,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
                 
                 window.setBusy();
                 try {
-                    scripts = scriptletService.callList("findByName",event.getMatch()+"%");
+                    scripts = scriptletService.callList("fetchByName",event.getMatch()+"%");
                     model = new ArrayList<TableDataRow>();
                     for(IdNameVO script : scripts) {
                         model.add(new TableDataRow(script.getId(),script.getName()));
@@ -982,34 +981,27 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
     }        
     
     public void onGetMatches(GetMatchesEvent event) {
-        Query query;
-        QueryData field;
         QueryFieldUtil parser;
         ArrayList<TableDataRow> model;
         TableDataRow row;
         int rg;
         String match;
-        IdNameDO autoDO;
-        List<IdNameDO> list;
+        IdNameVO data;
+        List<IdNameVO> list;
         
-        query = new Query();
         parser = new QueryFieldUtil();
         parser.parse(event.getMatch());
-
-        field = new QueryData();
-        field.query = parser.getParameter().get(0);
-        query.setFields(field);
 
         window.setBusy();
         try {
             if(isAnalyteQuery()) {
-                list = service.callList("getAnalyteMatches",query);
+                list = analyteService.callList("fetchByName",parser.getParameter().get(0));
                 model = new ArrayList<TableDataRow>();
                 for(int i = 0; i < list.size(); i++) {
-                    autoDO = (IdNameDO)list.get(i);
+                    data = list.get(i);
                     row = new TableDataRow(1);
-                    row.key = autoDO.getId();
-                    row.cells.get(0).value = autoDO.getName();
+                    row.key = data.getId();
+                    row.cells.get(0).value = data.getName();
                     model.add(row);
                 }
             } else {

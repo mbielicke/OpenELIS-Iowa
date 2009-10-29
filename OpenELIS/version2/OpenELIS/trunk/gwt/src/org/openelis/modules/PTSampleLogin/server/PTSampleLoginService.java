@@ -40,6 +40,7 @@ import org.openelis.modules.PTSampleLogin.client.PTSampleLoginForm;
 import org.openelis.persistence.CachingManager;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.CategoryRemote;
+import org.openelis.remote.DictionaryRemote;
 import org.openelis.server.constants.Constants;
 
 public class PTSampleLoginService implements AppScreenFormServiceInt<PTSampleLoginForm, Query<TableDataRow<Integer>>>{
@@ -112,17 +113,28 @@ public class PTSampleLoginService implements AppScreenFormServiceInt<PTSampleLog
     public TableDataModel<TableDataRow<String>> getInitialModel(String cat){
         Integer id = null;
         CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
+        DictionaryRemote dictRemote = (DictionaryRemote)EJBFactory.lookup("openelis/DictionaryBean/remote");
         
-        if(cat.equals("statuses"))
-            id = remote.getCategoryId("sample_status");
-        else if(cat.equals("ptProviders"))
-            id = remote.getCategoryId("pt_provider_names");
-        else if(cat.equals("ptDepartments"))
-            id = remote.getCategoryId("pt_department_names");
-        
+        try {
+            if (cat.equals("statuses"))
+                id = (remote.fetchBySystemName("sample_status")).getId();
+            else if (cat.equals("ptProviders"))
+                id = (remote.fetchBySystemName("pt_provider_names")).getId();
+            else if (cat.equals("ptDepartments"))
+                id = (remote.fetchBySystemName("pt_department_names")).getId();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+         
         List<IdNameVO> entries = new ArrayList();
-        if(id != null)
-            entries = remote.getDropdownValues(id);
+        if(id != null) {            
+            try {
+                entries = dictRemote.fetchIdEntryByCategoryId(id);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+            
+        }
         
         //we need to build the model to return
         TableDataModel<TableDataRow<String>> returnModel = new TableDataModel<TableDataRow<String>>();

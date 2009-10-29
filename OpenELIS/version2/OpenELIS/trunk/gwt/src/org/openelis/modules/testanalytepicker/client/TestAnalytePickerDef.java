@@ -23,15 +23,10 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.cache.server;
+package org.openelis.modules.testanalytepicker.client;
 
-import java.util.ArrayList;
+import org.openelis.gwt.screen.ScreenDefInt;
 
-import org.openelis.domain.SectionDO;
-import org.openelis.gwt.common.RPC;
+public interface TestAnalytePickerDef extends ScreenDefInt {
 
-public class SectionCacheRPC implements RPC {
-
-    private static final long serialVersionUID = 1L;
-    public ArrayList<SectionDO> list;
 }

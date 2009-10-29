@@ -32,9 +32,8 @@ import java.util.List;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.SectionCache;
 import org.openelis.domain.DictionaryDO;
-import org.openelis.domain.IdNameDO;
 import org.openelis.domain.IdNameVO;
-import org.openelis.domain.SectionViewDO;
+import org.openelis.domain.SectionDO;
 import org.openelis.domain.TestDO;
 import org.openelis.domain.TestMethodVO;
 import org.openelis.domain.TestSectionViewDO;
@@ -128,7 +127,8 @@ public class TestScreen extends Screen {
     private CheckBox                 isActive, isReportable;
     private CalendarLookUp           activeBegin, activeEnd;
     
-    private ScreenService            scriptletService;
+    private ScreenService            methodService,scriptletService,trailerService,
+                                     labelService,analyteService,qcService;
     
     private enum Tabs {
         DETAILS, SAMPLE_TYPES, ANALYTES_RESULTS, PREPS_REFLEXES, WORKSHEET
@@ -138,6 +138,12 @@ public class TestScreen extends Screen {
         super((ScreenDefInt)GWT.create(TestDef.class));
         service = new ScreenService("controller?service=org.openelis.modules.test.server.TestService");
         scriptletService = new ScreenService("controller?service=org.openelis.modules.scriptlet.server.ScriptletService");
+        methodService = new ScreenService("controller?service=org.openelis.modules.method.server.MethodService"); 
+        trailerService = new ScreenService("controller?service=org.openelis.modules.testTrailer.server.TestTrailerService"); 
+        labelService = new ScreenService("controller?service=org.openelis.modules.label.server.LabelService"); 
+        analyteService = new ScreenService("controller?service=org.openelis.modules.analyte.server.AnalyteService");
+        qcService = new ScreenService("controller?service=org.openelis.modules.qc.server.QCService");
+        
         security = OpenELIS.security.getModule("test");
         if (security == null)
             throw new SecurityException("screenPermException", "Test Screen");
@@ -163,6 +169,7 @@ public class TestScreen extends Screen {
 
         analyteAndResultTab.setWindow(window);
         worksheetLayoutTab.setWindow(window);
+        prepAndReflexTab.setWindow(window);
         setState(State.DEFAULT);
         initializeDropdowns();
 
@@ -324,31 +331,24 @@ public class TestScreen extends Screen {
         // the calling interface
         method.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
-                Query query;
-                QueryData field;
                 QueryFieldUtil parser;
-                ArrayList<TableDataRow> model;
                 TableDataRow row;
-                IdNameDO autoDO;
-                List<IdNameDO> list;
+                IdNameVO data;
+                ArrayList<IdNameVO> list;
+                ArrayList<TableDataRow> model;
 
-                query = new Query();
                 parser = new QueryFieldUtil();
                 parser.parse(event.getMatch());
                 
-                field = new QueryData();
-                field.query = parser.getParameter().get(0);
-                query.setFields(field);
-                
                 window.setBusy();
                 try {
-                    list = service.callList("getMethodMatches", query);
+                    list = methodService.callList("fetchByName", parser.getParameter().get(0));
                     model = new ArrayList<TableDataRow>();
                     for (int i = 0; i < list.size(); i++ ) {
-                        autoDO = list.get(i);
+                        data = list.get(i);
                         row = new TableDataRow(1);
-                        row.key = autoDO.getId();
-                        row.cells.get(0).value = autoDO.getName();
+                        row.key = data.getId();
+                        row.cells.get(0).value = data.getName();
                         model.add(row);
                     }
                     method.showAutoMatches(model);
@@ -557,28 +557,22 @@ public class TestScreen extends Screen {
         // the calling interface
         label.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
-                Query query;
-                QueryData field;
                 QueryFieldUtil parser;
-                ArrayList<TableDataRow> model;
                 TableDataRow row;
-                IdNameDO autoDO;
-                List<IdNameDO> list;
+                ArrayList<TableDataRow> model;
+                List<IdNameVO> list;
+                IdNameVO autoDO;
 
-                query = new Query();
+
                 parser = new QueryFieldUtil();
                 parser.parse(event.getMatch());
 
-                field = new QueryData();
-                field.query = parser.getParameter().get(0);
-                query.setFields(field);
-
                 window.setBusy();
                 try {
-                    list = service.callList("getLabelMatches", query);
+                    list = labelService.callList("fetchByName", parser.getParameter().get(0));
                     model = new ArrayList<TableDataRow>();
                     for (int i = 0; i < list.size(); i++ ) {
-                        autoDO = (IdNameDO)list.get(i);
+                        autoDO = list.get(i);
                         row = new TableDataRow(1);
                         row.key = autoDO.getId();
                         row.cells.get(0).value = autoDO.getName();
@@ -843,28 +837,21 @@ public class TestScreen extends Screen {
         // the calling interface
         testTrailer.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
-                Query query;
-                QueryData field;
                 QueryFieldUtil parser;
-                ArrayList<TableDataRow> model;
                 TableDataRow row;
-                IdNameDO autoDO;
-                List<IdNameDO> list;
+                ArrayList<TableDataRow> model;
+                IdNameVO autoDO;
+                List<IdNameVO> list;
 
-                query = new Query();
                 parser = new QueryFieldUtil();
                 parser.parse(event.getMatch());
 
-                field = new QueryData();
-                field.query = parser.getParameter().get(0);
-                query.setFields(field);
-
                 window.setBusy();
                 try {
-                    list = service.callList("getTrailerMatches", query);
+                    list = trailerService.callList("fetchByName", parser.getParameter().get(0));
                     model = new ArrayList<TableDataRow>();
                     for (int i = 0; i < list.size(); i++ ) {
-                        autoDO = (IdNameDO)list.get(i);
+                        autoDO = list.get(i);
                         row = new TableDataRow(1);
                         row.key = autoDO.getId();
                         row.cells.get(0).value = autoDO.getName();
@@ -919,15 +906,27 @@ public class TestScreen extends Screen {
         // the calling interface
         scriptlet.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
+                QueryFieldUtil parser;
+                TableDataRow row;
                 ArrayList<TableDataRow> model;
                 List<IdNameVO> list;
+                IdNameVO data;
 
+                parser = new QueryFieldUtil();
+                parser.parse(event.getMatch());
+                
                 window.setBusy();
                 try {
-                    list = scriptletService.callList("findByName",event.getMatch()+"%");
+                    list = scriptletService.callList("fetchByName", parser.getParameter().get(0));
                     model = new ArrayList<TableDataRow>();
-                    for(IdNameVO script : list) {
-                        model.add(new TableDataRow(script.getId(),script.getName()));
+                    for (int i = 0; i < list.size(); i++ ) {
+                        row = new TableDataRow(1);
+                        data = list.get(i);
+                        
+                        row.key = data.getId();
+                        row.cells.get(0).value = data.getName();
+                        
+                        model.add(row);
                     }
                     scriptlet.showAutoMatches(model);
                 } catch (Exception e) {
@@ -994,7 +993,7 @@ public class TestScreen extends Screen {
             }
         });
 
-        analyteAndResultTab = new AnalyteAndResultTab(def,service,scriptletService);
+        analyteAndResultTab = new AnalyteAndResultTab(def,service,scriptletService,analyteService);
         sampleTypeTab.addActionHandler(analyteAndResultTab);
 
         addScreenHandler(analyteAndResultTab, new ScreenEventHandler<Object>() {
@@ -1024,7 +1023,7 @@ public class TestScreen extends Screen {
 
         analyteAndResultTab.addActionHandler(prepAndReflexTab);
 
-        worksheetLayoutTab = new WorksheetLayoutTab(def, service,scriptletService);
+        worksheetLayoutTab = new WorksheetLayoutTab(def,service,scriptletService,qcService);
         addScreenHandler(worksheetLayoutTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                 worksheetLayoutTab.setManager(manager);
@@ -1131,7 +1130,7 @@ public class TestScreen extends Screen {
     private void initializeDropdowns() {
         ArrayList<TableDataRow> model;
         List<DictionaryDO> list;
-        List<SectionViewDO> sectList;
+        List<SectionDO> sectList;
         TableColumn column;
 
         model = new ArrayList<TableDataRow>();
@@ -1179,7 +1178,7 @@ public class TestScreen extends Screen {
         column = table.getColumns().get(0);
         sectList = SectionCache.getSectionList();
         model.add(new TableDataRow(null, ""));
-        for (SectionViewDO resultDO : sectList) {
+        for (SectionDO resultDO : sectList) {
             model.add(new TableDataRow(resultDO.getId(), resultDO.getName()));
         }
         ((Dropdown<Integer>)column.getColumnWidget()).setModel(model);

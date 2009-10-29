@@ -23,15 +23,11 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.cache.server;
+package org.openelis.modules.dictionaryentrypicker.client;
 
-import java.util.ArrayList;
+import org.openelis.gwt.screen.ScreenDefInt;
 
-import org.openelis.domain.SectionDO;
-import org.openelis.gwt.common.RPC;
 
-public class SectionCacheRPC implements RPC {
+public interface DictionaryEntryPickerDef extends ScreenDefInt {
 
-    private static final long serialVersionUID = 1L;
-    public ArrayList<SectionDO> list;
 }

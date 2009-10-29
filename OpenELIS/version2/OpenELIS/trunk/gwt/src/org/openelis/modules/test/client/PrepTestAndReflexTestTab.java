@@ -30,7 +30,6 @@ import java.util.EnumSet;
 import java.util.List;
 
 import org.openelis.cache.DictionaryCache;
-import org.openelis.common.AutocompleteRPC;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.domain.TestMethodVO;
@@ -47,14 +46,16 @@ import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
-import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.Dropdown;
+import org.openelis.gwt.widget.Label;
+import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.gwt.widget.table.TableColumn;
 import org.openelis.gwt.widget.table.TableDataCell;
 import org.openelis.gwt.widget.table.TableDataRow;
+import org.openelis.gwt.widget.table.TableRow;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
@@ -72,10 +73,12 @@ import org.openelis.manager.TestResultManager;
 import org.openelis.modules.test.client.AnalyteAndResultTab.Action;
 
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.user.client.Window;
 
 public class PrepTestAndReflexTestTab extends Screen implements GetMatchesHandler,
-                                                                ActionHandler<AnalyteAndResultTab.Action>{
+                                                                ActionHandler<AnalyteAndResultTab.Action> {
     
     private TestManager            manager;
     private TestAnalyteManager     testAnalyteManager;
@@ -85,7 +88,7 @@ public class PrepTestAndReflexTestTab extends Screen implements GetMatchesHandle
     
     private TableWidget            testPrepTable,testReflexTable;
     private AppButton              addPrepTestButton,removePrepTestButton,addReflexTestButton,removeReflexTestButton;
-    private AutoComplete<Integer>  analyteAuto,resultAuto;
+    private AutoComplete<Integer>  prepTestAuto,reflexTestAuto,analyteAuto,resultAuto;
     
     private ArrayList<TableColumn> columns;
     
@@ -99,8 +102,7 @@ public class PrepTestAndReflexTestTab extends Screen implements GetMatchesHandle
 
     }
 
-    private void initialize() {
-        AutoComplete<Integer> ac;        
+    private void initialize() {       
         
         testPrepTable = (TableWidget)def.getWidget("testPrepTable");
         addScreenHandler(testPrepTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
@@ -121,7 +123,6 @@ public class PrepTestAndReflexTestTab extends Screen implements GetMatchesHandle
                 Object val;
                 TableDataRow row;
                 TestPrepViewDO prepDO;
-                String names[];
 
                 r = event.getRow();
                 c = event.getCol();
@@ -140,9 +141,8 @@ public class PrepTestAndReflexTestTab extends Screen implements GetMatchesHandle
                         row = (TableDataRow)val;
                         prepDO.setPrepTestId((Integer)(row.key)); 
                         if(row.key != null) {
-                            names = ((String)row.cells.get(0).getValue()).split(",");
-                            prepDO.setPrepTestName(names[0]);
-                            prepDO.setMethodName(names[1]);
+                            prepDO.setPrepTestName((String)row.cells.get(0).getValue());
+                            prepDO.setMethodName((String)row.cells.get(1).getValue()); 
                         }                        
                         break;
                     case 1:
@@ -175,9 +175,29 @@ public class PrepTestAndReflexTestTab extends Screen implements GetMatchesHandle
             }
         });
         
-        columns = testPrepTable.getColumns();        
-        ac = (AutoComplete<Integer>)columns.get(0).getColumnWidget();            
-        ac.addGetMatchesHandler(this);
+        columns = testPrepTable.getColumns(); 
+      
+        prepTestAuto = (AutoComplete<Integer>)columns.get(0).getColumnWidget();            
+        prepTestAuto.addGetMatchesHandler(this);
+        
+        prepTestAuto.addSelectionHandler(new SelectionHandler<TableRow>(){
+            public void onSelection(SelectionEvent<TableRow> event) {
+                TableDataRow selectedRow;              
+                String value;
+                int index;
+                                
+                selectedRow = event.getSelectedItem().row;
+                value = (String)selectedRow.cells.get(1).getValue();
+                index = testPrepTable.getSelectedRow();
+                
+                //set the method
+                if (selectedRow != null && selectedRow.key != null)
+                    testPrepTable.setCell(index,1,value);
+                else
+                    testPrepTable.setCell(index,1,null);
+            }
+            
+        });
        
         addPrepTestButton = (AppButton)def.getWidget("addPrepTestButton");
         addScreenHandler(addPrepTestButton, new ScreenEventHandler<Object>() {
@@ -249,7 +269,6 @@ public class PrepTestAndReflexTestTab extends Screen implements GetMatchesHandle
                 Object val;
                 TestReflexViewDO refDO;
                 TableDataRow trow;
-                String names[];
                 
                 row = event.getRow();
                 col = event.getCol();
@@ -266,9 +285,8 @@ public class PrepTestAndReflexTestTab extends Screen implements GetMatchesHandle
                         trow = (TableDataRow)val;
                         refDO.setAddTestId((Integer)(trow.key));
                         if(trow.key != null) {
-                            names = ((String)trow.cells.get(0).getValue()).split(",");
-                            refDO.setAddTestName(names[0]);
-                            refDO.setAddMethodName(names[1]); 
+                            refDO.setAddTestName((String)trow.cells.get(0).getValue());
+                            refDO.setAddMethodName((String)trow.cells.get(1).getValue()); 
                         }
                         break;
                     case 1:
@@ -309,10 +327,31 @@ public class PrepTestAndReflexTestTab extends Screen implements GetMatchesHandle
         });
 
         columns = testReflexTable.getColumns();        
-        ac = (AutoComplete<Integer>)columns.get(0).getColumnWidget();            
-        ac.addGetMatchesHandler(this);
         
-        analyteAuto = (AutoComplete<Integer>)columns.get(1).getColumnWidget();
+        reflexTestAuto = (AutoComplete<Integer>)columns.get(0).getColumnWidget();            
+        reflexTestAuto.addGetMatchesHandler(this);
+        
+        reflexTestAuto.addSelectionHandler(new SelectionHandler<TableRow>(){
+            public void onSelection(SelectionEvent<TableRow> event) {
+                TableDataRow selectedRow;              
+                String value;
+                int index;
+                                
+                selectedRow = event.getSelectedItem().row;
+                value = (String)selectedRow.cells.get(1).getValue();
+                index = testReflexTable.getSelectedRow();
+                
+                //set the method
+                if (selectedRow != null && selectedRow.key != null)
+                    testReflexTable.setCell(index,1,value);
+                else
+                    testReflexTable.setCell(index,1,null);
+             
+            }
+            
+        });
+        
+        analyteAuto = (AutoComplete<Integer>)columns.get(2).getColumnWidget();
         analyteAuto.addGetMatchesHandler(new GetMatchesHandler(){
 
             public void onGetMatches(GetMatchesEvent event) {                
@@ -341,7 +380,7 @@ public class PrepTestAndReflexTestTab extends Screen implements GetMatchesHandle
             
         });
         
-        resultAuto = (AutoComplete<Integer>)columns.get(2).getColumnWidget();
+        resultAuto = (AutoComplete<Integer>)columns.get(3).getColumnWidget();
         resultAuto.addGetMatchesHandler(new GetMatchesHandler(){
 
             public void onGetMatches(GetMatchesEvent event) {                
@@ -454,32 +493,30 @@ public class PrepTestAndReflexTestTab extends Screen implements GetMatchesHandle
     }
 
     public void onGetMatches(GetMatchesEvent event) {
-        AutocompleteRPC rpc;
+        QueryFieldUtil parser;
+        TestMethodVO data;
+        ArrayList<TestMethodVO> list;
         ArrayList<TableDataRow> model;
-        TestMethodVO autoDO;
-        TableDataRow row;
-                       
-        rpc = new AutocompleteRPC();
-        rpc.match = event.getMatch();
+
+        parser = new QueryFieldUtil();
+        parser.parse(event.getMatch());
+        
+        window.setBusy();        
         try {
-            rpc = service.call("findByName",rpc);
+            list = service.callList("fetchByName", parser.getParameter().get(0));
             model = new ArrayList<TableDataRow>();
-            
-            for (int i=0; i<rpc.model.size(); i++){
-                autoDO = (TestMethodVO)rpc.model.get(i);
-                
-                row = new TableDataRow(1);
-                row.key = autoDO.getTestId();
-                row.cells.get(0).value = autoDO.getTestName()+","+autoDO.getMethodName();
-                //row.cells.get(1).value = autoDO.getTestDescription();
-                //row.cells.get(2).value = autoDO.getMethodName();
-                //row.cells.get(3).value = autoDO.getMethodDescription();
-                model.add(row);
+            for (int i = 0; i < list.size(); i++ ) {
+                data = list.get(i);
+                model.add(new TableDataRow(data.getTestId(), data.getTestName(),
+                                           data.getMethodName(), data.getTestDescription()));
+                //model.add(new TableDataRow(data.getTestId(), data.getTestName()+","+
+                  //               data.getMethodName()));   
             }
             ((AutoComplete)event.getSource()).showAutoMatches(model);
        }catch(Exception e) {
            Window.alert(e.getMessage());                     
        }
+       window.clearStatus();
         
     }
     
@@ -546,13 +583,13 @@ public class PrepTestAndReflexTestTab extends Screen implements GetMatchesHandle
             tpm = manager.getPrepTests();
             for(int i = 0; i < tpm.count(); i++) {
                 prepTest = tpm.getPrepAt(i);
-                row = new TableDataRow(2);
+                row = new TableDataRow(3);
                 row.key = prepTest.getId();               
                 
                 row.cells.get(0).setValue(new TableDataRow(prepTest.getPrepTestId(),
-                                                           prepTest.getPrepTestName()
-                                                           +","+prepTest.getMethodName()));
-                row.cells.get(1).setValue(prepTest.getIsOptional());
+                                                           prepTest.getPrepTestName()));
+                row.cells.get(1).setValue(prepTest.getMethodName());
+                row.cells.get(2).setValue(prepTest.getIsOptional());
                 model.add(row);
             }
         } catch (Exception e) {    
@@ -578,17 +615,17 @@ public class PrepTestAndReflexTestTab extends Screen implements GetMatchesHandle
             trm = manager.getReflexTests();
             for(int i = 0; i < trm.count(); i++) {
                 reflexTest = trm.getReflexAt(i);
-                row = new TableDataRow(4);
+                row = new TableDataRow(5);
                 row.key = reflexTest.getId();               
                 
                 row.cells.get(0).setValue(new TableDataRow(reflexTest.getAddTestId(),
-                                                           reflexTest.getAddTestName()
-                                                           +","+reflexTest.getAddMethodName()));
-                row.cells.get(1).setValue(new TableDataRow(reflexTest.getTestAnalyteId(),
+                                                           reflexTest.getAddTestName()));
+                row.cells.get(1).setValue(reflexTest.getAddMethodName());
+                row.cells.get(2).setValue(new TableDataRow(reflexTest.getTestAnalyteId(),
                                                            reflexTest.getTestAnalyteName()));                
-                row.cells.get(2).setValue(new TableDataRow(reflexTest.getTestResultId(),
+                row.cells.get(3).setValue(new TableDataRow(reflexTest.getTestResultId(),
                                                            reflexTest.getTestResultValue()));
-                row.cells.get(3).setValue(reflexTest.getFlagsId());
+                row.cells.get(4).setValue(reflexTest.getFlagsId());
                 
                 model.add(row);
             }
@@ -611,7 +648,7 @@ public class PrepTestAndReflexTestTab extends Screen implements GetMatchesHandle
         for(DictionaryDO resultDO :  list){
             model.add(new TableDataRow(resultDO.getId(),resultDO.getEntry()));
         } 
-        ((Dropdown)testReflexTable.getColumns().get(3).getColumnWidget()).setModel(model);
+        ((Dropdown)testReflexTable.getColumns().get(4).getColumnWidget()).setModel(model);
     }
     
     private Integer getResultGroupForTestAnalyte(Integer taId) {
@@ -669,7 +706,9 @@ public class PrepTestAndReflexTestTab extends Screen implements GetMatchesHandle
                 }
             }
         }
-    } 
+    
+
+}
 
 
 }

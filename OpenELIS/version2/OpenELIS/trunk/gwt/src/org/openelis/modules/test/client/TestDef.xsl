@@ -160,7 +160,7 @@ UIRF Software License are applicable instead of those above.
               <xsl:call-template name="aToZLeftPanelButtons" />
             </buttonGroup>
             <VerticalPanel>
-              <table key="atozTable" width="auto" maxRows="23" style="AtoZtable">
+              <table key="atozTable" width="auto" maxRows="24" style="AtoZtable">
                 <col width="175" header="{resource:getString($constants,'nameMethod')}">
                   <label />
                 </col>
@@ -453,14 +453,14 @@ UIRF Software License are applicable instead of those above.
                         <textbox key="{meta:getReportingSequence($test)}" width="80px" tab="{testTrailer:getName($tt)},{meta:getReportingMethodId($test)}" field="Integer" />
                       </row>
                     </TablePanel>
-                    <VerticalPanel height="84px" />
+                    <VerticalPanel height="71px" />
                   </VerticalPanel>
                 </tab>
                 <tab key="sampleTypeTab" text="{resource:getString($constants,'sampleType')}">
                   <VerticalPanel>
                     <HorizontalPanel>
                       <widget valign="top">
-                        <table key="sampleTypeTable" width="auto" maxRows="19" showScroll="ALWAYS" title="">
+                        <table key="sampleTypeTable" width="auto" maxRows="20" showScroll="ALWAYS" title="">
                           <col key="{testTOS:getTypeOfSampleId($tos)}" width="300" sort="false" header="{resource:getString($constants,'sampleType')}">
                             <dropdown width="300" case="MIXED" popWidth="300" field="Integer" required="true" />
                           </col>
@@ -497,7 +497,7 @@ UIRF Software License are applicable instead of those above.
                 </tab>
                 <tab key="analyteTab" text="{resource:getString($constants,'analytesResults')}">
                   <VerticalPanel padding="0" spacing="0">
-                    <table key="analyteTable" width="604px" maxRows="8" showScroll="ALWAYS">
+                    <table key="analyteTable" width="600px" maxRows="8" showScroll="ALWAYS">
                       <col key="analyteLookup" header = "1" width="152" sort="false">
                         <autoComplete width="125px" case="MIXED" popWidth="auto" field="Integer">
                           <col width="300" />
@@ -576,13 +576,13 @@ UIRF Software License are applicable instead of those above.
                             <xsl:value-of select="resource:getString($constants,'scriptlet')" />:
                           </text>
                           <autoComplete key="{testAnalyte:getScriptletId($tana)}" width="100px" case="LOWER" field="Integer">
-                            <col width="165" header="Name" />
+                            <col width="165" />
                           </autoComplete>
                         </row>
                       </TablePanel>
                     </HorizontalPanel>
                     <VerticalPanel>
-                      <ScrollTabBar key="resultTabPanel" width="602px" />
+                      <ScrollTabBar key="resultTabPanel" width="610px" />
                       <widget valign="top">
                         <table key="resultTable" width="auto" maxRows="8" showScroll="ALWAYS" title="">
                           <col key="{testResult:getUnitOfMeasureId($tr)}" width="75" sort="true" header="{resource:getString($constants,'unit')}">
@@ -646,7 +646,6 @@ UIRF Software License are applicable instead of those above.
                         </widget>
                       </row>
                     </TablePanel>
-                    <VerticalPanel height="1px" />
                   </VerticalPanel>
                 </tab>
                 <tab key="prepAndReflexTab" text="{resource:getString($constants,'prepAndReflex')}">
@@ -655,11 +654,16 @@ UIRF Software License are applicable instead of those above.
                       <VerticalPanel padding="0" spacing="0">
                         <HorizontalPanel>
                           <widget valign="top">
-                            <table key="testPrepTable" width="auto" maxRows="7" showScroll="ALWAYS" title="">
+                            <table key="testPrepTable" width="auto" maxRows="8" showScroll="ALWAYS" title="">
                               <col key="{prepTestMeta:getName($pt)}" width="527" header="{resource:getString($constants,'prepTestMethod')}">
-                                <autoComplete width="525" field="Integer">
-                                  <col width="525" />
+                                <autoComplete width="425" field="Integer">
+                                  <col width="140" header="{resource:getString($constants,'test')}" />
+                				  <col width="135" header="{resource:getString($constants,'method')}" />
+                                  <col width="250" header="{resource:getString($constants,'description')}" />                                  
                                 </autoComplete>
+                              </col>
+                              <col key = "method" width="100" header="{resource:getString($constants,'method')}">
+                              	<label/>
                               </col>
                               <col key="{testPrep:getIsOptional($tp)}" width="70" header="{resource:getString($constants,'optional')}">
                                 <check />
@@ -696,10 +700,15 @@ UIRF Software License are applicable instead of those above.
                         <HorizontalPanel>
                           <widget valign="top">
                             <table key="testReflexTable" width="auto" maxRows="10" showScroll="ALWAYS" title="">
-                              <col key="{addTestMeta:getName($at)}" width="150" header="{resource:getString($constants,'reflexiveTest')}">
-                                <autoComplete width="150px" case="MIXED" field="Integer" required="true">
-                                  <col width="160" header="Name" />
+                              <col key="{addTestMeta:getName($at)}" width="80" header="{resource:getString($constants,'reflexiveTest')}">
+                                <autoComplete width="80" case="MIXED" field="Integer" required="true">
+                                  <col width="140" header="{resource:getString($constants,'test')}" />
+                				  <col width="135" header="{resource:getString($constants,'method')}" />
+                                  <col width="250" header="{resource:getString($constants,'description')}" />
                                 </autoComplete>
+                              </col>
+                              <col key = "method" width="70" header="{resource:getString($constants,'method')}">
+                              	<label />
                               </col>
                               <col key="{testRefAna:getName($trefa)}" width="190" sort="false" header="{resource:getString($constants,'testAnalyte')}">
                                 <autoComplete width="181" case="MIXED" popWidth="auto" field="Integer" required="true">
@@ -745,7 +754,7 @@ UIRF Software License are applicable instead of those above.
                         </HorizontalPanel>
                       </VerticalPanel>
                     </VerticalPanel>
-                    <VerticalPanel height="4px" />
+                    <VerticalPanel height="6px" />
                   </VerticalPanel>
                 </tab>
                 <tab key="worksheetTab" text="{resource:getString($constants,'worksheetLayout')}">
@@ -803,7 +812,7 @@ UIRF Software License are applicable instead of those above.
                             </col>
                             <col key="{testWrkshtItm:getQcName($twsi)}" width="370" header="{resource:getString($constants,'qcName')}">
                               <autoComplete width="340" case="MIXED" field="String">
-                                <col width="350" header="Name" />
+                                <col width="350" />
                               </autoComplete>
                             </col>
                           </table>
@@ -878,7 +887,7 @@ UIRF Software License are applicable instead of those above.
                         </widget>
                       </HorizontalPanel>
                     </VerticalPanel>
-                    <VerticalPanel height="4px" />
+                    <VerticalPanel height="15px" />
                   </VerticalPanel>
                 </tab>
               </TabPanel>

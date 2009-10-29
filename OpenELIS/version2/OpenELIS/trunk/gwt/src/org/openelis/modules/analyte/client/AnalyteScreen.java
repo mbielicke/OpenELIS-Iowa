@@ -246,7 +246,7 @@ public class AnalyteScreen extends Screen {
 
         parent.addGetMatchesHandler(new GetMatchesHandler() {
         	public void onGetMatches(GetMatchesEvent event) {
-        		service.callList("findByName",event.getMatch()+"%",new AsyncCallback<ArrayList<IdNameVO>>() {
+        		service.callList("fetchByName",event.getMatch()+"%",new AsyncCallback<ArrayList<IdNameVO>>() {
         			public void onSuccess(ArrayList<IdNameVO> result) {
         				ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
         				for(IdNameVO vo : result) {

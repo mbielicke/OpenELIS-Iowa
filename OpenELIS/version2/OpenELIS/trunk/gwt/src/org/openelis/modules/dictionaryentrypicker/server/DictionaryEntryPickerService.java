@@ -27,12 +27,12 @@ package org.openelis.modules.dictionaryentrypicker.server;
 
 import java.util.ArrayList;
 
-import org.openelis.domain.IdNameDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.modules.dictionaryentrypicker.client.DictionaryEntryPickerDataRPC;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.CategoryRemote;
+import org.openelis.remote.DictionaryRemote;
 import org.openelis.server.constants.Constants;
 
 public class DictionaryEntryPickerService {
@@ -42,12 +42,12 @@ public class DictionaryEntryPickerService {
     }
     
     public DictionaryEntryPickerDataRPC getDictionaryEntries(DictionaryEntryPickerDataRPC rpc){
-        CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
-        ArrayList<IdNameDO> dictDOList = null;
+        DictionaryRemote remote = (DictionaryRemote)EJBFactory.lookup("openelis/DictionaryBean/remote");
+        ArrayList<IdNameVO> dictDOList = null;
                                              
         dictDOList = null;
         try{ 
-          dictDOList = remote.getDictionaryListByPatternAndCategory(rpc.fields);
+          dictDOList = remote.fetchIdEntryByEntryAndCategoryId(rpc.fields);
         }catch(Exception ex) {
             ex.printStackTrace();
         }
@@ -57,8 +57,12 @@ public class DictionaryEntryPickerService {
     }
     
     public DictionaryEntryPickerDataRPC getCategoryModel(DictionaryEntryPickerDataRPC rpc) {
-        CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");        
-        rpc.categoryModel = (ArrayList<IdNameVO>)remote.getCategoryList();
+        CategoryRemote remote = (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote"); 
+        try {
+            rpc.categoryModel = (ArrayList<IdNameVO>)remote.fetchIdName();
+        } catch(Exception ex) {
+            ex.printStackTrace();
+        }
         return rpc;
     }
    

@@ -30,16 +30,12 @@ import java.util.EnumSet;
 import java.util.List;
 
 import org.openelis.cache.DictionaryCache;
-import org.openelis.common.AutocompleteRPC;
 import org.openelis.domain.DictionaryDO;
-import org.openelis.domain.IdNameDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.domain.TestWorksheetAnalyteViewDO;
 import org.openelis.domain.TestWorksheetItemDO;
 import org.openelis.gwt.common.LocalizedException;
-import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.common.data.QueryData;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -49,7 +45,6 @@ import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
-import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
@@ -95,15 +90,18 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
                                     addWSAnalyteButton,removeWSAnalyteButton;
     private TextBox<Integer>        batchCapacity,totalCapacity;
     private AutoComplete            scriptlet,qcname; 
-    private ScreenService           scriptletService;
+    private ScreenService           scriptletService, qcService;
     
-    public WorksheetLayoutTab(ScreenDefInt def,
-                              ScreenService service,ScreenService scriptletService) {
+    public WorksheetLayoutTab(ScreenDefInt def,ScreenService service,
+                              ScreenService scriptletService,ScreenService qcService) {
         setDef(def);
         
         TestMeta = new TestMetaMap();
+        
         this.service = service;
         this.scriptletService = scriptletService;
+        this.qcService = qcService;
+        
         initialize();        
         
         initializeDropdowns();
@@ -184,7 +182,7 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
 
                 window.setBusy();                
                 try {
-                    scripts = scriptletService.callList("findByName",event.getMatch()+"%");
+                    scripts = scriptletService.callList("fetchByName",event.getMatch()+"%");
                     model = new ArrayList<TableDataRow>();
                     for(IdNameVO script : scripts) {
                         model.add(new TableDataRow(script.getId(),script.getName()));
@@ -214,25 +212,29 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
         qcname = (AutoComplete<String>)worksheetTable.getColumns().get(2).getColumnWidget();            
         qcname.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
-                AutocompleteRPC trpc;
+                QueryFieldUtil parser;
                 ArrayList<TableDataRow> model;
                 TableDataRow row;
-                IdNameDO autoDO;
+                IdNameVO data;
+                ArrayList<IdNameVO> list;
                 
-                trpc = new AutocompleteRPC(); 
-                trpc.match = event.getMatch();                
+                parser = new QueryFieldUtil();
+                parser.parse(event.getMatch());
+
+                window.setBusy();                
                 try {
-                    trpc = service.call("getQCNameMatches",trpc);
+                    list = qcService.callList("fetchByName", parser.getParameter().get(0));
                     model = new ArrayList<TableDataRow>();
-                    for(int i = 0; i < trpc.model.size(); i++) {
-                        autoDO = (IdNameDO)trpc.model.get(i);
-                        row = new TableDataRow(autoDO.getName(),autoDO.getName());
+                    for(int i = 0; i <list.size(); i++) {
+                        data = list.get(i);
+                        row = new TableDataRow(data.getName(),data.getName());
                         model.add(row);
                     }
                     qcname.showAutoMatches(model);
                 }catch(Exception e) {
                     Window.alert(e.getMessage());                     
-                }                            
+                }   
+                window.clearStatus();
             }
             
         });

@@ -62,6 +62,7 @@ import org.openelis.modules.shipping.client.ShippingNotesForm;
 import org.openelis.modules.shipping.client.ShippingShipToKey;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.CategoryRemote;
+import org.openelis.remote.DictionaryRemote;
 import org.openelis.remote.OrganizationRemote;
 import org.openelis.remote.ShippingRemote;
 import org.openelis.server.constants.Constants;
@@ -412,17 +413,28 @@ System.out.println("after shipping items");
 		Integer id = null;
 		CategoryRemote remote = (CategoryRemote) EJBFactory
 				.lookup("openelis/CategoryBean/remote");
+		DictionaryRemote dictRemote = (DictionaryRemote)EJBFactory.lookup("openelis/DictionaryBean/remote");
 
+		try {
 		if (cat.equals("status"))
-			id = remote.getCategoryId("shippingStatus");
+			id = (remote.fetchBySystemName("shippingStatus")).getId();
 		else if (cat.equals("shipFrom"))
-			id = remote.getCategoryId("shipFrom");
+			id = (remote.fetchBySystemName("shipFrom")).getId();
 		else if (cat.equals("shippingMethod"))
-			id = remote.getCategoryId("shippingMethod");
-
+			id = (remote.fetchBySystemName("shippingMethod")).getId();
+		} catch (Exception ex) {
+		    ex.printStackTrace();
+		}
+		
 		List<IdNameVO> entries = new ArrayList();
-		if (id != null)
-			entries = remote.getDropdownValues(id);
+		if(id != null) {          
+            try {
+                entries = dictRemote.fetchIdEntryByCategoryId(id);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+            
+        }
 
 		// we need to build the model to return
 		TableDataModel<TableDataRow<Integer>> returnModel = new TableDataModel<TableDataRow<Integer>>();
