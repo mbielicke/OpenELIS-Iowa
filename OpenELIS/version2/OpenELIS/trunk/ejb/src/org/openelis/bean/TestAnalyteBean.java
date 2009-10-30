@@ -160,6 +160,7 @@ public class TestAnalyteBean implements TestAnalyteLocal {
         ValidationErrorsList list;
 
         list = new ValidationErrorsList();
+        
         if (anaDO.getAnalyteId() == null) {
             exc = new FieldErrorException("fieldRequiredException",
                                           meta.TEST_ANALYTE.getAnalyteId());
