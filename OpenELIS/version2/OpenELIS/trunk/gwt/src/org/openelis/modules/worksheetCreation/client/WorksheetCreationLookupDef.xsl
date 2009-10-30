@@ -91,8 +91,8 @@ UIRF Software License are applicable instead of those above.
               <col width="150" header="Test" />
               <col width="150" header="Method" />
               <col width="200" header="Description" />
-              <col width="200" header="Begin Date" />
-              <col width="200" header="End Date" />
+              <col width="75" header="Begin Date" />
+              <col width="75" header="End Date" />
             </autoComplete>
             <text style="Prompt">
               <xsl:value-of select="resource:getString($constants,'method')" />:
@@ -107,11 +107,11 @@ UIRF Software License are applicable instead of those above.
             <text style="Prompt">
               <xsl:value-of select="resource:getString($constants,'accessionNum')" />:
             </text>
-            <textbox key="{sampleMetaMap:getAccessionNumber($sample)}" width="75px" tab="{analysisMetaMap:getStatusId($analysis)},{sectionMeta:getId($section)}" field="Integer" required="true" />
+            <textbox key="{sampleMetaMap:getAccessionNumber($sample)}" width="75px" tab="{analysisMetaMap:getStatusId($analysis)},{sectionMeta:getId($section)}" field="Integer" />
             <text style="Prompt">
               <xsl:value-of select="resource:getString($constants,'status')" />:
             </text>
-            <dropdown key="{analysisMetaMap:getStatusId($analysis)}" width="110px" popWidth="110px" tab="{sampleItemMetaMap:getTypeOfSampleId($sampleItem)},{sampleMetaMap:getAccessionNumber($sample)}" field="Integer" required="true" />
+            <dropdown key="{analysisMetaMap:getStatusId($analysis)}" width="110px" popWidth="110px" tab="{sampleItemMetaMap:getTypeOfSampleId($sampleItem)},{sampleMetaMap:getAccessionNumber($sample)}" field="Integer" />
             <text style="Prompt">
               <xsl:value-of select="resource:getString($constants,'sampleType')" />:
             </text>

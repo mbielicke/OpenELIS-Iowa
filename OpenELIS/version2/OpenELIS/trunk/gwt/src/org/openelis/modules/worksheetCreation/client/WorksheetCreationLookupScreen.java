@@ -82,6 +82,7 @@ import org.openelis.modules.main.client.openelis.OpenELIS;
 public class WorksheetCreationLookupScreen extends Screen 
                                            implements HasActionHandlers<WorksheetCreationLookupScreen.Action> {
 
+    private ScreenService            testService;
     private SecurityModule           security;
     private WorksheetCreationMetaMap meta;
 
@@ -100,6 +101,7 @@ public class WorksheetCreationLookupScreen extends Screen
     public WorksheetCreationLookupScreen() throws Exception {
         super((ScreenDefInt)GWT.create(WorksheetCreationLookupDef.class));
         service = new ScreenService("OpenELISServlet?service=org.openelis.modules.worksheetCreation.server.WorksheetCreationService");
+        testService = new ScreenService("OpenELISServlet?service=org.openelis.modules.test.server.TestService");
         
         security = OpenELIS.security.getModule("worksheet");
         if (security == null)
@@ -187,29 +189,30 @@ public class WorksheetCreationLookupScreen extends Screen
 
         testId.addGetMatchesHandler(new GetMatchesHandler(){
             public void onGetMatches(GetMatchesEvent event) {
-                AutocompleteRPC rpc;
-                TableDataRow    row;
+                ArrayList<TableDataRow> model;
+                ArrayList<TestMethodVO> matches;
+                QueryFieldUtil          parser;
+                TableDataRow            row;
+                TestMethodVO            tmVO;                
 
-                rpc       = new AutocompleteRPC();
-                rpc.match = event.getMatch();
-                
+                parser = new QueryFieldUtil();
+                parser.parse(event.getMatch());
                 try {
-                    rpc = service.call("getTestMethodMatches", rpc);
-                    ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
-                        
-                    for (int i = 0; i < rpc.model.size(); i++) {
-                        TestMethodVO autoDO = (TestMethodVO)rpc.model.get(i);
+                    model = new ArrayList<TableDataRow>();
+                    matches = testService.callList("fetchByName", parser.getParameter().get(0)/*+"%"*/);
+                    for (int i = 0; i < matches.size(); i++) {
+                        tmVO = (TestMethodVO)matches.get(i);
                         
                         row = new TableDataRow(5);
-                        row.key = autoDO.getTestId();
-                        row.cells.get(0).value = autoDO.getTestName();
-                        row.cells.get(1).value = autoDO.getMethodName();
-                        row.cells.get(2).value = autoDO.getTestDescription();
-                        if ("N".equals(autoDO.getIsActive())) {
-                            row.cells.get(3).value = autoDO.getActiveBegin();
-                            row.cells.get(4).value = autoDO.getActiveEnd();
+                        row.key = tmVO.getTestId();
+                        row.cells.get(0).value = tmVO.getTestName();
+                        row.cells.get(1).value = tmVO.getMethodName();
+                        row.cells.get(2).value = tmVO.getTestDescription();
+                        if ("N".equals(tmVO.getIsActive())) {
+                            row.cells.get(3).value = tmVO.getActiveBegin();
+                            row.cells.get(4).value = tmVO.getActiveEnd();
                         }
-                        row.data = autoDO.getMethodId();
+                        row.data = tmVO.getMethodId();
                         
                         model.add(row);
                     } 
@@ -473,7 +476,6 @@ public class WorksheetCreationLookupScreen extends Screen
                 dictDo = DictionaryCache.getEntryFromId(analysisRow.getStatusId());
                 
                 row = new TableDataRow(8);
-                row.key = analysisRow.getAnalysisId();
                 row.cells.get(0).value = analysisRow.getAccessionNumber();
                 row.cells.get(1).value = analysisRow.getDescription();
 //                row.cells.get(2).value = analysisRow.getProjectName();
