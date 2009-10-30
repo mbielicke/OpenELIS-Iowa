@@ -42,7 +42,6 @@ import org.openelis.domain.TestViewDO;
 import org.openelis.entity.Test;
 import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
@@ -258,7 +257,7 @@ public class TestBean implements TestRemote, TestLocal {
             query.setParameter("testId", testDO.getId());
             list = query.getResultList();
             if (list.size() > 0) {
-                exceptionList.add(new FormErrorException("testUsedAsPrepTestException"));
+                exceptionList.add(new FieldErrorException("testUsedAsPrepTestException",null));
                 checkDuplicate = false;
             }
 
@@ -266,7 +265,7 @@ public class TestBean implements TestRemote, TestLocal {
             query.setParameter("testId", testDO.getId());
             list = query.getResultList();
             if (list.size() > 0) {
-                exceptionList.add(new FormErrorException("testUsedAsReflexTestException"));
+                exceptionList.add(new FieldErrorException("testUsedAsReflexTestException",null));
                 checkDuplicate = false;
             }
         }
@@ -315,7 +314,7 @@ public class TestBean implements TestRemote, TestLocal {
 
         if (checkDuplicate) {
             if (testDO.getActiveEnd().before(testDO.getActiveBegin())) {
-                exceptionList.add(new FormErrorException("endDateAfterBeginDateException"));
+                exceptionList.add(new FieldErrorException("endDateAfterBeginDateException",null));
                 checkDuplicate = false;
             }
         }
@@ -331,7 +330,7 @@ public class TestBean implements TestRemote, TestLocal {
                     if (test.getMethodId().equals(testDO.getMethodId())) {
                         if (test.getIsActive().equals(testDO.getIsActive())) {
                             if ("Y".equals(testDO.getIsActive())) {
-                                exceptionList.add(new FormErrorException("testActiveException"));
+                                exceptionList.add(new FieldErrorException("testActiveException",null));
                                 break;
                             }
                         }
@@ -350,7 +349,7 @@ public class TestBean implements TestRemote, TestLocal {
                         }
 
                         if (overlap) {
-                            exceptionList.add(new FormErrorException("testTimeOverlapException"));
+                            exceptionList.add(new FieldErrorException("testTimeOverlapException",null));
                         }
                     }
                 }

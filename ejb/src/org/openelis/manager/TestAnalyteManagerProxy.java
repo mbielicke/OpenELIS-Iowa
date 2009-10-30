@@ -146,24 +146,26 @@ public class TestAnalyteManagerProxy{
         for (i = 0; i < grid.size(); i++ ) {
             analist = grid.get(i);
             
-            for (j = 0; j < list.size(); j++ ) {
+            for (j = 0; j < analist.size(); j++ ) {
                 anaDO = analist.get(j);
                 rg = anaDO.getResultGroup();
-                if(j == 0)
+                if(j == 0 && !DataBaseUtil.isEmpty(rg))
                     anaResGrpMap.put(anaDO.getId(), rg);
                 
                 try {
                     al.validate(anaDO);
+                    
+                    if(rg > results.size()){
+                        exc = new GridFieldErrorException("invalidResultGroupException", i, j,
+                                                          meta.TEST_ANALYTE.getResultGroup(),
+                                                          "analyteTable");
+                        list.add(exc);
+                    } 
                 } catch (Exception e) {                    
                     DataBaseUtil.mergeException(list, e, "analyteTable", i, j);
                 }
                 
-                if(rg > results.size()){
-                    exc = new GridFieldErrorException("invalidResultGroupException", i, j,
-                                                      meta.TEST_ANALYTE.getResultGroup(),
-                                                      "analyteTable");
-                    list.add(exc);
-                }                                
+                                               
             }
         } 
         

@@ -157,7 +157,7 @@ public class TestReflex implements Auditable, Cloneable {
     }
 
     public void setAddTestId(Integer addTestId) {
-        if (DataBaseUtil.isDifferent(addTestId,addTestId))
+        if (DataBaseUtil.isDifferent(addTestId,this.addTestId))
             this.addTestId = addTestId;
     }
     
@@ -214,15 +214,10 @@ public class TestReflex implements Auditable, Cloneable {
             Element root = doc.getDocumentElement();
 
             AuditUtil.getChangeXML(id, original.id, doc, "id");
-
             AuditUtil.getChangeXML(testId, original.testId, doc, "test_id");
-
             AuditUtil.getChangeXML(testAnalyteId, original.testAnalyteId, doc, "test_analyte_id");
-
             AuditUtil.getChangeXML(testResultId, original.testResultId, doc, "test_result_id");
-
             AuditUtil.getChangeXML(flagsId, original.flagsId, doc, "flags_id");
-
             AuditUtil.getChangeXML(addTestId, original.addTestId, doc, "add_test_id");
 
             if (root.hasChildNodes())

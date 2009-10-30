@@ -31,6 +31,7 @@ import java.util.List;
 import javax.naming.InitialContext;
 
 import org.openelis.domain.TestSectionViewDO;
+import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
@@ -89,9 +90,9 @@ public class TestSectionManagerProxy {
         TestSectionViewDO secDO;
         TestSectionLocal sl;
         DictionaryLocal dl;
-        Integer defId, askId, matchId, flagId, sectId;
+        Integer defId, matchId, flagId, sectId;
         List<Integer> idList;
-        int size, numDef, numAsk, numMatch, numBlank, iter;
+        int size, numDef, numMatch, numBlank, iter;
         TableFieldErrorException exc;
 
         sl = local();
@@ -100,7 +101,7 @@ public class TestSectionManagerProxy {
 
         size = man.count();
         if (size == 0) {
-            list.add(new FormErrorException("atleastOneSection"));
+            list.add(new FieldErrorException("atleastOneSection",null));
             return;
         }
 
@@ -108,11 +109,9 @@ public class TestSectionManagerProxy {
         size = sectionDOList.size();
 
         defId = (dl.fetchBySystemName("test_section_default")).getId();
-        askId = (dl.fetchBySystemName("test_section_ask")).getId();
         matchId = (dl.fetchBySystemName("test_section_match")).getId();
 
         numDef = 0;
-        numAsk = 0;
         numMatch = 0;
         numBlank = 0;
 
@@ -140,8 +139,6 @@ public class TestSectionManagerProxy {
                 numBlank++ ;
             } else if (defId.equals(flagId)) {
                 numDef++ ;
-            } else if (askId.equals(flagId)) {
-                numAsk++ ;
             } else if (matchId.equals(flagId)) {
                 numMatch++ ;
             }
@@ -186,19 +183,7 @@ public class TestSectionManagerProxy {
                 }
 
             }
-        } else if (numAsk > 0 && numAsk != size) {
-            for (iter = 0; iter < size; iter++ ) {
-                secDO = sectionDOList.get(iter);
-                flagId = secDO.getFlagId();
-
-                if ( (flagId == null) || (flagId != null && !askId.equals(flagId))) {
-                    exc = new TableFieldErrorException("allSectAskFlagException",iter,
-                                                       meta.getTestSection().getFlagId(),"sectionTable");
-                    list.add(exc);
-                }
-
-            }
-        }
+        } 
         
         if (list.size() > 0)
             throw list;

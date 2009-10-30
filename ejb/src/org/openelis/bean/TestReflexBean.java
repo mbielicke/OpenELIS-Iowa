@@ -42,7 +42,6 @@ import org.openelis.domain.TestReflexViewDO;
 import org.openelis.entity.TestReflex;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.CategoryLocal;
 import org.openelis.local.DictionaryLocal;
 import org.openelis.local.TestReflexLocal;
 import org.openelis.metamap.TestMetaMap;
@@ -116,7 +115,7 @@ public class TestReflexBean implements TestReflexLocal {
         testReflex = manager.find(TestReflex.class, data.getId());
 
         testReflex.setTestId(data.getTestId());
-        testReflex.setAddTestId(data.getAddTestId());
+        testReflex.setAddTestId(data.getAddTestId());        
         testReflex.setTestAnalyteId(data.getTestAnalyteId());
         testReflex.setTestResultId(data.getTestResultId());
         testReflex.setFlagsId(data.getFlagsId());
