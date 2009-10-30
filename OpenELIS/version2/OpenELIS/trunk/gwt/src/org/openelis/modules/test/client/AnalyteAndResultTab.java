@@ -187,7 +187,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
                         // and we also don't want to allow a user to be able to
                         // edit a header row column that's beyond the number of
                         // columns for the row group that the analyte rows under
-                        // the header belong to; in additionto cancelling the
+                        // the header belong to; in addition to cancelling the
                         // edit event, we disable the three widgets, disallow 
                         // adding or removing columns and set anaSelCol to -1 
                         // such that the three widgets don't show any data when
@@ -291,7 +291,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
                 
                 try {                                                                                              
                     if((Boolean)row.data) {                        
-                        numCol = displayManager.columnCount(r);                        
+                        numCol = displayManager.columnCount(r);                                                
                         if(numCol < col) {
                             if(key != null) {
                                 //
@@ -314,7 +314,19 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
                                 anaDO = displayManager.getTestAnalyteAt(i, col-1);
                                 anaDO.setAnalyteId(key);                                
                             }
-                        }                           
+                        }   
+                        
+                        //
+                        // since we cannot allow adding or removing of columns
+                        // if col exceeds the number of columns that a given
+                        // row group has for itself in the manager, we set
+                        // canAddRemoveColumn to false if this is the case 
+                        // and to true otherwise
+                        //
+                        if(col <= displayManager.columnCount(r)) 
+                            canAddRemoveColumn = true;                                
+                        else
+                            canAddRemoveColumn = false;
                     } else {                                                
                         if(col == 0) {
                             //
@@ -344,7 +356,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
 
         analyteTable.addBeforeRowAddedHandler(new BeforeRowAddedHandler() {
             public void onBeforeRowAdded(BeforeRowAddedEvent event) {   
-                TableDataRow row,addrow;
+                TableDataRow row;
                 int index;
                 try {
                     row = event.getRow();
@@ -358,9 +370,6 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
                         addAnalyteRow = true;                        
                         event.cancel();
                         analyteTable.addRow(createHeaderRow());
-                        //addrow = new TableDataRow(10);
-                        //addrow.data = new Boolean(false);
-                        //analyteTable.addRow(addrow);
                     }
                                                                     
                 } catch(Exception ex) {
@@ -755,15 +764,19 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
             public void onDataChange(DataChangeEvent event) {
                 int selTab;
                 
+                //
+                //this table is not queried by,so it needs to be cleared in query mode
+                //
                 if(state != State.QUERY) {
                     selTab = resultTabPanel.getTabBar().getSelectedTab();                
                     resultTable.load(getResultTableModel(selTab));
+                } else {
+                    resultTable.load(new ArrayList<TableDataRow>());
                 }
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                resultTable.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
-                resultTable.setQueryMode(event.getState() == State.QUERY);
+                resultTable.enable(EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));                
             }
         });
         
@@ -1461,7 +1474,6 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
     
     private void showErrorsForResultGroup(int group) {
         GridFieldErrorException exc;
-        String message, unit[];
         TableDataRow row;
         int i,j;                
         
@@ -1476,8 +1488,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
         }
         
         for (i = 0; i < resultErrorList.size(); i++) {
-            exc = resultErrorList.get(i);
-            message = exc.getKey();
+            exc = resultErrorList.get(i);            
             if (exc.getRowIndex() == group) {
                     resultTable.setCellException(exc.getColumnIndex(),
                                               exc.getFieldName(),
@@ -1703,18 +1714,19 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
     private void addColumn() {
         int ar,index;
         
-        if(!canAddRemoveColumn) 
+        if(!canAddRemoveColumn) {
             Window.alert(consts.get("cantAddColumn"));
+            return;
+        }
         
-        if(anaSelCol != -1 && analyteTable.getSelectedRow() != -1) {
-            index = displayManager.getDataRowIndex(analyteTable.getSelectedRow());
+        ar = analyteTable.getSelectedRow();
+        
+        if(anaSelCol != -1 && ar != -1) {
+            index = displayManager.getDataRowIndex(ar);
             testAnalyteManager.addColumnAt(index, anaSelCol-1, null);
-            displayManager.setDataGrid(testAnalyteManager.getAnalytes());
-            
-            ar = analyteTable.getSelectedRow();               
+            displayManager.setDataGrid(testAnalyteManager.getAnalytes());                                      
             
             shiftDataInRowToTheRight(ar);
-            //shiftDataAboveToTheRight(ar);
             shiftDataBelowToTheRight(ar);        
 
             analyteTable.refresh();
@@ -1725,8 +1737,10 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
     private void removeColumn() {
         int ar,index;
         
-        if(!canAddRemoveColumn) 
+        if(!canAddRemoveColumn) {
             Window.alert(consts.get("cantRemoveColumn"));
+            return;
+        }
         
         ar = analyteTable.getSelectedRow();
         if(anaSelCol != -1 && ar != -1) {                                                                                              
@@ -1752,21 +1766,18 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
         
         if(ar == -1 || ar == num-1) {
             analyteTable.addRow(createHeaderRow());
-            //analyteTable.selectRow(num);
             analyteTable.scrollToSelection();
         } else {
             row = analyteTable.getRow(ar);
             if((Boolean)row.data) {    
                 headerAddedInTheMiddle = true;
                 analyteTable.addRow(ar,createHeaderRow());
-                //analyteTable.selectRow(ar);
                 analyteTable.scrollToSelection();                                    
             } else { 
                 row = analyteTable.getRow(ar+1);
                 if((Boolean)row.data) {
                     headerAddedInTheMiddle = true;
                     analyteTable.addRow(ar+1,createHeaderRow());
-                    //analyteTable.selectRow(ar+1);
                     analyteTable.scrollToSelection();                                        
                 } else {
                     Window.alert(consts.get("headerCantBeAddedInsideGroup"));

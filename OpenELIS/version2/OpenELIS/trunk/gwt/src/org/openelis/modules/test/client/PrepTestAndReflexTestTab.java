@@ -50,7 +50,6 @@ import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.Dropdown;
-import org.openelis.gwt.widget.Label;
 import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.gwt.widget.table.TableColumn;
 import org.openelis.gwt.widget.table.TableDataCell;
@@ -145,7 +144,7 @@ public class PrepTestAndReflexTestTab extends Screen implements GetMatchesHandle
                             prepDO.setMethodName((String)row.cells.get(1).getValue()); 
                         }                        
                         break;
-                    case 1:
+                    case 2:
                         prepDO.setIsOptional((String)val);
                         break;
                 }
@@ -250,9 +249,9 @@ public class PrepTestAndReflexTestTab extends Screen implements GetMatchesHandle
                                 
                 row = event.getRow();
                 col = event.getCol();                
-                if(col == 2) {                    
-                    val = (TableDataRow)testReflexTable.getRow(row).cells.get(1).getValue();
-                    tdc = testReflexTable.getCell(row, 1);                    
+                if(col == 3) {                    
+                    val = (TableDataRow)testReflexTable.getRow(row).cells.get(2).getValue();
+                    tdc = testReflexTable.getCell(row, 3);                    
                     if(val == null || val.key == null || tdc.getExceptions() != null) {
                         Window.alert(consts.get("selectAnaBeforeRes"));
                         event.cancel();
@@ -289,17 +288,17 @@ public class PrepTestAndReflexTestTab extends Screen implements GetMatchesHandle
                             refDO.setAddMethodName((String)trow.cells.get(1).getValue()); 
                         }
                         break;
-                    case 1:
+                    case 2:
                         trow = (TableDataRow)val;
                         refDO.setTestAnalyteId((Integer)(trow.key));
                         refDO.setTestAnalyteName((String)trow.cells.get(0).getValue());
                         break;
-                    case 2:
+                    case 3:
                         trow = (TableDataRow)val;
                         refDO.setTestResultId((Integer)(trow.key));
                         refDO.setTestResultValue((String)trow.cells.get(0).getValue());
                         break;
-                    case 3:
+                    case 4:
                         refDO.setFlagsId((Integer)val);
                         break;
                 }
@@ -394,7 +393,7 @@ public class PrepTestAndReflexTestTab extends Screen implements GetMatchesHandle
                                 
                 ar = testReflexTable.getSelectedRow();                
                 trow =  testReflexTable.getRow(ar);               
-                arow = (TableDataRow)trow.cells.get(1).getValue();
+                arow = (TableDataRow)trow.cells.get(2).getValue();
                 
                 model = new ArrayList<TableDataRow>();
                 
@@ -665,17 +664,24 @@ public class PrepTestAndReflexTestTab extends Screen implements GetMatchesHandle
     private void setAnalyteErrors(Integer id,String name,String key,boolean matchLabel) {
         TableDataRow trow, arow;
         String val;
+        TestReflexViewDO refDO;
         
         for(int i = 0; i < testReflexTable.numRows(); i++) {
             trow = testReflexTable.getRow(i);
-            arow = (TableDataRow)trow.cells.get(1).getValue();
+            arow = (TableDataRow)trow.cells.get(2).getValue();
             val = (String)arow.cells.get(0).getValue();
             
             if(id.equals(arow.key)) {
                if((matchLabel && !(val.equals(name))) || !matchLabel) {                   
-                   testReflexTable.setCellException(i, 1, new LocalizedException(key));
+                   testReflexTable.setCellException(i, 2, new LocalizedException(key));
                    arow = new TableDataRow(null,"");
                    trow.cells.get(1).setValue(arow);
+                   try {
+                       refDO = manager.getReflexTests().getReflexAt(i);
+                       refDO.setTestAnalyteId(null);
+                   } catch(Exception ex) {
+                       ex.printStackTrace();
+                   }
                } 
             }
         }
@@ -687,12 +693,13 @@ public class PrepTestAndReflexTestTab extends Screen implements GetMatchesHandle
         Integer id;
         String value;
         Integer dictId;
+        TestReflexViewDO refDO;
         
         id = resDO.getId();
         dictId = DictionaryCache.getIdFromSystemName("test_res_type_dictionary");
         for (int i = 0; i < testReflexTable.numRows(); i++ ) {
             trow = testReflexTable.getRow(i);
-            rrow = (TableDataRow)trow.cells.get(2).getValue();
+            rrow = (TableDataRow)trow.cells.get(3).getValue();
             val = (String)rrow.cells.get(0).getValue();
             if(dictId.equals(resDO.getTypeId()))
                 value = resDO.getDictionary();
@@ -700,9 +707,15 @@ public class PrepTestAndReflexTestTab extends Screen implements GetMatchesHandle
                 value = resDO.getValue();            
             if(id.equals(rrow.key)) {
                 if ((matchLabel && !(val.equals(value))) || !matchLabel) {
-                    testReflexTable.setCellException(i, 2, new LocalizedException(key));
+                    testReflexTable.setCellException(i, 3, new LocalizedException(key));
                     rrow = new TableDataRow(null, "");
                     trow.cells.get(2).setValue(rrow);
+                    try {
+                        refDO = manager.getReflexTests().getReflexAt(i);
+                        refDO.setTestResultId(null);
+                    } catch(Exception ex) {
+                        ex.printStackTrace();
+                    }
                 }
             }
         }
