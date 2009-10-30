@@ -32,10 +32,13 @@ package org.openelis.entity;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -78,8 +81,11 @@ public class AuxData implements Auditable, Cloneable {
   private Integer typeId;             
 
   @Column(name="value")
-  private String value;             
-
+  private String value; 
+  
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "aux_field_id",insertable = false, updatable = false)
+  private AuxField auxField;
 
   @Transient
   private AuxData original;
@@ -196,5 +202,11 @@ public class AuxData implements Auditable, Cloneable {
   public String getTableName() {
     return "aux_data";
   }
+public AuxField getAuxField() {
+    return auxField;
+}
+public void setAuxField(AuxField auxField) {
+    this.auxField = auxField;
+}
   
 }   
