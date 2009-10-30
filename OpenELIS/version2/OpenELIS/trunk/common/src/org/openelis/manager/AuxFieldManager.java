@@ -2,6 +2,7 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
+import org.openelis.domain.AuxFieldValueDO;
 import org.openelis.domain.AuxFieldViewDO;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.RPC;
@@ -30,6 +31,10 @@ public class AuxFieldManager implements RPC {
 
     public static AuxFieldManager fetchById(Integer id) throws Exception {
         return proxy().fetchById(id);
+    }
+    
+    public static AuxFieldManager fetchWithValuesById(Integer id) throws Exception {
+        return proxy().fetchWithValuesById(id);
     }
     
     /**
@@ -68,6 +73,17 @@ public class AuxFieldManager implements RPC {
     public void addAuxField(AuxFieldViewDO auxField) {
         AuxFieldListItem item = new AuxFieldListItem();
         item.field = auxField;
+
+        items.add(item);
+    }
+    
+    public void addAuxFieldAndValues(AuxFieldViewDO auxField, ArrayList<AuxFieldValueDO> values) {
+        AuxFieldListItem item = new AuxFieldListItem();
+        item.field = auxField;
+        item.values = AuxFieldValueManager.getInstance();
+        
+        for(int i=0; i<item.values.count(); i++)
+            item.values.addAuxFieldValue(values.get(i));
 
         items.add(item);
     }

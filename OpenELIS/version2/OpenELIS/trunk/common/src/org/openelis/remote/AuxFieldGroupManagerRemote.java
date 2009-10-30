@@ -22,6 +22,8 @@ public interface AuxFieldGroupManagerRemote {
 
     public AuxFieldManager fetchAuxFieldById(Integer id) throws Exception;
     
+    public AuxFieldManager fetchAuxFieldWithValuesById(Integer id) throws Exception;
+    
     public AuxFieldManager fetchFieldByGroupId(Integer id) throws Exception;
     
     public AuxFieldValueManager fetchFieldValueByFieldId(Integer id) throws Exception;

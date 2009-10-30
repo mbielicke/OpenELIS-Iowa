@@ -6,7 +6,8 @@ public class AuxFieldViewDO extends AuxFieldDO {
 
     private static final long serialVersionUID = 1L;
     
-    protected String analyteName, methodName, scriptletName;
+    protected String analyteName, methodName, scriptletName, unitOfMeasureName;
+    protected Integer typeId;
     
     public AuxFieldViewDO(){
         
@@ -15,13 +16,14 @@ public class AuxFieldViewDO extends AuxFieldDO {
     public AuxFieldViewDO(Integer id, Integer auxFieldGroupId, Integer sortOrder, Integer analyteId,
                           String description, Integer methodId, Integer unitOfMeasureId,
                           String isRequired, String isActive, String isReportable, Integer scriptletId,
-                          String analyteName, String methodName, String scriptletName){
+                          String analyteName, String methodName, String scriptletName, String unitOfMeasureName){
         
         super(id, auxFieldGroupId, sortOrder, analyteId, description, methodId, unitOfMeasureId, isRequired, isActive, isReportable, scriptletId);
         
         setAnalyteName(analyteName);
         setMethodName(methodName);
         setScriptletName(scriptletName);
+        setUnitOfMeasureName(unitOfMeasureName);
     }
 
     public String getAnalyteName() {
@@ -46,5 +48,21 @@ public class AuxFieldViewDO extends AuxFieldDO {
 
     public void setScriptletName(String scriptletName) {
         this.scriptletName = DataBaseUtil.trim(scriptletName);
+    }
+
+    public String getUnitOfMeasureName() {
+        return unitOfMeasureName;
+    }
+
+    public void setUnitOfMeasureName(String unitOfMeasureName) {
+        this.unitOfMeasureName = unitOfMeasureName;
+    }
+
+    public Integer getTypeId() {
+        return typeId;
+    }
+
+    public void setTypeId(Integer typeId) {
+        this.typeId = typeId;
     }
 }
