@@ -907,8 +907,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
         auxDataTab = new AuxDataTab(def);
         addScreenHandler(auxDataTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
-                    //auxDataTab.setData(new SampleDataBundle());
-                    //auxDataTab.setManager(manager);
+                    auxDataTab.setManager(manager);
 
                     if (tab == Tabs.AUX_DATA)
                         drawTabs();
@@ -1126,6 +1125,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
         sampleNotesTab.draw();
         storageTab.draw();
         qaEventsTab.draw();
+        auxDataTab.draw();
         
         window.setDone(consts.get("enterFieldsToQuery"));
     }

@@ -68,20 +68,10 @@ UIRF Software License are applicable instead of those above.
 				</menuDisplay>
 				  <menuPanel style="topMenuContainer" layout="vertical" position="below">
 				    <menuItem enable="false" key="preference" icon="preferenceIcon" label="{resource:getString($constants,'preference')}" description="{resource:getString($constants,'preferenceDescription')}"/>
-				    <menuItem key="FavoritesMenu" icon="favoritesMenuIcon" label="{resource:getString($constants,'favoritesMenu')}" description="{resource:getString($constants,'favoritesMenuDescription')}"/>
+				    <menuItem enable="false" key="FavoritesMenu" icon="favoritesMenuIcon" label="{resource:getString($constants,'favoritesMenu')}" description="{resource:getString($constants,'favoritesMenuDescription')}"/>
 				    <menuItem key="Logout" icon="logoutIcon" label="{resource:getString($constants,'logout')}" description="{resource:getString($constants,'logoutDescription')}"/>
 				  </menuPanel>
 		    </menuItem>
-		    <menuItem>
-		      <menuDisplay>					
-					<label style="topMenuBarItem" text="{resource:getString($constants,'edit')}"/>
-			  </menuDisplay>
-	            <menuPanel style="topMenuContainer" layout="vertical" position="below">
-				    <menuItem enable="false" key="cut" icon="cutIcon" label="{resource:getString($constants,'cut')}" description="{resource:getString($constants,'copyDescription')}"/>
-				    <menuItem enable="false" key="copy" icon="copyIcon" label="{resource:getString($constants,'copy')}" description="{resource:getString($constants,'copyDescription')}"/>
- 					<menuItem enable="false" key="paste" icon="pasteIcon" label="{resource:getString($constants,'paste')}" description="{resource:getString($constants,'pasteDescription')}"/>
-			    </menuPanel>
-			</menuItem>
     	    <menuItem>
     	      <menuDisplay>
 					<label style="topMenuBarItem" text="{resource:getString($constants,'sample')}" />
@@ -94,12 +84,12 @@ UIRF Software License are applicable instead of those above.
 					<html>&lt;hr/&gt;</html>
 					
 				   <menuItem key="environmentalSampleLogin" icon="environmentalSampleLoginIcon" label="{resource:getString($constants,'environmentalSampleLogin')}" description="{resource:getString($constants,'environmentalSampleLoginDescription')}"/>
-				   <menuItem key="clinicalSampleLogin" icon="clinicalSampleLoginIcon" label="{resource:getString($constants,'clinicalSampleLogin')}" description="{resource:getString($constants,'clinicalSampleLoginDescription')}"/>
-				   <menuItem key="animalSampleLogin" icon="animalSampleLoginIcon" label="{resource:getString($constants,'animalSampleLogin')}" description="{resource:getString($constants,'animalSampleLoginDescription')}"/>
-				   <menuItem key="newbornScreeningSampleLogin" icon="newbornScreeningSampleLoginIcon" label="{resource:getString($constants,'newbornScreeningSampleLogin')}" description="{resource:getString($constants,'newbornScreeningSampleLoginDescription')}"/>
-				   <menuItem key="ptSampleLogin" icon="ptSampleLoginIcon" label="{resource:getString($constants,'ptSampleLogin')}" description="{resource:getString($constants,'ptSampleLoginDescription')}"/>
-				   <menuItem key="sdwisSampleLogin" icon="sdwisSampleLoginIcon" label="{resource:getString($constants,'sdwisSampleLogin')}" description="{resource:getString($constants,'sdwisSampleLoginDescription')}"/>
-				   <menuItem key="privateWellWaterSampleLogin" icon="privateWellWaterSampleLoginIcon" label="{resource:getString($constants,'privateWellWaterSampleLogin')}" description="{resource:getString($constants,'privateWellWaterSampleLoginDescription')}"/>
+				   <menuItem enable="false" key="clinicalSampleLogin" icon="clinicalSampleLoginIcon" label="{resource:getString($constants,'clinicalSampleLogin')}" description="{resource:getString($constants,'clinicalSampleLoginDescription')}"/>
+				   <menuItem enable="false" key="animalSampleLogin" icon="animalSampleLoginIcon" label="{resource:getString($constants,'animalSampleLogin')}" description="{resource:getString($constants,'animalSampleLoginDescription')}"/>
+				   <menuItem enable="false" key="newbornScreeningSampleLogin" icon="newbornScreeningSampleLoginIcon" label="{resource:getString($constants,'newbornScreeningSampleLogin')}" description="{resource:getString($constants,'newbornScreeningSampleLoginDescription')}"/>
+				   <menuItem enable="false" key="ptSampleLogin" icon="ptSampleLoginIcon" label="{resource:getString($constants,'ptSampleLogin')}" description="{resource:getString($constants,'ptSampleLoginDescription')}"/>
+				   <menuItem enable="false" key="sdwisSampleLogin" icon="sdwisSampleLoginIcon" label="{resource:getString($constants,'sdwisSampleLogin')}" description="{resource:getString($constants,'sdwisSampleLoginDescription')}"/>
+				   <menuItem enable="false" key="privateWellWaterSampleLogin" icon="privateWellWaterSampleLoginIcon" label="{resource:getString($constants,'privateWellWaterSampleLogin')}" description="{resource:getString($constants,'privateWellWaterSampleLoginDescription')}"/>
 				   <!-- <menuItem key="sampleManagement" icon="sampleManagementIcon" label="{resource:getString($constants,'sampleManagement')}" description="{resource:getString($constants,'sampleManagementDescription')}"/>  -->
 					<html>&lt;hr/&gt;</html>
 
@@ -132,20 +122,20 @@ UIRF Software License are applicable instead of those above.
 					<label style="topMenuBarItem" text="{resource:getString($constants,'inventoryOrder')}"/>
 			  </menuDisplay>
 				<menuPanel layout="vertical" style="topMenuContainer" position="below">
-				    <menuItem key="internalOrder" icon="internalOrderIcon" label="{resource:getString($constants,'internalOrder')}" description="{resource:getString($constants,'internalOrderDescription')}"/>
-			        <menuItem key="vendorOrder" icon="vendorOrderIcon" label="{resource:getString($constants,'vendorOrder')}" description="{resource:getString($constants,'vendorOrderDescription')}"/>
-				    <menuItem key="kitOrder" icon="kitOrderIcon" label="{resource:getString($constants,'kitOrder')}" description="{resource:getString($constants,'kitOrderDescription')}"/>
+				    <menuItem enable="false" key="internalOrder" icon="internalOrderIcon" label="{resource:getString($constants,'internalOrder')}" description="{resource:getString($constants,'internalOrderDescription')}"/>
+			        <menuItem enable="false" key="vendorOrder" icon="vendorOrderIcon" label="{resource:getString($constants,'vendorOrder')}" description="{resource:getString($constants,'vendorOrderDescription')}"/>
+				    <menuItem enable="false" key="kitOrder" icon="kitOrderIcon" label="{resource:getString($constants,'kitOrder')}" description="{resource:getString($constants,'kitOrderDescription')}"/>
 				    <html>&lt;hr/&gt;</html>
-				    <menuItem key="fillOrder" icon="fillOrderIcon" label="{resource:getString($constants,'fillOrder')}" description="{resource:getString($constants,'fillOrderDescription')}"/>
-				    <menuItem key="shipping" icon="shippingIcon" label="{resource:getString($constants,'shipping')}" description="{resource:getString($constants,'shippingDescription')}"/>
+				    <menuItem enable="false" key="fillOrder" icon="fillOrderIcon" label="{resource:getString($constants,'fillOrder')}" description="{resource:getString($constants,'fillOrderDescription')}"/>
+				    <menuItem enable="false" key="shipping" icon="shippingIcon" label="{resource:getString($constants,'shipping')}" description="{resource:getString($constants,'shippingDescription')}"/>
 				    <html>&lt;hr/&gt;</html>
-				    <menuItem key="buildKits" icon="buildKitsIcon" label="{resource:getString($constants,'buildKits')}" description="{resource:getString($constants,'buildKitsDescription')}"/>
-				    <menuItem key="inventoryTransfer" icon="inventoryTransferIcon" label="{resource:getString($constants,'inventoryTransfer')}" description="{resource:getString($constants,'inventoryTransferDescription')}"/>
+				    <menuItem enable="false" key="buildKits" icon="buildKitsIcon" label="{resource:getString($constants,'buildKits')}" description="{resource:getString($constants,'buildKitsDescription')}"/>
+				    <menuItem enable="false" key="inventoryTransfer" icon="inventoryTransferIcon" label="{resource:getString($constants,'inventoryTransfer')}" description="{resource:getString($constants,'inventoryTransferDescription')}"/>
 				    <html>&lt;hr/&gt;</html>
-				    <menuItem key="inventoryReceipt" icon="inventoryReceiptIcon" label="{resource:getString($constants,'inventoryReceipt')}" description="{resource:getString($constants,'inventoryReceiptDescription')}"/>
-				    <menuItem key="inventoryAdjustment" icon="inventoryAdjustmentIcon" label="{resource:getString($constants,'inventoryAdjustment')}" description="{resource:getString($constants,'inventoryAdjustmentDescription')}"/>
+				    <menuItem enable="false" key="inventoryReceipt" icon="inventoryReceiptIcon" label="{resource:getString($constants,'inventoryReceipt')}" description="{resource:getString($constants,'inventoryReceiptDescription')}"/>
+				    <menuItem enable="false" key="inventoryAdjustment" icon="inventoryAdjustmentIcon" label="{resource:getString($constants,'inventoryAdjustment')}" description="{resource:getString($constants,'inventoryAdjustmentDescription')}"/>
 				    <code>if(OpenELIS.security.hasModule("inventory","SELECT")){</code>			
-    				    <menuItem key="inventoryItem" icon="inventoryItemIcon" label="{resource:getString($constants,'inventoryItem')}" description="{resource:getString($constants,'inventoryItemDescription')}"/>
+    				    <menuItem enable="false" key="inventoryItem" icon="inventoryItemIcon" label="{resource:getString($constants,'inventoryItem')}" description="{resource:getString($constants,'inventoryItemDescription')}"/>
 				    <code>}</code>
 				</menuPanel>
 		    </menuItem>
@@ -164,7 +154,7 @@ UIRF Software License are applicable instead of those above.
 				<menuPanel layout="vertical" style="topMenuContainer" position="below">
 				    <menuItem key="test" icon="testIcon" label="{resource:getString($constants,'test')}" description="{resource:getString($constants,'testDescription')}"/>
 				    <menuItem key="method" icon="methodIcon" label="{resource:getString($constants,'method')}" description="{resource:getString($constants,'methodDescription')}"/>
-				    <menuItem key="panel" icon="panelIcon" label="{resource:getString($constants,'panel')}" description="{resource:getString($constants,'panelDescription')}"/>
+				    <menuItem enable="false" key="panel" icon="panelIcon" label="{resource:getString($constants,'panel')}" description="{resource:getString($constants,'panelDescription')}"/>
 				    <code>if(OpenELIS.security.hasModule("qaevent","SELECT")){</code>
  				    	<menuItem key="QAEvent" icon="QAEventIcon" label="{resource:getString($constants,'QAEvent')}" description="{resource:getString($constants,'QAEventDescription')}"/>
 				    <code>}</code>
@@ -176,10 +166,10 @@ UIRF Software License are applicable instead of those above.
 				    <code>if(OpenELIS.security.hasModule("dictionary","SELECT")){</code>
 				    	<menuItem key="dictionary" icon="dictionaryIcon" label="{resource:getString($constants,'dictionary')}" description="{resource:getString($constants,'dictionaryDescription')}"/>
 				    <code>}</code>
-				    <menuItem key="auxiliaryPrompt" icon="auxiliaryPromptIcon" label="{resource:getString($constants,'auxiliaryPrompt')}" description="{resource:getString($constants,'auxiliaryPromptDescription')}"/>
+				    <menuItem enable="false" key="auxiliaryPrompt" icon="auxiliaryPromptIcon" label="{resource:getString($constants,'auxiliaryPrompt')}" description="{resource:getString($constants,'auxiliaryPromptDescription')}"/>
 					<html>&lt;hr/&gt;</html>
 			        <code>if(OpenELIS.security.hasModule("label","SELECT")){</code>
-				    	<menuItem key="label" icon="labelIcon" label="{resource:getString($constants,'label')}" description="{resource:getString($constants,'labelDescription')}"/>
+				    	<menuItem enable="false" key="label" icon="labelIcon" label="{resource:getString($constants,'label')}" description="{resource:getString($constants,'labelDescription')}"/>
 				    <code>}</code>
 				    <code>if(OpenELIS.security.hasModule("standardnote","SELECT")){</code>			    
 				    	<menuItem key="standardNote" icon="standardNoteIcon" label="{resource:getString($constants,'standardNote')}" description="{resource:getString($constants,'standardNoteDescription')}"/>
@@ -189,10 +179,10 @@ UIRF Software License are applicable instead of those above.
 				    <code>}</code>
 					<html>&lt;hr/&gt;</html>
 			        <code>if(OpenELIS.security.hasModule("storageunit","SELECT")){</code>
-					    <menuItem key="storageUnit" icon="storageUnitIcon" label="{resource:getString($constants,'storageUnit')}" description="{resource:getString($constants,'storageUnitDescription')}"/>
+					    <menuItem enable="false" key="storageUnit" icon="storageUnitIcon" label="{resource:getString($constants,'storageUnit')}" description="{resource:getString($constants,'storageUnitDescription')}"/>
 				    <code>}</code>
 				    <code>if(OpenELIS.security.hasModule("storagelocation","SELECT")){</code>
-					    <menuItem key="storageLocation" icon="storageLocationIcon" label="{resource:getString($constants,'storageLocation')}" description="{resource:getString($constants,'storageLocationDescription')}"/>
+					    <menuItem enable="false" key="storageLocation" icon="storageLocationIcon" label="{resource:getString($constants,'storageLocation')}" description="{resource:getString($constants,'storageLocationDescription')}"/>
 				    <code>}</code>
 					<html>&lt;hr/&gt;</html>
 				    <menuItem enable="false" key="instrument" icon="instrumentIcon" label="{resource:getString($constants,'instrument')}" description="{resource:getString($constants,'instrumentDescription')}"/>

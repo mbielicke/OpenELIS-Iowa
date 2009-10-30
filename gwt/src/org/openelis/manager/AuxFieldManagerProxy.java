@@ -40,6 +40,10 @@ public class AuxFieldManagerProxy {
         return service.call("fetchAuxFieldById", id);
     }
     
+    public AuxFieldManager fetchWithValuesById(Integer id) throws Exception {
+        return service.call("fetchWithValuesById", id);
+    }
+    
     public AuxFieldManager fetchByAuxFieldGroupId(Integer auxFieldGroupId) throws Exception {
         return service.call("fetchByAuxFieldGroupId", auxFieldGroupId);
     }

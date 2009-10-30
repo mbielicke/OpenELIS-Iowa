@@ -26,9 +26,14 @@
 package org.openelis.modules.environmentalSampleLogin.client;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.EnumSet;
 
+import org.openelis.cache.DictionaryCache;
+import org.openelis.domain.AuxDataDO;
+import org.openelis.domain.AuxFieldValueDO;
 import org.openelis.domain.AuxFieldViewDO;
+import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -43,17 +48,20 @@ import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
-import org.openelis.gwt.widget.table.TableColumn;
 import org.openelis.gwt.widget.table.TableDataRow;
+import org.openelis.gwt.widget.table.TableRow;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.gwt.widget.table.event.CellEditedEvent;
 import org.openelis.gwt.widget.table.event.CellEditedHandler;
 import org.openelis.manager.AuxDataManager;
 import org.openelis.manager.AuxFieldManager;
+import org.openelis.manager.AuxFieldValueManager;
+import org.openelis.manager.HasAuxDataInt;
 import org.openelis.modules.auxGroupPicker.client.AuxGroupPickerScreen;
 
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.user.client.Window;
 
 public class AuxDataTab extends Screen implements GetMatchesHandler{
@@ -63,7 +71,9 @@ public class AuxDataTab extends Screen implements GetMatchesHandler{
     protected TableWidget auxValsTable;
     protected AppButton addAuxButton, removeAuxButton;
     protected TextBox auxMethod, auxUnits, auxDesc;
+    protected AutoComplete<Integer> ac;
     
+    protected HasAuxDataInt parentMan;
     protected AuxDataManager manager;
     
     public AuxDataTab(ScreenDefInt def) {
@@ -71,24 +81,24 @@ public class AuxDataTab extends Screen implements GetMatchesHandler{
         setDef(def);
         
         initialize();
+        
+        //load types into cache
+        DictionaryCache.getListByCategorySystemName("aux_field_value_type");
     }
     
     private void initialize() {
         auxValsTable = (TableWidget)def.getWidget("auxValsTable");
+        ((AuxTableColumn)auxValsTable.getColumns().get(2)).setScreen(this);
         addScreenHandler(auxValsTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
             public void onDataChange(DataChangeEvent event) {
-              //  auxValsTable.load(); // FIXME load(model)
+                auxValsTable.load(getTableModel());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                auxValsTable.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                auxValsTable.enable(EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));
                 auxValsTable.setQueryMode(event.getState() == State.QUERY);
             }
         });
-        
-        //TODO add matches handler to value col
-      //  AutoComplete<Integer> ac = (AutoComplete<Integer>)auxValsTable.columns.get(2).getColumnWidget();
-      //  ac.addGetMatchesHandler(this);
         
         auxValsTable.addCellEditedHandler(new CellEditedHandler(){
             public void onCellUpdated(CellEditedEvent event) {
@@ -96,12 +106,17 @@ public class AuxDataTab extends Screen implements GetMatchesHandler{
                 
             }
         });
-        /*
+        
         auxValsTable.addSelectionHandler(new SelectionHandler<TableRow>(){
            public void onSelection(SelectionEvent<TableRow> event) {
-               event.cancel();
-           } 
-        });*/
+               TableRow row = event.getSelectedItem();
+               AuxFieldViewDO fieldDO = (AuxFieldViewDO)row.row.data;
+               
+               auxMethod.setValue(fieldDO.getMethodName());
+               auxDesc.setValue(fieldDO.getDescription());
+               auxUnits.setValue(fieldDO.getUnitOfMeasureName());
+           }; 
+        });
         
         addAuxButton = (AppButton)def.getWidget("addAuxButton");
         addScreenHandler(addAuxButton, new ScreenEventHandler<Object>() {
@@ -122,8 +137,6 @@ public class AuxDataTab extends Screen implements GetMatchesHandler{
                 ScreenWindow modal = new ScreenWindow("Aux Group Selection", "auxGroupScreen", "",
                                                       true, false);
                 modal.setName(consts.get("auxGroupSelection"));
-                //qaEventScreen.setType(QaeventPickerScreen.Type.SAMPLE);
-                //qaEventScreen.draw();
                 modal.setContent(auxGroupScreen);
                 auxGroupScreen.draw();
             }
@@ -149,11 +162,7 @@ public class AuxDataTab extends Screen implements GetMatchesHandler{
         auxMethod = (TextBox)def.getWidget("auxMethod");
         addScreenHandler(auxMethod, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-         //       auxMethod.setValue(AUXMETHOD_DO.auxMethod());
-            }
-
-            public void onValueChange(ValueChangeEvent<String> event) {
-         //       AUXMETHOD_DO.auxMethod(event.getValue());
+                auxMethod.setValue(null);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -164,11 +173,7 @@ public class AuxDataTab extends Screen implements GetMatchesHandler{
         auxUnits = (TextBox)def.getWidget("auxUnits");
         addScreenHandler(auxUnits, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-         //       auxUnits.setValue(AUXUNITS_DO.auxUnits());
-            }
-
-            public void onValueChange(ValueChangeEvent<String> event) {
-        //        AUXUNITS_DO.auxUnits(event.getValue());
+                auxUnits.setValue(null);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -179,11 +184,7 @@ public class AuxDataTab extends Screen implements GetMatchesHandler{
         auxDesc = (TextBox)def.getWidget("auxDesc");
         addScreenHandler(auxDesc, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-          //      auxDesc.setValue(AUXDESC_DO.auxDesc());
-            }
-
-            public void onValueChange(ValueChangeEvent<String> event) {
-         //       AUXDESC_DO.auxDesc(event.getValue());
+                auxDesc.setValue(null);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -192,42 +193,147 @@ public class AuxDataTab extends Screen implements GetMatchesHandler{
         });
     }
     
+    private ArrayList<TableDataRow> getTableModel() {
+        int i;
+        TableDataRow row;
+        AuxDataDO data;
+        AuxFieldViewDO field;
+        AuxFieldValueDO val;
+        ArrayList<TableDataRow> model;
+        
+        model = new ArrayList<TableDataRow>();
+        if (manager == null)
+            return model;
+
+        try {
+            for (i = 0; i < manager.count(); i++) {
+                data = manager.getAuxDataAt(i);
+                field = manager.getFieldsAt(i).getAuxFieldAt(0);
+                val = manager.getFieldsAt(i).getValuesAt(0).getAuxFieldValueAt(0);
+                
+                row = new TableDataRow(3);
+                row.cells.get(0).value = data.getIsReportable();
+                row.cells.get(1).value = field.getAnalyteName();
+                row.cells.get(2).value = getCorrectValueByType(data.getValue(), val.getTypeId());
+                
+                field.setTypeId(val.getTypeId());
+                row.data = field;
+                
+                model.add(row);
+            }
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            e.printStackTrace();
+        }
+        return model;
+    }
+    
     private void groupsSelectedFromLookup(ArrayList<AuxFieldManager> fields){
         AuxFieldManager man;
         AuxFieldViewDO fieldDO;
+        AuxFieldValueDO valueDO;
+        AuxDataDO dataDO;
         TableDataRow row;
         
-        auxValsTable.fireEvents(false);
-        for(int i=0; i<fields.size(); i++){
-            man = fields.get(i);
-            
-            for(int j=0; j<man.count(); j++){
-                fieldDO = man.getAuxFieldAt(j);
+        try{
+            auxValsTable.fireEvents(false);
+            for(int i=0; i<fields.size(); i++){
+                man = fields.get(i);
                 
-                row = new TableDataRow(3);
-                row.cells.get(0).value = fieldDO.getIsReportable();
-                row.cells.get(1).value = fieldDO.getAnalyteName();
-                //TODO not sure right now...row.cells.get(2).value = fieldDO.get;
-                auxValsTable.addRow(row);
+                for(int j=0; j<man.count(); j++){
+                    fieldDO = man.getAuxFieldAt(j);
+                    valueDO = man.getValuesAt(j).getAuxFieldValueAt(0);
+                    dataDO = new AuxDataDO();
+                    
+                    dataDO.setTypeId(valueDO.getTypeId());
+                    dataDO.setAuxFieldId(fieldDO.getId());
+                    dataDO.setIsReportable(fieldDO.getIsReportable());
+                    dataDO.setValue(valueDO.getValue());
+                    
+                    manager.addAuxData(dataDO);
+                    manager.setFieldsAt(man, i);
+                    row = new TableDataRow(3);
+                    row.cells.get(0).value = fieldDO.getIsReportable();
+                    row.cells.get(1).value = fieldDO.getAnalyteName();
+                    if(valueDO.getValue() != null)
+                        row.cells.get(2).value = getCorrectValueByType(valueDO.getValue(), valueDO.getTypeId());
+                    
+                    fieldDO.setTypeId(valueDO.getTypeId());
+                    row.data = fieldDO;
+                    auxValsTable.addRow(row);
+                }
             }
+            auxValsTable.fireEvents(true);
+            
+        }catch(Exception e){
+            
+            Window.alert(e.getMessage());
         }
-        auxValsTable.fireEvents(true);
+    }
+    
+    private Object getCorrectValueByType(String value, Integer typeId){
+        if(DictionaryCache.getIdFromSystemName("aux_alpha_lower").equals(typeId) || 
+                        DictionaryCache.getIdFromSystemName("aux_alpha_upper").equals(typeId) || 
+                        DictionaryCache.getIdFromSystemName("aux_alpha_mixed").equals(typeId) || 
+                        DictionaryCache.getIdFromSystemName("aux_numeric").equals(typeId) || 
+                        DictionaryCache.getIdFromSystemName("aux_time").equals(typeId))
+            return value;
+            
+        else if(DictionaryCache.getIdFromSystemName("aux_date").equals(typeId))
+            return new Datetime(Datetime.YEAR, Datetime.DAY, new Date(value));
+        
+        else if(DictionaryCache.getIdFromSystemName("aux_date_time").equals(typeId))
+            return new Datetime(Datetime.YEAR, Datetime.MINUTE, new Date(value));
+        
+        else if(DictionaryCache.getIdFromSystemName("aux_dictionary").equals(typeId))
+            return new TableDataRow(new Integer(1), value);
+        
+        return null;
     }
     
     public void onGetMatches(GetMatchesEvent event) {
-        // TODO Auto-generated method stub
+        ArrayList<TableDataRow> model;
+        int index;
+        AuxFieldValueDO valDO;
         
+        index = auxValsTable.getSelectedRow();
+        model = new ArrayList<TableDataRow>();
+        
+        //give them the dictionary entries
+        try{
+            AuxFieldValueManager valMan = manager.getFieldsAt(index).getValuesAt(0);
+            
+            for(int i=0; i<valMan.count(); i++){
+                valDO = valMan.getAuxFieldValueAt(i);
+                model.add(new TableDataRow(valDO.getValue(), valDO.getValue()));
+            }
+        }catch(Exception e){
+            Window.alert(e.getMessage());
+            return;
+        }
+        
+        ((AutoComplete<Integer>)event.getSource()).showAutoMatches(model);
     }
     
-    public void setManager(AuxDataManager manager){
-        this.manager = manager;
+    public void setManager(HasAuxDataInt parentMan){
+        this.parentMan = parentMan;
         loaded = false;
     }
     
     public void draw(){
         if(!loaded){
-            DataChangeEvent.fire(this);
-            loaded = true;
+            try{
+                if(state == State.UPDATE || state == State.ADD)
+                    manager = parentMan.getAuxDataforUpdate();
+                else
+                    manager = parentMan.getAuxData();
+                
+                DataChangeEvent.fire(this);
+                loaded = true;
+                
+            }catch(Exception e){
+                Window.alert(e.getMessage());
+            }
         }
     }
 }
