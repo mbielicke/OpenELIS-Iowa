@@ -28,6 +28,7 @@ package org.openelis.modules.worksheetCreation.server;
 import java.util.ArrayList;
 
 import org.openelis.common.AutocompleteRPC;
+import org.openelis.domain.TestMethodVO;
 import org.openelis.domain.WorksheetCreationVO;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.manager.WorksheetManager;
@@ -40,36 +41,12 @@ import org.openelis.remote.WorksheetManagerRemote;
 
 public class WorksheetCreationService {
 
-    public AutocompleteRPC getTestMethodMatches(AutocompleteRPC rpc) throws Exception {
-        rpc.model = (ArrayList)testRemote().fetchActiveByName(rpc.match+"%", 10);
-        
-        return rpc;
-    }
-
-    public AutocompleteRPC getSectionMatches(AutocompleteRPC rpc) throws Exception {
-        rpc.model = (ArrayList)sectionRemote().fetchByName(rpc.match+"%", 10);
-        
-        return rpc;
-    }
-
     public ArrayList<WorksheetCreationVO> query(Query query) throws Exception {
         return creationRemote().query(query.getFields(), 0, 500);
     }
 
     public WorksheetManager add(WorksheetManager man) throws Exception {
         return remoteManager().add(man);
-    }
-    
-    private TestRemote testRemote() {
-        return (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
-    }
-    
-    private SectionRemote sectionRemote() {
-        return (SectionRemote)EJBFactory.lookup("openelis/SectionBean/remote");
-    }
-    
-    private WorksheetRemote remote() {
-        return (WorksheetRemote)EJBFactory.lookup("openelis/WorksheetBean/remote");
     }
     
     private WorksheetCreationRemote creationRemote() {
