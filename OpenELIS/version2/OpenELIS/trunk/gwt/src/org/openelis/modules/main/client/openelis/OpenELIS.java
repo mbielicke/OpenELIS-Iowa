@@ -145,21 +145,6 @@ public class OpenELIS extends Screen implements ClickHandler {
                 }
             }
         });
-        ((MenuItem)def.getWidget("cut")).addClickHandler(new ClickHandler() {
-            public void onClick(ClickEvent event) {
-                // browser.addScreen(new )
-            }
-        });
-        ((MenuItem)def.getWidget("copy")).addClickHandler(new ClickHandler() {
-            public void onClick(ClickEvent event) {
-                // browser.addScreen(new )
-            }
-        });
-        ((MenuItem)def.getWidget("paste")).addClickHandler(new ClickHandler() {
-            public void onClick(ClickEvent event) {
-                // browser.addScreen(new )
-            }
-        });
         ((MenuItem)def.getWidget("quickEntry")).addClickHandler(new ClickHandler() {
             public void onClick(ClickEvent event) {
                 // browser.addScreen(new )

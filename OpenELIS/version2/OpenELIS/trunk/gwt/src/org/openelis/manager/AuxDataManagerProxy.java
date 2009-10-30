@@ -30,7 +30,7 @@ import org.openelis.gwt.services.ScreenService;
 import org.openelis.modules.auxiliary.client.AuxiliaryServiceParams;
 
 public class AuxDataManagerProxy {
-    protected static final String AUXILIARY_SERVICE_URL = "org.openelis.modules.auxiliary.server.AuxiliaryService";
+    protected static final String AUXILIARY_SERVICE_URL = "org.openelis.modules.auxData.server.AuxDataService";
     protected ScreenService service;
     
     public AuxDataManagerProxy(){
@@ -42,15 +42,15 @@ public class AuxDataManagerProxy {
         p.referenceId = referenceId;
         p.referenceTableId = referenceTableId;
         
-        return service.call("", p);
+        return service.call("fetchById", p);
     }
     
-    public AuxDataManager fetchWithFields(Integer referenceId, Integer referenceTableId) throws Exception {
+    public AuxDataManager fetchByIdForUpdate(Integer referenceId, Integer referenceTableId) throws Exception {
         AuxiliaryServiceParams p = new AuxiliaryServiceParams();
         p.referenceId = referenceId;
         p.referenceTableId = referenceTableId;
         
-        return service.call("", p);
+        return service.call("fetchByIdForUpdate", p);
     }
     
     public AuxDataManager add(AuxDataManager man) throws Exception {

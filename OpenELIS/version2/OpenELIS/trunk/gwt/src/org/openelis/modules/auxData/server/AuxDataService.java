@@ -35,8 +35,8 @@ public class AuxDataService {
         return remote().fetchById(params.referenceId, params.referenceTableId);
     }   
     
-    public AuxDataManager fetchByIdWithFields(AuxiliaryServiceParams params) throws Exception {
-        return remote().fetchByIdWithFields(params.referenceId, params.referenceTableId);
+    public AuxDataManager fetchByIdForUpdate(AuxiliaryServiceParams params) throws Exception {
+        return remote().fetchByIdForUpdate(params.referenceId, params.referenceTableId);
     }
     
     protected AuxDataManagerRemote remote(){

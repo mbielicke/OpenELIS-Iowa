@@ -220,6 +220,8 @@ MISSING TABLE COL!!! USING OLD TABLE FORMAT?
         TableColumn col;
         int width=200;
         
+        if(numOfCols == 0)
+            return;
         
         if(resultTableCols == null)
             resultTableCols = (ArrayList<TableColumn>)testResultsTable.getColumns().clone();
