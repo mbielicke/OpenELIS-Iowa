@@ -31,7 +31,7 @@ import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.ValidationErrorsList;
 
-public class SampleManager implements RPC, HasNotesInt {
+public class SampleManager implements RPC, HasNotesInt, HasAuxDataInt {
     private static final long serialVersionUID = 1L;
     
     protected SampleDO sample;
@@ -42,6 +42,7 @@ public class SampleManager implements RPC, HasNotesInt {
     protected SampleDomainInt sampleDomain;
     protected NoteManager sampleInternalNotes;
     protected NoteManager sampleExternalNote;
+    protected AuxDataManager auxData;
     
     protected Integer sampleReferenceTableId, sampleInternalReferenceTableId;
     
@@ -253,6 +254,37 @@ public class SampleManager implements RPC, HasNotesInt {
              qaEvents = SampleQaEventManager.getInstance();
      
         return qaEvents;
+    }
+    
+    public AuxDataManager getAuxDataforUpdate() throws Exception{
+        return getAuxData(true);
+    }
+    
+    public AuxDataManager getAuxData() throws Exception {
+        return getAuxData(false);
+    }
+    
+    private AuxDataManager getAuxData(boolean forUpdate) throws Exception {
+        if(auxData == null){
+            if(sample.getId() != null && sampleReferenceTableId != null){
+                try{
+                    if(forUpdate)
+                        auxData = AuxDataManager.fetchByIdForUpdate(sample.getId(), sampleReferenceTableId);
+                    else
+                        auxData = AuxDataManager.fetchById(sample.getId(), sampleReferenceTableId);
+                }
+                catch(NotFoundException e){
+                    //ignore
+                }catch(Exception e){
+                    throw e;
+                }
+            }
+        }
+            
+         if(auxData == null)
+             auxData = AuxDataManager.getInstance();
+     
+        return auxData;
     }
     
     public NoteManager getInternalNotes() throws Exception {

@@ -3,6 +3,8 @@ package org.openelis.manager;
 import java.util.ArrayList;
 
 import org.openelis.domain.AuxDataDO;
+import org.openelis.domain.AuxFieldValueDO;
+import org.openelis.domain.AuxFieldViewDO;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.ValidationErrorsList;
@@ -30,9 +32,15 @@ public class AuxDataManager implements RPC {
         return proxy().fetchById(referenceId, referenceTableId);
     }
 
-    public static AuxDataManager fetchByIdWithFields(Integer referenceId, Integer referenceTableId)
-                                                                                               throws Exception {
-        return proxy().fetchWithFields(referenceId, referenceTableId);
+    public static AuxDataManager fetchByIdForUpdate(Integer referenceId, Integer referenceTableId) throws Exception {
+        return proxy().fetchByIdForUpdate(referenceId, referenceTableId);
+    }
+    
+    public int count() {
+        if (items == null)
+            return 0;
+
+        return items.size();
     }
 
     public Integer getReferenceId() {
@@ -49,6 +57,46 @@ public class AuxDataManager implements RPC {
 
     public void setReferenceTableId(Integer referenceTableId) {
         this.referenceTableId = referenceTableId;
+    }
+    
+    public AuxDataDO getAuxDataAt(int i) {
+        return items.get(i).data;
+
+    }
+
+    public void setAuxDataAt(AuxDataDO auxData, int i) {
+        items.get(i).data = auxData;
+    }
+
+    public void addAuxData(AuxDataDO auxData) {
+        AuxDataListItem item = new AuxDataListItem();
+        item.data = auxData;
+
+        items.add(item);
+    }
+    
+    public void addAuxDataFieldsAndValues(AuxDataDO auxData, AuxFieldViewDO field, ArrayList<AuxFieldValueDO> values) {
+        AuxDataListItem item = new AuxDataListItem();
+        item.data = auxData;
+        
+        AuxFieldManager fieldMan = AuxFieldManager.getInstance();
+        fieldMan.addAuxFieldAndValues(field, values);
+        item.fields = fieldMan;
+
+        items.add(item);
+    }
+
+    public void removeAuxDataAt(int i) {
+        if (items == null || i >= items.size())
+            return;
+
+        AuxDataListItem tmp = items.remove(i);
+
+        if (deletedList == null)
+            deletedList = new ArrayList<AuxDataListItem>();
+
+        if (tmp.data.getId() != null)
+            deletedList.add(tmp);
     }
 
     //
@@ -73,6 +121,10 @@ public class AuxDataManager implements RPC {
             item.fields = AuxFieldManager.getInstance();
 
         return item.fields;
+    }
+    
+    public void setFieldsAt(AuxFieldManager fieldManager, int i) {
+        items.get(i).fields = fieldManager;
     }
 
     // service methods
