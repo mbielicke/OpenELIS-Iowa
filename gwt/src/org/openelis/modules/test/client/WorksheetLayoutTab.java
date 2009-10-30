@@ -34,6 +34,7 @@ import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.domain.TestWorksheetAnalyteViewDO;
+import org.openelis.domain.TestWorksheetDO;
 import org.openelis.domain.TestWorksheetItemDO;
 import org.openelis.gwt.common.LocalizedException;
 import org.openelis.gwt.event.ActionEvent;
@@ -446,15 +447,20 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
     protected void clearKeys(TestWorksheetManager twm) {
         TestWorksheetItemDO item;
         TestWorksheetAnalyteViewDO ana;
+        TestWorksheetDO tw;
+        boolean hasData;
         int i;
         
-        twm.getWorksheet().setId(null);
+        tw = twm.getWorksheet();
+        hasData = false;
+        
         twm.setTestId(null);
         
         for(i = 0; i < twm.itemCount(); i++) {
             item = twm.getItemAt(i);
             item.setId(null);
-            item.setTestWorksheetId(null);            
+            item.setTestWorksheetId(null);   
+            hasData = true;
         }
         
         for(i = 0; i < twm.analyteCount(); i++) {
@@ -462,7 +468,11 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
             ana.setId(null);
             ana.setTestId(null);
             ana.setTestAnalyteId(ana.getTestAnalyteId()*(-1));
+            hasData = true;
         }
+        
+        if(hasData)
+            tw.setId(null);
     }   
     
     private void initializeDropdowns() {

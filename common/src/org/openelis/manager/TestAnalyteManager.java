@@ -174,6 +174,60 @@ public class TestAnalyteManager implements RPC {
         }
 
     }
+    
+    public void addColumnAt(int row, int col, Integer analyteId,String analyteName) {
+        TestAnalyteViewDO anaDO;
+        ArrayList<TestAnalyteViewDO> list;
+        int i, rg, nrg;
+
+        rg = analytes.get(row).get(col - 1).getRowGroup();
+        for (i = row; i < analytes.size(); i++ ) {
+            list = analytes.get(i);
+            if (list.size() <= col - 1)
+                break;
+
+            nrg = list.get(col - 1).getRowGroup();
+            if (rg != nrg)
+                break;
+
+            anaDO = new TestAnalyteViewDO();
+            // anaDO.setId(--tempId);
+            anaDO.setAnalyteId(analyteId);
+            anaDO.setAnalyteName(analyteName);
+            anaDO.setIsColumn("Y");
+            anaDO.setIsReportable("N");
+            anaDO.setRowGroup(rg);
+
+            if (list.size() > col)
+                list.add(col, anaDO);
+            else
+                list.add(anaDO);
+        }
+
+        for (i = row - 1; i > -1; i-- ) {
+            list = analytes.get(i);
+            if (list.size() <= col - 1)
+                break;
+
+            nrg = list.get(col - 1).getRowGroup();
+            if (rg != nrg)
+                break;
+
+            anaDO = new TestAnalyteViewDO();
+            // anaDO.setId(--tempId);
+            anaDO.setAnalyteId(analyteId);
+            anaDO.setAnalyteName(analyteName);            
+            anaDO.setIsColumn("Y");
+            anaDO.setIsReportable("N");
+            anaDO.setRowGroup(rg);
+
+            if (list.size() > col)
+                list.add(col, anaDO);
+            else
+                list.add(anaDO);
+        }
+
+    }
 
     public void removeColumnAt(int row, int col) {
         TestAnalyteViewDO anaDO, nextDO;

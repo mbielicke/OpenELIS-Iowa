@@ -655,14 +655,14 @@ UIRF Software License are applicable instead of those above.
                         <HorizontalPanel>
                           <widget valign="top">
                             <table key="testPrepTable" width="auto" maxRows="8" showScroll="ALWAYS" title="">
-                              <col key="{prepTestMeta:getName($pt)}" width="527" header="{resource:getString($constants,'prepTestMethod')}">
-                                <autoComplete width="425" field="Integer">
+                              <col key="{prepTestMeta:getName($pt)}" width="312" header="{resource:getString($constants,'prepTest')}">
+                                <autoComplete width="312" field="Integer">
                                   <col width="140" header="{resource:getString($constants,'test')}" />
                 				  <col width="135" header="{resource:getString($constants,'method')}" />
                                   <col width="250" header="{resource:getString($constants,'description')}" />                                  
                                 </autoComplete>
                               </col>
-                              <col key = "method" width="100" header="{resource:getString($constants,'method')}">
+                              <col key = "method" width="212" header="{resource:getString($constants,'method')}">
                               	<label/>
                               </col>
                               <col key="{testPrep:getIsOptional($tp)}" width="70" header="{resource:getString($constants,'optional')}">
@@ -700,14 +700,14 @@ UIRF Software License are applicable instead of those above.
                         <HorizontalPanel>
                           <widget valign="top">
                             <table key="testReflexTable" width="auto" maxRows="10" showScroll="ALWAYS" title="">
-                              <col key="{addTestMeta:getName($at)}" width="80" header="{resource:getString($constants,'reflexiveTest')}">
+                              <col key="{addTestMeta:getName($at)}" width="90" header="{resource:getString($constants,'reflexiveTest')}">
                                 <autoComplete width="80" case="MIXED" field="Integer" required="true">
                                   <col width="140" header="{resource:getString($constants,'test')}" />
                 				  <col width="135" header="{resource:getString($constants,'method')}" />
                                   <col width="250" header="{resource:getString($constants,'description')}" />
                                 </autoComplete>
                               </col>
-                              <col key = "method" width="70" header="{resource:getString($constants,'method')}">
+                              <col key = "method" width="65" header="{resource:getString($constants,'method')}">
                               	<label />
                               </col>
                               <col key="{testRefAna:getName($trefa)}" width="190" sort="false" header="{resource:getString($constants,'testAnalyte')}">
@@ -720,7 +720,7 @@ UIRF Software License are applicable instead of those above.
                                   <col width="140" />
                                 </autoComplete>
                               </col>
-                              <col key="{testRef:getFlagsId($tref)}" width="111" header="{resource:getString($constants,'flags')}">
+                              <col key="{testRef:getFlagsId($tref)}" width="103" header="{resource:getString($constants,'flags')}">
                                 <dropdown width="200" case="MIXED" popWidth="300" field="Integer" required="true" />
                               </col>
                             </table>
