@@ -65,6 +65,24 @@ public class AuxFieldValueBean implements AuxFieldValueLocal {
         }
         return data;
     }
+    
+    public ArrayList<AuxFieldValueDO> fetchByAuxDataRefIdRefTableId(Integer referenceId, Integer referenceTableId) throws Exception {
+        Query query;
+        ArrayList<AuxFieldValueDO> data;
+        
+        query = manager.createNamedQuery("AuxFieldValue.FetchByDataRefId");
+        query.setParameter("id", referenceId);
+        query.setParameter("tableId", referenceTableId);
+        
+        try {
+            data = DataBaseUtil.toArrayList(query.getResultList());
+        } catch (NoResultException e) {
+            throw new NotFoundException();
+        } catch (Exception e) {
+            throw new DatabaseException(e);
+        }
+        return data;
+    }
 
     public AuxFieldValueDO add(AuxFieldValueDO data) throws Exception {
         AuxFieldValue entity;

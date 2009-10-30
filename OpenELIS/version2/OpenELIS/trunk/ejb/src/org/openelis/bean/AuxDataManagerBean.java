@@ -44,8 +44,8 @@ public class AuxDataManagerBean implements AuxDataManagerRemote {
         return AuxDataManager.fetchById(referenceId, referenceTableId);
     }
 
-    public AuxDataManager fetchByIdWithFields(Integer referenceId, Integer referenceTableId)
+    public AuxDataManager fetchByIdForUpdate(Integer referenceId, Integer referenceTableId)
                                                                                             throws Exception {
-        return AuxDataManager.fetchByIdWithFields(referenceId, referenceTableId);
+        return AuxDataManager.fetchByIdForUpdate(referenceId, referenceTableId);
     }
 }

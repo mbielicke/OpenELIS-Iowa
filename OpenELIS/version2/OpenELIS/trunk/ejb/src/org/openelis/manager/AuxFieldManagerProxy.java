@@ -29,6 +29,7 @@ import java.util.ArrayList;
 
 import javax.naming.InitialContext;
 
+import org.openelis.domain.AuxFieldValueDO;
 import org.openelis.domain.AuxFieldViewDO;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.AuxFieldLocal;
@@ -37,6 +38,22 @@ public class AuxFieldManagerProxy {
     public AuxFieldManager fetchById(Integer id) throws Exception {
         AuxFieldLocal l;
         ArrayList<AuxFieldViewDO> data;
+        AuxFieldManager m;
+
+        l = local();
+        data = l.fetchById(id);
+        m = AuxFieldManager.getInstance();
+        
+        for(int i=0; i<data.size(); i++)
+            m.addAuxField(data.get(i));
+
+        return m;
+    }
+    
+    public AuxFieldManager fetchWithValuesById(Integer id) throws Exception {
+        AuxFieldLocal l;
+        ArrayList<AuxFieldViewDO> data;
+        ArrayList<AuxFieldValueDO> values;
         AuxFieldManager m;
 
         l = local();

@@ -55,19 +55,24 @@ import org.openelis.utils.Auditable;
 
 @NamedQueries({@NamedQuery(name = "AuxField.FetchById", query = "select distinct new org.openelis.domain.AuxFieldViewDO(af.id, af.auxFieldGroupId, af.sortOrder,"+
                            " af.analyteId,af.description,af.methodId,af.unitOfMeasureId,af.isRequired,"+
-                           " af.isActive,af.isReportable,s.id,a.name,m.name,s.name) " +
-                           " from AuxField af left join af.scriptlet s left join af.analyte a left join af.method m where " + 
+                           " af.isActive,af.isReportable,s.id,a.name,m.name,s.name, d.entry) " +
+                           " from AuxField af left join af.scriptlet s left join af.analyte a left join af.method m LEFT JOIN af.unitOfMeasure d where " + 
                            " af.id = :id"),
                @NamedQuery(name = "AuxField.FetchAllByGroupId", query = "select distinct new org.openelis.domain.AuxFieldViewDO(af.id, af.auxFieldGroupId, af.sortOrder,"+
                        " af.analyteId,af.description,af.methodId,af.unitOfMeasureId,af.isRequired,"+
-                       " af.isActive,af.isReportable,s.id,a.name,m.name,s.name) " +
-                       " from AuxField af left join af.scriptlet s left join af.analyte a left join af.method m where af.auxFieldGroupId = :auxFieldGroupId order by af.sortOrder "),
+                       " af.isActive,af.isReportable,s.id,a.name,m.name,s.name, d.entry) " +
+                       " from AuxField af left join af.scriptlet s left join af.analyte a left join af.method m LEFT JOIN af.unitOfMeasure d where af.auxFieldGroupId = :auxFieldGroupId order by af.sortOrder "),
+               @NamedQuery(name = "AuxField.FetchByDataRefId", query = "select distinct new org.openelis.domain.AuxFieldViewDO(af.id, af.auxFieldGroupId, af.sortOrder,"+
+                       " af.analyteId,af.description,af.methodId,af.unitOfMeasureId,af.isRequired,"+
+                       " af.isActive,af.isReportable,s.id,a.name,m.name,s.name, d.entry) " +
+                       " from AuxData ad, IN (ad.auxField) af left join af.scriptlet s left join af.analyte a left join af.method m LEFT JOIN af.unitOfMeasure d where " + 
+                       " ad.referenceId = :id and ad.referenceTableId = :tableId order by af.auxFieldGroupId, af.sortOrder "),
                @NamedQuery(name = "AuxField.FetchAllActiveByGroupId", query = "select distinct new org.openelis.domain.AuxFieldViewDO(af.id, af.auxFieldGroupId, af.sortOrder,"+
                        " af.analyteId,af.description,af.methodId,af.unitOfMeasureId,af.isRequired,"+
-                       " af.isActive,af.isReportable,s.id,a.name,m.name,s.name) " +
-                       " from AuxField af left join af.scriptlet s left join af.analyte a left join af.method m where " + 
+                       " af.isActive,af.isReportable,s.id,a.name,m.name,s.name, d.entry) " +
+                       " from AuxField af left join af.scriptlet s left join af.analyte a left join af.method m LEFT JOIN af.unitOfMeasure d where " + 
                        " af.auxFieldGroupId = :auxFieldGroupId and af.isActive = 'Y' order by af.sortOrder "),
-                @NamedQuery(name = "AuxField.AuxFieldByAnalyteId", query = "select a.id from AuxField a where a.analyteId = :id ")       })
+                @NamedQuery(name = "AuxField.AuxFieldByAnalyteId", query = "select a.id from AuxField a where a.analyteId = :id ")})
         
 @Entity
 @Table(name="aux_field")
@@ -124,6 +129,10 @@ public class AuxField implements Auditable, Cloneable {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "scriptlet_id",insertable = false, updatable = false)
   private Scriptlet scriptlet;
+  
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "unit_of_measure_id",insertable = false, updatable = false)
+  private Dictionary unitOfMeasure;
 
   @Transient
   private AuxField original;
@@ -297,6 +306,12 @@ public Scriptlet getScriptlet() {
 }
 public void setScriptlet(Scriptlet scriptlet) {
     this.scriptlet = scriptlet;
+}
+public Dictionary getUnitOfMeasure() {
+    return unitOfMeasure;
+}
+public void setUnitOfMeasure(Dictionary unitOfMeasure) {
+    this.unitOfMeasure = unitOfMeasure;
 }
   
 }   
