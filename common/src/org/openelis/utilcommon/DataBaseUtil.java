@@ -92,6 +92,24 @@ public class DataBaseUtil {
         return dt;
     }
 
+    public static Datetime toYS(Datetime yearToSecond) {
+        if (yearToSecond != null) {
+            yearToSecond.startCode = Datetime.YEAR;
+            yearToSecond.endCode = Datetime.SECOND;
+        }
+        return yearToSecond;
+    }
+
+    public static Datetime toYS(Date yearToSecond) {
+        Datetime dt;
+
+        dt = null;
+        if (yearToSecond != null)
+            dt = new Datetime(Datetime.YEAR, Datetime.SECOND, yearToSecond);
+
+        return dt;
+    }
+
     public static Datetime toHM(Datetime hourToMinute) {
         if (hourToMinute != null) {
             hourToMinute.startCode = Datetime.HOUR;
@@ -119,6 +137,70 @@ public class DataBaseUtil {
         return (a == null && b != null) || (a != null && !a.equals(b));
     }
 
+    public static boolean isDifferentYD(Date a, Date b) {
+        return isDifferent(toYD(a), toYD(b));
+    }
+
+    public static boolean isDifferentYD(Date a, Datetime b) {
+        return isDifferent(toYD(a), toYD(b));
+    }
+
+    public static boolean isDifferentYD(Datetime a, Date b) {
+        return isDifferent(toYD(a), toYD(b));
+    }
+
+    public static boolean isDifferentYD(Datetime a, Datetime b) {
+        return isDifferent(toYD(a), toYD(b));
+    }
+
+    public static boolean isDifferentYM(Date a, Date b) {
+        return isDifferent(toYM(a), toYM(b));
+    }
+
+    public static boolean isDifferentYM(Date a, Datetime b) {
+        return isDifferent(toYM(a), toYM(b));
+    }
+
+    public static boolean isDifferentYM(Datetime a, Date b) {
+        return isDifferent(toYM(a), toYM(b));
+    }
+
+    public static boolean isDifferentYM(Datetime a, Datetime b) {
+        return isDifferent(toYM(a), toYM(b));
+    }
+
+    public static boolean isDifferentYS(Date a, Date b) {
+        return isDifferent(toYS(a), toYS(b));
+    }
+
+    public static boolean isDifferentYS(Date a, Datetime b) {
+        return isDifferent(toYS(a), toYS(b));
+    }
+
+    public static boolean isDifferentYS(Datetime a, Date b) {
+        return isDifferent(toYS(a), toYS(b));
+    }
+
+    public static boolean isDifferentYS(Datetime a, Datetime b) {
+        return isDifferent(toYS(a), toYS(b));
+    }
+
+    public static boolean isDifferentHM(Date a, Date b) {
+        return isDifferent(toHM(a), toHM(b));
+    }
+
+    public static boolean isDifferentHM(Date a, Datetime b) {
+        return isDifferent(toHM(a), toHM(b));
+    }
+
+    public static boolean isDifferentHM(Datetime a, Date b) {
+        return isDifferent(toHM(a), toHM(b));
+    }
+
+    public static boolean isDifferentDT(Datetime a, Datetime b) {
+        return isDifferent(toHM(a), toHM(b));
+    }
+
     /**
      * Checks the parameter to see if its null or its length is 0.
      * 
@@ -129,11 +211,21 @@ public class DataBaseUtil {
             return ((String)a).length() == 0;
         return a == null;
     }
+    
+    /**
+     * Compares to see if the first date is after the second date 
+     *
+     * @return true if first date is after the second date
+     */
+    public static boolean isAfter(Datetime a, Datetime b) {
+        return a != null && a.after(b);
+    }
 
     /*
      * For paged result list, this method returns a subList of the query list
      * starting at first for max number of results.
      */
+    @SuppressWarnings("unchecked")
     public static ArrayList subList(List query, int first, int max) {
         int to;
         Iterator e;
@@ -154,6 +246,7 @@ public class DataBaseUtil {
     /**
      * Convert a List to ArrayList
      */
+    @SuppressWarnings("unchecked")
     public static ArrayList toArrayList(List from) {
         if (from instanceof ArrayList)
             return (ArrayList)from;

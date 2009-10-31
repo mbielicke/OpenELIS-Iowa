@@ -47,5 +47,5 @@ public interface SystemVariableRemote {
 
     public SystemVariableDO abortUpdate(Integer id) throws Exception;
 
-    public void delete(Integer id) throws Exception;
+    public void delete(SystemVariableDO data) throws Exception;
 }
