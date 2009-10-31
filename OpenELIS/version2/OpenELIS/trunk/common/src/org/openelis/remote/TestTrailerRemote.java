@@ -48,5 +48,5 @@ public interface TestTrailerRemote {
 
     public TestTrailerDO abortUpdate(Integer id) throws Exception;
 
-    public void delete(Integer id) throws Exception;
+    public void delete(TestTrailerDO data) throws Exception;
 }

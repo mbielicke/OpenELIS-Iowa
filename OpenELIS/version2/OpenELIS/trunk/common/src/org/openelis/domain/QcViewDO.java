@@ -45,10 +45,10 @@ public class QcViewDO extends QcDO {
     }
 
     public QcViewDO(Integer id, String name, Integer typeId, Integer inventoryItemId,
-                           String inventoryItemName, String source, String lotNumber,
-                           Date preparedDate, Double preparedVolume, Integer preparedUnitId,
+                           String source, String lotNumber, Date preparedDate, 
+                           Double preparedVolume, Integer preparedUnitId,
                            Integer preparedById, Date usableDate, Date expireDate,
-                           String isSingleUse) {
+                           String isSingleUse, String inventoryItemName) {
         super(id, name, typeId, inventoryItemId, source, lotNumber, preparedDate, preparedVolume,
               preparedUnitId, preparedById, usableDate, expireDate, isSingleUse);
         setInventoryItemName(inventoryItemName);
