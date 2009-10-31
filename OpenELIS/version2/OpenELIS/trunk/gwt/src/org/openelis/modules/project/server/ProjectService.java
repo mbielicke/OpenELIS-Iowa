@@ -28,7 +28,9 @@ package org.openelis.modules.project.server;
 import java.util.ArrayList;
 
 import org.openelis.domain.IdNameVO;
+import org.openelis.domain.ProjectDO;
 import org.openelis.gwt.common.DatabaseException;
+import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.manager.ProjectManager;
 import org.openelis.persistence.EJBFactory;
@@ -55,6 +57,19 @@ public class ProjectService {
         }
     }
 
+    public ArrayList<ProjectDO> fetchByName(String search) throws Exception {
+        ArrayList<ProjectDO> list;
+        
+        try {
+            list = remote().fetchByName(search+"%", 10);
+        } catch (NotFoundException e) {
+            list = new ArrayList<ProjectDO>(0);
+        } catch (RuntimeException e) {
+            throw new DatabaseException(e);
+        }
+        return list;
+    }
+    
     public ProjectManager add(ProjectManager man) throws Exception {
         try {
             return remoteManager().add(man);

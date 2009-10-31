@@ -30,7 +30,6 @@ import java.util.EnumSet;
 import java.util.HashMap;
 
 import org.openelis.cache.DictionaryCache;
-import org.openelis.common.AutocompleteRPC;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
@@ -68,6 +67,7 @@ import org.openelis.gwt.widget.CalendarLookUp;
 import org.openelis.gwt.widget.CheckBox;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.MenuItem;
+import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.AppButton.ButtonState;
@@ -131,6 +131,8 @@ public class EnvironmentalSampleLoginScreen extends Screen {
     private SampleOrganizationScreen organizationScreen;
     private SampleProjectScreen projectScreen;
     
+    protected ScreenService orgService;
+    protected ScreenService projectService;
     private SampleEnvironmentalMetaMap Meta;
     
     ScreenNavigator nav;
@@ -143,7 +145,10 @@ public class EnvironmentalSampleLoginScreen extends Screen {
     public EnvironmentalSampleLoginScreen() throws Exception {
         //Call base to get ScreenDef and draw screen
         super((ScreenDefInt)GWT.create(EnvironmentalSampleLoginDef.class));
-        service = new ScreenService("OpenELISServlet?service=org.openelis.modules.environmentalSampleLogin.server.EnvironmentalSampleLoginService");
+        service = new ScreenService("controller?service=org.openelis.modules.environmentalSampleLogin.server.EnvironmentalSampleLoginService");
+        orgService = new ScreenService("controller?service=org.openelis.modules.organization.server.OrganizationService");
+        projectService = new ScreenService("controller?service=org.openelis.modules.project.server.ProjectService");
+        
         manager = SampleManager.getInstance();
         manager.getSample().setDomain(SampleManager.ENVIRONMENTAL_DOMAIN_FLAG);
 
@@ -462,27 +467,35 @@ public class EnvironmentalSampleLoginScreen extends Screen {
         
         project.addGetMatchesHandler(new GetMatchesHandler(){
            public void onGetMatches(GetMatchesEvent event) {
-               AutocompleteRPC rpc = new AutocompleteRPC();
-               rpc.match = event.getMatch();
+               QueryFieldUtil parser;
+               TableDataRow row;
+               ProjectDO data;
+               ArrayList<ProjectDO> list;
+               ArrayList<TableDataRow> model;
+
+               parser = new QueryFieldUtil();
+               parser.parse(event.getMatch());
+
+               window.setBusy();
                try {
-                   rpc = service.call("getProjectMatches", rpc);
-                   ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
-                       
-                   for (int i=0; i<rpc.model.size(); i++){
-                       ProjectDO autoDO = (ProjectDO)rpc.model.get(i);
-                       
-                       TableDataRow row = new TableDataRow(2);
-                       row.key = autoDO.getId();
-                       row.cells.get(0).value = autoDO.getName();
-                       row.cells.get(1).value = autoDO.getDescription();
+                   list = service.callList("fetchByName", parser.getParameter().get(0));
+                   model = new ArrayList<TableDataRow>();
+                   for (int i = 0; i < list.size(); i++ ) {
+                       row = new TableDataRow(4);
+                       data = list.get(i);
+
+                       row.key = data.getId();
+                       row.cells.get(0).value = data.getName();
+                       row.cells.get(1).value = data.getDescription();
+                      
                        model.add(row);
-                   } 
-                   
+                   }
                    project.showAutoMatches(model);
-                       
-               }catch(Exception e) {
-                   Window.alert(e.getMessage());                     
+               } catch (Throwable e) {
+                   e.printStackTrace();
+                   Window.alert(e.getMessage());
                }
+               window.clearStatus();
             } 
         });
         
@@ -493,7 +506,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
                     SampleOrganizationViewDO reportToOrg = manager.getOrganizations().getFirstReportTo();
                     
                     if(reportToOrg != null)
-                        reportTo.setSelection(reportToOrg.getId(), reportToOrg.getOrganizationName());
+                        reportTo.setSelection(reportToOrg.getOrganizationId(), reportToOrg.getOrganizationName());
                     else
                         reportTo.setSelection(null, "");
                     
@@ -519,7 +532,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
                     reportToOrg = manager.getOrganizations().getFirstReportTo();
                     
                     if(reportToOrg != null)
-                        reportTo.setSelection(reportToOrg.getId(), reportToOrg.getOrganizationName());
+                        reportTo.setSelection(reportToOrg.getOrganizationId(), reportToOrg.getOrganizationName());
                     else
                         reportTo.setSelection(null, "");
                     
@@ -549,7 +562,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
                     SampleOrganizationViewDO billToOrg = manager.getOrganizations().getFirstBillTo();
                     
                     if(billToOrg != null)
-                        billTo.setSelection(billToOrg.getId(), billToOrg.getOrganizationName());
+                        billTo.setSelection(billToOrg.getOrganizationId(), billToOrg.getOrganizationName());
                     else
                         billTo.setSelection(null, "");
                     
@@ -575,7 +588,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
                     billToOrg = manager.getOrganizations().getFirstBillTo();
                     
                     if(billToOrg != null)
-                        billTo.setSelection(billToOrg.getId(), billToOrg.getOrganizationName());
+                        billTo.setSelection(billToOrg.getOrganizationId(), billToOrg.getOrganizationName());
                     else
                         billTo.setSelection(null, "");
                     
@@ -1666,30 +1679,37 @@ public class EnvironmentalSampleLoginScreen extends Screen {
     }
     
     private void getOrganizationMatches(String match, AutoComplete widget){
-        AutocompleteRPC rpc = new AutocompleteRPC();
-        rpc.match = match;
+        QueryFieldUtil parser;
+        TableDataRow row;
+        OrganizationDO data;
+        ArrayList<OrganizationDO> list;
+        ArrayList<TableDataRow> model;
+
+        parser = new QueryFieldUtil();
+        parser.parse(match);
+
+        window.setBusy();
         try {
-            rpc = service.call("getOrganizationMatches", rpc);
-            ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
-                
-            for (int i=0; i<rpc.model.size(); i++){
-                OrganizationDO autoDO = (OrganizationDO)rpc.model.get(i);
-                
-                TableDataRow row = new TableDataRow(4);
-                row.key = autoDO.getId();
-                row.cells.get(0).value = autoDO.getName();
-                row.cells.get(1).value = autoDO.getAddress().getStreetAddress();
-                row.cells.get(2).value = autoDO.getAddress().getCity();
-                row.cells.get(3).value = autoDO.getAddress().getState();
-  
+            list = orgService.callList("fetchByIdOrName", parser.getParameter().get(0));
+            model = new ArrayList<TableDataRow>();
+            for (int i = 0; i < list.size(); i++ ) {
+                row = new TableDataRow(4);
+                data = list.get(i);
+
+                row.key = data.getId();
+                row.cells.get(0).value = data.getName();
+                row.cells.get(1).value = data.getAddress().getStreetAddress();
+                row.cells.get(2).value = data.getAddress().getCity();
+                row.cells.get(3).value = data.getAddress().getState();
+
                 model.add(row);
-            } 
-            
+            }
             widget.showAutoMatches(model);
-                
-        }catch(Exception e) {
-            Window.alert(e.getMessage());                     
+        } catch (Throwable e) {
+            e.printStackTrace();
+            Window.alert(e.getMessage());
         }
+        window.clearStatus();
     }
     
     private String formatTreeString(String val){
