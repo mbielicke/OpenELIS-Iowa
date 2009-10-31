@@ -524,7 +524,7 @@ public class OrganizationScreen extends Screen {
                         } else if (error instanceof LastPageException) {
                             window.setError("No more records in this direction");
                         } else {
-                            Window.alert("Error: SystemVariable call query failed; " +
+                            Window.alert("Error: Organization call query failed; " +
                                          error.getMessage());
                             window.setError(consts.get("queryFailed"));
                         }
@@ -605,7 +605,7 @@ public class OrganizationScreen extends Screen {
     protected void query() {
         manager = OrganizationManager.getInstance();
 
-        setState(Screen.State.QUERY);
+        setState(State.QUERY);
         DataChangeEvent.fire(this);
 
         // clear all the tabs
@@ -627,7 +627,7 @@ public class OrganizationScreen extends Screen {
         manager = OrganizationManager.getInstance();
         manager.getOrganization().setIsActive("Y");
 
-        setState(Screen.State.ADD);
+        setState(State.ADD);
         DataChangeEvent.fire(this);
         window.setDone(consts.get("enterInformationPressCommit"));
     }

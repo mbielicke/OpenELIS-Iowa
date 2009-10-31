@@ -107,11 +107,11 @@ public class SystemVariableScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                if (event.getState() == State.QUERY)
-                    queryButton.setState(ButtonState.LOCK_PRESSED);
                 queryButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY)
                                           .contains(event.getState()) &&
                                    security.hasSelectPermission());
+                if (event.getState() == State.QUERY)
+                    queryButton.setState(ButtonState.LOCK_PRESSED);
             }
         });
 
@@ -418,7 +418,7 @@ public class SystemVariableScreen extends Screen {
         } else if (state == State.DELETE) {
             window.setBusy(consts.get("deleting"));
             try {
-                service.call("delete", data.getId());
+                service.call("delete", data);
 
                 fetchById(null);
                 window.setDone(consts.get("deleteComplete"));

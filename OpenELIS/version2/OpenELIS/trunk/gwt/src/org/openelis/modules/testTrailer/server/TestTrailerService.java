@@ -87,9 +87,9 @@ public class TestTrailerService {
         }
     }
     
-    public void delete(Integer id) throws Exception {
+    public void delete(TestTrailerDO data) throws Exception {
         try {
-            remote().delete(id);
+            remote().delete(data);
         } catch (RuntimeException e) {
             throw new DatabaseException(e);
         }
