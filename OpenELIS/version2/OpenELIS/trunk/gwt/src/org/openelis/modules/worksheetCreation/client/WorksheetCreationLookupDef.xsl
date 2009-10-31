@@ -81,6 +81,21 @@ UIRF Software License are applicable instead of those above.
     </xsl:variable>
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
     <screen id="WorksheetCreationLookup" name="{resource:getString($constants,'worksheetCreationLookup')}">
+<!--
+      <VerticalPanel padding="0" spacing="0">
+        <AbsolutePanel spacing="0" style="ButtonPanelContainer">
+          <HorizontalPanel>
+            <appButton key="findButton" style="ButtonPanelButton" action="find">
+              <HorizontalPanel>
+                <AbsolutePanel style="FindButtonImage" />
+                <text>
+                  <xsl:value-of select="resource:getString($constants,'find')" />
+                </text>
+              </HorizontalPanel>
+            </appButton>
+          </HorizontalPanel>
+        </AbsolutePanel>
+-->        
       <VerticalPanel padding="0" spacing="0" style="WhiteContentPanel">
         <TablePanel style="Form">
           <row>
@@ -136,7 +151,7 @@ UIRF Software License are applicable instead of those above.
             </appButton>
           </row>
         </TablePanel>
-        <table key="analysesTable" width="800px" maxRows="9" showScroll="ALWAYS" tab="{testMetaMap:getId($test)},{sampleMetaMap:getEnteredDate($sample)}" title="">
+        <table key="analysesTable" width="800px" maxRows="9" showScroll="ALWAYS" tab="{testMetaMap:getId($test)},{sampleMetaMap:getEnteredDate($sample)}" title="" style="atozTable">
           <col width="90" header="{resource:getString($constants,'accessionNum')}">
             <label />
           </col>
@@ -188,6 +203,7 @@ UIRF Software License are applicable instead of those above.
           </HorizontalPanel>
         </widget>
       </VerticalPanel>
+<!--      </VerticalPanel>   -->
     </screen>
   </xsl:template>
 </xsl:stylesheet>

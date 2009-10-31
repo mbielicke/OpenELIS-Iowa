@@ -106,7 +106,7 @@ UIRF Software License are applicable instead of those above.
 	        </appButton>
           </row>
         </TablePanel>
-        <table key="worksheetItemTable" width="auto" maxRows="9" showScroll="ALWAYS" tab="{worksheetMetaMap:getId($worksheet)},{worksheetMetaMap:getId($worksheet)}" title="">
+        <table key="worksheetItemTable" width="auto" maxRows="9" showScroll="ALWAYS" tab="{worksheetMetaMap:getId($worksheet)},{worksheetMetaMap:getId($worksheet)}" title="" style="atozTable">
           <col width="50" header="{resource:getString($constants,'wellNumber')}" sort="false">
             <label />
           </col>
