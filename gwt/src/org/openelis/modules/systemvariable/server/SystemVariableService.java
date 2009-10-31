@@ -79,9 +79,9 @@ public class SystemVariableService {
         }
     }
     
-    public void delete(Integer id) throws Exception {
+    public void delete(SystemVariableDO data) throws Exception {
         try {
-            remote().delete(id);
+            remote().delete(data);
         } catch (RuntimeException e) {
             throw new DatabaseException(e);
         }

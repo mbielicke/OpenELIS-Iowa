@@ -365,7 +365,7 @@ public class ProviderScreen extends Screen {
                         } else if (error instanceof LastPageException) {
                             window.setError("No more records in this direction");
                         } else {
-                            Window.alert("Error: SystemVariable call query failed; " +
+                            Window.alert("Error: Provider call query failed; " +
                                          error.getMessage());
                             window.setError(consts.get("queryFailed"));
                         }
