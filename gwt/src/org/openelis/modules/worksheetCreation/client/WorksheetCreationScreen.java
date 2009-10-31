@@ -30,6 +30,8 @@ import java.util.Set;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Command;
@@ -40,10 +42,12 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.common.AutocompleteRPC;
 import org.openelis.domain.DictionaryDO;
+import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.TestMethodVO;
 import org.openelis.domain.TestWorksheetDO;
 import org.openelis.domain.TestWorksheetItemDO;
 import org.openelis.domain.TestWorksheetViewDO;
+import org.openelis.domain.WorksheetAnalysisDO;
 import org.openelis.domain.WorksheetCreationVO;
 import org.openelis.domain.WorksheetItemDO;
 import org.openelis.gwt.common.Datetime;
@@ -71,6 +75,7 @@ import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableDataRow;
+import org.openelis.gwt.widget.table.TableRow;
 import org.openelis.gwt.widget.table.TableSorter;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
@@ -89,6 +94,7 @@ import org.openelis.modules.main.client.openelis.OpenELIS;
 
 public class WorksheetCreationScreen extends Screen implements HasActionHandlers<WorksheetCreationScreen.Action> {
 
+    private boolean                         isSaved;
     private ScreenService                   testService;
     private SecurityModule                  security;
     private WorksheetCreationScreen         source;
@@ -137,6 +143,7 @@ public class WorksheetCreationScreen extends Screen implements HasActionHandlers
      */
     private void postConstructor() {
         analysisItems = new ArrayList<TableDataRow>();
+        isSaved       = true;
         manager       = WorksheetManager.getInstance();
         source        = this;
         testIds       = new ArrayList<Integer>();
@@ -155,9 +162,6 @@ public class WorksheetCreationScreen extends Screen implements HasActionHandlers
         addScreenHandler(worksheetId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 worksheetId.setValue(manager.getWorksheet().getId());
-            }
-
-            public void onValueChange(ValueChangeEvent<Integer> event) {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -189,15 +193,20 @@ public class WorksheetCreationScreen extends Screen implements HasActionHandlers
 
         worksheetItemTable = (TableWidget)def.getWidget("worksheetItemTable");
         addScreenHandler(worksheetItemTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
-            public void onDataChange(DataChangeEvent event) {
-                worksheetItemTable.load(getTableModel());
-            }
-
             public void onStateChange(StateChangeEvent<State> event) {
-                worksheetItemTable.enable(true);
+                worksheetItemTable.enable(false);
             }
         });
 
+        worksheetItemTable.addSelectionHandler(new SelectionHandler<TableRow>() {
+            public void onSelection(SelectionEvent event) {
+                if (worksheetItemTable.getSelectedRow() != -1)
+                    removeRowButton.enable(true);
+                else
+                    removeRowButton.enable(false);
+            }
+        });
+        
         worksheetItemTable.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
                 // this table cannot be edited
@@ -213,6 +222,9 @@ public class WorksheetCreationScreen extends Screen implements HasActionHandlers
 
         worksheetItemTable.addRowDeletedHandler(new RowDeletedHandler() {
             public void onRowDeleted(RowDeletedEvent event) {
+                // TODO -- Update to include QC Removal
+                analysisItems.remove(event.getIndex());
+                mergeAnalysesAndQCs();
             }
         });
 
@@ -239,6 +251,11 @@ public class WorksheetCreationScreen extends Screen implements HasActionHandlers
         removeRowButton = (AppButton)def.getWidget("removeRowButton");
         addScreenHandler(removeRowButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
+                int r;
+                
+                r = worksheetItemTable.getSelectedRow();
+                if (r > -1 && worksheetItemTable.numRows() > 0)
+                    worksheetItemTable.deleteRow(r);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -271,7 +288,6 @@ public class WorksheetCreationScreen extends Screen implements HasActionHandlers
                                         testIds.add(data.getTestId());
                                     
                                     newRow.key = row.key;                                   // analysis id
-                                    newRow.cells.get(0).value = analysisItems.size() + 1;   // position
                                     newRow.cells.get(2).value = row.cells.get(0).value;     // accession #
                                     newRow.cells.get(3).value = row.cells.get(1).value;     // description
                                     newRow.cells.get(4).value = row.cells.get(5).value;     // status
@@ -280,9 +296,6 @@ public class WorksheetCreationScreen extends Screen implements HasActionHandlers
                                     analysisItems.add(newRow);
                                 }
                                 
-                                saveButton.enable(true);
-                                insertQCButton.enable(true);
-                                
                                 if (testIds.size() > 1) {
                                     Window.alert(consts.get("multipleTestsOnWorksheet"));
                                     // TODO -- Clear QC Template
@@ -290,6 +303,11 @@ public class WorksheetCreationScreen extends Screen implements HasActionHandlers
                                     loadQCTemplate(testIds.get(0));
                                 }
                                 mergeAnalysesAndQCs();
+
+                                isSaved = false;
+//                                saveButton.enable(true);
+//                                insertQCButton.enable(true);
+                                worksheetItemTable.enable(true);
                             }
                         }
                     }
@@ -310,6 +328,8 @@ public class WorksheetCreationScreen extends Screen implements HasActionHandlers
     protected void save() {
         int          i;
         TableDataRow row;
+        WorksheetAnalysisDO  waDO;
+        WorksheetItemDO      wiDO;
         WorksheetItemManager wiManager;
         
         if (worksheetItemTable.numRows() == 0) {
@@ -317,6 +337,8 @@ public class WorksheetCreationScreen extends Screen implements HasActionHandlers
             return;
         }
         
+        window.setBusy(consts.get("saving"));
+
         try {
             wiManager = manager.getItems();
         } catch (Exception ignE) {
@@ -327,8 +349,32 @@ public class WorksheetCreationScreen extends Screen implements HasActionHandlers
         for (i = 0; i < worksheetItemTable.numRows(); i++) {
             row = worksheetItemTable.getRow(i);
             
+            wiDO = new WorksheetItemDO();
+            wiDO.setPosition((Integer)row.cells.get(0).value);
+            
+            waDO = new WorksheetAnalysisDO();
+            waDO.setReferenceId((Integer)row.key);
+            waDO.setReferenceTableId(ReferenceTable.ANALYSIS);
         }
         
+        try {
+            manager = manager.add();
+
+            setState(State.DISPLAY);
+            DataChangeEvent.fire(this);
+            window.setDone(consts.get("savingComplete"));
+        } catch (ValidationErrorsList e) {
+            showErrors(e);
+        } catch (Exception e) {
+            Window.alert("commitAdd(): " + e.getMessage());
+            window.clearStatus();
+        }
+        
+        isSaved = true;
+        saveButton.enable(false);
+        insertQCButton.enable(false);
+        removeRowButton.enable(false);
+        worksheetItemTable.enable(false);
     }
 
     protected void exit() {
@@ -367,10 +413,17 @@ public class WorksheetCreationScreen extends Screen implements HasActionHandlers
     }
     
     private void mergeAnalysesAndQCs() {
+        int          i;
+        TableDataRow row;
+        
         // TODO -- Implement merging of sorted analyses with the QC template
+        for (i = 0; i < analysisItems.size(); i++) {
+            row = analysisItems.get(i);
+            row.cells.get(0).value = i + 1;
+        }
         worksheetItemTable.load(analysisItems);
     }
-    
+/*    
     private ArrayList<TableDataRow> getTableModel() {
         int i;
         ArrayList<TableDataRow> model;
@@ -395,7 +448,7 @@ public class WorksheetCreationScreen extends Screen implements HasActionHandlers
         }
         return model;
     }
-
+*/
     public HandlerRegistration addActionHandler(ActionHandler<WorksheetCreationScreen.Action> handler) {
         return addHandler(handler, ActionEvent.getType());
     }        

@@ -169,9 +169,6 @@ public class WorksheetCreationLookupScreen extends Screen
         //
         testId = (AutoComplete)def.getWidget(meta.SAMPLE.SAMPLE_ITEM.ANALYSIS.TEST.getId());
         addScreenHandler(testId, new ScreenEventHandler<Integer>() {
-            public void onDataChange(DataChangeEvent event) {
-            }
-
             public void onValueChange(ValueChangeEvent<Integer> event) {
                 TableDataRow selectedRow = testId.getSelection();
                 
@@ -227,12 +224,6 @@ public class WorksheetCreationLookupScreen extends Screen
 
         methodName = (TextBox)def.getWidget(meta.SAMPLE.SAMPLE_ITEM.ANALYSIS.TEST.METHOD.getName());
         addScreenHandler(methodName, new ScreenEventHandler<Integer>() {
-            public void onDataChange(DataChangeEvent event) {
-            }
-
-            public void onValueChange(ValueChangeEvent<Integer> event) {
-            }
-
             public void onStateChange(StateChangeEvent<State> event) {
                 methodName.enable(false);
             }
@@ -240,12 +231,6 @@ public class WorksheetCreationLookupScreen extends Screen
 
         sectionId = (Dropdown)def.getWidget(meta.SAMPLE.SAMPLE_ITEM.ANALYSIS.SECTION.getId());
         addScreenHandler(sectionId, new ScreenEventHandler<Integer>() {
-            public void onDataChange(DataChangeEvent event) {
-            }
-
-            public void onValueChange(ValueChangeEvent<Integer> event) {
-            }
-
             public void onStateChange(StateChangeEvent<State> event) {
                 sectionId.enable(true);
                 sectionId.setQueryMode(true);
@@ -254,12 +239,6 @@ public class WorksheetCreationLookupScreen extends Screen
 
         accessionNumber = (TextBox)def.getWidget(meta.SAMPLE.getAccessionNumber());
         addScreenHandler(accessionNumber, new ScreenEventHandler<Integer>() {
-            public void onDataChange(DataChangeEvent event) {
-            }
-
-            public void onValueChange(ValueChangeEvent<Integer> event) {
-            }
-
             public void onStateChange(StateChangeEvent<State> event) {
                 accessionNumber.enable(true);
                 accessionNumber.setQueryMode(true);
@@ -268,12 +247,6 @@ public class WorksheetCreationLookupScreen extends Screen
 
         statusId = (Dropdown)def.getWidget(meta.SAMPLE.SAMPLE_ITEM.ANALYSIS.getStatusId());
         addScreenHandler(statusId, new ScreenEventHandler<Integer>() {
-            public void onDataChange(DataChangeEvent event) {
-            }
-
-            public void onValueChange(ValueChangeEvent<Integer> event) {
-            }
-
             public void onStateChange(StateChangeEvent<State> event) {
                 statusId.enable(true);
                 statusId.setQueryMode(true);
@@ -282,12 +255,6 @@ public class WorksheetCreationLookupScreen extends Screen
 
         typeOfSampleId = (Dropdown)def.getWidget(meta.SAMPLE.SAMPLE_ITEM.getTypeOfSampleId());
         addScreenHandler(typeOfSampleId, new ScreenEventHandler<Integer>() {
-            public void onDataChange(DataChangeEvent event) {
-            }
-
-            public void onValueChange(ValueChangeEvent<Integer> event) {
-            }
-
             public void onStateChange(StateChangeEvent<State> event) {
                 typeOfSampleId.enable(true);
                 typeOfSampleId.setQueryMode(true);
@@ -296,12 +263,6 @@ public class WorksheetCreationLookupScreen extends Screen
 
         receivedDate = (CalendarLookUp)def.getWidget(meta.SAMPLE.getReceivedDate());
         addScreenHandler(receivedDate, new ScreenEventHandler<Datetime>() {
-            public void onDataChange(DataChangeEvent event) {
-            }
-
-            public void onValueChange(ValueChangeEvent<Datetime> event) {
-            }
-
             public void onStateChange(StateChangeEvent<State> event) {
                 receivedDate.enable(true);
                 receivedDate.setQueryMode(true);
@@ -310,12 +271,6 @@ public class WorksheetCreationLookupScreen extends Screen
 
         enteredDate = (CalendarLookUp)def.getWidget(meta.SAMPLE.getEnteredDate());
         addScreenHandler(enteredDate, new ScreenEventHandler<Datetime>() {
-            public void onDataChange(DataChangeEvent event) {
-            }
-
-            public void onValueChange(ValueChangeEvent<Datetime> event) {
-            }
-
             public void onStateChange(StateChangeEvent<State> event) {
                 enteredDate.enable(true);
                 enteredDate.setQueryMode(true);
@@ -338,9 +293,6 @@ public class WorksheetCreationLookupScreen extends Screen
         //
         analysesTable = (TableWidget)def.getWidget("analysesTable");
         addScreenHandler(analysesTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
-            public void onDataChange(DataChangeEvent event) {
-            }
-
             public void onStateChange(StateChangeEvent<State> event) {
                 analysesTable.enable(true);
                 analysesTable.enableMultiSelect(true);
@@ -352,16 +304,6 @@ public class WorksheetCreationLookupScreen extends Screen
                 // this table cannot be edited
                 event.cancel();
                 
-            }
-        });
-
-        analysesTable.addRowAddedHandler(new RowAddedHandler() {
-            public void onRowAdded(RowAddedEvent event) {
-            }
-        });
-
-        analysesTable.addRowDeletedHandler(new RowDeletedHandler() {
-            public void onRowDeleted(RowDeletedEvent event) {
             }
         });
 
