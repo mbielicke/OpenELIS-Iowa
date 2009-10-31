@@ -93,9 +93,9 @@ public class SystemVariableBean implements SystemVariableRemote {
         return data;
     }
 
+    @SuppressWarnings("unchecked")
     public ArrayList<SystemVariableDO> fetchByName(String name, int max) throws Exception {
         Query query;
-        SystemVariableDO data;
 
         query = manager.createNamedQuery("SystemVariable.FetchByName");
         query.setParameter("name", name);
@@ -104,6 +104,7 @@ public class SystemVariableBean implements SystemVariableRemote {
         return DataBaseUtil.toArrayList(query.getResultList());
     }
 
+    @SuppressWarnings("unchecked")
     public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception {
         Query query;
         QueryBuilderV2 builder;
@@ -181,19 +182,19 @@ public class SystemVariableBean implements SystemVariableRemote {
         return fetchById(id);
     }
 
-    public void delete(Integer id) throws Exception {
+    public void delete(SystemVariableDO data) throws Exception {
         SystemVariable entity;
 
         checkSecurity(ModuleFlags.DELETE);
 
-        lockBean.validateLock(ReferenceTable.SYSTEM_VARIABLE, id);
+        lockBean.validateLock(ReferenceTable.SYSTEM_VARIABLE, data.getId());
 
         manager.setFlushMode(FlushModeType.COMMIT);
-        entity = manager.find(SystemVariable.class, id);
+        entity = manager.find(SystemVariable.class, data.getId());
         if (entity != null)
             manager.remove(entity);
 
-        lockBean.giveUpLock(ReferenceTable.SYSTEM_VARIABLE, id);
+        lockBean.giveUpLock(ReferenceTable.SYSTEM_VARIABLE, data.getId());
     }
 
     public void validate(SystemVariableDO data) throws Exception {

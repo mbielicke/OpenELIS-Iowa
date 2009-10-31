@@ -28,476 +28,217 @@ package org.openelis.bean;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.Resource;
-import javax.ejb.EJB;
-import javax.ejb.SessionContext;
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
-import org.openelis.domain.DictionaryViewDO;
-import org.openelis.domain.IdNameLotNumberDO;
 import org.openelis.domain.IdNameVO;
-import org.openelis.domain.QcAnalyteViewDO;
+import org.openelis.domain.QcDO;
 import org.openelis.domain.QcViewDO;
 import org.openelis.entity.Qc;
-import org.openelis.entity.QcAnalyte;
-import org.openelis.exception.ParseException;
-import org.openelis.gwt.common.Datetime;
+import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.InconsistencyException;
 import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.TableFieldErrorException;
+import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.data.deprecated.AbstractField;
-import org.openelis.local.DictionaryLocal;
-import org.openelis.local.LockLocal;
+import org.openelis.gwt.common.data.QueryData;
+import org.openelis.local.QcLocal;
 import org.openelis.metamap.QcMetaMap;
 import org.openelis.remote.QcRemote;
-import org.openelis.security.domain.SystemUserDO;
-import org.openelis.security.local.SystemUserUtilLocal;
-import org.openelis.util.QueryBuilder;
+import org.openelis.util.QueryBuilderV2;
 import org.openelis.utilcommon.DataBaseUtil;
-import org.openelis.utilcommon.NumericRange;
-import org.openelis.utilcommon.TiterRange;
-import org.openelis.utils.GetPage;
-import org.openelis.utils.ReferenceTableCache;
 
 @Stateless
 @SecurityDomain("openelis")
-public class QcBean implements QcRemote {
+@RolesAllowed("qc-select")
+public class QcBean implements QcRemote, QcLocal {
 
     @PersistenceContext(name = "openelis")
-    private EntityManager manager;
+    private EntityManager                    manager;
 
-    @Resource
-    private SessionContext ctx;
+    private static final QcMetaMap meta = new QcMetaMap();
 
-    @EJB
-    private LockLocal lockBean;
-    
-    @EJB
-    private SystemUserUtilLocal sysUser;    
-    
-    @EJB
-    private DictionaryLocal dictionaryBean;
-    
-    private static QcMetaMap QcMeta = new QcMetaMap(); 
-    
-    private static Integer qcRefTableId;
-    
-    public QcBean() {
-        qcRefTableId = ReferenceTableCache.getReferenceTable("system_variable");
-    }
-    
-    public QcViewDO getQc(Integer qcId) {
-        QcViewDO qcDO;
+    public QcViewDO fetchById(Integer id) throws Exception {
         Query query;
-        SystemUserDO userDO;
+        QcViewDO data;
         
-        query = manager.createNamedQuery("Qc.QcDOById");
-        query.setParameter("id", qcId);
-        qcDO = (QcViewDO)query.getSingleResult(); 
-        userDO = sysUser.getSystemUser(qcDO.getPreparedById());
-        qcDO.setPreparedByName(userDO.getLoginName());
-        return qcDO;
+        query = manager.createNamedQuery("Qc.FetchById");
+        query.setParameter("id", id);
+        try {
+            data = (QcViewDO)query.getSingleResult();
+        } catch (NoResultException e) {
+            throw new NotFoundException();
+        } catch (Exception e) {
+            throw new DatabaseException(e);
+        }
+        return data;
     }
 
-    public List<QcAnalyteViewDO> getQcAnalytes(Integer qcId) {
+    public QcDO fetchByLotNumber(String lot) throws Exception {
         Query query;
-        List<QcAnalyteViewDO> qcAnaDOList;
-        QcAnalyteViewDO qcaDO;
-        List results;
-        Integer typeId;
-        String systemName,value;
-        DictionaryViewDO snDO,entDO;
+        QcDO data;
         
-        query = manager.createNamedQuery("QcAnalyte.QcAnalyteDOsByQcId");
-        query.setParameter("id", qcId);     
-        qcAnaDOList = query.getResultList();
-        for(int i = 0; i < qcAnaDOList.size(); i++) {
-            qcaDO = qcAnaDOList.get(i);
-            typeId = qcaDO.getTypeId();
-                       
-            query = manager.createNamedQuery("Dictionary.FetchById");
-            query.setParameter("id", typeId);                    
-            results = query.getResultList();
-            snDO = (DictionaryViewDO)results.get(0);
-            systemName = (String)snDO.getSystemName();
-            
-            if("qc_analyte_dictionary".equals(systemName)) {
-                query = manager.createNamedQuery("Dictionary.FetchById");
-                value = qcaDO.getValue();
-                query.setParameter("id", Integer.parseInt(value));
-                results = query.getResultList();
-                entDO = (DictionaryViewDO)results.get(0);
-                value = (String)entDO.getEntry();
-                qcaDO.setValue(value);
-            }
+        query = manager.createNamedQuery("Qc.FetchByLotNumber");
+        query.setParameter("lotNumber", lot);
+        try {
+            data = (QcDO)query.getSingleResult();
+        } catch (NoResultException e) {
+            throw new NotFoundException();
+        } catch (Exception e) {
+            throw new DatabaseException(e);
         }
-        return qcAnaDOList;
+        return data;
     }
 
-    public QcViewDO getQcAndLock(Integer qcId, String session) throws Exception {        
-        lockBean.getLock(qcRefTableId, qcId);
-        return getQc(qcId);
-    }
-
-    public QcViewDO getQcAndUnlock(Integer qcId, String session) {        
-        lockBean.giveUpLock(qcRefTableId, qcId);
-        return getQc(qcId);
-    }
-
-    public List<IdNameLotNumberDO> query(ArrayList<AbstractField> fields,
-                                int first,
-                                int max) throws Exception {
-        StringBuffer sb;
-        QueryBuilder qb;
-        List returnList;
-        Query query;
-        
-        sb = new StringBuffer();
-        qb = new QueryBuilder();
-        
-        qb.setMeta(QcMeta);
-
-        qb.setSelect("distinct new org.openelis.domain.IdNameLotNumberDO(" +QcMeta.getId()
-                     + ", "
-                     + QcMeta.getName()
-                     + ", "
-                     + QcMeta.getLotNumber()
-                     + ") ");               
-        
-        qb.addWhere(fields);        
-        qb.setOrderBy(QcMeta.getName());
-
-        sb.append(qb.getEJBQL());                                
-        query = manager.createQuery(sb.toString());
-
-        if (first > -1 && max > -1)
-            query.setMaxResults(first + max);
-
-        // ***set the parameters in the query
-        qb.setQueryParams(query);
-
-        returnList = GetPage.getPage(query.getResultList(), first, max);
-
-        if (returnList == null)
-            throw new LastPageException();
-        else
-            return returnList;        
-    }
-
-    public Integer updateQc(QcViewDO qcDO, List<QcAnalyteViewDO> qcAnaDOList) throws Exception {
-        Query query;
-        Integer qcId,qcaId,typeId,dictId;
-        Qc qc;
-        QcAnalyteViewDO qcaDO;
-        QcAnalyte qca;
-        String systemName;
-        List results;
-                
-        qcId = qcDO.getId();
-        
-        if (qcId != null) {
-            // we need to call lock one more time to make sure their lock
-            // didnt expire and someone else grabbed the record
-            lockBean.validateLock(qcRefTableId, qcId);
-        }
-
-        validateQc(qcDO, qcAnaDOList);
-        
-        manager.setFlushMode(FlushModeType.COMMIT);
-        qc = null;
-        
-        if(qcId == null) {
-            qc = new Qc();
-        } else {
-            qc = manager.find(Qc.class, qcId);                        
-        }
-        
-        qc.setExpireDate(qcDO.getExpireDate());
-        qc.setIsSingleUse(qcDO.getIsSingleUse());
-        qc.setLotNumber(qcDO.getLotNumber());
-        qc.setName(qcDO.getName());
-        qc.setPreparedById(qcDO.getPreparedById());
-        qc.setPreparedDate(qcDO.getPreparedDate());
-        qc.setPreparedUnitId(qcDO.getPreparedUnitId());
-        qc.setPreparedVolume(qcDO.getPreparedVolume());
-        qc.setSource(qcDO.getSource());
-        qc.setTypeId(qcDO.getTypeId());
-        qc.setUsableDate(qcDO.getUsableDate());  
-        qc.setInventoryItemId(qcDO.getInventoryItemId());
-        
-        qcId = qc.getId();        
-        if(qcId == null) {
-            manager.persist(qc);
-        }
-        
-        if(qcAnaDOList != null) {
-            for(int i=0; i < qcAnaDOList.size(); i++) {
-                qcaDO = qcAnaDOList.get(i);
-                qcaId = qcaDO.getId();
-                if(qcaId == null) {
-                    qca = new QcAnalyte();                    
-                } else {
-                    qca = manager.find(QcAnalyte.class, qcaId);
-                }
-                
-                //the delete flag was taken out of the do
-                //this will be fixed when the screen is rewritten
-                //if(qcaDO.getDelete() && qcaId != null) {
-                //    manager.remove(qca);
-               // } else if(!qcaDO.getDelete()) {
-                    qca.setAnalyteId(qcaDO.getAnalyteId());
-                    qca.setQcId(qc.getId());
-                    qca.setIsTrendable(qcaDO.getIsTrendable());
-                    
-                    typeId = qcaDO.getTypeId();
-                    qca.setTypeId(typeId);
-                    
-                    query = manager.createNamedQuery("Dictionary.FetchById");
-                    query.setParameter("id", typeId);                    
-                    results = query.getResultList();
-                    systemName = ((DictionaryViewDO)results.get(0)).getSystemName();
-                    
-                    if("qc_analyte_dictionary".equals(systemName)) {                                               
-                        //dictId = dictionaryBean.getEntryIdForEntry(qcaDO.getValue());
-                        //qca.setValue(dictId.toString());
-                    } else {
-                        qca.setValue(qcaDO.getValue());
-                    }
-                                           
-                    if(qca.getId() == null) {
-                        manager.persist(qca);
-                    }
-             //   }
-            }
-        }
-        
-        lockBean.giveUpLock(qcRefTableId, qcId);        
-        return qc.getId();
-    }
-    
-    public ArrayList<IdNameVO> fetchByName(String name, int max) throws Exception {
+    @SuppressWarnings("unchecked")
+    public ArrayList<QcDO> fetchByName(String name, int max) {
         Query query;
         
         query = manager.createNamedQuery("Qc.FetchByName");
         query.setParameter("name", name);
         query.setMaxResults(max);
-        
-        return  DataBaseUtil.toArrayList(query.getResultList());               
-     }
-    
-    private void validateQc(QcViewDO qcDO, List<QcAnalyteViewDO> qcAnaDOList) throws Exception {
-        ValidationErrorsList exceptionList;
-        
-        exceptionList = new ValidationErrorsList();
-        validateQc(qcDO,exceptionList);
-        validateQcAnalytes(qcAnaDOList,exceptionList);
-        
-        if(exceptionList.size() > 0) 
-            throw exceptionList;
+
+        return DataBaseUtil.toArrayList(query.getResultList());
     }
-    
-    private void validateQc(QcViewDO qcDO, ValidationErrorsList exceptionList) {
-        String name,source,lotNumber;
-        Datetime prepDate,expDate,usbDate;
+
+    @SuppressWarnings("unchecked")
+    public ArrayList<QcDO> fetchNonExpiredByName(String name, int max) {
         Query query;
-        boolean checkOverlap;
-        Double volume;
-        List<Qc> list;
-        Qc qc;
         
-        checkOverlap = true;
+        query = manager.createNamedQuery("Qc.FetchNonExpiredByName");
+        query.setParameter("name", name);
+        query.setMaxResults(max);
+
+        return DataBaseUtil.toArrayList(query.getResultList());
+    }
+
+    @SuppressWarnings("unchecked")
+    public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception {
+        Query query;
+        QueryBuilderV2 builder;
+        List list;
+
+        builder = new QueryBuilderV2();
+        builder.setMeta(meta);
+        builder.setSelect("distinct new org.openelis.domain.IdNameVO(" + 
+                          meta.getId() + "," + meta.getName() + "," +
+                          meta.getLotNumber() + ") ");
+        builder.constructWhere(fields);
+        builder.setOrderBy(meta.getName() + "," + meta.getLotNumber());
+
+        query = manager.createQuery(builder.getEJBQL());
+        query.setMaxResults(first + max);
+        builder.setQueryParams(query, fields);
+
+        list = query.getResultList();
+        if (list.isEmpty())
+            throw new NotFoundException();
+        list = (ArrayList<IdNameVO>)DataBaseUtil.subList(list, first, max);
+        if (list == null)
+            throw new LastPageException();
+
+        return (ArrayList<IdNameVO>)list;
+    }
+
+
+    public QcViewDO add(QcViewDO data) throws Exception {
+        Qc entity;
         
-        name = qcDO.getName();
-        if(name == null || "".equals(name)) {
-            exceptionList.add(new FieldErrorException("fieldRequiredException",
-                                                      QcMeta.getName()));
-        }
-                        
-        source = qcDO.getSource();
-        if(source == null || "".equals(source)) {
-            exceptionList.add(new FieldErrorException("fieldRequiredException",
-                                                      QcMeta.getSource()));
-        }
+        manager.setFlushMode(FlushModeType.COMMIT);
         
-        lotNumber = qcDO.getLotNumber();
-        if(lotNumber == null || "".equals(lotNumber)) {
-            exceptionList.add(new FieldErrorException("fieldRequiredException",
-                                                      QcMeta.getLotNumber()));
+        entity = new Qc();
+        entity.setName(data.getName());
+        entity.setTypeId(data.getTypeId());
+        entity.setInventoryItemId(data.getInventoryItemId());
+        entity.setSource(data.getSource());
+        entity.setLotNumber(data.getLotNumber());
+        entity.setPreparedDate(data.getPreparedDate());
+        entity.setPreparedVolume(data.getPreparedVolume());
+        entity.setPreparedUnitId(data.getPreparedUnitId());
+        entity.setPreparedById(data.getPreparedById());
+        entity.setUsableDate(data.getUsableDate());  
+        entity.setExpireDate(data.getExpireDate());
+        entity.setIsSingleUse(data.getIsSingleUse());
+
+        manager.persist(entity);
+        data.setId(entity.getId());
+        
+        return data;
+    }
+
+    public QcViewDO update(QcViewDO data) throws Exception {
+        Qc entity;
+        
+        if (!data.isChanged())
+            return data;
+        
+        manager.setFlushMode(FlushModeType.COMMIT);
+
+        entity = manager.find(Qc.class, data.getId());
+        entity.setName(data.getName());
+        entity.setTypeId(data.getTypeId());
+        entity.setInventoryItemId(data.getInventoryItemId());
+        entity.setSource(data.getSource());
+        entity.setLotNumber(data.getLotNumber());
+        entity.setPreparedDate(data.getPreparedDate());
+        entity.setPreparedVolume(data.getPreparedVolume());
+        entity.setPreparedUnitId(data.getPreparedUnitId());
+        entity.setPreparedById(data.getPreparedById());
+        entity.setUsableDate(data.getUsableDate());  
+        entity.setExpireDate(data.getExpireDate());
+        entity.setIsSingleUse(data.getIsSingleUse());
+
+        return data;
+    }
+
+    public void validate(QcViewDO data) throws Exception {
+        QcDO dup;
+        ValidationErrorsList list;
+        
+        list = new ValidationErrorsList();
+        if (DataBaseUtil.isEmpty(data.getName()))
+            list.add(new FieldErrorException("fieldRequiredException", meta.getName()));
+
+        if (DataBaseUtil.isEmpty(data.getSource()))
+            list.add(new FieldErrorException("fieldRequiredException", meta.getSource()));
+
+        if (DataBaseUtil.isEmpty(data.getPreparedDate()))
+            list.add(new FieldErrorException("fieldRequiredException", meta.getPreparedDate()));
+
+        if (DataBaseUtil.isEmpty(data.getUsableDate()))
+            list.add(new FieldErrorException("fieldRequiredException", meta.getUsableDate()));
+
+        if (DataBaseUtil.isEmpty(data.getExpireDate()))
+            list.add(new FieldErrorException("fieldRequiredException", meta.getExpireDate()));
+
+        if (DataBaseUtil.isAfter(data.getPreparedDate(), data.getUsableDate()))
+            list.add(new FormErrorException("usbDateBeforePrepDateException"));
+
+        if (DataBaseUtil.isAfter(data.getUsableDate(), data.getExpireDate()))
+            list.add(new FormErrorException("expDateBeforeUsbDateException"));
+
+        //
+        // check for duplicate lot #
+        //
+        if (DataBaseUtil.isEmpty(data.getLotNumber())) {
+            list.add(new FieldErrorException("fieldRequiredException", meta.getLotNumber()));
         } else {
-            query = manager.createNamedQuery("Qc.QcByLotNumber");
-            query.setParameter("lotNumber", lotNumber);
-            list = query.getResultList();
-            for(int i = 0; i < list.size(); i++) {
-                qc = list.get(i);
-                if(!qc.getId().equals(qcDO.getId())) {
-                    exceptionList.add(new FieldErrorException("fieldUniqueException",
-                                                              QcMeta.getLotNumber()));
-                    break;
-                }
-            }
-        }
-        
-        
-        volume = qcDO.getPreparedVolume();
-        if(volume == null) {
-            exceptionList.add(new FieldErrorException("fieldRequiredException",
-                                                      QcMeta.getPreparedVolume()));
-        } else if(volume <= 0.0){
-            exceptionList.add(new FieldErrorException("invalidPrepVolumeException",
-                                                      QcMeta.getPreparedVolume()));
-        }
-        
-        prepDate = qcDO.getPreparedDate();
-        expDate = qcDO.getExpireDate();
-        usbDate = qcDO.getUsableDate();
-        
-        if(prepDate == null) {
-            exceptionList.add(new FieldErrorException("fieldRequiredException",
-                                                      QcMeta.getPreparedDate()));
-            checkOverlap = false;
-        }
-        
-        if(expDate == null) {
-            exceptionList.add(new FieldErrorException("fieldRequiredException",
-                                                      QcMeta.getExpireDate()));
-            checkOverlap = false;
-        }
-        
-        if(usbDate == null) {
-            exceptionList.add(new FieldErrorException("fieldRequiredException",
-                                                      QcMeta.getUsableDate()));
-            checkOverlap = false;
-        }
-        
-        if(checkOverlap) {
-            if(usbDate.before(prepDate)) {
-                exceptionList.add(new FormErrorException("usbDateBeforePrepDateException"));                               
-            }
-            
-            if(expDate.before(usbDate) || expDate.equals(usbDate)) {
-                exceptionList.add(new FormErrorException("expDateBeforeUsbDateException"));
-                                
-            }
-        }
-        
-    }
-    
-    private void validateQcAnalytes(List<QcAnalyteViewDO> qcAnaDOList, ValidationErrorsList exceptionList) {
-        QcAnalyteViewDO qcaDO;
-        Integer numId,dictId,titerId,typeId,entryId;
-        String value, fieldName;
-        NumericRange nr;
-        TiterRange tr;
-        List<Integer> dictList;
-        List<TiterRange> trlist;
-        List<NumericRange> nrlist;
-        TableFieldErrorException exc;
-        int i;                
-        
-        value = null;  
-        dictId = null;
-        numId = null;
-        titerId = null;
-        entryId = null;
-        
-        try {
-            dictId = (dictionaryBean.fetchBySystemName("qc_analyte_dictionary")).getId();                 
-            numId = (dictionaryBean.fetchBySystemName("qc_analyte_numeric")).getId();                
-            titerId = (dictionaryBean.fetchBySystemName("qc_analyte_titer")).getId(); 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        
-        trlist = new ArrayList<TiterRange>();
-        nrlist = new ArrayList<NumericRange>();
-        dictList = new ArrayList<Integer>();
-        
-        for(i = 0; i < qcAnaDOList.size(); i++) {           
-            qcaDO = qcAnaDOList.get(i);               
-            //if(qcaDO.getDelete())
-           //     continue;                                                 
-            
-            value = qcaDO.getValue();               
-            typeId = qcaDO.getTypeId();
-            //
-            // units need to be valid for every result type because
-            // their use is dependent on the unit
-            //
-            
-            fieldName = QcMeta.getQcAnalyte().getValue();
-            //
-            // dictionary, titers, numeric require a value
-            //
-            if (value == null || "".equals(value)) {
-                exc = new TableFieldErrorException("fieldRequiredException", i,fieldName);
-                exceptionList.add(exc);  
-                continue;
-            }
-                                      
             try {
-                if (numId.equals(typeId)) {                  
-                    nr = new NumericRange(value);
-                    addNumericIfNoOverLap(nrlist, nr);
-                } else if (titerId.equals(typeId)) {                   
-                    tr = new TiterRange(value);
-                    addTiterIfNoOverLap(trlist,tr);
-                } else if (dictId.equals(typeId)) {
-                   // entryId = dictionaryBean.getEntryIdForEntry(value);
-                    if (entryId == null)
-                        throw new ParseException("illegalDictEntryException");
-
-                    if (!dictList.contains(entryId))
-                        dictList.add(entryId);
-                    else
-                        throw new InconsistencyException("qcDictEntryNotUniqueException");                                              
-                } else {
-                    fieldName = QcMeta.getQcAnalyte().getTypeId();
-                    throw new ParseException("fieldRequiredException");
-                }
-            } catch (ParseException ex) {                 
-                exc = new TableFieldErrorException(ex.getMessage(), i,fieldName);
-                exceptionList.add(exc); 
-            } catch (InconsistencyException ex) {               
-                exc = new TableFieldErrorException(ex.getMessage(), i,fieldName);
-                exceptionList.add(exc);
-            }                                                
-         }
+                dup = fetchByLotNumber(data.getLotNumber());
+                if (DataBaseUtil.isDifferent(dup.getId(), data.getId()))
+                    list.add(new FieldErrorException("fieldUniqueException", meta.getLotNumber()));
+            } catch (NotFoundException e) {
+                // ignore
+            }
+        }
+        
+        if (list.size() > 0)
+            throw list;
     }
-    
-    private void addNumericIfNoOverLap(List<NumericRange> nrList,
-                                       NumericRange nr) throws InconsistencyException{
-         NumericRange lr;                  
-         
-         for(int i = 0; i < nrList.size(); i++) {
-             lr = nrList.get(i);
-             if(lr.isOverlapping(nr))                    
-                 throw new InconsistencyException("qcNumRangeOverlapException");             
-         }
-         
-         nrList.add(nr);         
-    }
-    
-    private void addTiterIfNoOverLap(List<TiterRange> trList,
-                                       TiterRange tr) throws InconsistencyException{
-         TiterRange lr;                  
-         
-         for(int i = 0; i < trList.size(); i++) {
-             lr = trList.get(i);
-             if(lr.isOverlapping(tr))                    
-                 throw new InconsistencyException("qcTiterRangeOverlapException");             
-         }
-         
-         trList.add(tr);         
-    }
-    
-
-
 }
