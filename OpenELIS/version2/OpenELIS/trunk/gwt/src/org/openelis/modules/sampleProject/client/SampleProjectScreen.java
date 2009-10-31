@@ -28,7 +28,6 @@ package org.openelis.modules.sampleProject.client;
 import java.util.ArrayList;
 import java.util.EnumSet;
 
-import org.openelis.common.AutocompleteRPC;
 import org.openelis.domain.ProjectDO;
 import org.openelis.domain.SampleProjectViewDO;
 import org.openelis.gwt.event.ActionEvent;
@@ -39,9 +38,12 @@ import org.openelis.gwt.event.GetMatchesHandler;
 import org.openelis.gwt.event.HasActionHandlers;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
+import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
+import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
+import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.gwt.widget.table.event.CellEditedEvent;
@@ -53,6 +55,7 @@ import org.openelis.gwt.widget.table.event.RowDeletedHandler;
 import org.openelis.manager.SampleProjectManager;
 import org.openelis.metamap.SampleProjectMetaMap;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Window;
@@ -69,8 +72,8 @@ public class SampleProjectScreen extends Screen implements HasActionHandlers<Sam
     private TableWidget sampleProjectTable;
 
     public SampleProjectScreen() throws Exception {
-        // Call base to get ScreenDef and draw screen
-        super("OpenELISServlet?service=org.openelis.modules.sampleProject.server.SampleProjectService");
+        super((ScreenDefInt)GWT.create(SampleProjectDef.class));
+        service = new ScreenService("controller?service=org.openelis.modules.project.server.ProjectService");
         
         // Setup link between Screen and widget Handlers
         initialize();
@@ -122,6 +125,7 @@ public class SampleProjectScreen extends Screen implements HasActionHandlers<Sam
                         
                         projectDO.setProjectId((Integer)selectedRow.key);
                         projectDO.setProjectName((String)selectedRow.cells.get(0).value);
+                        projectDO.setProjectDescription(des);
                         break;
                     case 1:
                         projectDO.setProjectDescription((String)val);
@@ -135,27 +139,35 @@ public class SampleProjectScreen extends Screen implements HasActionHandlers<Sam
 
         project.addGetMatchesHandler(new GetMatchesHandler(){
             public void onGetMatches(GetMatchesEvent event) {
-                AutocompleteRPC rpc = new AutocompleteRPC();
-                rpc.match = event.getMatch();
+                QueryFieldUtil parser;
+                TableDataRow row;
+                ProjectDO data;
+                ArrayList<ProjectDO> list;
+                ArrayList<TableDataRow> model;
+
+                parser = new QueryFieldUtil();
+                parser.parse(event.getMatch());
+
+                window.setBusy();
                 try {
-                    rpc = service.call("getProjectMatches", rpc);
-                    ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
-                        
-                    for (int i=0; i<rpc.model.size(); i++){
-                        ProjectDO autoDO = (ProjectDO)rpc.model.get(i);
-                        
-                        TableDataRow row = new TableDataRow(2);
-                        row.key = autoDO.getId();
-                        row.cells.get(0).value = autoDO.getName();
-                        row.cells.get(1).value = autoDO.getDescription();
+                    list = service.callList("fetchByName", parser.getParameter().get(0));
+                    model = new ArrayList<TableDataRow>();
+                    for (int i = 0; i < list.size(); i++ ) {
+                        row = new TableDataRow(4);
+                        data = list.get(i);
+
+                        row.key = data.getId();
+                        row.cells.get(0).value = data.getName();
+                        row.cells.get(1).value = data.getDescription();
+                       
                         model.add(row);
-                    } 
-                    
+                    }
                     project.showAutoMatches(model);
-                        
-                }catch(Exception e) {
-                    Window.alert(e.getMessage());                     
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                    Window.alert(e.getMessage());
                 }
+                window.clearStatus();
             }
         });
         
