@@ -19,16 +19,18 @@
 		above.
   -->
 
-<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-                xmlns:xalan="http://xml.apache.org/xalan"
-                xmlns:resource="xalan://org.openelis.util.UTFResource"
-                xmlns:locale="xalan://java.util.Locale" 
-                extension-element-prefixes="resource"
-                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                xsi:noNamespaceSchemaLocation="http://openelis.uhl.uiowa.edu/schema/ScreenSchema.xsd"
-                xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd"
-                version="1.0">
-  <xsl:import href="http://openelis.uhl.uiowa.edu/schema/button.xsl" />
+<xsl:stylesheet
+  version="1.0"
+  extension-element-prefixes="resource"
+  xmlns:locale="xalan://java.util.Locale"
+  xmlns:resource="xalan://org.openelis.util.UTFResource"
+  xmlns:xalan="http://xml.apache.org/xalan"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+  xsi:noNamespaceSchemaLocation="http://openelis.uhl.uiowa.edu/schema/ScreenSchema.xsd"
+  xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd">
+  
+  <xsl:import href="IMPORT/button.xsl" />
   <xalan:component prefix="resource">
     <xalan:script lang="javaclass" src="xalan://org.openelis.util.UTFResource" />
   </xalan:component>
@@ -48,13 +50,13 @@
         <VerticalPanel width="300px" padding="0" spacing="0" style="WhiteContentPanel">
           <table key="sampleOrganizationTable" width="auto" maxRows="10" showScroll="ALWAYS" tab="sampleOrganizationTable,sampleOrganizationTable" title="">
             <col width="120" header="Type">
-              <dropdown width="110px" case="mixed" />
+              <dropdown width="110px"/>
             </col>
             <col width="35" header="Id">
               <label/>
             </col>
             <col width="160" header="Name">
-              <autoComplete width="130px" case="upper">
+              <autoComplete width="130px" case="UPPER">
                 <col width="180" header="Name" />
                 <col width="110" header="Street" />
                 <col width="100" header="City" />
@@ -70,7 +72,7 @@
           </table>
           <HorizontalPanel style="WhiteContentPanel">
           	<widget halign="center" style="WhiteContentPanel">
-            	<appButton action="organizationAdd" key="organizationAddButton" onclick="this" style="Button">
+            	<appButton key="organizationAddButton" style="Button">
                 	<HorizontalPanel>
                     	<AbsolutePanel style="AddRowButtonImage"/>
                         <text><xsl:value-of select="resource:getString($constants,'addRow')"/></text>
@@ -78,7 +80,7 @@
             	</appButton>
           	</widget>
             <widget halign="center" style="WhiteContentPanel">
-            	<appButton action="organizationRemove" key="organizationRemoveButton" onclick="this" style="Button">
+            	<appButton key="organizationRemoveButton" style="Button">
                 	<HorizontalPanel>
                     	<AbsolutePanel style="RemoveRowButtonImage"/>
                         <text><xsl:value-of select="resource:getString($constants,'removeRow')"/></text>

@@ -23,14 +23,10 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.modules.sampleLocation.server;
+package org.openelis.modules.sampleOrganization.client;
 
-import org.openelis.gwt.server.ServiceUtils;
-import org.openelis.server.constants.Constants;
+import org.openelis.gwt.screen.ScreenDefInt;
 
-public class SampleLocationService {
+public interface SampleOrganizationDef extends ScreenDefInt {
 
-    public String getScreen() throws Exception {
-        return ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/sampleLocation.xsl");      
-    }
 }

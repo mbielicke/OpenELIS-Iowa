@@ -29,12 +29,11 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 
 import org.openelis.cache.DictionaryCache;
-import org.openelis.common.AutocompleteRPC;
-import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.SampleOrganizationDO;
 import org.openelis.domain.SampleOrganizationViewDO;
+import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
@@ -44,10 +43,13 @@ import org.openelis.gwt.event.GetMatchesHandler;
 import org.openelis.gwt.event.HasActionHandlers;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
+import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
+import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.Dropdown;
+import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.gwt.widget.table.event.CellEditedEvent;
@@ -57,7 +59,9 @@ import org.openelis.gwt.widget.table.event.RowAddedHandler;
 import org.openelis.gwt.widget.table.event.RowDeletedEvent;
 import org.openelis.gwt.widget.table.event.RowDeletedHandler;
 import org.openelis.manager.SampleOrganizationManager;
+import org.openelis.modules.organization.client.OrganizationDef;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Window;
@@ -71,11 +75,10 @@ public class SampleOrganizationScreen  extends Screen implements HasActionHandle
     };
 
     private TableWidget sampleOrganizationTable;
-    private boolean loaded = false;
-
+    
     public SampleOrganizationScreen() throws Exception {
-        // Call base to get ScreenDef and draw screen
-        super("OpenELISServlet?service=org.openelis.modules.sampleOrganization.server.SampleOrganizationService");
+        super((ScreenDefInt)GWT.create(SampleOrganizationDef.class));
+        service = new ScreenService("controller?service=org.openelis.modules.organization.server.OrganizationService");
         
         // Setup link between Screen and widget Handlers
         initialize();
@@ -145,7 +148,10 @@ public class SampleOrganizationScreen  extends Screen implements HasActionHandle
                                                         4,
                                                         state);
 
+                        orgDO.setOrganizationId(id);
                         orgDO.setOrganizationName((String)selectedRow.cells.get(0).value);
+                        orgDO.setOrganizationCity(city);
+                        orgDO.setOrganizationState(state);
                         break;
                     case 3:
                         orgDO.setOrganizationCity((String)val);
@@ -159,29 +165,37 @@ public class SampleOrganizationScreen  extends Screen implements HasActionHandle
         
         organization.addGetMatchesHandler(new GetMatchesHandler(){
             public void onGetMatches(GetMatchesEvent event) {
-                AutocompleteRPC rpc = new AutocompleteRPC();
-                rpc.match = event.getMatch();
+                QueryFieldUtil parser;
+                TableDataRow row;
+                OrganizationDO data;
+                ArrayList<OrganizationDO> list;
+                ArrayList<TableDataRow> model;
+
+                parser = new QueryFieldUtil();
+                parser.parse(event.getMatch());
+
+                window.setBusy();
                 try {
-                    rpc = service.call("getOrganizationMatches", rpc);
-                    ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
-                        
-                    for (int i=0; i<rpc.model.size(); i++){
-                        OrganizationDO autoDO = (OrganizationDO)rpc.model.get(i);
-                        
-                        TableDataRow row = new TableDataRow(4);
-                        row.key = autoDO.getId();
-                        row.cells.get(0).value = autoDO.getName();
-                        row.cells.get(1).value = autoDO.getAddress().getStreetAddress();
-                        row.cells.get(2).value = autoDO.getAddress().getCity();
-                        row.cells.get(3).value = autoDO.getAddress().getState();
+                    list = service.callList("fetchByIdOrName", parser.getParameter().get(0));
+                    model = new ArrayList<TableDataRow>();
+                    for (int i = 0; i < list.size(); i++ ) {
+                        row = new TableDataRow(4);
+                        data = list.get(i);
+
+                        row.key = data.getId();
+                        row.cells.get(0).value = data.getName();
+                        row.cells.get(1).value = data.getAddress().getStreetAddress();
+                        row.cells.get(2).value = data.getAddress().getCity();
+                        row.cells.get(3).value = data.getAddress().getState();
+
                         model.add(row);
-                    } 
-                    
+                    }
                     organization.showAutoMatches(model);
-                        
-                }catch(Exception e) {
-                    Window.alert(e.getMessage());                     
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                    Window.alert(e.getMessage());
                 }
+                window.clearStatus();
             }
         });
         
@@ -304,7 +318,29 @@ public class SampleOrganizationScreen  extends Screen implements HasActionHandle
         boolean superValue = super.validate();
         
         try{
-            manager.validate();
+            ValidationErrorsList errorsList = new ValidationErrorsList();
+            int numBillTo, numReportTo;
+            
+            numBillTo = 0;
+            numReportTo = 0;
+            for(int i=0; i<manager.count(); i++){
+                SampleOrganizationDO orgDO = manager.getOrganizationAt(i);
+                if(DictionaryCache.getIdFromSystemName("org_bill_to").equals(orgDO.getTypeId()))
+                    numBillTo++;
+                
+                if(DictionaryCache.getIdFromSystemName("org_report_to").equals(orgDO.getTypeId()))
+                    numReportTo++;
+            }
+            
+            if(numBillTo > 1)
+                errorsList.add(new FormErrorException("multipleBillToException"));
+            
+            if(numReportTo > 1)
+                errorsList.add(new FormErrorException("multipleReportToException"));
+            
+            if(errorsList.size() > 0)
+                throw errorsList;
+            
         }catch(ValidationErrorsList e){
             showErrors(e);
             return false;
