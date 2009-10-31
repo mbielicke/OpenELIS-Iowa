@@ -88,7 +88,7 @@ public class DictionaryMeta implements Meta {
         return path + CATEGORY_ID;
     } 
     
-    public String sortOrder() {
+    public String getSortOrder() {
         return path + SORT_ORDER;
     }
 

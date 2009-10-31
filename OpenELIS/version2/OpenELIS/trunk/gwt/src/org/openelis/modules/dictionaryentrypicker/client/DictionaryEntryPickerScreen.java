@@ -27,6 +27,7 @@ package org.openelis.modules.dictionaryentrypicker.client;
 
 import java.util.ArrayList;
 
+import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.SystemVariableDO;
@@ -78,8 +79,7 @@ public class DictionaryEntryPickerScreen extends Screen
 
     public DictionaryEntryPickerScreen() throws Exception {
         super((ScreenDefInt)GWT.create(DictionaryEntryPickerDef.class));
-        service = new ScreenService(
-                                    "controller?service=org.openelis.modules.dictionaryentrypicker.server.DictionaryEntryPickerService");
+        service = new ScreenService("controller?service=org.openelis.modules.dictionaryentrypicker.server.DictionaryEntryPickerService");
 
         // Setup link between Screen and widget Handlers
         initialize();
@@ -267,6 +267,8 @@ public class DictionaryEntryPickerScreen extends Screen
         entry.query = pattern;
         rpc.fields.add(entry);
 
+        window.setBusy();
+        
         try {
             rpc = service.call("getDictionaryEntries", rpc);
             fillDictEntryTable(rpc.dictionaryTableModel);
@@ -275,10 +277,12 @@ public class DictionaryEntryPickerScreen extends Screen
             Window.alert(e.getMessage());
 
         }
+        
+        window.clearStatus();
     }
 
-    private void fillDictEntryTable(ArrayList<IdNameVO> entries) {
-        IdNameVO resultDO;
+    private void fillDictEntryTable(ArrayList<DictionaryDO> entries) {
+        DictionaryDO resultDO;
         TableDataRow row;
         ArrayList<TableDataRow> model;
 
@@ -287,7 +291,7 @@ public class DictionaryEntryPickerScreen extends Screen
         model = new ArrayList<TableDataRow>();
         for (int i = 0; i < entries.size(); i++ ) {
             resultDO = entries.get(i);
-            row = new TableDataRow(resultDO.getId(), resultDO.getName());
+            row = new TableDataRow(resultDO.getId(), resultDO.getEntry());
             model.add(row);
         }
 

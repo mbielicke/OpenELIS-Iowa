@@ -45,13 +45,11 @@ public interface DictionaryRemote {
     
     public DictionaryViewDO fetchById(Integer id) throws Exception;
     
-    public ArrayList<IdNameVO> fetchIdEntryByEntryAndCategoryId(ArrayList<QueryData> fields) throws Exception;
+    public ArrayList<DictionaryDO> fetchByEntryAndCategoryId(ArrayList<QueryData> fields) throws Exception;
     
     public ArrayList<IdNameVO> fetchIdEntryByEntry(String entry,int maxResults) throws Exception;
     
     public ArrayList<DictionaryDO> fetchByCategorySystemName(String categorySystemName) throws Exception;
-    
-    public Integer getNumResultsAffected(String entry, Integer id) throws Exception;
     
     public void validateForDelete(DictionaryViewDO data) throws Exception; 
 }

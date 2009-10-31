@@ -351,7 +351,7 @@ public class TestAnalyteManager implements RPC {
             if (referPrev && row - 1 >= 0) {
                 prevlist = analytes.get(row - 1);
             } else {
-                prevlist = analytes.get(row + 1);
+                prevlist = analytes.get(row);
             }
 
             for (int i = 0; i < prevlist.size(); i++ ) {

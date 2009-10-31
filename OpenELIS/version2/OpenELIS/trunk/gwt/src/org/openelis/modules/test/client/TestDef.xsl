@@ -552,7 +552,10 @@ UIRF Software License are applicable instead of those above.
                     <HorizontalPanel style="TableButtonFooter">
                       <TablePanel padding="0" spacing="0">
                         <row>
-                          <dropdown key="tableActions" width="125" field="String" />
+                        	<text style="Prompt">
+                            <xsl:value-of select="resource:getString($constants,'tableOptions')" />:
+                          </text>
+                          <dropdown key="tableActions" width="75" field="String" />
                           <appButton key="addButton" style="Button">
                             <AbsolutePanel style="AddButtonIcon" />
                           </appButton>
@@ -561,15 +564,15 @@ UIRF Software License are applicable instead of those above.
                           </appButton>
                         </row>
                       </TablePanel>
-                      <HorizontalPanel width="55px" />
+                      <HorizontalPanel width="15px" />
                       <TablePanel>
                         <row>
                           <text style="Prompt">
                             <xsl:value-of select="resource:getString($constants,'type')" />:
                           </text>
-                          <dropdown key="{testAnalyte:getTypeId($tana)}" width="100px" field="Integer" />
+                          <dropdown key="{testAnalyte:getTypeId($tana)}" width="75px" field="Integer" />
                           <text style="Prompt">
-                            <xsl:value-of select="resource:getString($constants,'analyteReportable')" />:
+                            <xsl:value-of select="resource:getString($constants,'reportable')" />:
                           </text>
                           <check key="{testAnalyte:getIsReportable($tana)}" />
                           <text style="Prompt">
@@ -585,23 +588,23 @@ UIRF Software License are applicable instead of those above.
                       <ScrollTabBar key="resultTabPanel" width="610px" />
                       <widget valign="top">
                         <table key="resultTable" width="auto" maxRows="8" showScroll="ALWAYS" title="">
-                          <col key="{testResult:getUnitOfMeasureId($tr)}" width="75" sort="true" header="{resource:getString($constants,'unit')}">
-                            <dropdown width="75" case="MIXED" field="Integer" />
+                          <col key="{testResult:getUnitOfMeasureId($tr)}" width="70" sort="true" header="{resource:getString($constants,'unit')}">
+                            <dropdown width="70" case="MIXED" field="Integer" />
                           </col>
-                          <col key="{testResult:getTypeId($tr)}" width="90" sort="true" header="{resource:getString($constants,'type')}">
-                            <dropdown width="75" case="MIXED" field="Integer" required="true" />
+                          <col key="{testResult:getTypeId($tr)}" width="85" sort="true" header="{resource:getString($constants,'type')}">
+                            <dropdown width="90" case="MIXED" field="Integer" required="true" />
                           </col>
-                          <col key="{testResult:getValue($tr)}" width="200" sort="true" header="{resource:getString($constants,'value')}">
+                          <col key="{testResult:getValue($tr)}" width="185" sort="true" header="{resource:getString($constants,'value')}">
                             <textbox case="MIXED" field="String" />
                           </col>
-                          <col key="{testResult:getFlagsId($tr)}" width="110" sort="true" header="{resource:getString($constants,'flags')}">
+                          <col key="{testResult:getFlagsId($tr)}" width="95" sort="true" header="{resource:getString($constants,'flags')}">
                             <dropdown width="115" case="MIXED" field="Integer" />
                           </col>
-                          <col key="{testResult:getSignificantDigits($tr)}" width="40" header="{resource:getString($constants,'significantDigits')}">
+                          <col key="{testResult:getSignificantDigits($tr)}" width="45" header="{resource:getString($constants,'significantDigits')}">
                             <textbox case="MIXED" field="Integer" />
                           </col>
-                          <col key="{testResult:getRoundingMethodId($tr)}" width="70" header="{resource:getString($constants,'roundingMethod')}">
-                            <dropdown width="95" case="MIXED" field="Integer" />
+                          <col key="{testResult:getRoundingMethodId($tr)}" width="103" header="{resource:getString($constants,'roundingMethod')}">
+                            <dropdown width="100" case="MIXED" field="Integer" />
                           </col>
                         </table>
                       </widget>

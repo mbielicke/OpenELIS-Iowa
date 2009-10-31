@@ -106,15 +106,6 @@ public class DictionaryService {
         return rpc;
     }
     
-    public DictionaryRPC getNumResultsAffected(DictionaryRPC rpc) {    
-        try {
-           // rpc.count = dictRemote().getNumResultsAffected(rpc.entryText,rpc.id);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-        return rpc;
-    }
-    
     private CategoryRemote remote() {
         return (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
     }
