@@ -30,7 +30,7 @@ import java.util.ArrayList;
 import javax.ejb.Remote;
 
 import org.openelis.domain.IdNameVO;
-import org.openelis.domain.ProjectViewDO;
+import org.openelis.domain.ProjectDO;
 import org.openelis.gwt.common.data.QueryData;
 
 @Remote
@@ -39,7 +39,7 @@ public interface ProjectRemote {
 
     public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception;
 
-    public ArrayList<ProjectViewDO> fetchByName(String name, int maxResults);
+    public ArrayList<ProjectDO> fetchByName(String name, int maxResults) throws Exception;
  
     
 }

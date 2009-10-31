@@ -59,7 +59,7 @@ public class SampleProjectManager implements RPC {
         SampleProjectViewDO oldProject = getFirstPermanentProject();
 
         if (oldProject == null && newProject != null) { // insert
-            addProject(newProject);
+            addProjectAt(newProject, 0);
         } else if (oldProject != null && newProject == null) { // delete
             removeProjectAt(0);
         } else if (oldProject != null && newProject != null) { // update
