@@ -216,7 +216,7 @@ xmlns:testMetaMap="xalan://org.openelis.metamap.TestMetaMap" xmlns:sectionMeta="
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'received')" />:
               </text>
-              <calendar key="{sampleMetaMap:getReceivedDate($sample)}" begin="0" end="4" width="110px" pattern="{resource:getString($constants,'dateTimePattern')}" tab="{sampleMetaMap:getStatusId($sample)},{sampleMetaMap:getCollectionTime($sample)}" />
+              <calendar key="{sampleMetaMap:getReceivedDate($sample)}" begin="0" end="4" width="110px" pattern="{resource:getString($constants,'dateTimePattern')}" tab="{sampleMetaMap:getStatusId($sample)},{sampleMetaMap:getCollectionTime($sample)}" required="true"/>
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'status')" />:
               </text>
@@ -453,7 +453,7 @@ xmlns:testMetaMap="xalan://org.openelis.metamap.TestMetaMap" xmlns:sectionMeta="
             <tab key="tab2" text="{resource:getString($constants,'testResults')}">
 				<TablePanel padding="0" spacing="0">
 	              <row>
-	                <table key="testResultsTable" width="695" maxRows="9" showScroll="ALWAYS" title="">
+	                <table key="testResultsTable" width="697" maxRows="9" showScroll="ALWAYS" title="">
 	                  <col width="200">
 	                    <label />
 	                  </col>
@@ -525,7 +525,7 @@ xmlns:testMetaMap="xalan://org.openelis.metamap.TestMetaMap" xmlns:sectionMeta="
 		            <text style="Title"><xsl:value-of select="resource:getString($constants,'external')" />:</text>
 		        </row>
 		        <row>
-		        	<notes key="anExNotesPanel" width="350px" height="190px" />
+		        	<notes key="anExNotesPanel" style="atozTable" width="351px" height="190px" />
 		        </row>
 		        <row>
 			        <widget style="TableButtonFooter">
@@ -546,7 +546,7 @@ xmlns:testMetaMap="xalan://org.openelis.metamap.TestMetaMap" xmlns:sectionMeta="
 			    	<text style="Title"><xsl:value-of select="resource:getString($constants,'internal')" />:</text>    
 			    </row>
 		     	<row>
-           			<notes key="anIntNotesPanel" width="350px" height="190px" />
+           			<notes key="anIntNotesPanel" style="atozTable" width="351px" height="190px" />
            		</row>
                   <row>
 		              <widget style="TableButtonFooter">
@@ -570,7 +570,7 @@ xmlns:testMetaMap="xalan://org.openelis.metamap.TestMetaMap" xmlns:sectionMeta="
             		<text style="Title"><xsl:value-of select="resource:getString($constants,'external')" />:</text>
             	</row>
             	<row>
-            		<notes key="sampleExtNotesPanel" width="350px" height="190px" />
+            		<notes key="sampleExtNotesPanel" style="atozTable" width="351px" height="190px" />
             	</row>
             	<row>
 	            	<widget style="TableButtonFooter">
@@ -591,7 +591,7 @@ xmlns:testMetaMap="xalan://org.openelis.metamap.TestMetaMap" xmlns:sectionMeta="
         		    <text style="Title"><xsl:value-of select="resource:getString($constants,'internal')" />:</text>    
                 </row>
                 <row>
-               		<notes key="sampleIntNotesPanel" width="350px" height="190px" />
+               		<notes key="sampleIntNotesPanel" style="atozTable" width="351px" height="190px" />
                   </row>
                   <row>
 	               	<widget style="TableButtonFooter">
@@ -623,7 +623,7 @@ xmlns:testMetaMap="xalan://org.openelis.metamap.TestMetaMap" xmlns:sectionMeta="
                   <col width="135" header="{resource:getString($constants,'checkIn')}">
                     <calendar key="" begin="0" end="4" width="110" pattern="{resource:getString($constants,'dateTimePattern')}" required="true"/>
                   </col>
-                  <col width="135" header="{resource:getString($constants,'checkOut')}">
+                  <col width="136" header="{resource:getString($constants,'checkOut')}">
                     <calendar key="" begin="0" end="4" width="110" pattern="{resource:getString($constants,'dateTimePattern')}"/>
                   </col>
                 </table>
@@ -655,21 +655,21 @@ xmlns:testMetaMap="xalan://org.openelis.metamap.TestMetaMap" xmlns:sectionMeta="
             <tab key="tab6" text="{resource:getString($constants,'qaEvents')}">
               	<TablePanel padding="0" spacing="0" height="100%" style="TabSubForm">
               	<row>
-	                 <table key="sampleQATable" title="" width="auto" maxRows="9" showScroll="ALWAYS">
+	                 <table key="sampleQATable" style="atozTable" title="" width="auto" maxRows="9" showScroll="ALWAYS">
 	                  <col width="175" header="{resource:getString($constants,'sampleQAEvent')}">
 	                  	<label/>
 	                  </col>
 	                  <col width="90" header="{resource:getString($constants,'type')}">
 		                  <dropdown width="75px" popWidth="75px" field="Integer"/>
 	                  </col>
-	                  <col width="60" header="{resource:getString($constants,'billable')}">
+	                  <col width="61" header="{resource:getString($constants,'billable')}">
 	                  	<check/>
 	                  </col>
 	                </table>
 	                <widget rowspan="3">
 	                	<AbsolutePanel style="Divider"/>
 	                </widget>
-	                <table key="analysisQATable" title="" width="auto" maxRows="9" showScroll="ALWAYS">
+	                <table key="analysisQATable" style="atozTable" title="" width="auto" maxRows="9" showScroll="ALWAYS">
                   		<col width="175" header="{resource:getString($constants,'analysisQAEvent')}">
                   		<label/>
 	                  </col>
@@ -737,7 +737,7 @@ xmlns:testMetaMap="xalan://org.openelis.metamap.TestMetaMap" xmlns:sectionMeta="
 	                  <col width="315" header="{resource:getString($constants,'name')}">
 	                    <label />
 	                  </col>
-	                  <col width="315" class="org.openelis.modules.environmentalSampleLogin.client.AuxTableColumn" header="{resource:getString($constants,'value')}">
+	                  <col width="319" class="org.openelis.modules.environmentalSampleLogin.client.AuxTableColumn" header="{resource:getString($constants,'value')}">
 	                  	<label/>
 	                  </col>
 	                </table>

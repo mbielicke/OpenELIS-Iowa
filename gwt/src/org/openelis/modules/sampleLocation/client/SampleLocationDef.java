@@ -23,33 +23,10 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.modules.environmentalSampleLogin.server;
+package org.openelis.modules.sampleLocation.client;
 
-import java.util.ArrayList;
+import org.openelis.gwt.screen.ScreenDefInt;
 
-import org.openelis.domain.IdNameVO;
-import org.openelis.gwt.common.data.Query;
-import org.openelis.persistence.EJBFactory;
-import org.openelis.remote.SampleEnvironmentalRemote;
-import org.openelis.remote.SampleRemote;
+public interface SampleLocationDef extends ScreenDefInt {
 
-public class EnvironmentalSampleLoginService {
-
-    private static final int rowPP = 12;
-    
-    public ArrayList<IdNameVO> query(Query query) throws Exception {
-        return environmentalRemote().query(query.getFields(), query.getPage() * rowPP, rowPP);
-    }
-    
-    public void validateAccessionNumber(Integer accessionNumber) throws Exception {
-        sampleRemote().validateAccessionNumber(accessionNumber);
-    }
-    
-    private SampleRemote sampleRemote() {
-        return (SampleRemote)EJBFactory.lookup("openelis/SampleBean/remote");
-    }
-
-    private SampleEnvironmentalRemote environmentalRemote() {
-        return (SampleEnvironmentalRemote)EJBFactory.lookup("openelis/SampleEnvironmentalBean/remote");
-    }
 }

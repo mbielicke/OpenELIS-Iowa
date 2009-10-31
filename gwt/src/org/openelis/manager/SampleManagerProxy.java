@@ -27,8 +27,11 @@ package org.openelis.manager;
 
 import org.openelis.domain.SampleDO;
 import org.openelis.gwt.common.FieldErrorException;
+import org.openelis.gwt.common.FieldErrorWarning;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.services.ScreenService;
+import org.openelis.metamap.SampleEnvironmentalMetaMap;
+import org.openelis.metamap.SampleMetaMap;
 
 public class SampleManagerProxy {
     protected static final String SAMPLE_SERVICE_URL = "org.openelis.modules.sample.server.SampleService";
@@ -67,14 +70,19 @@ public class SampleManagerProxy {
     }
     
     public void validate(SampleManager man, ValidationErrorsList errorsList) throws Exception {
-      //  offFocus -accession not dup (also check on commit (backend))
+        //FIXME revalidate accession num
+        
+        SampleMetaMap meta = new SampleMetaMap("sample.");
+        
         //sample validate code
         SampleDO sampleDO = man.getSample();
         //validate the dates
         if(sampleDO.getCollectionDate() != null && sampleDO.getReceivedDate() != null)
             if(sampleDO.getCollectionDate().compareTo(sampleDO.getReceivedDate()) == 1)
-                errorsList.add(new FieldErrorException("COLLECTED DATE CANT BE GREATER THAN RECIEVED", ""));
+                errorsList.add(new FieldErrorException("collectedDateInvalidError", meta.getReceivedDate()));
         
+        if(sampleDO.getCollectionDate() == null)
+            errorsList.add(new FieldErrorWarning("collectedDateMissingWarning", meta.getCollectionDate()));
         
         man.getSampleItems().validate(errorsList);
         man.getOrganizations().validate(errorsList);

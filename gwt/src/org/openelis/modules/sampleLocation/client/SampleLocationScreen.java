@@ -30,7 +30,6 @@ import java.util.EnumSet;
 
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.DictionaryDO;
-import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.SampleEnvironmentalDO;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
@@ -38,6 +37,7 @@ import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.HasActionHandlers;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
+import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.Dropdown;
@@ -45,6 +45,7 @@ import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.metamap.SampleEnvironmentalMetaMap;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -62,8 +63,7 @@ public class SampleLocationScreen extends Screen implements HasActionHandlers<Sa
     private SampleEnvironmentalMetaMap       meta = new SampleEnvironmentalMetaMap();
 
     public SampleLocationScreen() throws Exception {
-        // Call base to get ScreenDef and draw screen
-        super("OpenELISServlet?service=org.openelis.modules.sampleLocation.server.SampleLocationService");
+        super((ScreenDefInt)GWT.create(SampleLocationDef.class));
         
         // Setup link between Screen and widget Handlers
         initialize();

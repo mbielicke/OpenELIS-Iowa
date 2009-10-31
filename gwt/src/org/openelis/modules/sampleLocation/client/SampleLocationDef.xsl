@@ -16,14 +16,19 @@
 		provisions of a UIRF Software License are applicable instead of those
 		above.
 	-->
-<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-	xmlns:xalan="http://xml.apache.org/xalan" 
-	xmlns:resource="xalan://org.openelis.util.UTFResource"
-	xmlns:locale="xalan://java.util.Locale"
-	xmlns:envMeta="xalan://org.openelis.metamap.SampleEnvironmentalMetaMap"
-    xmlns:addressMeta="xalan://org.openelis.meta.AddressMeta"
-	extension-element-prefixes="resource" version="1.0">
-	<xsl:import href="button.xsl" />
+<xsl:stylesheet
+  version="1.0"
+  extension-element-prefixes="resource"
+  xmlns:locale="xalan://java.util.Locale"
+  xmlns:resource="xalan://org.openelis.util.UTFResource"
+  xmlns:xalan="http://xml.apache.org/xalan"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+  xsi:noNamespaceSchemaLocation="http://openelis.uhl.uiowa.edu/schema/ScreenSchema.xsd"
+  xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd"
+  xmlns:addressMeta="xalan://org.openelis.meta.AddressMeta" 
+  xmlns:envMeta="xalan://org.openelis.metamap.SampleEnvironmentalMetaMap" >
+	<xsl:import href="IMPORT/button.xsl" />
 
 	<xalan:component prefix="resource">
 		<xalan:script lang="javaclass"
@@ -53,49 +58,49 @@
 		</xsl:variable>
 		<xsl:variable name="constants"
 			select="resource:getBundle(string($props),locale:new(string($language)))" />
-		<screen id="SampleLocationPicker" name="{resource:getString($constants,'sampleLocation')}" serviceUrl="ElisService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+		<screen id="SampleLocationPicker" name="{resource:getString($constants,'sampleLocation')}" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 				<VerticalPanel spacing="0" padding="0">
 					<VerticalPanel style="WhiteContentPanel" spacing="0" padding="0" width="300px">
 						<TablePanel style="Form">
 					<row>
 					<text style="Prompt"><xsl:value-of select='resource:getString($constants,"location")'/>:</text>
 						<widget colspan="3">
-							<textbox case="mixed" key="{envMeta:getSamplingLocation($env)}" width="214px" max="30" tab="{addressMeta:getMultipleUnit($address)},{addressMeta:getCountry($address)}" field="String"/>
+							<textbox key="{envMeta:getSamplingLocation($env)}" width="214px" max="30" tab="{addressMeta:getMultipleUnit($address)},{addressMeta:getCountry($address)}" field="String"/>
 						</widget>
 					</row>
 					<row>
 						<text style="Prompt"><xsl:value-of select='resource:getString($constants,"aptSuite")'/>:</text>
 						<widget colspan="3">
-							<textbox case="upper" key="{addressMeta:getMultipleUnit($address)}" width="214px" max="30" tab="{addressMeta:getStreetAddress($address)},{envMeta:getSamplingLocation($env)}" field="String"/>
+							<textbox case="UPPER" key="{addressMeta:getMultipleUnit($address)}" width="214px" max="30" tab="{addressMeta:getStreetAddress($address)},{envMeta:getSamplingLocation($env)}" field="String"/>
 						</widget>		
 					</row>
 					<row>
 						<text style="Prompt"><xsl:value-of select='resource:getString($constants,"address")'/>:</text>
 						<widget colspan="3">
-							<textbox case="upper" key="{addressMeta:getStreetAddress($address)}" width="214px" max="30" tab="{addressMeta:getCity($address)},{addressMeta:getMultipleUnit($address)}" field="String"/>
+							<textbox case="UPPER" key="{addressMeta:getStreetAddress($address)}" width="214px" max="30" tab="{addressMeta:getCity($address)},{addressMeta:getMultipleUnit($address)}" field="String"/>
 						</widget>		
 					</row>
 					<row>
 						<text style="Prompt"><xsl:value-of select='resource:getString($constants,"city")'/>:</text>
 						<widget colspan="3">
-							<textbox case="upper" key="{addressMeta:getCity($address)}" width="214px" max="30" tab="{addressMeta:getState($address)},{addressMeta:getStreetAddress($address)}" field="String"/>
+							<textbox case="UPPER" key="{addressMeta:getCity($address)}" width="214px" max="30" tab="{addressMeta:getState($address)},{addressMeta:getStreetAddress($address)}" field="String"/>
 						</widget>		
 					</row>
 					<row>
 						<text style="Prompt"><xsl:value-of select='resource:getString($constants,"state")'/>:</text>
 						<widget>
-							<dropdown case="upper" key="{addressMeta:getState($address)}" width="40px" tab="{addressMeta:getZipCode($address)},{addressMeta:getCity($address)}" field="String"/>
+							<dropdown case="UPPER" key="{addressMeta:getState($address)}" width="40px" tab="{addressMeta:getZipCode($address)},{addressMeta:getCity($address)}" field="String"/>
 						</widget>
 						
 						<text style="Prompt"><xsl:value-of select='resource:getString($constants,"zipcode")'/>:</text>
 						<widget>
-							<textbox case="upper" key="{addressMeta:getZipCode($address)}" width="76px" max="30" tab="{addressMeta:getCountry($address)},{addressMeta:getState($address)}" field="String"/>
+							<textbox case="UPPER" key="{addressMeta:getZipCode($address)}" width="76px" max="30" tab="{addressMeta:getCountry($address)},{addressMeta:getState($address)}" field="String"/>
 						</widget>
 					</row>
 					<row>
 					<text style="Prompt"><xsl:value-of select="resource:getString($constants,'country')"/>:</text>
 					<widget colspan="3">
-						<dropdown case="mixed" key="{addressMeta:getCountry($address)}" width="198px" tab="{envMeta:getSamplingLocation($env)},{addressMeta:getZipCode($address)}" field="String"/>
+						<dropdown key="{addressMeta:getCountry($address)}" width="198px" tab="{envMeta:getSamplingLocation($env)},{addressMeta:getZipCode($address)}" field="String"/>
 					</widget>
 					</row>
 					</TablePanel>
