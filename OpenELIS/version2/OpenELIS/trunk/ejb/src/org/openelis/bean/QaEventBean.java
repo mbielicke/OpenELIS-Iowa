@@ -95,6 +95,7 @@ public class QaEventBean implements QaEventRemote {
         return data;
     }
     
+    @SuppressWarnings("unchecked")
     public ArrayList<QaEventVO> fetchByName(String name) throws Exception {
         Query query;
     
@@ -103,6 +104,7 @@ public class QaEventBean implements QaEventRemote {
         return DataBaseUtil.toArrayList(query.getResultList());
     }
 
+    @SuppressWarnings("unchecked")
     public ArrayList<QaEventVO> fetchByTestId(Integer id) throws Exception {
         Query query;
         
@@ -111,6 +113,7 @@ public class QaEventBean implements QaEventRemote {
         return DataBaseUtil.toArrayList(query.getResultList());
     }
 
+    @SuppressWarnings("unchecked")
     public ArrayList<QaEventVO> fetchByCommon() throws Exception {
         Query query;
 
@@ -118,6 +121,7 @@ public class QaEventBean implements QaEventRemote {
         return DataBaseUtil.toArrayList(query.getResultList());
     }
 
+    @SuppressWarnings("unchecked")
     public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception {
         Query query;
         QueryBuilderV2 builder;

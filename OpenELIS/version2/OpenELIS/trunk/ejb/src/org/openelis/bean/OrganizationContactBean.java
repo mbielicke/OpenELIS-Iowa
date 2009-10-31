@@ -60,6 +60,7 @@ public class OrganizationContactBean implements OrganizationContactLocal {
 
     private static final OrganizationMetaMap meta = new OrganizationMetaMap();
 
+    @SuppressWarnings("unchecked")
     public ArrayList<OrganizationContactDO> fetchByOrganizationId(Integer id) throws Exception {
         Query query;
         List list;

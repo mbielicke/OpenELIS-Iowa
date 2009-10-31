@@ -39,16 +39,13 @@ import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.IdNameVO;
-import org.openelis.domain.OrganizationContactDO;
 import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.OrganizationViewDO;
 import org.openelis.entity.Organization;
-import org.openelis.entity.OrganizationContact;
 import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.AddressLocal;
@@ -101,6 +98,7 @@ public class OrganizationBean implements OrganizationRemote, OrganizationLocal {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public ArrayList<OrganizationDO> fetchActiveByName(String name, int max) {
         Query query;
         
@@ -111,6 +109,7 @@ public class OrganizationBean implements OrganizationRemote, OrganizationLocal {
         return DataBaseUtil.toArrayList(query.getResultList());
     }
 
+    @SuppressWarnings("unchecked")
     public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception {
         Query query;
         QueryBuilderV2 builder;

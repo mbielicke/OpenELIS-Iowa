@@ -183,18 +183,18 @@ public class TestTrailerBean implements TestTrailerRemote{
         return fetchById(id);
     }
 
-    public void delete(Integer id) throws Exception {
+    public void delete(TestTrailerDO data) throws Exception {
         Query query;
         List<Long> list;
         TestTrailer entity;
 
         checkSecurity(ModuleFlags.DELETE);
 
-        lockBean.validateLock(ReferenceTable.TEST_TRAILER, id);
+        lockBean.validateLock(ReferenceTable.TEST_TRAILER, data.getId());
 
         // reference check
         query = manager.createNamedQuery("TestTrailer.ReferenceCount");
-        query.setParameter("id", id);
+        query.setParameter("id", data.getId());
         list = query.getResultList();
         for (Long i : list) {
             if (i > 0)
@@ -202,11 +202,11 @@ public class TestTrailerBean implements TestTrailerRemote{
         }
 
         manager.setFlushMode(FlushModeType.COMMIT);
-        entity = manager.find(TestTrailer.class, id);
+        entity = manager.find(TestTrailer.class, data.getId());
         if (entity != null)
             manager.remove(entity);
 
-        lockBean.giveUpLock(ReferenceTable.TEST_TRAILER, id);
+        lockBean.giveUpLock(ReferenceTable.TEST_TRAILER, data.getId());
     }
 
     public void validate(TestTrailerDO data) throws Exception {
