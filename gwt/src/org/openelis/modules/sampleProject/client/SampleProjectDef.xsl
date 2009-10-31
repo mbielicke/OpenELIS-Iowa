@@ -17,11 +17,17 @@
 		provisions of a UIRF Software License are applicable instead of those
 		above.
 	-->
-<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-	xmlns:xalan="http://xml.apache.org/xalan" xmlns:resource="xalan://org.openelis.util.UTFResource"
-	xmlns:locale="xalan://java.util.Locale"
-	extension-element-prefixes="resource" version="1.0">
-	<xsl:import href="button.xsl" />
+<xsl:stylesheet
+  version="1.0"
+  extension-element-prefixes="resource"
+  xmlns:locale="xalan://java.util.Locale"
+  xmlns:resource="xalan://org.openelis.util.UTFResource"
+  xmlns:xalan="http://xml.apache.org/xalan"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+  xsi:noNamespaceSchemaLocation="http://openelis.uhl.uiowa.edu/schema/ScreenSchema.xsd"
+  xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd">
+	<xsl:import href="IMPORT/button.xsl" />
 
 	<xalan:component prefix="resource">
 		<xalan:script lang="javaclass"
@@ -41,12 +47,12 @@
 		</xsl:variable>
 		<xsl:variable name="constants"
 			select="resource:getBundle(string($props),locale:new(string($language)))" />
-		<screen id="SampleProjectPicker" name="{resource:getString($constants,'sampleProject')}" serviceUrl="ElisService" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+		<screen id="SampleProjectPicker" name="{resource:getString($constants,'sampleProject')}" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 				<VerticalPanel spacing="0" padding="0">
 					<VerticalPanel style="WhiteContentPanel" spacing="0" padding="0" width="300px">
 						<table key="sampleProjectTable" width="auto" maxRows="10" title="" showScroll="ALWAYS" tab="sampleProjectTable,sampleProjectTable">
 							<col header="Name" width="120">
-								<autoComplete cat="project" case="upper" width="100px">		
+								<autoComplete case="UPPER" width="100px">		
 									<col header="Name" width="115"/>
 									<col header="Desc" width="190"/>		
 								</autoComplete>
@@ -60,7 +66,7 @@
 						</table>
 						<HorizontalPanel style="WhiteContentPanel">
                       <widget halign="center" style="WhiteContentPanel">
-                      <appButton action="projectAdd" key="projectAddButton" onclick="this" style="Button">
+                      <appButton key="projectAddButton" style="Button">
                         <HorizontalPanel>
                           <AbsolutePanel style="AddRowButtonImage"/>
                           <text><xsl:value-of select="resource:getString($constants,'addRow')"/></text>
@@ -68,7 +74,7 @@
                       </appButton>
                       </widget>
                       <widget halign="center" style="WhiteContentPanel">
-                      <appButton action="projectRemove" key="projectRemoveButton" onclick="this" style="Button">
+                      <appButton key="projectRemoveButton" style="Button">
                         <HorizontalPanel>
                           <AbsolutePanel style="RemoveRowButtonImage"/>
                           <text><xsl:value-of select="resource:getString($constants,'removeRow')"/></text>

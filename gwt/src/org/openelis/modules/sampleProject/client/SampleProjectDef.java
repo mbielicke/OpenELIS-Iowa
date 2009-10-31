@@ -23,24 +23,11 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.modules.sampleProject.server;
+package org.openelis.modules.sampleProject.client;
 
-import java.util.ArrayList;
+import org.openelis.gwt.screen.ScreenDefInt;
 
-import org.openelis.common.AutocompleteRPC;
-import org.openelis.gwt.server.ServiceUtils;
-import org.openelis.persistence.EJBFactory;
-import org.openelis.remote.ProjectRemote;
-import org.openelis.server.constants.Constants;
+public interface SampleProjectDef extends ScreenDefInt {
 
-public class SampleProjectService {
-    public String getScreen() throws Exception {
-        return ServiceUtils.getXML(Constants.APP_ROOT+"/Forms/sampleProject.xsl");      
-    }
 
-    public AutocompleteRPC getProjectMatches(AutocompleteRPC rpc) throws Exception {
-        ProjectRemote remote = (ProjectRemote)EJBFactory.lookup("openelis/ProjectBean/remote");
-        rpc.model = (ArrayList)remote.fetchByName(rpc.match+"%", 10);
-        return rpc;
-    }
 }
