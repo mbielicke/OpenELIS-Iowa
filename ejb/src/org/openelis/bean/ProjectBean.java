@@ -40,6 +40,7 @@ import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.IdNameVO;
+import org.openelis.domain.ProjectDO;
 import org.openelis.domain.ProjectViewDO;
 import org.openelis.entity.Project;
 import org.openelis.gwt.common.Datetime;
@@ -182,7 +183,7 @@ public class ProjectBean implements ProjectLocal, ProjectRemote {
         return data;
     }
 
-    public ArrayList<ProjectViewDO> fetchByName(String name, int maxResults) {
+    public ArrayList<ProjectDO> fetchByName(String name, int maxResults) throws Exception {
         Query query;
         
         query = manager.createNamedQuery("Project.FetchActiveByName");
