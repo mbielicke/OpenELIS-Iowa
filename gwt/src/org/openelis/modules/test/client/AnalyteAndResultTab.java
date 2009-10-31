@@ -31,7 +31,6 @@ import java.util.List;
 
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.DictionaryDO;
-import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.domain.TestResultViewDO;
@@ -300,7 +299,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
                                 // for the first time and the key set as its value is not null 
                                 //
                                 dindex = displayManager.getDataRowIndex(r);
-                                testAnalyteManager.addColumnAt(dindex, col-1, key);
+                                testAnalyteManager.addColumnAt(dindex, col-1, key,auto.getTextBoxDisplay());
                                 displayManager.setDataGrid(testAnalyteManager.getAnalytes());
                             }
                         } else {
@@ -441,7 +440,9 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
                                 nrow = analyteTable.getRow(index+1);
                                 if(!(Boolean)nrow.data) {
                                     testAnalyteManager.addRowAt(dindex,false,false,getNextTempId());
-                                    return;
+                                    displayManager.setDataGrid(testAnalyteManager.getAnalytes());
+                                    analyteTable.selectRow(index);
+                                    return;                                    
                                 }
                             }
                             //
@@ -451,7 +452,9 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
                             testAnalyteManager.addRowAt(dindex+1,true,false,getNextTempId());
                         } else {
                             //
-                            // if prow
+                            // if prow is an analyte row and then the newly added row has
+                            // not been added to a new group and it will have to look at
+                            // row previous to it in the data grid to copy data from look
                             //
                             testAnalyteManager.addRowAt(dindex+1,false,true,getNextTempId());
                         }                        
@@ -1022,7 +1025,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
                 match = event.getMatch();
                 try {
                     rg = Integer.parseInt(match);
-                    if(rg <= resultTabPanel.getTabBar().getTabCount()){
+                    if(rg > 0 && rg <= resultTabPanel.getTabBar().getTabCount()){
                         model.add(new TableDataRow(rg,match));
                     } else {
                         model.add(new TableDataRow(null,""));
@@ -1630,7 +1633,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
                 exc = addToResultErrorList(selTab,row,TestMeta.getTestResult().getValue(),"illegalDictEntryException"); 
                 resultTable.setCellException(row, 2, exc);
             } else if(rpc.dictIdList.size() > 1) {
-                Window.alert("This value belongs to more than one category, please choose one through this window");
+                Window.alert(consts.get("chooseValueByCategory"));
                 resultTable.setCell(row, 2, "");                
                 showDictionaryPopUp();                
             } else {        

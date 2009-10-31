@@ -218,8 +218,7 @@ public class DictionaryBean implements DictionaryLocal, DictionaryRemote {
         return dictDO;
     }
 
-    public ArrayList<IdNameVO> fetchIdEntryByEntryAndCategoryId(ArrayList<QueryData> fields)
-                                                                                            throws Exception {
+    public ArrayList<DictionaryDO> fetchByEntryAndCategoryId(ArrayList<QueryData> fields) throws Exception {
         Query query;
         QueryBuilderV2 qb;
         List list;
@@ -227,11 +226,14 @@ public class DictionaryBean implements DictionaryLocal, DictionaryRemote {
         qb = new QueryBuilderV2();
         qb.setMeta(meta);
 
-        qb.setSelect("distinct new org.openelis.domain.IdNameVO(" + meta.getId() + ", " +
-                     meta.getEntry() + ") ");
+        qb.setSelect("distinct new org.openelis.domain.DictionaryDO(" + meta.getId() + ", " +
+                     meta.getSortOrder() + ", " + meta.getCategoryId() + ", " +
+                     meta.getRelatedEntryId() + ", " + meta.getSystemName() + ", " +
+                     meta.getIsActive() + ", " + meta.getLocalAbbrev() + ", " +
+                     meta.getEntry()+ ") ");
 
         qb.constructWhere(fields);
-        qb.setOrderBy(meta.getEntry());
+        qb.setOrderBy(meta.getSortOrder());
 
         query = manager.createQuery(qb.getEJBQL());
 

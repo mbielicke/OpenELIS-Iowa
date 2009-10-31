@@ -325,9 +325,7 @@ public class DictionaryScreen extends Screen implements GetMatchesHandler, DragH
                         entry.setLocalAbbrev((String)val);
                         break;
                     case 3:
-                        entry.setEntry(validateTextAgainstTestResults(entry.getId(),
-                                                                      entry.getEntry(),
-                                                                      (String)val, r));
+                        entry.setEntry((String)val);
                         break;
                     case 4:
                         row = (TableDataRow)val;
@@ -700,33 +698,6 @@ public class DictionaryScreen extends Screen implements GetMatchesHandler, DragH
         }
 
         sectionId.setModel(model);
-    }
-
-    private String validateTextAgainstTestResults(Integer key,String oldEntry,
-                                                String entry,
-                                                int row) {
-        DictionaryRPC detrpc;
-        boolean ok;
-
-        if (key == null || DataBaseUtil.isEmpty(oldEntry))
-            return entry;
-
-        detrpc = new DictionaryRPC();
-        detrpc.entryText = entry;
-        
-        try {
-            detrpc = service.call("getNumResultsAffected", detrpc);
-            if (detrpc.count > 0) {
-                ok = Window.confirm(consts.get("entryAddedAsResultValue"));
-                if (!ok) {                    
-                    dictEntTable.setCell(row, 3, oldEntry);
-                    return oldEntry;
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return entry; 
     }
     
     private void enableDragAndDrop(boolean enable) {          

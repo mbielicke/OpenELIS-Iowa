@@ -32,10 +32,8 @@ import javax.naming.InitialContext;
 
 import org.openelis.domain.TestSectionViewDO;
 import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.CategoryLocal;
 import org.openelis.local.DictionaryLocal;
 import org.openelis.local.TestSectionLocal;
 import org.openelis.metamap.TestMetaMap;

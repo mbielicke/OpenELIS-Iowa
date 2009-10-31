@@ -127,6 +127,9 @@ public class DictionaryManager implements RPC {
             return;
 
         entry = entries.remove(oldIndex);
+        if(newIndex > oldIndex)
+            newIndex--;
+        
         if (newIndex >= count())
             addEntry(entry);
         else

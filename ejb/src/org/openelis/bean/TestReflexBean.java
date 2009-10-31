@@ -146,7 +146,7 @@ public class TestReflexBean implements TestReflexLocal {
 
         if (refDO.getTestAnalyteId() == null) {
             list.add(new FieldErrorException("fieldRequiredException",
-                                             meta.TEST_REFLEX.getTestAnalyteId()));
+                                             meta.TEST_REFLEX.getTestAnalyte().getAnalyte().getName()));
         }
 
         if (refDO.getTestResultId() == null) {            
