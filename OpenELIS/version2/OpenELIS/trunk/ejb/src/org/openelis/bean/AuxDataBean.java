@@ -35,7 +35,9 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
-import org.openelis.domain.AuxDataDO;
+import org.openelis.domain.AuxDataViewDO;
+import org.openelis.domain.DictionaryDO;
+import org.openelis.domain.DictionaryViewDO;
 import org.openelis.entity.AuxData;
 import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.NotFoundException;
@@ -50,16 +52,36 @@ public class AuxDataBean implements AuxDataLocal {
     @PersistenceContext(name = "openelis")
     private EntityManager manager;
 
-    public ArrayList<AuxDataDO> fetchById(Integer referenceId, Integer referenceTableId)
-                                                                                        throws Exception {
+    public ArrayList<AuxDataViewDO> fetchById(Integer referenceId, Integer referenceTableId) throws Exception {
         Query query;
-        ArrayList<AuxDataDO> data;
+        ArrayList<AuxDataViewDO> data;
+        AuxDataViewDO dataDO;
+        Integer dictionaryTypeId;
+        DictionaryDO dictDO;
         
         query = manager.createNamedQuery("AuxData.FetchById");
         query.setParameter("id", referenceId);
         query.setParameter("tableId", referenceTableId);
         try {
             data = DataBaseUtil.toArrayList(query.getResultList());
+            
+            if(data.size() > 0){
+                query = manager.createNamedQuery("Dictionary.FetchBySystemName");
+                query.setParameter("name", "aux_dictionary");
+                dictDO = (DictionaryDO)query.getResultList().get(0);
+                dictionaryTypeId = dictDO.getId();
+                
+                for(int i=0; i<data.size(); i++){
+                    dataDO = data.get(i);
+                
+                    if(dictionaryTypeId.equals(dataDO.getTypeId())){
+                        query = manager.createNamedQuery("Dictionary.FetchById");
+                        query.setParameter("id", new Integer(dataDO.getValue()));
+                        dictDO = (DictionaryViewDO)query.getResultList().get(0);
+                        dataDO.setDictionary(dictDO.getEntry());
+                    }
+                }
+            }
         } catch (NoResultException e) {
             throw new NotFoundException();
         } catch (Exception e) {
@@ -68,7 +90,7 @@ public class AuxDataBean implements AuxDataLocal {
         return data;
     }
 
-    public AuxDataDO add(AuxDataDO data) throws Exception {
+    public AuxDataViewDO add(AuxDataViewDO data) throws Exception {
         AuxData entity;
         
         manager.setFlushMode(FlushModeType.COMMIT);
@@ -88,7 +110,7 @@ public class AuxDataBean implements AuxDataLocal {
         return data;
     }
 
-    public AuxDataDO update(AuxDataDO data) throws Exception {
+    public AuxDataViewDO update(AuxDataViewDO data) throws Exception {
         AuxData entity;
         
         if (!data.isChanged())
@@ -108,7 +130,7 @@ public class AuxDataBean implements AuxDataLocal {
         return data;
     }
 
-    public void delete(AuxDataDO data) throws Exception {
+    public void delete(AuxDataViewDO data) throws Exception {
         AuxData entity;
 
         manager.setFlushMode(FlushModeType.COMMIT);

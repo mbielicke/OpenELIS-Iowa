@@ -100,7 +100,7 @@ public class AuxiliaryBean implements AuxiliaryRemote {
         String sysName,entry;       
         DictionaryViewDO snDO, entDO;
         
-        Query query = manager.createNamedQuery("AuxFieldValue.AuxFieldValueDOList");
+        Query query = manager.createNamedQuery("AuxFieldValue.FetchById");
         query.setParameter("auxFieldId", auxFieldId);        
             auxfieldValues = query.getResultList();
             for (Iterator iter = auxfieldValues.iterator(); iter.hasNext();) {

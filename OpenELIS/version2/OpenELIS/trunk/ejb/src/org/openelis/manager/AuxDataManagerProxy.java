@@ -30,8 +30,8 @@ import java.util.HashMap;
 
 import javax.naming.InitialContext;
 
-import org.openelis.domain.AuxDataDO;
-import org.openelis.domain.AuxFieldValueDO;
+import org.openelis.domain.AuxDataViewDO;
+import org.openelis.domain.AuxFieldValueViewDO;
 import org.openelis.domain.AuxFieldViewDO;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.AuxDataLocal;
@@ -42,7 +42,7 @@ public class AuxDataManagerProxy {
     
     public AuxDataManager fetchById(Integer referenceId, Integer referenceTableId) throws Exception {
         AuxDataLocal l;
-        ArrayList<AuxDataDO> data;
+        ArrayList<AuxDataViewDO> data;
         AuxDataManager m;
 
         l = local();
@@ -59,13 +59,13 @@ public class AuxDataManagerProxy {
         AuxDataLocal l;
         AuxFieldLocal fl;
         AuxFieldValueLocal fvl;
-        AuxDataDO dataDO;
-        ArrayList<AuxDataDO> data;
+        AuxDataViewDO dataDO;
+        ArrayList<AuxDataViewDO> data;
         ArrayList<AuxFieldViewDO> fields;
-        ArrayList<AuxFieldValueDO> values, tmpValue;
+        ArrayList<AuxFieldValueViewDO> values, tmpValue;
         int fieldId;
         HashMap<Integer, AuxFieldViewDO> fieldHash;
-        HashMap<Integer, ArrayList<AuxFieldValueDO>> valueHash;
+        HashMap<Integer, ArrayList<AuxFieldValueViewDO>> valueHash;
         
         
         AuxDataManager m;
@@ -85,7 +85,7 @@ public class AuxDataManagerProxy {
         values = fvl.fetchByAuxDataRefIdRefTableId(referenceId, referenceTableId);
         
         //split the values up by field id
-        valueHash = new HashMap<Integer, ArrayList<AuxFieldValueDO>>();
+        valueHash = new HashMap<Integer, ArrayList<AuxFieldValueViewDO>>();
         tmpValue = null;
         fieldId = -1;
         for(int j=0; j<values.size(); j++){
@@ -93,7 +93,7 @@ public class AuxDataManagerProxy {
                 tmpValue.add(values.get(j));
             }else{
                 valueHash.put(fieldId, tmpValue);
-                tmpValue = new ArrayList<AuxFieldValueDO>();
+                tmpValue = new ArrayList<AuxFieldValueViewDO>();
                 tmpValue.add(values.get(j));
                 fieldId = values.get(j).getAuxFieldId();
             }
@@ -109,11 +109,44 @@ public class AuxDataManagerProxy {
     }
     
     public AuxDataManager add(AuxDataManager man) throws Exception {
-        return null;
+        AuxDataLocal l;
+        AuxDataViewDO data;
+
+        l = local();
+        for (int i = 0; i < man.count(); i++ ) {
+            data = man.getAuxDataAt(i);
+            data.setReferenceTableId(man.getReferenceTableId());
+            data.setReferenceId(man.getReferenceId());
+            data.setSortOrder(i);
+            
+            l.add(data);
+        }
+
+        return man;
     }
     
     public AuxDataManager update(AuxDataManager man) throws Exception {
-        return null;
+        AuxDataLocal l;
+        AuxDataViewDO data;
+
+        l = local();
+        for (int j = 0; j < man.deleteCount(); j++ )
+            l.delete(man.getDeletedAuxDataAt(j));
+
+        for (int i = 0; i < man.count(); i++ ) {
+            data = man.getAuxDataAt(i);
+            data.setSortOrder(i);
+            
+            if (data.getId() == null) {
+                data.setReferenceTableId(man.getReferenceTableId());
+                data.setReferenceId(man.getReferenceId());
+                l.add(data);
+            } else {
+                l.update(data);
+            }
+        }
+
+        return man;
     }
     
     public void validate(AuxDataManager man, ValidationErrorsList errorsList) throws Exception {

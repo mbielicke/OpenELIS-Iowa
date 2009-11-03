@@ -29,14 +29,14 @@ import java.util.ArrayList;
 
 import javax.naming.InitialContext;
 
-import org.openelis.domain.AuxFieldValueDO;
+import org.openelis.domain.AuxFieldValueViewDO;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.AuxFieldValueLocal;
 
 public class AuxFieldValueManagerProxy {
     public AuxFieldValueManager fetchByAuxFieldId(Integer auxFieldId) throws Exception {
         AuxFieldValueLocal l;
-        ArrayList<AuxFieldValueDO> data;
+        ArrayList<AuxFieldValueViewDO> data;
         AuxFieldValueManager m;
 
         l = local();
@@ -51,7 +51,7 @@ public class AuxFieldValueManagerProxy {
     }
     
     public AuxFieldValueManager add(AuxFieldValueManager man) throws Exception {
-        AuxFieldValueDO auxDO;
+        AuxFieldValueViewDO auxDO;
         AuxFieldValueLocal l;
 
         l = local();
@@ -65,7 +65,7 @@ public class AuxFieldValueManagerProxy {
     }
     
     public AuxFieldValueManager update(AuxFieldValueManager man) throws Exception {
-        AuxFieldValueDO auxDO;
+        AuxFieldValueViewDO auxDO;
         AuxFieldValueLocal l;
 
         l = local();

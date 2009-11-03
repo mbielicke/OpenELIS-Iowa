@@ -57,6 +57,10 @@ public class SampleManagerProxy {
         man.getQaEvents().setSampleId(sampleId);
         man.getQaEvents().add();
         
+        man.getAuxData().setReferenceTableId(sampleRefId);
+        man.getAuxData().setReferenceId(sampleId);
+        man.getAuxData().add();
+        
         man.getInternalNotes().setReferenceTableId(sampleInternalRefId);
         man.getInternalNotes().setReferenceId(sampleId);
         man.getInternalNotes().add();
@@ -87,7 +91,11 @@ public class SampleManagerProxy {
         man.getProjects().update();
         
         man.getQaEvents().setSampleId(sampleId);
-        man.getQaEvents().add();
+        man.getQaEvents().update();
+        
+        man.getAuxData().setReferenceTableId(sampleRefId);
+        man.getAuxData().setReferenceId(sampleId);
+        man.getAuxData().update();
         
         man.getInternalNotes().setReferenceTableId(sampleInternalRefId);
         man.getInternalNotes().setReferenceId(sampleId);

@@ -26,13 +26,15 @@
 package org.openelis.manager;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.naming.InitialContext;
 
-import org.openelis.domain.AuxFieldValueDO;
+import org.openelis.domain.AuxFieldValueViewDO;
 import org.openelis.domain.AuxFieldViewDO;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.AuxFieldLocal;
+import org.openelis.local.AuxFieldValueLocal;
 
 public class AuxFieldManagerProxy {
     public AuxFieldManager fetchById(Integer id) throws Exception {
@@ -50,23 +52,54 @@ public class AuxFieldManagerProxy {
         return m;
     }
     
-    public AuxFieldManager fetchWithValuesById(Integer id) throws Exception {
+    public AuxFieldManager fetchByGroupIdWithValues(Integer groupId) throws Exception {
         AuxFieldLocal l;
-        ArrayList<AuxFieldViewDO> data;
-        ArrayList<AuxFieldValueDO> values;
-        AuxFieldManager m;
-
-        l = local();
-        data = l.fetchById(id);
-        m = AuxFieldManager.getInstance();
+        AuxFieldValueLocal vl;
         
-        for(int i=0; i<data.size(); i++)
-            m.addAuxField(data.get(i));
-
+        AuxFieldViewDO dataDO;
+        ArrayList<AuxFieldViewDO> fields;
+        ArrayList<AuxFieldValueViewDO> values, tmpValue;
+        int fieldId;
+        HashMap<Integer, ArrayList<AuxFieldValueViewDO>> valueHash;
+        AuxFieldManager m;
+        
+        l = local();
+        fields = l.fetchByGroupId(groupId);
+        
+        vl = valueLocal();
+        values = vl.fetchByGroupId(groupId);
+        
+        //split the values up by field id
+        valueHash = new HashMap<Integer, ArrayList<AuxFieldValueViewDO>>();
+        tmpValue = null;
+        fieldId = -1;
+        for(int j=0; j<values.size(); j++){
+            if(fieldId == values.get(j).getAuxFieldId()){
+                tmpValue.add(values.get(j));
+            }else{
+                if(fieldId > -1)
+                    valueHash.put(fieldId, tmpValue);
+                
+                tmpValue = new ArrayList<AuxFieldValueViewDO>();
+                tmpValue.add(values.get(j));
+                fieldId = values.get(j).getAuxFieldId();
+            }
+        }
+        
+        //put one more in the hash to catch the last one
+        valueHash.put(fieldId, tmpValue);
+        
+        m = AuxFieldManager.getInstance();
+        m.setAuxFieldGroupId(groupId);
+        for(int k=0; k<fields.size(); k++){
+            dataDO = fields.get(k);
+            m.addAuxFieldAndValues(dataDO, valueHash.get(dataDO.getId()));
+        }
+        
         return m;
     }
     
-    public AuxFieldManager fetchByAuxFieldGroupId(Integer auxFieldGroupId) throws Exception {
+    public AuxFieldManager fetchByGroupId(Integer auxFieldGroupId) throws Exception {
         AuxFieldLocal l;
         ArrayList<AuxFieldViewDO> data;
         AuxFieldManager m;
@@ -132,6 +165,16 @@ public class AuxFieldManagerProxy {
         try {
             InitialContext ctx = new InitialContext();
             return (AuxFieldLocal)ctx.lookup("openelis/AuxFieldBean/local");
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return null;
+        }
+    }
+    
+    private AuxFieldValueLocal valueLocal() {
+        try {
+            InitialContext ctx = new InitialContext();
+            return (AuxFieldValueLocal)ctx.lookup("openelis/AuxFieldValueBean/local");
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return null;

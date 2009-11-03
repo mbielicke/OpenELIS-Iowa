@@ -48,8 +48,8 @@ import org.openelis.utils.Auditable;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-@NamedQueries({@NamedQuery(name = "AuxData.FetchById", query = "select distinct new org.openelis.domain.AuxDataDO(a.id, a.sortOrder, " + 
-                           " a.auxFieldId, a.referenceId, a.referenceTableId, a.isReportable, a.typeId, a.value) " +
+@NamedQueries({@NamedQuery(name = "AuxData.FetchById", query = "select distinct new org.openelis.domain.AuxDataViewDO(a.id, a.sortOrder, " + 
+                           " a.auxFieldId, a.referenceId, a.referenceTableId, a.isReportable, a.typeId, a.value, '') " +
                            " from AuxData a where a.referenceId = :id and a.referenceTableId = :tableId order by a.sortOrder ")})
                     
 @Entity

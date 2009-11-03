@@ -210,17 +210,7 @@ public class ResultBean implements ResultLocal {
                                   HashMap<Integer, AnalyteDO> analyteList) throws Exception {
         List<AnalyteDO> analytes = null;
         List<ResultViewDO> rslts = null;
-        /*
-        //get test_analytes by test id
-        Query query = manager.createNamedQuery("TestAnalyte.FetchByTestId");
-        query.setParameter("testId", testId);
-        testAnalytes = query.getResultList();
         
-        //get test_results by test id
-        query = manager.createNamedQuery("TestResult.FetchByTestId");
-        query.setParameter("testId", testId);
-        testResults = query.getResultList();
-        */
         //get analytes by analysis id
         Query query = manager.createNamedQuery("Result.AnalyteByAnalysisId");
         query.setParameter("id", analysisId);
