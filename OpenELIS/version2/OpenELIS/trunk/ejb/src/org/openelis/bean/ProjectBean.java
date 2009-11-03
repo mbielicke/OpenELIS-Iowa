@@ -82,15 +82,16 @@ public class ProjectBean implements ProjectLocal, ProjectRemote {
 
         try {
             data = (ProjectViewDO)query.getSingleResult();
+            if (data.getOwnerId() != null) {
+                user = sysUser.getSystemUser(data.getOwnerId());
+                if (user != null)
+                    data.setOwnerName(user.getLoginName());
+            }
         } catch (NoResultException e) {
             throw new NotFoundException();
         } catch (Exception e) {
             throw new DatabaseException(e);
         }
-        user = sysUser.getSystemUser(data.getOwnerId());
-        if (user != null)
-            data.setOwnerName(user.getLoginName());
-
         return data;
     }
 

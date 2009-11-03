@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.security.RolesAllowed;
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
@@ -51,6 +52,8 @@ import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.QcLocal;
 import org.openelis.metamap.QcMetaMap;
 import org.openelis.remote.QcRemote;
+import org.openelis.security.domain.SystemUserDO;
+import org.openelis.security.local.SystemUserUtilLocal;
 import org.openelis.util.QueryBuilderV2;
 import org.openelis.utilcommon.DataBaseUtil;
 
@@ -62,16 +65,25 @@ public class QcBean implements QcRemote, QcLocal {
     @PersistenceContext(name = "openelis")
     private EntityManager                    manager;
 
+    @EJB
+    private SystemUserUtilLocal   sysUser;
+
     private static final QcMetaMap meta = new QcMetaMap();
 
     public QcViewDO fetchById(Integer id) throws Exception {
         Query query;
         QcViewDO data;
+        SystemUserDO user;
         
         query = manager.createNamedQuery("Qc.FetchById");
         query.setParameter("id", id);
         try {
             data = (QcViewDO)query.getSingleResult();
+            if (data.getPreparedById() != null) {
+                user = sysUser.getSystemUser(data.getPreparedById());
+                if (user != null)
+                    data.setPreparedByName(user.getLoginName());
+            }
         } catch (NoResultException e) {
             throw new NotFoundException();
         } catch (Exception e) {
