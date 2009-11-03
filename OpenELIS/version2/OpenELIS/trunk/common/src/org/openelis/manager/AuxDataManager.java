@@ -2,9 +2,10 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
-import org.openelis.domain.AuxDataDO;
-import org.openelis.domain.AuxFieldValueDO;
+import org.openelis.domain.AuxDataViewDO;
+import org.openelis.domain.AuxFieldValueViewDO;
 import org.openelis.domain.AuxFieldViewDO;
+import org.openelis.domain.OrganizationContactDO;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.ValidationErrorsList;
@@ -32,10 +33,11 @@ public class AuxDataManager implements RPC {
         return proxy().fetchById(referenceId, referenceTableId);
     }
 
-    public static AuxDataManager fetchByIdForUpdate(Integer referenceId, Integer referenceTableId) throws Exception {
+    public static AuxDataManager fetchByIdForUpdate(Integer referenceId, Integer referenceTableId)
+                                                                                                  throws Exception {
         return proxy().fetchByIdForUpdate(referenceId, referenceTableId);
     }
-    
+
     public int count() {
         if (items == null)
             return 0;
@@ -58,28 +60,31 @@ public class AuxDataManager implements RPC {
     public void setReferenceTableId(Integer referenceTableId) {
         this.referenceTableId = referenceTableId;
     }
-    
-    public AuxDataDO getAuxDataAt(int i) {
+
+    public AuxDataViewDO getAuxDataAt(int i) {
         return items.get(i).data;
 
     }
 
-    public void setAuxDataAt(AuxDataDO auxData, int i) {
+    public void setAuxDataAt(AuxDataViewDO auxData, int i) {
         items.get(i).data = auxData;
     }
 
-    public void addAuxData(AuxDataDO auxData) {
+    public void addAuxData(AuxDataViewDO auxData) {
         AuxDataListItem item = new AuxDataListItem();
         item.data = auxData;
 
         items.add(item);
     }
-    
-    public void addAuxDataFieldsAndValues(AuxDataDO auxData, AuxFieldViewDO field, ArrayList<AuxFieldValueDO> values) {
+
+    public void addAuxDataFieldsAndValues(AuxDataViewDO auxData,
+                                          AuxFieldViewDO field,
+                                          ArrayList<AuxFieldValueViewDO> values) {
         AuxDataListItem item = new AuxDataListItem();
         item.data = auxData;
-        
+
         AuxFieldManager fieldMan = AuxFieldManager.getInstance();
+        fieldMan.setAuxFieldGroupId(field.getAuxFieldGroupId());
         fieldMan.addAuxFieldAndValues(field, values);
         item.fields = fieldMan;
 
@@ -97,6 +102,27 @@ public class AuxDataManager implements RPC {
 
         if (tmp.data.getId() != null)
             deletedList.add(tmp);
+    }
+
+    public void removeAuxDataGroupAt(int i) {
+        Integer groupId;
+        if (items == null || i >= items.size())
+            return;
+
+        // need to get the group id to remove
+        groupId = items.get(i).fields.getAuxFieldGroupId();
+        
+        if (deletedList == null)
+            deletedList = new ArrayList<AuxDataListItem>();
+        
+        for(int j=count()-1; j>-1; j--){
+            if(groupId.equals(items.get(j).fields.getAuxFieldGroupId())){
+                AuxDataListItem tmp = items.remove(j);
+                
+                if(tmp.data.getId() != null)
+                    deletedList.add(tmp);
+            }
+        }
     }
 
     //
@@ -122,7 +148,7 @@ public class AuxDataManager implements RPC {
 
         return item.fields;
     }
-    
+
     public void setFieldsAt(AuxFieldManager fieldManager, int i) {
         items.get(i).fields = fieldManager;
     }
@@ -148,6 +174,16 @@ public class AuxDataManager implements RPC {
     public void validate(ValidationErrorsList errorsList) throws Exception {
         proxy().validate(this, errorsList);
     }
+    
+    int deleteCount() {
+        if (deletedList == null)
+            return 0;
+        return deletedList.size();
+    }
+
+    AuxDataViewDO getDeletedAuxDataAt(int i) {
+        return deletedList.get(i).data;
+    }
 
     private static AuxDataManagerProxy proxy() {
         if (proxy == null)
@@ -159,7 +195,7 @@ public class AuxDataManager implements RPC {
     static class AuxDataListItem implements RPC {
         private static final long serialVersionUID = 1L;
 
-        AuxDataDO                 data;
+        AuxDataViewDO             data;
         AuxFieldManager           fields;
     }
 }

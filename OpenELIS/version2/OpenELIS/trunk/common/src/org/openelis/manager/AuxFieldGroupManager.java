@@ -53,7 +53,7 @@ public class AuxFieldGroupManager implements RPC {
         if (fields == null) {
             if (group.getId() != null) {
                 try {
-                    fields = AuxFieldManager.fetchByAuxFieldGroupId(group.getId());
+                    fields = AuxFieldManager.fetchByGroupId(group.getId());
                 } catch (NotFoundException e) {
                     // ignore
                 } catch (Exception e) {

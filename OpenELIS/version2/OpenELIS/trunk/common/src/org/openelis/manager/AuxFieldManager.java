@@ -2,7 +2,7 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
-import org.openelis.domain.AuxFieldValueDO;
+import org.openelis.domain.AuxFieldValueViewDO;
 import org.openelis.domain.AuxFieldViewDO;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.RPC;
@@ -33,16 +33,16 @@ public class AuxFieldManager implements RPC {
         return proxy().fetchById(id);
     }
     
-    public static AuxFieldManager fetchWithValuesById(Integer id) throws Exception {
-        return proxy().fetchWithValuesById(id);
-    }
-    
     /**
      * Creates a new instance of this object with the specified auxiliary field
      * id. Use this function to load an instance of this object from database.
      */
-    public static AuxFieldManager fetchByAuxFieldGroupId(Integer auxFieldGroupId) throws Exception {
-        return proxy().fetchByAuxFieldGroupId(auxFieldGroupId);
+    public static AuxFieldManager fetchByGroupId(Integer auxFieldGroupId) throws Exception {
+        return proxy().fetchByGroupId(auxFieldGroupId);
+    }
+    
+    public static AuxFieldManager fetchByGroupIdWithValues(Integer auxFieldGroupId) throws Exception {
+        return proxy().fetchByGroupIdWithValues(auxFieldGroupId);
     }
 
     public int count() {
@@ -77,12 +77,13 @@ public class AuxFieldManager implements RPC {
         items.add(item);
     }
     
-    public void addAuxFieldAndValues(AuxFieldViewDO auxField, ArrayList<AuxFieldValueDO> values) {
+    public void addAuxFieldAndValues(AuxFieldViewDO auxField, ArrayList<AuxFieldValueViewDO> values) {
         AuxFieldListItem item = new AuxFieldListItem();
         item.field = auxField;
         item.values = AuxFieldValueManager.getInstance();
+        item.values.setAuxiliaryFieldId(auxField.getId());
         
-        for(int i=0; i<item.values.count(); i++)
+        for(int i=0; i<values.size(); i++)
             item.values.addAuxFieldValue(values.get(i));
 
         items.add(item);
