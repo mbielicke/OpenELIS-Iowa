@@ -1,6 +1,7 @@
 package org.openelis.bean;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.annotation.Resource;
 import javax.annotation.security.RolesAllowed;
@@ -15,6 +16,7 @@ import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.ProjectParameterDO;
 import org.openelis.entity.ProjectParameter;
 import org.openelis.gwt.common.FieldErrorException;
+import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.ProjectParameterLocal;
 import org.openelis.metamap.ProjectMetaMap;
@@ -23,102 +25,85 @@ import org.openelis.utilcommon.DataBaseUtil;
 @Stateless
 @SecurityDomain("openelis")
 @RolesAllowed("project-select")
-
 public class ProjectParameterBean implements ProjectParameterLocal {
-	
+
     @PersistenceContext(name = "openelis")
-    private EntityManager manager;
+    private EntityManager         manager;
 
-    @Resource
-    private SessionContext ctx;
-    
-    private static ProjectMetaMap ProjMeta = new ProjectMetaMap();
-    
-    public ProjectParameterDO fetchById(Integer id) throws Exception {
+    private static final ProjectMetaMap meta = new ProjectMetaMap();
+
+    public ArrayList<ProjectParameterDO> fetchByProjectId(Integer id) throws Exception {
         Query query;
-        
-        query = manager.createNamedQuery("ProjectParameter.ProjectParameterById");
-        query.setParameter("id",id);        
-        
-        return (ProjectParameterDO)query.getSingleResult();
+        List list;
+
+        query = manager.createNamedQuery("ProjectParameter.FetchByProjectId");
+        query.setParameter("projectId", id);
+
+        list = query.getResultList();
+        if (list.isEmpty())
+            throw new NotFoundException();
+
+        return DataBaseUtil.toArrayList(list);
     }
 
-    public ArrayList<ProjectParameterDO> findByProject(Integer projectId) throws Exception {
-        Query query;
-        
-        query = manager.createNamedQuery("ProjectParameter.ProjectParameterByProjectId");
-        query.setParameter("projectId",projectId);        
-        
-        return DataBaseUtil.toArrayList(query.getResultList());
+    public ProjectParameterDO add(ProjectParameterDO data) throws Exception {
+        ProjectParameter entity;
+
+        manager.setFlushMode(FlushModeType.COMMIT);
+
+        entity = new ProjectParameter();
+        entity.setProjectId(data.getProjectId());
+        entity.setParameter(data.getParameter());
+        entity.setOperationId(data.getOperationId());
+        entity.setValue(data.getValue());
+
+        manager.persist(entity);
+        data.setId(entity.getId());
+
+        return data;
     }
-    
-    public ProjectParameterDO add(ProjectParameterDO paramDO) throws Exception {
-    	ProjectParameter param;
-    	    	
-    	manager.setFlushMode(FlushModeType.COMMIT);
-    	
-        param = new ProjectParameter();
-        param.setParameter(paramDO.getParameter());
-        param.setOperationId(paramDO.getOperationId());
-        param.setValue(paramDO.getValue());
-        param.setProjectId(paramDO.getProjectId());
-          
-        manager.persist(param);
-        
-        paramDO.setId(param.getId());
-        
-        return paramDO;
+
+    public ProjectParameterDO update(ProjectParameterDO data) throws Exception {
+        ProjectParameter entity;
+
+        if ( !data.isChanged())
+            return data;
+
+        manager.setFlushMode(FlushModeType.COMMIT);
+
+        entity = manager.find(ProjectParameter.class, data.getId());
+        entity.setProjectId(data.getProjectId());
+        entity.setParameter(data.getParameter());
+        entity.setOperationId(data.getOperationId());
+        entity.setValue(data.getValue());
+
+        return data;
     }
-    
-    public ProjectParameterDO update(ProjectParameterDO paramDO) throws Exception {
-    	ProjectParameter param;
-    	    	
-    	manager.setFlushMode(FlushModeType.COMMIT);
-    	
-        param = manager.find(ProjectParameter.class, paramDO.getId());
-        param.setParameter(paramDO.getParameter());
-        param.setOperationId(paramDO.getOperationId());
-        param.setValue(paramDO.getValue());
-        param.setProjectId(paramDO.getProjectId());
-                  
-        return paramDO;
-    }
-    
+
     public void delete(ProjectParameterDO data) throws Exception {
-    	ProjectParameter param;
-    	
-    	manager.setFlushMode(FlushModeType.COMMIT);
-    	
-    	param = manager.find(ProjectParameter.class, data.getId());
-    	
-    	manager.remove(param);
-    }
-    
-    
-    public void validate(ProjectParameterDO paramDO) throws ValidationErrorsList {
-    	String param,value;
-    	ValidationErrorsList exceptionList = new ValidationErrorsList();
+        ProjectParameter entity;
 
-    	param = paramDO.getParameter();
-    	value = paramDO.getValue();
-    	if(param == null || "".equals(param)) {
-    		exceptionList.add(new FieldErrorException("fieldRequiredException",
-    				ProjMeta.getProjectParameter().getParameter()));
-    	}
+        manager.setFlushMode(FlushModeType.COMMIT);
 
-    	if(value == null || "".equals(value)) {
-    		exceptionList.add(new FieldErrorException("fieldRequiredException",
-    				ProjMeta.getProjectParameter().getValue()));
-    	}
-
-    	if(paramDO.getOperationId() == null) {
-    		exceptionList.add(new FieldErrorException("fieldRequiredException",
-    				ProjMeta.getProjectParameter().getOperationId()));
-    	}
-    	
-    	if(exceptionList.size() > 0)
-    		throw exceptionList;
-    		
+        entity = manager.find(ProjectParameter.class, data.getId());
+        if (entity != null)
+            manager.remove(entity);
     }
 
+    public void validate(ProjectParameterDO data) throws ValidationErrorsList {
+        ValidationErrorsList list;
+
+        list = new ValidationErrorsList();
+        if (DataBaseUtil.isEmpty(data.getParameter()))
+            list.add(new FieldErrorException("fieldRequiredException", 
+                                             meta.PROJECT_PARAMETER.getParameter()));
+        if (DataBaseUtil.isEmpty(data.getOperationId()))
+            list.add(new FieldErrorException("fieldRequiredException",
+                                             meta.PROJECT_PARAMETER.getOperationId()));
+        if (DataBaseUtil.isEmpty(data.getValue()))
+            list.add(new FieldErrorException("fieldRequiredException",
+                                             meta.PROJECT_PARAMETER.getValue()));
+        if (list.size() > 0)
+            throw list;
+    }
 }

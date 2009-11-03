@@ -1,40 +1,39 @@
-/** Exhibit A - UIRF Open-source Based Public Software License.
-* 
-* The contents of this file are subject to the UIRF Open-source Based
-* Public Software License(the "License"); you may not use this file except
-* in compliance with the License. You may obtain a copy of the License at
-* openelis.uhl.uiowa.edu
-* 
-* Software distributed under the License is distributed on an "AS IS"
-* basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
-* License for the specific language governing rights and limitations
-* under the License.
-* 
-* The Original Code is OpenELIS code.
-* 
-* The Initial Developer of the Original Code is The University of Iowa.
-* Portions created by The University of Iowa are Copyright 2006-2008. All
-* Rights Reserved.
-* 
-* Contributor(s): ______________________________________.
-* 
-* Alternatively, the contents of this file marked
-* "Separately-Licensed" may be used under the terms of a UIRF Software
-* license ("UIRF Software License"), in which case the provisions of a
-* UIRF Software License are applicable instead of those above. 
-*/
+/**
+ * Exhibit A - UIRF Open-source Based Public Software License.
+ * 
+ * The contents of this file are subject to the UIRF Open-source Based Public
+ * Software License(the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * openelis.uhl.uiowa.edu
+ * 
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+ * the specific language governing rights and limitations under the License.
+ * 
+ * The Original Code is OpenELIS code.
+ * 
+ * The Initial Developer of the Original Code is The University of Iowa.
+ * Portions created by The University of Iowa are Copyright 2006-2008. All
+ * Rights Reserved.
+ * 
+ * Contributor(s): ______________________________________.
+ * 
+ * Alternatively, the contents of this file marked "Separately-Licensed" may be
+ * used under the terms of a UIRF Software license ("UIRF Software License"), in
+ * which case the provisions of a UIRF Software License are applicable instead
+ * of those above.
+ */
 package org.openelis.bean;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.Resource;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
-import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
@@ -43,15 +42,12 @@ import org.openelis.domain.IdNameVO;
 import org.openelis.domain.ProjectDO;
 import org.openelis.domain.ProjectViewDO;
 import org.openelis.entity.Project;
-import org.openelis.gwt.common.Datetime;
+import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.SecurityModule.ModuleFlags;
 import org.openelis.gwt.common.data.QueryData;
-import org.openelis.local.LockLocal;
 import org.openelis.local.ProjectLocal;
 import org.openelis.metamap.ProjectMetaMap;
 import org.openelis.remote.ProjectRemote;
@@ -59,74 +55,72 @@ import org.openelis.security.domain.SystemUserDO;
 import org.openelis.security.local.SystemUserUtilLocal;
 import org.openelis.util.QueryBuilderV2;
 import org.openelis.utilcommon.DataBaseUtil;
-import org.openelis.utils.GetPage;
-import org.openelis.utils.SecurityInterceptor;
 
 @Stateless
-@RolesAllowed("project-select")
 @SecurityDomain("openelis")
+@RolesAllowed("project-select")
 public class ProjectBean implements ProjectLocal, ProjectRemote {
 
     @PersistenceContext(name = "openelis")
-    private EntityManager manager;
+    private EntityManager         manager;
 
-    @Resource
-    private SessionContext ctx;
+    private static ProjectMetaMap meta = new ProjectMetaMap();
 
     @EJB
-    private LockLocal lockBean;
-    
-    @EJB
-    private SystemUserUtilLocal sysUser;
-    
-    private static ProjectMetaMap ProjMeta = new ProjectMetaMap();
-    
-    private static Integer projRefTableId;
-    
+    private SystemUserUtilLocal   sysUser;
+
     public ProjectBean() {
- 
     }
-    
+
     public ProjectViewDO fetchById(Integer id) throws Exception {
-        ProjectViewDO data;
         Query query;
-        
-        query = manager.createNamedQuery("Project.FetchDOById");
+        ProjectViewDO data;
+        SystemUserDO user;
+
+        query = manager.createNamedQuery("Project.FetchById");
         query.setParameter("id", id);
-        data = (ProjectViewDO)query.getSingleResult(); 
-        
-        SystemUserDO user= sysUser.getSystemUser(data.getOwnerId());
-        data.setSystemUserName(user.getLoginName());
-                
+
+        try {
+            data = (ProjectViewDO)query.getSingleResult();
+        } catch (NoResultException e) {
+            throw new NotFoundException();
+        } catch (Exception e) {
+            throw new DatabaseException(e);
+        }
+        user = sysUser.getSystemUser(data.getOwnerId());
+        if (user != null)
+            data.setOwnerName(user.getLoginName());
+
         return data;
     }
 
-    public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception {
-        QueryBuilderV2 qb;
-        List list;
+    @SuppressWarnings("unchecked")
+    public ArrayList<ProjectDO> fetchActiveByName(String name, int maxResults) throws Exception {
         Query query;
-        
-        qb = new QueryBuilderV2();
-        
-        qb.setMeta(ProjMeta);
 
-        qb.setSelect("distinct new org.openelis.domain.IdNameVO(" +ProjMeta.getId()
-                     + ", "
-                     + ProjMeta.getName()
-                     + ") ");               
-        
-        qb.constructWhere(fields);        
-        qb.setOrderBy(ProjMeta.getName());
+        query = manager.createNamedQuery("Project.FetchActiveByName");
+        query.setParameter("name", name);
+        query.setMaxResults(maxResults);
 
-        query = manager.createQuery(qb.getEJBQL());
+        return DataBaseUtil.toArrayList(query.getResultList());
+    }
 
-        if (first > -1 && max > -1)
-            query.setMaxResults(first + max);
+    @SuppressWarnings("unchecked")
+    public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception {
+        Query query;
+        QueryBuilderV2 builder;
+        List list;
 
-        // ***set the parameters in the query
-        QueryBuilderV2.setQueryParams(query,fields);
+        builder = new QueryBuilderV2();
+        builder.setMeta(meta);
+        builder.setSelect("distinct new org.openelis.domain.IdNameVO(" +
+                          meta.getId() + "," + meta.getName() + ") ");
+        builder.constructWhere(fields);
+        builder.setOrderBy(meta.getName());
 
-        list = GetPage.getPage(query.getResultList(), first, max);
+        query = manager.createQuery(builder.getEJBQL());
+        query.setMaxResults(first + max);
+        builder.setQueryParams(query, fields);
 
         list = query.getResultList();
         if (list.isEmpty())
@@ -139,145 +133,86 @@ public class ProjectBean implements ProjectLocal, ProjectRemote {
     }
 
     public ProjectViewDO add(ProjectViewDO data) throws Exception {
-        
-        Project project;
+        Project entity;
 
-        checkSecurity(ModuleFlags.ADD);
-        
         manager.setFlushMode(FlushModeType.COMMIT);
-        
-        project = new Project();        
-        project.setCompletedDate(data.getCompletedDate());
-        project.setDescription(data.getDescription());
-        project.setIsActive(data.getIsActive());
-        project.setName(data.getName());
-        project.setOwnerId(data.getOwnerId());
-        project.setReferenceTo(data.getReferenceTo());
-        project.setScriptletId(data.getScriptletId());
-        project.setStartedDate(data.getStartedDate());
-       
-        manager.persist(project);
-        data.setId(project.getId());
+
+        entity = new Project();
+        entity.setCompletedDate(data.getCompletedDate());
+        entity.setDescription(data.getDescription());
+        entity.setIsActive(data.getIsActive());
+        entity.setName(data.getName());
+        entity.setOwnerId(data.getOwnerId());
+        entity.setReferenceTo(data.getReferenceTo());
+        entity.setScriptletId(data.getScriptletId());
+        entity.setStartedDate(data.getStartedDate());
+
+        manager.persist(entity);
+        data.setId(entity.getId());
 
         return data;
     }
 
     public ProjectViewDO update(ProjectViewDO data) throws Exception {
-    	Project project;
+        Project entity;
 
-        checkSecurity(ModuleFlags.UPDATE);
-        
+        if ( !data.isChanged())
+            return data;
+
         manager.setFlushMode(FlushModeType.COMMIT);
-         
-        project = manager.find(Project.class,data.getId());
-        
-        project.setCompletedDate(data.getCompletedDate());
-        project.setDescription(data.getDescription());
-        project.setIsActive(data.getIsActive());
-        project.setName(data.getName());
-        project.setOwnerId(data.getOwnerId());
-        project.setReferenceTo(data.getReferenceTo());
-        project.setScriptletId(data.getScriptletId());
-        project.setStartedDate(data.getStartedDate());
-               
+
+        entity = manager.find(Project.class, data.getId());
+
+        entity.setCompletedDate(data.getCompletedDate());
+        entity.setDescription(data.getDescription());
+        entity.setIsActive(data.getIsActive());
+        entity.setName(data.getName());
+        entity.setOwnerId(data.getOwnerId());
+        entity.setReferenceTo(data.getReferenceTo());
+        entity.setScriptletId(data.getScriptletId());
+        entity.setStartedDate(data.getStartedDate());
+
         return data;
     }
 
-    public ArrayList<ProjectDO> fetchByName(String name, int maxResults) throws Exception {
-        Query query;
+    public void validate(ProjectViewDO data) throws ValidationErrorsList {
+        ArrayList<ProjectDO> dups;
+        ValidationErrorsList list;
         
-        query = manager.createNamedQuery("Project.FetchActiveByName");
-        query.setParameter("name", name);
-        query.setMaxResults(maxResults);
-    
-        return DataBaseUtil.toArrayList(query.getResultList()); 
+        list = new ValidationErrorsList();
+        if (DataBaseUtil.isEmpty(data.getIsActive()))
+            list.add(new FieldErrorException("fieldRequiredException", meta.getIsActive()));
+
+        if (DataBaseUtil.isEmpty(data.getOwnerId()))
+            list.add(new FieldErrorException("fieldRequiredException", meta.getOwnerId()));
+
+        if (DataBaseUtil.isEmpty(data.getStartedDate()))
+            list.add(new FieldErrorException("fieldRequiredException", meta.getStartedDate()));
+
+        if (DataBaseUtil.isEmpty(data.getCompletedDate()))
+            list.add(new FieldErrorException("fieldRequiredException", meta.getCompletedDate()));
+
+        if (DataBaseUtil.isAfter(data.getStartedDate(), data.getCompletedDate()))
+            list.add(new FieldErrorException("endDateAfterBeginDateException",
+                                                      meta.getCompletedDate()));
+        //
+        // check for duplicate name
+        //
+        if (DataBaseUtil.isEmpty(data.getName())) { 
+            list.add(new FieldErrorException("fieldRequiredException", meta.getName()));
+        } else {
+            if ("Y".equals(data.getIsActive())) {
+                try {
+                    dups = fetchActiveByName(data.getName(), 1);
+                    if (dups.size() > 0 && DataBaseUtil.isDifferent(data.getId(), dups.get(0).getId())) 
+                        list.add(new FieldErrorException("fieldUniqueException", meta.getName()));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        if (list.size() > 0)
+            throw list;
     }
-
-    public void validate(ProjectViewDO projectDO) throws ValidationErrorsList {
-    	boolean checkDuplicate, overlap;
-    	Datetime dcompleteDate, dstartDate,qcompleteDate, qstartDate;
-    	Integer id;
-    	String active;
-    	int iter;
-    	Query query;
-    	Project project;
-    	List<Project> list;
-    	ValidationErrorsList exceptionList = new ValidationErrorsList();
-
-    	checkDuplicate = true;
-    	dstartDate = projectDO.getStartedDate();
-    	dcompleteDate = projectDO.getCompletedDate();
-    	id = projectDO.getId();
-    	active = projectDO.getIsActive();        
-    	if (projectDO.getName() == null || "".equals(projectDO.getName())) {
-    		exceptionList.add(new FieldErrorException("fieldRequiredException",
-    				ProjMeta.getName()));
-    		checkDuplicate = false;
-    	}
-    	if (projectDO.getIsActive() == null) {
-    		exceptionList.add(new FieldErrorException("fieldRequiredException",
-    				ProjMeta.getIsActive()));
-    		checkDuplicate = false;
-    	}
-
-    	if (projectDO.getOwnerId() == null) {
-    		exceptionList.add(new FieldErrorException("fieldRequiredException",
-    				ProjMeta.getOwnerId()));
-    		checkDuplicate = false;
-    	}
-
-    	if (checkDuplicate) {
-    		if (dcompleteDate != null && dcompleteDate.before(dstartDate)) {
-    			exceptionList.add(new FieldErrorException("endDateAfterBeginDateException",
-    					              ProjMeta.getCompletedDate()));
-    			return;
-    		}
-
-    		query = manager.createNamedQuery("Project.FetchEntityByName");
-    		query.setParameter("name", projectDO.getName());
-    		list = query.getResultList();
-
-    		for (iter = 0; iter < list.size(); iter++) {
-    			overlap = false;
-    			project = (Project)list.get(iter);
-    			if (!project.getId().equals(id)) {
-    				if (project.getIsActive().equals(active)) {
-    					if ("Y".equals(active)) {
-    						exceptionList.add(new FormErrorException("projectActiveException"));
-    						break;
-    					}
-
-    					qcompleteDate = project.getCompletedDate();
-    					qstartDate = project.getStartedDate();                           
-    					if(qstartDate != null && qcompleteDate != null) {
-    						if (qstartDate.before(dcompleteDate) && (qcompleteDate.after(dstartDate))) {
-    							overlap = true;
-    						} else if (qstartDate.before(dstartDate) && (qcompleteDate.after(dcompleteDate))) {
-    							overlap = true;
-    						} else if (qstartDate.equals(dcompleteDate) || (qcompleteDate.equals(dstartDate))) {
-    							overlap = true;
-    						} else if (qstartDate.equals(dstartDate) || (qcompleteDate.equals(dcompleteDate))) {
-    							overlap = true;
-    						} 
-    					}
-    					if (overlap) 
-    						exceptionList.add(new FormErrorException("projectTimeOverlapException"));
-
-
-    				}
-    			}
-    		} 
-    	}
-    	
-    	if(exceptionList.size() > 0)
-    		throw exceptionList;
-    }       
-
-
-    
-    private void checkSecurity(ModuleFlags flag) throws Exception {
-        SecurityInterceptor.applySecurity(ctx.getCallerPrincipal().getName(), 
-                                          "project", flag);
-    }
-
-  }
+}

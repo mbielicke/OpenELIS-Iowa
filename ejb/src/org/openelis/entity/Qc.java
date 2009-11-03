@@ -193,7 +193,7 @@ public class Qc implements Auditable, Cloneable {
 
     public void setPreparedDate(Datetime prepared_date) {
         if (DataBaseUtil.isDifferentYM(prepared_date, this.preparedDate))
-            this.preparedDate = prepared_date.getDate();
+            this.preparedDate = DataBaseUtil.toDate(prepared_date);
     }
 
     public Double getPreparedVolume() {
@@ -229,7 +229,7 @@ public class Qc implements Auditable, Cloneable {
 
     public void setUsableDate(Datetime usableDate) {
         if (DataBaseUtil.isDifferentYM(usableDate, this.usableDate))
-            this.usableDate = usableDate.getDate();
+            this.usableDate = DataBaseUtil.toDate(usableDate);
     }
 
     public Datetime getExpireDate() {
@@ -238,7 +238,7 @@ public class Qc implements Auditable, Cloneable {
 
     public void setExpireDate(Datetime expireDate) {
         if (DataBaseUtil.isDifferentYM(expireDate, this.expireDate))
-            this.expireDate = expireDate.getDate();
+            this.expireDate = DataBaseUtil.toDate(expireDate);
     }
 
     public String getIsSingleUse() {

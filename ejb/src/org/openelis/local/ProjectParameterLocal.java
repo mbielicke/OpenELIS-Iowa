@@ -29,17 +29,11 @@ import java.util.ArrayList;
 
 import javax.ejb.Local;
 
-import org.openelis.domain.IdNameVO;
 import org.openelis.domain.ProjectParameterDO;
-import org.openelis.domain.ProjectViewDO;
-import org.openelis.gwt.common.data.QueryData;
 
 @Local
 public interface ProjectParameterLocal {
-
-    public ProjectParameterDO fetchById(Integer id) throws Exception;
-    
-    public ArrayList<ProjectParameterDO> findByProject(Integer projectId) throws Exception;
+    public ArrayList<ProjectParameterDO> fetchByProjectId(Integer id) throws Exception;
     
     public ProjectParameterDO add(ProjectParameterDO data) throws Exception;
     
@@ -48,5 +42,4 @@ public interface ProjectParameterLocal {
     public void delete(ProjectParameterDO id) throws Exception;
     
     public void validate(ProjectParameterDO param) throws Exception;
-    
 }
