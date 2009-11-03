@@ -35,6 +35,7 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.CalendarLookUp;
 import org.openelis.gwt.widget.DateField;
+import org.openelis.gwt.widget.DoubleField;
 import org.openelis.gwt.widget.IntegerField;
 import org.openelis.gwt.widget.Label;
 import org.openelis.gwt.widget.StringField;
@@ -47,7 +48,8 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class AuxTableColumn extends TableColumn {
     protected GetMatchesHandler screen;
-    protected TextBox textBox;
+    protected TextBox alphaTextBox;
+    protected TextBox<Double> numTextBox;
     protected CalendarLookUp calendar;
     protected AutoComplete<Integer> autoComplete;
     protected Label label;
@@ -94,16 +96,27 @@ public class AuxTableColumn extends TableColumn {
         return autoComplete;
     }
     
-    private TextBox getTextbox(Case boxCase){
-        if(textBox == null){
-            textBox = new TextBox();
-            textBox.setStyleName("ScreenTextBox");
-            textBox.setField(new StringField());
+    private TextBox getAlphaTextbox(Case boxCase){
+        if(alphaTextBox == null){
+            alphaTextBox = new TextBox();
+            alphaTextBox.setStyleName("ScreenTextBox");
+            alphaTextBox.setField(new StringField());
         }
         
-        textBox.setCase(boxCase);
+        alphaTextBox.setCase(boxCase);
         
-        return textBox;
+        return alphaTextBox;
+    }
+    
+    private TextBox<Double> getNumTextbox(){
+        if(numTextBox == null){
+            numTextBox = new TextBox<Double>();
+            numTextBox.setStyleName("ScreenTextBox");
+            alphaTextBox.setCase(Case.MIXED);
+            numTextBox.setField(new DoubleField());
+        }
+        
+        return numTextBox;
     }
     
     private CalendarLookUp getCalendar(byte begin, byte end){
@@ -144,13 +157,14 @@ public class AuxTableColumn extends TableColumn {
         if(typeId == null)
             return getLabel();
         else if(DictionaryCache.getIdFromSystemName("aux_alpha_lower").equals(typeId))
-            return getTextbox(Case.LOWER);
+            return getAlphaTextbox(Case.LOWER);
         else if(DictionaryCache.getIdFromSystemName("aux_alpha_upper").equals(typeId))
-            return getTextbox(Case.UPPER);
+            return getAlphaTextbox(Case.UPPER);
         else if(DictionaryCache.getIdFromSystemName("aux_alpha_mixed").equals(typeId) ||
-                        DictionaryCache.getIdFromSystemName("aux_numeric").equals(typeId) || 
                         DictionaryCache.getIdFromSystemName("aux_time").equals(typeId))
-            return getTextbox(Case.MIXED);
+            return getAlphaTextbox(Case.MIXED);
+        else if(DictionaryCache.getIdFromSystemName("aux_numeric").equals(typeId))
+            return getNumTextbox();
         else if(DictionaryCache.getIdFromSystemName("aux_date").equals(typeId))
             return getCalendar(Datetime.YEAR, Datetime.DAY);
         else if(DictionaryCache.getIdFromSystemName("aux_date_time").equals(typeId))

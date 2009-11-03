@@ -35,6 +35,7 @@ import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
+import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.table.TableColumn;
 import org.openelis.gwt.widget.table.TableDataCell;
@@ -270,8 +271,10 @@ MISSING TABLE COL!!! USING OLD TABLE FORMAT?
             
             if(state == State.ADD || state == State.UPDATE)
                 StateChangeEvent.fire(this, State.UPDATE);
-        }else
+        }else{
             anDO = new AnalysisViewDO();
+            StateChangeEvent.fire(this, State.DEFAULT);   
+        }
             
         analysisMan = data.analysisManager;
         

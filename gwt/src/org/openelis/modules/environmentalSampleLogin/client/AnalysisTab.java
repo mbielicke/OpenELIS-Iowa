@@ -379,18 +379,18 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
     }
         
     public void setData(SampleDataBundle data) {
-        if(data.type == SampleDataBundle.Type.SAMPLE_ITEM){
-            analysis = new AnalysisViewDO();
-            manager = null;
-            StateChangeEvent.fire(this, State.DEFAULT);   
-        }else{
+        if(data.type == SampleDataBundle.Type.ANALYSIS){
             analysis = data.analysisTestDO;
             manager = data.analysisManager;
             sampleItem = data.sampleItemDO;
             
             if(state == State.ADD || state == State.UPDATE)
                 StateChangeEvent.fire(this, State.UPDATE);
-        }
+        }else {
+            analysis = new AnalysisViewDO();
+            manager = null;
+            StateChangeEvent.fire(this, State.DEFAULT);   
+        } 
         bundle = data;
         loaded = false;
     }

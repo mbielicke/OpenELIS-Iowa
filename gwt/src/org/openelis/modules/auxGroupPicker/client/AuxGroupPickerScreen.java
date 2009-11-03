@@ -44,7 +44,6 @@ import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
 import org.openelis.manager.AuxFieldManager;
-import org.openelis.modules.qaeventPicker.client.QaeventPickerScreen.Action;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -124,7 +123,7 @@ public class AuxGroupPickerScreen extends Screen implements HasActionHandlers<Au
         returnList = new ArrayList<AuxFieldManager>();
         try{
             for(int i=0; i<selections.size(); i++)
-                returnList.add(AuxFieldManager.fetchByAuxFieldGroupId((Integer)selections.get(i).key));
+                returnList.add(AuxFieldManager.fetchByGroupIdWithValues((Integer)selections.get(i).key));
         }catch(Exception e){
             Window.alert(e.getMessage());
         }

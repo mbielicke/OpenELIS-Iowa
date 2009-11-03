@@ -1193,6 +1193,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
     }
 
     protected void commit() {
+        clearErrors();
         if ( !validate()){
             window.setError(consts.get("correctErrors"));
             return;

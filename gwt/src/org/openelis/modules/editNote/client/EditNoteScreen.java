@@ -116,7 +116,7 @@ public class EditNoteScreen extends Screen implements HasActionHandlers<EditNote
                 if ("note".equals(item.leafType))
                     preview.setValue((String)item.data, true);
                 else
-                    preview.setValue(null, true);
+                    preview.setValue("", true);
             }
         });
 

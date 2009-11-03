@@ -30,7 +30,6 @@ import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FieldErrorWarning;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.services.ScreenService;
-import org.openelis.metamap.SampleEnvironmentalMetaMap;
 import org.openelis.metamap.SampleMetaMap;
 
 public class SampleManagerProxy {
