@@ -39,7 +39,7 @@ public class QcViewDO extends QcDO {
 
     private static final long serialVersionUID = 1L;
 
-    protected String          inventoryItemName;
+    protected String          inventoryItemName, preparedByName;
 
     public QcViewDO() {
     }
@@ -48,10 +48,11 @@ public class QcViewDO extends QcDO {
                            String source, String lotNumber, Date preparedDate, 
                            Double preparedVolume, Integer preparedUnitId,
                            Integer preparedById, Date usableDate, Date expireDate,
-                           String isSingleUse, String inventoryItemName) {
+                           String isSingleUse, String inventoryItemName, String preparedByName) {
         super(id, name, typeId, inventoryItemId, source, lotNumber, preparedDate, preparedVolume,
               preparedUnitId, preparedById, usableDate, expireDate, isSingleUse);
         setInventoryItemName(inventoryItemName);
+        setPreparedByName(preparedByName);
     }
 
     public String getInventoryItemName() {
@@ -60,5 +61,13 @@ public class QcViewDO extends QcDO {
 
     public void setInventoryItemName(String inventoryItemName) {
         this.inventoryItemName = DataBaseUtil.trim(inventoryItemName);
+    }
+
+    public String getPreparedByName() {
+        return preparedByName;
+    }
+
+    public void setPreparedByName(String preparedByName) {
+        this.preparedByName = DataBaseUtil.trim(preparedByName);
     }
 }
