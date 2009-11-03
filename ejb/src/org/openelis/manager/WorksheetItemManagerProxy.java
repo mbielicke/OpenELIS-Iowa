@@ -39,27 +39,30 @@ import org.openelis.utilcommon.DataBaseUtil;
 public class WorksheetItemManagerProxy {
     
     public WorksheetItemManager fetchByWorksheetId(Integer id) throws Exception {
+        int                        i;
         WorksheetItemManager       manager;
         ArrayList<WorksheetItemDO> items;
         
         items = local().fetchByWorksheetId(id);
         manager = WorksheetItemManager.getInstance();
         manager.setWorksheetId(id);
-        manager.setItems(items);
+        for (i = 0; i < items.size(); i++)
+            manager.addWorksheetItem(items.get(i));
         
         return manager;
     }
     
     public WorksheetItemManager add(WorksheetItemManager manager) throws Exception {
         int                i;
-        WorksheetItemLocal local;
         WorksheetItemDO    item;
+        WorksheetItemLocal local;
         
         local = local();
-        for(i = 0; i < manager.count(); i++) {
-            item = manager.getItemAt(i);
+        for (i = 0; i < manager.count(); i++) {
+            item = manager.getWorksheetItemAt(i);
             item.setWorksheetId(manager.getWorksheetId());
             local.add(item);
+            manager.getWorksheetAnalysisAt(i).add();
         }
         
         return manager;
@@ -72,10 +75,10 @@ public class WorksheetItemManagerProxy {
         
         local = local();
         for (j = 0; j < man.deleteCount(); j++)
-            local.delete(man.getDeletedAt(j));
+            local.delete(man.getDeletedAt(j).worksheetItem);
         
         for (i = 0; i < man.count(); i++) {
-            item = man.getItemAt(i);
+            item = man.getWorksheetItemAt(i);
             
             if (item.getId() == null) {
                 item.setWorksheetId(man.getWorksheetId());
@@ -83,6 +86,9 @@ public class WorksheetItemManagerProxy {
             } else {
                 local.update(item);
             }
+            
+            man.getWorksheetAnalysisAt(i).setWorksheetItemId(item.getId());
+            man.update();
         }
 
         return man;
@@ -97,7 +103,8 @@ public class WorksheetItemManagerProxy {
         list  = new ValidationErrorsList();
         for (i = 0; i < man.count(); i++) {
             try {
-                local.validate(man.getItemAt(i));
+                local.validate(man.getWorksheetItemAt(i));
+                man.getWorksheetAnalysisAt(i).validate();
             } catch (Exception e) {
                 DataBaseUtil.mergeException(list, e, "itemTable", i);
             }
