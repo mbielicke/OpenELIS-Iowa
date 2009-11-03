@@ -1,3 +1,0 @@
-<module>
-    <entry-point class="org.openelis.modules.dictionary.client.DictionaryEntry"/>
-</module>

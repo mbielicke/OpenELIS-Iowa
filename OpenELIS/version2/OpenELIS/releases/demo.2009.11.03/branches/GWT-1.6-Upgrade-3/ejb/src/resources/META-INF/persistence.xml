@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<persistence>
-   <persistence-unit name="openelis">
-      <jta-data-source>java:/OpenELISDS</jta-data-source>
-      <properties>
-         <property name="hibernate.dialect" value="org.hibernate.dialect.InformixDialect"/>
-      </properties>
-   </persistence-unit>
-</persistence>
