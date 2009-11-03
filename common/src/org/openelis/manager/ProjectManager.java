@@ -1,77 +1,46 @@
 package org.openelis.manager;
 
-import java.util.ArrayList;
-
-import org.openelis.domain.ProjectParameterDO;
 import org.openelis.domain.ProjectViewDO;
+import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.RPC;
 
 public class ProjectManager implements RPC {
 	
-    private static final long                            serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
         
-    protected ProjectViewDO	projectView;
-    protected ArrayList<ProjectParameterDO> projectParameters;
-    protected ArrayList<ProjectParameterDO> deleted;
+    protected ProjectViewDO	project;
+    protected ProjectParameterManager parameters;
     
     protected transient static ProjectManagerProxy proxy;
     
     public ProjectManager() {
-    	projectView = null;
-    	projectParameters = null;
+    	project = null;
     }
     
     public static ProjectManager getInstance() {
     	ProjectManager manager;
     	
     	manager = new ProjectManager();
-    	manager.projectView = new ProjectViewDO();
-    	manager.projectParameters = new ArrayList<ProjectParameterDO>();
-    	
+    	manager.project = new ProjectViewDO();
+
     	return manager;
     }
     
-    public void setProject(ProjectViewDO projectView) {
-    	this.projectView = projectView;
-    }
-    
     public ProjectViewDO getProject() {
-    	return projectView;
+        return project;
     }
-    
-    public void setProjectParameters(ArrayList<ProjectParameterDO> projectParameters) {
-    	this.projectParameters = projectParameters;
-    }
-    
-    public ArrayList<ProjectParameterDO> getProjectParameters() {
-    	return projectParameters;
-    }
-    
-    public ProjectParameterDO getProjectParameter(int index) {
-    	return projectParameters.get(index);
-    }
-    
-    public ProjectParameterDO removeProjectParamter(int index) {
-    	if(projectParameters.get(index).getId() != null) {
-    		if(deleted == null)
-    			deleted = new ArrayList<ProjectParameterDO>();
-    	   	deleted.add(projectParameters.get(index));
-    	}
-    	return projectParameters.remove(index);
-    }
-    
-    public void addProjectParameter(ProjectParameterDO param) {
-    	projectParameters.add(param);
-    }
-    
-    public void addProjectParameter(int index, ProjectParameterDO param) {
-    	projectParameters.add(index,param);
+
+    public void setProject(ProjectViewDO project) {
+    	this.project = project;
     }
     
     // service methods
-    
     public static ProjectManager fetchById(Integer id) throws Exception {
-    	return proxy().fetchById(id);
+        return proxy().fetchById(id);
+    }
+
+    public static ProjectManager fetchWithParameters(Integer id) throws Exception {
+        return proxy().fetchWithParameters(id);
     }
     
     public ProjectManager add() throws Exception {
@@ -83,21 +52,41 @@ public class ProjectManager implements RPC {
     }
     
     public ProjectManager fetchForUpdate() throws Exception {
-    	return proxy().fetchForUpdate(projectView.getId());
+    	return proxy().fetchForUpdate(project.getId());
     }
     
     public ProjectManager abortUpdate() throws Exception {
-    	return proxy().abortUpdate(projectView.getId());
+    	return proxy().abortUpdate(project.getId());
     }
     
     public void validate() throws Exception {
     	proxy().validate(this);
     }
     
+    //
+    // other managers
+    //
+    public ProjectParameterManager getParameters() throws Exception {
+        if (parameters == null) {
+            if (project.getId() != null) {
+                try {
+                    parameters = ProjectParameterManager.fetchByProjectId(project.getId());
+                } catch (NotFoundException e) {
+                    // ignore
+                } catch (Exception e) {
+                    throw e;
+                }
+            }
+            if (parameters == null)
+                parameters = ProjectParameterManager.getInstance();
+        }
+        return parameters;
+    }
+
     private static ProjectManagerProxy proxy() {
     	if(proxy == null)
     		proxy = new ProjectManagerProxy();
-    	
+
     	return proxy;
     }
 

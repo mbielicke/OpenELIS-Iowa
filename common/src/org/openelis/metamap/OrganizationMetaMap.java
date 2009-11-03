@@ -41,20 +41,19 @@ public class OrganizationMetaMap extends OrganizationMeta implements MetaMap {
 
     public OrganizationMetaMap() {
         super("o.");
-        ADDRESS = new AddressMeta("o.address.");
-        PARENT_ORGANIZATION = new OrganizationMeta("o.parentOrganization.");
-        ORGANIZATION_CONTACT = new OrganizationContactMetaMap("contact.");
-        ORGANIZATION_PARAMETER = new OrganizationParameterMeta("parameter.");
+        ADDRESS = new AddressMeta(path + "address.");
+        PARENT_ORGANIZATION = new OrganizationMeta(path + "parentOrganization.");
+        ORGANIZATION_CONTACT = new OrganizationContactMetaMap(path + "contact.");
+        ORGANIZATION_PARAMETER = new OrganizationParameterMeta(path + "parameter.");
         NOTE = new NoteMeta("note.");
     }
 
     public OrganizationMetaMap(String path) {
         super(path);
-
         ADDRESS = new AddressMeta(path + "address.");
         PARENT_ORGANIZATION = new OrganizationMeta(path + "parentOrganization.");
-        ORGANIZATION_CONTACT = new OrganizationContactMetaMap("contact.");
-        ORGANIZATION_PARAMETER = new OrganizationParameterMeta("parameter.");
+        ORGANIZATION_CONTACT = new OrganizationContactMetaMap(path + "contact.");
+        ORGANIZATION_PARAMETER = new OrganizationParameterMeta(path + "parameter.");
         NOTE = new NoteMeta("note.");
     }
 
@@ -89,9 +88,9 @@ public class OrganizationMetaMap extends OrganizationMeta implements MetaMap {
             return PARENT_ORGANIZATION.hasColumn(name);
         else if (name.startsWith("note."))
             return NOTE.hasColumn(name);
-        else if (name.startsWith("contact."))
+        else if (name.startsWith(path + "contact."))
             return ORGANIZATION_CONTACT.hasColumn(name);
-        else if (name.startsWith("parameter."))
+        else if (name.startsWith(path + "parameter."))
             return ORGANIZATION_PARAMETER.hasColumn(name);
         return super.hasColumn(name);
     }

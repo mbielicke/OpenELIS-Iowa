@@ -40,17 +40,18 @@ public class ProjectViewDO extends ProjectDO {
     private static final long serialVersionUID = 1L;
 
     protected String          scriptletName;
-    protected String          systemUserName;
+    protected String          ownerName;
 
     public ProjectViewDO() {
     }
 
     public ProjectViewDO(Integer id, String name, String description, Date startedDate,
                          Date completedDate, String isActive, String referenceTo, Integer ownerId,
-                         Integer scriptletId, String scriptletName, String systemUserName) {
+                         Integer scriptletId, String scriptletName, String ownerName) {
         super(id, name, description, startedDate, completedDate, isActive, referenceTo, ownerId,
               scriptletId);
         setScriptletName(scriptletName);
+        setOwnerName(ownerName);
     }
 
     public String getScriptletName() {
@@ -61,11 +62,11 @@ public class ProjectViewDO extends ProjectDO {
         this.scriptletName = DataBaseUtil.trim(scriptletName);
     }
 
-    public String getSystemUserName() {
-        return systemUserName;
+    public String getOwnerName() {
+        return ownerName;
     }
 
-    public void setSystemUserName(String systemUserName) {
-        this.systemUserName = DataBaseUtil.trim(systemUserName);
+    public void setOwnerName(String systemUserName) {
+        this.ownerName = DataBaseUtil.trim(systemUserName);
     }
 }
