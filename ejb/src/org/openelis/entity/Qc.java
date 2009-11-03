@@ -58,7 +58,7 @@ import org.openelis.utils.Auditable;
     @NamedQuery( name = "Qc.FetchById",
                 query = "select new org.openelis.domain.QcViewDO(q.id,q.name,q.typeId,q.inventoryItemId," +
                 		"q.source,q.lotNumber,q.preparedDate,q.preparedVolume,q.preparedUnitId," +
-                		"q.preparedById,q.usableDate,q.expireDate,q.isSingleUse,i.name)"
+                		"q.preparedById,q.usableDate,q.expireDate,q.isSingleUse,i.name,'')"
                 	  + " from Qc q left join q.inventoryItem i where q.id = :id"),
     @NamedQuery( name = "Qc.FetchByLotNumber",
                 query = "select new org.openelis.domain.QcDO(q.id,q.name,q.typeId,q.inventoryItemId," +
