@@ -62,6 +62,7 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
+import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.AppButton;
@@ -74,7 +75,6 @@ import org.openelis.gwt.widget.HasField;
 import org.openelis.gwt.widget.MenuItem;
 import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.gwt.widget.TextBox;
-import org.openelis.gwt.widget.table.TableColumn;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.gwt.widget.table.event.CellEditedEvent;
@@ -703,10 +703,7 @@ public class TestScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                if (event.getState() == State.ADD || event.getState() == State.UPDATE)
-                    removeSection.enable(true);
-                else
-                    removeSection.enable(false);
+                removeSection.enable(EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));
             }
 
         });
@@ -721,10 +718,7 @@ public class TestScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                if (event.getState() == State.ADD || event.getState() == State.UPDATE)
-                    addSection.enable(true);
-                else
-                    addSection.enable(false);
+                addSection.enable(EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));
             }
 
         });
@@ -1131,7 +1125,6 @@ public class TestScreen extends Screen {
         ArrayList<TableDataRow> model;
         List<DictionaryDO> list;
         List<SectionDO> sectList;
-        TableColumn column;
 
         model = new ArrayList<TableDataRow>();
         list = DictionaryCache.getListByCategorySystemName("test_format");
@@ -1166,22 +1159,20 @@ public class TestScreen extends Screen {
         revisionMethod.setModel(model);
 
         model = new ArrayList<TableDataRow>();
-        column = table.getColumns().get(1);
         list = DictionaryCache.getListByCategorySystemName("test_section_flags");
         model.add(new TableDataRow(null, ""));
         for (DictionaryDO resultDO : list) {
             model.add(new TableDataRow(resultDO.getId(), resultDO.getEntry()));
         }
-        ((Dropdown<Integer>)column.getColumnWidget()).setModel(model);
+        ((Dropdown<Integer>)table.getColumnWidget(meta.getTestSection().getFlagId())).setModel(model);
 
         model = new ArrayList<TableDataRow>();
-        column = table.getColumns().get(0);
         sectList = SectionCache.getSectionList();
         model.add(new TableDataRow(null, ""));
         for (SectionDO resultDO : sectList) {
             model.add(new TableDataRow(resultDO.getId(), resultDO.getName()));
         }
-        ((Dropdown<Integer>)column.getColumnWidget()).setModel(model);
+        ((Dropdown<Integer>)table.getColumnWidget(meta.getTestSection().getSectionId())).setModel(model);
     }
 
     /*
@@ -1257,7 +1248,20 @@ public class TestScreen extends Screen {
         //
         id.setFocus(false);
 
-        if ( !validate()) {
+        //
+        // We do this here so that if due to changes in the data of the test analyte 
+        // and test result tables some errors need to be added to the test reflex and 
+        // test worksheet analyte tables then that will hapen before validate() executes
+        // and so it will be able to find those errors and prevent the data from being
+        // committed. We have to do this here even though validate() calls checkValue
+        // (which in turns calls finishEditing on that table) on each table, because
+        // it can be the case that checkValue on the tables to which the errors are
+        // to be added could get executed before it gets executed for the test analyte
+        // and test result tables.       
+        //
+        analyteAndResultTab.finishEditing();
+        
+        if (!validate()) {
             window.setError(consts.get("correctErrors"));
             return;
         }

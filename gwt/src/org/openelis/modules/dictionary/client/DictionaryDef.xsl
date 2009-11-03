@@ -199,7 +199,7 @@ UIRF Software License are applicable instead of those above.
                   </col>
                   <col key="{relentry:getEntry($rel)}" width="150" header="{resource:getString($constants,'relEntry')}">
                     <autoComplete width="130" field="Integer">
-                      <col width="130" />
+                      <col width="200" />
                     </autoComplete>
                   </col>
                 </table>

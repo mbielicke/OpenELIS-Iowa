@@ -25,6 +25,8 @@
  */
 package org.openelis.domain;
 
+import org.openelis.utilcommon.DataBaseUtil;
+
 /**
  * The class extends test result DO and carries the dictionary entry
  * text,"dictionary". The additional field is for read/display only and does not
@@ -59,6 +61,6 @@ public class TestResultViewDO extends TestResultDO {
     }
 
     public void setDictionary(String dictionary) {
-        this.dictionary = dictionary;
+        this.dictionary = DataBaseUtil.trim(dictionary);
     }
 }

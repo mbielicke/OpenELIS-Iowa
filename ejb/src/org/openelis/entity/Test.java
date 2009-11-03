@@ -273,30 +273,20 @@ public class Test implements Auditable, Cloneable {
     }
 
     public Datetime getActiveBegin() {
-        if (activeBegin == null)
-            return null;
-        return new Datetime(Datetime.YEAR, Datetime.DAY, activeBegin);
+        return DataBaseUtil.toYD(activeBegin);
     }
 
     public void setActiveBegin(Datetime active_begin) {
-        if ( (active_begin == null && this.activeBegin != null) ||
-            (active_begin != null && this.activeBegin == null) ||
-            (active_begin != null && !active_begin.equals(new Datetime(Datetime.YEAR, Datetime.DAY,
-                                                                       this.activeBegin))))
-            this.activeBegin = active_begin.getDate();
+        if (DataBaseUtil.isDifferentYD(active_begin,this.activeBegin))
+            this.activeBegin = active_begin.getDate();        
     }
 
     public Datetime getActiveEnd() {
-        if (activeEnd == null)
-            return null;
-        return new Datetime(Datetime.YEAR, Datetime.DAY, activeEnd);
+        return DataBaseUtil.toYD(activeEnd);
     }
 
     public void setActiveEnd(Datetime active_end) {
-        if ( (active_end == null && this.activeEnd != null) ||
-            (active_end != null && this.activeEnd == null) ||
-            (active_end != null && !active_end.equals(new Datetime(Datetime.YEAR, Datetime.DAY,
-                                                                   this.activeEnd))))
+        if (DataBaseUtil.isDifferentYD(active_end,this.activeEnd))
             this.activeEnd = active_end.getDate();
     }
 

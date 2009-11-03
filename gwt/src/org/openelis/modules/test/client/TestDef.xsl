@@ -807,13 +807,13 @@ UIRF Software License are applicable instead of those above.
                       <HorizontalPanel>
                         <widget valign="top">
                           <table key="worksheetTable" width="auto" maxRows="6" showScroll="ALWAYS" tab="removeWSItemButton, {testWrksht:getScriptletId($tws)}" title="">
-                            <col key="{testWrkshtItm:getPosition($twsi)}" width="63" header="{resource:getString($constants,'position')}">
+                            <col key="{testWrkshtItm:getPosition($twsi)}" width="70" header="{resource:getString($constants,'position')}">
                               <textbox field="Integer" />
                             </col>
                             <col key="{testWrkshtItm:getTypeId($twsi)}" width="150" header="{resource:getString($constants,'type')}">
                               <dropdown width="140" case="MIXED" field="Integer" required="true" />
                             </col>
-                            <col key="{testWrkshtItm:getQcName($twsi)}" width="370" header="{resource:getString($constants,'qcName')}">
+                            <col key="{testWrkshtItm:getQcName($twsi)}" width="363" header="{resource:getString($constants,'qcName')}">
                               <autoComplete width="340" case="MIXED" field="String">
                                 <col width="350" />
                               </autoComplete>

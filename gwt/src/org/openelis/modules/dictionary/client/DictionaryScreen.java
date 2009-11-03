@@ -69,7 +69,6 @@ import org.openelis.gwt.widget.table.event.RowMovedHandler;
 import org.openelis.manager.DictionaryManager;
 import org.openelis.metamap.CategoryMetaMap;
 import org.openelis.modules.main.client.openelis.OpenELIS;
-import org.openelis.utilcommon.DataBaseUtil;
 
 import com.allen_sauer.gwt.dnd.client.DragEndEvent;
 import com.allen_sauer.gwt.dnd.client.DragHandler;
@@ -359,7 +358,7 @@ public class DictionaryScreen extends Screen implements GetMatchesHandler, DragH
             
         });
 
-        relEntry = (AutoComplete<Integer>)dictEntTable.getColumns().get(4).getColumnWidget();
+        relEntry = (AutoComplete<Integer>)dictEntTable.getColumnWidget(meta.getDictionary().getRelatedEntry().getEntry());
         relEntry.addGetMatchesHandler(this);                    
         
         removeEntryButton = (AppButton)def.getWidget("removeEntryButton");

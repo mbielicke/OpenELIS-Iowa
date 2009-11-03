@@ -191,7 +191,7 @@ public class TestService {
         }
     }
     
-    public TestResultCategoryRPC getDictIdForResultValue(TestResultCategoryRPC rpc) {
+    public TestResultCategoryRPC fetchByEntry(TestResultCategoryRPC rpc) {
         try {
             rpc.dictIdList = dictRemote().fetchByEntry(DataBaseUtil.trim(rpc.resultValue));
         } catch(Exception ex) {

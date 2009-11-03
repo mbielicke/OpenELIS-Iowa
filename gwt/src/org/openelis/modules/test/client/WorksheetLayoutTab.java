@@ -78,10 +78,10 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
     private TestAnalyteManager      analyteManager;
     private TestWorksheetManager    worksheetManager;
     
-    private WorksheetLayoutTab      source;
+    private WorksheetLayoutTab      screen;
     private TestAnalytePickerScreen testAnalytePicker; 
     
-    private TestMetaMap             TestMeta;   
+    private TestMetaMap             meta = new TestMetaMap();   
     
     private boolean                 loaded;
     
@@ -96,9 +96,7 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
     public WorksheetLayoutTab(ScreenDefInt def,ScreenService service,
                               ScreenService scriptletService,ScreenService qcService) {
         setDef(def);
-        
-        TestMeta = new TestMetaMap();
-        
+                       
         this.service = service;
         this.scriptletService = scriptletService;
         this.qcService = qcService;
@@ -109,9 +107,9 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
     }
 
     private void initialize() {        
-        source = this;
+        screen = this;
         
-        formatId = (Dropdown)def.getWidget(TestMeta.getTestWorksheet().getFormatId());
+        formatId = (Dropdown)def.getWidget(meta.getTestWorksheet().getFormatId());
         addScreenHandler(formatId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 formatId.setSelection(worksheetManager.getWorksheet().getFormatId());
@@ -127,7 +125,7 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
             }
         });
 
-        batchCapacity = (TextBox)def.getWidget(TestMeta.getTestWorksheet().getBatchCapacity());
+        batchCapacity = (TextBox)def.getWidget(meta.getTestWorksheet().getBatchCapacity());
         addScreenHandler(batchCapacity, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 batchCapacity.setValue(worksheetManager.getWorksheet().getBatchCapacity());
@@ -143,7 +141,7 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
             }
         });
 
-        totalCapacity = (TextBox)def.getWidget(TestMeta.getTestWorksheet().getTotalCapacity());
+        totalCapacity = (TextBox)def.getWidget(meta.getTestWorksheet().getTotalCapacity());
         addScreenHandler(totalCapacity, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 totalCapacity.setValue(worksheetManager.getWorksheet().getTotalCapacity());
@@ -159,7 +157,7 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
             }
         });
 
-        scriptlet = (AutoComplete)def.getWidget(TestMeta.getTestWorksheet().getScriptlet().getName());
+        scriptlet = (AutoComplete)def.getWidget(meta.getTestWorksheet().getScriptlet().getName());
         addScreenHandler(scriptlet, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 scriptlet.setSelection(worksheetManager.getWorksheet().getScriptletId(), worksheetManager.getWorksheet().getScriptletName());
@@ -210,10 +208,10 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
             }
         });
         
-        qcname = (AutoComplete<String>)worksheetTable.getColumns().get(2).getColumnWidget();            
+        qcname = (AutoComplete<String>)worksheetTable.getColumnWidget(meta.getTestWorksheetItem().getQcName());            
         qcname.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
-                QueryFieldUtil parser;
+                QueryFieldUtil parser;                
                 ArrayList<TableDataRow> model;
                 TableDataRow row;
                 IdNameVO data;
@@ -351,39 +349,38 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
         addScreenHandler(addWSAnalyteButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 ScreenWindow modal;
-                
-                //if(testAnalytePicker == null) {
-                    try {
-                        testAnalytePicker = new TestAnalytePickerScreen(analyteManager);
-                        testAnalytePicker.addActionHandler(new ActionHandler<TestAnalytePickerScreen.Action>() {
 
-                            public void onAction(ActionEvent<TestAnalytePickerScreen.Action> event) {                                
-                                ArrayList<TableDataRow> model;
-                                TestWorksheetAnalyteViewDO anaDO;
-                                TableDataRow row;
-                                if(event.getAction() == TestAnalytePickerScreen.Action.OK) {
-                                    model = (ArrayList<TableDataRow>)event.getData();
-                                    for(int i = 0; i < model.size(); i++) {
-                                        row = model.get(i);
-                                        anaDO = new TestWorksheetAnalyteViewDO();
-                                        anaDO.setAnalyteName((String)row.cells.get(0).getValue());
-                                        anaDO.setTestAnalyteId((Integer)row.key);
-                                        anaDO.setRepeat(1);
-                                        worksheetManager.addAnalyte(anaDO);                                        
-                                    }
-                                    DataChangeEvent.fire(source,worksheetAnalyteTable);                                    
+                try {
+                    testAnalytePicker = new TestAnalytePickerScreen(analyteManager);
+                    testAnalytePicker.addActionHandler(new ActionHandler<TestAnalytePickerScreen.Action>() {
+
+                        public void onAction(ActionEvent<TestAnalytePickerScreen.Action> event) {
+                            ArrayList<TableDataRow> model;
+                            TestWorksheetAnalyteViewDO anaDO;
+                            TableDataRow row;
+                            if (event.getAction() == TestAnalytePickerScreen.Action.OK) {
+                                model = (ArrayList<TableDataRow>)event.getData();
+                                for (int i = 0; i < model.size(); i++ ) {
+                                    row = model.get(i);
+                                    anaDO = new TestWorksheetAnalyteViewDO();
+                                    anaDO.setAnalyteName((String)row.cells.get(0).getValue());
+                                    anaDO.setTestAnalyteId((Integer)row.key);
+                                    anaDO.setRepeat(1);
+                                    worksheetManager.addAnalyte(anaDO);
                                 }
-                                
+                                DataChangeEvent.fire(screen, worksheetAnalyteTable);
                             }
-                            
-                        });
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        Window.alert("error: " + e.getMessage());
-                        return;
-                    }
-                //}
-                modal = new ScreenWindow("Test Analyte LookUp","testAnalytePickerScreen","",true,false);
+
+                        }
+
+                    });
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Window.alert("error: " + e.getMessage());
+                    return;
+                }
+                modal = new ScreenWindow("Test Analyte LookUp", "testAnalytePickerScreen", "",
+                                         true, false);
                 modal.setName(consts.get("testAnalyteSelection"));
                 modal.setContent(testAnalytePicker);
                 testAnalytePicker.setScreenState(State.DEFAULT);
@@ -485,7 +482,7 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
         for(DictionaryDO resultDO :  list){
             model.add(new TableDataRow(resultDO.getId(),resultDO.getEntry()));
         } 
-        ((Dropdown)worksheetAnalyteTable.getColumns().get(2).getColumnWidget()).setModel(model);
+        ((Dropdown)worksheetAnalyteTable.getColumnWidget(meta.getTestWorksheetAnalyte().getFlagId())).setModel(model);
         
         model = new ArrayList<TableDataRow>();
         list = DictionaryCache.getListByCategorySystemName("test_worksheet_item_type");
@@ -493,7 +490,7 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
         for(DictionaryDO resultDO :  list){
             model.add(new TableDataRow(resultDO.getId(),resultDO.getEntry()));
         } 
-        ((Dropdown)worksheetTable.getColumns().get(1).getColumnWidget()).setModel(model);
+        ((Dropdown)worksheetTable.getColumnWidget(meta.getTestWorksheetItem().getTypeId())).setModel(model);
         
         model = new ArrayList<TableDataRow>();
         list = DictionaryCache.getListByCategorySystemName("test_worksheet_format");

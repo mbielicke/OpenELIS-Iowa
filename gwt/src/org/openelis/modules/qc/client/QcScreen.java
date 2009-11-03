@@ -1,28 +1,28 @@
-/** Exhibit A - UIRF Open-source Based Public Software License.
-* 
-* The contents of this file are subject to the UIRF Open-source Based
-* Public Software License(the "License"); you may not use this file except
-* in compliance with the License. You may obtain a copy of the License at
-* openelis.uhl.uiowa.edu
-* 
-* Software distributed under the License is distributed on an "AS IS"
-* basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
-* License for the specific language governing rights and limitations
-* under the License.
-* 
-* The Original Code is OpenELIS code.
-* 
-* The Initial Developer of the Original Code is The University of Iowa.
-* Portions created by The University of Iowa are Copyright 2006-2008. All
-* Rights Reserved.
-* 
-* Contributor(s): ______________________________________.
-* 
-* Alternatively, the contents of this file marked
-* "Separately-Licensed" may be used under the terms of a UIRF Software
-* license ("UIRF Software License"), in which case the provisions of a
-* UIRF Software License are applicable instead of those above. 
-*/
+/**
+ * Exhibit A - UIRF Open-source Based Public Software License.
+ * 
+ * The contents of this file are subject to the UIRF Open-source Based Public
+ * Software License(the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * openelis.uhl.uiowa.edu
+ * 
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+ * the specific language governing rights and limitations under the License.
+ * 
+ * The Original Code is OpenELIS code.
+ * 
+ * The Initial Developer of the Original Code is The University of Iowa.
+ * Portions created by The University of Iowa are Copyright 2006-2008. All
+ * Rights Reserved.
+ * 
+ * Contributor(s): ______________________________________.
+ * 
+ * Alternatively, the contents of this file marked "Separately-Licensed" may be
+ * used under the terms of a UIRF Software license ("UIRF Software License"), in
+ * which case the provisions of a UIRF Software License are applicable instead
+ * of those above.
+ */
 package org.openelis.modules.qc.client;
 
 import java.util.ArrayList;
@@ -35,6 +35,7 @@ import org.openelis.domain.QcAnalyteViewDO;
 import org.openelis.domain.SecuritySystemUserDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.LastPageException;
+import org.openelis.gwt.common.LocalizedException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.SecurityException;
@@ -42,6 +43,8 @@ import org.openelis.gwt.common.SecurityModule;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
+import org.openelis.gwt.event.ActionEvent;
+import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.GetMatchesEvent;
 import org.openelis.gwt.event.GetMatchesHandler;
@@ -50,7 +53,6 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
-import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
@@ -59,6 +61,7 @@ import org.openelis.gwt.widget.CalendarLookUp;
 import org.openelis.gwt.widget.CheckBox;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.QueryFieldUtil;
+import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataRow;
@@ -72,7 +75,9 @@ import org.openelis.gwt.widget.table.event.RowDeletedHandler;
 import org.openelis.manager.QcManager;
 import org.openelis.meta.InventoryItemMeta;
 import org.openelis.metamap.QcMetaMap;
+import org.openelis.modules.dictionaryentrypicker.client.DictionaryEntryPickerScreen;
 import org.openelis.modules.main.client.openelis.OpenELIS;
+import org.openelis.modules.test.client.TestResultCategoryRPC;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -83,31 +88,39 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class QcScreen extends Screen {
-    private QcManager         manager;
-    private QcMetaMap         meta    = new QcMetaMap();
-    private InventoryItemMeta invMeta = meta.getInventoryItem();
-    private SecurityModule    security;
+    private QcManager                   manager;
+    private QcMetaMap                   meta    = new QcMetaMap();
+    private InventoryItemMeta           invMeta = meta.getInventoryItem();
+    private SecurityModule              security;
 
-    private AppButton         queryButton, previousButton, nextButton, addButton, updateButton,
-                              commitButton, abortButton, removeAnalyteButton, dictionaryButton;
-    private ButtonGroup       atoz;
-    private ScreenNavigator   nav;
+    private AppButton                   queryButton, previousButton, nextButton, addButton,
+                                        updateButton, commitButton, abortButton, addAnalyteButton,
+                                        removeAnalyteButton, dictionaryButton;
+    private ButtonGroup                 atoz;
+    private ScreenNavigator             nav;
 
-    private CalendarLookUp        preparedDate, usableDate, expireDate;
-    private AutoComplete<Integer> inventoryItem, preparedBy, analyte;
-    private Dropdown<Integer>     typeId, preparedUnitId, analyteTypeId;
-    private TextBox               name, source, lotNumber, preparedVolume;
-    private CheckBox              isSingleUse;
-    private TableWidget           qcAnalyteTable;
+    private CalendarLookUp              preparedDate, usableDate, expireDate;
+    private AutoComplete<Integer>       inventoryItem, preparedBy, analyte;
+    private Dropdown<Integer>           typeId, preparedUnitId, analyteTypeId;
+    private TextBox                     name, source, lotNumber, preparedVolume;
+    private CheckBox                    isSingleUse;
 
-    private ScreenService         analyteService, inventoryService, userService;
-    
+    private DictionaryEntryPickerScreen dictEntryPicker;
+
+    private QcScreen                    screen;
+
+    private TableWidget                 qcAnalyteTable;
+
+    private ScreenService               analyteService, inventoryService, userService;
+
     public QcScreen() throws Exception {
         super((ScreenDefInt)GWT.create(QcDef.class));
         service = new ScreenService("controller?service=org.openelis.modules.qc.server.QcService");
         userService = new ScreenService("controller?service=org.openelis.server.SystemUserService");
-        analyteService = new ScreenService("controller?service=org.openelis.modules.analyte.server.AnalyteService");
-        inventoryService = new ScreenService("controller?service=org.openelis.modules.inventoryItem.server.InventoryItemService");
+        analyteService = new ScreenService(
+                                           "controller?service=org.openelis.modules.analyte.server.AnalyteService");
+        inventoryService = new ScreenService(
+                                             "controller?service=org.openelis.modules.inventoryItem.server.InventoryItemService");
 
         security = OpenELIS.security.getModule("qc");
         if (security == null)
@@ -125,22 +138,25 @@ public class QcScreen extends Screen {
 
     /**
      * This method is called to set the initial state of widgets after the
-     * screen is attached to the browser. It is usually called in deferred command.
+     * screen is attached to the browser. It is usually called in deferred
+     * command.
      */
     private void postConstructor() {
         manager = QcManager.getInstance();
 
         setState(State.DEFAULT);
-        
+
         initializeDropdowns();
         DataChangeEvent.fire(this);
     }
-    
+
     /**
      * Setup state and data change handles for every widget on the screen
      */
     @SuppressWarnings("unchecked")
     private void initialize() {
+        screen = this;
+
         //
         // button panel buttons
         //
@@ -248,9 +264,10 @@ public class QcScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                name.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                name.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                   .contains(event.getState()));
                 name.setQueryMode(event.getState() == State.QUERY);
-                if (EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()))
+                if (EnumSet.of(State.QUERY, State.ADD, State.UPDATE).contains(event.getState()))
                     name.setFocus(true);
             }
         });
@@ -266,7 +283,8 @@ public class QcScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                typeId.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                typeId.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                     .contains(event.getState()));
                 typeId.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -274,7 +292,8 @@ public class QcScreen extends Screen {
         inventoryItem = (AutoComplete)def.getWidget(invMeta.getName());
         addScreenHandler(inventoryItem, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                inventoryItem.setSelection(manager.getQc().getInventoryItemId(), manager.getQc().getInventoryItemName());
+                inventoryItem.setSelection(manager.getQc().getInventoryItemId(),
+                                           manager.getQc().getInventoryItemName());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -285,8 +304,8 @@ public class QcScreen extends Screen {
             public void onStateChange(StateChangeEvent<State> event) {
                 // TODO enable this code after inventory rewrite
                 inventoryItem.enable(false);
-//                inventoryItem.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
-//                inventoryItem.setQueryMode(event.getState() == State.QUERY);
+                // inventoryItem.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                // inventoryItem.setQueryMode(event.getState() == State.QUERY);
             }
         });
         inventoryItem.addGetMatchesHandler(new GetMatchesHandler() {
@@ -302,16 +321,15 @@ public class QcScreen extends Screen {
                 try {
                     list = inventoryService.callList("fetchByName", parser.getParameter().get(0));
                     model = new ArrayList<TableDataRow>();
-                        
+
                     for (IdNameVO data : list)
                         model.add(new TableDataRow(data.getId(), data.getName()));
-                    analyte.showAutoMatches(model);
-                } catch(Exception e) {
-                    Window.alert(e.getMessage());                     
+                    inventoryItem.showAutoMatches(model);
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
                 }
             }
         });
-
 
         source = (TextBox)def.getWidget(meta.getSource());
         addScreenHandler(source, new ScreenEventHandler<String>() {
@@ -324,7 +342,8 @@ public class QcScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                source.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                source.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                     .contains(event.getState()));
                 source.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -340,7 +359,8 @@ public class QcScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                lotNumber.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                lotNumber.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                        .contains(event.getState()));
                 lotNumber.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -356,7 +376,8 @@ public class QcScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                isSingleUse.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                isSingleUse.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                          .contains(event.getState()));
                 isSingleUse.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -372,7 +393,8 @@ public class QcScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                preparedDate.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                preparedDate.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                           .contains(event.getState()));
                 preparedDate.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -388,7 +410,8 @@ public class QcScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                preparedVolume.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                preparedVolume.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                             .contains(event.getState()));
                 preparedVolume.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -404,7 +427,8 @@ public class QcScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                preparedUnitId.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                preparedUnitId.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                             .contains(event.getState()));
                 preparedUnitId.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -412,7 +436,8 @@ public class QcScreen extends Screen {
         preparedBy = (AutoComplete)def.getWidget(meta.getPreparedById());
         addScreenHandler(preparedBy, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                preparedBy.setSelection(manager.getQc().getPreparedById(), manager.getQc().getPreparedByName());
+                preparedBy.setSelection(manager.getQc().getPreparedById(),
+                                        manager.getQc().getPreparedByName());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -421,7 +446,8 @@ public class QcScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                preparedBy.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                preparedBy.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                         .contains(event.getState()));
                 preparedBy.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -448,7 +474,6 @@ public class QcScreen extends Screen {
             }
         });
 
-
         usableDate = (CalendarLookUp)def.getWidget(meta.getUsableDate());
         addScreenHandler(usableDate, new ScreenEventHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
@@ -460,7 +485,8 @@ public class QcScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                usableDate.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                usableDate.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                         .contains(event.getState()));
                 usableDate.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -476,14 +502,15 @@ public class QcScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                expireDate.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                expireDate.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                         .contains(event.getState()));
                 expireDate.setQueryMode(event.getState() == State.QUERY);
             }
         });
 
         qcAnalyteTable = (TableWidget)def.getWidget("QcAnalyteTable");
-        analyte = (AutoComplete<Integer>) qcAnalyteTable.getColumns().get(0).colWidget;
-        analyteTypeId = (Dropdown) qcAnalyteTable.getColumns().get(1).colWidget;
+        analyte = (AutoComplete<Integer>)qcAnalyteTable.getColumnWidget(meta.QC_ANALYTE.getAnalyte().getName());
+        analyteTypeId = (Dropdown)qcAnalyteTable.getColumnWidget(meta.QC_ANALYTE.getTypeId());
         addScreenHandler(qcAnalyteTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
             public void onDataChange(DataChangeEvent event) {
                 if (state != State.QUERY)
@@ -491,7 +518,8 @@ public class QcScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                qcAnalyteTable.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                qcAnalyteTable.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                             .contains(event.getState()));
                 qcAnalyteTable.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -501,19 +529,26 @@ public class QcScreen extends Screen {
                 int r, c;
                 Object val;
                 QcAnalyteViewDO data;
+                Integer typeId;
+                TableDataRow trow,row;
+                String sysName,value;
 
                 r = event.getRow();
                 c = event.getCol();
-                val = qcAnalyteTable.getObject(r,c);
+                val = qcAnalyteTable.getObject(r, c);
+                sysName = null;
+                value = null;
+                
                 try {
                     data = manager.getAnalytes().getAnalyteAt(r);
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
                     return;
                 }
-                switch(c) {
+                switch (c) {
                     case 0:
-                        data.setAnalyteId((Integer)val);
+                        row = (TableDataRow)val;
+                        data.setAnalyteId((Integer)row.key);                        
                         data.setAnalyteName(analyte.getTextBoxDisplay());
                         break;
                     case 1:
@@ -523,7 +558,24 @@ public class QcScreen extends Screen {
                         data.setIsTrendable((String)val);
                         break;
                     case 3:
-                        data.setValue((String)val);
+                        trow = qcAnalyteTable.getRow(r);
+                        typeId = (Integer)trow.cells.get(1).getValue();
+                        
+                        if(typeId != null)
+                            sysName = DictionaryCache.getSystemNameFromId(typeId);
+                        
+                        if("qc_analyte_numeric".equals(sysName)) {
+                            value = validateAndSetNumericValue((String)val,r);                            
+                        } else if("qc_analyte_titer".equals(sysName)) {
+                            value = validateAndSetTiterValue((String)val,r);                            
+                        } else if("qc_analyte_dictionary".equals(sysName)) {
+                            value = validateAndSetDictValue((String)val,r,data);
+                            if(value == null)
+                                data.setDictionary("");
+                            else 
+                                data.setDictionary((String)val);
+                        }                      
+                        data.setValue(value);                        
                         break;
                 }
             }
@@ -552,7 +604,6 @@ public class QcScreen extends Screen {
         analyte.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
                 QueryFieldUtil parser;
-                TableDataRow row;
                 IdNameVO data;
                 ArrayList<IdNameVO> list;
                 ArrayList<TableDataRow> model;
@@ -563,18 +614,37 @@ public class QcScreen extends Screen {
                 try {
                     list = analyteService.callList("fetchByName", parser.getParameter().get(0));
                     model = new ArrayList<TableDataRow>();
-                        
-                    for (int i=0; i < list.size(); i++) {
+
+                    for (int i = 0; i < list.size(); i++ ) {
                         data = list.get(i);
                         model.add(new TableDataRow(data.getId(), data.getName()));
-                    } 
+                    }
                     analyte.showAutoMatches(model);
-                } catch(Exception e) {
-                    Window.alert(e.getMessage());                     
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
                 }
             }
         });
-        
+
+        addAnalyteButton = (AppButton)def.getWidget("addAnalyteButton");
+        addScreenHandler(addAnalyteButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                int n;
+
+                qcAnalyteTable.addRow();
+                n = qcAnalyteTable.numRows() - 1;
+                qcAnalyteTable.selectRow(n);
+                qcAnalyteTable.scrollToSelection();
+                qcAnalyteTable.startEditing(n, 0);
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                addAnalyteButton.enable(EnumSet.of(State.ADD, State.UPDATE)
+                                               .contains(event.getState()));
+            }
+
+        });
+
         removeAnalyteButton = (AppButton)def.getWidget("removeAnalyteButton");
         addScreenHandler(removeAnalyteButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
@@ -586,18 +656,20 @@ public class QcScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                removeAnalyteButton.enable(EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));
+                removeAnalyteButton.enable(EnumSet.of(State.ADD, State.UPDATE)
+                                                  .contains(event.getState()));
             }
         });
 
         dictionaryButton = (AppButton)def.getWidget("dictionaryButton");
         addScreenHandler(dictionaryButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-                // FIXME add on click handler
+                showDictionaryPopUp();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                dictionaryButton.enable(EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));
+                dictionaryButton.enable(EnumSet.of(State.ADD, State.UPDATE)
+                                               .contains(event.getState()));
             }
         });
 
@@ -621,8 +693,7 @@ public class QcScreen extends Screen {
                         } else if (error instanceof LastPageException) {
                             window.setError("No more records in this direction");
                         } else {
-                            Window.alert("Error: QC call query failed; " +
-                                         error.getMessage());
+                            Window.alert("Error: QC call query failed; " + error.getMessage());
                             window.setError(consts.get("queryFailed"));
                         }
                     }
@@ -642,7 +713,8 @@ public class QcScreen extends Screen {
                 if (result != null) {
                     model = new ArrayList<TableDataRow>();
                     for (IdNameVO entry : result)
-                        model.add(new TableDataRow(entry.getId(), entry.getName(), entry.getDescription()));
+                        model.add(new TableDataRow(entry.getId(), entry.getName(),
+                                                   entry.getDescription()));
                 }
                 return model;
             }
@@ -843,24 +915,30 @@ public class QcScreen extends Screen {
 
         return true;
     }
-    
+
     private ArrayList<TableDataRow> getAnalyteTableModel() {
         int i;
         TableDataRow row;
         QcAnalyteViewDO data;
         ArrayList<TableDataRow> model;
-        
+        String value;
+
         model = new ArrayList<TableDataRow>();
         if (manager == null)
             return model;
 
         try {
-            for (i = 0; i < manager.getAnalytes().count(); i++) {
+            for (i = 0; i < manager.getAnalytes().count(); i++ ) {
                 data = manager.getAnalytes().getAnalyteAt(i);
-                row = new TableDataRow(null,
-                                       new TableDataRow(data.getAnalyteId(), data.getAnalyteName()),
-                                       data.getTypeId(), data.getIsTrendable(),
-                                       data.getValue());
+                
+                if(data.getDictionary() == null)
+                    value = data.getValue();
+                else 
+                    value = data.getDictionary();
+                
+                row = new TableDataRow(null, new TableDataRow(data.getAnalyteId(),
+                                                              data.getAnalyteName()),
+                                       data.getTypeId(), data.getIsTrendable(), value);
                 model.add(row);
             }
         } catch (Exception e) {
@@ -869,534 +947,418 @@ public class QcScreen extends Screen {
         }
         return model;
     }
-}
 
+    private void showDictionaryPopUp() {
+        ScreenWindow modal;
 
-/*
-import java.util.ArrayList;
-import java.util.List;
-
-import org.openelis.cache.DictionaryCache;
-import org.openelis.domain.DictionaryDO;
-import org.openelis.domain.TestResultDO;
-import org.openelis.gwt.common.data.deprecated.DropDownField;
-import org.openelis.gwt.common.data.deprecated.KeyListManager;
-import org.openelis.gwt.common.data.deprecated.QueryStringField;
-import org.openelis.gwt.common.data.deprecated.StringField;
-import org.openelis.gwt.common.data.deprecated.StringObject;
-import org.openelis.gwt.common.data.deprecated.TableDataModel;
-import org.openelis.gwt.common.data.deprecated.TableDataRow;
-import org.openelis.gwt.common.deprecated.Form;
-import org.openelis.gwt.common.deprecated.Query;
-import org.openelis.gwt.event.ActionEvent;
-import org.openelis.gwt.event.ActionHandler;
-import org.openelis.gwt.screen.Screen;
-import org.openelis.gwt.screen.deprecated.CommandChain;
-import org.openelis.gwt.screen.deprecated.ScreenWindow;
-import org.openelis.gwt.widget.deprecated.AppButton;
-import org.openelis.gwt.widget.deprecated.AutoComplete;
-import org.openelis.gwt.widget.deprecated.ButtonPanel;
-import org.openelis.gwt.widget.deprecated.Dropdown;
-import org.openelis.gwt.widget.deprecated.ResultsTable;
-import org.openelis.gwt.widget.deprecated.AppButton.ButtonState;
-import org.openelis.gwt.widget.table.deprecated.TableDropdown;
-import org.openelis.gwt.widget.table.deprecated.TableManager;
-import org.openelis.gwt.widget.table.deprecated.TableWidget;
-import org.openelis.gwt.widget.table.deprecated.event.SourcesTableWidgetEvents;
-import org.openelis.gwt.widget.table.deprecated.event.TableWidgetListener;
-import org.openelis.metamap.QcMetaMap;
-import org.openelis.modules.dictionaryentrypicker.client.DictionaryEntryPickerScreen;
-import org.openelis.modules.main.client.OpenELISScreenForm;
-
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.SyncCallback;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.Widget;
-
-public class QcScreen extends OpenELISScreenForm<QCForm, Query<TableDataRow<Integer>>> implements TableManager,
-                                                                                                  ClickListener,
-                                                                                                  TableWidgetListener{
-
-    private KeyListManager<Integer> keyList = new KeyListManager<Integer>();
-    
-    private QcMetaMap QcMeta = new QcMetaMap();
-    
-    private AppButton removeQCAnalyteButton, dictionaryLookUpButton;
-    
-    private TextBox qcName;
-    
-    private TableWidget qcAnalyteTableWidget;
-    
-    private Dropdown qcType,preparedUnit;   
-    
-    private AutoComplete prepBy;    
-    
-    private DictionaryEntryPickerScreen dictEntryPicker;
-    
-    public QcScreen() {
-        super("org.openelis.modules.qc.server.QCService");
-        query = new Query<TableDataRow<Integer>>();
-        getScreen(new QCForm());
-    }
-    
-    public void afterDraw(boolean success) {
-        ButtonPanel bpanel, atozButtons;
-        CommandChain chain;       
-        ResultsTable atozTable;
-        ArrayList cache;
-        TableDataModel<TableDataRow> model;
-        
-        atozTable = (ResultsTable)getWidget("azTable");
-        atozButtons = (ButtonPanel)getWidget("atozButtons");
-        //((CollapsePanel)getWidget("collapsePanel")).addChangeListener(atozTable);
-
-        bpanel = (ButtonPanel)getWidget("buttons");        
-        //
-        // we are interested in getting button actions in two places,
-        // modelwidget and this screen.
-        //
-        chain = new CommandChain();
-        chain.addCommand(this);
-        chain.addCommand(bpanel);
-        chain.addCommand(keyList);
-        chain.addCommand(atozTable);
-        chain.addCommand(atozButtons);
-        
-        qcType = (Dropdown)getWidget(QcMeta.getTypeId());
-        preparedUnit = (Dropdown)getWidget(QcMeta.getPreparedUnitId());
-        
-        qcAnalyteTableWidget = (TableWidget)getWidget("qcAnalyteTable");
-        qcAnalyteTableWidget.addTableWidgetListener(this);
-        
-        removeQCAnalyteButton = (AppButton)getWidget("removeQCAnalyteButton");
-        dictionaryLookUpButton = (AppButton)getWidget("dictionaryLookUpButton");                
-
-        qcName = (TextBox)getWidget(QcMeta.getName());                      
-        
-        prepBy = (AutoComplete)getWidget(QcMeta.getPreparedById());
-        
-        updateChain.add(afterUpdate);
-        commitUpdateChain.add(commitUpdateCallback);
-        commitAddChain.add(commitAddCallback);
-        
-        super.afterDraw(success);
-        
-        cache = DictionaryCache.getListByCategorySystemName("unit_of_measure");
-        model = getDictionaryIdEntryList(cache);
-        preparedUnit.setModel(model);
-        
-        cache = DictionaryCache.getListByCategorySystemName("qc_analyte_type");
-        model = getDictionaryIdEntryList(cache);
-        ((TableDropdown)qcAnalyteTableWidget.columns.get(1).getColumnWidget()).setModel(model);
-        
-        cache = DictionaryCache.getListByCategorySystemName("qc_type");
-        model = getDictionaryIdEntryList(cache);
-        qcType.setModel(model);
-    }
-    
-    public void performCommand(Enum action, Object obj) { 
-        ArrayList<TableDataRow<Integer>> selectedRows;
-        String query;
-        if(obj instanceof AppButton) {
-            query = ((AppButton)obj).action;
-            if (query.indexOf("*") != -1)
-                getQCs(query);
-            else                         
-                super.performCommand(action, obj);            
-         }  else if(action == DictionaryEntryPickerScreen.Action.COMMIT) {              
-             selectedRows = (ArrayList<TableDataRow<Integer>>)obj;
-             dictionaryLookupClosed(selectedRows);
-         } else{
-             super.performCommand(action, obj);
-         }   
-    }
-    
-    public boolean canPerformCommand(Enum action, Object obj) {
-        if(action == DictionaryEntryPickerScreen.Action.OK || 
-                        action == DictionaryEntryPickerScreen.Action.CANCEL)
-            return true;
-        else
-            return super.canPerformCommand(action, obj);
-    }
-    
-    public void query() {
-        super.query();
-        removeQCAnalyteButton.changeState(ButtonState.DISABLED);
-        dictionaryLookUpButton.changeState(ButtonState.DISABLED);
-        qcAnalyteTableWidget.model.enableAutoAdd(false);   
-        prepBy.enabled(false);
-    }
-    
-    public void add() {
-        super.add();
-        qcName.setFocus(true);
-        qcAnalyteTableWidget.model.enableAutoAdd(true); 
-        qcAnalyteTableWidget.activeRow = -1;
-        prepBy.enabled(true);
-    }
-    
-    public void abort() {
-        qcAnalyteTableWidget.model.enableAutoAdd(false); 
-        super.abort();
-    }
-    
-    protected SyncCallback<QCForm> afterUpdate = new SyncCallback<QCForm>() {
-        public void onFailure(Throwable caught) {
-            Window.alert(caught.getMessage());
-        }
-
-        public void onSuccess(QCForm result) {
-            qcName.setFocus(true);
-            qcAnalyteTableWidget.model.enableAutoAdd(true);  
-            qcAnalyteTableWidget.activeRow = -1;
-            prepBy.enabled(true);
-        }
-    };   
-    
-    protected SyncCallback<QCForm> commitUpdateCallback = new SyncCallback<QCForm>() {
-        public void onSuccess(QCForm result) {
-            if (form.status != Form.Status.invalid)                                
-                qcAnalyteTableWidget.model.enableAutoAdd(false); 
-        }
-
-        public void onFailure(Throwable caught) {
-            handleError(caught);
-        }
-    };
-
-    protected SyncCallback<QCForm> commitAddCallback = new SyncCallback<QCForm>() {
-        public void onSuccess(QCForm result) {
-            if (form.status != Form.Status.invalid)                                
-                qcAnalyteTableWidget.model.enableAutoAdd(false); 
-        }
-
-        public void onFailure(Throwable caught) {
-            handleError(caught);
-        }
-    };
-
-    private void getQCs(String query) {
-        QueryStringField qField;
-        if (state == State.DISPLAY || state == State.DEFAULT) {
-            qField = new QueryStringField(QcMeta.getName());
-            qField.setValue(query);
-            commitQuery(qField);
-        }
-        
-    }
-
-    public <T> boolean canAdd(TableWidget widget, TableDataRow<T> set, int row) {
-        return false;
-    }
-
-    public <T> boolean canAutoAdd(TableWidget widget, TableDataRow<T> addRow) {
-        DropDownField<Integer> ddField;
-        StringField strField;
-        String val;
-        int empty = 0;
-        
-        ddField =  (DropDownField<Integer>)addRow.cells[0];
-        if(ddField.getSelectedKey()==null)
-            empty++;
-        
-        ddField =  (DropDownField<Integer>)addRow.cells[1];
-        if(ddField.getSelectedKey()==null)
-            empty++;
-        
-        strField = (StringField)addRow.cells[3];
-        val = strField.getValue();
-        if(val == null || (val != null && "".equals(val.trim())))
-            empty++;
-        
-        return (empty != 3);        
-        
-    }
-
-    public <T> boolean canDelete(TableWidget widget,TableDataRow<T> set,int row) {
-        return false;
-    }
-
-    public <T> boolean canEdit(TableWidget widget,TableDataRow<T> set,int row,int col) {
-        if(state == State.ADD || state == State.UPDATE)
-            return true;
-        else if (state == State.QUERY && col != 3)
-            return true;
-            
-        return false;
-    }
-
-    public <T> boolean canSelect(TableWidget widget,TableDataRow<T> set,int row) {
-        if(state == State.ADD || state == State.UPDATE || state == State.QUERY)
-            return true;
-        return false;
-    }
-
-    public void onClick(Widget sender) {      
-        if(sender == removeQCAnalyteButton)            
-            onQCAnalyteButtonClicked();
-        else if (sender == dictionaryLookUpButton)
-            onDictionaryLookUpButtonClicked();
-    }
-    
-    public void finishedEditing(SourcesTableWidgetEvents sender,int row,int col) {    
-        Double doubleVal,darray[];
-        String finalValue,systemName,value,token,strList[];
-        QCGeneralPurposeRPC agrpc;
-        boolean convert;
-        int iter;
-                
-        if(sender == qcAnalyteTableWidget && col == 3) {            
-            final int currRow = row;            
-            value = ((StringField)qcAnalyteTableWidget.model.getRow(row).cells[3]).getValue();            
-            darray = new Double[2];
-            finalValue = "";
-            systemName = getSelectedSystemName(row);                                  
-            if(systemName!=null){
-                if ("qc_analyte_dictionary".equals(systemName)) {
-                    //
-                    // Find out if this value is stored in the database if
-                    // the type chosen was "Dictionary"
-                    //
-                    if (!"".equals(value.trim())) {   
-                        agrpc = new QCGeneralPurposeRPC();
-                        agrpc.stringValue = value;
-                        screenService.call("getEntryIdForEntryText",agrpc,
-                                           new SyncCallback<QCGeneralPurposeRPC>() {
-                                               public void onSuccess(QCGeneralPurposeRPC result) {
-                                                   //
-                                                   // If this value is not stored in the
-                                                   // database then add error to this
-                                                   // cell in the "Value" column
-                                                   //
-                                                   if (result.key == null) {
-                                                       qcAnalyteTableWidget.model.setCellError(currRow,3,
-                                                                                                   consts.get("illegalDictEntryException"));
-                                                   } else {  
-                                                       qcAnalyteTableWidget.model.setCell(currRow,3,result.stringValue);
-                                                   }
-                                               }
-
-                                               public void onFailure(Throwable caught) {
-                                                   Window.alert(caught.getMessage());
-                                                   window.clearStatus();
-                                               }
-                        });
-                    }    
-                } else if ("qc_analyte_numeric".equals(systemName)) {                                              
-                    //
-                    // Get the string that was entered if the type
-                    // chosen was "Numeric" and try to break it up at
-                    // the "," if it follows the pattern number,number
-                    //
-                    if (!"".equals(value.trim())) {    
-                        strList = value.split(",");
-                        convert = false;
-                        if (strList.length == 2) {
-                            for (iter = 0; iter < strList.length; iter++) {
-                                token = strList[iter];
-                                try {
-                                    // 
-                                    // Convert each number obtained
-                                    // from the string and store its value
-                                    // converted to double if its a valid
-                                    // number, into an array
-                                    //
-                                    doubleVal = Double.valueOf(token);
-                                    darray[iter] = doubleVal;
-                                    convert = true;
-                                } catch (NumberFormatException ex) {
-                                    convert = false;
-                                }
-                            }
-                        }
-                        
-                        if (convert) {
-                            //
-                            // If it's a valid string store the converted
-                            // string back into the column otherwise add
-                            // an error to the cell and store empty
-                            // string into the cell
-                            //  
-                            if (darray[0].toString()
-                                            .indexOf(".") == -1) {
-                                finalValue = darray[0].toString() + ".0" + ",";
-                            } else {
-                                finalValue = darray[0].toString() + ",";
-                            }
-                            
-                            if (darray[1].toString()
-                                            .indexOf(".") == -1) {
-                                finalValue += darray[1].toString() + ".0";
-                            } else {
-                                finalValue += darray[1].toString();
-                            }
-                            qcAnalyteTableWidget.model.setCell(currRow,3,finalValue);                            
-                        } else {
-                            qcAnalyteTableWidget.model.setCellError(currRow,3,
-                                                                    consts.get("illegalNumericFormatException"));
-                        }    
-                    }  
-                } else if ("qc_analyte_titer".equals(systemName)) {
-                    //
-                    // Get the string that was entered if the type chosen
-                    // was "Titer" and try to
-                    // break it up at the ":" if it follows the pattern
-                    // "number:number"
-                    //
-                    if (!"".equals(value.trim())) {
-                        strList = value.split(":");
-                        convert = false;
-                        if (strList.length == 2) {
-                            for (iter = 0; iter < strList.length; iter++) {
-                                token = strList[iter];
-                                try {
-                                    //
-                                    //  Convert each number obtained from the
-                                    // string and store its value converted to 
-                                    // int if it's a valid number, into an array
-                                    //
-                                    Integer.parseInt(token);                                    
-                                    convert = true;
-                                } catch (NumberFormatException ex) {
-                                    convert = false;
-                                }
-                            }
-                        }
-                        if (convert) {
-                            //
-                            // If it's a valid string store the converted
-                            // string back into the column otherwise add
-                            // an error to the cell and store empty
-                            // string into the cell
-                            //  
-                            qcAnalyteTableWidget.model.setCell(currRow,3,value);                        
-                        } else {
-                            qcAnalyteTableWidget.model.setCellError(currRow,3,
-                                                                    consts.get("illegalTiterFormatException"));
-                        }
-                    }                   
-                }                                             
-            }
-        }                                                    
-    }
-                
-    public void startEditing(SourcesTableWidgetEvents sender, int row, int col) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    public void stopEditing(SourcesTableWidgetEvents sender, int row, int col) {
-        // TODO Auto-generated method stub
-        
-    }    
-    
-    private void onQCAnalyteButtonClicked() {        
-        int index;
-        
-        index = qcAnalyteTableWidget.modelIndexList[qcAnalyteTableWidget.activeRow];
-        if (index > -1)
-            qcAnalyteTableWidget.model.deleteRow(index);
-    }
-    
-    private void onDictionaryLookUpButtonClicked() {
-        ScreenWindow modal;                                                            
-        if(dictEntryPicker == null) {
+        if (dictEntryPicker == null) {
             try {
                 dictEntryPicker = new DictionaryEntryPickerScreen();
-                dictEntryPicker.addActionHandler(new ActionHandler<DictionaryEntryPickerScreen.Action>(){
+                dictEntryPicker.addActionHandler(new ActionHandler<DictionaryEntryPickerScreen.Action>() {
 
                     public void onAction(ActionEvent<DictionaryEntryPickerScreen.Action> event) {
-                       int selTab;
-                       ArrayList<org.openelis.gwt.widget.table.TableDataRow> model;
-                       TestResultDO resDO;
-                       org.openelis.gwt.widget.table.TableDataRow row;
-                       Integer dictId;                               
-                       if(event.getAction() == DictionaryEntryPickerScreen.Action.OK) {
-                           model = (ArrayList<org.openelis.gwt.widget.table.TableDataRow>)event.getData();                                                                                      
-                           dictId = DictionaryCache.getIdFromSystemName("qc_analyte_dictionary");  
-                           addQCAnalyteRows(model,dictId);                                                          
-                       }                                
+                        ArrayList<TableDataRow> model;
+                        QcAnalyteViewDO data;
+                        TableDataRow row;
+                        Integer dictId;
+
+                        try {
+                            if (event.getAction() == DictionaryEntryPickerScreen.Action.OK) {
+                                model = (ArrayList<TableDataRow>)event.getData();
+                                if (model != null) {
+                                    for (int i = 0; i < model.size(); i++ ) {
+                                        row = model.get(i);
+                                        dictId = DictionaryCache.getIdFromSystemName("qc_analyte_dictionary");
+                                        data = new QcAnalyteViewDO();
+                                        data.setIsTrendable("N");
+                                        data.setValue(String.valueOf((Integer)row.key));
+                                        data.setDictionary((String)row.cells.get(0).getValue());
+                                        data.setTypeId(dictId);
+                                        manager.getAnalytes().addAnalyte(data);
+                                    }
+                                    DataChangeEvent.fire(screen, qcAnalyteTable);
+                                }
+                            }
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            Window.alert("error: " + e.getMessage());
+                            return;
+                        }
                     }
-                    
+
                 });
             } catch (Exception e) {
                 e.printStackTrace();
                 Window.alert("error: " + e.getMessage());
                 return;
-            }                                       
+            }
         }
-        modal = new ScreenWindow(null,"Dictionary LookUp","dictionaryEntryPickerScreen","",true,false);
+        modal = new ScreenWindow("Dictionary LookUp", "dictionaryEntryPickerScreen", "", true,
+                                 false);
         modal.setName(consts.get("chooseDictEntry"));
         modal.setContent(dictEntryPicker);
-        dictEntryPicker.setScreenState(Screen.State.DEFAULT);
-    }
-    
-    private void dictionaryLookupClosed(ArrayList<org.openelis.gwt.widget.table.TableDataRow> selectedRows) {              
-        Integer key;
-                
-        key = DictionaryCache.getIdFromSystemName("qc_analyte_dictionary");  
-        addQCAnalyteRows(selectedRows,key);                                                      
-             
-    }
-    
-    private void addQCAnalyteRows(ArrayList<org.openelis.gwt.widget.table.TableDataRow> selectedRows,
-                                  Integer key) {
-         List<String> entries;
-         TableDataRow<Integer> row,dictSet;
-         org.openelis.gwt.widget.table.TableDataRow set;
-         String entry;         
+        dictEntryPicker.setScreenState(State.DEFAULT);    
+}
 
-         if (selectedRows != null) {
-             dictSet = new TableDataRow<Integer>(key); 
-             entries = new ArrayList<String>();
-             for (int iter = 0; iter < selectedRows.size(); iter++) {
-                 set = selectedRows.get(iter);
-                 entry = (String)(set.cells.get(0)).getValue();
-                 if (entry != null && !entries.contains(entry.trim())) {
-                     entries.add(entry);
-                     row = (TableDataRow<Integer>)qcAnalyteTableWidget.model.createRow();
-                     row.cells[1].setValue(dictSet);
-                     row.cells[3].setValue(entry);                                                     
-                     qcAnalyteTableWidget.model.addRow(row);                     
-                 }
-             }
-             qcAnalyteTableWidget.model.refresh();
-         }
-     }      
+private String validateAndSetNumericValue(String value,int row) {              
+    boolean convert;
+    Double doubleVal,darray[];
+    String token,finalValue,strList[];     
     
-    private String getSelectedSystemName(int row){
-        TableDataRow<Integer> trow;
-        String sysname;
-        Integer key;
-        if(row > -1) {
-            trow = qcAnalyteTableWidget.model.getRow(row);
-            key = (Integer)(((DropDownField<Integer>)trow.cells[1]).getSelectedKey());            
-            sysname = DictionaryCache.getSystemNameFromId(key);
-            return sysname;                     
-        }    
-        return null;
-    }
-
-    private TableDataModel<TableDataRow> getDictionaryIdEntryList(ArrayList list){
-        TableDataModel<TableDataRow> m = new TableDataModel<TableDataRow>();
-        TableDataRow<Integer> row;
-        
-        if(list == null)
-            return m;
-        
-        m = new TableDataModel<TableDataRow>();
-        m.add(new TableDataRow<Integer>(null,new StringObject("")));
-        
-        for(int i=0; i<list.size(); i++){
-            row = new TableDataRow<Integer>(1);
-            DictionaryDO dictDO = (DictionaryDO)list.get(i);
-            row.key = dictDO.getId();
-            row.cells[0] = new StringObject(dictDO.getEntry());
-            m.add(row);
+    darray = new Double[2];
+    //
+    // Get the string that was entered if the type
+    // chosen was "Numeric" and try to break it up at
+    // the "," if it follows the pattern number,number
+    //
+    if (!"".equals(value.trim())) {    
+        strList = value.split(",");
+        convert = false;
+        if (strList.length == 2) {
+            for (int iter = 0; iter < strList.length; iter++) {
+                token = strList[iter];
+                try {
+                    // 
+                    // Convert each number obtained
+                    // from the string and store its value
+                    // converted to double if its a valid
+                    // number, into an array
+                    //
+                    doubleVal = Double.valueOf(token);
+                    darray[iter] = doubleVal;
+                    convert = true;
+                } catch (NumberFormatException ex) {
+                    convert = false;
+                }
+            }
         }
         
-        return m;
+        if (convert) {
+            //
+            // If it's a valid string store the converted
+            // string back into the column otherwise add
+            // an error to the cell and store empty
+            // string into the cell
+            //  
+            if (darray[0].toString()
+                            .indexOf(".") == -1) {
+                finalValue = darray[0].toString() + ".0"
+                + ",";
+            } else {
+                finalValue = darray[0].toString() + ",";
+            }
+            
+            if (darray[1].toString()
+                            .indexOf(".") == -1) {
+                finalValue += darray[1].toString() + ".0";
+            } else {
+                finalValue += darray[1].toString();
+            }
+            qcAnalyteTable.setCell(row,3,finalValue);
+            return finalValue;                
+        } else {                
+            qcAnalyteTable.setCellException(row,3, new LocalizedException("illegalNumericFormatException"));
+        }    
+    }  else {            
+        qcAnalyteTable.setCellException(row,3,new LocalizedException("fieldRequiredException"));  
+    }
+    qcAnalyteTable.setCell(row,3,value);
+    return value;
+}
+
+private String validateAndSetTiterValue(String value,int row) {                
+    boolean valid;
+    String token,strList[];
+             
+    //
+    // Get the string that was entered if the type
+    // chosen was "Numeric" and try to break it up at
+    // the "," if it follows the pattern number,number
+    //
+    if (!"".equals(value.trim())) {    
+        strList = value.split(":");
+        valid = false;
+        if (strList.length == 2) {
+            for (int iter = 0; iter < strList.length; iter++) {
+                token = strList[iter];
+                try {
+                    // 
+                    // Convert each number obtained
+                    // from the string and store its value
+                    // converted to double if its a valid
+                    // number, into an array
+                    //
+                    Integer.parseInt(token);
+                    valid = true;
+                } catch (NumberFormatException ex) {
+                    valid = false;
+                }
+            }
+        }
+        
+        if (!valid) {                                                            
+            qcAnalyteTable.setCellException(row,3, new LocalizedException("illegalTiterFormatException"));
+        }
+    }  else {
+        qcAnalyteTable.setCellException(row,3,new LocalizedException("fieldRequiredException"));              
+    }
+    qcAnalyteTable.setCell(row,3,value); 
+    return value;
+}
+
+private String validateAndSetDictValue(String value, int row,QcAnalyteViewDO data) {
+    TestResultCategoryRPC rpc;  
+            
+    rpc = new TestResultCategoryRPC();
+        
+    rpc.resultValue = value;
+    try {
+        rpc = service.call("fetchByEntry",rpc);
+        if(rpc.dictIdList.size() == 0) {                
+            qcAnalyteTable.setCellException(row, 3, new LocalizedException("illegalDictEntryException"));
+        } else if(rpc.dictIdList.size() > 1) {
+            Window.alert(consts.get("chooseValueByCategory"));
+            qcAnalyteTable.setCell(row, 3, "");                
+            showDictionaryPopUp();                
+        } else {        
+            return String.valueOf(rpc.dictIdList.get(0).getId());                
+        }
+    } catch (Exception ex) {
+        ex.printStackTrace();
+        Window.alert(ex.getMessage());
+    }
+    
+    return null;
     }
 }
-*/
+
+/*
+ * import java.util.ArrayList; import java.util.List; import
+ * org.openelis.cache.DictionaryCache; import org.openelis.domain.DictionaryDO;
+ * import org.openelis.domain.TestResultDO; import
+ * org.openelis.gwt.common.data.deprecated.DropDownField; import
+ * org.openelis.gwt.common.data.deprecated.KeyListManager; import
+ * org.openelis.gwt.common.data.deprecated.QueryStringField; import
+ * org.openelis.gwt.common.data.deprecated.StringField; import
+ * org.openelis.gwt.common.data.deprecated.StringObject; import
+ * org.openelis.gwt.common.data.deprecated.TableDataModel; import
+ * org.openelis.gwt.common.data.deprecated.TableDataRow; import
+ * org.openelis.gwt.common.deprecated.Form; import
+ * org.openelis.gwt.common.deprecated.Query; import
+ * org.openelis.gwt.event.ActionEvent; import
+ * org.openelis.gwt.event.ActionHandler; import org.openelis.gwt.screen.Screen;
+ * import org.openelis.gwt.screen.deprecated.CommandChain; import
+ * org.openelis.gwt.screen.deprecated.ScreenWindow; import
+ * org.openelis.gwt.widget.deprecated.AppButton; import
+ * org.openelis.gwt.widget.deprecated.AutoComplete; import
+ * org.openelis.gwt.widget.deprecated.ButtonPanel; import
+ * org.openelis.gwt.widget.deprecated.Dropdown; import
+ * org.openelis.gwt.widget.deprecated.ResultsTable; import
+ * org.openelis.gwt.widget.deprecated.AppButton.ButtonState; import
+ * org.openelis.gwt.widget.table.deprecated.TableDropdown; import
+ * org.openelis.gwt.widget.table.deprecated.TableManager; import
+ * org.openelis.gwt.widget.table.deprecated.TableWidget; import
+ * org.openelis.gwt.widget.table.deprecated.event.SourcesTableWidgetEvents;
+ * import org.openelis.gwt.widget.table.deprecated.event.TableWidgetListener;
+ * import org.openelis.metamap.QcMetaMap; import
+ * org.openelis.modules.dictionaryentrypicker
+ * .client.DictionaryEntryPickerScreen; import
+ * org.openelis.modules.main.client.OpenELISScreenForm; import
+ * com.google.gwt.user.client.Window; import
+ * com.google.gwt.user.client.rpc.SyncCallback; import
+ * com.google.gwt.user.client.ui.ClickListener; import
+ * com.google.gwt.user.client.ui.TextBox; import
+ * com.google.gwt.user.client.ui.Widget; public class QcScreen extends
+ * OpenELISScreenForm<QCForm, Query<TableDataRow<Integer>>> implements
+ * TableManager, ClickListener, TableWidgetListener{ private
+ * KeyListManager<Integer> keyList = new KeyListManager<Integer>(); private
+ * QcMetaMap QcMeta = new QcMetaMap(); private AppButton removeQCAnalyteButton,
+ * dictionaryLookUpButton; private TextBox qcName; private TableWidget
+ * qcAnalyteTableWidget; private Dropdown qcType,preparedUnit; private
+ * AutoComplete prepBy; private DictionaryEntryPickerScreen dictEntryPicker;
+ * public QcScreen() { super("org.openelis.modules.qc.server.QCService"); query
+ * = new Query<TableDataRow<Integer>>(); getScreen(new QCForm()); } public void
+ * afterDraw(boolean success) { ButtonPanel bpanel, atozButtons; CommandChain
+ * chain; ResultsTable atozTable; ArrayList cache; TableDataModel<TableDataRow>
+ * model; atozTable = (ResultsTable)getWidget("azTable"); atozButtons =
+ * (ButtonPanel)getWidget("atozButtons");
+ * //((CollapsePanel)getWidget("collapsePanel")).addChangeListener(atozTable);
+ * bpanel = (ButtonPanel)getWidget("buttons"); // // we are interested in
+ * getting button actions in two places, // modelwidget and this screen. //
+ * chain = new CommandChain(); chain.addCommand(this); chain.addCommand(bpanel);
+ * chain.addCommand(keyList); chain.addCommand(atozTable);
+ * chain.addCommand(atozButtons); qcType =
+ * (Dropdown)getWidget(QcMeta.getTypeId()); preparedUnit =
+ * (Dropdown)getWidget(QcMeta.getPreparedUnitId()); qcAnalyteTableWidget =
+ * (TableWidget)getWidget("qcAnalyteTable");
+ * qcAnalyteTableWidget.addTableWidgetListener(this); removeQCAnalyteButton =
+ * (AppButton)getWidget("removeQCAnalyteButton"); dictionaryLookUpButton =
+ * (AppButton)getWidget("dictionaryLookUpButton"); qcName =
+ * (TextBox)getWidget(QcMeta.getName()); prepBy =
+ * (AutoComplete)getWidget(QcMeta.getPreparedById());
+ * updateChain.add(afterUpdate); commitUpdateChain.add(commitUpdateCallback);
+ * commitAddChain.add(commitAddCallback); super.afterDraw(success); cache =
+ * DictionaryCache.getListByCategorySystemName("unit_of_measure"); model =
+ * getDictionaryIdEntryList(cache); preparedUnit.setModel(model); cache =
+ * DictionaryCache.getListByCategorySystemName("qc_analyte_type"); model =
+ * getDictionaryIdEntryList(cache);
+ * ((TableDropdown)qcAnalyteTableWidget.columns.
+ * get(1).getColumnWidget()).setModel(model); cache =
+ * DictionaryCache.getListByCategorySystemName("qc_type"); model =
+ * getDictionaryIdEntryList(cache); qcType.setModel(model); } public void
+ * performCommand(Enum action, Object obj) { ArrayList<TableDataRow<Integer>>
+ * selectedRows; String query; if(obj instanceof AppButton) { query =
+ * ((AppButton)obj).action; if (query.indexOf("*") != -1) getQCs(query); else
+ * super.performCommand(action, obj); } else if(action ==
+ * DictionaryEntryPickerScreen.Action.COMMIT) { selectedRows =
+ * (ArrayList<TableDataRow<Integer>>)obj; dictionaryLookupClosed(selectedRows);
+ * } else{ super.performCommand(action, obj); } } public boolean
+ * canPerformCommand(Enum action, Object obj) { if(action ==
+ * DictionaryEntryPickerScreen.Action.OK || action ==
+ * DictionaryEntryPickerScreen.Action.CANCEL) return true; else return
+ * super.canPerformCommand(action, obj); } public void query() { super.query();
+ * removeQCAnalyteButton.changeState(ButtonState.DISABLED);
+ * dictionaryLookUpButton.changeState(ButtonState.DISABLED);
+ * qcAnalyteTableWidget.model.enableAutoAdd(false); prepBy.enabled(false); }
+ * public void add() { super.add(); qcName.setFocus(true);
+ * qcAnalyteTableWidget.model.enableAutoAdd(true);
+ * qcAnalyteTableWidget.activeRow = -1; prepBy.enabled(true); } public void
+ * abort() { qcAnalyteTableWidget.model.enableAutoAdd(false); super.abort(); }
+ * protected SyncCallback<QCForm> afterUpdate = new SyncCallback<QCForm>() {
+ * public void onFailure(Throwable caught) { Window.alert(caught.getMessage());
+ * } public void onSuccess(QCForm result) { qcName.setFocus(true);
+ * qcAnalyteTableWidget.model.enableAutoAdd(true);
+ * qcAnalyteTableWidget.activeRow = -1; prepBy.enabled(true); } }; protected
+ * SyncCallback<QCForm> commitUpdateCallback = new SyncCallback<QCForm>() {
+ * public void onSuccess(QCForm result) { if (form.status !=
+ * Form.Status.invalid) qcAnalyteTableWidget.model.enableAutoAdd(false); }
+ * public void onFailure(Throwable caught) { handleError(caught); } }; protected
+ * SyncCallback<QCForm> commitAddCallback = new SyncCallback<QCForm>() { public
+ * void onSuccess(QCForm result) { if (form.status != Form.Status.invalid)
+ * qcAnalyteTableWidget.model.enableAutoAdd(false); } public void
+ * onFailure(Throwable caught) { handleError(caught); } }; private void
+ * getQCs(String query) { QueryStringField qField; if (state == State.DISPLAY ||
+ * state == State.DEFAULT) { qField = new QueryStringField(QcMeta.getName());
+ * qField.setValue(query); commitQuery(qField); } } public <T> boolean
+ * canAdd(TableWidget widget, TableDataRow<T> set, int row) { return false; }
+ * public <T> boolean canAutoAdd(TableWidget widget, TableDataRow<T> addRow) {
+ * DropDownField<Integer> ddField; StringField strField; String val; int empty =
+ * 0; ddField = (DropDownField<Integer>)addRow.cells[0];
+ * if(ddField.getSelectedKey()==null) empty++; ddField =
+ * (DropDownField<Integer>)addRow.cells[1]; if(ddField.getSelectedKey()==null)
+ * empty++; strField = (StringField)addRow.cells[3]; val = strField.getValue();
+ * if(val == null || (val != null && "".equals(val.trim()))) empty++; return
+ * (empty != 3); } public <T> boolean canDelete(TableWidget
+ * widget,TableDataRow<T> set,int row) { return false; } public <T> boolean
+ * canEdit(TableWidget widget,TableDataRow<T> set,int row,int col) { if(state ==
+ * State.ADD || state == State.UPDATE) return true; else if (state ==
+ * State.QUERY && col != 3) return true; return false; } public <T> boolean
+ * canSelect(TableWidget widget,TableDataRow<T> set,int row) { if(state ==
+ * State.ADD || state == State.UPDATE || state == State.QUERY) return true;
+ * return false; } public void onClick(Widget sender) { if(sender ==
+ * removeQCAnalyteButton) onQCAnalyteButtonClicked(); else if (sender ==
+ * dictionaryLookUpButton) onDictionaryLookUpButtonClicked(); } public void
+ * finishedEditing(SourcesTableWidgetEvents sender,int row,int col) { Double
+ * doubleVal,darray[]; String finalValue,systemName,value,token,strList[];
+ * QCGeneralPurposeRPC agrpc; boolean convert; int iter; if(sender ==
+ * qcAnalyteTableWidget && col == 3) { final int currRow = row; value =
+ * ((StringField)qcAnalyteTableWidget.model.getRow(row).cells[3]).getValue();
+ * darray = new Double[2]; finalValue = ""; systemName =
+ * getSelectedSystemName(row); if(systemName!=null){ if
+ * ("qc_analyte_dictionary".equals(systemName)) { // // Find out if this value
+ * is stored in the database if // the type chosen was "Dictionary" // if
+ * (!"".equals(value.trim())) { agrpc = new QCGeneralPurposeRPC();
+ * agrpc.stringValue = value; screenService.call("getEntryIdForEntryText",agrpc,
+ * new SyncCallback<QCGeneralPurposeRPC>() { public void
+ * onSuccess(QCGeneralPurposeRPC result) { // // If this value is not stored in
+ * the // database then add error to this // cell in the "Value" column // if
+ * (result.key == null) { qcAnalyteTableWidget.model.setCellError(currRow,3,
+ * consts.get("illegalDictEntryException")); } else {
+ * qcAnalyteTableWidget.model.setCell(currRow,3,result.stringValue); } } public
+ * void onFailure(Throwable caught) { Window.alert(caught.getMessage());
+ * window.clearStatus(); } }); } } else if
+ * ("qc_analyte_numeric".equals(systemName)) { // // Get the string that was
+ * entered if the type // chosen was "Numeric" and try to break it up at // the
+ * "," if it follows the pattern number,number // if (!"".equals(value.trim()))
+ * { strList = value.split(","); convert = false; if (strList.length == 2) { for
+ * (iter = 0; iter < strList.length; iter++) { token = strList[iter]; try { //
+ * // Convert each number obtained // from the string and store its value //
+ * converted to double if its a valid // number, into an array // doubleVal =
+ * Double.valueOf(token); darray[iter] = doubleVal; convert = true; } catch
+ * (NumberFormatException ex) { convert = false; } } } if (convert) { // // If
+ * it's a valid string store the converted // string back into the column
+ * otherwise add // an error to the cell and store empty // string into the cell
+ * // if (darray[0].toString() .indexOf(".") == -1) { finalValue =
+ * darray[0].toString() + ".0" + ","; } else { finalValue = darray[0].toString()
+ * + ","; } if (darray[1].toString() .indexOf(".") == -1) { finalValue +=
+ * darray[1].toString() + ".0"; } else { finalValue += darray[1].toString(); }
+ * qcAnalyteTableWidget.model.setCell(currRow,3,finalValue); } else {
+ * qcAnalyteTableWidget.model.setCellError(currRow,3,
+ * consts.get("illegalNumericFormatException")); } } } else if
+ * ("qc_analyte_titer".equals(systemName)) { // // Get the string that was
+ * entered if the type chosen // was "Titer" and try to // break it up at the
+ * ":" if it follows the pattern // "number:number" // if
+ * (!"".equals(value.trim())) { strList = value.split(":"); convert = false; if
+ * (strList.length == 2) { for (iter = 0; iter < strList.length; iter++) { token
+ * = strList[iter]; try { // // Convert each number obtained from the // string
+ * and store its value converted to // int if it's a valid number, into an array
+ * // Integer.parseInt(token); convert = true; } catch (NumberFormatException
+ * ex) { convert = false; } } } if (convert) { // // If it's a valid string
+ * store the converted // string back into the column otherwise add // an error
+ * to the cell and store empty // string into the cell //
+ * qcAnalyteTableWidget.model.setCell(currRow,3,value); } else {
+ * qcAnalyteTableWidget.model.setCellError(currRow,3,
+ * consts.get("illegalTiterFormatException")); } } } } } } public void
+ * startEditing(SourcesTableWidgetEvents sender, int row, int col) { // TODO
+ * Auto-generated method stub } public void stopEditing(SourcesTableWidgetEvents
+ * sender, int row, int col) { // TODO Auto-generated method stub } private void
+ * onQCAnalyteButtonClicked() { int index; index =
+ * qcAnalyteTableWidget.modelIndexList[qcAnalyteTableWidget.activeRow]; if
+ * (index > -1) qcAnalyteTableWidget.model.deleteRow(index); } private void
+ * onDictionaryLookUpButtonClicked() { ScreenWindow modal; if(dictEntryPicker ==
+ * null) { try { dictEntryPicker = new DictionaryEntryPickerScreen();
+ * dictEntryPicker.addActionHandler(new
+ * ActionHandler<DictionaryEntryPickerScreen.Action>(){ public void
+ * onAction(ActionEvent<DictionaryEntryPickerScreen.Action> event) { int selTab;
+ * ArrayList<org.openelis.gwt.widget.table.TableDataRow> model; TestResultDO
+ * resDO; org.openelis.gwt.widget.table.TableDataRow row; Integer dictId;
+ * if(event.getAction() == DictionaryEntryPickerScreen.Action.OK) { model =
+ * (ArrayList<org.openelis.gwt.widget.table.TableDataRow>)event.getData();
+ * dictId = DictionaryCache.getIdFromSystemName("qc_analyte_dictionary");
+ * addQCAnalyteRows(model,dictId); } } }); } catch (Exception e) {
+ * e.printStackTrace(); Window.alert("error: " + e.getMessage()); return; } }
+ * modal = new
+ * ScreenWindow(null,"Dictionary LookUp","dictionaryEntryPickerScreen"
+ * ,"",true,false); modal.setName(consts.get("chooseDictEntry"));
+ * modal.setContent(dictEntryPicker);
+ * dictEntryPicker.setScreenState(Screen.State.DEFAULT); } private void
+ * dictionaryLookupClosed(ArrayList<org.openelis.gwt.widget.table.TableDataRow>
+ * selectedRows) { Integer key; key =
+ * DictionaryCache.getIdFromSystemName("qc_analyte_dictionary");
+ * addQCAnalyteRows(selectedRows,key); } private void
+ * addQCAnalyteRows(ArrayList<org.openelis.gwt.widget.table.TableDataRow>
+ * selectedRows, Integer key) { List<String> entries; TableDataRow<Integer>
+ * row,dictSet; org.openelis.gwt.widget.table.TableDataRow set; String entry; if
+ * (selectedRows != null) { dictSet = new TableDataRow<Integer>(key); entries =
+ * new ArrayList<String>(); for (int iter = 0; iter < selectedRows.size();
+ * iter++) { set = selectedRows.get(iter); entry =
+ * (String)(set.cells.get(0)).getValue(); if (entry != null &&
+ * !entries.contains(entry.trim())) { entries.add(entry); row =
+ * (TableDataRow<Integer>)qcAnalyteTableWidget.model.createRow();
+ * row.cells[1].setValue(dictSet); row.cells[3].setValue(entry);
+ * qcAnalyteTableWidget.model.addRow(row); } }
+ * qcAnalyteTableWidget.model.refresh(); } } private String
+ * getSelectedSystemName(int row){ TableDataRow<Integer> trow; String sysname;
+ * Integer key; if(row > -1) { trow = qcAnalyteTableWidget.model.getRow(row);
+ * key = (Integer)(((DropDownField<Integer>)trow.cells[1]).getSelectedKey());
+ * sysname = DictionaryCache.getSystemNameFromId(key); return sysname; } return
+ * null; } private TableDataModel<TableDataRow>
+ * getDictionaryIdEntryList(ArrayList list){ TableDataModel<TableDataRow> m =
+ * new TableDataModel<TableDataRow>(); TableDataRow<Integer> row; if(list ==
+ * null) return m; m = new TableDataModel<TableDataRow>(); m.add(new
+ * TableDataRow<Integer>(null,new StringObject(""))); for(int i=0;
+ * i<list.size(); i++){ row = new TableDataRow<Integer>(1); DictionaryDO dictDO
+ * = (DictionaryDO)list.get(i); row.key = dictDO.getId(); row.cells[0] = new
+ * StringObject(dictDO.getEntry()); m.add(row); } return m; } }
+ */

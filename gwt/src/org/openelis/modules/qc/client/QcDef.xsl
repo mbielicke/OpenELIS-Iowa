@@ -268,6 +268,14 @@ UIRF Software License are applicable instead of those above.
               </table>
               <widget style="TableButtonFooter">
                 <HorizontalPanel>
+                 <appButton key="addAnalyteButton" style="Button">
+                  <HorizontalPanel>
+                   <AbsolutePanel style="AddRowButtonImage" />
+                    <text>
+                     <xsl:value-of select="resource:getString($constants,'addRow')" />
+                    </text>
+                  </HorizontalPanel>
+                  </appButton>
                   <appButton key="removeAnalyteButton" style="Button">
                     <HorizontalPanel>
                       <AbsolutePanel style="RemoveRowButtonImage" />
@@ -278,7 +286,7 @@ UIRF Software License are applicable instead of those above.
                   </appButton>
                   <appButton key="dictionaryButton" style="Button">
                     <HorizontalPanel>
-                      <AbsolutePanel style="ButtonPanelButton" />
+                      <AbsolutePanel style="DictionaryButtonImage" />
                       <text>
                         <xsl:value-of select='resource:getString($constants,"dictionary")' />
                       </text>

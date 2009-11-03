@@ -36,6 +36,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
+import org.openelis.domain.DictionaryViewDO;
 import org.openelis.domain.QcAnalyteDO;
 import org.openelis.domain.QcAnalyteViewDO;
 import org.openelis.entity.QcAnalyte;
@@ -60,6 +61,10 @@ public class QcAnalyteBean implements QcAnalyteLocal {
     public ArrayList<QcAnalyteViewDO> fetchByQcId(Integer id) throws Exception {
         Query query;
         List list;
+        QcAnalyteViewDO data;
+        Integer typeId, val;
+        DictionaryViewDO snDO,entDO;      
+        String sysName, entry;
 
         query = manager.createNamedQuery("QcAnalyte.FetchByQcId");
         query.setParameter("id", id);
@@ -67,6 +72,28 @@ public class QcAnalyteBean implements QcAnalyteLocal {
         list = query.getResultList();
         if (list.isEmpty())
             throw new NotFoundException();
+        
+        try {                       
+            for (int i = 0 ; i < list.size(); i++) {
+                data = (QcAnalyteViewDO)list.get(i);                
+                typeId = data.getTypeId();
+                query = manager.createNamedQuery("Dictionary.FetchById");
+                query.setParameter("id", typeId);
+                snDO = (DictionaryViewDO)query.getResultList().get(0);
+                sysName = snDO.getSystemName();
+                if ("qc_analyte_dictionary".equals(sysName)) {
+                    val = Integer.parseInt(data.getValue());
+                    query = manager.createNamedQuery("Dictionary.FetchById");
+                    query.setParameter("id", val);
+                    entDO = (DictionaryViewDO)query.getResultList().get(0);
+                    entry = entDO.getEntry();
+                    data.setDictionary(entry);
+                }
+            }
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
 
         return DataBaseUtil.toArrayList(list);
     }
