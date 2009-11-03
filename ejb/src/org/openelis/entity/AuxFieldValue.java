@@ -45,10 +45,13 @@ import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
-@NamedQueries({@NamedQuery(name = "AuxFieldValue.AuxFieldValueDOList", query = "select distinct new org.openelis.domain.AuxFieldValueDO(afv.id,afv.auxFieldId,"+
-                          " afv.typeId,afv.value) from AuxFieldValue afv where afv.auxFieldId = :auxFieldId"),
-                          @NamedQuery(name = "AuxFieldValue.FetchByDataRefId", query = "select distinct new org.openelis.domain.AuxFieldValueDO(afv.id,afv.auxFieldId,"+
-                          " afv.typeId,afv.value) from AuxData ad, IN (ad.auxField) af left join af.auxFieldValue afv where " + 
+@NamedQueries({@NamedQuery(name = "AuxFieldValue.FetchById", query = "select distinct new org.openelis.domain.AuxFieldValueViewDO(afv.id,afv.auxFieldId,"+
+                          " afv.typeId,afv.value,'') from AuxFieldValue afv where afv.auxFieldId = :auxFieldId"),
+                          @NamedQuery(name = "AuxFieldValue.FetchByGroupId", query = "select distinct new org.openelis.domain.AuxFieldValueViewDO(afv.id,afv.auxFieldId,"+
+                                      " afv.typeId,afv.value,'') from AuxField af left join af.auxFieldValue afv where " + 
+                                                  " af.auxFieldGroupId = :groupId order by afv.auxFieldId "),
+                          @NamedQuery(name = "AuxFieldValue.FetchByDataRefId", query = "select distinct new org.openelis.domain.AuxFieldValueViewDO(afv.id,afv.auxFieldId,"+
+                          " afv.typeId,afv.value,'') from AuxData ad, IN (ad.auxField) af left join af.auxFieldValue afv where " + 
                                       " ad.referenceId = :id and ad.referenceTableId = :tableId order by afv.auxFieldId")})
 
 @Entity

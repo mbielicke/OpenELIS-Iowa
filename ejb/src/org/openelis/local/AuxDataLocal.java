@@ -30,11 +30,12 @@ import java.util.ArrayList;
 import javax.ejb.Local;
 
 import org.openelis.domain.AuxDataDO;
+import org.openelis.domain.AuxDataViewDO;
 
 @Local
 public interface AuxDataLocal {
-    public ArrayList<AuxDataDO> fetchById(Integer referenceId, Integer referenceTableId) throws Exception;
-    public AuxDataDO add(AuxDataDO data) throws Exception;
-    public AuxDataDO update(AuxDataDO data) throws Exception;
-    public void delete(AuxDataDO data) throws Exception;
+    public ArrayList<AuxDataViewDO> fetchById(Integer referenceId, Integer referenceTableId) throws Exception;
+    public AuxDataViewDO add(AuxDataViewDO data) throws Exception;
+    public AuxDataViewDO update(AuxDataViewDO data) throws Exception;
+    public void delete(AuxDataViewDO data) throws Exception;
 }

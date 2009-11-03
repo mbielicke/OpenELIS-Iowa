@@ -35,7 +35,9 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
-import org.openelis.domain.AuxFieldValueDO;
+import org.openelis.domain.AuxFieldValueViewDO;
+import org.openelis.domain.DictionaryDO;
+import org.openelis.domain.DictionaryViewDO;
 import org.openelis.entity.AuxFieldValue;
 import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.NotFoundException;
@@ -50,14 +52,35 @@ public class AuxFieldValueBean implements AuxFieldValueLocal {
     @PersistenceContext(name = "openelis")
     private EntityManager                    manager;
 
-    public ArrayList<AuxFieldValueDO> fetchById(Integer id) throws Exception {
+    public ArrayList<AuxFieldValueViewDO> fetchById(Integer id) throws Exception {
         Query query;
-        ArrayList<AuxFieldValueDO> data;
+        ArrayList<AuxFieldValueViewDO> data;
+        AuxFieldValueViewDO dataDO;
+        Integer dictionaryTypeId;
+        DictionaryDO dictDO;
         
-        query = manager.createNamedQuery("AuxFieldValue.AuxFieldValueDOList");
+        query = manager.createNamedQuery("AuxFieldValue.FetchById");
         query.setParameter("auxFieldId", id);
         try {
             data = DataBaseUtil.toArrayList(query.getResultList());
+            
+            if(data.size() > 0){
+                query = manager.createNamedQuery("Dictionary.FetchBySystemName");
+                query.setParameter("name", "aux_dictionary");
+                dictDO = (DictionaryDO)query.getResultList().get(0);
+                dictionaryTypeId = dictDO.getId();
+                
+                for(int i=0; i<data.size(); i++){
+                    dataDO = data.get(i);
+                
+                    if(dictionaryTypeId.equals(dataDO.getTypeId())){
+                        query = manager.createNamedQuery("Dictionary.FetchById");
+                        query.setParameter("id", new Integer(dataDO.getValue()));
+                        dictDO = (DictionaryViewDO)query.getResultList().get(0);
+                        dataDO.setDictionary(dictDO.getEntry());
+                    }
+                }
+            }
         } catch (NoResultException e) {
             throw new NotFoundException();
         } catch (Exception e) {
@@ -66,16 +89,73 @@ public class AuxFieldValueBean implements AuxFieldValueLocal {
         return data;
     }
     
-    public ArrayList<AuxFieldValueDO> fetchByAuxDataRefIdRefTableId(Integer referenceId, Integer referenceTableId) throws Exception {
+    public ArrayList<AuxFieldValueViewDO> fetchByAuxDataRefIdRefTableId(Integer referenceId, Integer referenceTableId) throws Exception {
         Query query;
-        ArrayList<AuxFieldValueDO> data;
+        ArrayList<AuxFieldValueViewDO> data;
+        AuxFieldValueViewDO dataDO;
+        Integer dictionaryTypeId;
+        DictionaryDO dictDO;
         
         query = manager.createNamedQuery("AuxFieldValue.FetchByDataRefId");
         query.setParameter("id", referenceId);
         query.setParameter("tableId", referenceTableId);
-        
         try {
             data = DataBaseUtil.toArrayList(query.getResultList());
+            
+            if(data.size() > 0){
+                query = manager.createNamedQuery("Dictionary.FetchBySystemName");
+                query.setParameter("name", "aux_dictionary");
+                dictDO = (DictionaryDO)query.getResultList().get(0);
+                dictionaryTypeId = dictDO.getId();
+                
+                for(int i=0; i<data.size(); i++){
+                    dataDO = data.get(i);
+                
+                    if(dictionaryTypeId.equals(dataDO.getTypeId())){
+                        query = manager.createNamedQuery("Dictionary.FetchById");
+                        query.setParameter("id", new Integer(dataDO.getValue()));
+                        dictDO = (DictionaryViewDO)query.getResultList().get(0);
+                        dataDO.setDictionary(dictDO.getEntry());
+                    }
+                }
+            }
+        } catch (NoResultException e) {
+            throw new NotFoundException();
+        } catch (Exception e) {
+            throw new DatabaseException(e);
+        }
+        return data;
+    }
+    
+    public ArrayList<AuxFieldValueViewDO> fetchByGroupId(Integer groupId) throws Exception {
+        Query query;
+        ArrayList<AuxFieldValueViewDO> data;
+        AuxFieldValueViewDO dataDO;
+        Integer dictionaryTypeId;
+        DictionaryDO dictDO;
+        
+        query = manager.createNamedQuery("AuxFieldValue.FetchByGroupId");
+        query.setParameter("groupId", groupId);
+        try {
+            data = DataBaseUtil.toArrayList(query.getResultList());
+            
+            if(data.size() > 0){
+                query = manager.createNamedQuery("Dictionary.FetchBySystemName");
+                query.setParameter("name", "aux_dictionary");
+                dictDO = (DictionaryDO)query.getResultList().get(0);
+                dictionaryTypeId = dictDO.getId();
+                
+                for(int i=0; i<data.size(); i++){
+                    dataDO = data.get(i);
+                
+                    if(dictionaryTypeId.equals(dataDO.getTypeId())){
+                        query = manager.createNamedQuery("Dictionary.FetchById");
+                        query.setParameter("id", new Integer(dataDO.getValue()));
+                        dictDO = (DictionaryViewDO)query.getResultList().get(0);
+                        dataDO.setDictionary(dictDO.getEntry());
+                    }
+                }
+            }
         } catch (NoResultException e) {
             throw new NotFoundException();
         } catch (Exception e) {
@@ -84,7 +164,7 @@ public class AuxFieldValueBean implements AuxFieldValueLocal {
         return data;
     }
 
-    public AuxFieldValueDO add(AuxFieldValueDO data) throws Exception {
+    public AuxFieldValueViewDO add(AuxFieldValueViewDO data) throws Exception {
         AuxFieldValue entity;
         
         manager.setFlushMode(FlushModeType.COMMIT);
@@ -100,7 +180,7 @@ public class AuxFieldValueBean implements AuxFieldValueLocal {
         return data;
     }
 
-    public AuxFieldValueDO update(AuxFieldValueDO data) throws Exception {
+    public AuxFieldValueViewDO update(AuxFieldValueViewDO data) throws Exception {
         AuxFieldValue entity;
         
         if (!data.isChanged())
@@ -113,5 +193,15 @@ public class AuxFieldValueBean implements AuxFieldValueLocal {
         entity.setValue(data.getValue());
 
         return data;
+    }
+    
+    public void delete(AuxFieldValueViewDO data) throws Exception {
+        AuxFieldValue entity;
+
+        manager.setFlushMode(FlushModeType.COMMIT);
+
+        entity = manager.find(AuxFieldValue.class, data.getId());
+        if (entity != null)
+            manager.remove(entity);
     }
 }

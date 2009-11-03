@@ -127,7 +127,7 @@ public class StandardNoteBean implements StandardNoteRemote{
 		
         builder.setMeta(StandardNoteMap);
 		
-		builder.setSelect("distinct new org.openelis.domain.StandardNoteDO(" + StandardNoteMap.getId() + ", " 
+		builder.setSelect("new org.openelis.domain.StandardNoteDO(" + StandardNoteMap.getId() + ", " 
 				                                                             + StandardNoteMap.getName() + ","
 				                                                             + StandardNoteMap.getDescription() + ","
 				                                                             + StandardNoteMap.getTypeId() + "," 

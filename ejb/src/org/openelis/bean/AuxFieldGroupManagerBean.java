@@ -110,16 +110,16 @@ public class AuxFieldGroupManagerBean implements AuxFieldGroupManagerRemote {
         return AuxFieldManager.fetchById(id);
     }
     
-    public AuxFieldManager fetchFieldByGroupId(Integer id) throws Exception {
-        return AuxFieldManager.fetchByAuxFieldGroupId(id);
+    public AuxFieldManager fetchByGroupId(Integer id) throws Exception {
+        return AuxFieldManager.fetchByGroupId(id);
     }
 
     public AuxFieldValueManager fetchFieldValueByFieldId(Integer id) throws Exception {
         return AuxFieldValueManager.fetchByAuxFieldId(id);
     }
     
-    public AuxFieldManager fetchAuxFieldWithValuesById(Integer id) throws Exception {
-        return AuxFieldManager.fetchWithValuesById(id);
+    public AuxFieldManager fetchByGroupIdWithValues(Integer groupId) throws Exception {
+        return AuxFieldManager.fetchByGroupIdWithValues(groupId);
     }
     
     private void checkSecurity(ModuleFlags flag) throws Exception {
