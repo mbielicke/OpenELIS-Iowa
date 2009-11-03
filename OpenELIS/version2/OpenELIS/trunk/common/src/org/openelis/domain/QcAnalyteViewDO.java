@@ -38,14 +38,17 @@ public class QcAnalyteViewDO extends QcAnalyteDO {
     private static final long serialVersionUID = 1L;
 
     protected String          analyteName;
+    
+    protected String          dictionary;
 
     public QcAnalyteViewDO() {
     }
 
     public QcAnalyteViewDO(Integer id, Integer qcId, Integer analyteId, Integer typeId,
-                           String value, String isTrendable, String analyteName) {
+                           String value, String isTrendable, String analyteName,String dictionary) {
         super(id, qcId, analyteId, typeId, value, isTrendable);
         setAnalyteName(analyteName);
+        setDictionary(dictionary);
     }
 
     public String getAnalyteName() {
@@ -54,6 +57,14 @@ public class QcAnalyteViewDO extends QcAnalyteDO {
 
     public void setAnalyteName(String analyteName) {
         this.analyteName = DataBaseUtil.trim(analyteName);
+    }
+    
+    public String getDictionary() {
+        return dictionary;
+    }
+
+    public void setDictionary(String dictionary) {
+        this.dictionary = DataBaseUtil.trim(dictionary);
     }
 
 }

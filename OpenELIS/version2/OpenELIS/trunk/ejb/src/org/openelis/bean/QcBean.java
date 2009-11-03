@@ -44,7 +44,6 @@ import org.openelis.domain.QcViewDO;
 import org.openelis.entity.Qc;
 import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
@@ -212,6 +211,9 @@ public class QcBean implements QcRemote, QcLocal {
     public void validate(QcViewDO data) throws Exception {
         QcDO dup;
         ValidationErrorsList list;
+        Double prepVolume;
+        
+        prepVolume = data.getPreparedVolume();
         
         list = new ValidationErrorsList();
         if (DataBaseUtil.isEmpty(data.getName()))
@@ -222,6 +224,9 @@ public class QcBean implements QcRemote, QcLocal {
 
         if (DataBaseUtil.isEmpty(data.getPreparedDate()))
             list.add(new FieldErrorException("fieldRequiredException", meta.getPreparedDate()));
+        
+        if(!DataBaseUtil.isEmpty(prepVolume) && prepVolume <= 0.0) 
+            list.add(new FieldErrorException("invalidPrepVolumeException", meta.getPreparedVolume()));
 
         if (DataBaseUtil.isEmpty(data.getUsableDate()))
             list.add(new FieldErrorException("fieldRequiredException", meta.getUsableDate()));
@@ -230,10 +235,10 @@ public class QcBean implements QcRemote, QcLocal {
             list.add(new FieldErrorException("fieldRequiredException", meta.getExpireDate()));
 
         if (DataBaseUtil.isAfter(data.getPreparedDate(), data.getUsableDate()))
-            list.add(new FormErrorException("usbDateBeforePrepDateException"));
+            list.add(new FieldErrorException("usbDateBeforePrepDateException",null));
 
         if (DataBaseUtil.isAfter(data.getUsableDate(), data.getExpireDate()))
-            list.add(new FormErrorException("expDateBeforeUsbDateException"));
+            list.add(new FieldErrorException("expDateBeforeUsbDateException",null));       
 
         //
         // check for duplicate lot #

@@ -34,9 +34,12 @@ import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.manager.QcAnalyteManager;
 import org.openelis.manager.QcManager;
+import org.openelis.modules.test.client.TestResultCategoryRPC;
 import org.openelis.persistence.EJBFactory;
+import org.openelis.remote.DictionaryRemote;
 import org.openelis.remote.QcManagerRemote;
 import org.openelis.remote.QcRemote;
+import org.openelis.utilcommon.DataBaseUtil;
 
 public class QcService {
 
@@ -122,11 +125,25 @@ public class QcService {
         }
     }
     
+    public TestResultCategoryRPC fetchByEntry(TestResultCategoryRPC rpc) {
+        try {
+            rpc.dictIdList = dictRemote().fetchByEntry(DataBaseUtil.trim(rpc.resultValue));
+        } catch(Exception ex) {
+            ex.printStackTrace();
+        }
+        
+        return rpc; 
+    } 
+    
     private QcRemote remote() {
         return (QcRemote)EJBFactory.lookup("openelis/QcBean/remote");
     }
 
     private QcManagerRemote remoteManager() {
         return (QcManagerRemote)EJBFactory.lookup("openelis/QcManagerBean/remote");
+    }
+    
+    private DictionaryRemote dictRemote() {
+        return (DictionaryRemote)EJBFactory.lookup("openelis/DictionaryBean/remote");
     }
 }

@@ -37,7 +37,6 @@ import org.openelis.exception.ParseException;
 import org.openelis.gwt.common.GridFieldErrorException;
 import org.openelis.gwt.common.InconsistencyException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.CategoryLocal;
 import org.openelis.local.DictionaryLocal;
 import org.openelis.local.TestResultLocal;
 import org.openelis.metamap.TestMetaMap;
