@@ -109,7 +109,6 @@ public class QcScreen extends Screen {
         analyteService = new ScreenService("controller?service=org.openelis.modules.analyte.server.AnalyteService");
         inventoryService = new ScreenService("controller?service=org.openelis.modules.inventoryItem.server.InventoryItemService");
 
-
         security = OpenELIS.security.getModule("qc");
         if (security == null)
             throw new SecurityException("screenPermException", "QC Screen");
@@ -418,6 +417,7 @@ public class QcScreen extends Screen {
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
                 manager.getQc().setPreparedById(event.getValue());
+                manager.getQc().setPreparedByName(preparedBy.getTextBoxDisplay());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
