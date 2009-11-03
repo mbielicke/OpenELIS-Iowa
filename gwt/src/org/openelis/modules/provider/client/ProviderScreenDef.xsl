@@ -193,19 +193,19 @@ UIRF Software License are applicable instead of those above.
                         <textbox max="30" />
                       </col>
                       <col header="{resource:getString($constants,'address')}" key="{addr:getStreetAddress($locAddr)}" sort="true" width="130">
-                        <textbox max="30" required="true" />
+                        <textbox max="30" />
                       </col>
                       <col header="{resource:getString($constants,'city')}" key="{addr:getCity($locAddr)}" sort="true" width="130">
-                        <textbox max="30" required="true" />
+                        <textbox max="30" />
                       </col>
                       <col header="{resource:getString($constants,'state')}" key="{addr:getState($locAddr)}" sort="true" width="60">
                         <dropdown case="UPPER" field="String" width="60px" />
                       </col>
                       <col header="{resource:getString($constants,'zipcode')}" key="{addr:getZipCode($locAddr)}" sort="true" width="100">
-                        <textbox max="10" required="true" />
+                        <textbox max="10" />
                       </col>
                       <col header="{resource:getString($constants,'country')}" key="{addr:getCountry($locAddr)}" sort="true" width="130">
-                        <dropdown field="String" required="true" width="130px" />
+                        <dropdown field="String" width="130px" />
                       </col>
                       <col header="{resource:getString($constants,'workNumber')}" key="{addr:getWorkPhone($locAddr)}" sort="true" width="90">
                         <textbox max="21" />
