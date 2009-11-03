@@ -77,6 +77,7 @@ import org.openelis.manager.TestResultManager;
 import org.openelis.manager.TestTypeOfSampleManager;
 import org.openelis.metamap.TestMetaMap;
 import org.openelis.modules.dictionaryentrypicker.client.DictionaryEntryPickerScreen;
+import org.openelis.utilcommon.DataBaseUtil;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
@@ -123,16 +124,18 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
     
     private int                                anaSelCol,tempId;  
     
-    private ScreenService                      scriptletService,analyteService;
+    private ScreenService                      scriptletService,analyteService,dictionaryService;
     
     public AnalyteAndResultTab(ScreenDefInt def, ScreenService service,
-                               ScreenService scriptletService,ScreenService analyteService) {
+                               ScreenService scriptletService,ScreenService analyteService,
+                               ScreenService dictionaryService) {
         setDef(def);
         
         
         this.service = service;
         this.scriptletService = scriptletService;
         this.analyteService = analyteService;
+        this.dictionaryService = dictionaryService;
         initialize();  
         
         initializeDropdowns();
@@ -1610,30 +1613,27 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
     }
     
     private String validateAndSetDictValue(String value, int row,TestResultViewDO result) {
-        TestResultCategoryRPC rpc;
+        ArrayList<DictionaryDO> list;
         int selTab;        
         GridFieldErrorException exc;
         
-        selTab = resultTabPanel.getTabBar().getSelectedTab();
-                
-        rpc = new TestResultCategoryRPC();
-            
-        rpc.resultValue = value;
+        selTab = resultTabPanel.getTabBar().getSelectedTab();                
+        
         try {
-            rpc = service.call("fetchByEntry",rpc);
-            if(rpc.dictIdList.size() == 0) {                
+            list = dictionaryService.callList("fetchByEntry", DataBaseUtil.trim(value));
+            if (DataBaseUtil.isEmpty(list) || list.size() == 0) {             
                 exc = addToResultErrorList(selTab,row,meta.getTestResult().getValue(),"illegalDictEntryException"); 
                 resultTable.setCellException(row, 2, exc);
-            } else if(rpc.dictIdList.size() > 1) {
+            } else if(list.size() > 1) {
                 Window.alert(consts.get("chooseValueByCategory"));
                 resultTable.setCell(row, 2, "");                
                 showDictionaryPopUp();                
             } else {        
-                return String.valueOf(rpc.dictIdList.get(0).getId());                
+                return String.valueOf(list.get(0).getId());                
             }
         } catch (Exception ex) {
             ex.printStackTrace();
-            Window.alert(ex.getMessage());
+            //Window.alert(ex.getMessage());
         }
         
         return null;

@@ -128,7 +128,7 @@ public class TestScreen extends Screen {
     private CalendarLookUp           activeBegin, activeEnd;
     
     private ScreenService            methodService,scriptletService,trailerService,
-                                     labelService,analyteService,qcService;
+                                     labelService,analyteService,qcService,dictionaryService;
     
     private enum Tabs {
         DETAILS, SAMPLE_TYPES, ANALYTES_RESULTS, PREPS_REFLEXES, WORKSHEET
@@ -143,6 +143,7 @@ public class TestScreen extends Screen {
         labelService = new ScreenService("controller?service=org.openelis.modules.label.server.LabelService"); 
         analyteService = new ScreenService("controller?service=org.openelis.modules.analyte.server.AnalyteService");
         qcService = new ScreenService("controller?service=org.openelis.modules.qc.server.QCService");
+        dictionaryService = new ScreenService("controller?service=org.openelis.modules.dictionary.server.DictionaryService");
         
         security = OpenELIS.security.getModule("test");
         if (security == null)
@@ -987,7 +988,7 @@ public class TestScreen extends Screen {
             }
         });
 
-        analyteAndResultTab = new AnalyteAndResultTab(def,service,scriptletService,analyteService);
+        analyteAndResultTab = new AnalyteAndResultTab(def,service,scriptletService,analyteService,dictionaryService);
         sampleTypeTab.addActionHandler(analyteAndResultTab);
 
         addScreenHandler(analyteAndResultTab, new ScreenEventHandler<Object>() {

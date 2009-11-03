@@ -66,6 +66,8 @@ import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableWidget;
+import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
+import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
 import org.openelis.gwt.widget.table.event.CellEditedEvent;
 import org.openelis.gwt.widget.table.event.CellEditedHandler;
 import org.openelis.gwt.widget.table.event.RowAddedEvent;
@@ -77,7 +79,7 @@ import org.openelis.meta.InventoryItemMeta;
 import org.openelis.metamap.QcMetaMap;
 import org.openelis.modules.dictionaryentrypicker.client.DictionaryEntryPickerScreen;
 import org.openelis.modules.main.client.openelis.OpenELIS;
-import org.openelis.modules.test.client.TestResultCategoryRPC;
+import org.openelis.utilcommon.DataBaseUtil;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -94,8 +96,8 @@ public class QcScreen extends Screen {
     private SecurityModule              security;
 
     private AppButton                   queryButton, previousButton, nextButton, addButton,
-                                        updateButton, commitButton, abortButton, addAnalyteButton,
-                                        removeAnalyteButton, dictionaryButton;
+                    updateButton, commitButton, abortButton, addAnalyteButton, removeAnalyteButton,
+                    dictionaryButton;
     private ButtonGroup                 atoz;
     private ScreenNavigator             nav;
 
@@ -111,17 +113,16 @@ public class QcScreen extends Screen {
 
     private TableWidget                 qcAnalyteTable;
 
-    private ScreenService               analyteService, inventoryService, userService;
+    private ScreenService               analyteService, inventoryService, userService,
+                                       dictionaryService;
 
     public QcScreen() throws Exception {
         super((ScreenDefInt)GWT.create(QcDef.class));
         service = new ScreenService("controller?service=org.openelis.modules.qc.server.QcService");
         userService = new ScreenService("controller?service=org.openelis.server.SystemUserService");
-        analyteService = new ScreenService(
-                                           "controller?service=org.openelis.modules.analyte.server.AnalyteService");
-        inventoryService = new ScreenService(
-                                             "controller?service=org.openelis.modules.inventoryItem.server.InventoryItemService");
-
+        analyteService = new ScreenService("controller?service=org.openelis.modules.analyte.server.AnalyteService");
+        inventoryService = new ScreenService("controller?service=org.openelis.modules.inventoryItem.server.InventoryItemService");
+        dictionaryService = new ScreenService("controller?service=org.openelis.modules.dictionary.server.DictionaryService");
         security = OpenELIS.security.getModule("qc");
         if (security == null)
             throw new SecurityException("screenPermException", "QC Screen");
@@ -509,36 +510,37 @@ public class QcScreen extends Screen {
         });
 
         qcAnalyteTable = (TableWidget)def.getWidget("QcAnalyteTable");
-        analyte = (AutoComplete<Integer>)qcAnalyteTable.getColumnWidget(meta.QC_ANALYTE.getAnalyte().getName());
+        analyte = (AutoComplete<Integer>)qcAnalyteTable.getColumnWidget(meta.QC_ANALYTE.getAnalyte()
+                                                                                       .getName());
         analyteTypeId = (Dropdown)qcAnalyteTable.getColumnWidget(meta.QC_ANALYTE.getTypeId());
         addScreenHandler(qcAnalyteTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
             public void onDataChange(DataChangeEvent event) {
-                if (state != State.QUERY)
-                    qcAnalyteTable.load(getAnalyteTableModel());
+                //
+                //this table is not queried by,so it needs to be cleared in query mode
+                //
+                qcAnalyteTable.load(getAnalyteTableModel());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                qcAnalyteTable.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
-                                             .contains(event.getState()));
-                qcAnalyteTable.setQueryMode(event.getState() == State.QUERY);
+                qcAnalyteTable.enable(EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()));                
             }
         });
-
+        
         qcAnalyteTable.addCellEditedHandler(new CellEditedHandler() {
             public void onCellUpdated(CellEditedEvent event) {
                 int r, c;
                 Object val;
                 QcAnalyteViewDO data;
                 Integer typeId;
-                TableDataRow trow,row;
-                String sysName,value;
+                TableDataRow trow, row;
+                String sysName, value;
 
                 r = event.getRow();
                 c = event.getCol();
                 val = qcAnalyteTable.getObject(r, c);
                 sysName = null;
                 value = null;
-                
+
                 try {
                     data = manager.getAnalytes().getAnalyteAt(r);
                 } catch (Exception e) {
@@ -548,7 +550,7 @@ public class QcScreen extends Screen {
                 switch (c) {
                     case 0:
                         row = (TableDataRow)val;
-                        data.setAnalyteId((Integer)row.key);                        
+                        data.setAnalyteId((Integer)row.key);
                         data.setAnalyteName(analyte.getTextBoxDisplay());
                         break;
                     case 1:
@@ -560,22 +562,22 @@ public class QcScreen extends Screen {
                     case 3:
                         trow = qcAnalyteTable.getRow(r);
                         typeId = (Integer)trow.cells.get(1).getValue();
-                        
-                        if(typeId != null)
+
+                        if (typeId != null)
                             sysName = DictionaryCache.getSystemNameFromId(typeId);
-                        
-                        if("qc_analyte_numeric".equals(sysName)) {
-                            value = validateAndSetNumericValue((String)val,r);                            
-                        } else if("qc_analyte_titer".equals(sysName)) {
-                            value = validateAndSetTiterValue((String)val,r);                            
-                        } else if("qc_analyte_dictionary".equals(sysName)) {
-                            value = validateAndSetDictValue((String)val,r,data);
-                            if(value == null)
+
+                        if ("qc_analyte_numeric".equals(sysName)) {
+                            value = validateAndSetNumericValue((String)val, r);
+                        } else if ("qc_analyte_titer".equals(sysName)) {
+                            value = validateAndSetTiterValue((String)val, r);
+                        } else if ("qc_analyte_dictionary".equals(sysName)) {
+                            value = validateAndSetDictValue((String)val, r, data);
+                            if (value == null)
                                 data.setDictionary("");
-                            else 
+                            else
                                 data.setDictionary((String)val);
-                        }                      
-                        data.setValue(value);                        
+                        }
+                        data.setValue(value);
                         break;
                 }
             }
@@ -930,12 +932,12 @@ public class QcScreen extends Screen {
         try {
             for (i = 0; i < manager.getAnalytes().count(); i++ ) {
                 data = manager.getAnalytes().getAnalyteAt(i);
-                
-                if(data.getDictionary() == null)
+
+                if (data.getDictionary() == null)
                     value = data.getValue();
-                else 
+                else
                     value = data.getDictionary();
-                
+
                 row = new TableDataRow(null, new TableDataRow(data.getAnalyteId(),
                                                               data.getAnalyteName()),
                                        data.getTypeId(), data.getIsTrendable(), value);
@@ -998,138 +1000,144 @@ public class QcScreen extends Screen {
                                  false);
         modal.setName(consts.get("chooseDictEntry"));
         modal.setContent(dictEntryPicker);
-        dictEntryPicker.setScreenState(State.DEFAULT);    
-}
+        dictEntryPicker.setScreenState(State.DEFAULT);
+    }
 
-private String validateAndSetNumericValue(String value,int row) {              
-    boolean convert;
-    Double doubleVal,darray[];
-    String token,finalValue,strList[];     
-    
-    darray = new Double[2];
-    //
-    // Get the string that was entered if the type
-    // chosen was "Numeric" and try to break it up at
-    // the "," if it follows the pattern number,number
-    //
-    if (!"".equals(value.trim())) {    
-        strList = value.split(",");
-        convert = false;
-        if (strList.length == 2) {
-            for (int iter = 0; iter < strList.length; iter++) {
-                token = strList[iter];
-                try {
-                    // 
-                    // Convert each number obtained
-                    // from the string and store its value
-                    // converted to double if its a valid
-                    // number, into an array
-                    //
-                    doubleVal = Double.valueOf(token);
-                    darray[iter] = doubleVal;
-                    convert = true;
-                } catch (NumberFormatException ex) {
-                    convert = false;
+    private String validateAndSetNumericValue(String value, int row) {
+        boolean convert;
+        Double doubleVal, darray[];
+        String token, finalValue, strList[];
+
+        darray = new Double[2];
+        //
+        // Get the string that was entered if the type
+        // chosen was "Numeric" and try to break it up at
+        // the "," if it follows the pattern number,number
+        //
+        if ( !"".equals(value.trim())) {
+            strList = value.split(",");
+            convert = false;
+            if (strList.length == 2) {
+                for (int iter = 0; iter < strList.length; iter++ ) {
+                    token = strList[iter];
+                    try {
+                        // 
+                        // Convert each number obtained
+                        // from the string and store its value
+                        // converted to double if its a valid
+                        // number, into an array
+                        //
+                        doubleVal = Double.valueOf(token);
+                        darray[iter] = doubleVal;
+                        convert = true;
+                    } catch (NumberFormatException ex) {
+                        convert = false;
+                    }
                 }
             }
-        }
-        
-        if (convert) {
-            //
-            // If it's a valid string store the converted
-            // string back into the column otherwise add
-            // an error to the cell and store empty
-            // string into the cell
-            //  
-            if (darray[0].toString()
-                            .indexOf(".") == -1) {
-                finalValue = darray[0].toString() + ".0"
-                + ",";
-            } else {
-                finalValue = darray[0].toString() + ",";
-            }
-            
-            if (darray[1].toString()
-                            .indexOf(".") == -1) {
-                finalValue += darray[1].toString() + ".0";
-            } else {
-                finalValue += darray[1].toString();
-            }
-            qcAnalyteTable.setCell(row,3,finalValue);
-            return finalValue;                
-        } else {                
-            qcAnalyteTable.setCellException(row,3, new LocalizedException("illegalNumericFormatException"));
-        }    
-    }  else {            
-        qcAnalyteTable.setCellException(row,3,new LocalizedException("fieldRequiredException"));  
-    }
-    qcAnalyteTable.setCell(row,3,value);
-    return value;
-}
 
-private String validateAndSetTiterValue(String value,int row) {                
-    boolean valid;
-    String token,strList[];
-             
-    //
-    // Get the string that was entered if the type
-    // chosen was "Numeric" and try to break it up at
-    // the "," if it follows the pattern number,number
-    //
-    if (!"".equals(value.trim())) {    
-        strList = value.split(":");
-        valid = false;
-        if (strList.length == 2) {
-            for (int iter = 0; iter < strList.length; iter++) {
-                token = strList[iter];
-                try {
-                    // 
-                    // Convert each number obtained
-                    // from the string and store its value
-                    // converted to double if its a valid
-                    // number, into an array
-                    //
-                    Integer.parseInt(token);
-                    valid = true;
-                } catch (NumberFormatException ex) {
-                    valid = false;
+            if (convert) {
+                //
+                // If it's a valid string store the converted
+                // string back into the column otherwise add
+                // an error to the cell and store empty
+                // string into the cell
+                //  
+                if (darray[0].toString().indexOf(".") == -1) {
+                    finalValue = darray[0].toString() + ".0" + ",";
+                } else {
+                    finalValue = darray[0].toString() + ",";
+                }
+
+                if (darray[1].toString().indexOf(".") == -1) {
+                    finalValue += darray[1].toString() + ".0";
+                } else {
+                    finalValue += darray[1].toString();
+                }
+                qcAnalyteTable.setCell(row, 3, finalValue);
+                return finalValue;
+            } else {
+                qcAnalyteTable.setCellException(
+                                                row,
+                                                3,
+                                                new LocalizedException(
+                                                                       "illegalNumericFormatException"));
+            }
+        } else {
+            qcAnalyteTable.setCellException(row, 3,
+                                            new LocalizedException("fieldRequiredException"));
+        }
+        qcAnalyteTable.setCell(row, 3, value);
+        return value;
+    }
+
+    private String validateAndSetTiterValue(String value, int row) {
+        boolean valid;
+        String token, strList[];
+
+        //
+        // Get the string that was entered if the type
+        // chosen was "Numeric" and try to break it up at
+        // the "," if it follows the pattern number,number
+        //
+        if ( !"".equals(value.trim())) {
+            strList = value.split(":");
+            valid = false;
+            if (strList.length == 2) {
+                for (int iter = 0; iter < strList.length; iter++ ) {
+                    token = strList[iter];
+                    try {
+                        // 
+                        // Convert each number obtained
+                        // from the string and store its value
+                        // converted to double if its a valid
+                        // number, into an array
+                        //
+                        Integer.parseInt(token);
+                        valid = true;
+                    } catch (NumberFormatException ex) {
+                        valid = false;
+                    }
                 }
             }
-        }
-        
-        if (!valid) {                                                            
-            qcAnalyteTable.setCellException(row,3, new LocalizedException("illegalTiterFormatException"));
-        }
-    }  else {
-        qcAnalyteTable.setCellException(row,3,new LocalizedException("fieldRequiredException"));              
-    }
-    qcAnalyteTable.setCell(row,3,value); 
-    return value;
-}
 
-private String validateAndSetDictValue(String value, int row,QcAnalyteViewDO data) {
-    TestResultCategoryRPC rpc;  
-            
-    rpc = new TestResultCategoryRPC();
-        
-    rpc.resultValue = value;
-    try {
-        rpc = service.call("fetchByEntry",rpc);
-        if(rpc.dictIdList.size() == 0) {                
-            qcAnalyteTable.setCellException(row, 3, new LocalizedException("illegalDictEntryException"));
-        } else if(rpc.dictIdList.size() > 1) {
-            Window.alert(consts.get("chooseValueByCategory"));
-            qcAnalyteTable.setCell(row, 3, "");                
-            showDictionaryPopUp();                
-        } else {        
-            return String.valueOf(rpc.dictIdList.get(0).getId());                
+            if ( !valid) {
+                qcAnalyteTable.setCellException(
+                                                row,
+                                                3,
+                                                new LocalizedException(
+                                                                       "illegalTiterFormatException"));
+            }
+        } else {
+            qcAnalyteTable.setCellException(row, 3,
+                                            new LocalizedException("fieldRequiredException"));
         }
-    } catch (Exception ex) {
-        ex.printStackTrace();
-        Window.alert(ex.getMessage());
+        qcAnalyteTable.setCell(row, 3, value);
+        return value;
     }
-    
-    return null;
+
+    private String validateAndSetDictValue(String value, int row, QcAnalyteViewDO data) {
+        ArrayList<DictionaryDO> list;
+
+        try {
+            list = dictionaryService.callList("fetchByEntry", DataBaseUtil.trim(value));
+
+            if (DataBaseUtil.isEmpty(list) || list.size() == 0) {
+                qcAnalyteTable.setCellException(row, 3,
+                                                new LocalizedException("illegalDictEntryException"));
+            } else if (list.size() > 1) {
+                Window.alert(consts.get("chooseValueByCategory"));
+                qcAnalyteTable.setCell(row, 3, "");
+                showDictionaryPopUp();
+            } else {
+                return String.valueOf(list.get(0).getId());
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            //Window.alert(ex.getMessage());
+        }
+
+        return null;
     }
 }
 

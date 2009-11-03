@@ -60,7 +60,7 @@ UIRF Software License are applicable instead of those above.
          <row>
           <text style="Prompt"><xsl:value-of select="resource:getString($constants,'selectCategory')"/>:</text>
           <widget colspan = "3">	 		
-		   <dropdown key="category" popWidth = "245" width="245" />				  
+		   <dropdown key="category" popWidth = "245" field="Integer" width="245" />				  
 		  </widget> 
 		 </row> 
 		<row>

@@ -27,6 +27,7 @@ package org.openelis.modules.dictionary.server;
 
 import java.util.ArrayList;
 
+import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.ValidationErrorsList;
@@ -92,6 +93,10 @@ public class DictionaryService {
     
     public ArrayList<IdNameVO> fetchIdEntryByEntry(String entry) throws Exception { 
         return dictRemote().fetchIdEntryByEntry(entry + "%", 10);
+    }
+    
+    public ArrayList<DictionaryDO> fetchByEntry(String entry) throws Exception { 
+        return dictRemote().fetchByEntry(entry);
     }
     
     public DictionaryRPC validateDelete(DictionaryRPC rpc) throws Exception {
