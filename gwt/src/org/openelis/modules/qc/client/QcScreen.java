@@ -32,6 +32,7 @@ import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.QcAnalyteViewDO;
+import org.openelis.domain.SecuritySystemUserDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;
@@ -49,6 +50,7 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
+import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
@@ -98,12 +100,15 @@ public class QcScreen extends Screen {
     private CheckBox              isSingleUse;
     private TableWidget           qcAnalyteTable;
 
-    private ScreenService         analyteService;
+    private ScreenService         analyteService, inventoryService, userService;
     
     public QcScreen() throws Exception {
         super((ScreenDefInt)GWT.create(QcDef.class));
         service = new ScreenService("controller?service=org.openelis.modules.qc.server.QcService");
+        userService = new ScreenService("controller?service=org.openelis.server.SystemUserService");
         analyteService = new ScreenService("controller?service=org.openelis.modules.analyte.server.AnalyteService");
+        inventoryService = new ScreenService("controller?service=org.openelis.modules.inventoryItem.server.InventoryItemService");
+
 
         security = OpenELIS.security.getModule("qc");
         if (security == null)
@@ -246,6 +251,8 @@ public class QcScreen extends Screen {
             public void onStateChange(StateChangeEvent<State> event) {
                 name.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
                 name.setQueryMode(event.getState() == State.QUERY);
+                if (EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()))
+                    name.setFocus(true);
             }
         });
 
@@ -277,10 +284,35 @@ public class QcScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                inventoryItem.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
-                inventoryItem.setQueryMode(event.getState() == State.QUERY);
+                // TODO enable this code after inventory rewrite
+                inventoryItem.enable(false);
+//                inventoryItem.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+//                inventoryItem.setQueryMode(event.getState() == State.QUERY);
             }
         });
+        inventoryItem.addGetMatchesHandler(new GetMatchesHandler() {
+            // TODO after rewrite of the inventoryItem, check this code
+            public void onGetMatches(GetMatchesEvent event) {
+                QueryFieldUtil parser;
+                ArrayList<IdNameVO> list;
+                ArrayList<TableDataRow> model;
+
+                parser = new QueryFieldUtil();
+                parser.parse(event.getMatch());
+
+                try {
+                    list = inventoryService.callList("fetchByName", parser.getParameter().get(0));
+                    model = new ArrayList<TableDataRow>();
+                        
+                    for (IdNameVO data : list)
+                        model.add(new TableDataRow(data.getId(), data.getName()));
+                    analyte.showAutoMatches(model);
+                } catch(Exception e) {
+                    Window.alert(e.getMessage());                     
+                }
+            }
+        });
+
 
         source = (TextBox)def.getWidget(meta.getSource());
         addScreenHandler(source, new ScreenEventHandler<String>() {
@@ -394,6 +426,29 @@ public class QcScreen extends Screen {
             }
         });
 
+        preparedBy.addGetMatchesHandler(new GetMatchesHandler() {
+            public void onGetMatches(GetMatchesEvent event) {
+                QueryFieldUtil parser;
+                ArrayList<SecuritySystemUserDO> users;
+                ArrayList<TableDataRow> model;
+
+                parser = new QueryFieldUtil();
+                parser.parse(event.getMatch());
+
+                try {
+                    users = userService.callList("fetchByLogin", parser.getParameter().get(0));
+                    model = new ArrayList<TableDataRow>();
+                    for (SecuritySystemUserDO user : users)
+                        model.add(new TableDataRow(user.getId(), user.getLoginName()));
+                    preparedBy.showAutoMatches(model);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Window.alert(e.toString());
+                }
+            }
+        });
+
+
         usableDate = (CalendarLookUp)def.getWidget(meta.getUsableDate());
         addScreenHandler(usableDate, new ScreenEventHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
@@ -438,8 +493,6 @@ public class QcScreen extends Screen {
             public void onStateChange(StateChangeEvent<State> event) {
                 qcAnalyteTable.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
                 qcAnalyteTable.setQueryMode(event.getState() == State.QUERY);
-
-//                qcAnalyteTable.enable(EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));
             }
         });
 
