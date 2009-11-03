@@ -2,7 +2,7 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
-import org.openelis.domain.AuxFieldValueDO;
+import org.openelis.domain.AuxFieldValueViewDO;
 import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.ValidationErrorsList;
 
@@ -11,8 +11,8 @@ public class AuxFieldValueManager implements RPC {
     private static final long                                  serialVersionUID = 1L;
 
     protected Integer                                          auxiliaryFieldId;
-    protected ArrayList<AuxFieldValueDO>                            values;
-    protected ArrayList<AuxFieldValueDO>                            deletedList;
+    protected ArrayList<AuxFieldValueViewDO>                            values;
+    protected ArrayList<AuxFieldValueViewDO>                            deletedList;
 
     protected transient static AuxFieldValueManagerProxy proxy;
     
@@ -23,7 +23,7 @@ public class AuxFieldValueManager implements RPC {
         AuxFieldValueManager afvm;
 
         afvm = new AuxFieldValueManager();
-        afvm.values = new ArrayList<AuxFieldValueDO>();
+        afvm.values = new ArrayList<AuxFieldValueViewDO>();
 
         return afvm;
     }
@@ -51,16 +51,20 @@ public class AuxFieldValueManager implements RPC {
         this.auxiliaryFieldId = auxiliaryFieldId;
     }
 
-    public AuxFieldValueDO getAuxFieldValueAt(int i) {
+    public AuxFieldValueViewDO getAuxFieldValueAt(int i) {
         return values.get(i);
 
     }
+    
+    public ArrayList<AuxFieldValueViewDO> getValues() {
+        return values;
+    }
 
-    public void setAuxFieldValueAt(AuxFieldValueDO auxFieldValue, int i) {
+    public void setAuxFieldValueAt(AuxFieldValueViewDO auxFieldValue, int i) {
         values.add(i, auxFieldValue);
     }
     
-    public void addAuxFieldValue(AuxFieldValueDO auxFieldValue){
+    public void addAuxFieldValue(AuxFieldValueViewDO auxFieldValue){
         values.add(auxFieldValue);
     }
     
@@ -68,10 +72,10 @@ public class AuxFieldValueManager implements RPC {
         if(values == null || i >= values.size())
             return;
         
-        AuxFieldValueDO tmp = values.remove(i);
+        AuxFieldValueViewDO tmp = values.remove(i);
         
         if(deletedList == null)
-            deletedList = new ArrayList<AuxFieldValueDO>();
+            deletedList = new ArrayList<AuxFieldValueViewDO>();
         
         if(tmp.getId() != null)
             deletedList.add(tmp);
@@ -113,7 +117,7 @@ public class AuxFieldValueManager implements RPC {
         return deletedList.size();
     }
 
-    AuxFieldValueDO getDeletedAt(int i) {
+    AuxFieldValueViewDO getDeletedAt(int i) {
         return deletedList.get(i);
     }    
 }
