@@ -40,12 +40,12 @@ public class AuxFieldManagerProxy {
         return service.call("fetchAuxFieldById", id);
     }
     
-    public AuxFieldManager fetchWithValuesById(Integer id) throws Exception {
-        return service.call("fetchWithValuesById", id);
+    public AuxFieldManager fetchByGroupIdWithValues(Integer id) throws Exception {
+        return service.call("fetchByGroupIdWithValues", id);
     }
     
-    public AuxFieldManager fetchByAuxFieldGroupId(Integer auxFieldGroupId) throws Exception {
-        return service.call("fetchByAuxFieldGroupId", auxFieldGroupId);
+    public AuxFieldManager fetchByGroupId(Integer auxFieldGroupId) throws Exception {
+        return service.call("fetchByGroupId", auxFieldGroupId);
     }
     
     public AuxFieldManager add(AuxFieldManager man) throws Exception {

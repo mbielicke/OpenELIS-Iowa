@@ -570,12 +570,16 @@ public class AuxiliaryService implements
         return remoteManager().fetchAuxFieldById(id);
     }
     
-    public AuxFieldManager fetchWithValuesById(Integer id) throws Exception {
-        return remoteManager().fetchAuxFieldWithValuesById(id);
+    public AuxFieldManager fetchByGroupIdWithValues(Integer groupId) throws Exception {
+        try{
+        return remoteManager().fetchByGroupIdWithValues(groupId);
+        }catch(Exception e){
+            throw e;
+        }
     }
     
-    public AuxFieldManager fetchByAuxFieldGroupId(Integer auxFieldGroupId) throws Exception {
-        return remoteManager().fetchFieldByGroupId(auxFieldGroupId);
+    public AuxFieldManager fetchByGroupId(Integer auxFieldGroupId) throws Exception {
+        return remoteManager().fetchByGroupId(auxFieldGroupId);
     }
     
     public AuxFieldValueManager fetchByAuxFieldId(Integer auxFieldId) throws Exception {

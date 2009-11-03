@@ -731,13 +731,13 @@ xmlns:testMetaMap="xalan://org.openelis.metamap.TestMetaMap" xmlns:sectionMeta="
                 <row>
                 <widget colspan="6">
 	              <table key="auxValsTable" title="" width="auto" maxRows="7" showScroll="ALWAYS">
-	                 <col width="55" header="{resource:getString($constants,'analyteReportable')}">
+	                 <col width="85" header="{resource:getString($constants,'reportable')}">
 	                 <check/>
 	                 </col>
-	                  <col width="315" header="{resource:getString($constants,'name')}">
+	                  <col width="300" header="{resource:getString($constants,'name')}">
 	                    <label />
 	                  </col>
-	                  <col width="319" class="org.openelis.modules.environmentalSampleLogin.client.AuxTableColumn" header="{resource:getString($constants,'value')}">
+	                  <col width="304" class="org.openelis.modules.environmentalSampleLogin.client.AuxTableColumn" header="{resource:getString($constants,'value')}">
 	                  	<label/>
 	                  </col>
 	                </table>

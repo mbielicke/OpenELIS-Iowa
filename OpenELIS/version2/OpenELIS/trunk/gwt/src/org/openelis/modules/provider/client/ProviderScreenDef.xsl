@@ -224,7 +224,7 @@ UIRF Software License are applicable instead of those above.
                       </col>
                     </table>
                   </widget>
-                  <widget halign="center" style="WhiteContentPanel">
+                  <widget style="TableButtonFooter">
                     <HorizontalPanel>
                       <appButton key="addAddressButton" style="Button">
                         <HorizontalPanel>
