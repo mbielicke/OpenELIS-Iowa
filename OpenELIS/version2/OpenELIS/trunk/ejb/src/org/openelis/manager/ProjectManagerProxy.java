@@ -11,123 +11,92 @@ import org.openelis.local.ProjectLocal;
 import org.openelis.local.ProjectParameterLocal;
 import org.openelis.utilcommon.DataBaseUtil;
 
-
 public class ProjectManagerProxy {
-    
+
     public ProjectManager fetchById(Integer id) throws Exception {
-    	ProjectLocal projLocal;
-    	ProjectParameterLocal paramLocal;
-    	ProjectViewDO data;
-    	ArrayList<ProjectParameterDO> parameters;
-    	ProjectManager m;
-    	
-    	projLocal = projectLocal();
-    	paramLocal = paramLocal();
-    	data = projLocal.fetchById(id);
-    	parameters = paramLocal.findByProject(id);
-    	
-    	m = ProjectManager.getInstance();
-    	
-    	m.setProject(data);
-    	m.setProjectParameters(parameters);
-        
-    	return m;
+        ProjectViewDO data;
+        ProjectManager m;
+
+        data = local().fetchById(id);
+        m = ProjectManager.getInstance();
+        m.setProject(data);
+
+        return m;
+    }
+
+    public ProjectManager fetchWithParameters(Integer id) throws Exception {
+        ProjectViewDO data;
+        ProjectManager m;
+
+        data = local().fetchById(id);
+        m = ProjectManager.getInstance();
+
+        m.setProject(data);
+        m.getParameters();
+
+        return m;
     }
 
     public ProjectManager add(ProjectManager man) throws Exception {
-    	ProjectLocal pl;
-    	ProjectParameterLocal paramLocal;
-    	
-    	pl = projectLocal();
-    	paramLocal = paramLocal();
-    	
-    	pl.add(man.getProject());
-    	
-    	for(ProjectParameterDO paramDO : man.projectParameters) {
-    		paramLocal.add(paramDO);
-    	}
-    	    	
-    	return man;
+        Integer id;
+
+        local().add(man.getProject());
+        id = man.getProject().getId();
+
+        man.getParameters().setProjectId(id);
+        man.getParameters().add();
+
+        return man;
     }
 
     public ProjectManager update(ProjectManager man) throws Exception {
-    	ProjectLocal pl;
-    	ProjectParameterLocal paramLocal;
-    	
-    	pl = projectLocal();
-    	paramLocal = paramLocal();
-    	
-    	pl.update(man.getProject());
-    	
-    	for(ProjectParameterDO paramDO : man.projectParameters) {
-    		if(paramDO.getId() != null)
-    	   		paramLocal.update(paramDO);
-    		else
-    			paramLocal.add(paramDO);
-    	}
-    	
-    	if(man.deleted != null) {
-    		for(ProjectParameterDO data : man.deleted) {
-    			paramLocal.delete(data);
-    		}	
-    		man.deleted = null;
-    	}
-    	
-    	return man;
+        Integer id;
+
+        local().update(man.getProject());
+        id = man.getProject().getId();
+
+        man.getParameters().setProjectId(id);
+        man.getParameters().update();
+
+        return man;
     }
 
     public ProjectManager fetchForUpdate(Integer id) throws Exception {
         assert false : "not supported";
-    	return null;
+        return null;
     }
 
     public ProjectManager abortUpdate(Integer id) throws Exception {
         assert false : "not supported";
-    	return null;
+        return null;
     }
 
     public void validate(ProjectManager man) throws Exception {
-    	ValidationErrorsList list;
-    	 
-    	list = new ValidationErrorsList();
-    	
-    	try {
-    		projectLocal().validate(man.projectView);
-    	}catch(ValidationErrorsList vl) {
-    		DataBaseUtil.mergeException(list, vl);
-    	}
-    	
-    	ProjectParameterLocal pl = paramLocal();
-    	
-    	for(int i = 0; i < man.getProjectParameters().size(); i++){
-    		try {
-    			pl.validate(man.getProjectParameters().get(i));
-    		}catch(ValidationErrorsList vl) {
-    			DataBaseUtil.mergeException(list, vl, "parameterTable", i);
-    		}
-    	}
-    	
-    	if(list.size() > 0)
-    		throw list;
+        ValidationErrorsList list;
+
+        list = new ValidationErrorsList();
+        try {
+            local().validate(man.getProject());
+        } catch (Exception e) {
+            DataBaseUtil.mergeException(list, e);
+        }
+        try {
+            man.getParameters().validate();
+        } catch (Exception e) {
+            DataBaseUtil.mergeException(list, e);
+        }
+
+        if (list.size() > 0)
+            throw list;
     }
-    
-    private ProjectLocal projectLocal() {
-    	try {
-    		InitialContext ctx = new InitialContext();
-    		return (ProjectLocal)ctx.lookup("openelis/ProjectBean/local");
-    	}catch(Exception e) {
-    		e.printStackTrace();
-    		return null;
-    	}
-    }
-    
-    private ProjectParameterLocal paramLocal() {
-    	try {
-    		InitialContext ctx = new InitialContext();
-    		return (ProjectParameterLocal)ctx.lookup("openelis/ProjectParameterBean/local");
-    	}catch(Exception e){
-    		e.printStackTrace();
-    		return null;
-    	}
+
+    private ProjectLocal local() {
+        try {
+            InitialContext ctx = new InitialContext();
+            return (ProjectLocal)ctx.lookup("openelis/ProjectBean/local");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

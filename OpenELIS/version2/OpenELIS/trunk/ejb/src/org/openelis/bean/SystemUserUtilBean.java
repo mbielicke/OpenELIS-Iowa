@@ -44,8 +44,7 @@ public class SystemUserUtilBean implements SystemUserUtilRemote {
     @EJB
     private SystemUserUtilLocal sysUser;
     
-    public ArrayList<SecuritySystemUserDO> findSystemUserByLogin(String loginName,
-                                                                   int numResult) {
+    public ArrayList<SecuritySystemUserDO> fetchByLogin(String loginName, int numResult) {
         SecuritySystemUserDO secUserDO;
         SystemUserDO userDO;
         List<SystemUserDO> userDOList;
