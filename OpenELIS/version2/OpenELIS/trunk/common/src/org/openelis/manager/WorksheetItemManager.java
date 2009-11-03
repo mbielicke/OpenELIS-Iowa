@@ -28,18 +28,16 @@ package org.openelis.manager;
 import java.util.ArrayList;
 
 import org.openelis.domain.WorksheetItemDO;
+import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.RPC;
 
 public class WorksheetItemManager implements RPC {
     
-    private static final long            serialVersionUID = 1L;
-    protected Integer                    worksheetId;
-    protected ArrayList<WorksheetItemDO> items, deleted;
+    private static final long                  serialVersionUID = 1L;
+    protected Integer                          worksheetId;
+    protected ArrayList<WorksheetItemListItem> items, deleted;
     
     protected transient static WorksheetItemManagerProxy proxy;
-    
-    protected WorksheetItemManager() {
-    }
     
     /**
      * Creates a new instance of this object.
@@ -55,42 +53,65 @@ public class WorksheetItemManager implements RPC {
         return items.size();
     }
     
-    public WorksheetItemDO getItemAt(int i) {
-        return items.get(i);
+    public WorksheetItemDO getWorksheetItemAt(int i) {
+        return items.get(i).worksheetItem;
     }
     
-    public void setItemAt(WorksheetItemDO item, int i) {
+    public void setWorksheetItemAt(WorksheetItemDO item, int i) {
         if (items == null)
-            items = new ArrayList<WorksheetItemDO>();
-        items.set(i, item);
+            items = new ArrayList<WorksheetItemListItem>();
+        items.get(i).worksheetItem = item;
     }
     
-    public void addItem(WorksheetItemDO item) {
+    public void addWorksheetItem(WorksheetItemDO item) {
+        WorksheetItemListItem listItem;
+        
         if (items == null)
-            items = new ArrayList<WorksheetItemDO>();
-        items.add(item);
-    }
-    
-    public void addItemAt(WorksheetItemDO item, int i) {
-        if (items == null)
-            items = new ArrayList<WorksheetItemDO>();
-        items.add(i, item);
+            items = new ArrayList<WorksheetItemListItem>();
+        listItem = new WorksheetItemListItem();
+        listItem.worksheetItem = item;
+        items.add(listItem);
     }
     
     public void removeItemAt(int i) {
-        WorksheetItemDO tmp;
+        WorksheetItemListItem tmp;
         
         if (items == null || i >= items.size())
             return;
         
         tmp = items.remove(i);
-        if (tmp.getId() != null) {
+        if (tmp.worksheetItem.getId() != null) {
             if (deleted == null)
-                deleted = new ArrayList<WorksheetItemDO>();
+                deleted = new ArrayList<WorksheetItemListItem>();
             deleted.add(tmp);
         }
     }
     
+    public WorksheetAnalysisManager getWorksheetAnalysisAt(int i) throws Exception {
+        WorksheetItemListItem item = items.get(i);
+
+        if (item.analysis == null) {
+            if (item.worksheetItem != null && item.worksheetItem.getId() != null) {
+                try {
+                    item.analysis = WorksheetAnalysisManager.fetchByWorksheetItemId(item.worksheetItem.getId());
+                } catch (NotFoundException e) {
+                    //ignore
+                } catch (Exception e) {
+                    throw e;
+                }
+            }
+        }
+            
+        if (item.analysis == null)
+            item.analysis = WorksheetAnalysisManager.getInstance();
+    
+        return item.analysis;
+    }
+
+    public void setWorksheetAnalysisAt(WorksheetAnalysisManager analysis, int i) {
+        items.get(i).analysis = analysis;
+    }
+
     //service methods
     public static WorksheetItemManager fetchByWorksheetId(Integer id) throws Exception {
         return proxy().fetchByWorksheetId(id);
@@ -117,21 +138,13 @@ public class WorksheetItemManager implements RPC {
         worksheetId = id;
     }
     
-    ArrayList<WorksheetItemDO> getItems() {
-        return items;
-    }
-
-    void setItems(ArrayList<WorksheetItemDO> items) {
-        this.items = items;
-    }
-    
     int deleteCount() {
         if (deleted == null)
             return 0;
         return deleted.size();
     }
     
-    WorksheetItemDO getDeletedAt(int i) {
+    WorksheetItemListItem getDeletedAt(int i) {
         return deleted.get(i);
     }
     
@@ -139,5 +152,12 @@ public class WorksheetItemManager implements RPC {
         if(proxy == null)
             proxy = new WorksheetItemManagerProxy();
         return proxy;
+    }
+    
+    static class WorksheetItemListItem implements RPC {
+        private static final long serialVersionUID = 1L;
+
+        WorksheetItemDO          worksheetItem;
+        WorksheetAnalysisManager analysis;
     }
 }
