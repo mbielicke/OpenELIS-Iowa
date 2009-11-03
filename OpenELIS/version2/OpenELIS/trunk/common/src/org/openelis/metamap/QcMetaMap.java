@@ -31,13 +31,13 @@ import org.openelis.meta.QcMeta;
 
 public class QcMetaMap extends QcMeta implements MetaMap {
 
-    private QcAnalyteMetaMap  QC_ANALYTE;
-    private InventoryItemMeta INVENTORY_ITEM;
+    public QcAnalyteMetaMap  QC_ANALYTE;
+    public InventoryItemMeta INVENTORY_ITEM;
 
     public QcMetaMap() {
         super("qc.");
         QC_ANALYTE = new QcAnalyteMetaMap("qcAnalyte.");
-        INVENTORY_ITEM = new InventoryItemMeta(path+"inventoryItem.");
+        INVENTORY_ITEM = new InventoryItemMeta(path + "inventoryItem.");
     }
 
     public QcMetaMap(String path) {
@@ -52,7 +52,7 @@ public class QcMetaMap extends QcMeta implements MetaMap {
 
     public String buildFrom(String name) {
         String from;
-        
+
         from = "Qc qc ";
         if (name.indexOf("qcAnalyte.") > -1)
             from += ", IN (qc.qcAnalyte) qcAnalyte ";

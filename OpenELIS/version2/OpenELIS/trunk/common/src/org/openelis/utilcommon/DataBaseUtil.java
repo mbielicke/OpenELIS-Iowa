@@ -127,6 +127,13 @@ public class DataBaseUtil {
 
         return dt;
     }
+    
+    public static Date toDate(Datetime datetime) {
+        if (datetime != null)
+            return datetime.getDate();
+
+        return null;
+    }
 
     /**
      * Compares the two parameters to see if they are different

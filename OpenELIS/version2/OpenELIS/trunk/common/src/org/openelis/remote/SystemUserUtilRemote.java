@@ -26,7 +26,6 @@
 package org.openelis.remote;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import javax.ejb.Remote;
 
@@ -34,5 +33,5 @@ import org.openelis.domain.SecuritySystemUserDO;
 
 @Remote
 public interface SystemUserUtilRemote {
-    public ArrayList<SecuritySystemUserDO> findSystemUserByLogin(String loginName, int numResult);   
+    public ArrayList<SecuritySystemUserDO> fetchByLogin(String login, int numResult);   
 }
