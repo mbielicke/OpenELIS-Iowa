@@ -72,13 +72,13 @@ UIRF Software License are applicable instead of those above.
 
 <!--left table goes here -->
 
-          <CollapsePanel height="450px" key="collapsePanel" style="LeftSidePanel">
-            <HorizontalPanel width="225px">
+          <CollapsePanel key="collapsePanel" style="LeftSidePanel">
+            <HorizontalPanel width="225">
               <buttonGroup key="atozButtons">
                 <xsl:call-template name="aToZLeftPanelButtons" />
               </buttonGroup>
               <VerticalPanel>
-                <table key="atozTable" width="auto" maxRows="18">
+                <table key="atozTable" width="auto" maxRows="18" style="atozTable">
                   <col width="175" header="{resource:getString($constants,'name')}">
                     <label />
                   </col>
@@ -144,20 +144,20 @@ UIRF Software License are applicable instead of those above.
 
 <!--end button panel-->
 
-            <VerticalPanel height="235px" padding="0" spacing="0" style="WhiteContentPanel" width="620px">
+            <VerticalPanel height="235" padding="0" spacing="0" style="WhiteContentPanel" width="620">
               <TablePanel style="Form">
                 <row>
                   <text style="Prompt">
                     <xsl:value-of select="resource:getString($constants,'id')" />:
                   </text>
-                  <textbox key="{meta:getId($proj)}" tab="{meta:getName($proj)},parameterTable" width="50px" field="Integer" />
+                  <textbox key="{meta:getId($proj)}" tab="{meta:getName($proj)},parameterTable" width="50" field="Integer" />
                 </row>
                 <row>
                   <text style="Prompt">
                     <xsl:value-of select="resource:getString($constants,'name')" />:
                   </text>
                   <widget colspan="6">
-                    <textbox case="LOWER" key="{meta:getName($proj)}" max="20" tab="{meta:getDescription($proj)},{meta:getId($proj)}" width="145px" required="true"/>
+                    <textbox case="LOWER" key="{meta:getName($proj)}" max="20" tab="{meta:getDescription($proj)},{meta:getId($proj)}" width="145" required="true"/>
                   </widget>
                 </row>
                 <row>
@@ -165,7 +165,7 @@ UIRF Software License are applicable instead of those above.
                     <xsl:value-of select="resource:getString($constants,'description')" />:
                   </text>
                   <widget colspan="6">
-                    <textbox key="{meta:getDescription($proj)}" max="60" tab="{meta:getOwnerId($proj)},{meta:getName($proj)}" width="425px" />
+                    <textbox key="{meta:getDescription($proj)}" max="60" tab="{meta:getOwnerId($proj)},{meta:getName($proj)}" width="425" required="true"/>
                   </widget>
                 </row>
                 <row>
@@ -173,7 +173,7 @@ UIRF Software License are applicable instead of those above.
                     <xsl:value-of select="resource:getString($constants,'owner')" />:
                   </text>
                   <widget>
-                    <autoComplete key="{meta:getOwnerId($proj)}" tab="{meta:getIsActive($proj)},{meta:getDescription($proj)}" width="145px" required="true"/>
+                    <autoComplete key="{meta:getOwnerId($proj)}" case="LOWER" tab="{meta:getIsActive($proj)},{meta:getDescription($proj)}" width="145" required="true"/>
                   </widget>
                 </row>
                 <row>
@@ -185,35 +185,35 @@ UIRF Software License are applicable instead of those above.
                     <xsl:value-of select="resource:getString($constants,'referenceTo')" />:
                   </text>
                   <widget>
-                    <textbox key="{meta:getReferenceTo($proj)}" max="20" tab="{script:getName($scpt)},{meta:getCompletedDate($proj)}" width="145px" />
+                    <textbox key="{meta:getReferenceTo($proj)}" max="20" tab="{script:getName($scpt)},{meta:getCompletedDate($proj)}" width="145" />
                   </widget>
                 </row>
                 <row>
                   <text style="Prompt">
                     <xsl:value-of select='resource:getString($constants,"beginDate")' />:
                   </text>
-                  <calendar begin="0" end="2" key="{meta:getStartedDate($proj)}" tab="{meta:getCompletedDate($proj)},{meta:getIsActive($proj)}" width="90px" />
+                  <calendar begin="0" end="2" key="{meta:getStartedDate($proj)}" tab="{meta:getCompletedDate($proj)},{meta:getIsActive($proj)}" width="90" required="true" />
                   <text style="Prompt">
                     <xsl:value-of select="resource:getString($constants,'scriptlet')" />:
                   </text>
-                  <autoComplete case="LOWER" key="{script:getName($scpt)}" tab="parameterTable,{meta:getId($proj)}" width="180px"/>
+                  <autoComplete case="LOWER" key="{script:getName($scpt)}" tab="parameterTable,{meta:getId($proj)}" width="180" field="Integer"/>
                 </row>
                 <row>
                   <text style="Prompt">
                     <xsl:value-of select='resource:getString($constants,"endDate")' />:
                   </text>
-                  <calendar begin="0" end="2" key="{meta:getCompletedDate($proj)}" tab="{meta:getReferenceTo($proj)},{meta:getStartedDate($proj)}" width="90px" />
+                  <calendar begin="0" end="2" key="{meta:getCompletedDate($proj)}" tab="{meta:getReferenceTo($proj)},{meta:getStartedDate($proj)}" width="90" required="true"/>
                 </row>
               </TablePanel>
-              <VerticalPanel height="5px" />
-              <HorizontalPanel width="635px">
+              <VerticalPanel height="5" />
+              <HorizontalPanel width="635">
                 <widget valign="top">
-                  <table key="parameterTable" maxRows="8" showScroll="ALWAYS" tab="{meta:getId($proj)},{script:getName($scpt)}" title="" width="605px">
+                  <table key="parameterTable" maxRows="8" showScroll="ALWAYS" tab="{meta:getId($proj)},{script:getName($scpt)}" width="615" style="atozTable">
                     <col header="{resource:getString($constants,'parameter')}" key="{prmtrMeta:getParameter($prm)}" width="325">
                       <textbox required="true"/>
                     </col>
                     <col header="{resource:getString($constants,'operation')}" key="{prmtrMeta:getOperationId($prm)}" width="80"> 
-                       <dropdown width="80px" required="true"/>
+                       <dropdown width="80" required="true"/>
                     </col>
                     <col header="{resource:getString($constants,'value')}" key="{prmtrMeta:getValue($prm)}" width="400">
                        <textbox required="true"/>

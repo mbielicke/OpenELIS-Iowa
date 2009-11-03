@@ -7,10 +7,8 @@ import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.SystemUserUtilRemote;
 
 public class SystemUserService {
-	
-	public ArrayList<SecuritySystemUserDO> findSystemUserByLogin(String login) {
-		return remote().findSystemUserByLogin(login,10);
-		
+    public ArrayList<SecuritySystemUserDO> fetchByLogin(String search) {
+		return remote().fetchByLogin(search + "%",10);
 	}
 	
 	private SystemUserUtilRemote remote() {

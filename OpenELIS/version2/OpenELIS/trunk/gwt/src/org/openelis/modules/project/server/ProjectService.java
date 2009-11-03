@@ -33,6 +33,7 @@ import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.manager.ProjectManager;
+import org.openelis.manager.ProjectParameterManager;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.ProjectManagerRemote;
 import org.openelis.remote.ProjectRemote;
@@ -57,11 +58,19 @@ public class ProjectService {
         }
     }
 
-    public ArrayList<ProjectDO> fetchByName(String search) throws Exception {
+    public ProjectManager fetchWithParameters(Integer id) throws Exception {
+        try {
+            return remoteManager().fetchWithParameters(id);
+        } catch (RuntimeException e) {
+            throw new DatabaseException(e);
+        }
+    }
+
+    public ArrayList<ProjectDO> fetchActiveByName(String search) throws Exception {
         ArrayList<ProjectDO> list;
         
         try {
-            list = remote().fetchByName(search+"%", 10);
+            list = remote().fetchActiveByName(search+"%", 10);
         } catch (NotFoundException e) {
             list = new ArrayList<ProjectDO>(0);
         } catch (RuntimeException e) {
@@ -97,6 +106,17 @@ public class ProjectService {
     public ProjectManager abortUpdate(Integer id) throws Exception {
         try {
             return remoteManager().abortUpdate(id);
+        } catch (RuntimeException e) {
+            throw new DatabaseException(e);
+        }
+    }
+
+    //
+    // support for ProjectParameterManager
+    //
+    public ProjectParameterManager fetchParameterByProjectId(Integer id) throws Exception {
+        try {
+            return remoteManager().fetchParameterByProjectId(id);
         } catch (RuntimeException e) {
             throw new DatabaseException(e);
         }

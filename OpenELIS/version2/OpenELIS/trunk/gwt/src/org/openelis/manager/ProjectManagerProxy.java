@@ -4,15 +4,19 @@ import org.openelis.gwt.services.ScreenService;
 
 public class ProjectManagerProxy {
     
-	protected static final String PROJ_MANAGER_SERVICE_URL = "org.openelis.modules.project.server.ProjectService";
+	protected static final String MANAGER_SERVICE_URL = "org.openelis.modules.project.server.ProjectService";
     protected ScreenService       service;
 
     public ProjectManagerProxy() {
-        service = new ScreenService("controller?service=" + PROJ_MANAGER_SERVICE_URL);
+        service = new ScreenService("controller?service=" + MANAGER_SERVICE_URL);
     }
     
     public ProjectManager fetchById(Integer id) throws Exception {
         return service.call("fetchById", id);
+    }
+
+    public ProjectManager fetchWithParameters(Integer id) throws Exception {
+        return service.call("fetchWithParameters", id);
     }
 
     public ProjectManager add(ProjectManager man) throws Exception {
@@ -31,6 +35,7 @@ public class ProjectManagerProxy {
         return service.call("abortUpdate", id);
     }
 
+    @SuppressWarnings("unused")
     public void validate(ProjectManager man) throws Exception {
     }
 }
