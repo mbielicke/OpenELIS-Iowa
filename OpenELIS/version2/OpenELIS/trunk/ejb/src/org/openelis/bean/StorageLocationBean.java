@@ -42,6 +42,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
+import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.StorageLocationViewDO;
 import org.openelis.entity.StorageLocation;
 import org.openelis.gwt.common.FieldErrorException;
@@ -56,7 +57,6 @@ import org.openelis.remote.StorageLocationRemote;
 import org.openelis.util.QueryBuilder;
 import org.openelis.utilcommon.DataBaseUtil;
 import org.openelis.utils.GetPage;
-import org.openelis.utils.ReferenceTableCache;
 
 @Stateless
 @EJBs({
@@ -77,7 +77,7 @@ public class StorageLocationBean implements StorageLocationRemote{
     private static final StorageLocationMetaMap StorageLocationMeta = new StorageLocationMetaMap();
 
     public StorageLocationBean(){
-        storageLocationRefTableId = ReferenceTableCache.getReferenceTable("storage_location");
+        storageLocationRefTableId = ReferenceTable.STORAGE_LOCATION;
     }
     
     @PostConstruct

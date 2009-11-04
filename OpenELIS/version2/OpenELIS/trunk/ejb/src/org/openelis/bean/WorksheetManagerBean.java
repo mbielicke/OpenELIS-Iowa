@@ -32,17 +32,15 @@ import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
-import javax.persistence.PersistenceContext;
 import javax.transaction.UserTransaction;
 
 import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.SecurityModule.ModuleFlags;
 import org.openelis.local.LockLocal;
-import org.openelis.manager.WorksheetManager;
 import org.openelis.manager.WorksheetItemManager;
+import org.openelis.manager.WorksheetManager;
 import org.openelis.remote.WorksheetManagerRemote;
-import org.openelis.utils.ReferenceTableCache;
 import org.openelis.utils.SecurityInterceptor;
 
 @Stateless

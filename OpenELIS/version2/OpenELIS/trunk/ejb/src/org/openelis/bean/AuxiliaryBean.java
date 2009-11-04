@@ -45,29 +45,24 @@ import org.openelis.domain.AuxFieldGroupDO;
 import org.openelis.domain.AuxFieldValueDO;
 import org.openelis.domain.AuxFieldViewDO;
 import org.openelis.domain.DictionaryViewDO;
+import org.openelis.domain.ReferenceTable;
 import org.openelis.entity.AuxField;
 import org.openelis.entity.AuxFieldGroup;
-import org.openelis.entity.AuxFieldValue;
 import org.openelis.exception.InconsistentException;
-import org.openelis.exception.ParseException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.deprecated.AbstractField;
-import org.openelis.local.CategoryLocal;
 import org.openelis.local.DictionaryLocal;
 import org.openelis.local.LockLocal;
 import org.openelis.metamap.AuxFieldGroupMetaMap;
-import org.openelis.metamap.AuxFieldMetaMap;
 import org.openelis.remote.AuxiliaryRemote;
+import org.openelis.util.QueryBuilder;
 import org.openelis.utilcommon.DataBaseUtil;
 import org.openelis.utilcommon.NumericRange;
-import org.openelis.util.QueryBuilder;
-import org.openelis.utilcommon.TestResultValidator;
 import org.openelis.utils.GetPage;
-import org.openelis.utils.ReferenceTableCache;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -88,7 +83,7 @@ public class AuxiliaryBean implements AuxiliaryRemote {
     private static Integer auxFGRefTableId;
     
     public AuxiliaryBean() {
-        auxFGRefTableId = ReferenceTableCache.getReferenceTable("aux_field_group");
+        auxFGRefTableId = ReferenceTable.AUX_FIELD_GROUP;
     }
     
     private static final AuxFieldGroupMetaMap AuxFieldGroupMeta = new AuxFieldGroupMetaMap();     

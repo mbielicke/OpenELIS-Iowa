@@ -47,7 +47,6 @@ import org.openelis.local.SampleItemLocal;
     @EJB(name="ejb/Lock",beanInterface=LockLocal.class)
 })
 @SecurityDomain("openelis")
-//@RolesAllowed("LOCKINGtest")
 public class SampleItemBean implements SampleItemLocal {
 
     @PersistenceContext(name = "openelis")

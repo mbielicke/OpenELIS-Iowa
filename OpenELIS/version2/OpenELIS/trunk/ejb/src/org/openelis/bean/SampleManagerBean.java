@@ -26,6 +26,7 @@
 package org.openelis.bean;
 
 import javax.annotation.Resource;
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
@@ -35,19 +36,21 @@ import javax.persistence.PersistenceContext;
 import javax.transaction.UserTransaction;
 
 import org.jboss.annotation.security.SecurityDomain;
+import org.openelis.domain.ReferenceTable;
+import org.openelis.gwt.common.SecurityModule.ModuleFlags;
 import org.openelis.local.LockLocal;
 import org.openelis.manager.SampleItemManager;
 import org.openelis.manager.SampleManager;
 import org.openelis.manager.SampleOrganizationManager;
 import org.openelis.manager.SampleProjectManager;
 import org.openelis.remote.SampleManagerRemote;
-import org.openelis.utils.ReferenceTableCache;
+import org.openelis.utils.SecurityInterceptor;
 
 @Stateless
 @TransactionManagement(TransactionManagementType.BEAN)
 
 @SecurityDomain("openelis")
-//@RolesAllowed("sample-select")
+@RolesAllowed("sample-select")
 public class SampleManagerBean  implements SampleManagerRemote {
 
     @PersistenceContext(name = "openelis")
@@ -60,37 +63,15 @@ public class SampleManagerBean  implements SampleManagerRemote {
     private static int sampleRefTableId;
     
     public SampleManagerBean(){
-        sampleRefTableId = ReferenceTableCache.getReferenceTable("sample");
+        sampleRefTableId = ReferenceTable.SAMPLE;
     }
     
-    public SampleManager add(SampleManager man) throws Exception {
-        man.validate();
-        
-        UserTransaction ut = ctx.getUserTransaction();
-        ut.begin();
-        man.add();
-        ut.commit();
-        
-        return man;
-    }
-
-    public SampleManager update(SampleManager man) throws Exception {
-        man.validate();
-        
-        UserTransaction ut = ctx.getUserTransaction();
-        ut.begin();
-        man.update();
-        ut.commit();
-        
-        return man;
-    }
-
     public SampleManager fetch(Integer sampleId) throws Exception {
         SampleManager man = SampleManager.findById(sampleId);
         
         return man;
     }
-    
+
     public SampleManager fetchWithItemsAnalysis(Integer sampleId) throws Exception {
         SampleManager man = SampleManager.findByIdWithItemsAnalyses(sampleId);
         
@@ -99,6 +80,36 @@ public class SampleManagerBean  implements SampleManagerRemote {
 
     public SampleManager fetchByAccessionNumber(Integer accessionNumber) throws Exception {
         SampleManager man = SampleManager.findByAccessionNumber(accessionNumber);
+        
+        return man;
+    }
+
+    public SampleManager add(SampleManager man) throws Exception {
+        UserTransaction ut;
+        
+        checkSecurity(ModuleFlags.ADD);
+        
+        man.validate();
+        
+        ut = ctx.getUserTransaction();
+        ut.begin();
+        man.add();
+        ut.commit();
+        
+        return man;
+    }
+
+    public SampleManager update(SampleManager man) throws Exception {
+        UserTransaction ut;
+        
+        checkSecurity(ModuleFlags.UPDATE);
+        
+        man.validate();
+        
+        ut = ctx.getUserTransaction();
+        ut.begin();
+        man.update();
+        ut.commit();
         
         return man;
     }
@@ -131,5 +142,10 @@ public class SampleManagerBean  implements SampleManagerRemote {
         SampleItemManager man = SampleItemManager.findBySampleId(sampleId);
         
         return man;
+    }
+    
+    private void checkSecurity(ModuleFlags flag) throws Exception {
+        SecurityInterceptor.applySecurity(ctx.getCallerPrincipal().getName(), 
+                                          "sample", flag);
     }
 }

@@ -45,6 +45,7 @@ import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.InventoryAdjustmentAddAutoFillDO;
 import org.openelis.domain.InventoryAdjustmentChildDO;
 import org.openelis.domain.InventoryAdjustmentDO;
+import org.openelis.domain.ReferenceTable;
 import org.openelis.entity.InventoryAdjustment;
 import org.openelis.entity.InventoryLocation;
 import org.openelis.entity.InventoryXAdjust;
@@ -60,7 +61,6 @@ import org.openelis.security.domain.SystemUserDO;
 import org.openelis.security.local.SystemUserUtilLocal;
 import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
-import org.openelis.utils.ReferenceTableCache;
 
 @Stateless
 @EJBs({
@@ -84,7 +84,7 @@ public class InventoryAdjustmentBean implements InventoryAdjustmentRemote{
     private static final InventoryAdjustmentMetaMap InventoryAdjustmentMetaMap = new InventoryAdjustmentMetaMap();
     
     public InventoryAdjustmentBean(){
-        invLocRefTableId = ReferenceTableCache.getReferenceTable("inventory_location");
+        invLocRefTableId = ReferenceTable.INVENTORY_LOCATION;
     }
     
     @PostConstruct

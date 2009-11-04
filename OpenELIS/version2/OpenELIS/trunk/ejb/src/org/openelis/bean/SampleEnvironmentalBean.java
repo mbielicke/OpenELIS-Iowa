@@ -28,6 +28,7 @@ package org.openelis.bean;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -53,7 +54,7 @@ import org.openelis.utilcommon.DataBaseUtil;
 @Stateless
 
 @SecurityDomain("openelis")
-//@RolesAllowed("inventory-select")
+@RolesAllowed("sample_environmental-select")
 public class SampleEnvironmentalBean implements SampleEnvironmentalRemote, SampleEnvironmentalLocal {
     @PersistenceContext(name = "openelis")
     private EntityManager manager;

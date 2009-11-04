@@ -101,4 +101,14 @@ public class NoteBean implements NoteRemote, NoteLocal {
         note.setText(noteDO.getText());
         note.setTimestamp(Datetime.getInstance());
     }
+    
+    public void delete(NoteViewDO data) throws Exception {
+        Note entity;
+
+        manager.setFlushMode(FlushModeType.COMMIT);
+
+        entity = manager.find(Note.class, data.getId());
+        if (entity != null)
+            manager.remove(entity);
+    }
 }

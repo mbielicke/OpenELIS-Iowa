@@ -44,6 +44,7 @@ import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.InventoryComponentDO;
 import org.openelis.domain.InventoryItemDO;
 import org.openelis.domain.NoteViewDO;
+import org.openelis.domain.ReferenceTable;
 import org.openelis.entity.InventoryComponent;
 import org.openelis.entity.InventoryItem;
 import org.openelis.entity.Note;
@@ -52,7 +53,6 @@ import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.data.deprecated.AbstractField;
 import org.openelis.local.LockLocal;
 import org.openelis.metamap.InventoryItemMetaMap;
 import org.openelis.remote.InventoryItemRemote;
@@ -60,7 +60,6 @@ import org.openelis.security.domain.SystemUserDO;
 import org.openelis.security.local.SystemUserLocal;
 import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
-import org.openelis.utils.ReferenceTableCache;
 
 @Stateless
 @EJBs({
@@ -89,8 +88,8 @@ public class InventoryItemBean implements InventoryItemRemote{
     }
     
     public InventoryItemBean(){
-        invItemRefTableId = ReferenceTableCache.getReferenceTable("inventory_item_manufacturing");
-        invItemManufacRefTableId = ReferenceTableCache.getReferenceTable("inventory_item");
+        invItemRefTableId = ReferenceTable.INVENTORY_ITEM_MANUFACTURING;
+        invItemManufacRefTableId = ReferenceTable.INVENTORY_ITEM;
         
     }
 

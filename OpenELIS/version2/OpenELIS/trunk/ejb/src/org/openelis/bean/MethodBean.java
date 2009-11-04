@@ -41,6 +41,7 @@ import javax.persistence.Query;
 import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.MethodDO;
+import org.openelis.domain.ReferenceTable;
 import org.openelis.entity.Method;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FieldErrorException;
@@ -55,7 +56,6 @@ import org.openelis.metamap.MethodMetaMap;
 import org.openelis.remote.MethodRemote;
 import org.openelis.util.QueryBuilderV2;
 import org.openelis.utilcommon.DataBaseUtil;
-import org.openelis.utils.ReferenceTableCache;
 import org.openelis.utils.SecurityInterceptor;
 
 @Stateless
@@ -77,7 +77,7 @@ public class MethodBean implements MethodRemote {
     private static Integer methodRefTableId; 
     
     public MethodBean() {
-        methodRefTableId = ReferenceTableCache.getReferenceTable("method");
+        methodRefTableId = ReferenceTable.METHOD;
     } 
     
     public MethodDO fetchById(Integer id) {

@@ -44,6 +44,7 @@ import javax.persistence.Query;
 import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.NoteViewDO;
+import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.ShippingAddAutoFillDO;
 import org.openelis.domain.ShippingDO;
 import org.openelis.domain.ShippingItemDO;
@@ -65,7 +66,6 @@ import org.openelis.security.domain.SystemUserDO;
 import org.openelis.security.local.SystemUserUtilLocal;
 import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
-import org.openelis.utils.ReferenceTableCache;
 
 @Stateless
 @EJBs({
@@ -89,9 +89,9 @@ public class ShippingBean implements ShippingRemote{
     private static final ShippingMetaMap ShippingMeta = new ShippingMetaMap();
 
     public ShippingBean(){
-        shippingRefTableId = ReferenceTableCache.getReferenceTable("shipping");
-        orderItemRefTableId = ReferenceTableCache.getReferenceTable("order_item");
-        sampleItemRefTableId = ReferenceTableCache.getReferenceTable("sample_item");
+        shippingRefTableId = ReferenceTable.SHIPPING;
+        orderItemRefTableId = ReferenceTable.ORDER_ITEM;
+        sampleItemRefTableId = ReferenceTable.SAMPLE_ITEM;
     }
     
     @PostConstruct

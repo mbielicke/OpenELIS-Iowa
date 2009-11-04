@@ -34,9 +34,21 @@ import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.NoteLocal;
 
 public class NoteManagerProxy {
+    public NoteManager fetch(Integer tableId, Integer id) throws Exception {
+        NoteLocal nl = local();
+        ArrayList<NoteViewDO> notes = nl.getNotes(tableId, id);
+        
+        NoteManager n = NoteManager.getInstance();
+        n.setNotes(notes);
+        n.setReferenceId(id);
+        n.setReferenceTableId(tableId);
+        
+        return n;
+    }
+
     public NoteManager add(NoteManager man) throws Exception {
         NoteViewDO note;
-        NoteLocal nl = getNoteLocal();
+        NoteLocal nl = local();
         
         if(man.count() >0){
             note = man.getNoteAt(0);
@@ -51,7 +63,11 @@ public class NoteManagerProxy {
 
     public NoteManager update(NoteManager man) throws Exception {
         NoteViewDO note;
-        NoteLocal nl = getNoteLocal();
+        NoteLocal nl;
+        
+        nl = local();
+        for (int j = 0; j < man.deleteCount(); j++ )
+            nl.delete(man.getDeletedAt(j));
         
         if(man.count() >0){
             note = man.getNoteAt(0);
@@ -66,23 +82,11 @@ public class NoteManagerProxy {
         return man;
     }
 
-    public NoteManager fetch(Integer tableId, Integer id) throws Exception {
-        NoteLocal nl = getNoteLocal();
-        ArrayList<NoteViewDO> notes = nl.getNotes(tableId, id);
-        
-        NoteManager n = NoteManager.getInstance();
-        n.setNotes(notes);
-        n.setReferenceId(id);
-        n.setReferenceTableId(tableId);
-        
-        return n;
-    }
-    
     public void validate(NoteManager man, ValidationErrorsList errorsList) throws Exception {
         
     }
     
-    private NoteLocal getNoteLocal(){
+    private NoteLocal local(){
         try{
             InitialContext ctx = new InitialContext();
             return (NoteLocal)ctx.lookup("openelis/NoteBean/local");

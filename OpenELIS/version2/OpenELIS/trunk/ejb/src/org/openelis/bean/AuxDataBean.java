@@ -46,7 +46,6 @@ import org.openelis.utilcommon.DataBaseUtil;
 
 @Stateless
 @SecurityDomain("openelis")
-// @RolesAllowed("organization-select")
 public class AuxDataBean implements AuxDataLocal {
 
     @PersistenceContext(name = "openelis")

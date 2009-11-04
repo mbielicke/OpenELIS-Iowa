@@ -35,17 +35,15 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
+import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.SampleDO;
 import org.openelis.entity.Sample;
 import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.LockLocal;
 import org.openelis.local.SampleLocal;
-import org.openelis.metamap.OrganizationMetaMap;
 import org.openelis.metamap.SampleMetaMap;
 import org.openelis.remote.SampleRemote;
-import org.openelis.utils.ReferenceTableCache;
 
 @Stateless
 
@@ -64,7 +62,7 @@ public class SampleBean implements SampleRemote, SampleLocal {
     private static final SampleMetaMap sampleMeta = new SampleMetaMap();
     
     public SampleBean(){
-        sampleRefTableId = ReferenceTableCache.getReferenceTable("sample");
+        sampleRefTableId = ReferenceTable.SAMPLE;
     }
     
     public SampleDO fetchById(Integer sampleId) throws Exception {
@@ -130,6 +128,10 @@ public class SampleBean implements SampleRemote, SampleLocal {
         lockBean.giveUpLock(sampleRefTableId, sampleDO.getId());
     }
     
+    private void validate() throws Exception {
+        
+    }
+
     public void validateAccessionNumber(Integer accessionNumber) throws Exception {
         Query query = manager.createNamedQuery("Sample.AccessionNumberCheck");
         query.setParameter("id", accessionNumber);
@@ -142,9 +144,5 @@ public class SampleBean implements SampleRemote, SampleLocal {
             
             throw errorsList;
         }
-    }
-    
-    private void validateSample() throws Exception {
-        
     }
 }

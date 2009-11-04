@@ -29,7 +29,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.security.RolesAllowed;
-import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
@@ -38,27 +37,19 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
-import org.openelis.domain.IdNameVO;
 import org.openelis.domain.WorksheetDO;
-import org.openelis.domain.WorksheetItemDO;
 import org.openelis.entity.Worksheet;
-import org.openelis.entity.WorksheetItem;
 import org.openelis.gwt.common.DatabaseException;
-import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.TableFieldErrorException;
+import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.QueryData;
-import org.openelis.local.AddressLocal;
-import org.openelis.local.LockLocal;
 import org.openelis.local.WorksheetLocal;
 import org.openelis.metamap.WorksheetMetaMap;
 import org.openelis.remote.WorksheetRemote;
 import org.openelis.util.QueryBuilderV2;
 import org.openelis.utilcommon.DataBaseUtil;
-import org.openelis.utils.GetPage;
-import org.openelis.utils.ReferenceTableCache;
 
 @Stateless
 @SecurityDomain("openelis")

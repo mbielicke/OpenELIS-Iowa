@@ -36,4 +36,5 @@ public interface NoteLocal {
     public ArrayList<NoteViewDO> getNotes(Integer refTableId, Integer refId) throws Exception;
     public void update(NoteViewDO note) throws Exception;
     public void add(NoteViewDO note) throws Exception;
+    public void delete(NoteViewDO data) throws Exception;
 }
