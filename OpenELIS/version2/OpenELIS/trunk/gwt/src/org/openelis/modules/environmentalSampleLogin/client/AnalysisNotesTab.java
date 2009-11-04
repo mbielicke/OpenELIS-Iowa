@@ -33,7 +33,6 @@ import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.StateChangeEvent;
-import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.widget.AppButton;
@@ -59,6 +58,7 @@ public class AnalysisNotesTab extends NotesTab {
     
     protected NotesPanel internalNotesPanel;
     protected EditNoteScreen internalEditNote;
+    protected NoteViewDO internalNote;
     
     public AnalysisNotesTab(ScreenDefInt def, String notesPanelKey, String editButtonKey, boolean isExternal) {
         super(def, notesPanelKey, editButtonKey, isExternal);
@@ -96,6 +96,9 @@ public class AnalysisNotesTab extends NotesTab {
                         internalEditNote.addActionHandler(new ActionHandler<EditNoteScreen.Action>() {
                             public void onAction(ActionEvent<EditNoteScreen.Action> event) {
                                 if (event.getAction() == EditNoteScreen.Action.COMMIT) {
+                                    if (internalNote.getText() == null || internalNote.getText().trim().length() == 0)
+                                        internalManager.removeEditingNote();
+                                    
                                     loaded = false;
                                     draw();
                                 }
@@ -117,19 +120,18 @@ public class AnalysisNotesTab extends NotesTab {
                 modal.setName(consts.get("standardNote"));
                 modal.setContent(internalEditNote);
 
-                NoteViewDO note = null;
-                
+                internalNote = null;
                 try{
-                    note = internalManager.getInternalEditingNote();
+                    internalNote = internalManager.getInternalEditingNote();
                 }catch(Exception e ){
                     e.printStackTrace();
                     Window.alert("error!");
                 }
-                note.setSystemUser(userName);
-                note.setSystemUserId(userId);
-                note.setTimestamp(Datetime.getInstance(Datetime.YEAR, Datetime.SECOND));
-                internalEditNote.setNote(note);
-                internalEditNote.setScreenState(State.DEFAULT);
+                internalNote.setSystemUser(userName);
+                internalNote.setSystemUserId(userId);
+                internalNote.setTimestamp(Datetime.getInstance(Datetime.YEAR, Datetime.SECOND));
+                internalEditNote.setNote(internalNote);
+                internalEditNote.setScreenState(State.UPDATE);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {

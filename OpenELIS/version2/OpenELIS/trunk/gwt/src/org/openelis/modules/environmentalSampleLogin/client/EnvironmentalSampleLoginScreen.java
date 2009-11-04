@@ -154,8 +154,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
 
         Meta = new SampleEnvironmentalMetaMap();
         
-        //FIXME change this when we can add the module
-        security = OpenELIS.security.getModule("organization");
+        security = OpenELIS.security.getModule("sample_environmental");
         
         // Setup link between Screen and widget Handlers
         initialize();

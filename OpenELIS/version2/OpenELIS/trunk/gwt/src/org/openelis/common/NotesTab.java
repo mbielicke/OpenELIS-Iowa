@@ -22,26 +22,27 @@ import com.google.gwt.user.client.Window;
 
 public class NotesTab extends Screen {
 
-    protected HasNotesInt      parentManager;
-    protected NoteManager     manager;
-    protected NotesPanel       notesPanel;
+    protected HasNotesInt    parentManager;
+    protected NoteManager    manager;
+    protected NoteViewDO     note;
+    protected NotesPanel     notesPanel;
     protected EditNoteScreen editNote;
-    protected String           userName;
-    protected Integer          userId;
-    protected String notesPanelKey, editButtonKey;
-    protected boolean          loaded, isExternal;
+    protected String         userName;
+    protected Integer        userId;
+    protected String         notesPanelKey, editButtonKey;
+    protected boolean        loaded, isExternal;
 
     public NotesTab(ScreenDefInt def, String notesPanelKey, String editButtonKey, boolean isExternal) {
         setDef(def);
-        
+
         userName = OpenELIS.security.getSystemUserName();
         userId = OpenELIS.security.getSystemUserId();
 
         this.notesPanelKey = notesPanelKey;
         this.editButtonKey = editButtonKey;
-        
+
         this.isExternal = isExternal;
-        
+
         initialize();
     }
 
@@ -66,6 +67,9 @@ public class NotesTab extends Screen {
                         editNote.addActionHandler(new ActionHandler<EditNoteScreen.Action>() {
                             public void onAction(ActionEvent<EditNoteScreen.Action> event) {
                                 if (event.getAction() == EditNoteScreen.Action.COMMIT) {
+                                    if (note.getText() == null || note.getText().trim().length() == 0)
+                                        manager.removeEditingNote();
+
                                     loaded = false;
                                     draw();
                                 }
@@ -79,34 +83,30 @@ public class NotesTab extends Screen {
                     }
                 }
 
-                ScreenWindow modal = new ScreenWindow("Edit Note Screen",
-                                                      "editNoteScreen",
-                                                      "",
-                                                      true,
-                                                      false);
+                ScreenWindow modal = new ScreenWindow("Edit Note Screen", "editNoteScreen", "",
+                                                      true, false);
                 modal.setName(consts.get("standardNote"));
                 modal.setContent(editNote);
 
-                NoteViewDO note = null;
-                
-                try{
-                if(isExternal)
-                    note = manager.getExternalEditingNote();
-                else
-                    note = manager.getInternalEditingNote();
-                }catch(Exception e ){
+                note = null;
+                try {
+                    if (isExternal)
+                        note = manager.getExternalEditingNote();
+                    else
+                        note = manager.getInternalEditingNote();
+                } catch (Exception e) {
                     e.printStackTrace();
                     Window.alert("error!");
                 }
+                
                 note.setSystemUser(userName);
                 note.setSystemUserId(userId);
                 note.setTimestamp(Datetime.getInstance(Datetime.YEAR, Datetime.SECOND));
                 editNote.setNote(note);
-                editNote.setScreenState(State.DEFAULT);
+                editNote.setScreenState(State.UPDATE);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-
                 if (event.getState() == State.ADD || event.getState() == State.UPDATE)
                     standardNote.enable(true);
                 else
@@ -117,11 +117,9 @@ public class NotesTab extends Screen {
 
     private void drawNotes() {
         notesPanel.clearNotes();
-        for (int i = 0; i < manager.count(); i++) {
+        for (int i = 0; i < manager.count(); i++ ) {
             NoteViewDO noteRow = manager.getNoteAt(i);
-            notesPanel.addNote(noteRow.getSubject(),
-                               noteRow.getSystemUser(),
-                               noteRow.getText(),
+            notesPanel.addNote(noteRow.getSubject(), noteRow.getSystemUser(), noteRow.getText(),
                                noteRow.getTimestamp());
         }
     }
