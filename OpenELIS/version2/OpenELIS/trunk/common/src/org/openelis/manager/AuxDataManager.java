@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.AuxFieldValueViewDO;
 import org.openelis.domain.AuxFieldViewDO;
-import org.openelis.domain.OrganizationContactDO;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.ValidationErrorsList;
@@ -111,15 +110,15 @@ public class AuxDataManager implements RPC {
 
         // need to get the group id to remove
         groupId = items.get(i).fields.getAuxFieldGroupId();
-        
+
         if (deletedList == null)
             deletedList = new ArrayList<AuxDataListItem>();
-        
-        for(int j=count()-1; j>-1; j--){
-            if(groupId.equals(items.get(j).fields.getAuxFieldGroupId())){
+
+        for (int j = count() - 1; j > -1; j-- ) {
+            if (groupId.equals(items.get(j).fields.getAuxFieldGroupId())) {
                 AuxDataListItem tmp = items.remove(j);
-                
-                if(tmp.data.getId() != null)
+
+                if (tmp.data.getId() != null)
                     deletedList.add(tmp);
             }
         }
@@ -174,7 +173,7 @@ public class AuxDataManager implements RPC {
     public void validate(ValidationErrorsList errorsList) throws Exception {
         proxy().validate(this, errorsList);
     }
-    
+
     int deleteCount() {
         if (deletedList == null)
             return 0;
