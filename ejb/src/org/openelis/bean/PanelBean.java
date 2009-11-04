@@ -25,22 +25,6 @@
 */
 package org.openelis.bean;
 
-import org.jboss.annotation.security.SecurityDomain;
-import org.openelis.domain.PanelDO;
-import org.openelis.domain.PanelItemDO;
-import org.openelis.entity.Panel;
-import org.openelis.entity.PanelItem;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.data.deprecated.AbstractField;
-import org.openelis.local.LockLocal;
-import org.openelis.metamap.PanelMetaMap;
-import org.openelis.remote.PanelRemote;
-import org.openelis.util.QueryBuilder;
-import org.openelis.utils.GetPage;
-import org.openelis.utils.ReferenceTableCache;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,6 +37,22 @@ import javax.persistence.FlushModeType;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+
+import org.jboss.annotation.security.SecurityDomain;
+import org.openelis.domain.PanelDO;
+import org.openelis.domain.PanelItemDO;
+import org.openelis.domain.ReferenceTable;
+import org.openelis.entity.Panel;
+import org.openelis.entity.PanelItem;
+import org.openelis.gwt.common.FieldErrorException;
+import org.openelis.gwt.common.LastPageException;
+import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.gwt.common.data.deprecated.AbstractField;
+import org.openelis.local.LockLocal;
+import org.openelis.metamap.PanelMetaMap;
+import org.openelis.remote.PanelRemote;
+import org.openelis.util.QueryBuilder;
+import org.openelis.utils.GetPage;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -72,7 +72,7 @@ public class PanelBean implements PanelRemote {
     private static Integer panelRefTableId;
     
     public PanelBean() {
-        panelRefTableId = ReferenceTableCache.getReferenceTable("panel");
+        panelRefTableId = ReferenceTable.PANEL;
     }
     
     public PanelDO getPanel(Integer panelId) {

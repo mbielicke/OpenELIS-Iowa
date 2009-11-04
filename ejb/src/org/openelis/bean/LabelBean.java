@@ -25,24 +25,6 @@
 */
 package org.openelis.bean;
 
-import org.openelis.domain.IdNameVO;
-import org.openelis.domain.LabelViewDO;
-import org.openelis.entity.Label;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.SecurityModule.ModuleFlags;
-import org.openelis.gwt.common.data.deprecated.AbstractField;
-import org.openelis.local.LockLocal;
-import org.openelis.metamap.LabelMetaMap;
-import org.openelis.remote.LabelRemote;
-import org.openelis.util.QueryBuilder;
-import org.openelis.utilcommon.DataBaseUtil;
-import org.openelis.utils.GetPage;
-import org.openelis.utils.ReferenceTableCache;
-import org.openelis.utils.SecurityInterceptor;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,9 +35,24 @@ import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
-import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+
+import org.openelis.domain.IdNameVO;
+import org.openelis.domain.LabelViewDO;
+import org.openelis.domain.ReferenceTable;
+import org.openelis.entity.Label;
+import org.openelis.gwt.common.LastPageException;
+import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.gwt.common.SecurityModule.ModuleFlags;
+import org.openelis.gwt.common.data.deprecated.AbstractField;
+import org.openelis.local.LockLocal;
+import org.openelis.metamap.LabelMetaMap;
+import org.openelis.remote.LabelRemote;
+import org.openelis.util.QueryBuilder;
+import org.openelis.utilcommon.DataBaseUtil;
+import org.openelis.utils.GetPage;
+import org.openelis.utils.SecurityInterceptor;
 
 @Stateless
 @RolesAllowed("label-select")
@@ -73,7 +70,7 @@ public class LabelBean implements LabelRemote {
     private static final LabelMetaMap Meta = new LabelMetaMap();
 
     public LabelBean(){
-        labelRefTableId = ReferenceTableCache.getReferenceTable("label");
+        labelRefTableId = ReferenceTable.LABEL;
     }
     
     

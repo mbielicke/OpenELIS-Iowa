@@ -31,9 +31,9 @@ import java.util.HashMap;
 import javax.naming.InitialContext;
 
 import org.openelis.domain.AnalysisViewDO;
+import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.AnalysisLocal;
-import org.openelis.utils.ReferenceTableCache;
 
 public class AnalysisManagerProxy {
     public AnalysisManager fetchBySampleItemId(Integer sampleItemId) throws Exception {
@@ -45,9 +45,7 @@ public class AnalysisManagerProxy {
             am.addAnalysis(items.get(i));
         
         am.setSampleItemId(sampleItemId);
-        am.setAnalysisReferenceId(ReferenceTableCache.getReferenceTable("analysis"));
-        am.setAnalysisInternalReferenceTableId(ReferenceTableCache.getReferenceTable("analysis_internal_note"));
-
+        
         return am;
     }
     
@@ -153,8 +151,8 @@ public class AnalysisManagerProxy {
         Integer anRefId, anIntRefId;
         AnalysisLocal al = getAnalysisLocal();
         
-        anRefId = ReferenceTableCache.getReferenceTable("analysis");
-        anIntRefId = ReferenceTableCache.getReferenceTable("analysis_internal_note");
+        anRefId = ReferenceTable.ANALYSIS;
+        anIntRefId = ReferenceTable.ANALYSIS_INTERNAL_NOTE;
         
         analysisDO.setSampleItemId(man.getSampleItemId());
         al.add(analysisDO);
@@ -179,8 +177,8 @@ public class AnalysisManagerProxy {
         Integer anRefId, anIntRefId;
         AnalysisLocal al = getAnalysisLocal();
         
-        anRefId = ReferenceTableCache.getReferenceTable("analysis");
-        anIntRefId = ReferenceTableCache.getReferenceTable("analysis_internal_note");
+        anRefId = ReferenceTable.ANALYSIS;
+        anIntRefId = ReferenceTable.ANALYSIS_INTERNAL_NOTE;
 
         if(analysisDO.getId() == null){
             analysisDO.setSampleItemId(man.getSampleItemId());

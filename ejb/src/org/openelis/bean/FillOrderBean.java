@@ -25,10 +25,26 @@
 */
 package org.openelis.bean;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
+import javax.annotation.security.RolesAllowed;
+import javax.ejb.EJB;
+import javax.ejb.EJBs;
+import javax.ejb.SessionContext;
+import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.FlushModeType;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+
 import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.FillOrderDO;
 import org.openelis.domain.NoteViewDO;
+import org.openelis.domain.ReferenceTable;
 import org.openelis.entity.InventoryLocation;
 import org.openelis.entity.InventoryXUse;
 import org.openelis.entity.Order;
@@ -45,22 +61,6 @@ import org.openelis.remote.FillOrderRemote;
 import org.openelis.security.domain.SystemUserDO;
 import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
-import org.openelis.utils.ReferenceTableCache;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
-import javax.annotation.security.RolesAllowed;
-import javax.ejb.EJB;
-import javax.ejb.EJBs;
-import javax.ejb.SessionContext;
-import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.FlushModeType;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
 
 @Stateless
 @EJBs({
@@ -81,9 +81,9 @@ public class FillOrderBean implements FillOrderRemote {
     private static final OrderMetaMap OrderMap = new OrderMetaMap();
     
     public FillOrderBean(){
-        orderRefTableId = ReferenceTableCache.getReferenceTable("order");
-        orderItemRefTableId = ReferenceTableCache.getReferenceTable("order_item");
-        orderShippingNoteRefTableId = ReferenceTableCache.getReferenceTable("order_shipping_note");
+        orderRefTableId = ReferenceTable.ORDER;
+        orderItemRefTableId = ReferenceTable.ORDER_ITEM;
+        orderShippingNoteRefTableId = ReferenceTable.ORDER_SHIPPING_NOTE;
     }
     
     @PostConstruct

@@ -40,6 +40,7 @@ import javax.persistence.Query;
 import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.InstrumentLogDO;
 import org.openelis.domain.InstrumentViewDO;
+import org.openelis.domain.ReferenceTable;
 import org.openelis.entity.Instrument;
 import org.openelis.entity.InstrumentLog;
 import org.openelis.gwt.common.Datetime;
@@ -55,7 +56,6 @@ import org.openelis.metamap.InstrumentMetaMap;
 import org.openelis.remote.InstrumentRemote;
 import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
-import org.openelis.utils.ReferenceTableCache;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -75,7 +75,7 @@ public class InstrumentBean implements InstrumentRemote {
     private static Integer instRefTableId;
     
     public InstrumentBean() {
-        instRefTableId = ReferenceTableCache.getReferenceTable("instrument"); 
+        instRefTableId = ReferenceTable.INSTRUMENT; 
     }
     
     public InstrumentViewDO getInstrument(Integer instrumentId) {

@@ -43,6 +43,7 @@ import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.BuildKitComponentDO;
 import org.openelis.domain.BuildKitDO;
 import org.openelis.domain.DictionaryDO;
+import org.openelis.domain.ReferenceTable;
 import org.openelis.entity.InventoryLocation;
 import org.openelis.entity.InventoryReceipt;
 import org.openelis.entity.InventoryReceiptOrderItem;
@@ -57,7 +58,6 @@ import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.LockLocal;
 import org.openelis.metamap.InventoryItemMetaMap;
 import org.openelis.remote.BuildKitsRemote;
-import org.openelis.utils.ReferenceTableCache;
 
 @Stateless
 @EJBs({
@@ -85,7 +85,7 @@ public class BuildKitsBean implements BuildKitsRemote{
     private static final InventoryItemMetaMap InventoryItemMeta = new InventoryItemMetaMap();
     
     public BuildKitsBean(){
-        invLocRefTableId = ReferenceTableCache.getReferenceTable("inventory_location");
+        invLocRefTableId = ReferenceTable.INVENTORY_LOCATION;
     }
     
     @RolesAllowed("buildkits-update")

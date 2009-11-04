@@ -42,7 +42,6 @@ import org.openelis.local.SampleQAEventLocal;
 @Stateless
 
 @SecurityDomain("openelis")
-//@RolesAllowed("LOCKINGtest")
 public class SampleQaEventBean implements SampleQAEventLocal {
 
     @PersistenceContext(name = "openelis")

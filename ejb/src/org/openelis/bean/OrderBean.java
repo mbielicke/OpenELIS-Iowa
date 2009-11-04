@@ -48,6 +48,7 @@ import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.OrderAddAutoFillDO;
 import org.openelis.domain.OrderDO;
 import org.openelis.domain.OrderItemDO;
+import org.openelis.domain.ReferenceTable;
 import org.openelis.entity.Note;
 import org.openelis.entity.Order;
 import org.openelis.entity.OrderItem;
@@ -62,7 +63,6 @@ import org.openelis.metamap.OrderMetaMap;
 import org.openelis.remote.OrderRemote;
 import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
-import org.openelis.utils.ReferenceTableCache;
 
 @Stateless
 @EJBs({
@@ -83,9 +83,9 @@ public class OrderBean implements OrderRemote{
     private static final OrderMetaMap OrderMetaMap = new OrderMetaMap();
     
     public OrderBean(){
-        orderRefTable = ReferenceTableCache.getReferenceTable("order");
-        orderShippingNoteRefTableId = ReferenceTableCache.getReferenceTable("order_shipping_note");
-        orderCustNoteRefTableId = ReferenceTableCache.getReferenceTable("order_customer_note");
+        orderRefTable = ReferenceTable.ORDER;
+        orderShippingNoteRefTableId = ReferenceTable.ORDER_SHIPPING_NOTE;
+        orderCustNoteRefTableId = ReferenceTable.ORDER_CUSTOMER_NOTE;
     }
     
     @PostConstruct

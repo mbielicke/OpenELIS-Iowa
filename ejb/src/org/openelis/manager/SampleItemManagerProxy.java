@@ -29,10 +29,10 @@ import java.util.ArrayList;
 
 import javax.naming.InitialContext;
 
+import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.SampleItemLocal;
-import org.openelis.utils.ReferenceTableCache;
 
 public class SampleItemManagerProxy {
     public SampleItemManager fetchBySampleId(Integer sampleId) throws Exception {
@@ -44,8 +44,7 @@ public class SampleItemManagerProxy {
             sim.addSampleItem(items.get(i));
         
         sim.setSampleId(sampleId);
-        sim.setSampleItemReferenceTableId(ReferenceTableCache.getReferenceTable("sample_item"));
-
+        
         return sim;
     }
     
@@ -54,7 +53,7 @@ public class SampleItemManagerProxy {
         SampleItemLocal sil = getSampleItemLocal();
         SampleItemViewDO itemDO;
         
-        sampleItemRefTableId = ReferenceTableCache.getReferenceTable("sample_item");
+        sampleItemRefTableId = ReferenceTable.SAMPLE_ITEM;
         
         for(int i=0; i<man.count(); i++){
             itemDO = man.getSampleItemAt(i);
@@ -78,7 +77,7 @@ public class SampleItemManagerProxy {
         SampleItemLocal sil = getSampleItemLocal();
         SampleItemViewDO itemDO;
         
-        sampleItemRefTableId = man.getSampleItemReferenceTableId();
+        sampleItemRefTableId = ReferenceTable.SAMPLE_ITEM;
         
         for(int j=0; j<man.deleteCount(); j++)
             sil.delete(man.getDeletedAt(j).sampleItem);

@@ -30,18 +30,12 @@ import javax.ejb.Stateless;
 import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.manager.AnalysisManager;
 import org.openelis.remote.AnalysisManagerRemote;
-import org.openelis.utils.ReferenceTableCache;
 
 @Stateless
 
 @SecurityDomain("openelis")
 //@RolesAllowed("inventory-select")
 public class AnalysisManagerBean implements AnalysisManagerRemote {
-    private static int analysisRefTableId;
-    
-    public AnalysisManagerBean(){
-        analysisRefTableId = ReferenceTableCache.getReferenceTable("analysis");
-    }
     
     public AnalysisManager fetchBySampleItemId(Integer sampleItemId) throws Exception {
         AnalysisManager man = AnalysisManager.findBySampleItemId(sampleItemId);   

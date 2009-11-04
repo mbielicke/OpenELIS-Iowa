@@ -25,6 +25,13 @@
 */
 package org.openelis.bean;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
+import javax.ejb.EJB;
+import javax.ejb.EJBs;
+import javax.ejb.SessionContext;
+import javax.ejb.Stateless;
+
 import org.openelis.gwt.common.SecurityUtil;
 import org.openelis.local.LoginLocal;
 import org.openelis.persistence.JBossCachingManager;
@@ -32,14 +39,6 @@ import org.openelis.remote.LoginRemote;
 import org.openelis.security.domain.SystemUserDO;
 import org.openelis.security.local.SecurityLocal;
 import org.openelis.security.local.SystemUserUtilLocal;
-import org.openelis.utils.ReferenceTableCache;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
-import javax.ejb.EJB;
-import javax.ejb.EJBs;
-import javax.ejb.SessionContext;
-import javax.ejb.Stateless;
 
 @EJBs({
     @EJB(name="ejb/Security",beanInterface=SecurityLocal.class),

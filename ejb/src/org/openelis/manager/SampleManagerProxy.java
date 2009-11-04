@@ -27,10 +27,10 @@ package org.openelis.manager;
 
 import javax.naming.InitialContext;
 
+import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.SampleDO;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.SampleLocal;
-import org.openelis.utils.ReferenceTableCache;
 
 public class SampleManagerProxy {
     public SampleManager add(SampleManager man) throws Exception {
@@ -39,8 +39,8 @@ public class SampleManagerProxy {
         sl.add(man.getSample());
         
         sampleId = man.getSample().getId();
-        sampleRefId = ReferenceTableCache.getReferenceTable("sample");
-        sampleInternalRefId = ReferenceTableCache.getReferenceTable("sample_internal_note");
+        sampleRefId = ReferenceTable.SAMPLE;
+        sampleInternalRefId = ReferenceTable.SAMPLE_INTERNAL_NOTE;
         
         man.getDomainManager().setSampleId(sampleId);
         man.getDomainManager().add();
@@ -78,8 +78,8 @@ public class SampleManagerProxy {
         sl.update(man.getSample());
         
         sampleId = man.getSample().getId();
-        sampleRefId = man.getSampleReferenceTableId();
-        sampleInternalRefId = man.getSampleInternalReferenceTableId();
+        sampleRefId = ReferenceTable.SAMPLE;
+        sampleInternalRefId = ReferenceTable.SAMPLE_INTERNAL_NOTE;
         
         man.getSampleItems().setSampleId(sampleId);
         man.getSampleItems().update();
@@ -120,9 +120,6 @@ public class SampleManagerProxy {
         sm.getProjects();
         sm.getSampleItems();
         
-        sm.setSampleReferenceTableId(ReferenceTableCache.getReferenceTable("sample"));
-        sm.setSampleInternalReferenceTableId(ReferenceTableCache.getReferenceTable("sample_internal_note"));
-        
         return sm;
     }
                          
@@ -136,9 +133,6 @@ public class SampleManagerProxy {
         sm.getDomainManager();
         sm.getOrganizations();
         sm.getProjects();
-        
-        sm.setSampleReferenceTableId(ReferenceTableCache.getReferenceTable("sample"));
-        sm.setSampleInternalReferenceTableId(ReferenceTableCache.getReferenceTable("sample_internal_note"));
         
         SampleItemManager sim = sm.getSampleItems();
         

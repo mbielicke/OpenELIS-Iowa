@@ -42,7 +42,6 @@ import org.openelis.local.SampleOrganizationLocal;
 @Stateless
 
 @SecurityDomain("openelis")
-//@RolesAllowed("LOCKINGtest")
 public class SampleOrganizationBean implements SampleOrganizationLocal {
     @PersistenceContext(name = "openelis")
     private EntityManager manager;

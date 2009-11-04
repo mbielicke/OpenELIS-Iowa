@@ -50,6 +50,19 @@ public class StorageBean implements StorageLocal{
     
     @EJB LoginLocal login;
 
+    public ArrayList<StorageViewDO> fetchByRefId(Integer refTableId, Integer refId) throws Exception {
+        Query query = manager.createNamedQuery("Storage.StorageById");
+        query.setParameter("referenceTable", refTableId);
+        query.setParameter("id", refId);
+        
+        ArrayList<StorageViewDO> list = (ArrayList<StorageViewDO>)query.getResultList();
+        
+        if(list.size() == 0)
+            throw new NotFoundException();
+        
+        return list;
+    }
+
     public void add(StorageViewDO storageDO) throws Exception {
         manager.setFlushMode(FlushModeType.COMMIT);
         
@@ -77,18 +90,5 @@ public class StorageBean implements StorageLocal{
         storage.setReferenceTableId(storageDO.getReferenceTableId());
         storage.setStorageLocationId(storageDO.getStorageLocationId());
         storage.setSystemUserId(storageDO.getSystemUserId());
-    }
-    
-    public ArrayList<StorageViewDO> fetchByRefId(Integer refTableId, Integer refId) throws Exception {
-        Query query = manager.createNamedQuery("Storage.StorageById");
-        query.setParameter("referenceTable", refTableId);
-        query.setParameter("id", refId);
-        
-        ArrayList<StorageViewDO> list = (ArrayList<StorageViewDO>)query.getResultList();
-        
-        if(list.size() == 0)
-            throw new NotFoundException();
-        
-        return list;
     }
 }

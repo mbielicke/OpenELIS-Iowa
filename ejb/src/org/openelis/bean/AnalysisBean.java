@@ -44,7 +44,6 @@ import org.openelis.local.AnalysisLocal;
 @Stateless
 
 @SecurityDomain("openelis")
-//@RolesAllowed("LOCKINGtest")
 public class AnalysisBean implements AnalysisLocal{
 
     @PersistenceContext(name = "openelis")
