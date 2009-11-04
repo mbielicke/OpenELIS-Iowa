@@ -25,6 +25,7 @@
 */
 package org.openelis.manager;
 
+import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.SampleDO;
 import org.openelis.gwt.common.InconsistencyException;
 import org.openelis.gwt.common.NotFoundException;
@@ -43,8 +44,6 @@ public class SampleManager implements RPC, HasNotesInt, HasAuxDataInt {
     protected NoteManager sampleInternalNotes;
     protected NoteManager sampleExternalNote;
     protected AuxDataManager auxData;
-    
-    protected Integer sampleReferenceTableId, sampleInternalReferenceTableId;
     
     public static final String  ENVIRONMENTAL_DOMAIN_FLAG   = "E",
                                 HUMAN_DOMAIN_FLAG           = "H",
@@ -119,22 +118,6 @@ public class SampleManager implements RPC, HasNotesInt, HasAuxDataInt {
     
     public void setSample(SampleDO sample) {
         this.sample = sample;
-    }
-    
-    public Integer getSampleReferenceTableId() {
-        return sampleReferenceTableId;
-    }
-
-    public void setSampleReferenceTableId(Integer sampleReferenceTableId) {
-        this.sampleReferenceTableId = sampleReferenceTableId;
-    }
-
-    public Integer getSampleInternalReferenceTableId() {
-        return sampleInternalReferenceTableId;
-    }
-
-    public void setSampleInternalReferenceTableId(Integer sampleInternalReferenceTableId) {
-        this.sampleInternalReferenceTableId = sampleInternalReferenceTableId;
     }
     
     public NoteManager getNotes() throws Exception {
@@ -266,12 +249,13 @@ public class SampleManager implements RPC, HasNotesInt, HasAuxDataInt {
     
     private AuxDataManager getAuxData(boolean forUpdate) throws Exception {
         if(auxData == null){
-            if(sample.getId() != null && sampleReferenceTableId != null){
+            if(sample.getId() != null){
                 try{
                     if(forUpdate)
-                        auxData = AuxDataManager.fetchByIdForUpdate(sample.getId(), sampleReferenceTableId);
+                        auxData = AuxDataManager.fetchByIdForUpdate(sample.getId(), ReferenceTable.SAMPLE);
                     else
-                        auxData = AuxDataManager.fetchById(sample.getId(), sampleReferenceTableId);
+                        auxData = AuxDataManager.fetchById(sample.getId(), ReferenceTable.SAMPLE
+                                                           );
                 }
                 catch(NotFoundException e){
                     //ignore
@@ -289,9 +273,9 @@ public class SampleManager implements RPC, HasNotesInt, HasAuxDataInt {
     
     public NoteManager getInternalNotes() throws Exception {
         if(sampleInternalNotes == null){
-            if(sample.getId() != null && sampleInternalReferenceTableId != null){
+            if(sample.getId() != null){
                 try{
-                    sampleInternalNotes = NoteManager.findByRefTableRefId(sampleInternalReferenceTableId, sample.getId());
+                    sampleInternalNotes = NoteManager.findByRefTableRefId(ReferenceTable.SAMPLE_INTERNAL_NOTE, sample.getId());
                     
                 }catch(NotFoundException e){
                     //ignore
@@ -309,9 +293,9 @@ public class SampleManager implements RPC, HasNotesInt, HasAuxDataInt {
     
     public NoteManager getExternalNote() throws Exception {
         if(sampleExternalNote == null){
-            if(sample.getId() != null && sampleReferenceTableId != null){
+            if(sample.getId() != null){
                 try{
-                    sampleExternalNote = NoteManager.findByRefTableRefId(sampleReferenceTableId, sample.getId());
+                    sampleExternalNote = NoteManager.findByRefTableRefId(ReferenceTable.SAMPLE, sample.getId());
                     
                 }catch(NotFoundException e){
                     //ignore

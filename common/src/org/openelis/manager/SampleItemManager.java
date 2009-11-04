@@ -27,6 +27,7 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
+import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.RPC;
@@ -40,8 +41,6 @@ public class SampleItemManager implements RPC {
     protected ArrayList<SampleItemListItem>                   items;
     protected ArrayList<SampleItemListItem>                   deletedList;
     
-    protected Integer sampleItemReferenceTableId;
-
     protected transient static SampleItemManagerProxy proxy;
 
     /**
@@ -78,15 +77,7 @@ public class SampleItemManager implements RPC {
     public void setSampleId(Integer sampleId) {
         this.sampleId = sampleId;
     }
-    
-    public Integer getSampleItemReferenceTableId() {
-        return sampleItemReferenceTableId;
-    }
-
-    public void setSampleItemReferenceTableId(Integer sampleItemReferenceTableId) {
-        this.sampleItemReferenceTableId = sampleItemReferenceTableId;
-    }
-    
+        
     // sample item
     public SampleItemViewDO getSampleItemAt(int i) {
         return getItem(i).sampleItem;
@@ -121,9 +112,9 @@ public class SampleItemManager implements RPC {
         SampleItemListItem item = getItem(i);
 
         if (item.storage == null) {
-            if(item.sampleItem != null && item.sampleItem.getId() != null && sampleItemReferenceTableId != null){
+            if(item.sampleItem != null && item.sampleItem.getId() != null){
                 try{
-                    item.storage = StorageManager.findByRefTableRefId(sampleItemReferenceTableId, item.sampleItem.getId());
+                    item.storage = StorageManager.findByRefTableRefId(ReferenceTable.SAMPLE_ITEM, item.sampleItem.getId());
                 }catch(NotFoundException e){
                     //ignore
                 }catch(Exception e){

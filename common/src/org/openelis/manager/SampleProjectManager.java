@@ -10,9 +10,7 @@ public class SampleProjectManager implements RPC {
     private static final long                            serialVersionUID = 1L;
 
     protected Integer                                    sampleId;
-
-    protected ArrayList<SampleProjectViewDO>                 projects;
-    protected ArrayList<SampleProjectViewDO>                 deletedList;
+    protected ArrayList<SampleProjectViewDO>             projects, deletedList;
 
     protected transient static SampleProjectManagerProxy proxy;
 
@@ -29,7 +27,8 @@ public class SampleProjectManager implements RPC {
     }
 
     /**
-     * Creates a new instance of this object with the specified sample id. Use this function to load an instance of this object from database.
+     * Creates a new instance of this object with the specified sample id. Use
+     * this function to load an instance of this object from database.
      */
     public static SampleProjectManager findBySampleId(Integer sampleId) throws Exception {
         return proxy().fetchBySampleId(sampleId);
@@ -42,19 +41,19 @@ public class SampleProjectManager implements RPC {
     public void setSampleId(Integer sampleId) {
         this.sampleId = sampleId;
     }
-    
-    public SampleProjectViewDO getFirstPermanentProject(){
+
+    public SampleProjectViewDO getFirstPermanentProject() {
         int i;
         SampleProjectViewDO project;
-        
-        for(i=0;i<projects.size(); i++){
+
+        for (i = 0; i < projects.size(); i++ ) {
             project = projects.get(i);
-            if("Y".equals(project.getIsPermanent()))
+            if ("Y".equals(project.getIsPermanent()))
                 return project;
         }
         return null;
     }
-    
+
     public void addFirstPermanentProject(SampleProjectViewDO newProject) {
         SampleProjectViewDO oldProject = getFirstPermanentProject();
 
@@ -93,7 +92,7 @@ public class SampleProjectManager implements RPC {
         if (projects == null)
             projects = new ArrayList<SampleProjectViewDO>();
 
-        if("Y".equals(project.getIsPermanent()))
+        if ("Y".equals(project.getIsPermanent()))
             projects.add(0, project);
         else
             projects.add(i, project);
@@ -108,9 +107,10 @@ public class SampleProjectManager implements RPC {
         if (deletedList == null)
             deletedList = new ArrayList<SampleProjectViewDO>();
 
-        if(tmpDO.getId() != null)
+        if (tmpDO.getId() != null)
             deletedList.add(tmpDO);
     }
+
     // service methods
     public SampleProjectManager add() throws Exception {
         return proxy().add(this);
@@ -119,16 +119,16 @@ public class SampleProjectManager implements RPC {
     public SampleProjectManager update() throws Exception {
         return proxy().update(this);
     }
-    
+
     public void validate() throws Exception {
         ValidationErrorsList errorsList = new ValidationErrorsList();
-        
+
         proxy().validate(this, errorsList);
-        
-        if(errorsList.size() > 0)
+
+        if (errorsList.size() > 0)
             throw errorsList;
     }
-    
+
     public void validate(ValidationErrorsList errorsList) throws Exception {
         proxy().validate(this, errorsList);
     }
@@ -140,7 +140,8 @@ public class SampleProjectManager implements RPC {
         return proxy;
     }
 
-    // these are friendly methods so only managers and proxies can call this method
+    // these are friendly methods so only managers and proxies can call this
+    // method
     ArrayList<SampleProjectViewDO> getProjects() {
         return projects;
     }
