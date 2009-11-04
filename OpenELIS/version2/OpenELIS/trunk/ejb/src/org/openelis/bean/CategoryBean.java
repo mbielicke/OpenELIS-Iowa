@@ -38,7 +38,6 @@ import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.CategoryDO;
-import org.openelis.domain.DictionaryViewDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.entity.Category;
 import org.openelis.gwt.common.DatabaseException;
@@ -201,10 +200,7 @@ public class CategoryBean implements CategoryRemote, CategoryLocal {
         }
 
         if (DataBaseUtil.isEmpty(name)) 
-            list.add(new FieldErrorException("fieldRequiredException", meta.getName()));
-        
-        if (DataBaseUtil.isEmpty(data.getSectionId())) 
-            list.add(new FieldErrorException("fieldRequiredException", meta.getSectionId()));
+            list.add(new FieldErrorException("fieldRequiredException", meta.getName()));              
         
         if(list.size() > 0)
             throw list;
