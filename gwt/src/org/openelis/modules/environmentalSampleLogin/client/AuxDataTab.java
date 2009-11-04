@@ -89,6 +89,8 @@ public class AuxDataTab extends Screen implements GetMatchesHandler{
     }
     
     private void initialize() {
+        final AuxDataTab tab = this;
+        
         auxValsTable = (TableWidget)def.getWidget("auxValsTable");
         ((AuxTableColumn)auxValsTable.getColumns().get(2)).setScreen(this);
         addScreenHandler(auxValsTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
@@ -191,8 +193,8 @@ public class AuxDataTab extends Screen implements GetMatchesHandler{
                 if(Window.confirm(consts.get("removeAuxMessage")))
                     manager.removeAuxDataGroupAt(auxValsTable.getSelectedRow());
                 
-                //reload the table
-                auxValsTable.load(getTableModel());
+                //reload the tab
+                DataChangeEvent.fire(tab);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {

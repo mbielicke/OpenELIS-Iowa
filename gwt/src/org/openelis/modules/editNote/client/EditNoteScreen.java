@@ -31,6 +31,7 @@ import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.StandardNoteDO;
+import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.data.Query;
@@ -52,7 +53,6 @@ import org.openelis.gwt.widget.tree.TreeWidget;
 import org.openelis.gwt.widget.tree.event.LeafOpenedEvent;
 import org.openelis.gwt.widget.tree.event.LeafOpenedHandler;
 import org.openelis.metamap.StandardNoteMetaMap;
-import org.openelis.modules.organization.client.OrganizationDef;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -84,9 +84,10 @@ public class EditNoteScreen extends Screen implements HasActionHandlers<EditNote
         super((ScreenDefInt)GWT.create(EditNoteDef.class));
         service = new ScreenService("OpenELISServlet?service=org.openelis.modules.editNote.server.EditNoteService");
 
+        setState(State.DEFAULT);
+        
         // Setup link between Screen and widget Handlers
         initialize();
-        setState(State.DEFAULT);
     }
 
     private void initialize() {
@@ -133,9 +134,11 @@ public class EditNoteScreen extends Screen implements HasActionHandlers<EditNote
             public void onStateChange(StateChangeEvent<State> event) {
                 if (screenNoteDO != null) {
                     if ("N".equals(screenNoteDO.getIsExternal())) {
+                        subject.enable(true);
                         subject.setVisible(true);
                         subject.setFocus(true);
                     } else {
+                        subject.enable(false);
                         subject.setVisible(false);
                         text.setFocus(true);
                     }
@@ -325,9 +328,10 @@ public class EditNoteScreen extends Screen implements HasActionHandlers<EditNote
     }
 
     public void commit() {
+        clearErrors();
         if (validate()) {
             managerNoteDO.copy(screenNoteDO);
-
+            setState(State.DEFAULT);
             ActionEvent.fire(this, Action.COMMIT, null);
             clearErrors();
             window.close();
@@ -335,22 +339,25 @@ public class EditNoteScreen extends Screen implements HasActionHandlers<EditNote
     }
 
     public void abort() {
+        setState(State.DEFAULT);
         ActionEvent.fire(this, Action.ABORT, null);
         clearErrors();
         window.close();
     }
 
     protected boolean validate() {
-        return true;
-        /*
-         * boolean valid = true; if (screenNoteDO != null) { if
-         * ("N".equals(screenNoteDO.getIsExternal())) { if
-         * (subject.getValue().trim().length() == 0) {
-         * subject.addError(consts.get("fieldRequiredException")); valid =
-         * false; } } if (text.getValue().trim().length() == 0) {
-         * text.addError(consts.get("fieldRequiredException")); valid = false; }
-         * } window.setError(consts.get("correctErrors")); return valid;
-         */
+        boolean valid = true; 
+        if (screenNoteDO != null) { 
+            if ("N".equals(screenNoteDO.getIsExternal())) { 
+                if (subject.getValue().trim().length() == 0 && text.getValue().trim().length() > 0) {
+                    subject.addException(new FieldErrorException("fieldRequiredException",""));
+                    window.setError(consts.get("correctErrors"));
+                    valid = false; 
+                } 
+            } 
+        } 
+ 
+        return valid;
     }
 
     private void buildTree(ArrayList<StandardNoteDO> noteList) {
