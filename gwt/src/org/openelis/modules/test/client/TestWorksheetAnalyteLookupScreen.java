@@ -49,7 +49,7 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 
-public class TestAnalyteLookupScreen extends Screen implements HasActionHandlers<TestAnalyteLookupScreen.Action>{
+public class TestWorksheetAnalyteLookupScreen extends Screen implements HasActionHandlers<TestWorksheetAnalyteLookupScreen.Action>{
 
     protected TableWidget testAnalyteTable;
     protected AppButton okButton,cancelButton;
@@ -61,8 +61,8 @@ public class TestAnalyteLookupScreen extends Screen implements HasActionHandlers
         OK, CANCEL
     };
     
-    public TestAnalyteLookupScreen(TestAnalyteManager testAnalyteManager) throws Exception {
-        super((ScreenDefInt)GWT.create(TestAnalyteLookupDef.class));
+    public TestWorksheetAnalyteLookupScreen(TestAnalyteManager testAnalyteManager) throws Exception {
+        super((ScreenDefInt)GWT.create(TestWorksheetAnalyteLookupDef.class));
 
         this.testAnalyteManager = testAnalyteManager;
         
@@ -174,7 +174,7 @@ public class TestAnalyteLookupScreen extends Screen implements HasActionHandlers
         setState(state);
     }
 
-    public HandlerRegistration addActionHandler(ActionHandler<TestAnalyteLookupScreen.Action> handler) {
+    public HandlerRegistration addActionHandler(ActionHandler<TestWorksheetAnalyteLookupScreen.Action> handler) {
         return addHandler(handler, ActionEvent.getType());
     }   
     

@@ -78,7 +78,7 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
     private TestWorksheetManager    worksheetManager;
     
     private WorksheetLayoutTab      screen;
-    private TestAnalyteLookupScreen testAnalytePicker; 
+    private TestWorksheetAnalyteLookupScreen testAnalytePicker; 
     
     private TestMetaMap             meta = new TestMetaMap();   
     
@@ -350,14 +350,14 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
                 ScreenWindow modal;
 
                 try {
-                    testAnalytePicker = new TestAnalyteLookupScreen(analyteManager);
-                    testAnalytePicker.addActionHandler(new ActionHandler<TestAnalyteLookupScreen.Action>() {
+                    testAnalytePicker = new TestWorksheetAnalyteLookupScreen(analyteManager);
+                    testAnalytePicker.addActionHandler(new ActionHandler<TestWorksheetAnalyteLookupScreen.Action>() {
 
-                        public void onAction(ActionEvent<TestAnalyteLookupScreen.Action> event) {
+                        public void onAction(ActionEvent<TestWorksheetAnalyteLookupScreen.Action> event) {
                             ArrayList<TableDataRow> model;
                             TestWorksheetAnalyteViewDO anaDO;
                             TableDataRow row;
-                            if (event.getAction() == TestAnalyteLookupScreen.Action.OK) {
+                            if (event.getAction() == TestWorksheetAnalyteLookupScreen.Action.OK) {
                                 model = (ArrayList<TableDataRow>)event.getData();
                                 for (int i = 0; i < model.size(); i++ ) {
                                     row = model.get(i);
