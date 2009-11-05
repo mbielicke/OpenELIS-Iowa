@@ -39,7 +39,6 @@ UIRF Software License are applicable instead of those above.
     <inherits name='com.allen_sauer.gwt.dnd.gwt-dnd'/> 
     <inherits name="org.openelis.modules.main.Main"/>
     <inherits name="org.openelis.modules.analyte.Analyte"/>
-    <inherits name="org.openelis.modules.auxGroupPicker.AuxGroupPicker"/>
     <inherits name="org.openelis.modules.animalSampleLogin.AnimalSampleLogin"/>
     <inherits name="org.openelis.modules.auxiliary.Auxiliary"/>
     <inherits name="org.openelis.modules.buildKits.BuildKits"/>
@@ -64,14 +63,11 @@ UIRF Software License are applicable instead of those above.
     <inherits name="org.openelis.modules.provider.Provider"/>
     <inherits name="org.openelis.modules.panel.Panel"/>
     <inherits name="org.openelis.modules.PTSampleLogin.PTSampleLogin"/>
-    <inherits name="org.openelis.modules.qaeventPicker.QaeventPicker"/>
     <inherits name="org.openelis.modules.qaevent.QAEvent"/>
     <inherits name="org.openelis.modules.qc.QC"/>
     <inherits name="org.openelis.modules.richTextPopup.RichTextPopup"/>
+    <inherits name="org.openelis.modules.sample.Sample"/>
     <inherits name="org.openelis.modules.sampleManagement.SampleManagement"/>
-    <inherits name="org.openelis.modules.sampleLocation.SampleLocation"/>
-    <inherits name="org.openelis.modules.sampleOrganization.SampleOrganization"/>
-    <inherits name="org.openelis.modules.sampleProject.SampleProject"/>
     <inherits name="org.openelis.modules.SDWISSampleLogin.SDWISSampleLogin"/>
     <inherits name="org.openelis.modules.section.Section"/>
     <inherits name="org.openelis.modules.shipping.Shipping"/>
@@ -82,9 +78,7 @@ UIRF Software License are applicable instead of those above.
     <inherits name="org.openelis.modules.testTrailer.TestTrailer"/>
     <inherits name="org.openelis.modules.test.Test"/>
     <inherits name="org.openelis.modules.worksheetCreation.WorksheetCreation"/>
-    <inherits name="org.openelis.modules.testPrepPicker.TestPrepPicker"/> 
     <inherits name="org.openelis.modules.dictionaryentrypicker.DictionaryEntryPicker"/>
-    <inherits name="org.openelis.modules.testanalytepicker.TestAnalytePicker"/>
     <inherits name="org.openelis.modules.scriptlet.Scriptlet"/>
     <inherits name="org.openelis.ELISCommon"/>     
     

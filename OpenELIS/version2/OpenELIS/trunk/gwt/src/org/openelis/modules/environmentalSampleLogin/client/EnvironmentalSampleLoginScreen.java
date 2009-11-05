@@ -86,10 +86,19 @@ import org.openelis.manager.TestManager;
 import org.openelis.manager.TestPrepManager;
 import org.openelis.metamap.SampleEnvironmentalMetaMap;
 import org.openelis.modules.main.client.openelis.OpenELIS;
-import org.openelis.modules.sampleLocation.client.SampleLocationScreen;
-import org.openelis.modules.sampleOrganization.client.SampleOrganizationScreen;
-import org.openelis.modules.sampleProject.client.SampleProjectScreen;
-import org.openelis.modules.testPrepPicker.client.TestPrepPickerScreen;
+import org.openelis.modules.sample.client.AnalysisNotesTab;
+import org.openelis.modules.sample.client.AnalysisTab;
+import org.openelis.modules.sample.client.AuxDataTab;
+import org.openelis.modules.sample.client.QAEventsTab;
+import org.openelis.modules.sample.client.SampleDataBundle;
+import org.openelis.modules.sample.client.SampleItemTab;
+import org.openelis.modules.sample.client.SampleLocationLookupScreen;
+import org.openelis.modules.sample.client.SampleNotesTab;
+import org.openelis.modules.sample.client.SampleOrganizationLookupScreen;
+import org.openelis.modules.sample.client.SampleProjectLookupScreen;
+import org.openelis.modules.sample.client.StorageTab;
+import org.openelis.modules.sample.client.TestResultsTab;
+import org.openelis.modules.test.client.TestPrepLookupScreen;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -122,14 +131,14 @@ public class EnvironmentalSampleLoginScreen extends Screen {
     private QAEventsTab                qaEventsTab;
     private AuxDataTab                 auxDataTab;
     
-    protected TestPrepPickerScreen prepPickerScreen;
+    protected TestPrepLookupScreen prepPickerScreen;
     protected TextBox location;
     protected AutoComplete<Integer> project, reportTo, billTo;
     protected TreeWidget itemsTree;
 
-    private SampleLocationScreen locationScreen;
-    private SampleOrganizationScreen organizationScreen;
-    private SampleProjectScreen projectScreen;
+    private SampleLocationLookupScreen locationScreen;
+    private SampleOrganizationLookupScreen organizationScreen;
+    private SampleProjectLookupScreen projectScreen;
     
     protected ScreenService orgService;
     protected ScreenService projectService;
@@ -477,7 +486,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
 
                window.setBusy();
                try {
-                   list = service.callList("fetchByName", parser.getParameter().get(0));
+                   list = service.callList("fetchActiveByName", parser.getParameter().get(0));
                    model = new ArrayList<TableDataRow>();
                    for (int i = 0; i < list.size(); i++ ) {
                        row = new TableDataRow(4);
@@ -1343,10 +1352,10 @@ public class EnvironmentalSampleLoginScreen extends Screen {
         try {
             if (projectScreen == null) {
                 final EnvironmentalSampleLoginScreen env = this;
-                projectScreen = new SampleProjectScreen();
-                projectScreen.addActionHandler(new ActionHandler<SampleProjectScreen.Action>() {
-                        public void onAction(ActionEvent<SampleProjectScreen.Action> event) {
-                            if (event.getAction() == SampleProjectScreen.Action.COMMIT) {
+                projectScreen = new SampleProjectLookupScreen();
+                projectScreen.addActionHandler(new ActionHandler<SampleProjectLookupScreen.Action>() {
+                        public void onAction(ActionEvent<SampleProjectLookupScreen.Action> event) {
+                            if (event.getAction() == SampleProjectLookupScreen.Action.COMMIT) {
                                 DataChangeEvent.fire(env, project);
 
                             }
@@ -1376,11 +1385,11 @@ public class EnvironmentalSampleLoginScreen extends Screen {
         try{
             if(organizationScreen == null){
                 final EnvironmentalSampleLoginScreen env = this;
-                organizationScreen = new SampleOrganizationScreen();
+                organizationScreen = new SampleOrganizationLookupScreen();
                 
-                organizationScreen.addActionHandler(new ActionHandler<SampleOrganizationScreen.Action>() {
-                    public void onAction(ActionEvent<SampleOrganizationScreen.Action> event) {
-                        if (event.getAction() == SampleOrganizationScreen.Action.COMMIT) {
+                organizationScreen.addActionHandler(new ActionHandler<SampleOrganizationLookupScreen.Action>() {
+                    public void onAction(ActionEvent<SampleOrganizationLookupScreen.Action> event) {
+                        if (event.getAction() == SampleOrganizationLookupScreen.Action.COMMIT) {
                             DataChangeEvent.fire(env, reportTo);
                             DataChangeEvent.fire(env, billTo);
                         }
@@ -1410,11 +1419,11 @@ public class EnvironmentalSampleLoginScreen extends Screen {
         try {
             if (locationScreen == null) {
                     final EnvironmentalSampleLoginScreen env = this;
-                    locationScreen = new SampleLocationScreen();
+                    locationScreen = new SampleLocationLookupScreen();
                     
-                    locationScreen.addActionHandler(new ActionHandler<SampleLocationScreen.Action>() {
-                        public void onAction(ActionEvent<SampleLocationScreen.Action> event) {
-                            if (event.getAction() == SampleLocationScreen.Action.COMMIT) {
+                    locationScreen.addActionHandler(new ActionHandler<SampleLocationLookupScreen.Action>() {
+                        public void onAction(ActionEvent<SampleLocationLookupScreen.Action> event) {
+                            if (event.getAction() == SampleLocationLookupScreen.Action.COMMIT) {
                                 DataChangeEvent.fire(env, location);
                             }
                         }
@@ -1722,10 +1731,10 @@ public class EnvironmentalSampleLoginScreen extends Screen {
     private void drawTestPrepScreen(TestPrepManager manager){
         if (prepPickerScreen == null) {
             try {
-                prepPickerScreen = new TestPrepPickerScreen();
-                prepPickerScreen.addActionHandler(new ActionHandler<TestPrepPickerScreen.Action>() {
-                    public void onAction(ActionEvent<TestPrepPickerScreen.Action> event) {
-                        if (event.getAction() == TestPrepPickerScreen.Action.SELECTED_PREP_ROW) {
+                prepPickerScreen = new TestPrepLookupScreen();
+                prepPickerScreen.addActionHandler(new ActionHandler<TestPrepLookupScreen.Action>() {
+                    public void onAction(ActionEvent<TestPrepLookupScreen.Action> event) {
+                        if (event.getAction() == TestPrepLookupScreen.Action.SELECTED_PREP_ROW) {
                             
                             TableDataRow selectedRow = (TableDataRow)event.getData();
                             Integer testId = (Integer)selectedRow.key;
