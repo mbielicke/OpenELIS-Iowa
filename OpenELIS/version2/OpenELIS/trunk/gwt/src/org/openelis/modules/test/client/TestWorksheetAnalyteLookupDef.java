@@ -27,6 +27,6 @@ package org.openelis.modules.test.client;
 
 import org.openelis.gwt.screen.ScreenDefInt;
 
-public interface TestAnalyteLookupDef extends ScreenDefInt {
+public interface TestWorksheetAnalyteLookupDef extends ScreenDefInt {
 
 }

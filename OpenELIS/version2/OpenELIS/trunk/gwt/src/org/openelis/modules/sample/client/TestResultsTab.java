@@ -30,12 +30,17 @@ import java.util.EnumSet;
 
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.ResultViewDO;
+import org.openelis.gwt.common.Datetime;
+import org.openelis.gwt.event.ActionEvent;
+import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
+import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.table.TableColumn;
 import org.openelis.gwt.widget.table.TableDataCell;
 import org.openelis.gwt.widget.table.TableDataRow;
@@ -48,6 +53,7 @@ import org.openelis.gwt.widget.table.event.RowDeletedEvent;
 import org.openelis.gwt.widget.table.event.RowDeletedHandler;
 import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.AnalysisResultManager;
+import org.openelis.modules.editNote.client.EditNoteScreen;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.Window;
@@ -59,7 +65,8 @@ public class TestResultsTab extends Screen {
     protected TableWidget             testResultsTable;
     private ArrayList<TableColumn> resultTableCols;
     
-
+    protected TestAnalyteLookupScreen testAnalyteScreen;
+    
     protected AnalysisResultManager manager;
     private ResultDisplayManager    displayManager;
 
@@ -113,11 +120,32 @@ MISSING TABLE COL!!! USING OLD TABLE FORMAT?
         addResultButton = (AppButton)def.getWidget("addResultButton");
         addScreenHandler(addResultButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-                //<CHANGE-ME>;
+                if (testAnalyteScreen == null) {
+                    try {
+                        testAnalyteScreen = new TestAnalyteLookupScreen();
+                        testAnalyteScreen.addActionHandler(new ActionHandler<TestAnalyteLookupScreen.Action>() {
+                            public void onAction(ActionEvent<TestAnalyteLookupScreen.Action> event) {
+                                if (event.getAction() == TestAnalyteLookupScreen.Action.COMMIT) {
+                                    //do something
+                                }
+                            }
+                        });
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        Window.alert("error: " + e.getMessage());
+                        return;
+                    }
+                }
+
+                ScreenWindow modal = new ScreenWindow("Test Analyte Screen", "testAnalyteScreen", "",
+                                                      true, false);
+                modal.setName(consts.get("testAnalyteSelection"));
+                modal.setContent(testAnalyteScreen);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                addResultButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+                addResultButton.enable(EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()));
             }
         });
 
