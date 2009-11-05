@@ -66,7 +66,6 @@ import org.openelis.manager.TestManager;
 import org.openelis.manager.TestWorksheetManager;
 import org.openelis.metamap.TestMetaMap;
 import org.openelis.modules.test.client.AnalyteAndResultTab.Action;
-import org.openelis.modules.testanalytepicker.client.TestAnalytePickerScreen;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -79,7 +78,7 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
     private TestWorksheetManager    worksheetManager;
     
     private WorksheetLayoutTab      screen;
-    private TestAnalytePickerScreen testAnalytePicker; 
+    private TestAnalyteLookupScreen testAnalytePicker; 
     
     private TestMetaMap             meta = new TestMetaMap();   
     
@@ -351,14 +350,14 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
                 ScreenWindow modal;
 
                 try {
-                    testAnalytePicker = new TestAnalytePickerScreen(analyteManager);
-                    testAnalytePicker.addActionHandler(new ActionHandler<TestAnalytePickerScreen.Action>() {
+                    testAnalytePicker = new TestAnalyteLookupScreen(analyteManager);
+                    testAnalytePicker.addActionHandler(new ActionHandler<TestAnalyteLookupScreen.Action>() {
 
-                        public void onAction(ActionEvent<TestAnalytePickerScreen.Action> event) {
+                        public void onAction(ActionEvent<TestAnalyteLookupScreen.Action> event) {
                             ArrayList<TableDataRow> model;
                             TestWorksheetAnalyteViewDO anaDO;
                             TableDataRow row;
-                            if (event.getAction() == TestAnalytePickerScreen.Action.OK) {
+                            if (event.getAction() == TestAnalyteLookupScreen.Action.OK) {
                                 model = (ArrayList<TableDataRow>)event.getData();
                                 for (int i = 0; i < model.size(); i++ ) {
                                     row = model.get(i);
