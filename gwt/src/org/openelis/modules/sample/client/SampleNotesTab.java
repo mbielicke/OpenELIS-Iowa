@@ -86,7 +86,7 @@ public class SampleNotesTab extends NotesTab {
                         internalEditNote = new EditNoteScreen();
                         internalEditNote.addActionHandler(new ActionHandler<EditNoteScreen.Action>() {
                             public void onAction(ActionEvent<EditNoteScreen.Action> event) {
-                                if (event.getAction() == EditNoteScreen.Action.COMMIT) {
+                                if (event.getAction() == EditNoteScreen.Action.OK) {
                                     if (internalNote.getText() == null || internalNote.getText().trim().length() == 0)
                                         internalManager.removeEditingNote();
                                     

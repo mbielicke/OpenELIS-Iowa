@@ -94,7 +94,7 @@
 
         <AbsolutePanel align="center" spacing="0" style="BottomButtonPanelContainer">
           <HorizontalPanel>
-            <xsl:call-template name="commitButton">
+            <xsl:call-template name="okButton">
               <xsl:with-param name="language">
                 <xsl:value-of select="language" />
               </xsl:with-param>

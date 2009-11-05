@@ -53,8 +53,8 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Window;
 
 public class AuxGroupLookupScreen extends Screen implements HasActionHandlers<AuxGroupLookupScreen.Action>{
-    public enum Action {COMMIT};
-    protected AppButton commitButton, abortButton;
+    public enum Action {OK};
+    protected AppButton okButton, cancelButton;
     protected TableWidget auxGroupsTable;
     private ArrayList<TableDataRow> groupsModel; 
     
@@ -93,30 +93,30 @@ public class AuxGroupLookupScreen extends Screen implements HasActionHandlers<Au
            }
         });
         
-        commitButton = (AppButton)def.getWidget("commit");
-        addScreenHandler(commitButton, new ScreenEventHandler<Object>() {
+        okButton = (AppButton)def.getWidget("ok");
+        addScreenHandler(okButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-                commit();
+                ok();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                commitButton.enable(true);
+                okButton.enable(true);
             }
         });
 
-        abortButton = (AppButton)def.getWidget("abort");
-        addScreenHandler(abortButton, new ScreenEventHandler<Object>() {
+        cancelButton = (AppButton)def.getWidget("cancel");
+        addScreenHandler(cancelButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-                abort();
+                cancel();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                abortButton.enable(true);
+                cancelButton.enable(true);
             }
         });
     }
     
-    private void commit(){
+    private void ok(){
         ArrayList<TableDataRow> selections = auxGroupsTable.getSelections();
         ArrayList<AuxFieldManager> returnList;
 
@@ -129,12 +129,12 @@ public class AuxGroupLookupScreen extends Screen implements HasActionHandlers<Au
         }
             
         if(selections.size() > 0)
-            ActionEvent.fire(this, Action.COMMIT, returnList);
+            ActionEvent.fire(this, Action.OK, returnList);
         
         window.close();
     }
     
-    private void abort(){
+    private void cancel(){
         window.close();
     }
     

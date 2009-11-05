@@ -25,7 +25,7 @@
 */
 package org.openelis.modules.sample.client;
 
-import javax.swing.table.TableColumn;
+import org.openelis.gwt.widget.table.TableColumn;
 
 public class TestResultTableColumn extends TableColumn {
 

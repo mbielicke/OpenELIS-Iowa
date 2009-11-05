@@ -59,7 +59,6 @@ import org.openelis.gwt.widget.table.event.RowAddedHandler;
 import org.openelis.gwt.widget.table.event.RowDeletedEvent;
 import org.openelis.gwt.widget.table.event.RowDeletedHandler;
 import org.openelis.manager.SampleOrganizationManager;
-import org.openelis.modules.organization.client.OrganizationDef;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -71,7 +70,7 @@ public class SampleOrganizationLookupScreen  extends Screen implements HasAction
     private SampleOrganizationManager manager;
 
     public enum Action {
-        COMMIT
+        OK
     };
 
     private TableWidget sampleOrganizationTable;
@@ -238,23 +237,23 @@ public class SampleOrganizationLookupScreen  extends Screen implements HasAction
             }
         });
         
-        final AppButton commitButton = (AppButton)def.getWidget("commit");
-        addScreenHandler(commitButton, new ScreenEventHandler<Object>() {
+        final AppButton okButton = (AppButton)def.getWidget("ok");
+        addScreenHandler(okButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-                commit();
+                ok();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                commitButton.enable(true);
+                okButton.enable(true);
             }
         });
 
     }
     
-    public void commit() {
+    public void ok() {
         sampleOrganizationTable.finishEditing();
         if(validate()){
-            ActionEvent.fire(this, Action.COMMIT, null);
+            ActionEvent.fire(this, Action.OK, null);
             window.close();
         }
     }

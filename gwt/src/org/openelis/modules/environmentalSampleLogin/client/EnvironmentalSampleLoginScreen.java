@@ -1355,7 +1355,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
                 projectScreen = new SampleProjectLookupScreen();
                 projectScreen.addActionHandler(new ActionHandler<SampleProjectLookupScreen.Action>() {
                         public void onAction(ActionEvent<SampleProjectLookupScreen.Action> event) {
-                            if (event.getAction() == SampleProjectLookupScreen.Action.COMMIT) {
+                            if (event.getAction() == SampleProjectLookupScreen.Action.OK) {
                                 DataChangeEvent.fire(env, project);
 
                             }
@@ -1389,7 +1389,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
                 
                 organizationScreen.addActionHandler(new ActionHandler<SampleOrganizationLookupScreen.Action>() {
                     public void onAction(ActionEvent<SampleOrganizationLookupScreen.Action> event) {
-                        if (event.getAction() == SampleOrganizationLookupScreen.Action.COMMIT) {
+                        if (event.getAction() == SampleOrganizationLookupScreen.Action.OK) {
                             DataChangeEvent.fire(env, reportTo);
                             DataChangeEvent.fire(env, billTo);
                         }
@@ -1423,7 +1423,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
                     
                     locationScreen.addActionHandler(new ActionHandler<SampleLocationLookupScreen.Action>() {
                         public void onAction(ActionEvent<SampleLocationLookupScreen.Action> event) {
-                            if (event.getAction() == SampleLocationLookupScreen.Action.COMMIT) {
+                            if (event.getAction() == SampleLocationLookupScreen.Action.OK) {
                                 DataChangeEvent.fire(env, location);
                             }
                         }

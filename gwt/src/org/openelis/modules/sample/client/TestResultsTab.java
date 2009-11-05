@@ -125,7 +125,7 @@ MISSING TABLE COL!!! USING OLD TABLE FORMAT?
                         testAnalyteScreen = new TestAnalyteLookupScreen();
                         testAnalyteScreen.addActionHandler(new ActionHandler<TestAnalyteLookupScreen.Action>() {
                             public void onAction(ActionEvent<TestAnalyteLookupScreen.Action> event) {
-                                if (event.getAction() == TestAnalyteLookupScreen.Action.COMMIT) {
+                                if (event.getAction() == TestAnalyteLookupScreen.Action.OK) {
                                     //do something
                                 }
                             }

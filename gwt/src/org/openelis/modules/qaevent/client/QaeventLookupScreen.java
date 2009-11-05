@@ -54,13 +54,13 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Window;
 
 public class QaeventLookupScreen extends Screen implements HasActionHandlers<QaeventLookupScreen.Action>{
-    public enum Action {COMMIT};
+    public enum Action {OK};
     public enum Type {SAMPLE, ANALYSIS};
     protected Integer testId;
     protected Type type;
     protected ArrayList<QaEventVO> qaEvents;
     
-    private AppButton commitButton, abortButton;
+    private AppButton okButton, cancelButton;
     private TableWidget prepTestTable;
     
     
@@ -99,41 +99,41 @@ public class QaeventLookupScreen extends Screen implements HasActionHandlers<Qae
             }
         });
 
-        commitButton = (AppButton)def.getWidget("commit");
-        addScreenHandler(commitButton, new ScreenEventHandler<Object>() {
+        okButton = (AppButton)def.getWidget("ok");
+        addScreenHandler(okButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-                if (commitButton.isEnabled())
-                    commit();
+                if (okButton.isEnabled())
+                    ok();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                commitButton.enable(true);
+                okButton.enable(true);
             }
         });
 
-        abortButton = (AppButton)def.getWidget("abort");
-        addScreenHandler(abortButton, new ScreenEventHandler<Object>() {
+        cancelButton = (AppButton)def.getWidget("cancel");
+        addScreenHandler(cancelButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-                if (abortButton.isEnabled())
-                    abort();
+                if (cancelButton.isEnabled())
+                    cancel();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                abortButton.enable(true);
+                cancelButton.enable(true);
             }
         });
     }
     
-    private void commit(){
+    private void ok(){
         ArrayList<TableDataRow> selections = prepTestTable.getSelections();
         
         if(selections.size() > 0)
-            ActionEvent.fire(this, Action.COMMIT, selections);
+            ActionEvent.fire(this, Action.OK, selections);
         
         window.close();
     }
     
-    private void abort(){
+    private void cancel(){
         window.close();
     }
     
