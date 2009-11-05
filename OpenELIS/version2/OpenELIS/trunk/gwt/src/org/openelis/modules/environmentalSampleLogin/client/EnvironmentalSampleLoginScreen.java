@@ -1484,7 +1484,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
         newRow.cells.get(0).value = "<> : <>";
         newRow.cells.get(1).value = loggedInId;
         
-        TreeDataItem selectedRow = itemsTree.getRow(itemsTree.getSelectedIndex());
+        TreeDataItem selectedRow = itemsTree.getRow(itemsTree.getSelectedRow());
         
         if(!"sampleItem".equals(selectedRow.leafType))
             selectedRow = selectedRow.parent;
@@ -1585,7 +1585,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
         cache = DictionaryCache.getListByCategorySystemName("analysis_status");
         model = getDictionaryIdEntryList(cache);
         
-        ((Dropdown<Integer>)itemsTree.columns.get("analysis").get(1).colWidget).setModel(model);
+        ((Dropdown<Integer>)itemsTree.getColumns().get("analysis").get(1).colWidget).setModel(model);
     }
     
     private void drawTabs() {
@@ -1866,7 +1866,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
     
     private void updateTreeAnalysisRowAndCheckPrepTests(){
         TreeDataItem selected = itemsTree.getSelection();
-        int selectedIndex = itemsTree.getSelectedIndex();
+        int selectedIndex = itemsTree.getSelectedRow();
         
         SampleDataBundle data = (SampleDataBundle)selected.data;
         AnalysisViewDO aDO = data.analysisTestDO;
