@@ -68,7 +68,7 @@ public class EditNoteScreen extends Screen implements HasActionHandlers<EditNote
     private NoteViewDO managerNoteDO, screenNoteDO;
 
     public enum Action {
-        COMMIT, ABORT
+        OK, CANCEL
     };
 
     protected TextArea                text, preview;
@@ -223,25 +223,25 @@ public class EditNoteScreen extends Screen implements HasActionHandlers<EditNote
             }
         });
 
-        final AppButton commitButton = (AppButton)def.getWidget("commit");
-        addScreenHandler(commitButton, new ScreenEventHandler<Object>() {
+        final AppButton okButton = (AppButton)def.getWidget("ok");
+        addScreenHandler(okButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-                commit();
+                ok();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                commitButton.enable(true);
+                okButton.enable(true);
             }
         });
 
-        final AppButton abortButton = (AppButton)def.getWidget("abort");
-        addScreenHandler(abortButton, new ScreenEventHandler<Object>() {
+        final AppButton cancelButton = (AppButton)def.getWidget("cancel");
+        addScreenHandler(cancelButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-                abort();
+                cancel();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                abortButton.enable(true);
+                cancelButton.enable(true);
             }
         });
     }
@@ -327,20 +327,20 @@ public class EditNoteScreen extends Screen implements HasActionHandlers<EditNote
         text.setSelectionRange(cursorIndex, preview.getText().length());
     }
 
-    public void commit() {
+    public void ok() {
         clearErrors();
         if (validate()) {
             managerNoteDO.copy(screenNoteDO);
             setState(State.DEFAULT);
-            ActionEvent.fire(this, Action.COMMIT, null);
+            ActionEvent.fire(this, Action.OK, null);
             clearErrors();
             window.close();
         }
     }
 
-    public void abort() {
+    public void cancel() {
         setState(State.DEFAULT);
-        ActionEvent.fire(this, Action.ABORT, null);
+        ActionEvent.fire(this, Action.CANCEL, null);
         clearErrors();
         window.close();
     }

@@ -57,7 +57,7 @@ public class SampleLocationLookupScreen extends Screen implements HasActionHandl
     private SampleEnvironmentalDO        envDO;
 
     public enum Action {
-        COMMIT
+        OK
     };
 
     private SampleEnvironmentalMetaMap       meta = new SampleEnvironmentalMetaMap();
@@ -186,20 +186,20 @@ public class SampleLocationLookupScreen extends Screen implements HasActionHandl
             }
         });
         
-        final AppButton commitButton = (AppButton)def.getWidget("commit");
-        addScreenHandler(commitButton, new ScreenEventHandler<Object>() {
+        final AppButton okButton = (AppButton)def.getWidget("ok");
+        addScreenHandler(okButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-                commit();
+                ok();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                commitButton.enable(true);
+                okButton.enable(true);
             }
         });
     }
         
-    public void commit() {
-        ActionEvent.fire(this, Action.COMMIT, null);
+    public void ok() {
+        ActionEvent.fire(this, Action.OK, null);
         window.close();
     }
 

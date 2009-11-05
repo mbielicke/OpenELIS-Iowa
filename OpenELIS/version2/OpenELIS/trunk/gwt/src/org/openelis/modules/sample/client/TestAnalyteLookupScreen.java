@@ -38,7 +38,10 @@ import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.table.TableDataRow;
+import org.openelis.gwt.widget.table.TableRow;
 import org.openelis.gwt.widget.table.TableWidget;
+import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
+import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
 import org.openelis.gwt.widget.table.event.CellEditedEvent;
 import org.openelis.gwt.widget.table.event.CellEditedHandler;
 import org.openelis.gwt.widget.table.event.RowAddedEvent;
@@ -48,9 +51,12 @@ import org.openelis.gwt.widget.table.event.RowDeletedHandler;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
+import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
+import com.google.gwt.user.client.Window;
 
 public class TestAnalyteLookupScreen extends Screen implements HasActionHandlers<TestAnalyteLookupScreen.Action>{
 
@@ -60,7 +66,7 @@ public class TestAnalyteLookupScreen extends Screen implements HasActionHandlers
     //private TestAnalyteManager testAnalyteManager;
     
     public enum Action {
-        COMMIT
+        OK, CANCEL
     };
     
     public TestAnalyteLookupScreen() throws Exception {
@@ -96,8 +102,7 @@ public class TestAnalyteLookupScreen extends Screen implements HasActionHandlers
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                testAnalyteTable.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
-                testAnalyteTable.setQueryMode(event.getState() == State.QUERY);
+                testAnalyteTable.enable(true);
             }
         });
 
@@ -112,47 +117,47 @@ public class TestAnalyteLookupScreen extends Screen implements HasActionHandlers
 
             }
         });
-
-        testAnalyteTable.addRowAddedHandler(new RowAddedHandler() {
-            public void onRowAdded(RowAddedEvent event) {
-                // FIXME add row added handler
-            }
+        
+        testAnalyteTable.addBeforeSelectionHandler(new BeforeSelectionHandler<TableRow>(){
+           public void onBeforeSelection(BeforeSelectionEvent<TableRow> event) {
+               //always allow
+           }
         });
 
-        testAnalyteTable.addRowDeletedHandler(new RowDeletedHandler() {
-            public void onRowDeleted(RowDeletedEvent event) {
-                // FIXME add row delete handler;
+        testAnalyteTable.addBeforeCellEditedHandler(new BeforeCellEditedHandler(){
+            public void onBeforeCellEdited(BeforeCellEditedEvent event) {
+                event.cancel();
             }
         });
-
-        commitButton = (AppButton)def.getWidget("commit");
+        
+        commitButton = (AppButton)def.getWidget("ok");
         addScreenHandler(commitButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-                commit();
+                ok();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                commitButton.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE,State.DELETE).contains(event.getState()));
+                commitButton.enable(true);
             }
         });
 
-        abortButton = (AppButton)def.getWidget("abort");
+        abortButton = (AppButton)def.getWidget("cancel");
         addScreenHandler(abortButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-                abort();
+                cancel();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                abortButton.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE,State.DELETE).contains(event.getState()));
+                abortButton.enable(true);
             }
         });
     }
     
-    private void commit(){
+    private void ok(){
         window.close();
     }
     
-    private void abort(){
+    private void cancel(){
         window.close();
     }
     

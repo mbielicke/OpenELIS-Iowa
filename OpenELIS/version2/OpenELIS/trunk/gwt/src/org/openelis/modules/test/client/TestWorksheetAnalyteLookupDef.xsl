@@ -33,6 +33,7 @@ UIRF Software License are applicable instead of those above.
                 xmlns:locale="xalan://java.util.Locale"
                 extension-element-prefixes="resource"
                 version="1.0">
+  <xsl:import href="IMPORT/button.xsl"/>
   
   <xalan:component prefix="resource">
     <xalan:script lang="javaclass" src="xalan://org.openelis.util.UTFResource"/>
@@ -59,34 +60,20 @@ UIRF Software License are applicable instead of those above.
 							
 	     </widget>						
 							
-		            <AbsolutePanel spacing="0" style="BottomButtonPanelContainer" align="center">
-		             <HorizontalPanel>
-                                <widget halign="center">
-                                 <appButton key="okButton" style="ButtonPanelButton">
-                                  <HorizontalPanel>
-                                    <AbsolutePanel style="CommitButtonImage" />
-                                    <widget>
-                                      <text>
-                                        <xsl:value-of select='resource:getString($constants,"ok")' />
-                                      </text>
-                                    </widget>
-                                  </HorizontalPanel>
-                                </appButton>
-                              </widget>
-                              <widget halign="center">
-                                 <appButton key="cancelButton" style="ButtonPanelButton">
-                                  <HorizontalPanel>
-                                    <AbsolutePanel style="AbortButtonImage" />
-                                    <widget>
-                                      <text>
-                                        <xsl:value-of select='resource:getString($constants,"cancel")' />
-                                      </text>
-                                    </widget>
-                                 </HorizontalPanel>
-                                </appButton>
-                              </widget>
-                     </HorizontalPanel>
-                    </AbsolutePanel>
+		            <AbsolutePanel align="center" spacing="0" style="BottomButtonPanelContainer">
+          <HorizontalPanel>
+            <xsl:call-template name="okButton">
+              <xsl:with-param name="language">
+                <xsl:value-of select="language" />
+              </xsl:with-param>
+            </xsl:call-template>
+            <xsl:call-template name="cancelButton">
+              <xsl:with-param name="language">
+                <xsl:value-of select="language" />
+              </xsl:with-param>
+            </xsl:call-template>
+          </HorizontalPanel>
+        </AbsolutePanel>
    </VerticalPanel>				
 </screen>
   </xsl:template>

@@ -65,7 +65,7 @@ public class SampleProjectLookupScreen extends Screen implements HasActionHandle
     private SampleProjectManager manager;
 
     public enum Action {
-        COMMIT
+        OK
     };
 
     private SampleProjectMetaMap       meta = new SampleProjectMetaMap();
@@ -210,22 +210,22 @@ public class SampleProjectLookupScreen extends Screen implements HasActionHandle
             }
         });
         
-        final AppButton commitButton = (AppButton)def.getWidget("commit");
-        addScreenHandler(commitButton, new ScreenEventHandler<Object>() {
+        final AppButton okButton = (AppButton)def.getWidget("ok");
+        addScreenHandler(okButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-                commit();
+                ok();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                commitButton.enable(true);
+                okButton.enable(true);
             }
         });
 
     }
     
-    public void commit() {
+    public void ok() {
         sampleProjectTable.finishEditing();
-        ActionEvent.fire(this, Action.COMMIT, null);
+        ActionEvent.fire(this, Action.OK, null);
         window.close();
     }
         

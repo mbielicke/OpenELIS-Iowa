@@ -66,7 +66,7 @@ public class NotesTab extends Screen {
                         editNote = new EditNoteScreen();
                         editNote.addActionHandler(new ActionHandler<EditNoteScreen.Action>() {
                             public void onAction(ActionEvent<EditNoteScreen.Action> event) {
-                                if (event.getAction() == EditNoteScreen.Action.COMMIT) {
+                                if (event.getAction() == EditNoteScreen.Action.OK) {
                                     if (note.getText() == null || note.getText().trim().length() == 0)
                                         manager.removeEditingNote();
 
