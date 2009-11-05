@@ -23,7 +23,7 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.modules.qaeventPicker.client;
+package org.openelis.modules.qaevent.client;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -53,7 +53,7 @@ import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Window;
 
-public class QaeventPickerScreen extends Screen implements HasActionHandlers<QaeventPickerScreen.Action>{
+public class QaeventLookupScreen extends Screen implements HasActionHandlers<QaeventLookupScreen.Action>{
     public enum Action {COMMIT};
     public enum Type {SAMPLE, ANALYSIS};
     protected Integer testId;
@@ -64,8 +64,8 @@ public class QaeventPickerScreen extends Screen implements HasActionHandlers<Qae
     private TableWidget prepTestTable;
     
     
-    public QaeventPickerScreen() throws Exception {
-        super((ScreenDefInt)GWT.create(QaeventPickerDef.class));
+    public QaeventLookupScreen() throws Exception {
+        super((ScreenDefInt)GWT.create(QaeventLookupDef.class));
         service = new ScreenService("OpenELISServlet?service=org.openelis.modules.qaevent.server.QaEventService");
         // Setup link between Screen and widget Handlers
         initialize();

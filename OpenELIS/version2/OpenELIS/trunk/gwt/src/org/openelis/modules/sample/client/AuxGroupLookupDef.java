@@ -23,10 +23,10 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.modules.qaeventPicker.client;
+package org.openelis.modules.sample.client;
 
 import org.openelis.gwt.screen.ScreenDefInt;
 
-public interface QaeventPickerDef extends ScreenDefInt { 
+public interface AuxGroupLookupDef extends ScreenDefInt { 
 
 }
