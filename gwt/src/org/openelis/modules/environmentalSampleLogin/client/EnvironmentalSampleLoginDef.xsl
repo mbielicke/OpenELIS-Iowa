@@ -683,7 +683,7 @@ xmlns:testMetaMap="xalan://org.openelis.metamap.TestMetaMap" xmlns:sectionMeta="
                 </row>
                 <row>
                 <widget style="TableButtonFooter">
-	                <HorizontalPanel width="100%">
+	                <HorizontalPanel>
 	                  <appButton key="removeSampleQAButton" style="Button">
 	                    <HorizontalPanel>
 	                      <AbsolutePanel style="RemoveRowButtonImage" />
@@ -692,7 +692,7 @@ xmlns:testMetaMap="xalan://org.openelis.metamap.TestMetaMap" xmlns:sectionMeta="
 	                      </text>
 	                    </HorizontalPanel>
 	                  </appButton>
-	                   <appButton key="sampleQAPicker" style="Button" halign="right">
+	                   <appButton key="sampleQAPicker" style="Button">
 	                    <HorizontalPanel>
 	                      <AbsolutePanel style="PickerButtonImage" />
 	                      <text>
@@ -703,7 +703,7 @@ xmlns:testMetaMap="xalan://org.openelis.metamap.TestMetaMap" xmlns:sectionMeta="
 	                </HorizontalPanel>
 	                </widget>
                 <widget style="TableButtonFooter">
-                <HorizontalPanel width="100%">
+                <HorizontalPanel>
                   <appButton key="removeAnalysisQAButton" style="Button">
                     <HorizontalPanel>
                       <AbsolutePanel style="RemoveRowButtonImage" />
@@ -712,7 +712,7 @@ xmlns:testMetaMap="xalan://org.openelis.metamap.TestMetaMap" xmlns:sectionMeta="
                       </text>
                     </HorizontalPanel>
                   </appButton>
-                  <appButton key="analysisQAPicker" style="Button" halign="right">
+                  <appButton key="analysisQAPicker" style="Button">
 	                    <HorizontalPanel>
 	                      <AbsolutePanel style="PickerButtonImage" />
 	                      <text>
@@ -737,7 +737,7 @@ xmlns:testMetaMap="xalan://org.openelis.metamap.TestMetaMap" xmlns:sectionMeta="
 	                  <col width="300" header="{resource:getString($constants,'name')}">
 	                    <label />
 	                  </col>
-	                  <col width="304" class="org.openelis.modules.environmentalSampleLogin.client.AuxTableColumn" header="{resource:getString($constants,'value')}">
+	                  <col width="304" class="org.openelis.modules.sample.client.AuxTableColumn" header="{resource:getString($constants,'value')}">
 	                  	<label/>
 	                  </col>
 	                </table>
@@ -745,7 +745,7 @@ xmlns:testMetaMap="xalan://org.openelis.metamap.TestMetaMap" xmlns:sectionMeta="
                 </row>
                 <row>
                 <widget colspan="6" style="TableButtonFooter">
-                <HorizontalPanel width="100%">
+                <HorizontalPanel>
                   <appButton key="removeAuxButton" style="Button">
                     <HorizontalPanel>
                       <AbsolutePanel style="RemoveRowButtonImage" />
@@ -754,7 +754,7 @@ xmlns:testMetaMap="xalan://org.openelis.metamap.TestMetaMap" xmlns:sectionMeta="
                       </text>
                     </HorizontalPanel>
                   </appButton>
-                  <appButton key="addAuxButton" style="Button" halign="right">
+                  <appButton key="addAuxButton" style="Button">
                     <HorizontalPanel>
                       <AbsolutePanel style="PickerButtonImage" />
                       <text>

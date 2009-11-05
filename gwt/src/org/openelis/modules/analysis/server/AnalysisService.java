@@ -27,9 +27,10 @@ package org.openelis.modules.analysis.server;
 
 import java.util.ArrayList;
 
+import org.openelis.domain.TestMethodVO;
+import org.openelis.gwt.common.data.Query;
 import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.AnalysisQaEventManager;
-import org.openelis.modules.environmentalSampleLogin.client.AnalysisAutoCompleteRPC;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.AnalysisManagerRemote;
 import org.openelis.remote.AnalysisQAEventManagerRemote;
@@ -52,11 +53,12 @@ public class AnalysisService {
         return qaRemote().fetchByAnalysisId(analysisId);
     }
     
-    public AnalysisAutoCompleteRPC getTestMethodMatches(AnalysisAutoCompleteRPC rpc) throws Exception {
+    public ArrayList<TestMethodVO> getTestMethodMatches(Query query) throws Exception {
+        ArrayList<TestMethodVO> resultList;
         TestRemote remote = (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
-        rpc.model = (ArrayList)remote.fetchByNameSampleItemType(rpc.match+"%", rpc.sampleItemType, 10);
+        resultList = (ArrayList)remote.fetchByNameSampleItemType(query.getFields().get(0).query+"%", new Integer(query.getFields().get(1).query), 10);
         
-        return rpc;
+        return resultList;
     }
     
     private AnalysisQAEventManagerRemote qaRemote(){
