@@ -59,9 +59,9 @@ import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
-public class DictionaryEntryLookupScreen extends Screen
+public class DictionaryLookupScreen extends Screen
                                                        implements
-                                                       HasActionHandlers<DictionaryEntryLookupScreen.Action> {
+                                                       HasActionHandlers<DictionaryLookupScreen.Action> {
 
     protected TextBox               findTextBox;
     protected AppButton             findButton,okButton,cancelButton;
@@ -77,8 +77,8 @@ public class DictionaryEntryLookupScreen extends Screen
         OK, CANCEL
     };
 
-    public DictionaryEntryLookupScreen() throws Exception {
-        super((ScreenDefInt)GWT.create(DictionaryEntryLookupDef.class));
+    public DictionaryLookupScreen() throws Exception {
+        super((ScreenDefInt)GWT.create(DictionaryLookupDef.class));
         service = new ScreenService("controller?service=org.openelis.modules.dictionary.server.DictionaryService");
 
         // Setup link between Screen and widget Handlers
@@ -207,7 +207,7 @@ public class DictionaryEntryLookupScreen extends Screen
         setState(state);
     }
 
-    public HandlerRegistration addActionHandler(ActionHandler<DictionaryEntryLookupScreen.Action> handler) {
+    public HandlerRegistration addActionHandler(ActionHandler<DictionaryLookupScreen.Action> handler) {
         return addHandler(handler, ActionEvent.getType());
     }
 

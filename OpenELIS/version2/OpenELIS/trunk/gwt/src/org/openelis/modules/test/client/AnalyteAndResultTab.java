@@ -76,7 +76,7 @@ import org.openelis.manager.TestManager;
 import org.openelis.manager.TestResultManager;
 import org.openelis.manager.TestTypeOfSampleManager;
 import org.openelis.metamap.TestMetaMap;
-import org.openelis.modules.dictionary.client.DictionaryEntryLookupScreen;
+import org.openelis.modules.dictionary.client.DictionaryLookupScreen;
 import org.openelis.utilcommon.DataBaseUtil;
 
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -105,7 +105,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
     private AnalyteAndResultTab                screen;
     private TestAnalyteDisplayManager          displayManager;
     
-    private DictionaryEntryLookupScreen        dictEntryPicker; 
+    private DictionaryLookupScreen        dictEntryPicker; 
     
     private TableWidget                        analyteTable, resultTable;
     private Dropdown<Integer>                  typeId;       
@@ -1801,9 +1801,9 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
         
         if(dictEntryPicker == null) {
             try {
-                dictEntryPicker = new DictionaryEntryLookupScreen();
-                dictEntryPicker.addActionHandler(new ActionHandler<DictionaryEntryLookupScreen.Action>(){
-                    public void onAction(ActionEvent<DictionaryEntryLookupScreen.Action> event) {
+                dictEntryPicker = new DictionaryLookupScreen();
+                dictEntryPicker.addActionHandler(new ActionHandler<DictionaryLookupScreen.Action>(){
+                    public void onAction(ActionEvent<DictionaryLookupScreen.Action> event) {
                        int selTab,numTabs;
                        ArrayList<TableDataRow> model;
                        TestResultViewDO resDO;
@@ -1812,7 +1812,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
                        
                        selTab = resultTabPanel.getTabBar().getSelectedTab();     
                        numTabs = resultTabPanel.getTabBar().getTabCount();
-                       if(event.getAction() == DictionaryEntryLookupScreen.Action.OK) {
+                       if(event.getAction() == DictionaryLookupScreen.Action.OK) {
                            model = (ArrayList<TableDataRow>)event.getData();
                            if(model != null) {
                                if (model.size() > 0 && numTabs == 0) {

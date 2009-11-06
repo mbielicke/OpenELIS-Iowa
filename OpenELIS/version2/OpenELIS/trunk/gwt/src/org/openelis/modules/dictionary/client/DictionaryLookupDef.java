@@ -27,7 +27,5 @@ package org.openelis.modules.dictionary.client;
 
 import org.openelis.gwt.screen.ScreenDefInt;
 
-
-public interface DictionaryEntryLookupDef extends ScreenDefInt {
-
+public interface DictionaryLookupDef extends ScreenDefInt {
 }

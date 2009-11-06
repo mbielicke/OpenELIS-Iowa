@@ -60,7 +60,7 @@ import org.openelis.gwt.widget.table.deprecated.event.SourcesTableWidgetEvents;
 import org.openelis.gwt.widget.table.deprecated.event.TableModelListener;
 import org.openelis.gwt.widget.table.deprecated.event.TableWidgetListener;
 import org.openelis.metamap.AuxFieldGroupMetaMap;
-import org.openelis.modules.dictionary.client.DictionaryEntryLookupScreen;
+import org.openelis.modules.dictionary.client.DictionaryLookupScreen;
 import org.openelis.modules.main.client.OpenELISScreenForm;
 
 import com.google.gwt.user.client.Window;
@@ -91,7 +91,7 @@ public class AuxiliaryScreen extends OpenELISScreenForm<AuxiliaryForm, Query<Tab
            
     private TextBox grpName;     
     
-    private DictionaryEntryLookupScreen dictEntryPicker;
+    private DictionaryLookupScreen dictEntryPicker;
 
     public AuxiliaryScreen() {
         super("org.openelis.modules.auxiliary.server.AuxiliaryService");
@@ -164,8 +164,8 @@ public class AuxiliaryScreen extends OpenELISScreenForm<AuxiliaryForm, Query<Tab
     }
     
     public boolean canPerformCommand(Enum action, Object obj) {
-        if(action == DictionaryEntryLookupScreen.Action.OK || 
-                        action == DictionaryEntryLookupScreen.Action.CANCEL)
+        if(action == DictionaryLookupScreen.Action.OK || 
+                        action == DictionaryLookupScreen.Action.CANCEL)
             return true;
         else
             return super.canPerformCommand(action, obj);
@@ -389,16 +389,16 @@ public class AuxiliaryScreen extends OpenELISScreenForm<AuxiliaryForm, Query<Tab
         ScreenWindow modal;                                                            
         if(dictEntryPicker == null) {
             try {
-                dictEntryPicker = new DictionaryEntryLookupScreen();
-                dictEntryPicker.addActionHandler(new ActionHandler<DictionaryEntryLookupScreen.Action>(){
+                dictEntryPicker = new DictionaryLookupScreen();
+                dictEntryPicker.addActionHandler(new ActionHandler<DictionaryLookupScreen.Action>(){
 
-                    public void onAction(ActionEvent<DictionaryEntryLookupScreen.Action> event) {
+                    public void onAction(ActionEvent<DictionaryLookupScreen.Action> event) {
                        int selTab;
                        ArrayList<org.openelis.gwt.widget.table.TableDataRow> model;
                        TestResultDO resDO;
                        org.openelis.gwt.widget.table.TableDataRow row;
                        Integer dictId;                               
-                       if(event.getAction() == DictionaryEntryLookupScreen.Action.CANCEL) {
+                       if(event.getAction() == DictionaryLookupScreen.Action.CANCEL) {
                            model = (ArrayList<org.openelis.gwt.widget.table.TableDataRow>)event.getData();                                                                                      
                            dictId = DictionaryCache.getIdFromSystemName("aux_dictionary");                             
                            if(auxFieldValueTableWidget.model.getAutoAdd()) {        

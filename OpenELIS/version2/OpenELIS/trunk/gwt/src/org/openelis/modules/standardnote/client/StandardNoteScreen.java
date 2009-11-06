@@ -80,7 +80,7 @@ public class StandardNoteScreen extends Screen {
     private StandardNoteMetaMap META = new StandardNoteMetaMap();
     
 	public StandardNoteScreen() throws Exception{                
-        super((ScreenDefInt)GWT.create(StandardNoteScreenDef.class));
+        super((ScreenDefInt)GWT.create(StandardNoteDef.class));
         service = new ScreenService("controller?service=org.openelis.modules.standardnote.server.StandardNoteService");
         security = OpenELIS.security.getModule("standardnote");
         if (security == null)

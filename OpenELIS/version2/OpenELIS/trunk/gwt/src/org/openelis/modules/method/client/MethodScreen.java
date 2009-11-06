@@ -82,7 +82,7 @@ public class MethodScreen extends Screen {
 	private MethodMetaMap META = new MethodMetaMap();
     
     public MethodScreen() throws Exception {
-        super((ScreenDefInt)GWT.create(MethodScreenDef.class));
+        super((ScreenDefInt)GWT.create(MethodDef.class));
         service = new ScreenService("controller?service=org.openelis.modules.method.server.MethodService");
         
         security = OpenELIS.security.getModule("method");
