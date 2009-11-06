@@ -191,16 +191,6 @@ public class TestService {
         }
     }
     
-    public TestResultCategoryRPC fetchByEntry(TestResultCategoryRPC rpc) {
-        try {
-            rpc.dictIdList = dictRemote().fetchByEntry(DataBaseUtil.trim(rpc.resultValue));
-        } catch(Exception ex) {
-            ex.printStackTrace();
-        }
-        
-        return rpc; 
-    } 
-    
     private TestRemote remote() {
         return (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
     }

@@ -66,8 +66,6 @@ import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableWidget;
-import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
-import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
 import org.openelis.gwt.widget.table.event.CellEditedEvent;
 import org.openelis.gwt.widget.table.event.CellEditedHandler;
 import org.openelis.gwt.widget.table.event.RowAddedEvent;
@@ -77,7 +75,7 @@ import org.openelis.gwt.widget.table.event.RowDeletedHandler;
 import org.openelis.manager.QcManager;
 import org.openelis.meta.InventoryItemMeta;
 import org.openelis.metamap.QcMetaMap;
-import org.openelis.modules.dictionaryentrypicker.client.DictionaryEntryPickerScreen;
+import org.openelis.modules.dictionary.client.DictionaryEntryLookupScreen;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 import org.openelis.utilcommon.DataBaseUtil;
 
@@ -96,8 +94,8 @@ public class QcScreen extends Screen {
     private SecurityModule              security;
 
     private AppButton                   queryButton, previousButton, nextButton, addButton,
-                    updateButton, commitButton, abortButton, addAnalyteButton, removeAnalyteButton,
-                    dictionaryButton;
+                                        updateButton, commitButton, abortButton, addAnalyteButton,
+                                        removeAnalyteButton, dictionaryButton;
     private ButtonGroup                 atoz;
     private ScreenNavigator             nav;
 
@@ -107,14 +105,14 @@ public class QcScreen extends Screen {
     private TextBox                     name, source, lotNumber, preparedVolume;
     private CheckBox                    isSingleUse;
 
-    private DictionaryEntryPickerScreen dictEntryPicker;
+    private DictionaryEntryLookupScreen dictEntryPicker;
 
     private QcScreen                    screen;
 
     private TableWidget                 qcAnalyteTable;
 
     private ScreenService               analyteService, inventoryService, userService,
-                                       dictionaryService;
+                                        dictionaryService;
 
     public QcScreen() throws Exception {
         super((ScreenDefInt)GWT.create(QcDef.class));
@@ -955,17 +953,17 @@ public class QcScreen extends Screen {
 
         if (dictEntryPicker == null) {
             try {
-                dictEntryPicker = new DictionaryEntryPickerScreen();
-                dictEntryPicker.addActionHandler(new ActionHandler<DictionaryEntryPickerScreen.Action>() {
+                dictEntryPicker = new DictionaryEntryLookupScreen();
+                dictEntryPicker.addActionHandler(new ActionHandler<DictionaryEntryLookupScreen.Action>() {
 
-                    public void onAction(ActionEvent<DictionaryEntryPickerScreen.Action> event) {
+                    public void onAction(ActionEvent<DictionaryEntryLookupScreen.Action> event) {
                         ArrayList<TableDataRow> model;
                         QcAnalyteViewDO data;
                         TableDataRow row;
                         Integer dictId;
 
                         try {
-                            if (event.getAction() == DictionaryEntryPickerScreen.Action.OK) {
+                            if (event.getAction() == DictionaryEntryLookupScreen.Action.OK) {
                                 model = (ArrayList<TableDataRow>)event.getData();
                                 if (model != null) {
                                     for (int i = 0; i < model.size(); i++ ) {

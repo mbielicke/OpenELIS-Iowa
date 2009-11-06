@@ -118,7 +118,8 @@ public class TestScreen extends Screen {
                                      reportingSequence, timeTaMax, timeTaAverage, timeTaWarning, timeTransit,
                                      timeHolding, labelQty;
     private AppButton                queryButton, previousButton, nextButton, addButton,
-                                     updateButton, commitButton, abortButton, removeSection, addSection;
+                                     updateButton, commitButton, abortButton,
+                                     removeSectionButton, addSectionButton;
     private Dropdown<Integer>        sortingMethod, reportingMethod, testFormat, revisionMethod;
     private AutoComplete<Integer>    testTrailer, scriptlet, method, label;
     private MenuItem                 duplicate, history;
@@ -334,29 +335,22 @@ public class TestScreen extends Screen {
             public void onGetMatches(GetMatchesEvent event) {
                 QueryFieldUtil parser;
                 TableDataRow row;
-                IdNameVO data;
                 ArrayList<IdNameVO> list;
                 ArrayList<TableDataRow> model;
 
                 parser = new QueryFieldUtil();
                 parser.parse(event.getMatch());
-                
-                window.setBusy();
+                                
                 try {
                     list = methodService.callList("fetchByName", parser.getParameter().get(0));
                     model = new ArrayList<TableDataRow>();
-                    for (int i = 0; i < list.size(); i++ ) {
-                        data = list.get(i);
-                        row = new TableDataRow(1);
-                        row.key = data.getId();
-                        row.cells.get(0).value = data.getName();
-                        model.add(row);
-                    }
+                    
+                    for (IdNameVO data : list)
+                        model.add(new TableDataRow(data.getId(),data.getName()));                    
                     method.showAutoMatches(model);
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
                 }
-                window.clearStatus();
             }
 
         });
@@ -538,8 +532,8 @@ public class TestScreen extends Screen {
         label = (AutoComplete)def.getWidget(meta.getLabel().getName());
         addScreenHandler(label, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                TestViewDO testDO = manager.getTest();
-                label.setSelection(testDO.getLabelId(), testDO.getLabelName());
+                label.setSelection(manager.getTest().getLabelId(),
+                                   manager.getTest().getLabelName());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -559,31 +553,22 @@ public class TestScreen extends Screen {
         label.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
                 QueryFieldUtil parser;
-                TableDataRow row;
                 ArrayList<TableDataRow> model;
-                List<IdNameVO> list;
-                IdNameVO autoDO;
-
+                ArrayList<IdNameVO> list;
 
                 parser = new QueryFieldUtil();
                 parser.parse(event.getMatch());
 
-                window.setBusy();
                 try {
                     list = labelService.callList("fetchByName", parser.getParameter().get(0));
                     model = new ArrayList<TableDataRow>();
-                    for (int i = 0; i < list.size(); i++ ) {
-                        autoDO = list.get(i);
-                        row = new TableDataRow(1);
-                        row.key = autoDO.getId();
-                        row.cells.get(0).value = autoDO.getName();
-                        model.add(row);
-                    }
+                    
+                    for (IdNameVO data: list)                         
+                        model.add(new TableDataRow(data.getId(), data.getName()));                    
                     label.showAutoMatches(model);
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
-                }
-                window.clearStatus();
+                }               
             }
 
         });
@@ -625,7 +610,7 @@ public class TestScreen extends Screen {
                 Integer val;
                 String systemName;
                 TestSectionManager tsm;
-                TestSectionViewDO sectionDO;
+                TestSectionViewDO data;
 
                 row = event.getRow();
                 col = event.getCol();
@@ -633,7 +618,7 @@ public class TestScreen extends Screen {
                 val = (Integer)table.getObject(row, col);
 
                 try {
-                    sectionDO = tsm.getSectionAt(row);
+                    data = tsm.getSectionAt(row);
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
                     return;
@@ -641,10 +626,10 @@ public class TestScreen extends Screen {
 
                 switch (col) {
                     case 0:
-                        sectionDO.setSectionId(val);
+                        data.setSectionId(val);
                         break;
                     case 1:
-                        sectionDO.setFlagId(val);
+                        data.setFlagId(val);
                         if (val == null)
                             break;
                         systemName = DictionaryCache.getSystemNameFromId(val);
@@ -653,14 +638,14 @@ public class TestScreen extends Screen {
                                 for (i = 0; i < tsm.count(); i++ ) {
                                     if (i == row)
                                         continue;
-                                    sectionDO = tsm.getSectionAt(i);
-                                    sectionDO.setFlagId(null);
+                                    data = tsm.getSectionAt(i);
+                                    data.setFlagId(null);
                                     table.getData().get(i).cells.get(col).setValue(null);
                                 }
                             } else {
                                 for (i = 0; i < tsm.count(); i++ ) {
-                                    sectionDO = tsm.getSectionAt(i);
-                                    sectionDO.setFlagId(val);
+                                    data = tsm.getSectionAt(i);
+                                    data.setFlagId(val);
                                     table.getData().get(i).cells.get(col).setValue(val);
                                 }
                             }
@@ -692,9 +677,27 @@ public class TestScreen extends Screen {
 
             }
         });
+        
+        addSectionButton = (AppButton)def.getWidget("addSectionButton");
+        addScreenHandler(addSectionButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                int n;
 
-        removeSection = (AppButton)def.getWidget("removeSectionButton");
-        addScreenHandler(removeSection, new ScreenEventHandler<Object>() {
+                table.addRow();
+                n = table.numRows() - 1;
+                table.selectRow(n);
+                table.scrollToSelection();
+                table.startEditing(n, 0);
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                addSectionButton.enable(EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));
+            }
+
+        });
+        
+        removeSectionButton = (AppButton)def.getWidget("removeSectionButton");
+        addScreenHandler(removeSectionButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 int r;
                 
@@ -704,25 +707,11 @@ public class TestScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                removeSection.enable(EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));
+                removeSectionButton.enable(EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));
             }
 
         });
 
-        addSection = (AppButton)def.getWidget("addSectionButton");
-        addScreenHandler(addSection, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                table.addRow();
-                table.selectRow(table.numRows() - 1);
-                table.scrollToSelection();
-                table.startEditing(table.numRows() - 1, 0);
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                addSection.enable(EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));
-            }
-
-        });
 
         isReportable = (CheckBox)def.getWidget(meta.getIsReportable());
         addScreenHandler(isReportable, new ScreenEventHandler<String>() {
@@ -833,30 +822,23 @@ public class TestScreen extends Screen {
         testTrailer.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
                 QueryFieldUtil parser;
-                TableDataRow row;
                 ArrayList<TableDataRow> model;
-                IdNameVO autoDO;
-                List<IdNameVO> list;
+                ArrayList<IdNameVO> list;
 
                 parser = new QueryFieldUtil();
                 parser.parse(event.getMatch());
 
-                window.setBusy();
                 try {
                     list = trailerService.callList("fetchByName", parser.getParameter().get(0));
                     model = new ArrayList<TableDataRow>();
-                    for (int i = 0; i < list.size(); i++ ) {
-                        autoDO = list.get(i);
-                        row = new TableDataRow(1);
-                        row.key = autoDO.getId();
-                        row.cells.get(0).value = autoDO.getName();
-                        model.add(row);
-                    }
+                    for (IdNameVO data : list)
+                        model.add(new TableDataRow(data.getId(), data.getName()));
+                    
                     testTrailer.showAutoMatches(model);
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
                 }
-                window.clearStatus();
+                
             }
 
         });
@@ -902,32 +884,22 @@ public class TestScreen extends Screen {
         scriptlet.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
                 QueryFieldUtil parser;
-                TableDataRow row;
                 ArrayList<TableDataRow> model;
-                List<IdNameVO> list;
-                IdNameVO data;
+                ArrayList<IdNameVO> list;
 
                 parser = new QueryFieldUtil();
                 parser.parse(event.getMatch());
                 
-                window.setBusy();
                 try {
                     list = scriptletService.callList("fetchByName", parser.getParameter().get(0));
                     model = new ArrayList<TableDataRow>();
-                    for (int i = 0; i < list.size(); i++ ) {
-                        row = new TableDataRow(1);
-                        data = list.get(i);
-                        
-                        row.key = data.getId();
-                        row.cells.get(0).value = data.getName();
-                        
-                        model.add(row);
+                    for (IdNameVO data : list) {                       
+                        model.add(new TableDataRow(data.getId(),data.getName()));
                     }
                     scriptlet.showAutoMatches(model);
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
                 }
-                window.clearStatus();
             }
 
         });
