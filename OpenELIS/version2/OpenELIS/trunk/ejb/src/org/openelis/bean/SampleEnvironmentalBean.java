@@ -111,6 +111,7 @@ public class SampleEnvironmentalBean implements SampleEnvironmentalRemote, Sampl
         environmental.setCollectorPhone(envSampleDO.getCollectorPhone());
         environmental.setDescription(envSampleDO.getDescription());
         environmental.setIsHazardous(envSampleDO.getIsHazardous());
+        environmental.setPriority(envSampleDO.getPriority());
         environmental.setSampleId(envSampleDO.getSampleId());
         environmental.setSamplingLocation(envSampleDO.getSamplingLocation());
         
@@ -131,6 +132,7 @@ public class SampleEnvironmentalBean implements SampleEnvironmentalRemote, Sampl
         environmental.setCollectorPhone(envSampleDO.getCollectorPhone());
         environmental.setDescription(envSampleDO.getDescription());
         environmental.setIsHazardous(envSampleDO.getIsHazardous());
+        environmental.setPriority(envSampleDO.getPriority());
         environmental.setSampleId(envSampleDO.getSampleId());
         environmental.setSamplingLocation(envSampleDO.getSamplingLocation());
     }

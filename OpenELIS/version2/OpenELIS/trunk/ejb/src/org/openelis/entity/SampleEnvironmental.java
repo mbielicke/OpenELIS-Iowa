@@ -51,7 +51,7 @@ import org.w3c.dom.Element;
 
 @NamedQueries({
     @NamedQuery( name = "SampleEnvironmental.FetchBySampleId",
-                query = "select new org.openelis.domain.SampleEnvironmentalDO(s.id,s.sampleId,s.isHazardous,"+
+                query = "select new org.openelis.domain.SampleEnvironmentalDO(s.id,s.sampleId,s.isHazardous, s.priority, "+
                         "s.description,s.collector,s.collectorPhone,s.samplingLocation,s.addressId,a.multipleUnit," +
                         "a.streetAddress,a.city,a.state,a.zipCode,a.country)"
                       + " from SampleEnvironmental s LEFT JOIN s.address a where s.sampleId = :id")})
@@ -70,6 +70,9 @@ public class SampleEnvironmental implements Auditable, Cloneable {
 
     @Column(name = "is_hazardous")
     private String              isHazardous;
+    
+    @Column(name = "priority")
+    private Integer              priority;
 
     @Column(name = "description")
     private String              description;
@@ -122,6 +125,15 @@ public class SampleEnvironmental implements Auditable, Cloneable {
     public void setIsHazardous(String isHazardous) {
         if (DataBaseUtil.isDifferent(isHazardous, this.isHazardous))
             this.isHazardous = isHazardous;
+    }
+    
+    public Integer getPriority() {
+        return priority;
+    }
+
+    public void setPriority(Integer priority) {
+        if (DataBaseUtil.isDifferent(priority, this.priority))
+            this.priority = priority;
     }
 
     public String getDescription() {
@@ -201,6 +213,7 @@ public class SampleEnvironmental implements Auditable, Cloneable {
             AuditUtil.getChangeXML(id, original.id, doc, "id");
             AuditUtil.getChangeXML(sampleId, original.sampleId, doc, "sample_id");
             AuditUtil.getChangeXML(isHazardous, original.isHazardous, doc, "is_hazardous");
+            AuditUtil.getChangeXML(priority, original.priority, doc, "priority");
             AuditUtil.getChangeXML(description, original.description, doc, "description");
             AuditUtil.getChangeXML(collector, original.collector, doc, "collector");
             AuditUtil.getChangeXML(collectorPhone, original.collectorPhone, doc, "collector_phone");
