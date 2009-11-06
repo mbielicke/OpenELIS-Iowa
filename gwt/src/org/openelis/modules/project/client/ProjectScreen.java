@@ -102,7 +102,7 @@ public class ProjectScreen extends Screen {
     private ScreenService         userService, scriptletService;
 
     public ProjectScreen() throws Exception {
-        super((ScreenDefInt)GWT.create(ProjectScreenDef.class));
+        super((ScreenDefInt)GWT.create(ProjectDef.class));
         service = new ScreenService("controller?service=org.openelis.modules.project.server.ProjectService");
         userService = new ScreenService("controller?service=org.openelis.server.SystemUserService");
         scriptletService = new ScreenService("controller?service=org.openelis.modules.scriptlet.server.ScriptletService");

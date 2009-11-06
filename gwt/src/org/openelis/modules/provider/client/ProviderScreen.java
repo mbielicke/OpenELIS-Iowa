@@ -94,7 +94,7 @@ public class ProviderScreen extends Screen {
     private ProviderManager manager;
     
     public ProviderScreen() throws Exception {
-        super((ScreenDefInt)GWT.create(ProviderScreenDef.class));
+        super((ScreenDefInt)GWT.create(ProviderDef.class));
         service = new ScreenService("controller?service=org.openelis.modules.provider.server.ProviderService");
         
         security = OpenELIS.security.getModule("provider");
