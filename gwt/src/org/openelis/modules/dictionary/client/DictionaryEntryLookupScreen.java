@@ -23,14 +23,13 @@
  * which case the provisions of a UIRF Software License are applicable instead
  * of those above.
  */
-package org.openelis.modules.dictionaryentrypicker.client;
+package org.openelis.modules.dictionary.client;
 
 import java.util.ArrayList;
 
-import org.openelis.domain.DictionaryDO;
-import org.openelis.domain.IdNameDO;
 import org.openelis.domain.IdNameVO;
-import org.openelis.domain.SystemVariableDO;
+import org.openelis.gwt.common.NotFoundException;
+import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
@@ -40,7 +39,6 @@ import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
-import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.ButtonGroup;
@@ -48,7 +46,8 @@ import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableWidget;
-import org.openelis.metamap.DictionaryMetaMap;
+import org.openelis.metamap.CategoryMetaMap;
+import org.openelis.utilcommon.DataBaseUtil;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -58,10 +57,11 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 
-public class DictionaryEntryPickerScreen extends Screen
+public class DictionaryEntryLookupScreen extends Screen
                                                        implements
-                                                       HasActionHandlers<DictionaryEntryPickerScreen.Action> {
+                                                       HasActionHandlers<DictionaryEntryLookupScreen.Action> {
 
     protected TextBox               findTextBox;
     protected AppButton             findButton,okButton,cancelButton;
@@ -71,15 +71,15 @@ public class DictionaryEntryPickerScreen extends Screen
 
     private ArrayList<TableDataRow> selectionList;
 
-    private DictionaryMetaMap       dictMeta = new DictionaryMetaMap();
+    private CategoryMetaMap         meta = new CategoryMetaMap();
 
     public enum Action {
         OK, CANCEL
     };
 
-    public DictionaryEntryPickerScreen() throws Exception {
-        super((ScreenDefInt)GWT.create(DictionaryEntryPickerDef.class));
-        service = new ScreenService("controller?service=org.openelis.modules.dictionaryentrypicker.server.DictionaryEntryPickerService");
+    public DictionaryEntryLookupScreen() throws Exception {
+        super((ScreenDefInt)GWT.create(DictionaryEntryLookupDef.class));
+        service = new ScreenService("controller?service=org.openelis.modules.dictionary.server.DictionaryService");
 
         // Setup link between Screen and widget Handlers
         initialize();
@@ -91,6 +91,7 @@ public class DictionaryEntryPickerScreen extends Screen
         });
 
     }
+    
 
     /**
      * This method is called to set the initial state of widgets after the
@@ -127,8 +128,8 @@ public class DictionaryEntryPickerScreen extends Screen
 
         findButton = (AppButton)def.getWidget("findButton");
         addScreenHandler(findButton, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                executeQuery();
+            public void onClick(ClickEvent event) {                
+                executeQuery(findTextBox.getText());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -152,7 +153,7 @@ public class DictionaryEntryPickerScreen extends Screen
 
         });
 
-        okButton = (AppButton)def.getWidget("okButton");
+        okButton = (AppButton)def.getWidget("ok");
         addScreenHandler(okButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 ok();
@@ -163,7 +164,7 @@ public class DictionaryEntryPickerScreen extends Screen
             }
         });
 
-        cancelButton = (AppButton)def.getWidget("cancelButton");
+        cancelButton = (AppButton)def.getWidget("cancel");
         addScreenHandler(cancelButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 cancel();
@@ -178,11 +179,11 @@ public class DictionaryEntryPickerScreen extends Screen
         azButtons = (ButtonGroup)def.getWidget("atozButtons");
         addScreenHandler(azButtons, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-                String baction;
+                String query;
 
-                baction = ((AppButton)event.getSource()).action;
-                findTextBox.setText(baction);
-                executeQuery();
+                query = ((AppButton)event.getSource()).action;
+                findTextBox.setText(query);
+                executeQuery(query);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -206,25 +207,22 @@ public class DictionaryEntryPickerScreen extends Screen
         setState(state);
     }
 
-    public HandlerRegistration addActionHandler(ActionHandler<DictionaryEntryPickerScreen.Action> handler) {
+    public HandlerRegistration addActionHandler(ActionHandler<DictionaryEntryLookupScreen.Action> handler) {
         return addHandler(handler, ActionEvent.getType());
     }
 
     private void initializeDropdowns() {
-        DictionaryEntryPickerDataRPC rpc;
         ArrayList<TableDataRow> model;
         TableDataRow row;
+        ArrayList<IdNameVO> list;
 
         model = null;
-        rpc = new DictionaryEntryPickerDataRPC();
         try {
-            rpc = service.call("getCategoryModel", rpc);
+            list = service.callList("fetchByCategoryName","%");
             model = new ArrayList<TableDataRow>();
             model.add(new TableDataRow(null, ""));
-            for (IdNameVO autoDO : rpc.categoryModel) {
-                row = new TableDataRow(1);
-                row.key = autoDO.getId();
-                row.cells.get(0).value = autoDO.getName();
+            for (IdNameVO data : list) {
+                row = new TableDataRow(data.getId(),data.getName());
                 model.add(row);
             }
 
@@ -234,68 +232,80 @@ public class DictionaryEntryPickerScreen extends Screen
         }
         category.setModel(model);
     }
-
-    private void executeQuery() {
-        Integer catId;
-        String pattern;
-        DictionaryEntryPickerDataRPC rpc;
-        QueryData id, entry;
-
-        catId = category.getValue();
-        pattern = findTextBox.getText();
-
-        if (catId == null) {
-            Window.alert(consts.get("plsSelCat"));
-            return;
-        }
-
-        if (pattern == null || "".equals(pattern.trim()))
-            return;
-
-        rpc = new DictionaryEntryPickerDataRPC();
-        rpc.fields = new ArrayList<QueryData>();
-
-        id = new QueryData();
-        id.key = dictMeta.getCategoryId();
-        id.type = QueryData.Type.INTEGER;
-        id.query = catId.toString();
-        rpc.fields.add(id);
-
-        entry = new QueryData();
-        entry.key = dictMeta.getEntry();
-        entry.type = QueryData.Type.STRING;
-        entry.query = pattern;
-        rpc.fields.add(entry);
-
-        window.setBusy();
-        
-        try {
-            rpc = service.call("getDictionaryEntries", rpc);
-            fillDictEntryTable(rpc.dictionaryTableModel);
-        } catch (Exception e) {
-            e.printStackTrace();
-            Window.alert(e.getMessage());
-
-        }
-        
-        window.clearStatus();
+    
+    public void clearFields() {
+        findTextBox.setText(null);
+        category.setValue(null);
     }
 
-    private void fillDictEntryTable(ArrayList<DictionaryDO> entries) {
-        DictionaryDO resultDO;
-        TableDataRow row;
+    public void executeQuery(String pattern) {
+        Integer catId;
+        Query query;  
+        QueryData field;
+        ArrayList<QueryData> fields;
+       
+        if (DataBaseUtil.isEmpty(pattern))
+            return;              
+
+        findTextBox.setText(pattern);
+        
+        query = new Query();
+        fields = new ArrayList<QueryData>();
+        catId = category.getValue();        
+        if(catId != null) {            
+            field = new QueryData();
+            field.key = meta.getId();
+            field.type = QueryData.Type.INTEGER;
+            field.query = catId.toString();
+            fields.add(field);
+        }
+        field = new QueryData();
+        field.key = meta.getDictionary().getEntry();
+        field.type = QueryData.Type.STRING;
+        field.query = pattern;
+        fields.add(field);
+        
+        field = new QueryData();
+        field.key = meta.getIsSystem();
+        field.type = QueryData.Type.STRING;
+        field.query = "N";
+        fields.add(field);
+        
+        query.setFields(fields);
+        
+        window.setBusy(consts.get("querying"));
+        
+        service.callList("fetchByEntry", query, new AsyncCallback<ArrayList<IdNameVO>>() {
+            public void onSuccess(ArrayList<IdNameVO> result) {
+                setQueryResult(result);
+            }
+
+            public void onFailure(Throwable error) {
+                setQueryResult(null);
+                if (error instanceof NotFoundException) {
+                    window.setDone(consts.get("noRecordsFound"));                   
+                } else {
+                    Window.alert("Error: Query failed; " + error.getMessage());
+                    window.setError(consts.get("queryFailed"));
+                }               
+            }
+        });                        
+    }
+
+    private void setQueryResult(ArrayList<IdNameVO> list) {
         ArrayList<TableDataRow> model;
 
         dictEntTable.clear();
 
         model = new ArrayList<TableDataRow>();
-        for (int i = 0; i < entries.size(); i++ ) {
-            resultDO = entries.get(i);
-            row = new TableDataRow(resultDO.getId(), resultDO.getEntry());
-            model.add(row);
+        if(list != null) {
+            for (IdNameVO data : list)             
+                model.add(new TableDataRow(data.getId(), data.getName(), data.getDescription()));
         }
-
+        
         dictEntTable.load(model);
+        
+        window.setDone(consts.get("done"));
 
     }
 

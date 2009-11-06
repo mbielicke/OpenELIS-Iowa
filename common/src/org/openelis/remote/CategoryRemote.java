@@ -26,7 +26,6 @@
 package org.openelis.remote;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import javax.ejb.Remote;
 
@@ -37,10 +36,10 @@ import org.openelis.gwt.common.data.QueryData;
 @Remote
 public interface CategoryRemote {
     
-    public List<IdNameVO> fetchIdName() throws Exception;
+    public ArrayList<IdNameVO> fetchByName(String name) throws Exception;
     
     public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception;            
     
-    public CategoryDO fetchBySystemName(String systemName) throws Exception;     
+    public CategoryDO fetchBySystemName(String systemName) throws Exception; 
     
 }

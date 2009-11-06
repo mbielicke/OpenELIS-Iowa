@@ -203,9 +203,7 @@ public class QcAnalyteManagerProxy {
         TiterRange lr;
 
         for (int i = 0; i < trList.size(); i++ ) {
-            lr = trList.get(i);
-            System.out.println("lr%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"+lr);
-            System.out.println("tr%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"+tr);
+            lr = trList.get(i);           
             if (lr.isOverlapping(tr))
                 throw new InconsistencyException("qcTiterRangeOverlapException");
         }

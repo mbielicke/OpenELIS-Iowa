@@ -284,7 +284,7 @@ public class AuxiliaryService implements
         List<DictionaryDO> list;
         
         try{
-            list = remote.fetchByEntry(rpc.stringValue);            
+            list = remote.fetchByEntry(rpc.stringValue,100000);            
             rpc.key = list.get(0).getId();
           }catch(Exception ex) {
               ex.printStackTrace();              

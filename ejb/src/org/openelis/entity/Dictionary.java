@@ -74,13 +74,11 @@ import org.openelis.utils.Auditable;
                                   + " from  Dictionary d left join d.category c where c.systemName = :name order by d.sortOrder "),            
                 @NamedQuery(name = "Dictionary.FetchIdEntryByCategoryId",
                             query = "select new org.openelis.domain.IdNameVO(d.id, d.entry) from Dictionary d where "
-                                  + " d.isActive='Y' and d.categoryId = :id order by d.sortOrder"),             
-                @NamedQuery(name = "Dictionary.FetchIdEntryByEntry",
-                            query = "select new org.openelis.domain.IdNameVO(d.id, d.entry) from Dictionary d where d.entry like :entry order by d.entry"),
+                                  + " d.isActive='Y' and d.categoryId = :id order by d.sortOrder"),                            
                 @NamedQuery(name = "Dictionary.FetchByEntry",
                             query = "select distinct new org.openelis.domain.DictionaryDO(d.id,d.sortOrder, d.categoryId, d.relatedEntryId, " +
                                     " d.systemName,d.isActive,  d.localAbbrev, d.entry) "
-                                  + " from  Dictionary d where d.entry = :entry")})
+                                  + " from  Dictionary d left join d.category c where c.isSystem = 'N' and d.entry like :entry")})
                                   
  @NamedNativeQueries({@NamedNativeQuery(name = "Dictionary.ReferenceCheckForId",     
                   query = "select operation_id as DICTIONARY_ID from project_parameter where operation_id = :id " +

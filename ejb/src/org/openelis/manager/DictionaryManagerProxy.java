@@ -32,7 +32,6 @@ import javax.naming.InitialContext;
 import org.openelis.domain.CategoryDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.DictionaryViewDO;
-import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.CategoryLocal;
@@ -46,41 +45,29 @@ public class DictionaryManagerProxy {
 
     private static CategoryMetaMap meta = new CategoryMetaMap();
 
-    public DictionaryManager fetchByCategoryId(Integer categoryId) throws Exception {
-        CategoryDO catDO;
+    public DictionaryManager fetchByCategoryId(Integer id) throws Exception {
         DictionaryManager man;
         ArrayList<DictionaryViewDO> entries;
 
-        catDO = catLocal().fetchById(categoryId);
+        entries = local().fetchByCategoryId(id);
         man = DictionaryManager.getInstance();
-        man.setCategory(catDO);
-
-        try {
-            entries = (ArrayList<DictionaryViewDO>)dictLocal().fetchByCategoryId(categoryId);
-            man.entries = entries;
-        } catch(NotFoundException e) {
-            e.printStackTrace();
-        }
+        man.setCategoryId(id);
+        man.setEntries(entries);
         
         return man;
     }
 
     public DictionaryManager add(DictionaryManager man) throws Exception {
-        DictionaryViewDO entry;
+        DictionaryViewDO data;
         DictionaryLocal dl;
 
-        catLocal().add(man.getCategory());
-
-        man.setCategoryId(man.getCategory().getId());
-
-        dl = dictLocal();
+        dl = local();
 
         for (int i = 0; i < man.count(); i++ ) {
-            entry = man.getEntryAt(i);
-            entry.setSortOrder(i + 1);
-            entry.setCategoryId(man.getCategoryId());
-
-            dl.add(entry);
+            data = man.getEntryAt(i);
+            data.setSortOrder(i + 1);
+            data.setCategoryId(man.getCategoryId());
+            dl.add(data);
         }
 
         return man;
@@ -94,12 +81,8 @@ public class DictionaryManagerProxy {
         CategoryDO catDO;
         boolean sendMessage;
 
-        catDO = man.getCategory();
         sendMessage = false;
-        dl = dictLocal();
-
-        catLocal().update(catDO);
-        man.setCategoryId(catDO.getId());
+        dl = local();
 
         for (i = 0; i < man.deleteCount(); i++ ) {
             dl.delete(man.getDeletedAt(i));
@@ -123,6 +106,8 @@ public class DictionaryManagerProxy {
 
         if (sendMessage) {
             // invalidate the cache
+            catDO = new CategoryDO();
+            catDO.setId(man.getCategoryId());
             msg = new DictionaryCacheMessage();
             msg.setCatDO(catDO);
             msg.action = DictionaryCacheMessage.Action.UPDATED;
@@ -147,12 +132,6 @@ public class DictionaryManagerProxy {
         
         list = new ValidationErrorsList();
         
-        try {
-            catLocal().validate(man.getCategory());
-        } catch (Exception e) {
-            DataBaseUtil.mergeException(list, e);
-        }
-        
         validateDictionary(list,man);
         
         if(list.size() > 0)
@@ -169,7 +148,7 @@ public class DictionaryManagerProxy {
         }
     }
 
-    private DictionaryLocal dictLocal() {
+    private DictionaryLocal local() {
         try {
             InitialContext ctx = new InitialContext();
             return (DictionaryLocal)ctx.lookup("openelis/DictionaryBean/local");
@@ -204,10 +183,10 @@ public class DictionaryManagerProxy {
         systemNames = new ArrayList<String>();
         entries = new ArrayList<String>();
         data = null;
-        dl = dictLocal();
+        dl = local();
         catId = null;
         dictList = man.getEntries();
-        categoryId = man.getCategory().getId();
+        categoryId = man.getCategoryId();
         
 
         for(i = 0;  i < man.deleteCount(); i++) {

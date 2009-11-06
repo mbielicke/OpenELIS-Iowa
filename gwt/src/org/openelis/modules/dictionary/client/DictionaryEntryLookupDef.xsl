@@ -33,7 +33,7 @@ UIRF Software License are applicable instead of those above.
                 xmlns:locale="xalan://java.util.Locale"
                 extension-element-prefixes="resource"
                 version="1.0">
-  <xsl:import href="IMPORT/aToZOneColumn.xsl"/>
+  <xsl:import href="IMPORT/aToZTwoColumns.xsl"/>
   
   <xalan:component prefix="resource">
     <xalan:script lang="javaclass" src="xalan://org.openelis.util.UTFResource"/>
@@ -46,75 +46,73 @@ UIRF Software License are applicable instead of those above.
   <xsl:variable name="props"><xsl:value-of select="props"/></xsl:variable>
   <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))"/>
  <screen id="DictionaryEntryPicker" name="{resource:getString($constants,'dictionaryEntrySelection')}" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">	
-		<VerticalPanel>
+		<VerticalPanel >
 		<HorizontalPanel spacing="0">
 			<!--left table goes here -->
 			 <buttonGroup height = "100%" key='atozButtons'>
                 <xsl:call-template name='aToZLeftPanelButtons' />
               </buttonGroup>							
 		<!-- <HorizontalPanel width = "5px"/> -->
-		<VerticalPanel>
-		 <VerticalPanel style="WhiteContentPanel" spacing="0">
+		<VerticalPanel style="WhiteContentPanel">
+		 <VerticalPanel  spacing="0">
 		 
          <TablePanel style = "Form"> 
          <row>
           <text style="Prompt"><xsl:value-of select="resource:getString($constants,'selectCategory')"/>:</text>
           <widget colspan = "3">	 		
-		   <dropdown key="category" popWidth = "245" field="Integer" width="245" />				  
+		   <dropdown key="category" popWidth = "253" field="Integer" width="253" />				  
 		  </widget> 
 		 </row> 
 		<row>
 		  <text style="Prompt"><xsl:value-of select="resource:getString($constants,'enterSearch')"/>:</text>
 		  
-		   <textbox key="findTextBox" width="120px" />
-		   <appButton action="find" style="Button" key="findButton" >
-			<HorizontalPanel>
-            	<AbsolutePanel style="FindButtonImage"/>
-                <text><xsl:value-of select='resource:getString($constants,"search")'/></text>
-			</HorizontalPanel>
-		   </appButton>		   
+		   <textbox key="findTextBox" width="253" />		   	  
 		</row>
 	   </TablePanel>	
 		</VerticalPanel> 
 		<VerticalPanel spacing="0">
 		 <widget>
-							<table maxRows = "17" width = "auto" key="dictEntTable" multiSelect = "true" title="" showScroll="ALWAYS">
-								<col key="entry" width="357" sort="false" header="{resource:getString($constants,'entry')}">
-                                	<label width="357"/>
+							<table maxRows = "6" width = "auto" key="dictEntTable" multiSelect = "true" title="" showScroll="ALWAYS" style="atozTable">
+								<col key="entry" width="250" sort="false" header="{resource:getString($constants,'entry')}">
+                                	<label width="250"/>
+                                </col>
+								<col key="entry" width="110" sort="false" header="{resource:getString($constants,'category')}">
+                                	<label width="110"/>
                                 </col>
 							</table>
 							
 	     </widget>	
+	     <widget>
+	     	<VerticalPanel height = "15"/>
+	     </widget>
 	     </VerticalPanel>		     
    </VerticalPanel>	   
   </HorizontalPanel>  
-  <VerticalPanel spacing="0" width="402px">								
+  <VerticalPanel spacing="0" width="437px">								
 		            <AbsolutePanel spacing="0" style="BottomButtonPanelContainer" align="center">
 		             <HorizontalPanel>
-                                <widget halign="center">
-                                 <appButton key="okButton" style="ButtonPanelButton">
-                                  <HorizontalPanel>
-                                    <AbsolutePanel style="CommitButtonImage" />
-                                    <widget>
-                                      <text>
-                                        <xsl:value-of select='resource:getString($constants,"ok")' />
-                                      </text>
-                                    </widget>
-                                  </HorizontalPanel>
-                                </appButton>
-                              </widget>
+                                <xsl:call-template name="okButton">
+              <xsl:with-param name="language">
+                <xsl:value-of select="language" />
+              </xsl:with-param>
+            </xsl:call-template>
+            <xsl:call-template name="cancelButton">
+              <xsl:with-param name="language">
+                <xsl:value-of select="language" />
+              </xsl:with-param>
+            </xsl:call-template>
                               <widget halign="center">
-                                 <appButton key="cancelButton" style="ButtonPanelButton">
-                                  <HorizontalPanel>
-                                    <AbsolutePanel style="AbortButtonImage" />
-                                    <widget>
-                                      <text>
-                                        <xsl:value-of select='resource:getString($constants,"cancel")' />
-                                      </text>
-                                    </widget>
-                                 </HorizontalPanel>
-                                </appButton>
-                              </widget>
+                               <appButton action="find" style="ButtonPanelButton" key="findButton" >
+								<HorizontalPanel>
+            						<AbsolutePanel style="FindButtonImage"/>
+            						 <widget>
+                						<text>
+                						  <xsl:value-of select='resource:getString($constants,"search")'/>
+                					    </text>
+                					 </widget>
+								</HorizontalPanel>
+		   						</appButton>	
+		   					  </widget>
                      </HorizontalPanel>
                     </AbsolutePanel>		            
     </VerticalPanel>

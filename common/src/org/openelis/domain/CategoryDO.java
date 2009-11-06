@@ -36,18 +36,19 @@ public class CategoryDO extends DataObject {
     private static final long serialVersionUID = 1L;
 
     protected Integer         id, sectionId;
-    protected String          systemName, name, description;
+    protected String          systemName, name, description, isSystem;
 
     public CategoryDO() {
     }
 
     public CategoryDO(Integer id, String systemName, String name, String description,
-                      Integer sectionId) {
+                      Integer sectionId,String isSystem) {
         setId(id);
         setSystemName(systemName);
         setName(name);
         setDescription(description);
         setSectionId(sectionId);
+        setIsSystem(isSystem);
         _changed = false;
     }
 
@@ -89,6 +90,15 @@ public class CategoryDO extends DataObject {
 
     public Integer getSectionId() {
         return sectionId;
+    }
+    
+    public String getIsSystem() {
+        return isSystem;
+    }
+
+    public void setIsSystem(String isSystem) {
+        this.isSystem = DataBaseUtil.trim(isSystem);
+        _changed = true;
     }
 
     public void setSectionId(Integer sectionId) {

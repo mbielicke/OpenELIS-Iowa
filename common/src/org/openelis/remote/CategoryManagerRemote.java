@@ -27,19 +27,24 @@ package org.openelis.remote;
 
 import javax.ejb.Remote;
 
+import org.openelis.manager.CategoryManager;
 import org.openelis.manager.DictionaryManager;
 
 @Remote
-public interface DictionaryManagerRemote {
+public interface CategoryManagerRemote {
 
-   public DictionaryManager fetchByCategoryId(Integer categoryId) throws Exception;
+   public CategoryManager fetchById(Integer id) throws Exception;
    
-   public DictionaryManager add(DictionaryManager man) throws Exception;
+   public CategoryManager fetchWithEntries(Integer id) throws Exception;
+   
+   public CategoryManager add(CategoryManager man) throws Exception;
 
-   public DictionaryManager update(DictionaryManager man) throws Exception;
+   public CategoryManager update(CategoryManager man) throws Exception;
 
-   public DictionaryManager fetchForUpdate(Integer categoryId) throws Exception;
+   public CategoryManager fetchForUpdate(Integer id) throws Exception;
 
-   public DictionaryManager abortUpdate(Integer categoryId) throws Exception;
-
+   public CategoryManager abortUpdate(Integer id) throws Exception;
+   
+   public DictionaryManager fetchEntryByCategoryId(Integer id) throws Exception;
+   
 }

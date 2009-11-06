@@ -39,15 +39,16 @@ import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.SecurityModule.ModuleFlags;
 import org.openelis.local.LockLocal;
+import org.openelis.manager.CategoryManager;
 import org.openelis.manager.DictionaryManager;
-import org.openelis.remote.DictionaryManagerRemote;
+import org.openelis.remote.CategoryManagerRemote;
 import org.openelis.utils.SecurityInterceptor;
 
 @Stateless
 @SecurityDomain("openelis")
 @RolesAllowed("dictionary-select")
 @TransactionManagement(TransactionManagementType.BEAN)
-public class DictionaryManagerBean implements DictionaryManagerRemote {
+public class CategoryManagerBean implements CategoryManagerRemote {
 
     @PersistenceContext(name = "openelis")
     @Resource
@@ -56,14 +57,18 @@ public class DictionaryManagerBean implements DictionaryManagerRemote {
     @EJB
     private LockLocal      lockBean;
 
-    public DictionaryManagerBean() {       
+    public CategoryManagerBean() {       
     }
 
-    public DictionaryManager fetchByCategoryId(Integer categoryId) throws Exception {
-        return DictionaryManager.fetchByCategoryId(categoryId);
+    public CategoryManager fetchById(Integer id) throws Exception {
+        return CategoryManager.fetchById(id);
+    }
+    
+    public CategoryManager fetchWithEntries(Integer id) throws Exception {
+        return CategoryManager.fetchWithEntries(id);
     }
 
-    public DictionaryManager add(DictionaryManager man) throws Exception {
+    public CategoryManager add(CategoryManager man) throws Exception {
         UserTransaction ut;
 
         checkSecurity(ModuleFlags.ADD);
@@ -78,7 +83,7 @@ public class DictionaryManagerBean implements DictionaryManagerRemote {
         return man;
     }
 
-    public DictionaryManager update(DictionaryManager man) throws Exception {
+    public CategoryManager update(CategoryManager man) throws Exception {
         UserTransaction ut;
 
         checkSecurity(ModuleFlags.UPDATE);
@@ -95,19 +100,22 @@ public class DictionaryManagerBean implements DictionaryManagerRemote {
         return man;
     }
 
-    public DictionaryManager fetchForUpdate(Integer categoryId) throws Exception {
+    public CategoryManager fetchForUpdate(Integer categoryId) throws Exception {
         lockBean.getLock(ReferenceTable.DICTIONARY, categoryId);
-        return fetchByCategoryId(categoryId);
+        return fetchById(categoryId);
     }
 
-    public DictionaryManager abortUpdate(Integer categoryId) throws Exception {
+    public CategoryManager abortUpdate(Integer categoryId) throws Exception {
         lockBean.giveUpLock(ReferenceTable.DICTIONARY, categoryId);
-        return fetchByCategoryId(categoryId);
+        return fetchById(categoryId);
+    }
+    
+    public DictionaryManager fetchEntryByCategoryId(Integer id) throws Exception {
+        return DictionaryManager.fetchByCategoryId(id);
     }
 
     private void checkSecurity(ModuleFlags flag) throws Exception {
         SecurityInterceptor.applySecurity(ctx.getCallerPrincipal().getName(),
                                           "dictionary", flag);
     }
-
 }
