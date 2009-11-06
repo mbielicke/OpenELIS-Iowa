@@ -32,6 +32,7 @@ import javax.naming.InitialContext;
 
 import org.openelis.domain.AnalyteDO;
 import org.openelis.domain.ResultViewDO;
+import org.openelis.domain.TestResultDO;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.ResultLocal;
 
@@ -63,8 +64,9 @@ public class AnalysisResultManagerProxy {
     public AnalysisResultManager fetchNewByTestId(Integer testId) throws Exception {
         ArrayList<ArrayList<ResultViewDO>> results = new ArrayList<ArrayList<ResultViewDO>>();
         HashMap<Integer, AnalyteDO> analyteList = new HashMap<Integer, AnalyteDO>();
+        HashMap<Integer, TestResultDO> testResultList = new HashMap<Integer, TestResultDO>();
         
-        local().fetchByTestIdNoResults(testId, results, analyteList);
+        local().fetchByTestIdNoResults(testId, results, analyteList, testResultList);
         AnalysisResultManager man = AnalysisResultManager.getInstance();
         man.setResults(results);
         man.setAnalyteList(analyteList);

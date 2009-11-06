@@ -38,6 +38,7 @@ import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.AnalyteDO;
+import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.domain.TestResultDO;
@@ -73,42 +74,30 @@ public class ResultBean implements ResultLocal {
     }
 
     public void fetchByTestIdNoResults(Integer testId, ArrayList<ArrayList<ResultViewDO>> results,
-                                  HashMap<Integer, AnalyteDO> analyteList) throws Exception {
+                                  HashMap<Integer, AnalyteDO> analyteList, HashMap<Integer, TestResultDO> testResultList) throws Exception {
         List<TestAnalyteViewDO> testAnalytes = null;
-        List<TestResultDO> testResults = null;
         List<AnalyteDO> analytes = null;
+        List<TestResultDO> testResults = null;
+        int i, j, rg;
+        TestAnalyteViewDO ado;
+        DictionaryDO dictDO;
+        ArrayList<ResultViewDO> ar;
+        Integer supplementalTypeId;
         
         //get test_analytes by test id
-        /*
         Query query = manager.createNamedQuery("TestAnalyte.FetchByTestId");
         query.setParameter("testId", testId);
         testAnalytes = query.getResultList();
+        
+        //get analytes for test
+        query = manager.createNamedQuery("Analyte.FetchByTest");
+        query.setParameter("testId", testId);
+        analytes = query.getResultList();
         
         //get test_results by test id
         query = manager.createNamedQuery("TestResult.FetchByTestId");
         query.setParameter("testId", testId);
         testResults = query.getResultList();
-        */
-        
-        //get analytes for test
-        Query query = manager.createNamedQuery("Analyte.FetchByTest");
-        query.setParameter("testId", testId);
-        analytes = query.getResultList();
-        
-        //convert the lists to hashmaps
-        /*testAnalyteList.clear();
-        TestAnalyteViewDO testAnalyteDO;
-        for(int i=0; i <testAnalytes.size(); i++){
-            testAnalyteDO = testAnalytes.get(i);
-            testAnalyteList.put(testAnalyteDO.getId(), testAnalyteDO);
-        }
-        
-        testResultList.clear();
-        TestResultDO testResultDO;
-        for(int j=0; j<testResults.size(); j++){
-            testResultDO = testResults.get(j);
-            testResultList.put(testResultDO.getId(), testResultDO);
-        }*/
         
         analyteList.clear();
         AnalyteDO analyteDO;
@@ -117,11 +106,19 @@ public class ResultBean implements ResultLocal {
             analyteList.put(analyteDO.getId(), analyteDO);
         }
         
+        testResultList.clear();
+        TestResultDO testResultDO;
+        for(int k=0; k<testResults.size(); k++){
+            testResultDO = testResults.get(k);
+            testResultList.put(testResultDO.getId(), testResultDO);
+        }
+        
         //build the grid
-        int i, j, rg;
-        TestAnalyteViewDO ado;
-        ArrayList<ResultViewDO> ar;
-
+        query = manager.createNamedQuery("Dictionary.FetchBySystemName");
+        query.setParameter("name", "test_analyte_suplmtl");
+        dictDO = (DictionaryDO)query.getResultList().get(0);
+        supplementalTypeId = dictDO.getId();
+        
         j = -1;
         ar = null;
         results.clear();
@@ -131,34 +128,36 @@ public class ResultBean implements ResultLocal {
 
         for (i = 0; i < testAnalytes.size(); i++ ) {
             ado = testAnalytes.get(i);
-            //create a new resultDO
-            ResultViewDO resultDO = new ResultViewDO();
-            resultDO.setTestAnalyteId(ado.getId());
-            resultDO.setAnalyte(ado.getAnalyteName());
-            //resultDO.setTestResultId(testResultId);
-            resultDO.setIsColumn(ado.getIsColumn());
-            resultDO.setSortOrder(ado.getSortOrder());
-            resultDO.setIsReportable(ado.getIsReportable());
-            resultDO.setTypeId(ado.getTypeId());
-            
-            rg = ado.getRowGroup();
-            resultDO.setRowGroup(rg);
-
-            if (j != rg) {
-                ar = new ArrayList<ResultViewDO>(1);
+            if(!supplementalTypeId.equals(ado.getTypeId())){
+                //create a new resultDO
+                ResultViewDO resultDO = new ResultViewDO();
+                resultDO.setTestAnalyteId(ado.getId());
+                resultDO.setAnalyte(ado.getAnalyteName());
+                //resultDO.setTestResultId(testResultId);
+                resultDO.setIsColumn(ado.getIsColumn());
+                resultDO.setSortOrder(ado.getSortOrder());
+                resultDO.setIsReportable(ado.getIsReportable());
+                resultDO.setTypeId(ado.getTypeId());
+                
+                rg = ado.getRowGroup();
+                resultDO.setRowGroup(rg);
+    
+                if (j != rg) {
+                    ar = new ArrayList<ResultViewDO>(1);
+                    ar.add(resultDO);
+                    results.add(ar);
+                    j = rg;
+                    continue;
+                }
+                if ("N".equals(ado.getIsColumn())) {
+                    ar = new ArrayList<ResultViewDO>(1);
+                    ar.add(resultDO);
+                    results.add(ar);
+                    continue;
+                }
+    
                 ar.add(resultDO);
-                results.add(ar);
-                j = rg;
-                continue;
             }
-            if ("N".equals(ado.getIsColumn())) {
-                ar = new ArrayList<ResultViewDO>(1);
-                ar.add(resultDO);
-                results.add(ar);
-                continue;
-            }
-
-            ar.add(resultDO);
         }
     }
     
