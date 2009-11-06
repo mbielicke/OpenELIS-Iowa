@@ -238,11 +238,11 @@ xmlns:testMetaMap="xalan://org.openelis.metamap.TestMetaMap" xmlns:sectionMeta="
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'hazardous')" />:
                 </text>
-                <check key="{envMeta:getIsHazardous($env)}" tab="{envMeta:getDescription($env)},{sampleMetaMap:getClientReference($sample)}" />
+                <check key="{envMeta:getIsHazardous($env)}" tab="{envMeta:getPriority($env)},{sampleMetaMap:getClientReference($sample)}" />
                 <text style="Prompt">
-                  <xsl:value-of select="resource:getString($constants,'desc')" />:
+                  <xsl:value-of select="resource:getString($constants,'priority')" />:
                 </text>
-                <textbox key="{envMeta:getDescription($env)}" width="315px" tab="{envMeta:getCollector($env)},{envMeta:getIsHazardous($env)}" field="String" />
+                <textbox key="{envMeta:getPriority($env)}" width="90px" tab="{envMeta:getCollector($env)},{envMeta:getIsHazardous($env)}" field="Integer" />
               </row>
               <row>
                 <text style="Prompt">
@@ -259,11 +259,15 @@ xmlns:testMetaMap="xalan://org.openelis.metamap.TestMetaMap" xmlns:sectionMeta="
                   <xsl:value-of select="resource:getString($constants,'location')" />:
                 </text>
                 <HorizontalPanel>
-                  <textbox key="{envMeta:getSamplingLocation($env)}" width="175px" field="String" />
+                  <textbox key="{envMeta:getSamplingLocation($env)}" width="175px" field="String" tab="{envMeta:getDescription($env)},{envMeta:getCollectorPhone($env)}" />
                   <appButton key="locButton" style="LookupButton">
                     <AbsolutePanel style="LookupButtonImage" />
                   </appButton>
                 </HorizontalPanel>
+                <text style="Prompt">
+                  <xsl:value-of select="resource:getString($constants,'desc')" />:
+                </text>
+                <textbox key="{envMeta:getDescription($env)}" width="315px" tab="itemsTestsTree,{envMeta:getSamplingLocation($env)}" field="String" />
               </row>
             </TablePanel>
           </VerticalPanel>

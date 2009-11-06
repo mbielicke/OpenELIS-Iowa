@@ -356,6 +356,23 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             }
         });
         
+        final TextBox<Integer> priority = (TextBox<Integer>)def.getWidget(Meta.getPriority());
+        addScreenHandler(priority, new ScreenEventHandler<Integer>() {
+            public void onDataChange(DataChangeEvent event) {
+                priority.setValue(getEnvManager().getEnvironmental().getPriority());
+            }
+
+            public void onValueChange(ValueChangeEvent<Integer> event) {
+                getEnvManager().getEnvironmental().setPriority(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                priority.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
+                                   .contains(event.getState()));
+                priority.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+        
         final TextBox description = (TextBox)def.getWidget(Meta.getDescription());
         addScreenHandler(description, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
