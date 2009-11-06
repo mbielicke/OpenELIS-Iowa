@@ -27,8 +27,11 @@ package org.openelis.bean;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.annotation.security.RolesAllowed;
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
@@ -36,6 +39,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
+import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.DictionaryViewDO;
 import org.openelis.domain.QcAnalyteDO;
 import org.openelis.domain.QcAnalyteViewDO;
@@ -43,6 +47,7 @@ import org.openelis.entity.QcAnalyte;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.local.DictionaryLocal;
 import org.openelis.local.QcAnalyteLocal;
 import org.openelis.meta.QcAnalyteMeta;
 import org.openelis.utilcommon.DataBaseUtil;
@@ -53,18 +58,34 @@ import org.openelis.utilcommon.DataBaseUtil;
 public class QcAnalyteBean implements QcAnalyteLocal {
 
     @PersistenceContext(name = "openelis")
-    private EntityManager                    manager;
+    private EntityManager              manager;
 
+    @EJB
+    private DictionaryLocal            dictionary;
+
+    private static int                 typeDict;
     private static final QcAnalyteMeta meta = new QcAnalyteMeta();
+    private static final Logger        log  = Logger.getLogger(QcAnalyteBean.class.getName());
+
+    public QcAnalyteBean() {
+        DictionaryDO data;
+
+        try {
+            data = dictionary.fetchBySystemName("qc_analyte_dictionary");
+            typeDict = data.getId();
+        } catch (Throwable e) {
+            typeDict = 0;
+            log.log(Level.SEVERE, "Failed to lookup dictionary entry by system name='qc_analyte_dictionary'", e);
+        }
+    }
+        
 
     @SuppressWarnings("unchecked")
     public ArrayList<QcAnalyteViewDO> fetchByQcId(Integer id) throws Exception {
         Query query;
         List list;
         QcAnalyteViewDO data;
-        Integer typeId, val;
-        DictionaryViewDO snDO,entDO;      
-        String sysName, entry;
+        DictionaryViewDO dict;      
 
         query = manager.createNamedQuery("QcAnalyte.FetchByQcId");
         query.setParameter("id", id);
@@ -72,30 +93,26 @@ public class QcAnalyteBean implements QcAnalyteLocal {
         list = query.getResultList();
         if (list.isEmpty())
             throw new NotFoundException();
-        
+
+        list = DataBaseUtil.toArrayList(list);
+        //
+        // for entries that are dictionary, we want to fetch the dictionary
+        // text and set it for display
+        //
         try {                       
             for (int i = 0 ; i < list.size(); i++) {
                 data = (QcAnalyteViewDO)list.get(i);                
-                typeId = data.getTypeId();
-                query = manager.createNamedQuery("Dictionary.FetchById");
-                query.setParameter("id", typeId);
-                snDO = (DictionaryViewDO)query.getResultList().get(0);
-                sysName = snDO.getSystemName();
-                if ("qc_analyte_dictionary".equals(sysName)) {
-                    val = Integer.parseInt(data.getValue());
-                    query = manager.createNamedQuery("Dictionary.FetchById");
-                    query.setParameter("id", val);
-                    entDO = (DictionaryViewDO)query.getResultList().get(0);
-                    entry = entDO.getEntry();
-                    data.setDictionary(entry);
+                if (typeDict == data.getTypeId()) {
+                    dict = dictionary.fetchById(Integer.parseInt(data.getValue()));
+                    if (dict != null)
+                        data.setDictionary(dict.getEntry());
                 }
             }
-
         } catch (Exception ex) {
             ex.printStackTrace();
         }
 
-        return DataBaseUtil.toArrayList(list);
+        return (ArrayList) list;
     }
 
     public QcAnalyteViewDO add(QcAnalyteViewDO data) throws Exception {
