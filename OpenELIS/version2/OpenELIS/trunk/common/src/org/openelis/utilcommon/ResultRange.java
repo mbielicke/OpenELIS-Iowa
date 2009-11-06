@@ -23,21 +23,13 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.exception;
 
-import org.openelis.gwt.common.LocalizedException;
+package org.openelis.utilcommon;
 
-/**
- * This exception is thrown when the range for a numeric or titer value is invalid.
- * Valid numeric ranges are of the format min,max such as 5,20; and valid titer
- * ranges are of the format min:max where min and max are arbitrary concentrations. 
- */
-public class ParseException extends LocalizedException {
+import org.openelis.exception.ParseException;
 
-    private static final long serialVersionUID = 1L;    
-    
-    public ParseException(String arg) {
-        super(arg);
-    }
-
+public interface ResultRange {
+        public void setRange(String range) throws ParseException;
+        public boolean intersects(ResultRange range);
+        public boolean contains(String value);
 }
