@@ -27,31 +27,38 @@ package org.openelis.manager;
 
 import org.openelis.gwt.services.ScreenService;
 
-
-public class DictionaryManagerProxy {
-    
-    protected static final String DICTIONARY_MANAGER_SERVICE_URL = "org.openelis.modules.dictionary.server.DictionaryService";
+public class CategoryManagerProxy {
+    protected static final String MANAGER_SERVICE_URL = "org.openelis.modules.dictionary.server.DictionaryService";
     protected ScreenService service;
     
-    public DictionaryManagerProxy() {
-        service = new ScreenService("OpenELISServlet?service="+DICTIONARY_MANAGER_SERVICE_URL);
+    public CategoryManagerProxy() {
+        service = new ScreenService("OpenELISServlet?service="+MANAGER_SERVICE_URL);
     }
     
-    public DictionaryManager fetchByCategoryId(Integer categoryId)throws Exception {
-        return service.call("fetchEntryByCategoryId", categoryId);
+    public CategoryManager fetchById(Integer id)throws Exception {
+        return service.call("fetchById", id);
     }
     
-    public DictionaryManager add(DictionaryManager man) throws Exception {
-        assert false : "not supported";
-        return null;
+    public CategoryManager fetchWithEntries(Integer id)throws Exception {
+        return service.call("fetchWithEntries", id);
     }
     
-    public DictionaryManager update(DictionaryManager man) throws Exception {
-        assert false : "not supported";
-        return null;
+    public CategoryManager add(CategoryManager man) throws Exception {
+        return service.call("add",man);
+    }
+    
+    public CategoryManager update(CategoryManager man) throws Exception {
+        return service.call("update",man);
     }    
     
-    public void validate(DictionaryManager man) throws Exception {        
+    public CategoryManager fetchForUpdate(Integer id) throws Exception {
+        return service.call("fetchForUpdate",id);
     }
-
+    
+    public CategoryManager abortUpdate(Integer id) throws Exception {
+        return service.call("abortUpdate", id);
+    }
+    
+    public void validate(CategoryManager man) throws Exception {        
+    }
 }

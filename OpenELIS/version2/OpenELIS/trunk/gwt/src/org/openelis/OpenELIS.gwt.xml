@@ -78,7 +78,6 @@ UIRF Software License are applicable instead of those above.
     <inherits name="org.openelis.modules.testTrailer.TestTrailer"/>
     <inherits name="org.openelis.modules.test.Test"/>
     <inherits name="org.openelis.modules.worksheetCreation.WorksheetCreation"/>
-    <inherits name="org.openelis.modules.dictionaryentrypicker.DictionaryEntryPicker"/>
     <inherits name="org.openelis.modules.scriptlet.Scriptlet"/>
     <inherits name="org.openelis.ELISCommon"/>     
     

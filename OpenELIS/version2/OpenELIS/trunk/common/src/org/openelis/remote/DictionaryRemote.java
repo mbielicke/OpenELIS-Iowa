@@ -37,7 +37,7 @@ import org.openelis.gwt.common.data.QueryData;
 @Remote
 public interface DictionaryRemote {
 
-    public ArrayList<DictionaryDO> fetchByEntry(String entry) throws Exception;
+    public ArrayList<DictionaryDO> fetchByEntry(String entry, int max) throws Exception;
     
     public ArrayList<IdNameVO> fetchIdEntryByCategoryId(Integer categoryId) throws Exception;
     
@@ -45,9 +45,7 @@ public interface DictionaryRemote {
     
     public DictionaryViewDO fetchById(Integer id) throws Exception;
     
-    public ArrayList<DictionaryDO> fetchByEntryAndCategoryId(ArrayList<QueryData> fields) throws Exception;
-    
-    public ArrayList<IdNameVO> fetchIdEntryByEntry(String entry,int maxResults) throws Exception;
+    public ArrayList<IdNameVO> fetchByEntryAndCategoryId(ArrayList<QueryData> fields) throws Exception;
     
     public ArrayList<DictionaryDO> fetchByCategorySystemName(String categorySystemName) throws Exception;
     

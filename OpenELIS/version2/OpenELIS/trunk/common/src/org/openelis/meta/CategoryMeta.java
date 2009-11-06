@@ -41,10 +41,11 @@ public class CategoryMeta implements Meta {
               SYSTEM_NAME					="systemName",
               NAME					="name",
               DESCRIPTION					="description",
-              SECTION_ID					="sectionId";
+              SECTION_ID					="sectionId",
+              IS_SYSTEM               = "isSystem";
 
   	private static final String[] columnNames = {
-  	  ID,SYSTEM_NAME,NAME,DESCRIPTION,SECTION_ID};
+  	  ID,SYSTEM_NAME,NAME,DESCRIPTION,SECTION_ID,IS_SYSTEM};
   	  
 	private HashSet<String> columnHashList;
     
@@ -96,6 +97,10 @@ public class CategoryMeta implements Meta {
     public String getSectionId() {
         return path + SECTION_ID;
     } 
+    
+    public String getIsSystem() {
+        return path + IS_SYSTEM;
+    }
 
   
 }   

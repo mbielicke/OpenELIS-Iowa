@@ -98,10 +98,18 @@ public class CategoryBean implements CategoryRemote, CategoryLocal {
         return catDO;
     }
     
-    public List<IdNameVO> fetchIdName() throws Exception {
-        Query query = manager.createNamedQuery("Category.FetchIdName");
-        List idNameDOList = query.getResultList();
-        return idNameDOList;
+    public ArrayList<IdNameVO> fetchByName(String name) throws Exception {
+        Query query;
+        List list;
+        
+        query = manager.createNamedQuery("Category.FetchByName");
+        query.setParameter("name",name);
+        list = query.getResultList();
+        
+        if(list.isEmpty())
+            throw new NotFoundException();
+        
+        return DataBaseUtil.toArrayList(list);
     }    
     
 
@@ -144,6 +152,7 @@ public class CategoryBean implements CategoryRemote, CategoryLocal {
         category.setName(data.getName());
         category.setSectionId(data.getSectionId());
         category.setSystemName(data.getSystemName());
+        category.setIsSystem(data.getIsSystem());
 
         manager.persist(category);
 
@@ -165,6 +174,7 @@ public class CategoryBean implements CategoryRemote, CategoryLocal {
         category.setName(data.getName());
         category.setSectionId(data.getSectionId());
         category.setSystemName(data.getSystemName());
+        category.setIsSystem(data.getIsSystem());
 
         return data;
     }

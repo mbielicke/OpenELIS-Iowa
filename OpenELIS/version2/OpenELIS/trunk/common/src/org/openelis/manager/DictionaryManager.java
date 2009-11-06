@@ -27,9 +27,7 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
-import org.openelis.domain.CategoryDO;
 import org.openelis.domain.DictionaryViewDO;
-import org.openelis.gwt.common.InconsistencyException;
 import org.openelis.gwt.common.RPC;
 
 public class DictionaryManager implements RPC {
@@ -37,7 +35,6 @@ public class DictionaryManager implements RPC {
     private static final long                         serialVersionUID = 1L;
 
     protected Integer                                 categoryId;
-    protected CategoryDO                              category;
     protected ArrayList<DictionaryViewDO>             entries, deleted;
 
     protected transient static DictionaryManagerProxy proxy;
@@ -46,65 +43,35 @@ public class DictionaryManager implements RPC {
      * This is a protected constructor
      */
     protected DictionaryManager() {
-        category = null;
-        entries = null;
     }
 
     /**
-     * Creates a new instance of this object. A default category object is also
-     * created.
+     * Creates a new instance of this object. 
      */
     public static DictionaryManager getInstance() {
-        DictionaryManager dm;
-
-        dm = new DictionaryManager();
-        dm.category = new CategoryDO();
-        return dm;
-    }
-
-    public CategoryDO getCategory() {
-        return category;
-    }
-
-    public void setCategory(CategoryDO category) {
-        this.category = category;
+        return new DictionaryManager();
     }
 
     public int count() {
         if (entries == null)
             return 0;
-
         return entries.size();
     }
 
     public DictionaryViewDO getEntryAt(int i) {
         return entries.get(i);
     }
-
+    
     public void setEntryAt(DictionaryViewDO entry, int i) {
-        entries.set(i, entry);
+        entries().set(i, entry);
     }
 
-    public Integer getCategoryId() {
-        return categoryId;
-    }
-
-    public void setCategoryId(Integer categoryId) {
-        this.categoryId = categoryId;
-    }
-
-    public void addEntry(DictionaryViewDO entry) {
-        if (entries == null)
-            entries = new ArrayList<DictionaryViewDO>();
-
-        entries.add(entry);
+    public void addEntry(DictionaryViewDO entry) {       
+        entries().add(entry);
     }
 
     public void addEntryAt(DictionaryViewDO entry, int i) {
-        if (entries == null)
-            entries = new ArrayList<DictionaryViewDO>();
-
-        entries.add(i, entry);
+        entries().add(i, entry);
     }
 
     public void removeEntryAt(int i) {
@@ -148,19 +115,17 @@ public class DictionaryManager implements RPC {
         return proxy().update(this);
     }
 
-    public DictionaryManager fetchForUpdate() throws Exception {
-        if (category.getId() == null)
-            throw new InconsistencyException("test id is null");
-
-        return proxy().fetchForUpdate(category.getId());
-    }
-
-    public DictionaryManager abortUpdate() throws Exception {
-        return proxy().abortUpdate(category.getId());
-    }
-
     public void validate() throws Exception {
         proxy().validate(this);
+    }
+    
+    // friendly methods used by managers and proxies
+    Integer getCategoryId() {
+        return categoryId;
+    }
+
+    void setCategoryId(Integer categoryId) {
+        this.categoryId = categoryId;
     }
 
     ArrayList<DictionaryViewDO> getEntries() {
@@ -186,5 +151,11 @@ public class DictionaryManager implements RPC {
         if (proxy == null)
             proxy = new DictionaryManagerProxy();
         return proxy;
+    }
+    
+    private ArrayList<DictionaryViewDO> entries(){
+        if (entries == null)
+            entries = new ArrayList<DictionaryViewDO>();
+        return entries;
     }
 }

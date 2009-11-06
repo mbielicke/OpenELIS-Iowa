@@ -44,7 +44,6 @@ import org.openelis.domain.TestResultViewDO;
 import org.openelis.entity.TestResult;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.CategoryLocal;
 import org.openelis.local.DictionaryLocal;
 import org.openelis.local.TestResultLocal;
 import org.openelis.metamap.TestMetaMap;

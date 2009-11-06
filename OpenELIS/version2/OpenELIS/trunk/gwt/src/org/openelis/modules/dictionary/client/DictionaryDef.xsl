@@ -74,7 +74,7 @@ UIRF Software License are applicable instead of those above.
               <xsl:call-template name="aToZLeftPanelButtons" />
             </buttonGroup>
             <VerticalPanel>
-              <table key="atozTable" width="auto" maxRows="19">
+              <table key="atozTable" width="auto" maxRows="19" style="atozTable">
                 <col width="175" header="{resource:getString($constants,'catName')}">
                   <label />
                 </col>
@@ -159,32 +159,42 @@ UIRF Software License are applicable instead of those above.
             <TablePanel style="Form">
               <row>
                 <text style="Prompt">
-                  <xsl:value-of select='resource:getString($constants,"catName")' />
+                  <xsl:value-of select='resource:getString($constants,"catName")' />:
                 </text>
-                <textbox key="{meta:getName($cat)}" required = "true" width="355px" case="MIXED" max="50" tab="{meta:getDescription($cat)},{meta:getSystemName($cat)}" />
+                <widget colspan = "5">
+                	<textbox key="{meta:getName($cat)}" required = "true" width="355px" case="MIXED" max="50" tab="{meta:getDescription($cat)},{meta:getSystemName($cat)}" />
+                </widget>	
               </row>
               <row>
                 <text style="Prompt">
-                  <xsl:value-of select='resource:getString($constants,"description")' />
+                  <xsl:value-of select='resource:getString($constants,"description")' />:
                 </text>
-                <textbox key="{meta:getDescription($cat)}" width="425px" case="MIXED" max="60" tab="{meta:getSectionId($cat)},{meta:getName($cat)}" />
+                <widget colspan = "3">                
+                	<textbox key="{meta:getDescription($cat)}" width="425px" case="MIXED" max="60" tab="{meta:getSectionId($cat)},{meta:getName($cat)}" />
+              	</widget>
               </row>
               <row>
                 <text style="Prompt">
-                  <xsl:value-of select='resource:getString($constants,"section")' />
+                  <xsl:value-of select='resource:getString($constants,"section")' />:
                 </text>
                 <dropdown key="{meta:getSectionId($cat)}" width="100px" case="LOWER" tab="{meta:getSystemName($cat)},{meta:getDescription($cat)}"/>
               </row>
               <row>
                 <text style="Prompt">
-                  <xsl:value-of select='resource:getString($constants,"systemName")' />
+                  <xsl:value-of select='resource:getString($constants,"systemName")' />:
                 </text>
-                <textbox key="{meta:getSystemName($cat)}" required = "true" width="215px" case="MIXED" max="30" tab="dictEntTable,{meta:getSectionId($cat)}" />
+                <textbox key="{meta:getSystemName($cat)}" required = "true" width="215px" case="MIXED" max="30" tab="{meta:getIsSystem($cat)},{meta:getSectionId($cat)}" />
               </row>
+              <row>
+                <text style="Prompt">
+                    <xsl:value-of select='resource:getString($constants,"system")' />:
+                  </text>
+                  <check key="{meta:getIsSystem($cat)}" tab="dictEntTable,{meta:getSystemName($cat)}" />
+                </row>
             </TablePanel>
             <VerticalPanel>
               <widget valign="top">
-                <table key="dictEntTable" width="auto" maxRows="13" showScroll="ALWAYS" tab="{meta:getName($cat)},{meta:getSystemName($cat)}" title="">
+                <table key="dictEntTable" width="auto" maxRows="13" showScroll="ALWAYS" tab="{meta:getName($cat)},{meta:getSystemName($cat)}" title="" style="atozTable">
                   <col key="{dictionary:getIsActive($dictNew)}" width="60" header="{resource:getString($constants,'active')}">
                     <check>Y</check>
                   </col>

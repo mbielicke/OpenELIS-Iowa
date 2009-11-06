@@ -54,14 +54,14 @@ import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
 @NamedQueries( {@NamedQuery(name = "Category.FetchById", 
-                            query = "select new org.openelis.domain.CategoryDO(c.id,c.systemName,c.name,c.description,c.sectionId)"
+                            query = "select new org.openelis.domain.CategoryDO(c.id,c.systemName,c.name,c.description,c.sectionId,c.isSystem)"
                                   + "  from Category c where c.id = :id"),
                 @NamedQuery(name = "Category.FetchBySystemName",
-                            query = "select new org.openelis.domain.CategoryDO(c.id,c.systemName,c.name,c.description,c.sectionId)"
+                            query = "select new org.openelis.domain.CategoryDO(c.id,c.systemName,c.name,c.description,c.sectionId,c.isSystem)"
                                   + "  from Category c where c.systemName = :systemName"),
-                @NamedQuery(name = "Category.FetchIdName", 
+                @NamedQuery(name = "Category.FetchByName", 
                             query = "select distinct new org.openelis.domain.IdNameVO(c.id, c.name) "
-                                  + "  from Category c order by c.name")})
+                                  + "  from Category c where c.name like :name and c.isSystem = 'N' order by c.name")})
 @Entity
 @Table(name = "category")
 @EntityListeners( {AuditUtil.class})
@@ -83,6 +83,9 @@ public class Category implements Auditable, Cloneable {
 
     @Column(name = "section_id")
     private Integer                sectionId;
+    
+    @Column(name = "is_system")
+    private String                 isSystem;
 
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
@@ -136,6 +139,15 @@ public class Category implements Auditable, Cloneable {
             this.sectionId = sectionId;
     }
     
+    public String getIsSystem() {
+        return isSystem;
+    }
+
+    public void setIsSystem(String isSystem) {
+        if (DataBaseUtil.isDifferent(isSystem,this.isSystem))
+            this.isSystem = isSystem;
+    }
+    
     public Collection<Dictionary> getDictionary() {
         return dictionary;
     }
@@ -169,6 +181,7 @@ public class Category implements Auditable, Cloneable {
             AuditUtil.getChangeXML(name, original.name, doc, "name");
             AuditUtil.getChangeXML(description, original.description, doc, "description");
             AuditUtil.getChangeXML(sectionId, original.sectionId, doc, "section_id");
+            AuditUtil.getChangeXML(isSystem, original.isSystem, doc, "is_system");
 
             if (root.hasChildNodes())
                 return XMLUtil.toString(doc);

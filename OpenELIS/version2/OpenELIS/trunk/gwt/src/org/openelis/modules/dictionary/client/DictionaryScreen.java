@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 
 import org.openelis.cache.SectionCache;
+import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.DictionaryViewDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.SectionDO;
@@ -52,6 +53,7 @@ import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.ButtonGroup;
+import org.openelis.gwt.widget.CheckBox;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.gwt.widget.TextBox;
@@ -66,6 +68,7 @@ import org.openelis.gwt.widget.table.event.RowDeletedEvent;
 import org.openelis.gwt.widget.table.event.RowDeletedHandler;
 import org.openelis.gwt.widget.table.event.RowMovedEvent;
 import org.openelis.gwt.widget.table.event.RowMovedHandler;
+import org.openelis.manager.CategoryManager;
 import org.openelis.manager.DictionaryManager;
 import org.openelis.metamap.CategoryMetaMap;
 import org.openelis.modules.main.client.openelis.OpenELIS;
@@ -82,7 +85,7 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class DictionaryScreen extends Screen implements GetMatchesHandler, DragHandler {
-    private DictionaryManager manager;
+    private CategoryManager manager;
     private CategoryMetaMap   meta = new CategoryMetaMap();
     private SecurityModule    security;
 
@@ -90,6 +93,7 @@ public class DictionaryScreen extends Screen implements GetMatchesHandler, DragH
     private AppButton         queryButton, previousButton, nextButton, addButton, updateButton,
                               commitButton, abortButton, removeEntryButton, addEntryButton;
     private Dropdown<Integer> sectionId;
+    private CheckBox          isSystem; 
     private TableWidget       dictEntTable;
     private ButtonGroup       atoz;
     private ScreenNavigator   nav;
@@ -105,7 +109,7 @@ public class DictionaryScreen extends Screen implements GetMatchesHandler, DragH
         // Setup link between Screen and widget Handlers
         initialize();
 
-        manager = DictionaryManager.getInstance();
+        manager = CategoryManager.getInstance();
 
         DeferredCommand.addCommand(new Command() {
             public void execute() {
@@ -286,6 +290,23 @@ public class DictionaryScreen extends Screen implements GetMatchesHandler, DragH
                 systemName.setQueryMode(event.getState() == State.QUERY);
             }
         });
+        
+        isSystem = (CheckBox)def.getWidget(meta.getIsSystem());
+        addScreenHandler(isSystem, new ScreenEventHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                isSystem.setValue(manager.getCategory().getIsSystem());
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                manager.getCategory().setIsSystem(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                isSystem.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                          .contains(event.getState()));
+                isSystem.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
 
         dictEntTable = (TableWidget)def.getWidget("dictEntTable");
         addScreenHandler(dictEntTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
@@ -311,8 +332,12 @@ public class DictionaryScreen extends Screen implements GetMatchesHandler, DragH
                 r = event.getRow();
                 c = event.getCol();
                 val = dictEntTable.getRow(r).cells.get(c).getValue();
-                entry = manager.getEntryAt(r);
-
+                try {
+                    entry = manager.getEntries().getEntryAt(r);
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                    return;
+                }
                 switch (c) {
                     case 0:
                         entry.setIsActive((String)val);
@@ -339,21 +364,33 @@ public class DictionaryScreen extends Screen implements GetMatchesHandler, DragH
             public void onRowAdded(RowAddedEvent event) {
                 DictionaryViewDO entry;
                 
-                entry = new DictionaryViewDO();
-                entry.setIsActive("Y");
-                manager.addEntry(entry);                                
+                try {
+                    entry = new DictionaryViewDO();
+                    entry.setIsActive("Y");
+                    manager.getEntries().addEntry(entry);      
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                }
             }
         });
 
         dictEntTable.addRowDeletedHandler(new RowDeletedHandler() {
-            public void onRowDeleted(RowDeletedEvent event) {
-                manager.removeEntryAt(event.getIndex());
+            public void onRowDeleted(RowDeletedEvent event) {        
+                try {
+                    manager.getEntries().removeEntryAt(event.getIndex());
+                } catch (Exception e) {
+                Window.alert(e.getMessage());
+                }
             }
         });
         
         dictEntTable.addRowMovedHandler(new RowMovedHandler() {
-            public void onRowMoved(RowMovedEvent event) {                
-                manager.moveEntry(event.getOldIndex(),event.getNewIndex());                
+            public void onRowMoved(RowMovedEvent event) {      
+                try {
+                    manager.getEntries().moveEntry(event.getOldIndex(),event.getNewIndex());
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                }
             }
             
         });
@@ -368,11 +405,15 @@ public class DictionaryScreen extends Screen implements GetMatchesHandler, DragH
                 
                 r = dictEntTable.getSelectedRow();
                 
-                if (r > -1 && dictEntTable.numRows() > 0) {
-                    if(validateForDelete(manager.getEntryAt(r)))
-                        dictEntTable.deleteRow(r);
-                    else 
-                        Window.alert(consts.get("dictionaryDeleteException"));
+                try {
+                    if (r > -1 && dictEntTable.numRows() > 0) {
+                        if(validateForDelete(manager.getEntries().getEntryAt(r)))
+                            dictEntTable.deleteRow(r);
+                        else 
+                            Window.alert(consts.get("dictionaryDeleteException"));
+                    }
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
                 }
             }
 
@@ -475,22 +516,18 @@ public class DictionaryScreen extends Screen implements GetMatchesHandler, DragH
 
     public void onGetMatches(GetMatchesEvent event) {
         QueryFieldUtil parser;
-        TableDataRow row;
         ArrayList<TableDataRow> model;
-        ArrayList<IdNameVO> list;
-        IdNameVO data;
+        ArrayList<DictionaryDO> list;
 
         parser = new QueryFieldUtil();
         parser.parse(event.getMatch());
 
         window.setBusy();
         try {
-            list = service.callList("fetchIdEntryByEntry", parser.getParameter().get(0));
+            list = service.callList("fetchByEntry", parser.getParameter().get(0));
             model = new ArrayList<TableDataRow>();
-            for (int i = 0; i < list.size(); i++ ) {
-                data = (IdNameVO)list.get(i);
-                row = new TableDataRow(data.getId(), data.getName());
-                model.add(row);
+            for (DictionaryDO data: list) {
+                model.add(new TableDataRow(data.getId(), data.getEntry()));                
             }
             ((AutoComplete)event.getSource()).showAutoMatches(model);
         } catch (Exception e) {
@@ -516,7 +553,7 @@ public class DictionaryScreen extends Screen implements GetMatchesHandler, DragH
         
     }
     protected void query() {
-        manager = DictionaryManager.getInstance();
+        manager = CategoryManager.getInstance();
         setState(State.QUERY);
         DataChangeEvent.fire(this);
         window.setDone(consts.get("enterFieldsToQuery"));
@@ -531,7 +568,7 @@ public class DictionaryScreen extends Screen implements GetMatchesHandler, DragH
     }
 
     protected void add() {
-        manager = DictionaryManager.getInstance();
+        manager = CategoryManager.getInstance();
         setState(State.ADD);
         DataChangeEvent.fire(this);
         enableDragAndDrop(true);
@@ -635,13 +672,13 @@ public class DictionaryScreen extends Screen implements GetMatchesHandler, DragH
 
     protected boolean fetchByCategoryId(Integer id) {
         if (id == null) {
-            manager = DictionaryManager.getInstance();
+            manager = CategoryManager.getInstance();
             setState(State.DEFAULT);
         } else {
             window.setBusy(consts.get("fetching"));
             try {
                 window.setBusy(consts.get("fetching"));
-                manager = DictionaryManager.fetchByCategoryId(id);
+                manager = CategoryManager.fetchWithEntries(id);
             } catch (Exception e) {
                 fetchByCategoryId(null);
                 e.printStackTrace();
@@ -665,20 +702,25 @@ public class DictionaryScreen extends Screen implements GetMatchesHandler, DragH
         if (manager == null)
             return model;
 
-        for (int i = 0; i < manager.count(); i++ ) {
-            entry = manager.getEntryAt(i);
-
-            row = new TableDataRow(5);
-            row.key = entry.getId();
-            row.data = entry.getCategoryId();
-            
-            row.cells.get(0).setValue(entry.getIsActive());
-            row.cells.get(1).setValue(entry.getSystemName());
-            row.cells.get(2).setValue(entry.getLocalAbbrev());
-            row.cells.get(3).setValue(entry.getEntry());
-            row.cells.get(4).setValue(new TableDataRow(entry.getRelatedEntryId(),
-                                                       entry.getRelatedEntryName()));
-            model.add(row);
+        try {
+            for (int i = 0; i < manager.getEntries().count(); i++ ) {
+                entry = manager.getEntries().getEntryAt(i);
+    
+                row = new TableDataRow(5);
+                row.key = entry.getId();
+                row.data = entry.getCategoryId();
+                
+                row.cells.get(0).setValue(entry.getIsActive());
+                row.cells.get(1).setValue(entry.getSystemName());
+                row.cells.get(2).setValue(entry.getLocalAbbrev());
+                row.cells.get(3).setValue(entry.getEntry());
+                row.cells.get(4).setValue(new TableDataRow(entry.getRelatedEntryId(),
+                                                           entry.getRelatedEntryName()));
+                model.add(row);
+            }
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            e.printStackTrace();
         }
 
         return model;

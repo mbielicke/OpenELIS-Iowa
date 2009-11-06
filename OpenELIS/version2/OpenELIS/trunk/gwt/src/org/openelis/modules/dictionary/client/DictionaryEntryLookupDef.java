@@ -23,11 +23,11 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.modules.dictionaryentrypicker.client;
+package org.openelis.modules.dictionary.client;
 
 import org.openelis.gwt.screen.ScreenDefInt;
 
 
-public interface DictionaryEntryPickerDef extends ScreenDefInt {
+public interface DictionaryEntryLookupDef extends ScreenDefInt {
 
 }
