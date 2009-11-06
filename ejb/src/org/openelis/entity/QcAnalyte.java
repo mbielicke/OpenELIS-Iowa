@@ -53,8 +53,8 @@ import org.openelis.utils.Auditable;
 @NamedQueries({
     @NamedQuery( name = "QcAnalyte.FetchByQcId",
                 query = "select new org.openelis.domain.QcAnalyteViewDO(qca.id,qca.qcId,qca.analyteId," +
-                		"qca.typeId,qca.value,qca.isTrendable,a.name,'') "
-                      + " from QcAnalyte qca left join qca.analyte a where qca.qcId = :id ")})
+                		"qca.typeId,qca.value,qca.isTrendable,a.name,'')"
+                      + " from QcAnalyte qca left join qca.analyte a where qca.qcId = :id")})
 @Entity
 @Table(name = "qc_analyte")
 @EntityListeners( {AuditUtil.class})
