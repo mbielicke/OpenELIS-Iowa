@@ -89,25 +89,29 @@ import org.openelis.gwt.widget.table.deprecated.TableTextBox;
 import org.openelis.gwt.widget.tree.deprecated.TableTree;
 
 import com.google.gwt.core.client.EntryPoint;
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.EventListener;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.Event.NativePreviewEvent;
+import com.google.gwt.user.client.Event.NativePreviewHandler;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.xml.client.Node;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
  */
-public class OpenELIS implements EntryPoint, EventListener {
+public class OpenELIS implements EntryPoint, NativePreviewHandler {
   /**
    * This is the entry point method.
    */
   public void onModuleLoad() {
 	  setWidgetMap();
-     
+	  //All Events will flow this this handler first before any other handlers.
+	  Event.addNativePreviewHandler(this);
       try {
-	  RootPanel.get("main").add(new org.openelis.modules.main.client.openelis.OpenELIS());
+    	  RootPanel.get("main").add(new org.openelis.modules.main.client.openelis.OpenELIS());
       }catch(Throwable e){
     	  e.printStackTrace();
     	  Window.alert("Unable to start app : "+e.getMessage());
@@ -719,9 +723,15 @@ public class OpenELIS implements EntryPoint, EventListener {
              });
   }
 
-  public void onBrowserEvent(Event event) {
-      Window.alert("module on browser");
-      DOM.eventPreventDefault(event);
+  /**
+   * All events created by the application will flow through here.  The event can be inspected for type and other user input
+   * then certain actions can be taken such as preventing default browser before or even cancelling events
+   */
+  public void onPreviewNativeEvent(NativePreviewEvent event) {
+	  //This check is to prevent FireFox from highlighting HTML Elements when mouseDown is combined with the ctrl key
+	  if(event.getTypeInt() == Event.ONMOUSEDOWN && event.getNativeEvent().getCtrlKey())
+		  event.getNativeEvent().preventDefault();
+	
   }
   
 }
