@@ -40,6 +40,7 @@ public class SampleEnvironmentalMeta implements Meta {
               ID					="id",
               SAMPLE_ID					="sampleId",
               IS_HAZARDOUS					="isHazardous",
+              PRIORITY                  ="priority",
               DESCRIPTION					="description",
               COLLECTOR					="collector",
               COLLECTOR_PHONE					="collectorPhone",
@@ -47,7 +48,7 @@ public class SampleEnvironmentalMeta implements Meta {
               ADDRESS_ID					="addressId";
 
   	private static final String[] columnNames = {
-  	  ID,SAMPLE_ID,IS_HAZARDOUS,DESCRIPTION,COLLECTOR,COLLECTOR_PHONE,SAMPLING_LOCATION,ADDRESS_ID};
+  	  ID,SAMPLE_ID,IS_HAZARDOUS,PRIORITY,DESCRIPTION,COLLECTOR,COLLECTOR_PHONE,SAMPLING_LOCATION,ADDRESS_ID};
   	  
 	private HashSet<String> columnHashList;
     
@@ -90,6 +91,10 @@ public class SampleEnvironmentalMeta implements Meta {
 
     public String getIsHazardous() {
         return path + IS_HAZARDOUS;
+    } 
+    
+    public String getPriority() {
+        return path + PRIORITY;
     } 
 
     public String getDescription() {

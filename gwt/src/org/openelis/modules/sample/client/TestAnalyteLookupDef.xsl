@@ -49,11 +49,11 @@ UIRF Software License are applicable instead of those above.
  	<VerticalPanel padding="0" spacing="0">
         <VerticalPanel width="300px" padding="0" spacing="0" style="WhiteContentPanel">
         	<table key="testAnalyteTable" width="auto" maxRows="10" showScroll="ALWAYS" title="">
-            	<col width="60" header="{resource:getString($constants,'alias')}">
-                	<label/>
+            	<col width="50" header="{resource:getString($constants,'alias')}">
+                	<check/>
                 </col>
                 <col width ="400" header="{resource:getString($constants,'analyte')}">
-                 	<check />
+                 	<label/>
                 </col>
          	</table>
      	</VerticalPanel>

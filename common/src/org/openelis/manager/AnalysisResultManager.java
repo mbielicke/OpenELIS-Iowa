@@ -36,11 +36,11 @@ public class AnalysisResultManager implements RPC {
      * Creates a new instance of this object with the specified analysis id. Use
      * this function to load an instance of this object from database.
      */
-    public static AnalysisResultManager fetchAnalysisId(Integer analysisId, Integer testId) throws Exception {
+    public static AnalysisResultManager fetchByAnalysisId(Integer analysisId, Integer testId) throws Exception {
         return proxy().fetchByAnalysisId(analysisId, testId);
     }
     
-    public static AnalysisResultManager fetchAnalysisIdForDisplay(Integer analysisId) throws Exception {
+    public static AnalysisResultManager fetchByAnalysisIdForDisplay(Integer analysisId) throws Exception {
         return proxy().fetchByAnalysisIdForDisplay(analysisId);
     }
 

@@ -36,7 +36,7 @@ public class SampleEnvironmentalDO extends DataObject {
 
     private static final long serialVersionUID = 1L;
 
-    protected Integer         id, sampleId, addressId;
+    protected Integer         id, sampleId, priority, addressId;
     protected String          isHazardous, description, collector, collectorPhone,
                               samplingLocation;
     protected AddressDO       addressDO        = new AddressDO();
@@ -44,7 +44,7 @@ public class SampleEnvironmentalDO extends DataObject {
     public SampleEnvironmentalDO() {
     }
 
-    public SampleEnvironmentalDO(Integer id, Integer sampleId, String isHazardous,
+    public SampleEnvironmentalDO(Integer id, Integer sampleId, String isHazardous, Integer priority,
                                  String description, String collector, String collectorPhone,
                                  String samplingLocation, Integer addressId, String multipleUnit,
                                  String streetAddress, String city, String state, String zipCode,
@@ -52,6 +52,7 @@ public class SampleEnvironmentalDO extends DataObject {
         setId(id);
         setSampleId(sampleId);
         setIsHazardous(isHazardous);
+        setPriority(priority);
         setDescription(description);
         setCollector(collector);
         setCollectorPhone(collectorPhone);
@@ -142,5 +143,13 @@ public class SampleEnvironmentalDO extends DataObject {
 
     public AddressDO getAddressDO() {
         return addressDO;
+    }
+
+    public Integer getPriority() {
+        return priority;
+    }
+
+    public void setPriority(Integer priority) {
+        this.priority = priority;
     }
 }
