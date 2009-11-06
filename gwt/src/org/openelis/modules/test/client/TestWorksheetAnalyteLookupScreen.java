@@ -134,7 +134,7 @@ public class TestWorksheetAnalyteLookupScreen extends Screen implements HasActio
         });
 
 
-        okButton = (AppButton)def.getWidget("okButton");
+        okButton = (AppButton)def.getWidget("ok");
         addScreenHandler(okButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 ok();
@@ -145,7 +145,7 @@ public class TestWorksheetAnalyteLookupScreen extends Screen implements HasActio
             }
         });
 
-        cancelButton = (AppButton)def.getWidget("cancelButton");
+        cancelButton = (AppButton)def.getWidget("cancel");
         addScreenHandler(cancelButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 cancel();
