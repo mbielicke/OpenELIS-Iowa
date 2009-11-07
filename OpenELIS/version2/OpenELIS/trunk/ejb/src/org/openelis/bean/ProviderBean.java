@@ -36,7 +36,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
-import org.openelis.domain.IdLastNameFirstNameDO;
+import org.openelis.domain.IdFirstLastNameVO;
 import org.openelis.domain.ProviderDO;
 import org.openelis.entity.Provider;
 import org.openelis.gwt.common.FieldErrorException;
@@ -72,7 +72,7 @@ public class ProviderBean implements ProviderRemote, ProviderLocal {
     }
 
     @SuppressWarnings("unchecked")
-	public ArrayList<IdLastNameFirstNameDO> query (ArrayList<QueryData> fields, int first, int max) throws Exception {                         
+	public ArrayList<IdFirstLastNameVO> query (ArrayList<QueryData> fields, int first, int max) throws Exception {                         
        Query query;
        QueryBuilderV2 qb = new QueryBuilderV2();
        List list;
@@ -95,11 +95,11 @@ public class ProviderBean implements ProviderRemote, ProviderLocal {
        list = query.getResultList();
        if (list.isEmpty())
            throw new NotFoundException();
-       list = (ArrayList<IdLastNameFirstNameDO>)DataBaseUtil.subList(list, first, max);
+       list = (ArrayList<IdFirstLastNameVO>)DataBaseUtil.subList(list, first, max);
        if (list == null)
            throw new LastPageException();
 
-       return (ArrayList<IdLastNameFirstNameDO>)list;
+       return (ArrayList<IdFirstLastNameVO>)list;
         
     }
 
