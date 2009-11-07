@@ -46,7 +46,7 @@ public class ResultRangeNumeric implements ResultRange {
             try {
                 min = Double.parseDouble(st[0]);
                 max = Double.parseDouble(st[1]);
-                if (min > max)
+                if (min >= max)
                     throw new ParseException("illegalNumericRangeException");
             } catch (NumberFormatException ex) {
                 throw new ParseException("illegalNumericFormatException");

@@ -29,12 +29,12 @@ import java.util.ArrayList;
 
 import javax.ejb.Remote;
 
-import org.openelis.domain.IdLastNameFirstNameDO;
+import org.openelis.domain.IdFirstLastNameVO;
 import org.openelis.gwt.common.data.QueryData;
 
 @Remote
 public interface ProviderRemote {
     
-    public ArrayList<IdLastNameFirstNameDO> query(ArrayList<QueryData> fields, int first, int max) throws Exception;
+    public ArrayList<IdFirstLastNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception;
         
 }

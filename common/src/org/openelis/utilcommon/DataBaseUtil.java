@@ -209,6 +209,14 @@ public class DataBaseUtil {
     }
 
     /**
+     * Compares the two parameters to see if they are the same
+     * @return true if object is the same; otherwise false
+     */
+    public static boolean isSame(Object a, Object b) {
+        return a != null && a.equals(b);
+    }
+
+    /**
      * Checks the parameter to see if its null or its length is 0.
      * 
      * @return true if object is empty; otherwise false
