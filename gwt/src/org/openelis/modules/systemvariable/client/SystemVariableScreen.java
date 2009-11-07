@@ -221,8 +221,6 @@ public class SystemVariableScreen extends Screen {
                 name.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                    .contains(event.getState()));
                 name.setQueryMode(event.getState() == State.QUERY);
-                if (event.getState() == State.ADD || event.getState() == State.UPDATE)
-                    name.setFocus(true);
             }
         });
 
@@ -323,6 +321,8 @@ public class SystemVariableScreen extends Screen {
         data = new SystemVariableDO();
         setState(State.QUERY);
         DataChangeEvent.fire(this);
+
+        setFocus(name);
         window.setDone(consts.get("enterFieldsToQuery"));
     }
 
@@ -339,6 +339,8 @@ public class SystemVariableScreen extends Screen {
 
         setState(State.ADD);
         DataChangeEvent.fire(this);
+
+        setFocus(name);
         window.setDone(consts.get("enterInformationPressCommit"));
     }
 
@@ -350,6 +352,7 @@ public class SystemVariableScreen extends Screen {
 
             setState(State.UPDATE);
             DataChangeEvent.fire(this);
+            setFocus(name);
         } catch (Exception e) {
             Window.alert(e.getMessage());
         }
@@ -371,10 +374,7 @@ public class SystemVariableScreen extends Screen {
     }
 
     protected void commit() {
-        //
-        // set the focus to null so every field will commit its data.
-        //
-        name.setFocus(false);
+        setFocus(null);
 
         if ( !validate()) {
             window.setError(consts.get("correctErrors"));
@@ -432,8 +432,7 @@ public class SystemVariableScreen extends Screen {
     }
 
     protected void abort() {
-        name.setFocus(false);
-
+        setFocus(null);
         clearErrors();
         window.setBusy(consts.get("cancelChanges"));
 

@@ -39,7 +39,7 @@ UIRF Software License are applicable instead of those above.
   xmlns:meta="xalan://org.openelis.metamap.QaEventMetaMap"
   xmlns:testMeta="xalan://org.openelis.metamap.TestMetaMap">
 
-  <xsl:import href="IMPORT/aToZOneColumn.xsl" />
+  <xsl:import href="IMPORT/aToZTwoColumns.xsl" />
   <xalan:component prefix="resource">
     <xalan:script lang="javaclass" src="xalan://org.openelis.util.UTFResource" />
   </xalan:component>
@@ -73,7 +73,7 @@ UIRF Software License are applicable instead of those above.
               <xsl:call-template name="aToZLeftPanelButtons" />
             </buttonGroup>
             <VerticalPanel>
-              <table key="atozTable" width="auto" maxRows="19" style="atozTable">
+              <table key="atozTable" width="auto" maxRows="14" style="atozTable">
                 <col width="120" header="{resource:getString($constants,'name')}">
                   <label />
                 </col>
@@ -190,9 +190,7 @@ UIRF Software License are applicable instead of those above.
                   <xsl:value-of select='resource:getString($constants,"text")' />:
                 </text>
               </widget>
-              <widget halign="center">
-                <textarea key="{meta:getReportingText($qae)}" width="425" height="255" tab="{meta:getName($qae)},{meta:getReportingSequence($qae)}" />
-              </widget>
+              <textarea key="{meta:getReportingText($qae)}" width="425" height="155" tab="{meta:getName($qae)},{meta:getReportingSequence($qae)}" />
             </row>
           </TablePanel>
         </VerticalPanel>

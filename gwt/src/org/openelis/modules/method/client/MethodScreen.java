@@ -31,7 +31,6 @@ import java.util.EnumSet;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.MethodDO;
 import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.LocalizedException;
 import org.openelis.gwt.common.NotFoundException;
@@ -69,7 +68,6 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 public class MethodScreen extends Screen {
     
 	private MethodDO data;
-	
 	private SecurityModule security;
     
 	private CalendarLookUp activeBegin, activeEnd;
@@ -79,7 +77,7 @@ public class MethodScreen extends Screen {
 	private ButtonGroup atoz;
 	private ScreenNavigator nav;
 	
-	private MethodMetaMap META = new MethodMetaMap();
+	private MethodMetaMap meta = new MethodMetaMap();
     
     public MethodScreen() throws Exception {
         super((ScreenDefInt)GWT.create(MethodDef.class));
@@ -89,10 +87,7 @@ public class MethodScreen extends Screen {
         if (security == null)
             throw new SecurityException("screenPermException", "Method Screen");
 
-        // Setup link between Screen and widget Handlers
         initialize();
-
-        data = new MethodDO();
 
         DeferredCommand.addCommand(new Command() {
             public void execute() {
@@ -106,6 +101,8 @@ public class MethodScreen extends Screen {
      * screen is attached to the browser. It is usually called in deferred command.
      */
     private void postConstructor() {
+        data = new MethodDO();
+
         setState(State.DEFAULT);
         DataChangeEvent.fire(this);
     }
@@ -197,7 +194,7 @@ public class MethodScreen extends Screen {
             }
         });
 
-        name = (TextBox)def.getWidget(META.getName());
+        name = (TextBox)def.getWidget(meta.getName());
         addScreenHandler(name, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 name.setValue(data.getName());
@@ -213,7 +210,7 @@ public class MethodScreen extends Screen {
             }
         });
 
-        description = (TextBox)def.getWidget(META.getDescription());
+        description = (TextBox)def.getWidget(meta.getDescription());
         addScreenHandler(description, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 description.setValue(data.getDescription());
@@ -229,7 +226,7 @@ public class MethodScreen extends Screen {
             }
         });
 
-        reportingDescription = (TextBox)def.getWidget(META.getReportingDescription());
+        reportingDescription = (TextBox)def.getWidget(meta.getReportingDescription());
         addScreenHandler(reportingDescription, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 reportingDescription.setValue(data.getReportingDescription());
@@ -245,7 +242,7 @@ public class MethodScreen extends Screen {
             }
         });
 
-        isActive = (CheckBox)def.getWidget(META.getIsActive());
+        isActive = (CheckBox)def.getWidget(meta.getIsActive());
         addScreenHandler(isActive, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 isActive.setValue(data.getIsActive());
@@ -261,7 +258,7 @@ public class MethodScreen extends Screen {
             }
         });
 
-        activeBegin = (CalendarLookUp)def.getWidget(META.getActiveBegin());
+        activeBegin = (CalendarLookUp)def.getWidget(meta.getActiveBegin());
         addScreenHandler(activeBegin, new ScreenEventHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
                 activeBegin.setValue(data.getActiveBegin());
@@ -277,7 +274,7 @@ public class MethodScreen extends Screen {
             }
         });
 
-        activeEnd = (CalendarLookUp)def.getWidget(META.getActiveEnd());
+        activeEnd = (CalendarLookUp)def.getWidget(meta.getActiveEnd());
         addScreenHandler(activeEnd, new ScreenEventHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
                 activeEnd.setValue(data.getActiveEnd());
@@ -354,7 +351,7 @@ public class MethodScreen extends Screen {
                 QueryData field;
 
                 field = new QueryData();
-                field.key = META.getName();
+                field.key = meta.getName();
                 field.query = ((AppButton)event.getSource()).action;
                 field.type = QueryData.Type.STRING;
 
@@ -369,6 +366,8 @@ public class MethodScreen extends Screen {
         data = new MethodDO();
         setState(State.QUERY);
         DataChangeEvent.fire(this);
+
+        setFocus(name);
         window.setDone(consts.get("enterFieldsToQuery"));
     }
     
@@ -380,6 +379,16 @@ public class MethodScreen extends Screen {
     	nav.previous();
     }
     
+    private void add() {
+        data = new MethodDO();
+        data.setIsActive("Y");
+        setState(State.ADD);
+        DataChangeEvent.fire(this);
+        
+        setFocus(name);
+        window.setDone(consts.get("enterInformationPressCommit"));
+    }
+    
     private void update() {
         window.setBusy(consts.get("lockForUpdate"));
 
@@ -388,25 +397,15 @@ public class MethodScreen extends Screen {
 
             setState(State.UPDATE);
             DataChangeEvent.fire(this);
+            setFocus(name);
         } catch (Exception e) {
             Window.alert(e.getMessage());
         }
         window.clearStatus();
     }
  
-    private void add() {
-        data = new MethodDO();
-        data.setIsActive("Y");
-        setState(State.ADD);
-        DataChangeEvent.fire(this);
-        window.setDone(consts.get("enterInformationPressCommit"));
-    }
-    
     private void commit() {
-        //
-        // set the focus to null so every field will commit its data.
-        //
-        name.setFocus(false);
+        setFocus(null);
 
         if ( !validate()) {
             window.setError(consts.get("correctErrors"));
@@ -464,6 +463,7 @@ public class MethodScreen extends Screen {
     }
     
     private void abort() {
+        setFocus(null);
         clearErrors();
         window.setBusy(consts.get("cancelChanges"));
 

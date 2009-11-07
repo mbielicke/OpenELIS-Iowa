@@ -33,14 +33,13 @@ import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.QcAnalyteViewDO;
 import org.openelis.domain.SecuritySystemUserDO;
-import org.openelis.domain.TestResultViewDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.LocalizedException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.RPC;
-import org.openelis.gwt.common.SecurityModule;
 import org.openelis.gwt.common.SecurityException;
+import org.openelis.gwt.common.SecurityModule;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
@@ -54,7 +53,6 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
-import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
@@ -79,7 +77,7 @@ import org.openelis.meta.InventoryItemMeta;
 import org.openelis.metamap.QcMetaMap;
 import org.openelis.modules.dictionary.client.DictionaryLookupScreen;
 import org.openelis.modules.main.client.openelis.OpenELIS;
-import org.openelis.utilcommon.ResultRange;
+import org.openelis.utilcommon.DataBaseUtil;
 import org.openelis.utilcommon.ResultRangeNumeric;
 import org.openelis.utilcommon.ResultRangeTiter;
 
@@ -97,7 +95,6 @@ public class QcScreen extends Screen {
     private InventoryItemMeta           invMeta = meta.getInventoryItem();
     private SecurityModule              security;
 
-    private QcScreen                    screen;
     private AppButton                   queryButton, previousButton, nextButton, addButton,
                                         updateButton, commitButton, abortButton, addAnalyteButton,
                                         removeAnalyteButton, dictionaryButton;
@@ -110,10 +107,12 @@ public class QcScreen extends Screen {
     private CheckBox                    isSingleUse;
     private TableWidget                 qcAnalyteTable;
 
-    private int                         typeDict, typeNumeric, typeTiter;
+    private Integer                     typeDict, typeNumeric, typeTiter;
     private DictionaryLookupScreen      dictLookup;
     private ScreenService               analyteService, inventoryService, userService,
                                         dictionaryService;
+    private ResultRangeNumeric          rangeNumeric;
+    private ResultRangeTiter            rangeTiter;
 
     public QcScreen() throws Exception {
         super((ScreenDefInt)GWT.create(QcDef.class));
@@ -156,8 +155,6 @@ public class QcScreen extends Screen {
      */
     @SuppressWarnings("unchecked")
     private void initialize() {
-        screen = this;
-
         //
         // button panel buttons
         //
@@ -268,8 +265,6 @@ public class QcScreen extends Screen {
                 name.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                    .contains(event.getState()));
                 name.setQueryMode(event.getState() == State.QUERY);
-                if (EnumSet.of(State.QUERY, State.ADD, State.UPDATE).contains(event.getState()))
-                    name.setFocus(true);
             }
         });
 
@@ -515,9 +510,7 @@ public class QcScreen extends Screen {
         analyteTypeId = (Dropdown)qcAnalyteTable.getColumnWidget(meta.QC_ANALYTE.getTypeId());
         addScreenHandler(qcAnalyteTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
             public void onDataChange(DataChangeEvent event) {
-                //
-                //this table is not queried by,so it needs to be cleared in query mode
-                //
+                // table is not queried,so it needs to be cleared in query mode
                 qcAnalyteTable.load(getAnalyteTableModel());
             }
 
@@ -525,6 +518,9 @@ public class QcScreen extends Screen {
                 qcAnalyteTable.enable(EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()));                
             }
         });
+
+        rangeNumeric = new ResultRangeNumeric();
+        rangeTiter   = new ResultRangeTiter();
         
         qcAnalyteTable.addCellEditedHandler(new CellEditedHandler() {
             public void onCellUpdated(CellEditedEvent event) {
@@ -558,9 +554,8 @@ public class QcScreen extends Screen {
                         break;
                     case 3:
                         try {
-                            if (data.getTypeId() == typeDict) {
-//                                dict = getDictionary(val);
-                                dict = null;
+                            if (DataBaseUtil.isSame(data.getTypeId(), typeDict)) {
+                                dict = getDictionary((String)val);
                                 if (dict != null) {
                                     data.setValue(dict.getId().toString());
                                     data.setDictionary(dict.getEntry());
@@ -569,14 +564,14 @@ public class QcScreen extends Screen {
                                     data.setDictionary(null);
                                     throw new LocalizedException("qc.invalidValue");
                                 }
-                            } else if (data.getTypeId() == typeNumeric) {
-                                if (! (row.data instanceof ResultRangeNumeric))
-                                    row.data = new ResultRangeNumeric();
-                                ((ResultRange)row.data).setRange((String)val);
-                            } else if (data.getTypeId() == typeTiter) {
-                                if (! (row.data instanceof ResultRangeTiter))
-                                    row.data = new ResultRangeTiter();
-                                ((ResultRange)row.data).setRange((String)val);
+                            } else if (DataBaseUtil.isSame(data.getTypeId(),typeNumeric)) {
+                                rangeNumeric.setRange((String)val);
+                                data.setValue(rangeNumeric.toString());
+                                qcAnalyteTable.setCell(r, c, data.getValue());
+                            } else if (DataBaseUtil.isSame(data.getTypeId(),typeTiter)) {
+                                rangeTiter.setRange((String)val);
+                                data.setValue(rangeTiter.toString());
+                                qcAnalyteTable.setCell(r, c, data.getValue());
                             } else {
                                 throw new LocalizedException("qc.invalidValue");
                             }
@@ -763,6 +758,7 @@ public class QcScreen extends Screen {
             model.add(new TableDataRow(d.getId(), d.getEntry()));
 
         typeId.setModel(model);
+        typeId.setSearchMode(Dropdown.Search.LINEAR);
         typeDict    = DictionaryCache.getIdFromSystemName("qc_analyte_dictionary");
         typeNumeric = DictionaryCache.getIdFromSystemName("qc_analyte_numeric");
         typeTiter   = DictionaryCache.getIdFromSystemName("qc_analyte_titer");
@@ -782,6 +778,7 @@ public class QcScreen extends Screen {
             model.add(new TableDataRow(d.getId(), d.getEntry()));
 
         analyteTypeId.setModel(model);
+        analyteTypeId.setSearchMode(Dropdown.Search.LINEAR);
     }
 
     /*
@@ -793,6 +790,8 @@ public class QcScreen extends Screen {
 
         setState(State.QUERY);
         DataChangeEvent.fire(this);
+        
+        setFocus(name);
         window.setDone(consts.get("enterFieldsToQuery"));
     }
 
@@ -809,6 +808,8 @@ public class QcScreen extends Screen {
 
         setState(State.ADD);
         DataChangeEvent.fire(this);
+
+        setFocus(name);
         window.setDone(consts.get("enterInformationPressCommit"));
     }
 
@@ -820,6 +821,7 @@ public class QcScreen extends Screen {
 
             setState(State.UPDATE);
             DataChangeEvent.fire(this);
+            setFocus(name);
         } catch (Exception e) {
             Window.alert(e.getMessage());
         }
@@ -827,10 +829,7 @@ public class QcScreen extends Screen {
     }
 
     public void commit() {
-        //
-        // set the focus to null so every field will commit its data.
-        //
-        name.setFocus(false);
+        setFocus(null);
 
         if ( !validate()) {
             window.setError(consts.get("correctErrors"));
@@ -875,7 +874,7 @@ public class QcScreen extends Screen {
     }
 
     protected void abort() {
-        name.setFocus(false);
+        setFocus(null);
         clearErrors();
         window.setBusy(consts.get("cancelChanges"));
 
@@ -954,58 +953,77 @@ public class QcScreen extends Screen {
         return model;
     }
 
+    private DictionaryDO getDictionary(String entry) {
+        ArrayList<DictionaryDO> list;
+        
+        entry = DataBaseUtil.trim(entry); 
+        if (entry == null)
+            return null;
+        
+        try {
+            list = dictionaryService.callList("fetchByEntry", entry);
+            if (list.size() == 1)
+                return list.get(0);
+            else if (list.size() > 1)                
+                showDictionary(entry);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Window.alert(e.getMessage());
+        }
+        return null;
+    }
+
     private void showDictionary(String entry) {
-        ScreenWindow modal;                                
-/*        
-        if(dictEntryPicker == null) {
+        ScreenWindow modal;
+
+        if (dictLookup == null) {
             try {
-                dictEntryPicker = new DictionaryLookupScreen();
-                dictEntryPicker.addActionHandler(new ActionHandler<DictionaryLookupScreen.Action>(){
-                    public void onAction(ActionEvent<DictionaryLookupScreen.Action> event) {
-                       int selTab,numTabs;
-                       ArrayList<TableDataRow> model;
-                       TestResultViewDO resDO;
-                       TableDataRow row;
-                       Integer dictId;   
-                       
-                       selTab = resultTabPanel.getTabBar().getSelectedTab();     
-                       numTabs = resultTabPanel.getTabBar().getTabCount();
-                       if(event.getAction() == DictionaryLookupScreen.Action.OK) {
-                           model = (ArrayList<TableDataRow>)event.getData();
-                           if(model != null) {
-                               if (model.size() > 0 && numTabs == 0) {
-                                   Window.alert(consts.get("atleastOneResGrp"));
-                                   return;
-                               }               
-                               for(int i = 0; i < model.size(); i++) {
-                                   row = model.get(i);                                                   
-                                   testResultManager.addResultAt(selTab+1,resultTable.numRows(),getNextTempId());
-                                   resDO = testResultManager.getResultAt(selTab+1,resultTable.numRows());
-                                   dictId = DictionaryCache.getIdFromSystemName("test_res_type_dictionary");
-                                   resDO.setValue(String.valueOf((Integer)row.key));
-                                   resDO.setDictionary((String)row.cells.get(0).getValue());
-                                   resDO.setTypeId(dictId);                                           
-                               }
-                               DataChangeEvent.fire(screen, resultTable);
-                           }
-                       }                                
-                    }
-                    
-                });
+                dictLookup = new DictionaryLookupScreen();
             } catch (Exception e) {
                 e.printStackTrace();
-                Window.alert("error: " + e.getMessage());
+                Window.alert("DictionaryLookup Error: " + e.getMessage());
                 return;
-            }                                       
+            }
+        
+            dictLookup.addActionHandler(new ActionHandler<DictionaryLookupScreen.Action>() {
+                public void onAction(ActionEvent<DictionaryLookupScreen.Action> event) {
+                    int r;
+                    IdNameVO entry;
+                    QcAnalyteViewDO data;
+                    ArrayList<IdNameVO> list;
+
+                    if (event.getAction() == DictionaryLookupScreen.Action.OK) {
+                        list = (ArrayList<IdNameVO>)event.getData();
+                        if (list != null) {
+                            r = qcAnalyteTable.getSelectedRow();
+                            if (r == -1) {
+                                window.setError(consts.get(""));
+                                return;
+                            }
+                            entry = list.get(0);
+                            try {
+                                data = manager.getAnalytes().getAnalyteAt(r);
+                                data.setValue(entry.getId().toString());
+                                data.setDictionary(entry.getName());
+                                qcAnalyteTable.setCell(r, 3, data.getValue());
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                qcAnalyteTable.setCell(r, 3, "");
+                                Window.alert("DictionaryLookup Error: " + e.getMessage());
+                            }
+                        }
+                    }
+                }
+            });
         }
-        modal = new ScreenWindow("Dictionary LookUp","dictionaryEntryPickerScreen","",true,false);
+        modal = new ScreenWindow("Dictionary LookUp", "dictionaryEntryPickerScreen", 
+                                 "", true, false);
         modal.setName(consts.get("chooseDictEntry"));
-        modal.setContent(dictEntryPicker);
-        dictEntryPicker.setScreenState(State.DEFAULT);
+        modal.setContent(dictLookup);
+        dictLookup.setScreenState(State.DEFAULT);
         if (entry != null) {
-            dictEntryPicker.clearFields();
-            dictEntryPicker.executeQuery(entry);
+            dictLookup.clearFields();
+            dictLookup.executeQuery(entry);
         }
-        */
     }
 }

@@ -1,28 +1,28 @@
-/** Exhibit A - UIRF Open-source Based Public Software License.
-* 
-* The contents of this file are subject to the UIRF Open-source Based
-* Public Software License(the "License"); you may not use this file except
-* in compliance with the License. You may obtain a copy of the License at
-* openelis.uhl.uiowa.edu
-* 
-* Software distributed under the License is distributed on an "AS IS"
-* basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
-* License for the specific language governing rights and limitations
-* under the License.
-* 
-* The Original Code is OpenELIS code.
-* 
-* The Initial Developer of the Original Code is The University of Iowa.
-* Portions created by The University of Iowa are Copyright 2006-2008. All
-* Rights Reserved.
-* 
-* Contributor(s): ______________________________________.
-* 
-* Alternatively, the contents of this file marked
-* "Separately-Licensed" may be used under the terms of a UIRF Software
-* license ("UIRF Software License"), in which case the provisions of a
-* UIRF Software License are applicable instead of those above. 
-*/
+/**
+ * Exhibit A - UIRF Open-source Based Public Software License.
+ * 
+ * The contents of this file are subject to the UIRF Open-source Based Public
+ * Software License(the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * openelis.uhl.uiowa.edu
+ * 
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+ * the specific language governing rights and limitations under the License.
+ * 
+ * The Original Code is OpenELIS code.
+ * 
+ * The Initial Developer of the Original Code is The University of Iowa.
+ * Portions created by The University of Iowa are Copyright 2006-2008. All
+ * Rights Reserved.
+ * 
+ * Contributor(s): ______________________________________.
+ * 
+ * Alternatively, the contents of this file marked "Separately-Licensed" may be
+ * used under the terms of a UIRF Software license ("UIRF Software License"), in
+ * which case the provisions of a UIRF Software License are applicable instead
+ * of those above.
+ */
 package org.openelis.modules.testTrailer.client;
 
 import java.util.ArrayList;
@@ -64,14 +64,14 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 public class TestTrailerScreen extends Screen {
     private TestTrailerDO      data;
     private TestTrailerMetaMap meta = new TestTrailerMetaMap();
-    private SecurityModule        security;
+    private SecurityModule     security;
 
-    private AppButton             queryButton, previousButton, nextButton, addButton, updateButton,
-                                  deleteButton, commitButton, abortButton;
-    private TextBox               name, description;
-    private TextArea              text;
-    private ButtonGroup           atoz;
-    private ScreenNavigator       nav;
+    private AppButton          queryButton, previousButton, nextButton, addButton, updateButton,
+                               deleteButton, commitButton, abortButton;
+    private TextBox            name, description;
+    private TextArea           text;
+    private ButtonGroup        atoz;
+    private ScreenNavigator    nav;
 
     public TestTrailerScreen() throws Exception {
         super((ScreenDefInt)GWT.create(TestTrailerDef.class));
@@ -93,7 +93,8 @@ public class TestTrailerScreen extends Screen {
 
     /**
      * This method is called to set the initial state of widgets after the
-     * screen is attached to the browser. It is usually called in deferred command.
+     * screen is attached to the browser. It is usually called in deferred
+     * command.
      */
     private void postConstructor() {
         data = new TestTrailerDO();
@@ -101,7 +102,7 @@ public class TestTrailerScreen extends Screen {
         setState(State.DEFAULT);
         DataChangeEvent.fire(this);
     }
-    
+
     /**
      * Setup state and data change handles for every widget on the screen
      */
@@ -230,9 +231,6 @@ public class TestTrailerScreen extends Screen {
                 name.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                    .contains(event.getState()));
                 name.setQueryMode(event.getState() == State.QUERY);
-                if (EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
-                                .contains(event.getState()))
-                    name.setFocus(true);
             }
         });
 
@@ -248,7 +246,7 @@ public class TestTrailerScreen extends Screen {
 
             public void onStateChange(StateChangeEvent<State> event) {
                 description.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
-                                    .contains(event.getState()));
+                                          .contains(event.getState()));
                 description.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -264,7 +262,7 @@ public class TestTrailerScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                text.enable(EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));
+                text.enable(EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()));
                 text.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -349,6 +347,8 @@ public class TestTrailerScreen extends Screen {
         data = new TestTrailerDO();
         setState(State.QUERY);
         DataChangeEvent.fire(this);
+
+        setFocus(name);
         window.setDone(consts.get("enterFieldsToQuery"));
     }
 
@@ -365,6 +365,8 @@ public class TestTrailerScreen extends Screen {
 
         setState(State.ADD);
         DataChangeEvent.fire(this);
+        
+        setFocus(name);
         window.setDone(consts.get("enterInformationPressCommit"));
     }
 
@@ -376,6 +378,7 @@ public class TestTrailerScreen extends Screen {
 
             setState(State.UPDATE);
             DataChangeEvent.fire(this);
+            setFocus(name);
         } catch (Exception e) {
             Window.alert(e.getMessage());
         }
@@ -397,10 +400,7 @@ public class TestTrailerScreen extends Screen {
     }
 
     protected void commit() {
-        //
-        // set the focus to null so every field will commit its data.
-        //
-        name.setFocus(false);
+        setFocus(null);
 
         if ( !validate()) {
             window.setError(consts.get("correctErrors"));
@@ -458,8 +458,7 @@ public class TestTrailerScreen extends Screen {
     }
 
     protected void abort() {
-        name.setFocus(false);
-
+        setFocus(null);
         clearErrors();
         window.setBusy(consts.get("cancelChanges"));
 

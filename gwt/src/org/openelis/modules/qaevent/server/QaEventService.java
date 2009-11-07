@@ -37,7 +37,7 @@ import org.openelis.remote.QaEventRemote;
 
 public class QaEventService {
 
-    private static final int rowPP = 19;
+    private static final int rowPP = 14;
 
     public QaEventViewDO fetchById(Integer id) throws Exception {
         try {

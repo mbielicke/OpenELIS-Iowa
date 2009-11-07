@@ -1,4 +1,5 @@
 
+
 <!--
 Exhibit A - UIRF Open-source Based Public Software License.
   
@@ -68,188 +69,194 @@ UIRF Software License are applicable instead of those above.
     </xsl:variable>
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
     <screen id="Project" name="{resource:getString($constants,'project')}">
-        <HorizontalPanel padding="0" spacing="0">
+
+<!-- main screen -->
+
+      <HorizontalPanel padding="0" spacing="0">
 
 <!--left table goes here -->
 
-          <CollapsePanel key="collapsePanel" style="LeftSidePanel">
-            <HorizontalPanel width="225">
-              <buttonGroup key="atozButtons">
-                <xsl:call-template name="aToZLeftPanelButtons" />
-              </buttonGroup>
-              <VerticalPanel>
-                <table key="atozTable" width="auto" maxRows="18" style="atozTable">
-                  <col width="175" header="{resource:getString($constants,'name')}">
-                    <label />
-                  </col>
-              	</table>
-                <widget halign="center">
-                  <HorizontalPanel >
-                    <appButton key="atozPrev" style="Button" enable="false">
-                      <AbsolutePanel style="prevNavIndex" />
-                    </appButton>
-                    <appButton key="atozNext" style="Button" enable="false">
-                      <AbsolutePanel style="nextNavIndex" />
-                    </appButton>
-                  </HorizontalPanel>
-                </widget>
-              </VerticalPanel>
-            </HorizontalPanel>
-          </CollapsePanel>
-          <VerticalPanel padding="0" spacing="0">
+        <CollapsePanel key="collapsePanel" style="LeftSidePanel">
+          <HorizontalPanel width="225">
+            <buttonGroup key="atozButtons">
+              <xsl:call-template name="aToZLeftPanelButtons" />
+            </buttonGroup>
+            <VerticalPanel>
+              <table key="atozTable" width="auto" maxRows="18" style="atozTable">
+                <col width="175" header="{resource:getString($constants,'name')}">
+                  <label />
+                </col>
+              </table>
+              <widget halign="center">
+                <HorizontalPanel>
+                  <appButton key="atozPrev" style="Button" enable="false">
+                    <AbsolutePanel style="prevNavIndex" />
+                  </appButton>
+                  <appButton key="atozNext" style="Button" enable="false">
+                    <AbsolutePanel style="nextNavIndex" />
+                  </appButton>
+                </HorizontalPanel>
+              </widget>
+            </VerticalPanel>
+          </HorizontalPanel>
+        </CollapsePanel>
+        <VerticalPanel padding="0" spacing="0">
 
 <!--button panel code-->
 
-            <AbsolutePanel spacing="0" style="ButtonPanelContainer">
-               <HorizontalPanel>
-                <xsl:call-template name="queryButton">
-                  <xsl:with-param name="language">
-                    <xsl:value-of select="language" />
-                  </xsl:with-param>
-                </xsl:call-template>
-                <xsl:call-template name="previousButton">
-                  <xsl:with-param name="language">
-                    <xsl:value-of select="language" />
-                  </xsl:with-param>
-                </xsl:call-template>
-                <xsl:call-template name="nextButton">
-                  <xsl:with-param name="language">
-                    <xsl:value-of select="language" />
-                  </xsl:with-param>
-                </xsl:call-template>
-                <xsl:call-template name="buttonPanelDivider" />
-                <xsl:call-template name="addButton">
-                  <xsl:with-param name="language">
-                    <xsl:value-of select="language" />
-                  </xsl:with-param>
-                </xsl:call-template>
-                <xsl:call-template name="updateButton">
-                  <xsl:with-param name="language">
-                    <xsl:value-of select="language" />
-                  </xsl:with-param>
-                </xsl:call-template>
-                <xsl:call-template name="buttonPanelDivider" />
-                <xsl:call-template name="commitButton">
-                  <xsl:with-param name="language">
-                    <xsl:value-of select="language" />
-                  </xsl:with-param>
-                </xsl:call-template>
-                <xsl:call-template name="abortButton">
-                  <xsl:with-param name="language">
-                    <xsl:value-of select="language" />
-                  </xsl:with-param>
-                </xsl:call-template>
-              </HorizontalPanel>
-            </AbsolutePanel>
+          <AbsolutePanel spacing="0" style="ButtonPanelContainer">
+            <HorizontalPanel>
+              <xsl:call-template name="queryButton">
+                <xsl:with-param name="language">
+                  <xsl:value-of select="language" />
+                </xsl:with-param>
+              </xsl:call-template>
+              <xsl:call-template name="previousButton">
+                <xsl:with-param name="language">
+                  <xsl:value-of select="language" />
+                </xsl:with-param>
+              </xsl:call-template>
+              <xsl:call-template name="nextButton">
+                <xsl:with-param name="language">
+                  <xsl:value-of select="language" />
+                </xsl:with-param>
+              </xsl:call-template>
+              <xsl:call-template name="buttonPanelDivider" />
+              <xsl:call-template name="addButton">
+                <xsl:with-param name="language">
+                  <xsl:value-of select="language" />
+                </xsl:with-param>
+              </xsl:call-template>
+              <xsl:call-template name="updateButton">
+                <xsl:with-param name="language">
+                  <xsl:value-of select="language" />
+                </xsl:with-param>
+              </xsl:call-template>
+              <xsl:call-template name="buttonPanelDivider" />
+              <xsl:call-template name="commitButton">
+                <xsl:with-param name="language">
+                  <xsl:value-of select="language" />
+                </xsl:with-param>
+              </xsl:call-template>
+              <xsl:call-template name="abortButton">
+                <xsl:with-param name="language">
+                  <xsl:value-of select="language" />
+                </xsl:with-param>
+              </xsl:call-template>
+            </HorizontalPanel>
+          </AbsolutePanel>
 
 <!--end button panel-->
 
-            <VerticalPanel height="235" padding="0" spacing="0" style="WhiteContentPanel" width="620">
-              <TablePanel style="Form">
-                <row>
-                  <text style="Prompt">
-                    <xsl:value-of select="resource:getString($constants,'id')" />:
-                  </text>
-                  <textbox key="{meta:getId($proj)}" tab="{meta:getName($proj)},parameterTable" width="50" field="Integer" />
-                </row>
-                <row>
-                  <text style="Prompt">
-                    <xsl:value-of select="resource:getString($constants,'name')" />:
-                  </text>
-                  <widget colspan="6">
-                    <textbox case="LOWER" key="{meta:getName($proj)}" max="20" tab="{meta:getDescription($proj)},{meta:getId($proj)}" width="145" required="true"/>
-                  </widget>
-                </row>
-                <row>
-                  <text style="Prompt">
-                    <xsl:value-of select="resource:getString($constants,'description')" />:
-                  </text>
-                  <widget colspan="6">
-                    <textbox key="{meta:getDescription($proj)}" max="60" tab="{meta:getOwnerId($proj)},{meta:getName($proj)}" width="425" required="true"/>
-                  </widget>
-                </row>
-                <row>
-                  <text style="Prompt">
-                    <xsl:value-of select="resource:getString($constants,'owner')" />:
-                  </text>
-                  <widget>
-                    <autoComplete key="{meta:getOwnerId($proj)}" case="LOWER" tab="{meta:getIsActive($proj)},{meta:getDescription($proj)}" width="145" required="true"/>
-                  </widget>
-                </row>
-                <row>
-                  <text style="Prompt">
-                    <xsl:value-of select='resource:getString($constants,"active")' />:
-                  </text>
-                  <check key="{meta:getIsActive($proj)}" tab="{meta:getStartedDate($proj)},{meta:getOwnerId($proj)}" />
-                  <text style="Prompt">
-                    <xsl:value-of select="resource:getString($constants,'referenceTo')" />:
-                  </text>
-                  <widget>
-                    <textbox key="{meta:getReferenceTo($proj)}" max="20" tab="{script:getName($scpt)},{meta:getCompletedDate($proj)}" width="145" />
-                  </widget>
-                </row>
-                <row>
-                  <text style="Prompt">
-                    <xsl:value-of select='resource:getString($constants,"beginDate")' />:
-                  </text>
-                  <calendar begin="0" end="2" key="{meta:getStartedDate($proj)}" tab="{meta:getCompletedDate($proj)},{meta:getIsActive($proj)}" width="90" required="true" />
-                  <text style="Prompt">
-                    <xsl:value-of select="resource:getString($constants,'scriptlet')" />:
-                  </text>
-                  <autoComplete case="LOWER" key="{script:getName($scpt)}" tab="parameterTable,{meta:getId($proj)}" width="180" field="Integer"/>
-                </row>
-                <row>
-                  <text style="Prompt">
-                    <xsl:value-of select='resource:getString($constants,"endDate")' />:
-                  </text>
-                  <calendar begin="0" end="2" key="{meta:getCompletedDate($proj)}" tab="{meta:getReferenceTo($proj)},{meta:getStartedDate($proj)}" width="90" required="true"/>
-                </row>
-              </TablePanel>
-              <VerticalPanel height="5" />
-              <HorizontalPanel width="635">
-                <widget valign="top">
-                  <table key="parameterTable" maxRows="8" showScroll="ALWAYS" tab="{meta:getId($proj)},{script:getName($scpt)}" width="615" style="atozTable">
-                    <col header="{resource:getString($constants,'parameter')}" key="{prmtrMeta:getParameter($prm)}" width="325">
-                      <textbox required="true"/>
-                    </col>
-                    <col header="{resource:getString($constants,'operation')}" key="{prmtrMeta:getOperationId($prm)}" width="80"> 
-                       <dropdown width="80" required="true"/>
-                    </col>
-                    <col header="{resource:getString($constants,'value')}" key="{prmtrMeta:getValue($prm)}" width="400">
-                       <textbox required="true"/>
-                    </col>
-                  </table>
+          <VerticalPanel width="620" height="235" padding="0" spacing="0" style="WhiteContentPanel">
+            <TablePanel style="Form">
+              <row>
+                <text style="Prompt">
+                  <xsl:value-of select="resource:getString($constants,'id')" />:
+                </text>
+                <textbox key="{meta:getId($proj)}" width="50" tab="{meta:getName($proj)},parameterTable" field="Integer" />
+              </row>
+              <row>
+                <text style="Prompt">
+                  <xsl:value-of select="resource:getString($constants,'name')" />:
+                </text>
+                <widget colspan="6">
+                  <textbox key="{meta:getName($proj)}" width="145" case="LOWER" max="20" tab="{meta:getDescription($proj)},{meta:getId($proj)}" required="true" />
                 </widget>
-              </HorizontalPanel>
-              <HorizontalPanel>
-                  <widget>
-                    <appButton key="addParameterButton" style="Button">
-                      <HorizontalPanel>
-                        <AbsolutePanel style="AddRowButtonImage" />
-                        <widget>
-                          <text>
-                            <xsl:value-of select='resource:getString($constants,"addRow")' />
-                          </text>
-                        </widget>
-                      </HorizontalPanel>
-                    </appButton>
-                  </widget>
-                  <widget>
-                    <appButton key="removeParameterButton" style="Button">
-                      <HorizontalPanel>
-                        <AbsolutePanel style="RemoveRowButtonImage" />
-                        <widget>
-                          <text>
-                            <xsl:value-of select='resource:getString($constants,"removeRow")' />
-                          </text>
-                        </widget>
-                      </HorizontalPanel>
-                    </appButton>
-                  </widget>
-              </HorizontalPanel>
-            </VerticalPanel>
+              </row>
+              <row>
+                <text style="Prompt">
+                  <xsl:value-of select="resource:getString($constants,'description')" />:
+                </text>
+                <widget colspan="6">
+                  <textbox key="{meta:getDescription($proj)}" width="425" max="60" tab="{meta:getOwnerId($proj)},{meta:getName($proj)}" required="true" />
+                </widget>
+              </row>
+              <row>
+                <text style="Prompt">
+                  <xsl:value-of select="resource:getString($constants,'owner')" />:
+                </text>
+                <widget>
+                  <autoComplete key="{meta:getOwnerId($proj)}" width="145" case="LOWER" tab="{meta:getIsActive($proj)},{meta:getDescription($proj)}" required="true" />
+                </widget>
+              </row>
+              <row>
+                <text style="Prompt">
+                  <xsl:value-of select='resource:getString($constants,"active")' />:
+                </text>
+                <check key="{meta:getIsActive($proj)}" tab="{meta:getStartedDate($proj)},{meta:getOwnerId($proj)}" />
+                <text style="Prompt">
+                  <xsl:value-of select="resource:getString($constants,'referenceTo')" />:
+                </text>
+                <widget>
+                  <textbox key="{meta:getReferenceTo($proj)}" width="145" max="20" tab="{script:getName($scpt)},{meta:getCompletedDate($proj)}" />
+                </widget>
+              </row>
+              <row>
+                <text style="Prompt">
+                  <xsl:value-of select='resource:getString($constants,"beginDate")' />:
+                </text>
+                <calendar key="{meta:getStartedDate($proj)}" begin="0" end="2" width="90" tab="{meta:getCompletedDate($proj)},{meta:getIsActive($proj)}" required="true" />
+                <text style="Prompt">
+                  <xsl:value-of select="resource:getString($constants,'scriptlet')" />:
+                </text>
+                <autoComplete key="{script:getName($scpt)}" width="180" case="LOWER" tab="parameterTable,{meta:getId($proj)}" field="Integer" />
+              </row>
+              <row>
+                <text style="Prompt">
+                  <xsl:value-of select='resource:getString($constants,"endDate")' />:
+                </text>
+                <calendar key="{meta:getCompletedDate($proj)}" begin="0" end="2" width="90" tab="{meta:getReferenceTo($proj)},{meta:getStartedDate($proj)}" required="true" />
+              </row>
+            </TablePanel>
+            <VerticalPanel height="5" />
+
+<!-- parameter table -->
+
+            <HorizontalPanel width="609">
+              <widget valign="top">
+                <table key="parameterTable" width="590" maxRows="8" showScroll="ALWAYS" style="atozTable" tab="{meta:getId($proj)},{script:getName($scpt)}">
+                  <col key="{prmtrMeta:getParameter($prm)}" width="325" header="{resource:getString($constants,'parameter')}">
+                    <textbox required="true" />
+                  </col>
+                  <col key="{prmtrMeta:getOperationId($prm)}" width="80" header="{resource:getString($constants,'operation')}">
+                    <dropdown width="80" required="true" />
+                  </col>
+                  <col key="{prmtrMeta:getValue($prm)}" width="400" header="{resource:getString($constants,'value')}">
+                    <textbox required="true" />
+                  </col>
+                </table>
+              </widget>
+            </HorizontalPanel>
+            <HorizontalPanel>
+              <widget>
+                <appButton key="addParameterButton" style="Button">
+                  <HorizontalPanel>
+                    <AbsolutePanel style="AddRowButtonImage" />
+                    <widget>
+                      <text>
+                        <xsl:value-of select='resource:getString($constants,"addRow")' />
+                      </text>
+                    </widget>
+                  </HorizontalPanel>
+                </appButton>
+              </widget>
+              <widget>
+                <appButton key="removeParameterButton" style="Button">
+                  <HorizontalPanel>
+                    <AbsolutePanel style="RemoveRowButtonImage" />
+                    <widget>
+                      <text>
+                        <xsl:value-of select='resource:getString($constants,"removeRow")' />
+                      </text>
+                    </widget>
+                  </HorizontalPanel>
+                </appButton>
+              </widget>
+            </HorizontalPanel>
           </VerticalPanel>
-        </HorizontalPanel>
+        </VerticalPanel>
+      </HorizontalPanel>
     </screen>
   </xsl:template>
 </xsl:stylesheet>

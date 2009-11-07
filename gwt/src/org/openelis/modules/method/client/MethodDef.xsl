@@ -1,3 +1,4 @@
+
 <!--
 Exhibit A - UIRF Open-source Based Public Software License.
   
@@ -24,17 +25,18 @@ Alternatively, the contents of this file marked
 license ("UIRF Software License"), in which case the provisions of a
 UIRF Software License are applicable instead of those above. 
   -->
+
 <xsl:stylesheet
-  xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   version="1.0"
-  xmlns:resource="xalan://org.openelis.util.UTFResource"
-  xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xmlns:locale="xalan://java.util.Locale"
-  xmlns:meta="xalan://org.openelis.metamap.MethodMetaMap"
   extension-element-prefixes="resource"
+  xmlns:locale="xalan://java.util.Locale"
+  xmlns:resource="xalan://org.openelis.util.UTFResource"
   xmlns:xalan="http://xml.apache.org/xalan"
-  xsi:noNamespaceSchemaLocation="http://openelis.uhl.uiowa.edu/schema/ScreenSchema.xsd">
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+  xsi:noNamespaceSchemaLocation="http://openelis.uhl.uiowa.edu/schema/ScreenSchema.xsd"
+  xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd"
+  xmlns:meta="xalan://org.openelis.metamap.MethodMetaMap">
 
   <xsl:import href="IMPORT/aToZTwoColumns.xsl" />
   <xalan:component prefix="resource">
@@ -55,26 +57,31 @@ UIRF Software License are applicable instead of those above.
       <xsl:value-of select="props" />
     </xsl:variable>
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
-    <screen name="{resource:getString($constants,'method')}" id="Test">
+
+<!-- main screen -->
+
+    <screen id="Test" name="{resource:getString($constants,'method')}">
       <HorizontalPanel padding="0" spacing="0">
+
 <!--left table goes here -->
-        <CollapsePanel style="LeftSidePanel" height="235px" key="collapsePanel">
-          <HorizontalPanel width="225px">
+
+        <CollapsePanel key="collapsePanel" style="LeftSidePanel">
+          <HorizontalPanel width="225">
             <buttonGroup key="atozButtons">
               <xsl:call-template name="aToZLeftPanelButtons" />
             </buttonGroup>
             <VerticalPanel>
-              <table width="auto" key="atozTable" maxRows="9">
+              <table key="atozTable" width="auto" maxRows="9" style="atozTable">
                 <col width="175" header="{resource:getString($constants,'method')}">
                   <label />
                 </col>
               </table>
               <widget halign="center">
                 <HorizontalPanel>
-                  <appButton enable="false" style="Button" key="atozPrev">
+                  <appButton key="atozPrev" style="Button" enable="false">
                     <AbsolutePanel style="prevNavIndex" />
                   </appButton>
-                  <appButton enable="false" style="Button" key="atozNext">
+                  <appButton key="atozNext" style="Button" enable="false">
                     <AbsolutePanel style="nextNavIndex" />
                   </appButton>
                 </HorizontalPanel>
@@ -82,9 +89,11 @@ UIRF Software License are applicable instead of those above.
             </VerticalPanel>
           </HorizontalPanel>
         </CollapsePanel>
-        <VerticalPanel padding="0" spacing="0">
+
 <!--button panel code-->
-          <AbsolutePanel style="ButtonPanelContainer" spacing="0">
+
+        <VerticalPanel padding="0" spacing="0">
+          <AbsolutePanel spacing="0" style="ButtonPanelContainer">
             <HorizontalPanel>
               <xsl:call-template name="queryButton">
                 <xsl:with-param name="language">
@@ -125,15 +134,17 @@ UIRF Software License are applicable instead of those above.
               </xsl:call-template>
             </HorizontalPanel>
           </AbsolutePanel>
+
 <!--end button panel-->
-          <VerticalPanel width="620px" padding="0" style="WhiteContentPanel" height="235px" spacing="0">
+
+          <VerticalPanel width="560" height="220" padding="0" spacing="0" style="WhiteContentPanel">
             <TablePanel style="Form">
               <row>
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'name')" />:
                 </text>
                 <widget colspan="6">
-                  <textbox width="145px" max="20" case="LOWER" key="{meta:getName($method)}" tab="{meta:getDescription($method)},{meta:getActiveEnd($method)}" required="true"/>
+                  <textbox key="{meta:getName($method)}" width="145" case="LOWER" max="20" tab="{meta:getDescription($method)},{meta:getActiveEnd($method)}" required="true" />
                 </widget>
               </row>
               <row>
@@ -141,7 +152,7 @@ UIRF Software License are applicable instead of those above.
                   <xsl:value-of select="resource:getString($constants,'description')" />:
                 </text>
                 <widget colspan="6">
-                  <textbox width="425px" max="60" case="MIXED" key="{meta:getDescription($method)}" tab="{meta:getReportingDescription($method)},{meta:getName($method)}" />
+                  <textbox key="{meta:getDescription($method)}" width="425" case="MIXED" max="60" tab="{meta:getReportingDescription($method)},{meta:getName($method)}" />
                 </widget>
               </row>
               <row>
@@ -149,7 +160,7 @@ UIRF Software License are applicable instead of those above.
                   <xsl:value-of select="resource:getString($constants,'reportDescription')" />:
                 </text>
                 <widget colspan="6">
-                  <textbox width="425px" max="60" case="MIXED" key="{meta:getReportingDescription($method)}" tab="{meta:getIsActive($method)},{meta:getDescription($method)}" />
+                  <textbox key="{meta:getReportingDescription($method)}" width="425" case="MIXED" max="60" tab="{meta:getIsActive($method)},{meta:getDescription($method)}" />
                 </widget>
               </row>
               <row>
@@ -162,13 +173,13 @@ UIRF Software License are applicable instead of those above.
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"beginDate")' />:
                 </text>
-                <calendar width="90px" key="{meta:getActiveBegin($method)}" begin="0" end="2" tab="{meta:getActiveEnd($method)},{meta:getIsActive($method)}" required="true" pattern="{resource:getString($constants,'datePattern')}"/>
+                <calendar key="{meta:getActiveBegin($method)}" begin="0" end="2" width="90" pattern="{resource:getString($constants,'datePattern')}" tab="{meta:getActiveEnd($method)},{meta:getIsActive($method)}" required="true" />
               </row>
               <row>
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"endDate")' />:
                 </text>
-                <calendar width="90px" key="{meta:getActiveEnd($method)}" begin="0" end="2" tab="{meta:getName($method)},{meta:getActiveBegin($method)}" required="true"  pattern="{resource:getString($constants,'datePattern')}"/>
+                <calendar key="{meta:getActiveEnd($method)}" begin="0" end="2" width="90" pattern="{resource:getString($constants,'datePattern')}" tab="{meta:getName($method)},{meta:getActiveBegin($method)}" required="true" />
               </row>
             </TablePanel>
           </VerticalPanel>

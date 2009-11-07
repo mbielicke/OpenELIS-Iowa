@@ -1,4 +1,5 @@
 
+
 <!--
 Exhibit A - UIRF Open-source Based Public Software License.
   
@@ -37,10 +38,10 @@ UIRF Software License are applicable instead of those above.
   xsi:noNamespaceSchemaLocation="http://openelis.uhl.uiowa.edu/schema/ScreenSchema.xsd"
   xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd"
   xmlns:addr="xalan://org.openelis.meta.AddressMeta"
-  xmlns:parameter="xalan://org.openelis.metamap.OrganizationParameterMeta"
   xmlns:contact="xalan://org.openelis.metamap.OrganizationContactMetaMap"
   xmlns:meta="xalan://org.openelis.metamap.OrganizationMetaMap"
   xmlns:note="xalan://org.openelis.meta.NoteMeta"
+  xmlns:parameter="xalan://org.openelis.metamap.OrganizationParameterMeta"
   xmlns:parent="xalan://org.openelis.meta.OrganizationMeta">
 
   <xsl:import href="IMPORT/aToZOneColumn.xsl" />
@@ -298,7 +299,6 @@ UIRF Software License are applicable instead of those above.
                     </HorizontalPanel>
                   </widget>
                 </VerticalPanel>
-
               </tab>
 
 <!-- TAB 2 -->
@@ -310,7 +310,7 @@ UIRF Software License are applicable instead of those above.
                       <dropdown width="300" field="Integer" required="true" />
                     </col>
                     <col key="{parameter:getValue($param)}" width="287" align="left" header="{resource:getString($constants,'value')}">
-                      <textbox field="String" max="80" required="true" />
+                      <textbox max="80" field="String" required="true" />
                     </col>
                   </table>
                   <widget style="TableButtonFooter">

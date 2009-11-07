@@ -32,7 +32,6 @@ import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.ProjectParameterDO;
-import org.openelis.domain.QcAnalyteViewDO;
 import org.openelis.domain.SecuritySystemUserDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.LastPageException;
@@ -83,10 +82,10 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class ProjectScreen extends Screen {
+    private ProjectManager   manager;
     private ProjectMetaMap   meta       = new ProjectMetaMap();
     private ScriptletMeta    scriptMeta = new ScriptletMeta();
     private SecurityModule   security;
-    private ProjectManager   manager;
 
     private CalendarLookUp   startedDate, completedDate;
     private TextBox<Integer> id;
@@ -240,8 +239,6 @@ public class ProjectScreen extends Screen {
                 id.enable(EnumSet.of(State.QUERY)
                                  .contains(event.getState()));
                 id.setQueryMode(event.getState() == State.QUERY);
-                if (state == State.QUERY)
-                    id.setFocus(true);
             }
         });
 
@@ -259,8 +256,6 @@ public class ProjectScreen extends Screen {
                 name.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                    .contains(event.getState()));
                 name.setQueryMode(event.getState() == State.QUERY);
-                if (EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()))
-                    name.setFocus(true);
             }
         });
 
@@ -610,6 +605,8 @@ public class ProjectScreen extends Screen {
         manager = ProjectManager.getInstance();
         setState(State.QUERY);
         DataChangeEvent.fire(this);
+        
+        setFocus(id);
         window.setDone(consts.get("enterFieldsToQuery"));
     }
 
@@ -621,6 +618,16 @@ public class ProjectScreen extends Screen {
         nav.previous();
     }
 
+    private void add() {
+        manager = ProjectManager.getInstance();
+        manager.getProject().setIsActive("Y");
+
+        setState(State.ADD);
+        DataChangeEvent.fire(this);
+        setFocus(name);
+        window.setDone(consts.get("enterInformationPressCommit"));
+    }
+
     private void update() {
         window.setBusy(consts.get("lockForUpdate"));
 
@@ -629,26 +636,15 @@ public class ProjectScreen extends Screen {
 
             setState(State.UPDATE);
             DataChangeEvent.fire(this);
+            setFocus(name);
         } catch (Exception e) {
             Window.alert(e.getMessage());
         }
         window.clearStatus();
     }
 
-    private void add() {
-        manager = ProjectManager.getInstance();
-        manager.getProject().setIsActive("Y");
-
-        setState(State.ADD);
-        DataChangeEvent.fire(this);
-        window.setDone(consts.get("enterInformationPressCommit"));
-    }
-
     private void commit() {
-        //
-        // set the focus to null so every field will commit its data.
-        //
-        name.setFocus(false);
+        setFocus(null);
 
         if ( !validate()) {
             window.setError(consts.get("correctErrors"));
@@ -693,7 +689,7 @@ public class ProjectScreen extends Screen {
     }
 
     private void abort() {
-        name.setFocus(false);
+        setFocus(null);
         clearErrors();
         window.setBusy(consts.get("cancelChanges"));
 
