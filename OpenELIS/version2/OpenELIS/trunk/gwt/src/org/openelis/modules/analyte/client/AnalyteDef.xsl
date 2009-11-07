@@ -1,4 +1,5 @@
 
+
 <!--
 Exhibit A - UIRF Open-source Based Public Software License.
   
@@ -27,17 +28,17 @@ UIRF Software License are applicable instead of those above.
   -->
 
 <xsl:stylesheet
-  extension-element-prefixes="resource"
   version="1.0"
+  extension-element-prefixes="resource"
   xmlns:locale="xalan://java.util.Locale"
-  xmlns:meta="xalan://org.openelis.metamap.AnalyteMetaMap"
-  xmlns:parentMeta="xalan://org.openelis.meta.AnalyteMeta"
   xmlns:resource="xalan://org.openelis.util.UTFResource"
   xmlns:xalan="http://xml.apache.org/xalan"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   xsi:noNamespaceSchemaLocation="http://openelis.uhl.uiowa.edu/schema/ScreenSchema.xsd"
-  xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd">
+  xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd"
+  xmlns:meta="xalan://org.openelis.metamap.AnalyteMetaMap"
+  xmlns:parentMeta="xalan://org.openelis.meta.AnalyteMeta">
 
   <xsl:import href="IMPORT/aToZTwoColumns.xsl" />
   <xalan:component prefix="resource">
@@ -62,28 +63,31 @@ UIRF Software License are applicable instead of those above.
       <xsl:value-of select="props" />
     </xsl:variable>
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
+
+<!-- main screen -->
+
     <screen id="Analyte" name="{resource:getString($constants,'analyte')}">
       <HorizontalPanel padding="0" spacing="0">
 
 <!--left table goes here -->
 
-        <CollapsePanel height="235px" key="collapsePanel" style="LeftSidePanel">
-          <HorizontalPanel width="225px">
+        <CollapsePanel key="collapsePanel" style="LeftSidePanel">
+          <HorizontalPanel width="225">
             <buttonGroup key="atozButtons">
               <xsl:call-template name="aToZLeftPanelButtons" />
             </buttonGroup>
             <VerticalPanel>
-              <table key="atozTable" maxRows="9" width="auto">
-                <col header="{resource:getString($constants,'name')}" width="175">
+              <table key="atozTable" width="auto" maxRows="9" style="atozTable">
+                <col width="175" header="{resource:getString($constants,'name')}">
                   <label />
                 </col>
               </table>
               <widget halign="center">
                 <HorizontalPanel>
-                  <appButton enable="false" key="atozPrev" style="Button">
+                  <appButton key="atozPrev" style="Button" enable="false">
                     <AbsolutePanel style="prevNavIndex" />
                   </appButton>
-                  <appButton enable="false" key="atozNext" style="Button">
+                  <appButton key="atozNext" style="Button" enable="false">
                     <AbsolutePanel style="nextNavIndex" />
                   </appButton>
                 </HorizontalPanel>
@@ -91,10 +95,10 @@ UIRF Software License are applicable instead of those above.
             </VerticalPanel>
           </HorizontalPanel>
         </CollapsePanel>
-        <VerticalPanel spacing="0">
 
 <!--button panel code-->
 
+        <VerticalPanel spacing="0">
           <AbsolutePanel spacing="0" style="ButtonPanelContainer">
             <HorizontalPanel>
               <xsl:call-template name="queryButton">
@@ -123,11 +127,6 @@ UIRF Software License are applicable instead of those above.
                   <xsl:value-of select="language" />
                 </xsl:with-param>
               </xsl:call-template>
-              <xsl:call-template name="deleteButton">
-                <xsl:with-param name="language">
-                  <xsl:value-of select="language" />
-                </xsl:with-param>
-              </xsl:call-template>
               <xsl:call-template name="buttonPanelDivider" />
               <xsl:call-template name="commitButton">
                 <xsl:with-param name="language">
@@ -144,7 +143,7 @@ UIRF Software License are applicable instead of those above.
 
 <!--end button panel-->
 
-          <VerticalPanel height="235px" padding="0" spacing="0" style="WhiteContentPanel" width="600px">
+          <VerticalPanel width="550" height="220" padding="0" spacing="0" style="WhiteContentPanel">
             <TablePanel style="Form">
               <row>
                 <HorizontalPanel style="FormVerticalSpacing" />
@@ -153,21 +152,21 @@ UIRF Software License are applicable instead of those above.
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"name")' />:
                 </text>
-                <textbox key="{meta:getName($meta)}" max="60" required="true" tab="{parentMeta:getName($parentMeta)},{meta:getIsActive($meta)}" width="350px" />
+                <textbox key="{meta:getName($meta)}" width="350" max="60" tab="{parentMeta:getName($parentMeta)},{meta:getIsActive($meta)}" required="true" />
               </row>
               <row>
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"parentAnalyte")' />:
                 </text>
                 <widget>
-                  <autoComplete key="{parentMeta:getName($parentMeta)}" tab="{meta:getExternalId($meta)},{meta:getName($meta)}" width="184px" />
+                  <autoComplete key="{parentMeta:getName($parentMeta)}" width="184" tab="{meta:getExternalId($meta)},{meta:getName($meta)}" />
                 </widget>
               </row>
               <row>
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"externalId")' />:
                 </text>
-                <textbox key="{meta:getExternalId($meta)}" max="20" tab="{meta:getIsActive($meta)},{parentMeta:getName($parentMeta)}" width="150px" />
+                <textbox key="{meta:getExternalId($meta)}" width="150" max="20" tab="{meta:getIsActive($meta)},{parentMeta:getName($parentMeta)}" />
               </row>
               <row>
                 <text style="Prompt">

@@ -1,4 +1,5 @@
 
+
 <!--
 Exhibit A - UIRF Open-source Based Public Software License.
   
@@ -57,6 +58,9 @@ UIRF Software License are applicable instead of those above.
       <xsl:value-of select="props" />
     </xsl:variable>
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
+
+<!-- main screen -->
+
     <screen id="TestTrailer" name="{resource:getString($constants,'trailerForTest')}">
       <HorizontalPanel padding="0" spacing="0">
 
@@ -139,19 +143,19 @@ UIRF Software License are applicable instead of those above.
 
 <!--end button panel-->
 
-          <VerticalPanel width="620" padding="0" spacing="0" style="WhiteContentPanel">
+          <VerticalPanel width="600" padding="0" spacing="0" style="WhiteContentPanel">
             <TablePanel style="Form">
               <row>
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"name")' />:
                 </text>
-                <textbox key="{meta:getName($tt)}" width="150" case="LOWER" max="60" tab="{meta:getDescription($tt)},{meta:getText($tt)}" required="true"/>
+                <textbox key="{meta:getName($tt)}" width="150" case="LOWER" max="60" tab="{meta:getDescription($tt)},{meta:getText($tt)}" required="true" />
               </row>
               <row>
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"description")' />:
                 </text>
-                <textbox key="{meta:getDescription($tt)}" width="300" max="60" tab="{meta:getText($tt)},{meta:getName($tt)}" required="true"/>
+                <textbox key="{meta:getDescription($tt)}" width="300" max="60" tab="{meta:getText($tt)},{meta:getName($tt)}" required="true" />
               </row>
               <row>
                 <widget valign="top">
@@ -160,7 +164,7 @@ UIRF Software License are applicable instead of those above.
                   </text>
                 </widget>
                 <widget>
-                  <textarea key="{meta:getText($tt)}" width="500" height="145" tab="{meta:getName($tt)},{meta:getDescription($tt)}" required="true"/>
+                  <textarea key="{meta:getText($tt)}" width="500" height="145" tab="{meta:getName($tt)},{meta:getDescription($tt)}" required="true" />
                 </widget>
               </row>
             </TablePanel>

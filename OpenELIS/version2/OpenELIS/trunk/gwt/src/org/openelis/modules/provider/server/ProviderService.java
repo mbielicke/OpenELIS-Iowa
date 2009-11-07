@@ -27,7 +27,7 @@ package org.openelis.modules.provider.server;
 
 import java.util.ArrayList;
 
-import org.openelis.domain.IdLastNameFirstNameDO;
+import org.openelis.domain.IdFirstLastNameVO;
 import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.manager.ProviderAddressManager;
@@ -65,7 +65,7 @@ public class ProviderService {
         }
     }
 
-    public ArrayList<IdLastNameFirstNameDO> query(Query query) throws Exception {
+    public ArrayList<IdFirstLastNameVO> query(Query query) throws Exception {
         try {
             return remote().query(query.getFields(), query.getPage() * rowPP, rowPP);
         } catch (RuntimeException e) {

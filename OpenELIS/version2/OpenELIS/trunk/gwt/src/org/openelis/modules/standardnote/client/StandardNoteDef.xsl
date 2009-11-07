@@ -1,4 +1,5 @@
 
+
 <!--
 Exhibit A - UIRF Open-source Based Public Software License.
   
@@ -27,16 +28,16 @@ UIRF Software License are applicable instead of those above.
   -->
 
 <xsl:stylesheet
-  extension-element-prefixes="resource"
   version="1.0"
+  extension-element-prefixes="resource"
   xmlns:locale="xalan://java.util.Locale"
   xmlns:resource="xalan://org.openelis.util.UTFResource"
-  xmlns:standardNoteMeta="xalan://org.openelis.metamap.StandardNoteMetaMap"
   xmlns:xalan="http://xml.apache.org/xalan"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   xsi:noNamespaceSchemaLocation="http://openelis.uhl.uiowa.edu/schema/ScreenSchema.xsd"
-  xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd">
+  xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd"
+  xmlns:standardNoteMeta="xalan://org.openelis.metamap.StandardNoteMetaMap">
 
   <xsl:import href="IMPORT/aToZTwoColumns.xsl" />
   <xalan:component prefix="resource">
@@ -57,28 +58,31 @@ UIRF Software License are applicable instead of those above.
       <xsl:value-of select="props" />
     </xsl:variable>
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
-    <screen id="Storage" name="{resource:getString($constants,'standardNote')}">
+
+<!-- main screen -->
+
+    <screen id="StandardNote" name="{resource:getString($constants,'standardNote')}">
       <HorizontalPanel padding="0" spacing="0">
 
 <!--left table goes here -->
 
-        <CollapsePanel height="310px" key="collapsePanel" style="LeftSidePanel">
-          <HorizontalPanel width="225px">
+        <CollapsePanel key="collapsePanel" style="LeftSidePanel">
+          <HorizontalPanel width="225">
             <buttonGroup key="atozButtons">
               <xsl:call-template name="aToZLeftPanelButtons" />
             </buttonGroup>
             <VerticalPanel>
-              <table key="atozTable" maxRows="13" width="auto">
-                <col header="{resource:getString($constants,'name')}" width="175">
+              <table key="atozTable" width="auto" maxRows="13" style="atozTable">
+                <col width="175" header="{resource:getString($constants,'name')}">
                   <label />
                 </col>
               </table>
               <widget halign="center">
                 <HorizontalPanel>
-                  <appButton enable="false" key="atozPrev" style="Button">
+                  <appButton key="atozPrev" style="Button" enable="false">
                     <AbsolutePanel style="prevNavIndex" />
                   </appButton>
-                  <appButton enable="false" key="atozNext" style="Button">
+                  <appButton key="atozNext" style="Button" enable="false">
                     <AbsolutePanel style="nextNavIndex" />
                   </appButton>
                 </HorizontalPanel>
@@ -139,7 +143,7 @@ UIRF Software License are applicable instead of those above.
 
 <!--end button panel-->
 
-          <VerticalPanel height="310px" padding="0" spacing="0" style="WhiteContentPanel" width="620px">
+          <VerticalPanel width="590" height="300" padding="0" spacing="0" style="WhiteContentPanel">
             <TablePanel style="Form">
               <row>
                 <HorizontalPanel style="FormVerticalSpacing" />
@@ -148,25 +152,27 @@ UIRF Software License are applicable instead of those above.
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"name")' />:
                 </text>
-                <textbox case="LOWER" key="{standardNoteMeta:getName($meta)}" max="20" required="true" tab="{standardNoteMeta:getDescription($meta)},{standardNoteMeta:getText($meta)}" width="155px" />
+                <textbox key="{standardNoteMeta:getName($meta)}" width="155" case="LOWER" max="20" tab="{standardNoteMeta:getDescription($meta)},{standardNoteMeta:getText($meta)}" required="true" />
               </row>
               <row>
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"description")' />:
                 </text>
-                <textbox key="{standardNoteMeta:getDescription($meta)}" max="60" required="true" tab="{standardNoteMeta:getTypeId($meta)},{standardNoteMeta:getName($meta)}" width="300px" />
+                <textbox key="{standardNoteMeta:getDescription($meta)}" width="300" max="60" tab="{standardNoteMeta:getTypeId($meta)},{standardNoteMeta:getName($meta)}" required="true" />
               </row>
               <row>
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"type")' />:
                 </text>
-                <dropdown key="{standardNoteMeta:getTypeId($meta)}" required="true" tab="{standardNoteMeta:getText($meta)},{standardNoteMeta:getDescription($meta)}" width="121px" />
+                <dropdown key="{standardNoteMeta:getTypeId($meta)}" width="121" tab="{standardNoteMeta:getText($meta)},{standardNoteMeta:getDescription($meta)}" required="true" />
               </row>
               <row>
-                <text style="Prompt">
-                  <xsl:value-of select='resource:getString($constants,"text")' />:
-                </text>
-                <textarea height="180px" key="{standardNoteMeta:getText($meta)}" required="true" tab="{standardNoteMeta:getName($meta)},{standardNoteMeta:getTypeId($meta)}" width="300px" />
+                <widget valign="top">
+                  <text style="Prompt">
+                    <xsl:value-of select='resource:getString($constants,"text")' />:
+                  </text>
+                </widget>
+                <textarea key="{standardNoteMeta:getText($meta)}" width="500" height="195" tab="{standardNoteMeta:getName($meta)},{standardNoteMeta:getTypeId($meta)}" required="true" />
               </row>
             </TablePanel>
           </VerticalPanel>

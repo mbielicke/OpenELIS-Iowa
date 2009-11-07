@@ -1,28 +1,28 @@
-/** Exhibit A - UIRF Open-source Based Public Software License.
-* 
-* The contents of this file are subject to the UIRF Open-source Based
-* Public Software License(the "License"); you may not use this file except
-* in compliance with the License. You may obtain a copy of the License at
-* openelis.uhl.uiowa.edu
-* 
-* Software distributed under the License is distributed on an "AS IS"
-* basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
-* License for the specific language governing rights and limitations
-* under the License.
-* 
-* The Original Code is OpenELIS code.
-* 
-* The Initial Developer of the Original Code is The University of Iowa.
-* Portions created by The University of Iowa are Copyright 2006-2008. All
-* Rights Reserved.
-* 
-* Contributor(s): ______________________________________.
-* 
-* Alternatively, the contents of this file marked
-* "Separately-Licensed" may be used under the terms of a UIRF Software
-* license ("UIRF Software License"), in which case the provisions of a
-* UIRF Software License are applicable instead of those above. 
-*/
+/**
+ * Exhibit A - UIRF Open-source Based Public Software License.
+ * 
+ * The contents of this file are subject to the UIRF Open-source Based Public
+ * Software License(the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * openelis.uhl.uiowa.edu
+ * 
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+ * the specific language governing rights and limitations under the License.
+ * 
+ * The Original Code is OpenELIS code.
+ * 
+ * The Initial Developer of the Original Code is The University of Iowa.
+ * Portions created by The University of Iowa are Copyright 2006-2008. All
+ * Rights Reserved.
+ * 
+ * Contributor(s): ______________________________________.
+ * 
+ * Alternatively, the contents of this file marked "Separately-Licensed" may be
+ * used under the terms of a UIRF Software license ("UIRF Software License"), in
+ * which case the provisions of a UIRF Software License are applicable instead
+ * of those above.
+ */
 package org.openelis.modules.analyte.client;
 
 import java.util.ArrayList;
@@ -65,32 +65,27 @@ import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
-
-
 public class AnalyteScreen extends Screen {
-	
-	private TextBox name, externalId;
-	private CheckBox isActive;
-	private AppButton queryButton, previousButton, nextButton, addButton, updateButton, deleteButton, commitButton, abortButton;
-	private AutoComplete<Integer> parent;
-	private ButtonGroup atoz;
-	private ScreenNavigator nav;
-	
-	private SecurityModule security;
-	
-	private AnalyteViewDO data;
-	
-    private static final AnalyteMetaMap META = new AnalyteMetaMap();
-    
-	
-	public AnalyteScreen() throws Exception {                
+    private AnalyteViewDO         data;
+    private AnalyteMetaMap        meta = new AnalyteMetaMap();
+    private SecurityModule        security;
+
+    private TextBox               name, externalId;
+    private CheckBox              isActive;
+    private AppButton             queryButton, previousButton, nextButton, addButton, updateButton,
+                                  commitButton, abortButton;
+    private AutoComplete<Integer> parent;
+    private ButtonGroup           atoz;
+    private ScreenNavigator       nav;
+
+    public AnalyteScreen() throws Exception {
         super((ScreenDefInt)GWT.create(AnalyteDef.class));
         service = new ScreenService("controller?service=org.openelis.modules.analyte.server.AnalyteService");
+
         security = OpenELIS.security.getModule("analyte");
         if (security == null)
             throw new SecurityException("screenPermException", "Analyte Screen");
 
-        // Setup link between Screen and widget Handlers
         initialize();
 
         DeferredCommand.addCommand(new Command() {
@@ -102,14 +97,15 @@ public class AnalyteScreen extends Screen {
 
     /**
      * This method is called to set the initial state of widgets after the
-     * screen is attached to the browser. It is usually called in deferred command.
+     * screen is attached to the browser. It is usually called in deferred
+     * command.
      */
     private void postConstructor() {
         data = new AnalyteViewDO();
-    	setState(State.DEFAULT);
+        setState(State.DEFAULT);
         DataChangeEvent.fire(this);
     }
-    
+
     private void initialize() {
         queryButton = (AppButton)def.getWidget("query");
         addScreenHandler(queryButton, new ScreenEventHandler<Object>() {
@@ -118,8 +114,9 @@ public class AnalyteScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                queryButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState())
-                                     && security.hasSelectPermission());
+                queryButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY)
+                                          .contains(event.getState()) &&
+                                   security.hasSelectPermission());
                 if (event.getState() == State.QUERY)
                     queryButton.setState(ButtonState.LOCK_PRESSED);
             }
@@ -154,8 +151,9 @@ public class AnalyteScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                addButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState())
-                                     && security.hasAddPermission());
+                addButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY)
+                                        .contains(event.getState()) &&
+                                 security.hasAddPermission());
                 if (event.getState() == State.ADD)
                     addButton.setState(ButtonState.LOCK_PRESSED);
             }
@@ -168,24 +166,10 @@ public class AnalyteScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                updateButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState())
-                                     && security.hasUpdatePermission());
+                updateButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()) &&
+                                    security.hasUpdatePermission());
                 if (event.getState() == State.UPDATE)
                     updateButton.setState(ButtonState.LOCK_PRESSED);
-            }
-        });
-
-        deleteButton = (AppButton)def.getWidget("delete");
-        addScreenHandler(deleteButton, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                delete();
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                deleteButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState())
-                                     && security.hasDeletePermission());
-                if (event.getState() == State.DELETE)
-                    deleteButton.setState(ButtonState.LOCK_PRESSED);
             }
         });
 
@@ -196,7 +180,8 @@ public class AnalyteScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                commitButton.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE,State.DELETE).contains(event.getState()));
+                commitButton.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
+                                           .contains(event.getState()));
             }
         });
 
@@ -207,11 +192,12 @@ public class AnalyteScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                abortButton.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE,State.DELETE).contains(event.getState()));
+                abortButton.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
+                                          .contains(event.getState()));
             }
         });
 
-        name = (TextBox)def.getWidget(META.getName());
+        name = (TextBox)def.getWidget(meta.getName());
         addScreenHandler(name, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 name.setValue(data.getName());
@@ -222,12 +208,13 @@ public class AnalyteScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                name.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                name.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                   .contains(event.getState()));
                 name.setQueryMode(event.getState() == State.QUERY);
             }
         });
 
-        parent = (AutoComplete<Integer>)def.getWidget(META.getParentAnalyte().getName());
+        parent = (AutoComplete<Integer>)def.getWidget(meta.getParentAnalyte().getName());
         addScreenHandler(parent, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 parent.setSelection(data.getParentAnalyteId(), data.getParentAnalyteName());
@@ -239,31 +226,33 @@ public class AnalyteScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                parent.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                parent.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                     .contains(event.getState()));
                 parent.setQueryMode(event.getState() == State.QUERY);
             }
         });
 
         parent.addGetMatchesHandler(new GetMatchesHandler() {
-        	public void onGetMatches(GetMatchesEvent event) {
-        		service.callList("fetchByName",event.getMatch()+"%",new AsyncCallback<ArrayList<IdNameVO>>() {
-        			public void onSuccess(ArrayList<IdNameVO> result) {
-        				ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
-        				for(IdNameVO vo : result) {
-        					model.add(new TableDataRow(vo.getId(),vo.getName()));
-        				}
-        				parent.showAutoMatches(model);
-        			}
-        			
-        			public void onFailure(Throwable caught) {
-        				caught.printStackTrace();
-        				Window.alert(caught.toString());
-        			}
-        		});
-        	}
+            public void onGetMatches(GetMatchesEvent event) {
+                service.callList("fetchByName", event.getMatch() + "%",
+                                 new AsyncCallback<ArrayList<IdNameVO>>() {
+                                     public void onSuccess(ArrayList<IdNameVO> result) {
+                                         ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
+                                         for (IdNameVO vo : result) {
+                                             model.add(new TableDataRow(vo.getId(), vo.getName()));
+                                         }
+                                         parent.showAutoMatches(model);
+                                     }
+
+                                     public void onFailure(Throwable caught) {
+                                         caught.printStackTrace();
+                                         Window.alert(caught.toString());
+                                     }
+                                 });
+            }
         });
-        
-        externalId = (TextBox)def.getWidget(META.getExternalId());
+
+        externalId = (TextBox)def.getWidget(meta.getExternalId());
         addScreenHandler(externalId, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 externalId.setValue(data.getExternalId());
@@ -274,12 +263,13 @@ public class AnalyteScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                externalId.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                externalId.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                         .contains(event.getState()));
                 externalId.setQueryMode(event.getState() == State.QUERY);
             }
         });
 
-        isActive = (CheckBox)def.getWidget(META.getIsActive());
+        isActive = (CheckBox)def.getWidget(meta.getIsActive());
         addScreenHandler(isActive, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 isActive.setValue(data.getIsActive());
@@ -290,11 +280,12 @@ public class AnalyteScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                isActive.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                isActive.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                       .contains(event.getState()));
                 isActive.setQueryMode(event.getState() == State.QUERY);
             }
-        });    	
-        
+        });
+
         //
         // left hand navigation panel
         //
@@ -315,8 +306,7 @@ public class AnalyteScreen extends Screen {
                         } else if (error instanceof LastPageException) {
                             window.setError("No more records in this direction");
                         } else {
-                            Window.alert("Error: Project call query failed; " +
-                                         error.getMessage());
+                            Window.alert("Error: Project call query failed; " + error.getMessage());
                             window.setError(consts.get("queryFailed"));
                         }
                     }
@@ -356,7 +346,7 @@ public class AnalyteScreen extends Screen {
                 QueryData field;
 
                 field = new QueryData();
-                field.key = META.getName();
+                field.key = meta.getName();
                 field.query = ((AppButton)event.getSource()).action;
                 field.type = QueryData.Type.STRING;
 
@@ -366,6 +356,7 @@ public class AnalyteScreen extends Screen {
             }
         });
     }
+
     /*
      * basic button methods
      */
@@ -373,6 +364,8 @@ public class AnalyteScreen extends Screen {
         data = new AnalyteViewDO();
         setState(State.QUERY);
         DataChangeEvent.fire(this);
+
+        setFocus(name);
         window.setDone(consts.get("enterFieldsToQuery"));
     }
 
@@ -389,6 +382,8 @@ public class AnalyteScreen extends Screen {
         data.setIsActive("Y");
         setState(State.ADD);
         DataChangeEvent.fire(this);
+
+        setFocus(name);
         window.setDone(consts.get("enterInformationPressCommit"));
     }
 
@@ -400,20 +395,7 @@ public class AnalyteScreen extends Screen {
 
             setState(State.UPDATE);
             DataChangeEvent.fire(this);
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-        }
-        window.clearStatus();
-    }
-
-    protected void delete() {
-        window.setBusy(consts.get("lockForUpdate"));
-
-        try {
-            data = service.call("fetchForUpdate", data.getId());
-
-            setState(State.DELETE);
-            DataChangeEvent.fire(this);
+            setFocus(name);
         } catch (Exception e) {
             Window.alert(e.getMessage());
         }
@@ -421,10 +403,7 @@ public class AnalyteScreen extends Screen {
     }
 
     protected void commit() {
-        //
-        // set the focus to null so every field will commit its data.
-        //
-        name.setFocus(false);
+        setFocus(null);
 
         if ( !validate()) {
             window.setError(consts.get("correctErrors"));
@@ -465,25 +444,11 @@ public class AnalyteScreen extends Screen {
                 Window.alert("commitUpdate(): " + e.getMessage());
                 window.clearStatus();
             }
-        } else if (state == State.DELETE) {
-            window.setBusy(consts.get("deleting"));
-            try {
-                service.call("delete", data);
-
-                fetchById(null);
-                window.setDone(consts.get("deleteComplete"));
-            } catch (ValidationErrorsList e) {
-                showErrors(e);
-            } catch (Exception e) {
-                Window.alert("commitDelete(): " + e.getMessage());
-                window.clearStatus();
-            }
         }
     }
 
     protected void abort() {
-        name.setFocus(false);
-
+        setFocus(null);
         clearErrors();
         window.setBusy(consts.get("cancelChanges"));
 
@@ -503,16 +468,6 @@ public class AnalyteScreen extends Screen {
                 fetchById(null);
             }
             window.setDone(consts.get("updateAborted"));
-        } else if (state == State.DELETE) {
-            try {
-                data = service.call("abortUpdate", data.getId());
-                setState(State.DISPLAY);
-                DataChangeEvent.fire(this);
-            } catch (Exception e) {
-                Window.alert(e.getMessage());
-                fetchById(null);
-            }
-            window.setDone(consts.get("deleteAborted"));
         } else {
             window.clearStatus();
         }

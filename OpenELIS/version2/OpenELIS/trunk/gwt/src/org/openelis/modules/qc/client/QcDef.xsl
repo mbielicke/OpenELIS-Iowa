@@ -1,4 +1,5 @@
 
+
 <!--
 Exhibit A - UIRF Open-source Based Public Software License.
   
@@ -215,7 +216,7 @@ UIRF Software License are applicable instead of those above.
                     <xsl:value-of select="resource:getString($constants,'preparedVolume')" />:
                   </text>
                   <widget colspan="6">
-                    <textbox key="{meta:getPreparedVolume($qc)}" width="100" tab="{meta:getPreparedUnitId($qc)},{meta:getPreparedDate($qc)}" field="Double"/>
+                    <textbox key="{meta:getPreparedVolume($qc)}" width="100" tab="{meta:getPreparedUnitId($qc)},{meta:getPreparedDate($qc)}" field="Double" />
                   </widget>
                 </row>
                 <row>
@@ -250,7 +251,7 @@ UIRF Software License are applicable instead of those above.
             </HorizontalPanel>
             <VerticalPanel height="10" />
             <VerticalPanel>
-              <table key="QcAnalyteTable" width="625" maxRows="10" showScroll="ALWAYS" tab="{meta:getName($qc)},{meta:getExpireDate($qc)}"  style="atozTable">
+              <table key="QcAnalyteTable" width="625" maxRows="10" showScroll="ALWAYS" style="atozTable" tab="{meta:getName($qc)},{meta:getExpireDate($qc)}">
                 <col key="{analyte:getName($ana)}" width="270" align="left" sort="false" header="{resource:getString($constants,'analyte')}">
                   <autoComplete popWidth="auto" field="Integer" required="true">
                     <col width="300" />
@@ -263,18 +264,18 @@ UIRF Software License are applicable instead of those above.
                   <check />
                 </col>
                 <col key="{qcaMeta:getValue($qca)}" width="400" align="left" sort="false" header="{resource:getString($constants,'expectedValue')}">
-                  <textbox max="80" field="String" required="true"/>
+                  <textbox max="80" field="String" required="true" />
                 </col>
               </table>
               <widget style="TableButtonFooter">
                 <HorizontalPanel>
-                 <appButton key="addAnalyteButton" style="Button">
-                  <HorizontalPanel>
-                   <AbsolutePanel style="AddRowButtonImage" />
-                    <text>
-                     <xsl:value-of select="resource:getString($constants,'addRow')" />
-                    </text>
-                  </HorizontalPanel>
+                  <appButton key="addAnalyteButton" style="Button">
+                    <HorizontalPanel>
+                      <AbsolutePanel style="AddRowButtonImage" />
+                      <text>
+                        <xsl:value-of select="resource:getString($constants,'addRow')" />
+                      </text>
+                    </HorizontalPanel>
                   </appButton>
                   <appButton key="removeAnalyteButton" style="Button">
                     <HorizontalPanel>

@@ -107,8 +107,8 @@ public class SectionScreen extends Screen {
      */
     private void postConstructor() {
         data = new SectionViewDO();
+
         setState(State.DEFAULT);
-        
         DataChangeEvent.fire(this);
     }
     
@@ -212,8 +212,6 @@ public class SectionScreen extends Screen {
             public void onStateChange(StateChangeEvent<State> event) {
                 name.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
                 name.setQueryMode(event.getState() == State.QUERY);
-                if (event.getState() == State.ADD || event.getState() == State.UPDATE)
-                    name.setFocus(true);
             }
         });
 
@@ -434,6 +432,8 @@ public class SectionScreen extends Screen {
         data = new SectionViewDO();
         setState(State.QUERY);
         DataChangeEvent.fire(this);
+
+        setFocus(name);
         window.setDone(consts.get("enterFieldsToQuery"));
     }
 
@@ -450,6 +450,8 @@ public class SectionScreen extends Screen {
 
         setState(State.ADD);
         DataChangeEvent.fire(this);
+
+        setFocus(name);
         window.setDone(consts.get("enterInformationPressCommit"));
     }
 
@@ -461,6 +463,7 @@ public class SectionScreen extends Screen {
 
             setState(State.UPDATE);
             DataChangeEvent.fire(this);
+            setFocus(name);
         } catch (Exception e) {
             Window.alert(e.getMessage());
         }
@@ -468,10 +471,7 @@ public class SectionScreen extends Screen {
     }
 
     protected void commit() {
-        //
-        // set the focus to null so every field will commit its data.
-        //
-        name.setFocus(false);
+        setFocus(null);
 
         if ( !validate()) {
             window.setError(consts.get("correctErrors"));
@@ -516,8 +516,7 @@ public class SectionScreen extends Screen {
     }
 
     protected void abort() {
-        name.setFocus(false);
-
+        setFocus(null);
         clearErrors();
         window.setBusy(consts.get("cancelChanges"));
 

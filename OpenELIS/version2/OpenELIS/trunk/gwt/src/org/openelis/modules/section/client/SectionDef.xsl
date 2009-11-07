@@ -1,3 +1,5 @@
+
+
 <!--
 Exhibit A - UIRF Open-source Based Public Software License.
   
@@ -24,6 +26,7 @@ Alternatively, the contents of this file marked
 license ("UIRF Software License"), in which case the provisions of a
 UIRF Software License are applicable instead of those above. 
   -->
+
 <xsl:stylesheet
   version="1.0"
   extension-element-prefixes="resource"
@@ -65,10 +68,16 @@ UIRF Software License are applicable instead of those above.
       <xsl:value-of select="props" />
     </xsl:variable>
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
+
+<!-- main screen -->
+
     <screen id="Section" name="{resource:getString($constants,'labSection')}">
       <HorizontalPanel padding="0" spacing="0">
+
+<!--left table goes here -->
+
         <CollapsePanel key="collapsePanel" style="LeftSidePanel">
-          <HorizontalPanel width="225px">
+          <HorizontalPanel width="225">
             <buttonGroup key="atozButtons">
               <xsl:call-template name="aToZLeftPanelButtons" />
             </buttonGroup>
@@ -91,58 +100,62 @@ UIRF Software License are applicable instead of those above.
             </VerticalPanel>
           </HorizontalPanel>
         </CollapsePanel>
-        <VerticalPanel padding="0" spacing="0">
+
 <!--button panel code-->
+
+        <VerticalPanel padding="0" spacing="0">
           <AbsolutePanel spacing="0" style="ButtonPanelContainer">
             <HorizontalPanel>
-            <xsl:call-template name="queryButton">
-              <xsl:with-param name="language">
-                <xsl:value-of select="language" />
-              </xsl:with-param>
-            </xsl:call-template>
-            <xsl:call-template name="previousButton">
-              <xsl:with-param name="language">
-                <xsl:value-of select="language" />
-              </xsl:with-param>
-            </xsl:call-template>
-            <xsl:call-template name="nextButton">
-              <xsl:with-param name="language">
-                <xsl:value-of select="language" />
-              </xsl:with-param>
-            </xsl:call-template>
-            <xsl:call-template name="buttonPanelDivider" />
-            <xsl:call-template name="addButton">
-              <xsl:with-param name="language">
-                <xsl:value-of select="language" />
-              </xsl:with-param>
-            </xsl:call-template>
-            <xsl:call-template name="updateButton">
-              <xsl:with-param name="language">
-                <xsl:value-of select="language" />
-              </xsl:with-param>
-            </xsl:call-template>
-            <xsl:call-template name="buttonPanelDivider" />
-            <xsl:call-template name="commitButton">
-              <xsl:with-param name="language">
-                <xsl:value-of select="language" />
-              </xsl:with-param>
-            </xsl:call-template>
-            <xsl:call-template name="abortButton">
-              <xsl:with-param name="language">
-                <xsl:value-of select="language" />
-              </xsl:with-param>
-            </xsl:call-template>
+              <xsl:call-template name="queryButton">
+                <xsl:with-param name="language">
+                  <xsl:value-of select="language" />
+                </xsl:with-param>
+              </xsl:call-template>
+              <xsl:call-template name="previousButton">
+                <xsl:with-param name="language">
+                  <xsl:value-of select="language" />
+                </xsl:with-param>
+              </xsl:call-template>
+              <xsl:call-template name="nextButton">
+                <xsl:with-param name="language">
+                  <xsl:value-of select="language" />
+                </xsl:with-param>
+              </xsl:call-template>
+              <xsl:call-template name="buttonPanelDivider" />
+              <xsl:call-template name="addButton">
+                <xsl:with-param name="language">
+                  <xsl:value-of select="language" />
+                </xsl:with-param>
+              </xsl:call-template>
+              <xsl:call-template name="updateButton">
+                <xsl:with-param name="language">
+                  <xsl:value-of select="language" />
+                </xsl:with-param>
+              </xsl:call-template>
+              <xsl:call-template name="buttonPanelDivider" />
+              <xsl:call-template name="commitButton">
+                <xsl:with-param name="language">
+                  <xsl:value-of select="language" />
+                </xsl:with-param>
+              </xsl:call-template>
+              <xsl:call-template name="abortButton">
+                <xsl:with-param name="language">
+                  <xsl:value-of select="language" />
+                </xsl:with-param>
+              </xsl:call-template>
             </HorizontalPanel>
           </AbsolutePanel>
+
 <!--end button panel-->
-          <VerticalPanel width="620" height="235" padding="0" spacing="0" style="WhiteContentPanel">
+
+          <VerticalPanel height="220" padding="0" spacing="0" style="WhiteContentPanel">
             <TablePanel style="Form">
               <row>
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'name')" />:
                 </text>
                 <widget colspan="6">
-                  <textbox key="{meta:getName($sect)}" width="145px" case="LOWER" max="20" tab="{meta:getDescription($sect)},{parentSect:getName($psect)}" />
+                  <textbox key="{meta:getName($sect)}" width="145" case="LOWER" max="20" tab="{meta:getDescription($sect)},{parentSect:getName($psect)}" />
                 </widget>
               </row>
               <row>
@@ -150,7 +163,7 @@ UIRF Software License are applicable instead of those above.
                   <xsl:value-of select="resource:getString($constants,'description')" />:
                 </text>
                 <widget colspan="6">
-                  <textbox key="{meta:getDescription($sect)}" width="425px" case="MIXED" max="60" tab="{meta:getIsExternal($sect)},{meta:getName($sect)}" />
+                  <textbox key="{meta:getDescription($sect)}" width="425" case="MIXED" max="60" tab="{meta:getIsExternal($sect)},{meta:getName($sect)}" />
                 </widget>
               </row>
               <row>
@@ -164,7 +177,7 @@ UIRF Software License are applicable instead of those above.
                   <xsl:value-of select="resource:getString($constants,'organization')" />:
                 </text>
                 <widget>
-                  <autoComplete key="{org:getName($o)}" width="285px" case="UPPER" popWidth="auto" tab="{parentSect:getName($psect)},{meta:getIsExternal($sect)}" field="Integer">
+                  <autoComplete key="{org:getName($o)}" width="285" case="UPPER" popWidth="auto" tab="{parentSect:getName($psect)},{meta:getIsExternal($sect)}" field="Integer">
                     <col width="180" header="{resource:getString($constants,'name')}" />
                     <col width="110" header="{resource:getString($constants,'street')}" />
                     <col width="100" header="{resource:getString($constants,'city')}" />
@@ -176,7 +189,7 @@ UIRF Software License are applicable instead of those above.
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'parentSection')" />:
                 </text>
-                <autoComplete key="{parentSect:getName($psect)}" width="180px" case="LOWER" popWidth="auto" tab="{meta:getName($sect)},{org:getName($o)}" field="Integer">
+                <autoComplete key="{parentSect:getName($psect)}" width="180" case="LOWER" popWidth="auto" tab="{meta:getName($sect)},{org:getName($o)}" field="Integer">
                   <col width="180" />
                 </autoComplete>
               </row>
