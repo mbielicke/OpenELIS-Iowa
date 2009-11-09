@@ -39,25 +39,25 @@ public class ProviderAddressManagerProxy {
 
     public ProviderAddressManager fetchByProviderId(Integer id) throws Exception {
         ProviderAddressManager pm;
-        ArrayList<ProviderAddressDO> Addresss;
+        ArrayList<ProviderAddressDO> address;
 
-        Addresss = local().fetchByProviderId(id);
+        address = local().fetchByProviderId(id);
         pm = ProviderAddressManager.getInstance();
         pm.setProviderId(id);
-        pm.setAddresses(Addresss);
+        pm.setAddresses(address);
 
         return pm;
     }
 
     public ProviderAddressManager add(ProviderAddressManager man) throws Exception {
         ProviderAddressLocal pl;
-        ProviderAddressDO Address;
+        ProviderAddressDO address;
 
         pl = local();
         for (int i = 0; i < man.count(); i++ ) {
-            Address = man.getAddressAt(i);
-            Address.setProviderId(man.getProviderId());
-            pl.add(Address);
+            address = man.getAddressAt(i);
+            address.setProviderId(man.getProviderId());
+            pl.add(address);
         }
 
         return man;
@@ -65,29 +65,28 @@ public class ProviderAddressManagerProxy {
 
     public ProviderAddressManager update(ProviderAddressManager man) throws Exception {
         ProviderAddressLocal pl;
-        ProviderAddressDO Address;
+        ProviderAddressDO address;
 
         pl = local();
-        
-        if(man.getDeleted() != null){
-        	for (ProviderAddressDO id : man.getDeleted())
-        		pl.delete(id);
+        if (man.getDeleted() != null) {
+            for (ProviderAddressDO data : man.getDeleted())
+                pl.delete(data);
         }
-        
-        for (int i = 0; i < man.count(); i++ ) {
-            Address = man.getAddressAt(i);
 
-            if (Address.getId() == null) {
-                Address.setProviderId(man.getProviderId());
-                pl.add(Address);
+        for (int i = 0; i < man.count(); i++ ) {
+            address = man.getAddressAt(i);
+
+            if (address.getId() == null) {
+                address.setProviderId(man.getProviderId());
+                pl.add(address);
             } else {
-                pl.update(Address);
+                pl.update(address);
             }
         }
 
         return man;
     }
-    
+
     public void validate(ProviderAddressManager man) throws Exception {
         ValidationErrorsList list;
         ProviderAddressLocal cl;
