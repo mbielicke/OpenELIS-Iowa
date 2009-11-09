@@ -29,6 +29,8 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Locale;
 
+import javax.servlet.http.HttpSession;
+
 import org.openelis.gwt.common.SecurityUtil;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.modules.main.client.openelis.OpenELISRPC;
@@ -39,8 +41,18 @@ import org.openelis.util.UTFResource;
 public class OpenELISScreenService {
    
     public void logout() {
-        // TODO Auto-generated method stub
-        
+        HttpSession session;
+        try {
+            session = SessionManager.getSession();
+            SessionManager.removeSession(session.getId());
+            // Clear out the existing session for the user
+            if (session != null) {
+                session.invalidate();
+            }
+            // redirect to CAS logout servlet for deletion of CAS cookies
+        } catch (Exception e) {
+            e.getMessage();
+        }
     }
     
     public String getScreen() {
