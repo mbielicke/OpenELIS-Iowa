@@ -68,7 +68,7 @@ public class WorksheetDO extends DataObject {
     }
 
     public void setCreatedDate(Datetime createdDate) {
-        this.createdDate = DataBaseUtil.toYD(createdDate);
+        this.createdDate = DataBaseUtil.toYM(createdDate);
         _changed = true;
     }
 

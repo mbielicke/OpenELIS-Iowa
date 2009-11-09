@@ -34,33 +34,39 @@ import org.openelis.utilcommon.DataBaseUtil;
 public class WorksheetCreationVO implements RPC {
     private static final long serialVersionUID = 1L;
 
-    protected Integer  analysisId, accessionNumber, statusId, testId;
+    protected Integer  analysisId, accessionNumber, priority, testId, timeHolding,
+                       timeTaAverage, preAnalysisId, statusId;
+    protected Long     dueDays;
     protected String   domain, envDescription, /*projectName,*/ testName, methodName,
                        sectionName;
-    protected Datetime collectionDate, receivedDate;
+    protected Datetime collectionDate, receivedDate, expireDate;
 
     public WorksheetCreationVO() {
 
     }
 
     // analysis, accession number, test, method, section, status and received
-    public WorksheetCreationVO(Integer analysisId, Integer accessionNumber,
-                               String domain, String description, //String projectName,
-                               Integer testId, String testName, String methodName,
-                               String sectionName, Integer statusId,
-                               Date collectionDate, Date receivedDate) {
+    public WorksheetCreationVO(Integer analysisId, String domain, Integer accessionNumber,
+                               Date collectionDate, Date receivedDate, String description,
+                               Integer priority, /*String projectName,*/ Integer testId, String testName,
+                               String methodName, Integer timeHolding, Integer timeTaAverage,
+                               String sectionName, Integer preAnalysisId, Integer statusId) {
         setAnalysisId(analysisId);
-        setAccessionNumber(accessionNumber);
         setDomain(domain);
+        setAccessionNumber(accessionNumber);
+        setCollectionDate(DataBaseUtil.toYD(collectionDate));
+        setReceivedDate(DataBaseUtil.toYM(receivedDate));
         setEnvDescription(description);
+        setPriority(priority);
 //        setProjectName(projectName);
         setTestId(testId);
         setTestName(testName);
         setMethodName(methodName);
+        setTimeHolding(timeHolding);
+        setTimeTaAverage(timeTaAverage);
         setSectionName(sectionName);
+        setPreAnalysisId(preAnalysisId);
         setStatusId(statusId);
-        setCollectionDate(DataBaseUtil.toYD(collectionDate));
-        setReceivedDate(DataBaseUtil.toYM(receivedDate));
     }
 
     public Integer getAnalysisId() {
@@ -71,14 +77,6 @@ public class WorksheetCreationVO implements RPC {
         this.analysisId = analysisId;
     }
 
-    public Integer getAccessionNumber() {
-        return accessionNumber;
-    }
-
-    public void setAccessionNumber(Integer accessionNumber) {
-        this.accessionNumber = accessionNumber;
-    }
-
     public String getDomain() {
         return domain;
     }
@@ -87,12 +85,56 @@ public class WorksheetCreationVO implements RPC {
         this.domain = domain;
     }
 
+    public Integer getAccessionNumber() {
+        return accessionNumber;
+    }
+
+    public void setAccessionNumber(Integer accessionNumber) {
+        this.accessionNumber = accessionNumber;
+    }
+
+    public Datetime getCollectionDate() {
+        return collectionDate;
+    }
+
+    public void setCollectionDate(Datetime collectionDate) {
+        this.collectionDate = DataBaseUtil.toYD(collectionDate);
+    }
+
+    public Datetime getReceivedDate() {
+        return receivedDate;
+    }
+
+    public void setReceivedDate(Datetime receivedDate) {
+        this.receivedDate = DataBaseUtil.toYM(receivedDate);
+    }
+    
     public String getEnvDescription() {
         return envDescription;
     }
 
     public void setEnvDescription(String description) {
         this.envDescription = description;
+    }
+
+    public String getDescription() {
+        String description;
+        
+        description = "";
+        if ("E".equals(getDomain()))
+            description = getEnvDescription();
+//        else if ("C".equals(getDomain()))
+//            description = getLastName()+", "+getFirstName();
+        
+        return description;
+    }
+
+    public Integer getPriority() {
+        return priority;
+    }
+
+    public void setPriority(Integer priority) {
+        this.priority = priority;
     }
 /*
     public String getProjectName() {
@@ -127,12 +169,36 @@ public class WorksheetCreationVO implements RPC {
         this.methodName = methodName;
     }
 
+    public Integer getTimeHolding() {
+        return timeHolding;
+    }
+
+    public void setTimeHolding(Integer timeHolding) {
+        this.timeHolding = timeHolding;
+    }
+
+    public Integer getTimeTaAverage() {
+        return timeTaAverage;
+    }
+
+    public void setTimeTaAverage(Integer timeTaAverage) {
+        this.timeTaAverage = timeTaAverage;
+    }
+
     public String getSectionName() {
         return sectionName;
     }
 
     public void setSectionName(String sectionName) {
         this.sectionName = sectionName;
+    }
+
+    public Integer getPreAnalysisId() {
+        return preAnalysisId;
+    }
+
+    public void setPreAnalysisId(Integer preAnalysisId) {
+        this.preAnalysisId = preAnalysisId;
     }
 
     public Integer getStatusId() {
@@ -143,31 +209,19 @@ public class WorksheetCreationVO implements RPC {
         this.statusId = statusId;
     }
 
-    public Datetime getCollectionDate() {
-        return collectionDate;
+    public Long getDueDays() {
+        return dueDays;
     }
 
-    public void setCollectionDate(Datetime collectionDate) {
-        this.collectionDate = DataBaseUtil.toYD(collectionDate);
+    public void setDueDays(Long dueDays) {
+        this.dueDays = dueDays;
     }
 
-    public Datetime getReceivedDate() {
-        return receivedDate;
+    public Datetime getExpireDate() {
+        return expireDate;
     }
 
-    public void setReceivedDate(Datetime receivedDate) {
-        this.receivedDate = DataBaseUtil.toYM(receivedDate);
-    }
-    
-    public String getDescription() {
-        String description;
-        
-        description = "";
-        if ("E".equals(getDomain()))
-            description = getEnvDescription();
-//        else if ("C".equals(getDomain()))
-//            description = getLastName()+", "+getFirstName();
-        
-        return description;
+    public void setExpireDate(Datetime expireDate) {
+        this.expireDate = expireDate;
     }
 }
