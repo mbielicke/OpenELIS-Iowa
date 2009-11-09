@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -67,7 +68,7 @@ public class QcAnalyteBean implements QcAnalyteLocal {
     private static final QcAnalyteMeta meta = new QcAnalyteMeta();
     private static final Logger        log  = Logger.getLogger(QcAnalyteBean.class.getName());
 
-    public QcAnalyteBean() {
+    /*public QcAnalyteBean() {
         DictionaryDO data;
 
         try {
@@ -76,6 +77,20 @@ public class QcAnalyteBean implements QcAnalyteLocal {
         } catch (Throwable e) {
             typeDict = 0;
             log.log(Level.SEVERE, "Failed to lookup dictionary entry by system name='qc_analyte_dictionary'", e);
+        }
+    }*/
+    
+    @PostConstruct
+    public void init() {
+        DictionaryDO data;
+
+        try {
+            data = dictionary.fetchBySystemName("qc_analyte_dictionary");
+            typeDict = data.getId();
+        } catch (Throwable e) {
+            typeDict = 0;
+            log.log(Level.SEVERE,
+                    "Failed to lookup dictionary entry by system name='qc_analyte_dictionary'", e);
         }
     }
         
