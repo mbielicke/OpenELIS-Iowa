@@ -141,45 +141,54 @@ UIRF Software License are applicable instead of those above.
               <xsl:value-of select="resource:getString($constants,'entered')" />:
             </text>
             <calendar key="{sampleMetaMap:getEnteredDate($sample)}" begin="0" end="4" width="110px" pattern="{resource:getString($constants,'dateTimePattern')}" tab="analysisTable,{sampleMetaMap:getReceivedDate($sample)}" />
-            <appButton key="findButton" style="Button" action="find">
+            <appButton key="searchButton" style="Button" action="search">
               <HorizontalPanel>
                 <AbsolutePanel style="FindButtonImage" />
                 <text>
-                  <xsl:value-of select="resource:getString($constants,'find')" />
+                  <xsl:value-of select="resource:getString($constants,'search')" />
                 </text>
               </HorizontalPanel>
             </appButton>
           </row>
         </TablePanel>
-        <table key="analysesTable" width="800px" maxRows="9" showScroll="ALWAYS" tab="{testMetaMap:getId($test)},{sampleMetaMap:getEnteredDate($sample)}" title="" style="atozTable">
-          <col width="90" header="{resource:getString($constants,'accessionNum')}">
+        <table key="analysesTable" width="800" maxRows="9" showScroll="ALWAYS" tab="{testMetaMap:getId($test)},{sampleMetaMap:getEnteredDate($sample)}" title="" style="atozTable">
+          <col width="90" header="{resource:getString($constants,'accessionNum')}" sort="true">
             <label />
           </col>
-          <col width="150" header="{resource:getString($constants,'description')}">
+          <col width="150" header="{resource:getString($constants,'description')}" sort="true">
             <label />
           </col>
 <!-- 
-          <col width="150" header="{resource:getString($constants,'project')}">
+          <col width="150" header="{resource:getString($constants,'project')}" sort="true">
             <label />
           </col>
 -->
-          <col width="150" header="{resource:getString($constants,'test')}">
+          <col width="100" header="{resource:getString($constants,'test')}" sort="true">
             <label />
           </col>
-          <col width="150" header="{resource:getString($constants,'method')}">
+          <col width="100" header="{resource:getString($constants,'method')}" sort="true">
             <label />
           </col>
-          <col width="150" header="{resource:getString($constants,'section')}">
+          <col width="100" header="{resource:getString($constants,'section')}" sort="true">
             <label />
           </col>
-          <col width="75" header="{resource:getString($constants,'status')}">
+          <col width="75" header="{resource:getString($constants,'status')}" sort="true">
             <label />
           </col>
-          <col width="75" header="{resource:getString($constants,'collected')}">
+          <col width="75" header="{resource:getString($constants,'collected')}" sort="true">
             <calendar pattern="{resource:getString($constants,'datePattern')}" begin="0" end="2"/>
           </col>
-          <col width="100" header="{resource:getString($constants,'received')}">
+          <col width="100" header="{resource:getString($constants,'received')}" sort="true">
             <calendar pattern="{resource:getString($constants,'dateTimePattern')}" begin="0" end="4"/>
+          </col>
+          <col width="50" header="{resource:getString($constants,'due')}" sort="true">
+            <label />
+          </col>
+          <col width="75" header="{resource:getString($constants,'expire')}" sort="true">
+            <calendar pattern="{resource:getString($constants,'datePattern')}" begin="0" end="2"/>
+          </col>
+          <col width="65" header="{resource:getString($constants,'priority')}" sort="true">
+            <label />
           </col>
         </table>
         <widget style="TableFooterPanel">

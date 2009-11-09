@@ -36,15 +36,22 @@ import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 
+import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.ReferenceTable;
+import org.openelis.domain.TestWorksheetDO;
+import org.openelis.domain.TestWorksheetItemDO;
 import org.openelis.domain.WorksheetAnalysisDO;
 import org.openelis.domain.WorksheetCreationVO;
+import org.openelis.domain.WorksheetDO;
 import org.openelis.domain.WorksheetItemDO;
+import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.SecurityException;
 import org.openelis.gwt.common.SecurityModule;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
+import org.openelis.gwt.event.BeforeCloseEvent;
+import org.openelis.gwt.event.BeforeCloseHandler;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.HasActionHandlers;
 import org.openelis.gwt.event.StateChangeEvent;
@@ -75,21 +82,21 @@ import org.openelis.modules.main.client.openelis.OpenELIS;
 
 public class WorksheetCreationScreen extends Screen implements HasActionHandlers<WorksheetCreationScreen.Action> {
 
-    private boolean                         isSaved;
-//    private ScreenService                   testService;
-    private SecurityModule                  security;
-//    private WorksheetCreationScreen         source;
-    private WorksheetManager                manager;
-    private WorksheetMetaMap                meta;
+    private boolean                          isSaved;
+    private SecurityModule                   security;
+    private WorksheetManager                 manager;
+    private WorksheetMetaMap                 meta;
 
-    private AppButton                       saveButton, exitButton,
-                                            insertQCButton, removeRowButton;
+    private AppButton                        saveButton, exitButton,
+                                             insertQCButton, removeRowButton;
 
-    protected ArrayList<Integer>            testIds;
-    protected ArrayList<TableDataRow>       analysisItems;
-    protected TableWidget                   worksheetItemTable;
-    protected TextBox<Integer>              worksheetId;
-    protected WorksheetCreationLookupScreen wcLookupScreen;
+    protected ArrayList<Integer>             testIds;
+    protected ArrayList<TableDataRow>        analysisItems;
+    protected ArrayList<TestWorksheetItemDO> testWorksheetItems;
+    protected TableWidget                    worksheetItemTable;
+    protected TextBox<Integer>               worksheetId;
+    protected TestWorksheetDO                testWorksheetDO;
+    protected WorksheetCreationLookupScreen  wcLookupScreen;
     
     public enum Action {
         ITEMS_CHANGED
@@ -98,8 +105,7 @@ public class WorksheetCreationScreen extends Screen implements HasActionHandlers
     public WorksheetCreationScreen() throws Exception {
         super((ScreenDefInt)GWT.create(WorksheetCreationDef.class));
 
-        service     = new ScreenService("OpenELISServlet?service=org.openelis.modules.worksheetCreation.server.WorksheetCreationService");
-//        testService = new ScreenService("OpenELISServlet?service=org.openelis.modules.test.server.TestService");
+        service = new ScreenService("OpenELISServlet?service=org.openelis.modules.worksheetCreation.server.WorksheetCreationService");
 
         security = OpenELIS.security.getModule("worksheet");
         if (security == null)
@@ -126,9 +132,17 @@ public class WorksheetCreationScreen extends Screen implements HasActionHandlers
         analysisItems = new ArrayList<TableDataRow>();
         isSaved       = true;
         manager       = WorksheetManager.getInstance();
-//        source        = this;
         testIds       = new ArrayList<Integer>();
 
+        window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
+            public void onBeforeClosed(BeforeCloseEvent event) {
+                if (exit())
+                    wcLookupScreen.getWindow().close();
+                else
+                    event.cancel();
+            }
+        });
+        
         setState(State.DEFAULT);
         openLookupWindow();
 
@@ -164,7 +178,7 @@ public class WorksheetCreationScreen extends Screen implements HasActionHandlers
         exitButton = (AppButton)def.getWidget("exitButton");
         addScreenHandler(exitButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-                exit();
+                window.close();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -262,7 +276,7 @@ public class WorksheetCreationScreen extends Screen implements HasActionHandlers
                             if (model != null) {
                                 for (int i = 0; i < model.size(); i++) {
                                     row  = model.get(i);
-                                    newRow = new TableDataRow(7);
+                                    newRow = new TableDataRow(9);
                                     data = (WorksheetCreationVO)row.data;
                                     
                                     if (!testIds.contains(data.getTestId()))
@@ -271,9 +285,11 @@ public class WorksheetCreationScreen extends Screen implements HasActionHandlers
                                     newRow.key = row.key;                                   // analysis id
                                     newRow.cells.get(2).value = row.cells.get(0).value;     // accession #
                                     newRow.cells.get(3).value = row.cells.get(1).value;     // description
-                                    newRow.cells.get(4).value = row.cells.get(5).value;     // status
-                                    newRow.cells.get(5).value = row.cells.get(6).value;     // collection date
-                                    newRow.cells.get(6).value = row.cells.get(7).value;     // received data and time
+                                    newRow.cells.get(4).value = row.cells.get(2).value;     // test name
+                                    newRow.cells.get(5).value = row.cells.get(3).value;     // method name
+                                    newRow.cells.get(6).value = row.cells.get(5).value;     // status
+                                    newRow.cells.get(7).value = row.cells.get(6).value;     // collection date
+                                    newRow.cells.get(8).value = row.cells.get(7).value;     // received data and time
                                     analysisItems.add(newRow);
                                 }
                                 
@@ -286,29 +302,27 @@ public class WorksheetCreationScreen extends Screen implements HasActionHandlers
                                 mergeAnalysesAndQCs();
 
                                 isSaved = false;
-//                                saveButton.enable(true);
+                                saveButton.enable(true);
 //                                insertQCButton.enable(true);
                                 worksheetItemTable.enable(true);
                             }
                         }
                     }
                 });
+                
+                OpenELIS.browser.addScreen(wcLookupScreen);
             } catch (Exception e) {
                 e.printStackTrace();
                 Window.alert("error: " + e.getMessage());
                 return;
             }
         }
-
-        lookupWindow = new ScreenWindow("Worksheet Creation Lookup Screen",
-                                        "worksheetCreationLookupScreen","",false,false);
-        lookupWindow.setName(consts.get("worksheetCreationLookup"));
-        lookupWindow.setContent(wcLookupScreen);
     }
     
     protected void save() {
         int          i;
         TableDataRow row;
+        WorksheetDO              wDO;
         WorksheetAnalysisDO      waDO;
         WorksheetAnalysisManager waManager = null;
         WorksheetItemDO          wiDO;
@@ -321,6 +335,13 @@ public class WorksheetCreationScreen extends Screen implements HasActionHandlers
         
         window.setBusy(consts.get("saving"));
 
+        wDO = manager.getWorksheet();
+        wDO.setCreatedDate(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE));
+        wDO.setSystemUserId(OpenELIS.security.getSystemUserId());
+        wDO.setStatusId(DictionaryCache.getIdFromSystemName("worksheet_working"));
+        // TODO -- Need to pull format from test_worksheet
+        wDO.setFormatId(DictionaryCache.getIdFromSystemName("wsheet_num_format_total"));
+        
         try {
             wiManager = manager.getItems();
         } catch (Exception ignE) {
@@ -342,7 +363,8 @@ public class WorksheetCreationScreen extends Screen implements HasActionHandlers
                 waManager = wiManager.getWorksheetAnalysisAt(i);
                 waManager.addAnalysis(waDO);
             } catch (Exception anyE) {
-                
+                // TODO -- Need to code real exception handling
+                anyE.printStackTrace();
             }
         }
         
@@ -366,18 +388,14 @@ public class WorksheetCreationScreen extends Screen implements HasActionHandlers
         }
     }
 
-    protected void exit() {
+    protected boolean exit() {
         boolean choice;
         
-        if (!isSaved) {
+        choice = true;
+        if (!isSaved)
             choice = Window.confirm("This worksheet has not been saved.\n"+
                                     "Are you sure you would like to exit without saving?");
-            if (!choice)
-                return;
-        }
-
-        wcLookupScreen.getWindow().close();
-        window.close();
+        return choice;
     }
 
     private void loadQCTemplate(Integer testId) {
@@ -423,32 +441,7 @@ public class WorksheetCreationScreen extends Screen implements HasActionHandlers
         }
         worksheetItemTable.load(analysisItems);
     }
-/*    
-    private ArrayList<TableDataRow> getTableModel() {
-        int i;
-        ArrayList<TableDataRow> model;
-        TableDataRow row;
-        WorksheetItemDO data;
-        
-        model = new ArrayList<TableDataRow>();
-        if (manager == null)
-            return model;
 
-        try {
-            for (i = 0; i < manager.getItems().count(); i++) {
-                data = (WorksheetItemDO)manager.getItems().getItemAt(i);
-
-                row = new TableDataRow(13);
-                row.cells.get(0).value = data.getPosition();
-                model.add(row);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-        return model;
-    }
-*/
     public HandlerRegistration addActionHandler(ActionHandler<WorksheetCreationScreen.Action> handler) {
         return addHandler(handler, ActionEvent.getType());
     }        

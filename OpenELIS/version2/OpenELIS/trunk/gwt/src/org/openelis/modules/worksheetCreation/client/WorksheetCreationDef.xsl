@@ -119,6 +119,12 @@ UIRF Software License are applicable instead of those above.
           <col width="150" header="{resource:getString($constants,'description')}" sort="true">
             <label />
           </col>
+          <col width="100" header="{resource:getString($constants,'test')}" sort="true">
+            <label />
+          </col>
+          <col width="100" header="{resource:getString($constants,'method')}" sort="true">
+            <label />
+          </col>
           <col width="75" header="{resource:getString($constants,'status')}" sort="true">
             <label />
           </col>
