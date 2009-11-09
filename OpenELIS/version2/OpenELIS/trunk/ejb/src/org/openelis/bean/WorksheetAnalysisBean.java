@@ -50,7 +50,7 @@ import org.openelis.utilcommon.DataBaseUtil;
 @Stateless
 @SecurityDomain("openelis")
 @RolesAllowed("worksheet-select")
-public class WorksheetAnaylsisBean implements WorksheetAnalysisLocal {
+public class WorksheetAnalysisBean implements WorksheetAnalysisLocal {
 
     @PersistenceContext(name = "openelis")
     private EntityManager manager;

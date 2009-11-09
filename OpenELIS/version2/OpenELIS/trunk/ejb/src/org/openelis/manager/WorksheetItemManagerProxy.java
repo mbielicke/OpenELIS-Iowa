@@ -62,6 +62,8 @@ public class WorksheetItemManagerProxy {
             item = manager.getWorksheetItemAt(i);
             item.setWorksheetId(manager.getWorksheetId());
             local.add(item);
+            
+            manager.getWorksheetAnalysisAt(i).setWorksheetItemId(item.getId());
             manager.getWorksheetAnalysisAt(i).add();
         }
         

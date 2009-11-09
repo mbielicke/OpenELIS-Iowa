@@ -117,7 +117,7 @@ public class WorksheetBean implements WorksheetRemote, WorksheetLocal {
         entity.setStatusId(data.getStatusId());
         entity.setFormatId(data.getFormatId());
 
-        manager.persist(data);
+        manager.persist(entity);
         data.setId(entity.getId());
         
         return data;

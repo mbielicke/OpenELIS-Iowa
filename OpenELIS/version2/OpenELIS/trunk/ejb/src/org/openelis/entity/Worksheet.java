@@ -1,9 +1,8 @@
-
 package org.openelis.entity;
 
 /**
-  * Worksheet Entity POJO for database 
-  */
+ * Worksheet Entity POJO for database
+ */
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -24,6 +23,8 @@ import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+
+import org.openelis.utilcommon.DataBaseUtil;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
@@ -33,118 +34,118 @@ import org.openelis.utils.Auditable;
                         "from Worksheet w where w.id = :id")})
 
 @Entity
-@Table(name="worksheet")
-@EntityListeners({AuditUtil.class})
+@Table(name = "worksheet")
+@EntityListeners( {AuditUtil.class})
 public class Worksheet implements Auditable, Cloneable {
-  
-  @Id
-  @GeneratedValue
-  @Column(name="id")
-  private Integer id;             
 
-  @Column(name="created_date")
-  private Date createdDate;             
+    @Id
+    @GeneratedValue
+    @Column(name = "id")
+    private Integer                   id;
 
-  @Column(name="system_user_id")
-  private Integer systemUserId;             
+    @Column(name = "created_date")
+    private Date                      createdDate;
 
-  @Column(name="status_id")
-  private Integer statusId;             
+    @Column(name = "system_user_id")
+    private Integer                   systemUserId;
 
-  @Column(name="format_id")
-  private Integer formatId;             
+    @Column(name = "status_id")
+    private Integer                   statusId;
 
-  @OneToMany(fetch = FetchType.LAZY)
-  @JoinColumn(name = "worksheet_id")
-  private Collection<WorksheetItem> worksheetItem;
+    @Column(name = "format_id")
+    private Integer                   formatId;
 
-  @Transient
-  private Worksheet original;
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "worksheet_id")
+    private Collection<WorksheetItem> worksheetItem;
 
-  public Integer getId() {
-    return id;
-  }
-  protected void setId(Integer id) {
-    if((id == null && this.id != null) || 
-       (id != null && !id.equals(this.id)))
-      this.id = id;
-  }
+    @Transient
+    private Worksheet                 original;
 
-  public Datetime getCreatedDate() {
-    if(createdDate == null)
-      return null;
-    return new Datetime(Datetime.YEAR,Datetime.MINUTE,createdDate);
-  }
-  public void setCreatedDate (Datetime created_date){
-    if((createdDate == null && this.createdDate != null) || 
-       (createdDate != null && !createdDate.equals(this.createdDate)))
-      this.createdDate = created_date.getDate();
-  }
-
-  public Integer getSystemUserId() {
-    return systemUserId;
-  }
-  public void setSystemUserId(Integer systemUserId) {
-    if((systemUserId == null && this.systemUserId != null) || 
-       (systemUserId != null && !systemUserId.equals(this.systemUserId)))
-      this.systemUserId = systemUserId;
-  }
-
-  public Integer getStatusId() {
-    return statusId;
-  }
-  public void setStatusId(Integer statusId) {
-    if((statusId == null && this.statusId != null) || 
-       (statusId != null && !statusId.equals(this.statusId)))
-      this.statusId = statusId;
-  }
-
-  public Integer getFormatId() {
-    return formatId;
-  }
-  public void setFormatId(Integer formatId) {
-    if((formatId == null && this.formatId != null) || 
-       (formatId != null && !formatId.equals(this.formatId)))
-      this.formatId = formatId;
-  }
-
-  public Collection<WorksheetItem> getWorksheetItem() {
-      return worksheetItem;
-  }
-  public void setWorksheetItem(Collection<WorksheetItem> worksheetItem) {
-      this.worksheetItem = worksheetItem;
-  }
-    
-  public void setClone() {
-    try {
-      original = (Worksheet)this.clone();
-    }catch(Exception e){}
-  }
-  
-  public String getChangeXML() {
-    try {
-      Document doc = XMLUtil.createNew("change");
-      Element root = doc.getDocumentElement();
-      
-      AuditUtil.getChangeXML(id,original.id,doc,"id");
-
-      AuditUtil.getChangeXML(createdDate,original.createdDate,doc,"created_date");
-
-      AuditUtil.getChangeXML(systemUserId,original.systemUserId,doc,"system_user_id");
-
-      AuditUtil.getChangeXML(statusId,original.statusId,doc,"status_id");
-
-      AuditUtil.getChangeXML(formatId,original.formatId,doc,"format_id");
-
-      if(root.hasChildNodes())
-        return XMLUtil.toString(doc);
-    }catch(Exception e){
-      e.printStackTrace();
+    public Integer getId() {
+        return id;
     }
-    return null;
-  }
-   
-  public String getTableName() {
-    return "worksheet";
-  }
-}   
+
+    protected void setId(Integer id) {
+        if (DataBaseUtil.isDifferent(id, this.id))
+            this.id = id;
+    }
+
+    public Datetime getCreatedDate() {
+        return DataBaseUtil.toYM(createdDate);
+    }
+
+    public void setCreatedDate(Datetime created_date) {
+        if (DataBaseUtil.isDifferentYM(created_date, this.createdDate))
+            this.createdDate = DataBaseUtil.toDate(created_date);
+    }
+
+    public Integer getSystemUserId() {
+        return systemUserId;
+    }
+
+    public void setSystemUserId(Integer systemUserId) {
+        if (DataBaseUtil.isDifferent(systemUserId, this.systemUserId))
+            this.systemUserId = systemUserId;
+    }
+
+    public Integer getStatusId() {
+        return statusId;
+    }
+
+    public void setStatusId(Integer statusId) {
+        if (DataBaseUtil.isDifferent(statusId, this.statusId))
+            this.statusId = statusId;
+    }
+
+    public Integer getFormatId() {
+        return formatId;
+    }
+
+    public void setFormatId(Integer formatId) {
+        if (DataBaseUtil.isDifferent(formatId, this.formatId))
+            this.formatId = formatId;
+    }
+
+    public Collection<WorksheetItem> getWorksheetItem() {
+        return worksheetItem;
+    }
+
+    public void setWorksheetItem(Collection<WorksheetItem> worksheetItem) {
+        this.worksheetItem = worksheetItem;
+    }
+
+    public void setClone() {
+        try {
+            original = (Worksheet)this.clone();
+        } catch (Exception e) {
+        }
+    }
+
+    public String getChangeXML() {
+        try {
+            Document doc = XMLUtil.createNew("change");
+            Element root = doc.getDocumentElement();
+
+            AuditUtil.getChangeXML(id, original.id, doc, "id");
+
+            AuditUtil.getChangeXML(createdDate, original.createdDate, doc, "created_date");
+
+            AuditUtil.getChangeXML(systemUserId, original.systemUserId, doc, "system_user_id");
+
+            AuditUtil.getChangeXML(statusId, original.statusId, doc, "status_id");
+
+            AuditUtil.getChangeXML(formatId, original.formatId, doc, "format_id");
+
+            if (root.hasChildNodes())
+                return XMLUtil.toString(doc);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public String getTableName() {
+        return "worksheet";
+    }
+}
