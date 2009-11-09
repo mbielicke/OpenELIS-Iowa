@@ -5,12 +5,14 @@ import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.RPC;
 
-public class ProviderManager implements HasNotesInt,RPC {
-	
-	protected ProviderDO 								provider;
-	protected ProviderAddressManager                    addresses;
-    protected NoteManager                               notes;
-    
+public class ProviderManager implements RPC, HasNotesInt {
+
+    private static final long                       serialVersionUID = 1L;
+
+    protected ProviderDO                            provider;
+    protected ProviderAddressManager                addresses;
+    protected NoteManager                           notes;
+
     protected transient static ProviderManagerProxy proxy;
 
     /**
@@ -24,8 +26,8 @@ public class ProviderManager implements HasNotesInt,RPC {
     }
 
     /**
-     * Creates a new instance of this object. A default Provider object is
-     * also created.
+     * Creates a new instance of this object. A default Provider object is also
+     * created.
      */
     public static ProviderManager getInstance() {
         ProviderManager manager;
@@ -101,7 +103,8 @@ public class ProviderManager implements HasNotesInt,RPC {
         if (notes == null) {
             if (provider.getId() != null) {
                 try {
-                    notes = NoteManager.findByRefTableRefId(ReferenceTable.PROVIDER, provider.getId());
+                    notes = NoteManager.findByRefTableRefId(ReferenceTable.PROVIDER,
+                                                            provider.getId());
                 } catch (NotFoundException e) {
                     // ignore
                 } catch (Exception e) {
@@ -120,5 +123,4 @@ public class ProviderManager implements HasNotesInt,RPC {
 
         return proxy;
     }
-
 }
