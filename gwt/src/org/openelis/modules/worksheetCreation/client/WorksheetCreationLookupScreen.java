@@ -38,9 +38,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.SectionCache;
-import org.openelis.common.AutocompleteRPC;
 import org.openelis.domain.DictionaryDO;
-import org.openelis.domain.IdNameVO;
 import org.openelis.domain.SectionDO;
 import org.openelis.domain.TestMethodVO;
 import org.openelis.domain.WorksheetCreationVO;
@@ -72,10 +70,6 @@ import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
-import org.openelis.gwt.widget.table.event.RowAddedEvent;
-import org.openelis.gwt.widget.table.event.RowAddedHandler;
-import org.openelis.gwt.widget.table.event.RowDeletedEvent;
-import org.openelis.gwt.widget.table.event.RowDeletedHandler;
 import org.openelis.metamap.WorksheetCreationMetaMap;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 
@@ -86,7 +80,7 @@ public class WorksheetCreationLookupScreen extends Screen
     private SecurityModule           security;
     private WorksheetCreationMetaMap meta;
 
-    protected AppButton             findButton, addButton, selectAllButton;
+    protected AppButton             searchButton, addButton, selectAllButton;
     protected AutoComplete<Integer> testId;
     protected CalendarLookUp        receivedDate, enteredDate;
     protected Dropdown<Integer>     sectionId, statusId, typeOfSampleId;
@@ -277,14 +271,14 @@ public class WorksheetCreationLookupScreen extends Screen
             }
         });
 
-        findButton = (AppButton)def.getWidget("findButton");
-        addScreenHandler(findButton, new ScreenEventHandler<Object>() {
+        searchButton = (AppButton)def.getWidget("searchButton");
+        addScreenHandler(searchButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 executeQuery();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                findButton.enable(true);
+                searchButton.enable(true);
             }
         });
 
@@ -396,11 +390,11 @@ public class WorksheetCreationLookupScreen extends Screen
     }
 
     private void setQueryResult(ArrayList<WorksheetCreationVO> list) {
-        int i;
+        int                     i;
         ArrayList<TableDataRow> model;
-        DictionaryDO dictDo;
-        TableDataRow row;
-        WorksheetCreationVO analysisRow;
+        DictionaryDO            dictDo;
+        TableDataRow            row;
+        WorksheetCreationVO     analysisRow;
         
         window.setDone(consts.get("queryingComplete"));
 
@@ -414,20 +408,28 @@ public class WorksheetCreationLookupScreen extends Screen
             model = new ArrayList<TableDataRow>();
             for (i = 0; i < list.size(); i++) {
                 analysisRow = list.get(i);
-
-                dictDo = DictionaryCache.getEntryFromId(analysisRow.getStatusId());
                 
-                row = new TableDataRow(8);
+                row = new TableDataRow(11);
+                row.key = analysisRow.getAnalysisId();
                 row.cells.get(0).value = analysisRow.getAccessionNumber();
                 row.cells.get(1).value = analysisRow.getDescription();
 //                row.cells.get(2).value = analysisRow.getProjectName();
                 row.cells.get(2).value = analysisRow.getTestName();
                 row.cells.get(3).value = analysisRow.getMethodName();
                 row.cells.get(4).value = analysisRow.getSectionName();
+
+                dictDo = DictionaryCache.getEntryFromId(analysisRow.getStatusId());
                 if (dictDo != null)
                     row.cells.get(5).value = dictDo.getEntry();          
+
                 row.cells.get(6).value = analysisRow.getCollectionDate();
                 row.cells.get(7).value = analysisRow.getReceivedDate();
+                row.cells.get(8).value = analysisRow.getDueDays();
+                row.cells.get(9).value = analysisRow.getExpireDate();
+
+                if (analysisRow.getPriority() != null)
+                    row.cells.get(10).value = analysisRow.getPriority();
+
                 row.data = analysisRow;
 
                 model.add(row);
