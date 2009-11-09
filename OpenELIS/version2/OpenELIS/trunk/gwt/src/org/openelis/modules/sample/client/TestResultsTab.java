@@ -153,7 +153,7 @@ MISSING TABLE COL!!! USING OLD TABLE FORMAT?
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                removeResultButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+                removeResultButton.enable(EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()));
             }
         });
 
@@ -164,10 +164,11 @@ MISSING TABLE COL!!! USING OLD TABLE FORMAT?
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                duplicateResultButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+                duplicateResultButton.enable(EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()));
             }
         });
 
+        
     }
     
     private ArrayList<TableDataRow> getTableModel() {
