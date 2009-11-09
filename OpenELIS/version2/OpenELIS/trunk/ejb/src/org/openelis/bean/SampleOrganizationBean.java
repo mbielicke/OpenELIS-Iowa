@@ -58,35 +58,46 @@ public class SampleOrganizationBean implements SampleOrganizationLocal {
         return returnList;
     }
     
-    public void add(SampleOrganizationViewDO sampleOrgDO) {
+    public SampleOrganizationViewDO add(SampleOrganizationViewDO data) {
+        SampleOrganization entity;
+        
         manager.setFlushMode(FlushModeType.COMMIT);
         
-        SampleOrganization organization = new SampleOrganization();
+        entity = new SampleOrganization();
+        entity.setOrganizationId(data.getOrganizationId());
+        entity.setSampleId(data.getSampleId());
+        entity.setTypeId(data.getTypeId());
         
-        organization.setOrganizationId(sampleOrgDO.getOrganizationId());
-        organization.setSampleId(sampleOrgDO.getSampleId());
-        organization.setTypeId(sampleOrgDO.getTypeId());
+        manager.persist(entity);
+        data.setId(entity.getId());
         
-        manager.persist(organization);
-        sampleOrgDO.setId(organization.getId());
+        return data;
     }
 
-    public void update(SampleOrganizationViewDO sampleOrgDO) {
+    public SampleOrganizationViewDO update(SampleOrganizationViewDO data) {
+        SampleOrganization entity;
+        
+        if (!data.isChanged())
+            return data;
+        
         manager.setFlushMode(FlushModeType.COMMIT);
         
-        SampleOrganization organization = manager.find(SampleOrganization.class, sampleOrgDO.getId());
+        entity = manager.find(SampleOrganization.class, data.getId());
+        entity.setOrganizationId(data.getOrganizationId());
+        entity.setSampleId(data.getSampleId());
+        entity.setTypeId(data.getTypeId());
         
-        organization.setOrganizationId(sampleOrgDO.getOrganizationId());
-        organization.setSampleId(sampleOrgDO.getSampleId());
-        organization.setTypeId(sampleOrgDO.getTypeId());
+        return data;
     }
     
-    public void delete(SampleOrganizationViewDO sampleOrgDO) {
+    public void delete(SampleOrganizationViewDO data) {
+        SampleOrganization entity;
+        
         manager.setFlushMode(FlushModeType.COMMIT);
         
-        SampleOrganization organization = manager.find(SampleOrganization.class, sampleOrgDO.getId());
+        entity = manager.find(SampleOrganization.class, data.getId());
         
-        if(organization != null)
-            manager.remove(organization);
+        if(entity != null)
+            manager.remove(entity);
     }    
 }

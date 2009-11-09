@@ -58,37 +58,44 @@ public class SampleQaEventBean implements SampleQAEventLocal {
         return returnList;
     }
     
-    public void add(SampleQaEventViewDO sampleQAEventDO) {
+    public void add(SampleQaEventViewDO data) {
+        SampleQaevent entity;
+        
         manager.setFlushMode(FlushModeType.COMMIT);
         
-        SampleQaevent sampleQA = new SampleQaevent();
+        entity = new SampleQaevent();
+        entity.setIsBillable(data.getIsBillable());
+        entity.setQaeventId(data.getQaEventId());
+        entity.setSampleId(data.getSampleId());
+        entity.setTypeId(data.getTypeId());
         
-        sampleQA.setIsBillable(sampleQAEventDO.getIsBillable());
-        sampleQA.setQaeventId(sampleQAEventDO.getQaEventId());
-        sampleQA.setSampleId(sampleQAEventDO.getSampleId());
-        sampleQA.setTypeId(sampleQAEventDO.getTypeId());
-        
-       manager.persist(sampleQA);
-       sampleQAEventDO.setId(sampleQA.getId());
+       manager.persist(entity);
+       data.setId(entity.getId());
     }
 
-    public void update(SampleQaEventViewDO sampleQAEventDO) {
+    public void update(SampleQaEventViewDO data) {
+        SampleQaevent entity;
+        
+        if (!data.isChanged())
+            return;
+        
         manager.setFlushMode(FlushModeType.COMMIT);
         
-        SampleQaevent sampleQA = manager.find(SampleQaevent.class, sampleQAEventDO.getId());
-            
-        sampleQA.setIsBillable(sampleQAEventDO.getIsBillable());
-        sampleQA.setQaeventId(sampleQAEventDO.getQaEventId());
-        sampleQA.setSampleId(sampleQAEventDO.getSampleId());
-        sampleQA.setTypeId(sampleQAEventDO.getTypeId());
+        entity = manager.find(SampleQaevent.class, data.getId());
+        entity.setIsBillable(data.getIsBillable());
+        entity.setQaeventId(data.getQaEventId());
+        entity.setSampleId(data.getSampleId());
+        entity.setTypeId(data.getTypeId());
     }
     
-    public void delete(SampleQaEventViewDO sampleQAEventDO) {
+    public void delete(SampleQaEventViewDO data) {
+        SampleQaevent entity;
+        
         manager.setFlushMode(FlushModeType.COMMIT);
         
-        SampleQaevent sampleQA = manager.find(SampleQaevent.class, sampleQAEventDO.getId());
+        entity = manager.find(SampleQaevent.class, data.getId());
         
-        if(sampleQA != null)
-            manager.remove(sampleQA);
+        if(entity != null)
+            manager.remove(entity);
     }
 }

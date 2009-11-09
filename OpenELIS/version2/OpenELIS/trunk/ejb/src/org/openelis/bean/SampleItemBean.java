@@ -64,50 +64,62 @@ public class SampleItemBean implements SampleItemLocal {
         return returnList;
     }
 
-    public void add(SampleItemViewDO itemDO){
+    public SampleItemViewDO add(SampleItemViewDO data){
+        SampleItem entity;
+        
         manager.setFlushMode(FlushModeType.COMMIT);
         
-        SampleItem item = new SampleItem();
+        entity = new SampleItem();
+        entity.setContainerId(data.getContainerId());
+        entity.setContainerReference(data.getContainerReference());
+        entity.setItemSequence(data.getItemSequence());
+        entity.setQuantity(data.getQuantity());
+        entity.setSampleId(data.getSampleId());
+        entity.setSampleItemId(data.getSampleItemId());
+        entity.setSourceOfSampleId(data.getSourceOfSampleId());
+        entity.setSourceOther(data.getSourceOther());
+        entity.setTypeOfSampleId(data.getTypeOfSampleId());
+        entity.setUnitOfMeasureId(data.getUnitOfMeasureId());
         
-        item.setContainerId(itemDO.getContainerId());
-        item.setContainerReference(itemDO.getContainerReference());
-        item.setItemSequence(itemDO.getItemSequence());
-        item.setQuantity(itemDO.getQuantity());
-        item.setSampleId(itemDO.getSampleId());
-        item.setSampleItemId(itemDO.getSampleItemId());
-        item.setSourceOfSampleId(itemDO.getSourceOfSampleId());
-        item.setSourceOther(itemDO.getSourceOther());
-        item.setTypeOfSampleId(itemDO.getTypeOfSampleId());
-        item.setUnitOfMeasureId(itemDO.getUnitOfMeasureId());
-        
-       manager.persist(item);
-       itemDO.setId(item.getId());
+       manager.persist(entity);
+       data.setId(entity.getId());
+       
+       return data;
     }
     
-    public void update(SampleItemViewDO itemDO){
+    public SampleItemViewDO update(SampleItemViewDO data){
+        SampleItem entity;
+        
+        if (!data.isChanged())
+            return data;
+        
         manager.setFlushMode(FlushModeType.COMMIT);
         
-        SampleItem item = manager.find(SampleItem.class, itemDO.getId());
+        entity = manager.find(SampleItem.class, data.getId());
         
-        item.setContainerId(itemDO.getContainerId());
-        item.setContainerReference(itemDO.getContainerReference());
-        item.setItemSequence(itemDO.getItemSequence());
-        item.setQuantity(itemDO.getQuantity());
-        item.setSampleId(itemDO.getSampleId());
-        item.setSampleItemId(itemDO.getSampleItemId());
-        item.setSourceOfSampleId(itemDO.getSourceOfSampleId());
-        item.setSourceOther(itemDO.getSourceOther());
-        item.setTypeOfSampleId(itemDO.getTypeOfSampleId());
-        item.setUnitOfMeasureId(itemDO.getUnitOfMeasureId());
+        entity.setContainerId(data.getContainerId());
+        entity.setContainerReference(data.getContainerReference());
+        entity.setItemSequence(data.getItemSequence());
+        entity.setQuantity(data.getQuantity());
+        entity.setSampleId(data.getSampleId());
+        entity.setSampleItemId(data.getSampleItemId());
+        entity.setSourceOfSampleId(data.getSourceOfSampleId());
+        entity.setSourceOther(data.getSourceOther());
+        entity.setTypeOfSampleId(data.getTypeOfSampleId());
+        entity.setUnitOfMeasureId(data.getUnitOfMeasureId());
+        
+        return data;
     }
     
-    public void delete(SampleItemViewDO itemDO){
+    public void delete(SampleItemViewDO data){
+        SampleItem entity;
+        
         manager.setFlushMode(FlushModeType.COMMIT);
         
-        SampleItem item = manager.find(SampleItem.class, itemDO.getId());
+        entity = manager.find(SampleItem.class, data.getId());
         
-        if(item != null)
-            manager.remove(item);
+        if(entity != null)
+            manager.remove(entity);
     }
     
     public void validate() throws Exception {

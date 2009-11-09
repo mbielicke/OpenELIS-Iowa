@@ -37,8 +37,8 @@ public interface AnalysisLocal {
     
     public List fetchBySampleItemId(Integer sampleItemId) throws Exception;
     
-    public void add(AnalysisViewDO analysisDO);
-    public void update(AnalysisViewDO analysisDO);
-    public void delete(AnalysisViewDO analysisDO);
+    public AnalysisViewDO add(AnalysisViewDO data);
+    public AnalysisViewDO update(AnalysisViewDO data);
+    public void delete(AnalysisViewDO data);
     
 }

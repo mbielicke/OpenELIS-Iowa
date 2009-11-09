@@ -10,7 +10,7 @@ import org.openelis.domain.SampleItemViewDO;
 public interface SampleItemLocal {
     public List<SampleItemViewDO> fetchBySampleId(Integer sampleId) throws Exception;
     
-    public void add(SampleItemViewDO itemDO);
-    public void update(SampleItemViewDO itemDO);
-    public void delete(SampleItemViewDO itemDO);
+    public SampleItemViewDO add(SampleItemViewDO data);
+    public SampleItemViewDO update(SampleItemViewDO data);
+    public void delete(SampleItemViewDO data);
 }

@@ -37,7 +37,7 @@ public interface SampleProjectLocal {
 
     public List<SampleProjectViewDO> fetchBySampleId(Integer sampleId) throws Exception;   
     
-    public void add(SampleProjectViewDO sampleProjectDO);
-    public void update(SampleProjectViewDO sampleProjectDO);
+    public SampleProjectViewDO add(SampleProjectViewDO sampleProjectDO);
+    public SampleProjectViewDO update(SampleProjectViewDO sampleProjectDO);
     public void delete(SampleProjectViewDO sampleProjectDO);
 }

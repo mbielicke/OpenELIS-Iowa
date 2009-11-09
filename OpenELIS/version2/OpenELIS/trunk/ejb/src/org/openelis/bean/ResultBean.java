@@ -58,21 +58,6 @@ public class ResultBean implements ResultLocal {
     @Resource
     private SessionContext ctx;
 
-    public void add(TestAnalyteViewDO itemDO) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    public void update(TestAnalyteViewDO itemDO) {
-        // TODO Auto-generated method stub
-        
-    }
-    
-    public void delete(TestAnalyteViewDO itemDO) {
-        // TODO Auto-generated method stub
-        
-    }
-
     public void fetchByTestIdNoResults(Integer testId, ArrayList<ArrayList<ResultViewDO>> results,
                                   HashMap<Integer, AnalyteDO> analyteList, HashMap<Integer, TestResultDO> testResultList) throws Exception {
         List<TestAnalyteViewDO> testAnalytes = null;
@@ -260,5 +245,22 @@ public class ResultBean implements ResultLocal {
 
             ar.add(rdo);
         }
+    }
+    
+    public TestAnalyteViewDO add(TestAnalyteViewDO itemDO) {
+        return null;
+        // TODO Auto-generated method stub
+        
+    }
+
+    public TestAnalyteViewDO update(TestAnalyteViewDO itemDO) {
+        return null;
+        // TODO Auto-generated method stub
+        
+    }
+    
+    public void delete(TestAnalyteViewDO itemDO) {
+        // TODO Auto-generated method stub
+        
     }
 }

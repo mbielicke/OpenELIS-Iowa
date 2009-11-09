@@ -41,19 +41,18 @@ import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.local.LoginLocal;
 import org.openelis.local.NoteLocal;
-import org.openelis.remote.NoteRemote;
 
 @Stateless
 
 @SecurityDomain("openelis")
-public class NoteBean implements NoteRemote, NoteLocal {
+public class NoteBean implements NoteLocal {
 
     @PersistenceContext(name = "openelis")
     private EntityManager manager;
     
     @EJB LoginLocal login;
     
-    public ArrayList<NoteViewDO> getNotes(Integer refTableId, Integer refId) throws Exception {
+    public ArrayList<NoteViewDO> fetchById(Integer refTableId, Integer refId) throws Exception {
         
         Query query = manager.createNamedQuery("Note.Notes");
         query.setParameter("referenceTable", refTableId);
@@ -67,39 +66,44 @@ public class NoteBean implements NoteRemote, NoteLocal {
         return list;
     }
     
-    public void add(NoteViewDO noteDO) throws Exception {
+    public NoteViewDO add(NoteViewDO data) throws Exception {
+        Note entity;
+        
         manager.setFlushMode(FlushModeType.COMMIT);
         
-        Note note = new Note();
+        entity = new Note();
+        entity.setIsExternal(data.getIsExternal());
+        entity.setReferenceId(data.getReferenceId());
+        entity.setReferenceTableId(data.getReferenceTableId());
+        entity.setSubject(data.getSubject());
+        entity.setSystemUserId(login.getSystemUserId());
+        entity.setText(data.getText());
+        entity.setTimestamp(Datetime.getInstance());
         
-        note.setIsExternal(noteDO.getIsExternal());
-        note.setReferenceId(noteDO.getReferenceId());
-        note.setReferenceTableId(noteDO.getReferenceTableId());
-        note.setSubject(noteDO.getSubject());
-        note.setSystemUserId(login.getSystemUserId());
-        note.setText(noteDO.getText());
-        note.setTimestamp(Datetime.getInstance());
+        manager.persist(entity);
+        data.setId(entity.getId());
         
-        manager.persist(note);
-        
-        noteDO.setId(note.getId());
+        return data;
     }
 
-    public void update(NoteViewDO noteDO) throws Exception {
-        if (! noteDO.isChanged())
-            return;
+    public NoteViewDO update(NoteViewDO data) throws Exception {
+        Note entity;
+        
+        if (! data.isChanged())
+            return data;
 
         manager.setFlushMode(FlushModeType.COMMIT);
         
-        Note note = manager.find(Note.class, noteDO.getId());
-
-        note.setIsExternal(noteDO.getIsExternal());
-        note.setReferenceId(noteDO.getReferenceId());
-        note.setReferenceTableId(noteDO.getReferenceTableId());
-        note.setSubject(noteDO.getSubject());
-        note.setSystemUserId(login.getSystemUserId());
-        note.setText(noteDO.getText());
-        note.setTimestamp(Datetime.getInstance());
+        entity = manager.find(Note.class, data.getId());
+        entity.setIsExternal(data.getIsExternal());
+        entity.setReferenceId(data.getReferenceId());
+        entity.setReferenceTableId(data.getReferenceTableId());
+        entity.setSubject(data.getSubject());
+        entity.setSystemUserId(login.getSystemUserId());
+        entity.setText(data.getText());
+        entity.setTimestamp(Datetime.getInstance());
+        
+        return data;
     }
     
     public void delete(NoteViewDO data) throws Exception {

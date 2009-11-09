@@ -79,53 +79,62 @@ public class SampleBean implements SampleRemote, SampleLocal {
         return (SampleDO)query.getSingleResult();
     }
     
-    public void add(SampleDO sampleDO) {
+    public SampleDO add(SampleDO data) {
+        Sample entity;
+        
         manager.setFlushMode(FlushModeType.COMMIT);
         
-        Sample sample = new Sample();
+        entity = new Sample();
         
-
-        sample.setAccessionNumber(sampleDO.getAccessionNumber());
-        sample.setClientReference(sampleDO.getClientReference());
-        sample.setCollectionDate(sampleDO.getCollectionDate());
-        sample.setCollectionTime(sampleDO.getCollectionTime());
-        sample.setDomain(sampleDO.getDomain());
-        sample.setEnteredDate(sampleDO.getEnteredDate());
-        sample.setNextItemSequence(sampleDO.getNextItemSequence());
-        sample.setPackageId(sampleDO.getPackageId());
-        sample.setReceivedById(sampleDO.getReceivedById());
-        sample.setReceivedDate(sampleDO.getReceivedDate());
-        sample.setReleasedDate(sampleDO.getReleasedDate());
-        sample.setRevision(sampleDO.getRevision());
-        sample.setStatusId(sampleDO.getStatusId());
+        entity.setAccessionNumber(data.getAccessionNumber());
+        entity.setClientReference(data.getClientReference());
+        entity.setCollectionDate(data.getCollectionDate());
+        entity.setCollectionTime(data.getCollectionTime());
+        entity.setDomain(data.getDomain());
+        entity.setEnteredDate(data.getEnteredDate());
+        entity.setNextItemSequence(data.getNextItemSequence());
+        entity.setPackageId(data.getPackageId());
+        entity.setReceivedById(data.getReceivedById());
+        entity.setReceivedDate(data.getReceivedDate());
+        entity.setReleasedDate(data.getReleasedDate());
+        entity.setRevision(data.getRevision());
+        entity.setStatusId(data.getStatusId());
         
-        manager.persist(sample);
+        manager.persist(entity);
+        data.setId(entity.getId());
         
-        sampleDO.setId(sample.getId());
+        return data;
     }
 
-    public void update(SampleDO sampleDO) throws Exception {
-        lockBean.validateLock(sampleRefTableId, sampleDO.getId());
+    public SampleDO update(SampleDO data) throws Exception {
+        Sample entity;
+        
+        if (!data.isChanged())
+            return data;
+        
+        lockBean.validateLock(sampleRefTableId, data.getId());
         
         manager.setFlushMode(FlushModeType.COMMIT);
         
-        Sample sample = manager.find(Sample.class, sampleDO.getId());
+        entity = manager.find(Sample.class, data.getId());
 
-        sample.setAccessionNumber(sampleDO.getAccessionNumber());
-        sample.setClientReference(sampleDO.getClientReference());
-        sample.setCollectionDate(sampleDO.getCollectionDate());
-        sample.setCollectionTime(sampleDO.getCollectionTime());
-        sample.setDomain(sampleDO.getDomain());
-        sample.setEnteredDate(sampleDO.getEnteredDate());
-        sample.setNextItemSequence(sampleDO.getNextItemSequence());
-        sample.setPackageId(sampleDO.getPackageId());
-        sample.setReceivedById(sampleDO.getReceivedById());
-        sample.setReceivedDate(sampleDO.getReceivedDate());
-        sample.setReleasedDate(sampleDO.getReleasedDate());
-        sample.setRevision(sampleDO.getRevision());
-        sample.setStatusId(sampleDO.getStatusId());
+        entity.setAccessionNumber(data.getAccessionNumber());
+        entity.setClientReference(data.getClientReference());
+        entity.setCollectionDate(data.getCollectionDate());
+        entity.setCollectionTime(data.getCollectionTime());
+        entity.setDomain(data.getDomain());
+        entity.setEnteredDate(data.getEnteredDate());
+        entity.setNextItemSequence(data.getNextItemSequence());
+        entity.setPackageId(data.getPackageId());
+        entity.setReceivedById(data.getReceivedById());
+        entity.setReceivedDate(data.getReceivedDate());
+        entity.setReleasedDate(data.getReleasedDate());
+        entity.setRevision(data.getRevision());
+        entity.setStatusId(data.getStatusId());
         
-        lockBean.giveUpLock(sampleRefTableId, sampleDO.getId());
+        lockBean.giveUpLock(sampleRefTableId, data.getId());
+        
+        return data;
     }
     
     private void validate() throws Exception {

@@ -43,7 +43,7 @@ public interface ResultLocal {
     public void fetchByAnalysisId(Integer analysisId, ArrayList<ArrayList<ResultViewDO>> results,
                                   HashMap<Integer, AnalyteDO> analyteList) throws Exception;
     
-    public void add(TestAnalyteViewDO itemDO);
-    public void update(TestAnalyteViewDO itemDO);
-    public void delete(TestAnalyteViewDO itemDO);
+    public TestAnalyteViewDO add(TestAnalyteViewDO data);
+    public TestAnalyteViewDO update(TestAnalyteViewDO data);
+    public void delete(TestAnalyteViewDO data);
 }

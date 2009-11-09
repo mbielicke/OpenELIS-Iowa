@@ -35,7 +35,7 @@ import org.openelis.domain.AnalysisQaEventViewDO;
 public interface AnalysisQAEventLocal {
     public List fetchByAnalysisId(Integer analysisId) throws Exception;
     
-    public void add(AnalysisQaEventViewDO analysisQAEventDO);
-    public void update(AnalysisQaEventViewDO analysisQAEventDO);
-    public void delete(AnalysisQaEventViewDO analysisQAEventDO);
+    public AnalysisQaEventViewDO add(AnalysisQaEventViewDO data);
+    public AnalysisQaEventViewDO update(AnalysisQaEventViewDO data);
+    public void delete(AnalysisQaEventViewDO data);
 }

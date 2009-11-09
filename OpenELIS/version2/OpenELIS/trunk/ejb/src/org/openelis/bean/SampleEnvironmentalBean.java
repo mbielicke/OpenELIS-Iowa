@@ -99,42 +99,49 @@ public class SampleEnvironmentalBean implements SampleEnvironmentalRemote, Sampl
         return (ArrayList<IdNameVO>)list;
     }
     
-    public void add(SampleEnvironmentalDO envSampleDO) throws Exception {
+    public void add(SampleEnvironmentalDO data) throws Exception {
+        SampleEnvironmental entity;
+        
         manager.setFlushMode(FlushModeType.COMMIT);
 
-        SampleEnvironmental environmental = new SampleEnvironmental();
+        entity = new SampleEnvironmental();
         
-        addressBean.add(envSampleDO.getAddressDO());
+        addressBean.add(data.getAddressDO());
         
-        environmental.setAddressId(envSampleDO.getAddressDO().getId());
-        environmental.setCollector(envSampleDO.getCollector());
-        environmental.setCollectorPhone(envSampleDO.getCollectorPhone());
-        environmental.setDescription(envSampleDO.getDescription());
-        environmental.setIsHazardous(envSampleDO.getIsHazardous());
-        environmental.setPriority(envSampleDO.getPriority());
-        environmental.setSampleId(envSampleDO.getSampleId());
-        environmental.setSamplingLocation(envSampleDO.getSamplingLocation());
+        entity.setAddressId(data.getAddressDO().getId());
+        entity.setCollector(data.getCollector());
+        entity.setCollectorPhone(data.getCollectorPhone());
+        entity.setDescription(data.getDescription());
+        entity.setIsHazardous(data.getIsHazardous());
+        entity.setPriority(data.getPriority());
+        entity.setSampleId(data.getSampleId());
+        entity.setSamplingLocation(data.getSamplingLocation());
         
-        manager.persist(environmental);
+        manager.persist(entity);
         
-        envSampleDO.setId(environmental.getId());
+        data.setId(entity.getId());
     }
 
-    public void update(SampleEnvironmentalDO envSampleDO) throws Exception {
+    public void update(SampleEnvironmentalDO data) throws Exception {
+        SampleEnvironmental entity;
+        
+        if (!data.isChanged())
+            return;
+        
         manager.setFlushMode(FlushModeType.COMMIT);
         
-        SampleEnvironmental environmental = manager.find(SampleEnvironmental.class, envSampleDO.getId());
+        entity = manager.find(SampleEnvironmental.class, data.getId());
         
-        addressBean.update(envSampleDO.getAddressDO());
+        addressBean.update(data.getAddressDO());
         
-        environmental.setAddressId(envSampleDO.getAddressDO().getId());
-        environmental.setCollector(envSampleDO.getCollector());
-        environmental.setCollectorPhone(envSampleDO.getCollectorPhone());
-        environmental.setDescription(envSampleDO.getDescription());
-        environmental.setIsHazardous(envSampleDO.getIsHazardous());
-        environmental.setPriority(envSampleDO.getPriority());
-        environmental.setSampleId(envSampleDO.getSampleId());
-        environmental.setSamplingLocation(envSampleDO.getSamplingLocation());
+        entity.setAddressId(data.getAddressDO().getId());
+        entity.setCollector(data.getCollector());
+        entity.setCollectorPhone(data.getCollectorPhone());
+        entity.setDescription(data.getDescription());
+        entity.setIsHazardous(data.getIsHazardous());
+        entity.setPriority(data.getPriority());
+        entity.setSampleId(data.getSampleId());
+        entity.setSamplingLocation(data.getSamplingLocation());
     }
 
     public void validate() throws Exception {

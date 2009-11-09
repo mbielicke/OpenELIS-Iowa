@@ -33,8 +33,8 @@ import org.openelis.domain.NoteViewDO;
 
 @Local
 public interface NoteLocal {
-    public ArrayList<NoteViewDO> getNotes(Integer refTableId, Integer refId) throws Exception;
-    public void update(NoteViewDO note) throws Exception;
-    public void add(NoteViewDO note) throws Exception;
+    public ArrayList<NoteViewDO> fetchById(Integer refTableId, Integer refId) throws Exception;
+    public NoteViewDO update(NoteViewDO note) throws Exception;
+    public NoteViewDO add(NoteViewDO note) throws Exception;
     public void delete(NoteViewDO data) throws Exception;
 }

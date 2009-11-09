@@ -29,7 +29,6 @@ import java.util.ArrayList;
 
 import javax.ejb.Local;
 
-import org.openelis.domain.AuxDataDO;
 import org.openelis.domain.AuxDataViewDO;
 
 @Local
