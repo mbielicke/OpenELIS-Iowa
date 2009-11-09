@@ -58,38 +58,48 @@ public class AnalysisQAEventBean implements AnalysisQAEventLocal {
         return returnList;
     }
     
-    public void add(AnalysisQaEventViewDO analysisQAEventDO) {
+    public AnalysisQaEventViewDO add(AnalysisQaEventViewDO data) {
+        AnalysisQaevent entity;
+        
         manager.setFlushMode(FlushModeType.COMMIT);
         
-        AnalysisQaevent analysisQA = new AnalysisQaevent();
+        entity = new AnalysisQaevent();
+        entity.setIsBillable(data.getIsBillable());
+        entity.setQaeventId(data.getQaEventId());
+        entity.setAnalysisId(data.getAnalysisId());
+        entity.setTypeId(data.getTypeId());
         
-        analysisQA.setIsBillable(analysisQAEventDO.getIsBillable());
-        analysisQA.setQaeventId(analysisQAEventDO.getQaEventId());
-        analysisQA.setAnalysisId(analysisQAEventDO.getAnalysisId());
-        analysisQA.setTypeId(analysisQAEventDO.getTypeId());
-        
-       manager.persist(analysisQA);
-       analysisQAEventDO.setId(analysisQA.getId());
+       manager.persist(entity);
+       data.setId(entity.getId());
+       
+       return data;
         
     }
 
-    public void update(AnalysisQaEventViewDO analysisQAEventDO) {
+    public AnalysisQaEventViewDO update(AnalysisQaEventViewDO data) {
+        AnalysisQaevent entity;
+        
+        if ( !data.isChanged())
+            return data;
+        
         manager.setFlushMode(FlushModeType.COMMIT);
         
-        AnalysisQaevent analysisQA = manager.find(AnalysisQaevent.class, analysisQAEventDO.getId());
-            
-        analysisQA.setIsBillable(analysisQAEventDO.getIsBillable());
-        analysisQA.setQaeventId(analysisQAEventDO.getQaEventId());
-        analysisQA.setAnalysisId(analysisQAEventDO.getAnalysisId());
-        analysisQA.setTypeId(analysisQAEventDO.getTypeId());
+        entity = manager.find(AnalysisQaevent.class, data.getId());
+        entity.setIsBillable(data.getIsBillable());
+        entity.setQaeventId(data.getQaEventId());
+        entity.setAnalysisId(data.getAnalysisId());
+        entity.setTypeId(data.getTypeId());
+        
+        return data;
     }
     
-    public void delete(AnalysisQaEventViewDO analysisQAEventDO) {
+    public void delete(AnalysisQaEventViewDO data) {
+        AnalysisQaevent entity;
         manager.setFlushMode(FlushModeType.COMMIT);
         
-        AnalysisQaevent analysisQA = manager.find(AnalysisQaevent.class, analysisQAEventDO.getId());
+        entity = manager.find(AnalysisQaevent.class, data.getId());
         
-        if(analysisQA != null)
-            manager.remove(analysisQA);
+        if(entity != null)
+            manager.remove(entity);
     }
 }

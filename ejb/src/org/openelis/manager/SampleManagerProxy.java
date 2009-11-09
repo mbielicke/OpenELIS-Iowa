@@ -81,6 +81,9 @@ public class SampleManagerProxy {
         sampleRefId = ReferenceTable.SAMPLE;
         sampleInternalRefId = ReferenceTable.SAMPLE_INTERNAL_NOTE;
         
+        man.getDomainManager().setSampleId(sampleId);
+        man.getDomainManager().update();
+        
         man.getSampleItems().setSampleId(sampleId);
         man.getSampleItems().update();
         

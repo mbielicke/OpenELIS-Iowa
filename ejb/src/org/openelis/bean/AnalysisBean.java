@@ -63,59 +63,69 @@ public class AnalysisBean implements AnalysisLocal{
         return returnList;
     }
     
-    public void add(AnalysisViewDO analysisDO) {
+    public AnalysisViewDO add(AnalysisViewDO data) {
+        Analysis entity;
+        
         manager.setFlushMode(FlushModeType.COMMIT);
         
-        Analysis analysis = new Analysis();
+        entity = new Analysis();
+        entity.setAvailableDate(data.getAvailableDate());
+        entity.setCompletedDate(data.getCompletedDate());
+        entity.setIsReportable(data.getIsReportable());
+        entity.setParentAnalysisId(data.getParentAnalysisId());
+        entity.setParentResultId(data.getParentResultId());
+        entity.setPreAnalysisId(data.getPreAnalysisId());
+        entity.setPrintedDate(data.getPrintedDate());
+        entity.setReleasedDate(data.getReleasedDate());
+        entity.setRevision(data.getRevision());
+        entity.setSampleItemId(data.getSampleItemId());
+        entity.setSectionId(data.getSectionId());
+        entity.setStartedDate(data.getStartedDate());
+        entity.setStatusId(data.getStatusId());
+        entity.setTestId(data.getTestId());
+        entity.setUnitOfMeasureId(data.getUnitOfMeasureId());
         
-        analysis.setAvailableDate(analysisDO.getAvailableDate());
-        analysis.setCompletedDate(analysisDO.getCompletedDate());
-        analysis.setIsReportable(analysisDO.getIsReportable());
-        analysis.setParentAnalysisId(analysisDO.getParentAnalysisId());
-        analysis.setParentResultId(analysisDO.getParentResultId());
-        analysis.setPreAnalysisId(analysisDO.getPreAnalysisId());
-        analysis.setPrintedDate(analysisDO.getPrintedDate());
-        analysis.setReleasedDate(analysisDO.getReleasedDate());
-        analysis.setRevision(analysisDO.getRevision());
-        analysis.setSampleItemId(analysisDO.getSampleItemId());
-        analysis.setSectionId(analysisDO.getSectionId());
-        analysis.setStartedDate(analysisDO.getStartedDate());
-        analysis.setStatusId(analysisDO.getStatusId());
-        analysis.setTestId(analysisDO.getTestId());
-        analysis.setUnitOfMeasureId(analysisDO.getUnitOfMeasureId());
-        
-       manager.persist(analysis);
-       analysisDO.setId(analysis.getId());
+       manager.persist(entity);
+       data.setId(entity.getId());
+       
+       return data;
     }
 
-    public void update(AnalysisViewDO analysisDO) {
+    public AnalysisViewDO update(AnalysisViewDO data) {
+        Analysis entity;
+        
+        if ( !data.isChanged())
+            return data;
+        
         manager.setFlushMode(FlushModeType.COMMIT);
         
-        Analysis analysis = manager.find(Analysis.class, analysisDO.getId());
-            
-        analysis.setAvailableDate(analysisDO.getAvailableDate());
-        analysis.setCompletedDate(analysisDO.getCompletedDate());
-        analysis.setIsReportable(analysisDO.getIsReportable());
-        analysis.setParentAnalysisId(analysisDO.getParentAnalysisId());
-        analysis.setParentResultId(analysisDO.getParentResultId());
-        analysis.setPreAnalysisId(analysisDO.getPreAnalysisId());
-        analysis.setPrintedDate(analysisDO.getPrintedDate());
-        analysis.setReleasedDate(analysisDO.getReleasedDate());
-        analysis.setRevision(analysisDO.getRevision());
-        analysis.setSampleItemId(analysisDO.getSampleItemId());
-        analysis.setSectionId(analysisDO.getSectionId());
-        analysis.setStartedDate(analysisDO.getStartedDate());
-        analysis.setStatusId(analysisDO.getStatusId());
-        analysis.setTestId(analysisDO.getTestId());
-        analysis.setUnitOfMeasureId(analysisDO.getUnitOfMeasureId());
+        entity = manager.find(Analysis.class, data.getId());
+        entity.setAvailableDate(data.getAvailableDate());
+        entity.setCompletedDate(data.getCompletedDate());
+        entity.setIsReportable(data.getIsReportable());
+        entity.setParentAnalysisId(data.getParentAnalysisId());
+        entity.setParentResultId(data.getParentResultId());
+        entity.setPreAnalysisId(data.getPreAnalysisId());
+        entity.setPrintedDate(data.getPrintedDate());
+        entity.setReleasedDate(data.getReleasedDate());
+        entity.setRevision(data.getRevision());
+        entity.setSampleItemId(data.getSampleItemId());
+        entity.setSectionId(data.getSectionId());
+        entity.setStartedDate(data.getStartedDate());
+        entity.setStatusId(data.getStatusId());
+        entity.setTestId(data.getTestId());
+        entity.setUnitOfMeasureId(data.getUnitOfMeasureId());
+        
+        return data;
     }
     
-    public void delete(AnalysisViewDO analysisDO) {
+    public void delete(AnalysisViewDO data) {
+        Analysis entity;
         manager.setFlushMode(FlushModeType.COMMIT);
         
-        Analysis analysis = manager.find(Analysis.class, analysisDO.getId());
+        entity = manager.find(Analysis.class, data.getId());
         
-        if(analysis != null)
-            manager.remove(analysis);
+        if(entity != null)
+            manager.remove(entity);
     }
 }

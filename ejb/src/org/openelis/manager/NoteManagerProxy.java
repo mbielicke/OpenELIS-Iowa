@@ -36,7 +36,7 @@ import org.openelis.local.NoteLocal;
 public class NoteManagerProxy {
     public NoteManager fetch(Integer tableId, Integer id) throws Exception {
         NoteLocal nl = local();
-        ArrayList<NoteViewDO> notes = nl.getNotes(tableId, id);
+        ArrayList<NoteViewDO> notes = nl.fetchById(tableId, id);
         
         NoteManager n = NoteManager.getInstance();
         n.setNotes(notes);

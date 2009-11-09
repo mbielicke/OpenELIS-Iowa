@@ -57,35 +57,46 @@ public class SampleProjectBean implements SampleProjectLocal {
         return returnList;
     }
 
-    public void add(SampleProjectViewDO sampleProjectDO) {
+    public SampleProjectViewDO add(SampleProjectViewDO data) {
+        SampleProject entity;
+        
         manager.setFlushMode(FlushModeType.COMMIT);
         
-        SampleProject project = new SampleProject();
+        entity = new SampleProject();
+        entity.setIsPermanent(data.getIsPermanent());
+        entity.setProjectId(data.getProjectId());
+        entity.setSampleId(data.getSampleId());
         
-        project.setIsPermanent(sampleProjectDO.getIsPermanent());
-        project.setProjectId(sampleProjectDO.getProjectId());
-        project.setSampleId(sampleProjectDO.getSampleId());
+        manager.persist(entity);
+        data.setId(entity.getId());
         
-        manager.persist(project);
-        sampleProjectDO.setId(project.getId());
+        return data;
     }
 
-    public void update(SampleProjectViewDO sampleProjectDO) {
+    public SampleProjectViewDO update(SampleProjectViewDO data) {
+        SampleProject entity;
+        
+        if (!data.isChanged())
+            return data;
+        
         manager.setFlushMode(FlushModeType.COMMIT);
         
-        SampleProject project = manager.find(SampleProject.class, sampleProjectDO.getId());
+        entity = manager.find(SampleProject.class, data.getId());
+        entity.setIsPermanent(data.getIsPermanent());
+        entity.setProjectId(data.getProjectId());
+        entity.setSampleId(data.getSampleId());
         
-        project.setIsPermanent(sampleProjectDO.getIsPermanent());
-        project.setProjectId(sampleProjectDO.getProjectId());
-        project.setSampleId(sampleProjectDO.getSampleId());
+        return data;
     }
 
-    public void delete(SampleProjectViewDO sampleProjectDO) {
+    public void delete(SampleProjectViewDO data) {
+        SampleProject entity;
+        
         manager.setFlushMode(FlushModeType.COMMIT);
         
-        SampleProject project = manager.find(SampleProject.class, sampleProjectDO.getId());
+        entity = manager.find(SampleProject.class, data.getId());
         
-        if(project != null)
-            manager.remove(project);
+        if(entity != null)
+            manager.remove(entity);
     }
 }

@@ -63,32 +63,52 @@ public class StorageBean implements StorageLocal{
         return list;
     }
 
-    public void add(StorageViewDO storageDO) throws Exception {
+    public StorageViewDO add(StorageViewDO data) throws Exception {
+        Storage entity;
+        
         manager.setFlushMode(FlushModeType.COMMIT);
         
-        Storage storage = new Storage();
+        entity = new Storage();
+        entity.setCheckin(data.getCheckin());
+        entity.setCheckout(data.getCheckout());
+        entity.setReferenceId(data.getReferenceId());
+        entity.setReferenceTableId(data.getReferenceTableId());
+        entity.setStorageLocationId(data.getStorageLocationId());
+        entity.setSystemUserId(login.getSystemUserId());
         
-        storage.setCheckin(storageDO.getCheckin());
-        storage.setCheckout(storageDO.getCheckout());
-        storage.setReferenceId(storageDO.getReferenceId());
-        storage.setReferenceTableId(storageDO.getReferenceTableId());
-        storage.setStorageLocationId(storageDO.getStorageLocationId());
-        storage.setSystemUserId(login.getSystemUserId());
+        manager.persist(entity);
+        data.setId(entity.getId());
         
-        manager.persist(storage);
-        storageDO.setId(storage.getId());
+        return data;
     }
 
-    public void update(StorageViewDO storageDO) throws Exception {
+    public StorageViewDO update(StorageViewDO data) throws Exception {
+        Storage entity;
+        
+        if ( !data.isChanged())
+            return data;
+        
         manager.setFlushMode(FlushModeType.COMMIT);
         
-        Storage storage = manager.find(Storage.class, storageDO.getId());
+        entity = manager.find(Storage.class, data.getId());
 
-        storage.setCheckin(storageDO.getCheckin());
-        storage.setCheckout(storageDO.getCheckout());
-        storage.setReferenceId(storageDO.getReferenceId());
-        storage.setReferenceTableId(storageDO.getReferenceTableId());
-        storage.setStorageLocationId(storageDO.getStorageLocationId());
-        storage.setSystemUserId(storageDO.getSystemUserId());
+        entity.setCheckin(data.getCheckin());
+        entity.setCheckout(data.getCheckout());
+        entity.setReferenceId(data.getReferenceId());
+        entity.setReferenceTableId(data.getReferenceTableId());
+        entity.setStorageLocationId(data.getStorageLocationId());
+        entity.setSystemUserId(data.getSystemUserId());
+        
+        return data;
+    }
+    
+    public void delete(StorageViewDO data) throws Exception {
+        Storage entity;
+
+        manager.setFlushMode(FlushModeType.COMMIT);
+        entity = manager.find(Storage.class, data.getId());
+        
+        if (entity != null)
+            manager.remove(entity);
     }
 }
