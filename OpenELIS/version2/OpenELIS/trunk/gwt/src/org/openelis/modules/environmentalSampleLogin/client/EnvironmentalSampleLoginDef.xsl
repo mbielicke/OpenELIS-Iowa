@@ -182,7 +182,7 @@ xmlns:testMetaMap="xalan://org.openelis.metamap.TestMetaMap" xmlns:sectionMeta="
 			  				</HorizontalPanel>
 						</appButton>
 					</menuDisplay>
-					<menuPanel style="topMenuContainer" layout="vertical" position="below">
+					<menuPanel style="buttonMenuContainer" layout="vertical" position="below">
 						<xsl:call-template name="historyMenuItem"/>
 			  		</menuPanel>
 	    		</menuItem>

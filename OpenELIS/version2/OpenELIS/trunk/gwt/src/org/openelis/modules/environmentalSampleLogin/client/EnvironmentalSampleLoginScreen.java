@@ -47,6 +47,7 @@ import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.RPC;
+import org.openelis.gwt.common.SecurityException;
 import org.openelis.gwt.common.SecurityModule;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
@@ -163,7 +164,9 @@ public class EnvironmentalSampleLoginScreen extends Screen {
 
         Meta = new SampleEnvironmentalMetaMap();
         
-        security = OpenELIS.security.getModule("sample_environmental");
+        security = OpenELIS.security.getModule("sampleenvironmental");
+        if (security == null)
+            throw new SecurityException("screenPermException", "Environmental Sample Login Screen");
         
         // Setup link between Screen and widget Handlers
         initialize();

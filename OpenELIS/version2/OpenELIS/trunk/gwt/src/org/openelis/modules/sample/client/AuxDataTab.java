@@ -300,7 +300,8 @@ public class AuxDataTab extends Screen implements GetMatchesHandler{
                     row = new TableDataRow(3);
                     row.cells.get(0).value = fieldDO.getIsReportable();
                     row.cells.get(1).value = fieldDO.getAnalyteName();
-                    if(valueDO.getValue() != null)
+                    if(valueDO.getValue() != null && 
+                                    !DictionaryCache.getIdFromSystemName("aux_dictionary").equals(valueDO.getTypeId()))
                         row.cells.get(2).value = getCorrectColValueByType(valueDO.getValue(), valueDO.getDictionary(), valueDO.getTypeId());
                     
                     fieldDO.setTypeId(valueDO.getTypeId());
@@ -362,9 +363,14 @@ public class AuxDataTab extends Screen implements GetMatchesHandler{
         ArrayList<TableDataRow> model;
         int index;
         AuxFieldValueViewDO valDO;
+        String match;
+        boolean showWholeList;
         
         index = auxValsTable.getSelectedRow();
         model = new ArrayList<TableDataRow>();
+        match = event.getMatch();
+        
+        showWholeList = "".equals(match.trim());
         
         //give them the dictionary entries
         try{
@@ -372,7 +378,9 @@ public class AuxDataTab extends Screen implements GetMatchesHandler{
             
             for(int i=0; i<valMan.count(); i++){
                 valDO = valMan.getAuxFieldValueAt(i);
-                model.add(new TableDataRow(new Integer(valDO.getValue()), valDO.getDictionary()));
+                
+                if(showWholeList || valDO.getDictionary().startsWith(match))
+                    model.add(new TableDataRow(new Integer(valDO.getValue()), valDO.getDictionary()));
             }
         }catch(Exception e){
             Window.alert(e.getMessage());
