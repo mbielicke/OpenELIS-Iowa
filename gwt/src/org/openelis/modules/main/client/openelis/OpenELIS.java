@@ -31,9 +31,6 @@ import java.util.HashMap;
 import org.openelis.gwt.common.SecurityUtil;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
-import org.openelis.gwt.screen.deprecated.AppScreen;
-import org.openelis.gwt.screen.deprecated.ScreenMenuPanel;
-import org.openelis.gwt.screen.deprecated.ScreenWidget;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.MenuItem;
@@ -72,7 +69,6 @@ import org.openelis.modules.storageunit.client.StorageUnitScreen;
 import org.openelis.modules.systemvariable.client.SystemVariableScreen;
 import org.openelis.modules.test.client.TestScreen;
 import org.openelis.modules.testTrailer.client.TestTrailerScreen;
-import org.openelis.modules.worksheetCreation.client.WorksheetCreationLookupScreen;
 import org.openelis.modules.worksheetCreation.client.WorksheetCreationScreen;
 
 import com.google.gwt.core.client.GWT;
@@ -82,20 +78,18 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
 
-public class OpenELIS extends Screen implements ClickHandler {
+public class OpenELIS extends Screen {
 
     public static WindowBrowser             browser;
     public static SecurityUtil              security;
     private FavoritesScreen                 fv;
-    private static HashMap<String, HashMap> cacheList;
     public static ArrayList<String>         modules = new ArrayList<String>();
+    private static HashMap<String, HashMap> cacheList;
 
     public OpenELIS() throws Exception {
         service = new ScreenService("OpenELISServlet?service=org.openelis.modules.main.server.OpenELISScreenService");
         OpenELISRPC rpc = service.call("initialData");
-        AppScreen.consts = rpc.appConstants;
         Screen.consts = rpc.appConstants;
         security = rpc.security;
         drawScreen((ScreenDefInt)GWT.create(OpenELISDef.class));
@@ -105,12 +99,12 @@ public class OpenELIS extends Screen implements ClickHandler {
     }
 
     public void setHandlers() {
-        ((MenuItem)def.getWidget("preference")).addClickHandler(new ClickHandler() {
+        addClickHandler("preference", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 // browser.addScreen(new )
             }
         });
-        ((MenuItem)def.getWidget("FavoritesMenu")).addClickHandler(new ClickHandler() {
+        addClickHandler("FavoritesMenu", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 VerticalPanel fmp = (VerticalPanel)def.getWidget("favoritesPanel");
                 if (fmp.getWidgetCount() == 1) {
@@ -134,7 +128,7 @@ public class OpenELIS extends Screen implements ClickHandler {
                     fv.edit();
             }
         });
-        ((MenuItem)def.getWidget("Logout")).addClickHandler(new ClickHandler() {
+        addClickHandler("Logout", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 try {
                     service.callVoid("logout");
@@ -145,17 +139,17 @@ public class OpenELIS extends Screen implements ClickHandler {
                 }
             }
         });
-        ((MenuItem)def.getWidget("quickEntry")).addClickHandler(new ClickHandler() {
+        addClickHandler("quickEntry", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 // browser.addScreen(new )
             }
         });
-        ((MenuItem)def.getWidget("tracking")).addClickHandler(new ClickHandler() {
+        addClickHandler("tracking", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 // browser.addScreen(new )
             }
         });
-        ((MenuItem)def.getWidget("environmentalSampleLogin")).addClickHandler(new ClickHandler() {
+        addClickHandler("environmentalSampleLogin", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -174,7 +168,7 @@ public class OpenELIS extends Screen implements ClickHandler {
                 });
             }
         });
-        ((MenuItem)def.getWidget("clinicalSampleLogin")).addClickHandler(new ClickHandler() {
+        addClickHandler("clinicalSampleLogin", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -193,7 +187,7 @@ public class OpenELIS extends Screen implements ClickHandler {
                 });
             }
         });
-        ((MenuItem)def.getWidget("animalSampleLogin")).addClickHandler(new ClickHandler() {
+        addClickHandler("animalSampleLogin", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -212,7 +206,7 @@ public class OpenELIS extends Screen implements ClickHandler {
                 });
             }
         });
-        ((MenuItem)def.getWidget("newbornScreeningSampleLogin")).addClickHandler(new ClickHandler() {
+        addClickHandler("newbornScreeningSampleLogin", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -231,7 +225,7 @@ public class OpenELIS extends Screen implements ClickHandler {
                 });
             }
         });
-        ((MenuItem)def.getWidget("ptSampleLogin")).addClickHandler(new ClickHandler() {
+        addClickHandler("ptSampleLogin", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -250,7 +244,7 @@ public class OpenELIS extends Screen implements ClickHandler {
                 });
             }
         });
-        ((MenuItem)def.getWidget("sdwisSampleLogin")).addClickHandler(new ClickHandler() {
+        addClickHandler("sdwisSampleLogin", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -269,7 +263,7 @@ public class OpenELIS extends Screen implements ClickHandler {
                 });
             }
         });
-        ((MenuItem)def.getWidget("privateWellWaterSampleLogin")).addClickHandler(new ClickHandler() {
+        addClickHandler("privateWellWaterSampleLogin", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -288,7 +282,7 @@ public class OpenELIS extends Screen implements ClickHandler {
                 });
             }
         });
-        ((MenuItem)def.getWidget("project")).addClickHandler(new ClickHandler() {
+        addClickHandler("project", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -306,7 +300,7 @@ public class OpenELIS extends Screen implements ClickHandler {
                 });
             }
         });
-        ((MenuItem)def.getWidget("provider")).addClickHandler(new ClickHandler() {
+        addClickHandler("provider", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -325,8 +319,7 @@ public class OpenELIS extends Screen implements ClickHandler {
                 });
             }
         });
-
-        ((MenuItem)def.getWidget("organization")).addClickHandler(new ClickHandler() {
+        addClickHandler("organization", new ClickHandler() {
             public void onClick(ClickEvent event) {
 
                 GWT.runAsync(new RunAsyncCallback() {
@@ -346,8 +339,7 @@ public class OpenELIS extends Screen implements ClickHandler {
                 });
             }
         });
-
-        ((MenuItem)def.getWidget("worksheetCreation")).addClickHandler(new ClickHandler() {
+        addClickHandler("worksheetCreation", new ClickHandler() {
             public void onClick(ClickEvent event) {
 
                 GWT.runAsync(new RunAsyncCallback() {
@@ -367,32 +359,32 @@ public class OpenELIS extends Screen implements ClickHandler {
                 });
             }
         });
-        ((MenuItem)def.getWidget("worksheetCompletion")).addClickHandler(new ClickHandler() {
+        addClickHandler("worksheetCompletion", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 // browser.addScreen(new )
             }
         });
-        ((MenuItem)def.getWidget("addOrCancel")).addClickHandler(new ClickHandler() {
+        addClickHandler("addOrCancel", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 // browser.addScreen(new )
             }
         });
-        ((MenuItem)def.getWidget("reviewAndRelease")).addClickHandler(new ClickHandler() {
+        addClickHandler("reviewAndRelease", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 // browser.addScreen(new )
             }
         });
-        ((MenuItem)def.getWidget("toDo")).addClickHandler(new ClickHandler() {
+        addClickHandler("toDo", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 // browser.addScreen(new )
             }
         });
-        ((MenuItem)def.getWidget("labelFor")).addClickHandler(new ClickHandler() {
+        addClickHandler("labelFor", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 // browser.addScreen(new )
             }
         });
-        ((MenuItem)def.getWidget("storage")).addClickHandler(new ClickHandler() {
+        addClickHandler("storage", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -411,7 +403,7 @@ public class OpenELIS extends Screen implements ClickHandler {
                 });
             }
         });
-        ((MenuItem)def.getWidget("QC")).addClickHandler(new ClickHandler() {
+        addClickHandler("QC", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -430,7 +422,7 @@ public class OpenELIS extends Screen implements ClickHandler {
                 });
             }
         });
-        ((MenuItem)def.getWidget("internalOrder")).addClickHandler(new ClickHandler() {
+        addClickHandler("internalOrder", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -449,7 +441,7 @@ public class OpenELIS extends Screen implements ClickHandler {
                 });
             }
         });
-        ((MenuItem)def.getWidget("vendorOrder")).addClickHandler(new ClickHandler() {
+        addClickHandler("vendorOrder", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -468,7 +460,7 @@ public class OpenELIS extends Screen implements ClickHandler {
                 });
             }
         });
-        ((MenuItem)def.getWidget("kitOrder")).addClickHandler(new ClickHandler() {
+        addClickHandler("kitOrder", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -487,7 +479,7 @@ public class OpenELIS extends Screen implements ClickHandler {
                 });
             }
         });
-        ((MenuItem)def.getWidget("fillOrder")).addClickHandler(new ClickHandler() {
+        addClickHandler("fillOrder", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -506,7 +498,7 @@ public class OpenELIS extends Screen implements ClickHandler {
                 });
             }
         });
-        ((MenuItem)def.getWidget("shipping")).addClickHandler(new ClickHandler() {
+        addClickHandler("shipping", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -525,7 +517,7 @@ public class OpenELIS extends Screen implements ClickHandler {
                 });
             }
         });
-        ((MenuItem)def.getWidget("buildKits")).addClickHandler(new ClickHandler() {
+        addClickHandler("buildKits", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -544,7 +536,7 @@ public class OpenELIS extends Screen implements ClickHandler {
                 });
             }
         });
-        ((MenuItem)def.getWidget("inventoryTransfer")).addClickHandler(new ClickHandler() {
+        addClickHandler("inventoryTransfer", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -563,7 +555,7 @@ public class OpenELIS extends Screen implements ClickHandler {
                 });
             }
         });
-        ((MenuItem)def.getWidget("inventoryAdjustment")).addClickHandler(new ClickHandler() {
+        addClickHandler("inventoryAdjustment", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -582,7 +574,7 @@ public class OpenELIS extends Screen implements ClickHandler {
                 });
             }
         });
-        ((MenuItem)def.getWidget("inventoryItem")).addClickHandler(new ClickHandler() {
+        addClickHandler("inventoryItem", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -601,7 +593,7 @@ public class OpenELIS extends Screen implements ClickHandler {
                 });
             }
         });
-        ((MenuItem)def.getWidget("instrument")).addClickHandler(new ClickHandler() {
+        addClickHandler("instrument", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -620,7 +612,7 @@ public class OpenELIS extends Screen implements ClickHandler {
                 });
             }
         });
-        ((MenuItem)def.getWidget("test")).addClickHandler(new ClickHandler() {
+        addClickHandler("test", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -639,7 +631,7 @@ public class OpenELIS extends Screen implements ClickHandler {
                 });
             }
         });
-        ((MenuItem)def.getWidget("method")).addClickHandler(new ClickHandler() {
+        addClickHandler("method", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -658,7 +650,7 @@ public class OpenELIS extends Screen implements ClickHandler {
                 });
             }
         });
-        ((MenuItem)def.getWidget("panel")).addClickHandler(new ClickHandler() {
+        addClickHandler("panel", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -677,7 +669,7 @@ public class OpenELIS extends Screen implements ClickHandler {
                 });
             }
         });
-        ((MenuItem)def.getWidget("QAEvent")).addClickHandler(new ClickHandler() {
+        addClickHandler("QAEvent", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -696,7 +688,7 @@ public class OpenELIS extends Screen implements ClickHandler {
                 });
             }
         });
-        ((MenuItem)def.getWidget("labSection")).addClickHandler(new ClickHandler() {
+        addClickHandler("labSection", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -715,7 +707,7 @@ public class OpenELIS extends Screen implements ClickHandler {
                 });
             }
         });
-        ((MenuItem)def.getWidget("analyte")).addClickHandler(new ClickHandler() {
+        addClickHandler("analyte", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -734,7 +726,7 @@ public class OpenELIS extends Screen implements ClickHandler {
                 });
             }
         });
-        ((MenuItem)def.getWidget("dictionary")).addClickHandler(new ClickHandler() {
+        addClickHandler("dictionary", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -753,7 +745,7 @@ public class OpenELIS extends Screen implements ClickHandler {
                 });
             }
         });
-        ((MenuItem)def.getWidget("auxiliaryPrompt")).addClickHandler(new ClickHandler() {
+        addClickHandler("auxiliaryPrompt", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -772,7 +764,7 @@ public class OpenELIS extends Screen implements ClickHandler {
                 });
             }
         });
-        ((MenuItem)def.getWidget("label")).addClickHandler(new ClickHandler() {
+        addClickHandler("label", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -791,7 +783,7 @@ public class OpenELIS extends Screen implements ClickHandler {
                 });
             }
         });
-        ((MenuItem)def.getWidget("standardNote")).addClickHandler(new ClickHandler() {
+        addClickHandler("standardNote", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -810,7 +802,7 @@ public class OpenELIS extends Screen implements ClickHandler {
                 });
             }
         });
-        ((MenuItem)def.getWidget("trailerForTest")).addClickHandler(new ClickHandler() {
+        addClickHandler("trailerForTest", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -829,7 +821,7 @@ public class OpenELIS extends Screen implements ClickHandler {
                 });
             }
         });
-        ((MenuItem)def.getWidget("storageUnit")).addClickHandler(new ClickHandler() {
+        addClickHandler("storageUnit", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -848,7 +840,7 @@ public class OpenELIS extends Screen implements ClickHandler {
                 });
             }
         });
-        ((MenuItem)def.getWidget("storageLocation")).addClickHandler(new ClickHandler() {
+        addClickHandler("storageLocation", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -867,12 +859,12 @@ public class OpenELIS extends Screen implements ClickHandler {
                 });
             }
         });
-        ((MenuItem)def.getWidget("scriptlet")).addClickHandler(new ClickHandler() {
+        addClickHandler("scriptlet", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 // browser.addScreen(new )
             }
         });
-        ((MenuItem)def.getWidget("systemVariable")).addClickHandler(new ClickHandler() {
+        addClickHandler("systemVariable", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -891,29 +883,21 @@ public class OpenELIS extends Screen implements ClickHandler {
                 });
             }
         });
-        ((MenuItem)def.getWidget("finalReport")).addClickHandler(new ClickHandler() {
+        addClickHandler("finalReport", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 // browser.addScreen(new )
             }
         });
-        ((MenuItem)def.getWidget("sampleDataExport")).addClickHandler(new ClickHandler() {
+        addClickHandler("sampleDataExport", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 // browser.addScreen(new )
             }
         });
-        ((MenuItem)def.getWidget("loginLabel")).addClickHandler(new ClickHandler() {
+        addClickHandler("loginLabel", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 // browser.addScreen(new )
             }
         });
-    }
-
-    public void onClick(ClickEvent item) {
-        /*
-         * if(item.getSource() == def.getWidget("EditFavorites")){
-         * if(fv.editing) fv.saveFavorites(); else fv.getEditFavorites();
-         * return; }
-         */
     }
 
     public void setStyleToAllCellsInCol(FlexTable table, int col, String style) {
@@ -922,16 +906,18 @@ public class OpenELIS extends Screen implements ClickHandler {
         }
     }
 
-    public void onDrop(Widget sender, Widget source) {
-        VerticalPanel vp = (VerticalPanel) ((ScreenMenuPanel)sender).getWidget();
-        for (int i = 0; i < vp.getWidgetCount(); i++ ) {
-            if (vp.getWidget(i).getAbsoluteTop() > source.getAbsoluteTop()) {
-                vp.insert((Widget) ((ScreenWidget)source).getUserObject(), i);
-                break;
-            }
-        }
+    private void addClickHandler(String screen, ClickHandler handler) {
+        MenuItem item;
+
+        item = ((MenuItem)def.getWidget(screen));
+        if (item != null)
+            item.addClickHandler(handler);
     }
 
+    /**
+     * Gobal in browser cache list. Used for ditionary and other objects that
+     * are cached in the browser space.
+     */
     public static HashMap<String, HashMap> getCacheList() {
         if (cacheList == null)
             cacheList = new HashMap<String, HashMap>();
