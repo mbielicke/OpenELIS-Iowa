@@ -1,28 +1,28 @@
-/** Exhibit A - UIRF Open-source Based Public Software License.
-* 
-* The contents of this file are subject to the UIRF Open-source Based
-* Public Software License(the "License"); you may not use this file except
-* in compliance with the License. You may obtain a copy of the License at
-* openelis.uhl.uiowa.edu
-* 
-* Software distributed under the License is distributed on an "AS IS"
-* basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
-* License for the specific language governing rights and limitations
-* under the License.
-* 
-* The Original Code is OpenELIS code.
-* 
-* The Initial Developer of the Original Code is The University of Iowa.
-* Portions created by The University of Iowa are Copyright 2006-2008. All
-* Rights Reserved.
-* 
-* Contributor(s): ______________________________________.
-* 
-* Alternatively, the contents of this file marked
-* "Separately-Licensed" may be used under the terms of a UIRF Software
-* license ("UIRF Software License"), in which case the provisions of a
-* UIRF Software License are applicable instead of those above. 
-*/
+/**
+ * Exhibit A - UIRF Open-source Based Public Software License.
+ * 
+ * The contents of this file are subject to the UIRF Open-source Based Public
+ * Software License(the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * openelis.uhl.uiowa.edu
+ * 
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+ * the specific language governing rights and limitations under the License.
+ * 
+ * The Original Code is OpenELIS code.
+ * 
+ * The Initial Developer of the Original Code is The University of Iowa.
+ * Portions created by The University of Iowa are Copyright 2006-2008. All
+ * Rights Reserved.
+ * 
+ * Contributor(s): ______________________________________.
+ * 
+ * Alternatively, the contents of this file marked "Separately-Licensed" may be
+ * used under the terms of a UIRF Software license ("UIRF Software License"), in
+ * which case the provisions of a UIRF Software License are applicable instead
+ * of those above.
+ */
 package org.openelis.bean;
 
 import java.util.ArrayList;
@@ -41,36 +41,54 @@ import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.local.LoginLocal;
 import org.openelis.local.NoteLocal;
+import org.openelis.security.domain.SystemUserDO;
+import org.openelis.security.local.SystemUserUtilLocal;
 
 @Stateless
-
 @SecurityDomain("openelis")
 public class NoteBean implements NoteLocal {
 
     @PersistenceContext(name = "openelis")
     private EntityManager manager;
-    
-    @EJB LoginLocal login;
-    
+
+    @EJB
+    SystemUserUtilLocal   sysUser;
+    @EJB
+    LoginLocal            login;
+
     public ArrayList<NoteViewDO> fetchById(Integer refTableId, Integer refId) throws Exception {
+        Query query;
+        NoteViewDO note;
+        SystemUserDO user;
+        ArrayList<NoteViewDO> list;
         
-        Query query = manager.createNamedQuery("Note.Notes");
+        query = manager.createNamedQuery("Note.Notes");
         query.setParameter("referenceTable", refTableId);
         query.setParameter("id", refId);
-        
-        ArrayList<NoteViewDO> list = (ArrayList<NoteViewDO>)query.getResultList();
-        
-        if(list.size() == 0)
+
+        list = (ArrayList<NoteViewDO>)query.getResultList();
+
+        if (list.size() == 0)
             throw new NotFoundException();
+        
+        for(int i=0; i<list.size(); i++){
+            note = list.get(i);
+
+            if (note.getSystemUserId() != null) {
+                user = sysUser.getSystemUser(note.getSystemUserId());
+                if (user != null)
+                    note.setSystemUser(user.getLoginName());
+            }
+        }
         
         return list;
     }
-    
+
     public NoteViewDO add(NoteViewDO data) throws Exception {
         Note entity;
-        
+
         manager.setFlushMode(FlushModeType.COMMIT);
-        
+
         entity = new Note();
         entity.setIsExternal(data.getIsExternal());
         entity.setReferenceId(data.getReferenceId());
@@ -79,21 +97,21 @@ public class NoteBean implements NoteLocal {
         entity.setSystemUserId(login.getSystemUserId());
         entity.setText(data.getText());
         entity.setTimestamp(Datetime.getInstance());
-        
+
         manager.persist(entity);
         data.setId(entity.getId());
-        
+
         return data;
     }
 
     public NoteViewDO update(NoteViewDO data) throws Exception {
         Note entity;
-        
-        if (! data.isChanged())
+
+        if ( !data.isChanged())
             return data;
 
         manager.setFlushMode(FlushModeType.COMMIT);
-        
+
         entity = manager.find(Note.class, data.getId());
         entity.setIsExternal(data.getIsExternal());
         entity.setReferenceId(data.getReferenceId());
@@ -102,10 +120,10 @@ public class NoteBean implements NoteLocal {
         entity.setSystemUserId(login.getSystemUserId());
         entity.setText(data.getText());
         entity.setTimestamp(Datetime.getInstance());
-        
+
         return data;
     }
-    
+
     public void delete(NoteViewDO data) throws Exception {
         Note entity;
 

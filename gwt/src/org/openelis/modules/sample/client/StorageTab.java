@@ -234,7 +234,7 @@ public class StorageTab extends Screen {
                TableDataRow row = new TableDataRow(4);
                row.key = storageDO.getId();
 
-               //FIXME not possible right now  row.cells.get(0).value = storageDO.getUserName();
+               row.cells.get(0).value = storageDO.getUserName();
                row.cells.get(1).value = new TableDataRow(storageDO.getStorageLocationId(), storageDO.getStorageLocation());
                row.cells.get(2).value = storageDO.getCheckin();
                row.cells.get(3).value = storageDO.getCheckout();

@@ -40,6 +40,9 @@ import org.openelis.entity.Storage;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.local.LoginLocal;
 import org.openelis.local.StorageLocal;
+import org.openelis.security.domain.SystemUserDO;
+import org.openelis.security.local.SystemUserUtilLocal;
+import org.openelis.utilcommon.DataBaseUtil;
 
 @Stateless
 
@@ -48,14 +51,29 @@ public class StorageBean implements StorageLocal{
     @PersistenceContext(name = "openelis")
     private EntityManager manager;
     
+    @EJB SystemUserUtilLocal   sysUser;
     @EJB LoginLocal login;
 
     public ArrayList<StorageViewDO> fetchByRefId(Integer refTableId, Integer refId) throws Exception {
-        Query query = manager.createNamedQuery("Storage.StorageById");
+        SystemUserDO user;
+        StorageViewDO storage;
+        Query query;
+        
+        query = manager.createNamedQuery("Storage.StorageById");
         query.setParameter("referenceTable", refTableId);
         query.setParameter("id", refId);
         
-        ArrayList<StorageViewDO> list = (ArrayList<StorageViewDO>)query.getResultList();
+        ArrayList<StorageViewDO> list = DataBaseUtil.toArrayList(query.getResultList());
+        
+        for(int i=0; i<list.size(); i++){
+            storage = list.get(i);
+
+            if (storage.getSystemUserId() != null) {
+                user = sysUser.getSystemUser(storage.getSystemUserId());
+                if (user != null)
+                    storage.setUserName(user.getLoginName());
+            }
+        }
         
         if(list.size() == 0)
             throw new NotFoundException();
