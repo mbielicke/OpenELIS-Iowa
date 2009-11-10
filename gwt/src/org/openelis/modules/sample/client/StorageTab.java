@@ -52,6 +52,7 @@ import org.openelis.gwt.widget.table.event.RowAddedHandler;
 import org.openelis.gwt.widget.table.event.RowDeletedEvent;
 import org.openelis.gwt.widget.table.event.RowDeletedHandler;
 import org.openelis.manager.StorageManager;
+import org.openelis.modules.main.client.openelis.OpenELIS;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.Window;
@@ -59,7 +60,10 @@ import com.google.gwt.user.client.Window;
 public class StorageTab extends Screen {
     private boolean loaded;
 
+    protected AutoComplete<Integer> location;
     protected TableWidget storageTable;
+    protected Integer userId;
+    protected String userName;
     
     protected StorageManager manager;
     protected SampleDataBundle data;
@@ -67,6 +71,9 @@ public class StorageTab extends Screen {
     public StorageTab(ScreenDefInt def) {
         service = new ScreenService("OpenELISServlet?service=org.openelis.modules.storage.server.StorageService");
         setDef(def);
+        
+        userName = OpenELIS.security.getSystemUserName();
+        userId = OpenELIS.security.getSystemUserId();
         
         initialize();
     }
@@ -84,6 +91,7 @@ public class StorageTab extends Screen {
             }
         });
         
+        location = ((AutoComplete<Integer>)storageTable.getColumns().get(1).colWidget);
         storageTable.addCellEditedHandler(new CellEditedHandler() {
             public void onCellUpdated(CellEditedEvent event) {
                 int row,col;
@@ -106,7 +114,9 @@ public class StorageTab extends Screen {
                             storageDO.setSystemUserId((Integer)val);
                             break;
                     case 1:
+                            TableDataRow selection = location.getSelection();
                             storageDO.setStorageLocationId((Integer)((TableDataRow)val).key);
+                            storageDO.setStorageLocation((String)selection.getCells().get(0));
                             break;
                     case 2:
                             storageDO.setCheckin((Datetime)val);
@@ -136,6 +146,8 @@ public class StorageTab extends Screen {
                     TableDataRow selectedRow = storageTable.getRow(0);
                     StorageViewDO storageDO = new StorageViewDO();
                     storageDO.setCheckin((Datetime)selectedRow.cells.get(2).value);
+                    storageDO.setSystemUserId(userId);
+                    storageDO.setUserName(userName);
                     
                     manager.addStorage(storageDO);
                 }catch(Exception e){
@@ -155,7 +167,6 @@ public class StorageTab extends Screen {
             }
         });
         
-        final AutoComplete<Integer> location = ((AutoComplete<Integer>)storageTable.getColumns().get(1).colWidget);
         location.addGetMatchesHandler(new GetMatchesHandler(){
             public void onGetMatches(GetMatchesEvent event) {
                 AutocompleteRPC rpc = new AutocompleteRPC();
@@ -192,6 +203,7 @@ public class StorageTab extends Screen {
                     storageTable.setCell(0, 3, date);
                 
                 TableDataRow newRow = new TableDataRow(4);
+                newRow.cells.get(0).value = userName;
                 newRow.cells.get(2).value = date;
                 storageTable.addRow(0, newRow);
                 storageTable.selectRow(0);
