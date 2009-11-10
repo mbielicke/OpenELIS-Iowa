@@ -75,6 +75,7 @@ import org.openelis.gwt.widget.table.event.RowDeletedEvent;
 import org.openelis.gwt.widget.table.event.RowDeletedHandler;
 import org.openelis.gwt.widget.table.event.SortEvent;
 import org.openelis.gwt.widget.table.event.SortHandler;
+import org.openelis.manager.TestWorksheetManager;
 import org.openelis.manager.WorksheetAnalysisManager;
 import org.openelis.manager.WorksheetItemManager;
 import org.openelis.manager.WorksheetManager;
@@ -226,7 +227,15 @@ public class WorksheetCreationScreen extends Screen implements HasActionHandlers
 
         worksheetItemTable.addSortHandler(new SortHandler() {
             public void onSort(SortEvent event) {
-            	Collections.sort(analysisItems,new ColumnComparator(event.getIndex(),event.getDirection()));
+				ColumnComparator comparator;
+//                TableSorter sorter;
+                
+                comparator = new ColumnComparator(event.getIndex(), event.getDirection());
+                Collections.sort(analysisItems, comparator);
+                
+//                sorter = new TableSorter();
+//                sorter.sort(analysisItems, event.getIndex(), event.getDirection());
+                
                 mergeAnalysesAndQCs();
             }
         });
@@ -293,7 +302,11 @@ public class WorksheetCreationScreen extends Screen implements HasActionHandlers
                                 
                                 if (testIds.size() > 1) {
                                     Window.alert(consts.get("multipleTestsOnWorksheet"));
-                                    // TODO -- Clear QC Template
+                                    testWorksheetDO = new TestWorksheetDO();
+                                    testWorksheetDO.setFormatId(DictionaryCache.getIdFromSystemName("wsheet_num_format_total"));
+                                    testWorksheetDO.setBatchCapacity(500);
+                                    testWorksheetDO.setTotalCapacity(500);
+                                    testWorksheetItems.clear();
                                 } else {
                                     loadQCTemplate(testIds.get(0));
                                 }
@@ -318,6 +331,7 @@ public class WorksheetCreationScreen extends Screen implements HasActionHandlers
     }
     
     protected void save() {
+        boolean      choice;
         int          i;
         TableDataRow row;
         WorksheetDO              wDO;
@@ -331,14 +345,18 @@ public class WorksheetCreationScreen extends Screen implements HasActionHandlers
             return;
         }
         
+        choice = Window.confirm("Worksheets cannot be changed once they have been saved.\n"+
+                                "Are you sure you would like to save this worksheet?");
+        if (!choice)
+            return;
+
         window.setBusy(consts.get("saving"));
 
         wDO = manager.getWorksheet();
         wDO.setCreatedDate(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE));
         wDO.setSystemUserId(OpenELIS.security.getSystemUserId());
         wDO.setStatusId(DictionaryCache.getIdFromSystemName("worksheet_working"));
-        // TODO -- Need to pull format from test_worksheet
-        wDO.setFormatId(DictionaryCache.getIdFromSystemName("wsheet_num_format_total"));
+        wDO.setFormatId(testWorksheetDO.getFormatId());
         
         try {
             wiManager = manager.getItems();
@@ -397,26 +415,22 @@ public class WorksheetCreationScreen extends Screen implements HasActionHandlers
     }
 
     private void loadQCTemplate(Integer testId) {
-/*
         int                  i;
-        TestWorksheetViewDO  twDO;
         TestWorksheetItemDO  twiDO;
         TestWorksheetManager twM;
         
-        // TODO -- Retrieve worksheet template information for specified test
         try {
-            twM = TestWorksheetManager.findByTestId(testIds.get(0));
-            twDO = twM.getWorksheet();
+            twM = TestWorksheetManager.fetchByTestId(testId);
+            testWorksheetDO = twM.getWorksheet();
             for (i = 0; i < twM.itemCount(); i++) {
                 twiDO = twM.getItemAt(i);
             }
         } catch (Exception anyE) {
-            
+            // TODO -- Need to code real exception handling
+            anyE.printStackTrace();
         }
         
-        
         buildQCWorksheet();
-*/
     }
     
     private void buildQCWorksheet() {
@@ -429,13 +443,22 @@ public class WorksheetCreationScreen extends Screen implements HasActionHandlers
     }
     
     private void mergeAnalysesAndQCs() {
-        int          i;
+        int          i, major, minor;
+        String       sysName;
         TableDataRow row;
         
         // TODO -- Implement merging of sorted analyses with the QC template
         for (i = 0; i < analysisItems.size(); i++) {
-            row = analysisItems.get(i);
-            row.cells.get(0).value = i + 1;
+            row     = analysisItems.get(i);
+            sysName = DictionaryCache.getSystemNameFromId(testWorksheetDO.getFormatId());
+
+            if ("worksheet_num_format_batch".equals(sysName)) {
+                major = getWellMajorNumber(i+1);
+                minor = getWellMinorNumber(i+1);
+                row.cells.get(0).value = major+"-"+minor;
+            } else if ("worksheet_num_format_total".equals(sysName)) {
+                row.cells.get(0).value = i + 1;
+            }
         }
         worksheetItemTable.load(analysisItems);
     }
@@ -443,4 +466,20 @@ public class WorksheetCreationScreen extends Screen implements HasActionHandlers
     public HandlerRegistration addActionHandler(ActionHandler<WorksheetCreationScreen.Action> handler) {
         return addHandler(handler, ActionEvent.getType());
     }        
+
+    /**
+     * Parses the well number and returns the major number
+     * for batch numbering.
+     */
+   private int getWellMajorNumber(int wellNumber) {
+       return (int) (wellNumber / (double)testWorksheetDO.getBatchCapacity() + .99);
+   }
+
+   /**
+     * Parses the well number and returns the minor number
+     * for batch numbering.
+     */
+   private int getWellMinorNumber(int wellNumber) {
+       return wellNumber - (getWellMajorNumber(wellNumber) - 1) * testWorksheetDO.getBatchCapacity();
+   }
 }
