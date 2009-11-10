@@ -26,6 +26,7 @@
 package org.openelis.modules.worksheetCreation.client;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -62,9 +63,9 @@ import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
+import org.openelis.gwt.widget.table.ColumnComparator;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableRow;
-import org.openelis.gwt.widget.table.TableSorter;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
@@ -225,10 +226,7 @@ public class WorksheetCreationScreen extends Screen implements HasActionHandlers
 
         worksheetItemTable.addSortHandler(new SortHandler() {
             public void onSort(SortEvent event) {
-                TableSorter sorter;
-                
-                sorter = new TableSorter();
-                sorter.sort(analysisItems, event.getIndex(), event.getDirection());
+            	Collections.sort(analysisItems,new ColumnComparator(event.getIndex(),event.getDirection()));
                 mergeAnalysesAndQCs();
             }
         });
