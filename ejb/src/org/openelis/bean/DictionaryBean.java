@@ -75,6 +75,84 @@ public class DictionaryBean implements DictionaryLocal, DictionaryRemote {
 
         return DataBaseUtil.toArrayList(list);
     }
+    
+    public ArrayList<DictionaryDO> fetchByCategorySystemName(String categoryName) throws Exception {
+        Query query;
+
+        query = manager.createNamedQuery("Dictionary.FetchByCategorySystemName");
+        query.setParameter("name", categoryName);
+
+        return DataBaseUtil.toArrayList(query.getResultList());
+    }
+
+    public ArrayList<DictionaryDO> fetchByEntry(String entry, int max) throws Exception {
+        Query query;
+
+        query = manager.createNamedQuery("Dictionary.FetchByEntry");
+        query.setParameter("entry", entry);
+        query.setMaxResults(max);
+
+        return DataBaseUtil.toArrayList(query.getResultList());
+    }
+
+    public DictionaryViewDO fetchById(Integer id) throws Exception {
+        Query query;
+        DictionaryViewDO dictDO;
+
+        query = manager.createNamedQuery("Dictionary.FetchById");
+        query.setParameter("id", id);
+
+        try {
+            dictDO = (DictionaryViewDO)query.getSingleResult();
+        } catch (NoResultException e) {
+            throw new NotFoundException();
+        } catch (Exception e) {
+            throw new DatabaseException(e);
+        }
+
+        return dictDO;
+    }
+
+    public ArrayList<IdNameVO> fetchByEntry(ArrayList<QueryData> fields) throws Exception {
+        Query query;
+        QueryBuilderV2 builder;
+        List list;
+
+        builder = new QueryBuilderV2();
+        builder.setMeta(meta);
+
+        builder.setSelect("distinct new org.openelis.domain.IdNameVO(" + meta.getDictionary().getId() + ", " +                     
+                     meta.getDictionary().getEntry()+ ", " + meta.getName() +") ");
+
+        builder.constructWhere(fields);
+        builder.setOrderBy(meta.getDictionary().getEntry()+", "+meta.getName());
+
+        query = manager.createQuery(builder.getEJBQL());
+        builder.setQueryParams(query, fields);
+
+        list = query.getResultList();        
+        if (list.isEmpty())
+            throw new NotFoundException();
+
+        return DataBaseUtil.toArrayList(list);
+    }
+
+    public DictionaryDO fetchBySystemName(String systemName) throws Exception {
+        Query query;
+        DictionaryDO dictDO;
+
+        query = manager.createNamedQuery("Dictionary.FetchBySystemName");
+        query.setParameter("name", systemName);
+        try {
+            dictDO = (DictionaryDO)query.getSingleResult();
+        } catch (NoResultException e) {
+            throw new NotFoundException();
+        } catch (Exception e) {
+            throw new DatabaseException(e);
+        }
+
+        return dictDO;
+    }
 
     public DictionaryViewDO add(DictionaryViewDO data) throws Exception {
         Dictionary dictionary;
@@ -145,128 +223,36 @@ public class DictionaryBean implements DictionaryLocal, DictionaryRemote {
         Query query; 
         ValidationErrorsList list;
         List result;
-        boolean valid;
         
         list = new ValidationErrorsList();
-        valid = true;
-        
-        query = manager.createNamedQuery("Dictionary.ReferenceCheckForId");
-        query.setParameter("id",data.getId());
-        result = query.getResultList();  
-        
-        if(result.size() > 0) 
-            valid = false;
-        
-        query = manager.createNamedQuery("Dictionary.ReferenceCheckForValue");
-        query.setParameter("value",String.valueOf(data.getId()));
-        result = query.getResultList();
-        
-        if(result.size() > 0) 
-            valid = false;
         
         query = manager.createNamedQuery("Dictionary.ReferenceCheckForStateCountry");
         query.setParameter("value",data.getEntry());
         result = query.getResultList();
         
-        if(result.size() > 0) 
-            valid = false;
-        
-        if(!valid) {
+        if(result.size() > 0) {
             list.add(new FieldErrorException("dictionaryDeleteException",null));
             throw list;
         }
         
+        query = manager.createNamedQuery("Dictionary.ReferenceCheckForValue");
+        query.setParameter("value",String.valueOf(data.getId()));
+        result = query.getResultList();
         
-    }
-
-    public ArrayList<DictionaryDO> fetchByCategorySystemName(String categoryName) throws Exception {
-        Query query;
-
-        query = manager.createNamedQuery("Dictionary.FetchByCategorySystemName");
-        query.setParameter("name", categoryName);
-
-        return DataBaseUtil.toArrayList(query.getResultList());
-    }
-
-    public ArrayList<DictionaryDO> fetchByEntry(String entry, int max) throws Exception {
-        Query query;
-
-        query = manager.createNamedQuery("Dictionary.FetchByEntry");
-        query.setParameter("entry", entry);
-        query.setMaxResults(max);
-
-        return DataBaseUtil.toArrayList(query.getResultList());
-    }
-
-    public DictionaryViewDO fetchById(Integer id) throws Exception {
-        Query query;
-        DictionaryViewDO dictDO;
-
-        query = manager.createNamedQuery("Dictionary.FetchById");
-        query.setParameter("id", id);
-
-        try {
-            dictDO = (DictionaryViewDO)query.getSingleResult();
-        } catch (NoResultException e) {
-            throw new NotFoundException();
-        } catch (Exception e) {
-            throw new DatabaseException(e);
+        if(result.size() > 0) {
+            list.add(new FieldErrorException("dictionaryDeleteException",null));
+            throw list;
         }
-
-        return dictDO;
-    }
-
-    public ArrayList<IdNameVO> fetchByEntryAndCategoryId(ArrayList<QueryData> fields) throws Exception {
-        Query query;
-        QueryBuilderV2 qb;
-        List list;
-
-        qb = new QueryBuilderV2();
-        qb.setMeta(meta);
-
-        qb.setSelect("distinct new org.openelis.domain.IdNameVO(" + meta.getDictionary().getId() + ", " +                     
-                     meta.getDictionary().getEntry()+ ", " + meta.getName() +") ");
-
-        qb.constructWhere(fields);
-        qb.setOrderBy(meta.getDictionary().getEntry()+", "+meta.getName());
-
-        query = manager.createQuery(qb.getEJBQL());
-
-        // ***set the parameters in the query
-        qb.setQueryParams(query, fields);
-
-        list = query.getResultList();
         
-        if (list.isEmpty())
-            throw new NotFoundException();
-
-        return DataBaseUtil.toArrayList(list);
-    }
-
-    public DictionaryDO fetchBySystemName(String systemName) throws Exception {
-        Query query;
-        DictionaryDO dictDO;
-
-        query = manager.createNamedQuery("Dictionary.FetchBySystemName");
-        query.setParameter("name", systemName);
-        try {
-            dictDO = (DictionaryDO)query.getSingleResult();
-        } catch (NoResultException e) {
-            throw new NotFoundException();
-        } catch (Exception e) {
-            throw new DatabaseException(e);
+        query = manager.createNamedQuery("Dictionary.ReferenceCheckForId");
+        query.setParameter("id",data.getId());
+        result = query.getResultList();  
+        
+        if(result.size() > 0) {
+            list.add(new FieldErrorException("dictionaryDeleteException",null));
+            throw list;
         }
-
-        return dictDO;
-    }
-
-    public ArrayList<IdNameVO> fetchIdEntryByCategoryId(Integer categoryId) throws Exception {
-        Query query;
-
-        query = manager.createNamedQuery("Dictionary.FetchIdEntryByCategoryId");
-        query.setParameter("id", categoryId);
-
-        return DataBaseUtil.toArrayList(query.getResultList());
+                              
     }
 
 }

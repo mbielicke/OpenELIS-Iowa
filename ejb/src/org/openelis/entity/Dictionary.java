@@ -71,10 +71,7 @@ import org.openelis.utils.Auditable;
                 @NamedQuery(name = "Dictionary.FetchByCategorySystemName",
                             query = "select distinct new org.openelis.domain.DictionaryDO(d.id,d.sortOrder, d.categoryId, d.relatedEntryId, " +
                                     " d.systemName,d.isActive,  d.localAbbrev, d.entry)"
-                                  + " from  Dictionary d left join d.category c where c.systemName = :name order by d.sortOrder "),            
-                @NamedQuery(name = "Dictionary.FetchIdEntryByCategoryId",
-                            query = "select new org.openelis.domain.IdNameVO(d.id, d.entry) from Dictionary d where "
-                                  + " d.isActive='Y' and d.categoryId = :id order by d.sortOrder"),                            
+                                  + " from  Dictionary d left join d.category c where c.systemName = :name order by d.sortOrder "),                                        
                 @NamedQuery(name = "Dictionary.FetchByEntry",
                             query = "select distinct new org.openelis.domain.DictionaryDO(d.id,d.sortOrder, d.categoryId, d.relatedEntryId, " +
                                     " d.systemName,d.isActive,  d.localAbbrev, d.entry) "

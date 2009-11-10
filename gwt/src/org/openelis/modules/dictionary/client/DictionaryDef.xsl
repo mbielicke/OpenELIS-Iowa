@@ -198,13 +198,13 @@ UIRF Software License are applicable instead of those above.
                   <col key="{dictionary:getIsActive($dictNew)}" width="60" header="{resource:getString($constants,'active')}">
                     <check>Y</check>
                   </col>
-                  <col key="{dictionary:getSystemName($dictNew)}" width="120" sort="true" header="{resource:getString($constants,'systemName')}">
+                  <col key="{dictionary:getSystemName($dictNew)}" width="120"  header="{resource:getString($constants,'systemName')}">
                     <textbox case="LOWER" max="30" field="String" />
                   </col>
-                  <col key="{dictionary:getLocalAbbrev($dictNew)}" width="120" sort="true" header="{resource:getString($constants,'abbr')}">
+                  <col key="{dictionary:getLocalAbbrev($dictNew)}" width="120"  header="{resource:getString($constants,'abbr')}">
                     <textbox max="10" field="String" />
                   </col>
-                  <col key="{dictionary:getEntry($dictNew)}" width="180" sort="true" header="{resource:getString($constants,'entry')}">
+                  <col key="{dictionary:getEntry($dictNew)}" width="180"  header="{resource:getString($constants,'entry')}">
                     <textbox max="255" field="String" required = "true"/>
                   </col>
                   <col key="{relentry:getEntry($rel)}" width="150" header="{resource:getString($constants,'relEntry')}">

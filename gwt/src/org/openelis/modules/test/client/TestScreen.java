@@ -62,7 +62,6 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
-import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.AppButton;
@@ -172,7 +171,9 @@ public class TestScreen extends Screen {
         analyteAndResultTab.setWindow(window);
         worksheetLayoutTab.setWindow(window);
         prepAndReflexTab.setWindow(window);
+        
         setState(State.DEFAULT);
+        
         initializeDropdowns();
 
         DataChangeEvent.fire(this);
@@ -286,8 +287,6 @@ public class TestScreen extends Screen {
             public void onStateChange(StateChangeEvent<State> event) {
                 id.enable(EnumSet.of(State.QUERY).contains(event.getState()));
                 id.setQueryMode(event.getState() == State.QUERY);
-                if (event.getState() == State.QUERY)
-                    id.setFocus(true);
             }
         });
 
@@ -334,7 +333,6 @@ public class TestScreen extends Screen {
         method.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
                 QueryFieldUtil parser;
-                TableDataRow row;
                 ArrayList<IdNameVO> list;
                 ArrayList<TableDataRow> model;
 
@@ -606,52 +604,51 @@ public class TestScreen extends Screen {
 
         table.addCellEditedHandler(new CellEditedHandler() {
             public void onCellUpdated(CellEditedEvent event) {
-                int row, col, i;
+                int r, c, i;
                 Integer val;
                 String systemName;
                 TestSectionManager tsm;
                 TestSectionViewDO data;
 
-                row = event.getRow();
-                col = event.getCol();
-                tsm = manager.getTestSections();
-                val = (Integer)table.getObject(row, col);
+                r = event.getRow();
+                c = event.getCol();
+                val = (Integer)table.getObject(r, c);
 
                 try {
-                    data = tsm.getSectionAt(row);
+                    data = manager.getTestSections().getSectionAt(r);
+
+                    switch (c) {
+                        case 0:
+                            data.setSectionId(val);
+                            break;
+                        case 1:
+                            data.setFlagId(val);
+                            if (val == null)
+                                break;
+                            systemName = DictionaryCache.getSystemNameFromId(val);
+                            if (systemName != null) {
+                                if ("test_section_default".equals(systemName)) {
+                                    for (i = 0; i < manager.getTestSections().count(); i++ ) {
+                                        if (i == r)
+                                            continue;
+                                        data = manager.getTestSections().getSectionAt(i);
+                                        data.setFlagId(null);
+                                        table.setCell(i,c,null);
+                                    }
+                                } else {
+                                    for (i = 0; i < manager.getTestSections().count(); i++ ) {
+                                        data = manager.getTestSections().getSectionAt(i);
+                                        data.setFlagId(val);
+                                        table.setCell(i,c,val);
+                                    }
+                                }
+                            }
+                            break;
+                    }
+
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
                     return;
-                }
-
-                switch (col) {
-                    case 0:
-                        data.setSectionId(val);
-                        break;
-                    case 1:
-                        data.setFlagId(val);
-                        if (val == null)
-                            break;
-                        systemName = DictionaryCache.getSystemNameFromId(val);
-                        if (systemName != null) {
-                            if ("test_section_default".equals(systemName)) {
-                                for (i = 0; i < tsm.count(); i++ ) {
-                                    if (i == row)
-                                        continue;
-                                    data = tsm.getSectionAt(i);
-                                    data.setFlagId(null);
-                                    table.getData().get(i).cells.get(col).setValue(null);
-                                }
-                            } else {
-                                for (i = 0; i < tsm.count(); i++ ) {
-                                    data = tsm.getSectionAt(i);
-                                    data.setFlagId(val);
-                                    table.getData().get(i).cells.get(col).setValue(val);
-                                }
-                            }
-                            table.refresh();
-                        }
-                        break;
                 }
             }
         });
@@ -862,9 +859,9 @@ public class TestScreen extends Screen {
 
         scriptlet = (AutoComplete)def.getWidget(meta.getScriptlet().getName());
         addScreenHandler(scriptlet, new ScreenEventHandler<Integer>() {
-            public void onDataChange(DataChangeEvent event) {
-                TestViewDO testDO = manager.getTest();
-                scriptlet.setSelection(testDO.getScriptletId(), testDO.getScriptletName());
+            public void onDataChange(DataChangeEvent event) {                
+                scriptlet.setSelection(manager.getTest().getScriptletId(),
+                                       manager.getTest().getScriptletName());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -1163,6 +1160,7 @@ public class TestScreen extends Screen {
         prepAndReflexTab.draw();
         worksheetLayoutTab.draw();
 
+        setFocus(id);
         window.setDone(consts.get("enterFieldsToQuery"));
     }
 
@@ -1184,6 +1182,8 @@ public class TestScreen extends Screen {
         
         setState(State.ADD);
         DataChangeEvent.fire(this);
+        setFocus(name);
+        
         window.setDone(consts.get("enterInformationPressCommit"));
     }
 
@@ -1195,10 +1195,10 @@ public class TestScreen extends Screen {
 
             setState(State.UPDATE);
             DataChangeEvent.fire(this);
+            setFocus(name);
 
             //
-            // all tabs are loaded here to make sure that the on-screen
-            // validation
+            // all tabs are loaded here to make sure that the on-screen validation
             // and the validation done at the back end doesn't suffer from
             // errorneous conclusions about the data because of the lack of some
             // subset of it
@@ -1215,11 +1215,7 @@ public class TestScreen extends Screen {
     }
 
     protected void commit() {
-        Query query;
-        //
-        // set the focus to null so every field will commit its data.
-        //
-        id.setFocus(false);
+        setFocus(null);
 
         //
         // We do this here so that if due to changes in the data of the test analyte 
@@ -1240,6 +1236,8 @@ public class TestScreen extends Screen {
         }
 
         if (state == State.QUERY) {
+            Query query;
+            
             query = new Query();
             query.setFields(getQueryFields());
             nav.setQuery(query);
@@ -1280,7 +1278,7 @@ public class TestScreen extends Screen {
     }
 
     protected void abort() {
-        id.setFocus(false);
+        setFocus(null);
         clearErrors();
         window.setBusy(consts.get("cancelChanges"));
 
@@ -1371,8 +1369,9 @@ public class TestScreen extends Screen {
     
 
     public void showErrors(ValidationErrorsList errors) {
-        ArrayList<LocalizedException> formErrors = new ArrayList<LocalizedException>();
+        ArrayList<LocalizedException> formErrors;
         
+        formErrors = new ArrayList<LocalizedException>();
         for (Exception ex : errors.getErrorList()) {
             if (ex instanceof TableFieldErrorException) {
                 if (ex instanceof GridFieldErrorException) {
@@ -1394,7 +1393,9 @@ public class TestScreen extends Screen {
             } else if (ex instanceof FormErrorException) {
                 FormErrorException fe = (FormErrorException)ex;
                 formErrors.add(fe);
-            } 
+            } else {
+                Window.alert(ex.getMessage());
+            }
         }
         if (formErrors.size() == 0)
             window.setError(consts.get("correctErrors"));
@@ -1440,22 +1441,21 @@ public class TestScreen extends Screen {
 
     private ArrayList<TableDataRow> getTableModel() {
         ArrayList<TableDataRow> model;
-        TestSectionViewDO sectionDO;
-        TestSectionManager tsm;
+        TestSectionViewDO data;
         TableDataRow row;
 
         model = new ArrayList<TableDataRow>();
         if (manager == null)
             return model;
-        tsm = manager.getTestSections();
-        for (int iter = 0; iter < tsm.count(); iter++ ) {
-            sectionDO = tsm.getSectionAt(iter);
+        
+        for (int iter = 0; iter < manager.getTestSections().count(); iter++ ) {
+            data = manager.getTestSections().getSectionAt(iter);
 
             row = new TableDataRow(2);
-            row.key = sectionDO.getId();
+            row.key = data.getId();
 
-            row.cells.get(0).value = sectionDO.getSectionId();
-            row.cells.get(1).value = sectionDO.getFlagId();
+            row.cells.get(0).value = data.getSectionId();
+            row.cells.get(1).value = data.getFlagId();
             model.add(row);
         }
 
@@ -1465,27 +1465,24 @@ public class TestScreen extends Screen {
     private boolean canCommitResultGroups() {
         ArrayList<Integer> list;
         int i, size;
-        TestResultManager trm;
         boolean commit;
 
-        trm = null;
         commit = true;
 
         try {
-            trm = manager.getTestResults();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        list = getEmptyResultGroups(trm);
-        size = list.size();
-        if (size > 0) {
-            commit = Window.confirm(consts.get("resultGroupsEmpty"));
-            if (commit) {
-                for (i = 0; i < size; i++ ) {
-                    trm.removeResultGroup(list.get(i));
+            list = getEmptyResultGroups(manager.getTestResults());
+            size = list.size();
+            if (size > 0) {
+                commit = Window.confirm(consts.get("resultGroupsEmpty"));
+                if (commit) {
+                    for (i = 0; i < size; i++ ) {
+                        manager.getTestResults().removeResultGroup(list.get(i));
+                    }
                 }
             }
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            e.printStackTrace();
         }
         return commit;
     }
@@ -1505,8 +1502,9 @@ public class TestScreen extends Screen {
                 allow = Window.confirm(consts.get("resultNoAnalytes"));
             }
 
-        } catch (Exception ex) {
-            ex.printStackTrace();
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            e.printStackTrace();
         }
 
         return allow;
@@ -1528,14 +1526,14 @@ public class TestScreen extends Screen {
     }
 
     private void clearKeys() {
-        TestDO test;
+        TestDO data;
 
-        test = manager.getTest();
-        test.setId(null);
-        test.setIsActive("N");
-        test.setIsReportable("N");
-        test.setActiveBegin(null);
-        test.setActiveEnd(null);
+        data = manager.getTest();
+        data.setId(null);
+        data.setIsActive("N");
+        data.setIsReportable("N");
+        data.setActiveBegin(null);
+        data.setActiveEnd(null);
 
         try {
             clearSectionKeys(manager.getTestSections());
@@ -1550,12 +1548,12 @@ public class TestScreen extends Screen {
     }
 
     private void clearSectionKeys(TestSectionManager tsm) {
-        TestSectionViewDO section;
+        TestSectionViewDO data;
 
         for (int i = 0; i < tsm.count(); i++ ) {
-            section = tsm.getSectionAt(i);
-            section.setId(null);
-            section.setTestId(null);
+            data = tsm.getSectionAt(i);
+            data.setId(null);
+            data.setTestId(null);
         }
     }
 }

@@ -50,8 +50,8 @@ import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.Dropdown;
+import org.openelis.gwt.widget.Label;
 import org.openelis.gwt.widget.QueryFieldUtil;
-import org.openelis.gwt.widget.table.TableDataCell;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableRow;
 import org.openelis.gwt.widget.table.TableWidget;
@@ -90,6 +90,7 @@ public class PrepTestAndReflexTestTab extends Screen implements GetMatchesHandle
     private AppButton              addPrepTestButton, removePrepTestButton, addReflexTestButton,
                                    removeReflexTestButton;
     private AutoComplete<Integer>  prepTestAuto, reflexTestAuto, analyteAuto, resultAuto;
+    private Label<String>          prepMethodName, reflexMethodName; 
 
     public PrepTestAndReflexTestTab(ScreenDefInt def, ScreenService service) {
         setDef(def);
@@ -121,15 +122,15 @@ public class PrepTestAndReflexTestTab extends Screen implements GetMatchesHandle
                 int r, c;
                 Object val;
                 TableDataRow row;
-                TestPrepViewDO prepDO;
+                TestPrepViewDO data;
 
                 r = event.getRow();
                 c = event.getCol();
 
-                val = testPrepTable.getRow(r).cells.get(c).getValue();
+                val = testPrepTable.getObject(r, c);
 
                 try {
-                    prepDO = manager.getPrepTests().getPrepAt(r);
+                    data = manager.getPrepTests().getPrepAt(r);
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
                     return;
@@ -138,14 +139,12 @@ public class PrepTestAndReflexTestTab extends Screen implements GetMatchesHandle
                 switch (c) {
                     case 0:
                         row = (TableDataRow)val;
-                        prepDO.setPrepTestId((Integer) (row.key));
-                        if (row.key != null) {
-                            prepDO.setPrepTestName((String)row.cells.get(0).getValue());
-                            prepDO.setMethodName((String)row.cells.get(1).getValue());
-                        }
+                        data.setPrepTestId((Integer) (row.key));
+                        data.setPrepTestName(prepTestAuto.getTextBoxDisplay());
+                        data.setMethodName(prepMethodName.getText());                        
                         break;
                     case 2:
-                        prepDO.setIsOptional((String)val);
+                        data.setIsOptional((String)val);
                         break;
                 }
 
@@ -153,11 +152,15 @@ public class PrepTestAndReflexTestTab extends Screen implements GetMatchesHandle
         });
         testPrepTable.addRowAddedHandler(new RowAddedHandler() {
             public void onRowAdded(RowAddedEvent event) {
-                try {
-                    TestPrepViewDO prepDO;
-                    prepDO = new TestPrepViewDO();
-                    prepDO.setIsOptional("N");
-                    manager.getPrepTests().addPrep(prepDO);
+                int r;
+                TestPrepViewDO data;
+                
+                r = event.getIndex();
+                try {                                        
+                    data = new TestPrepViewDO();
+                    data.setIsOptional("N");                    
+                    manager.getPrepTests().addPrep(data);
+                    testPrepTable.setCell(r, 0, "N");
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
                 }
@@ -176,33 +179,38 @@ public class PrepTestAndReflexTestTab extends Screen implements GetMatchesHandle
 
         prepTestAuto = (AutoComplete<Integer>)testPrepTable.getColumnWidget(meta.getTestPrep().getPrepTest().getName());
         prepTestAuto.addGetMatchesHandler(this);
+        
+        prepMethodName = (Label<String>)testPrepTable.getColumnWidget("method");
 
         prepTestAuto.addSelectionHandler(new SelectionHandler<TableRow>() {
             public void onSelection(SelectionEvent<TableRow> event) {
                 TableDataRow selectedRow;
                 String value;
-                int index;
+                int r;
 
                 selectedRow = event.getSelectedItem().row;
                 value = (String)selectedRow.cells.get(1).getValue();
-                index = testPrepTable.getSelectedRow();
+                r = testPrepTable.getSelectedRow();
 
                 // set the method
                 if (selectedRow != null && selectedRow.key != null)
-                    testPrepTable.setCell(index, 1, value);
+                    testPrepTable.setCell(r, 1, value);
                 else
-                    testPrepTable.setCell(index, 1, null);
+                    testPrepTable.setCell(r, 1, null);
             }
 
         });
 
         addPrepTestButton = (AppButton)def.getWidget("addPrepTestButton");
         addScreenHandler(addPrepTestButton, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
+            public void onClick(ClickEvent event) {                
+                int r;
+
+                r = testPrepTable.numRows();
                 testPrepTable.addRow();
-                testPrepTable.selectRow(testPrepTable.numRows() - 1);
+                testPrepTable.selectRow(r);
                 testPrepTable.scrollToSelection();
-                testPrepTable.startEditing(testPrepTable.numRows() - 1, 0);
+                testPrepTable.startEditing(r, 0);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -244,15 +252,14 @@ public class PrepTestAndReflexTestTab extends Screen implements GetMatchesHandle
 
         testReflexTable.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
-                int row, col;
+                int r, c;
                 TableDataRow val;
-                TableDataCell tdc;
 
-                row = event.getRow();
-                col = event.getCol();
-                if (col == 3) {
-                    val = (TableDataRow)testReflexTable.getRow(row).cells.get(2).getValue();
-                    tdc = testReflexTable.getCell(row, 3);
+                r = event.getRow();
+                c = event.getCol();
+                
+                if (c == 3) {
+                    val = (TableDataRow)testReflexTable.getObject(r, c);
                     if (val == null || val.key == null) {
                         Window.alert(consts.get("selectAnaBeforeRes"));
                         event.cancel();
@@ -265,42 +272,40 @@ public class PrepTestAndReflexTestTab extends Screen implements GetMatchesHandle
 
         testReflexTable.addCellEditedHandler(new CellEditedHandler() {
             public void onCellUpdated(CellEditedEvent event) {
-                int row, col;
+                int r, c;
                 Object val;
-                TestReflexViewDO refDO;
-                TableDataRow trow;
+                TestReflexViewDO data;
+                TableDataRow row;
 
-                row = event.getRow();
-                col = event.getCol();
-                val = testReflexTable.getRow(row).cells.get(col).getValue();
+                r = event.getRow();
+                c = event.getCol();
+                val = testReflexTable.getObject(r,c);
                 try {
-                    refDO = manager.getReflexTests().getReflexAt(row);
+                    data = manager.getReflexTests().getReflexAt(r);
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
                     return;
                 }
 
-                switch (col) {
+                switch (c) {
                     case 0:
-                        trow = (TableDataRow)val;
-                        refDO.setAddTestId((Integer) (trow.key));
-                        if (trow.key != null) {
-                            refDO.setAddTestName((String)trow.cells.get(0).getValue());
-                            refDO.setAddMethodName((String)trow.cells.get(1).getValue());
-                        }
+                        row = (TableDataRow)val;
+                        data.setAddTestId((Integer)(row.key));
+                        data.setAddTestName(reflexTestAuto.getTextBoxDisplay());
+                        data.setAddMethodName(reflexMethodName.getText());                        
                         break;
                     case 2:
-                        trow = (TableDataRow)val;
-                        refDO.setTestAnalyteId((Integer) (trow.key));
-                        refDO.setTestAnalyteName((String)trow.cells.get(0).getValue());
+                        row = (TableDataRow)val;
+                        data.setTestAnalyteId((Integer)(row.key));
+                        data.setTestAnalyteName(analyteAuto.getTextBoxDisplay());
                         break;
                     case 3:
-                        trow = (TableDataRow)val;
-                        refDO.setTestResultId((Integer) (trow.key));
-                        refDO.setTestResultValue((String)trow.cells.get(0).getValue());
+                        row = (TableDataRow)val;
+                        data.setTestResultId((Integer)(row.key));
+                        data.setTestResultValue(resultAuto.getTextBoxDisplay());
                         break;
                     case 4:
-                        refDO.setFlagsId((Integer)val);
+                        data.setFlagsId((Integer)val);
                         break;
                 }
             }
@@ -328,6 +333,8 @@ public class PrepTestAndReflexTestTab extends Screen implements GetMatchesHandle
 
         reflexTestAuto = (AutoComplete<Integer>)testReflexTable.getColumnWidget(meta.getTestReflex().getAddTest().getName());
         reflexTestAuto.addGetMatchesHandler(this);
+        
+        reflexMethodName = (Label<String>)testReflexTable.getColumnWidget("method");
 
         reflexTestAuto.addSelectionHandler(new SelectionHandler<TableRow>() {
             public void onSelection(SelectionEvent<TableRow> event) {
@@ -353,19 +360,17 @@ public class PrepTestAndReflexTestTab extends Screen implements GetMatchesHandle
         analyteAuto.addGetMatchesHandler(new GetMatchesHandler() {
 
             public void onGetMatches(GetMatchesEvent event) {
-                TestAnalyteViewDO ana;
+                TestAnalyteViewDO data;
                 ArrayList<TableDataRow> model;
                 TableDataRow row;
                 String name;
 
                 model = new ArrayList<TableDataRow>();
                 for (int i = 0; i < testAnalyteManager.rowCount(); i++ ) {
-                    ana = testAnalyteManager.getAnalyteAt(i, 0);
-                    name = ana.getAnalyteName();
+                    data = testAnalyteManager.getAnalyteAt(i, 0);
+                    name = data.getAnalyteName();
                     if (name != null && name.startsWith(event.getMatch())) {
-                        row = new TableDataRow(1);
-                        row.key = ana.getId();
-                        row.cells.get(0).setValue(name);
+                        row = new TableDataRow(data.getId(),name);
                         model.add(row);
                     }
                 }
@@ -382,7 +387,7 @@ public class PrepTestAndReflexTestTab extends Screen implements GetMatchesHandle
         resultAuto.addGetMatchesHandler(new GetMatchesHandler() {
 
             public void onGetMatches(GetMatchesEvent event) {
-                TestResultViewDO res;
+                TestResultViewDO data;
                 ArrayList<TableDataRow> model;
                 TableDataRow row, trow, arow;
                 Integer rg;
@@ -414,14 +419,14 @@ public class PrepTestAndReflexTestTab extends Screen implements GetMatchesHandle
                 dictId = DictionaryCache.getIdFromSystemName("test_res_type_dictionary");
 
                 for (int i = 0; i < size; i++ ) {
-                    res = testResultManager.getResultAt(rg, i);
+                    data = testResultManager.getResultAt(rg, i);
                     row = new TableDataRow(1);
-                    if (dictId.equals(res.getTypeId()))
-                        value = res.getDictionary();
+                    if (dictId.equals(data.getTypeId()))
+                        value = data.getDictionary();
                     else
-                        value = res.getValue();
+                        value = data.getValue();
                     if (value != null && !"".equals(value)) {
-                        row.key = res.getId();
+                        row.key = data.getId();
                         row.cells.get(0).setValue(value);
                         model.add(row);
                     }
@@ -438,33 +443,33 @@ public class PrepTestAndReflexTestTab extends Screen implements GetMatchesHandle
         addReflexTestButton = (AppButton)def.getWidget("addReflexTestButton");
         addScreenHandler(addReflexTestButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
+                int r;
+
+                r = testReflexTable.numRows();
                 testReflexTable.addRow();
-                testReflexTable.selectRow(testReflexTable.numRows() - 1);
+                testReflexTable.selectRow(r);
                 testReflexTable.scrollToSelection();
-                testReflexTable.startEditing(testReflexTable.numRows() - 1, 0);
+                testReflexTable.startEditing(r, 0);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                if (event.getState() == State.ADD || event.getState() == State.UPDATE)
-                    addReflexTestButton.enable(true);
-                else
-                    addReflexTestButton.enable(false);
+                addReflexTestButton.enable(EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()));
             }
         });
 
         removeReflexTestButton = (AppButton)def.getWidget("removeReflexTestButton");
         addScreenHandler(removeReflexTestButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-                int selectedRow = testReflexTable.getSelectedRow();
-                if (selectedRow > -1)
-                    testReflexTable.deleteRow(selectedRow);
+                int r;
+                
+                r = testReflexTable.getSelectedRow();
+                if (r > -1 && testReflexTable.numRows() > 0)
+                    testReflexTable.deleteRow(r);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                if (event.getState() == State.ADD || event.getState() == State.UPDATE)
-                    removeReflexTestButton.enable(true);
-                else
-                    removeReflexTestButton.enable(false);
+               removeReflexTestButton.enable(EnumSet.of(State.ADD, State.UPDATE)
+                                                  .contains(event.getState()));
             }
         });
 
@@ -517,46 +522,46 @@ public class PrepTestAndReflexTestTab extends Screen implements GetMatchesHandle
     }
 
     public void onAction(ActionEvent<AnalyteAndResultTab.Action> event) {
-        TestAnalyteViewDO anaDO;
-        TestResultViewDO resDO;
+        TestAnalyteViewDO ana;
+        TestResultViewDO res;
 
         if (state == State.QUERY)
             return;
 
         if (event.getAction() == Action.ANALYTE_CHANGED) {
-            anaDO = (TestAnalyteViewDO)event.getData();
-            setAnalyteErrors(anaDO.getId(), anaDO.getAnalyteName(), "analyteNameChanged", true);
+            ana = (TestAnalyteViewDO)event.getData();
+            setAnalyteErrors(ana.getId(), ana.getAnalyteName(), "analyteNameChanged", true);
         } else if (event.getAction() == Action.ANALYTE_DELETED) {
-            anaDO = (TestAnalyteViewDO)event.getData();
-            setAnalyteErrors(anaDO.getId(), anaDO.getAnalyteName(), "analyteDeleted", false);
+            ana = (TestAnalyteViewDO)event.getData();
+            setAnalyteErrors(ana.getId(), ana.getAnalyteName(), "analyteDeleted", false);
         }
         if (event.getAction() == Action.RESULT_CHANGED) {
-            resDO = (TestResultViewDO)event.getData();
-            setResultErrors(resDO, "resultValueChanged", true);
+            res = (TestResultViewDO)event.getData();
+            setResultErrors(res, "resultValueChanged", true);
         } else if (event.getAction() == Action.RESULT_DELETED) {
-            resDO = (TestResultViewDO)event.getData();
-            setResultErrors(resDO, "resultDeleted", false);
+            res = (TestResultViewDO)event.getData();
+            setResultErrors(res, "resultDeleted", false);
         }
 
     }
 
     protected void clearKeys(TestPrepManager tpm, TestReflexManager tfm) {
-        TestPrepViewDO prepDO;
-        TestReflexViewDO refDO;
+        TestPrepViewDO prep;
+        TestReflexViewDO ref;
         int i;
 
         for (i = 0; i < tpm.count(); i++ ) {
-            prepDO = tpm.getPrepAt(i);
-            prepDO.setId(null);
-            prepDO.setTestId(null);
+            prep = tpm.getPrepAt(i);
+            prep.setId(null);
+            prep.setTestId(null);
         }
 
         for (i = 0; i < tfm.count(); i++ ) {
-            refDO = tfm.getReflexAt(i);
-            refDO.setId(null);
-            refDO.setTestAnalyteId(refDO.getTestAnalyteId() * ( -1));
-            refDO.setTestResultId(refDO.getTestResultId() * ( -1));
-            refDO.setTestId(null);
+            ref = tfm.getReflexAt(i);
+            ref.setId(null);
+            ref.setTestAnalyteId(ref.getTestAnalyteId() * ( -1));
+            ref.setTestResultId(ref.getTestResultId() * ( -1));
+            ref.setTestId(null);
         }
     }
 
@@ -567,7 +572,7 @@ public class PrepTestAndReflexTestTab extends Screen implements GetMatchesHandle
     private ArrayList<TableDataRow> getPrepTestModel() {
         ArrayList<TableDataRow> model;
         TestPrepManager tpm;
-        TestPrepViewDO prepTest;
+        TestPrepViewDO data;
         TableDataRow row;
 
         model = new ArrayList<TableDataRow>();
@@ -578,15 +583,14 @@ public class PrepTestAndReflexTestTab extends Screen implements GetMatchesHandle
         try {
             tpm = manager.getPrepTests();
             for (int i = 0; i < tpm.count(); i++ ) {
-                prepTest = tpm.getPrepAt(i);
+                data = tpm.getPrepAt(i);
                 row = new TableDataRow(3);
-                row.key = prepTest.getId();
+                row.key = data.getId();
 
-                row.cells.get(0).setValue(
-                                          new TableDataRow(prepTest.getPrepTestId(),
-                                                           prepTest.getPrepTestName()));
-                row.cells.get(1).setValue(prepTest.getMethodName());
-                row.cells.get(2).setValue(prepTest.getIsOptional());
+                row.cells.get(0).setValue(new TableDataRow(data.getPrepTestId(),
+                                                           data.getPrepTestName()));
+                row.cells.get(1).setValue(data.getMethodName());
+                row.cells.get(2).setValue(data.getIsOptional());
                 model.add(row);
             }
         } catch (Exception e) {
@@ -600,7 +604,7 @@ public class PrepTestAndReflexTestTab extends Screen implements GetMatchesHandle
     private ArrayList<TableDataRow> getReflexTestModel() {
         ArrayList<TableDataRow> model;
         TestReflexManager trm;
-        TestReflexViewDO reflexTest;
+        TestReflexViewDO data;
         TableDataRow row;
 
         model = new ArrayList<TableDataRow>();
@@ -611,21 +615,18 @@ public class PrepTestAndReflexTestTab extends Screen implements GetMatchesHandle
         try {
             trm = manager.getReflexTests();
             for (int i = 0; i < trm.count(); i++ ) {
-                reflexTest = trm.getReflexAt(i);
+                data = trm.getReflexAt(i);
                 row = new TableDataRow(5);
-                row.key = reflexTest.getId();
+                row.key = data.getId();
 
-                row.cells.get(0).setValue(
-                                          new TableDataRow(reflexTest.getAddTestId(),
-                                                           reflexTest.getAddTestName()));
-                row.cells.get(1).setValue(reflexTest.getAddMethodName());
-                row.cells.get(2).setValue(
-                                          new TableDataRow(reflexTest.getTestAnalyteId(),
-                                                           reflexTest.getTestAnalyteName()));
-                row.cells.get(3).setValue(
-                                          new TableDataRow(reflexTest.getTestResultId(),
-                                                           reflexTest.getTestResultValue()));
-                row.cells.get(4).setValue(reflexTest.getFlagsId());
+                row.cells.get(0).setValue(new TableDataRow(data.getAddTestId(),
+                                                           data.getAddTestName()));
+                row.cells.get(1).setValue(data.getAddMethodName());
+                row.cells.get(2).setValue(new TableDataRow(data.getTestAnalyteId(),
+                                                           data.getTestAnalyteName()));
+                row.cells.get(3).setValue(new TableDataRow(data.getTestResultId(),
+                                                           data.getTestResultValue()));
+                row.cells.get(4).setValue(data.getFlagsId());
 
                 model.add(row);
             }
@@ -663,45 +664,43 @@ public class PrepTestAndReflexTestTab extends Screen implements GetMatchesHandle
     }
 
     private void setAnalyteErrors(Integer id, String name, String key, boolean matchLabel) {
-        TableDataRow trow, arow;
+        TableDataRow row;
         String val;
 
         for (int i = 0; i < testReflexTable.numRows(); i++ ) {
-            trow = testReflexTable.getRow(i);
-            arow = (TableDataRow)trow.cells.get(2).getValue();
-            val = (String)arow.cells.get(0).getValue();
+            row = (TableDataRow)testReflexTable.getObject(i, 2);
+            val = (String)row.cells.get(0).getValue();
 
-            if (id.equals(arow.key)) {
+            if (id.equals(row.key)) {
                 if ((matchLabel && ! (val.equals(name))) || !matchLabel) {
-                    arow = new TableDataRow(null, "");
-                    trow.cells.get(2).setValue(arow);
+                    row = new TableDataRow(null, "");
+                    testReflexTable.setCell(i,2,row);
                     testReflexTable.setCellException(i, 2, new LocalizedException(key));                    
                 }
             }
         }
     }
 
-    private void setResultErrors(TestResultViewDO resDO, String key, boolean matchLabel) {
-        TableDataRow trow, rrow;
+    private void setResultErrors(TestResultViewDO data, String key, boolean matchLabel) {
+        TableDataRow row;
         String val;
         Integer id;
         String value;
         Integer dictId;
 
-        id = resDO.getId();
+        id = data.getId();
         dictId = DictionaryCache.getIdFromSystemName("test_res_type_dictionary");
         for (int i = 0; i < testReflexTable.numRows(); i++ ) {
-            trow = testReflexTable.getRow(i);
-            rrow = (TableDataRow)trow.cells.get(3).getValue();
-            val = (String)rrow.cells.get(0).getValue();
-            if (dictId.equals(resDO.getTypeId()))
-                value = resDO.getDictionary();
+            row = (TableDataRow)testReflexTable.getObject(i, 3);
+            val = (String)row.cells.get(0).getValue();
+            if (dictId.equals(data.getTypeId()))
+                value = data.getDictionary();
             else
-                value = resDO.getValue();
-            if (id.equals(rrow.key)) {
+                value = data.getValue();
+            if (id.equals(row.key)) {
                 if ( (matchLabel && ! (val.equals(value))) || !matchLabel) {
-                    rrow = new TableDataRow(null, "");
-                    trow.cells.get(3).setValue(rrow);
+                    row = new TableDataRow(null, "");
+                    testReflexTable.setCell(i,3,row);
                     testReflexTable.setCellException(i, 3, new LocalizedException(key));
                 }
             }

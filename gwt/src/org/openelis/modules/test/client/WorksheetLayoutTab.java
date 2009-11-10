@@ -1,28 +1,28 @@
-/** Exhibit A - UIRF Open-source Based Public Software License.
-* 
-* The contents of this file are subject to the UIRF Open-source Based
-* Public Software License(the "License"); you may not use this file except
-* in compliance with the License. You may obtain a copy of the License at
-* openelis.uhl.uiowa.edu
-* 
-* Software distributed under the License is distributed on an "AS IS"
-* basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
-* License for the specific language governing rights and limitations
-* under the License.
-* 
-* The Original Code is OpenELIS code.
-* 
-* The Initial Developer of the Original Code is The University of Iowa.
-* Portions created by The University of Iowa are Copyright 2006-2008. All
-* Rights Reserved.
-* 
-* Contributor(s): ______________________________________.
-* 
-* Alternatively, the contents of this file marked
-* "Separately-Licensed" may be used under the terms of a UIRF Software
-* license ("UIRF Software License"), in which case the provisions of a
-* UIRF Software License are applicable instead of those above. 
-*/
+/**
+ * Exhibit A - UIRF Open-source Based Public Software License.
+ * 
+ * The contents of this file are subject to the UIRF Open-source Based Public
+ * Software License(the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * openelis.uhl.uiowa.edu
+ * 
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+ * the specific language governing rights and limitations under the License.
+ * 
+ * The Original Code is OpenELIS code.
+ * 
+ * The Initial Developer of the Original Code is The University of Iowa.
+ * Portions created by The University of Iowa are Copyright 2006-2008. All
+ * Rights Reserved.
+ * 
+ * Contributor(s): ______________________________________.
+ * 
+ * Alternatively, the contents of this file marked "Separately-Licensed" may be
+ * used under the terms of a UIRF Software license ("UIRF Software License"), in
+ * which case the provisions of a UIRF Software License are applicable instead
+ * of those above.
+ */
 package org.openelis.modules.test.client;
 
 import java.util.ArrayList;
@@ -71,55 +71,63 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.user.client.Window;
 
-public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteAndResultTab.Action>{
+public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteAndResultTab.Action> {
 
-    private TestManager             manager;
-    private TestAnalyteManager      analyteManager;
-    private TestWorksheetManager    worksheetManager;
-    
-    private WorksheetLayoutTab      screen;
-    private TestWorksheetAnalyteLookupScreen testAnalytePicker; 
-    
-    private TestMetaMap             meta = new TestMetaMap();   
-    
-    private boolean                 loaded;
-    
-    private Dropdown<Integer>       formatId;    
-    private TableWidget             worksheetAnalyteTable, worksheetTable;
-    private AppButton               addWSItemButton,removeWSItemButton,
-                                    addWSAnalyteButton,removeWSAnalyteButton;
-    private TextBox<Integer>        batchCapacity,totalCapacity;
-    private AutoComplete            scriptlet,qcname; 
-    private ScreenService           scriptletService, qcService;
-    
-    public WorksheetLayoutTab(ScreenDefInt def,ScreenService service,
-                              ScreenService scriptletService,ScreenService qcService) {
+    private TestManager                      manager;
+    private TestAnalyteManager               analyteManager;
+
+    private WorksheetLayoutTab               screen;
+    private TestWorksheetAnalyteLookupScreen testAnalytePicker;
+
+    private TestMetaMap                      meta = new TestMetaMap();
+
+    private boolean                          loaded;
+
+    private Dropdown<Integer>                formatId;
+    private TableWidget                      worksheetAnalyteTable, worksheetTable;
+    private AppButton                        addWSItemButton, removeWSItemButton,
+                                             addWSAnalyteButton, removeWSAnalyteButton;
+    private TextBox<Integer>                 batchCapacity, totalCapacity;
+    private AutoComplete                     scriptlet, qcname;
+    private ScreenService                    scriptletService, qcService;
+
+    public WorksheetLayoutTab(ScreenDefInt def, ScreenService service,
+                              ScreenService scriptletService, ScreenService qcService) {
         setDef(def);
-                       
+
         this.service = service;
         this.scriptletService = scriptletService;
         this.qcService = qcService;
-        
-        initialize();        
-        
+
+        initialize();
+
         initializeDropdowns();
     }
 
-    private void initialize() {        
+    private void initialize() {
         screen = this;
-        
+
         formatId = (Dropdown)def.getWidget(meta.getTestWorksheet().getFormatId());
         addScreenHandler(formatId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                formatId.setSelection(worksheetManager.getWorksheet().getFormatId());
+                try {
+                    formatId.setSelection(manager.getTestWorksheet().getWorksheet().getFormatId());
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                }
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
-                worksheetManager.getWorksheet().setFormatId(event.getValue());
+                try {
+                    manager.getTestWorksheet().getWorksheet().setFormatId(event.getValue());
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                }
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                formatId.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE,State.DELETE).contains(event.getState()));
+                formatId.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
+                                       .contains(event.getState()));
                 formatId.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -127,15 +135,24 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
         batchCapacity = (TextBox)def.getWidget(meta.getTestWorksheet().getBatchCapacity());
         addScreenHandler(batchCapacity, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                batchCapacity.setValue(worksheetManager.getWorksheet().getBatchCapacity());
+                try {
+                    batchCapacity.setValue(manager.getTestWorksheet().getWorksheet().getBatchCapacity());
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                }
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
-                worksheetManager.getWorksheet().setBatchCapacity(event.getValue());
+                try {
+                    manager.getTestWorksheet().getWorksheet().setBatchCapacity(event.getValue());
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                }
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                batchCapacity.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE,State.DELETE).contains(event.getState()));
+                batchCapacity.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
+                                            .contains(event.getState()));
                 batchCapacity.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -143,15 +160,25 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
         totalCapacity = (TextBox)def.getWidget(meta.getTestWorksheet().getTotalCapacity());
         addScreenHandler(totalCapacity, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                totalCapacity.setValue(worksheetManager.getWorksheet().getTotalCapacity());
+                try {
+                    totalCapacity.setValue(manager.getTestWorksheet().getWorksheet().getTotalCapacity());
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                }
+                
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
-                worksheetManager.getWorksheet().setTotalCapacity(event.getValue());
+                try {
+                    manager.getTestWorksheet().getWorksheet().setTotalCapacity(event.getValue());
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                }
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                totalCapacity.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE,State.DELETE).contains(event.getState()));
+                totalCapacity.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
+                                            .contains(event.getState()));
                 totalCapacity.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -159,132 +186,154 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
         scriptlet = (AutoComplete)def.getWidget(meta.getTestWorksheet().getScriptlet().getName());
         addScreenHandler(scriptlet, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                scriptlet.setSelection(worksheetManager.getWorksheet().getScriptletId(), worksheetManager.getWorksheet().getScriptletName());
+                try {
+                    scriptlet.setSelection(manager.getTestWorksheet().getWorksheet().getScriptletId(),
+                                           manager.getTestWorksheet().getWorksheet().getScriptletName());
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                }
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
-                worksheetManager.getWorksheet().setScriptletId(event.getValue());
-                worksheetManager.getWorksheet().setScriptletName(scriptlet.getTextBoxDisplay());
+                try {
+                    manager.getTestWorksheet().getWorksheet().setScriptletId(event.getValue());
+                    manager.getTestWorksheet().getWorksheet().setScriptletName(scriptlet.getTextBoxDisplay());
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                }
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                scriptlet.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE,State.DELETE).contains(event.getState()));
+                scriptlet.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
+                                        .contains(event.getState()));
                 scriptlet.setQueryMode(event.getState() == State.QUERY);
             }
         });
-        
+
         scriptlet.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
                 ArrayList<TableDataRow> model;
-                ArrayList<IdNameVO> scripts;               
+                ArrayList<IdNameVO> list;
 
-                window.setBusy();                
                 try {
-                    scripts = scriptletService.callList("fetchByName",event.getMatch()+"%");
+                    list = scriptletService.callList("fetchByName", event.getMatch() + "%");
                     model = new ArrayList<TableDataRow>();
-                    for(IdNameVO script : scripts) {
-                        model.add(new TableDataRow(script.getId(),script.getName()));
+                    for (IdNameVO data : list) {
+                        model.add(new TableDataRow(data.getId(), data.getName()));
                     }
                     scriptlet.showAutoMatches(model);
-                }catch(Exception e) {
-                    Window.alert(e.getMessage());                     
-                }           
-                window.clearStatus();
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                }
             }
-            
+
         });
 
         worksheetTable = (TableWidget)def.getWidget("worksheetTable");
         addScreenHandler(worksheetTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
             public void onDataChange(DataChangeEvent event) {
-                if(state != State.QUERY)
+                if (state != State.QUERY)
                     worksheetTable.load(getWSItemsModel());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                worksheetTable.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                worksheetTable.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                             .contains(event.getState()));
                 worksheetTable.setQueryMode(event.getState() == State.QUERY);
             }
         });
-        
-        qcname = (AutoComplete<String>)worksheetTable.getColumnWidget(meta.getTestWorksheetItem().getQcName());            
+
+        qcname = (AutoComplete<String>)worksheetTable.getColumnWidget(meta.getTestWorksheetItem()
+                                                                          .getQcName());
         qcname.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
-                QueryFieldUtil parser;                
+                QueryFieldUtil parser;
                 ArrayList<TableDataRow> model;
                 TableDataRow row;
-                IdNameVO data;
                 ArrayList<IdNameVO> list;
-                
+
                 parser = new QueryFieldUtil();
                 parser.parse(event.getMatch());
 
-                window.setBusy();                
                 try {
                     list = qcService.callList("fetchByName", parser.getParameter().get(0));
                     model = new ArrayList<TableDataRow>();
-                    for(int i = 0; i <list.size(); i++) {
-                        data = list.get(i);
-                        row = new TableDataRow(data.getName(),data.getName());
-                        model.add(row);
+                    for (IdNameVO data : list) {
+                        model.add(new TableDataRow(data.getName(), data.getName()));
                     }
                     qcname.showAutoMatches(model);
-                }catch(Exception e) {
-                    Window.alert(e.getMessage());                     
-                }   
-                window.clearStatus();
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                }
             }
-            
+
         });
 
         worksheetTable.addCellEditedHandler(new CellEditedHandler() {
             public void onCellUpdated(CellEditedEvent event) {
-                int r, col;
+                int r, c;
                 Object val;
-                TestWorksheetItemDO item;
+                TestWorksheetItemDO data;
 
                 r = event.getRow();
-                col = event.getCol();
-                
-                val = worksheetTable.getObject(r,col);
-                item = worksheetManager.getItemAt(r);
-                switch(col) {
+                c = event.getCol();
+
+                val = worksheetTable.getObject(r, c);
+                try {
+                    data = manager.getTestWorksheet().getItemAt(r);
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                    return;
+                }
+                switch (c) {
                     case 0:
-                        item.setPosition((Integer)val);
+                        data.setPosition((Integer)val);
                         break;
                     case 1:
-                        item.setTypeId((Integer)val);
+                        data.setTypeId((Integer)val);
                         break;
-                    case 2:                        
-                        item.setQcName((String)((TableDataRow)val).key);
+                    case 2:
+                        data.setQcName((String)((TableDataRow)val).key);
                         break;
                 }
             }
         });
 
         worksheetTable.addRowAddedHandler(new RowAddedHandler() {
-            public void onRowAdded(RowAddedEvent event) {                                
-                worksheetManager.addItem(new TestWorksheetItemDO());               
+            public void onRowAdded(RowAddedEvent event) {
+                try {
+                    manager.getTestWorksheet().addItem(new TestWorksheetItemDO());
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                }
             }
         });
 
         worksheetTable.addRowDeletedHandler(new RowDeletedHandler() {
             public void onRowDeleted(RowDeletedEvent event) {
-                worksheetManager.removeItemAt(event.getIndex());
+                try {
+                    manager.getTestWorksheet().removeItemAt(event.getIndex());
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                }
             }
         });
 
         addWSItemButton = (AppButton)def.getWidget("addWSItemButton");
         addScreenHandler(addWSItemButton, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
+            public void onClick(ClickEvent event) {               
+                int n;
+
                 worksheetTable.addRow();
-                worksheetTable.selectRow(worksheetTable.numRows()-1);
+                n = worksheetTable.numRows() - 1;
+                worksheetTable.selectRow(n);
                 worksheetTable.scrollToSelection();
-                worksheetTable.startEditing(worksheetTable.numRows()-1, 0);
+                worksheetTable.startEditing(n, 0);
             }
 
-            public void onStateChange(StateChangeEvent<State> event) {               
-                addWSItemButton.enable(EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()));
+            public void onStateChange(StateChangeEvent<State> event) {
+                addWSItemButton.enable(EnumSet.of(State.ADD, State.UPDATE)
+                                              .contains(event.getState()));
             }
         });
 
@@ -292,58 +341,71 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
         addScreenHandler(removeWSItemButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 int r;
-                
+
                 r = worksheetTable.getSelectedRow();
-                if (r > -1 && worksheetTable.numRows() > 0) 
-                    worksheetTable.deleteRow(r);   
+                if (r > -1 && worksheetTable.numRows() > 0)
+                    worksheetTable.deleteRow(r);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                removeWSItemButton.enable(EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()));
+                removeWSItemButton.enable(EnumSet.of(State.ADD, State.UPDATE)
+                                                 .contains(event.getState()));
             }
         });
 
         worksheetAnalyteTable = (TableWidget)def.getWidget("worksheetAnalyteTable");
         addScreenHandler(worksheetAnalyteTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
             public void onDataChange(DataChangeEvent event) {
-                if(state != State.QUERY)
+                if (state != State.QUERY)
                     worksheetAnalyteTable.load(getWSAnalytesModel());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                worksheetAnalyteTable.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                worksheetAnalyteTable.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                                    .contains(event.getState()));
                 worksheetAnalyteTable.setQueryMode(event.getState() == State.QUERY);
             }
         });
 
         worksheetAnalyteTable.addCellEditedHandler(new CellEditedHandler() {
             public void onCellUpdated(CellEditedEvent event) {
-                int r, col;
+                int r, c;
                 Integer val;
-                TestWorksheetAnalyteViewDO anaDO;
-                
-                r = event.getRow();
-                col = event.getCol();
+                TestWorksheetAnalyteViewDO data;
 
-                val = (Integer)worksheetAnalyteTable.getRow(r).cells.get(col).value;
-                anaDO = worksheetManager.getAnalyteAt(r);
-                switch(col) {                    
+                r = event.getRow();
+                c = event.getCol();
+
+                val = (Integer)worksheetAnalyteTable.getObject(r,c);
+                
+                try {
+                    data = manager.getTestWorksheet().getAnalyteAt(r);
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                    return;
+                }
+                switch (c) {
                     case 1:
-                        anaDO.setRepeat(val);
+                        data.setRepeat(val);
                         break;
                     case 2:
-                        anaDO.setFlagId(val);
+                        data.setFlagId(val);
                         break;
                 }
             }
         });
 
         worksheetAnalyteTable.addRowDeletedHandler(new RowDeletedHandler() {
-            public void onRowDeleted(RowDeletedEvent event) {               
-                worksheetManager.removeAnalyteAt(event.getIndex());                
+            public void onRowDeleted(RowDeletedEvent event) {
+                try {
+                    manager.getTestWorksheet().removeAnalyteAt(event.getIndex());
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+
+                }
             }
         });
-        
+
         addWSAnalyteButton = (AppButton)def.getWidget("addWSAnalyteButton");
         addScreenHandler(addWSAnalyteButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
@@ -355,19 +417,24 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
 
                         public void onAction(ActionEvent<TestWorksheetAnalyteLookupScreen.Action> event) {
                             ArrayList<TableDataRow> model;
-                            TestWorksheetAnalyteViewDO anaDO;
+                            TestWorksheetAnalyteViewDO data;
                             TableDataRow row;
-                            if (event.getAction() == TestWorksheetAnalyteLookupScreen.Action.OK) {
-                                model = (ArrayList<TableDataRow>)event.getData();
-                                for (int i = 0; i < model.size(); i++ ) {
-                                    row = model.get(i);
-                                    anaDO = new TestWorksheetAnalyteViewDO();
-                                    anaDO.setAnalyteName((String)row.cells.get(0).getValue());
-                                    anaDO.setTestAnalyteId((Integer)row.key);
-                                    anaDO.setRepeat(1);
-                                    worksheetManager.addAnalyte(anaDO);
+                            try {
+                                if (event.getAction() == TestWorksheetAnalyteLookupScreen.Action.OK) {
+                                    model = (ArrayList<TableDataRow>)event.getData();
+                                    for (int i = 0; i < model.size(); i++ ) {
+                                        row = model.get(i);
+                                        data = new TestWorksheetAnalyteViewDO();
+                                        data.setAnalyteName((String)row.cells.get(0).getValue());
+                                        data.setTestAnalyteId((Integer)row.key);
+                                        data.setRepeat(1);
+                                        manager.getTestWorksheet().addAnalyte(data);
+                                    }
+                                    DataChangeEvent.fire(screen, worksheetAnalyteTable);
                                 }
-                                DataChangeEvent.fire(screen, worksheetAnalyteTable);
+                            } catch (Exception e) {
+                                Window.alert(e.getMessage());
+                                e.printStackTrace();
                             }
 
                         }
@@ -385,177 +452,187 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
                 testAnalytePicker.setScreenState(State.DEFAULT);
             }
 
-            public void onStateChange(StateChangeEvent<State> event) {               
-                addWSAnalyteButton.enable(EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()));
+            public void onStateChange(StateChangeEvent<State> event) {
+                addWSAnalyteButton.enable(EnumSet.of(State.ADD, State.UPDATE)
+                                                 .contains(event.getState()));
             }
         });
 
         removeWSAnalyteButton = (AppButton)def.getWidget("removeWSAnalyteButton");
         addScreenHandler(removeWSAnalyteButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-                int ar = worksheetAnalyteTable.getSelectedRow();
-                if(ar != -1)
-                    worksheetAnalyteTable.deleteRow(ar);
+                int r;
+                
+                r = worksheetAnalyteTable.getSelectedRow();
+                if (r != -1 && worksheetAnalyteTable.numRows() > 0)
+                    worksheetAnalyteTable.deleteRow(r);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                removeWSAnalyteButton.enable(EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()));
+                removeWSAnalyteButton.enable(EnumSet.of(State.ADD, State.UPDATE)
+                                                    .contains(event.getState()));
             }
         });
     }
-    
+
     public void setManager(TestManager manager) {
         this.manager = manager;
-        loaded = false;     
+        loaded = false;
     }
-    
-    public void draw(){
-        if(!loaded) { 
+
+    public void draw() {
+        if ( !loaded) {
             try {
-                if(state == State.UPDATE || state == State.ADD)   
-                    analyteManager = manager.getTestAnalytes();                   
-                worksheetManager = manager.getTestWorksheet();                
+                if (state == State.UPDATE || state == State.ADD)
+                    analyteManager = manager.getTestAnalytes();
                 DataChangeEvent.fire(this);
-            } catch(Exception ex) {
+            } catch (Exception ex) {
                 ex.printStackTrace();
             }
-        }           
-        loaded = true;       
+        }
+        loaded = true;
     }
-    
+
     public void onAction(ActionEvent<AnalyteAndResultTab.Action> event) {
-        TestAnalyteViewDO anaDO;
-        
-        if(state == State.QUERY)
+        TestAnalyteViewDO data;
+
+        if (state == State.QUERY)
             return;
-              
-        if(event.getAction() == Action.ANALYTE_CHANGED) {
-            anaDO = (TestAnalyteViewDO)event.getData();
-            setAnalyteErrors(anaDO.getId(), anaDO.getAnalyteName(),"analyteNameChanged",true);
-        } else if(event.getAction() == Action.ANALYTE_DELETED) {
-            anaDO = (TestAnalyteViewDO)event.getData();
-            setAnalyteErrors(anaDO.getId(), anaDO.getAnalyteName(),"analyteDeleted",false);
-        }         
-        
+
+        if (event.getAction() == Action.ANALYTE_CHANGED) {
+            data = (TestAnalyteViewDO)event.getData();
+            setAnalyteErrors(data.getId(), data.getAnalyteName(), "analyteNameChanged", true);
+        } else if (event.getAction() == Action.ANALYTE_DELETED) {
+            data = (TestAnalyteViewDO)event.getData();
+            setAnalyteErrors(data.getId(), data.getAnalyteName(), "analyteDeleted", false);
+        }
+
     }
-    
-    
+
     protected void clearKeys(TestWorksheetManager twm) {
         TestWorksheetItemDO item;
         TestWorksheetAnalyteViewDO ana;
         TestWorksheetDO tw;
         boolean hasData;
         int i;
-        
+
         tw = twm.getWorksheet();
         hasData = false;
-        
+
         twm.setTestId(null);
-        
-        for(i = 0; i < twm.itemCount(); i++) {
+
+        for (i = 0; i < twm.itemCount(); i++ ) {
             item = twm.getItemAt(i);
             item.setId(null);
-            item.setTestWorksheetId(null);   
+            item.setTestWorksheetId(null);
             hasData = true;
         }
-        
-        for(i = 0; i < twm.analyteCount(); i++) {
+
+        for (i = 0; i < twm.analyteCount(); i++ ) {
             ana = twm.getAnalyteAt(i);
             ana.setId(null);
             ana.setTestId(null);
-            ana.setTestAnalyteId(ana.getTestAnalyteId()*(-1));
+            ana.setTestAnalyteId(ana.getTestAnalyteId() * ( -1));
             hasData = true;
         }
-        
-        if(hasData)
+
+        if (hasData)
             tw.setId(null);
-    }   
-    
+    }
+
     private void initializeDropdowns() {
         ArrayList<TableDataRow> model;
         List<DictionaryDO> list;
-        
+
         model = new ArrayList<TableDataRow>();
         list = DictionaryCache.getListByCategorySystemName("test_worksheet_analyte_flags");
         model.add(new TableDataRow(null, ""));
-        for(DictionaryDO resultDO :  list){
-            model.add(new TableDataRow(resultDO.getId(),resultDO.getEntry()));
-        } 
+        for (DictionaryDO resultDO : list) {
+            model.add(new TableDataRow(resultDO.getId(), resultDO.getEntry()));
+        }
         ((Dropdown)worksheetAnalyteTable.getColumnWidget(meta.getTestWorksheetAnalyte().getFlagId())).setModel(model);
-        
+
         model = new ArrayList<TableDataRow>();
         list = DictionaryCache.getListByCategorySystemName("test_worksheet_item_type");
         model.add(new TableDataRow(null, ""));
-        for(DictionaryDO resultDO :  list){
-            model.add(new TableDataRow(resultDO.getId(),resultDO.getEntry()));
-        } 
+        for (DictionaryDO resultDO : list) {
+            model.add(new TableDataRow(resultDO.getId(), resultDO.getEntry()));
+        }
         ((Dropdown)worksheetTable.getColumnWidget(meta.getTestWorksheetItem().getTypeId())).setModel(model);
-        
+
         model = new ArrayList<TableDataRow>();
         list = DictionaryCache.getListByCategorySystemName("test_worksheet_format");
         model.add(new TableDataRow(null, ""));
-        for(DictionaryDO resultDO :  list){
-            model.add(new TableDataRow(resultDO.getId(),resultDO.getEntry()));
-        } 
+        for (DictionaryDO resultDO : list) {
+            model.add(new TableDataRow(resultDO.getId(), resultDO.getEntry()));
+        }
         formatId.setModel(model);
-        
+
     }
-    
+
     private ArrayList<TableDataRow> getWSItemsModel() {
-        ArrayList<TableDataRow> model;       
+        ArrayList<TableDataRow> model;
         TestWorksheetItemDO item;
         TableDataRow row;
-        
+
         model = new ArrayList<TableDataRow>();
-                
-        if(manager == null)
+
+        if (manager == null)
             return model;
-        
-                   
-        for (int i = 0; i < worksheetManager.itemCount(); i++ ) {
-            item = worksheetManager.getItemAt(i);
-            row = new TableDataRow(3);
-            row.key = item.getId();
 
-            row.cells.get(0).setValue(item.getPosition());
-            row.cells.get(1).setValue(item.getTypeId());
-            row.cells.get(2).setValue(new TableDataRow(item.getQcName(), item.getQcName()));
+        try {
+            for (int i = 0; i < manager.getTestWorksheet().itemCount(); i++ ) {
+                item = manager.getTestWorksheet().getItemAt(i);
+                row = new TableDataRow(3);
+                row.key = item.getId();
 
-            model.add(row);
+                row.cells.get(0).setValue(item.getPosition());
+                row.cells.get(1).setValue(item.getTypeId());
+                row.cells.get(2).setValue(new TableDataRow(item.getQcName(), item.getQcName()));
+
+                model.add(row);
+            }
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            e.printStackTrace();
         }        
-        
+
         return model;
     }
-    
+
     private ArrayList<TableDataRow> getWSAnalytesModel() {
-        ArrayList<TableDataRow> model;       
-        TestWorksheetAnalyteViewDO analyte;
+        ArrayList<TableDataRow> model;
+        TestWorksheetAnalyteViewDO data;
         TableDataRow row;
         int i;
-        
+
         model = new ArrayList<TableDataRow>();
-                
-        if(manager == null)            
+
+        if (manager == null)
             return model;
-        
-        for(i = 0 ; i < worksheetManager.analyteCount(); i++) {
-            analyte = worksheetManager.getAnalyteAt(i);
-            row = new TableDataRow(3);            
-            row.key = analyte.getId();            
-            row.data = analyte.getTestAnalyteId();
-            
-            row.cells.get(0).setValue(analyte.getAnalyteName());            
-            row.cells.get(1).setValue(analyte.getRepeat());
-            row.cells.get(2).setValue(analyte.getFlagId());
-            
-            model.add(row);            
-        }                
-        
+
+        try {
+            for (i = 0; i < manager.getTestWorksheet().analyteCount(); i++ ) {
+                data = manager.getTestWorksheet().getAnalyteAt(i);
+                row = new TableDataRow(3);
+                row.key = data.getId();
+                row.data = data.getTestAnalyteId();
+    
+                row.cells.get(0).setValue(data.getAnalyteName());
+                row.cells.get(1).setValue(data.getRepeat());
+                row.cells.get(2).setValue(data.getFlagId());
+    
+                model.add(row);
+            }
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            e.printStackTrace();
+        }
+
         return model;
     }
-    
-    
-    private void setAnalyteErrors(Integer id,String name,String key,boolean matchLabel) {
+
+    private void setAnalyteErrors(Integer id, String name, String key, boolean matchLabel) {
         TableDataRow trow;
         String val;
         Integer data;
@@ -566,7 +643,7 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
             data = (Integer)trow.data;
 
             if (data.equals(id)) {
-                if ((matchLabel && ! (val.equals(name))) || !matchLabel)
+                if ( (matchLabel && ! (val.equals(name))) || !matchLabel)
                     worksheetAnalyteTable.setCellException(i, 0, new LocalizedException(key));
             }
         }

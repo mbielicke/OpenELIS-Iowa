@@ -62,7 +62,7 @@ public class CategoryBean implements CategoryRemote, CategoryLocal {
 
     private static CategoryMetaMap meta = new CategoryMetaMap();
 
-    public CategoryBean() {
+    public CategoryBean() {        
     }
 
     public CategoryDO fetchById(Integer id) throws Exception {
@@ -72,7 +72,7 @@ public class CategoryBean implements CategoryRemote, CategoryLocal {
         query = manager.createNamedQuery("Category.FetchById");
         query.setParameter("id", id);
         try {
-            data = (CategoryDO)query.getSingleResult();// getting category
+            data = (CategoryDO)query.getSingleResult();
         } catch (NoResultException e) {
             throw new NotFoundException();
         } catch (Exception e) {
@@ -83,19 +83,19 @@ public class CategoryBean implements CategoryRemote, CategoryLocal {
     
     public CategoryDO fetchBySystemName(String systemName) throws Exception {
         Query query;
-        CategoryDO catDO;
+        CategoryDO data;
         
-        catDO = null;
+        data = null;
         query = manager.createNamedQuery("Category.FetchBySystemName");
         query.setParameter("systemName", systemName);
         try {
-            catDO = (CategoryDO)query.getSingleResult();        
+            data = (CategoryDO)query.getSingleResult();        
         } catch (NoResultException e) {
             throw new NotFoundException();
         } catch (Exception e) {
             throw new DatabaseException(e);
         }
-        return catDO;
+        return data;
     }
     
     public ArrayList<IdNameVO> fetchByName(String name) throws Exception {

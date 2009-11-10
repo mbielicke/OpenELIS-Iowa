@@ -427,14 +427,6 @@ System.out.println("after shipping items");
 		}
 		
 		List<IdNameVO> entries = new ArrayList();
-		if(id != null) {          
-            try {
-                entries = dictRemote.fetchIdEntryByCategoryId(id);
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-            
-        }
 
 		// we need to build the model to return
 		TableDataModel<TableDataRow<Integer>> returnModel = new TableDataModel<TableDataRow<Integer>>();
