@@ -107,8 +107,12 @@ UIRF Software License are applicable instead of those above.
 					<label style="topMenuBarItem" text="{resource:getString($constants,'analysis')}"/>
 		      </menuDisplay>
 				<menuPanel layout="vertical" style="topMenuContainer" position="below">
-				    <menuItem enable="true" key="worksheetCreation" icon="worksheetCreationIcon" label="{resource:getString($constants,'worksheetCreation')}" description="{resource:getString($constants,'worksheetCreationDescription')}"/>
-				    <menuItem enable="false" key="worksheetCompletion" icon="worksheetCompletionIcon" label="{resource:getString($constants,'worksheetCompletion')}" description="{resource:getString($constants,'worksheetCompletionDescription')}"/>
+<!--				    <code>if(OpenELIS.security.hasModule("worksheet","ADD")){</code>			-->
+					    <menuItem enable="true" key="worksheetCreation" icon="worksheetCreationIcon" label="{resource:getString($constants,'worksheetCreation')}" description="{resource:getString($constants,'worksheetCreationDescription')}"/>
+<!--				    <code>}</code>   -->
+<!--				    <code>if(OpenELIS.security.hasModule("worksheet","SELECT")){</code>			-->
+					    <menuItem enable="false" key="worksheetCompletion" icon="worksheetCompletionIcon" label="{resource:getString($constants,'worksheetCompletion')}" description="{resource:getString($constants,'worksheetCompletionDescription')}"/>
+<!--				    <code>}</code>   -->
 				    <menuItem enable="false" key="addOrCancel" icon="addOrCancelIcon" label="{resource:getString($constants,'addOrCancel')}" description="{resource:getString($constants,'addOrCancelDescription')}"/>
 				    <menuItem enable="false" key="reviewAndRelease" icon="reviewAndReleaseIcon" label="{resource:getString($constants,'reviewAndRelease')}" description="{resource:getString($constants,'reviewAndReleaseDescription')}"/>
 				    <menuItem enable="false" key="toDo" icon="toDoIcon" label="{resource:getString($constants,'toDo')}" description="{resource:getString($constants,'toDoDescription')}"/>
