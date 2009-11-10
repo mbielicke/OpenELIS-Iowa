@@ -54,7 +54,7 @@ import org.openelis.utilcommon.DataBaseUtil;
 @Stateless
 
 @SecurityDomain("openelis")
-@RolesAllowed("sample_environmental-select")
+@RolesAllowed("sampleenvironmental-select")
 public class SampleEnvironmentalBean implements SampleEnvironmentalRemote, SampleEnvironmentalLocal {
     @PersistenceContext(name = "openelis")
     private EntityManager manager;

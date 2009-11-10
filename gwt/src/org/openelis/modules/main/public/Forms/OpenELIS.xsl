@@ -155,17 +155,6 @@ UIRF Software License are applicable instead of those above.
 				      <xsl:with-param name="args"></xsl:with-param>
 				    </xsl:call-template>
 					<html panelWidth="100%" showError="false">&lt;hr/&gt;</html>
-					<!--
-					enviromentalSampleLogin = Enviromental Sample Login
-enviromentalSampleLoginDescription = Description...
-clinicalSampleLogin = Clinical Sample Login
-clinicalSampleLoginDescription = Description...
-animalSampleLogin = Animal Sample Login
-newbornScreeningSampleLogin = Newborn Screening Sample Login
-newbornScreeningSampleDescription = Description...
-sampleManagement = Sample Management
-sampleManagementDescription = Description...
--->
 				    <xsl:call-template name="menuItem">
 				      <xsl:with-param name="key">EnvironmentalSampleLogin</xsl:with-param>
 				      <xsl:with-param name="label">environmentalSampleLogin</xsl:with-param>
