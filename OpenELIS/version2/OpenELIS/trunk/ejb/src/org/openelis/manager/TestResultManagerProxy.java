@@ -28,9 +28,12 @@ package org.openelis.manager;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.naming.InitialContext;
 
+import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.TestResultViewDO;
 import org.openelis.domain.TestTypeOfSampleDO;
 import org.openelis.exception.ParseException;
@@ -48,6 +51,83 @@ import org.openelis.utilcommon.TiterRange;
 public class TestResultManagerProxy {
 
     private static final TestMetaMap meta = new TestMetaMap();
+    
+    private static int               typeDict, typeNumeric, typeTiter, typeDate,
+                                     typeDateTime, typeTime, typeDefault; 
+    
+    private static final Logger      log  = Logger.getLogger(TestResultManagerProxy.class.getName());
+    
+    public TestResultManagerProxy() {
+        DictionaryDO data;
+        DictionaryLocal dl;
+        
+        dl = dictLocal();
+        
+        try {
+            data = dl.fetchBySystemName("test_res_type_dictionary");
+            typeDict = data.getId();
+        } catch (Throwable e) {
+            typeDict = 0;
+            log.log(Level.SEVERE,
+                    "Failed to lookup dictionary entry by system name='test_res_type_dictionary'", e);
+        }
+        
+        try {
+            data = dl.fetchBySystemName("test_res_type_numeric");
+            typeNumeric = data.getId();
+        } catch (Throwable e) {
+            typeNumeric = 0;
+            log.log(Level.SEVERE,
+                    "Failed to lookup dictionary entry by system name='test_res_type_numeric'", e);
+        }
+        
+        try {
+            data = dl.fetchBySystemName("test_res_type_titer");
+            typeTiter = data.getId();
+        } catch (Throwable e) {
+            typeTiter = 0;
+            log.log(Level.SEVERE,
+                    "Failed to lookup dictionary entry by system name='test_res_type_titer'", e);
+        }
+        
+        try {
+            data = dl.fetchBySystemName("test_res_type_date");
+            typeDate = data.getId();
+        } catch (Throwable e) {
+            typeDate = 0;
+            log.log(Level.SEVERE,
+                    "Failed to lookup dictionary entry by system name='test_res_type_date'", e);
+        }
+        
+        try {
+            data = dl.fetchBySystemName("test_res_type_date_time");
+            typeDateTime = data.getId();
+        } catch (Throwable e) {
+            typeDateTime = 0;
+            log.log(Level.SEVERE,
+                    "Failed to lookup dictionary entry by system name='test_res_type_date_time'", e);
+        }
+        
+        try {
+            data = dl.fetchBySystemName("test_res_type_time");
+            typeTime = data.getId();
+        } catch (Throwable e) {
+            typeTime = 0;
+            log.log(Level.SEVERE,
+                    "Failed to lookup dictionary entry by system name='test_res_type_time'", e);
+        }   
+        
+        try {
+            data = dl.fetchBySystemName("test_res_type_default");
+            typeDefault = data.getId();
+        } catch (Throwable e) {
+            typeDefault = 0;
+            log.log(Level.SEVERE,
+                    "Failed to lookup dictionary entry by system name='test_res_type_default'", e);
+        }
+                
+    }
+
 
     public TestResultManager fetchByTestId(Integer testId) throws Exception {
         TestResultManager trm;
@@ -64,7 +144,7 @@ public class TestResultManagerProxy {
     public TestResultManager add(TestResultManager man,
                                  HashMap<Integer, Integer> idMap) throws Exception {
         TestResultLocal rl;
-        TestResultViewDO testResult;
+        TestResultViewDO data;
         int i, j, size, negId;
 
         rl = local();
@@ -72,14 +152,14 @@ public class TestResultManagerProxy {
         for (i = 0; i < man.groupCount(); i++ ) {
             size = man.getResultGroupSize(i + 1);
             for (j = 0; j < size; j++ ) {
-                testResult = man.getResultAt(i + 1, j);
-                negId = testResult.getId();
-                testResult.setTestId(man.getTestId());
-                testResult.setResultGroup(i + 1);
-                testResult.setSortOrder(j);
+                data = man.getResultAt(i + 1, j);
+                negId = data.getId();
+                data.setTestId(man.getTestId());
+                data.setResultGroup(i + 1);
+                data.setSortOrder(j);
 
-                rl.add(testResult);
-                idMap.put(negId, testResult.getId());
+                rl.add(data);
+                idMap.put(negId, data.getId());
             }
         }
         return man;
@@ -88,7 +168,7 @@ public class TestResultManagerProxy {
     public TestResultManager update(TestResultManager man,
                                     HashMap<Integer, Integer> idMap) throws Exception {
         TestResultLocal rl;
-        TestResultViewDO testResult;
+        TestResultViewDO data;
         int i, j, size, negId;
 
         rl = local();
@@ -99,16 +179,16 @@ public class TestResultManagerProxy {
         for (i = 0; i < man.groupCount(); i++ ) {
             size = man.getResultGroupSize(i + 1);
             for (j = 0; j < size; j++ ) {
-                testResult = man.getResultAt(i + 1, j);
-                testResult.setResultGroup(i + 1);
-                testResult.setSortOrder(j);
-                negId = testResult.getId();
+                data = man.getResultAt(i + 1, j);
+                data.setResultGroup(i + 1);
+                data.setSortOrder(j);
+                negId = data.getId();
                 if (negId < 0) {
-                    testResult.setTestId(man.getTestId());
-                    rl.add(testResult);
-                    idMap.put(negId, testResult.getId());
+                    data.setTestId(man.getTestId());
+                    rl.add(data);
+                    idMap.put(negId, data.getId());
                 } else {
-                    rl.update(testResult);
+                    rl.update(data);
                 }
             }
         }
@@ -118,7 +198,7 @@ public class TestResultManagerProxy {
     public void validate(TestResultManager trm,TestTypeOfSampleManager ttsm,
                          HashMap<Integer, List<Integer>> resGrpRsltMap) throws Exception{
         ValidationErrorsList list;
-        TestResultViewDO resDO;
+        TestResultViewDO data;
         Integer numId, dictId, titerId, typeId, dateId, dtId, timeId, unitId, entryId, defId;
         int i, j;
         String value, fieldName, unitText;
@@ -129,23 +209,21 @@ public class TestResultManagerProxy {
         HashMap<Integer, List<NumericRange>> nrMap;
         List<Integer> dictList, unitsWithDefault;
         List<Integer> resIdList;
-        ArrayList<ArrayList<TestResultViewDO>> results;
         DictionaryLocal dl;
         TestResultLocal rl;
         
         list = new ValidationErrorsList();                
         value = null;
         dl = dictLocal();
-        results = trm.getResults();
         rl = local();
         
-        dictId = (dl.fetchBySystemName("test_res_type_dictionary")).getId();
+        /*dictId = (dl.fetchBySystemName("test_res_type_dictionary")).getId();
         numId = (dl.fetchBySystemName("test_res_type_numeric")).getId();
         titerId = (dl.fetchBySystemName("test_res_type_titer")).getId();
         dateId = (dl.fetchBySystemName("test_res_type_date")).getId();
         dtId = (dl.fetchBySystemName("test_res_type_date_time")).getId();
         timeId = (dl.fetchBySystemName("test_res_type_time")).getId();
-        defId = (dl.fetchBySystemName("test_res_type_default")).getId();
+        defId = (dl.fetchBySystemName("test_res_type_default")).getId();*/
 
         trMap = new HashMap<Integer, List<TiterRange>>();
         nrMap = new HashMap<Integer, List<NumericRange>>();
@@ -154,7 +232,7 @@ public class TestResultManagerProxy {
         hasDateType = false;
         
 
-        for (i = 0; i < results.size(); i++ ) {
+        for (i = 0; i < trm.groupCount(); i++ ) {
             trMap.clear();
             nrMap.clear();
             dictList.clear();
@@ -163,13 +241,13 @@ public class TestResultManagerProxy {
             resIdList = new ArrayList<Integer>();        
             resGrpRsltMap.put(i+1, resIdList);
             
-            for (j = 0; j < results.get(i).size(); j++ ) {
-                resDO = results.get(i).get(j);
-                value = resDO.getValue();
-                typeId = resDO.getTypeId();
-                unitId = resDO.getUnitOfMeasureId();    
+            for (j = 0; j < trm.getResultGroupSize(i+1); j++ ) {
+                data = trm.getResultAt(i+1, j);
+                value = data.getValue();
+                typeId = data.getTypeId();
+                unitId = data.getUnitOfMeasureId();    
                 
-                resIdList.add(resDO.getId());
+                resIdList.add(data.getId());
                 
                 //
                 // units need to be valid for every result type because
@@ -188,39 +266,39 @@ public class TestResultManagerProxy {
                 fieldName = meta.TEST_RESULT.getValue();
                 
                 try {                    
-                    rl.validate(resDO);                    
+                    rl.validate(data);                    
                 } catch(Exception e) {
                     DataBaseUtil.mergeException(list, e, "resultTable", i, j);
                     continue;
                 }
 
                 try {
-                    if (numId.equals(typeId)) {
+                    if (DataBaseUtil.isSame(typeNumeric,typeId)) {
                         nr = new NumericRange(value);
                         addNumericIfNoOverLap(nrMap, unitId, nr);
-                    } else if (titerId.equals(typeId)) {
+                    } else if (DataBaseUtil.isSame(typeTiter,typeId)) {
                         tr = new TiterRange(value);
                         addTiterIfNoOverLap(trMap, unitId, tr);
-                    } else if (dateId.equals(typeId)) {
+                    } else if (DataBaseUtil.isSame(typeDate,typeId)) {
                         TestResultValidator.validateDate(value);
                         if (hasDateType) {
                             fieldName = meta.TEST_RESULT.getTypeId();
                             throw new InconsistencyException("testMoreThanOneDateTypeException");
                         }
                         hasDateType = true;
-                    } else if (dtId.equals(typeId)) {                        
+                    } else if (DataBaseUtil.isSame(typeDateTime,typeId)) {                        
                         if (hasDateType) {
                             fieldName = meta.TEST_RESULT.getTypeId();
                             throw new InconsistencyException("testMoreThanOneDateTypeException");
                         }
                         hasDateType = true;
-                    } else if (timeId.equals(typeId)) {                        
+                    } else if (DataBaseUtil.isSame(typeTime,typeId)) {                        
                         if (hasDateType) {
                             fieldName = meta.TEST_RESULT.getTypeId();
                             throw new InconsistencyException("testMoreThanOneDateTypeException");
                         }
                         hasDateType = true;
-                    } else if (dictId.equals(typeId)) {
+                    } else if (DataBaseUtil.isSame(typeDict,typeId)) {
                         entryId = Integer.parseInt(value);
                         if (entryId == null)
                             throw new ParseException("illegalDictEntryException");
@@ -229,7 +307,7 @@ public class TestResultManagerProxy {
                             dictList.add(entryId);
                         else
                             throw new InconsistencyException("testDictEntryNotUniqueException");
-                    } else if (defId.equals(typeId)) {
+                    } else if (DataBaseUtil.isSame(typeDefault,typeId)) {
                         if (unitsWithDefault.indexOf(unitId) == -1)
                             unitsWithDefault.add(unitId);
                         else

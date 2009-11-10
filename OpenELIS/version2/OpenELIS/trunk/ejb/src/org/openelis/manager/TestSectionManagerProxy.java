@@ -45,15 +45,15 @@ public class TestSectionManagerProxy {
 
     public TestSectionManager add(TestSectionManager man) throws Exception {
         TestSectionLocal tl;
-        TestSectionViewDO section;
+        TestSectionViewDO data;
 
         tl = local();
 
         for (int i = 0; i < man.count(); i++ ) {
-            section = man.getSectionAt(i);
-            section.setTestId(man.getTestId());
+            data = man.getSectionAt(i);
+            data.setTestId(man.getTestId());
 
-            tl.add(section);
+            tl.add(data);
         }
 
         return man;
@@ -61,7 +61,7 @@ public class TestSectionManagerProxy {
 
     public TestSectionManager update(TestSectionManager man) throws Exception {
         TestSectionLocal tl;
-        TestSectionViewDO section;
+        TestSectionViewDO data;
 
         tl = local();
 
@@ -70,13 +70,13 @@ public class TestSectionManagerProxy {
         }
 
         for (int i = 0; i < man.count(); i++ ) {
-            section = man.getSectionAt(i);
+            data = man.getSectionAt(i);
 
-            if (section.getId() == null) {
-                section.setTestId(man.getTestId());
-                tl.add(section);
+            if (data.getId() == null) {
+                data.setTestId(man.getTestId());
+                tl.add(data);
             } else
-                tl.update(section);
+                tl.update(data);
         }
 
         return man;
@@ -84,27 +84,25 @@ public class TestSectionManagerProxy {
 
     public void validate(TestSectionManager man) throws Exception {
         ValidationErrorsList list;
-        List<TestSectionViewDO> sectionDOList;
-        TestSectionViewDO secDO;
+        List<TestSectionViewDO> sectionList;
+        TestSectionViewDO data;
         TestSectionLocal sl;
         DictionaryLocal dl;
         Integer defId, matchId, flagId, sectId;
         List<Integer> idList;
-        int size, numDef, numMatch, numBlank, iter;
+        int numDef, numMatch, numBlank, i;
         TableFieldErrorException exc;
 
         sl = local();
-        sectionDOList = man.getSections();
+        sectionList = man.getSections();
         list = new ValidationErrorsList();
-
-        size = man.count();
-        if (size == 0) {
+        
+        if (man.count() == 0) {
             list.add(new FieldErrorException("atleastOneSection",null));
-            return;
+            throw list;
         }
 
         dl = dictLocal();
-        size = sectionDOList.size();
 
         defId = (dl.fetchBySystemName("test_section_default")).getId();
         matchId = (dl.fetchBySystemName("test_section_match")).getId();
@@ -114,19 +112,19 @@ public class TestSectionManagerProxy {
         numBlank = 0;
 
         idList = new ArrayList<Integer>();
-        for (iter = 0; iter < size; iter++ ) {
-            secDO = sectionDOList.get(iter);
-            flagId = secDO.getFlagId();
-            sectId = secDO.getSectionId();
+        for (i = 0; i < man.count(); i++ ) {
+            data = man.getSectionAt(i);
+            flagId = data.getFlagId();
+            sectId = data.getSectionId();
 
             try {
-                sl.validate(secDO);
+                sl.validate(data);
             } catch (Exception e) {
-                DataBaseUtil.mergeException(list, e, "sectionTable", iter);
+                DataBaseUtil.mergeException(list, e, "sectionTable", i);
             }
 
             if (idList.contains(sectId)) {                
-                exc = new TableFieldErrorException("fieldUniqueOnlyException",iter,
+                exc = new TableFieldErrorException("fieldUniqueOnlyException",i,
                                                    meta.getTestSection().getFlagId(),"sectionTable");
                 list.add(exc);
             } else {
@@ -143,39 +141,39 @@ public class TestSectionManagerProxy {
 
         }
 
-        if (numBlank == size) {
-            for (iter = 0; iter < size; iter++ ) {
-                exc = new TableFieldErrorException("allSectCantBeBlankException",iter,
+        if (numBlank == man.count()) {
+            for (i = 0; i < man.count(); i++ ) {
+                exc = new TableFieldErrorException("allSectCantBeBlankException",i,
                                                    meta.getTestSection().getFlagId(),"sectionTable");
                 list.add(exc);
             }
         } else if (numDef > 1) {
-            for (iter = 0; iter < size; iter++ ) {
-                secDO = sectionDOList.get(iter);
-                flagId = secDO.getFlagId();
+            for (i = 0; i < man.count(); i++ ) {
+                data = sectionList.get(i);
+                flagId = data.getFlagId();
                 if (flagId != null) {
-                    exc = new TableFieldErrorException("allSectBlankIfDefException",iter,
+                    exc = new TableFieldErrorException("allSectBlankIfDefException",i,
                                                        meta.getTestSection().getFlagId(),"sectionTable");
                     list.add(exc);
                 }
             }
-        } else if (numDef == 1 && numBlank != (size - 1)) {
-            for (iter = 0; iter < size; iter++ ) {
-                secDO = sectionDOList.get(iter);
-                flagId = secDO.getFlagId();
+        } else if (numDef == 1 && numBlank != (man.count() - 1)) {
+            for (i = 0; i < man.count(); i++ ) {
+                data = sectionList.get(i);
+                flagId = data.getFlagId();
                 if (flagId != null && !defId.equals(flagId)) {
-                    exc = new TableFieldErrorException("allSectBlankIfDefException",iter,
+                    exc = new TableFieldErrorException("allSectBlankIfDefException",i,
                                                        meta.getTestSection().getFlagId(),"sectionTable");
                     list.add(exc);
                 }
             }
-        } else if (numMatch > 0 && numMatch != size) {
-            for (iter = 0; iter < size; iter++ ) {
-                secDO = sectionDOList.get(iter);
-                flagId = secDO.getFlagId();
+        } else if (numMatch > 0 && numMatch != man.count()) {
+            for (i = 0; i < man.count(); i++ ) {
+                data = sectionList.get(i);
+                flagId = data.getFlagId();
 
                 if (flagId == null || (flagId != null && !matchId.equals(flagId))) {
-                    exc = new TableFieldErrorException("allSectMatchFlagException",iter,
+                    exc = new TableFieldErrorException("allSectMatchFlagException",i,
                                                        meta.getTestSection().getFlagId(),"sectionTable");
                     list.add(exc);
                 }

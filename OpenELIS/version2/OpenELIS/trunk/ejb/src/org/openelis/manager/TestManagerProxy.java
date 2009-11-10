@@ -219,18 +219,18 @@ public class TestManagerProxy {
         HashMap<Integer, Integer> anaResGrpMap;
         HashMap<Integer, List<Integer>> resGrpRsltMap;
         boolean anaListValid, resListValid;
-        TestViewDO testDO;
+        TestViewDO data;
         
         exceptionList = new ValidationErrorsList();
 
         anaResGrpMap = new HashMap<Integer, Integer>();
         resGrpRsltMap = new HashMap<Integer, List<Integer>>();        
-        testDO = man.getTest();
+        data = man.getTest();
         anaListValid = true;
         resListValid = true;
         
         try {
-            local().validate(testDO);
+            local().validate(data);
         } catch(Exception e) {
             e.printStackTrace();
             DataBaseUtil.mergeException(exceptionList, e);

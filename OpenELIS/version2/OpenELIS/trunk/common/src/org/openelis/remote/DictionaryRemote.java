@@ -39,13 +39,11 @@ public interface DictionaryRemote {
 
     public ArrayList<DictionaryDO> fetchByEntry(String entry, int max) throws Exception;
     
-    public ArrayList<IdNameVO> fetchIdEntryByCategoryId(Integer categoryId) throws Exception;
-    
     public DictionaryDO fetchBySystemName(String systemName) throws Exception;   
     
     public DictionaryViewDO fetchById(Integer id) throws Exception;
     
-    public ArrayList<IdNameVO> fetchByEntryAndCategoryId(ArrayList<QueryData> fields) throws Exception;
+    public ArrayList<IdNameVO> fetchByEntry(ArrayList<QueryData> fields) throws Exception;
     
     public ArrayList<DictionaryDO> fetchByCategorySystemName(String categorySystemName) throws Exception;
     

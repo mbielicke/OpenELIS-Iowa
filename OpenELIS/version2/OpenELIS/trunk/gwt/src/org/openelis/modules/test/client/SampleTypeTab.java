@@ -40,7 +40,6 @@ import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
-import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.table.TableDataRow;
@@ -54,7 +53,6 @@ import org.openelis.gwt.widget.table.event.RowDeletedHandler;
 import org.openelis.manager.TestManager;
 import org.openelis.manager.TestTypeOfSampleManager;
 import org.openelis.metamap.TestMetaMap;
-import org.openelis.modules.test.client.AnalyteAndResultTab.Action;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.shared.HandlerRegistration;

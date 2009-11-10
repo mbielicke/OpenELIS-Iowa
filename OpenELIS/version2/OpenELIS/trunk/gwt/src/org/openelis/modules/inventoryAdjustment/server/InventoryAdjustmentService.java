@@ -385,16 +385,7 @@ public class InventoryAdjustmentService implements AppScreenFormServiceInt<Inven
                 ex.printStackTrace();
             }
         
-        List<IdNameVO> entries = new ArrayList<IdNameVO>();
-        if(id > -1) {
-            try {
-                entries = dictRemote.fetchIdEntryByCategoryId(id);
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-            
-        }
-        
+        List<IdNameVO> entries = new ArrayList<IdNameVO>();                
         
         //we need to build the model to return
         TableDataModel<TableDataRow<Integer>> returnModel = new TableDataModel<TableDataRow<Integer>>();

@@ -246,22 +246,22 @@ UIRF Software License are applicable instead of those above.
                   <text style="Prompt">
                     <xsl:value-of select="resource:getString($constants,'id')" />:
                   </text>
-                  <textbox key="{meta:getId($test)}" width="50px" tab="{meta:getName($test)},{method:getName($mt)}" field="Integer" />
+                  <textbox key="{meta:getId($test)}" width="50" tab="{meta:getName($test)},{method:getName($mt)}" field="Integer" />
                   <text style="Prompt">
                     <xsl:value-of select="resource:getString($constants,'name')" />:
                   </text>
-                  <textbox key="{meta:getName($test)}" width="145px" case="LOWER" max="20" tab="{method:getName($mt)},{meta:getId($test)}" field="String" required="true" />
+                  <textbox key="{meta:getName($test)}" width="145" case="LOWER" max="20" tab="{method:getName($mt)},{meta:getId($test)}" field="String" required="true" />
                   <text style="Prompt">
                     <xsl:value-of select="resource:getString($constants,'method')" />:
                   </text>
                   <widget>
-                    <autoComplete key="{method:getName($mt)}" width="145px" tab="{meta:getId($test)}, {meta:getName($test)}" field="Integer" required="true">
+                    <autoComplete key="{method:getName($mt)}" width="145" tab="{meta:getId($test)}, {meta:getName($test)}" field="Integer" required="true">
                       <col width="145" />
                     </autoComplete>
                   </widget>
                 </row>
               </TablePanel>
-              <TabPanel key="testTabPanel" width="620px">
+              <TabPanel key="testTabPanel" height = "480" width="620">
                 <tab key="detailsTab" text="{resource:getString($constants,'testDetails')}">
                   <VerticalPanel padding="0" spacing="0">
                     <TablePanel style="Form">
@@ -353,7 +353,7 @@ UIRF Software License are applicable instead of those above.
                               <xsl:value-of select='resource:getString($constants,"type")' />:
                             </text>
                             <widget>
-                              <autoComplete key="{label:getName($lbl)}" width="224px" tab="{meta:getLabelQty($test)},{meta:getActiveEnd($test)}" field="Integer">
+                              <autoComplete key="{label:getName($lbl)}" width="224" tab="{meta:getLabelQty($test)},{meta:getActiveEnd($test)}" field="Integer">
                                 <col width="224" />
                               </autoComplete>
                             </widget>
@@ -362,7 +362,7 @@ UIRF Software License are applicable instead of those above.
                             <text style="Prompt">
                               <xsl:value-of select='resource:getString($constants,"quantity")' />:
                             </text>
-                            <textbox key="{meta:getLabelQty($test)}" width="50px" tab="{meta:getIsReportable($test)},{label:getName($lbl)}" field="Integer" />
+                            <textbox key="{meta:getLabelQty($test)}" width="50" tab="{meta:getIsReportable($test)},{label:getName($lbl)}" field="Integer" />
                           </row>
                         </TablePanel>
                       </VerticalPanel>

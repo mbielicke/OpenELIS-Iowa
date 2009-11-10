@@ -28,13 +28,12 @@ package org.openelis.modules.dictionary.server;
 import java.util.ArrayList;
 
 import org.openelis.domain.DictionaryDO;
+import org.openelis.domain.DictionaryViewDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.gwt.common.DatabaseException;
-import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.manager.CategoryManager;
 import org.openelis.manager.DictionaryManager;
-import org.openelis.modules.dictionary.client.DictionaryRPC;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.CategoryRemote;
 import org.openelis.remote.CategoryManagerRemote;
@@ -54,7 +53,7 @@ public class DictionaryService {
 
     public ArrayList<IdNameVO> fetchByEntry(Query query) throws Exception {
         try {
-            return dictRemote().fetchByEntryAndCategoryId(query.getFields());
+            return dictRemote().fetchByEntry(query.getFields());
         } catch (RuntimeException e) {
             throw new DatabaseException(e);
         }
@@ -133,16 +132,9 @@ public class DictionaryService {
     }
     
 
-    public DictionaryRPC validateDelete(DictionaryRPC rpc) throws Exception {
-        try {
-            dictRemote().validateForDelete(rpc.data);
-        } catch (RuntimeException e) {
-            throw new DatabaseException(e);
-        } catch (ValidationErrorsList e) {
-            rpc.valid = false;
-        }
-
-        return rpc;
+    public DictionaryViewDO validateDelete(DictionaryViewDO data) throws Exception {
+        dictRemote().validateForDelete(data);        
+        return data;
     }
 
     private CategoryRemote remote() {

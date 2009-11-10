@@ -63,44 +63,42 @@ public class TestBean implements TestRemote, TestLocal {
     private static final TestMetaMap TestMeta = new TestMetaMap();
 
     public TestViewDO fetchById(Integer testId) throws Exception {
-        TestViewDO testDO;
+        TestViewDO data;
         Query query;
 
         query = manager.createNamedQuery("Test.FetchById");
         query.setParameter("id", testId);
         try {
-            testDO = (TestViewDO)query.getSingleResult();
+            data = (TestViewDO)query.getSingleResult();
         } catch (NoResultException e) {
             throw new NotFoundException();
         } catch (Exception e) {
             throw new DatabaseException(e);
         }
-        return testDO;
+        return data;
     }
 
-    public List<TestMethodVO> fetchByName(String name, int maxResults) {
+    public List<TestMethodVO> fetchByName(String name, int max) {
         Query query = manager.createNamedQuery("Test.FetchWithMethodByName");
         query.setParameter("name", name);
-        query.setMaxResults(maxResults);
+        query.setMaxResults(max);
 
         return query.getResultList();
     }
 
-    public List<TestMethodVO> fetchActiveByName(String name, int maxResults) {
+    public List<TestMethodVO> fetchActiveByName(String name, int max) {
         Query query = manager.createNamedQuery("Test.FetchActiveByName");
         query.setParameter("name", name);
-        query.setMaxResults(maxResults);
+        query.setMaxResults(max);
 
         return query.getResultList();
     }
 
-    public List<TestMethodVO> fetchByNameSampleItemType(String name,
-                                                            Integer sampleItemType,
-                                                            int maxResults) {
+    public List<TestMethodVO> fetchByNameSampleItemType(String name, Integer sampleItemType, int max) {
         Query query = manager.createNamedQuery("Test.FetchByNameSampleItemType");
         query.setParameter("name", name);
         query.setParameter("typeId", sampleItemType);
-        query.setMaxResults(maxResults);
+        query.setMaxResults(max);
 
         List testList = query.getResultList();
 
@@ -118,7 +116,7 @@ public class TestBean implements TestRemote, TestLocal {
     }
 
     public ArrayList<TestMethodVO> query(ArrayList<QueryData> fields, int first, int max)
-                                                                                             throws Exception {
+                                                                                         throws Exception {
         Query query;
         QueryBuilderV2 builder;
         List returnList;
@@ -149,208 +147,218 @@ public class TestBean implements TestRemote, TestLocal {
     }
 
     public TestViewDO add(TestViewDO data) throws Exception {
-        Test test;
+        Test entity;
 
         manager.setFlushMode(FlushModeType.COMMIT);
 
-        test = new Test();
+        entity = new Test();
 
-        test.setName(data.getName());
-        test.setMethodId(data.getMethodId());
-        test.setActiveBegin(data.getActiveBegin());
-        test.setActiveEnd(data.getActiveEnd());
-        test.setDescription(data.getDescription());
-        test.setIsActive(data.getIsActive());
-        test.setIsReportable(data.getIsReportable());
-        test.setLabelId(data.getLabelId());
-        test.setLabelQty(data.getLabelQty());
-        test.setReportingDescription(data.getReportingDescription());
-        test.setRevisionMethodId(data.getRevisionMethodId());
-        test.setScriptletId(data.getScriptletId());
-        test.setTestFormatId(data.getTestFormatId());
-        test.setTestTrailerId(data.getTestTrailerId());
-        test.setTimeHolding(data.getTimeHolding());
-        test.setTimeTaAverage(data.getTimeTaAverage());
-        test.setTimeTaMax(data.getTimeTaMax());
-        test.setTimeTaWarning(data.getTimeTaWarning());
-        test.setTimeTransit(data.getTimeTransit());
-        test.setReportingMethodId(data.getReportingMethodId());
-        test.setSortingMethodId(data.getSortingMethodId());
-        test.setReportingSequence(data.getReportingSequence());
+        entity.setName(data.getName());
+        entity.setMethodId(data.getMethodId());
+        entity.setActiveBegin(data.getActiveBegin());
+        entity.setActiveEnd(data.getActiveEnd());
+        entity.setDescription(data.getDescription());
+        entity.setIsActive(data.getIsActive());
+        entity.setIsReportable(data.getIsReportable());
+        entity.setLabelId(data.getLabelId());
+        entity.setLabelQty(data.getLabelQty());
+        entity.setReportingDescription(data.getReportingDescription());
+        entity.setRevisionMethodId(data.getRevisionMethodId());
+        entity.setScriptletId(data.getScriptletId());
+        entity.setTestFormatId(data.getTestFormatId());
+        entity.setTestTrailerId(data.getTestTrailerId());
+        entity.setTimeHolding(data.getTimeHolding());
+        entity.setTimeTaAverage(data.getTimeTaAverage());
+        entity.setTimeTaMax(data.getTimeTaMax());
+        entity.setTimeTaWarning(data.getTimeTaWarning());
+        entity.setTimeTransit(data.getTimeTransit());
+        entity.setReportingMethodId(data.getReportingMethodId());
+        entity.setSortingMethodId(data.getSortingMethodId());
+        entity.setReportingSequence(data.getReportingSequence());
 
-        manager.persist(test);
-        data.setId(test.getId());
+        manager.persist(entity);
+        data.setId(entity.getId());
 
         return data;
     }
 
     @RolesAllowed("test-update")
     public TestViewDO update(TestViewDO data) throws Exception {
-        Test test;
+        Test entity;
 
         if ( !data.isChanged())
             return data;
 
         manager.setFlushMode(FlushModeType.COMMIT);
-        test = manager.find(Test.class, data.getId());
+        entity = manager.find(Test.class, data.getId());
 
-        test.setName(data.getName());
-        test.setMethodId(data.getMethodId());
-        test.setActiveBegin(data.getActiveBegin());
-        test.setActiveEnd(data.getActiveEnd());
-        test.setDescription(data.getDescription());
-        test.setIsActive(data.getIsActive());
-        test.setIsReportable(data.getIsReportable());
-        test.setLabelId(data.getLabelId());
-        test.setLabelQty(data.getLabelQty());
-        test.setReportingDescription(data.getReportingDescription());
-        test.setRevisionMethodId(data.getRevisionMethodId());
-        test.setScriptletId(data.getScriptletId());
-        test.setTestFormatId(data.getTestFormatId());
-        test.setTestTrailerId(data.getTestTrailerId());
-        test.setTimeHolding(data.getTimeHolding());
-        test.setTimeTaAverage(data.getTimeTaAverage());
-        test.setTimeTaMax(data.getTimeTaMax());
-        test.setTimeTaWarning(data.getTimeTaWarning());
-        test.setTimeTransit(data.getTimeTransit());
-        test.setReportingMethodId(data.getReportingMethodId());
-        test.setSortingMethodId(data.getSortingMethodId());
-        test.setReportingSequence(data.getReportingSequence());
+        entity.setName(data.getName());
+        entity.setMethodId(data.getMethodId());
+        entity.setActiveBegin(data.getActiveBegin());
+        entity.setActiveEnd(data.getActiveEnd());
+        entity.setDescription(data.getDescription());
+        entity.setIsActive(data.getIsActive());
+        entity.setIsReportable(data.getIsReportable());
+        entity.setLabelId(data.getLabelId());
+        entity.setLabelQty(data.getLabelQty());
+        entity.setReportingDescription(data.getReportingDescription());
+        entity.setRevisionMethodId(data.getRevisionMethodId());
+        entity.setScriptletId(data.getScriptletId());
+        entity.setTestFormatId(data.getTestFormatId());
+        entity.setTestTrailerId(data.getTestTrailerId());
+        entity.setTimeHolding(data.getTimeHolding());
+        entity.setTimeTaAverage(data.getTimeTaAverage());
+        entity.setTimeTaMax(data.getTimeTaMax());
+        entity.setTimeTaWarning(data.getTimeTaWarning());
+        entity.setTimeTransit(data.getTimeTransit());
+        entity.setReportingMethodId(data.getReportingMethodId());
+        entity.setSortingMethodId(data.getSortingMethodId());
+        entity.setReportingSequence(data.getReportingSequence());
 
         return data;
 
     }
 
-    public void validate(TestViewDO testDO) throws Exception {
-        boolean checkDuplicate = true;
+    public void validate(TestViewDO data) throws Exception {
+        boolean checkDuplicate, overlap;
         List list;
         Query query;
         TestViewDO test;
         ValidationErrorsList exceptionList;
 
         exceptionList = new ValidationErrorsList();
+        checkDuplicate = true;
 
-        if (testDO.getName() == null || "".equals(testDO.getName())) {
+        if (DataBaseUtil.isEmpty(data.getName())) {
             exceptionList.add(new FieldErrorException("fieldRequiredException", TestMeta.getName()));
             checkDuplicate = false;
         }
 
-        if (testDO.getMethodId() == null) {
+        if (DataBaseUtil.isEmpty(data.getMethodId())) {
             exceptionList.add(new FieldErrorException("fieldRequiredException",
                                                       TestMeta.getMethodId()));
             checkDuplicate = false;
         }
 
-        if (testDO.getDescription() == null || "".equals(testDO.getDescription())) {
+        if (DataBaseUtil.isEmpty(data.getDescription())) {
             exceptionList.add(new FieldErrorException("fieldRequiredException",
                                                       TestMeta.getDescription()));
             checkDuplicate = false;
         }
 
-        if (testDO.getIsActive() == null) {
+        if (DataBaseUtil.isEmpty(data.getIsActive())) {
             exceptionList.add(new FieldErrorException("fieldRequiredException",
                                                       TestMeta.getIsActive()));
             checkDuplicate = false;
-        } else if ("N".equals(testDO.getIsActive())) {
+        } else if ("N".equals(data.getIsActive())) {
 
             query = manager.createNamedQuery("TestPrep.FetchByPrepTestId");
-            query.setParameter("testId", testDO.getId());
+            query.setParameter("testId", data.getId());
             list = query.getResultList();
             if (list.size() > 0) {
-                exceptionList.add(new FieldErrorException("testUsedAsPrepTestException",null));
+                exceptionList.add(new FieldErrorException("testUsedAsPrepTestException", null));
                 checkDuplicate = false;
             }
 
             query = manager.createNamedQuery("TestReflex.FetchByAddTestId");
-            query.setParameter("testId", testDO.getId());
+            query.setParameter("testId", data.getId());
             list = query.getResultList();
             if (list.size() > 0) {
-                exceptionList.add(new FieldErrorException("testUsedAsReflexTestException",null));
+                exceptionList.add(new FieldErrorException("testUsedAsReflexTestException", null));
                 checkDuplicate = false;
             }
         }
 
-        if (testDO.getIsReportable() == null) {
+        if (DataBaseUtil.isEmpty(data.getIsReportable())) {
             exceptionList.add(new FieldErrorException("fieldRequiredException",
                                                       TestMeta.getIsReportable()));
         }
 
-        if (testDO.getTimeTaMax() == null) {
+        if (DataBaseUtil.isEmpty(data.getTimeTaMax())) {
             exceptionList.add(new FieldErrorException("fieldRequiredException",
                                                       TestMeta.getTimeTaMax()));
         }
 
-        if (testDO.getTimeTransit() == null) {
+        if (DataBaseUtil.isEmpty(data.getTimeTransit())) {
             exceptionList.add(new FieldErrorException("fieldRequiredException",
                                                       TestMeta.getTimeTransit()));
         }
 
-        if (testDO.getTimeTaAverage() == null) {
+        if (DataBaseUtil.isEmpty(data.getTimeTaAverage())) {
             exceptionList.add(new FieldErrorException("fieldRequiredException",
                                                       TestMeta.getTimeTaAverage()));
         }
 
-        if (testDO.getTimeHolding() == null) {
+        if (DataBaseUtil.isEmpty(data.getTimeHolding())) {
             exceptionList.add(new FieldErrorException("fieldRequiredException",
                                                       TestMeta.getTimeHolding()));
         }
 
-        if (testDO.getTimeTaWarning() == null) {
+        if (DataBaseUtil.isEmpty(data.getTimeTaWarning())) {
             exceptionList.add(new FieldErrorException("fieldRequiredException",
                                                       TestMeta.getTimeTaWarning()));
         }
 
-        if (testDO.getActiveBegin() == null) {
+        if (DataBaseUtil.isEmpty(data.getActiveBegin())) {
             exceptionList.add(new FieldErrorException("fieldRequiredException",
                                                       TestMeta.getActiveBegin()));
             checkDuplicate = false;
         }
 
-        if (testDO.getActiveEnd() == null) {
+        if (DataBaseUtil.isEmpty(data.getActiveEnd())) {
             exceptionList.add(new FieldErrorException("fieldRequiredException",
                                                       TestMeta.getActiveEnd()));
             checkDuplicate = false;
         }
 
         if (checkDuplicate) {
-            if (testDO.getActiveEnd().before(testDO.getActiveBegin())) {
-                exceptionList.add(new FieldErrorException("endDateAfterBeginDateException",null));
+            if (data.getActiveEnd().before(data.getActiveBegin())) {
+                exceptionList.add(new FieldErrorException("endDateAfterBeginDateException", null));
                 checkDuplicate = false;
             }
         }
 
         if (checkDuplicate) {
             query = manager.createNamedQuery("Test.FetchByName");
-            query.setParameter("name", testDO.getName());
+            query.setParameter("name", data.getName());
             list = query.getResultList();
-            for (int iter = 0; iter < list.size(); iter++ ) {
-                boolean overlap = false;
-                test = (TestViewDO)list.get(iter);
-                if ( !test.getId().equals(testDO.getId())) {
-                    if (test.getMethodId().equals(testDO.getMethodId())) {
-                        if (test.getIsActive().equals(testDO.getIsActive())) {
-                            if ("Y".equals(testDO.getIsActive())) {
-                                exceptionList.add(new FieldErrorException("testActiveException",null));
-                                break;
-                            }
-                        }
-                        if (test.getActiveBegin().before(testDO.getActiveEnd()) &&
-                            (test.getActiveEnd().after(testDO.getActiveBegin()))) {
-                            overlap = true;
-                        } else if (test.getActiveBegin().before(testDO.getActiveBegin()) &&
-                                   (test.getActiveEnd().after(testDO.getActiveEnd()))) {
-                            overlap = true;
-                        } else if (test.getActiveBegin().equals(testDO.getActiveEnd()) ||
-                                   (test.getActiveEnd().equals(testDO.getActiveBegin()))) {
-                            overlap = true;
-                        } else if (test.getActiveBegin().equals(testDO.getActiveBegin()) ||
-                                   (test.getActiveEnd().equals(testDO.getActiveEnd()))) {
-                            overlap = true;
-                        }
+            for (int i = 0; i < list.size(); i++ ) {
+                overlap = false;
+                test = (TestViewDO)list.get(i);
+                if (DataBaseUtil.isDifferent(test.getId(), data.getId()) &&
+                    DataBaseUtil.isSame(test.getMethodId(), data.getMethodId()) &&
+                    DataBaseUtil.isSame(test.getIsActive(), data.getIsActive())) {
+                    if ("Y".equals(data.getIsActive())) {
+                        exceptionList.add(new FieldErrorException("testActiveException", null));
+                        break;
+                    }
 
-                        if (overlap) {
-                            exceptionList.add(new FieldErrorException("testTimeOverlapException",null));
-                        }
+                    if (DataBaseUtil.isAfter(data.getActiveEnd(), test.getActiveBegin()) &&
+                        DataBaseUtil.isAfter(test.getActiveEnd(), data.getActiveBegin())) {
+                        overlap = true;
+                    } else if (DataBaseUtil.isAfter(data.getActiveBegin(), test.getActiveBegin()) &&
+                               DataBaseUtil.isAfter(test.getActiveEnd(), data.getActiveEnd())) {
+                        overlap = true;
+                    } else if (DataBaseUtil.isAfter(data.getActiveEnd(), test.getActiveEnd()) &&
+                               DataBaseUtil.isAfter(test.getActiveBegin(), data.getActiveBegin())) {
+                        overlap = true;
+                    } else if (DataBaseUtil.isAfter(test.getActiveEnd(), data.getActiveEnd()) &&
+                               DataBaseUtil.isAfter(data.getActiveBegin(), test.getActiveBegin())) {
+                        overlap = true;
+                    } else if (!DataBaseUtil.isDifferentYD(test.getActiveBegin(),
+                                                            data.getActiveEnd()) ||
+                               !DataBaseUtil.isDifferentYD(test.getActiveEnd(),
+                                                           data.getActiveBegin())) {
+                        overlap = true;
+                    } else if (!DataBaseUtil.isDifferentYD(test.getActiveBegin(),
+                                                            data.getActiveBegin()) ||
+                               (!DataBaseUtil.isDifferentYD(test.getActiveEnd(),
+                                                             data.getActiveEnd()))) {
+                        overlap = true;
+                    }
+
+                    if (overlap) {
+                        exceptionList.add(new FieldErrorException("testTimeOverlapException", null));
                     }
                 }
             }

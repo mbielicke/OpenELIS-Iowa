@@ -66,8 +66,6 @@ import org.openelis.gwt.widget.table.event.RowAddedEvent;
 import org.openelis.gwt.widget.table.event.RowAddedHandler;
 import org.openelis.gwt.widget.table.event.RowDeletedEvent;
 import org.openelis.gwt.widget.table.event.RowDeletedHandler;
-import org.openelis.gwt.widget.table.event.RowMovedEvent;
-import org.openelis.gwt.widget.table.event.RowMovedHandler;
 import org.openelis.manager.CategoryManager;
 import org.openelis.metamap.CategoryMetaMap;
 import org.openelis.modules.main.client.openelis.OpenELIS;
@@ -391,16 +389,6 @@ public class DictionaryScreen extends Screen {
                     Window.alert(e.getMessage());
                 }
             }
-        });
-
-        dictTable.addRowMovedHandler(new RowMovedHandler() {
-            public void onRowMoved(RowMovedEvent event) {
-                try {
-                    manager.getEntries().moveEntry(event.getOldIndex(), event.getNewIndex());
-                } catch (Exception e) {
-                    Window.alert(e.getMessage());
-                }
-            }
 
         });
         
@@ -437,13 +425,14 @@ public class DictionaryScreen extends Screen {
                 r = dictTable.getSelectedRow();
                 try {
                     if (r > -1 && dictTable.numRows() > 0) {
-                        if (validateForDelete(manager.getEntries().getEntryAt(r)))
-                            dictTable.deleteRow(r);
-                        else
-                            Window.alert(consts.get("dictionaryDeleteException"));
+                        validateForDelete(manager.getEntries().getEntryAt(r));
+                        dictTable.deleteRow(r);                        
                     }
+                } catch(ValidationErrorsList e) {
+                    Window.alert(consts.get("dictionaryDeleteException"));
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
+                    e.printStackTrace();                   
                 }
             }
 
@@ -718,27 +707,24 @@ public class DictionaryScreen extends Screen {
         }
         return model;
     }
-
-    private boolean validateForDelete(DictionaryViewDO data) {
-        DictionaryRPC rpc;
-
-        rpc = new DictionaryRPC();
-
-        if (data.getId() == null)
-            return true;
-
-        rpc.data = data;
-        rpc.valid = true;
-
-        try {
-            window.setBusy(consts.get("validatingDelete"));
-            rpc = (DictionaryRPC)service.call("validateDelete", rpc);
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-            e.printStackTrace();
-        }
-
+    
+    /*private void enableDragAndDrop(boolean enable) {          
+        dictTable.enableDrag(enable);
+        dictTable.enableDrop(enable);
+        if(enable) {
+            dictTable.addTarget(dictTable);
+            dictTable.addDragHandler(this);
+        } 
+    }*/
+    
+    private void validateForDelete(DictionaryViewDO data) throws Exception{        
+        if(data.getId() == null)
+            return;                           
+     
+        window.setBusy(consts.get("validatingDelete"));
+        service.call("validateDelete", data);            
+                
         window.clearStatus();
-        return rpc.valid;
+
     }
 }

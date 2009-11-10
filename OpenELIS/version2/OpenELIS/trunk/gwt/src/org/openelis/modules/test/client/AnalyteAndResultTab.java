@@ -78,6 +78,8 @@ import org.openelis.manager.TestTypeOfSampleManager;
 import org.openelis.metamap.TestMetaMap;
 import org.openelis.modules.dictionary.client.DictionaryLookupScreen;
 import org.openelis.utilcommon.DataBaseUtil;
+import org.openelis.utilcommon.ResultRangeNumeric;
+import org.openelis.utilcommon.ResultRangeTiter;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
@@ -105,7 +107,11 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
     private AnalyteAndResultTab                screen;
     private TestAnalyteDisplayManager          displayManager;
     
-    private DictionaryLookupScreen        dictEntryPicker; 
+    private Integer                            typeDict, typeNumeric, typeTiter,
+                                               typeDefault, typeDate, typeDateTime,
+                                               typeTime;
+    
+    private DictionaryLookupScreen             dictEntryPicker; 
     
     private TableWidget                        analyteTable, resultTable;
     private Dropdown<Integer>                  typeId;       
@@ -124,7 +130,11 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
     
     private int                                anaSelCol,tempId;  
     
-    private ScreenService                      scriptletService,analyteService,dictionaryService;
+    private ScreenService                      scriptletService,analyteService,
+                                               dictionaryService;
+    
+    private ResultRangeNumeric                 rangeNumeric;
+    private ResultRangeTiter                   rangeTiter;
     
     public AnalyteAndResultTab(ScreenDefInt def, ScreenService service,
                                ScreenService scriptletService,ScreenService analyteService,
@@ -169,21 +179,24 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
                 analyteTable.enable(EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));                
             }
         });
+        
+        rangeNumeric = new ResultRangeNumeric();
+        rangeTiter   = new ResultRangeTiter();
        
         analyteTable.addBeforeCellEditedHandler(new BeforeCellEditedHandler () {
 
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
-                int row, col;
+                int r, c;
                 Integer key;
                 TableDataRow set,vset;
                 
-                row = event.getRow();
-                col = event.getCol();                                              
-                anaSelCol = col;
+                r = event.getRow();
+                c = event.getCol();                                              
+                anaSelCol = c;
                 enableAnalyteWidgets(true);
                 try {                    
-                    set = analyteTable.getRow(row); 
-                    if(displayManager.isHeaderRow(row)) {
+                    set = analyteTable.getRow(r); 
+                    if(displayManager.isHeaderRow(r)) {
                         // 
                         // the first two columns of a header row are immutable
                         // and we also don't want to allow a user to be able to
@@ -195,13 +208,13 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
                         // such that the three widgets don't show any data when
                         // refreshAnalyteWidgets() is called
                         //
-                        if(col < 2 || col > (displayManager.columnCount(row)+1)) {
+                        if(c < 2 || c > (displayManager.columnCount(r)+1)) {
                             event.cancel();                            
                             enableAnalyteWidgets(false);
                             canAddRemoveColumn = false;                            
                             anaSelCol = -1;                            
-                        } else if(col != 2) {  
-                            vset = (TableDataRow)set.cells.get(col-1).getValue(); 
+                        } else if(c != 2) {  
+                            vset = (TableDataRow)set.cells.get(c-1).getValue(); 
                             //
                             // we don't want to allow editing of a header cell if the
                             // cell to its left doesn't have any data in it                            
@@ -219,18 +232,18 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
                             // canAddRemoveColumn to false if this is the case 
                             // and to true otherwise
                             //
-                            if(col <= displayManager.columnCount(row)) 
+                            if(c <= displayManager.columnCount(r)) 
                                 canAddRemoveColumn = true;                                
                             else
                                 canAddRemoveColumn = false;                                                           
-                        } else if(col == 2) {
+                        } else if(c == 2) {
                             //
                             // we always allow adding or removing of columns at
                             // the third column of a header row 
                             // 
                             canAddRemoveColumn = true;                            
                         }                           
-                    } else if(col > displayManager.columnCount(row)){
+                    } else if(c > displayManager.columnCount(r)){
                         //
                         // for a header row, we allow editing of the cell that's
                         // next to last cell that has data in it but in the case
@@ -242,8 +255,8 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
                         event.cancel();
                         enableAnalyteWidgets(false);
                         canAddRemoveColumn = false;                        
-                    } else if(col > 0) {
-                        vset = (TableDataRow)set.cells.get(col).getValue();           
+                    } else if(c > 0) {
+                        vset = (TableDataRow)set.cells.get(c).getValue();           
                         if(vset != null && vset.key != null){
                            //
                            // here we check to see if there was a result group 
@@ -513,41 +526,49 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
         addScreenHandler(typeId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {                      
                 TestAnalyteViewDO data;                                              
+                int r;
                 
-                if(displayManager != null && analyteTable.getSelectedRow() != -1) {                    
+                r = analyteTable.getSelectedRow();
+                if(displayManager != null && r != -1) {                    
                     if(anaSelCol == 0)
-                        data = displayManager.getTestAnalyteAt(analyteTable.getSelectedRow(), anaSelCol);
+                        data = displayManager.getTestAnalyteAt(r, anaSelCol);
                     else 
-                        data = displayManager.getTestAnalyteAt(analyteTable.getSelectedRow(), anaSelCol-1);
+                        data = displayManager.getTestAnalyteAt(r, anaSelCol-1);
                                         
                     if(data != null)
                         typeId.setSelection(data.getTypeId());
                     else
-                        typeId.setSelection(null);                    
+                        typeId.setSelection(null);      
+                                        
                 }  
                
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
-                TestAnalyteViewDO anaDO;
-                TableDataRow row;
-                int i,ar;
+                TestAnalyteViewDO data;
+                TableDataRow row,nrow;
+                int i,r;
                 
-                ar = analyteTable.getSelectedRow();
-                if(ar != -1  && anaSelCol != -1) {
-                    row =  analyteTable.getRow(ar);
+                r = analyteTable.getSelectedRow();
+                if(r != -1  && anaSelCol != -1) {
+                    row =  analyteTable.getRow(r);
                     if((Boolean)row.data) {
-                        for(i = ar; i < analyteTable.numRows(); i++) {                            
-                            anaDO = displayManager.getTestAnalyteAt(i, anaSelCol-1);
-                            anaDO.setTypeId(event.getValue());
+                        for(i = r; i < analyteTable.numRows(); i++) {                            
+                            data = displayManager.getTestAnalyteAt(i, anaSelCol-1);
+                            data.setTypeId(event.getValue());
                             
-                            if(displayManager.isHeaderRow(i+1))
-                                break;
+                            if(i+1 < analyteTable.numRows()) {
+                                nrow = analyteTable.getRow(i+1);
+                                if((Boolean)nrow.data)
+                                    break;
+                            }
                         }
                     } else {
-                        anaDO = displayManager.getTestAnalyteAt(ar, anaSelCol);
-                        anaDO.setTypeId(event.getValue());
+                        data = displayManager.getTestAnalyteAt(r, anaSelCol);
+                        data.setTypeId(event.getValue());
                     }
+                    
+                    resultTable.clearCellExceptions(r, anaSelCol);
                 }                
             }
 
@@ -583,24 +604,27 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {                                
-                TestAnalyteViewDO anaDO;
-                TableDataRow row;
-                int i,ar;
+                TestAnalyteViewDO data;
+                TableDataRow row,nrow;
+                int i,r;
                 
-                ar = analyteTable.getSelectedRow();
-                if(ar != -1  && anaSelCol != -1) {
-                    row =  analyteTable.getRow(ar);
+                r = analyteTable.getSelectedRow();
+                if(r != -1  && anaSelCol != -1) {
+                    row =  analyteTable.getRow(r);
                     if((Boolean)row.data) {
-                        for(i = ar; i < analyteTable.numRows(); i++) {                            
-                            anaDO = displayManager.getTestAnalyteAt(i, anaSelCol-1);
-                            anaDO.setIsReportable(event.getValue());
+                        for(i = r; i < analyteTable.numRows(); i++) {                            
+                            data = displayManager.getTestAnalyteAt(i, anaSelCol-1);
+                            data.setIsReportable(event.getValue());
                             
-                            if(displayManager.isHeaderRow(i+1))
-                                break;
+                            if(i+1 < analyteTable.numRows()) {
+                                nrow = analyteTable.getRow(i+1);
+                                if((Boolean)nrow.data)
+                                    break;
+                            }
                         }
                     } else {
-                        anaDO = displayManager.getTestAnalyteAt(ar, anaSelCol);
-                        anaDO.setIsReportable(event.getValue());
+                        data = displayManager.getTestAnalyteAt(r, anaSelCol);
+                        data.setIsReportable(event.getValue());
                     }
                 }
                                     
@@ -617,18 +641,18 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
         scriptlet = (AutoComplete<Integer>)def.getWidget(meta.getTestAnalyte().getScriptletId());
         addScreenHandler(scriptlet, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                TestAnalyteViewDO anaDO;
-                int ar;
+                TestAnalyteViewDO data;
+                int r;
                 
-                ar = analyteTable.getSelectedRow();
+                r = analyteTable.getSelectedRow();
                 
-                if(displayManager != null && ar != -1) {
+                if(displayManager != null && r != -1) {
                         if(anaSelCol == 0)
-                            anaDO = displayManager.getTestAnalyteAt(analyteTable.getSelectedRow(), anaSelCol);
+                            data = displayManager.getTestAnalyteAt(r, anaSelCol);
                         else 
-                            anaDO = displayManager.getTestAnalyteAt(analyteTable.getSelectedRow(), anaSelCol-1);                       
-                        if(anaDO != null)
-                            scriptlet.setSelection(anaDO.getScriptletId(),anaDO.getScriptletName());
+                            data = displayManager.getTestAnalyteAt(r, anaSelCol-1);                       
+                        if(data != null)
+                            scriptlet.setSelection(data.getScriptletId(),data.getScriptletName());
                         else
                             scriptlet.setSelection(null,"");
                         
@@ -636,26 +660,29 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {                                
-                TestAnalyteViewDO anaDO;
-                TableDataRow row;
-                int i,ar;
+                TestAnalyteViewDO data;
+                TableDataRow row,nrow;
+                int i,r;
                 
-                ar = analyteTable.getSelectedRow();
-                if(ar != -1  && anaSelCol != -1) {
-                    row =  analyteTable.getRow(ar);
+                r = analyteTable.getSelectedRow();
+                if(r != -1  && anaSelCol != -1) {
+                    row =  analyteTable.getRow(r);
                     if((Boolean)row.data) {
-                        for(i = ar; i < analyteTable.numRows(); i++) {                            
-                            anaDO = displayManager.getTestAnalyteAt(i, anaSelCol-1);
-                            anaDO.setScriptletId(event.getValue());
-                            anaDO.setScriptletName(scriptlet.getTextBoxDisplay());
+                        for(i = r; i < analyteTable.numRows(); i++) {                            
+                            data = displayManager.getTestAnalyteAt(i, anaSelCol-1);
+                            data.setScriptletId(event.getValue());
+                            data.setScriptletName(scriptlet.getTextBoxDisplay());
                             
-                            if(displayManager.isHeaderRow(i+1))
-                                break;
+                            if(i+1 < analyteTable.numRows()) {
+                                nrow = analyteTable.getRow(i+1);
+                                if((Boolean)nrow.data)
+                                    break;
+                            }
                         }
                     } else {
-                        anaDO = displayManager.getTestAnalyteAt(ar, anaSelCol);
-                        anaDO.setScriptletId(event.getValue());
-                        anaDO.setScriptletName(scriptlet.getTextBoxDisplay());
+                        data = displayManager.getTestAnalyteAt(r, anaSelCol);
+                        data.setScriptletId(event.getValue());
+                        data.setScriptletName(scriptlet.getTextBoxDisplay());
                     }
                 }
                 
@@ -693,9 +720,9 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
             public void onStateChange(StateChangeEvent<State> event) {
                 tableActions.enable(EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));                
                 tableActions.setQueryMode(false);
-                if(tableActions.getData() != null && EnumSet.of(State.ADD,State.UPDATE).contains(event.getState())) {
+                if(tableActions.getData() != null && EnumSet.of(State.ADD,State.UPDATE).contains(event.getState())) 
                     tableActions.setSelection("analyte");
-                }
+                
             }                        
         });        
         
@@ -710,6 +737,9 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
                 } else {
                     addHeader();
                 }
+                
+                tableActions.setSelection("analyte");
+                
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -728,6 +758,8 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
                 } else {
                     removeHeader();
                 }
+                
+                tableActions.setSelection("analyte");
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -792,21 +824,21 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
         resultTable.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
 
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
-                int row,col,group;                
+                int r,c,group;                
 
-                row = event.getRow();
-                col = event.getCol();                
+                r = event.getRow();
+                c = event.getCol();                
                 group = resultTabPanel.getTabBar().getSelectedTab();
                 
-                switch(col) {
+                switch(c) {
                     case 0:   
-                        clearResultCellError(group,row,meta.getTestResult().getUnitOfMeasureId());
+                        clearResultCellError(group,r,meta.getTestResult().getUnitOfMeasureId());
                         break;
                     case 1:   
-                        clearResultCellError(group,row,meta.getTestResult().getTypeId());
+                        clearResultCellError(group,r,meta.getTestResult().getTypeId());
                         break;
                     case 2:             
-                        clearResultCellError(group,row,meta.getTestResult().getValue());
+                        clearResultCellError(group,r,meta.getTestResult().getValue());
                         break;                    
                 }
             }
@@ -818,16 +850,13 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
                 int r,c,group;                
                 TestResultViewDO data ;
                 Object val;
-                Integer typeId;
-                String sysName,value;
+                DictionaryDO dict;
 
                 r = event.getRow();
                 c = event.getCol();
                 val = resultTable.getObject(r, c);
                 group = resultTabPanel.getTabBar().getSelectedTab();
                 data = testResultManager.getResultAt(group+1, r);
-                sysName = null;
-                value = null;
                 
                 switch(c) {
                     case 0:   
@@ -836,27 +865,39 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
                     case 1:                           
                         data.setTypeId((Integer)val);
                         break;
-                    case 2:                                                             
-                        typeId = data.getTypeId();
-                        
-                        if(typeId != null)
-                            sysName = DictionaryCache.getSystemNameFromId(typeId);
-                        
-                        if("test_res_type_numeric".equals(sysName)) {
-                            value = validateAndSetNumericValue((String)val,r);                            
-                        } else if("test_res_type_titer".equals(sysName)) {
-                            value = validateAndSetTiterValue((String)val,r);                            
-                        } else if("test_res_type_dictionary".equals(sysName)) {
-                            value = validateAndSetDictValue((String)val,r,data);
-                            if(value == null)
-                                data.setDictionary("");
-                            else 
-                                data.setDictionary((String)val);
-                        } else {
-                            value = (String)val;
-                        }                     
-                        data.setValue(value);
-                        ActionEvent.fire(screen, Action.RESULT_CHANGED, data);
+                    case 2:                                                                                     
+                        try {
+                            if (DataBaseUtil.isSame(data.getTypeId(), typeDict)) {
+                                dict = getDictionary((String)val);
+                                if (dict != null) {
+                                    data.setValue(dict.getId().toString());
+                                    data.setDictionary(dict.getEntry());                                    
+                                } else {
+                                    data.setDictionary(null);
+                                    throw new LocalizedException("test.invalidValue");
+                                }
+                                resultTable.setCell(r, c, data.getDictionary());
+                            } else if (DataBaseUtil.isSame(data.getTypeId(),typeNumeric)) {
+                                rangeNumeric.setRange((String)val);
+                                data.setValue(rangeNumeric.toString());
+                                resultTable.setCell(r, c, data.getValue());
+                            } else if (DataBaseUtil.isSame(data.getTypeId(),typeTiter)) {
+                                rangeTiter.setRange((String)val);
+                                data.setValue(rangeTiter.toString());
+                                resultTable.setCell(r, c, data.getValue());
+                            } else if(DataBaseUtil.isSame(data.getTypeId(),typeDefault) || 
+                                      DataBaseUtil.isSame(data.getTypeId(),typeDate) ||
+                                      DataBaseUtil.isSame(data.getTypeId(),typeDateTime) ||
+                                      DataBaseUtil.isSame(data.getTypeId(),typeTime)) {
+                                data.setValue((String)val);
+                                resultTable.setCell(r, c, data.getValue());                                
+                            } else {
+                                throw new LocalizedException("test.invalidValue");
+                            }
+                            ActionEvent.fire(screen, Action.RESULT_CHANGED, data);
+                        } catch (LocalizedException e) {
+                            resultTable.setCellException(r, c, e);
+                        }
                         break;
                     case 3:                
                         data.setFlagsId((Integer)val);
@@ -885,16 +926,16 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
 
         resultTable.addRowDeletedHandler(new RowDeletedHandler() {
             public void onRowDeleted(RowDeletedEvent event) {
-                int row,selTab;
-                TestResultViewDO resDO;
+                int r,selTab;
+                TestResultViewDO data;
                 
                 selTab = resultTabPanel.getTabBar().getSelectedTab();                
-                row = event.getIndex();                     
-                resDO = testResultManager.getResultAt(selTab+1, row);
+                r = event.getIndex();                     
+                data = testResultManager.getResultAt(selTab+1, r);
                 
-                testResultManager.removeResultAt(selTab+1, row);
+                testResultManager.removeResultAt(selTab+1, r);
                 
-                ActionEvent.fire(screen, Action.RESULT_DELETED, resDO);
+                ActionEvent.fire(screen, Action.RESULT_DELETED, data);
             }
         });
 
@@ -918,12 +959,12 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
         removeTestResultButton = (AppButton)def.getWidget("removeTestResultButton");
         addScreenHandler(removeTestResultButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-               int ar;
+               int r;
                
-               ar = resultTable.getSelectedRow();
+               r = resultTable.getSelectedRow();
                
-               if(ar != -1 && resultTable.numRows() > 0)                                      
-                   resultTable.deleteRow(ar);   
+               if(r != -1 && resultTable.numRows() > 0)                                      
+                   resultTable.deleteRow(r);   
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -958,7 +999,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
         dictionaryLookUpButton = (AppButton)def.getWidget("dictionaryLookUpButton");
         addScreenHandler(dictionaryLookUpButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-                showDictionaryPopUp(null);
+                showDictionary(null);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -1035,14 +1076,13 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
     }
 
     public void onBeforeGetMatches(BeforeGetMatchesEvent event) {
-        // TODO Auto-generated method stub
         
     }
     
     public void showTestAnalyteError(GridFieldErrorException error) {
         int dindex,trindex,col,i;
         String field;
-        TableDataRow trow;
+        TableDataRow row;
         ArrayList<LocalizedException> errors;
         
         
@@ -1068,9 +1108,9 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
                 analyteTable.setCellException(trindex, col, error);
         } else {
             for(i = trindex-1; i > -1; i--) {            
-                trow = analyteTable.getRow(i); 
+                row = analyteTable.getRow(i); 
                 errors = analyteTable.getCell(i, col+1).getExceptions();                
-                if((Boolean)trow.data) { 
+                if((Boolean)row.data) { 
                     if((errors == null || !errors.contains(error))) {                               
                         analyteTable.setCellException(i, col+1, error);
                     }
@@ -1110,32 +1150,32 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
     }
 
     protected void clearKeys(TestAnalyteManager tam,TestResultManager trm) {
-        TestAnalyteViewDO anaDO;
-        TestResultViewDO resDO;
+        TestAnalyteViewDO ana;
+        TestResultViewDO res;
         Integer id;
         int i, j;
         
         for(i = 0; i < tam.rowCount(); i++) {
             for(j = 0; j < tam.columnCount(i); j++) {
-                anaDO = tam.getAnalyteAt(i, j);
+                ana = tam.getAnalyteAt(i, j);
                 if(j == 0) {
-                    anaDO.setId(anaDO.getId()*(-1));
-                    id = anaDO.getId();
+                    ana.setId(ana.getId()*(-1));
+                    id = ana.getId();
                     if(id < tempId) 
                         tempId = id;
                 } else {
-                    anaDO.setId(null);
+                    ana.setId(null);
                 }
-                anaDO.setTestId(null);                
+                ana.setTestId(null);                
             }
         }
         
         for(i = 1; i < trm.groupCount()+1; i++) {
             for(j = 0; j < trm.getResultGroupSize(i); j++) {
-                resDO = trm.getResultAt(i, j);
-                resDO.setId(resDO.getId()*(-1));
-                resDO.setTestId(null);
-                id = resDO.getId();
+                res = trm.getResultAt(i, j);
+                res.setId(res.getId()*(-1));
+                res.setTestId(null);
+                id = res.getId();
                 if(id < tempId) 
                     tempId = id;
             }
@@ -1153,7 +1193,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
        int m,c,len;
        ArrayList<TableDataRow> model;
        TableDataRow hrow,row;
-       TestAnalyteViewDO anaDO;
+       TestAnalyteViewDO data;
        boolean headerFilled;
        
        model = new ArrayList<TableDataRow>();
@@ -1175,18 +1215,18 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
            row =  new TableDataRow(10);
            row.data = new Boolean(false);
            for(c = 0; c < len; c++) {                        
-               anaDO = displayManager.getTestAnalyteAt(m,c);
-               row.key = anaDO.getId();
+               data = displayManager.getTestAnalyteAt(m,c);
+               row.key = data.getId();
                if(c == 0) {
-                   row.cells.get(0).setValue(new TableDataRow(anaDO.getAnalyteId(),anaDO.getAnalyteName()));
-                   row.cells.get(1).setValue(new TableDataRow(anaDO.getResultGroup(),String.valueOf(anaDO.getResultGroup())));
+                   row.cells.get(0).setValue(new TableDataRow(data.getAnalyteId(),data.getAnalyteName()));
+                   row.cells.get(1).setValue(new TableDataRow(data.getResultGroup(),String.valueOf(data.getResultGroup())));
                    continue;
                }                        
                
                if(!headerFilled) 
-                   hrow.cells.get(c+1).setValue(new TableDataRow(anaDO.getAnalyteId(),anaDO.getAnalyteName()));
+                   hrow.cells.get(c+1).setValue(new TableDataRow(data.getAnalyteId(),data.getAnalyteName()));
                
-               row.cells.get(c+1).setValue(new TableDataRow(anaDO.getResultGroup(),String.valueOf(anaDO.getResultGroup())));
+               row.cells.get(c+1).setValue(new TableDataRow(data.getResultGroup(),String.valueOf(data.getResultGroup())));
            }
            headerFilled = true;
            model.add(row);
@@ -1194,6 +1234,26 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
        return model;
        
     } 
+    
+    private DictionaryDO getDictionary(String entry) {
+        ArrayList<DictionaryDO> list;
+        
+        entry = DataBaseUtil.trim(entry); 
+        if (entry == null)
+            return null;
+        
+        try {
+            list = dictionaryService.callList("fetchByEntry", entry);
+            if (list.size() == 1)
+                return list.get(0);
+            else if (list.size() > 1)                
+                showDictionary(entry);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Window.alert(e.getMessage());
+        }
+        return null;
+    }
     
     private TableDataRow createHeaderRow() {
         TableDataRow row;       
@@ -1214,38 +1274,41 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
     
     private void initializeDropdowns() {
         ArrayList<TableDataRow> model;
-        List<DictionaryDO> list;
         
         model = new ArrayList<TableDataRow>();
-        list = DictionaryCache.getListByCategorySystemName("test_analyte_type");
         model.add(new TableDataRow(null, ""));
-        for(DictionaryDO resultDO :  list){
+        for(DictionaryDO resultDO :  DictionaryCache.getListByCategorySystemName("test_analyte_type"))
             model.add(new TableDataRow(resultDO.getId(),resultDO.getEntry()));
-        } 
+        
         typeId.setModel(model);
+        
+        typeDict     = DictionaryCache.getIdFromSystemName("test_res_type_dictionary");
+        typeNumeric  = DictionaryCache.getIdFromSystemName("test_res_type_numeric");
+        typeTiter    = DictionaryCache.getIdFromSystemName("test_res_type_titer");
+        typeDefault  = DictionaryCache.getIdFromSystemName("test_res_type_default");
+        typeDate     = DictionaryCache.getIdFromSystemName("test_res_type_date");
+        typeDateTime = DictionaryCache.getIdFromSystemName("test_res_type_date_time");
+        typeTime     = DictionaryCache.getIdFromSystemName("test_res_type_time");
               
         model = new ArrayList<TableDataRow>();        
-        list = DictionaryCache.getListByCategorySystemName("test_result_type");        
         model.add(new TableDataRow(null, ""));
-        for (DictionaryDO resultDO : list) {
+        for (DictionaryDO resultDO : DictionaryCache.getListByCategorySystemName("test_result_type")) 
             model.add(new TableDataRow(resultDO.getId(), resultDO.getEntry()));
-        }
+        
         ((Dropdown<Integer>)resultTable.getColumnWidget(meta.getTestResult().getTypeId())).setModel(model);
     
         model = new ArrayList<TableDataRow>();
-        list = DictionaryCache.getListByCategorySystemName("test_result_flags");        
         model.add(new TableDataRow(null, ""));
-        for (DictionaryDO resultDO : list) {
+        for (DictionaryDO resultDO : DictionaryCache.getListByCategorySystemName("test_result_flags")) 
             model.add(new TableDataRow(resultDO.getId(), resultDO.getEntry()));
-        }
+        
         ((Dropdown<Integer>)resultTable.getColumnWidget(meta.getTestResult().getFlagsId())).setModel(model);
     
         model = new ArrayList<TableDataRow>();
-        list = DictionaryCache.getListByCategorySystemName("rounding_method");        
         model.add(new TableDataRow(null, ""));
-        for (DictionaryDO resultDO : list) {
+        for (DictionaryDO resultDO : DictionaryCache.getListByCategorySystemName("rounding_method")) 
             model.add(new TableDataRow(resultDO.getId(), resultDO.getEntry()));
-        }
+        
         ((Dropdown<Integer>)resultTable.getColumnWidget(meta.getTestResult().getRoundingMethodId())).setModel(model);
         
         model = new ArrayList<TableDataRow>();
@@ -1262,7 +1325,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
     private void setUnitsOfMeasure() {        
         ArrayList<TableDataRow> model;
         List<DictionaryDO> dictList;
-        TestTypeOfSampleDO stDO;
+        TestTypeOfSampleDO data;
         String entry;
         Integer unitId;
         
@@ -1270,13 +1333,13 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
         
         model.add(new TableDataRow(null, ""));
         
-        if(state == State.ADD || state == State.UPDATE) {
+        if(sampleTypeManager != null && (state == State.ADD || state == State.UPDATE)) {
             for(int i=0; i < sampleTypeManager.count(); i++) {
-                stDO = sampleTypeManager.getTypeAt(i);
-                unitId = stDO.getUnitOfMeasureId();
+                data = sampleTypeManager.getTypeAt(i);
+                unitId = data.getUnitOfMeasureId();
                 if(unitId != null) {
-                 entry = DictionaryCache.getEntryFromId(unitId).getEntry();
-                 model.add(new TableDataRow(unitId, entry));
+                    entry = DictionaryCache.getEntryFromId(unitId).getEntry();
+                    model.add(new TableDataRow(unitId, entry));
                 }
             }
         } else {
@@ -1301,14 +1364,14 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
     }
     
     private void addMatchesHandlerToAnalyteCells() {
-        AutoComplete<Integer> ac;
+        AutoComplete<Integer> auto;
         ArrayList<TableColumn> columns;
         
         columns = analyteTable.getColumns();
         for(int i = 0; i < columns.size(); i++) {
-            ac = (AutoComplete<Integer>)columns.get(i).getColumnWidget();
-            ac.addBeforeGetMatchesHandler(this);
-            ac.addGetMatchesHandler(this);
+            auto = (AutoComplete<Integer>)columns.get(i).getColumnWidget();
+            auto.addBeforeGetMatchesHandler(this);
+            auto.addGetMatchesHandler(this);
         }
     }
    
@@ -1339,10 +1402,9 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
     
     private void shiftDataInRowToTheRight(int row) {
         int finCol; 
-        TableDataRow trow;        
-        String lname;
-        Integer lkey;
-        TableDataRow lrow;
+        TableDataRow trow,lrow;        
+        String name;
+        Integer key;       
                        
         if(anaSelCol < 2 || anaSelCol == 10 || row < 0) 
             return;
@@ -1353,16 +1415,16 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
         if (finCol == 10)
             return;        
         
-        lkey = null;
-        lname = "";
+        key = null;
+        name = "";
         try{
             for (int i = finCol; i > anaSelCol; i--) {               
                 lrow = (TableDataRow)trow.cells.get(i-1).getValue();     
                 if(lrow != null) {
-                    lkey = (Integer)lrow.key;                        
-                    lname = (String)lrow.cells.get(0).getValue();
+                    key = (Integer)lrow.key;                        
+                    name = (String)lrow.cells.get(0).getValue();
                 }
-                trow.cells.get(i).setValue(new TableDataRow(lkey,lname));
+                trow.cells.get(i).setValue(new TableDataRow(key,name));
                 trow.cells.get(i-1).setValue(new TableDataRow(null,""));                                     
             }   
         } catch (Exception ex) {
@@ -1371,56 +1433,55 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
         
     }
     
-    private void shiftDataInRowToTheLeft(int row) {
+    private void shiftDataInRowToTheLeft(int r) {
         int finalIndex; 
-        TableDataRow trow;        
-        String rname;
-        Integer rkey;
-        TableDataRow rrow,blankrow;
+        TableDataRow row,rrow,blankrow;        
+        String name;
+        Integer key;
         
-        if(anaSelCol < 2 || row < 0) 
+        if(anaSelCol < 2 || r < 0) 
             return;
         
-        trow = analyteTable.getRow(row);        
-        finalIndex = displayManager.columnCount(row)+1;
+        row = analyteTable.getRow(r);        
+        finalIndex = displayManager.columnCount(r)+1;
         blankrow = new TableDataRow(null,"");
         
         if(finalIndex == 2)
             return;
         
         if(anaSelCol == 9) {
-            trow.cells.get(anaSelCol).setValue(blankrow);            
+            row.cells.get(anaSelCol).setValue(blankrow);            
         } else {                
             for (int i = anaSelCol; i < finalIndex; i++) {
                 if(i == finalIndex-1) {
-                    trow.cells.get(i).setValue(blankrow);
+                    row.cells.get(i).setValue(blankrow);
                 } else {
-                    rrow = (TableDataRow)trow.cells.get(i + 1).getValue();
+                    rrow = (TableDataRow)row.cells.get(i + 1).getValue();
                     if(rrow == null) {
-                        trow.cells.get(i).setValue(blankrow);
+                        row.cells.get(i).setValue(blankrow);
                         continue;
                     }
                     
-                    rkey = (Integer)rrow.key;
-                    rname = (String)rrow.cells.get(0).getValue();
+                    key = (Integer)rrow.key;
+                    name = (String)rrow.cells.get(0).getValue();
 
-                    if (rkey != null)
-                        trow.cells.get(i)
-                                  .setValue(new TableDataRow(rkey, rname));
+                    if (key != null)
+                        row.cells.get(i)
+                                  .setValue(new TableDataRow(key, name));
                     else
-                        trow.cells.get(i).setValue(blankrow);
+                        row.cells.get(i).setValue(blankrow);
                     
                 }
             }
         }        
     }
     
-    private void shiftDataBelowToTheLeft(int row) {
-        TableDataRow trow;
+    private void shiftDataBelowToTheLeft(int r) {
+        TableDataRow row;
         
-        for(int i = row+1; i < analyteTable.numRows(); i++) {
-            trow = analyteTable.getRow(i);
-            if(!(Boolean)trow.data)
+        for(int i = r+1; i < analyteTable.numRows(); i++) {
+            row = analyteTable.getRow(i);
+            if(!(Boolean)row.data)
                 shiftDataInRowToTheLeft(i);
             else 
                 break;
@@ -1462,7 +1523,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
     
     
     private void showErrorsForResultGroup(int group) {
-        GridFieldErrorException exc;
+        GridFieldErrorException error;
         TableDataRow row;
         int i,j;                
         
@@ -1477,160 +1538,13 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
         }
         
         for (i = 0; i < resultErrorList.size(); i++) {
-            exc = resultErrorList.get(i);            
-            if (exc.getRowIndex() == group) {
-                    resultTable.setCellException(exc.getColumnIndex(),
-                                              exc.getFieldName(),
-                                              exc);
+            error = resultErrorList.get(i);            
+            if (error.getRowIndex() == group) {
+                    resultTable.setCellException(error.getColumnIndex(),
+                                              error.getFieldName(),
+                                              error);
             }
         }
-    }
-    
-    private String validateAndSetNumericValue(String value,int row) {              
-        boolean convert;
-        Double doubleVal,darray[];
-        String token,finalValue,strList[];
-        int selTab;
-        GridFieldErrorException exc;        
-        
-        selTab = resultTabPanel.getTabBar().getSelectedTab();
-        darray = new Double[2];
-        //
-        // Get the string that was entered if the type
-        // chosen was "Numeric" and try to break it up at
-        // the "," if it follows the pattern number,number
-        //
-        if (!"".equals(value.trim())) {    
-            strList = value.split(",");
-            convert = false;
-            if (strList.length == 2) {
-                for (int iter = 0; iter < strList.length; iter++) {
-                    token = strList[iter];
-                    try {
-                        // 
-                        // Convert each number obtained
-                        // from the string and store its value
-                        // converted to double if its a valid
-                        // number, into an array
-                        //
-                        doubleVal = Double.valueOf(token);
-                        darray[iter] = doubleVal;
-                        convert = true;
-                    } catch (NumberFormatException ex) {
-                        convert = false;
-                    }
-                }
-            }
-            
-            if (convert) {
-                //
-                // If it's a valid string store the converted
-                // string back into the column otherwise add
-                // an error to the cell and store empty
-                // string into the cell
-                //  
-                if (darray[0].toString()
-                                .indexOf(".") == -1) {
-                    finalValue = darray[0].toString() + ".0"
-                    + ",";
-                } else {
-                    finalValue = darray[0].toString() + ",";
-                }
-                
-                if (darray[1].toString()
-                                .indexOf(".") == -1) {
-                    finalValue += darray[1].toString() + ".0";
-                } else {
-                    finalValue += darray[1].toString();
-                }
-                resultTable.setCell(row,2,finalValue);
-                return finalValue;                
-            } else {                
-                exc = addToResultErrorList(selTab,row,meta.getTestResult().getValue(),"illegalNumericFormatException");
-                resultTable.setCellException(row,2, exc);
-            }    
-        }  else {            
-            exc = addToResultErrorList(selTab,row,meta.getTestResult().getValue(),"fieldRequiredException"); 
-            resultTable.setCellException(row,2,exc);  
-        }
-        resultTable.setCell(row,2,value);
-        return value;
-    }
-    
-    private String validateAndSetTiterValue(String value,int row) {                
-        boolean valid;
-        int selTab;
-        String token,strList[];
-        GridFieldErrorException exc;
-        
-        selTab = resultTabPanel.getTabBar().getSelectedTab();
-                
-        //
-        // Get the string that was entered if the type
-        // chosen was "Numeric" and try to break it up at
-        // the "," if it follows the pattern number,number
-        //
-        if (!"".equals(value.trim())) {    
-            strList = value.split(":");
-            valid = false;
-            if (strList.length == 2) {
-                for (int iter = 0; iter < strList.length; iter++) {
-                    token = strList[iter];
-                    try {
-                        // 
-                        // Convert each number obtained
-                        // from the string and store its value
-                        // converted to double if its a valid
-                        // number, into an array
-                        //
-                        Integer.parseInt(token);
-                        valid = true;
-                    } catch (NumberFormatException ex) {
-                        valid = false;
-                    }
-                }
-            }
-            
-            if (!valid) {                                                            
-                exc = addToResultErrorList(selTab,row,meta.getTestResult().getValue(),"illegalTiterFormatException"); 
-                resultTable.setCellException(row,2, exc);
-            }
-        }  else {
-            exc = addToResultErrorList(selTab,row,meta.getTestResult().getValue(),"fieldRequiredException");
-            resultTable.setCellException(row,2,exc);              
-        }
-        resultTable.setCell(row,2,value); 
-        return value;
-    }
-    
-    private String validateAndSetDictValue(String value, int row,TestResultViewDO result) {
-        ArrayList<DictionaryDO> list;
-        int selTab;        
-        GridFieldErrorException exc;                 
-        
-        selTab = resultTabPanel.getTabBar().getSelectedTab();
-        
-        if(value.indexOf("*") > -1) {
-            showDictionaryPopUp(DataBaseUtil.trim(value));
-        } else {
-            try {
-                list = dictionaryService.callList("fetchByEntry", DataBaseUtil.trim(value));
-                if (list == null || list.size() == 0) {             
-                    exc = addToResultErrorList(selTab,row,meta.getTestResult().getValue(),"illegalDictEntryException"); 
-                    resultTable.setCellException(row, 2, exc);
-                } else if(list.size() > 1) {                
-                    resultTable.setCell(row, 2, "");                                                
-                    showDictionaryPopUp(DataBaseUtil.trim(value + "*"));                
-                } else {        
-                    return String.valueOf(list.get(0).getId());                
-                }
-            } catch (Exception ex) {
-                ex.printStackTrace();
-                //Window.alert(ex.getMessage());
-            }
-        }
-        
-        return null;
     }
     
     private int getNextTempId() {
@@ -1638,7 +1552,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
     }
     
     private void clearResultCellError(int group,int row, String field) {
-        GridFieldErrorException exc;
+        GridFieldErrorException error;
         int i;
         
         if (resultErrorList == null)
@@ -1646,54 +1560,54 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
         
                     
         for (i = 0; i < resultErrorList.size(); i++) {
-            exc = resultErrorList.get(i);            
-            if (exc.getRowIndex() == group && exc.getColumnIndex() == row && field.equals(exc.getFieldName())) {
-                resultErrorList.remove(exc);
+            error = resultErrorList.get(i);            
+            if (error.getRowIndex() == group && error.getColumnIndex() == row && field.equals(error.getFieldName())) {
+                resultErrorList.remove(error);
             }
         }
     }
     
-    private GridFieldErrorException addToResultErrorList(int group,int row,String field,String error) {
-        GridFieldErrorException exc;
+    private GridFieldErrorException addToResultErrorList(int group,int row,String field,String message) {
+        GridFieldErrorException error;
         
-        exc = new GridFieldErrorException(error,group, row,field,"resultTable");
+        error = new GridFieldErrorException(message,group, row,field,"resultTable");
         if(resultErrorList == null)
             resultErrorList = new ArrayList<GridFieldErrorException>();
-        resultErrorList.add(exc);
+        resultErrorList.add(error);
         
-        return exc;
+        return error;
         
     }   
     
     private void addAnalyte() {
-        int ar;
-        TableDataRow addrow;
+        int r;
+        TableDataRow row;
         
-        ar = analyteTable.getSelectedRow();
-        addrow = new TableDataRow(10);
-        addrow.data = new Boolean(false);
-        if(ar == -1 || ar == analyteTable.numRows()-1) {            
-            analyteTable.addRow(addrow);
+        r = analyteTable.getSelectedRow();
+        row = new TableDataRow(10);
+        row.data = new Boolean(false);
+        if(r == -1 || r == analyteTable.numRows()-1) {            
+            analyteTable.addRow(row);
             analyteTable.selectRow(analyteTable.numRows()-1);
             analyteTable.scrollToSelection();
             analyteTable.startEditing(analyteTable.numRows()-1, 0);
         } else {
-            analyteTable.addRow(ar+1,addrow);
-            analyteTable.selectRow(ar+1);
+            analyteTable.addRow(r+1,row);
+            analyteTable.selectRow(r+1);
             analyteTable.scrollToSelection();
-            analyteTable.startEditing(ar+1, 0);
+            analyteTable.startEditing(r+1, 0);
         }
     }
     
     private void removeAnalyte() {
-        int ar;
+        int r;
         TableDataRow row;
         
-        ar = analyteTable.getSelectedRow();
-        if(ar != -1) {
-            row = analyteTable.getRow(ar);
+        r = analyteTable.getSelectedRow();
+        if(r != -1) {
+            row = analyteTable.getRow(r);
             if(!(Boolean)row.data) {                        
-                analyteTable.deleteRow(ar);
+                analyteTable.deleteRow(r);
                 analyteTable.refresh();
             }
         }
@@ -1701,22 +1615,22 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
     }
     
     private void addColumn() {
-        int ar,index;
+        int r,index;
         
         if(!canAddRemoveColumn) {
             Window.alert(consts.get("cantAddColumn"));
             return;
         }
         
-        ar = analyteTable.getSelectedRow();
+        r = analyteTable.getSelectedRow();
         
-        if(anaSelCol != -1 && ar != -1) {
-            index = displayManager.getDataRowIndex(ar);
+        if(anaSelCol != -1 && r != -1) {
+            index = displayManager.getDataRowIndex(r);
             testAnalyteManager.addColumnAt(index, anaSelCol-1, null);
             displayManager.setDataGrid(testAnalyteManager.getAnalytes());                                      
             
-            shiftDataInRowToTheRight(ar);
-            shiftDataBelowToTheRight(ar);        
+            shiftDataInRowToTheRight(r);
+            shiftDataBelowToTheRight(r);        
 
             analyteTable.refresh();
             anaSelCol = -1;
@@ -1724,21 +1638,21 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
     }
     
     private void removeColumn() {
-        int ar,index;
+        int r,index;
         
         if(!canAddRemoveColumn) {
             Window.alert(consts.get("cantRemoveColumn"));
             return;
         }
         
-        ar = analyteTable.getSelectedRow();
-        if(anaSelCol != -1 && ar != -1) {                                                                                              
-            shiftDataInRowToTheLeft(ar);                   
-            shiftDataBelowToTheLeft(ar);        
+        r = analyteTable.getSelectedRow();
+        if(anaSelCol != -1 && r != -1) {                                                                                              
+            shiftDataInRowToTheLeft(r);                   
+            shiftDataBelowToTheLeft(r);        
 
             analyteTable.refresh();                    
             
-            index = displayManager.getDataRowIndex(ar);
+            index = displayManager.getDataRowIndex(r);
             testAnalyteManager.removeColumnAt(index, anaSelCol-1);
             displayManager.setDataGrid(testAnalyteManager.getAnalytes());
             
@@ -1747,26 +1661,26 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
     }
 
     private void addHeader() {
-        int ar,num;
+        int r,num;
         TableDataRow row;
         
-        ar = analyteTable.getSelectedRow();
+        r = analyteTable.getSelectedRow();
         num = analyteTable.numRows(); 
         
-        if(ar == -1 || ar == num-1) {
+        if(r == -1 || r == num-1) {
             analyteTable.addRow(createHeaderRow());
             analyteTable.scrollToSelection();
         } else {
-            row = analyteTable.getRow(ar);
+            row = analyteTable.getRow(r);
             if((Boolean)row.data) {    
                 headerAddedInTheMiddle = true;
-                analyteTable.addRow(ar,createHeaderRow());
+                analyteTable.addRow(r,createHeaderRow());
                 analyteTable.scrollToSelection();                                    
             } else { 
-                row = analyteTable.getRow(ar+1);
+                row = analyteTable.getRow(r+1);
                 if((Boolean)row.data) {
                     headerAddedInTheMiddle = true;
-                    analyteTable.addRow(ar+1,createHeaderRow());
+                    analyteTable.addRow(r+1,createHeaderRow());
                     analyteTable.scrollToSelection();                                        
                 } else {
                     Window.alert(consts.get("headerCantBeAddedInsideGroup"));
@@ -1776,27 +1690,27 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
     }
     
     private void removeHeader() {
-        int ar;
+        int r;
         TableDataRow row;
         
-        ar = analyteTable.getSelectedRow();                
+        r = analyteTable.getSelectedRow();                
         
-        if(ar != -1) {
-            row = analyteTable.getRow(ar);                    
+        if(r != -1) {
+            row = analyteTable.getRow(r);                    
             if((Boolean)row.data) {  
-                analyteTable.deleteRow(ar);
-                while(ar < analyteTable.numRows()) {                        
-                    row = analyteTable.getRow(ar);
+                analyteTable.deleteRow(r);
+                while(r < analyteTable.numRows()) {                        
+                    row = analyteTable.getRow(r);
                     if((Boolean)row.data) 
                         break;
                     
-                    analyteTable.deleteRow(ar);
+                    analyteTable.deleteRow(r);
                 }
             }
         }
     }    
     
-    private void showDictionaryPopUp(String entry) {
+    private void showDictionary(String entry) {
         ScreenWindow modal;                                
         
         if(dictEntryPicker == null) {
@@ -1846,7 +1760,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
         dictEntryPicker.setScreenState(State.DEFAULT);
         if (entry != null) {
             dictEntryPicker.clearFields();
-            dictEntryPicker.executeQuery(entry);
+            dictEntryPicker.executeQuery(entry+"*");
         }
     }
     

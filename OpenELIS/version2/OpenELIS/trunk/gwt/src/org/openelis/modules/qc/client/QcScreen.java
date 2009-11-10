@@ -666,7 +666,7 @@ public class QcScreen extends Screen {
         dictionaryButton = (AppButton)def.getWidget("dictionaryButton");
         addScreenHandler(dictionaryButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-//                showDictionary();
+                showDictionary(null);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -1023,7 +1023,7 @@ public class QcScreen extends Screen {
         dictLookup.setScreenState(State.DEFAULT);
         if (entry != null) {
             dictLookup.clearFields();
-            dictLookup.executeQuery(entry);
+            dictLookup.executeQuery(entry+"*");
         }
     }
 }

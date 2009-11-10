@@ -51,11 +51,10 @@ UIRF Software License are applicable instead of those above.
 			<!--left table goes here -->
 			 <buttonGroup height = "100%" key='atozButtons'>
                 <xsl:call-template name='aToZLeftPanelButtons' />
-              </buttonGroup>							
-		<!-- <HorizontalPanel width = "5px"/> -->
+              </buttonGroup>	
+              						
 		<VerticalPanel style="WhiteContentPanel">
-		 <VerticalPanel  spacing="0">
-		 
+		<HorizontalPanel>	 
          <TablePanel style = "Form"> 
          <row>
           <text style="Prompt"><xsl:value-of select="resource:getString($constants,'selectCategory')"/>:</text>
@@ -64,20 +63,32 @@ UIRF Software License are applicable instead of those above.
 		  </widget> 
 		 </row> 
 		<row>
-		  <text style="Prompt"><xsl:value-of select="resource:getString($constants,'enterSearch')"/>:</text>
-		  
+		  <text style="Prompt"><xsl:value-of select="resource:getString($constants,'enterSearch')"/>:</text>		  
 		   <textbox key="findTextBox" width="253" />		   	  
 		</row>
 	   </TablePanel>	
-		</VerticalPanel> 
+	   <VerticalPanel>
+		<VerticalPanel height = "28px"/>
+		 <widget halign="center">
+                               <appButton action="find" style="Button" key="findButton" >
+								<HorizontalPanel>
+            						<AbsolutePanel style="FindButtonImage"/>
+                						<text>
+                						  <xsl:value-of select='resource:getString($constants,"search")'/>
+                					    </text>
+								</HorizontalPanel>
+		   						</appButton>	
+		   					  </widget>	
+		 </VerticalPanel>	
+		</HorizontalPanel> 
 		<VerticalPanel spacing="0">
 		 <widget>
 							<table maxRows = "6" width = "auto" key="dictEntTable" multiSelect = "true" title="" showScroll="ALWAYS" style="atozTable">
 								<col key="entry" width="250" sort="false" header="{resource:getString($constants,'entry')}">
                                 	<label width="250"/>
                                 </col>
-								<col key="entry" width="110" sort="false" header="{resource:getString($constants,'category')}">
-                                	<label width="110"/>
+								<col key="category" width="176" sort="false" header="{resource:getString($constants,'category')}">
+                                	<label width="176"/>
                                 </col>
 							</table>
 							
@@ -88,7 +99,7 @@ UIRF Software License are applicable instead of those above.
 	     </VerticalPanel>		     
    </VerticalPanel>	   
   </HorizontalPanel>  
-  <VerticalPanel spacing="0" width="437px">								
+  <VerticalPanel spacing="0" width="503px">								
 		            <AbsolutePanel spacing="0" style="BottomButtonPanelContainer" align="center">
 		             <HorizontalPanel>
                                 <xsl:call-template name="okButton">
@@ -100,19 +111,7 @@ UIRF Software License are applicable instead of those above.
               <xsl:with-param name="language">
                 <xsl:value-of select="language" />
               </xsl:with-param>
-            </xsl:call-template>
-                              <widget halign="center">
-                               <appButton action="find" style="ButtonPanelButton" key="findButton" >
-								<HorizontalPanel>
-            						<AbsolutePanel style="FindButtonImage"/>
-            						 <widget>
-                						<text>
-                						  <xsl:value-of select='resource:getString($constants,"search")'/>
-                					    </text>
-                					 </widget>
-								</HorizontalPanel>
-		   						</appButton>	
-		   					  </widget>
+            </xsl:call-template>                              
                      </HorizontalPanel>
                     </AbsolutePanel>		            
     </VerticalPanel>

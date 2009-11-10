@@ -70,37 +70,37 @@ public class TestSectionManager implements RPC {
         return sections.get(i);
     }
     
-    public void setSectionAt(TestSectionViewDO section, int i) {
+    public void setSectionAt(TestSectionViewDO data, int i) {
         if (sections == null)
             sections = new ArrayList<TestSectionViewDO>();
-        sections.set(i, section);
+        sections.set(i, data);
     }
 
-    public void addSection(TestSectionViewDO section) {
+    public void addSection(TestSectionViewDO data) {
         if (sections == null)
             sections = new ArrayList<TestSectionViewDO>();
-        sections.add(section);
+        sections.add(data);
     }
     
-    public void addSectionAt(TestSectionViewDO section, int i) {
+    public void addSectionAt(TestSectionViewDO data, int i) {
         if (sections == null)
             sections = new ArrayList<TestSectionViewDO>();
 
-        sections.add(i, section);
+        sections.add(i, data);
     }
     
     public void removeSectionAt(int i) {
-        TestSectionViewDO tmpDO;
+        TestSectionViewDO data;
         if (sections == null || i >= sections.size())
             return;
 
-        tmpDO = sections.remove(i);
+        data = sections.remove(i);
 
-        if (tmpDO.getId() != null) {
+        if (data.getId() != null) {
             if (deleted == null)
                 deleted = new ArrayList<TestSectionViewDO>();
 
-            deleted.add(tmpDO);
+            deleted.add(data);
         }
     }
     
@@ -118,16 +118,19 @@ public class TestSectionManager implements RPC {
     }
     
     public TestSectionViewDO getDefaultSection() {
-        Integer defaultId = DictionaryCache.getIdFromSystemName("test_section_default");
-        TestSectionViewDO defaultDO = null;
+        Integer defaultId;
+        TestSectionViewDO data;
+        
+        defaultId = DictionaryCache.getIdFromSystemName("test_section_default");
+        data = null;
         for (int i = 0; i < sections.size(); i++ ) {
             if (defaultId.equals(sections.get(i).getFlagId())) {
-                defaultDO = sections.get(i);
+                data = sections.get(i);
                 break;
             }
         }
 
-        return defaultDO;
+        return data;
     }
 
     public ArrayList<TestSectionViewDO> getSections() {

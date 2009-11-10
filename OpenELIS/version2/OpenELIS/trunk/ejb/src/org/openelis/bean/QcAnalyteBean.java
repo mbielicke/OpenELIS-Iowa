@@ -67,18 +67,6 @@ public class QcAnalyteBean implements QcAnalyteLocal {
     private static int                 typeDict;
     private static final QcAnalyteMeta meta = new QcAnalyteMeta();
     private static final Logger        log  = Logger.getLogger(QcAnalyteBean.class.getName());
-
-    /*public QcAnalyteBean() {
-        DictionaryDO data;
-
-        try {
-            data = dictionary.fetchBySystemName("qc_analyte_dictionary");
-            typeDict = data.getId();
-        } catch (Throwable e) {
-            typeDict = 0;
-            log.log(Level.SEVERE, "Failed to lookup dictionary entry by system name='qc_analyte_dictionary'", e);
-        }
-    }*/
     
     @PostConstruct
     public void init() {
