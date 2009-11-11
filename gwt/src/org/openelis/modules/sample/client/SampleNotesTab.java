@@ -55,10 +55,10 @@ public class SampleNotesTab extends NotesTab {
     
     protected NoteViewDO internalNote;
     
-    public SampleNotesTab(ScreenDefInt def, String externalNotesPanelKey, String externalEditButtonKey,
+    public SampleNotesTab(ScreenDefInt def, ScreenWindow window, String externalNotesPanelKey, String externalEditButtonKey,
                                String internalNotesPanelKey, String internalEditButtonKey) {
         
-        super(def, externalNotesPanelKey, externalEditButtonKey, true);
+        super(def, window, externalNotesPanelKey, externalEditButtonKey, true);
         
         this.internalNotesPanelKey = internalNotesPanelKey;
         this.internalEditButtonKey = internalEditButtonKey;
