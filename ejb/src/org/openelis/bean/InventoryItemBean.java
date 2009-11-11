@@ -222,9 +222,9 @@ public class InventoryItemBean implements InventoryItemRemote{
          inventoryItem.setAverageCost(inventoryItemDO.getAveCost());
          inventoryItem.setAverageDailyUse(inventoryItemDO.getAveDailyUse());
          inventoryItem.setAverageLeadTime(inventoryItemDO.getAveLeadTime());
-         inventoryItem.setCategoryId(inventoryItemDO.getCategory());
+//         inventoryItem.setCategoryId(inventoryItemDO.getCategory());
          inventoryItem.setDescription(inventoryItemDO.getDescription());
-         inventoryItem.setDispensedUnitsId(inventoryItemDO.getDispensedUnits());
+//         inventoryItem.setDispensedUnitsId(inventoryItemDO.getDispensedUnits());
          inventoryItem.setIsActive(inventoryItemDO.getIsActive());
          inventoryItem.setIsBulk(inventoryItemDO.getIsBulk());
          inventoryItem.setIsLabor(inventoryItemDO.getIsLabor());
@@ -239,7 +239,7 @@ public class InventoryItemBean implements InventoryItemRemote{
          inventoryItem.setQuantityMaxLevel(inventoryItemDO.getQuantityMaxLevel());
          inventoryItem.setQuantityMinLevel(inventoryItemDO.getQuantityMinLevel());
          inventoryItem.setQuantityToReorder(inventoryItemDO.getQuantityToReorder());
-         inventoryItem.setStoreId(inventoryItemDO.getStore());
+//         inventoryItem.setStoreId(inventoryItemDO.getStore());
          inventoryItem.setParentInventoryItemId(inventoryItemDO.getParentInventoryItemId());
          inventoryItem.setParentRatio(inventoryItemDO.getParentRatio());
          
@@ -422,14 +422,14 @@ public class InventoryItemBean implements InventoryItemRemote{
         }
         
         //store required
-        if(inventoryItemDO.getStore() == null){
-            list.add(new FieldErrorException("fieldRequiredException",invItemMap.getStoreId()));
-        }
+//       if(inventoryItemDO.getStore() == null){
+  //          list.add(new FieldErrorException("fieldRequiredException",invItemMap.getStoreId()));
+    //    }
         
         //dispensed units required
-        if(inventoryItemDO.getDispensedUnits() == null){
-            list.add(new FieldErrorException("fieldRequiredException",invItemMap.getDispensedUnitsId()));
-        }
+//        if(inventoryItemDO.getDispensedUnits() == null){
+//            list.add(new FieldErrorException("fieldRequiredException",invItemMap.getDispensedUnitsId()));
+//        }
         
         //item has to have unique name,store duplicates
         Query query = null;
@@ -437,19 +437,19 @@ public class InventoryItemBean implements InventoryItemRemote{
         if(inventoryItemDO.getId() == null){
             query = manager.createNamedQuery("InventoryItem.AddNameStoreCompare");
             query.setParameter("name", inventoryItemDO.getName());
-            query.setParameter("store", inventoryItemDO.getStore());
+//            query.setParameter("store", inventoryItemDO.getStore());
         }else{
             query = manager.createNamedQuery("InventoryItem.UpdateNameStoreCompare");
             query.setParameter("name", inventoryItemDO.getName());
-            query.setParameter("store", inventoryItemDO.getStore());
+//            query.setParameter("store", inventoryItemDO.getStore());
             query.setParameter("id",inventoryItemDO.getId());
         }
         
         if(query.getResultList().size() > 0)
             list.add(new FieldErrorException("inventoryItemNameUniqueException",invItemMap.getName()));
         
-        for(int i=0; i<components.size();i++)            
-            validateInventoryComponent((InventoryComponentDO)components.get(i), inventoryItemDO.getStore(), i, list);
+        //for(int i=0; i<components.size();i++)            
+          //  validateInventoryComponent((InventoryComponentDO)components.get(i), inventoryItemDO.getStore(), i, list);
         
         if(list.size() > 0)
             throw list;
