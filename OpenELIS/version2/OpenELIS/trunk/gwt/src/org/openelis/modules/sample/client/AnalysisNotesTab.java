@@ -60,14 +60,14 @@ public class AnalysisNotesTab extends NotesTab {
     protected EditNoteScreen internalEditNote;
     protected NoteViewDO internalNote;
     
-    public AnalysisNotesTab(ScreenDefInt def, String notesPanelKey, String editButtonKey, boolean isExternal) {
-        super(def, notesPanelKey, editButtonKey, isExternal);
+    public AnalysisNotesTab(ScreenDefInt def, ScreenWindow window, String notesPanelKey, String editButtonKey, boolean isExternal) {
+        super(def, window, notesPanelKey, editButtonKey, isExternal);
     }
     
-    public AnalysisNotesTab(ScreenDefInt def, String externalNotesPanelKey, String externalEditButtonKey,
+    public AnalysisNotesTab(ScreenDefInt def, ScreenWindow window, String externalNotesPanelKey, String externalEditButtonKey,
                           String internalNotesPanelKey, String internalEditButtonKey) {
    
-       super(def, externalNotesPanelKey, externalEditButtonKey, true);
+       super(def, window, externalNotesPanelKey, externalEditButtonKey, true);
        
        this.internalNotesPanelKey = internalNotesPanelKey;
        this.internalEditButtonKey = internalEditButtonKey;
