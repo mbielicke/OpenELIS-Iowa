@@ -24,12 +24,12 @@ public class QcMeta implements Meta {
                                   PREPARED_BY_ID = "preparedById",
                                   USABLE_DATE = "usableDate",
                                   EXPIRE_DATE = "expireDate",
-                                  IS_SINGLE_USE = "isSingleUse";
+                                  IS_ACTIVE = "isActive";
 
     private static final String[] columnNames = {ID,
                     NAME, TYPE_ID, INVENTORY_ITEM_ID, SOURCE, LOT_NUMBER,
                     PREPARED_DATE, PREPARED_VOLUME, PREPARED_UNIT_ID,
-                    PREPARED_BY_ID, USABLE_DATE, EXPIRE_DATE, IS_SINGLE_USE};
+                    PREPARED_BY_ID, USABLE_DATE, EXPIRE_DATE, IS_ACTIVE};
 
     private HashSet<String>       columnHashList;
 
@@ -97,8 +97,8 @@ public class QcMeta implements Meta {
         return path + EXPIRE_DATE;
     }
 
-    public String getIsSingleUse() {
-        return path + IS_SINGLE_USE;
+    public String getIsActive() {
+        return path + IS_ACTIVE;
     }
 
     public String[] getColumnList() {

@@ -38,7 +38,7 @@ public class QcDO extends DataObject {
     private static final long serialVersionUID = 1L;
 
     protected Integer         id, typeId, inventoryItemId, preparedUnitId, preparedById;
-    protected String          name, source, lotNumber, preparedByName, isSingleUse;
+    protected String          name, source, lotNumber, preparedByName, isAtive;
     protected Datetime        preparedDate, usableDate, expireDate;
     protected Double          preparedVolume;
 
@@ -47,7 +47,7 @@ public class QcDO extends DataObject {
 
     public QcDO(Integer id, String name, Integer typeId, Integer inventoryItemId, String source,
                 String lotNumber, Date preparedDate, Double preparedVolume, Integer preparedUnitId,
-                Integer preparedById, Date usableDate, Date expireDate, String isSingleUse) {
+                Integer preparedById, Date usableDate, Date expireDate, String isAtive) {
         setId(id);
         setName(name);
         setTypeId(typeId);
@@ -60,7 +60,7 @@ public class QcDO extends DataObject {
         setPreparedById(preparedById);
         setUsableDate(DataBaseUtil.toYM(usableDate));
         setExpireDate(DataBaseUtil.toYM(expireDate));
-        setIsSingleUse(isSingleUse);
+        setIsActive(isAtive);
         _changed = false;
     }
 
@@ -145,12 +145,12 @@ public class QcDO extends DataObject {
         _changed = true;
     }
 
-    public String getIsSingleUse() {
-        return isSingleUse;
+    public String getIsActive() {
+        return isAtive;
     }
 
-    public void setIsSingleUse(String isSingleUse) {
-        this.isSingleUse = DataBaseUtil.trim(isSingleUse);
+    public void setIsActive(String isAtive) {
+        this.isAtive = DataBaseUtil.trim(isAtive);
         _changed = true;
     }
 
