@@ -194,14 +194,14 @@ UIRF Software License are applicable instead of those above.
                     <xsl:value-of select="resource:getString($constants,'lotNumber')" />:
                   </text>
                   <widget colspan="6">
-                    <textbox key="{meta:getLotNumber($qc)}" width="215" max="30" tab="{meta:getIsSingleUse($qc)},{meta:getSource($qc)}" />
+                    <textbox key="{meta:getLotNumber($qc)}" width="215" max="30" tab="{meta:getIsActive($qc)},{meta:getSource($qc)}" />
                   </widget>
                 </row>
                 <row>
                   <text style="Prompt">
-                    <xsl:value-of select='resource:getString($constants,"singleUse")' />:
+                    <xsl:value-of select='resource:getString($constants,"active")' />:
                   </text>
-                  <check key="{meta:getIsSingleUse($qc)}" tab="{meta:getPreparedDate($qc)},{meta:getLotNumber($qc)}" />
+                  <check key="{meta:getIsActive($qc)}" tab="{meta:getPreparedDate($qc)},{meta:getLotNumber($qc)}" />
                 </row>
               </TablePanel>
               <TablePanel style="Form">
@@ -209,7 +209,7 @@ UIRF Software License are applicable instead of those above.
                   <text style="Prompt">
                     <xsl:value-of select='resource:getString($constants,"preparedDate")' />:
                   </text>
-                  <calendar key="{meta:getPreparedDate($qc)}" begin="0" end="4" width="140" pattern="{resource:getString($constants,'dateTimePattern')}" tab="{meta:getPreparedVolume($qc)},{meta:getIsSingleUse($qc)}" />
+                  <calendar key="{meta:getPreparedDate($qc)}" begin="0" end="4" width="140" pattern="{resource:getString($constants,'dateTimePattern')}" tab="{meta:getPreparedVolume($qc)},{meta:getIsActive($qc)}" />
                 </row>
                 <row>
                   <text style="Prompt">
@@ -264,7 +264,7 @@ UIRF Software License are applicable instead of those above.
                   <check />
                 </col>
                 <col key="{qcaMeta:getValue($qca)}" width="400" align="left" sort="false" header="{resource:getString($constants,'expectedValue')}">
-                  <textbox max="80" field="String" required="true" />
+                  <textbox max="80" field="String" />
                 </col>
               </table>
               <widget style="TableButtonFooter">

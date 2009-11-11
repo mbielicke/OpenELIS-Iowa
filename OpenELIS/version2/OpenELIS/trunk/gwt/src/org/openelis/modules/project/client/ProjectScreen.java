@@ -488,8 +488,6 @@ public class ProjectScreen extends Screen {
             }
         });
         
-        ((Dropdown)parameterTable.getColumnWidget(meta.getProjectParameter().getOperationId())).setSearchMode(Dropdown.Search.LINEAR);
-        
         addParameterButton = (AppButton)def.getWidget("addParameterButton");
         addScreenHandler(addParameterButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {

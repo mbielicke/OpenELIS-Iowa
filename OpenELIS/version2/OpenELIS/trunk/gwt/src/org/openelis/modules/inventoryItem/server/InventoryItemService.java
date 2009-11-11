@@ -76,9 +76,8 @@ import org.openelis.util.XMLUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-public class InventoryItemService implements AppScreenFormServiceInt<InventoryItemForm,Query<TableDataRow<Integer>>>, 
-									     AutoCompleteServiceInt {
-    
+public class InventoryItemService {
+/*    
     private static final int leftTableRowsPerPage = 22;
     
     private static final InventoryItemMetaMap InvItemMeta = new InventoryItemMetaMap();
@@ -113,6 +112,7 @@ public class InventoryItemService implements AppScreenFormServiceInt<InventoryIt
             fields.remove("componentsTable");
             fields.remove("locQuantitiesTable");
             */
+            /*
             try{    
                 inventoryItemNames = remote.query(query.fields,query.page*leftTableRowsPerPage,leftTableRowsPerPage);
             }catch(LastPageException e) {
@@ -843,4 +843,5 @@ public class InventoryItemService implements AppScreenFormServiceInt<InventoryIt
         
         form.status = Form.Status.invalid;
     }
+    */
 }

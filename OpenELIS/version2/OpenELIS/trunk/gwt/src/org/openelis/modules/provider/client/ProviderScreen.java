@@ -97,7 +97,6 @@ public class ProviderScreen extends Screen {
         security = OpenELIS.security.getModule("provider");
         if (security == null)
             throw new SecurityException("screenPermException", "Provider Screen");
-        initialize();
 
         DeferredCommand.addCommand(new Command() {
             public void execute() {
@@ -108,13 +107,11 @@ public class ProviderScreen extends Screen {
 
     private void postConstructor() {
         tab = Tabs.ADDRESSES;
-        addressesTab.setWindow(window);
-
         manager = ProviderManager.getInstance();
 
+        initialize();
         setState(State.DEFAULT);
         initializeDropdowns();
-
         DataChangeEvent.fire(this);
     }
 
@@ -337,7 +334,7 @@ public class ProviderScreen extends Screen {
             }
         });
 
-        notesTab = new NotesTab(def, "notesPanel", "standardNoteButton", false);
+        notesTab = new NotesTab(def, window, "notesPanel", "standardNoteButton", false);
         addScreenHandler(notesTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                 notesTab.setManager(manager);
