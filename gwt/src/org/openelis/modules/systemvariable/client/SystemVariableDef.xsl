@@ -137,7 +137,7 @@ UIRF Software License are applicable instead of those above.
 
 <!--end button panel-->
 
-          <VerticalPanel width="620" height="210" padding="0" spacing="0" style="WhiteContentPanel">
+          <VerticalPanel width="620" height="215" padding="0" spacing="0" style="WhiteContentPanel">
             <TablePanel style="Form">
               <row>
                 <text style="Prompt">
