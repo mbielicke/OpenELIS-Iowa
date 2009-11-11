@@ -174,9 +174,6 @@ public class QcAnalyteBean implements QcAnalyteLocal {
         if (DataBaseUtil.isEmpty(data.getTypeId()))
             list.add(new FieldErrorException("fieldRequiredException",
                                              meta.getTypeId()));
-        if (DataBaseUtil.isEmpty(data.getValue()))
-            list.add(new FieldErrorException("fieldRequiredException",
-                                             meta.getValue()));
         if (list.size() > 0)
             throw list;
     }

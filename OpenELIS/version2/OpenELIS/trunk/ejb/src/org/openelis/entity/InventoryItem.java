@@ -50,7 +50,7 @@ import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-
+/*
 @NamedQueries({ @NamedQuery(name = "InventoryItem.InventoryItem", query = "select new org.openelis.domain.InventoryItemDO(i.id,i.name,i.description,i.categoryId,i.storeId,i.quantityMinLevel, " +
                                " i.quantityMaxLevel,i.quantityToReorder, i.dispensedUnitsId,i.isReorderAuto,i.isLotMaintained,i.isSerialMaintained,i.isActive, " +
                             " i.isBulk,i.isNotForSale,i.isSubAssembly,i.isLabor,i.isNoInventory,i.productUri,i.averageLeadTime, i.averageCost, i.averageDailyUse, i.parentInventoryItemId, "+
@@ -117,7 +117,7 @@ import org.w3c.dom.Element;
      @NamedQuery(name = "InventoryItem.AddNameStoreCompare", query = "select i.id from InventoryItem i where i.name = :name AND i.storeId = :store"),
      @NamedQuery(name = "InventoryItem.ValidateComponentWithItemStore", query = "select i.id from InventoryItem i where " +
                             " i.storeId = :store AND i.id = :id")})
-
+*/
      
 @Entity
 @Table(name="inventory_item")

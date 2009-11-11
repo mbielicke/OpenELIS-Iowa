@@ -58,23 +58,23 @@ import org.openelis.utils.Auditable;
     @NamedQuery( name = "Qc.FetchById",
                 query = "select new org.openelis.domain.QcViewDO(q.id,q.name,q.typeId,q.inventoryItemId," +
                 		"q.source,q.lotNumber,q.preparedDate,q.preparedVolume,q.preparedUnitId," +
-                		"q.preparedById,q.usableDate,q.expireDate,q.isSingleUse,i.name,'')"
+                		"q.preparedById,q.usableDate,q.expireDate,q.isActive,i.name,'')"
                 	  + " from Qc q left join q.inventoryItem i where q.id = :id"),
     @NamedQuery( name = "Qc.FetchByLotNumber",
                 query = "select new org.openelis.domain.QcDO(q.id,q.name,q.typeId,q.inventoryItemId," +
                         "q.source,q.lotNumber,q.preparedDate,q.preparedVolume,q.preparedUnitId," +
-                        "q.preparedById,q.usableDate,q.expireDate,q.isSingleUse)"
+                        "q.preparedById,q.usableDate,q.expireDate,q.isActive)"
                       + " from Qc q where q.lotNumber = :lotNumber"),
     @NamedQuery( name = "Qc.FetchByName",
                 query = "select new org.openelis.domain.QcDO(q.id,q.name,q.typeId,q.inventoryItemId," +
                         "q.source,q.lotNumber,q.preparedDate,q.preparedVolume,q.preparedUnitId," +
-                        "q.preparedById,q.usableDate,q.expireDate,q.isSingleUse)"
+                        "q.preparedById,q.usableDate,q.expireDate,q.isActive)"
                       + " from Qc q where q.name like :name"),
-    @NamedQuery( name = "Qc.FetchNonExpiredByName",
+    @NamedQuery( name = "Qc.FetchActiveByName",
                 query = "select new org.openelis.domain.QcDO(q.id,q.name,q.typeId,q.inventoryItemId," +
                         "q.source,q.lotNumber,q.preparedDate,q.preparedVolume,q.preparedUnitId," +
-                        "q.preparedById,q.usableDate,q.expireDate,q.isSingleUse)"
-                      + " from Qc q where q.name like :name and q.expireDate >= CURRENT_TIMESTAMP")})
+                        "q.preparedById,q.usableDate,q.expireDate,q.isActive)"
+                      + " from Qc q where q.name like :name and q.isActive='Y'")})
 
 @Entity
 @Table(name = "qc")
@@ -119,8 +119,8 @@ public class Qc implements Auditable, Cloneable {
     @Column(name = "expire_date")
     private Date                  expireDate;
 
-    @Column(name = "is_single_use")
-    private String                isSingleUse;
+    @Column(name = "is_active")
+    private String                isActive;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "inventory_item_id", insertable = false, updatable = false)
@@ -241,13 +241,13 @@ public class Qc implements Auditable, Cloneable {
             this.expireDate = DataBaseUtil.toDate(expireDate);
     }
 
-    public String getIsSingleUse() {
-        return isSingleUse;
+    public String getIsActive() {
+        return isActive;
     }
 
-    public void setIsSingleUse(String isSingleUse) {
-        if (DataBaseUtil.isDifferent(isSingleUse, this.isSingleUse))
-            this.isSingleUse = isSingleUse;
+    public void setIsActive(String isActive) {
+        if (DataBaseUtil.isDifferent(isActive, this.isActive))
+            this.isActive = isActive;
     }
 
     public Collection<QcAnalyte> getQcAnalyte() {
@@ -283,7 +283,7 @@ public class Qc implements Auditable, Cloneable {
             AuditUtil.getChangeXML(preparedById, original.preparedById, doc, "prepared_by_id");
             AuditUtil.getChangeXML(usableDate, original.usableDate, doc, "usable_date");
             AuditUtil.getChangeXML(expireDate, original.expireDate, doc, "expire_date");
-            AuditUtil.getChangeXML(isSingleUse, original.isSingleUse, doc, "is_single_use");
+            AuditUtil.getChangeXML(isActive, original.isActive, doc, "is_active");
 
             if (root.hasChildNodes())
                 return XMLUtil.toString(doc);

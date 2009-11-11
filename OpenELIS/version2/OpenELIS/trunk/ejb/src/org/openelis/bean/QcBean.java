@@ -119,10 +119,10 @@ public class QcBean implements QcRemote, QcLocal {
     }
 
     @SuppressWarnings("unchecked")
-    public ArrayList<QcDO> fetchNonExpiredByName(String name, int max) {
+    public ArrayList<QcDO> fetchActiveByName(String name, int max) {
         Query query;
         
-        query = manager.createNamedQuery("Qc.FetchNonExpiredByName");
+        query = manager.createNamedQuery("Qc.FetchActiveByName");
         query.setParameter("name", name);
         query.setMaxResults(max);
 
@@ -175,7 +175,7 @@ public class QcBean implements QcRemote, QcLocal {
         entity.setPreparedById(data.getPreparedById());
         entity.setUsableDate(data.getUsableDate());  
         entity.setExpireDate(data.getExpireDate());
-        entity.setIsSingleUse(data.getIsSingleUse());
+        entity.setIsActive(data.getIsActive());
 
         manager.persist(entity);
         data.setId(entity.getId());
@@ -203,7 +203,7 @@ public class QcBean implements QcRemote, QcLocal {
         entity.setPreparedById(data.getPreparedById());
         entity.setUsableDate(data.getUsableDate());  
         entity.setExpireDate(data.getExpireDate());
-        entity.setIsSingleUse(data.getIsSingleUse());
+        entity.setIsActive(data.getIsActive());
 
         return data;
     }
@@ -225,9 +225,6 @@ public class QcBean implements QcRemote, QcLocal {
         if (DataBaseUtil.isEmpty(data.getPreparedDate()))
             list.add(new FieldErrorException("fieldRequiredException", meta.getPreparedDate()));
         
-        if(!DataBaseUtil.isEmpty(prepVolume) && prepVolume <= 0.0) 
-            list.add(new FieldErrorException("invalidPrepVolumeException", meta.getPreparedVolume()));
-
         if (DataBaseUtil.isEmpty(data.getUsableDate()))
             list.add(new FieldErrorException("fieldRequiredException", meta.getUsableDate()));
 
@@ -235,10 +232,10 @@ public class QcBean implements QcRemote, QcLocal {
             list.add(new FieldErrorException("fieldRequiredException", meta.getExpireDate()));
 
         if (DataBaseUtil.isAfter(data.getPreparedDate(), data.getUsableDate()))
-            list.add(new FieldErrorException("usbDateBeforePrepDateException",null));
+            list.add(new FieldErrorException("usableBeforePrepException",null));
 
         if (DataBaseUtil.isAfter(data.getUsableDate(), data.getExpireDate()))
-            list.add(new FieldErrorException("expDateBeforeUsbDateException",null));       
+            list.add(new FieldErrorException("expireBeforeUsableException",null));       
 
         //
         // check for duplicate lot #
