@@ -37,7 +37,7 @@ import org.openelis.gwt.common.data.QueryData;
 public interface QcRemote {
     public ArrayList<QcDO> fetchByName(String name, int max) throws Exception;
 
-    public ArrayList<QcDO> fetchNonExpiredByName(String name, int max) throws Exception;
+    public ArrayList<QcDO> fetchActiveByName(String name, int max) throws Exception;
 
     public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception;
 }

@@ -25,79 +25,40 @@
 */
 package org.openelis.domain;
 
-import org.openelis.gwt.common.RPC;
 import org.openelis.utilcommon.DataBaseUtil;
 
-public class InventoryItemDO implements RPC {
+/**
+ * Class represents the fields in database table inventory_item.  
+ */
+public class InventoryItemDO extends DataObject {
 
     private static final long serialVersionUID = 1L;
 
-    protected Integer         id;
-    protected String          name;
-    protected String          description;
-    protected Integer         category;
-    protected Integer         store;
-    protected Integer         quantityMinLevel;
-    protected Integer         quantityMaxLevel;
-    protected Integer         quantityToReorder;
-    protected Integer         dispensedUnits;
-    protected String          isReorderAuto;
-    protected String          isLotMaintained;
-    protected String          isSerialMaintained;
-    protected String          isActive;
-    protected String          isBulk;
-    protected String          isNotForSale;
-    protected String          isSubAssembly;
-    protected String          isLabor;
-    protected String          isNoInventory;
-    protected String          productUri;
-    protected Integer         aveLeadTime;
-    protected double          aveCost;
-    protected Integer         aveDailyUse;
-    protected String          parentInventoryItem;
-    protected Integer         parentInventoryItemId;
-    protected Integer         parentRatio;
-    protected String          manufacturingText;
+    protected Integer         id, categoryId, storeId, quantityMinLevel, quantityMaxLevel,
+                              quantityToReorder, dispensedUnitsId, aveLeadTime,
+                              aveDailyUse, parentInventoryItemId, parentRatio;
+    protected String          name, description, isReorderAuto, isLotMaintained,
+                              isSerialMaintained, isActive, isBulk, isNotForSale,
+                              isSubAssembly, isLabor, isNoInventory, productUri;
+    protected Double          aveCost;
 
-    public InventoryItemDO() {
-
-    }
-
-    public InventoryItemDO(Integer id,
-                           String name,
-                           String description,
-                           Integer category,
-                           Integer store,
-                           Integer quantityMinLevel,
-                           Integer quantityMaxLevel,
-                           Integer quantityToReorder,
-                           Integer dispensedUnits,
-                           String isReorderAuto,
-                           String isLotMaintained,
-                           String isSerialMaintained,
-                           String isActive,
-                           String isBulk,
-                           String isNotForSale,
-                           String isSubAssembly,
-                           String isLabor,
-                           String isNoInventory,
-                           String productUri,
-                           Integer aveLeadTime,
-                           double aveCost,
-                           Integer aveDailyUse,
-                           Integer parentInventoryItemId,
-                           String parentInventoryItem,
-                           Integer parentRatio) {
-
+    public InventoryItemDO(Integer id, String name, String description, Integer categoryId,
+                           Integer storeId, Integer quantityMinLevel, Integer quantityMaxLevel,
+                           Integer quantityToReorder, Integer dispensedUnitsId,
+                           String isReorderAuto, String isLotMaintained, String isSerialMaintained,
+                           String isActive, String isBulk, String isNotForSale,
+                           String isSubAssembly, String isLabor, String isNoInventory,
+                           String productUri, Integer aveLeadTime, Double aveCost,
+                           Integer aveDailyUse, Integer parentInventoryItemId, Integer parentRatio) {
         setId(id);
         setName(name);
         setDescription(description);
-        setCategory(category);
-        setStore(store);
+        setCategoryId(categoryId);
+        setStoreId(storeId);
         setQuantityMinLevel(quantityMinLevel);
         setQuantityMaxLevel(quantityMaxLevel);
         setQuantityToReorder(quantityToReorder);
-        setDispensedUnits(dispensedUnits);
+        setDispensedUnitsId(dispensedUnitsId);
         setIsReorderAuto(isReorderAuto);
         setIsLotMaintained(isLotMaintained);
         setIsSerialMaintained(isSerialMaintained);
@@ -112,56 +73,8 @@ public class InventoryItemDO implements RPC {
         setAveCost(aveCost);
         setAveDailyUse(aveDailyUse);
         setParentInventoryItemId(parentInventoryItemId);
-        setParentInventoryItem(parentInventoryItem);
         setParentRatio(parentRatio);
-    }
-
-    public double getAveCost() {
-        return aveCost;
-    }
-
-    public void setAveCost(double aveCost) {
-        this.aveCost = aveCost;
-    }
-
-    public Integer getAveDailyUse() {
-        return aveDailyUse;
-    }
-
-    public void setAveDailyUse(Integer aveDailyUse) {
-        this.aveDailyUse = aveDailyUse;
-    }
-
-    public Integer getAveLeadTime() {
-        return aveLeadTime;
-    }
-
-    public void setAveLeadTime(Integer aveLeadTime) {
-        this.aveLeadTime = aveLeadTime;
-    }
-
-    public Integer getCategory() {
-        return category;
-    }
-
-    public void setCategory(Integer category) {
-        this.category = category;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = DataBaseUtil.trim(description);
-    }
-
-    public Integer getDispensedUnits() {
-        return dispensedUnits;
-    }
-
-    public void setDispensedUnits(Integer dispensedUnits) {
-        this.dispensedUnits = dispensedUnits;
+        _changed = false;
     }
 
     public Integer getId() {
@@ -170,78 +83,7 @@ public class InventoryItemDO implements RPC {
 
     public void setId(Integer id) {
         this.id = id;
-    }
-
-    public String getIsActive() {
-        return isActive;
-    }
-
-    public void setIsActive(String isActive) {
-        this.isActive = DataBaseUtil.trim(isActive);
-    }
-
-    public String getIsBulk() {
-        return isBulk;
-    }
-
-    public void setIsBulk(String isBulk) {
-        this.isBulk = DataBaseUtil.trim(isBulk);
-    }
-
-    public String getIsLabor() {
-        return isLabor;
-    }
-
-    public void setIsLabor(String isLabor) {
-        this.isLabor = DataBaseUtil.trim(isLabor);
-    }
-
-    public String getIsLotMaintained() {
-        return isLotMaintained;
-    }
-
-    public void setIsLotMaintained(String isLotMaintained) {
-        this.isLotMaintained = DataBaseUtil.trim(isLotMaintained);
-    }
-
-    public String getIsNoInventory() {
-        return isNoInventory;
-    }
-
-    public void setIsNoInventory(String isNoInventory) {
-        this.isNoInventory = DataBaseUtil.trim(isNoInventory);
-    }
-
-    public String getIsNotForSale() {
-        return isNotForSale;
-    }
-
-    public void setIsNotForSale(String isNotForSale) {
-        this.isNotForSale = DataBaseUtil.trim(isNotForSale);
-    }
-
-    public String getIsReorderAuto() {
-        return isReorderAuto;
-    }
-
-    public void setIsReorderAuto(String isReorderAuto) {
-        this.isReorderAuto = DataBaseUtil.trim(isReorderAuto);
-    }
-
-    public String getIsSerialMaintained() {
-        return isSerialMaintained;
-    }
-
-    public void setIsSerialMaintained(String isSerialMaintained) {
-        this.isSerialMaintained = DataBaseUtil.trim(isSerialMaintained);
-    }
-
-    public String getIsSubAssembly() {
-        return isSubAssembly;
-    }
-
-    public void setIsSubAssembly(String isSubAssembly) {
-        this.isSubAssembly = DataBaseUtil.trim(isSubAssembly);
+        _changed = true;
     }
 
     public String getName() {
@@ -250,22 +92,34 @@ public class InventoryItemDO implements RPC {
 
     public void setName(String name) {
         this.name = DataBaseUtil.trim(name);
+        _changed = true;
     }
 
-    public String getProductUri() {
-        return productUri;
+    public String getDescription() {
+        return description;
     }
 
-    public void setProductUri(String productUri) {
-        this.productUri = DataBaseUtil.trim(productUri);
+    public void setDescription(String description) {
+        this.description = DataBaseUtil.trim(description);
+        _changed = true;
     }
 
-    public Integer getQuantityMaxLevel() {
-        return quantityMaxLevel;
+    public Integer getCategoryId() {
+        return categoryId;
     }
 
-    public void setQuantityMaxLevel(Integer quantityMaxLevel) {
-        this.quantityMaxLevel = quantityMaxLevel;
+    public void setCategoryId(Integer categoryId) {
+        this.categoryId = categoryId;
+        _changed = true;
+    }
+
+    public Integer getStoreId() {
+        return storeId;
+    }
+
+    public void setStoreId(Integer storeId) {
+        this.storeId = storeId;
+        _changed = true;
     }
 
     public Integer getQuantityMinLevel() {
@@ -274,6 +128,16 @@ public class InventoryItemDO implements RPC {
 
     public void setQuantityMinLevel(Integer quantityMinLevel) {
         this.quantityMinLevel = quantityMinLevel;
+        _changed = true;
+    }
+
+    public Integer getQuantityMaxLevel() {
+        return quantityMaxLevel;
+    }
+
+    public void setQuantityMaxLevel(Integer quantityMaxLevel) {
+        this.quantityMaxLevel = quantityMaxLevel;
+        _changed = true;
     }
 
     public Integer getQuantityToReorder() {
@@ -282,14 +146,133 @@ public class InventoryItemDO implements RPC {
 
     public void setQuantityToReorder(Integer quantityToReorder) {
         this.quantityToReorder = quantityToReorder;
+        _changed = true;
     }
 
-    public Integer getStore() {
-        return store;
+    public Integer getDispensedUnitsId() {
+        return dispensedUnitsId;
     }
 
-    public void setStore(Integer store) {
-        this.store = store;
+    public void setDispensedUnitsId(Integer dispensedUnitsId) {
+        this.dispensedUnitsId = dispensedUnitsId;
+        _changed = true;
+    }
+
+    public String getIsReorderAuto() {
+        return isReorderAuto;
+    }
+
+    public void setIsReorderAuto(String isReorderAuto) {
+        this.isReorderAuto = DataBaseUtil.trim(isReorderAuto);
+        _changed = true;
+    }
+
+    public String getIsLotMaintained() {
+        return isLotMaintained;
+    }
+
+    public void setIsLotMaintained(String isLotMaintained) {
+        this.isLotMaintained = DataBaseUtil.trim(isLotMaintained);
+        _changed = true;
+    }
+
+    public String getIsSerialMaintained() {
+        return isSerialMaintained;
+    }
+
+    public void setIsSerialMaintained(String isSerialMaintained) {
+        this.isSerialMaintained = DataBaseUtil.trim(isSerialMaintained);
+        _changed = true;
+    }
+
+    public String getIsActive() {
+        return isActive;
+    }
+
+    public void setIsActive(String isActive) {
+        this.isActive = DataBaseUtil.trim(isActive);
+        _changed = true;
+    }
+
+    public String getIsBulk() {
+        return isBulk;
+    }
+
+    public void setIsBulk(String isBulk) {
+        this.isBulk = DataBaseUtil.trim(isBulk);
+        _changed = true;
+    }
+
+    public String getIsNotForSale() {
+        return isNotForSale;
+    }
+
+    public void setIsNotForSale(String isNotForSale) {
+        this.isNotForSale = DataBaseUtil.trim(isNotForSale);
+        _changed = true;
+    }
+
+    public String getIsSubAssembly() {
+        return isSubAssembly;
+    }
+
+    public void setIsSubAssembly(String isSubAssembly) {
+        this.isSubAssembly = DataBaseUtil.trim(isSubAssembly);
+        _changed = true;
+    }
+
+    public String getIsLabor() {
+        return isLabor;
+    }
+
+    public void setIsLabor(String isLabor) {
+        this.isLabor = DataBaseUtil.trim(isLabor);
+        _changed = true;
+    }
+
+    public String getIsNoInventory() {
+        return isNoInventory;
+    }
+
+    public void setIsNoInventory(String isNoInventory) {
+        this.isNoInventory = DataBaseUtil.trim(isNoInventory);
+        _changed = true;
+    }
+
+    public String getProductUri() {
+        return productUri;
+    }
+
+    public void setProductUri(String productUri) {
+        this.productUri = DataBaseUtil.trim(productUri);
+        _changed = true;
+    }
+
+    public Integer getAveLeadTime() {
+        return aveLeadTime;
+    }
+
+    public void setAveLeadTime(Integer aveLeadTime) {
+        this.aveLeadTime = aveLeadTime;
+        _changed = true;
+    }
+
+    public Double getAveCost() {
+        return aveCost;
+    }
+
+    public void setAveCost(Double aveCost) {
+        this.aveCost = aveCost;
+        _changed = true;
+    }
+
+    public Integer getAveDailyUse() {
+        return aveDailyUse;
+    }
+
+    public void setAveDailyUse(Integer aveDailyUse) {
+        this.aveDailyUse = aveDailyUse;
+        _changed = true;
     }
 
     public Integer getParentInventoryItemId() {
@@ -298,6 +281,7 @@ public class InventoryItemDO implements RPC {
 
     public void setParentInventoryItemId(Integer parentInventoryItemId) {
         this.parentInventoryItemId = parentInventoryItemId;
+        _changed = true;
     }
 
     public Integer getParentRatio() {
@@ -306,21 +290,6 @@ public class InventoryItemDO implements RPC {
 
     public void setParentRatio(Integer parentRatio) {
         this.parentRatio = parentRatio;
-    }
-
-    public String getParentInventoryItem() {
-        return parentInventoryItem;
-    }
-
-    public void setParentInventoryItem(String parentInventoryItem) {
-        this.parentInventoryItem = DataBaseUtil.trim(parentInventoryItem);
-    }
-
-    public String getManufacturingText() {
-        return manufacturingText;
-    }
-
-    public void setManufacturingText(String manufacturingText) {
-        this.manufacturingText = DataBaseUtil.trim(manufacturingText);
+        _changed = true;
     }
 }
