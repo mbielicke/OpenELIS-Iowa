@@ -32,9 +32,10 @@ public class NotesTab extends Screen {
     protected String         notesPanelKey, editButtonKey;
     protected boolean        loaded, isExternal;
 
-    public NotesTab(ScreenDefInt def, String notesPanelKey, String editButtonKey, boolean isExternal) {
+    public NotesTab(ScreenDefInt def, ScreenWindow window, String notesPanelKey,
+                    String editButtonKey, boolean isExternal) {
         setDef(def);
-
+        setWindow(window);
         userName = OpenELIS.security.getSystemUserName();
         userId = OpenELIS.security.getSystemUserId();
 

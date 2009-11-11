@@ -107,9 +107,6 @@ public class OrganizationScreen extends Screen {
         if (security == null)
             throw new SecurityException("screenPermException", "Oranization Screen");
 
-        // Setup link between Screen and widget Handlers
-        initialize();
-
         DeferredCommand.addCommand(new Command() {
             public void execute() {
                 postConstructor();
@@ -124,15 +121,11 @@ public class OrganizationScreen extends Screen {
      */
     private void postConstructor() {
         tab = Tabs.CONTACTS;
-        contactTab.setWindow(window);
-        parameterTab.setWindow(window);
-        notesTab.setWindow(window);
-        
         manager = OrganizationManager.getInstance();
 
+        initialize();
         setState(State.DEFAULT);
         initializeDropdowns();
-
         DataChangeEvent.fire(this);
     }
 
@@ -461,7 +454,7 @@ public class OrganizationScreen extends Screen {
             }
         });
 
-        contactTab = new ContactTab(def);
+        contactTab = new ContactTab(def, window);
         addScreenHandler(contactTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                 contactTab.setManager(manager);
@@ -474,7 +467,7 @@ public class OrganizationScreen extends Screen {
             }
         });
 
-        parameterTab = new ParameterTab(def);
+        parameterTab = new ParameterTab(def, window);
         addScreenHandler(parameterTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                 parameterTab.setManager(manager);
@@ -487,7 +480,7 @@ public class OrganizationScreen extends Screen {
             }
         });
 
-        notesTab = new NotesTab(def, "notesPanel", "standardNoteButton", false);
+        notesTab = new NotesTab(def, window, "notesPanel", "standardNoteButton", false);
         addScreenHandler(notesTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                 notesTab.setManager(manager);

@@ -104,10 +104,10 @@ public class QcScreen extends Screen {
     private AutoComplete<Integer>       inventoryItem, preparedBy, analyte;
     private Dropdown<Integer>           typeId, preparedUnitId, analyteTypeId;
     private TextBox                     name, source, lotNumber, preparedVolume;
-    private CheckBox                    isSingleUse;
+    private CheckBox                    isActive;
     private TableWidget                 qcAnalyteTable;
 
-    private Integer                     typeDict, typeNumeric, typeTiter;
+    private Integer                     typeDict, typeNumeric, typeTiter, typeDefault;
     private DictionaryLookupScreen      dictLookup;
     private ScreenService               analyteService, inventoryService, userService,
                                         dictionaryService;
@@ -126,9 +126,6 @@ public class QcScreen extends Screen {
         if (security == null)
             throw new SecurityException("screenPermException", "QC Screen");
 
-        // Setup link between Screen and widget Handlers
-        initialize();
-
         DeferredCommand.addCommand(new Command() {
             public void execute() {
                 postConstructor();
@@ -144,8 +141,8 @@ public class QcScreen extends Screen {
     private void postConstructor() {
         manager = QcManager.getInstance();
 
+        initialize();
         setState(State.DEFAULT);
-
         initializeDropdowns();
         DataChangeEvent.fire(this);
     }
@@ -361,20 +358,20 @@ public class QcScreen extends Screen {
             }
         });
 
-        isSingleUse = (CheckBox)def.getWidget(meta.getIsSingleUse());
-        addScreenHandler(isSingleUse, new ScreenEventHandler<String>() {
+        isActive = (CheckBox)def.getWidget(meta.getIsActive());
+        addScreenHandler(isActive, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                isSingleUse.setValue(manager.getQc().getIsSingleUse());
+                isActive.setValue(manager.getQc().getIsActive());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
-                manager.getQc().setIsSingleUse(event.getValue());
+                manager.getQc().setIsActive(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                isSingleUse.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                isActive.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                           .contains(event.getState()));
-                isSingleUse.setQueryMode(event.getState() == State.QUERY);
+                isActive.setQueryMode(event.getState() == State.QUERY);
             }
         });
 
@@ -526,14 +523,12 @@ public class QcScreen extends Screen {
             public void onCellUpdated(CellEditedEvent event) {
                 int r, c;
                 Object val;
-                DictionaryDO dict;
                 TableDataRow row;
                 QcAnalyteViewDO data;
 
                 r = event.getRow();
                 c = event.getCol();
                 val = qcAnalyteTable.getObject(r, c);
-                row = qcAnalyteTable.getRow(r);
                 try {
                     data = manager.getAnalytes().getAnalyteAt(r);
                 } catch (Exception e) {
@@ -548,33 +543,20 @@ public class QcScreen extends Screen {
                         break;
                     case 1:
                         data.setTypeId((Integer)val);
+                        qcAnalyteTable.clearCellExceptions(r, 3);
+                        try {
+                            validateValue(data, (String)qcAnalyteTable.getObject(r, 3));
+                        } catch (LocalizedException e) {
+                            qcAnalyteTable.setCellException(r, 3, e);
+                        }
                         break;
                     case 2:
                         data.setIsTrendable((String)val);
                         break;
                     case 3:
+                        qcAnalyteTable.clearCellExceptions(r, c);
                         try {
-                            if (DataBaseUtil.isSame(data.getTypeId(), typeDict)) {
-                                dict = getDictionary((String)val);
-                                if (dict != null) {
-                                    data.setValue(dict.getId().toString());
-                                    data.setDictionary(dict.getEntry());
-                                    qcAnalyteTable.setCell(r, c, data.getDictionary());
-                                } else {
-                                    data.setDictionary(null);
-                                    throw new LocalizedException("qc.invalidValue");
-                                }
-                            } else if (DataBaseUtil.isSame(data.getTypeId(),typeNumeric)) {
-                                rangeNumeric.setRange((String)val);
-                                data.setValue(rangeNumeric.toString());
-                                qcAnalyteTable.setCell(r, c, data.getValue());
-                            } else if (DataBaseUtil.isSame(data.getTypeId(),typeTiter)) {
-                                rangeTiter.setRange((String)val);
-                                data.setValue(rangeTiter.toString());
-                                qcAnalyteTable.setCell(r, c, data.getValue());
-                            } else {
-                                throw new LocalizedException("qc.invalidValue");
-                            }
+                            validateValue(data, (String)val);
                         } catch (LocalizedException e) {
                             qcAnalyteTable.setCellException(r, c, e);
                         }
@@ -585,8 +567,11 @@ public class QcScreen extends Screen {
 
         qcAnalyteTable.addRowAddedHandler(new RowAddedHandler() {
             public void onRowAdded(RowAddedEvent event) {
+                int r;
+                
+                r = qcAnalyteTable.getSelectedRow();
                 try {
-                    manager.getAnalytes().addAnalyte(new QcAnalyteViewDO());
+                    manager.getAnalytes().addAnalyteAt(new QcAnalyteViewDO(), r);
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
                 }
@@ -631,13 +616,21 @@ public class QcScreen extends Screen {
         addAnalyteButton = (AppButton)def.getWidget("addAnalyteButton");
         addScreenHandler(addAnalyteButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-                int n;
+                int r, n;
 
-                qcAnalyteTable.addRow();
-                n = qcAnalyteTable.numRows() - 1;
-                qcAnalyteTable.selectRow(n);
+                r = qcAnalyteTable.getSelectedRow() + 1;
+                if (r == 0) {
+                    n = qcAnalyteTable.numRows();
+                    if (n != 0) {
+                        Window.alert(consts.get("qc.noSelectedRow"));
+                        return;
+                    }
+                }
+
+                qcAnalyteTable.addRow(r);
+                qcAnalyteTable.selectRow(r);
                 qcAnalyteTable.scrollToSelection();
-                qcAnalyteTable.startEditing(n, 0);
+                qcAnalyteTable.startEditing(r, 0);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -666,7 +659,7 @@ public class QcScreen extends Screen {
         dictionaryButton = (AppButton)def.getWidget("dictionaryButton");
         addScreenHandler(dictionaryButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-                showDictionary(null);
+//                showDictionary();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -758,10 +751,6 @@ public class QcScreen extends Screen {
             model.add(new TableDataRow(d.getId(), d.getEntry()));
 
         typeId.setModel(model);
-        typeId.setSearchMode(Dropdown.Search.LINEAR);
-        typeDict    = DictionaryCache.getIdFromSystemName("qc_analyte_dictionary");
-        typeNumeric = DictionaryCache.getIdFromSystemName("qc_analyte_numeric");
-        typeTiter   = DictionaryCache.getIdFromSystemName("qc_analyte_titer");
 
         // prepareUnit dropdown
         model = new ArrayList<TableDataRow>();
@@ -778,7 +767,16 @@ public class QcScreen extends Screen {
             model.add(new TableDataRow(d.getId(), d.getEntry()));
 
         analyteTypeId.setModel(model);
-        analyteTypeId.setSearchMode(Dropdown.Search.LINEAR);
+
+        try {
+            typeDict    = DictionaryCache.getIdFromSystemName("qc_analyte_dictionary");
+            typeNumeric = DictionaryCache.getIdFromSystemName("qc_analyte_numeric");
+            typeTiter   = DictionaryCache.getIdFromSystemName("qc_analyte_titer");
+            typeDefault = DictionaryCache.getIdFromSystemName("qc_analyte_default");
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            window.close();
+        }
     }
 
     /*
@@ -805,6 +803,7 @@ public class QcScreen extends Screen {
 
     protected void add() {
         manager = QcManager.getInstance();
+        manager.getQc().setIsActive("Y");
 
         setState(State.ADD);
         DataChangeEvent.fire(this);
@@ -971,6 +970,36 @@ public class QcScreen extends Screen {
             Window.alert(e.getMessage());
         }
         return null;
+    }
+    
+    private void validateValue(QcAnalyteViewDO data, String value) throws LocalizedException {
+        DictionaryDO dict;
+
+        try {
+            if (typeDict.equals(data.getTypeId())) {
+                dict = getDictionary((String)value);
+                if (dict != null) {
+                    data.setValue(dict.getId().toString());
+                    data.setDictionary(dict.getEntry());
+                } else {
+                    throw new LocalizedException("qc.invalidValueException");
+                }
+            } else if (typeNumeric.equals(data.getTypeId())) {
+                rangeNumeric.setRange((String)value);
+                data.setValue(rangeNumeric.toString());
+            } else if (typeTiter.equals(data.getTypeId())) {
+                rangeTiter.setRange((String)value);
+                data.setValue(rangeTiter.toString());
+            } else if (typeDefault.equals(data.getTypeId())) {
+                data.setValue((String)value);
+            } else {
+                throw new LocalizedException("qc.invalidValueException");
+            }
+        } catch (LocalizedException e) {
+            data.setValue(null);
+            data.setDictionary(null);
+            throw e;
+        }
     }
 
     private void showDictionary(String entry) {
