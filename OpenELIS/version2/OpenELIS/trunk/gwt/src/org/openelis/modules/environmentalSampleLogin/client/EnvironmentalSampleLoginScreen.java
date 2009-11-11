@@ -122,7 +122,9 @@ public class EnvironmentalSampleLoginScreen extends Screen {
     };
 
     protected Tabs                     tab;
-
+    private Integer analysisLoggedInId, sampleLoggedInId, sampleErrorStatusId;
+    
+    private SampleEnvironmentalMetaMap meta = new SampleEnvironmentalMetaMap();
     private SampleItemTab              sampleItemTab;
     private AnalysisTab                analysisTab;
     private TestResultsTab             testResultsTab;
@@ -143,7 +145,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
     
     protected ScreenService orgService;
     protected ScreenService projectService;
-    private SampleEnvironmentalMetaMap Meta;
+    
     
     ScreenNavigator nav;
     private SecurityModule       security;
@@ -159,11 +161,6 @@ public class EnvironmentalSampleLoginScreen extends Screen {
         orgService = new ScreenService("controller?service=org.openelis.modules.organization.server.OrganizationService");
         projectService = new ScreenService("controller?service=org.openelis.modules.project.server.ProjectService");
         
-        manager = SampleManager.getInstance();
-        manager.getSample().setDomain(SampleManager.ENVIRONMENTAL_DOMAIN_FLAG);
-
-        Meta = new SampleEnvironmentalMetaMap();
-        
         security = OpenELIS.security.getModule("sampleenvironmental");
         if (security == null)
             throw new SecurityException("screenPermException", "Environmental Sample Login Screen");
@@ -171,7 +168,6 @@ public class EnvironmentalSampleLoginScreen extends Screen {
         // Setup link between Screen and widget Handlers
         initialize();
         
-        DataChangeEvent.fire(this);
         DeferredCommand.addCommand(new Command() {
             public void execute() {
                 postConstructor();
@@ -190,8 +186,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
         manager.getSample().setDomain(SampleManager.ENVIRONMENTAL_DOMAIN_FLAG);
 
         setState(State.DEFAULT);
-      
-        //setup the dropdowns
+        initializeDropdowns();
         setStatusModel();
         setAnalysisStatusModel();
 
@@ -208,7 +203,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
     }
     
     private void initialize() {
-        final TextBox<Integer> accessionNumber = (TextBox<Integer>)def.getWidget(Meta.SAMPLE.getAccessionNumber());
+        final TextBox<Integer> accessionNumber = (TextBox<Integer>)def.getWidget(meta.SAMPLE.getAccessionNumber());
         addScreenHandler(accessionNumber, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 accessionNumber.setValue(getString(manager.getSample().getAccessionNumber()));
@@ -257,7 +252,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             }
         });
         
-        final CalendarLookUp collectedDate = (CalendarLookUp)def.getWidget(Meta.SAMPLE.getCollectionDate());
+        final CalendarLookUp collectedDate = (CalendarLookUp)def.getWidget(meta.SAMPLE.getCollectionDate());
         addScreenHandler(collectedDate, new ScreenEventHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
                 collectedDate.setValue(manager.getSample().getCollectionDate());
@@ -274,7 +269,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             }
         });
         
-        final TextBox<Datetime> collectedTime = (TextBox<Datetime>)def.getWidget(Meta.SAMPLE.getCollectionTime());
+        final TextBox<Datetime> collectedTime = (TextBox<Datetime>)def.getWidget(meta.SAMPLE.getCollectionTime());
         addScreenHandler(collectedTime, new ScreenEventHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
                 collectedTime.setValue(manager.getSample().getCollectionTime());
@@ -291,7 +286,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             }
         });
         
-        final CalendarLookUp receivedDate = (CalendarLookUp)def.getWidget(Meta.getSample().getReceivedDate());
+        final CalendarLookUp receivedDate = (CalendarLookUp)def.getWidget(meta.getSample().getReceivedDate());
         addScreenHandler(receivedDate, new ScreenEventHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
                 receivedDate.setValue(manager.getSample().getReceivedDate());
@@ -308,7 +303,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             }
         });
         
-        final Dropdown<Integer> statusId = (Dropdown<Integer>)def.getWidget(Meta.SAMPLE.getStatusId());
+        final Dropdown<Integer> statusId = (Dropdown<Integer>)def.getWidget(meta.SAMPLE.getStatusId());
         addScreenHandler(statusId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 statusId.setSelection(manager.getSample().getStatusId());
@@ -325,7 +320,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             }
         });
         
-        final TextBox clientReference = (TextBox)def.getWidget(Meta.SAMPLE.getClientReference());
+        final TextBox clientReference = (TextBox)def.getWidget(meta.SAMPLE.getClientReference());
         addScreenHandler(clientReference, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 clientReference.setValue(manager.getSample().getClientReference());
@@ -342,7 +337,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             }
         });
         
-        final CheckBox isHazardous = (CheckBox)def.getWidget(Meta.getIsHazardous());
+        final CheckBox isHazardous = (CheckBox)def.getWidget(meta.getIsHazardous());
         addScreenHandler(isHazardous, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 isHazardous.setValue(getEnvManager().getEnvironmental().getIsHazardous());
@@ -359,7 +354,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             }
         });
         
-        final TextBox<Integer> priority = (TextBox<Integer>)def.getWidget(Meta.getPriority());
+        final TextBox<Integer> priority = (TextBox<Integer>)def.getWidget(meta.getPriority());
         addScreenHandler(priority, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 priority.setValue(getEnvManager().getEnvironmental().getPriority());
@@ -376,7 +371,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             }
         });
         
-        final TextBox description = (TextBox)def.getWidget(Meta.getDescription());
+        final TextBox description = (TextBox)def.getWidget(meta.getDescription());
         addScreenHandler(description, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 description.setValue(getEnvManager().getEnvironmental().getDescription());
@@ -393,7 +388,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             }
         });
         
-        final TextBox collector = (TextBox)def.getWidget(Meta.getCollector());
+        final TextBox collector = (TextBox)def.getWidget(meta.getCollector());
         addScreenHandler(collector, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 collector.setValue(getEnvManager().getEnvironmental().getCollector());
@@ -410,7 +405,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             }
         });
         
-        final TextBox collectorPhone = (TextBox)def.getWidget(Meta.getCollectorPhone());
+        final TextBox collectorPhone = (TextBox)def.getWidget(meta.getCollectorPhone());
         addScreenHandler(collectorPhone, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 collectorPhone.setValue(getEnvManager().getEnvironmental().getCollectorPhone());
@@ -427,7 +422,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             }
         });
         
-        location = (TextBox)def.getWidget(Meta.getSamplingLocation());
+        location = (TextBox)def.getWidget(meta.getSamplingLocation());
         addScreenHandler(location, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 location.setValue(getEnvManager().getEnvironmental().getSamplingLocation());
@@ -444,7 +439,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             }
         });
         
-        project = (AutoComplete<Integer>)def.getWidget(Meta.SAMPLE.SAMPLE_PROJECT.PROJECT.getName());
+        project = (AutoComplete<Integer>)def.getWidget(meta.SAMPLE.SAMPLE_PROJECT.PROJECT.getName());
         addScreenHandler(project, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 try{
@@ -527,7 +522,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             } 
         });
         
-        reportTo = (AutoComplete<Integer>)def.getWidget(Meta.SAMPLE.SAMPLE_ORGANIZATION.ORGANIZATION.getName());
+        reportTo = (AutoComplete<Integer>)def.getWidget(meta.SAMPLE.SAMPLE_ORGANIZATION.ORGANIZATION.getName());
         addScreenHandler(reportTo, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 try{
@@ -888,7 +883,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             }
         });
         
-        analysisNotesTab = new AnalysisNotesTab(def, "anExNotesPanel", "anExNoteButton", "anIntNotesPanel", "anIntNoteButton");
+        analysisNotesTab = new AnalysisNotesTab(def, window, "anExNotesPanel", "anExNoteButton", "anIntNotesPanel", "anIntNoteButton");
         addScreenHandler(analysisNotesTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                 analysisNotesTab.setData(new SampleDataBundle());
@@ -902,7 +897,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             }
         });
                 
-        sampleNotesTab = new SampleNotesTab(def, "sampleExtNotesPanel", "sampleExtNoteButton", "sampleIntNotesPanel", "sampleIntNoteButton");
+        sampleNotesTab = new SampleNotesTab(def, window, "sampleExtNotesPanel", "sampleExtNoteButton", "sampleIntNotesPanel", "sampleIntNoteButton");
         addScreenHandler(sampleNotesTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                 sampleNotesTab.setManager(manager);
@@ -985,16 +980,15 @@ public class EnvironmentalSampleLoginScreen extends Screen {
                     updateTreeAnalysisRowAndCheckPrepTests();
 
                 }else if(event.getAction() == AnalysisTab.Action.SELECTED_TEST_PREP_ROW){
-                    int loggedInId = DictionaryCache.getIdFromSystemName("analysis_logged_in");
                     TreeDataItem selected = itemsTree.getSelection();
                     selected = selected.parent;
                     SampleDataBundle selectedBundle = (SampleDataBundle)event.getData();
                     AnalysisViewDO anDO = selectedBundle.analysisTestDO;
-                    anDO.setStatusId(loggedInId);
+                    anDO.setStatusId(analysisLoggedInId);
                     
                     TreeDataItem newRow = itemsTree.createTreeItem("analysis");
                     newRow.cells.get(0).value = formatTreeString(anDO.getTestName())+" : "+formatTreeString(anDO.getMethodName());
-                    newRow.cells.get(1).value = loggedInId;
+                    newRow.cells.get(1).value = analysisLoggedInId;
                     
                     SampleDataBundle sampleItemData = (SampleDataBundle)selected.data;
                     SampleItemViewDO itemDO = sampleItemData.sampleItemDO;
@@ -1186,7 +1180,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
         //default the form
         try{
             manager.getSample().setRevision(0);
-            manager.getSample().setStatusId(DictionaryCache.getIdFromSystemName("sample_logged_in"));
+            manager.getSample().setStatusId(sampleLoggedInId);
             manager.getSample().setEnteredDate(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE));
             manager.getSample().setReceivedDate(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE));
             manager.getSample().setNextItemSequence(0);
@@ -1272,7 +1266,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
     }
     
     protected void commitWithWarnings() {
-        manager.getSample().setStatusId(DictionaryCache.getIdFromSystemName("sample_error"));
+        manager.getSample().setStatusId(sampleErrorStatusId);
         
         if (state == State.ADD) {
             window.setBusy(consts.get("adding"));
@@ -1498,11 +1492,9 @@ public class EnvironmentalSampleLoginScreen extends Screen {
     }
     
     public void onAddAnalysisButtonClick() {
-        int loggedInId = DictionaryCache.getIdFromSystemName("analysis_logged_in");
-        
         TreeDataItem newRow = itemsTree.createTreeItem("analysis");
         newRow.cells.get(0).value = "<> : <>";
-        newRow.cells.get(1).value = loggedInId;
+        newRow.cells.get(1).value = analysisLoggedInId;
         
         TreeDataItem selectedRow = itemsTree.getRow(itemsTree.getSelectedRow());
         
@@ -1515,7 +1507,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
         
         AnalysisViewDO aDO = new AnalysisViewDO();
         aDO.setId(getNextTempId());
-        aDO.setStatusId(loggedInId);
+        aDO.setStatusId(analysisLoggedInId);
         aDO.setRevision(0);
         
         try{
@@ -1591,12 +1583,18 @@ public class EnvironmentalSampleLoginScreen extends Screen {
         return m;
     }
 
+    private void initializeDropdowns(){
+        analysisLoggedInId = DictionaryCache.getIdFromSystemName("analysis_logged_in");
+        sampleLoggedInId = DictionaryCache.getIdFromSystemName("sample_logged_in");
+        sampleErrorStatusId = DictionaryCache.getIdFromSystemName("sample_error");
+    }
+    
     private void setStatusModel() {
         ArrayList cache;
         ArrayList<TableDataRow> model;
         cache = DictionaryCache.getListByCategorySystemName("sample_status");
         model = getDictionaryIdEntryList(cache);
-        ((Dropdown<Integer>)def.getWidget(Meta.SAMPLE.getStatusId())).setModel(model);
+        ((Dropdown<Integer>)def.getWidget(meta.SAMPLE.getStatusId())).setModel(model);
     }
     
     private void setAnalysisStatusModel(){
@@ -1826,7 +1824,6 @@ public class EnvironmentalSampleLoginScreen extends Screen {
     }
     
     private TreeDataItem createPrepRowTestRowById(Integer prepTestId){
-        int loggedInId = DictionaryCache.getIdFromSystemName("analysis_logged_in");
         SampleDataBundle bundle, selectedBundle;
         TreeDataItem selected = itemsTree.getSelection();
         selectedBundle = (SampleDataBundle)selected.data;
@@ -1847,7 +1844,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
                 AnalysisViewDO analysis = new AnalysisViewDO();
                 bundle.analysisTestDO = analysis;
                 analysis.setId(getNextTempId());
-                analysis.setStatusId(loggedInId);
+                analysis.setStatusId(analysisLoggedInId);
                 analysis.setTestId(prepTestId);
                 analysis.setTestName(testDO.getName());
                 analysis.setMethodId(testDO.getMethodId());
