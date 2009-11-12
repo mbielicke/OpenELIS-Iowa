@@ -46,7 +46,6 @@
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))"/>
     <screen id="AuxGroupPicker" name="{resource:getString($constants,'auxGroupSelection')}" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <VerticalPanel padding="0" spacing="0">
-        <VerticalPanel padding="0" spacing="0" style="WhiteContentPanel">
         	<table key="auxGroupsTable" width="auto" maxRows="10" showScroll="ALWAYS" multiSelect="true" title="">
         	<col width="205" header="{resource:getString($constants,'name')}">
         	   	<label/>
@@ -55,9 +54,6 @@
         	   	<label/>
         	</col>
         	</table>
-     	</VerticalPanel>
-
-<!--button panel code-->
 
         <AbsolutePanel align="center" spacing="0" style="BottomButtonPanelContainer">
           <HorizontalPanel>
@@ -73,8 +69,6 @@
             </xsl:call-template>
           </HorizontalPanel>
         </AbsolutePanel>
-
-<!--end button panel-->
 
       </VerticalPanel>
     </screen>

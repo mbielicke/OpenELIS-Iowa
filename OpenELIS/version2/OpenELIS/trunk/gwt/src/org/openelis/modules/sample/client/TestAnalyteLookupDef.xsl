@@ -47,7 +47,6 @@ UIRF Software License are applicable instead of those above.
   <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))"/>
  <screen id="testAnalyteLookup" name="{resource:getString($constants,'testAnalyteSelection')}" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
  	<VerticalPanel padding="0" spacing="0">
-        <VerticalPanel width="300px" padding="0" spacing="0" style="WhiteContentPanel">
         	<table key="testAnalyteTable" width="auto" maxRows="10" showScroll="ALWAYS" title="">
             	<col width="50" header="{resource:getString($constants,'alias')}">
                 	<check/>
@@ -56,8 +55,7 @@ UIRF Software License are applicable instead of those above.
                  	<label/>
                 </col>
          	</table>
-     	</VerticalPanel>
-        <AbsolutePanel align="center" spacing="0" style="BottomButtonPanelContainer">
+     	<AbsolutePanel align="center" spacing="0" style="BottomButtonPanelContainer">
           <HorizontalPanel>
             <xsl:call-template name="okButton">
               <xsl:with-param name="language">

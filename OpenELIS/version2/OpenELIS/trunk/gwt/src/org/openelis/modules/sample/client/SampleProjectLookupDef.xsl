@@ -49,7 +49,8 @@
 			select="resource:getBundle(string($props),locale:new(string($language)))" />
 		<screen id="SampleProjectPicker" name="{resource:getString($constants,'sampleProject')}" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 				<VerticalPanel spacing="0" padding="0">
-					<VerticalPanel style="WhiteContentPanel" spacing="0" padding="0" width="300px">
+				<TablePanel spacing="0" padding="0">
+					<row>
 						<table key="sampleProjectTable" width="auto" maxRows="10" title="" showScroll="ALWAYS" tab="sampleProjectTable,sampleProjectTable">
 							<col header="Name" width="120">
 								<autoComplete case="UPPER" width="100px">		
@@ -60,30 +61,31 @@
 							<col header="Description" width="160">
 								<label/>
 							</col>
-							<col header="Is Perm" width="60">
+							<col header="Is Perm" width="70">
 								<check/>
 							</col>
 						</table>
-						<HorizontalPanel style="WhiteContentPanel">
-                      <widget halign="center" style="WhiteContentPanel">
-                      <appButton key="projectAddButton" style="Button">
+					</row>
+					<row>
+					<widget style="TableButtonFooter">
+	                <HorizontalPanel>
+	                 <appButton key="projectAddButton" style="Button">
                         <HorizontalPanel>
                           <AbsolutePanel style="AddRowButtonImage"/>
                           <text><xsl:value-of select="resource:getString($constants,'addRow')"/></text>
                         </HorizontalPanel>
                       </appButton>
-                      </widget>
-                      <widget halign="center" style="WhiteContentPanel">
-                      <appButton key="projectRemoveButton" style="Button">
+	                  <appButton key="projectRemoveButton" style="Button">
                         <HorizontalPanel>
                           <AbsolutePanel style="RemoveRowButtonImage"/>
                           <text><xsl:value-of select="resource:getString($constants,'removeRow')"/></text>
                         </HorizontalPanel>
 
                       </appButton>
-                      </widget>
-                    </HorizontalPanel>
-					</VerticalPanel>
+	                </HorizontalPanel>
+	                </widget>
+	                </row>
+	                </TablePanel>
 					<!--button panel code-->
 					<AbsolutePanel spacing="0" style="BottomButtonPanelContainer"
 						align="center">
