@@ -147,10 +147,7 @@ public class TestScreen extends Screen {
         
         security = OpenELIS.security.getModule("test");
         if (security == null)
-            throw new SecurityException("screenPermException", "Test Screen");
-
-        // Setup link between Screen and widget Handlers
-        initialize();
+            throw new SecurityException("screenPermException", "Test Screen");        
 
         DeferredCommand.addCommand(new Command() {
             public void execute() {
@@ -168,14 +165,9 @@ public class TestScreen extends Screen {
         tab = Tabs.DETAILS;
         manager = TestManager.getInstance();
 
-        analyteAndResultTab.setWindow(window);
-        worksheetLayoutTab.setWindow(window);
-        prepAndReflexTab.setWindow(window);
-        
-        setState(State.DEFAULT);
-        
+        initialize();        
+        setState(State.DEFAULT);       
         initializeDropdowns();
-
         DataChangeEvent.fire(this);
     }
 
@@ -942,7 +934,7 @@ public class TestScreen extends Screen {
         });
 
         // Create the Handler for SampleTypeTab passing in the ScreenDef
-        sampleTypeTab = new SampleTypeTab(def);
+        sampleTypeTab = new SampleTypeTab(def,window);
 
         // Set up tabs to recieve State Change events from the main Screen.
         addScreenHandler(sampleTypeTab, new ScreenEventHandler<Object>() {
@@ -957,7 +949,7 @@ public class TestScreen extends Screen {
             }
         });
 
-        analyteAndResultTab = new AnalyteAndResultTab(def,service,scriptletService,analyteService,dictionaryService);
+        analyteAndResultTab = new AnalyteAndResultTab(def,window,service,scriptletService,analyteService,dictionaryService);
         sampleTypeTab.addActionHandler(analyteAndResultTab);
 
         addScreenHandler(analyteAndResultTab, new ScreenEventHandler<Object>() {
@@ -972,7 +964,7 @@ public class TestScreen extends Screen {
             }
         });
 
-        prepAndReflexTab = new PrepTestAndReflexTestTab(def, service);
+        prepAndReflexTab = new PrepTestAndReflexTestTab(def,window,service);
         addScreenHandler(prepAndReflexTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                 prepAndReflexTab.setManager(manager);
@@ -987,7 +979,7 @@ public class TestScreen extends Screen {
 
         analyteAndResultTab.addActionHandler(prepAndReflexTab);
 
-        worksheetLayoutTab = new WorksheetLayoutTab(def,service,scriptletService,qcService);
+        worksheetLayoutTab = new WorksheetLayoutTab(def,window,service,scriptletService,qcService);
         addScreenHandler(worksheetLayoutTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                 worksheetLayoutTab.setManager(manager);
