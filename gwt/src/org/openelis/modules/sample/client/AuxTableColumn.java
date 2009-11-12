@@ -44,38 +44,42 @@ import org.openelis.gwt.widget.TextBox.Case;
 import org.openelis.gwt.widget.table.TableColumn;
 import org.openelis.gwt.widget.table.TableDataRow;
 
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Widget;
 
 public class AuxTableColumn extends TableColumn {
-    protected GetMatchesHandler screen;
-    protected TextBox alphaTextBox;
-    protected TextBox<Double> numTextBox;
-    protected CalendarLookUp calendar;
+    protected GetMatchesHandler     screen;
+    protected TextBox               alphaTextBox;
+    protected TextBox<Double>       numTextBox;
+    protected CalendarLookUp        calendar;
     protected AutoComplete<Integer> autoComplete;
-    protected Label label;
-    
+    protected Label                 label;
+
+    protected Integer               alphaLowerId, alphaUpperId, alphaMixedId, timeId, numericId,
+                    dateId, dateTimeId, dictionaryId;
+
     public Widget getDisplayWidget(TableDataRow row) {
         setColumnWidget(getCellWidget(row));
         return super.getDisplayWidget(row);
     }
-    
+
     public void loadWidget(Widget widget, TableDataRow row) {
         setColumnWidget(getCellWidget(row));
         super.loadWidget(widget, row);
     }
-    
+
     public Widget getWidgetEditor(TableDataRow row) {
         setColumnWidget(getCellWidget(row));
         return super.getWidgetEditor(row);
     }
-        
-    private AutoComplete<Integer> getAutoComplete(Case boxCase){
-        if(autoComplete == null){
+
+    private AutoComplete<Integer> getAutoComplete(Case boxCase) {
+        if (autoComplete == null) {
             autoComplete = new AutoComplete<Integer>();
             autoComplete.setWidth("270");
             autoComplete.setTableWidth("auto");
             autoComplete.setField(new IntegerField());
-            
+
             ArrayList<TableColumn> cols = new ArrayList<TableColumn>();
             TableColumn col = new TableColumn();
             col.controller = autoComplete;
@@ -85,42 +89,42 @@ public class AuxTableColumn extends TableColumn {
             col.setColumnWidget(label);
             cols.add(col);
             autoComplete.setColumns(cols);
-            
+
             autoComplete.init();
             autoComplete.addGetMatchesHandler(screen);
             autoComplete.enable(true);
         }
-        
+
         autoComplete.setCase(boxCase);
-        
+
         return autoComplete;
     }
-    
-    private TextBox getAlphaTextbox(Case boxCase){
-        if(alphaTextBox == null){
+
+    private TextBox getAlphaTextbox(Case boxCase) {
+        if (alphaTextBox == null) {
             alphaTextBox = new TextBox();
             alphaTextBox.setStyleName("ScreenTextBox");
             alphaTextBox.setField(new StringField());
         }
-        
+
         alphaTextBox.setCase(boxCase);
-        
+
         return alphaTextBox;
     }
-    
-    private TextBox<Double> getNumTextbox(){
-        if(numTextBox == null){
+
+    private TextBox<Double> getNumTextbox() {
+        if (numTextBox == null) {
             numTextBox = new TextBox<Double>();
             numTextBox.setStyleName("ScreenTextBox");
             alphaTextBox.setCase(Case.MIXED);
             numTextBox.setField(new DoubleField());
         }
-        
+
         return numTextBox;
     }
-    
-    private CalendarLookUp getCalendar(byte begin, byte end){
-        if(calendar == null){
+
+    private CalendarLookUp getCalendar(byte begin, byte end) {
+        if (calendar == null) {
             calendar = new CalendarLookUp();
             calendar.setStyleName("ScreenCalendar");
         }
@@ -128,63 +132,78 @@ public class AuxTableColumn extends TableColumn {
         DateField field = new DateField();
         field.setBegin(begin);
         field.setEnd(end);
-        
-        if(end == Datetime.DAY)
-            field.setFormat(((Screen)screen).consts.get("datePattern"));
+
+        if (end == Datetime.DAY)
+            field.setFormat( ((Screen)screen).consts.get("datePattern"));
         else
-            field.setFormat(((Screen)screen).consts.get("dateTimePattern"));
-        
-        calendar.setField(field);    
+            field.setFormat( ((Screen)screen).consts.get("dateTimePattern"));
+
+        calendar.setField(field);
         calendar.init(begin, end, false);
-        
+
         return calendar;
     }
-    
-    private Label getLabel(){
-        if(label == null){
+
+    private Label getLabel() {
+        if (label == null) {
             label = new Label();
             label.setStyleName("ScreenLabel");
             label.setField(new StringField());
         }
-        
+
         return label;
     }
-    
-    private Widget getCellWidget(TableDataRow row){
+
+    private Widget getCellWidget(TableDataRow row) {
         Integer typeId;
         typeId = getCellTypeId(row);
         
-        if(typeId == null)
-            return getLabel();
-        else if(DictionaryCache.getIdFromSystemName("aux_alpha_lower").equals(typeId))
-            return getAlphaTextbox(Case.LOWER);
-        else if(DictionaryCache.getIdFromSystemName("aux_alpha_upper").equals(typeId))
-            return getAlphaTextbox(Case.UPPER);
-        else if(DictionaryCache.getIdFromSystemName("aux_alpha_mixed").equals(typeId) ||
-                        DictionaryCache.getIdFromSystemName("aux_time").equals(typeId))
-            return getAlphaTextbox(Case.MIXED);
-        else if(DictionaryCache.getIdFromSystemName("aux_numeric").equals(typeId))
-            return getNumTextbox();
-        else if(DictionaryCache.getIdFromSystemName("aux_date").equals(typeId))
-            return getCalendar(Datetime.YEAR, Datetime.DAY);
-        else if(DictionaryCache.getIdFromSystemName("aux_date_time").equals(typeId))
-            return getCalendar(Datetime.YEAR, Datetime.MINUTE);
-        else if(DictionaryCache.getIdFromSystemName("aux_dictionary").equals(typeId))
-            return getAutoComplete(Case.MIXED);
+        if(alphaLowerId == null){
+            try{
+                alphaLowerId = DictionaryCache.getIdFromSystemName("aux_alpha_lower");
+                alphaUpperId = DictionaryCache.getIdFromSystemName("aux_alpha_upper");
+                alphaMixedId = DictionaryCache.getIdFromSystemName("aux_alpha_mixed");
+                timeId = DictionaryCache.getIdFromSystemName("aux_time");
+                numericId = DictionaryCache.getIdFromSystemName("aux_numeric");
+                dateId = DictionaryCache.getIdFromSystemName("aux_date");
+                dateTimeId = DictionaryCache.getIdFromSystemName("aux_date_time");
+                dictionaryId = DictionaryCache.getIdFromSystemName("aux_dictionary");
+            }catch(Exception e){
+                Window.alert(e.getMessage());
+            }
+        }
         
+
+        if (typeId == null)
+            return getLabel();
+        else if (alphaLowerId.equals(typeId))
+            return getAlphaTextbox(Case.LOWER);
+        else if (alphaUpperId.equals(typeId))
+            return getAlphaTextbox(Case.UPPER);
+        else if (alphaMixedId.equals(typeId) || timeId.equals(typeId))
+            return getAlphaTextbox(Case.MIXED);
+        else if (numericId.equals(typeId))
+            return getNumTextbox();
+        else if (dateId.equals(typeId))
+            return getCalendar(Datetime.YEAR, Datetime.DAY);
+        else if (dateTimeId.equals(typeId))
+            return getCalendar(Datetime.YEAR, Datetime.MINUTE);
+        else if (dictionaryId.equals(typeId))
+            return getAutoComplete(Case.MIXED);
+
         return null;
     }
-    
-    private Integer getCellTypeId(TableDataRow row){
+
+    private Integer getCellTypeId(TableDataRow row) {
         AuxFieldViewDO data = (AuxFieldViewDO)row.data;
-        
-        if(data == null)
+
+        if (data == null)
             return null;
         else
             return data.getTypeId();
     }
-    
-    public void setScreen(GetMatchesHandler screen){
+
+    public void setScreen(GetMatchesHandler screen) {
         this.screen = screen;
     }
 }

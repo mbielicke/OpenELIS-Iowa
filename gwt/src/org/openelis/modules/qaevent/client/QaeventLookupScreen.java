@@ -28,7 +28,8 @@ package org.openelis.modules.qaevent.client;
 import java.util.ArrayList;
 import java.util.EnumSet;
 
-import org.openelis.domain.QaEventDO;
+import org.openelis.cache.DictionaryCache;
+import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.QaEventVO;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
@@ -40,6 +41,7 @@ import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableRow;
 import org.openelis.gwt.widget.table.TableWidget;
@@ -61,7 +63,7 @@ public class QaeventLookupScreen extends Screen implements HasActionHandlers<Qae
     protected ArrayList<QaEventVO> qaEvents;
     
     private AppButton okButton, cancelButton;
-    private TableWidget prepTestTable;
+    private TableWidget qaEventTable;
     
     
     public QaeventLookupScreen() throws Exception {
@@ -69,31 +71,33 @@ public class QaeventLookupScreen extends Screen implements HasActionHandlers<Qae
         service = new ScreenService("OpenELISServlet?service=org.openelis.modules.qaevent.server.QaEventService");
         // Setup link between Screen and widget Handlers
         initialize();
+        
+        initializeDropdowns();
 
         // Initialize Screen
         setState(State.DEFAULT);
     }
 
     private void initialize() {
-        prepTestTable = (TableWidget)def.getWidget("qaEventTable");
-        addScreenHandler(prepTestTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
+        qaEventTable = (TableWidget)def.getWidget("qaEventTable");
+        addScreenHandler(qaEventTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
             public void onDataChange(DataChangeEvent event) {
-                prepTestTable.load(getTableModel());
+                qaEventTable.load(getTableModel());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                prepTestTable.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
-                prepTestTable.setQueryMode(event.getState() == State.QUERY);
+                qaEventTable.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                qaEventTable.setQueryMode(event.getState() == State.QUERY);
             }
         });
         
-        prepTestTable.addBeforeSelectionHandler(new BeforeSelectionHandler<TableRow>(){
+        qaEventTable.addBeforeSelectionHandler(new BeforeSelectionHandler<TableRow>(){
            public void onBeforeSelection(BeforeSelectionEvent<TableRow> event) {
                //do nothing
            }; 
         });
         
-        prepTestTable.addBeforeCellEditedHandler(new BeforeCellEditedHandler(){
+        qaEventTable.addBeforeCellEditedHandler(new BeforeCellEditedHandler(){
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
                 event.cancel();
             }
@@ -125,7 +129,7 @@ public class QaeventLookupScreen extends Screen implements HasActionHandlers<Qae
     }
     
     private void ok(){
-        ArrayList<TableDataRow> selections = prepTestTable.getSelections();
+        ArrayList<TableDataRow> selections = qaEventTable.getSelections();
         
         if(selections.size() > 0)
             ActionEvent.fire(this, Action.OK, selections);
@@ -172,6 +176,16 @@ public class QaeventLookupScreen extends Screen implements HasActionHandlers<Qae
             e.printStackTrace();
             Window.alert(e.getMessage());
         }
+    }
+    
+    private void initializeDropdowns() {
+        ArrayList<TableDataRow> model;
+        
+        model = new ArrayList<TableDataRow>();
+        model.add(new TableDataRow(null, ""));
+        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("qaevent_type"))
+            model.add(new TableDataRow(d.getId(), d.getEntry()));
+        ((Dropdown<Integer>)qaEventTable.getColumns().get(2).getColumnWidget()).setModel(model);
     }
     
     public HandlerRegistration addActionHandler(ActionHandler<Action> handler) {

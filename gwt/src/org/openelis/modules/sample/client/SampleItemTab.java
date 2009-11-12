@@ -30,7 +30,6 @@ import java.util.EnumSet;
 
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.DictionaryDO;
-import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
@@ -41,6 +40,7 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.widget.Dropdown;
+import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.metamap.SampleMetaMap;
@@ -56,8 +56,9 @@ public class SampleItemTab extends Screen implements HasActionHandlers<SampleIte
     protected SampleItemViewDO sampleItem;
     protected Dropdown<Integer> typeOfSampleId, sourceOfSampleId, containerId, unitOfMeasureId;
 
-    public SampleItemTab(ScreenDefInt def) {
+    public SampleItemTab(ScreenDefInt def, ScreenWindow window) {
         setDef(def);
+        setWindow(window);
         
         meta = new SampleMetaMap("sample.");
         

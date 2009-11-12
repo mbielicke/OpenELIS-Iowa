@@ -165,9 +165,6 @@ public class EnvironmentalSampleLoginScreen extends Screen {
         if (security == null)
             throw new SecurityException("screenPermException", "Environmental Sample Login Screen");
         
-        // Setup link between Screen and widget Handlers
-        initialize();
-        
         DeferredCommand.addCommand(new Command() {
             public void execute() {
                 postConstructor();
@@ -185,20 +182,9 @@ public class EnvironmentalSampleLoginScreen extends Screen {
         manager = SampleManager.getInstance();
         manager.getSample().setDomain(SampleManager.ENVIRONMENTAL_DOMAIN_FLAG);
 
+        initialize();
         setState(State.DEFAULT);
         initializeDropdowns();
-        setStatusModel();
-        setAnalysisStatusModel();
-
-        sampleItemTab.setWindow(window);
-        analysisTab.setWindow(window);
-        testResultsTab.setWindow(window);
-        analysisNotesTab.setWindow(window);
-        sampleNotesTab.setWindow(window);
-        storageTab.setWindow(window);
-        qaEventsTab.setWindow(window);
-        auxDataTab.setWindow(window);
-        
         DataChangeEvent.fire(this);
     }
     
@@ -501,7 +487,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
 
                window.setBusy();
                try {
-                   list = service.callList("fetchActiveByName", parser.getParameter().get(0));
+                   list = projectService.callList("fetchActiveByName", parser.getParameter().get(0));
                    model = new ArrayList<TableDataRow>();
                    for (int i = 0; i < list.size(); i++ ) {
                        row = new TableDataRow(4);
@@ -841,7 +827,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
         };
         
         // Set up tabs to recieve State Change events from the main Screen.
-        sampleItemTab = new SampleItemTab(def);
+        sampleItemTab = new SampleItemTab(def, window);
         addScreenHandler(sampleItemTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                 sampleItemTab.setData(new SampleDataBundle());
@@ -855,7 +841,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             }
         });
         
-        analysisTab = new AnalysisTab(def);
+        analysisTab = new AnalysisTab(def, window);
         addScreenHandler(analysisTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                 analysisTab.setData(new SampleDataBundle());
@@ -869,7 +855,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             }
         });
         
-        testResultsTab = new TestResultsTab(def);
+        testResultsTab = new TestResultsTab(def, window);
         addScreenHandler(testResultsTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                     testResultsTab.setData(new SampleDataBundle());
@@ -911,7 +897,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             }
         });
         
-        storageTab = new StorageTab(def);
+        storageTab = new StorageTab(def, window);
         addScreenHandler(storageTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                     storageTab.setData(new SampleDataBundle());
@@ -925,7 +911,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             }
         });
 
-        qaEventsTab = new QAEventsTab(def);
+        qaEventsTab = new QAEventsTab(def, window);
         addScreenHandler(qaEventsTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                     qaEventsTab.setData(new SampleDataBundle());
@@ -940,7 +926,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             }
         });
         
-        auxDataTab = new AuxDataTab(def);
+        auxDataTab = new AuxDataTab(def, window);
         addScreenHandler(auxDataTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                     auxDataTab.setManager(manager);
@@ -1563,47 +1549,33 @@ public class EnvironmentalSampleLoginScreen extends Screen {
         }
     }*/
     
-   
-    private ArrayList<TableDataRow> getDictionaryIdEntryList(ArrayList list){
-        ArrayList<TableDataRow> m = new ArrayList<TableDataRow>();
-        TableDataRow row;
-        if(list == null)
-            return m;
-        
-        m.add(new TableDataRow(null,""));
-        
-        for(int i=0; i<list.size(); i++){
-            row = new TableDataRow(1);
-            DictionaryDO dictDO = (DictionaryDO)list.get(i);
-            row.key = dictDO.getId();
-            row.cells.get(0).value = dictDO.getEntry();
-            m.add(row);
-        }
-        
-        return m;
-    }
-
     private void initializeDropdowns(){
+        ArrayList<TableDataRow> model;
+
+        //sample status dropdown
+        model = new ArrayList<TableDataRow>();
+        model.add(new TableDataRow(null, ""));
+        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("sample_status"))
+            model.add(new TableDataRow(d.getId(), d.getEntry()));
+
+        ((Dropdown<Integer>)def.getWidget(meta.SAMPLE.getStatusId())).setModel(model);
+
+        //analysis status dropdown
+        model = new ArrayList<TableDataRow>();
+        model.add(new TableDataRow(null, ""));
+        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("analysis_status"))
+            model.add(new TableDataRow(d.getId(), d.getEntry()));
+
+        ((Dropdown<Integer>)itemsTree.getColumns().get("analysis").get(1).colWidget).setModel(model);
+        
+        try{
         analysisLoggedInId = DictionaryCache.getIdFromSystemName("analysis_logged_in");
         sampleLoggedInId = DictionaryCache.getIdFromSystemName("sample_logged_in");
         sampleErrorStatusId = DictionaryCache.getIdFromSystemName("sample_error");
-    }
-    
-    private void setStatusModel() {
-        ArrayList cache;
-        ArrayList<TableDataRow> model;
-        cache = DictionaryCache.getListByCategorySystemName("sample_status");
-        model = getDictionaryIdEntryList(cache);
-        ((Dropdown<Integer>)def.getWidget(meta.SAMPLE.getStatusId())).setModel(model);
-    }
-    
-    private void setAnalysisStatusModel(){
-        ArrayList cache;
-        ArrayList<TableDataRow> model;
-        cache = DictionaryCache.getListByCategorySystemName("analysis_status");
-        model = getDictionaryIdEntryList(cache);
-        
-        ((Dropdown<Integer>)itemsTree.getColumns().get("analysis").get(1).colWidget).setModel(model);
+        }catch(Exception e){
+            Window.alert(e.getMessage());
+            window.close();
+        }
     }
     
     private void drawTabs() {

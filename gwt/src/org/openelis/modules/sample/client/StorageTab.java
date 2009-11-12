@@ -43,6 +43,7 @@ import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
+import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.gwt.widget.table.event.CellEditedEvent;
@@ -68,9 +69,10 @@ public class StorageTab extends Screen {
     protected StorageManager manager;
     protected SampleDataBundle data;
 
-    public StorageTab(ScreenDefInt def) {
+    public StorageTab(ScreenDefInt def, ScreenWindow window) {
         service = new ScreenService("OpenELISServlet?service=org.openelis.modules.storage.server.StorageService");
         setDef(def);
+        setWindow(window);
         
         userName = OpenELIS.security.getSystemUserName();
         userId = OpenELIS.security.getSystemUserId();

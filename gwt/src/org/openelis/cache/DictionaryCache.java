@@ -30,7 +30,6 @@ import java.util.HashMap;
 
 import org.openelis.cache.server.DictionaryCacheRPC;
 import org.openelis.domain.DictionaryDO;
-import org.openelis.domain.DictionaryViewDO;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 
@@ -45,14 +44,14 @@ public class DictionaryCache {
     HashMap<String, ArrayList<DictionaryDO>> categoryNameList;
     private static DictionaryCache instance;
     
-    public static Integer getIdFromSystemName(String systemName){
+    public static Integer getIdFromSystemName(String systemName) throws Exception {
         if(instance == null)
             instance = new DictionaryCache();
         
         return instance.getIdFromSystemNameInt(systemName);
     }
     
-    public static String getSystemNameFromId(Integer id){
+    public static String getSystemNameFromId(Integer id) throws Exception {
         if(instance == null)
             instance = new DictionaryCache();
         
@@ -60,14 +59,14 @@ public class DictionaryCache {
     }
     
     
-    public static ArrayList<DictionaryDO> getListByCategorySystemName(String systemName){
+    public static ArrayList<DictionaryDO> getListByCategorySystemName(String systemName) {
        if(instance == null)
             instance = new DictionaryCache();
         
        return instance.getListFromCategorySystemName(systemName);
     }
     
-    public static DictionaryDO getEntryFromId(Integer id){
+    public static DictionaryDO getEntryFromId(Integer id) throws Exception {
         if(instance == null)
             instance = new DictionaryCache();
         
@@ -97,22 +96,19 @@ public class DictionaryCache {
         }
     }
     
-    protected Integer getIdFromSystemNameInt(final String systemName){
+    protected Integer getIdFromSystemNameInt(final String systemName) throws Exception {
         DictionaryDO dictDO = systemNameList.get(systemName);
         
         if(dictDO == null){
             try{
-                DictionaryCacheRPC rpc = (DictionaryCacheRPC)service.call("getIdBySystemName", systemName);
-                ArrayList<DictionaryDO> list = rpc.dictionaryList;
+                dictDO = (DictionaryDO)service.call("getIdBySystemName", systemName);
                 
-                if(list != null && list.size() == 1){
-                    dictDO = (DictionaryDO)list.get(0);
-                    
+                if(dictDO != null){
                     systemNameList.put(dictDO.getSystemName(), dictDO);
                     idList.put(dictDO.getId(), dictDO);
                 }
             }catch(Exception e){
-                Window.alert("DictionaryCache getIdFromSystemName error: "+e.getMessage());    
+                throw new Exception("DictionaryCache.getIdFromSystemName: \""+systemName+"\" not found in system.  Please call the system administrator.");    
             }
         }
         
@@ -120,44 +116,38 @@ public class DictionaryCache {
     }
     
     
-    protected String getSystemNameFromIdInt(final Integer id){
+    protected String getSystemNameFromIdInt(final Integer id) throws Exception {
         DictionaryDO dictDO = idList.get(id);
         
         if(dictDO == null){
             try{
-                DictionaryCacheRPC rpc = (DictionaryCacheRPC)service.call("getSystemNameById", id);
-                ArrayList<DictionaryDO> list = rpc.dictionaryList;
+                dictDO = (DictionaryDO)service.call("getSystemNameById", id);
                 
-                if(list != null && list.size() == 1){
-                    dictDO = (DictionaryDO)list.get(0);
-                    
+                if(dictDO != null){
                     systemNameList.put(dictDO.getSystemName(), dictDO);
                     idList.put(dictDO.getId(), dictDO);
                 }
             }catch(Exception e){
-                Window.alert("DictionaryCache getSystemNameFromId error: "+e.getMessage());    
+                throw new Exception("DictionaryCache getSystemNameFromId: id \""+id+"\" not found in system.  Please call the system administrator.");
             }
         }
         
         return dictDO.getSystemName();
     }
     
-    protected DictionaryDO getEntryFromIdInt(final Integer id){
+    protected DictionaryDO getEntryFromIdInt(final Integer id) throws Exception {
         DictionaryDO dictDO = idList.get(id);
         
         if(dictDO == null){
             try{
-                DictionaryCacheRPC rpc = (DictionaryCacheRPC)service.call("getSystemNameById", id);
-                ArrayList<DictionaryDO> list = rpc.dictionaryList;
+                dictDO = (DictionaryDO)service.call("getSystemNameById", id);
                 
-                if(list != null && list.size() == 1){
-                    dictDO = (DictionaryDO)list.get(0);
-                    
+                if(dictDO != null){
                     systemNameList.put(dictDO.getSystemName(), dictDO);
                     idList.put(dictDO.getId(), dictDO);
                 }
             }catch(Exception e){
-                Window.alert("DictionaryCache getSystemNameFromId error: "+e.getMessage());    
+                throw new Exception("DictionaryCache.getEntryFromId: id \""+id+"\" not found in system.  Please call the system administrator.");    
             }
         }
         
@@ -170,22 +160,21 @@ public class DictionaryCache {
         
         if(list == null){
             try{
-                DictionaryCacheRPC rpc = (DictionaryCacheRPC)service.call("getListByCategorySystemName", systemName);
-                list = rpc.dictionaryList;
-                
-                if(list != null){
-                    categoryNameList.put(systemName, list);
-                
-                    //iterate through the results and insert them into the other lists
-                    for(int i=0; i<list.size(); i++){
-                        DictionaryDO dictDO = (DictionaryDO)list.get(i);
-                        
-                        systemNameList.put(dictDO.getSystemName(), dictDO);
-                        idList.put(dictDO.getId(), dictDO);
-                    }
+                list = service.callList("getListByCategorySystemName", systemName);
+            }catch(Exception e ){
+                Window.alert(e.getMessage());
+            }
+            
+            if(list != null){
+                categoryNameList.put(systemName, list);
+            
+                //iterate through the results and insert them into the other lists
+                for(int i=0; i<list.size(); i++){
+                    DictionaryDO dictDO = (DictionaryDO)list.get(i);
+                    
+                    systemNameList.put(dictDO.getSystemName(), dictDO);
+                    idList.put(dictDO.getId(), dictDO);
                 }
-            }catch(Exception e){
-                Window.alert("DictionaryCache getListFromCategorySystemName error: "+e.getMessage());    
             }
         }
         
