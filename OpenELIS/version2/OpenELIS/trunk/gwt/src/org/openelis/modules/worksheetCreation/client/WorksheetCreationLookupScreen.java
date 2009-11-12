@@ -103,8 +103,6 @@ public class WorksheetCreationLookupScreen extends Screen
 
         meta = new WorksheetCreationMetaMap();
 
-        initialize();
-
         DeferredCommand.addCommand(new Command() {
             public void execute() {
                 postConstructor();
@@ -117,46 +115,17 @@ public class WorksheetCreationLookupScreen extends Screen
      * screen is attached to the browser. It is usually called in deferred command.
      */
     private void postConstructor() {
-        ArrayList<DictionaryDO> dictList;
-        ArrayList<SectionDO> sectList;
-        ArrayList<TableDataRow> model;
-
+        initialize();
         setState(State.DEFAULT);
         setState(State.QUERY);
-
-        //
-        // load analysis status dropdown model
-        //
-        sectList  = SectionCache.getSectionList();
-        model = new ArrayList<TableDataRow>();
-        model.add(new TableDataRow(null, ""));
-        for (SectionDO resultDO : sectList)
-            model.add(new TableDataRow(resultDO.getId(),resultDO.getName()));
-        sectionId.setModel(model);
-        
-        //
-        // load analysis status dropdown model
-        //
-        dictList  = DictionaryCache.getListByCategorySystemName("analysis_status");
-        model = new ArrayList<TableDataRow>();
-        model.add(new TableDataRow(null, ""));
-        for (DictionaryDO resultDO : dictList)
-            model.add(new TableDataRow(resultDO.getId(),resultDO.getEntry()));
-        statusId.setModel(model);
-        
-        //
-        // load type of sample dropdown model
-        //
-        dictList  = DictionaryCache.getListByCategorySystemName("type_of_sample");
-        model = new ArrayList<TableDataRow>();
-        model.add(new TableDataRow(null, ""));
-        for (DictionaryDO resultDO : dictList)
-            model.add(new TableDataRow(resultDO.getId(),resultDO.getEntry()));
-        typeOfSampleId.setModel(model);
-
+        initializeDropdowns();
         DataChangeEvent.fire(this);
-}
+    }
     
+    /**
+     * Setup state and data change handles for every widget on the screen
+     */
+    @SuppressWarnings("unchecked")
     private void initialize() {
         //
         // screen fields and buttons
@@ -323,11 +292,50 @@ public class WorksheetCreationLookupScreen extends Screen
             }
         });   
     }
+    
+    @SuppressWarnings("unchecked")
+    private void initializeDropdowns() {
+        ArrayList<DictionaryDO> dictList;
+        ArrayList<SectionDO> sectList;
+        ArrayList<TableDataRow> model;
+
+        //
+        // load analysis status dropdown model
+        //
+        sectList  = SectionCache.getSectionList();
+        model = new ArrayList<TableDataRow>();
+        model.add(new TableDataRow(null, ""));
+        for (SectionDO resultDO : sectList)
+            model.add(new TableDataRow(resultDO.getId(),resultDO.getName()));
+        sectionId.setModel(model);
+        
+        //
+        // load analysis status dropdown model
+        //
+        dictList  = DictionaryCache.getListByCategorySystemName("analysis_status");
+        model = new ArrayList<TableDataRow>();
+        model.add(new TableDataRow(null, ""));
+        for (DictionaryDO resultDO : dictList)
+            model.add(new TableDataRow(resultDO.getId(),resultDO.getEntry()));
+        statusId.setModel(model);
+        ((Dropdown<Integer>)analysesTable.getColumns().get(5).getColumnWidget()).setModel(model);
+        
+        //
+        // load type of sample dropdown model
+        //
+        dictList  = DictionaryCache.getListByCategorySystemName("type_of_sample");
+        model = new ArrayList<TableDataRow>();
+        model.add(new TableDataRow(null, ""));
+        for (DictionaryDO resultDO : dictList)
+            model.add(new TableDataRow(resultDO.getId(),resultDO.getEntry()));
+        typeOfSampleId.setModel(model);
+    }
 
     //
     // overriding AutoComplete's getQuery to return the id of the
     // selection instead of the text
     //
+    @SuppressWarnings("unchecked")
     public ArrayList<QueryData> getQueryFields() {
         ArrayList<QueryData> list;
         QueryData            qd;
@@ -392,7 +400,6 @@ public class WorksheetCreationLookupScreen extends Screen
     private void setQueryResult(ArrayList<WorksheetCreationVO> list) {
         int                     i;
         ArrayList<TableDataRow> model;
-        DictionaryDO            dictDo;
         TableDataRow            row;
         WorksheetCreationVO     analysisRow;
         
@@ -417,11 +424,7 @@ public class WorksheetCreationLookupScreen extends Screen
                 row.cells.get(2).value = analysisRow.getTestName();
                 row.cells.get(3).value = analysisRow.getMethodName();
                 row.cells.get(4).value = analysisRow.getSectionName();
-
-                dictDo = DictionaryCache.getEntryFromId(analysisRow.getStatusId());
-                if (dictDo != null)
-                    row.cells.get(5).value = dictDo.getEntry();          
-
+                row.cells.get(5).value = analysisRow.getStatusId();          
                 row.cells.get(6).value = analysisRow.getCollectionDate();
                 row.cells.get(7).value = analysisRow.getReceivedDate();
                 row.cells.get(8).value = analysisRow.getDueDays();
