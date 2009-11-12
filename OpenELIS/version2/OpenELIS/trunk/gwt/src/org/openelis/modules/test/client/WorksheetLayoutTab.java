@@ -91,14 +91,13 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
     private AutoComplete                     scriptlet, qcname;
     private ScreenService                    scriptletService, qcService;
 
-    public WorksheetLayoutTab(ScreenDefInt def, ScreenService service,
+    public WorksheetLayoutTab(ScreenDefInt def, ScreenWindow window, ScreenService service,
                               ScreenService scriptletService, ScreenService qcService) {
         setDef(def);
-
+        setWindow(window);
         this.service = service;
         this.scriptletService = scriptletService;
         this.qcService = qcService;
-
         initialize();
 
         initializeDropdowns();

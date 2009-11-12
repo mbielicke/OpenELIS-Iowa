@@ -52,6 +52,7 @@ import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.Label;
 import org.openelis.gwt.widget.QueryFieldUtil;
+import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableRow;
 import org.openelis.gwt.widget.table.TableWidget;
@@ -70,6 +71,7 @@ import org.openelis.manager.TestReflexManager;
 import org.openelis.manager.TestResultManager;
 import org.openelis.metamap.TestMetaMap;
 import org.openelis.modules.test.client.AnalyteAndResultTab.Action;
+import org.openelis.utilcommon.DataBaseUtil;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.SelectionEvent;
@@ -85,16 +87,17 @@ public class PrepTestAndReflexTestTab extends Screen implements GetMatchesHandle
     private TestResultManager      testResultManager;
 
     private boolean                loaded;
-
+    private Integer                typeDict;
+    
     private TableWidget            testPrepTable, testReflexTable;
     private AppButton              addPrepTestButton, removePrepTestButton, addReflexTestButton,
                                    removeReflexTestButton;
     private AutoComplete<Integer>  prepTestAuto, reflexTestAuto, analyteAuto, resultAuto;
     private Label<String>          prepMethodName, reflexMethodName; 
 
-    public PrepTestAndReflexTestTab(ScreenDefInt def, ScreenService service) {
+    public PrepTestAndReflexTestTab(ScreenDefInt def, ScreenWindow window, ScreenService service) {
         setDef(def);
-
+        setWindow(window);        
         this.service = service;
         initialize();
 
@@ -391,12 +394,11 @@ public class PrepTestAndReflexTestTab extends Screen implements GetMatchesHandle
                 ArrayList<TableDataRow> model;
                 TableDataRow row, trow, arow;
                 Integer rg;
-                int ar, size;
+                int r, size;
                 String value;
-                Integer dictId;
 
-                ar = testReflexTable.getSelectedRow();
-                trow = testReflexTable.getRow(ar);
+                r = testReflexTable.getSelectedRow();
+                trow = testReflexTable.getRow(r);
                 arow = (TableDataRow)trow.cells.get(2).getValue();
 
                 model = new ArrayList<TableDataRow>();
@@ -415,17 +417,16 @@ public class PrepTestAndReflexTestTab extends Screen implements GetMatchesHandle
                     return;
                 }
 
-                size = testResultManager.getResultGroupSize(rg);
-                dictId = DictionaryCache.getIdFromSystemName("test_res_type_dictionary");
+                size = testResultManager.getResultGroupSize(rg);                
 
                 for (int i = 0; i < size; i++ ) {
                     data = testResultManager.getResultAt(rg, i);
                     row = new TableDataRow(1);
-                    if (dictId.equals(data.getTypeId()))
+                    if (DataBaseUtil.isSame(typeDict,data.getTypeId()))
                         value = data.getDictionary();
                     else
                         value = data.getValue();
-                    if (value != null && !"".equals(value)) {
+                    if (DataBaseUtil.isEmpty(value)) {
                         row.key = data.getId();
                         row.cells.get(0).setValue(value);
                         model.add(row);
@@ -646,18 +647,24 @@ public class PrepTestAndReflexTestTab extends Screen implements GetMatchesHandle
         list = DictionaryCache.getListByCategorySystemName("test_reflex_flags");
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        for (DictionaryDO resultDO : list) {
-            model.add(new TableDataRow(resultDO.getId(), resultDO.getEntry()));
+        for (DictionaryDO data : list) {
+            model.add(new TableDataRow(data.getId(), data.getEntry()));
         }
         ((Dropdown)testReflexTable.getColumnWidget(meta.getTestReflex().getFlagsId())).setModel(model);
+        
+        try {
+            typeDict = DictionaryCache.getIdFromSystemName("test_res_type_dictionary");
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+        }
     }
 
     private Integer getResultGroupForTestAnalyte(Integer taId) {
-        TestAnalyteViewDO anaDO;
+        TestAnalyteViewDO data;
         for (int i = 0; i < testAnalyteManager.rowCount(); i++ ) {
-            anaDO = testAnalyteManager.getAnalyteAt(i, 0);
-            if (taId.equals(anaDO.getId()))
-                return anaDO.getResultGroup();
+            data = testAnalyteManager.getAnalyteAt(i, 0);
+            if (taId.equals(data.getId()))
+                return data.getResultGroup();
         }
 
         return null;
@@ -683,17 +690,14 @@ public class PrepTestAndReflexTestTab extends Screen implements GetMatchesHandle
 
     private void setResultErrors(TestResultViewDO data, String key, boolean matchLabel) {
         TableDataRow row;
-        String val;
+        String val,value;
         Integer id;
-        String value;
-        Integer dictId;
 
         id = data.getId();
-        dictId = DictionaryCache.getIdFromSystemName("test_res_type_dictionary");
         for (int i = 0; i < testReflexTable.numRows(); i++ ) {
             row = (TableDataRow)testReflexTable.getObject(i, 3);
             val = (String)row.cells.get(0).getValue();
-            if (dictId.equals(data.getTypeId()))
+            if (DataBaseUtil.isSame(typeDict,data.getTypeId()))
                 value = data.getDictionary();
             else
                 value = data.getValue();

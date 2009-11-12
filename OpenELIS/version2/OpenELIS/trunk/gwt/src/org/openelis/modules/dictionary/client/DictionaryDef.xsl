@@ -204,7 +204,7 @@ UIRF Software License are applicable instead of those above.
                   <col key="{dictionary:getLocalAbbrev($dictNew)}" width="120"  header="{resource:getString($constants,'abbr')}">
                     <textbox max="10" field="String" />
                   </col>
-                  <col key="{dictionary:getEntry($dictNew)}" width="180"  header="{resource:getString($constants,'entry')}">
+                  <col key="{dictionary:getEntry($dictNew)}" width="180" sort = "true" header="{resource:getString($constants,'entry')}">
                     <textbox max="255" field="String" required = "true"/>
                   </col>
                   <col key="{relentry:getEntry($rel)}" width="150" header="{resource:getString($constants,'relEntry')}">

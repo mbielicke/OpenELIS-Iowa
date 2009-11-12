@@ -117,7 +117,7 @@ public class TestSectionManager implements RPC {
         proxy().validate(this);
     }
     
-    public TestSectionViewDO getDefaultSection() {
+    public TestSectionViewDO getDefaultSection() throws Exception {
         Integer defaultId;
         TestSectionViewDO data;
         

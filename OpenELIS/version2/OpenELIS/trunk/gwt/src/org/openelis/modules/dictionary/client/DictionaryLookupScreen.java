@@ -291,6 +291,14 @@ public class DictionaryLookupScreen extends Screen
             }
         });                        
     }
+    
+    public void setQueryResult(String pattern, ArrayList<IdNameVO> list) {
+        if (DataBaseUtil.isEmpty(pattern))
+            return;              
+
+        findTextBox.setText(pattern);
+        setQueryResult(list);
+    }
 
     private void setQueryResult(ArrayList<IdNameVO> list) {
         ArrayList<TableDataRow> model;
@@ -306,7 +314,6 @@ public class DictionaryLookupScreen extends Screen
         dictEntTable.load(model);
         
         window.setDone(consts.get("done"));
-
     }
 
 }

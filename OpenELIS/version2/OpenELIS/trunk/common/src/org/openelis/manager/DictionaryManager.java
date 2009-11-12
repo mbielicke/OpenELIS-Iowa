@@ -26,9 +26,12 @@
 package org.openelis.manager;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 import org.openelis.domain.DictionaryViewDO;
 import org.openelis.gwt.common.RPC;
+import org.openelis.utilcommon.DataBaseUtil;
 
 public class DictionaryManager implements RPC {
 
@@ -46,7 +49,7 @@ public class DictionaryManager implements RPC {
     }
 
     /**
-     * Creates a new instance of this object. 
+     * Creates a new instance of this object.
      */
     public static DictionaryManager getInstance() {
         return new DictionaryManager();
@@ -61,12 +64,12 @@ public class DictionaryManager implements RPC {
     public DictionaryViewDO getEntryAt(int i) {
         return entries.get(i);
     }
-    
+
     public void setEntryAt(DictionaryViewDO entry, int i) {
         entries().set(i, entry);
     }
 
-    public void addEntry(DictionaryViewDO entry) {       
+    public void addEntry(DictionaryViewDO entry) {
         entries().add(entry);
     }
 
@@ -94,9 +97,9 @@ public class DictionaryManager implements RPC {
             return;
 
         entry = entries.remove(oldIndex);
-        if(newIndex > oldIndex)
-            newIndex--;
-        
+        if (newIndex > oldIndex)
+            newIndex-- ;
+
         if (newIndex >= count())
             addEntry(entry);
         else
@@ -119,6 +122,10 @@ public class DictionaryManager implements RPC {
         proxy().validate(this);
     }
     
+    public ArrayList<DictionaryViewDO> getEntries() {
+        return entries;
+    }
+
     // friendly methods used by managers and proxies
     Integer getCategoryId() {
         return categoryId;
@@ -126,10 +133,6 @@ public class DictionaryManager implements RPC {
 
     void setCategoryId(Integer categoryId) {
         this.categoryId = categoryId;
-    }
-
-    ArrayList<DictionaryViewDO> getEntries() {
-        return entries;
     }
 
     void setEntries(ArrayList<DictionaryViewDO> entries) {
@@ -152,8 +155,8 @@ public class DictionaryManager implements RPC {
             proxy = new DictionaryManagerProxy();
         return proxy;
     }
-    
-    private ArrayList<DictionaryViewDO> entries(){
+
+    private ArrayList<DictionaryViewDO> entries() {
         if (entries == null)
             entries = new ArrayList<DictionaryViewDO>();
         return entries;

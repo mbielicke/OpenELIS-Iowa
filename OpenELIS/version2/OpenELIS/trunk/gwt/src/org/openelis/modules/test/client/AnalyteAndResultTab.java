@@ -37,6 +37,8 @@ import org.openelis.domain.TestResultViewDO;
 import org.openelis.domain.TestTypeOfSampleDO;
 import org.openelis.gwt.common.GridFieldErrorException;
 import org.openelis.gwt.common.LocalizedException;
+import org.openelis.gwt.common.data.Query;
+import org.openelis.gwt.common.data.QueryData;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.BeforeGetMatchesEvent;
@@ -75,6 +77,7 @@ import org.openelis.manager.TestAnalyteManager;
 import org.openelis.manager.TestManager;
 import org.openelis.manager.TestResultManager;
 import org.openelis.manager.TestTypeOfSampleManager;
+import org.openelis.metamap.CategoryMetaMap;
 import org.openelis.metamap.TestMetaMap;
 import org.openelis.modules.dictionary.client.DictionaryLookupScreen;
 import org.openelis.utilcommon.DataBaseUtil;
@@ -99,6 +102,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
     
     private TestManager                        manager;
     private TestMetaMap                        meta = new TestMetaMap();
+    private CategoryMetaMap                    catMeta = new CategoryMetaMap();                 
     
     private TestAnalyteManager                 testAnalyteManager;
     private TestResultManager                  testResultManager;
@@ -111,7 +115,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
                                                typeDefault, typeDate, typeDateTime,
                                                typeTime;
     
-    private DictionaryLookupScreen             dictEntryPicker; 
+    private DictionaryLookupScreen             dictLookup; 
     
     private TableWidget                        analyteTable, resultTable;
     private Dropdown<Integer>                  typeId;       
@@ -136,16 +140,15 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
     private ResultRangeNumeric                 rangeNumeric;
     private ResultRangeTiter                   rangeTiter;
     
-    public AnalyteAndResultTab(ScreenDefInt def, ScreenService service,
-                               ScreenService scriptletService,ScreenService analyteService,
+    public AnalyteAndResultTab(ScreenDefInt def, ScreenWindow window, ScreenService service,
+                               ScreenService scriptletService, ScreenService analyteService,
                                ScreenService dictionaryService) {
         setDef(def);
-        
-        
+        setWindow(window);        
         this.service = service;
         this.scriptletService = scriptletService;
         this.analyteService = analyteService;
-        this.dictionaryService = dictionaryService;
+        this.dictionaryService = dictionaryService;        
         initialize();  
         
         initializeDropdowns();
@@ -850,7 +853,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
                 int r,c,group;                
                 TestResultViewDO data ;
                 Object val;
-                DictionaryDO dict;
+                IdNameVO dict;
 
                 r = event.getRow();
                 c = event.getCol();
@@ -871,7 +874,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
                                 dict = getDictionary((String)val);
                                 if (dict != null) {
                                     data.setValue(dict.getId().toString());
-                                    data.setDictionary(dict.getEntry());                                    
+                                    data.setDictionary(dict.getName());                                    
                                 } else {
                                     data.setDictionary(null);
                                     throw new LocalizedException("test.invalidValue");
@@ -999,7 +1002,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
         dictionaryLookUpButton = (AppButton)def.getWidget("dictionaryLookUpButton");
         addScreenHandler(dictionaryLookUpButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-                showDictionary(null);
+                showDictionary(null,null);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -1235,19 +1238,32 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
        
     } 
     
-    private DictionaryDO getDictionary(String entry) {
-        ArrayList<DictionaryDO> list;
+    private IdNameVO getDictionary(String value) {
+        ArrayList<IdNameVO> list;
+        Query query;  
+        QueryData field;
+        ArrayList<QueryData> fields;
         
-        entry = DataBaseUtil.trim(entry); 
-        if (entry == null)
+        //entry = DataBaseUtil.trim(entry); 
+        if (DataBaseUtil.isEmpty(value))
             return null;
         
+        query = new Query();
+        fields = new ArrayList<QueryData>();
+        field = new QueryData();
+        field.key = catMeta.getDictionary().getEntry();
+        field.type = QueryData.Type.STRING;
+        field.query = value;
+        fields.add(field);       
+        
+        query.setFields(fields);
+        
         try {
-            list = dictionaryService.callList("fetchByEntry", entry);
+            list = dictionaryService.callList("fetchByEntry", query);
             if (list.size() == 1)
                 return list.get(0);
             else if (list.size() > 1)                
-                showDictionary(entry);
+                showDictionary(value,list);
         } catch (Exception e) {
             e.printStackTrace();
             Window.alert(e.getMessage());
@@ -1282,14 +1298,18 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
         
         typeId.setModel(model);
         
-        typeDict     = DictionaryCache.getIdFromSystemName("test_res_type_dictionary");
-        typeNumeric  = DictionaryCache.getIdFromSystemName("test_res_type_numeric");
-        typeTiter    = DictionaryCache.getIdFromSystemName("test_res_type_titer");
-        typeDefault  = DictionaryCache.getIdFromSystemName("test_res_type_default");
-        typeDate     = DictionaryCache.getIdFromSystemName("test_res_type_date");
-        typeDateTime = DictionaryCache.getIdFromSystemName("test_res_type_date_time");
-        typeTime     = DictionaryCache.getIdFromSystemName("test_res_type_time");
-              
+        try {
+            typeDict = DictionaryCache.getIdFromSystemName("test_res_type_dictionary");
+            typeNumeric = DictionaryCache.getIdFromSystemName("test_res_type_numeric");
+            typeTiter = DictionaryCache.getIdFromSystemName("test_res_type_titer");
+            typeDefault = DictionaryCache.getIdFromSystemName("test_res_type_default");
+            typeDate = DictionaryCache.getIdFromSystemName("test_res_type_date");
+            typeDateTime = DictionaryCache.getIdFromSystemName("test_res_type_date_time");
+            typeTime = DictionaryCache.getIdFromSystemName("test_res_type_time");
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+        }
+                      
         model = new ArrayList<TableDataRow>();        
         model.add(new TableDataRow(null, ""));
         for (DictionaryDO resultDO : DictionaryCache.getListByCategorySystemName("test_result_type")) 
@@ -1337,9 +1357,13 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
             for(int i=0; i < sampleTypeManager.count(); i++) {
                 data = sampleTypeManager.getTypeAt(i);
                 unitId = data.getUnitOfMeasureId();
-                if(unitId != null) {
-                    entry = DictionaryCache.getEntryFromId(unitId).getEntry();
-                    model.add(new TableDataRow(unitId, entry));
+                try {
+                    if(unitId != null) {
+                        entry = DictionaryCache.getEntryFromId(unitId).getEntry();
+                        model.add(new TableDataRow(unitId, entry));
+                    } 
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
                 }
             }
         } else {
@@ -1710,19 +1734,18 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
         }
     }    
     
-    private void showDictionary(String entry) {
+    private void showDictionary(String entry,ArrayList<IdNameVO> list) {
         ScreenWindow modal;                                
         
-        if(dictEntryPicker == null) {
+        if(dictLookup == null) {
             try {
-                dictEntryPicker = new DictionaryLookupScreen();
-                dictEntryPicker.addActionHandler(new ActionHandler<DictionaryLookupScreen.Action>(){
+                dictLookup = new DictionaryLookupScreen();
+                dictLookup.addActionHandler(new ActionHandler<DictionaryLookupScreen.Action>(){
                     public void onAction(ActionEvent<DictionaryLookupScreen.Action> event) {
                        int selTab,numTabs;
                        ArrayList<TableDataRow> model;
                        TestResultViewDO resDO;
                        TableDataRow row;
-                       Integer dictId;   
                        
                        selTab = resultTabPanel.getTabBar().getSelectedTab();     
                        numTabs = resultTabPanel.getTabBar().getTabCount();
@@ -1736,11 +1759,10 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
                                for(int i = 0; i < model.size(); i++) {
                                    row = model.get(i);                                                   
                                    testResultManager.addResultAt(selTab+1,resultTable.numRows(),getNextTempId());
-                                   resDO = testResultManager.getResultAt(selTab+1,resultTable.numRows());
-                                   dictId = DictionaryCache.getIdFromSystemName("test_res_type_dictionary");
+                                   resDO = testResultManager.getResultAt(selTab+1,resultTable.numRows());                                   
                                    resDO.setValue(String.valueOf((Integer)row.key));
                                    resDO.setDictionary((String)row.cells.get(0).getValue());
-                                   resDO.setTypeId(dictId);                                           
+                                   resDO.setTypeId(typeDict);                                           
                                }
                                DataChangeEvent.fire(screen, resultTable);
                            }
@@ -1756,11 +1778,14 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
         }
         modal = new ScreenWindow("Dictionary LookUp","dictionaryEntryPickerScreen","",true,false);
         modal.setName(consts.get("chooseDictEntry"));
-        modal.setContent(dictEntryPicker);
-        dictEntryPicker.setScreenState(State.DEFAULT);
+        modal.setContent(dictLookup);
+        dictLookup.setScreenState(State.DEFAULT);
         if (entry != null) {
-            dictEntryPicker.clearFields();
-            dictEntryPicker.executeQuery(entry+"*");
+            dictLookup.clearFields();
+            dictLookup.executeQuery(entry);
+        } else if(list != null) {
+            dictLookup.clearFields();
+            dictLookup.setQueryResult(entry, list);
         }
     }
     

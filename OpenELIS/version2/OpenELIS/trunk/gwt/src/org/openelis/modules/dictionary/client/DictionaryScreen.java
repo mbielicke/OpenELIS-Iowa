@@ -26,6 +26,8 @@
 package org.openelis.modules.dictionary.client;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.EnumSet;
 
 import org.openelis.cache.SectionCache;
@@ -66,9 +68,13 @@ import org.openelis.gwt.widget.table.event.RowAddedEvent;
 import org.openelis.gwt.widget.table.event.RowAddedHandler;
 import org.openelis.gwt.widget.table.event.RowDeletedEvent;
 import org.openelis.gwt.widget.table.event.RowDeletedHandler;
+import org.openelis.gwt.widget.table.event.SortEvent;
+import org.openelis.gwt.widget.table.event.SortHandler;
+import org.openelis.gwt.widget.table.event.SortEvent.SortDirection;
 import org.openelis.manager.CategoryManager;
 import org.openelis.metamap.CategoryMetaMap;
 import org.openelis.modules.main.client.openelis.OpenELIS;
+import org.openelis.utilcommon.DataBaseUtil;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -83,6 +89,8 @@ public class DictionaryScreen extends Screen {
     private CategoryMetaMap       meta = new CategoryMetaMap();
     private SecurityModule        security;
 
+    private DictionaryScreen      screen; 
+    private DictionaryComparator  comparator;
     private TextBox               name, description, systemName;
     private AppButton             queryButton, previousButton, nextButton, addButton, updateButton,
                                   commitButton, abortButton, removeEntryButton, addEntryButton;
@@ -93,6 +101,42 @@ public class DictionaryScreen extends Screen {
     private ButtonGroup           atoz;
     private ScreenNavigator       nav;
 
+    private class DictionaryComparator implements Comparator<DictionaryViewDO> {
+        boolean ascending;
+
+        public void setSortAscending(boolean ascending) {
+            this.ascending = ascending;
+        }
+
+        public int compare(DictionaryViewDO data1, DictionaryViewDO data2) {
+            String entry1, entry2;
+
+            entry1 = data1.getEntry();
+            entry2 = data2.getEntry();            
+            
+            if(ascending) {
+                return compare(entry1, entry2);
+            } else {
+                return (compare(entry1, entry2) * -1);
+            }
+        }
+        
+        private int compare(String entry1, String entry2) {
+            if(DataBaseUtil.isEmpty(entry1)) {
+                if (DataBaseUtil.isEmpty(entry2))
+                    return 0;
+                else
+                    return 1;
+            } else {
+                if(DataBaseUtil.isEmpty(entry2))
+                    return -1;          
+                else 
+                    return entry1.compareTo(entry2);
+            }
+        }
+
+    }
+    
     public DictionaryScreen() throws Exception {
         super((ScreenDefInt)GWT.create(DictionaryDef.class));
         service = new ScreenService("controller?service=org.openelis.modules.dictionary.server.DictionaryService");
@@ -101,8 +145,6 @@ public class DictionaryScreen extends Screen {
         if (security == null)
             throw new SecurityException("screenPermException", "Dictionary Screen");
 
-        // Setup link between Screen and widget Handlers
-        initialize();
 
         DeferredCommand.addCommand(new Command() {
             public void execute() {
@@ -119,12 +161,15 @@ public class DictionaryScreen extends Screen {
     private void postConstructor() {
         manager = CategoryManager.getInstance();
 
+        initialize();
         setState(State.DEFAULT);
         initializeDropdowns();
         DataChangeEvent.fire(this);
     }
 
-    private void initialize() {
+    private void initialize() {        
+        screen = this; 
+        
         queryButton = (AppButton)def.getWidget("query");
         addScreenHandler(queryButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
@@ -392,10 +437,32 @@ public class DictionaryScreen extends Screen {
 
         });
         
+        dictTable.addSortHandler(new SortHandler(){
+            public void onSort(SortEvent event) {
+                SortDirection direction;
+                
+                direction = event.getDirection();
+                
+                try {
+                    if(direction == SortEvent.SortDirection.ASCENDING)
+                        sort(manager.getEntries().getEntries(),true);
+                    else 
+                        sort(manager.getEntries().getEntries(),false);
+                    
+                    DataChangeEvent.fire(screen, dictTable);
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                }
+                
+                
+            }
+            
+        });
+        
         dictTable.enableDrag(true);
         dictTable.enableDrop(true);
         dictTable.addTarget(dictTable);
-
+                
         relatedEntry.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
                 QueryFieldUtil parser;
@@ -540,8 +607,8 @@ public class DictionaryScreen extends Screen {
         list = SectionCache.getSectionList();
 
         model.add(new TableDataRow(null, ""));
-        for (SectionDO section : list)
-            model.add(new TableDataRow(section.getId(), section.getName()));
+        for (SectionDO data : list)
+            model.add(new TableDataRow(data.getId(), data.getName()));
         sectionId.setModel(model);
     }
 
@@ -679,6 +746,13 @@ public class DictionaryScreen extends Screen {
         window.clearStatus();
 
         return true;
+    }
+    
+    private void sort(ArrayList<DictionaryViewDO> list, boolean ascending) {       
+        if(comparator == null)
+            comparator = new DictionaryComparator();
+        comparator.setSortAscending(ascending);
+        Collections.sort(list, comparator);
     }
 
     private ArrayList<TableDataRow> getTableModel() {

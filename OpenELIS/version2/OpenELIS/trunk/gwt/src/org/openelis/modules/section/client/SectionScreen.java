@@ -91,9 +91,6 @@ public class SectionScreen extends Screen {
         if (security == null)
             throw new SecurityException("screenPermException", "Section Screen");
 
-        // Setup link between Screen and widget Handlers
-        initialize();        
-        
         DeferredCommand.addCommand(new Command() {
             public void execute() {
                 postConstructor();
@@ -107,7 +104,8 @@ public class SectionScreen extends Screen {
      */
     private void postConstructor() {
         data = new SectionViewDO();
-
+        
+        initialize(); 
         setState(State.DEFAULT);
         DataChangeEvent.fire(this);
     }
