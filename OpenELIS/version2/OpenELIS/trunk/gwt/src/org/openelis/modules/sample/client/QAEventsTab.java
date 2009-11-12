@@ -32,8 +32,6 @@ import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.AnalysisQaEventViewDO;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.DictionaryDO;
-import org.openelis.domain.DictionaryDO;
-import org.openelis.domain.QaEventVO;
 import org.openelis.domain.SampleQaEventViewDO;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
@@ -79,9 +77,10 @@ public class QAEventsTab extends Screen {
 
     protected QaeventLookupScreen    qaEventScreen;
 
-    public QAEventsTab(ScreenDefInt def) {
+    public QAEventsTab(ScreenDefInt def, ScreenWindow window) {
         service = new ScreenService("OpenELISServlet?service=org.openelis.modules.qaevent.server.QaEventService");
         setDef(def);
+        setWindow(window);
 
         initialize();
 

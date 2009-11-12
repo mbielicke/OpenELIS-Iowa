@@ -32,37 +32,15 @@ import org.openelis.server.handlers.DictionaryCacheHandler;
 
 public class DictionaryCacheService {
 
-    public DictionaryCacheRPC getIdBySystemName(String systemName) {
-        DictionaryCacheRPC rpc = new DictionaryCacheRPC();
-        DictionaryDO dictDO = DictionaryCacheHandler.getDictionaryDOFromSystemName(systemName);
-
-        if (dictDO != null) {
-            ArrayList list = new ArrayList();
-            list.add(dictDO);
-            rpc.dictionaryList = list;
-            return rpc;
-
-        } else
-            return null;
+    public DictionaryDO getIdBySystemName(String systemName) {
+        return DictionaryCacheHandler.getDictionaryDOFromSystemName(systemName);
     }
 
-    public DictionaryCacheRPC getSystemNameById(Integer id) {
-        DictionaryCacheRPC rpc = new DictionaryCacheRPC();
-        DictionaryDO dictDO = DictionaryCacheHandler.getDictionaryDOFromId(id);
-
-        if (dictDO != null) {
-            ArrayList list = new ArrayList();
-            list.add(dictDO);
-            rpc.dictionaryList = list;
-            return rpc;
-
-        } else
-            return null;
+    public DictionaryDO getSystemNameById(Integer id) {
+        return DictionaryCacheHandler.getDictionaryDOFromId(id);
     }
 
-    public DictionaryCacheRPC getListByCategorySystemName(String systemName) {
-        DictionaryCacheRPC rpc = new DictionaryCacheRPC();
-        rpc.dictionaryList = DictionaryCacheHandler.getListByCategorySystemName(systemName);
-        return rpc;
+    public ArrayList<DictionaryDO> getListByCategorySystemName(String systemName) {
+        return DictionaryCacheHandler.getListByCategorySystemName(systemName);
     }
 }

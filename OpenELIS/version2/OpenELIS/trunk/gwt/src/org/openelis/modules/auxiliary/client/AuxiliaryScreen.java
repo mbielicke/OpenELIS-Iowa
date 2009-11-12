@@ -400,9 +400,9 @@ public class AuxiliaryScreen extends OpenELISScreenForm<AuxiliaryForm, Query<Tab
                        Integer dictId;                               
                        if(event.getAction() == DictionaryLookupScreen.Action.CANCEL) {
                            model = (ArrayList<org.openelis.gwt.widget.table.TableDataRow>)event.getData();                                                                                      
-                           dictId = DictionaryCache.getIdFromSystemName("aux_dictionary");                             
+                           dictId = null; //DictionaryCache.getIdFromSystemName("aux_dictionary");                             
                            if(auxFieldValueTableWidget.model.getAutoAdd()) {        
-                               dictId = DictionaryCache.getIdFromSystemName("aux_dictionary");  
+                               dictId = null; //DictionaryCache.getIdFromSystemName("aux_dictionary");  
                                addAuxFieldValueRows(model,dictId);                                                      
                            } else {
                                Window.alert(consts.get("auxFieldSelFirst"));             
@@ -702,7 +702,7 @@ public class AuxiliaryScreen extends OpenELISScreenForm<AuxiliaryForm, Query<Tab
         if(row > -1) {
             trow = auxFieldValueTableWidget.model.getRow(row);
             key = (Integer)(((DropDownField<Integer>)trow.cells[0]).getSelectedKey());            
-            sysname = DictionaryCache.getSystemNameFromId(key);
+            sysname = null; //DictionaryCache.getSystemNameFromId(key);
             return sysname;
         }    
         return null;

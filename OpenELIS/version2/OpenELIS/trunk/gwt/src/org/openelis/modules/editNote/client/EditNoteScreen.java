@@ -364,6 +364,7 @@ public class EditNoteScreen extends Screen implements HasActionHandlers<EditNote
         Integer oldTypeId, currentTypeId;
         TreeDataItem catNode = null, noteNode = null;
         StandardNoteDO note;
+        DictionaryDO dictDO;
 
         if (tree.numRows() > 0)
             tree.clear();
@@ -378,7 +379,13 @@ public class EditNoteScreen extends Screen implements HasActionHandlers<EditNote
 
             if ( !currentTypeId.equals(oldTypeId)) {
                 oldTypeId = currentTypeId;
-                DictionaryDO dictDO = DictionaryCache.getEntryFromId(currentTypeId);
+                
+                try{
+                    dictDO = DictionaryCache.getEntryFromId(currentTypeId);
+                }catch(Exception e){
+                    Window.alert(e.getMessage());
+                    dictDO = null;
+                }
 
                 catNode = new TreeDataItem(1);
                 catNode.leafType = "category";

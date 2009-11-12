@@ -70,8 +70,9 @@ public class TestResultsTab extends Screen {
     protected AnalysisManager       analysisMan;
     protected AnalysisViewDO        anDO;
 
-    public TestResultsTab(ScreenDefInt def) {
+    public TestResultsTab(ScreenDefInt def, ScreenWindow window) {
         setDef(def);
+        setWindow(window);
         
         initialize();
     }

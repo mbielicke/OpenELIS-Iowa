@@ -191,7 +191,7 @@ public class FillOrderScreen extends OpenELISScreenForm<FillOrderForm, Query<Tab
         model = getDictionaryIdEntryList(cache);
         ((TableDropdown)fillItemsTable.table.columns.get(4).getColumnWidget()).setModel(model);
         
-        orderPendingValue = DictionaryCache.getIdFromSystemName("order_status_pending");
+        orderPendingValue = null; //DictionaryCache.getIdFromSystemName("order_status_pending");
     }
 
     public void add() {

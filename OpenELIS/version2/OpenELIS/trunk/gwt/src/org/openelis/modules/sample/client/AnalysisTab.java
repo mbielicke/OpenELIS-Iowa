@@ -53,6 +53,7 @@ import org.openelis.gwt.widget.CalendarLookUp;
 import org.openelis.gwt.widget.CheckBox;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.QueryFieldUtil;
+import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.manager.AnalysisManager;
@@ -79,9 +80,10 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
     protected SampleItemViewDO sampleItem;
     protected Dropdown<Integer> statusId;
     
-        public AnalysisTab(ScreenDefInt def) {
+        public AnalysisTab(ScreenDefInt def, ScreenWindow window) {
         service = new ScreenService("OpenELISServlet?service=org.openelis.modules.analysis.server.AnalysisService");
         setDef(def);
+        setWindow(window);
         meta = new SampleMetaMap("sample.");
         
         initialize();

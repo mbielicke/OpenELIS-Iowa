@@ -29,10 +29,11 @@ import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.SampleOrganizationDO;
 import org.openelis.gwt.common.FieldErrorWarning;
 import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.FormErrorWarning;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.metamap.SampleEnvironmentalMetaMap;
+
+import com.google.gwt.user.client.Window;
 
 public class SampleOrganizationManagerProxy {
     protected static final String SAMPLE_SERVICE_URL = "org.openelis.modules.sample.server.SampleService";
@@ -44,7 +45,12 @@ public class SampleOrganizationManagerProxy {
     }
     
     public Integer getIdFromSystemName(String systemName){
-        return DictionaryCache.getIdFromSystemName(systemName);
+        try{
+            return DictionaryCache.getIdFromSystemName(systemName);
+        }catch(Exception e){
+            Window.alert(e.getMessage());
+            return null;
+        }
     }
     
     public SampleOrganizationManager fetchBySampleId(Integer sampleId) throws Exception {

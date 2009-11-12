@@ -773,10 +773,10 @@ xmlns:testMetaMap="xalan://org.openelis.metamap.TestMetaMap" xmlns:sectionMeta="
                 <TablePanel style="Form">
                 <row>
 	                <text style="Prompt">
-	                	<xsl:value-of select="resource:getString($constants,'desc')" />:
+	                	<xsl:value-of select="resource:getString($constants,'description')" />:
 	              	</text>
 	              	<widget colspan="3">
-              			<textbox key="auxDesc" width="312px" style="ScreenTextboxDisplayOnly"/>
+              			<textbox key="auxDesc" width="275px" style="ScreenTextboxDisplayOnly"/>
               		</widget>
 	                <text style="Prompt">
 	                	<xsl:value-of select="resource:getString($constants,'method')" />:
