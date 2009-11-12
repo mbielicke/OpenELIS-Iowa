@@ -38,6 +38,7 @@ import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 
 import org.openelis.cache.DictionaryCache;
+import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.TestWorksheetDO;
 import org.openelis.domain.TestWorksheetItemDO;
@@ -61,6 +62,7 @@ import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.ColumnComparator;
@@ -85,6 +87,7 @@ import org.openelis.modules.main.client.openelis.OpenELIS;
 public class WorksheetCreationScreen extends Screen implements HasActionHandlers<WorksheetCreationScreen.Action> {
 
     private boolean                          isSaved;
+    private Integer                          formatBatch, formatTotal, statusWorking;
     private SecurityModule                   security;
     private WorksheetManager                 manager;
     private WorksheetMetaMap                 meta;
@@ -115,9 +118,6 @@ public class WorksheetCreationScreen extends Screen implements HasActionHandlers
 
         meta   = new WorksheetMetaMap();
 
-        // Setup link between Screen and widget Handlers
-        initialize();
-
         DeferredCommand.addCommand(new Command() {
             public void execute() {
                 postConstructor();
@@ -136,6 +136,8 @@ public class WorksheetCreationScreen extends Screen implements HasActionHandlers
         manager       = WorksheetManager.getInstance();
         testIds       = new ArrayList<Integer>();
 
+        initialize();
+
         window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
             public void onBeforeClosed(BeforeCloseEvent event) {
                 if (exit())
@@ -146,6 +148,7 @@ public class WorksheetCreationScreen extends Screen implements HasActionHandlers
         });
         
         setState(State.DEFAULT);
+        initializeDropdowns();
         openLookupWindow();
 
         DataChangeEvent.fire(this);
@@ -154,6 +157,7 @@ public class WorksheetCreationScreen extends Screen implements HasActionHandlers
     /**
      * Setup state and data change handles for every widget on the screen
      */
+    @SuppressWarnings("unchecked")
     private void initialize() {
         worksheetId = (TextBox)def.getWidget(meta.getId());
         addScreenHandler(worksheetId, new ScreenEventHandler<Integer>() {
@@ -266,9 +270,34 @@ public class WorksheetCreationScreen extends Screen implements HasActionHandlers
         });   
     }
 
+    @SuppressWarnings("unchecked")
+    private void initializeDropdowns(){
+        ArrayList<DictionaryDO> dictList;
+        ArrayList<TableDataRow> model;
+
+        //
+        // load analysis status dropdown model
+        //
+        dictList  = DictionaryCache.getListByCategorySystemName("analysis_status");
+        model = new ArrayList<TableDataRow>();
+        model.add(new TableDataRow(null, ""));
+        for (DictionaryDO resultDO : dictList)
+            model.add(new TableDataRow(resultDO.getId(),resultDO.getEntry()));
+        ((Dropdown<Integer>)worksheetItemTable.getColumns().get(6).getColumnWidget()).setModel(model);
+
+        try {
+//            formatBatch   = DictionaryCache.getIdFromSystemName("wsheet_num_format_batch");
+            formatBatch   = DictionaryCache.getIdFromSystemName("batch");
+//            formatTotal   = DictionaryCache.getIdFromSystemName("wsheet_num_format_total");
+            formatTotal   = DictionaryCache.getIdFromSystemName("total");
+            statusWorking = DictionaryCache.getIdFromSystemName("worksheet_working");
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            window.close();
+        }
+    }
+    
     protected void openLookupWindow() {
-        ScreenWindow lookupWindow;
-        
         if (wcLookupScreen == null) {
             try {
                 wcLookupScreen = new WorksheetCreationLookupScreen();
@@ -283,7 +312,7 @@ public class WorksheetCreationScreen extends Screen implements HasActionHandlers
                             if (model != null) {
                                 for (int i = 0; i < model.size(); i++) {
                                     row  = model.get(i);
-                                    newRow = new TableDataRow(9);
+                                    newRow = new TableDataRow(11);
                                     data = (WorksheetCreationVO)row.data;
                                     
                                     if (!testIds.contains(data.getTestId()))
@@ -296,14 +325,16 @@ public class WorksheetCreationScreen extends Screen implements HasActionHandlers
                                     newRow.cells.get(5).value = row.cells.get(3).value;     // method name
                                     newRow.cells.get(6).value = row.cells.get(5).value;     // status
                                     newRow.cells.get(7).value = row.cells.get(6).value;     // collection date
-                                    newRow.cells.get(8).value = row.cells.get(7).value;     // received data and time
+                                    newRow.cells.get(8).value = row.cells.get(7).value;     // received date and time
+                                    newRow.cells.get(9).value = row.cells.get(8).value;     // due days
+                                    newRow.cells.get(10).value = row.cells.get(9).value;    // expire date and time
                                     analysisItems.add(newRow);
                                 }
                                 
                                 if (testIds.size() > 1) {
                                     Window.alert(consts.get("multipleTestsOnWorksheet"));
                                     testWorksheetDO = new TestWorksheetDO();
-                                    testWorksheetDO.setFormatId(DictionaryCache.getIdFromSystemName("wsheet_num_format_total"));
+                                    testWorksheetDO.setFormatId(formatTotal);
                                     testWorksheetDO.setBatchCapacity(500);
                                     testWorksheetDO.setTotalCapacity(500);
                                     testWorksheetItems.clear();
@@ -355,7 +386,7 @@ public class WorksheetCreationScreen extends Screen implements HasActionHandlers
         wDO = manager.getWorksheet();
         wDO.setCreatedDate(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE));
         wDO.setSystemUserId(OpenELIS.security.getSystemUserId());
-        wDO.setStatusId(DictionaryCache.getIdFromSystemName("worksheet_working"));
+        wDO.setStatusId(statusWorking);
         wDO.setFormatId(testWorksheetDO.getFormatId());
         
         try {
@@ -444,19 +475,16 @@ public class WorksheetCreationScreen extends Screen implements HasActionHandlers
     
     private void mergeAnalysesAndQCs() {
         int          i, major, minor;
-        String       sysName;
         TableDataRow row;
         
         // TODO -- Implement merging of sorted analyses with the QC template
         for (i = 0; i < analysisItems.size(); i++) {
-            row     = analysisItems.get(i);
-            sysName = DictionaryCache.getSystemNameFromId(testWorksheetDO.getFormatId());
-
-            if ("worksheet_num_format_batch".equals(sysName)) {
+            row = analysisItems.get(i);
+            if (formatBatch.equals(testWorksheetDO.getFormatId())) {
                 major = getWellMajorNumber(i+1);
                 minor = getWellMinorNumber(i+1);
                 row.cells.get(0).value = major+"-"+minor;
-            } else if ("worksheet_num_format_total".equals(sysName)) {
+            } else if (formatTotal.equals(testWorksheetDO.getFormatId())) {
                 row.cells.get(0).value = i + 1;
             }
         }

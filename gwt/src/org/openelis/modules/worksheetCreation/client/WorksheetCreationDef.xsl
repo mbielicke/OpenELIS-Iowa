@@ -106,7 +106,7 @@ UIRF Software License are applicable instead of those above.
 	        </appButton>
           </row>
         </TablePanel>
-        <table key="worksheetItemTable" width="auto" maxRows="9" showScroll="ALWAYS" tab="{worksheetMetaMap:getId($worksheet)},{worksheetMetaMap:getId($worksheet)}" title="" style="atozTable">
+        <table key="worksheetItemTable" width="800" maxRows="9" showScroll="ALWAYS" tab="{worksheetMetaMap:getId($worksheet)},{worksheetMetaMap:getId($worksheet)}" title="" style="ScreenTableWithSides">
           <col width="50" header="{resource:getString($constants,'wellNumber')}" sort="false">
             <label />
           </col>
@@ -126,13 +126,19 @@ UIRF Software License are applicable instead of those above.
             <label />
           </col>
           <col width="75" header="{resource:getString($constants,'status')}" sort="true">
-            <label />
+            <dropdown width="55"/>
           </col>
           <col width="75" header="{resource:getString($constants,'collected')}" sort="true">
             <calendar pattern="{resource:getString($constants,'datePattern')}" begin="0" end="2"/>
           </col>
           <col width="100" header="{resource:getString($constants,'received')}" sort="true">
             <calendar pattern="{resource:getString($constants,'dateTimePattern')}" begin="0" end="4"/>
+          </col>
+          <col width="50" header="{resource:getString($constants,'due')}" sort="true">
+            <label />
+          </col>
+          <col width="75" header="{resource:getString($constants,'expire')}" sort="true">
+            <calendar pattern="{resource:getString($constants,'datePattern')}" begin="0" end="2"/>
           </col>
         </table>
         <widget style="TableFooterPanel">

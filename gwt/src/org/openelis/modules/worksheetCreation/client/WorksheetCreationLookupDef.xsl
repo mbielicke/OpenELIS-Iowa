@@ -140,7 +140,7 @@ UIRF Software License are applicable instead of those above.
               </appButton>
           </widget>
         </HorizontalPanel>
-        <table key="analysesTable" width="800" maxRows="9" showScroll="ALWAYS" tab="{testMetaMap:getId($test)},{sampleMetaMap:getEnteredDate($sample)}" title="" style="atozTable">
+        <table key="analysesTable" width="800" maxRows="9" showScroll="ALWAYS" tab="{testMetaMap:getId($test)},{sampleMetaMap:getEnteredDate($sample)}" title="" style="ScreenTableWithSides">
           <col width="90" header="{resource:getString($constants,'accessionNum')}" sort="true">
             <label />
           </col>
@@ -162,7 +162,7 @@ UIRF Software License are applicable instead of those above.
             <label />
           </col>
           <col width="75" header="{resource:getString($constants,'status')}" sort="true">
-            <label />
+            <dropdown width="55"/>
           </col>
           <col width="75" header="{resource:getString($constants,'collected')}" sort="true">
             <calendar pattern="{resource:getString($constants,'datePattern')}" begin="0" end="2"/>
