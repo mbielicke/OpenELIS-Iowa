@@ -1296,19 +1296,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
         for(DictionaryDO resultDO :  DictionaryCache.getListByCategorySystemName("test_analyte_type"))
             model.add(new TableDataRow(resultDO.getId(),resultDO.getEntry()));
         
-        typeId.setModel(model);
-        
-        try {
-            typeDict = DictionaryCache.getIdFromSystemName("test_res_type_dictionary");
-            typeNumeric = DictionaryCache.getIdFromSystemName("test_res_type_numeric");
-            typeTiter = DictionaryCache.getIdFromSystemName("test_res_type_titer");
-            typeDefault = DictionaryCache.getIdFromSystemName("test_res_type_default");
-            typeDate = DictionaryCache.getIdFromSystemName("test_res_type_date");
-            typeDateTime = DictionaryCache.getIdFromSystemName("test_res_type_date_time");
-            typeTime = DictionaryCache.getIdFromSystemName("test_res_type_time");
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-        }
+        typeId.setModel(model);        
                       
         model = new ArrayList<TableDataRow>();        
         model.add(new TableDataRow(null, ""));
@@ -1340,6 +1328,19 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
         tableActions.setSelection("analyte");
         
         setUnitsOfMeasure();
+        
+        try {
+            typeDict = DictionaryCache.getIdFromSystemName("test_res_type_dictionary");
+            typeNumeric = DictionaryCache.getIdFromSystemName("test_res_type_numeric");
+            typeTiter = DictionaryCache.getIdFromSystemName("test_res_type_titer");
+            typeDefault = DictionaryCache.getIdFromSystemName("test_res_type_default");
+            typeDate = DictionaryCache.getIdFromSystemName("test_res_type_date");
+            typeDateTime = DictionaryCache.getIdFromSystemName("test_res_type_date_time");
+            typeTime = DictionaryCache.getIdFromSystemName("test_res_type_time");
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            window.close();
+        }
     }
     
     private void setUnitsOfMeasure() {        
@@ -1368,8 +1369,8 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
             }
         } else {
             dictList = DictionaryCache.getListByCategorySystemName("unit_of_measure");
-            for (DictionaryDO resultDO : dictList) {
-                model.add(new TableDataRow(resultDO.getId(), resultDO.getEntry()));
+            for (DictionaryDO dict : dictList) {
+                model.add(new TableDataRow(dict.getId(), dict.getEntry()));
             }
         }
         ((Dropdown<Integer>)resultTable.getColumnWidget(meta.getTestResult().getUnitOfMeasureId())).setModel(model);
