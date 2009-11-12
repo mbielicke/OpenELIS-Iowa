@@ -569,7 +569,7 @@ public class QcScreen extends Screen {
             public void onRowAdded(RowAddedEvent event) {
                 int r;
                 
-                r = qcAnalyteTable.getSelectedRow();
+                r = event.getIndex();
                 try {
                     manager.getAnalytes().addAnalyteAt(new QcAnalyteViewDO(), r);
                 } catch (Exception e) {
@@ -626,7 +626,6 @@ public class QcScreen extends Screen {
                         return;
                     }
                 }
-
                 qcAnalyteTable.addRow(r);
                 qcAnalyteTable.selectRow(r);
                 qcAnalyteTable.scrollToSelection();
@@ -659,7 +658,7 @@ public class QcScreen extends Screen {
         dictionaryButton = (AppButton)def.getWidget("dictionaryButton");
         addScreenHandler(dictionaryButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-//                showDictionary();
+                showDictionary(null);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
