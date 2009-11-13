@@ -39,7 +39,7 @@ public class WorksheetCreationVO implements RPC {
     protected Long     dueDays;
     protected String   domain, envDescription, /*projectName,*/ testName, methodName,
                        sectionName;
-    protected Datetime collectionDate, receivedDate, expireDate;
+    protected Datetime collectionDate, collectionTime, receivedDate, expireDate;
 
     public WorksheetCreationVO() {
 
@@ -47,14 +47,16 @@ public class WorksheetCreationVO implements RPC {
 
     // analysis, accession number, test, method, section, status and received
     public WorksheetCreationVO(Integer analysisId, String domain, Integer accessionNumber,
-                               Date collectionDate, Date receivedDate, String description,
-                               Integer priority, /*String projectName,*/ Integer testId, String testName,
-                               String methodName, Integer timeHolding, Integer timeTaAverage,
+                               Date collectionDate, Date collectionTime, Date receivedDate,
+                               String description, Integer priority, /*String projectName,*/
+                               Integer testId, String testName, String methodName,
+                               Integer timeHolding, Integer timeTaAverage,
                                String sectionName, Integer preAnalysisId, Integer statusId) {
         setAnalysisId(analysisId);
         setDomain(domain);
         setAccessionNumber(accessionNumber);
         setCollectionDate(DataBaseUtil.toYD(collectionDate));
+        setCollectionTime(DataBaseUtil.toHM(collectionTime));
         setReceivedDate(DataBaseUtil.toYM(receivedDate));
         setEnvDescription(description);
         setPriority(priority);
@@ -99,6 +101,14 @@ public class WorksheetCreationVO implements RPC {
 
     public void setCollectionDate(Datetime collectionDate) {
         this.collectionDate = DataBaseUtil.toYD(collectionDate);
+    }
+
+    public Datetime getCollectionTime() {
+        return collectionTime;
+    }
+
+    public void setCollectionTime(Datetime collectionTime) {
+        this.collectionTime = collectionTime;
     }
 
     public Datetime getReceivedDate() {
