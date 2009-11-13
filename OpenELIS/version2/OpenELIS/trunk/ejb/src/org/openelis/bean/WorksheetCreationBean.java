@@ -26,6 +26,7 @@
 package org.openelis.bean;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import javax.annotation.security.RolesAllowed;
@@ -38,13 +39,11 @@ import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.WorksheetCreationVO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.metamap.WorksheetCreationMetaMap;
 import org.openelis.remote.WorksheetCreationRemote;
 import org.openelis.util.QueryBuilderV2;
 import org.openelis.utilcommon.DataBaseUtil;
-import org.openelis.utils.GetPage;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -59,6 +58,7 @@ public class WorksheetCreationBean implements WorksheetCreationRemote {
     public WorksheetCreationBean() {
     }
 
+    @SuppressWarnings("unchecked")
     public ArrayList<WorksheetCreationVO> query(ArrayList<QueryData> fields, 
                                                 int first, int max) throws Exception {
         int                 i;
@@ -74,6 +74,7 @@ public class WorksheetCreationBean implements WorksheetCreationRemote {
                           WorksheetCreationMetaMap.SAMPLE.getDomain()+", "+
                           WorksheetCreationMetaMap.SAMPLE.getAccessionNumber()+", "+
                           WorksheetCreationMetaMap.SAMPLE.getCollectionDate()+", "+
+                          WorksheetCreationMetaMap.SAMPLE.getCollectionTime()+", "+
                           WorksheetCreationMetaMap.SAMPLE.getReceivedDate()+", "+
                           WorksheetCreationMetaMap.SAMPLE_ENVIRONMENTAL.getDescription()+", "+
                           WorksheetCreationMetaMap.SAMPLE_ENVIRONMENTAL.getPriority()+", "+
@@ -122,7 +123,7 @@ public class WorksheetCreationBean implements WorksheetCreationRemote {
                     // on the collection date and the tests definition of holding
                     // hours.
                     //
-                    vo.setExpireDate(computeExpireDate(vo.getCollectionDate(), vo.getTimeHolding()));
+                    vo.setExpireDate(computeExpireDate(vo.getCollectionDate(), vo.getCollectionTime(), vo.getTimeHolding()));
                 }
             }
         } catch (Exception anyE) {
@@ -152,11 +153,23 @@ public class WorksheetCreationBean implements WorksheetCreationRemote {
     }
     
     /*
-     * Computer the number of days before the sample is no longer viable for analysis
+     * Compute the Datetime after which the sample is no longer viable for analysis
      */
-    private Datetime computeExpireDate(Datetime collection, int holdingHours) {
-        if (collection != null)
-            return collection.add(holdingHours / 24);
-        return null;
+    private Datetime computeExpireDate(Datetime collectionDate, Datetime collectionTime, int holdingHours) {
+        Calendar tempCal;
+        Datetime expireDate;
+        
+        tempCal    = Calendar.getInstance();
+        expireDate = null;
+        if (collectionDate != null) {
+            tempCal.setTime(collectionDate.getDate());
+            if (collectionTime != null) {
+                tempCal.set(Calendar.HOUR_OF_DAY, collectionTime.get(Datetime.HOUR));
+                tempCal.set(Calendar.MINUTE, collectionTime.get(Datetime.MINUTE));
+            }
+            tempCal.add(Calendar.HOUR_OF_DAY, holdingHours);
+            expireDate = new Datetime(Datetime.YEAR, Datetime.MINUTE, tempCal.getTime());
+        }
+        return expireDate;
     }
 }
