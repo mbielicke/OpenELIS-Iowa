@@ -194,7 +194,14 @@ public class DictionaryLookupScreen extends Screen
     }
 
     public void ok() {
-        ActionEvent.fire(this, Action.OK, selectionList);
+        ArrayList<IdNameVO> list;
+        
+        list = new ArrayList<IdNameVO>();
+        
+        for(TableDataRow row: selectionList)
+            list.add((IdNameVO)row.data);
+        
+        ActionEvent.fire(this, Action.OK, list);
         window.close();
     }
 
@@ -302,13 +309,17 @@ public class DictionaryLookupScreen extends Screen
 
     private void setQueryResult(ArrayList<IdNameVO> list) {
         ArrayList<TableDataRow> model;
+        TableDataRow row;
 
         dictEntTable.clear();
 
         model = new ArrayList<TableDataRow>();
         if(list != null) {
-            for (IdNameVO data : list)             
-                model.add(new TableDataRow(data.getId(), data.getName(), data.getDescription()));
+            for (IdNameVO data : list)   {  
+                row = new TableDataRow(data.getId(), data.getName(), data.getDescription());
+                row.data = data;
+                model.add(row);
+            }
         }
         
         dictEntTable.load(model);

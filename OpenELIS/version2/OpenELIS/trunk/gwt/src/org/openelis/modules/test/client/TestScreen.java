@@ -304,8 +304,8 @@ public class TestScreen extends Screen {
         method = (AutoComplete)def.getWidget(meta.getMethod().getName());
         addScreenHandler(method, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                TestViewDO testDO = manager.getTest();
-                method.setSelection(testDO.getMethodId(), testDO.getMethodName());
+                method.setSelection(manager.getTest().getMethodId(),
+                                    manager.getTest().getMethodName());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -599,7 +599,6 @@ public class TestScreen extends Screen {
                 int r, c, i;
                 Integer val;
                 String systemName;
-                TestSectionManager tsm;
                 TestSectionViewDO data;
 
                 r = event.getRow();
@@ -1026,14 +1025,14 @@ public class TestScreen extends Screen {
             }
 
             public ArrayList<TableDataRow> getModel() {
-                ArrayList<TestMethodVO> result;
+                ArrayList<TestMethodVO> list;
                 ArrayList<TableDataRow> model;
 
-                result = nav.getQueryResult();
+                list = nav.getQueryResult();
                 model = null;
-                if (result != null) {
+                if (list != null) {
                     model = new ArrayList<TableDataRow>();
-                    for (TestMethodVO entry : result)
+                    for (TestMethodVO entry : list)
                         model.add(new TableDataRow(entry.getTestId(), entry.getTestName() + "," +
                                                                       entry.getMethodName()));
                 }
@@ -1533,8 +1532,9 @@ public class TestScreen extends Screen {
             analyteAndResultTab.clearKeys(manager.getTestAnalytes(), manager.getTestResults());
             prepAndReflexTab.clearKeys(manager.getPrepTests(), manager.getReflexTests());
             worksheetLayoutTab.clearKeys(manager.getTestWorksheet());
-        } catch (Exception ex) {
-            ex.printStackTrace();
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            e.printStackTrace();
         }
 
     }

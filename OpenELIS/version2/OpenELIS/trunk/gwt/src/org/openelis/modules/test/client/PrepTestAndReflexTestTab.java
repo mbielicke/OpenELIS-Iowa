@@ -290,7 +290,7 @@ public class PrepTestAndReflexTestTab extends Screen implements
                 c = event.getCol();
 
                 if (c == 3) {
-                    val = (TableDataRow)testReflexTable.getObject(r, c);
+                    val = (TableDataRow)testReflexTable.getObject(r, 2);
                     if (val == null || val.key == null) {
                         Window.alert(consts.get("selectAnaBeforeRes"));
                         event.cancel();
@@ -487,7 +487,7 @@ public class PrepTestAndReflexTestTab extends Screen implements
                         value = data.getDictionary();
                     else
                         value = data.getValue();
-                    if (DataBaseUtil.isEmpty(value)) {
+                    if (!DataBaseUtil.isEmpty(value)) {
                         row.key = data.getId();
                         row.cells.get(0).setValue(value);
                         model.add(row);

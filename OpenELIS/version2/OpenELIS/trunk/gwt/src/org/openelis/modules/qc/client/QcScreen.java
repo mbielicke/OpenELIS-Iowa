@@ -74,6 +74,7 @@ import org.openelis.gwt.widget.table.event.RowDeletedEvent;
 import org.openelis.gwt.widget.table.event.RowDeletedHandler;
 import org.openelis.manager.QcManager;
 import org.openelis.meta.InventoryItemMeta;
+import org.openelis.metamap.CategoryMetaMap;
 import org.openelis.metamap.QcMetaMap;
 import org.openelis.modules.dictionary.client.DictionaryLookupScreen;
 import org.openelis.modules.main.client.openelis.OpenELIS;
@@ -93,6 +94,7 @@ public class QcScreen extends Screen {
     private QcManager                   manager;
     private QcMetaMap                   meta    = new QcMetaMap();
     private InventoryItemMeta           invMeta = meta.getInventoryItem();
+    private CategoryMetaMap             catMeta = new CategoryMetaMap();
     private SecurityModule              security;
 
     private AppButton                   queryButton, previousButton, nextButton, addButton,
@@ -658,7 +660,7 @@ public class QcScreen extends Screen {
         dictionaryButton = (AppButton)def.getWidget("dictionaryButton");
         addScreenHandler(dictionaryButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-                showDictionary(null);
+                showDictionary(null,null);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -951,19 +953,40 @@ public class QcScreen extends Screen {
         return model;
     }
 
-    private DictionaryDO getDictionary(String entry) {
-        ArrayList<DictionaryDO> list;
+    private IdNameVO getDictionary(String entry) {
+        ArrayList<IdNameVO> list;
+        Query query;  
+        QueryData field;
+        ArrayList<QueryData> fields;
         
         entry = DataBaseUtil.trim(entry); 
         if (entry == null)
             return null;
         
+        query = new Query();
+        fields = new ArrayList<QueryData>();
+        field = new QueryData();
+        field.key = catMeta.getDictionary().getEntry();
+        field.type = QueryData.Type.STRING;
+        field.query = entry;
+        fields.add(field);       
+        
+        field = new QueryData();
+        field.key = catMeta.getIsSystem();
+        field.type = QueryData.Type.STRING;
+        field.query = "N";
+        fields.add(field); 
+        
+        query.setFields(fields);
+        
         try {
-            list = dictionaryService.callList("fetchByEntry", entry);
+            list = dictionaryService.callList("fetchByEntry", query);
             if (list.size() == 1)
                 return list.get(0);
             else if (list.size() > 1)                
-                showDictionary(entry);
+                showDictionary(entry,list);
+        } catch(NotFoundException e){
+            return null;
         } catch (Exception e) {
             e.printStackTrace();
             Window.alert(e.getMessage());
@@ -972,15 +995,16 @@ public class QcScreen extends Screen {
     }
     
     private void validateValue(QcAnalyteViewDO data, String value) throws LocalizedException {
-        DictionaryDO dict;
+        IdNameVO dict;
 
         try {
             if (typeDict.equals(data.getTypeId())) {
                 dict = getDictionary((String)value);
                 if (dict != null) {
                     data.setValue(dict.getId().toString());
-                    data.setDictionary(dict.getEntry());
+                    data.setDictionary(dict.getName());
                 } else {
+                    data.setDictionary(null);
                     throw new LocalizedException("qc.invalidValueException");
                 }
             } else if (typeNumeric.equals(data.getTypeId())) {
@@ -1001,7 +1025,7 @@ public class QcScreen extends Screen {
         }
     }
 
-    private void showDictionary(String entry) {
+    private void showDictionary(String entry,ArrayList<IdNameVO> list) {
         ScreenWindow modal;
 
         if (dictLookup == null) {
@@ -1025,7 +1049,7 @@ public class QcScreen extends Screen {
                         if (list != null) {
                             r = qcAnalyteTable.getSelectedRow();
                             if (r == -1) {
-                                window.setError(consts.get(""));
+                                window.setError(consts.get("qc.noSelectedRow"));
                                 return;
                             }
                             entry = list.get(0);
@@ -1033,7 +1057,8 @@ public class QcScreen extends Screen {
                                 data = manager.getAnalytes().getAnalyteAt(r);
                                 data.setValue(entry.getId().toString());
                                 data.setDictionary(entry.getName());
-                                qcAnalyteTable.setCell(r, 3, data.getValue());
+                                qcAnalyteTable.setCell(r, 3, data.getDictionary());
+                                qcAnalyteTable.clearCellExceptions(r, 3);
                             } catch (Exception e) {
                                 e.printStackTrace();
                                 qcAnalyteTable.setCell(r, 3, "");
@@ -1044,14 +1069,17 @@ public class QcScreen extends Screen {
                 }
             });
         }
-        modal = new ScreenWindow("Dictionary LookUp", "dictionaryEntryPickerScreen", 
+        modal = new ScreenWindow("Dictionary LookUp", "dictionaryLookupScreen", 
                                  "", true, false);
         modal.setName(consts.get("chooseDictEntry"));
         modal.setContent(dictLookup);
         dictLookup.setScreenState(State.DEFAULT);
-        if (entry != null) {
+        if (list != null) {
             dictLookup.clearFields();
-            dictLookup.executeQuery(entry+"*");
+            dictLookup.setQueryResult(entry, list);
+        } else if (entry != null) {
+            dictLookup.clearFields();
+            dictLookup.executeQuery(entry);
         }
     }
 }
