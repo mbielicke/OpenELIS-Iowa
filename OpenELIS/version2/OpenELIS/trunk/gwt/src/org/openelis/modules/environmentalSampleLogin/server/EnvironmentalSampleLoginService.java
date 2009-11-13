@@ -31,25 +31,16 @@ import org.openelis.domain.IdNameVO;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.SampleEnvironmentalRemote;
-import org.openelis.remote.SampleRemote;
 
 public class EnvironmentalSampleLoginService {
 
     private static final int rowPP = 12;
     
     public ArrayList<IdNameVO> query(Query query) throws Exception {
-        return environmentalRemote().query(query.getFields(), query.getPage() * rowPP, rowPP);
+        return remote().query(query.getFields(), query.getPage() * rowPP, rowPP);
     }
     
-    public void validateAccessionNumber(Integer accessionNumber) throws Exception {
-        sampleRemote().validateAccessionNumber(accessionNumber);
-    }
-    
-    private SampleRemote sampleRemote() {
-        return (SampleRemote)EJBFactory.lookup("openelis/SampleBean/remote");
-    }
-
-    private SampleEnvironmentalRemote environmentalRemote() {
+    private SampleEnvironmentalRemote remote() {
         return (SampleEnvironmentalRemote)EJBFactory.lookup("openelis/SampleEnvironmentalBean/remote");
     }
 }

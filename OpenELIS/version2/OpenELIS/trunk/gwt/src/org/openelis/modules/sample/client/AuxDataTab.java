@@ -63,6 +63,8 @@ import org.openelis.manager.HasAuxDataInt;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 
 public class AuxDataTab extends Screen implements GetMatchesHandler {
@@ -87,6 +89,14 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
 
         initialize();
 
+        DeferredCommand.addCommand(new Command() {
+            public void execute() {
+                initializeDropdowns();
+            }
+        });
+    }
+    
+    private void initializeDropdowns() {
         // load types into cache
         DictionaryCache.getListByCategorySystemName("aux_field_value_type");
         

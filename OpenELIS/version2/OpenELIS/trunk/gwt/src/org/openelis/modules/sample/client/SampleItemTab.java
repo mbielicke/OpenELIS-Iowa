@@ -47,6 +47,8 @@ import org.openelis.metamap.SampleMetaMap;
 
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
 
 public class SampleItemTab extends Screen implements HasActionHandlers<SampleItemTab.Action> {
     public enum Action {CHANGED};
@@ -64,10 +66,14 @@ public class SampleItemTab extends Screen implements HasActionHandlers<SampleIte
         
         initialize();
         
-        setSampleTypesModel(DictionaryCache.getListByCategorySystemName("type_of_sample"));
-        setSourceModel(DictionaryCache.getListByCategorySystemName("source_of_sample"));
-        setContainersModel(DictionaryCache.getListByCategorySystemName("sample_container"));
-        setUnitsModel(DictionaryCache.getListByCategorySystemName("unit_of_measure"));
+        DeferredCommand.addCommand(new Command() {
+            public void execute() {
+                setSampleTypesModel(DictionaryCache.getListByCategorySystemName("type_of_sample"));
+                setSourceModel(DictionaryCache.getListByCategorySystemName("source_of_sample"));
+                setContainersModel(DictionaryCache.getListByCategorySystemName("sample_container"));
+                setUnitsModel(DictionaryCache.getListByCategorySystemName("unit_of_measure"));
+            }
+       });
     }
     
     private void initialize() {

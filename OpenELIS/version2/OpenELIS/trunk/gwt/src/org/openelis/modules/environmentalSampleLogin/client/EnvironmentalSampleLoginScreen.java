@@ -196,10 +196,12 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             }
 
             public void onValueChange(final ValueChangeEvent<Integer> event) {
-                DeferredCommand.addCommand(new Command() {
-                    public void execute() {
+                //FIXME not sure why this is a deferred command.  getting rid of it for now
+                //DeferredCommand.addCommand(new Command() {
+                //    public void execute() {
                         try{
-                            service.call("validateAccessionNumber", event.getValue());
+                //            service.call("validateAccessionNumber", event.getValue());
+                            manager.validateAccessionNumber(event.getValue());
                             manager.getSample().setAccessionNumber(event.getValue());
                             
                         }catch(ValidationErrorsList e) {
@@ -207,8 +209,8 @@ public class EnvironmentalSampleLoginScreen extends Screen {
                         }catch(Exception e){
                             Window.alert(e.getMessage());
                         }
-                    }
-                });
+                    //}
+                //});
             }
 
             public void onStateChange(StateChangeEvent<State> event) {

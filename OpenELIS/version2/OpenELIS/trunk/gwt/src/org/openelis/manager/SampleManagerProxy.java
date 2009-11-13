@@ -25,6 +25,8 @@
 */
 package org.openelis.manager;
 
+import java.util.ArrayList;
+
 import org.openelis.domain.SampleDO;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FieldErrorWarning;
@@ -68,8 +70,25 @@ public class SampleManagerProxy {
         return service.call("abort", sampleId);
     }
     
+    public void validateAccessionNumber(Integer accessionNumber) throws Exception {
+        service.call("validateAccessionNumber", accessionNumber);
+    }
+    
+    private void validateAccessionNumber(Integer accessionNumber, ValidationErrorsList errorsList) throws Exception {
+        try{
+            service.call("validateAccessionNumber", accessionNumber);
+
+        }catch(ValidationErrorsList e){
+            ArrayList<Exception> errors = e.getErrorList();
+            
+            for(int i=0; i<errors.size(); i++)
+                errorsList.add(errors.get(i));
+        }
+    }
+    
     public void validate(SampleManager man, ValidationErrorsList errorsList) throws Exception {
-        //FIXME revalidate accession num
+        //revalidate accession number
+        validateAccessionNumber(man.getSample().getAccessionNumber(), errorsList);
         
         SampleMetaMap meta = new SampleMetaMap("sample.");
         
@@ -86,7 +105,5 @@ public class SampleManagerProxy {
         man.getSampleItems().validate(errorsList);
         man.getOrganizations().validate(errorsList);
         man.getProjects().validate(errorsList);
-        
-        
     }
 }

@@ -62,6 +62,8 @@ import org.openelis.metamap.SampleMetaMap;
 
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 
 public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab.Action> {
@@ -88,9 +90,13 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
         
         initialize();
        
-        setStatusesModel(DictionaryCache.getListByCategorySystemName("analysis_status"));
-        ArrayList<TableDataRow> sections = getSectionsModel(new ArrayList());
-        sectionId.setModel(sections);
+        DeferredCommand.addCommand(new Command() {
+            public void execute() {
+                setStatusesModel(DictionaryCache.getListByCategorySystemName("analysis_status"));
+                ArrayList<TableDataRow> sections = getSectionsModel(new ArrayList());
+                sectionId.setModel(sections);
+            }
+        });
     }
     
     private void initialize() {
