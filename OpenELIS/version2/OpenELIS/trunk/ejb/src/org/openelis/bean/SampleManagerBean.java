@@ -25,6 +25,8 @@
 */
 package org.openelis.bean;
 
+import java.util.List;
+
 import javax.annotation.Resource;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
@@ -33,10 +35,13 @@ import javax.ejb.Stateless;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.transaction.UserTransaction;
 
 import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.ReferenceTable;
+import org.openelis.gwt.common.FieldErrorException;
+import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.SecurityModule.ModuleFlags;
 import org.openelis.local.LockLocal;
 import org.openelis.manager.SampleItemManager;
@@ -142,6 +147,11 @@ public class SampleManagerBean  implements SampleManagerRemote {
         SampleItemManager man = SampleItemManager.findBySampleId(sampleId);
         
         return man;
+    }
+    
+    public void validateAccessionNumber(Integer accessionNumber) throws Exception {
+        SampleManager man = SampleManager.getInstance();
+        man.validateAccessionNumber(accessionNumber);
     }
     
     private void checkSecurity(ModuleFlags flag) throws Exception {

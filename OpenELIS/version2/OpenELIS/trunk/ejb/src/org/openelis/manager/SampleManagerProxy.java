@@ -25,12 +25,18 @@
 */
 package org.openelis.manager;
 
+import java.util.ArrayList;
+
 import javax.naming.InitialContext;
 
 import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.SampleDO;
+import org.openelis.domain.SystemVariableDO;
+import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.SampleLocal;
+import org.openelis.local.SystemVariableLocal;
+import org.openelis.metamap.SampleMetaMap;
 
 public class SampleManagerProxy {
     public SampleManager add(SampleManager man) throws Exception {
@@ -166,6 +172,40 @@ public class SampleManagerProxy {
     public SampleManager abort(Integer sampleId) throws Exception {
         throw new UnsupportedOperationException();    }
     
+    public void validateAccessionNumber(Integer accessionNumber) throws Exception {
+        ValidationErrorsList errorsList;
+        SampleMetaMap meta = new SampleMetaMap("sample.");
+        SystemVariableLocal svl = getSysVariableLocal();
+        SampleLocal sl = getSampleLocal();
+        ArrayList<SystemVariableDO> sysVarList;
+        SystemVariableDO sysVarDO;
+        SampleDO sampleDO;
+        
+        errorsList = new ValidationErrorsList();
+        
+        //get system variable
+        sysVarList = svl.fetchByName("last_accession_number", 1);
+        sysVarDO = sysVarList.get(0);
+        
+        //we need to set the error
+        if(accessionNumber.compareTo(new Integer(sysVarDO.getValue())) > 0)
+            errorsList.add(new FieldErrorException("accessionNumberNotInUse", meta.getAccessionNumber()));
+        
+        //check for dups
+        try{
+            sampleDO = getSampleLocal().fetchByAccessionNumber(accessionNumber);
+            
+            if(sampleDO != null)
+                errorsList.add(new FieldErrorException("accessionNumberDuplicate", meta.getAccessionNumber()));
+
+        }catch(Exception e){
+            //resultnotfound exception good in this case, no error
+        }
+            
+        if(errorsList.size() > 0)
+            throw errorsList;
+    }
+    
     public void validate(SampleManager man, ValidationErrorsList errorsList) throws Exception {
         
     }
@@ -174,6 +214,16 @@ public class SampleManagerProxy {
         try{
             InitialContext ctx = new InitialContext();
             return (SampleLocal)ctx.lookup("openelis/SampleBean/local");
+        }catch(Exception e){
+             System.out.println(e.getMessage());
+             return null;
+        }
+    }
+    
+    private SystemVariableLocal getSysVariableLocal(){
+        try{
+            InitialContext ctx = new InitialContext();
+            return (SystemVariableLocal)ctx.lookup("openelis/SystemVariableBean/local");
         }catch(Exception e){
              System.out.println(e.getMessage());
              return null;
