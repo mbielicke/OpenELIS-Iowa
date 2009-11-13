@@ -202,43 +202,43 @@ UIRF Software License are applicable instead of those above.
                 <VerticalPanel width="605">
                   <widget valign="top">
                     <table key="providerAddressTable" width="587" maxRows="10" showScroll="ALWAYS">
-                      <col key="{location:getLocation($loc)}" width="115" sort="true" header="{resource:getString($constants,'location')}">
+                      <col key="{location:getLocation($loc)}" width="115" header="{resource:getString($constants,'location')}">
                         <textbox max="50" required="true" />
                       </col>
-                      <col key="{location:getExternalId($loc)}" width="130" sort="true" header="{resource:getString($constants,'externalId')}">
+                      <col key="{location:getExternalId($loc)}" width="130" header="{resource:getString($constants,'externalId')}">
                         <textbox max="10" />
                       </col>
-                      <col key="{addr:getMultipleUnit($locAddr)}" width="130" sort="true" header="{resource:getString($constants,'aptSuite')}">
+                      <col key="{addr:getMultipleUnit($locAddr)}" width="130" header="{resource:getString($constants,'aptSuite')}">
                         <textbox max="30" />
                       </col>
-                      <col key="{addr:getStreetAddress($locAddr)}" width="130" sort="true" header="{resource:getString($constants,'address')}">
+                      <col key="{addr:getStreetAddress($locAddr)}" width="130" header="{resource:getString($constants,'address')}">
                         <textbox max="30" />
                       </col>
-                      <col key="{addr:getCity($locAddr)}" width="130" sort="true" header="{resource:getString($constants,'city')}">
+                      <col key="{addr:getCity($locAddr)}" width="130" header="{resource:getString($constants,'city')}">
                         <textbox max="30" />
                       </col>
-                      <col key="{addr:getState($locAddr)}" width="60" sort="true" header="{resource:getString($constants,'state')}">
+                      <col key="{addr:getState($locAddr)}" width="60" header="{resource:getString($constants,'state')}">
                         <dropdown width="60" case="UPPER" field="String" />
                       </col>
-                      <col key="{addr:getZipCode($locAddr)}" width="100" sort="true" header="{resource:getString($constants,'zipcode')}">
+                      <col key="{addr:getZipCode($locAddr)}" width="100" header="{resource:getString($constants,'zipcode')}">
                         <textbox max="10" />
                       </col>
-                      <col key="{addr:getCountry($locAddr)}" width="130" sort="true" header="{resource:getString($constants,'country')}">
+                      <col key="{addr:getCountry($locAddr)}" width="130" header="{resource:getString($constants,'country')}">
                         <dropdown width="130" field="String" />
                       </col>
-                      <col key="{addr:getWorkPhone($locAddr)}" width="90" sort="true" header="{resource:getString($constants,'workNumber')}">
+                      <col key="{addr:getWorkPhone($locAddr)}" width="90" header="{resource:getString($constants,'workNumber')}">
                         <textbox max="21" />
                       </col>
-                      <col key="{addr:getHomePhone($locAddr)}" width="90" sort="true" header="{resource:getString($constants,'homeNumber')}">
+                      <col key="{addr:getHomePhone($locAddr)}" width="90" header="{resource:getString($constants,'homeNumber')}">
                         <textbox max="16" />
                       </col>
-                      <col key="{addr:getCellPhone($locAddr)}" width="90" sort="true" header="{resource:getString($constants,'cellNumber')}">
+                      <col key="{addr:getCellPhone($locAddr)}" width="90" header="{resource:getString($constants,'cellNumber')}">
                         <textbox max="16" />
                       </col>
-                      <col key="{addr:getFaxPhone($locAddr)}" width="150" sort="true" header="{resource:getString($constants,'faxNumber')}">
+                      <col key="{addr:getFaxPhone($locAddr)}" width="150" header="{resource:getString($constants,'faxNumber')}">
                         <textbox max="16" />
                       </col>
-                      <col key="{addr:getEmail($locAddr)}" width="145" sort="true" header="{resource:getString($constants,'email')}">
+                      <col key="{addr:getEmail($locAddr)}" width="145" header="{resource:getString($constants,'email')}">
                         <textbox max="80" />
                       </col>
                     </table>

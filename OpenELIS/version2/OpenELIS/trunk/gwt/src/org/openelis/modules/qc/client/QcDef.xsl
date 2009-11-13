@@ -251,19 +251,19 @@ UIRF Software License are applicable instead of those above.
             </HorizontalPanel>
             <VerticalPanel height="10" />
             <VerticalPanel>
-              <table key="QcAnalyteTable" width="625" maxRows="10" showScroll="ALWAYS" style="atozTable" tab="{meta:getName($qc)},{meta:getExpireDate($qc)}">
-                <col key="{analyte:getName($ana)}" width="270" align="left" sort="false" header="{resource:getString($constants,'analyte')}">
+              <table key="QcAnalyteTable" width="625" maxRows="10" showScroll="ALWAYS" style="ScreenTableWithSides" tab="{meta:getName($qc)},{meta:getExpireDate($qc)}">
+                <col key="{analyte:getName($ana)}" width="270" align="left" header="{resource:getString($constants,'analyte')}">
                   <autoComplete popWidth="auto" field="Integer" required="true">
                     <col width="300" />
                   </autoComplete>
                 </col>
-                <col key="{qcaMeta:getTypeId($qca)}" width="55" align="left" sort="false" header="{resource:getString($constants,'type')}">
+                <col key="{qcaMeta:getTypeId($qca)}" width="55" align="left" header="{resource:getString($constants,'type')}">
                   <dropdown width="55" field="Integer" required="true" />
                 </col>
-                <col key="{qcaMeta:getIsTrendable($qca)}" width="55" align="center" sort="false" header="{resource:getString($constants,'trendable')}">
+                <col key="{qcaMeta:getIsTrendable($qca)}" width="55" align="center" header="{resource:getString($constants,'trendable')}">
                   <check />
                 </col>
-                <col key="{qcaMeta:getValue($qca)}" width="400" align="left" sort="false" header="{resource:getString($constants,'expectedValue')}">
+                <col key="{qcaMeta:getValue($qca)}" width="400" align="left" header="{resource:getString($constants,'expectedValue')}">
                   <textbox max="80" field="String" />
                 </col>
               </table>
