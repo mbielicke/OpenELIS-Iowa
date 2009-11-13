@@ -21,4 +21,6 @@ public interface SampleManagerRemote {
     public SampleOrganizationManager fetchSampleOrgsBySampleId(Integer sampleId) throws Exception;
     public SampleProjectManager fetchSampleProjectsBySampleId(Integer sampleId) throws Exception;
     public SampleItemManager fetchSampleItemsBySampleId(Integer sampleId) throws Exception;
+    
+    public void validateAccessionNumber(Integer accessionNumber) throws Exception;
 }
