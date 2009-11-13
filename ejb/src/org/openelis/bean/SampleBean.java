@@ -25,8 +25,6 @@
 */
 package org.openelis.bean;
 
-import java.util.List;
-
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -38,18 +36,15 @@ import org.jboss.annotation.security.SecurityDomain;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.SampleDO;
 import org.openelis.entity.Sample;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.LockLocal;
 import org.openelis.local.SampleLocal;
 import org.openelis.metamap.SampleMetaMap;
-import org.openelis.remote.SampleRemote;
 
 @Stateless
 
 @SecurityDomain("openelis")
 //@RolesAllowed("inventory-select")
-public class SampleBean implements SampleRemote, SampleLocal {
+public class SampleBean implements SampleLocal {
 
     @PersistenceContext(name = "openelis")
     private EntityManager manager;
@@ -139,19 +134,5 @@ public class SampleBean implements SampleRemote, SampleLocal {
     
     private void validate() throws Exception {
         
-    }
-
-    public void validateAccessionNumber(Integer accessionNumber) throws Exception {
-        Query query = manager.createNamedQuery("Sample.AccessionNumberCheck");
-        query.setParameter("id", accessionNumber);
-        
-        List list = query.getResultList();
-        
-        if(list.size() > 0){
-            ValidationErrorsList errorsList = new ValidationErrorsList();
-            errorsList.add(new FieldErrorException("accessionNumberDuplicate", sampleMeta.getAccessionNumber()));
-            
-            throw errorsList;
-        }
-    }
+    }    
 }

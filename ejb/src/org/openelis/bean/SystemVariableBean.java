@@ -52,6 +52,7 @@ import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.SecurityModule.ModuleFlags;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.LockLocal;
+import org.openelis.local.SystemVariableLocal;
 import org.openelis.metamap.SystemVariableMetaMap;
 import org.openelis.remote.SystemVariableRemote;
 import org.openelis.util.QueryBuilderV2;
@@ -61,7 +62,7 @@ import org.openelis.utils.SecurityInterceptor;
 @Stateless
 @SecurityDomain("openelis")
 @RolesAllowed("systemvariable-select")
-public class SystemVariableBean implements SystemVariableRemote {
+public class SystemVariableBean implements SystemVariableRemote, SystemVariableLocal {
 
     @PersistenceContext(name = "openelis")
     private EntityManager                      manager;
