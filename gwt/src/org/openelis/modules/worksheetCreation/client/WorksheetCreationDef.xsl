@@ -138,7 +138,7 @@ UIRF Software License are applicable instead of those above.
             <label />
           </col>
           <col width="75" header="{resource:getString($constants,'expire')}" sort="true">
-            <calendar pattern="{resource:getString($constants,'datePattern')}" begin="0" end="2"/>
+            <calendar pattern="{resource:getString($constants,'dateTimePattern')}" begin="0" end="4"/>
           </col>
         </table>
         <widget style="TableFooterPanel">
