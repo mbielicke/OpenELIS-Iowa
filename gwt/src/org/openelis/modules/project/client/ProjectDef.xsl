@@ -215,7 +215,7 @@ UIRF Software License are applicable instead of those above.
 
             <HorizontalPanel width="609">
               <widget valign="top">
-                <table key="parameterTable" width="590" maxRows="8" showScroll="ALWAYS" style="atozTable" tab="{meta:getId($proj)},{script:getName($scpt)}">
+                <table key="parameterTable" width="590" maxRows="8" showScroll="ALWAYS" style="ScreenTableWithSides" tab="{meta:getId($proj)},{script:getName($scpt)}">
                   <col key="{prmtrMeta:getParameter($prm)}" width="325" header="{resource:getString($constants,'parameter')}">
                     <textbox required="true" />
                   </col>
