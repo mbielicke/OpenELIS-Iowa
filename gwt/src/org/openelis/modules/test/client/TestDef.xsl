@@ -588,16 +588,16 @@ UIRF Software License are applicable instead of those above.
                       <ScrollTabBar key="resultTabPanel" width="610px" />
                       <widget valign="top">
                         <table key="resultTable" width="auto" maxRows="8" showScroll="ALWAYS" title="">
-                          <col key="{testResult:getUnitOfMeasureId($tr)}" width="70" sort="true" header="{resource:getString($constants,'unit')}">
+                          <col key="{testResult:getUnitOfMeasureId($tr)}" width="70"  header="{resource:getString($constants,'unit')}">
                             <dropdown width="70" case="MIXED" field="Integer" />
                           </col>
-                          <col key="{testResult:getTypeId($tr)}" width="85" sort="true" header="{resource:getString($constants,'type')}">
+                          <col key="{testResult:getTypeId($tr)}" width="85" header="{resource:getString($constants,'type')}">
                             <dropdown width="90" case="MIXED" field="Integer" required="true" />
                           </col>
-                          <col key="{testResult:getValue($tr)}" width="185" sort="true" header="{resource:getString($constants,'value')}">
+                          <col key="{testResult:getValue($tr)}" width="185" header="{resource:getString($constants,'value')}">
                             <textbox case="MIXED" field="String" />
                           </col>
-                          <col key="{testResult:getFlagsId($tr)}" width="95" sort="true" header="{resource:getString($constants,'flags')}">
+                          <col key="{testResult:getFlagsId($tr)}" width="95" header="{resource:getString($constants,'flags')}">
                             <dropdown width="115" case="MIXED" field="Integer" />
                           </col>
                           <col key="{testResult:getSignificantDigits($tr)}" width="45" header="{resource:getString($constants,'significantDigits')}">

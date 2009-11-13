@@ -37,6 +37,7 @@ import org.openelis.domain.TestResultViewDO;
 import org.openelis.domain.TestTypeOfSampleDO;
 import org.openelis.gwt.common.GridFieldErrorException;
 import org.openelis.gwt.common.LocalizedException;
+import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.gwt.event.ActionEvent;
@@ -571,7 +572,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
                         data.setTypeId(event.getValue());
                     }
                     
-                    resultTable.clearCellExceptions(r, anaSelCol);
+                    analyteTable.clearCellExceptions(r, anaSelCol);
                 }                
             }
 
@@ -853,7 +854,6 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
                 int r,c,group;                
                 TestResultViewDO data ;
                 Object val;
-                IdNameVO dict;
 
                 r = event.getRow();
                 c = event.getCol();
@@ -867,40 +867,21 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
                         break;
                     case 1:                           
                         data.setTypeId((Integer)val);
+                        resultTable.clearCellExceptions(r, 2);
+                        try {
+                            validateValue(data, (String)resultTable.getObject(r, 2));
+                        } catch (LocalizedException e) {
+                            resultTable.setCellException(r, 2, e);
+                        }
                         break;
                     case 2:                                                                                     
+                        resultTable.clearCellExceptions(r, c);
                         try {
-                            if (DataBaseUtil.isSame(data.getTypeId(), typeDict)) {
-                                dict = getDictionary((String)val);
-                                if (dict != null) {
-                                    data.setValue(dict.getId().toString());
-                                    data.setDictionary(dict.getName());                                    
-                                } else {
-                                    data.setDictionary(null);
-                                    throw new LocalizedException("test.invalidValue");
-                                }
-                                resultTable.setCell(r, c, data.getDictionary());
-                            } else if (DataBaseUtil.isSame(data.getTypeId(),typeNumeric)) {
-                                rangeNumeric.setRange((String)val);
-                                data.setValue(rangeNumeric.toString());
-                                resultTable.setCell(r, c, data.getValue());
-                            } else if (DataBaseUtil.isSame(data.getTypeId(),typeTiter)) {
-                                rangeTiter.setRange((String)val);
-                                data.setValue(rangeTiter.toString());
-                                resultTable.setCell(r, c, data.getValue());
-                            } else if(DataBaseUtil.isSame(data.getTypeId(),typeDefault) || 
-                                      DataBaseUtil.isSame(data.getTypeId(),typeDate) ||
-                                      DataBaseUtil.isSame(data.getTypeId(),typeDateTime) ||
-                                      DataBaseUtil.isSame(data.getTypeId(),typeTime)) {
-                                data.setValue((String)val);
-                                resultTable.setCell(r, c, data.getValue());                                
-                            } else {
-                                throw new LocalizedException("test.invalidValue");
-                            }
-                            ActionEvent.fire(screen, Action.RESULT_CHANGED, data);
+                            validateValue(data, (String)val);
                         } catch (LocalizedException e) {
                             resultTable.setCellException(r, c, e);
                         }
+                        ActionEvent.fire(screen, Action.RESULT_CHANGED, data);
                         break;
                     case 3:                
                         data.setFlagsId((Integer)val);
@@ -1238,14 +1219,14 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
        
     } 
     
-    private IdNameVO getDictionary(String value) {
+    private IdNameVO getDictionary(String entry) {
         ArrayList<IdNameVO> list;
         Query query;  
         QueryData field;
         ArrayList<QueryData> fields;
         
-        //entry = DataBaseUtil.trim(entry); 
-        if (DataBaseUtil.isEmpty(value))
+        entry = DataBaseUtil.trim(entry); 
+        if (entry == null)
             return null;
         
         query = new Query();
@@ -1253,8 +1234,14 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
         field = new QueryData();
         field.key = catMeta.getDictionary().getEntry();
         field.type = QueryData.Type.STRING;
-        field.query = value;
+        field.query = entry;
         fields.add(field);       
+        
+        field = new QueryData();
+        field.key = catMeta.getIsSystem();
+        field.type = QueryData.Type.STRING;
+        field.query = "N";
+        fields.add(field); 
         
         query.setFields(fields);
         
@@ -1263,12 +1250,47 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
             if (list.size() == 1)
                 return list.get(0);
             else if (list.size() > 1)                
-                showDictionary(value,list);
+                showDictionary(entry,list);
+        } catch(NotFoundException e){
+            return null;
         } catch (Exception e) {
             e.printStackTrace();
             Window.alert(e.getMessage());
         }
         return null;
+    }
+    
+    private void validateValue(TestResultViewDO data, String value) throws LocalizedException {
+        IdNameVO dict;
+        try {
+            if (typeDict.equals(data.getTypeId())) {
+                dict = getDictionary((String)value);
+                if (dict != null) {
+                    data.setValue(dict.getId().toString());
+                    data.setDictionary(dict.getName());                                    
+                } else {
+                    data.setDictionary(null);
+                    throw new LocalizedException("test.invalidValue");
+                }                
+            } else if (typeNumeric.equals(data.getTypeId())) {
+                rangeNumeric.setRange((String)value);
+                data.setValue(rangeNumeric.toString());
+            } else if (typeTiter.equals(data.getTypeId())) {
+                rangeTiter.setRange((String)value);
+                data.setValue(rangeTiter.toString());
+            } else if(typeDefault.equals(data.getTypeId()) || 
+                      typeDate.equals(data.getTypeId()) ||
+                      typeDateTime.equals(data.getTypeId()) ||
+                      typeTime.equals(data.getTypeId())) {
+                data.setValue((String)value);                           
+            } else {
+                throw new LocalizedException("test.invalidValue");
+            }
+        } catch (LocalizedException e) {
+            data.setValue(null);
+            data.setDictionary(null);
+            throw e;
+        }
     }
     
     private TableDataRow createHeaderRow() {
@@ -1736,57 +1758,63 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
     }    
     
     private void showDictionary(String entry,ArrayList<IdNameVO> list) {
-        ScreenWindow modal;                                
-        
-        if(dictLookup == null) {
+        ScreenWindow modal;
+
+        if (dictLookup == null) {
             try {
                 dictLookup = new DictionaryLookupScreen();
-                dictLookup.addActionHandler(new ActionHandler<DictionaryLookupScreen.Action>(){
-                    public void onAction(ActionEvent<DictionaryLookupScreen.Action> event) {
-                       int selTab,numTabs;
-                       ArrayList<TableDataRow> model;
-                       TestResultViewDO resDO;
-                       TableDataRow row;
-                       
-                       selTab = resultTabPanel.getTabBar().getSelectedTab();     
-                       numTabs = resultTabPanel.getTabBar().getTabCount();
-                       if(event.getAction() == DictionaryLookupScreen.Action.OK) {
-                           model = (ArrayList<TableDataRow>)event.getData();
-                           if(model != null) {
-                               if (model.size() > 0 && numTabs == 0) {
-                                   Window.alert(consts.get("atleastOneResGrp"));
-                                   return;
-                               }               
-                               for(int i = 0; i < model.size(); i++) {
-                                   row = model.get(i);                                                   
-                                   testResultManager.addResultAt(selTab+1,resultTable.numRows(),getNextTempId());
-                                   resDO = testResultManager.getResultAt(selTab+1,resultTable.numRows());                                   
-                                   resDO.setValue(String.valueOf((Integer)row.key));
-                                   resDO.setDictionary((String)row.cells.get(0).getValue());
-                                   resDO.setTypeId(typeDict);                                           
-                               }
-                               DataChangeEvent.fire(screen, resultTable);
-                           }
-                       }                                
-                    }
-                    
-                });
             } catch (Exception e) {
                 e.printStackTrace();
-                Window.alert("error: " + e.getMessage());
+                Window.alert("DictionaryLookup error: " + e.getMessage());
                 return;
-            }                                       
+            }
+
+            dictLookup.addActionHandler(new ActionHandler<DictionaryLookupScreen.Action>() {
+                public void onAction(ActionEvent<DictionaryLookupScreen.Action> event) {
+                    int selTab, numTabs;
+                    ArrayList<IdNameVO> list;
+                    TestResultViewDO data;
+                    IdNameVO entry;
+
+                    selTab = resultTabPanel.getTabBar().getSelectedTab();
+                    numTabs = resultTabPanel.getTabBar().getTabCount();
+                    if (event.getAction() == DictionaryLookupScreen.Action.OK) {
+                        list = (ArrayList<IdNameVO>)event.getData();
+                        if (list != null) {
+                            if (list.size() > 0 && numTabs == 0) {
+                                Window.alert(consts.get("atleastOneResGrp"));
+                                return;
+                            }
+                           
+                            for (int i = 0; i < list.size(); i++ ) {
+                                entry = list.get(i);
+                                testResultManager.addResultAt(selTab + 1, resultTable.numRows(),
+                                                              getNextTempId());
+                                data = testResultManager.getResultAt(selTab + 1,
+                                                                      resultTable.numRows());
+                                data.setValue(entry.getId().toString());
+                                data.setDictionary(entry.getName());
+                                data.setTypeId(typeDict);                                
+                            }
+                            DataChangeEvent.fire(screen, resultTable);
+                        }
+                    }
+                }
+
+            });
+
         }
-        modal = new ScreenWindow("Dictionary LookUp","dictionaryEntryPickerScreen","",true,false);
+        modal = new ScreenWindow("Dictionary LookUp", "dictionaryEntryPickerScreen", "", true,
+                                 false);
         modal.setName(consts.get("chooseDictEntry"));
         modal.setContent(dictLookup);
         dictLookup.setScreenState(State.DEFAULT);
-        if (entry != null) {
-            dictLookup.clearFields();
-            dictLookup.executeQuery(entry);
-        } else if(list != null) {
+        if (list != null) {
             dictLookup.clearFields();
             dictLookup.setQueryResult(entry, list);
+        } else if (entry != null) {
+            dictLookup.clearFields();
+            dictLookup.executeQuery(entry);
         }
     }
     

@@ -106,8 +106,7 @@ public class DictionaryManagerProxy {
 
         if (sendMessage) {
             // invalidate the cache
-            catDO = new CategoryDO();
-            catDO.setId(man.getCategoryId());
+            catDO = catLocal().fetchById(man.getCategoryId());            
             msg = new DictionaryCacheMessage();
             msg.setCatDO(catDO);
             msg.action = DictionaryCacheMessage.Action.UPDATED;
