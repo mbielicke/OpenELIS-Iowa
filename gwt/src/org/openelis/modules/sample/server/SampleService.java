@@ -64,6 +64,10 @@ public class SampleService {
         return remote().abortUpdate(sampleId);
     }
     
+    public void validateAccessionNumber(Integer accessionNumber) throws Exception {
+        remote().validateAccessionNumber(accessionNumber);
+    }
+    
     //sample org methods
     public SampleOrganizationManager fetchSampleOrganizationsBySampleId(Integer sampleId) throws Exception {
         return remote().fetchSampleOrgsBySampleId(sampleId);
