@@ -7,7 +7,7 @@
 	<classpathentry kind="lib" path="/usr/local/java/jboss/client/jboss-annotations-ejb3.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/OpenELIS-Lib"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/OpenELIS-Common"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/OpenELIS-Security-EJB"/>
+	<classpathentry kind="lib" path="/OpenELIS-Lib/lib/security.jar"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
