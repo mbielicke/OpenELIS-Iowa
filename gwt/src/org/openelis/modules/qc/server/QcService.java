@@ -64,6 +64,19 @@ public class QcService {
         return list;
     }
 
+    public ArrayList<QcDO> fetchActiveByName(String search) throws Exception {
+        ArrayList<QcDO> list;
+        
+        try {
+            list = remote().fetchActiveByName(search+"%", 10);
+        } catch (NotFoundException e) {
+            list = new ArrayList<QcDO>(0);
+        } catch (RuntimeException e) {
+            throw new DatabaseException(e);
+        }
+        return list;
+    }
+
     public QcManager fetchWithAnalytes(Integer id) throws Exception {
         try {
             return remoteManager().fetchWithAnalytes(id);
