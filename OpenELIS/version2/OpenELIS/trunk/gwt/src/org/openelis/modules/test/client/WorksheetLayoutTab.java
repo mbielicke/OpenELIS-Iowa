@@ -455,8 +455,7 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
                     Window.alert("error: " + e.getMessage());
                     return;
                 }
-                modal = new ScreenWindow("Test Analyte LookUp", "testAnalytePickerScreen", "",
-                                         true, false);
+                modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
                 modal.setName(consts.get("testAnalyteSelection"));
                 modal.setContent(testAnalytePicker);
                 testAnalytePicker.setScreenState(State.DEFAULT);

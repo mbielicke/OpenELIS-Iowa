@@ -1069,8 +1069,7 @@ public class QcScreen extends Screen {
                 }
             });
         }
-        modal = new ScreenWindow("Dictionary LookUp", "dictionaryLookupScreen", 
-                                 "", true, false);
+        modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
         modal.setName(consts.get("chooseDictEntry"));
         modal.setContent(dictLookup);
         dictLookup.setScreenState(State.DEFAULT);

@@ -25,5 +25,5 @@ license ("UIRF Software License"), in which case the provisions of a
 UIRF Software License are applicable instead of those above. 
 -->
 <module>
-    <servlet path='/OpenELISServlet' class='org.openelis.modules.main.server.OpenELISServlet'/>  
+    <servlet path='/OpenELISServlet' class='org.openelis.gwt.server.ScreenControllerServlet'/>  
 </module>

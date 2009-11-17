@@ -136,8 +136,7 @@ MISSING TABLE COL!!! USING OLD TABLE FORMAT?
                     }
                 }
 
-                ScreenWindow modal = new ScreenWindow("Test Analyte Screen", "testAnalyteScreen", "",
-                                                      true, false);
+                ScreenWindow modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
                 modal.setName(consts.get("testAnalyteSelection"));
                 modal.setContent(testAnalyteScreen);
             }

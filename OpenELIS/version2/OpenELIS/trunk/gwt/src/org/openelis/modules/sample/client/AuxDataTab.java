@@ -199,8 +199,7 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
                     });
                 }
 
-                ScreenWindow modal = new ScreenWindow("Aux Group Selection", "auxGroupScreen", "",
-                                                      true, false);
+                ScreenWindow modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
                 modal.setName(consts.get("auxGroupSelection"));
                 modal.setContent(auxGroupScreen);
                 auxGroupScreen.draw();
