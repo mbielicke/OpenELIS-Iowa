@@ -168,7 +168,6 @@ UIRF Software License are applicable instead of those above.
                 <textbox key="{meta:getDescription($panel)}" width="425px" max="60" tab="addedTestTable,{meta:getName($panel)}" />
               </row>
             </TablePanel>
-            <!-- <VerticalPanel height="10px" />-->
             <HorizontalPanel>
               <VerticalPanel style="Form">
                 <widget valign="top">
