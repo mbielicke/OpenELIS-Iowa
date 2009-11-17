@@ -37,6 +37,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
+import org.openelis.domain.PanelVO;
 import org.openelis.domain.TestMethodVO;
 import org.openelis.domain.TestViewDO;
 import org.openelis.entity.Test;
@@ -78,23 +79,29 @@ public class TestBean implements TestRemote, TestLocal {
         return data;
     }
 
-    public List<TestMethodVO> fetchByName(String name, int max) {
+    public ArrayList<TestMethodVO> fetchByName(String name, int max) throws Exception{
         Query query = manager.createNamedQuery("Test.FetchWithMethodByName");
         query.setParameter("name", name);
         query.setMaxResults(max);
 
-        return query.getResultList();
+        return DataBaseUtil.toArrayList(query.getResultList());
     }
-
-    public List<TestMethodVO> fetchActiveByName(String name, int max) {
-        Query query = manager.createNamedQuery("Test.FetchActiveByName");
+    
+    public ArrayList<PanelVO> fetchNameMethodSectionByName(String name, int max) throws Exception{
+        Query query;
+        
+        query = manager.createNamedQuery("Test.FetchNameMethodSectionByName");
         query.setParameter("name", name);
         query.setMaxResults(max);
-
-        return query.getResultList();
+        try {
+            return DataBaseUtil.toArrayList(query.getResultList());
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
     }
 
-    public List<TestMethodVO> fetchByNameSampleItemType(String name, Integer sampleItemType, int max) {
+    public ArrayList<TestMethodVO> fetchByNameSampleItemType(String name, Integer sampleItemType, int max) throws Exception{
         Query query = manager.createNamedQuery("Test.FetchByNameSampleItemType");
         query.setParameter("name", name);
         query.setParameter("typeId", sampleItemType);
@@ -112,7 +119,7 @@ public class TestBean implements TestRemote, TestLocal {
          * ((ArrayList<TestPrepDO>)getTestPreps(testDO.getTest().getId())); }
          */
 
-        return testList;
+        return DataBaseUtil.toArrayList(testList);
     }
 
     public ArrayList<TestMethodVO> query(ArrayList<QueryData> fields, int first, int max)

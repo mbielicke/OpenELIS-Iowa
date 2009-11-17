@@ -23,16 +23,23 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.remote;
+package org.openelis.local;
 
 import java.util.ArrayList;
 
-import javax.ejb.Remote;
+import javax.ejb.Local;
 
-import org.openelis.domain.IdNameVO;
-import org.openelis.gwt.common.data.QueryData;
+import org.openelis.domain.PanelItemDO;
 
-@Remote
-public interface PanelRemote {       
-    public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception;    
+@Local
+public interface PanelItemLocal {
+    public ArrayList<PanelItemDO> fetchByPanelId(Integer id) throws Exception;
+    
+    public PanelItemDO add(PanelItemDO data) throws Exception;
+    
+    public PanelItemDO update(PanelItemDO data) throws Exception;
+    
+    public void delete(PanelItemDO data) throws Exception;
+    
+    public void validate(PanelItemDO data) throws Exception;
 }

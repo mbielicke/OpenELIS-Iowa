@@ -26,12 +26,9 @@
 package org.openelis.manager;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 
 import org.openelis.domain.DictionaryViewDO;
 import org.openelis.gwt.common.RPC;
-import org.openelis.utilcommon.DataBaseUtil;
 
 public class DictionaryManager implements RPC {
 
