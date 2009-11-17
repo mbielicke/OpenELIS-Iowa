@@ -83,7 +83,7 @@ UIRF Software License are applicable instead of those above.
 		</HorizontalPanel> 
 		<VerticalPanel spacing="0">
 		 <widget>
-							<table maxRows = "6" width = "auto" key="dictEntTable" multiSelect = "true" title="" showScroll="ALWAYS" style="atozTable">
+							<table maxRows = "6" width = "auto" key="dictEntTable" multiSelect = "true" title="" showScroll="ALWAYS" style="ScreenTableWithSides">
 								<col key="entry" width="250" sort="false" header="{resource:getString($constants,'entry')}">
                                 	<label width="250"/>
                                 </col>

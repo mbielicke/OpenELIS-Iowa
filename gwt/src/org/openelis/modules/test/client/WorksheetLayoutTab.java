@@ -69,6 +69,8 @@ import org.openelis.modules.test.client.AnalyteAndResultTab.Action;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 
 public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteAndResultTab.Action> {
@@ -98,9 +100,18 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
         this.service = service;
         this.scriptletService = scriptletService;
         this.qcService = qcService;
+        
         initialize();
 
-        initializeDropdowns();
+        DeferredCommand.addCommand(new Command() {
+            public void execute() {
+                postConstructor();
+            }
+        });        
+    }
+    
+    private void postConstructor() {
+        initializeDropdowns();        
     }
 
     private void initialize() {
