@@ -190,7 +190,9 @@ UIRF Software License are applicable instead of those above.
               <menuPanel layout="vertical" position="below" style="topMenuContainer">
                 <menuItem key="test" description="{resource:getString($constants,'testDescription')}" icon="testIcon" label="{resource:getString($constants,'test')}" />
                 <menuItem key="method" description="{resource:getString($constants,'methodDescription')}" icon="methodIcon" label="{resource:getString($constants,'method')}" />
-                <menuItem key="panel" description="{resource:getString($constants,'panelDescription')}" enable="false" icon="panelIcon" label="{resource:getString($constants,'panel')}" />
+                <code>if(OpenELIS.security.hasModule("panel","SELECT")){</code>
+                <menuItem key="panel" description="{resource:getString($constants,'panelDescription')}" enable="true" icon="panelIcon" label="{resource:getString($constants,'panel')}" />
+                <code>}</code>
                 <code>if(OpenELIS.security.hasModule("qaevent","SELECT")){</code>
                 <menuItem key="QAEvent" description="{resource:getString($constants,'QAEventDescription')}" icon="QAEventIcon" label="{resource:getString($constants,'QAEvent')}" />
                 <code>}</code>

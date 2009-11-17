@@ -57,6 +57,8 @@ import org.openelis.metamap.TestMetaMap;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 
 public class SampleTypeTab extends Screen implements HasActionHandlers<SampleTypeTab.Action> {
@@ -75,10 +77,19 @@ public class SampleTypeTab extends Screen implements HasActionHandlers<SampleTyp
 
     public SampleTypeTab(ScreenDefInt def, ScreenWindow window) {
         setDef(def);
-        setWindow(window);        
+        setWindow(window);       
+        
         initialize();
 
-        initializeDropdowns();
+        DeferredCommand.addCommand(new Command() {
+            public void execute() {
+                postConstructor();
+            }
+        });        
+    }
+    
+    private void postConstructor() {
+        initializeDropdowns();        
     }
 
     private void initialize() {

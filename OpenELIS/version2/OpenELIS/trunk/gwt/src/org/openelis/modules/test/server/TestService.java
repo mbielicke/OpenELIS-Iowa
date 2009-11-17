@@ -26,8 +26,8 @@
 package org.openelis.modules.test.server;
 
 import java.util.ArrayList;
-import java.util.List;
 
+import org.openelis.domain.PanelVO;
 import org.openelis.domain.TestMethodVO;
 import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.data.Query;
@@ -38,12 +38,10 @@ import org.openelis.manager.TestReflexManager;
 import org.openelis.manager.TestResultManager;
 import org.openelis.manager.TestTypeOfSampleManager;
 import org.openelis.manager.TestWorksheetManager;
-import org.openelis.modules.test.client.TestResultCategoryRPC;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.DictionaryRemote;
 import org.openelis.remote.TestManagerRemote;
 import org.openelis.remote.TestRemote;
-import org.openelis.utilcommon.DataBaseUtil;
 
 public class TestService {
 
@@ -57,8 +55,20 @@ public class TestService {
         }
     }
 
-    public List<TestMethodVO> fetchByName(String name) throws Exception {
-        return remote().fetchByName(name + "%", 10);
+    public ArrayList<TestMethodVO> fetchByName(String name) throws Exception {
+        try {
+            return remote().fetchByName(name + "%", 10);
+        } catch (RuntimeException e) {
+            throw new DatabaseException(e);
+        }
+    }
+
+    public ArrayList<PanelVO> fetchNameMethodSectionByName(String name) throws Exception {
+        try {
+            return remote().fetchNameMethodSectionByName(name + "%", 1000000);
+        } catch (RuntimeException e) {
+            throw new DatabaseException(e);
+        }
     }
 
     public TestTypeOfSampleManager fetchSampleTypeByTestId(Integer testId) throws Exception {
@@ -190,7 +200,7 @@ public class TestService {
             throw new DatabaseException(e);
         }
     }
-    
+
     private TestRemote remote() {
         return (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
     }
@@ -198,10 +208,9 @@ public class TestService {
     private TestManagerRemote managerRemote() {
         return (TestManagerRemote)EJBFactory.lookup("openelis/TestManagerBean/remote");
     }
-    
+
     private DictionaryRemote dictRemote() {
         return (DictionaryRemote)EJBFactory.lookup("openelis/DictionaryBean/remote");
     }
-    
-    
+
 }

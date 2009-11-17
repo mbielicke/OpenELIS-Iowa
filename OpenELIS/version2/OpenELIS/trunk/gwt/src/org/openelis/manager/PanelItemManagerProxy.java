@@ -23,19 +23,38 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.modules.test.client;
+package org.openelis.manager;
 
-import java.util.ArrayList;
+import org.openelis.gwt.services.ScreenService;
 
-import org.openelis.domain.DictionaryDO;
-import org.openelis.gwt.common.RPC;
+public class PanelItemManagerProxy {
+    protected static final String MANAGER_SERVICE_URL = "org.openelis.modules.panel.server.PanelService";
+    protected ScreenService       service;
 
+    public PanelItemManagerProxy() {
+        service = new ScreenService("controller?service=" + MANAGER_SERVICE_URL);
+    }
 
-public class TestResultCategoryRPC implements RPC {
+    public PanelItemManager fetchByPanelId(Integer id) throws Exception {
+        return service.call("fetchItemByPanelId", id);
+    }
 
-    private static final long serialVersionUID = 1L;
+    public PanelItemManager add(PanelItemManager man) throws Exception {
+        assert false : "not supported";
+        return null;
+    }
+
+    public PanelItemManager update(PanelItemManager man) throws Exception {
+        assert false : "not supported";
+        return null;
+    }
     
-    public String resultValue;
-    public ArrayList<DictionaryDO> dictIdList;
-
+    public PanelItemManager delete(PanelItemManager man) throws Exception {
+        assert false : "not supported";
+        return null;
+    }
+    
+    public void validate(PanelItemManager man) throws Exception {
+    }
+    
 }

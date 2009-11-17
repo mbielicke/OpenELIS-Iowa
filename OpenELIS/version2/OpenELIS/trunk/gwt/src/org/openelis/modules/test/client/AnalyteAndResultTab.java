@@ -92,6 +92,8 @@ import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 
 public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,BeforeGetMatchesHandler,
@@ -149,10 +151,19 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
         this.service = service;
         this.scriptletService = scriptletService;
         this.analyteService = analyteService;
-        this.dictionaryService = dictionaryService;        
+        this.dictionaryService = dictionaryService;  
+        
         initialize();  
         
-        initializeDropdowns();
+        DeferredCommand.addCommand(new Command() {
+            public void execute() {
+                postConstructor();
+            }
+        });        
+    }
+    
+    private void postConstructor() {
+        initializeDropdowns();        
     }
         
     private void initialize() {                        
@@ -854,6 +865,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
                 int r,c,group;                
                 TestResultViewDO data ;
                 Object val;
+                GridFieldErrorException exc;                 
 
                 r = event.getRow();
                 c = event.getCol();
@@ -872,6 +884,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
                             validateValue(data, (String)resultTable.getObject(r, 2));
                         } catch (LocalizedException e) {
                             resultTable.setCellException(r, 2, e);
+                            exc = addToResultErrorList(group, r, meta.TEST_RESULT.getValue(), e.getMessage());
                         }
                         break;
                     case 2:                                                                                     
@@ -880,6 +893,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
                             validateValue(data, (String)val);
                         } catch (LocalizedException e) {
                             resultTable.setCellException(r, c, e);
+                            exc = addToResultErrorList(group, r, meta.TEST_RESULT.getValue(), e.getMessage());
                         }
                         ActionEvent.fire(screen, Action.RESULT_CHANGED, data);
                         break;
@@ -1516,8 +1530,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
                         row.cells.get(i)
                                   .setValue(new TableDataRow(key, name));
                     else
-                        row.cells.get(i).setValue(blankrow);
-                    
+                        row.cells.get(i).setValue(blankrow);                    
                 }
             }
         }        
@@ -1571,18 +1584,10 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
     
     private void showErrorsForResultGroup(int group) {
         GridFieldErrorException error;
-        TableDataRow row;
-        int i,j;                
+        int i;                
         
         if (resultErrorList == null || resultErrorList.size() == 0)
-            return;        
-                
-        for(i = 0; i < resultTable.numRows(); i++) {
-            row = resultTable.getRow(i);
-            for(j = 0; j < row.cells.size(); j++) {
-                resultTable.clearCellExceptions(i, j);
-            }
-        }
+            return;                       
         
         for (i = 0; i < resultErrorList.size(); i++) {
             error = resultErrorList.get(i);            
@@ -1771,7 +1776,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
 
             dictLookup.addActionHandler(new ActionHandler<DictionaryLookupScreen.Action>() {
                 public void onAction(ActionEvent<DictionaryLookupScreen.Action> event) {
-                    int selTab, numTabs;
+                    int selTab, numTabs, r;
                     ArrayList<IdNameVO> list;
                     TestResultViewDO data;
                     IdNameVO entry;
@@ -1786,6 +1791,8 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
                                 return;
                             }
                            
+                            r = resultTable.numRows()-1;
+                            
                             for (int i = 0; i < list.size(); i++ ) {
                                 entry = list.get(i);
                                 testResultManager.addResultAt(selTab + 1, resultTable.numRows(),
