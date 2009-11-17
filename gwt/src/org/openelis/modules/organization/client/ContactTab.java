@@ -25,6 +25,8 @@ import org.openelis.gwt.widget.table.event.RowDeletedHandler;
 import org.openelis.manager.OrganizationManager;
 
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 
 public class ContactTab extends Screen {
@@ -38,8 +40,12 @@ public class ContactTab extends Screen {
         setDef(def);
         setWindow(window);
         initialize();
+        DeferredCommand.addCommand(new Command() {
+        	public void execute() {
+        		initializeDropdowns();
+        	}
+        });
         
-        initializeDropdowns();
     }
 
     private void initialize() {
@@ -173,7 +179,7 @@ public class ContactTab extends Screen {
         });
     }
 
-    private void initializeDropdowns() {
+    protected void initializeDropdowns() {
         ArrayList<TableDataRow> model;
         
         model = new ArrayList<TableDataRow>();

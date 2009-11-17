@@ -168,8 +168,7 @@ public class QAEventsTab extends Screen {
                     createQaEventPickerScreen();
                 }
 
-                ScreenWindow modal = new ScreenWindow("QA Event Selection", "qaEventScreen", "",
-                                                      true, false);
+                ScreenWindow modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
                 modal.setName(consts.get("qaEventSelection"));
                 qaEventScreen.setType(QaeventLookupScreen.Type.SAMPLE);
                 qaEventScreen.draw();
@@ -258,8 +257,7 @@ public class QAEventsTab extends Screen {
                 if (qaEventScreen == null)
                     createQaEventPickerScreen();
 
-                ScreenWindow modal = new ScreenWindow("QA Event Selection", "qaEventScreen", "",
-                                                      true, false);
+                ScreenWindow modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
                 modal.setName(consts.get("qaEventSelection"));
                 qaEventScreen.setType(QaeventLookupScreen.Type.ANALYSIS);
                 qaEventScreen.setTestId(anDO.getTestId());

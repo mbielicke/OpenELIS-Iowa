@@ -25,79 +25,12 @@
 */
 package org.openelis.modules.main.client;
 
-import org.openelis.gwt.common.data.deprecated.CheckField;
-import org.openelis.gwt.common.data.deprecated.DateField;
-import org.openelis.gwt.common.data.deprecated.DoubleField;
-import org.openelis.gwt.common.data.deprecated.DropDownField;
-import org.openelis.gwt.common.data.deprecated.FieldType;
-import org.openelis.gwt.common.data.deprecated.IntegerField;
-import org.openelis.gwt.common.data.deprecated.QueryCheckField;
-import org.openelis.gwt.common.data.deprecated.QueryDateField;
-import org.openelis.gwt.common.data.deprecated.QueryDoubleField;
-import org.openelis.gwt.common.data.deprecated.QueryIntegerField;
-import org.openelis.gwt.common.data.deprecated.QueryStringField;
-import org.openelis.gwt.common.data.deprecated.StringField;
-import org.openelis.gwt.common.data.deprecated.TableDataRow;
-import org.openelis.gwt.common.data.deprecated.TableField;
-import org.openelis.gwt.common.data.deprecated.TreeField;
-import org.openelis.gwt.screen.deprecated.ClassFactory;
-import org.openelis.gwt.screen.deprecated.ScreenAToZTable;
-import org.openelis.gwt.screen.deprecated.ScreenAbsolute;
-import org.openelis.gwt.screen.deprecated.ScreenAppButton;
-import org.openelis.gwt.screen.deprecated.ScreenAutoCompleteWidget;
-import org.openelis.gwt.screen.deprecated.ScreenBase;
-import org.openelis.gwt.screen.deprecated.ScreenButtonPanel;
-import org.openelis.gwt.screen.deprecated.ScreenCalendar;
-import org.openelis.gwt.screen.deprecated.ScreenCheck;
-import org.openelis.gwt.screen.deprecated.ScreenCollapsePanel;
-import org.openelis.gwt.screen.deprecated.ScreenCommandButton;
-import org.openelis.gwt.screen.deprecated.ScreenDropDownWidget;
-import org.openelis.gwt.screen.deprecated.ScreenHTML;
-import org.openelis.gwt.screen.deprecated.ScreenHorizontal;
-import org.openelis.gwt.screen.deprecated.ScreenLabel;
-import org.openelis.gwt.screen.deprecated.ScreenLookUp;
-import org.openelis.gwt.screen.deprecated.ScreenMaskedBox;
-import org.openelis.gwt.screen.deprecated.ScreenMenuItem;
-import org.openelis.gwt.screen.deprecated.ScreenMenuLabel;
-import org.openelis.gwt.screen.deprecated.ScreenMenuPanel;
-import org.openelis.gwt.screen.deprecated.ScreenMultipleLookUp;
-import org.openelis.gwt.screen.deprecated.ScreenRadio;
-import org.openelis.gwt.screen.deprecated.ScreenResultsTable;
-import org.openelis.gwt.screen.deprecated.ScreenRichTextArea;
-import org.openelis.gwt.screen.deprecated.ScreenScrollableTabBar;
-import org.openelis.gwt.screen.deprecated.ScreenStack;
-import org.openelis.gwt.screen.deprecated.ScreenTabPanel;
-import org.openelis.gwt.screen.deprecated.ScreenTablePanel;
-import org.openelis.gwt.screen.deprecated.ScreenTableWidget;
-import org.openelis.gwt.screen.deprecated.ScreenText;
-import org.openelis.gwt.screen.deprecated.ScreenTextArea;
-import org.openelis.gwt.screen.deprecated.ScreenTextBox;
-import org.openelis.gwt.screen.deprecated.ScreenTitledPanel;
-import org.openelis.gwt.screen.deprecated.ScreenTreeWidget;
-import org.openelis.gwt.screen.deprecated.ScreenVertical;
-import org.openelis.gwt.screen.deprecated.ScreenWindowBrowser;
-import org.openelis.gwt.widget.deprecated.HoverListener;
-import org.openelis.gwt.widget.deprecated.ProxyListener;
-import org.openelis.gwt.widget.table.deprecated.TableAutoComplete;
-import org.openelis.gwt.widget.table.deprecated.TableCalendar;
-import org.openelis.gwt.widget.table.deprecated.TableCheck;
-import org.openelis.gwt.widget.table.deprecated.TableCollection;
-import org.openelis.gwt.widget.table.deprecated.TableDropdown;
-import org.openelis.gwt.widget.table.deprecated.TableLabel;
-import org.openelis.gwt.widget.table.deprecated.TableMaskedTextBox;
-import org.openelis.gwt.widget.table.deprecated.TableTextBox;
-import org.openelis.gwt.widget.tree.deprecated.TableTree;
-
 import com.google.gwt.core.client.EntryPoint;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.EventListener;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.Event.NativePreviewEvent;
 import com.google.gwt.user.client.Event.NativePreviewHandler;
 import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.xml.client.Node;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
@@ -107,7 +40,7 @@ public class OpenELIS implements EntryPoint, NativePreviewHandler {
    * This is the entry point method.
    */
   public void onModuleLoad() {
-	  setWidgetMap();
+	  //setWidgetMap();
 	  //All Events will flow this this handler first before any other handlers.
 	  Event.addNativePreviewHandler(this);
       try {
@@ -119,7 +52,7 @@ public class OpenELIS implements EntryPoint, NativePreviewHandler {
   }
   
   public void setWidgetMap() {
-
+/*
       ClassFactory.addClassFactory(new String[] {ScreenVertical.class.getName(),ScreenVertical.TAG_NAME},
                             new ClassFactory.Factory() {
                                   public Object newInstance(Object[] args) {
@@ -231,7 +164,7 @@ public class OpenELIS implements EntryPoint, NativePreviewHandler {
                                       return null;
                                   }
       });
-      */
+      
       ClassFactory.addClassFactory(new String[] {ScreenTitledPanel.class.getName(), ScreenTitledPanel.TAG_NAME},
               new ClassFactory.Factory() {
                     public Object newInstance(Object[] args) {
@@ -721,6 +654,7 @@ public class OpenELIS implements EntryPoint, NativePreviewHandler {
                                              return null;
                                          }
              });
+      */
   }
 
   /**

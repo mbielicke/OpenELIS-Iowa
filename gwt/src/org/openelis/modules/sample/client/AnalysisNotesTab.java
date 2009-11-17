@@ -112,11 +112,7 @@ public class AnalysisNotesTab extends NotesTab {
                     }
                 }
 
-                ScreenWindow modal = new ScreenWindow("Edit Note Screen",
-                                                      "editNoteScreen",
-                                                      "",
-                                                      true,
-                                                      false);
+                ScreenWindow modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
                 modal.setName(consts.get("standardNote"));
                 modal.setContent(internalEditNote);
 

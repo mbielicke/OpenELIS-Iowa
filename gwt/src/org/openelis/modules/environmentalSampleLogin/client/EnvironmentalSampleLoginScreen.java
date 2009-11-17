@@ -1365,11 +1365,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
                     });
             }
     
-            ScreenWindow modal = new ScreenWindow("Edit Sample Project",
-                                                  "sampleProjectScreen",
-                                                  "",
-                                                  true,
-                                                  false);
+            ScreenWindow modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
             modal.setName(consts.get("sampleProject"));
             modal.setContent(projectScreen);
             projectScreen.setScreenState(state);
@@ -1399,11 +1395,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
                 });
             }
             
-            ScreenWindow modal = new ScreenWindow("Edit Sample Organization",
-                                                  "sampleOrganizationScreen",
-                                                  "",
-                                                  true,
-                                                  false);
+            ScreenWindow modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
             modal.setName(consts.get("sampleOrganization"));
             modal.setContent(organizationScreen);
         
@@ -1432,11 +1424,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
                     });
             }
     
-            ScreenWindow modal = new ScreenWindow("Edit Sample Location",
-                                                  "sampleLocationScreen",
-                                                  "",
-                                                  true,
-                                                  false);
+            ScreenWindow modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
             modal.setName(consts.get("sampleLocation"));
             modal.setContent(locationScreen);
     
@@ -1742,11 +1730,7 @@ public class EnvironmentalSampleLoginScreen extends Screen {
             }
         }
 
-        ScreenWindow modal = new ScreenWindow("Test Prep Picker Screen",
-                                              "testPrepPickerScreen",
-                                              "",
-                                              true,
-                                              false);
+        ScreenWindow modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
         modal.setName(consts.get("prepTestPicker"));
         modal.setContent(prepPickerScreen);
         prepPickerScreen.setManager(manager);

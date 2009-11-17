@@ -1811,8 +1811,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
             });
 
         }
-        modal = new ScreenWindow("Dictionary LookUp", "dictionaryEntryPickerScreen", "", true,
-                                 false);
+        modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
         modal.setName(consts.get("chooseDictEntry"));
         modal.setContent(dictLookup);
         dictLookup.setScreenState(State.DEFAULT);
