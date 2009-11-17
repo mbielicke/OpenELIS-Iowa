@@ -25,14 +25,28 @@
 */
 package org.openelis.remote;
 
-import java.util.ArrayList;
-
 import javax.ejb.Remote;
 
-import org.openelis.domain.IdNameVO;
-import org.openelis.gwt.common.data.QueryData;
+import org.openelis.manager.PanelItemManager;
+import org.openelis.manager.PanelManager;
 
 @Remote
-public interface PanelRemote {       
-    public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception;    
+public interface PanelManagerRemote {
+    
+    public PanelManager fetchById(Integer id) throws Exception;
+    
+    public PanelManager fetchWithItems(Integer id) throws Exception;
+    
+    public PanelManager add(PanelManager man) throws Exception;
+    
+    public PanelManager update(PanelManager man) throws Exception;
+    
+    public PanelManager delete(PanelManager man) throws Exception; 
+    
+    public PanelManager fetchForUpdate(Integer id) throws Exception;
+    
+    public PanelManager abortUpdate(Integer id) throws Exception;
+    
+    public PanelItemManager fetchItemByPanelId(Integer id) throws Exception;      
+
 }

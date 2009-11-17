@@ -25,11 +25,11 @@
  */
 package org.openelis.remote;
 
+import org.openelis.domain.PanelVO;
 import org.openelis.domain.TestMethodVO;
 import org.openelis.gwt.common.data.QueryData;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import javax.ejb.Remote;
 
@@ -38,12 +38,12 @@ public interface TestRemote {
 
     public ArrayList<TestMethodVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception;
 
-    public List<TestMethodVO> fetchByName(String name, int maxResults);
+    public ArrayList<TestMethodVO> fetchByName(String name, int maxResults) throws Exception;
+    
+    public ArrayList<PanelVO> fetchNameMethodSectionByName(String name, int maxResults) throws Exception;
 
-    public List<TestMethodVO> fetchActiveByName(String name, int maxResults);
-
-    public List<TestMethodVO> fetchByNameSampleItemType(String name,
+    public ArrayList<TestMethodVO> fetchByNameSampleItemType(String name,
                                                         Integer sampleItemType,
-                                                        int maxResults);
+                                                        int maxResults) throws Exception;
 
 }

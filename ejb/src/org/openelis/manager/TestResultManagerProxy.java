@@ -44,9 +44,9 @@ import org.openelis.local.DictionaryLocal;
 import org.openelis.local.TestResultLocal;
 import org.openelis.metamap.TestMetaMap;
 import org.openelis.utilcommon.DataBaseUtil;
-import org.openelis.utilcommon.NumericRange;
+import org.openelis.utilcommon.ResultRangeNumeric;
+import org.openelis.utilcommon.ResultRangeTiter;
 import org.openelis.utilcommon.TestResultValidator;
-import org.openelis.utilcommon.TiterRange;
 
 public class TestResultManagerProxy {
 
@@ -131,12 +131,12 @@ public class TestResultManagerProxy {
 
     public TestResultManager fetchByTestId(Integer testId) throws Exception {
         TestResultManager trm;
-        ArrayList<ArrayList<TestResultViewDO>> results;
+        ArrayList<ArrayList<TestResultViewDO>> list;
 
-        results = local().fetchByTestId(testId);
+        list = local().fetchByTestId(testId);
         trm = TestResultManager.getInstance();
         trm.setTestId(testId);
-        trm.setResults(results);
+        trm.setResults(list);
 
         return trm;
     }
@@ -199,14 +199,14 @@ public class TestResultManagerProxy {
                          HashMap<Integer, List<Integer>> resGrpRsltMap) throws Exception{
         ValidationErrorsList list;
         TestResultViewDO data;
-        Integer numId, dictId, titerId, typeId, dateId, dtId, timeId, unitId, entryId, defId;
+        Integer typeId, unitId, entryId;
         int i, j;
         String value, fieldName, unitText;
         boolean hasDateType;
-        NumericRange nr;
-        TiterRange tr;
-        HashMap<Integer, List<TiterRange>> trMap;
-        HashMap<Integer, List<NumericRange>> nrMap;
+        ResultRangeNumeric nr;
+        ResultRangeTiter tr;
+        HashMap<Integer, List<ResultRangeTiter>> trMap;
+        HashMap<Integer, List<ResultRangeNumeric>> nrMap;
         List<Integer> dictList, unitsWithDefault;
         List<Integer> resIdList;
         DictionaryLocal dl;
@@ -216,17 +216,9 @@ public class TestResultManagerProxy {
         value = null;
         dl = dictLocal();
         rl = local();
-        
-        /*dictId = (dl.fetchBySystemName("test_res_type_dictionary")).getId();
-        numId = (dl.fetchBySystemName("test_res_type_numeric")).getId();
-        titerId = (dl.fetchBySystemName("test_res_type_titer")).getId();
-        dateId = (dl.fetchBySystemName("test_res_type_date")).getId();
-        dtId = (dl.fetchBySystemName("test_res_type_date_time")).getId();
-        timeId = (dl.fetchBySystemName("test_res_type_time")).getId();
-        defId = (dl.fetchBySystemName("test_res_type_default")).getId();*/
 
-        trMap = new HashMap<Integer, List<TiterRange>>();
-        nrMap = new HashMap<Integer, List<NumericRange>>();
+        trMap = new HashMap<Integer, List<ResultRangeTiter>>();
+        nrMap = new HashMap<Integer, List<ResultRangeNumeric>>();
         dictList = new ArrayList<Integer>();
         unitsWithDefault = new ArrayList<Integer>();
         hasDateType = false;
@@ -274,10 +266,12 @@ public class TestResultManagerProxy {
 
                 try {
                     if (DataBaseUtil.isSame(typeNumeric,typeId)) {
-                        nr = new NumericRange(value);
+                        nr = new ResultRangeNumeric();
+                        nr.setRange(value);
                         addNumericIfNoOverLap(nrMap, unitId, nr);
                     } else if (DataBaseUtil.isSame(typeTiter,typeId)) {
-                        tr = new TiterRange(value);
+                        tr = new ResultRangeTiter();
+                        tr.setRange(value);
                         addTiterIfNoOverLap(trMap, unitId, tr);
                     } else if (DataBaseUtil.isSame(typeDate,typeId)) {
                         TestResultValidator.validateDate(value);
@@ -351,42 +345,42 @@ public class TestResultManagerProxy {
     }
     
     private void addTiterIfNoOverLap(HashMap<Integer, 
-                                     List<TiterRange>> trMap,Integer unitId,
-                                     TiterRange tr) throws InconsistencyException {
-        TiterRange lr;
-        List<TiterRange> trList;
+                                     List<ResultRangeTiter>> trMap,Integer unitId,
+                                     ResultRangeTiter tr) throws InconsistencyException {
+        ResultRangeTiter lr;
+        List<ResultRangeTiter> trList;
 
         trList = trMap.get(unitId);
         if (trList != null) {
             for (int i = 0; i < trList.size(); i++ ) {
                 lr = trList.get(i);
-                if (lr.isOverlapping(tr))
+                if (lr.intersects(tr))
                     throw new InconsistencyException("testTiterRangeOverlapException");
             }
             trList.add(tr);
         } else {
-            trList = new ArrayList<TiterRange>();
+            trList = new ArrayList<ResultRangeTiter>();
             trList.add(tr);
             trMap.put(unitId, trList);
         }
     }
 
     private void addNumericIfNoOverLap(HashMap<Integer,
-                                       List<NumericRange>> nrMap,Integer unitId,
-                                       NumericRange nr) throws InconsistencyException {
-        NumericRange lr;
-        List<NumericRange> nrList;
+                                       List<ResultRangeNumeric>> nrMap,Integer unitId,
+                                       ResultRangeNumeric nr) throws InconsistencyException {
+        ResultRangeNumeric lr;
+        List<ResultRangeNumeric> nrList;
 
         nrList = nrMap.get(unitId);
         if (nrList != null) {
             for (int i = 0; i < nrList.size(); i++ ) {
                 lr = nrList.get(i);
-                if (lr.isOverlapping(nr))
+                if (lr.intersects(nr))
                     throw new InconsistencyException("testNumRangeOverlapException");
             }
             nrList.add(nr);
         } else {
-            nrList = new ArrayList<NumericRange>();
+            nrList = new ArrayList<ResultRangeNumeric>();
             nrList.add(nr);
             nrMap.put(unitId, nrList);
         }

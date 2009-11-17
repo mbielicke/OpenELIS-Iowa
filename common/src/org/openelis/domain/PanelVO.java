@@ -26,51 +26,30 @@
 package org.openelis.domain;
 
 import org.openelis.gwt.common.RPC;
+import org.openelis.utilcommon.DataBaseUtil;
 
 public class PanelVO implements RPC {
     private static final long serialVersionUID = 1L;
 
-    protected Integer         testId;
-    protected String          testName;
-    protected String          methodName;
-    protected String          sectionName;
+    protected Integer         id;
+    protected String          testName, methodName, sectionName;
 
     public PanelVO() {
-
     }
 
-    public PanelVO(Integer testId,
-                                    String testName,
-                                    String methodName,
-                                    String sectionName) {
-        this.testId = testId;
-        this.testName = testName;
-        this.methodName = methodName;
-        this.sectionName = sectionName;
+    public PanelVO(Integer id, String testName, String methodName, String sectionName) {
+        setId(id);
+        setTestName(testName);
+        setMethodName(methodName);
+        setSectionName(sectionName);
     }
 
-    public String getMethodName() {
-        return methodName;
+    public Integer getId() {
+        return id;
     }
 
-    public void setMethodName(String methodName) {
-        this.methodName = methodName;
-    }
-
-    public String getSectionName() {
-        return sectionName;
-    }
-
-    public void setSectionName(String sectionName) {
-        this.sectionName = sectionName;
-    }
-
-    public Integer getTestId() {
-        return testId;
-    }
-
-    public void setTestId(Integer testId) {
-        this.testId = testId;
+    public void setId(Integer testId) {
+        this.id = testId;
     }
 
     public String getTestName() {
@@ -78,7 +57,24 @@ public class PanelVO implements RPC {
     }
 
     public void setTestName(String testName) {
-        this.testName = testName;
+        this.testName = DataBaseUtil.trim(testName);
     }
+    
+    public String getMethodName() {
+        return methodName;
+    }
+
+    public void setMethodName(String methodName) {
+        this.methodName = DataBaseUtil.trim(methodName);
+    }
+
+    public String getSectionName() {
+        return sectionName;
+    }
+
+    public void setSectionName(String sectionName) {
+        this.sectionName = DataBaseUtil.trim(sectionName);
+    }
+
 
 }

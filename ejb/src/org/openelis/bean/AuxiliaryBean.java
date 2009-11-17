@@ -61,7 +61,7 @@ import org.openelis.metamap.AuxFieldGroupMetaMap;
 import org.openelis.remote.AuxiliaryRemote;
 import org.openelis.util.QueryBuilder;
 import org.openelis.utilcommon.DataBaseUtil;
-import org.openelis.utilcommon.NumericRange;
+import org.openelis.utilcommon.ResultRangeNumeric;
 import org.openelis.utils.GetPage;
 
 @Stateless
@@ -422,9 +422,9 @@ public class AuxiliaryBean implements AuxiliaryRemote {
                 amcId, aucId,entryId;;
         ArrayList<Integer> dvl;
         List<Exception> exList;
-        List<NumericRange> nrList;
+        List<ResultRangeNumeric> nrList;
         String value, fieldName,typeName,valueName;
-        NumericRange nr;
+        ResultRangeNumeric nr;
         boolean hasDateType,hasYesNoType,hasAlphaType;
 
         exList = null;
@@ -435,7 +435,7 @@ public class AuxiliaryBean implements AuxiliaryRemote {
             return null;
 
         dvl = new ArrayList<Integer>();
-        nrList = new ArrayList<NumericRange>();
+        nrList = new ArrayList<ResultRangeNumeric>();
         exList = new ArrayList<Exception>();        
         
         try {
@@ -479,7 +479,7 @@ public class AuxiliaryBean implements AuxiliaryRemote {
 
             try {
                 if (numId.equals(typeId)) {
-                    nr = new NumericRange(value);
+                    nr = new ResultRangeNumeric(value);
                     addNumericIfNoOverLap(nrList, nr);
                 } else if (yesNoId.equals(typeId)) {
                     TestResultValidator.validateYesNoValue(value);
@@ -553,13 +553,13 @@ public class AuxiliaryBean implements AuxiliaryRemote {
         return exList;
       }     
     
-    private void addNumericIfNoOverLap(List<NumericRange> nrList,
-                                       NumericRange nr) throws InconsistentException{
-         NumericRange lr;                  
+    private void addNumericIfNoOverLap(List<ResultRangeNumeric> nrList,
+                                       ResultRangeNumeric nr) throws InconsistentException{
+         ResultRangeNumeric lr;                  
          
          for(int i = 0; i < nrList.size(); i++) {
              lr = nrList.get(i);
-             if(lr.isOverlapping(nr))                    
+             if(lr.intersects(nr))                    
                  throw new InconsistentException("auxNumRangeOverlapException");             
          }
          

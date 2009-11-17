@@ -74,8 +74,10 @@ public class PanelItemDO extends DataObject {
     }
 
     public void setSortOrder(Integer sortOrder) {
-        this.sortOrder = sortOrder;
-        _changed = true;
+        if(this.sortOrder == null || !(this.sortOrder.equals(sortOrder))) {
+            this.sortOrder = sortOrder;
+            _changed = true;
+        }
     }
 
     public String getTestName() {
