@@ -170,8 +170,8 @@ UIRF Software License are applicable instead of those above.
                 <html>&lt;hr/&gt;</html>
                 <menuItem key="inventoryReceipt" description="{resource:getString($constants,'inventoryReceiptDescription')}" enable="false" icon="inventoryReceiptIcon" label="{resource:getString($constants,'inventoryReceipt')}" />
                 <menuItem key="inventoryAdjustment" description="{resource:getString($constants,'inventoryAdjustmentDescription')}" enable="false" icon="inventoryAdjustmentIcon" label="{resource:getString($constants,'inventoryAdjustment')}" />
-                <code>if(OpenELIS.security.hasModule("inventory","SELECT")){</code>
-                <menuItem key="inventoryItem" description="{resource:getString($constants,'inventoryItemDescription')}" enable="false" icon="inventoryItemIcon" label="{resource:getString($constants,'inventoryItem')}" />
+                <code>if(OpenELIS.security.hasModule("inventoryitem","SELECT")){</code>
+                <menuItem key="inventoryItem" description="{resource:getString($constants,'inventoryItemDescription')}" enable="true" icon="inventoryItemIcon" label="{resource:getString($constants,'inventoryItem')}" />
                 <code>}</code>
               </menuPanel>
             </menuItem>
