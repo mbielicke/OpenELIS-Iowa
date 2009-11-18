@@ -38,7 +38,7 @@ import org.openelis.remote.PanelRemote;
 
 public class PanelService {
 
-    private static final int rowPP = 13;
+    private static final int rowPP = 14;
     
     public PanelManager fetchById(Integer id) throws Exception {
         try {

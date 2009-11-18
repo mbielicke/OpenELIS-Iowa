@@ -1,4 +1,3 @@
-
 <!--
 Exhibit A - UIRF Open-source Based Public Software License.
   
@@ -35,9 +34,8 @@ UIRF Software License are applicable instead of those above.
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   xsi:noNamespaceSchemaLocation="http://openelis.uhl.uiowa.edu/schema/ScreenSchema.xsd"
   xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd"
-  xmlns:meta="xalan://org.openelis.metamap.SectionMetaMap"
-  xmlns:org="xalan://org.openelis.meta.OrganizationMeta"
-  xmlns:parentSect="xalan://org.openelis.meta.SectionMeta">
+  xmlns:labelMeta="xalan://org.openelis.metamap.LabelMetaMap"
+  xmlns:scriptlet="xalan://org.openelis.meta.ScriptletMeta">
 
   <xsl:import href="IMPORT/aToZTwoColumns.xsl" />
   <xalan:component prefix="resource">
@@ -46,37 +44,31 @@ UIRF Software License are applicable instead of those above.
   <xalan:component prefix="locale">
     <xalan:script lang="javaclass" src="xalan://java.util.Locale" />
   </xalan:component>
-  <xalan:component prefix="meta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.SectionMetaMap" />
+  <xalan:component prefix="labelMeta">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.LabelMetaMap" />
   </xalan:component>
-  <xalan:component prefix="org">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.OrganizationMeta" />
-  </xalan:component>
-  <xalan:component prefix="parentSect">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.SectionMeta" />
+  <xalan:component prefix="scriptlet">
+    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.ScriptletMeta" />
   </xalan:component>
   <xsl:template match="doc">
-    <xsl:variable name="sect" select="meta:new()" />
-    <xsl:variable name="o" select="meta:getOrganization($sect)" />
-    <xsl:variable name="psect" select="meta:getParentSection($sect)" />
+    <xsl:variable name="lbl" select="labelMeta:new()" />
+    <xsl:variable name="scpt" select="labelMeta:getScriptlet($lbl)" />
     <xsl:variable name="language">
       <xsl:value-of select="locale" />
     </xsl:variable>
     <xsl:variable name="props">
       <xsl:value-of select="props" />
-    </xsl:variable>
+    </xsl:variable>    
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
-<!-- main screen -->
-    <screen id="Section" name="{resource:getString($constants,'labSection')}">
+    <screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Label" name="{resource:getString($constants,'label')}">
       <HorizontalPanel padding="0" spacing="0">
-<!--left table goes here -->
         <CollapsePanel key="collapsePanel" style="LeftSidePanel">
           <HorizontalPanel width="225">
             <buttonGroup key="atozButtons">
               <xsl:call-template name="aToZLeftPanelButtons" />
             </buttonGroup>
             <VerticalPanel>
-              <table key="atozTable" width="auto" maxRows="9" style="atozTable">
+              <table key="atozTable" width="auto" maxRows="10" style="atozTable">
                 <col width="175" header="{resource:getString($constants,'name')}">
                   <label />
                 </col>
@@ -94,7 +86,6 @@ UIRF Software License are applicable instead of those above.
             </VerticalPanel>
           </HorizontalPanel>
         </CollapsePanel>
-<!--button panel code-->
         <VerticalPanel padding="0" spacing="0">
           <AbsolutePanel spacing="0" style="ButtonPanelContainer">
             <HorizontalPanel>
@@ -123,7 +114,12 @@ UIRF Software License are applicable instead of those above.
                 <xsl:with-param name="language">
                   <xsl:value-of select="language" />
                 </xsl:with-param>
-              </xsl:call-template>
+              </xsl:call-template> 
+              <xsl:call-template name="deleteButton">
+                <xsl:with-param name="language">
+                  <xsl:value-of select="language" />
+                </xsl:with-param>
+              </xsl:call-template>             
               <xsl:call-template name="buttonPanelDivider" />
               <xsl:call-template name="commitButton">
                 <xsl:with-param name="language">
@@ -135,51 +131,51 @@ UIRF Software License are applicable instead of those above.
                   <xsl:value-of select="language" />
                 </xsl:with-param>
               </xsl:call-template>
+              <xsl:call-template name="buttonPanelDivider" />
+              <menuPanel key="optionsMenu" layout="vertical" style="topBarItemHolder">
+                <menuItem>
+                  <menuDisplay>
+                    <appButton style="ButtonPanelButton" action="option">
+                      <HorizontalPanel>
+                        <text>
+                          <xsl:value-of select='resource:getString($constants,"options")' />
+                        </text>
+                        <AbsolutePanel width="20px" height="20px" style="OptionsButtonImage" />
+                      </HorizontalPanel>
+                    </appButton>
+                  </menuDisplay>
+                  <menuPanel layout="vertical" position="below" style="topMenuContainer">
+                    <xsl:call-template name="historyMenuItem" />
+                  </menuPanel>
+                </menuItem>
+              </menuPanel>
             </HorizontalPanel>
           </AbsolutePanel>
-<!--end button panel-->
-          <VerticalPanel height="220" padding="0" spacing="0" style="WhiteContentPanel">
+          <VerticalPanel width="650" height="240" padding="0" spacing="0" style="WhiteContentPanel">
             <TablePanel style="Form">
               <row>
                 <text style="Prompt">
-                  <xsl:value-of select="resource:getString($constants,'name')" />:
+                  <xsl:value-of select='resource:getString($constants,"name")' />:
                 </text>
-                <widget colspan="6">
-                  <textbox key="{meta:getName($sect)}" width="145" case="LOWER" max="20" tab="{meta:getDescription($sect)},{parentSect:getName($psect)}" />
-                </widget>
+                <textbox key="{labelMeta:getName($lbl)}" width="215px" case="LOWER" max="30" required = "true" tab="{labelMeta:getDescription($lbl)},{scriptlet:getName($scpt)}"/>
               </row>
               <row>
                 <text style="Prompt">
-                  <xsl:value-of select="resource:getString($constants,'description')" />:
+                  <xsl:value-of select='resource:getString($constants,"description")' />:
                 </text>
-                <widget colspan="6">
-                  <textbox key="{meta:getDescription($sect)}" width="425" case="MIXED" max="60" tab="{meta:getIsExternal($sect)},{meta:getName($sect)}" />
-                </widget>
+                <textbox key="{labelMeta:getDescription($lbl)}" width="425px" max="60" tab="{labelMeta:getPrinterTypeId($lbl)},{labelMeta:getName($lbl)}" />
               </row>
               <row>
                 <text style="Prompt">
-                  <xsl:value-of select='resource:getString($constants,"external")' />:
+                  <xsl:value-of select='resource:getString($constants,"printerType")' />:
                 </text>
-                <check key="{meta:getIsExternal($sect)}" tab="{org:getName($o)},{meta:getDescription($sect)}" />
+                <dropdown key="{labelMeta:getPrinterTypeId($lbl)}" width="90px" required = "true" tab="{scriptlet:getName($scpt)},{labelMeta:getDescription($lbl)}"/>
               </row>
               <row>
                 <text style="Prompt">
-                  <xsl:value-of select="resource:getString($constants,'organization')" />:
+                  <xsl:value-of select='resource:getString($constants,"scriptlet")' />:
                 </text>
-                <widget>
-                  <autoComplete key="{org:getName($o)}" width="285" case="UPPER" popWidth="auto" tab="{parentSect:getName($psect)},{meta:getIsExternal($sect)}" field="Integer">
-                    <col width="180" header="{resource:getString($constants,'name')}" />
-                    <col width="110" header="{resource:getString($constants,'street')}" />
-                    <col width="100" header="{resource:getString($constants,'city')}" />
-                    <col width="20" header="{resource:getString($constants,'st')}" />
-                  </autoComplete>
-                </widget>
-              </row>
-              <row>
-                <text style="Prompt">
-                  <xsl:value-of select="resource:getString($constants,'parentSection')" />:
-                </text>
-                <autoComplete key="{parentSect:getName($psect)}" width="180" case="LOWER" popWidth="auto" tab="{meta:getName($sect)},{org:getName($o)}" field="Integer">
+                <autoComplete key="{scriptlet:getName($scpt)}" width="180" case="LOWER" required = "true" popWidth="auto" tab="{labelMeta:getName($lbl)},{labelMeta:getPrinterTypeId($lbl)}" field="Integer">
                   <col width="180" />
                 </autoComplete>
               </row>

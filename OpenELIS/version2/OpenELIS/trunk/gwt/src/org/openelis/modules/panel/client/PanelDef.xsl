@@ -69,7 +69,7 @@ UIRF Software License are applicable instead of those above.
               <xsl:call-template name="aToZLeftPanelButtons" />
             </buttonGroup>
             <VerticalPanel>
-              <table key="atozTable" width="auto" maxRows="13" style="atozTable">
+              <table key="atozTable" width="auto" maxRows="14" style="atozTable">
                 <col width="175" header="{resource:getString($constants,'name')}">
                   <label />
                 </col>
@@ -132,7 +132,7 @@ UIRF Software License are applicable instead of those above.
                   <xsl:value-of select="language" />
                 </xsl:with-param>
               </xsl:call-template>
-              <xsl:call-template name="buttonPanelDivider"/>
+              <xsl:call-template name="buttonPanelDivider" />
               <menuPanel key="optionsMenu" layout="vertical" style="topBarItemHolder">
                 <menuItem>
                   <menuDisplay>
@@ -153,13 +153,13 @@ UIRF Software License are applicable instead of those above.
             </HorizontalPanel>
           </AbsolutePanel>
 <!--end button panel-->
-          <VerticalPanel padding="0" spacing="0" style="WhiteContentPanel">
+          <VerticalPanel width="650" height="235" padding="0" spacing="0" style="WhiteContentPanel">
             <TablePanel style="Form">
               <row>
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'name')" />:
                 </text>
-                <textbox key="{meta:getName($panel)}" width="145px" max="20" tab="{meta:getDescription($panel)},{meta:getDescription($panel)}" />
+                <textbox key="{meta:getName($panel)}" width="145px" max="20" tab="{meta:getDescription($panel)},{meta:getDescription($panel)}" required="true" />
               </row>
               <row>
                 <text style="Prompt">
@@ -171,7 +171,7 @@ UIRF Software License are applicable instead of those above.
             <HorizontalPanel>
               <VerticalPanel style="Form">
                 <widget valign="top">
-                  <table key="panelItemTable" width="auto" maxRows="9" showScroll="ALWAYS" tab="{meta:getName($panel)},{meta:getDescription($panel)}" title="" style="ScreenTableWithSides">
+                  <table key="panelItemTable" width="auto" maxRows="9" showScroll="ALWAYS" style="ScreenTableWithSides" tab="{meta:getName($panel)},{meta:getDescription($panel)}" title="">
                     <col key="{panelItem:getTestName($pi)}" width="120" align="left" sort="false" header="{resource:getString($constants,'test')}">
                       <textbox field="String" />
                     </col>
@@ -180,37 +180,37 @@ UIRF Software License are applicable instead of those above.
                     </col>
                   </table>
                 </widget>
-              <HorizontalPanel>
-              <HorizontalPanel width="5px" />
-              <widget style="TableButtonFooter">
-              <HorizontalPanel>
-                <appButton key="removeTestButton" style="Button">
-                  <HorizontalPanel>
-                    <AbsolutePanel style="RemoveRowButtonImage" />
-                    <text>
-                      <xsl:value-of select="resource:getString($constants,'removeRow')" />
-                    </text>
-                  </HorizontalPanel>
-                </appButton>
-                <appButton key="moveUpButton" style="Button">
-                  <HorizontalPanel>
-                    <AbsolutePanel />
-                    <text>
-                      <xsl:value-of select="resource:getString($constants,'moveUp')" />
-                    </text>
-                  </HorizontalPanel>
-                </appButton>
-                <appButton key="moveDownButton" style="Button">
-                  <HorizontalPanel>
-                    <AbsolutePanel />
-                    <text>
-                      <xsl:value-of select="resource:getString($constants,'moveDown')" />
-                    </text>
-                  </HorizontalPanel>
-                </appButton>
+                <HorizontalPanel>
+                  <HorizontalPanel width="5px" />
+                  <widget style="TableButtonFooter">
+                    <HorizontalPanel>
+                      <appButton key="removeTestButton" style="Button">
+                        <HorizontalPanel>
+                          <AbsolutePanel style="RemoveRowButtonImage" />
+                          <text>
+                            <xsl:value-of select="resource:getString($constants,'removeRow')" />
+                          </text>
+                        </HorizontalPanel>
+                      </appButton>
+                      <appButton key="moveUpButton" style="Button">
+                        <HorizontalPanel>
+                          <AbsolutePanel />
+                          <text>
+                            <xsl:value-of select="resource:getString($constants,'moveUp')" />
+                          </text>
+                        </HorizontalPanel>
+                      </appButton>
+                      <appButton key="moveDownButton" style="Button">
+                        <HorizontalPanel>
+                          <AbsolutePanel />
+                          <text>
+                            <xsl:value-of select="resource:getString($constants,'moveDown')" />
+                          </text>
+                        </HorizontalPanel>
+                      </appButton>
+                    </HorizontalPanel>
+                  </widget>
                 </HorizontalPanel>
-              </widget>              
-            </HorizontalPanel>
               </VerticalPanel>
               <HorizontalPanel width="10px" />
               <widget valign="middle" style="WhiteContentPanel">
@@ -225,7 +225,7 @@ UIRF Software License are applicable instead of those above.
               </widget>
               <HorizontalPanel width="10px" />
               <VerticalPanel style="Form">
-                <table key="allTestsTable" width="auto" maxRows="9" showScroll="ALWAYS" title="" multiSelect = "true" style="ScreenTableWithSides">
+                <table key="allTestsTable" width="auto" maxRows="9" multiSelect="true" showScroll="ALWAYS" style="ScreenTableWithSides" title="">
                   <col key="test" width="90" align="left" sort="true" header="{resource:getString($constants,'test')}">
                     <label field="String" />
                   </col>
@@ -237,16 +237,16 @@ UIRF Software License are applicable instead of those above.
                   </col>
                 </table>
                 <widget style="TableButtonFooter">
-                 <HorizontalPanel>
-                  <appButton key="refreshButton" style="Button">
-                    <HorizontalPanel>
-                      <AbsolutePanel />
-                      <text>
-                        <xsl:value-of select="resource:getString($constants,'refresh')" />
-                      </text>
-                    </HorizontalPanel>
-                  </appButton>
-                </HorizontalPanel>
+                  <HorizontalPanel>
+                    <appButton key="refreshButton" style="Button">
+                      <HorizontalPanel>
+                        <AbsolutePanel />
+                        <text>
+                          <xsl:value-of select="resource:getString($constants,'refresh')" />
+                        </text>
+                      </HorizontalPanel>
+                    </appButton>
+                  </HorizontalPanel>
                 </widget>
               </VerticalPanel>
             </HorizontalPanel>
