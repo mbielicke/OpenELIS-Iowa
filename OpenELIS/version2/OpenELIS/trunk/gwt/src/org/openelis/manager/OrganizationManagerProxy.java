@@ -29,11 +29,11 @@ import org.openelis.gwt.services.ScreenService;
 
 public class OrganizationManagerProxy {
 
-    protected static final String ORG_MANAGER_SERVICE_URL = "org.openelis.modules.organization.server.OrganizationService";
+    protected static final String MANAGER_SERVICE_URL = "org.openelis.modules.organization.server.OrganizationService";
     protected ScreenService       service;
 
     public OrganizationManagerProxy() {
-        service = new ScreenService("OpenELISServlet?service=" + ORG_MANAGER_SERVICE_URL);
+        service = new ScreenService("controller?service=" + MANAGER_SERVICE_URL);
     }
 
     public OrganizationManager fetchById(Integer id) throws Exception {
