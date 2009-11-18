@@ -47,6 +47,7 @@ public class OrganizationManager implements RPC, HasNotesInt {
      */
     protected OrganizationManager() {
         contacts = null;
+        parameters = null;
         notes = null;
         organization = null;
     }
