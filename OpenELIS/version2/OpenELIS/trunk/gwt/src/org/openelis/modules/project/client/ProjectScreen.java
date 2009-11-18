@@ -94,7 +94,7 @@ public class ProjectScreen extends Screen {
     private AppButton        queryButton, previousButton, nextButton, addButton, updateButton,
                              commitButton, abortButton, addParameterButton, removeParameterButton;
     private TableWidget      parameterTable;
-    private AutoComplete<Integer> ownerId, scriptlet;
+    private AutoComplete<Integer> ownerId, scriptletId;
     private ButtonGroup           atoz;
     private ScreenNavigator       nav;
 
@@ -368,25 +368,25 @@ public class ProjectScreen extends Screen {
             }
         });
 
-        scriptlet = (AutoComplete<Integer>)def.getWidget(meta.getScriptlet().getName());
+        scriptletId = (AutoComplete<Integer>)def.getWidget(meta.getScriptlet().getName());
         addScreenHandler(name, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                scriptlet.setSelection(manager.getProject().getScriptletId(),
+                scriptletId.setSelection(manager.getProject().getScriptletId(),
                                        getString(manager.getProject().getScriptletName()));
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
                 manager.getProject().setScriptletId(event.getValue());
-                manager.getProject().setScriptletName(scriptlet.getTextBoxDisplay());
+                manager.getProject().setScriptletName(scriptletId.getTextBoxDisplay());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                scriptlet.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                scriptletId.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                    .contains(event.getState()));
-                scriptlet.setQueryMode(event.getState() == State.QUERY);
+                scriptletId.setQueryMode(event.getState() == State.QUERY);
             }
         });
-        scriptlet.addGetMatchesHandler(new GetMatchesHandler() {
+        scriptletId.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
                 QueryFieldUtil parser;
                 ArrayList<IdNameVO> list;
@@ -401,7 +401,7 @@ public class ProjectScreen extends Screen {
 
                     for (IdNameVO data : list)
                         model.add(new TableDataRow(data.getId(), data.getName()));
-                    scriptlet.showAutoMatches(model);
+                    scriptletId.showAutoMatches(model);
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
                 }

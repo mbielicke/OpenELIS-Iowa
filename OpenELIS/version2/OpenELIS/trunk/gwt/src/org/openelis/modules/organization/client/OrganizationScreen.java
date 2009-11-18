@@ -84,7 +84,7 @@ public class OrganizationScreen extends Screen {
 
     private ContactTab            contactTab;
     private ParameterTab          parameterTab;
-    private NotesTab              notesTab;
+    private NotesTab              noteTab;
     private Tabs                  tab;
 
     private AppButton             queryButton, previousButton, nextButton, addButton, updateButton,
@@ -96,7 +96,7 @@ public class OrganizationScreen extends Screen {
     private TabPanel              tabPanel;
 
     private enum Tabs {
-        CONTACTS, PARAMETERS, NOTES
+        CONTACT, PARAMETER, NOTE
     };
 
     public OrganizationScreen() throws Exception {
@@ -120,7 +120,7 @@ public class OrganizationScreen extends Screen {
      * command.
      */
     private void postConstructor() {
-        tab = Tabs.CONTACTS;
+        tab = Tabs.CONTACT;
         manager = OrganizationManager.getInstance();
 
         initialize();
@@ -458,7 +458,7 @@ public class OrganizationScreen extends Screen {
         addScreenHandler(contactTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                 contactTab.setManager(manager);
-                if (tab == Tabs.CONTACTS)
+                if (tab == Tabs.CONTACT)
                     drawTabs();
             }
 
@@ -471,7 +471,7 @@ public class OrganizationScreen extends Screen {
         addScreenHandler(parameterTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                 parameterTab.setManager(manager);
-                if (tab == Tabs.PARAMETERS)
+                if (tab == Tabs.PARAMETER)
                     drawTabs();
             }
 
@@ -480,16 +480,16 @@ public class OrganizationScreen extends Screen {
             }
         });
 
-        notesTab = new NotesTab(def, window, "notesPanel", "standardNoteButton", false);
-        addScreenHandler(notesTab, new ScreenEventHandler<Object>() {
+        noteTab = new NotesTab(def, window, "notesPanel", "standardNoteButton", false);
+        addScreenHandler(noteTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
-                notesTab.setManager(manager);
-                if (tab == Tabs.NOTES)
+                noteTab.setManager(manager);
+                if (tab == Tabs.NOTE)
                     drawTabs();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                notesTab.setState(event.getState());
+                noteTab.setState(event.getState());
             }
         });
 
@@ -599,7 +599,7 @@ public class OrganizationScreen extends Screen {
 
         // clear all the tabs
         contactTab.draw();
-        notesTab.draw();
+        noteTab.draw();
         parameterTab.draw();
         
         setFocus(id);
@@ -719,13 +719,13 @@ public class OrganizationScreen extends Screen {
             window.setBusy(consts.get("fetching"));
             try {
                 switch (tab) {
-                    case CONTACTS:
+                    case CONTACT:
                         manager = OrganizationManager.fetchWithContacts(id);
                         break;
-                    case PARAMETERS:
+                    case PARAMETER:
                         manager = OrganizationManager.fetchWithParameters(id);
                         break;
-                    case NOTES:
+                    case NOTE:
                         manager = OrganizationManager.fetchWithNotes(id);
                         break;
                 }
@@ -749,14 +749,14 @@ public class OrganizationScreen extends Screen {
 
     private void drawTabs() {
         switch (tab) {
-            case CONTACTS:
+            case CONTACT:
                 contactTab.draw();
                 break;
-            case PARAMETERS:
+            case PARAMETER:
                 parameterTab.draw();
                 break;
-            case NOTES:
-                notesTab.draw();
+            case NOTE:
+                noteTab.draw();
                 break;
         }
     }

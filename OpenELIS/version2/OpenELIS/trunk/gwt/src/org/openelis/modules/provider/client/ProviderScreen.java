@@ -321,7 +321,7 @@ public class ProviderScreen extends Screen {
             }
         });
 
-        addressesTab = new AddressesTab(def);
+        addressesTab = new AddressesTab(def, window);
         addScreenHandler(addressesTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                 addressesTab.setManager(manager);
