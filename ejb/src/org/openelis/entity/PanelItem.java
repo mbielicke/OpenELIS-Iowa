@@ -38,7 +38,6 @@ import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -47,10 +46,10 @@ import org.openelis.utilcommon.DataBaseUtil;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
-@NamedQueries({
-    @NamedQuery( name = "PanelItem.FetchByPanelId", 
-                query = "select distinct new org.openelis.domain.PanelItemDO(p.id,p.panelId,p.sortOrder,p.testName,p.methodName) "
-                      + " from PanelItem p where p.panelId = :id order by p.sortOrder")})
+@NamedQuery(name = "PanelItem.FetchByPanelId", 
+           query = "select distinct new org.openelis.domain.PanelItemDO(p.id,p.panelId,p.sortOrder,p.testName,p.methodName) "
+                 + " from PanelItem p where p.panelId = :id order by p.sortOrder")
+
 @Entity
 @Table(name = "panel_item")
 @EntityListeners( {AuditUtil.class})
@@ -134,13 +133,9 @@ public class PanelItem implements Auditable, Cloneable {
             Element root = doc.getDocumentElement();
 
             AuditUtil.getChangeXML(id, original.id, doc, "id");
-
             AuditUtil.getChangeXML(panelId, original.panelId, doc, "panel_id");
-
             AuditUtil.getChangeXML(sortOrder, original.sortOrder, doc, "sort_order_id");
-
             AuditUtil.getChangeXML(testName, original.testName, doc, "test_name");
-
             AuditUtil.getChangeXML(methodName, original.methodName, doc, "method_name");
 
             if (root.hasChildNodes())
