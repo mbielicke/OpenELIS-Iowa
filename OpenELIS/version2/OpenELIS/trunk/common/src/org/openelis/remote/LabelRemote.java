@@ -27,29 +27,28 @@ package org.openelis.remote;
 
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.LabelViewDO;
-import org.openelis.gwt.common.data.deprecated.AbstractField;
+import org.openelis.gwt.common.data.QueryData;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import javax.ejb.Remote;
 
 @Remote
 public interface LabelRemote {
-    // method to return Label 
-    public LabelViewDO getLabel(Integer labelId);
-    
-    public LabelViewDO getLabelAndUnlock(Integer labelId, String session);
-    
-    public LabelViewDO getLabelAndLock(Integer labelId, String session)throws Exception;    
-     
-    //  commit a change to Label or insert a new Label
-    public Integer updateLabel(LabelViewDO labelDO)throws Exception;
-    
-    //  method to query for Label
-    public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception;
-    
-    public void deleteLabel(LabelViewDO labelDO) throws Exception;
 
+    public LabelViewDO fetchById(Integer id) throws Exception;
+    
     public ArrayList<IdNameVO> fetchByName(String match,int max) throws Exception;
+
+    public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception;
+
+    public LabelViewDO add(LabelViewDO data) throws Exception;
+
+    public LabelViewDO update(LabelViewDO data) throws Exception;
+
+    public LabelViewDO fetchForUpdate(Integer id) throws Exception;
+
+    public LabelViewDO abortUpdate(Integer id) throws Exception;
+    
+    public void delete(LabelViewDO data) throws Exception;
 }

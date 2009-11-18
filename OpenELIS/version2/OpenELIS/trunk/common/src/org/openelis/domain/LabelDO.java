@@ -47,7 +47,7 @@ public class LabelDO extends DataObject {
         setId(id);
         setName(name);
         setDescription(description);
-        setPrinterType(printerType);
+        setPrinterTypeId(printerType);
         setScriptletId(scriptletId);
         _changed = false;
     }
@@ -83,7 +83,7 @@ public class LabelDO extends DataObject {
         return printerTypeId;
     }
 
-    public void setPrinterType(Integer printerTypeId) {
+    public void setPrinterTypeId(Integer printerTypeId) {
         this.printerTypeId = printerTypeId;
         _changed = true;
     }

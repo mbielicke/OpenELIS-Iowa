@@ -53,12 +53,15 @@ import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
 @NamedQueries({
-    @NamedQuery( name = "Panel.FetchById", 
-                query = "select distinct new org.openelis.domain.PanelDO(p.id,p.name,p.description)"
+    
+    @NamedQuery(name = "Panel.FetchById", 
+               query = "select distinct new org.openelis.domain.PanelDO(p.id,p.name,p.description)"
                       + " from Panel p where p.id = :id"),
-    @NamedQuery( name = "Panel.FetchByName",
-                query = "select distinct new org.openelis.domain.PanelDO(p.id,p.name,p.description)"
-                      + " from Panel p where p.name = :name")})
+    @NamedQuery(name = "Panel.FetchByName",
+               query = "select distinct new org.openelis.domain.PanelDO(p.id,p.name,p.description)"
+                      + " from Panel p where p.name = :name")
+})
+
 @Entity
 @Table(name = "panel")
 @EntityListeners( {AuditUtil.class})
@@ -131,9 +134,7 @@ public class Panel implements Auditable, Cloneable {
             Element root = doc.getDocumentElement();
 
             AuditUtil.getChangeXML(id, original.id, doc, "id");
-
             AuditUtil.getChangeXML(name, original.name, doc, "name");
-
             AuditUtil.getChangeXML(description, original.description, doc, "description");
 
             if (root.hasChildNodes())

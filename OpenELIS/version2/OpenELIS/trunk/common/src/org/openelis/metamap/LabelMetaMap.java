@@ -27,23 +27,34 @@ package org.openelis.metamap;
 
 import org.openelis.gwt.common.MetaMap;
 import org.openelis.meta.LabelMeta;
+import org.openelis.meta.ScriptletMeta;
 
 public class LabelMetaMap extends LabelMeta implements MetaMap {
 
+    public ScriptletMeta               SCRIPTLET;
+    
     public LabelMetaMap(){
         super("l.");
+        SCRIPTLET = new ScriptletMeta(path + "scriptlet.");
     } 
     
+    public LabelMetaMap(String path){
+        super("l.");
+        SCRIPTLET = new ScriptletMeta(path + "scriptlet.");
+    } 
+    
+    public String buildFrom(String where) {        
+        return "Label l ";
+    }
+    
     public boolean hasColumn(String name){
+        if (name.startsWith(path + "scriptlet."))
+            return SCRIPTLET.hasColumn(name);
         return super.hasColumn(name); 
     }
     
-    public static LabelMetaMap getInstance(){
-      return new LabelMetaMap();
-    }
-    
-    public String buildFrom(String where) {        
-        return "Label l";
+    public ScriptletMeta getScriptlet() {
+        return SCRIPTLET;
     }
 
 }
