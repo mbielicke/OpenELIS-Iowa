@@ -40,11 +40,16 @@ public class ParameterTab extends Screen {
         setDef(def);
         setWindow(window);
         initialize();
+
         DeferredCommand.addCommand(new Command() {
-        	public void execute() {
-        		initializeDropdowns();
-        	}
+            public void execute() {
+                postConstructor();
+            }
         });
+    }
+
+    private void postConstructor() {
+        initializeDropdowns();
     }
 
     private void initialize() {
@@ -146,7 +151,7 @@ public class ParameterTab extends Screen {
         });
     }
 
-    protected void initializeDropdowns() {
+    private void initializeDropdowns() {
         ArrayList<TableDataRow> model;
 
         model = new ArrayList<TableDataRow>();

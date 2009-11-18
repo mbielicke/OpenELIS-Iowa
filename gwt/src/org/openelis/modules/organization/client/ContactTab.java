@@ -40,12 +40,16 @@ public class ContactTab extends Screen {
         setDef(def);
         setWindow(window);
         initialize();
-        DeferredCommand.addCommand(new Command() {
-        	public void execute() {
-        		initializeDropdowns();
-        	}
-        });
         
+        DeferredCommand.addCommand(new Command() {
+            public void execute() {
+                postConstructor();
+            }
+        });
+    }
+
+    private void postConstructor() {
+        initializeDropdowns();
     }
 
     private void initialize() {
@@ -179,7 +183,7 @@ public class ContactTab extends Screen {
         });
     }
 
-    protected void initializeDropdowns() {
+    private void initializeDropdowns() {
         ArrayList<TableDataRow> model;
         
         model = new ArrayList<TableDataRow>();

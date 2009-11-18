@@ -25,6 +25,8 @@ import org.openelis.gwt.widget.table.event.RowDeletedHandler;
 import org.openelis.manager.ProviderManager;
 
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 
 public class AddressesTab extends Screen {
@@ -34,11 +36,21 @@ public class AddressesTab extends Screen {
 	private AppButton addAddressButton, removeAddressButton;
 	private boolean loaded;
 	
-	public AddressesTab(ScreenDefInt def) {
+	public AddressesTab(ScreenDefInt def, ScreenWindow window) {
 		setDef(def);
+		setWindow(window);
 		initialize();
-		initializeDropdowns();
-	}
+
+		DeferredCommand.addCommand(new Command() {
+            public void execute() {
+                postConstructor();
+            }
+        });
+    }
+
+    private void postConstructor() {
+        initializeDropdowns();
+    }
 	
 	private void initialize() {
         providerAddressTable = (TableWidget)def.getWidget("providerAddressTable");
