@@ -45,7 +45,7 @@ import org.openelis.remote.TestRemote;
 
 public class TestService {
 
-    private static final int rowPP = 24;
+    private static final int rowPP = 26;
 
     public TestManager fetchById(Integer testId) throws Exception {
         try {

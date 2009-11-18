@@ -207,7 +207,7 @@ UIRF Software License are applicable instead of those above.
                 <menuItem key="auxiliaryPrompt" description="{resource:getString($constants,'auxiliaryPromptDescription')}" enable="false" icon="auxiliaryPromptIcon" label="{resource:getString($constants,'auxiliaryPrompt')}" />
                 <html>&lt;hr/&gt;</html>
                 <code>if(OpenELIS.security.hasModule("label","SELECT")){</code>
-                <menuItem key="label" description="{resource:getString($constants,'labelDescription')}" enable="false" icon="labelIcon" label="{resource:getString($constants,'label')}" />
+                <menuItem key="label" description="{resource:getString($constants,'labelDescription')}" enable="true" icon="labelIcon" label="{resource:getString($constants,'label')}" />
                 <code>}</code>
                 <code>if(OpenELIS.security.hasModule("standardnote","SELECT")){</code>
                 <menuItem key="standardNote" description="{resource:getString($constants,'standardNoteDescription')}" icon="standardNoteIcon" label="{resource:getString($constants,'standardNote')}" />

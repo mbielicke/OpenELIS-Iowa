@@ -24,7 +24,6 @@ Alternatively, the contents of this file marked
 license ("UIRF Software License"), in which case the provisions of a
 UIRF Software License are applicable instead of those above. 
   -->
-
 <xsl:stylesheet
   version="1.0"
   extension-element-prefixes="resource"
@@ -152,60 +151,58 @@ UIRF Software License are applicable instead of those above.
               </menuPanel>
             </HorizontalPanel>
           </AbsolutePanel>
-
 <!--end button panel-->
-
           <VerticalPanel padding="0" spacing="0" style="WhiteContentPanel">
             <TablePanel style="Form">
               <row>
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"catName")' />:
                 </text>
-                <widget colspan = "5">
-                	<textbox key="{meta:getName($cat)}" required = "true" width="355px" case="MIXED" max="50" tab="{meta:getDescription($cat)},{meta:getSystemName($cat)}" />
-                </widget>	
+                <widget colspan="5">
+                  <textbox key="{meta:getName($cat)}" width="355px" case="MIXED" max="50" tab="{meta:getDescription($cat)},{meta:getSystemName($cat)}" required="true" />
+                </widget>
               </row>
               <row>
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"description")' />:
                 </text>
-                <widget colspan = "3">                
-                	<textbox key="{meta:getDescription($cat)}" width="425px" case="MIXED" max="60" tab="{meta:getSectionId($cat)},{meta:getName($cat)}" />
-              	</widget>
+                <widget colspan="3">
+                  <textbox key="{meta:getDescription($cat)}" width="425px" case="MIXED" max="60" tab="{meta:getSectionId($cat)},{meta:getName($cat)}" />
+                </widget>
               </row>
               <row>
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"section")' />:
                 </text>
-                <dropdown key="{meta:getSectionId($cat)}" width="100px" case="LOWER" tab="{meta:getSystemName($cat)},{meta:getDescription($cat)}"/>
+                <dropdown key="{meta:getSectionId($cat)}" width="100px" case="LOWER" tab="{meta:getSystemName($cat)},{meta:getDescription($cat)}" />
               </row>
               <row>
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"systemName")' />:
                 </text>
-                <textbox key="{meta:getSystemName($cat)}" required = "true" width="215px" case="MIXED" max="30" tab="{meta:getIsSystem($cat)},{meta:getSectionId($cat)}" />
+                <textbox key="{meta:getSystemName($cat)}" width="215px" case="MIXED" max="30" tab="{meta:getIsSystem($cat)},{meta:getSectionId($cat)}" required="true" />
               </row>
               <row>
                 <text style="Prompt">
-                    <xsl:value-of select='resource:getString($constants,"system")' />:
-                  </text>
-                  <check key="{meta:getIsSystem($cat)}" tab="dictEntTable,{meta:getSystemName($cat)}" />
-                </row>
+                  <xsl:value-of select='resource:getString($constants,"system")' />:
+                </text>
+                <check key="{meta:getIsSystem($cat)}" tab="dictEntTable,{meta:getSystemName($cat)}" />
+              </row>
             </TablePanel>
             <VerticalPanel>
               <widget valign="top">
-                <table key="dictEntTable" width="auto" maxRows="13" showScroll="ALWAYS" tab="{meta:getName($cat)},{meta:getSystemName($cat)}" title="" style="ScreenTableWithSides">
+                <table key="dictEntTable" width="auto" maxRows="13" showScroll="ALWAYS" style="ScreenTableWithSides" tab="{meta:getName($cat)},{meta:getSystemName($cat)}" title="">
                   <col key="{dictionary:getIsActive($dictNew)}" width="60" header="{resource:getString($constants,'active')}">
                     <check>Y</check>
                   </col>
-                  <col key="{dictionary:getSystemName($dictNew)}" width="120"  header="{resource:getString($constants,'systemName')}">
+                  <col key="{dictionary:getSystemName($dictNew)}" width="120" header="{resource:getString($constants,'systemName')}">
                     <textbox case="LOWER" max="30" field="String" />
                   </col>
-                  <col key="{dictionary:getLocalAbbrev($dictNew)}" width="120"  header="{resource:getString($constants,'abbr')}">
+                  <col key="{dictionary:getLocalAbbrev($dictNew)}" width="120" header="{resource:getString($constants,'abbr')}">
                     <textbox max="10" field="String" />
                   </col>
-                  <col key="{dictionary:getEntry($dictNew)}" width="180" sort = "true" header="{resource:getString($constants,'entry')}">
-                    <textbox max="255" field="String" required = "true"/>
+                  <col key="{dictionary:getEntry($dictNew)}" width="180" sort="true" header="{resource:getString($constants,'entry')}">
+                    <textbox max="255" field="String" required="true" />
                   </col>
                   <col key="{relentry:getEntry($rel)}" width="150" header="{resource:getString($constants,'relEntry')}">
                     <autoComplete width="130" field="Integer">

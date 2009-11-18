@@ -25,27 +25,8 @@
 */
 package org.openelis.modules.label.client;
 
-import org.openelis.gwt.screen.deprecated.AppModule;
+import org.openelis.gwt.screen.ScreenDefInt;
 
-
-public class LabelEntry implements AppModule {
-    public String getModuleName() {        
-        return "Label";
-    }
-
-    public void onModuleLoad() {
-    	/*
-    	OpenELIS.modules.add(getModuleName());
-        ClassFactory.addClassFactory(new String[] {"LabelScreen"}, 
-                              new ClassFactory.Factory() {
-                                  public Object newInstance(Object[] args) {
-                                      return new LabelScreen();
-                                  }
-                              }
-        );
-        */    
-
-    }
-        
+public interface LabelDef extends ScreenDefInt {
 
 }

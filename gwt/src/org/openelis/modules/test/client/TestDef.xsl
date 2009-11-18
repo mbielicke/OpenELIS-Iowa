@@ -160,7 +160,7 @@ UIRF Software License are applicable instead of those above.
               <xsl:call-template name="aToZLeftPanelButtons" />
             </buttonGroup>
             <VerticalPanel>
-              <table key="atozTable" width="auto" maxRows="24" style="AtoZtable">
+              <table key="atozTable" width="auto" maxRows="26" style="AtoZtable">
                 <col width="175" header="{resource:getString($constants,'nameMethod')}">
                   <label />
                 </col>
@@ -261,7 +261,7 @@ UIRF Software License are applicable instead of those above.
                   </widget>
                 </row>
               </TablePanel>
-              <TabPanel key="testTabPanel" height = "480" width="620">
+              <TabPanel key="testTabPanel" height = "515" width="625">
                 <tab key="detailsTab" text="{resource:getString($constants,'testDetails')}">
                   <VerticalPanel padding="0" spacing="0">
                     <TablePanel style="Form">
@@ -460,12 +460,12 @@ UIRF Software License are applicable instead of those above.
                   <VerticalPanel>
                     <HorizontalPanel>
                       <widget valign="top">
-                        <table key="sampleTypeTable" width="auto" maxRows="20" showScroll="ALWAYS" title="">
-                          <col key="{testTOS:getTypeOfSampleId($tos)}" width="300" sort="false" header="{resource:getString($constants,'sampleType')}">
-                            <dropdown width="300" case="MIXED" popWidth="300" field="Integer" required="true" />
+                        <table key="sampleTypeTable" width="auto" maxRows="21" showScroll="ALWAYS" title="">
+                          <col key="{testTOS:getTypeOfSampleId($tos)}" width="301" sort="false" header="{resource:getString($constants,'sampleType')}">
+                            <dropdown width="301" case="MIXED" popWidth="301" field="Integer" required="true" />
                           </col>
-                          <col key="{testTOS:getUnitOfMeasureId($tos)}" width="297" sort="false" header="{resource:getString($constants,'unitOfMeasure')}">
-                            <dropdown width="297" case="MIXED" popWidth="297" field="Integer" />
+                          <col key="{testTOS:getUnitOfMeasureId($tos)}" width="300" sort="false" header="{resource:getString($constants,'unitOfMeasure')}">
+                            <dropdown width="300" case="MIXED" popWidth="300" field="Integer" />
                           </col>
                         </table>
                       </widget>
@@ -497,7 +497,7 @@ UIRF Software License are applicable instead of those above.
                 </tab>
                 <tab key="analyteTab" text="{resource:getString($constants,'analytesResults')}">
                   <VerticalPanel padding="0" spacing="0">
-                    <table key="analyteTable" width="600px" maxRows="8" showScroll="ALWAYS">
+                    <table key="analyteTable" width="607px" maxRows="8" showScroll="ALWAYS">
                       <col key="analyteLookup" header = "1" width="152" sort="false">
                         <autoComplete width="125px" case="MIXED" popWidth="auto" field="Integer">
                           <col width="300" />
@@ -587,14 +587,14 @@ UIRF Software License are applicable instead of those above.
                     <VerticalPanel>
                       <ScrollTabBar key="resultTabPanel" width="610px" />
                       <widget valign="top">
-                        <table key="resultTable" width="auto" maxRows="8" showScroll="ALWAYS" title="">
+                        <table key="resultTable" width="auto" maxRows="9" showScroll="ALWAYS" title="">
                           <col key="{testResult:getUnitOfMeasureId($tr)}" width="70"  header="{resource:getString($constants,'unit')}">
                             <dropdown width="70" case="MIXED" field="Integer" />
                           </col>
                           <col key="{testResult:getTypeId($tr)}" width="85" header="{resource:getString($constants,'type')}">
                             <dropdown width="90" case="MIXED" field="Integer" required="true" />
                           </col>
-                          <col key="{testResult:getValue($tr)}" width="185" header="{resource:getString($constants,'value')}">
+                          <col key="{testResult:getValue($tr)}" width="190" header="{resource:getString($constants,'value')}">
                             <textbox case="MIXED" field="String" />
                           </col>
                           <col key="{testResult:getFlagsId($tr)}" width="95" header="{resource:getString($constants,'flags')}">
@@ -603,7 +603,7 @@ UIRF Software License are applicable instead of those above.
                           <col key="{testResult:getSignificantDigits($tr)}" width="45" header="{resource:getString($constants,'significantDigits')}">
                             <textbox case="MIXED" field="Integer" />
                           </col>
-                          <col key="{testResult:getRoundingMethodId($tr)}" width="103" header="{resource:getString($constants,'roundingMethod')}">
+                          <col key="{testResult:getRoundingMethodId($tr)}" width="104" header="{resource:getString($constants,'roundingMethod')}">
                             <dropdown width="100" case="MIXED" field="Integer" />
                           </col>
                         </table>
@@ -668,7 +668,7 @@ UIRF Software License are applicable instead of those above.
                               <col key = "method" width="212" header="{resource:getString($constants,'method')}">
                               	<label/>
                               </col>
-                              <col key="{testPrep:getIsOptional($tp)}" width="70" header="{resource:getString($constants,'optional')}">
+                              <col key="{testPrep:getIsOptional($tp)}" width="74" header="{resource:getString($constants,'optional')}">
                                 <check />
                               </col>
                             </table>
@@ -713,9 +713,9 @@ UIRF Software License are applicable instead of those above.
                               <col key = "method" width="65" header="{resource:getString($constants,'method')}">
                               	<label />
                               </col>
-                              <col key="{testRefAna:getName($trefa)}" width="190" sort="false" header="{resource:getString($constants,'testAnalyte')}">
-                                <autoComplete width="181" case="MIXED" popWidth="auto" field="Integer" required="true">
-                                  <col width="181" />
+                              <col key="{testRefAna:getName($trefa)}" width="194" sort="false" header="{resource:getString($constants,'testAnalyte')}">
+                                <autoComplete width="194" case="MIXED" popWidth="auto" field="Integer" required="true">
+                                  <col width="194" />
                                 </autoComplete>
                               </col>
                               <col key="{testRefRes:getValue($trefr)}" width="140" header="{resource:getString($constants,'result')}">
@@ -813,9 +813,9 @@ UIRF Software License are applicable instead of those above.
                             <col key="{testWrkshtItm:getTypeId($twsi)}" width="150" header="{resource:getString($constants,'type')}">
                               <dropdown width="140" case="MIXED" field="Integer" required="true" />
                             </col>
-                            <col key="{testWrkshtItm:getQcName($twsi)}" width="363" header="{resource:getString($constants,'qcName')}">
-                              <autoComplete width="340" case="MIXED" field="String">
-                                <col width="350" />
+                            <col key="{testWrkshtItm:getQcName($twsi)}" width="368" header="{resource:getString($constants,'qcName')}">
+                              <autoComplete width="368" case="MIXED" field="String">
+                                <col width="368" />
                               </autoComplete>
                             </col>
                           </table>
@@ -858,11 +858,11 @@ UIRF Software License are applicable instead of those above.
                             <col key="{testWrkshtAna:getAnalyteId($twsa)}" width="400" header="{resource:getString($constants,'analyte')}">
                               <label field="String" />
                             </col>
-                            <col key="{testWrkshtAna:getRepeat($twsa)}" width="83" header="{resource:getString($constants,'repeat')}">
+                            <col key="{testWrkshtAna:getRepeat($twsa)}" width="88" header="{resource:getString($constants,'repeat')}">
                               <textbox field="Integer" required="true" />
                             </col>
                             <col key="{testWrkshtAna:getFlagId($twsa)}" width="100" header="{resource:getString($constants,'flag')}">
-                              <dropdown width="140" case="MIXED" field="Integer" />
+                              <dropdown width="140" field="Integer" />
                             </col>
                           </table>
                         </widget>
