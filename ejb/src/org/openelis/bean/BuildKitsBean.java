@@ -290,9 +290,9 @@ public class BuildKitsBean implements BuildKitsRemote{
         }
         
         //location required
-        if(componentDO.getLocationId() == null){
-            list.add(new TableFieldErrorException("fieldRequiredException", rowIndex, InventoryItemMeta.INVENTORY_COMPONENT.INVENTORY_COMPONENT_ITEM.INVENTORY_LOCATION.INVENTORY_LOCATION_STORAGE_LOCATION.getLocation()));
-        }
+//        if(componentDO.getLocationId() == null){
+//            list.add(new TableFieldErrorException("fieldRequiredException", rowIndex, InventoryItemMeta.INVENTORY_COMPONENT.INVENTORY_COMPONENT_ITEM.INVENTORY_LOCATION.INVENTORY_LOCATION_STORAGE_LOCATION.getLocation()));
+//        }
         
         //unit required
         if(componentDO.getUnit() == null){
@@ -305,9 +305,9 @@ public class BuildKitsBean implements BuildKitsRemote{
         }
         
         //on hand required
-        if(componentDO.getQtyOnHand() == null){
-            list.add(new TableFieldErrorException("fieldRequiredException", rowIndex, InventoryItemMeta.INVENTORY_COMPONENT.INVENTORY_COMPONENT_ITEM.INVENTORY_LOCATION.getQuantityOnhand()));
-        }
+//        if(componentDO.getQtyOnHand() == null){
+//            list.add(new TableFieldErrorException("fieldRequiredException", rowIndex, InventoryItemMeta.INVENTORY_COMPONENT.INVENTORY_COMPONENT_ITEM.INVENTORY_LOCATION.getQuantityOnhand()));
+//        }
         
         //total cant be more than qty on hand
         if(componentDO.getTotal() != null && componentDO.getQtyOnHand() != null && componentDO.getTotal().compareTo(componentDO.getQtyOnHand()) > 0){
