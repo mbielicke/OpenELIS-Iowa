@@ -93,7 +93,7 @@ public class InventoryItemForm extends Form<Integer> {
        isNotForSale = new CheckField(meta.getIsNotForSale());
        isSubAssembly = new CheckField(meta.getIsSubAssembly());
        isLabor = new CheckField(meta.getIsLabor());
-       isNoInventory = new CheckField(meta.getIsNoInventory());
+       isNoInventory = new CheckField(meta.getIsNotInventoried());
        productUri = new StringField(meta.getProductUri());
        averageLeadTime = new IntegerField(meta.getAverageLeadTime());
        averageCost = new DoubleField(meta.getAverageCost());

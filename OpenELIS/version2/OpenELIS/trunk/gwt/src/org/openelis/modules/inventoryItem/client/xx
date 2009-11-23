@@ -1,0 +1,715 @@
+        queryButton = (AppButton)def.getWidget("query");
+        addScreenHandler(queryButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                query();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                queryButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState())
+                                     && security.hasSelectPermission());
+                if (event.getState() == State.QUERY)
+                    queryButton.setState(ButtonState.LOCK_PRESSED);
+            }
+        });
+
+        previousButton = (AppButton)def.getWidget("previous");
+        addScreenHandler(previousButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                previous();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                previousButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+
+        nextButton = (AppButton)def.getWidget("next");
+        addScreenHandler(nextButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                next();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                nextButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+
+        addButton = (AppButton)def.getWidget("add");
+        addScreenHandler(addButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                add();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                addButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState())
+                                     && security.hasAddPermission());
+                if (event.getState() == State.ADD)
+                    addButton.setState(ButtonState.LOCK_PRESSED);
+            }
+        });
+
+        updateButton = (AppButton)def.getWidget("update");
+        addScreenHandler(updateButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                update();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                updateButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState())
+                                     && security.hasUpdatePermission());
+                if (event.getState() == State.UPDATE)
+                    updateButton.setState(ButtonState.LOCK_PRESSED);
+            }
+        });
+
+        commitButton = (AppButton)def.getWidget("commit");
+        addScreenHandler(commitButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                commit();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                commitButton.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE,State.DELETE).contains(event.getState()));
+            }
+        });
+
+        abortButton = (AppButton)def.getWidget("abort");
+        addScreenHandler(abortButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                abort();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                abortButton.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE,State.DELETE).contains(event.getState()));
+            }
+        });
+
+        id = (TextBox)def.getWidget(META.getId());
+        addScreenHandler(id, new ScreenEventHandler<Integer>() {
+            public void onDataChange(DataChangeEvent event) {
+                id.setValue(DO.getId());
+            }
+
+            public void onValueChange(ValueChangeEvent<Integer> event) {
+                DO.setId(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                id.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                id.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+
+        name = (TextBox)def.getWidget(META.getName());
+        addScreenHandler(name, new ScreenEventHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                name.setValue(DO.getName());
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                DO.setName(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                name.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                name.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+
+        description = (TextBox)def.getWidget(META.getDescription());
+        addScreenHandler(description, new ScreenEventHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                description.setValue(DO.getDescription());
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                DO.setDescription(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                description.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                description.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+
+        categoryId = (Dropdown)def.getWidget(META.getCategoryId());
+        addScreenHandler(categoryId, new ScreenEventHandler<Integer>() {
+            public void onDataChange(DataChangeEvent event) {
+                categoryId.setSelection(DO.getCategoryId());
+            }
+
+            public void onValueChange(ValueChangeEvent<Integer> event) {
+                DO.setCategoryId(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                categoryId.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                categoryId.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+
+        storeId = (Dropdown)def.getWidget(META.getStoreId());
+        addScreenHandler(storeId, new ScreenEventHandler<Integer>() {
+            public void onDataChange(DataChangeEvent event) {
+                storeId.setSelection(DO.getStoreId());
+            }
+
+            public void onValueChange(ValueChangeEvent<Integer> event) {
+                DO.setStoreId(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                storeId.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                storeId.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+
+        quantityMinLevel = (TextBox)def.getWidget(META.getQuantityMinLevel());
+        addScreenHandler(quantityMinLevel, new ScreenEventHandler<Integer>() {
+            public void onDataChange(DataChangeEvent event) {
+                quantityMinLevel.setValue(DO.getQuantityMinLevel());
+            }
+
+            public void onValueChange(ValueChangeEvent<Integer> event) {
+                DO.setQuantityMinLevel(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                quantityMinLevel.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                quantityMinLevel.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+
+        quantityToReorder = (TextBox)def.getWidget(META.getQuantityToReorder());
+        addScreenHandler(quantityToReorder, new ScreenEventHandler<Integer>() {
+            public void onDataChange(DataChangeEvent event) {
+                quantityToReorder.setValue(DO.getQuantityToReorder());
+            }
+
+            public void onValueChange(ValueChangeEvent<Integer> event) {
+                DO.setQuantityToReorder(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                quantityToReorder.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                quantityToReorder.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+
+        quantityMaxLevel = (TextBox)def.getWidget(META.getQuantityMaxLevel());
+        addScreenHandler(quantityMaxLevel, new ScreenEventHandler<Integer>() {
+            public void onDataChange(DataChangeEvent event) {
+                quantityMaxLevel.setValue(DO.getQuantityMaxLevel());
+            }
+
+            public void onValueChange(ValueChangeEvent<Integer> event) {
+                DO.setQuantityMaxLevel(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                quantityMaxLevel.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                quantityMaxLevel.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+
+        dispensedUnitsId = (Dropdown)def.getWidget(META.getDispensedUnitsId());
+        addScreenHandler(dispensedUnitsId, new ScreenEventHandler<Integer>() {
+            public void onDataChange(DataChangeEvent event) {
+                dispensedUnitsId.setSelection(DO.getDispensedUnitsId());
+            }
+
+            public void onValueChange(ValueChangeEvent<Integer> event) {
+                DO.setDispensedUnitsId(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                dispensedUnitsId.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                dispensedUnitsId.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+
+        isActive = (CheckBox)def.getWidget(META.getIsActive());
+        addScreenHandler(isActive, new ScreenEventHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                isActive.setValue(DO.getIsActive());
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                DO.setIsActive(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                isActive.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                isActive.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+
+        isReorderAuto = (CheckBox)def.getWidget(META.getIsReorderAuto());
+        addScreenHandler(isReorderAuto, new ScreenEventHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                isReorderAuto.setValue(DO.getIsReorderAuto());
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                DO.setIsReorderAuto(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                isReorderAuto.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                isReorderAuto.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+
+        isLotMaintained = (CheckBox)def.getWidget(META.getIsLotMaintained());
+        addScreenHandler(isLotMaintained, new ScreenEventHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                isLotMaintained.setValue(DO.getIsLotMaintained());
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                DO.setIsLotMaintained(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                isLotMaintained.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                isLotMaintained.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+
+        isSerialMaintained = (CheckBox)def.getWidget(META.getIsSerialMaintained());
+        addScreenHandler(isSerialMaintained, new ScreenEventHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                isSerialMaintained.setValue(DO.getIsSerialMaintained());
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                DO.setIsSerialMaintained(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                isSerialMaintained.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                isSerialMaintained.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+
+        isBulk = (CheckBox)def.getWidget(META.getIsBulk());
+        addScreenHandler(isBulk, new ScreenEventHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                isBulk.setValue(DO.getIsBulk());
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                DO.setIsBulk(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                isBulk.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                isBulk.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+
+        isNotForSale = (CheckBox)def.getWidget(META.getIsNotForSale());
+        addScreenHandler(isNotForSale, new ScreenEventHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                isNotForSale.setValue(DO.getIsNotForSale());
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                DO.setIsNotForSale(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                isNotForSale.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                isNotForSale.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+
+        isSubAssembly = (CheckBox)def.getWidget(META.getIsSubAssembly());
+        addScreenHandler(isSubAssembly, new ScreenEventHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                isSubAssembly.setValue(DO.getIsSubAssembly());
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                DO.setIsSubAssembly(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                isSubAssembly.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                isSubAssembly.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+
+        isLabor = (CheckBox)def.getWidget(META.getIsLabor());
+        addScreenHandler(isLabor, new ScreenEventHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                isLabor.setValue(DO.getIsLabor());
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                DO.setIsLabor(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                isLabor.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                isLabor.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+
+        isNoInventory = (CheckBox)def.getWidget(META.getIsNoInventory());
+        addScreenHandler(isNoInventory, new ScreenEventHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                isNoInventory.setValue(DO.getIsNoInventory());
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                DO.setIsNoInventory(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                isNoInventory.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                isNoInventory.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+
+        componentId = (AutoComplete)def.getWidget(COMPONENTMETA_META.getComponentId());
+        addScreenHandler(componentId, new ScreenEventHandler<Integer>() {
+            public void onDataChange(DataChangeEvent event) {
+                componentId.setSelection(COMPONENTMETA_DO.getComponentIdId(), COMPONENTMETA_DO.getComponentIdDescription());
+            }
+
+            public void onValueChange(ValueChangeEvent<Integer> event) {
+                COMPONENTMETA_DO.setComponentId(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                componentId.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                componentId.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+
+        componentsTable = (TableWidget)def.getWidget("componentsTable");
+        addScreenHandler(componentsTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
+            public void onDataChange(DataChangeEvent event) {
+                componentsTable.load(); // FIXME load(model)
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                componentsTable.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                componentsTable.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+
+        componentsTable.addCellEditedHandler(new CellEditedHandler() {
+            public void onCellUpdated(CellEditedEvent event) {
+                int r, c;
+                Object val;
+
+                val = componentsTable.getObject(r,c);
+                switch(col) {
+                    case 0:
+                        COMPONENTMETA_DO.setComponentId((String)val);
+                        break;
+                    case 1:
+                        INVITEMMETA_DO.setDescription((String)val);
+                        break;
+                    case 2:
+                        COMPONENTMETA_DO.setQuantity((String)val);
+                        break;
+                }
+            }
+        });
+
+        componentsTable.addRowAddedHandler(new RowAddedHandler() {
+            public void onRowAdded(RowAddedEvent event) {
+                // FIXME add row added handler
+            }
+        });
+
+        componentsTable.addRowDeletedHandler(new RowDeletedHandler() {
+            public void onRowDeleted(RowDeletedEvent event) {
+                // FIXME add row delete handler;
+            }
+        });
+
+        addComponentButton = (AppButton)def.getWidget("addComponentButton");
+        addScreenHandler(addComponentButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                // FIXME add on click handler
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                addComponentButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+
+        removeComponentButton = (AppButton)def.getWidget("removeComponentButton");
+        addScreenHandler(removeComponentButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                // FIXME add on click handler
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                removeComponentButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+
+        locationTable = (TableWidget)def.getWidget("locationTable");
+        addScreenHandler(locationTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
+            public void onDataChange(DataChangeEvent event) {
+                locationTable.load(); // FIXME load(model)
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                locationTable.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                locationTable.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+
+        locationTable.addCellEditedHandler(new CellEditedHandler() {
+            public void onCellUpdated(CellEditedEvent event) {
+                int r, c;
+                Object val;
+
+                val = locationTable.getObject(r,c);
+                switch(col) {
+                    case 0:
+                        LOCATIONMETA_DO.setStorageLocationId((String)val);
+                        break;
+                    case 1:
+                        LOCATIONMETA_DO.setLotNumber((String)val);
+                        break;
+                    case 2:
+                        LOCATIONMETA_DO.setId((String)val);
+                        break;
+                    case 3:
+                        LOCATIONMETA_DO.setExpirationDate((String)val);
+                        break;
+                    case 4:
+                        LOCATIONMETA_DO.setQuantityOnhand((String)val);
+                        break;
+                }
+            }
+        });
+
+        locationTable.addRowAddedHandler(new RowAddedHandler() {
+            public void onRowAdded(RowAddedEvent event) {
+                // FIXME add row added handler
+            }
+        });
+
+        locationTable.addRowDeletedHandler(new RowDeletedHandler() {
+            public void onRowDeleted(RowDeletedEvent event) {
+                // FIXME add row delete handler;
+            }
+        });
+
+        productUri = (TextBox)def.getWidget(META.getProductUri());
+        addScreenHandler(productUri, new ScreenEventHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                productUri.setValue(DO.getProductUri());
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                DO.setProductUri(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                productUri.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                productUri.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+
+        name = (AutoComplete)def.getWidget(INVITEMMETA_META.getName());
+        addScreenHandler(name, new ScreenEventHandler<Integer>() {
+            public void onDataChange(DataChangeEvent event) {
+                name.setSelection(INVITEMMETA_DO.getNameId(), INVITEMMETA_DO.getNameDescription());
+            }
+
+            public void onValueChange(ValueChangeEvent<Integer> event) {
+                INVITEMMETA_DO.setName(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                name.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                name.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+
+        parentRatio = (TextBox)def.getWidget(META.getParentRatio());
+        addScreenHandler(parentRatio, new ScreenEventHandler<Integer>() {
+            public void onDataChange(DataChangeEvent event) {
+                parentRatio.setValue(DO.getParentRatio());
+            }
+
+            public void onValueChange(ValueChangeEvent<Integer> event) {
+                DO.setParentRatio(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                parentRatio.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                parentRatio.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+
+        averageLeadTime = (TextBox)def.getWidget(META.getAverageLeadTime());
+        addScreenHandler(averageLeadTime, new ScreenEventHandler<Integer>() {
+            public void onDataChange(DataChangeEvent event) {
+                averageLeadTime.setValue(DO.getAverageLeadTime());
+            }
+
+            public void onValueChange(ValueChangeEvent<Integer> event) {
+                DO.setAverageLeadTime(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                averageLeadTime.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                averageLeadTime.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+
+        averageCost = (TextBox)def.getWidget(META.getAverageCost());
+        addScreenHandler(averageCost, new ScreenEventHandler<Double>() {
+            public void onDataChange(DataChangeEvent event) {
+                averageCost.setValue(DO.getAverageCost());
+            }
+
+            public void onValueChange(ValueChangeEvent<Double> event) {
+                DO.setAverageCost(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                averageCost.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                averageCost.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+
+        averageDailyUse = (TextBox)def.getWidget(META.getAverageDailyUse());
+        addScreenHandler(averageDailyUse, new ScreenEventHandler<Integer>() {
+            public void onDataChange(DataChangeEvent event) {
+                averageDailyUse.setValue(DO.getAverageDailyUse());
+            }
+
+            public void onValueChange(ValueChangeEvent<Integer> event) {
+                DO.setAverageDailyUse(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                averageDailyUse.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                averageDailyUse.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+
+        editManufacturingButton = (AppButton)def.getWidget("editManufacturingButton");
+        addScreenHandler(editManufacturingButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                // FIXME add on click handler
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                editManufacturingButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+
+        standardNoteButton = (AppButton)def.getWidget("standardNoteButton");
+        addScreenHandler(standardNoteButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                // FIXME add on click handler
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                standardNoteButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+
+        tabPanel = (TabPanel)def.getWidget("tabPanel");
+        tabPanel.addSelectionHandler(new SelectionHandler<Integer>() {
+            public void onSelection(SelectionEvent<Integer> event) {
+                int i;
+
+                i = event.getSelectedItem().intValue();
+                tab = Tabs.values()[i];
+
+                window.setBusy();
+                drawTabs();
+                window.clearStatus();
+            }
+        });
+
+        componentTab = new ComponentTab(def, window);
+        addScreenHandler(componentTab, new ScreenEventHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                componentTab.setManager(manager);
+                if (tab == Tabs.COMPONENT)
+                    drawTabs();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                componentTab.setState(event.getState());
+            }
+        });
+
+        locationTab = new LocationTab(def, window);
+        addScreenHandler(locationTab, new ScreenEventHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                locationTab.setManager(manager);
+                if (tab == Tabs.LOCATION)
+                    drawTabs();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                locationTab.setState(event.getState());
+            }
+        });
+
+        additionalTab = new AdditionalTab(def, window);
+        addScreenHandler(additionalTab, new ScreenEventHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                additionalTab.setManager(manager);
+                if (tab == Tabs.ADDITIONAL)
+                    drawTabs();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                additionalTab.setState(event.getState());
+            }
+        });
+
+        manufacturingTab = new ManufacturingTab(def, window);
+        addScreenHandler(manufacturingTab, new ScreenEventHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                manufacturingTab.setManager(manager);
+                if (tab == Tabs.MANUFACTURING)
+                    drawTabs();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                manufacturingTab.setState(event.getState());
+            }
+        });
+
+        noteTab = new NoteTab(def, window);
+        addScreenHandler(noteTab, new ScreenEventHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                noteTab.setManager(manager);
+                if (tab == Tabs.NOTE)
+                    drawTabs();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                noteTab.setState(event.getState());
+            }
+        });
+
+private Dropdown<Integer> categoryId, storeId, dispensedUnitsId;
+private TextBox id, name, description, quantityMinLevel, quantityToReorder, quantityMaxLevel, productUri, parentRatio, averageLeadTime, averageCost, averageDailyUse;
+private NoteTab noteTab;
+private TableWidget componentsTable, locationTable;
+private ManufacturingTab manufacturingTab;
+private AutoComplete<Integer> componentId, name;
+private AdditionalTab additionalTab;
+private AppButton queryButton, previousButton, nextButton, addButton, updateButton, commitButton, abortButton, addComponentButton, removeComponentButton, editManufacturingButton, standardNoteButton;
+private CheckBox isActive, isReorderAuto, isLotMaintained, isSerialMaintained, isBulk, isNotForSale, isSubAssembly, isLabor, isNoInventory;
+private ComponentTab componentTab;
+private TabPanel tabPanel;
+private LocationTab locationTab;

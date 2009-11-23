@@ -37,39 +37,21 @@ UIRF Software License are applicable instead of those above.
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   xsi:noNamespaceSchemaLocation="http://openelis.uhl.uiowa.edu/schema/ScreenSchema.xsd"
   xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd"
-  xmlns:analyte="xalan://org.openelis.meta.AnalyteMeta"
-  xmlns:invMeta="xalan://org.openelis.meta.InventoryItemMeta"
+  xmlns:ana="xalan://org.openelis.meta.AnalyteMeta"
+  xmlns:inv="xalan://org.openelis.meta.InventoryItemMeta"
   xmlns:meta="xalan://org.openelis.metamap.QcMetaMap"
-  xmlns:qcaMeta="xalan://org.openelis.metamap.QcAnalyteParameterMetaMap">
+  xmlns:qca="xalan://org.openelis.metamap.QcAnalyteMetaMap">
 
   <xsl:import href="IMPORT/aToZOneColumn.xsl" />
-  <xalan:component prefix="resource">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.util.UTFResource" />
-  </xalan:component>
-  <xalan:component prefix="locale">
-    <xalan:script lang="javaclass" src="xalan://java.util.Locale" />
-  </xalan:component>
-  <xalan:component prefix="meta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.QcMetaMap" />
-  </xalan:component>
-  <xalan:component prefix="qcaMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.QcAnalyteMetaMap" />
-  </xalan:component>
-  <xalan:component prefix="invMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.InventoryItemMeta" />
-  </xalan:component>
+
   <xsl:template match="doc">
+    <xsl:variable name="language" select="locale" />
+    <xsl:variable name="props" select="props" />
+    <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
     <xsl:variable name="qc" select="meta:new()" />
     <xsl:variable name="qca" select="meta:getQcAnalyte($qc)" />
+    <xsl:variable name="ana" select="qca:getAnalyte($qca)" />
     <xsl:variable name="item" select="meta:getInventoryItem($qc)" />
-    <xsl:variable name="ana" select="qcaMeta:getAnalyte($qca)" />
-    <xsl:variable name="language">
-      <xsl:value-of select="locale" />
-    </xsl:variable>
-    <xsl:variable name="props">
-      <xsl:value-of select="props" />
-    </xsl:variable>
-    <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
 
 <!-- main screen -->
 
@@ -168,14 +150,14 @@ UIRF Software License are applicable instead of those above.
                   <text style="Prompt">
                     <xsl:value-of select="resource:getString($constants,'type')" />:
                   </text>
-                  <dropdown key="{meta:getTypeId($qc)}" width="100" tab="{invMeta:getName($item)},{meta:getName($qc)}" field="Integer" />
+                  <dropdown key="{meta:getTypeId($qc)}" width="100" tab="{inv:getName($item)},{meta:getName($qc)}" field="Integer" />
                 </row>
                 <row>
                   <text style="Prompt">
                     <xsl:value-of select="resource:getString($constants,'inventoryItem')" />:
                   </text>
                   <widget>
-                    <autoComplete key="{invMeta:getName($item)}" width="145" tab="{meta:getSource($qc)},{meta:getTypeId($qc)}" field="Integer">
+                    <autoComplete key="{inv:getName($item)}" width="145" tab="{meta:getSource($qc)},{meta:getTypeId($qc)}" field="Integer">
                       <col width="135" header="{resource:getString($constants,'name')}" />
                       <col width="110" header="{resource:getString($constants,'store')}" />
                     </autoComplete>
@@ -186,7 +168,7 @@ UIRF Software License are applicable instead of those above.
                     <xsl:value-of select="resource:getString($constants,'source')" />:
                   </text>
                   <widget colspan="6">
-                    <textbox key="{meta:getSource($qc)}" width="215" max="30" tab="{meta:getLotNumber($qc)},{invMeta:getName($item)}" />
+                    <textbox key="{meta:getSource($qc)}" width="215" max="30" tab="{meta:getLotNumber($qc)},{inv:getName($item)}" />
                   </widget>
                 </row>
                 <row>
@@ -252,18 +234,18 @@ UIRF Software License are applicable instead of those above.
             <VerticalPanel height="10" />
             <VerticalPanel>
               <table key="QcAnalyteTable" width="625" maxRows="10" showScroll="ALWAYS" style="ScreenTableWithSides" tab="{meta:getName($qc)},{meta:getExpireDate($qc)}">
-                <col key="{analyte:getName($ana)}" width="270" align="left" header="{resource:getString($constants,'analyte')}">
+                <col key="{ana:getName($ana)}" width="270" align="left" header="{resource:getString($constants,'analyte')}">
                   <autoComplete popWidth="auto" field="Integer" required="true">
                     <col width="300" />
                   </autoComplete>
                 </col>
-                <col key="{qcaMeta:getTypeId($qca)}" width="55" align="left" header="{resource:getString($constants,'type')}">
+                <col key="{qca:getTypeId($qca)}" width="55" align="left" header="{resource:getString($constants,'type')}">
                   <dropdown width="55" field="Integer" required="true" />
                 </col>
-                <col key="{qcaMeta:getIsTrendable($qca)}" width="55" align="center" header="{resource:getString($constants,'trendable')}">
+                <col key="{qca:getIsTrendable($qca)}" width="55" align="center" header="{resource:getString($constants,'trendable')}">
                   <check />
                 </col>
-                <col key="{qcaMeta:getValue($qca)}" width="400" align="left" header="{resource:getString($constants,'expectedValue')}">
+                <col key="{qca:getValue($qca)}" width="400" align="left" header="{resource:getString($constants,'expectedValue')}">
                   <textbox max="80" field="String" />
                 </col>
               </table>

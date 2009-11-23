@@ -584,11 +584,11 @@ public class OrderService implements AppScreenFormServiceInt<OrderForm, OrderQue
     private TableDataModel<TableDataRow<Integer>> getInventoryItemMatchesNoLoc(String match, boolean limitToMainStore, boolean allowSubAssembly){
         InventoryItemRemote remote = (InventoryItemRemote)EJBFactory.lookup("openelis/InventoryItemBean/remote");
         TableDataModel<TableDataRow<Integer>> dataModel = new TableDataModel<TableDataRow<Integer>>();
-        List autoCompleteList;
+        List autoCompleteList = null;
 
         String parsedMatch = match.replace('*', '%');
         
-        autoCompleteList = remote.inventoryItemStoreAutoCompleteLookupByName(parsedMatch+"%", 10, limitToMainStore, allowSubAssembly);
+//        autoCompleteList = remote.inventoryItemStoreAutoCompleteLookupByName(parsedMatch+"%", 10, limitToMainStore, allowSubAssembly);
         
         for(int i=0; i < autoCompleteList.size(); i++){
             InventoryItemAutoDO resultDO = (InventoryItemAutoDO) autoCompleteList.get(i);
@@ -616,11 +616,11 @@ public class OrderService implements AppScreenFormServiceInt<OrderForm, OrderQue
     private TableDataModel<TableDataRow<Integer>> getInventoryItemMatches(String match, boolean limitToMainStore, boolean allowSubAssembly){
         InventoryItemRemote remote = (InventoryItemRemote)EJBFactory.lookup("openelis/InventoryItemBean/remote");
         TableDataModel<TableDataRow<Integer>> dataModel = new TableDataModel<TableDataRow<Integer>>();
-        List autoCompleteList;
+        List autoCompleteList = null;
         
         String parsedMatch = match.replace('*', '%');
         
-        autoCompleteList = remote.inventoryItemStoreLocAutoCompleteLookupByName(parsedMatch+"%", 10, limitToMainStore, allowSubAssembly);
+//        autoCompleteList = remote.inventoryItemStoreLocAutoCompleteLookupByName(parsedMatch+"%", 10, limitToMainStore, allowSubAssembly);
         
         for(int i=0; i < autoCompleteList.size(); i++){
             InventoryItemAutoDO resultDO = (InventoryItemAutoDO) autoCompleteList.get(i);
@@ -1073,8 +1073,8 @@ public class OrderService implements AppScreenFormServiceInt<OrderForm, OrderQue
                     
                     TableDataRow<Integer> row = receiptsModel.createNewSet();
                     
-                    row.cells[0].setValue(locRow.getInventoryItem());                    
-                    row.cells[1].setValue(locRow.getStorageLocation());
+//                    row.cells[0].setValue(locRow.getInventoryItem());                    
+//                    row.cells[1].setValue(locRow.getStorageLocation());
                     row.cells[2].setValue(locRow.getQuantityOnHand());
                     row.cells[3].setValue(locRow.getLotNumber());
                     if(locRow.getExpirationDate() != null && locRow.getExpirationDate().getDate() != null)

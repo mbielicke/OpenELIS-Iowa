@@ -400,17 +400,17 @@ public class InventoryReceiptService implements AppScreenFormServiceInt<Inventor
                 throw new FormErrorException(openElisConstants.getString("inventoryTransferFromItemException"));
 
         TableDataModel<TableDataRow<Integer>> dataModel = new TableDataModel<TableDataRow<Integer>>();
-        List<InventoryItemAutoDO> autoCompleteList;
+        List<InventoryItemAutoDO> autoCompleteList = null;
         
         String parsedMatch = match.replace('*', '%');
-
+/*
         if(loc)
             autoCompleteList = remote.inventoryItemStoreLocAutoCompleteLookupByName(parsedMatch+"%", 10, false, true);    
         else if(new Integer(-1).compareTo(inventoryItemId) < 0 || new Integer(-1).compareTo(parentInventoryItemId) < 0)
             autoCompleteList = remote.inventoryItemStoreChildAutoCompleteLookupByName(parsedMatch+"%", parentInventoryItemId, inventoryItemId, 10);
         else
             autoCompleteList = remote.inventoryItemStoreAutoCompleteLookupByName(parsedMatch+"%", 10, true, true); 
-        
+  */      
         for(InventoryItemAutoDO resultDO : autoCompleteList){
             
             Integer itemId = resultDO.getId();

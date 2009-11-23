@@ -45,31 +45,10 @@ UIRF Software License are applicable instead of those above.
   xmlns:storageLocationMeta="xalan://org.openelis.meta.StorageLocationMeta">
 
   <xsl:import href="IMPORT/aToZOneColumn.xsl" />
-  <xalan:component prefix="resource">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.util.UTFResource" />
-  </xalan:component>
-  <xalan:component prefix="locale">
-    <xalan:script lang="javaclass" src="xalan://java.util.Locale" />
-  </xalan:component>
-  <xalan:component prefix="meta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.InventoryItemMetaMap" />
-  </xalan:component>
-  <xalan:component prefix="noteMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.NoteMeta" />
-  </xalan:component>
-  <xalan:component prefix="locationMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.InventoryLocationMetaMap" />
-  </xalan:component>
-  <xalan:component prefix="componentMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.InventoryComponentMetaMap" />
-  </xalan:component>
-  <xalan:component prefix="storageLocationMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.StorageLocationMeta" />
-  </xalan:component>
-  <xalan:component prefix="invItemMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.InventoryItemMeta" />
-  </xalan:component>
   <xsl:template match="doc">
+    <xsl:variable name="language" select="locale" />
+    <xsl:variable name="props" select="props" />
+    <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
     <xsl:variable name="invItem" select="meta:new()" />
     <xsl:variable name="parentInvItem" select="meta:getParentInventoryItem($invItem)" />
     <xsl:variable name="component" select="meta:getInventoryComponent($invItem)" />
@@ -77,13 +56,6 @@ UIRF Software License are applicable instead of those above.
     <xsl:variable name="note" select="meta:getNote($invItem)" />
     <xsl:variable name="compInvItem" select="componentMeta:getInventoryItem($component)" />
     <xsl:variable name="locStorageLoc" select="locationMeta:getStorageLocation($location)" />
-    <xsl:variable name="language">
-      <xsl:value-of select="locale" />
-    </xsl:variable>
-    <xsl:variable name="props">
-      <xsl:value-of select="props" />
-    </xsl:variable>
-    <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
 
 <!-- main screen -->
 
@@ -98,7 +70,7 @@ UIRF Software License are applicable instead of those above.
               <xsl:call-template name="aToZLeftPanelButtons" />
             </buttonGroup>
             <VerticalPanel>
-              <table key="atozTable" width="auto" maxRows="20" style="atozTable">
+              <table key="atozTable" width="auto" maxRows="23" style="atozTable">
                 <col width="110" header="{resource:getString($constants,'name')}">
                   <label />
                 </col>
@@ -175,7 +147,7 @@ UIRF Software License are applicable instead of those above.
                       </HorizontalPanel>
                     </appButton>
                   </menuDisplay>
-                  <menuPanel layout="vertical" position="below" style="topMenuContainer">
+                  <menuPanel layout="vertical" position="below" style="buttonMenuContainer">
                     <xsl:call-template name="duplicateRecordMenuItem" />
                     <xsl:call-template name="historyMenuItem" />
                   </menuPanel>
@@ -191,28 +163,22 @@ UIRF Software License are applicable instead of those above.
               <TablePanel style="Form">
                 <row>
                   <text style="Prompt">
-                    <xsl:value-of select='resource:getString($constants,"name")' />:
-                  </text>
-                  <textbox key="{meta:getName($invItem)}" width="150" case="LOWER" max="20" tab="{meta:getDescription($invItem)},{meta:getIsNoInventory($invItem)}" />
-                  <text style="Prompt">
                     <xsl:value-of select='resource:getString($constants,"id")' />:
                   </text>
-                  <textbox key="{meta:getId($invItem)}" width="75" />
+                  <textbox key="{meta:getId($invItem)}" width="75" tab="{meta:getName($invItem)},{meta:getId($invItem)}" field="Integer"/>
+                </row>
+                <row>
+                  <text style="Prompt">
+                    <xsl:value-of select='resource:getString($constants,"name")' />:
+                  </text>
+                  <textbox key="{meta:getName($invItem)}" width="150" case="LOWER" max="20" tab="{meta:getDescription($invItem)},{meta:getId($invItem)}" field="String"/>
                 </row>
                 <row>
                   <text style="Prompt">
                     <xsl:value-of select='resource:getString($constants,"description")' />:
                   </text>
                   <widget colspan="3">
-                    <textbox key="{meta:getDescription($invItem)}" width="340" max="60" tab="{meta:getStoreId($invItem)},{meta:getName($invItem)}" />
-                  </widget>
-                </row>
-                <row>
-                  <text style="Prompt">
-                    <xsl:value-of select='resource:getString($constants,"store")' />:
-                  </text>
-                  <widget colspan="3">
-                    <dropdown key="{meta:getStoreId($invItem)}" width="225" tab="{meta:getCategoryId($invItem)},{meta:getDescription($invItem)}" />
+                    <textbox key="{meta:getDescription($invItem)}" width="340" max="60" tab="{meta:getCategoryId($invItem)},{meta:getName($invItem)}" field="String"/>
                   </widget>
                 </row>
                 <row>
@@ -220,38 +186,40 @@ UIRF Software License are applicable instead of those above.
                     <xsl:value-of select='resource:getString($constants,"category")' />:
                   </text>
                   <widget colspan="3">
-                    <dropdown key="{meta:getCategoryId($invItem)}" width="180" tab="{meta:getQuantityMinLevel($invItem)},{meta:getStoreId($invItem)}" />
+                    <dropdown key="{meta:getCategoryId($invItem)}" width="180" tab="{meta:getStoreId($invItem)},{meta:getDescription($invItem)}" field="Integer"/>
                   </widget>
                 </row>
                 <row>
-                  <AbsolutePanel style="VerticalSpacer" />
+                  <text style="Prompt">
+                    <xsl:value-of select='resource:getString($constants,"store")' />:
+                  </text>
+                  <widget colspan="3">
+                    <dropdown key="{meta:getStoreId($invItem)}" width="225" tab="{meta:getQuantityMinLevel($invItem)},{meta:getCategoryId($invItem)}" field="Integer"/>
+                  </widget>
                 </row>
                 <row>
                   <text style="Prompt">
                     <xsl:value-of select='resource:getString($constants,"minOrderLevel")' />:
                   </text>
-                  <textbox key="{meta:getQuantityMinLevel($invItem)}" width="55" tab="{meta:getQuantityToReorder($invItem)},{meta:getCategoryId($invItem)}" />
+                  <textbox key="{meta:getQuantityMinLevel($invItem)}" width="55" tab="{meta:getQuantityToReorder($invItem)},{meta:getCategoryId($invItem)}" field="Integer"/>
                   <text style="Prompt">
                     <xsl:value-of select='resource:getString($constants,"reorderLevel")' />:
                   </text>
-                  <textbox key="{meta:getQuantityToReorder($invItem)}" width="55" tab="{meta:getQuantityMaxLevel($invItem)},{meta:getQuantityMinLevel($invItem)}" />
+                  <textbox key="{meta:getQuantityToReorder($invItem)}" width="55" tab="{meta:getQuantityMaxLevel($invItem)},{meta:getQuantityMinLevel($invItem)}" field="Integer" />
                 </row>
                 <row>
                   <text style="Prompt">
                     <xsl:value-of select='resource:getString($constants,"maxOrderLevel")' />:
                   </text>
                   <widget colspan="3">
-                    <textbox key="{meta:getQuantityMaxLevel($invItem)}" width="55" tab="{meta:getDispensedUnitsId($invItem)},{meta:getQuantityToReorder($invItem)}" />
+                    <textbox key="{meta:getQuantityMaxLevel($invItem)}" width="55" tab="{meta:getDispensedUnitsId($invItem)},{meta:getQuantityToReorder($invItem)}" field="Integer"/>
                   </widget>
-                </row>
-                <row>
-                  <AbsolutePanel style="VerticalSpacer" />
                 </row>
                 <row>
                   <text style="Prompt">
                     <xsl:value-of select='resource:getString($constants,"dispensedUnits")' />:
                   </text>
-                  <dropdown key="{meta:getDispensedUnitsId($invItem)}" width="90" tab="{meta:getIsActive($invItem)},{meta:getQuantityMaxLevel($invItem)}" />
+                  <dropdown key="{meta:getDispensedUnitsId($invItem)}" width="150" tab="{meta:getIsActive($invItem)},{meta:getQuantityMaxLevel($invItem)}" field="Integer"/>
                 </row>
               </TablePanel>
               <VerticalPanel style="subform">
@@ -305,13 +273,13 @@ UIRF Software License are applicable instead of those above.
                     <text style="CondensedPrompt">
                       <xsl:value-of select='resource:getString($constants,"labor")' />:
                     </text>
-                    <check key="{meta:getIsLabor($invItem)}" tab="{meta:getIsNoInventory($invItem)},{meta:getIsSubAssembly($invItem)}" />
+                    <check key="{meta:getIsLabor($invItem)}" tab="{meta:getIsNotInventoried($invItem)},{meta:getIsSubAssembly($invItem)}" />
                   </row>
                   <row>
                     <text style="CondensedPrompt">
                       <xsl:value-of select='resource:getString($constants,"doNotInventory")' />:
                     </text>
-                    <check key="{meta:getIsNoInventory($invItem)}" tab="{meta:getName($invItem)},{meta:getIsLabor($invItem)}" />
+                    <check key="{meta:getIsNotInventoried($invItem)}" tab="{meta:getName($invItem)},componentsTable" />
                   </row>
                 </TablePanel>
               </VerticalPanel>
@@ -320,22 +288,23 @@ UIRF Software License are applicable instead of those above.
 
 <!-- TAB PANEL -->
 
-              <TabPanel key="itemTabPanel" height="200">
+              <TabPanel key="tabPanel" width="605" height="285">
 
 <!-- TAB 1  -->
 
-                <tab key="componentsTab" text="{resource:getString($constants,'components')}">
+                <tab key="componentTab" text="{resource:getString($constants,'components')}">
                   <VerticalPanel padding="0" spacing="0">
-                    <table key="componentsTable" width="587" maxRows="9" showScroll="ALWAYS" tab="{meta:getIsNoInventory($invItem)},{meta:getIsLabor($invItem)}">
-                      <col key="{componentMeta:getComponentId($component)}" width="129" header="{resource:getString($constants,'component')}">
-                        <autoComplete key="{componentMeta:getComponentId($component)}" width="100" case="LOWER" popWidth="auto" field="Integer" required="true">
-                          <col width="100" />
+                    <table key="componentsTable" width="587" maxRows="10" showScroll="ALWAYS" tab="{meta:getName($invItem)},{meta:getIsNotInventoried($invItem)}">
+                      <col key="{componentMeta:getComponentId($component)}" width="137" header="{resource:getString($constants,'component')}">
+                        <autoComplete width="137" case="LOWER" popWidth="auto" field="Integer" required="true">
+                          <col width="135" header="{resource:getString($constants,'name')}" />
+                          <col width="300" header="{resource:getString($constants,'description')}" />
                         </autoComplete>
                       </col>
-                      <col key="{invItemMeta:getDescription($compInvItem)}" width="335" header="{resource:getString($constants,'description')}">
+                      <col key="{invItemMeta:getDescription($compInvItem)}" width="370" header="{resource:getString($constants,'description')}">
                         <label />
                       </col>
-                      <col key="{componentMeta:getQuantity($component)}" width="104" header="{resource:getString($constants,'quantity')}">
+                      <col key="{componentMeta:getQuantity($component)}" width="70" header="{resource:getString($constants,'quantity')}">
                         <textbox max="10" field="Double" required="true" />
                       </col>
                     </table>
@@ -364,22 +333,22 @@ UIRF Software License are applicable instead of those above.
 
 <!-- TAB 2 -->
 
-                <tab key="locationsTab" text="{resource:getString($constants,'locationQuantity')}">
+                <tab key="locationTab" text="{resource:getString($constants,'locationQuantity')}">
                   <VerticalPanel padding="0" spacing="0">
-                    <table key="locQuantitiesTable" width="587" maxRows="10" showScroll="ALWAYS">
-                      <col key="{locationMeta:getStorageLocationId($location)}" width="166" header="{resource:getString($constants,'location')}">
+                    <table key="locationTable" width="587" maxRows="11" showScroll="ALWAYS">
+                      <col key="{locationMeta:getStorageLocationId($location)}" width="170" header="{resource:getString($constants,'location')}">
                         <label />
                       </col>
-                      <col key="{locationMeta:getLotNumber($location)}" width="70" header="{resource:getString($constants,'lotNum')}">
+                      <col key="{locationMeta:getLotNumber($location)}" width="110" header="{resource:getString($constants,'lotNum')}">
                         <label />
                       </col>
-                      <col key="{locationMeta:getId($location)}" width="70" header="{resource:getString($constants,'locationNum')}">
+                      <col key="{locationMeta:getId($location)}" width="70" header="{resource:getString($constants,'serialNum')}">
                         <label />
                       </col>
-                      <col key="{locationMeta:getExpirationDate($location)}" width="133" header="{resource:getString($constants,'expirationDate')}">
+                      <col key="{locationMeta:getExpirationDate($location)}" width="110" header="{resource:getString($constants,'expirationDate')}">
                         <label />
                       </col>
-                      <col key="{locationMeta:getQuantityOnhand($location)}" width="123" header="{resource:getString($constants,'quantityOnHand')}">
+                      <col key="{locationMeta:getQuantityOnhand($location)}" width="125" header="{resource:getString($constants,'quantityOnHand')}">
                         <label />
                       </col>
                     </table>
@@ -388,40 +357,42 @@ UIRF Software License are applicable instead of those above.
 
 <!-- start TAB 3 -->
 
-                <tab key="additionalInfoTab" text="{resource:getString($constants,'additionalInfo')}">
-                  <TablePanel padding="0" spacing="0" style="Form">
+                <tab key="additionalTab" text="{resource:getString($constants,'additionalInfo')}">
+                  <TablePanel style="Form">
                     <row>
                       <text style="Prompt">
                         <xsl:value-of select='resource:getString($constants,"productURI")' />:
                       </text>
                       <widget colspan="5">
-                        <textbox key="{meta:getProductUri($invItem)}" width="490" max="80" tab="{invItemMeta:getName($parentInvItem)},{meta:getParentRatio($invItem)}" />
+                        <textbox key="{meta:getProductUri($invItem)}" width="490" max="80" tab="{invItemMeta:getName($parentInvItem)},{meta:getParentRatio($invItem)}" field="String"/>
                       </widget>
+                    </row>
+                    <row>
+                      <text style="Prompt">Parent Item:</text>
+                      <widget colspan="3">
+                        <autoComplete key="{invItemMeta:getName($parentInvItem)}" width="210" tab="{meta:getParentRatio($invItem)},{meta:getProductUri($invItem)}" field="Integer">
+                          <col width="135" header="{resource:getString($constants,'name')}" />
+                          <col width="130" header="{resource:getString($constants,'store')}" />
+                        </autoComplete>
+                      </widget>
+                    </row>
+                    <row>
+                      <text style="Prompt">Parent Ratio:</text>
+                      <textbox key="{meta:getParentRatio($invItem)}" width="55" max="30" tab="{meta:getProductUri($invItem)},{invItemMeta:getName($parentInvItem)}" field="Integer"/>
                     </row>
                     <row>
                       <text style="Prompt">
                         <xsl:value-of select='resource:getString($constants,"averageLeadTime")' />:
                       </text>
-                      <textbox key="{meta:getAverageLeadTime($invItem)}" width="55" max="30" style="ScreenTextboxDisplayOnly" />
+                      <textbox key="{meta:getAverageLeadTime($invItem)}" width="55" max="30" style="ScreenTextboxDisplayOnly" field="Integer"/>
                       <text style="Prompt">
                         <xsl:value-of select='resource:getString($constants,"averageCost")' />:
                       </text>
-                      <textbox key="{meta:getAverageCost($invItem)}" width="55" max="30" style="ScreenTextboxDisplayOnly" />
+                      <textbox key="{meta:getAverageCost($invItem)}" width="55" max="30" style="ScreenTextboxDisplayOnly" field="Double"/>
                       <text style="Prompt">
                         <xsl:value-of select='resource:getString($constants,"averageDailyUse")' />:
                       </text>
-                      <textbox key="{meta:getAverageDailyUse($invItem)}" width="55" max="30" style="ScreenTextboxDisplayOnly" />
-                    </row>
-                    <row>
-                      <text style="Prompt">Parent Item:</text>
-                      <widget colspan="3">
-                        <autoComplete key="{invItemMeta:getName($parentInvItem)}" width="210">
-                          <col width="135" header="{resource:getString($constants,'name')}" />
-                          <col width="130" header="{resource:getString($constants,'store')}" />
-                        </autoComplete>
-                      </widget>
-                      <text style="Prompt">Parent Ratio:</text>
-                      <textbox key="{meta:getParentRatio($invItem)}" width="55" max="30" tab="{meta:getProductUri($invItem)},{invItemMeta:getName($parentInvItem)}" />
+                      <textbox key="{meta:getAverageDailyUse($invItem)}" width="55" max="30" style="ScreenTextboxDisplayOnly" field="Integer"/>
                     </row>
                   </TablePanel>
                 </tab>
@@ -429,26 +400,22 @@ UIRF Software License are applicable instead of those above.
 <!-- start TAB 4 -->
 
                 <tab key="manufacturingTab" text="{resource:getString($constants,'manufacturing')}">
-                  <TablePanel key="manFormPanel" padding="0" spacing="0" style="Form">
-                    <row>
-                      <html key="manufacturingText" width="625" height="200" />
-                    </row>
-                    <row>
-                      <appButton key="editManufacturingButton" style="Button">
-                        <HorizontalPanel>
-                          <AbsolutePanel style="StandardNoteButtonImage" />
-                          <text>
-                            <xsl:value-of select="resource:getString($constants,'edit')" />
-                          </text>
-                        </HorizontalPanel>
-                      </appButton>
-                    </row>
-                  </TablePanel>
+                  <VerticalPanel padding="0" spacing="0">
+                    <html key="manufacturingText" width="604" height="247" style="ScreenTable" />
+                    <appButton key="editManufacturingButton" style="Button">
+                      <HorizontalPanel>
+                        <AbsolutePanel style="StandardNoteButtonImage" />
+                        <text>
+                          <xsl:value-of select="resource:getString($constants,'edit')" />
+                        </text>
+                      </HorizontalPanel>
+                    </appButton>
+                  </VerticalPanel>
                 </tab>
 
 <!-- start TAB 5 -->
 
-                <tab key="notesTab" text="{resource:getString($constants,'note')}">
+                <tab key="noteTab" text="{resource:getString($constants,'note')}">
                   <VerticalPanel padding="0" spacing="0">
                     <notes key="notesPanel" width="604" height="247" />
                     <appButton key="standardNoteButton" style="Button">

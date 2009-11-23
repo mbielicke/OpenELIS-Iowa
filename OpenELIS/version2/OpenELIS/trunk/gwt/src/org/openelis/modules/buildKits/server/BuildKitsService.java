@@ -237,10 +237,10 @@ public class BuildKitsService implements AppScreenFormServiceInt<BuildKitsForm, 
     private TableDataModel getKitMatches(String match) throws Exception{
         InventoryItemRemote remote = (InventoryItemRemote)EJBFactory.lookup("openelis/InventoryItemBean/remote");
         TableDataModel<TableDataRow<Integer>> dataModel = new TableDataModel<TableDataRow<Integer>>();
-        List autoCompleteList;
+        List autoCompleteList = null;
     
         //lookup by name
-        autoCompleteList = remote.inventoryItemWithComponentsAutoCompleteLookupByName(match+"%", 10);
+//        autoCompleteList = remote.inventoryItemWithComponentsAutoCompleteLookupByName(match+"%", 10);
         
         for(int i=0; i < autoCompleteList.size(); i++){
             InventoryItemAutoDO resultDO = (InventoryItemAutoDO) autoCompleteList.get(i);
@@ -337,9 +337,9 @@ public class BuildKitsService implements AppScreenFormServiceInt<BuildKitsForm, 
         InventoryItemRemote remote = (InventoryItemRemote)EJBFactory.lookup("openelis/InventoryItemBean/remote");
         Integer invItemId = rpc.kitId;
         TableDataModel<TableDataRow<Integer>> model = new TableDataModel<TableDataRow<Integer>>();
-        
+        /*                
         List components = remote.getInventoryComponents(invItemId);
-        
+
         for(int i=0; i<components.size(); i++){
             InventoryComponentDO componentDO = (InventoryComponentDO)components.get(i);
             TableDataRow<Integer> set = new TableDataRow<Integer>(componentDO.getComponentInventoryItemId(),
@@ -349,7 +349,7 @@ public class BuildKitsService implements AppScreenFormServiceInt<BuildKitsForm, 
                                                                   }
                                         );            
             model.add(set);
-        }
+        } */
         rpc.subItemsModel = model;
         return rpc;
     }
