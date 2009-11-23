@@ -39,40 +39,16 @@ UIRF Software License are applicable instead of those above.
   xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd"
   xmlns:addr="xalan://org.openelis.meta.AddressMeta"
   xmlns:location="xalan://org.openelis.metamap.ProviderAddressMetaMap"
-  xmlns:meta="xalan://org.openelis.metamap.ProviderMetaMap"
-  xmlns:note="xalan://org.openelis.meta.NotetMeta">
+  xmlns:meta="xalan://org.openelis.metamap.ProviderMetaMap">
 
   <xsl:import href="IMPORT/aToZOneColumn.xsl" />
-  <xalan:component prefix="resource">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.util.UTFResource" />
-  </xalan:component>
-  <xalan:component prefix="locale">
-    <xalan:script lang="javaclass" src="xalan://java.util.Locale" />
-  </xalan:component>
-  <xalan:component prefix="meta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.ProviderMetaMap" />
-  </xalan:component>
-  <xalan:component prefix="note">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.NotetMeta" />
-  </xalan:component>
-  <xalan:component prefix="location">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.ProviderAddressMetaMap" />
-  </xalan:component>
-  <xalan:component prefix="addr">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.AddressMeta" />
-  </xalan:component>
   <xsl:template match="doc">
+    <xsl:variable name="language" select="locale" />
+    <xsl:variable name="props" select="props" />
+    <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
     <xsl:variable name="pro" select="meta:new()" />
     <xsl:variable name="loc" select="meta:getProviderAddress($pro)" />
-    <xsl:variable name="note" select="meta:getNote($pro)" />
     <xsl:variable name="locAddr" select="location:getAddress($loc)" />
-    <xsl:variable name="language">
-      <xsl:value-of select="locale" />
-    </xsl:variable>
-    <xsl:variable name="props">
-      <xsl:value-of select="props" />
-    </xsl:variable>
-    <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
 
 <!-- main screen -->
 

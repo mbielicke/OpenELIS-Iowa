@@ -40,50 +40,20 @@ UIRF Software License are applicable instead of those above.
   xmlns:addr="xalan://org.openelis.meta.AddressMeta"
   xmlns:contact="xalan://org.openelis.metamap.OrganizationContactMetaMap"
   xmlns:meta="xalan://org.openelis.metamap.OrganizationMetaMap"
-  xmlns:note="xalan://org.openelis.meta.NoteMeta"
   xmlns:parameter="xalan://org.openelis.metamap.OrganizationParameterMeta"
   xmlns:parent="xalan://org.openelis.meta.OrganizationMeta">
 
   <xsl:import href="IMPORT/aToZOneColumn.xsl" />
-  <xalan:component prefix="resource">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.util.UTFResource" />
-  </xalan:component>
-  <xalan:component prefix="locale">
-    <xalan:script lang="javaclass" src="xalan://java.util.Locale" />
-  </xalan:component>
-  <xalan:component prefix="meta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.OrganizationMetaMap" />
-  </xalan:component>
-  <xalan:component prefix="addr">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.AddressMeta" />
-  </xalan:component>
-  <xalan:component prefix="contact">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.OrganizationContactMetaMap" />
-  </xalan:component>
-  <xalan:component prefix="parameter">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.OrganizationParameterMeta" />
-  </xalan:component>
-  <xalan:component prefix="note">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.NoteMeta" />
-  </xalan:component>
-  <xalan:component prefix="parent">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.OrganizationMeta" />
-  </xalan:component>
   <xsl:template match="doc">
+    <xsl:variable name="language" select="locale" />
+    <xsl:variable name="props" select="props" />
+    <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
     <xsl:variable name="org" select="meta:new()" />
     <xsl:variable name="addr" select="meta:getAddress($org)" />
     <xsl:variable name="cont" select="meta:getOrganizationContact($org)" />
     <xsl:variable name="param" select="meta:getOrganizationParameter($org)" />
     <xsl:variable name="parent" select="meta:getParentOrganization($org)" />
-    <xsl:variable name="note" select="meta:getNote($org)" />
     <xsl:variable name="contAddr" select="contact:getAddress($cont)" />
-    <xsl:variable name="language">
-      <xsl:value-of select="locale" />
-    </xsl:variable>
-    <xsl:variable name="props">
-      <xsl:value-of select="props" />
-    </xsl:variable>
-    <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
 
 <!-- main screen -->
 

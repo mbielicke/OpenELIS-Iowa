@@ -335,7 +335,7 @@ public class InventoryAdjustmentService implements AppScreenFormServiceInt<Inven
         
         InventoryItemRemote remote = (InventoryItemRemote)EJBFactory.lookup("openelis/InventoryItemBean/remote");
         //lookup by name
-        autoCompleteList = remote.inventoryAdjItemAutoCompleteLookupByName(parsedMatch+"%",storeId, 10);    
+        autoCompleteList = null; //remote.inventoryAdjItemAutoCompleteLookupByName(parsedMatch+"%",storeId, 10);    
         
         for(int i=0; i < autoCompleteList.size(); i++){
             InventoryItemAutoDO resultDO = (InventoryItemAutoDO) autoCompleteList.get(i);

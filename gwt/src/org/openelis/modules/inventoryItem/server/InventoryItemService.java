@@ -26,57 +26,154 @@
 package org.openelis.modules.inventoryItem.server;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 
-import org.openelis.domain.IdNameDO;
-import org.openelis.domain.IdNameStoreDO;
-import org.openelis.domain.InventoryComponentDO;
-import org.openelis.domain.InventoryItemAutoDO;
+import org.openelis.domain.IdNameVO;
 import org.openelis.domain.InventoryItemDO;
-import org.openelis.domain.InventoryLocationDO;
-import org.openelis.domain.NoteViewDO;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.TableFieldErrorException;
-import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.data.deprecated.AbstractField;
-import org.openelis.gwt.common.data.deprecated.DoubleField;
-import org.openelis.gwt.common.data.deprecated.DropDownField;
-import org.openelis.gwt.common.data.deprecated.Field;
-import org.openelis.gwt.common.data.deprecated.FieldType;
-import org.openelis.gwt.common.data.deprecated.StringField;
-import org.openelis.gwt.common.data.deprecated.StringObject;
-import org.openelis.gwt.common.data.deprecated.TableDataModel;
-import org.openelis.gwt.common.data.deprecated.TableDataRow;
-import org.openelis.gwt.common.data.deprecated.TableField;
-import org.openelis.gwt.common.deprecated.Form;
-import org.openelis.gwt.common.deprecated.Query;
-import org.openelis.gwt.server.ServiceUtils;
-import org.openelis.gwt.services.deprecated.AppScreenFormServiceInt;
-import org.openelis.gwt.services.deprecated.AutoCompleteServiceInt;
-import org.openelis.gwt.widget.deprecated.CheckBox;
-import org.openelis.metamap.InventoryItemMetaMap;
-import org.openelis.modules.inventoryItem.client.InventoryCommentsForm;
-import org.openelis.modules.inventoryItem.client.InventoryComponentAutoRPC;
-import org.openelis.modules.inventoryItem.client.InventoryComponentsForm;
-import org.openelis.modules.inventoryItem.client.InventoryItemForm;
-import org.openelis.modules.inventoryItem.client.InventoryLocationsForm;
-import org.openelis.modules.inventoryItem.client.InventoryManufacturingForm;
+import org.openelis.gwt.common.DatabaseException;
+import org.openelis.gwt.common.data.Query;
+import org.openelis.gwt.common.data.QueryData;
+import org.openelis.manager.InventoryComponentManager;
+import org.openelis.manager.InventoryItemManager;
+import org.openelis.manager.InventoryLocationManager;
 import org.openelis.persistence.EJBFactory;
+import org.openelis.remote.InventoryItemManagerRemote;
 import org.openelis.remote.InventoryItemRemote;
-import org.openelis.server.constants.Constants;
-import org.openelis.util.FormUtil;
-import org.openelis.util.SessionManager;
-import org.openelis.util.UTFResource;
-import org.openelis.util.XMLUtil;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
 public class InventoryItemService {
+
+    private static final int rowPP = 23;
+
+    public InventoryItemManager fetchById(Integer id) throws Exception {
+        try {
+            return remoteManager().fetchById(id);
+        } catch (RuntimeException e) {
+            throw new DatabaseException(e);
+        }
+    }
+
+    public ArrayList<InventoryItemDO> fetchActiveByName(String search) throws Exception {
+        return remote().fetchActiveByName(search+"%", 10);
+    }
+
+    public ArrayList<InventoryItemDO> fetchActiveByNameAndStore(Query query) throws Exception {
+        Integer storeId = null;
+        String name = null;
+        
+        // parse the query to find name and/or store
+        for (QueryData field : query.getFields()) {
+            if (field.key != null) {
+                if (field.key.endsWith("name"))
+                    name = field.query;
+                else if (field.key.endsWith("storeId"))
+                    storeId = new Integer(field.query);
+            }
+        }
+        if (storeId == null)
+            return remote().fetchActiveByName(name+"%", 10);
+        else
+            return remote().fetchActiveByNameAndStore(name+"%", storeId, 10);
+    }
+
+    public InventoryItemManager fetchWithComponents(Integer id) throws Exception {
+        try {
+            return remoteManager().fetchWithComponents(id);
+        } catch (RuntimeException e) {
+            throw new DatabaseException(e);
+        }
+    }
+
+    public InventoryItemManager fetchWithLocations(Integer id) throws Exception {
+        try {
+            return remoteManager().fetchWithLocations(id);
+        } catch (RuntimeException e) {
+            throw new DatabaseException(e);
+        }
+    }
+
+    public InventoryItemManager fetchWithManufacturing(Integer id) throws Exception {
+        try {
+            return remoteManager().fetchWithManufacturing(id);
+        } catch (RuntimeException e) {
+            throw new DatabaseException(e);
+        }
+    }
+
+    public InventoryItemManager fetchWithNotes(Integer id) throws Exception {
+        try {
+            return remoteManager().fetchWithNotes(id);
+        } catch (RuntimeException e) {
+            throw new DatabaseException(e);
+        }
+    }
+
+    public ArrayList<IdNameVO> query(Query query) throws Exception {
+        try {
+            return remote().query(query.getFields(), query.getPage() * rowPP, rowPP);
+        } catch (RuntimeException e) {
+            throw new DatabaseException(e);
+        }
+    }
+
+    public InventoryItemManager add(InventoryItemManager man) throws Exception {
+        try {
+            return remoteManager().add(man);
+        } catch (RuntimeException e) {
+            throw new DatabaseException(e);
+        }
+    }
+
+    public InventoryItemManager update(InventoryItemManager man) throws Exception {
+        try {
+            return remoteManager().update(man);
+        } catch (RuntimeException e) {
+            throw new DatabaseException(e);
+        }
+
+    }
+
+    public InventoryItemManager fetchForUpdate(Integer id) throws Exception {
+        try {
+            return remoteManager().fetchForUpdate(id);
+        } catch (RuntimeException e) {
+            throw new DatabaseException(e);
+        }
+    }
+
+    public InventoryItemManager abortUpdate(Integer id) throws Exception {
+        try {
+            return remoteManager().abortUpdate(id);
+        } catch (RuntimeException e) {
+            throw new DatabaseException(e);
+        }
+    }
+
+    //
+    // support for InventoryComponentManager and InventoryLocationManager
+    //
+    public InventoryComponentManager fetchComponentByInventoryItemId(Integer id) throws Exception {
+        try {
+            return remoteManager().fetchComponentByInventoryItemId(id);
+        } catch (RuntimeException e) {
+            throw new DatabaseException(e);
+        }
+    }
+    
+    public InventoryLocationManager fetchLocationByInventoryItemId(Integer id) throws Exception {
+        try {
+            return remoteManager().fetchLocationByInventoryItemId(id);
+        } catch (RuntimeException e) {
+            throw new DatabaseException(e);
+        }
+    }
+
+    private InventoryItemRemote remote() {
+        return (InventoryItemRemote)EJBFactory.lookup("openelis/InventoryItemBean/remote");
+    }
+
+    private InventoryItemManagerRemote remoteManager() {
+        return (InventoryItemManagerRemote)EJBFactory.lookup("openelis/InventoryItemManagerBean/remote");
+    }
+}
 /*    
     private static final int leftTableRowsPerPage = 22;
     
@@ -105,14 +202,13 @@ public class InventoryItemService {
                     throw new Exception(e.getMessage()); 
                 }           
             }    
-        }else{*/
+        }else{
             InventoryItemRemote remote = (InventoryItemRemote)EJBFactory.lookup("openelis/InventoryItemBean/remote");
-            /*
+            
             HashMap<String,AbstractField> fields = form.getFieldMap();
             fields.remove("componentsTable");
             fields.remove("locQuantitiesTable");
-            */
-            /*
+
             try{    
                 inventoryItemNames = remote.query(query.fields,query.page*leftTableRowsPerPage,leftTableRowsPerPage);
             }catch(LastPageException e) {
@@ -844,4 +940,3 @@ public class InventoryItemService {
         form.status = Form.Status.invalid;
     }
     */
-}
