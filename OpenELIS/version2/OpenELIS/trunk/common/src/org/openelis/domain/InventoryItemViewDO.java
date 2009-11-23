@@ -28,13 +28,19 @@ package org.openelis.domain;
 import org.openelis.utilcommon.DataBaseUtil;
 
 /**
- * Class represents the fields in database table inventory_item.
+ * The class extends inventory item DO and carries parent inventory item name.
+ * The additional field is for read/display only and do not get committed to the
+ * database. Note: isChanged will reflect any changes to read/display fields.
  */
+
 public class InventoryItemViewDO extends InventoryItemDO {
 
     private static final long serialVersionUID = 1L;
 
-    protected String          categoryName, storeName, dispensedUnitsName, parentInventoryItemName;
+    protected String          parentInventoryItemName;
+
+    public InventoryItemViewDO() {
+    }
 
     public InventoryItemViewDO(Integer id, String name, String description, Integer categoryId,
                                Integer storeId, Integer quantityMinLevel, Integer quantityMaxLevel,
@@ -42,45 +48,17 @@ public class InventoryItemViewDO extends InventoryItemDO {
                                String isReorderAuto, String isLotMaintained,
                                String isSerialMaintained, String isActive, String isBulk,
                                String isNotForSale, String isSubAssembly, String isLabor,
-                               String isNoInventory, String productUri, Integer aveLeadTime,
+                               String isNotInventoried, String productUri, Integer aveLeadTime,
                                Double aveCost, Integer aveDailyUse, Integer parentInventoryItemId,
-                               Integer parentRatio, String categoryName, String storeName,
-                               String dispesedUnitsName, String parentInventoryItenName) {
+                               Integer parentRatio, String parentInventoryItemName) {
 
         super(id, name, description, categoryId, storeId, quantityMinLevel, quantityMaxLevel,
               quantityToReorder, dispensedUnitsId, isReorderAuto, isLotMaintained,
               isSerialMaintained, isActive, isBulk, isNotForSale, isSubAssembly, isLabor,
-              isNoInventory, productUri, aveLeadTime, aveCost, aveDailyUse, parentInventoryItemId,
-              parentRatio);
+              isNotInventoried, productUri, aveLeadTime, aveCost, aveDailyUse,
+              parentInventoryItemId, parentRatio);
 
-        setCategoryName(categoryName);
-        setStoreName(storeName);
-        setDispensedUnitsName(dispesedUnitsName);
-        setParentInventoryItemName(parentInventoryItenName);
-    }
-
-    public String getCategoryName() {
-        return categoryName;
-    }
-
-    public void setCategoryName(String categoryName) {
-        this.categoryName = DataBaseUtil.trim(categoryName);
-    }
-
-    public String getStoreName() {
-        return storeName;
-    }
-
-    public void setStoreName(String storeName) {
-        this.storeName = DataBaseUtil.trim(storeName);
-    }
-
-    public String getDispensedUnitsName() {
-        return dispensedUnitsName;
-    }
-
-    public void setDispensedUnitsName(String dispensedUnitsName) {
-        this.dispensedUnitsName = DataBaseUtil.trim(dispensedUnitsName);
+        setParentInventoryItemName(parentInventoryItemName);
     }
 
     public String getParentInventoryItemName() {

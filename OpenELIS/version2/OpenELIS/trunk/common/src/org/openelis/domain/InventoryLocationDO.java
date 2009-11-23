@@ -1,98 +1,59 @@
-/** Exhibit A - UIRF Open-source Based Public Software License.
-* 
-* The contents of this file are subject to the UIRF Open-source Based
-* Public Software License(the "License"); you may not use this file except
-* in compliance with the License. You may obtain a copy of the License at
-* openelis.uhl.uiowa.edu
-* 
-* Software distributed under the License is distributed on an "AS IS"
-* basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
-* License for the specific language governing rights and limitations
-* under the License.
-* 
-* The Original Code is OpenELIS code.
-* 
-* The Initial Developer of the Original Code is The University of Iowa.
-* Portions created by The University of Iowa are Copyright 2006-2008. All
-* Rights Reserved.
-* 
-* Contributor(s): ______________________________________.
-* 
-* Alternatively, the contents of this file marked
-* "Separately-Licensed" may be used under the terms of a UIRF Software
-* license ("UIRF Software License"), in which case the provisions of a
-* UIRF Software License are applicable instead of those above. 
-*/
+/**
+ * Exhibit A - UIRF Open-source Based Public Software License.
+ * 
+ * The contents of this file are subject to the UIRF Open-source Based Public
+ * Software License(the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * openelis.uhl.uiowa.edu
+ * 
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+ * the specific language governing rights and limitations under the License.
+ * 
+ * The Original Code is OpenELIS code.
+ * 
+ * The Initial Developer of the Original Code is The University of Iowa.
+ * Portions created by The University of Iowa are Copyright 2006-2008. All
+ * Rights Reserved.
+ * 
+ * Contributor(s): ______________________________________.
+ * 
+ * Alternatively, the contents of this file marked "Separately-Licensed" may be
+ * used under the terms of a UIRF Software license ("UIRF Software License"), in
+ * which case the provisions of a UIRF Software License are applicable instead
+ * of those above.
+ */
 package org.openelis.domain;
 
 import java.util.Date;
 
 import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.RPC;
 import org.openelis.utilcommon.DataBaseUtil;
 
-public class InventoryLocationDO implements RPC {
+/**
+ * Class represents the fields in database table inventory_location.
+ */
+public class InventoryLocationDO extends DataObject {
 
     private static final long serialVersionUID = 1L;
 
-    protected Integer         id;
-    protected Integer         inventoryItemId;
-    protected String          inventoryItem;
+    protected Integer         id, inventoryItemId, storageLocationId, quantityOnHand;
     protected String          lotNumber;
-    // protected Integer storageLocationId;
-    protected String          storageLocation;
-    protected Integer         quantityOnHand;
     protected Datetime        expirationDate;
 
     public InventoryLocationDO() {
-
     }
 
-    public InventoryLocationDO(Integer id,
-                               Integer inventoryItemId,
-                               String inventoryItem,
-                               String lotNumber,
-                               String storageLocation,
-                               Integer quantityOnHand,
+    public InventoryLocationDO(Integer id, Integer inventoryItemId, String lotNumber,
+                               Integer storageLocationId, Integer quantityOnHand,
                                Date expirationDate) {
         setId(id);
         setInventoryItemId(inventoryItemId);
-        setInventoryItem(inventoryItem);
         setLotNumber(lotNumber);
-        setStorageLocation(storageLocation);
+        setStorageLocationId(storageLocationId);
         setQuantityOnHand(quantityOnHand);
-        setExpirationDate(new Datetime(Datetime.YEAR,
-                                       Datetime.DAY,
-                                       expirationDate));
-    }
-
-    public InventoryLocationDO(Integer id,
-                               Integer inventoryItemId,
-                               String inventoryItem,
-                               String lotNumber,
-                               String childStorageLocName,
-                               String childStorageLocLocation,
-                               String parentStorageLocName,
-                               String childStorageUnit,
-                               Integer quantityOnHand,
-                               Date expirationDate) {
-        setId(id);
-        setInventoryItemId(inventoryItemId);
-        setInventoryItem(inventoryItem);
-        setLotNumber(lotNumber);
-        setQuantityOnHand(quantityOnHand);
-        setExpirationDate(new Datetime(Datetime.YEAR,
-                                       Datetime.DAY,
-                                       expirationDate));
-        setStorageLocation(DataBaseUtil.formatStorageLocation(childStorageLocName, childStorageLocLocation, childStorageUnit, parentStorageLocName));
-    }
-
-    public Datetime getExpirationDate() {
-        return expirationDate;
-    }
-
-    public void setExpirationDate(Datetime expirationDate) {
-        this.expirationDate = expirationDate;
+        setExpirationDate(DataBaseUtil.toYD(expirationDate));
+        _changed = false;
     }
 
     public Integer getId() {
@@ -101,6 +62,7 @@ public class InventoryLocationDO implements RPC {
 
     public void setId(Integer id) {
         this.id = id;
+        _changed = true;
     }
 
     public Integer getInventoryItemId() {
@@ -109,14 +71,16 @@ public class InventoryLocationDO implements RPC {
 
     public void setInventoryItemId(Integer inventoryItemId) {
         this.inventoryItemId = inventoryItemId;
+        _changed = true;
     }
 
-    public String getLotNumber() {
-        return lotNumber;
+    public Integer getStorageLocationId() {
+        return storageLocationId;
     }
 
-    public void setLotNumber(String lotNumber) {
-        this.lotNumber = DataBaseUtil.trim(lotNumber);
+    public void setStorageLocationId(Integer storageLocationId) {
+        this.storageLocationId = storageLocationId;
+        _changed = true;
     }
 
     public Integer getQuantityOnHand() {
@@ -125,27 +89,24 @@ public class InventoryLocationDO implements RPC {
 
     public void setQuantityOnHand(Integer quantityOnHand) {
         this.quantityOnHand = quantityOnHand;
+        _changed = true;
     }
 
-    public String getStorageLocation() {
-        return storageLocation;
+    public String getLotNumber() {
+        return lotNumber;
     }
 
-    public void setStorageLocation(String storageLocation) {
-        this.storageLocation = DataBaseUtil.trim(storageLocation);
+    public void setLotNumber(String lotNumber) {
+        this.lotNumber = DataBaseUtil.trim(lotNumber);
+        _changed = true;
     }
 
-    public String getInventoryItem() {
-        return inventoryItem;
+    public Datetime getExpirationDate() {
+        return expirationDate;
     }
 
-    public void setInventoryItem(String inventoryItem) {
-        this.inventoryItem = DataBaseUtil.trim(inventoryItem);
+    public void setExpirationDate(Datetime expirationDate) {
+        this.expirationDate = DataBaseUtil.toYD(expirationDate);
+        _changed = true;
     }
-
-    /*
-     * public Integer getChildStorageLocationId() { return childStorageLocationId; }
-     * 
-     * public void setChildStorageLocationId(Integer childStorageLocationId) { this.childStorageLocationId = childStorageLocationId; }
-     */
 }
