@@ -86,8 +86,6 @@ public class OrganizationMetaMap extends OrganizationMeta implements MetaMap {
             return ADDRESS.hasColumn(name);
         else if (name.startsWith(path + "parentOrganization."))
             return PARENT_ORGANIZATION.hasColumn(name);
-        else if (name.startsWith("note."))
-            return NOTE.hasColumn(name);
         else if (name.startsWith(path + "contact."))
             return ORGANIZATION_CONTACT.hasColumn(name);
         else if (name.startsWith(path + "parameter."))
@@ -98,8 +96,6 @@ public class OrganizationMetaMap extends OrganizationMeta implements MetaMap {
     public String buildFrom(String where) {
         String from = "Organization o ";
 
-        if (where.indexOf("notes.") > -1)
-            from += ", IN (o.note) note ";
         if (where.indexOf("contact.") > -1)
             from += ", IN (o.organizationContact) contact ";
         if (where.indexOf("parameter.") > -1)

@@ -25,17 +25,26 @@
 */
 package org.openelis.remote;
 
-import org.openelis.domain.InventoryItemDO;
-import org.openelis.domain.NoteViewDO;
-
 import java.util.ArrayList;
-import java.util.List;
 
 import javax.ejb.Remote;
 
+import org.openelis.domain.IdNameVO;
+import org.openelis.domain.InventoryItemDO;
+import org.openelis.gwt.common.data.QueryData;
+
 @Remote
 public interface InventoryItemRemote {
-	//method to return parent inventory item
+    public InventoryItemDO fetchById(Integer id) throws Exception;
+
+    public ArrayList<InventoryItemDO> fetchActiveByName(String name, int max) throws Exception;
+
+    public ArrayList<InventoryItemDO> fetchActiveByNameAndStore(String name, Integer storeId, int max) throws Exception;
+
+    public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception;
+}
+/*
+    //method to return parent inventory item
 	public InventoryItemDO getInventoryItem(Integer inventoryItemId);
 	
 	//method to unlock entity and return parent inventory item
@@ -82,4 +91,4 @@ public interface InventoryItemRemote {
      
      //auto complete inv item lookup for inventory items that are children of the invId param
      public List inventoryItemStoreChildAutoCompleteLookupByName(String itemName, Integer parentId, Integer id, int maxResults);    
-}
+*/

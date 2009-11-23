@@ -35,21 +35,24 @@ public class InventoryItemDO extends DataObject {
     private static final long serialVersionUID = 1L;
 
     protected Integer         id, categoryId, storeId, quantityMinLevel, quantityMaxLevel,
-                              quantityToReorder, dispensedUnitsId, aveLeadTime,
-                              aveDailyUse, parentInventoryItemId, parentRatio;
+                              quantityToReorder, dispensedUnitsId, averageLeadTime,
+                              averageDailyUse, parentInventoryItemId, parentRatio;
     protected String          name, description, isReorderAuto, isLotMaintained,
                               isSerialMaintained, isActive, isBulk, isNotForSale,
-                              isSubAssembly, isLabor, isNoInventory, productUri;
-    protected Double          aveCost;
+                              isSubAssembly, isLabor, isNotInventoried, productUri;
+    protected Double          averageCost;
+
+    public InventoryItemDO() {
+    }
 
     public InventoryItemDO(Integer id, String name, String description, Integer categoryId,
                            Integer storeId, Integer quantityMinLevel, Integer quantityMaxLevel,
                            Integer quantityToReorder, Integer dispensedUnitsId,
                            String isReorderAuto, String isLotMaintained, String isSerialMaintained,
                            String isActive, String isBulk, String isNotForSale,
-                           String isSubAssembly, String isLabor, String isNoInventory,
-                           String productUri, Integer aveLeadTime, Double aveCost,
-                           Integer aveDailyUse, Integer parentInventoryItemId, Integer parentRatio) {
+                           String isSubAssembly, String isLabor, String isNotInventoried,
+                           String productUri, Integer averageLeadTime, Double averageCost,
+                           Integer averageDailyUse, Integer parentInventoryItemId, Integer parentRatio) {
         setId(id);
         setName(name);
         setDescription(description);
@@ -67,11 +70,11 @@ public class InventoryItemDO extends DataObject {
         setIsNotForSale(isNotForSale);
         setIsSubAssembly(isSubAssembly);
         setIsLabor(isLabor);
-        setIsNoInventory(isNoInventory);
+        setIsNotInventoried(isNotInventoried);
         setProductUri(productUri);
-        setAveLeadTime(aveLeadTime);
-        setAveCost(aveCost);
-        setAveDailyUse(aveDailyUse);
+        setAverageLeadTime(averageLeadTime);
+        setAverageCost(averageCost);
+        setAverageDailyUse(averageDailyUse);
         setParentInventoryItemId(parentInventoryItemId);
         setParentRatio(parentRatio);
         _changed = false;
@@ -230,12 +233,12 @@ public class InventoryItemDO extends DataObject {
         _changed = true;
     }
 
-    public String getIsNoInventory() {
-        return isNoInventory;
+    public String getIsNotInventoried() {
+        return isNotInventoried;
     }
 
-    public void setIsNoInventory(String isNoInventory) {
-        this.isNoInventory = DataBaseUtil.trim(isNoInventory);
+    public void setIsNotInventoried(String isNotInventoried) {
+        this.isNotInventoried = DataBaseUtil.trim(isNotInventoried);
         _changed = true;
     }
 
@@ -248,30 +251,30 @@ public class InventoryItemDO extends DataObject {
         _changed = true;
     }
 
-    public Integer getAveLeadTime() {
-        return aveLeadTime;
+    public Integer getAverageLeadTime() {
+        return averageLeadTime;
     }
 
-    public void setAveLeadTime(Integer aveLeadTime) {
-        this.aveLeadTime = aveLeadTime;
+    public void setAverageLeadTime(Integer averageLeadTime) {
+        this.averageLeadTime = averageLeadTime;
         _changed = true;
     }
 
-    public Double getAveCost() {
-        return aveCost;
+    public Double getAverageCost() {
+        return averageCost;
     }
 
-    public void setAveCost(Double aveCost) {
-        this.aveCost = aveCost;
+    public void setAverageCost(Double averageCost) {
+        this.averageCost = averageCost;
         _changed = true;
     }
 
-    public Integer getAveDailyUse() {
-        return aveDailyUse;
+    public Integer getAverageDailyUse() {
+        return averageDailyUse;
     }
 
-    public void setAveDailyUse(Integer aveDailyUse) {
-        this.aveDailyUse = aveDailyUse;
+    public void setAverageDailyUse(Integer averageDailyUse) {
+        this.averageDailyUse = averageDailyUse;
         _changed = true;
     }
 
