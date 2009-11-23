@@ -55,7 +55,6 @@ import org.openelis.remote.OrganizationRemote;
 import org.openelis.util.QueryBuilderV2;
 import org.openelis.utilcommon.DataBaseUtil;
 
-
 @Stateless
 @SecurityDomain("openelis")
 @RolesAllowed("organization-select")

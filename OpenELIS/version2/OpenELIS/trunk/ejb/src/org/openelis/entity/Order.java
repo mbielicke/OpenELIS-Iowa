@@ -53,7 +53,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
-
+/*
 @NamedQueries( {
     @NamedQuery(name = "Order.OrderInternal", query = "select new org.openelis.domain.OrderDO(o.id, o.statusId, o.orderedDate, o.neededInDays, o.requestedBy, o.costCenterId, o.organizationId, " +
                             " o.isExternal, o.externalOrderNumber, o.reportToId, o.billToId) from Order o where o.id = :id"),
@@ -75,7 +75,7 @@ import org.openelis.utils.Auditable;
     @NamedQuery(name = "Order.FillOrderSubInfo", query = "select new org.openelis.domain.FillOrderDO(o.requestedBy, o.costCenterId, add.multipleUnit, " +
     		" add.streetAddress, add.city, add.state, add.zipCode) from Order o LEFT JOIN o.organization orgz LEFT JOIN orgz.address add" + 
     		" where o.id = :id ")})
-            
+*/            
 @Entity
 @Table(name="order")
 @EntityListeners({AuditUtil.class})
