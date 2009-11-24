@@ -30,83 +30,76 @@ import java.util.ArrayList;
 
 import javax.naming.InitialContext;
 
-import org.openelis.domain.WorksheetItemDO;
+import org.openelis.domain.WorksheetQcResultDO;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.WorksheetItemLocal;
-import org.openelis.manager.WorksheetItemManager;
+import org.openelis.local.WorksheetQcResultLocal;
+import org.openelis.manager.WorksheetQcResultManager;
 import org.openelis.utilcommon.DataBaseUtil;
 
-public class WorksheetItemManagerProxy {
+public class WorksheetQcResultManagerProxy {
     
-    public WorksheetItemManager fetchByWorksheetId(Integer id) throws Exception {
-        int                        i;
-        WorksheetItemManager       manager;
-        ArrayList<WorksheetItemDO> items;
+    public WorksheetQcResultManager fetchByWorksheetAnalysisId(Integer id) throws Exception {
+        int                            i;
+        WorksheetQcResultManager       manager;
+        ArrayList<WorksheetQcResultDO> qcResults;
         
-        items = local().fetchByWorksheetId(id);
-        manager = WorksheetItemManager.getInstance();
-        manager.setWorksheetId(id);
-        for (i = 0; i < items.size(); i++)
-            manager.addWorksheetItem(items.get(i));
+        qcResults = local().fetchByWorksheetAnalysisId(id);
+        manager = WorksheetQcResultManager.getInstance();
+        manager.setWorksheetAnalysisId(id);
+        for (i = 0; i < qcResults.size(); i++)
+            manager.addWorksheetQcResult(qcResults.get(i));
         
         return manager;
     }
     
-    public WorksheetItemManager add(WorksheetItemManager manager) throws Exception {
-        int                i;
-        WorksheetItemDO    item;
-        WorksheetItemLocal local;
+    public WorksheetQcResultManager add(WorksheetQcResultManager manager) throws Exception {
+        int                    i;
+        WorksheetQcResultLocal local;
+        WorksheetQcResultDO    qcResult;
         
         local = local();
         for (i = 0; i < manager.count(); i++) {
-            item = manager.getWorksheetItemAt(i);
-            item.setWorksheetId(manager.getWorksheetId());
-            local.add(item);
-            
-            manager.getWorksheetAnalysisAt(i).setWorksheetItemId(item.getId());
-            manager.getWorksheetAnalysisAt(i).add();
+            qcResult = manager.getWorksheetQcResultAt(i);
+            qcResult.setWorksheetAnalysisId(manager.getWorksheetAnalysisId());
+            local.add(qcResult);
         }
         
         return manager;
     }
 
-    public WorksheetItemManager update(WorksheetItemManager manager) throws Exception {
-        int                i, j;
-        WorksheetItemLocal local;
-        WorksheetItemDO    item;
+    public WorksheetQcResultManager update(WorksheetQcResultManager manager) throws Exception {
+        int                    i, j;
+        WorksheetQcResultLocal local;
+        WorksheetQcResultDO    qcResult;
         
         local = local();
         for (j = 0; j < manager.deleteCount(); j++)
-            local.delete(manager.getDeletedAt(j).worksheetItem);
+            local.delete(manager.getDeletedAt(j));
         
         for (i = 0; i < manager.count(); i++) {
-            item = manager.getWorksheetItemAt(i);
+            qcResult = manager.getWorksheetQcResultAt(i);
             
-            if (item.getId() == null) {
-                item.setWorksheetId(manager.getWorksheetId());
-                local.add(item);
+            if (qcResult.getId() == null) {
+                qcResult.setWorksheetAnalysisId(manager.getWorksheetAnalysisId());
+                local.add(qcResult);
             } else {
-                local.update(item);
+                local.update(qcResult);
             }
-            
-            manager.getWorksheetAnalysisAt(i).setWorksheetItemId(item.getId());
-            manager.getWorksheetAnalysisAt(i).update();
         }
 
         return manager;
     }
 
-    public void validate(WorksheetItemManager manager) throws Exception {
-        int                  i;
-        ValidationErrorsList list;
-        WorksheetItemLocal   local;
+    public void validate(WorksheetQcResultManager manager) throws Exception {
+        int                    i;
+        ValidationErrorsList   list;
+        WorksheetQcResultLocal local;
 
         local = local();
         list  = new ValidationErrorsList();
         for (i = 0; i < manager.count(); i++) {
             try {
-                local.validate(manager.getWorksheetItemAt(i));
-                manager.getWorksheetAnalysisAt(i).validate();
+                local.validate(manager.getWorksheetQcResultAt(i));
             } catch (Exception e) {
                 DataBaseUtil.mergeException(list, e, "itemTable", i);
             }
@@ -115,10 +108,10 @@ public class WorksheetItemManagerProxy {
             throw list;
     }
 
-    private WorksheetItemLocal local() {
+    private WorksheetQcResultLocal local() {
         try {
             InitialContext ctx = new InitialContext();
-            return (WorksheetItemLocal)ctx.lookup("openelis/WorksheetItemBean/local");
+            return (WorksheetQcResultLocal)ctx.lookup("openelis/WorksheetQcResultBean/local");
         } catch(Exception e) {
              System.out.println(e.getMessage());
              return null;

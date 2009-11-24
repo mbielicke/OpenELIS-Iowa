@@ -77,6 +77,7 @@ public class WorksheetBean implements WorksheetRemote, WorksheetLocal {
         return data;
 	}
 
+    @SuppressWarnings("unchecked")
     public ArrayList<WorksheetDO> query(ArrayList<QueryData> fields, int first, int max) throws Exception {
         Query query;
         QueryBuilderV2 builder;

@@ -30,6 +30,7 @@ import java.util.ArrayList;
 
 import javax.naming.InitialContext;
 
+import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.WorksheetAnalysisDO;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.WorksheetAnalysisLocal;
@@ -39,13 +40,15 @@ import org.openelis.utilcommon.DataBaseUtil;
 public class WorksheetAnalysisManagerProxy {
     
     public WorksheetAnalysisManager fetchByWorksheetItemId(Integer id) throws Exception {
+        int                            i;
         WorksheetAnalysisManager       manager;
         ArrayList<WorksheetAnalysisDO> analyses;
         
         analyses = local().fetchByWorksheetItemId(id);
         manager = WorksheetAnalysisManager.getInstance();
         manager.setWorksheetItemId(id);
-        manager.setAnalyses(analyses);
+        for (i = 0; i < analyses.size(); i++)
+            manager.addWorksheetAnalysis(analyses.get(i));
         
         return manager;
     }
@@ -56,50 +59,70 @@ public class WorksheetAnalysisManagerProxy {
         WorksheetAnalysisDO    analysis;
         
         local = local();
-        for(i = 0; i < manager.count(); i++) {
-            analysis = manager.getAnalysisAt(i);
+        for (i = 0; i < manager.count(); i++) {
+            analysis = manager.getWorksheetAnalysisAt(i);
             analysis.setWorksheetItemId(manager.getWorksheetItemId());
             local.add(analysis);
+
+            if (analysis.getReferenceTableId() == ReferenceTable.ANALYSIS) {
+                manager.getWorksheetResultAt(i).setWorksheetAnalysisId(analysis.getId());
+                manager.getWorksheetResultAt(i).add();
+            } else if (analysis.getReferenceTableId() == ReferenceTable.QC) {
+                manager.getWorksheetQcResultAt(i).setWorksheetAnalysisId(analysis.getId());
+                manager.getWorksheetQcResultAt(i).add();
+            }
         }
         
         return manager;
     }
 
-    public WorksheetAnalysisManager update(WorksheetAnalysisManager man) throws Exception {
+    public WorksheetAnalysisManager update(WorksheetAnalysisManager manager) throws Exception {
         int                    i, j;
         WorksheetAnalysisLocal local;
         WorksheetAnalysisDO    analysis;
         
         local = local();
-        for (j = 0; j < man.deleteCount(); j++)
-            local.delete(man.getDeletedAt(j));
+        for (j = 0; j < manager.deleteCount(); j++)
+            local.delete(manager.getDeletedAt(j).worksheetAnalysis);
         
-        for (i = 0; i < man.count(); i++) {
-            analysis = man.getAnalysisAt(i);
+        for (i = 0; i < manager.count(); i++) {
+            analysis = manager.getWorksheetAnalysisAt(i);
             
             if (analysis.getId() == null) {
-                analysis.setWorksheetItemId(man.getWorksheetItemId());
+                analysis.setWorksheetItemId(manager.getWorksheetItemId());
                 local.add(analysis);
             } else {
                 local.update(analysis);
             }
+            
+            if (analysis.getReferenceTableId() == ReferenceTable.ANALYSIS) {
+                manager.getWorksheetResultAt(i).setWorksheetAnalysisId(analysis.getId());
+                manager.getWorksheetResultAt(i).update();
+            } else if (analysis.getReferenceTableId() == ReferenceTable.QC) {
+                manager.getWorksheetQcResultAt(i).setWorksheetAnalysisId(analysis.getId());
+                manager.getWorksheetQcResultAt(i).update();
+            }
         }
 
-        return man;
+        return manager;
     }
 
-    public void validate(WorksheetAnalysisManager man) throws Exception {
-        int                  i;
-        ValidationErrorsList list;
-        WorksheetAnalysisLocal   local;
+    public void validate(WorksheetAnalysisManager manager) throws Exception {
+        int                    i;
+        ValidationErrorsList   list;
+        WorksheetAnalysisLocal local;
 
         local = local();
         list  = new ValidationErrorsList();
-        for (i = 0; i < man.count(); i++) {
+        for (i = 0; i < manager.count(); i++) {
             try {
-                local.validate(man.getAnalysisAt(i));
+                local.validate(manager.getWorksheetAnalysisAt(i));
+                if (manager.getWorksheetAnalysisAt(i).getReferenceTableId() == ReferenceTable.ANALYSIS)
+                    manager.getWorksheetResultAt(i).validate();
+                else if (manager.getWorksheetAnalysisAt(i).getReferenceTableId() == ReferenceTable.QC)
+                    manager.getWorksheetQcResultAt(i).validate();
             } catch (Exception e) {
-                DataBaseUtil.mergeException(list, e, "analysisTable", i);
+                DataBaseUtil.mergeException(list, e, "itemTable", i);
             }
         }
         if (list.size() > 0)

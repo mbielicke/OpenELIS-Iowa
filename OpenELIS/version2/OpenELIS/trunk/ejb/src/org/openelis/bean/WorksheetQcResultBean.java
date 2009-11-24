@@ -36,31 +36,31 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
-import org.openelis.domain.WorksheetItemDO;
-import org.openelis.entity.WorksheetItem;
+import org.openelis.domain.WorksheetQcResultDO;
+import org.openelis.entity.WorksheetQcResult;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.WorksheetItemLocal;
-import org.openelis.metamap.WorksheetItemMetaMap;
+import org.openelis.local.WorksheetQcResultLocal;
+import org.openelis.metamap.WorksheetQcResultMetaMap;
 import org.openelis.utilcommon.DataBaseUtil;
 
 @Stateless
 @SecurityDomain("openelis")
 @RolesAllowed("worksheet-select")
-public class WorksheetItemBean implements WorksheetItemLocal {
+public class WorksheetQcResultBean implements WorksheetQcResultLocal {
 
     @PersistenceContext(name = "openelis")
     private EntityManager manager;
 
-    private static final WorksheetItemMetaMap meta = new WorksheetItemMetaMap();
+    private static final WorksheetQcResultMetaMap meta = new WorksheetQcResultMetaMap();
 
     @SuppressWarnings("unchecked")
-    public ArrayList<WorksheetItemDO> fetchByWorksheetId(Integer id) throws Exception {
+    public ArrayList<WorksheetQcResultDO> fetchByWorksheetAnalysisId(Integer id) throws Exception {
         Query query;
         List list;
 
-        query = manager.createNamedQuery("WorksheetItem.FetchByWorksheetId");
+        query = manager.createNamedQuery("WorksheetQcResult.FetchByWorksheetAnalysisId");
         query.setParameter("id", id);
 
         list = query.getResultList();
@@ -70,14 +70,17 @@ public class WorksheetItemBean implements WorksheetItemLocal {
         return DataBaseUtil.toArrayList(list);
     }
 
-    public WorksheetItemDO add(WorksheetItemDO data) throws Exception {
-        WorksheetItem entity;
+    public WorksheetQcResultDO add(WorksheetQcResultDO data) throws Exception {
+        WorksheetQcResult entity;
 
         manager.setFlushMode(FlushModeType.COMMIT);
 
-        entity = new WorksheetItem();
-        entity.setWorksheetId(data.getWorksheetId());
-        entity.setPosition(data.getPosition());
+        entity = new WorksheetQcResult();
+        entity.setWorksheetAnalysisId(data.getWorksheetAnalysisId());
+        entity.setSortOrder(data.getSortOrder());
+        entity.setQcAnalyteId(data.getQcAnalyteId());
+        entity.setTypeId(data.getTypeId());
+        entity.setValue(data.getValue());
 
         manager.persist(entity);
         data.setId(entity.getId());
@@ -85,37 +88,50 @@ public class WorksheetItemBean implements WorksheetItemLocal {
         return data;
     }
 
-    public WorksheetItemDO update(WorksheetItemDO data) throws Exception {
-        WorksheetItem entity;
+    public WorksheetQcResultDO update(WorksheetQcResultDO data) throws Exception {
+        WorksheetQcResult entity;
 
         if ( !data.isChanged())
             return data;
 
         manager.setFlushMode(FlushModeType.COMMIT);
 
-        entity = manager.find(WorksheetItem.class, data.getId());
-        entity.setPosition(data.getPosition());
+        entity = manager.find(WorksheetQcResult.class, data.getId());
+        entity.setWorksheetAnalysisId(data.getWorksheetAnalysisId());
+        entity.setSortOrder(data.getSortOrder());
+        entity.setQcAnalyteId(data.getQcAnalyteId());
+        entity.setTypeId(data.getTypeId());
+        entity.setValue(data.getValue());
 
         return data;
     }
 
-    public void delete(WorksheetItemDO data) throws Exception {
-        WorksheetItem entity;
+    public void delete(WorksheetQcResultDO data) throws Exception {
+        WorksheetQcResult entity;
 
         manager.setFlushMode(FlushModeType.COMMIT);
 
-        entity = manager.find(WorksheetItem.class, data.getId());
+        entity = manager.find(WorksheetQcResult.class, data.getId());
         if (entity != null)
             manager.remove(entity);
     }
 
-    public void validate(WorksheetItemDO data) throws Exception {
+    public void validate(WorksheetQcResultDO data) throws Exception {
         ValidationErrorsList list;
 
         list = new ValidationErrorsList();
-        if (DataBaseUtil.isEmpty(data.getPosition()))
+        if (DataBaseUtil.isEmpty(data.getWorksheetAnalysisId()))
             list.add(new FieldErrorException("fieldRequiredException",
-                                             meta.getPosition()));
+                                             meta.getWorksheetAnalysisId()));
+        if (DataBaseUtil.isEmpty(data.getSortOrder()))
+            list.add(new FieldErrorException("fieldRequiredException",
+                                             meta.getSortOrder()));
+        if (DataBaseUtil.isEmpty(data.getQcAnalyteId()))
+            list.add(new FieldErrorException("fieldRequiredException",
+                                             meta.getQcAnalyteId()));
+        if (DataBaseUtil.isEmpty(data.getTypeId()))
+            list.add(new FieldErrorException("fieldRequiredException",
+                                             meta.getTypeId()));
         
         if (list.size() > 0)
             throw list;

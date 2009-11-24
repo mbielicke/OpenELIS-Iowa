@@ -36,31 +36,31 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.annotation.security.SecurityDomain;
-import org.openelis.domain.WorksheetAnalysisDO;
-import org.openelis.entity.WorksheetAnalysis;
+import org.openelis.domain.WorksheetResultDO;
+import org.openelis.entity.WorksheetResult;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.WorksheetAnalysisLocal;
-import org.openelis.metamap.WorksheetAnalysisMetaMap;
+import org.openelis.local.WorksheetResultLocal;
+import org.openelis.metamap.WorksheetResultMetaMap;
 import org.openelis.utilcommon.DataBaseUtil;
 
 @Stateless
 @SecurityDomain("openelis")
 @RolesAllowed("worksheet-select")
-public class WorksheetAnalysisBean implements WorksheetAnalysisLocal {
+public class WorksheetResultBean implements WorksheetResultLocal {
 
     @PersistenceContext(name = "openelis")
     private EntityManager manager;
 
-    private static final WorksheetAnalysisMetaMap meta = new WorksheetAnalysisMetaMap();
+    private static final WorksheetResultMetaMap meta = new WorksheetResultMetaMap();
 
     @SuppressWarnings("unchecked")
-    public ArrayList<WorksheetAnalysisDO> fetchByWorksheetItemId(Integer id) throws Exception {
+    public ArrayList<WorksheetResultDO> fetchByWorksheetAnalysisId(Integer id) throws Exception {
         Query query;
         List list;
 
-        query = manager.createNamedQuery("WorksheetAnalysis.FetchByWorksheetItemId");
+        query = manager.createNamedQuery("WorksheetResult.FetchByWorksheetAnalysisId");
         query.setParameter("id", id);
 
         list = query.getResultList();
@@ -70,16 +70,20 @@ public class WorksheetAnalysisBean implements WorksheetAnalysisLocal {
         return DataBaseUtil.toArrayList(list);
     }
 
-    public WorksheetAnalysisDO add(WorksheetAnalysisDO data) throws Exception {
-        WorksheetAnalysis entity;
+    public WorksheetResultDO add(WorksheetResultDO data) throws Exception {
+        WorksheetResult entity;
 
         manager.setFlushMode(FlushModeType.COMMIT);
 
-        entity = new WorksheetAnalysis();
-        entity.setWorksheetItemId(data.getWorksheetItemId());
-        entity.setReferenceId(data.getReferenceId());
-        entity.setReferenceTableId(data.getReferenceTableId());
+        entity = new WorksheetResult();
         entity.setWorksheetAnalysisId(data.getWorksheetAnalysisId());
+        entity.setTestAnalyteId(data.getTestAnalyteId());
+        entity.setTestResultId(data.getTestResultId());
+        entity.setIsColumn(data.getIsColumn());
+        entity.setSortOrder(data.getSortOrder());
+        entity.setAnalyteId(data.getAnalyteId());
+        entity.setTypeId(data.getTypeId());
+        entity.setValue(data.getValue());
 
         manager.persist(entity);
         data.setId(entity.getId());
@@ -87,42 +91,59 @@ public class WorksheetAnalysisBean implements WorksheetAnalysisLocal {
         return data;
     }
 
-    public WorksheetAnalysisDO update(WorksheetAnalysisDO data) throws Exception {
-        WorksheetAnalysis entity;
+    public WorksheetResultDO update(WorksheetResultDO data) throws Exception {
+        WorksheetResult entity;
 
         if ( !data.isChanged())
             return data;
 
         manager.setFlushMode(FlushModeType.COMMIT);
 
-        entity = manager.find(WorksheetAnalysis.class, data.getId());
-        entity.setReferenceId(data.getReferenceId());
-        entity.setReferenceTableId(data.getReferenceTableId());
+        entity = manager.find(WorksheetResult.class, data.getId());
         entity.setWorksheetAnalysisId(data.getWorksheetAnalysisId());
+        entity.setTestAnalyteId(data.getTestAnalyteId());
+        entity.setTestResultId(data.getTestResultId());
+        entity.setIsColumn(data.getIsColumn());
+        entity.setSortOrder(data.getSortOrder());
+        entity.setAnalyteId(data.getAnalyteId());
+        entity.setTypeId(data.getTypeId());
+        entity.setValue(data.getValue());
 
         return data;
     }
 
-    public void delete(WorksheetAnalysisDO data) throws Exception {
-        WorksheetAnalysis entity;
+    public void delete(WorksheetResultDO data) throws Exception {
+        WorksheetResult entity;
 
         manager.setFlushMode(FlushModeType.COMMIT);
 
-        entity = manager.find(WorksheetAnalysis.class, data.getId());
+        entity = manager.find(WorksheetResult.class, data.getId());
         if (entity != null)
             manager.remove(entity);
     }
 
-    public void validate(WorksheetAnalysisDO data) throws Exception {
+    public void validate(WorksheetResultDO data) throws Exception {
         ValidationErrorsList list;
 
         list = new ValidationErrorsList();
-        if (DataBaseUtil.isEmpty(data.getReferenceId()))
+        if (DataBaseUtil.isEmpty(data.getWorksheetAnalysisId()))
             list.add(new FieldErrorException("fieldRequiredException",
-                                             meta.getReferenceId()));
-        if (DataBaseUtil.isEmpty(data.getReferenceTableId()))
+                                             meta.getWorksheetAnalysisId()));
+        if (DataBaseUtil.isEmpty(data.getTestAnalyteId()))
             list.add(new FieldErrorException("fieldRequiredException",
-                                             meta.getReferenceTableId()));
+                                             meta.getTestAnalyteId()));
+        if (DataBaseUtil.isEmpty(data.getIsColumn()))
+            list.add(new FieldErrorException("fieldRequiredException",
+                                             meta.getIsColumn()));
+        if (DataBaseUtil.isEmpty(data.getSortOrder()))
+            list.add(new FieldErrorException("fieldRequiredException",
+                                             meta.getSortOrder()));
+        if (DataBaseUtil.isEmpty(data.getAnalyteId()))
+            list.add(new FieldErrorException("fieldRequiredException",
+                                             meta.getAnalyteId()));
+        if (DataBaseUtil.isEmpty(data.getTypeId()))
+            list.add(new FieldErrorException("fieldRequiredException",
+                                             meta.getTypeId()));
         
         if (list.size() > 0)
             throw list;
