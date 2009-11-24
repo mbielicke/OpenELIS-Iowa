@@ -34,8 +34,7 @@
 <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&lt;runtimeClasspathEntry internalArchive=&quot;/OpenELIS-Lib/src&quot; path=&quot;3&quot; type=&quot;2&quot;/&gt;&#10;"/>
 <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&lt;runtimeClasspathEntry path=&quot;3&quot; projectName=&quot;OpenELIS-Common&quot; type=&quot;1&quot;/&gt;&#10;"/>
 <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&lt;runtimeClasspathEntry internalArchive=&quot;/OpenELIS-Common/src&quot; path=&quot;3&quot; type=&quot;2&quot;/&gt;&#10;"/>
-<listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&lt;runtimeClasspathEntry path=&quot;3&quot; projectName=&quot;OpenELIS-Security-EJB&quot; type=&quot;1&quot;/&gt;&#10;"/>
-<listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&lt;runtimeClasspathEntry internalArchive=&quot;/OpenELIS-Security-EJB/src&quot; path=&quot;3&quot; type=&quot;2&quot;/&gt;&#10;"/>
+<listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&lt;runtimeClasspathEntry internalArchive=&quot;/OpenELIS-Lib/lib/security.jar&quot; path=&quot;3&quot; type=&quot;2&quot;/&gt;&#10;"/>
 <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&lt;runtimeClasspathEntry path=&quot;3&quot; projectName=&quot;OpenELIS-GWT&quot; type=&quot;1&quot;/&gt;&#10;"/>
 <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&lt;runtimeClasspathEntry internalArchive=&quot;/OpenELIS-GWT/src&quot; path=&quot;3&quot; type=&quot;2&quot;/&gt;&#10;"/>
 </listAttribute>

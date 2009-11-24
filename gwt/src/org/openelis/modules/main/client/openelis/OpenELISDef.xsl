@@ -119,32 +119,12 @@ UIRF Software License are applicable instead of those above.
                 <label style="topMenuBarItem" text="{resource:getString($constants,'analysis')}" />
               </menuDisplay>
               <menuPanel layout="vertical" position="below" style="topMenuContainer">
-
-<!--				    
-<code>if(OpenELIS.security.hasModule("worksheet","ADD")){
-</code>
-  -->
-
-                <menuItem key="worksheetCreation" description="{resource:getString($constants,'worksheetCreationDescription')}" enable="true" icon="worksheetCreationIcon" label="{resource:getString($constants,'worksheetCreation')}" />
-
-<!--				    
-<code>}
-</code>
-  -->
-
-
-<!--				    
-<code>if(OpenELIS.security.hasModule("worksheet","SELECT")){
-</code>
-  -->
-
-                <menuItem key="worksheetCompletion" description="{resource:getString($constants,'worksheetCompletionDescription')}" enable="false" icon="worksheetCompletionIcon" label="{resource:getString($constants,'worksheetCompletion')}" />
-
-<!--				    
-<code>}
-</code>
-  -->
-
+				<code>if(OpenELIS.security.hasModule("worksheet","ADD")){</code>
+				<menuItem key="worksheetCreation" description="{resource:getString($constants,'worksheetCreationDescription')}" enable="true" icon="worksheetCreationIcon" label="{resource:getString($constants,'worksheetCreation')}"/>
+				<code>}</code>
+				<code>if(OpenELIS.security.hasModule("worksheet","SELECT")){</code>
+				<menuItem key="worksheetCompletion" description="{resource:getString($constants,'worksheetCompletionDescription')}"	enable="false" icon="worksheetCompletionIcon" label="{resource:getString($constants,'worksheetCompletion')}"/>
+				<code>}</code>
                 <menuItem key="addOrCancel" description="{resource:getString($constants,'addOrCancelDescription')}" enable="false" icon="addOrCancelIcon" label="{resource:getString($constants,'addOrCancel')}" />
                 <menuItem key="reviewAndRelease" description="{resource:getString($constants,'reviewAndReleaseDescription')}" enable="false" icon="reviewAndReleaseIcon" label="{resource:getString($constants,'reviewAndRelease')}" />
                 <menuItem key="toDo" description="{resource:getString($constants,'toDoDescription')}" enable="false" icon="toDoIcon" label="{resource:getString($constants,'toDo')}" />
