@@ -29,25 +29,24 @@ package org.openelis.domain;
  * Class represents the fields in database table system_variable.
  */
 
-public class WorksheetAnalyteDO extends DataObject {
+public class WorksheetQcResultDO extends DataObject {
 
     private static final long serialVersionUID = 1L;
 
-    protected Integer id, worksheetAnalysisId, sortOrder, analyteId, resultId;
+    protected Integer id, worksheetAnalysisId, sortOrder, qcAnalyteId, typeId;
     protected String  value;
 
-    public WorksheetAnalyteDO() {
+    public WorksheetQcResultDO() {
     }
 
-    public WorksheetAnalyteDO(Integer id, Integer worksheetAnalysisId,
-                              Integer sortOrder, Integer analyteId,
-                              String value, Integer resultId) {
+    public WorksheetQcResultDO(Integer id, Integer worksheetAnalysisId, Integer sortOrder,
+                               Integer qcAnalyteId, Integer typeId, String value) {
         setId(id);
         setWorksheetAnalysisId(worksheetAnalysisId);
         setSortOrder(sortOrder);
-        setAnalyteId(analyteId);
+        setQcAnalyteId(qcAnalyteId);
+        setTypeId(typeId);
         setValue(value);
-        setResultId(resultId);
         _changed = false;
     }
 
@@ -78,22 +77,21 @@ public class WorksheetAnalyteDO extends DataObject {
         _changed = true;
     }
 
-    public Integer getAnalyteId() {
-        return analyteId;
+    public Integer getQcAnalyteId() {
+        return qcAnalyteId;
     }
 
-    public void setAnalyteId(Integer analyteId) {
-        this.analyteId = analyteId;
+    public void setQcAnalyteId(Integer qcAnalyteId) {
+        this.qcAnalyteId = qcAnalyteId;
         _changed = true;
     }
 
-    public Integer getResultId() {
-        return resultId;
+    public Integer getTypeId() {
+        return typeId;
     }
 
-    public void setResultId(Integer resultId) {
-        this.resultId = resultId;
-        _changed = true;
+    public void setTypeId(Integer typeId) {
+        this.typeId = typeId;
     }
 
     public String getValue() {

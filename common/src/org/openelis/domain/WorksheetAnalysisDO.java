@@ -33,17 +33,19 @@ public class WorksheetAnalysisDO extends DataObject {
 
     private static final long serialVersionUID = 1L;
 
-    protected Integer id, worksheetItemId, referenceId, referenceTableId;
+    protected Integer id, worksheetItemId, referenceId, referenceTableId, worksheetAnalysisId;
 
     public WorksheetAnalysisDO() {
     }
 
     public WorksheetAnalysisDO(Integer id, Integer worksheetItemId,
-                               Integer referenceId, Integer referenceTableId) {
+                               Integer referenceId, Integer referenceTableId,
+                               Integer worksheetAnalysisId) {
         setId(id);
         setWorksheetItemId(worksheetItemId);
         setReferenceId(referenceId);
         setReferenceTableId(referenceTableId);
+        setWorksheetAnalysisId(worksheetAnalysisId);
         _changed = false;
     }
 
@@ -81,5 +83,13 @@ public class WorksheetAnalysisDO extends DataObject {
     public void setReferenceTableId(Integer referenceTableId) {
         this.referenceTableId = referenceTableId;
         _changed = true;
+    }
+
+    public Integer getWorksheetAnalysisId() {
+        return worksheetAnalysisId;
+    }
+
+    public void setWorksheetAnalysisId(Integer worksheetAnalysisId) {
+        this.worksheetAnalysisId = worksheetAnalysisId;
     }
 }
