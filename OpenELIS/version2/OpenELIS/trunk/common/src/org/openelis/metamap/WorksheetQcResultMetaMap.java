@@ -26,39 +26,43 @@
 package org.openelis.metamap;
 
 import org.openelis.gwt.common.MetaMap;
-import org.openelis.meta.WorksheetItemMeta;
-import org.openelis.metamap.WorksheetAnalysisMetaMap;
+import org.openelis.meta.WorksheetQcResultMeta;
 
-public class WorksheetItemMetaMap extends WorksheetItemMeta implements MetaMap {
+public class WorksheetQcResultMetaMap extends WorksheetQcResultMeta implements MetaMap {
     
-    public WorksheetAnalysisMetaMap WORKSHEET_ANALYSIS;
+    public QcAnalyteMetaMap QC_ANALYTE;
     
-    public WorksheetItemMetaMap() {
-        super("wi.");
-        WORKSHEET_ANALYSIS = new WorksheetAnalysisMetaMap();
+    public WorksheetQcResultMetaMap() {
+        super("wqr.");
+        QC_ANALYTE = new QcAnalyteMetaMap();
     }
     
-    public WorksheetItemMetaMap(String path) {
+    public WorksheetQcResultMetaMap(String path) {
         super(path);
-        WORKSHEET_ANALYSIS = new WorksheetAnalysisMetaMap();
+        QC_ANALYTE = new QcAnalyteMetaMap(path+"qcAnalyte.");
     }
     
-    public static WorksheetItemMetaMap getInstance() {
-        return new WorksheetItemMetaMap();
+    public static WorksheetQcResultMetaMap getInstance() {
+        return new WorksheetQcResultMetaMap();
+    }
+    
+    public QcAnalyteMetaMap getQcAnalyte() {
+        return QC_ANALYTE;
     }
     
     public boolean hasColumn(String columnName) {
-        if (columnName.startsWith("worksheetAnalysis."))
-            return WORKSHEET_ANALYSIS.hasColumn(columnName);
+        if (columnName.startsWith(path+"qcAnalyte."))
+            return QC_ANALYTE.hasColumn(columnName);
         return super.hasColumn(columnName);
     }      
 
     public String buildFrom(String name) {
         String from;
         
-        from = "WorksheetItem wi ";
-        if (name.indexOf("worksheetAnalysis.") > -1)
-            from += ", IN (wi.worksheetAnalysis) worksheetAnalysis ";
+        from = "WorksheetQCResult wqr ";
+        if (name.indexOf("qcAnalyte.") > -1)
+            from += ", IN (wqr.qcAnalyte) qcAnalyte ";
+
         return from;
     }
 }

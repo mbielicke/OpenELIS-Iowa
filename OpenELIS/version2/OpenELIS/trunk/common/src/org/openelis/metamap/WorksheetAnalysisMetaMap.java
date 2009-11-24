@@ -30,19 +30,47 @@ import org.openelis.meta.WorksheetAnalysisMeta;
 
 public class WorksheetAnalysisMetaMap extends WorksheetAnalysisMeta implements MetaMap {
     
+    public QcMetaMap             QC;
+    public AnalysisMetaMap       ANALYSIS;
+    public WorksheetAnalysisMeta RELATED_WORKSHEET_ANALYSIS;
+    
     public WorksheetAnalysisMetaMap() {
         super("wa.");
+        QC                         = new QcMetaMap();
+        ANALYSIS                   = new AnalysisMetaMap();
+        RELATED_WORKSHEET_ANALYSIS = new WorksheetAnalysisMeta();
     }
     
     public WorksheetAnalysisMetaMap(String path) {
         super(path);
+        QC       = new QcMetaMap(path+"qc.");
+        ANALYSIS = new AnalysisMetaMap(path+"analysis.");
+        RELATED_WORKSHEET_ANALYSIS = new WorksheetAnalysisMeta(path+"relatedAnalysis.");
     }
     
     public static WorksheetAnalysisMetaMap getInstance() {
         return new WorksheetAnalysisMetaMap();
     }
     
+    public QcMetaMap getQc() {
+        return QC;
+    }
+    
+    public AnalysisMetaMap getAnalysis() {
+        return ANALYSIS;
+    }
+    
+    public WorksheetAnalysisMeta getRelatedWorksheetAnalysis() {
+        return RELATED_WORKSHEET_ANALYSIS;
+    }
+    
     public boolean hasColumn(String columnName) {
+        if (columnName.startsWith(path+"qc."))
+            return QC.hasColumn(columnName);
+        if (columnName.startsWith(path+"analysis."))
+            return ANALYSIS.hasColumn(columnName);
+        if (columnName.startsWith(path+"relatedWorksheetAnalysis."))
+            return RELATED_WORKSHEET_ANALYSIS.hasColumn(columnName);
         return super.hasColumn(columnName);
     }      
 
@@ -50,6 +78,10 @@ public class WorksheetAnalysisMetaMap extends WorksheetAnalysisMeta implements M
         String from;
         
         from = "WorksheetAnalysis wa ";
+        if (name.indexOf("qc.") > -1)
+            from += ", IN (wa.qc) qc ";
+        if (name.indexOf("analysis.") > -1)
+            from += ", IN (wa.analysis) analysis ";
 
         return from;
     }

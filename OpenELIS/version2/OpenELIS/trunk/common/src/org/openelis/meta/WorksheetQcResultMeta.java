@@ -26,26 +26,27 @@
 package org.openelis.meta;
 
 /**
- * WorksheetAnalysis META Data
+ * WorksheetQc META Data
  */
 
 import java.util.HashSet;
 import org.openelis.gwt.common.Meta;
 
-public class WorksheetAnalysisMeta implements Meta {
-    protected String              path       = "";
+public class WorksheetQcResultMeta implements Meta {
+    protected String              path        = "";
     
-    private static final String   entityName = "WorksheetAnalysis";
+    private static final String   entityName  = "WorksheetQc";
 
     private static final String   ID                    = "id",
-                                  WORKSHEET_ITEM_ID     = "worksheetItemId",
-                                  REFERENCE_ID          = "referenceId",
-                                  REFERENCE_TABLE_ID    = "referenceTableId",
-                                  WORKSHEET_ANALYSIS_ID = "worksheetAnalysisId";
-    
-    private static final String[] columnNames = {ID, WORKSHEET_ITEM_ID, REFERENCE_ID,
-                                                 REFERENCE_TABLE_ID};
-    
+                                  WORKSHEET_ANALYSIS_ID = "worksheetAnalysisId",
+                                  SORT_ORDER            = "sortOrder",
+                                  QC_ANALYTE_ID         = "qcAnalyteId",
+                                  TYPE_ID               = "typeId",
+                                  VALUE                 = "value";
+
+    private static final String[] columnNames = {ID, WORKSHEET_ANALYSIS_ID, SORT_ORDER,
+                                                 QC_ANALYTE_ID, TYPE_ID, VALUE};
+
     private HashSet<String>       columnHashList;
 
     private void init() {
@@ -55,11 +56,11 @@ public class WorksheetAnalysisMeta implements Meta {
         }
     }
 
-    public WorksheetAnalysisMeta() {
+    public WorksheetQcResultMeta() {
         init();
     }
 
-    public WorksheetAnalysisMeta(String path) {
+    public WorksheetQcResultMeta(String path) {
         this.path = path;
         init();
     }
@@ -80,19 +81,23 @@ public class WorksheetAnalysisMeta implements Meta {
         return path + ID;
     }
 
-    public String getWorksheetItemId() {
-        return path + WORKSHEET_ITEM_ID;
-    }
-
-    public String getReferenceId() {
-        return path + REFERENCE_ID;
-    }
-
-    public String getReferenceTableId() {
-        return path + REFERENCE_TABLE_ID;
-    }
-
     public String getWorksheetAnalysisId() {
         return path + WORKSHEET_ANALYSIS_ID;
+    }
+
+    public String getSortOrder() {
+        return path + SORT_ORDER;
+    }
+
+    public String getQcAnalyteId() {
+        return path + QC_ANALYTE_ID;
+    }
+
+    public String getTypeId() {
+        return path + TYPE_ID;
+    }
+
+    public String getValue() {
+        return path + VALUE;
     }
 }

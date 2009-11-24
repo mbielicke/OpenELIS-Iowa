@@ -28,18 +28,16 @@ package org.openelis.manager;
 import java.util.ArrayList;
 
 import org.openelis.domain.WorksheetAnalysisDO;
+import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.RPC;
 
 public class WorksheetAnalysisManager implements RPC {
     
-    private static final long                serialVersionUID = 1L;
-    protected Integer                        worksheetItemId;
-    protected ArrayList<WorksheetAnalysisDO> analyses, deleted;
+    private static final long                      serialVersionUID = 1L;
+    protected Integer                              worksheetItemId;
+    protected ArrayList<WorksheetAnalysisListItem> analyses, deleted;
     
     protected transient static WorksheetAnalysisManagerProxy proxy;
-    
-    protected WorksheetAnalysisManager() {
-    }
     
     /**
      * Creates a new instance of this object.
@@ -55,42 +53,90 @@ public class WorksheetAnalysisManager implements RPC {
         return analyses.size();
     }
     
-    public WorksheetAnalysisDO getAnalysisAt(int i) {
-        return analyses.get(i);
+    public WorksheetAnalysisDO getWorksheetAnalysisAt(int i) {
+        return analyses.get(i).worksheetAnalysis;
     }
     
-    public void setAnalysisAt(WorksheetAnalysisDO analysis, int i) {
+    public void setWorksheetAnalysisAt(WorksheetAnalysisDO analysis, int i) {
         if (analyses == null)
-            analyses = new ArrayList<WorksheetAnalysisDO>();
-        analyses.set(i, analysis);
+            analyses = new ArrayList<WorksheetAnalysisListItem>();
+        analyses.get(i).worksheetAnalysis = analysis;
     }
     
-    public void addAnalysis(WorksheetAnalysisDO analysis) {
+    public void addWorksheetAnalysis(WorksheetAnalysisDO analysis) {
+        WorksheetAnalysisListItem listItem;
+        
         if (analyses == null)
-            analyses = new ArrayList<WorksheetAnalysisDO>();
-        analyses.add(analysis);
+            analyses = new ArrayList<WorksheetAnalysisListItem>();
+        listItem = new WorksheetAnalysisListItem();
+        listItem.worksheetAnalysis = analysis;
+        analyses.add(listItem);
     }
     
-    public void addAnalysisAt(WorksheetAnalysisDO analysis, int i) {
-        if (analyses == null)
-            analyses = new ArrayList<WorksheetAnalysisDO>();
-        analyses.add(i, analysis);
-    }
-    
-    public void removeAnalysisAt(int i) {
-        WorksheetAnalysisDO tmp;
+    public void removeWorksheetAnalysisAt(int i) {
+        WorksheetAnalysisListItem tmp;
         
         if (analyses == null || i >= analyses.size())
             return;
         
         tmp = analyses.remove(i);
-        if (tmp.getId() != null) {
+        if (tmp.worksheetAnalysis.getId() != null) {
             if (deleted == null)
-                deleted = new ArrayList<WorksheetAnalysisDO>();
+                deleted = new ArrayList<WorksheetAnalysisListItem>();
             deleted.add(tmp);
         }
     }
     
+    public WorksheetResultManager getWorksheetResultAt(int i) throws Exception {
+        WorksheetAnalysisListItem analysis = analyses.get(i);
+
+        if (analysis.worksheetResult == null) {
+            if (analysis.worksheetAnalysis != null && analysis.worksheetAnalysis.getId() != null) {
+                try {
+                    analysis.worksheetResult = WorksheetResultManager.fetchByWorksheetAnalysisId(analysis.worksheetAnalysis.getId());
+                } catch (NotFoundException e) {
+                    //ignore
+                } catch (Exception e) {
+                    throw e;
+                }
+            }
+        }
+            
+        if (analysis.worksheetResult == null)
+            analysis.worksheetResult = WorksheetResultManager.getInstance();
+    
+        return analysis.worksheetResult;
+    }
+
+    public void setWorksheetResultAt(WorksheetResultManager result, int i) {
+        analyses.get(i).worksheetResult = result;
+    }
+
+    public WorksheetQcResultManager getWorksheetQcResultAt(int i) throws Exception {
+        WorksheetAnalysisListItem analysis = analyses.get(i);
+
+        if (analysis.worksheetQcResult == null) {
+            if (analysis.worksheetAnalysis != null && analysis.worksheetAnalysis.getId() != null) {
+                try {
+                    analysis.worksheetQcResult = WorksheetQcResultManager.fetchByWorksheetAnalysisId(analysis.worksheetAnalysis.getId());
+                } catch (NotFoundException e) {
+                    //ignore
+                } catch (Exception e) {
+                    throw e;
+                }
+            }
+        }
+            
+        if (analysis.worksheetQcResult == null)
+            analysis.worksheetQcResult = WorksheetQcResultManager.getInstance();
+    
+        return analysis.worksheetQcResult;
+    }
+
+    public void setWorksheetQcResultAt(WorksheetQcResultManager qcResult, int i) {
+        analyses.get(i).worksheetQcResult = qcResult;
+    }
+
     //service methods
     public static WorksheetAnalysisManager fetchByWorksheetItemId(Integer id) throws Exception {
         return proxy().fetchByWorksheetItemId(id);
@@ -117,21 +163,13 @@ public class WorksheetAnalysisManager implements RPC {
         worksheetItemId = id;
     }
     
-    ArrayList<WorksheetAnalysisDO> getAnalyses() {
-        return analyses;
-    }
-
-    void setAnalyses(ArrayList<WorksheetAnalysisDO> analyses) {
-        this.analyses = analyses;
-    }
-    
     int deleteCount() {
         if (deleted == null)
             return 0;
         return deleted.size();
     }
     
-    WorksheetAnalysisDO getDeletedAt(int i) {
+    WorksheetAnalysisListItem getDeletedAt(int i) {
         return deleted.get(i);
     }
     
@@ -139,5 +177,13 @@ public class WorksheetAnalysisManager implements RPC {
         if(proxy == null)
             proxy = new WorksheetAnalysisManagerProxy();
         return proxy;
+    }
+    
+    static class WorksheetAnalysisListItem implements RPC {
+        private static final long serialVersionUID = 1L;
+
+        WorksheetAnalysisDO      worksheetAnalysis;
+        WorksheetResultManager   worksheetResult;
+        WorksheetQcResultManager worksheetQcResult;
     }
 }
