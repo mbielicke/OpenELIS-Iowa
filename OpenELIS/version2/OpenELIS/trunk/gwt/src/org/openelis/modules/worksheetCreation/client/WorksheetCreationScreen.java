@@ -39,6 +39,8 @@ import com.google.gwt.user.client.Window;
 
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.DictionaryDO;
+import org.openelis.domain.QcAnalyteDO;
+import org.openelis.domain.QcDO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.TestWorksheetDO;
 import org.openelis.domain.TestWorksheetItemDO;
@@ -46,6 +48,8 @@ import org.openelis.domain.WorksheetAnalysisDO;
 import org.openelis.domain.WorksheetCreationVO;
 import org.openelis.domain.WorksheetDO;
 import org.openelis.domain.WorksheetItemDO;
+import org.openelis.domain.WorksheetQcResultDO;
+import org.openelis.domain.WorksheetResultDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.SecurityException;
 import org.openelis.gwt.common.SecurityModule;
@@ -77,17 +81,23 @@ import org.openelis.gwt.widget.table.event.RowDeletedEvent;
 import org.openelis.gwt.widget.table.event.RowDeletedHandler;
 import org.openelis.gwt.widget.table.event.SortEvent;
 import org.openelis.gwt.widget.table.event.SortHandler;
+import org.openelis.manager.QcAnalyteManager;
 import org.openelis.manager.TestWorksheetManager;
 import org.openelis.manager.WorksheetAnalysisManager;
 import org.openelis.manager.WorksheetItemManager;
 import org.openelis.manager.WorksheetManager;
+import org.openelis.manager.WorksheetQcResultManager;
+import org.openelis.manager.WorksheetResultManager;
 import org.openelis.metamap.WorksheetMetaMap;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 
 public class WorksheetCreationScreen extends Screen implements HasActionHandlers<WorksheetCreationScreen.Action> {
 
     private boolean                          isSaved;
-    private Integer                          formatBatch, formatTotal, statusWorking;
+    private Integer                          formatBatch, formatTotal, statusWorking,
+                                             typeFixed, typeDup, typeRand, typeLastWell,
+                                             typeLastRun, typeLastBoth;
+    private ScreenService                    qcService;
     private SecurityModule                   security;
     private WorksheetManager                 manager;
     private WorksheetMetaMap                 meta;
@@ -96,8 +106,9 @@ public class WorksheetCreationScreen extends Screen implements HasActionHandlers
                                              insertQCButton, removeRowButton;
 
     protected ArrayList<Integer>             testIds;
-    protected ArrayList<TableDataRow>        analysisItems;
+    protected ArrayList<TableDataRow>        analysisItems, qcLastRunList, qcLastBothList;
     protected ArrayList<TestWorksheetItemDO> testWorksheetItems;
+    protected TableDataRow                   qcItems[];
     protected TableWidget                    worksheetItemTable;
     protected TextBox<Integer>               worksheetId;
     protected TestWorksheetDO                testWorksheetDO;
@@ -110,7 +121,8 @@ public class WorksheetCreationScreen extends Screen implements HasActionHandlers
     public WorksheetCreationScreen() throws Exception {
         super((ScreenDefInt)GWT.create(WorksheetCreationDef.class));
 
-        service = new ScreenService("OpenELISServlet?service=org.openelis.modules.worksheetCreation.server.WorksheetCreationService");
+        service   = new ScreenService("OpenELISServlet?service=org.openelis.modules.worksheetCreation.server.WorksheetCreationService");
+        qcService = new ScreenService("OpenELISServlet?service=org.openelis.modules.qc.server.QcService");
 
         security = OpenELIS.security.getModule("worksheet");
         if (security == null)
@@ -131,10 +143,12 @@ public class WorksheetCreationScreen extends Screen implements HasActionHandlers
      * command.
      */
     private void postConstructor() {
-        analysisItems = new ArrayList<TableDataRow>();
-        isSaved       = true;
-        manager       = WorksheetManager.getInstance();
-        testIds       = new ArrayList<Integer>();
+        analysisItems  = new ArrayList<TableDataRow>();
+        isSaved        = true;
+        manager        = WorksheetManager.getInstance();
+        qcLastRunList  = new ArrayList<TableDataRow>();
+        qcLastBothList = new ArrayList<TableDataRow>();
+        testIds        = new ArrayList<Integer>();
 
         initialize();
 
@@ -224,7 +238,7 @@ public class WorksheetCreationScreen extends Screen implements HasActionHandlers
         worksheetItemTable.addRowDeletedHandler(new RowDeletedHandler() {
             public void onRowDeleted(RowDeletedEvent event) {
                 // TODO -- Update to include QC Removal
-                analysisItems.remove(event.getIndex());
+//                analysisItems.remove(event.getIndex());
                 mergeAnalysesAndQCs();
             }
         });
@@ -232,14 +246,10 @@ public class WorksheetCreationScreen extends Screen implements HasActionHandlers
         worksheetItemTable.addSortHandler(new SortHandler() {
             public void onSort(SortEvent event) {
 				ColumnComparator comparator;
-//                TableSorter sorter;
                 
                 comparator = new ColumnComparator(event.getIndex(), event.getDirection());
                 Collections.sort(analysisItems, comparator);
-                
-//                sorter = new TableSorter();
-//                sorter.sort(analysisItems, event.getIndex(), event.getDirection());
-                
+
                 mergeAnalysesAndQCs();
             }
         });
@@ -291,6 +301,12 @@ public class WorksheetCreationScreen extends Screen implements HasActionHandlers
 //            formatTotal   = DictionaryCache.getIdFromSystemName("wsheet_num_format_total");
             formatTotal   = DictionaryCache.getIdFromSystemName("total");
             statusWorking = DictionaryCache.getIdFromSystemName("worksheet_working");
+            typeFixed = DictionaryCache.getIdFromSystemName("pos_fixed");
+            typeDup = DictionaryCache.getIdFromSystemName("pos_duplicate");
+            typeRand = DictionaryCache.getIdFromSystemName("pos_random");
+            typeLastWell = DictionaryCache.getIdFromSystemName("pos_last_of_well");
+            typeLastRun = DictionaryCache.getIdFromSystemName("pos_last_of_run");
+            typeLastBoth = DictionaryCache.getIdFromSystemName("pos_last_of_well_&_run");
         } catch (Exception e) {
             Window.alert(e.getMessage());
             window.close();
@@ -319,8 +335,8 @@ public class WorksheetCreationScreen extends Screen implements HasActionHandlers
                                         testIds.add(data.getTestId());
                                     
                                     newRow.key = row.key;                                   // analysis id
-                                    newRow.cells.get(2).value = row.cells.get(0).value;     // accession #
-                                    newRow.cells.get(3).value = row.cells.get(1).value;     // description
+                                    newRow.cells.get(1).value = row.cells.get(0).value;     // accession #
+                                    newRow.cells.get(2).value = row.cells.get(1).value;     // description
                                     newRow.cells.get(4).value = row.cells.get(2).value;     // test name
                                     newRow.cells.get(5).value = row.cells.get(3).value;     // method name
                                     newRow.cells.get(6).value = row.cells.get(5).value;     // status
@@ -362,14 +378,20 @@ public class WorksheetCreationScreen extends Screen implements HasActionHandlers
     }
     
     protected void save() {
-        boolean      choice;
-        int          i;
-        TableDataRow row;
+        boolean                  choice;
+        int                      i, j;
+        TableDataRow             row;
+        QcAnalyteDO              qcaDO;
+        QcAnalyteManager         qcaManager;
         WorksheetDO              wDO;
         WorksheetAnalysisDO      waDO;
         WorksheetAnalysisManager waManager = null;
         WorksheetItemDO          wiDO;
         WorksheetItemManager     wiManager = null;
+        WorksheetQcResultDO      wqrDO;
+        WorksheetQcResultManager wqrManager = null;
+        WorksheetResultDO        wrDO;
+        WorksheetResultManager   wrManager = null;
         
         if (worksheetItemTable.numRows() == 0) {
             Window.alert("You may not save an empty worksheet");
@@ -404,14 +426,58 @@ public class WorksheetCreationScreen extends Screen implements HasActionHandlers
             wiManager.addWorksheetItem(wiDO);
             
             waDO = new WorksheetAnalysisDO();
+            if (row.data instanceof TestWorksheetItemDO)
+                waDO.setReferenceTableId(ReferenceTable.QC);
+            else
+                waDO.setReferenceTableId(ReferenceTable.ANALYSIS);
             waDO.setReferenceId((Integer)row.key);
-            waDO.setReferenceTableId(ReferenceTable.ANALYSIS);
             try {
                 waManager = wiManager.getWorksheetAnalysisAt(i);
-                waManager.addAnalysis(waDO);
+                waManager.addWorksheetAnalysis(waDO);
             } catch (Exception anyE) {
                 // TODO -- Need to code real exception handling
                 anyE.printStackTrace();
+            }
+
+            if (row.data instanceof TestWorksheetItemDO) {
+                try {
+                    qcaManager = qcService.call("fetchAnalytesByQcId", (Integer)row.key);
+                    wqrManager = waManager.getWorksheetQcResultAt(0);
+                    for (j = 0; j < qcaManager.count(); j++) {
+                        qcaDO = qcaManager.getAnalyteAt(j);
+
+                        wqrDO = new WorksheetQcResultDO();
+                        wqrDO.setSortOrder(j+1);
+                        wqrDO.setQcAnalyteId(qcaDO.getId());
+                        wqrDO.setTypeId(qcaDO.getTypeId());
+                        
+                        wqrManager.addWorksheetQcResult(wqrDO);
+                    }
+                } catch (Exception anyE) {
+                    // TODO Auto-generated catch block
+                    anyE.printStackTrace();
+                }
+            } else {
+                // TODO -- Need to add worksheet_result records
+/*
+                try {
+                    qcaManager = qcService.call("fetchAnalytesByQcId", (Integer)row.key);
+                    wrManager = waManager.getWorksheetResultAt(0);
+                    for (j = 0; j < qcaManager.count(); j++) {
+                        aDO = aManager.getAnalyteAt(j);
+
+                        wrDO = new WorksheetResultDO();
+                        wrDO.setSortOrder(aDO.getSortOrder());
+                        wrDO.setAnalyteId(aDO.getId());
+                        wrDO.setTypeId(aDO.getTypeId());
+                        
+                        wrManager.addResult(wrDO);
+                    }
+                } catch (Exception anyE) {
+                    // TODO Auto-generated catch block
+                    anyE.printStackTrace();
+                }
+*/
             }
         }
         
@@ -447,15 +513,15 @@ public class WorksheetCreationScreen extends Screen implements HasActionHandlers
 
     private void loadQCTemplate(Integer testId) {
         int                  i;
-        TestWorksheetItemDO  twiDO;
         TestWorksheetManager twM;
         
         try {
             twM = TestWorksheetManager.fetchByTestId(testId);
             testWorksheetDO = twM.getWorksheet();
-            for (i = 0; i < twM.itemCount(); i++) {
-                twiDO = twM.getItemAt(i);
-            }
+            if (testWorksheetItems == null)
+                testWorksheetItems = new ArrayList<TestWorksheetItemDO>();
+            for (i = 0; i < twM.itemCount(); i++)
+                testWorksheetItems.add(twM.getItemAt(i));
         } catch (Exception anyE) {
             // TODO -- Need to code real exception handling
             anyE.printStackTrace();
@@ -465,49 +531,224 @@ public class WorksheetCreationScreen extends Screen implements HasActionHandlers
     }
     
     private void buildQCWorksheet() {
-        // TODO -- Implement loading of QCs from the specified test definition
-    }
-    
-    private void sort() {
-        // TODO -- Implement sorting of the added analyses
-        mergeAnalysesAndQCs();
+        int                     i, j, posNum, randSize, numBatches, startIndex;
+        Integer                 qcId;
+        String                  qcName;
+        ArrayList<QcDO>         list;
+        ArrayList<TableDataRow> qcRandList, qcLastWellList, lastOf;
+        TableDataRow            qcRow, qcRow1;
+        TestWorksheetItemDO     twiDO;
+
+        //
+        // initialize/clear the qcItems
+        //
+        if (qcItems == null) {
+            qcItems = new TableDataRow[testWorksheetDO.getTotalCapacity()];
+        } else {
+            for (i = 0; i < qcItems.length; i++)
+                qcItems[i] = null;
+        }
+        
+        qcRandList     = new ArrayList<TableDataRow>();
+        qcLastWellList = new ArrayList<TableDataRow>();
+        qcLastRunList.clear();
+        qcLastBothList.clear();
+        numBatches = testWorksheetDO.getTotalCapacity() / testWorksheetDO.getBatchCapacity();
+        
+        //
+        // Insert Fixed/Duplicate QCItems into worksheet per batch and store 
+        // Random and LastOf QC Items for later.
+        //
+        for (i = 0; i < testWorksheetItems.size(); i++) {
+            qcId   = null;
+            qcName = null;
+            twiDO  = (TestWorksheetItemDO) testWorksheetItems.get(i);
+            
+            try {
+                list = qcService.callList("fetchActiveByName", twiDO.getQcName());
+                if (list.size() == 0) {
+                    Window.alert("No active QC matching '"+twiDO.getQcName()+"' at row "+(i+1));
+                    qcName = "MISSING: "+twiDO.getQcName();
+                } else if (list.size() > 1) {
+                    // TODO -- Need to code a chooser for multiple active QCs matching name
+                    Window.alert("More than one active QC was found matching '"+twiDO.getQcName()+"' at row "+(i+1));
+                } else {
+                    qcId = list.get(0).getId();
+                    qcName = list.get(0).getName();
+                }
+            } catch (Exception anyE) {
+                // TODO Auto-generated catch block
+                anyE.printStackTrace();
+            }
+            
+            qcRow = new TableDataRow(11);
+            qcRow.key = qcId;                                      // qc id
+            qcRow.cells.get(2).value = qcName;                     // description
+            qcRow.data = twiDO;
+            
+            
+            if (typeFixed.equals(twiDO.getTypeId()) || typeDup.equals(twiDO.getTypeId()))
+                for (j = 0; j < numBatches; j++) {
+                    posNum = j * testWorksheetDO.getBatchCapacity() + twiDO.getPosition() - 1;
+                    qcRow.cells.get(1).value = "X."+getPositionNumber(posNum);     // qc accession #
+                    qcItems[posNum] = qcRow;
+                }
+            else if (typeRand.equals(twiDO.getTypeId()))
+                qcRandList.add(qcRow);
+            else if (typeLastWell.equals(twiDO.getTypeId()))
+                qcLastWellList.add(qcRow);
+            else if (typeLastRun.equals(twiDO.getTypeId()))
+                qcLastRunList.add(qcRow);
+            else if (typeLastBoth.equals(twiDO.getTypeId()))
+                qcLastBothList.add(qcRow);
+        }
+
+        //
+        // Insert Last of Well/Both QCItems into the worksheet per batch
+        //
+        if (! qcLastWellList.isEmpty())
+            lastOf = qcLastWellList;
+        else
+            lastOf = qcLastBothList;
+
+        startIndex = testWorksheetDO.getBatchCapacity() - lastOf.size();
+        for (i = 0; i < numBatches; i++) {
+            posNum = i * testWorksheetDO.getBatchCapacity() + startIndex;
+            for (j = 0; j < lastOf.size(); j++) {
+                qcRow = lastOf.get(j);
+                qcRow.cells.get(1).value = "X."+getPositionNumber(posNum);     // qc accession #
+                qcItems[posNum++] = qcRow;
+            }
+        }
+
+        //
+        // Insert random QCItems into the worksheet per batch
+        //
+        randSize = qcRandList.size();
+        for (i = 0; i < numBatches; i++) {
+            j = 0;
+            while (j < randSize) {
+                qcRow = qcRandList.get(j);
+                posNum = (int) (Math.random() * (testWorksheetDO.getBatchCapacity() - 1)) + i * testWorksheetDO.getBatchCapacity();
+                if (qcItems[posNum] == null) {
+                    if (posNum + 1 < testWorksheetDO.getTotalCapacity()) {
+                        qcRow1 = qcItems[posNum+1];
+                        if (qcRow1 != null && typeDup.equals(((TestWorksheetItemDO)qcRow1.data).getTypeId()))
+                            continue;
+                    }
+                    qcRow.cells.get(1).value = "X."+getPositionNumber(posNum);     // qc accession #
+                    qcItems[posNum] = qcRow;
+                    j++;
+                }
+            }
+        }
     }
     
     private void mergeAnalysesAndQCs() {
-        int          i, major, minor;
-        TableDataRow row;
+        int                     i, j, k;
+        ArrayList<TableDataRow> items, lastOf;
+        TableDataRow            row;
         
-        // TODO -- Implement merging of sorted analyses with the QC template
-        for (i = 0; i < analysisItems.size(); i++) {
-            row = analysisItems.get(i);
-            if (formatBatch.equals(testWorksheetDO.getFormatId())) {
-                major = getWellMajorNumber(i+1);
-                minor = getWellMinorNumber(i+1);
-                row.cells.get(0).value = major+"-"+minor;
-            } else if (formatTotal.equals(testWorksheetDO.getFormatId())) {
-                row.cells.get(0).value = i + 1;
+        //
+        // insert end of run QCs into lastOf list
+        //
+        if (!qcLastRunList.isEmpty())
+            lastOf = qcLastRunList;
+        else
+            lastOf = qcLastBothList;
+            
+        //
+        // Insert analyses, duplicates and fixed QCs into worksheet
+        //
+        j = 0;
+        items = new ArrayList<TableDataRow>();
+        for (i = 0; i < testWorksheetDO.getTotalCapacity() - lastOf.size(); i++) {
+            row = qcItems[i];
+            if (row == null) {
+                if (j >= analysisItems.size())
+                    break;
+
+                row = analysisItems.get(j);
+                row.cells.get(0).value = getPositionNumber(i);
+                items.add(analysisItems.get(j));
+                j++;
+            } else if (typeDup.equals(((TestWorksheetItemDO)row.data).getTypeId()) && j > 0) {
+                // TODO -- Add a duplicate of the previous analysis
+            } else {
+                row.cells.get(0).value = getPositionNumber(i);
+                items.add(row);
             }
         }
-        worksheetItemTable.load(analysisItems);
+        
+        //
+        // Append Last of Run QCItems
+        //
+        if (i < testWorksheetDO.getTotalCapacity()) {
+            for (k = 0; k < lastOf.size() && i < testWorksheetDO.getTotalCapacity(); k++) {
+                row = lastOf.get(k);
+                row.cells.get(0).value = getPositionNumber(i);
+                row.cells.get(1).value = "X."+getPositionNumber(i);     // qc accession #
+                items.add(row);
+                i++;
+            }
+        }
+
+        //
+        // Correct i for the case where we incremented it before breaking out
+        // due to running out of analyses and didn't later add lastOf QCs
+        //
+        if (j >= analysisItems.size() && lastOf.size() <= 0)
+            i--;
+
+        //
+        // If last batch contains only QC items, remove it
+        //
+        for (i--; i > -1 && items.get(i).data instanceof TestWorksheetItemDO; i--) {
+            if (i % testWorksheetDO.getTotalCapacity() == 0) {
+                while (i < items.size())
+                    items.remove(i);
+            }
+        }
+
+        if (j < analysisItems.size())
+            Window.alert("Worksheet is full, cannot add more Analyses");
+
+        worksheetItemTable.load(items);
     }
 
     public HandlerRegistration addActionHandler(ActionHandler<WorksheetCreationScreen.Action> handler) {
         return addHandler(handler, ActionEvent.getType());
     }        
 
+    private Object getPositionNumber(int position) {
+        int    major, minor;
+        Object positionNumber;
+        
+        positionNumber = "";
+        if (formatBatch.equals(testWorksheetDO.getFormatId())) {
+            major = getPositionMajorNumber(position+1);
+            minor = getPositionMinorNumber(position+1);
+            positionNumber = major+"-"+minor;
+        } else if (formatTotal.equals(testWorksheetDO.getFormatId())) {
+            positionNumber = position + 1;
+        }
+        
+        return positionNumber;
+    }
+    
     /**
-     * Parses the well number and returns the major number
+     * Parses the position number and returns the major number
      * for batch numbering.
      */
-   private int getWellMajorNumber(int wellNumber) {
-       return (int) (wellNumber / (double)testWorksheetDO.getBatchCapacity() + .99);
+   private int getPositionMajorNumber(int position) {
+       return (int) (position / (double)testWorksheetDO.getBatchCapacity() + .99);
    }
 
    /**
-     * Parses the well number and returns the minor number
+     * Parses the position number and returns the minor number
      * for batch numbering.
      */
-   private int getWellMinorNumber(int wellNumber) {
-       return wellNumber - (getWellMajorNumber(wellNumber) - 1) * testWorksheetDO.getBatchCapacity();
+   private int getPositionMinorNumber(int position) {
+       return position - (getPositionMajorNumber(position) - 1) * testWorksheetDO.getBatchCapacity();
    }
 }

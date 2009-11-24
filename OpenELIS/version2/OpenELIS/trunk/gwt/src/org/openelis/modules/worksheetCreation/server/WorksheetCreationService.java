@@ -27,15 +27,10 @@ package org.openelis.modules.worksheetCreation.server;
 
 import java.util.ArrayList;
 
-import org.openelis.common.AutocompleteRPC;
-import org.openelis.domain.TestMethodVO;
 import org.openelis.domain.WorksheetCreationVO;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.manager.WorksheetManager;
 import org.openelis.persistence.EJBFactory;
-import org.openelis.remote.SectionRemote;
-import org.openelis.remote.TestRemote;
-import org.openelis.remote.WorksheetRemote;
 import org.openelis.remote.WorksheetCreationRemote;
 import org.openelis.remote.WorksheetManagerRemote;
 

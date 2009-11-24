@@ -42,44 +42,16 @@ UIRF Software License are applicable instead of those above.
   xmlns:testMetaMap="xalan://org.openelis.metamap.TestMetaMap"
   xmlns:worksheetMetaMap="xalan://org.openelis.metamap.WorksheetMetaMap">
 
-  <xalan:component prefix="resource">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.util.UTFResource" />
-  </xalan:component>
-  <xalan:component prefix="locale">
-    <xalan:script lang="javaclass" src="xalan://java.util.Locale" />
-  </xalan:component>
-  <xalan:component prefix="analysisMetaMap">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.AnalysisMetaMap" />
-  </xalan:component>
-  <xalan:component prefix="methodMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.MethodMeta" />
-  </xalan:component>
-  <xalan:component prefix="sampleMetaMap">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.SampleMetaMap" />
-  </xalan:component>
-  <xalan:component prefix="sampleItemMetaMap">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.SampleItemMetaMap" />
-  </xalan:component>
-  <xalan:component prefix="testMetaMap">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.TestMetaMap" />
-  </xalan:component>
-  <xalan:component prefix="worksheetMetaMap">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.WorksheetMetaMap" />
-  </xalan:component>
   <xsl:template match="doc">
+    <xsl:variable name="language" select="locale" />
+    <xsl:variable name="props" select="props" />
+    <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
     <xsl:variable name="sample" select="sampleMetaMap:new()" />
     <xsl:variable name="sampleItem" select="sampleMetaMap:getSampleItem($sample)" />
     <xsl:variable name="analysis" select="sampleItemMetaMap:getAnalysis($sampleItem)" />
     <xsl:variable name="test" select="analysisMetaMap:getTest($analysis)" />
     <xsl:variable name="method" select="testMetaMap:getMethod($test)" />
     <xsl:variable name="worksheet" select="worksheetMetaMap:new()" />
-    <xsl:variable name="language">
-      <xsl:value-of select="locale" />
-    </xsl:variable>
-    <xsl:variable name="props">
-      <xsl:value-of select="props" />
-    </xsl:variable>
-    <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
     <screen id="WorksheetCreation" name="{resource:getString($constants,'worksheetCreation')}">
       <VerticalPanel padding="0" spacing="0" style="WhiteContentPanel">
         <TablePanel style="Form">
@@ -107,16 +79,16 @@ UIRF Software License are applicable instead of those above.
           </row>
         </TablePanel>
         <table key="worksheetItemTable" width="800" maxRows="9" showScroll="ALWAYS" tab="{worksheetMetaMap:getId($worksheet)},{worksheetMetaMap:getId($worksheet)}" title="" style="ScreenTableWithSides">
-          <col width="50" header="{resource:getString($constants,'wellNumber')}" sort="false">
-            <label />
-          </col>
-          <col width="50" header="{resource:getString($constants,'QC')}" sort="false">
+          <col width="50" header="{resource:getString($constants,'position')}" sort="false">
             <label />
           </col>
           <col width="90" header="{resource:getString($constants,'accessionNum')}" sort="true">
             <label />
           </col>
           <col width="150" header="{resource:getString($constants,'description')}" sort="true">
+            <label />
+          </col>
+          <col width="50" header="{resource:getString($constants,'qcLink')}" sort="false">
             <label />
           </col>
           <col width="100" header="{resource:getString($constants,'test')}" sort="true">

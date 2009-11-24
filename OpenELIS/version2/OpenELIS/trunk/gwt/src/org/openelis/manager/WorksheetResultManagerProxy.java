@@ -27,28 +27,28 @@ package org.openelis.manager;
 
 import org.openelis.gwt.services.ScreenService;
 
-public class WorksheetAnalysisManagerProxy {
+public class WorksheetResultManagerProxy {
     protected static final String WORKSHEET_MANAGER_SERVICE_URL = "org.openelis.modules.worksheet.server.WorksheetService";
     protected ScreenService service;
     
-    public WorksheetAnalysisManagerProxy(){
+    public WorksheetResultManagerProxy(){
         service = new ScreenService("OpenELISServlet?service="+WORKSHEET_MANAGER_SERVICE_URL);
     }
 
-    public WorksheetAnalysisManager fetchByWorksheetItemId(Integer worksheetItemId) throws Exception {
-        return service.call("fetchWorksheeetAnalysisByWorksheetItemId", worksheetItemId);
+    public WorksheetResultManager fetchByWorksheetAnalysisId(Integer worksheetAnalysisId) throws Exception {
+        return service.call("fetchWorksheeetResultByWorksheetAnalysisId", worksheetAnalysisId);
     }
 
-    public WorksheetAnalysisManager add(WorksheetAnalysisManager manager) throws Exception {
+    public WorksheetResultManager add(WorksheetResultManager manager) throws Exception {
         assert false : "not supported";
         return null;
     }
 
-    public WorksheetAnalysisManager update(WorksheetAnalysisManager manager) throws Exception {
+    public WorksheetResultManager update(WorksheetResultManager manager) throws Exception {
         assert false : "not supported";
         return null;
     }
     
-    public void validate(WorksheetAnalysisManager manager) throws Exception {
+    public void validate(WorksheetResultManager manager) throws Exception {
     }
 }

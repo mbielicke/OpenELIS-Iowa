@@ -42,44 +42,16 @@ UIRF Software License are applicable instead of those above.
   xmlns:sectionMeta="xalan://org.openelis.meta.SectionMeta"
   xmlns:testMetaMap="xalan://org.openelis.metamap.TestMetaMap">
 
-  <xalan:component prefix="resource">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.util.UTFResource" />
-  </xalan:component>
-  <xalan:component prefix="locale">
-    <xalan:script lang="javaclass" src="xalan://java.util.Locale" />
-  </xalan:component>
-  <xalan:component prefix="analysisMetaMap">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.AnalysisMetaMap" />
-  </xalan:component>
-  <xalan:component prefix="methodMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.MethodMeta" />
-  </xalan:component>
-  <xalan:component prefix="sampleMetaMap">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.SampleMetaMap" />
-  </xalan:component>
-  <xalan:component prefix="sampleItemMetaMap">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.SampleItemMetaMap" />
-  </xalan:component>
-  <xalan:component prefix="sectionMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.SectionMeta" />
-  </xalan:component>
-  <xalan:component prefix="testMetaMap">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.TestMetaMap" />
-  </xalan:component>
   <xsl:template match="doc">
+    <xsl:variable name="language" select="locale" />
+    <xsl:variable name="props" select="props" />
+    <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
     <xsl:variable name="sample" select="sampleMetaMap:new()" />
     <xsl:variable name="sampleItem" select="sampleMetaMap:getSampleItem($sample)" />
     <xsl:variable name="analysis" select="sampleItemMetaMap:getAnalysis($sampleItem)" />
     <xsl:variable name="test" select="analysisMetaMap:getTest($analysis)" />
     <xsl:variable name="method" select="testMetaMap:getMethod($test)" />
     <xsl:variable name="section" select="analysisMetaMap:getSection($analysis)" />
-    <xsl:variable name="language">
-      <xsl:value-of select="locale" />
-    </xsl:variable>
-    <xsl:variable name="props">
-      <xsl:value-of select="props" />
-    </xsl:variable>
-    <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
     <screen id="WorksheetCreationLookup" name="{resource:getString($constants,'worksheetCreationLookup')}">
       <VerticalPanel padding="0" spacing="0" style="WhiteContentPanel">
       	<HorizontalPanel>
@@ -102,7 +74,7 @@ UIRF Software License are applicable instead of those above.
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'section')" />:
               </text>
-              <dropdown key="{sectionMeta:getId($section)}" width="150px" popWidth="150px" tab="{sampleMetaMap:getAccessionNumber($sample)},testMetaMap:getId($test)" field="Integer" />
+              <dropdown key="{sectionMeta:getId($section)}" width="130px" popWidth="130px" tab="{sampleMetaMap:getAccessionNumber($sample)},testMetaMap:getId($test)" field="Integer" />
             </row>
             <row>
               <text style="Prompt">
@@ -112,11 +84,11 @@ UIRF Software License are applicable instead of those above.
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'status')" />:
               </text>
-              <dropdown key="{analysisMetaMap:getStatusId($analysis)}" width="110px" popWidth="110px" tab="{sampleItemMetaMap:getTypeOfSampleId($sampleItem)},{sampleMetaMap:getAccessionNumber($sample)}" field="Integer" />
+              <dropdown key="{analysisMetaMap:getStatusId($analysis)}" width="100px" popWidth="100px" tab="{sampleItemMetaMap:getTypeOfSampleId($sampleItem)},{sampleMetaMap:getAccessionNumber($sample)}" field="Integer" />
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'sampleType')" />:
               </text>
-              <dropdown key="{sampleItemMetaMap:getTypeOfSampleId($sampleItem)}" width="150px" popWidth="150px" tab="{sampleMetaMap:getReceivedDate($sample)},analysisMetaMap:getStatusId($analysis)" field="Integer" />
+              <dropdown key="{sampleItemMetaMap:getTypeOfSampleId($sampleItem)}" width="175px" popWidth="175px" tab="{sampleMetaMap:getReceivedDate($sample)},analysisMetaMap:getStatusId($analysis)" field="Integer" />
             </row>
             <row>
               <text style="Prompt">
