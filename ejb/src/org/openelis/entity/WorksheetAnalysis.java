@@ -24,7 +24,7 @@ import org.openelis.utils.Auditable;
 
 @NamedQueries({
     @NamedQuery( name = "WorksheetAnalysis.FetchByWorksheetItemId",
-                query = "select new org.openelis.domain.WorksheetAnalysisDO(wa.id,wa.worksheetItemId,wa.referenceId,wa.referenceTableId) "+
+                query = "select new org.openelis.domain.WorksheetAnalysisDO(wa.id,wa.worksheetItemId,wa.referenceId,wa.referenceTableId,wa.worksheetAnalysisId) "+
                         "from WorksheetAnalysis wa where wa.worksheetItemId = :id")})
 @Entity
 @Table(name = "worksheet_analysis")
@@ -44,6 +44,9 @@ public class WorksheetAnalysis implements Auditable, Cloneable {
 
     @Column(name = "reference_table_id")
     private Integer           referenceTableId;
+
+    @Column(name = "worksheet_analysis_id")
+    private Integer           worksheetAnalysisId;
 
     @Transient
     private WorksheetAnalysis original;
@@ -84,6 +87,14 @@ public class WorksheetAnalysis implements Auditable, Cloneable {
             this.referenceTableId = referenceTableId;
     }
 
+    public Integer getWorksheetAnalysisId() {
+        return worksheetAnalysisId;
+    }
+
+    public void setWorksheetAnalysisId(Integer worksheetAnalysisId) {
+        this.worksheetAnalysisId = worksheetAnalysisId;
+    }
+
     public void setClone() {
         try {
             original = (WorksheetAnalysis)this.clone();
@@ -110,6 +121,11 @@ public class WorksheetAnalysis implements Auditable, Cloneable {
                                    doc,
                                    "reference_table_id");
 
+            AuditUtil.getChangeXML(worksheetAnalysisId,
+                                   original.worksheetAnalysisId,
+                                   doc,
+                                   "worksheet_analysis_id");
+
             if (root.hasChildNodes())
                 return XMLUtil.toString(doc);
         } catch (Exception e) {
@@ -121,5 +137,4 @@ public class WorksheetAnalysis implements Auditable, Cloneable {
     public String getTableName() {
         return "worksheet_analysis";
     }
-
 }
