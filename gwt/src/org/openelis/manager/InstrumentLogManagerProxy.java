@@ -23,28 +23,32 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.modules.instrument.client;
+package org.openelis.manager;
 
-import org.openelis.gwt.screen.deprecated.AppModule;
-import org.openelis.gwt.screen.deprecated.ClassFactory;
-import org.openelis.modules.main.client.openelis.OpenELIS;
+import org.openelis.gwt.services.ScreenService;
 
-public class InstrumentEntry implements AppModule {
-
-    public String getModuleName() {
-        return "Instrument";
+public class InstrumentLogManagerProxy {
+    protected static final String INSTRUMENT_MANAGER_SERVICE_URL = "org.openelis.modules.instrument.server.InstrumentService";
+    protected ScreenService       service;
+    
+    public InstrumentLogManagerProxy() {
+        service = new ScreenService("OpenELISServlet?service=" + INSTRUMENT_MANAGER_SERVICE_URL);
     }
-
-    public void onModuleLoad() {
-        OpenELIS.modules.add(getModuleName());
-        ClassFactory.addClassFactory(new String[] {"InstrumentScreen"}, 
-                              new ClassFactory.Factory() {
-                                  public Object newInstance(Object[] args) {
-                                      return new InstrumentScreen();
-                                  }
-           }
-       );
-
+    
+    public InstrumentLogManager fetchByInstrumentId(Integer id) throws Exception {
+        return service.call("fetchLogByInstrumentId", id);
     }
-
+    
+    public InstrumentLogManager add(InstrumentLogManager man) throws Exception {
+        assert false : "not supported";
+        return null;
+    }
+    
+    public InstrumentLogManager update(InstrumentLogManager man) throws Exception {
+        assert false : "not supported";
+        return null;
+    }
+    
+    public void validate(InstrumentLogManager man) throws Exception {        
+    }
 }

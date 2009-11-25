@@ -159,13 +159,13 @@ UIRF Software License are applicable instead of those above.
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'name')" />:
                 </text>
-                <textbox key="{meta:getName($panel)}" width="145px" max="20" tab="{meta:getDescription($panel)},{meta:getDescription($panel)}" required="true" />
+                <textbox key="{meta:getName($panel)}" case = "LOWER" width="145" max="20" tab="{meta:getDescription($panel)},{meta:getDescription($panel)}" required="true" />
               </row>
               <row>
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'description')" />:
                 </text>
-                <textbox key="{meta:getDescription($panel)}" width="425px" max="60" tab="addedTestTable,{meta:getName($panel)}" />
+                <textbox key="{meta:getDescription($panel)}" width="425" max="60" tab="addedTestTable,{meta:getName($panel)}" />
               </row>
             </TablePanel>
             <HorizontalPanel>

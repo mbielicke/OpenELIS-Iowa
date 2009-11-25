@@ -65,6 +65,7 @@ import org.openelis.manager.TestAnalyteManager;
 import org.openelis.manager.TestManager;
 import org.openelis.manager.TestWorksheetManager;
 import org.openelis.metamap.TestMetaMap;
+import org.openelis.modules.dictionary.client.DictionaryLookupScreen;
 import org.openelis.modules.test.client.AnalyteAndResultTab.Action;
 
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -79,7 +80,7 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
     private TestAnalyteManager               analyteManager;
 
     private WorksheetLayoutTab               screen;
-    private TestWorksheetAnalyteLookupScreen testAnalytePicker;
+    private TestWorksheetAnalyteLookupScreen analyteLookup;
 
     private TestMetaMap                      meta = new TestMetaMap();
 
@@ -421,22 +422,28 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
             public void onClick(ClickEvent event) {
                 ScreenWindow modal;
 
-                try {
-                    testAnalytePicker = new TestWorksheetAnalyteLookupScreen(analyteManager);
-                    testAnalytePicker.addActionHandler(new ActionHandler<TestWorksheetAnalyteLookupScreen.Action>() {
+                if (analyteLookup == null) {
+                    try {
+                        analyteLookup = new TestWorksheetAnalyteLookupScreen(analyteManager);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        Window.alert("TestWorksheetAnalyteLookup error: " + e.getMessage());
+                        return;
+                    }
 
+                    analyteLookup.addActionHandler(new ActionHandler<TestWorksheetAnalyteLookupScreen.Action>() {
                         public void onAction(ActionEvent<TestWorksheetAnalyteLookupScreen.Action> event) {
-                            ArrayList<TableDataRow> model;
+                            ArrayList<TestAnalyteViewDO> model;
                             TestWorksheetAnalyteViewDO data;
-                            TableDataRow row;
+                            TestAnalyteViewDO ana;
                             try {
                                 if (event.getAction() == TestWorksheetAnalyteLookupScreen.Action.OK) {
-                                    model = (ArrayList<TableDataRow>)event.getData();
+                                    model = (ArrayList<TestAnalyteViewDO>)event.getData();
                                     for (int i = 0; i < model.size(); i++ ) {
-                                        row = model.get(i);
+                                        ana = model.get(i);
                                         data = new TestWorksheetAnalyteViewDO();
-                                        data.setAnalyteName((String)row.cells.get(0).getValue());
-                                        data.setTestAnalyteId((Integer)row.key);
+                                        data.setAnalyteName(ana.getAnalyteName());
+                                        data.setTestAnalyteId(ana.getId());
                                         data.setRepeat(1);
                                         manager.getTestWorksheet().addAnalyte(data);
                                     }
@@ -450,15 +457,14 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
                         }
 
                     });
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    Window.alert("error: " + e.getMessage());
-                    return;
-                }
+                } else {
+                    analyteLookup.refresh();
+                } 
+                
                 modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
                 modal.setName(consts.get("testAnalyteSelection"));
-                modal.setContent(testAnalytePicker);
-                testAnalytePicker.setScreenState(State.DEFAULT);
+                modal.setContent(analyteLookup);
+                analyteLookup.setScreenState(State.DEFAULT);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {

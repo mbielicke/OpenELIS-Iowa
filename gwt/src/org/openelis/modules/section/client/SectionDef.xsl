@@ -40,31 +40,12 @@ UIRF Software License are applicable instead of those above.
   xmlns:parentSect="xalan://org.openelis.meta.SectionMeta">
 
   <xsl:import href="IMPORT/aToZTwoColumns.xsl" />
-  <xalan:component prefix="resource">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.util.UTFResource" />
-  </xalan:component>
-  <xalan:component prefix="locale">
-    <xalan:script lang="javaclass" src="xalan://java.util.Locale" />
-  </xalan:component>
-  <xalan:component prefix="meta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.SectionMetaMap" />
-  </xalan:component>
-  <xalan:component prefix="org">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.OrganizationMeta" />
-  </xalan:component>
-  <xalan:component prefix="parentSect">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.SectionMeta" />
-  </xalan:component>
   <xsl:template match="doc">
     <xsl:variable name="sect" select="meta:new()" />
     <xsl:variable name="o" select="meta:getOrganization($sect)" />
     <xsl:variable name="psect" select="meta:getParentSection($sect)" />
-    <xsl:variable name="language">
-      <xsl:value-of select="locale" />
-    </xsl:variable>
-    <xsl:variable name="props">
-      <xsl:value-of select="props" />
-    </xsl:variable>
+    <xsl:variable name="language" select="locale" />
+    <xsl:variable name="props" select="props" />
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
 <!-- main screen -->
     <screen id="Section" name="{resource:getString($constants,'labSection')}">
@@ -135,10 +116,28 @@ UIRF Software License are applicable instead of those above.
                   <xsl:value-of select="language" />
                 </xsl:with-param>
               </xsl:call-template>
+              <xsl:call-template name="buttonPanelDivider" />
+              <menuPanel key="optionsMenu" layout="vertical" style="topBarItemHolder">
+                <menuItem>
+                  <menuDisplay>
+                    <appButton style="ButtonPanelButton" action="option">
+                      <HorizontalPanel>
+                        <text>
+                          <xsl:value-of select='resource:getString($constants,"options")' />
+                        </text>
+                        <AbsolutePanel width="20px" height="20px" style="OptionsButtonImage" />
+                      </HorizontalPanel>
+                    </appButton>
+                  </menuDisplay>
+                  <menuPanel layout="vertical" position="below" style="buttonMenuContainer">
+                    <xsl:call-template name="historyMenuItem" />
+                  </menuPanel>
+                </menuItem>
+              </menuPanel>
             </HorizontalPanel>
           </AbsolutePanel>
 <!--end button panel-->
-          <VerticalPanel height="220" padding="0" spacing="0" style="WhiteContentPanel">
+          <VerticalPanel width="580" height="220" padding="0" spacing="0" style="WhiteContentPanel">
             <TablePanel style="Form">
               <row>
                 <text style="Prompt">

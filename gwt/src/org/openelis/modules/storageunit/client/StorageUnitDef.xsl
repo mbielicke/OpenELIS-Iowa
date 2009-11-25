@@ -34,35 +34,37 @@ UIRF Software License are applicable instead of those above.
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   xsi:noNamespaceSchemaLocation="http://openelis.uhl.uiowa.edu/schema/ScreenSchema.xsd"
   xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd"
-  xmlns:labelMeta="xalan://org.openelis.metamap.LabelMetaMap"
-  xmlns:scriptlet="xalan://org.openelis.meta.ScriptletMeta">
+  xmlns:storageUnitMeta="xalan://org.openelis.metamap.StorageUnitMetaMap">
 
   <xsl:import href="IMPORT/aToZTwoColumns.xsl" />
   <xsl:template match="doc">
-    <xsl:variable name="lbl" select="labelMeta:new()" />
-    <xsl:variable name="scpt" select="labelMeta:getScriptlet($lbl)" />
-    <xsl:variable name="language" select="locale" />
-    <xsl:variable name="props" select="props" />
+    <xsl:variable name="meta" select="storageUnitMeta:new()" />
+    <xsl:variable name="language">
+      <xsl:value-of select="locale" />
+    </xsl:variable>
+    <xsl:variable name="props">
+      <xsl:value-of select="props" />
+    </xsl:variable>
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
-    <screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Label" name="{resource:getString($constants,'label')}">
+    <screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Storage" name="{resource:getString($constants,'storageUnit')}">
       <HorizontalPanel padding="0" spacing="0">
         <CollapsePanel key="collapsePanel" style="LeftSidePanel">
-          <HorizontalPanel width="225">
+          <HorizontalPanel width="225px" height="100%">
             <buttonGroup key="atozButtons">
               <xsl:call-template name="aToZLeftPanelButtons" />
             </buttonGroup>
             <VerticalPanel>
-              <table key="atozTable" width="auto" maxRows="9" style="atozTable">
-                <col width="175" header="{resource:getString($constants,'name')}">
+              <table key="atozTable" width="auto" maxRows="9" style="AtoZtable">
+                <col width="175" header="{resource:getString($constants,'description')}">
                   <label />
                 </col>
               </table>
               <widget halign="center">
                 <HorizontalPanel>
-                  <appButton key="atozPrev" style="Button" enable="false">
+                  <appButton key="atozPrev" style="Button">
                     <AbsolutePanel style="prevNavIndex" />
                   </appButton>
-                  <appButton key="atozNext" style="Button" enable="false">
+                  <appButton key="atozNext" style="Button">
                     <AbsolutePanel style="nextNavIndex" />
                   </appButton>
                 </HorizontalPanel>
@@ -71,6 +73,7 @@ UIRF Software License are applicable instead of those above.
           </HorizontalPanel>
         </CollapsePanel>
         <VerticalPanel padding="0" spacing="0">
+<!--button panel code-->
           <AbsolutePanel spacing="0" style="ButtonPanelContainer">
             <HorizontalPanel>
               <xsl:call-template name="queryButton">
@@ -135,33 +138,26 @@ UIRF Software License are applicable instead of those above.
               </menuPanel>
             </HorizontalPanel>
           </AbsolutePanel>
+<!--end button panel-->
           <VerticalPanel width="650" height="215" padding="0" spacing="0" style="WhiteContentPanel">
             <TablePanel style="Form">
               <row>
                 <text style="Prompt">
-                  <xsl:value-of select='resource:getString($constants,"name")' />:
+                  <xsl:value-of select='resource:getString($constants,"category")' />:
                 </text>
-                <textbox key="{labelMeta:getName($lbl)}" width="215" case="LOWER" max="30" tab="{labelMeta:getDescription($lbl)},{scriptlet:getName($scpt)}" required="true" />
+                <dropdown key="{storageUnitMeta:getCategoryId($meta)}" required = "true" field = "Integer" width="110" tab="{storageUnitMeta:getDescription($meta)},{storageUnitMeta:getIsSingular($meta)}" />
               </row>
               <row>
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"description")' />:
                 </text>
-                <textbox key="{labelMeta:getDescription($lbl)}" width="425" max="60" tab="{labelMeta:getPrinterTypeId($lbl)},{labelMeta:getName($lbl)}" />
+                <textbox key="{storageUnitMeta:getDescription($meta)}" required = "true" width="300" case="LOWER" max="60" tab="{storageUnitMeta:getIsSingular($meta)},{storageUnitMeta:getCategoryId($meta)}" />
               </row>
               <row>
                 <text style="Prompt">
-                  <xsl:value-of select='resource:getString($constants,"printerType")' />:
+                  <xsl:value-of select='resource:getString($constants,"isSingular")' />:
                 </text>
-                <dropdown key="{labelMeta:getPrinterTypeId($lbl)}" width="90" tab="{scriptlet:getName($scpt)},{labelMeta:getDescription($lbl)}" required="true" />
-              </row>
-              <row>
-                <text style="Prompt">
-                  <xsl:value-of select='resource:getString($constants,"scriptlet")' />:
-                </text>
-                <autoComplete key="{scriptlet:getName($scpt)}" width="180" popWidth="auto" tab="{labelMeta:getName($lbl)},{labelMeta:getPrinterTypeId($lbl)}" field="Integer">
-                  <col width="180" />
-                </autoComplete>
+                <check key="{storageUnitMeta:getIsSingular($meta)}" tab="{storageUnitMeta:getCategoryId($meta)},{storageUnitMeta:getDescription($meta)}" />
               </row>
             </TablePanel>
           </VerticalPanel>

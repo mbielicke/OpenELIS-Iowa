@@ -25,7 +25,6 @@ Alternatively, the contents of this file marked
 license ("UIRF Software License"), in which case the provisions of a
 UIRF Software License are applicable instead of those above. 
   -->
-
 <xsl:stylesheet
   version="1.0"
   extension-element-prefixes="resource"
@@ -58,72 +57,6 @@ UIRF Software License are applicable instead of those above.
   xmlns:wsscript="xalan://org.openelis.meta.ScriptletMeta">
 
   <xsl:import href="IMPORT/aToZOneColumn.xsl" />
-  <xalan:component prefix="resource">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.util.UTFResource" />
-  </xalan:component>
-  <xalan:component prefix="locale">
-    <xalan:script lang="javaclass" src="xalan://java.util.Locale" />
-  </xalan:component>
-  <xalan:component prefix="meta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.TestMetaMap" />
-  </xalan:component>
-  <xalan:component prefix="method">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.MethodMeta" />
-  </xalan:component>
-  <xalan:component prefix="script">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.ScriptletMeta" />
-  </xalan:component>
-  <xalan:component prefix="label">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.LabelMeta" />
-  </xalan:component>
-  <xalan:component prefix="testTrailer">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.TestTrailerMeta" />
-  </xalan:component>
-  <xalan:component prefix="testPrep">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.TestPrepMetaMap" />
-  </xalan:component>
-  <xalan:component prefix="prepTestMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.TestMeta" />
-  </xalan:component>
-  <xalan:component prefix="testTOS">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.TestTypeOfSampleMetaMap" />
-  </xalan:component>
-  <xalan:component prefix="testRef">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.TestReflexMetaMap" />
-  </xalan:component>
-  <xalan:component prefix="testRefRes">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.TestResultMeta" />
-  </xalan:component>
-  <xalan:component prefix="testRefTana">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.TestAnalyteMetaMap" />
-  </xalan:component>
-  <xalan:component prefix="testRefAna">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.AnalyteMeta" />
-  </xalan:component>
-  <xalan:component prefix="testWrksht">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.TestWorksheetMetaMap" />
-  </xalan:component>
-  <xalan:component prefix="testWrkshtItm">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.TestWorksheetItemMetaMap" />
-  </xalan:component>
-  <xalan:component prefix="wsscript">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.ScriptletMeta" />
-  </xalan:component>
-  <xalan:component prefix="testWrkshtAna">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.TestWorksheetAnalyteMetaMap" />
-  </xalan:component>
-  <xalan:component prefix="testAnalyte">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.TestAnalyteMetaMap" />
-  </xalan:component>
-  <xalan:component prefix="testSection">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.TestSectionMetaMap" />
-  </xalan:component>
-  <xalan:component prefix="testResult">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.TestResultMetaMap" />
-  </xalan:component>
-  <xalan:component prefix="addTestMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.meta.TestMeta" />
-  </xalan:component>
   <xsl:template match="doc">
     <xsl:variable name="test" select="meta:new()" />
     <xsl:variable name="mt" select="meta:getMethod($test)" />
@@ -145,12 +78,8 @@ UIRF Software License are applicable instead of those above.
     <xsl:variable name="tana" select="meta:getTestAnalyte($test)" />
     <xsl:variable name="ts" select="meta:getTestSection($test)" />
     <xsl:variable name="tr" select="meta:getTestResult($test)" />
-    <xsl:variable name="language">
-      <xsl:value-of select="locale" />
-    </xsl:variable>
-    <xsl:variable name="props">
-      <xsl:value-of select="props" />
-    </xsl:variable>
+    <xsl:variable name="language" select="locale" />
+    <xsl:variable name="props" select="props" />    
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
     <screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Test" name="{resource:getString($constants,'test')}">
       <HorizontalPanel padding="0" spacing="0">
@@ -231,7 +160,7 @@ UIRF Software License are applicable instead of those above.
                       </HorizontalPanel>
                     </appButton>
                   </menuDisplay>
-                  <menuPanel layout="vertical" position="below" style="topMenuContainer">
+                  <menuPanel layout="vertical" position="below" style="buttonMenuContainer">
                     <xsl:call-template name="duplicateRecordMenuItem" />
                     <xsl:call-template name="historyMenuItem" />
                   </menuPanel>
@@ -261,7 +190,7 @@ UIRF Software License are applicable instead of those above.
                   </widget>
                 </row>
               </TablePanel>
-              <TabPanel key="testTabPanel" height = "515" width="625">
+              <TabPanel key="testTabPanel" width="625" height="515">
                 <tab key="detailsTab" text="{resource:getString($constants,'testDetails')}">
                   <VerticalPanel padding="0" spacing="0">
                     <TablePanel style="Form">
@@ -331,13 +260,13 @@ UIRF Software License are applicable instead of those above.
                             <text style="Prompt">
                               <xsl:value-of select='resource:getString($constants,"beginDate")' />:
                             </text>
-                            <calendar key="{meta:getActiveBegin($test)}" begin="0" end="2" width="90px" tab="{meta:getActiveEnd($test)},{meta:getIsActive($test)}" required="true" />
+                            <calendar key="{meta:getActiveBegin($test)}" begin="0" end="2" width="90px" pattern="{resource:getString($constants,'datePattern')}" tab="{meta:getActiveEnd($test)},{meta:getIsActive($test)}" required="true" />
                           </row>
                           <row>
                             <text style="Prompt">
                               <xsl:value-of select='resource:getString($constants,"endDate")' />:
                             </text>
-                            <calendar key="{meta:getActiveEnd($test)}" begin="0" end="2" width="90px" tab="{label:getName($lbl)},{meta:getActiveBegin($test)}" required="true" />
+                            <calendar key="{meta:getActiveEnd($test)}" begin="0" end="2" width="90px" pattern="{resource:getString($constants,'datePattern')}" tab="{label:getName($lbl)},{meta:getActiveBegin($test)}" required="true" />
                           </row>
                         </TablePanel>
                       </VerticalPanel>
@@ -498,52 +427,52 @@ UIRF Software License are applicable instead of those above.
                 <tab key="analyteTab" text="{resource:getString($constants,'analytesResults')}">
                   <VerticalPanel padding="0" spacing="0">
                     <table key="analyteTable" width="607px" maxRows="8" showScroll="ALWAYS">
-                      <col key="analyteLookup" header = "1" width="152" sort="false">
+                      <col key="analyteLookup" width="152" sort="false" header="1">
                         <autoComplete width="125px" case="MIXED" popWidth="auto" field="Integer">
                           <col width="300" />
                         </autoComplete>
                       </col>
-                      <col key="analyteLookup2" header = "2" width="150" sort="false">
+                      <col key="analyteLookup2" width="150" sort="false" header="2">
                         <autoComplete key="analyteLookup" width="125px" case="MIXED" popWidth="auto" field="Integer">
                           <col width="150" />
                         </autoComplete>
                       </col>
-                      <col key="analyteLookup3" header = "3" width="150" sort="false">
+                      <col key="analyteLookup3" width="150" sort="false" header="3">
                         <autoComplete key="analyteLookup" width="125px" case="MIXED" popWidth="auto" field="Integer">
                           <col width="300" />
                         </autoComplete>
                       </col>
-                      <col key="analyteLookup4" header = "4" width="150" sort="false">
+                      <col key="analyteLookup4" width="150" sort="false" header="4">
                         <autoComplete key="analyteLookup" width="125px" case="MIXED" popWidth="auto" field="Integer">
                           <col width="150" />
                         </autoComplete>
                       </col>
-                      <col key="analyteLookup5" header = "5" width="150" sort="false">
+                      <col key="analyteLookup5" width="150" sort="false" header="5">
                         <autoComplete key="analyteLookup" width="125px" case="MIXED" popWidth="auto" field="Integer">
                           <col width="150" />
                         </autoComplete>
                       </col>
-                      <col key="analyteLookup6" header = "6" width="150" sort="false">
+                      <col key="analyteLookup6" width="150" sort="false" header="6">
                         <autoComplete key="analyteLookup" width="125px" case="MIXED" popWidth="auto" field="Integer">
                           <col width="150" />
                         </autoComplete>
                       </col>
-                      <col key="analyteLookup7" header = "7" width="150" sort="false">
+                      <col key="analyteLookup7" width="150" sort="false" header="7">
                         <autoComplete key="analyteLookup" width="125px" case="MIXED" popWidth="auto" field="Integer">
                           <col width="150" />
                         </autoComplete>
                       </col>
-                      <col key="analyteLookup8" header = "8" width="150" sort="false">
+                      <col key="analyteLookup8" width="150" sort="false" header="8">
                         <autoComplete key="analyteLookup" width="125px" case="MIXED" popWidth="auto" field="Integer">
                           <col width="150" />
                         </autoComplete>
                       </col>
-                      <col key="analyteLookup9" header = "9" width="150" sort="false">
+                      <col key="analyteLookup9" width="150" sort="false" header="9">
                         <autoComplete key="analyteLookup" width="125px" case="MIXED" popWidth="auto" field="Integer">
                           <col width="150" />
                         </autoComplete>
                       </col>
-                      <col key="analyteLookup10" header = "10" width="150" sort="false">
+                      <col key="analyteLookup10" width="150" sort="false" header="10">
                         <autoComplete key="analyteLookup" width="125px" case="MIXED" popWidth="auto" field="Integer">
                           <col width="150" />
                         </autoComplete>
@@ -552,7 +481,7 @@ UIRF Software License are applicable instead of those above.
                     <HorizontalPanel style="TableButtonFooter">
                       <TablePanel padding="0" spacing="0">
                         <row>
-                        	<text style="Prompt">
+                          <text style="Prompt">
                             <xsl:value-of select="resource:getString($constants,'tableOptions')" />:
                           </text>
                           <dropdown key="tableActions" width="75" field="String" />
@@ -588,7 +517,7 @@ UIRF Software License are applicable instead of those above.
                       <ScrollTabBar key="resultTabPanel" width="610px" />
                       <widget valign="top">
                         <table key="resultTable" width="auto" maxRows="9" showScroll="ALWAYS" title="">
-                          <col key="{testResult:getUnitOfMeasureId($tr)}" width="70"  header="{resource:getString($constants,'unit')}">
+                          <col key="{testResult:getUnitOfMeasureId($tr)}" width="70" header="{resource:getString($constants,'unit')}">
                             <dropdown width="70" case="MIXED" field="Integer" />
                           </col>
                           <col key="{testResult:getTypeId($tr)}" width="85" header="{resource:getString($constants,'type')}">
@@ -661,12 +590,12 @@ UIRF Software License are applicable instead of those above.
                               <col key="{prepTestMeta:getName($pt)}" width="312" header="{resource:getString($constants,'prepTest')}">
                                 <autoComplete width="312" field="Integer">
                                   <col width="140" header="{resource:getString($constants,'test')}" />
-                				  <col width="135" header="{resource:getString($constants,'method')}" />
-                                  <col width="250" header="{resource:getString($constants,'description')}" />                                  
+                                  <col width="135" header="{resource:getString($constants,'method')}" />
+                                  <col width="250" header="{resource:getString($constants,'description')}" />
                                 </autoComplete>
                               </col>
-                              <col key = "method" width="212" header="{resource:getString($constants,'method')}">
-                              	<label/>
+                              <col key="method" width="212" header="{resource:getString($constants,'method')}">
+                                <label />
                               </col>
                               <col key="{testPrep:getIsOptional($tp)}" width="74" header="{resource:getString($constants,'optional')}">
                                 <check />
@@ -706,12 +635,12 @@ UIRF Software License are applicable instead of those above.
                               <col key="{addTestMeta:getName($at)}" width="90" header="{resource:getString($constants,'reflexiveTest')}">
                                 <autoComplete width="80" case="MIXED" field="Integer" required="true">
                                   <col width="140" header="{resource:getString($constants,'test')}" />
-                				  <col width="135" header="{resource:getString($constants,'method')}" />
+                                  <col width="135" header="{resource:getString($constants,'method')}" />
                                   <col width="250" header="{resource:getString($constants,'description')}" />
                                 </autoComplete>
                               </col>
-                              <col key = "method" width="65" header="{resource:getString($constants,'method')}">
-                              	<label />
+                              <col key="method" width="65" header="{resource:getString($constants,'method')}">
+                                <label />
                               </col>
                               <col key="{testRefAna:getName($trefa)}" width="194" sort="false" header="{resource:getString($constants,'testAnalyte')}">
                                 <autoComplete width="194" case="MIXED" popWidth="auto" field="Integer" required="true">

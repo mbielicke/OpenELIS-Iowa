@@ -23,19 +23,9 @@
  * which case the provisions of a UIRF Software License are applicable instead
  * of those above.
  */
+package org.openelis.modules.storageunit.client;
 
-package org.openelis.modules.dictionary.client;
+import org.openelis.gwt.screen.ScreenDefInt;
 
-import org.openelis.domain.DictionaryViewDO;
-import org.openelis.gwt.common.RPC;
-
-public class DictionaryRPC implements RPC {
-
-    private static final long serialVersionUID = 1L;
-
-    public DictionaryViewDO   data;
-    public Integer            count;
-    public String             entryText;    
-    public Boolean            valid; 
-
+public interface StorageUnitDef extends ScreenDefInt {
 }

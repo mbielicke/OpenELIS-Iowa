@@ -79,11 +79,11 @@ public class DictionaryLookupScreen extends Screen
 
     public DictionaryLookupScreen() throws Exception {
         super((ScreenDefInt)GWT.create(DictionaryLookupDef.class));
-        service = new ScreenService("controller?service=org.openelis.modules.dictionary.server.DictionaryService");
-
+        service = new ScreenService("controller?service=org.openelis.modules.dictionary.server.DictionaryService");        
+        
         // Setup link between Screen and widget Handlers
         initialize();
-
+        
         DeferredCommand.addCommand(new Command() {
             public void execute() {
                 postConstructor();
@@ -194,12 +194,15 @@ public class DictionaryLookupScreen extends Screen
     }
 
     public void ok() {
-        ArrayList<IdNameVO> list;
+        ArrayList<IdNameVO> list;               
         
-        list = new ArrayList<IdNameVO>();
+        list = null;
         
-        for(TableDataRow row: selectionList)
-            list.add((IdNameVO)row.data);
+        if(selectionList != null) {
+            list = new ArrayList<IdNameVO>();
+            for(TableDataRow row: selectionList)
+                list.add((IdNameVO)row.data);
+        }
         
         ActionEvent.fire(this, Action.OK, list);
         window.close();
