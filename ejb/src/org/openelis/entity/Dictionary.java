@@ -116,8 +116,6 @@ import org.openelis.utils.Auditable;
                           "UNION " +
                           "select format_id as DICTIONARY_ID from worksheet where format_id = :id "+
                           "UNION " +
-                          "select type_id as DICTIONARY_ID from worksheet_qc where type_id = :id "+
-                          "UNION " +
                           "select contact_type_id as DICTIONARY_ID from organization_contact where contact_type_id = :id "+
                           "UNION " +
                           "select type_id as DICTIONARY_ID from organization_parameter where type_id = :id "+
@@ -143,6 +141,8 @@ import org.openelis.utils.Auditable;
                           "select unit_of_measure_id as DICTIONARY_ID from aux_field where unit_of_measure_id = :id "+
                           "UNION " +
                           "select type_id as DICTIONARY_ID from aux_field_value where type_id = :id "+
+                          "UNION "  +
+                          "select category_id as DICTIONARY_ID from storage_unit where category_id = :id "+
                           "UNION " +
                           "select type_id as DICTIONARY_ID from standard_note where type_id = :id ",                          
                   resultSetMapping="Dictionary.ReferenceCheckForIdMapping"),
@@ -156,18 +156,18 @@ import org.openelis.utils.Auditable;
                                       "select value as VALUE from aux_field_value afv,dictionary d where value = :value and" +
                                       " type_id = d.id and d.system_name = 'aux_dictionary' ",                          
                   resultSetMapping="Dictionary.ReferenceCheckForValueMapping"),
-                  @NamedNativeQuery(name = "Dictionary.ReferenceCheckForStateCountry",     
-                                    query = "select state as VALUE from address where state = :value " +
+                  @NamedNativeQuery(name = "Dictionary.ReferenceCheckForEntry",     
+                                    query = "select state as ENTRY from address where state = :entry " +
                                             "UNION " +
-                                            "select country as VALUE from address where country = :value ",                          
-                                    resultSetMapping="Dictionary.ReferenceCheckForStateCountryMapping")})
+                                            "select country as ENTRY from address where country = :entry ",                       
+                                    resultSetMapping="Dictionary.ReferenceCheckForEntryMapping")})
                                     
 @SqlResultSetMappings({@SqlResultSetMapping(name="Dictionary.ReferenceCheckForIdMapping",
                      columns={@ColumnResult(name="DICTIONARY_ID")}),
 @SqlResultSetMapping(name="Dictionary.ReferenceCheckForValueMapping",
                      columns={@ColumnResult(name="VALUE")}),
-@SqlResultSetMapping(name="Dictionary.ReferenceCheckForStateCountryMapping",
-                     columns={@ColumnResult(name="VALUE")})})                     
+@SqlResultSetMapping(name="Dictionary.ReferenceCheckForEntryMapping",
+                     columns={@ColumnResult(name="ENTRY")})})                     
                      
                      
                      

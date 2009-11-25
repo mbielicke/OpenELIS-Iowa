@@ -25,30 +25,25 @@
 */
 package org.openelis.remote;
 
-import org.openelis.domain.IdNameVO;
-import org.openelis.domain.StorageUnitDO;
-import org.openelis.gwt.common.data.QueryData;
-
-import java.util.ArrayList;
-
 import javax.ejb.Remote;
 
+import org.openelis.manager.InstrumentLogManager;
+import org.openelis.manager.InstrumentManager;
+
 @Remote
-public interface StorageUnitRemote {
-    public StorageUnitDO fetchById(Integer id) throws Exception;
+public interface InstrumentManagerRemote {
+
+    public InstrumentManager fetchById(Integer id) throws Exception;
     
-    public ArrayList<IdNameVO> fetchByDescription(String desc, int max) throws Exception;
-
-    public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int rowPP) throws Exception;
-
-    public StorageUnitDO add(StorageUnitDO data) throws Exception;
-
-    public StorageUnitDO update(StorageUnitDO data) throws Exception;
-
-    public StorageUnitDO fetchForUpdate(Integer id) throws Exception;
-
-    public void delete(StorageUnitDO data) throws Exception;
-
-    public StorageUnitDO abortUpdate(Integer id) throws Exception;
-
+    public InstrumentManager fetchWithLogs(Integer id) throws Exception;
+    
+    public InstrumentManager add(InstrumentManager man) throws Exception;
+    
+    public InstrumentManager update(InstrumentManager man) throws Exception;
+    
+    public InstrumentManager fetchForUpdate(Integer id) throws Exception;
+    
+    public InstrumentManager abortUpdate(Integer id) throws Exception;
+    
+    public InstrumentLogManager fetchLogByInstrumentId(Integer id) throws Exception;
 }

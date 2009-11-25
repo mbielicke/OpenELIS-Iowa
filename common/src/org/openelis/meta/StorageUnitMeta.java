@@ -38,12 +38,12 @@ public class StorageUnitMeta implements Meta {
 	
 	private static final String
               ID					="id",
-              CATEGORY					="category",
+              CATEGORY_ID					="categoryId",
               DESCRIPTION					="description",
               IS_SINGULAR					="isSingular";
 
   	private static final String[] columnNames = {
-  	  ID,CATEGORY,DESCRIPTION,IS_SINGULAR};
+  	  ID,CATEGORY_ID,DESCRIPTION,IS_SINGULAR};
   	  
 	private HashSet<String> columnHashList;
     
@@ -80,8 +80,8 @@ public class StorageUnitMeta implements Meta {
         return path + ID;
     } 
 
-    public String getCategory() {
-        return path + CATEGORY;
+    public String getCategoryId() {
+        return path + CATEGORY_ID;
     } 
 
     public String getDescription() {

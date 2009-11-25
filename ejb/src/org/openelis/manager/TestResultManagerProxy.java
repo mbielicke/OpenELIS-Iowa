@@ -307,8 +307,8 @@ public class TestResultManagerProxy {
                         else
                             throw new InconsistencyException("testMoreThanOneDefaultForUnitException");
                     } 
-                } catch (ParseException ex) {
-                    list.add(new GridFieldErrorException(ex.getMessage(), i, j, fieldName,
+                } catch (ParseException ex) {                 
+                    list.add(new GridFieldErrorException(ex.getKey(), i, j, fieldName,
                                                                   "resultTable"));
 
                 } catch (InconsistencyException ex) {

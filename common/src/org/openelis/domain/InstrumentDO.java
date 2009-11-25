@@ -75,7 +75,7 @@ public class InstrumentDO extends DataObject {
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.name = DataBaseUtil.trim(name);
         _changed = true;
     }
 
@@ -84,7 +84,7 @@ public class InstrumentDO extends DataObject {
     }
 
     public void setDescription(String description) {
-        this.description = description;
+        this.description = DataBaseUtil.trim(description);
         _changed = true;
     }
 

@@ -239,9 +239,6 @@ public class LabelBean implements LabelRemote {
         if (DataBaseUtil.isEmpty(data.getPrinterTypeId()))
             list.add(new FieldErrorException("fieldRequiredException", meta.getPrinterTypeId()));
 
-        if (DataBaseUtil.isEmpty(data.getScriptletId()))
-            list.add(new FieldErrorException("fieldRequiredException", meta.SCRIPTLET.getName()));
-
         if (list.size() > 0)
             throw list;
     }

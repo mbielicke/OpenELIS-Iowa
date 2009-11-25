@@ -226,8 +226,8 @@ public class DictionaryBean implements DictionaryLocal, DictionaryRemote {
         
         list = new ValidationErrorsList();
         
-        query = manager.createNamedQuery("Dictionary.ReferenceCheckForStateCountry");
-        query.setParameter("value",data.getEntry());
+        query = manager.createNamedQuery("Dictionary.ReferenceCheckForEntry");
+        query.setParameter("entry",data.getEntry());
         result = query.getResultList();
         
         if(result.size() > 0) {

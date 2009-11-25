@@ -84,9 +84,6 @@ public class CategoryManager implements RPC {
     }
 
     public CategoryManager fetchForUpdate() throws Exception {
-        if (category.getId() == null)
-            throw new InconsistencyException("category id is null");
-
         return proxy().fetchForUpdate(category.getId());
     }
 

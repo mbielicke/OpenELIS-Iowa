@@ -30,16 +30,17 @@ import org.openelis.meta.PanelMeta;
 
 public class PanelMetaMap extends PanelMeta implements MetaMap {
 
+    public PanelItemMetaMap PANEL_ITEM;
+    
     public PanelMetaMap(){
         super("p.");
+        PANEL_ITEM = new PanelItemMetaMap("panelItem.");
     }
-            
-    
+                
     public PanelMetaMap(String path){
-        super(path);                
+        super(path);        
+        PANEL_ITEM = new PanelItemMetaMap(path+"panelItem.");
     }
-    
-    private PanelItemMetaMap PANEL_ITEM = new PanelItemMetaMap("panelItem.");
 
     public boolean hasColumn(String name){                
         if(name.startsWith("panelItem."))
@@ -47,10 +48,10 @@ public class PanelMetaMap extends PanelMeta implements MetaMap {
         return super.hasColumn(name);
     }
     
-    public String buildFrom(String name) {                                
+    public String buildFrom(String where) {                                
        String from = "Panel p ";
-       if(name.indexOf("panelItem.") > -1)
-        from += ", IN (p.panelItem) panelItem ";
+       if(where.indexOf("panelItem.") > -1)
+           from += ", IN (p.panelItem) panelItem ";
        return from;
     }
 
