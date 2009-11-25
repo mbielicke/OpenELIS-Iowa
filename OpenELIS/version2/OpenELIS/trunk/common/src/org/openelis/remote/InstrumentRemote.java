@@ -26,28 +26,15 @@
 package org.openelis.remote;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import javax.ejb.Remote;
 
-import org.openelis.domain.InstrumentLogDO;
-import org.openelis.domain.InstrumentViewDO;
-import org.openelis.gwt.common.data.deprecated.AbstractField;
+import org.openelis.domain.IdNameVO;
+import org.openelis.gwt.common.data.QueryData;
 
 @Remote
 public interface InstrumentRemote {
     
-    public InstrumentViewDO getInstrument(Integer instrumentId);
-    
-    public InstrumentViewDO getInstrumentAndUnlock(Integer instrumentId, String session);
-    
-    public InstrumentViewDO getInstrumentAndLock(Integer instrumentId, String session) throws Exception;
-    
-    public Integer updateInstrument(InstrumentViewDO instrumentDO,
-                                    List<InstrumentLogDO> logEntries) throws Exception;   
-    
-    public List<InstrumentLogDO> getInstrumentLogs(Integer instrumentId);
-    
-    public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception;
+    public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception;
     
 }

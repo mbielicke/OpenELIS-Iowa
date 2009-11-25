@@ -175,7 +175,6 @@ public class DictionaryManagerProxy {
         Integer catId;
         String systemName;
         String name;
-        ArrayList<DictionaryViewDO> dictList;
         Integer categoryId;
         int i;
 
@@ -184,7 +183,6 @@ public class DictionaryManagerProxy {
         data = null;
         dl = local();
         catId = null;
-        dictList = man.getEntries();
         categoryId = man.getCategoryId();
         
 
@@ -197,8 +195,8 @@ public class DictionaryManagerProxy {
             }
         }
         
-        for (i = 0; i < dictList.size(); i++ ) {
-            data = dictList.get(i);
+        for (i = 0; i < man.count(); i++ ) {
+            data = man.getEntryAt(i);
             name = data.getEntry();
             systemName = data.getSystemName();
             
@@ -225,7 +223,7 @@ public class DictionaryManagerProxy {
                        e.printStackTrace();
                    }
                    
-                   if (!DataBaseUtil.isEmpty(catId) && !catId.equals(categoryId)) {
+                   if (!DataBaseUtil.isEmpty(catId) && DataBaseUtil.isDifferent(catId,categoryId)) {
                         list.add(new TableFieldErrorException("fieldUniqueException", i,
                                                               meta.getDictionary().getSystemName(),
                                                               "dictEntTable"));                        

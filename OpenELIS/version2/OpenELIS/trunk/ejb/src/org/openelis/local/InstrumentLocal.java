@@ -23,32 +23,22 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.remote;
+package org.openelis.local;
 
-import org.openelis.domain.IdNameVO;
-import org.openelis.domain.StorageUnitDO;
-import org.openelis.gwt.common.data.QueryData;
+import javax.ejb.Local;
 
-import java.util.ArrayList;
+import org.openelis.domain.InstrumentViewDO;
 
-import javax.ejb.Remote;
+@Local
+public interface InstrumentLocal {
 
-@Remote
-public interface StorageUnitRemote {
-    public StorageUnitDO fetchById(Integer id) throws Exception;
-    
-    public ArrayList<IdNameVO> fetchByDescription(String desc, int max) throws Exception;
+    public InstrumentViewDO fetchById(Integer id) throws Exception;
 
-    public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int rowPP) throws Exception;
+    public InstrumentViewDO add(InstrumentViewDO data) throws Exception;
 
-    public StorageUnitDO add(StorageUnitDO data) throws Exception;
+    public InstrumentViewDO update(InstrumentViewDO data) throws Exception;
 
-    public StorageUnitDO update(StorageUnitDO data) throws Exception;
-
-    public StorageUnitDO fetchForUpdate(Integer id) throws Exception;
-
-    public void delete(StorageUnitDO data) throws Exception;
-
-    public StorageUnitDO abortUpdate(Integer id) throws Exception;
+    public void validate(InstrumentViewDO data) throws Exception;
+        
 
 }

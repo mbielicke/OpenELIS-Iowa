@@ -29,7 +29,7 @@ import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
 @NamedQueries({
-    @NamedQuery( name = "Worksheet.WorksheetById",
+    @NamedQuery( name = "Worksheet.FetchById",
                 query = "select new org.openelis.domain.WorksheetDO(w.id,w.createdDate,w.systemUserId,w.statusId,w.formatId) "+
                         "from Worksheet w where w.id = :id")})
 

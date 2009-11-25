@@ -31,8 +31,8 @@ import org.openelis.meta.ScriptletMeta;
 
 public class InstrumentMetaMap extends InstrumentMeta implements MetaMap {
 
-    private InstrumentLogMetaMap INSTRUMENT_LOG;
-    private ScriptletMeta SCRIPTLET;
+    public InstrumentLogMetaMap INSTRUMENT_LOG;
+    public ScriptletMeta SCRIPTLET;
     
     public InstrumentMetaMap() {
         super("inst.");

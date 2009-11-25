@@ -130,7 +130,7 @@ public class PanelItemBean implements PanelItemLocal {
         match = false;
         
         if(tests.size() == 0) {            
-            list.add(new FieldErrorException("noActiveTestsException",meta.getPanelItem().getTestName()));
+            list.add(new FieldErrorException("noActiveTestsException",meta.PANEL_ITEM.getTestName()));
             throw list;
         } else {
             for(int i = 0; i < tests.size(); i++) {
@@ -142,7 +142,7 @@ public class PanelItemBean implements PanelItemLocal {
             }
             
             if(!match) {
-                list.add(new FieldErrorException("noActiveTestsException",meta.getPanelItem().getTestName()));
+                list.add(new FieldErrorException("noActiveTestsException",meta.PANEL_ITEM.getTestName()));
                 throw list;
             }                
         }

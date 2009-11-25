@@ -35,15 +35,15 @@ public class StorageUnitDO extends DataObject {
 
     private static final long serialVersionUID = 1L;
 
-    protected Integer         id;
-    protected String          category, description, isSingular;
+    protected Integer         id, categoryId;
+    protected String          description, isSingular;
 
     public StorageUnitDO() {
     }
 
-    public StorageUnitDO(Integer id, String category, String description, String isSingular) {
+    public StorageUnitDO(Integer id, Integer categoryId, String description, String isSingular) {
         setId(id);
-        setCategory(category);
+        setCategoryId(categoryId);
         setDescription(description);
         setIsSingular(isSingular);
         _changed = false;
@@ -58,12 +58,12 @@ public class StorageUnitDO extends DataObject {
         _changed = true;
     }
 
-    public String getCategory() {
-        return category;
+    public Integer getCategoryId() {
+        return categoryId;
     }
 
-    public void setCategory(String category) {
-        this.category = DataBaseUtil.trim(category);
+    public void setCategoryId(Integer categoryId) {
+        this.categoryId = categoryId;
         _changed = true;
     }
 
