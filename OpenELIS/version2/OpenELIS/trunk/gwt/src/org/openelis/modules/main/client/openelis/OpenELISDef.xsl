@@ -157,18 +157,12 @@ UIRF Software License are applicable instead of those above.
             </menuItem>
             <menuItem>
               <menuDisplay>
-                <label style="topMenuBarItem" text="{resource:getString($constants,'instrument')}" />
-              </menuDisplay>
-              <menuPanel layout="vertical" position="below" style="topMenuContainer">
-                <menuItem key="instrument" description="{resource:getString($constants,'instrumentDescription')}" enable="false" icon="instrumentIcon" label="{resource:getString($constants,'instrument')}" />
-              </menuPanel>
-            </menuItem>
-            <menuItem>
-              <menuDisplay>
                 <label style="topMenuBarItem" text="{resource:getString($constants,'maintenance')}" />
               </menuDisplay>
               <menuPanel layout="vertical" position="below" style="topMenuContainer">
+                <code>if(OpenELIS.security.hasModule("test","SELECT")){</code>
                 <menuItem key="test" description="{resource:getString($constants,'testDescription')}" icon="testIcon" label="{resource:getString($constants,'test')}" />
+                <code>}</code>
                 <menuItem key="method" description="{resource:getString($constants,'methodDescription')}" icon="methodIcon" label="{resource:getString($constants,'method')}" />
                 <code>if(OpenELIS.security.hasModule("panel","SELECT")){</code>
                 <menuItem key="panel" description="{resource:getString($constants,'panelDescription')}" enable="true" icon="panelIcon" label="{resource:getString($constants,'panel')}" />
@@ -176,7 +170,9 @@ UIRF Software License are applicable instead of those above.
                 <code>if(OpenELIS.security.hasModule("qaevent","SELECT")){</code>
                 <menuItem key="QAEvent" description="{resource:getString($constants,'QAEventDescription')}" icon="QAEventIcon" label="{resource:getString($constants,'QAEvent')}" />
                 <code>}</code>
+                <code>if(OpenELIS.security.hasModule("section","SELECT")){</code>
                 <menuItem key="labSection" description="{resource:getString($constants,'labSectionDescription')}" icon="labSectionIcon" label="{resource:getString($constants,'labSection')}" />
+                <code>}</code>
                 <html>&lt;hr/&gt;</html>
                 <code>if(OpenELIS.security.hasModule("analyte","SELECT")){</code>
                 <menuItem key="analyte" description="{resource:getString($constants,'analyteDescription')}" icon="analyteIcon" label="{resource:getString($constants,'analyte')}" />
@@ -197,13 +193,15 @@ UIRF Software License are applicable instead of those above.
                 <code>}</code>
                 <html>&lt;hr/&gt;</html>
                 <code>if(OpenELIS.security.hasModule("storageunit","SELECT")){</code>
-                <menuItem key="storageUnit" description="{resource:getString($constants,'storageUnitDescription')}" enable="false" icon="storageUnitIcon" label="{resource:getString($constants,'storageUnit')}" />
+                <menuItem key="storageUnit" description="{resource:getString($constants,'storageUnitDescription')}" enable="true" icon="storageUnitIcon" label="{resource:getString($constants,'storageUnit')}" />
                 <code>}</code>
                 <code>if(OpenELIS.security.hasModule("storagelocation","SELECT")){</code>
                 <menuItem key="storageLocation" description="{resource:getString($constants,'storageLocationDescription')}" enable="false" icon="storageLocationIcon" label="{resource:getString($constants,'storageLocation')}" />
                 <code>}</code>
                 <html>&lt;hr/&gt;</html>
-                <menuItem key="instrument" description="{resource:getString($constants,'instrumentDescription')}" enable="false" icon="instrumentIcon" label="{resource:getString($constants,'instrument')}" />
+                <code>if(OpenELIS.security.hasModule("instrument","SELECT")){</code>
+                <menuItem key="instrument" description="{resource:getString($constants,'instrumentDescription')}" enable="true" icon="instrumentIcon" label="{resource:getString($constants,'instrument')}" />
+                <code>}</code>
                 <html>&lt;hr/&gt;</html>
                 <menuItem key="scriptlet" description="{resource:getString($constants,'scriptletDescription')}" enable="false" icon="scriptletIcon" label="{resource:getString($constants,'scriptlet')}" />
                 <code>if(OpenELIS.security.hasModule("systemvariable","SELECT")){</code>

@@ -488,10 +488,11 @@ public class DictionaryScreen extends Screen {
         addScreenHandler(removeEntryButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 int r;
-
-                r = dictTable.getSelectedRow();
+                
+                r = dictTable.getSelectedRow();                
                 try {
                     if (r > -1 && dictTable.numRows() > 0) {
+                        window.setBusy(consts.get("validatingDelete"));        
                         validateForDelete(manager.getEntries().getEntryAt(r));
                         dictTable.deleteRow(r);                        
                     }
@@ -501,6 +502,7 @@ public class DictionaryScreen extends Screen {
                     Window.alert(e.getMessage());
                     e.printStackTrace();                   
                 }
+                window.clearStatus();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -614,6 +616,7 @@ public class DictionaryScreen extends Screen {
 
     protected void query() {
         manager = CategoryManager.getInstance();
+        
         setState(State.QUERY);
         DataChangeEvent.fire(this);
         
@@ -631,6 +634,8 @@ public class DictionaryScreen extends Screen {
 
     protected void add() {
         manager = CategoryManager.getInstance();
+        manager.getCategory().setIsSystem("N");
+        
         setState(State.ADD);
         DataChangeEvent.fire(this);
 
@@ -780,25 +785,11 @@ public class DictionaryScreen extends Screen {
             e.printStackTrace();
         }
         return model;
-    }
-    
-    /*private void enableDragAndDrop(boolean enable) {          
-        dictTable.enableDrag(enable);
-        dictTable.enableDrop(enable);
-        if(enable) {
-            dictTable.addTarget(dictTable);
-            dictTable.addDragHandler(this);
-        } 
-    }*/
+    }    
     
     private void validateForDelete(DictionaryViewDO data) throws Exception{        
         if(data.getId() == null)
             return;                           
-     
-        window.setBusy(consts.get("validatingDelete"));
         service.call("validateDelete", data);            
-                
-        window.clearStatus();
-
     }
 }

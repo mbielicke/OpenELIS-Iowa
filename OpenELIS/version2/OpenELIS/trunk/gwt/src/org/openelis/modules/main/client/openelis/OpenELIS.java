@@ -39,6 +39,7 @@ import org.openelis.modules.analyte.client.AnalyteScreen;
 import org.openelis.modules.dictionary.client.DictionaryScreen;
 import org.openelis.modules.environmentalSampleLogin.client.EnvironmentalSampleLoginScreen;
 import org.openelis.modules.favorites.client.FavoritesScreen;
+import org.openelis.modules.instrument.client.InstrumentScreen;
 import org.openelis.modules.inventoryItem.client.InventoryItemScreen;
 import org.openelis.modules.label.client.LabelScreen;
 import org.openelis.modules.method.client.MethodScreen;
@@ -50,6 +51,7 @@ import org.openelis.modules.qaevent.client.QaEventScreen;
 import org.openelis.modules.qc.client.QcScreen;
 import org.openelis.modules.section.client.SectionScreen;
 import org.openelis.modules.standardnote.client.StandardNoteScreen;
+import org.openelis.modules.storageunit.client.StorageUnitScreen;
 import org.openelis.modules.systemvariable.client.SystemVariableScreen;
 import org.openelis.modules.test.client.TestScreen;
 import org.openelis.modules.testTrailer.client.TestTrailerScreen;
@@ -595,7 +597,7 @@ public class OpenELIS extends Screen {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                      //      browser.addScreen(new InstrumentScreen());
+                            browser.addScreen(new InstrumentScreen());
                         } catch (Throwable e) {
                             e.printStackTrace();
                             Window.alert(e.getMessage());
@@ -830,7 +832,7 @@ public class OpenELIS extends Screen {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                         //   browser.addScreen(new StorageUnitScreen());
+                            browser.addScreen(new StorageUnitScreen());
                         } catch (Throwable e) {
                             e.printStackTrace();
                             Window.alert(e.getMessage());

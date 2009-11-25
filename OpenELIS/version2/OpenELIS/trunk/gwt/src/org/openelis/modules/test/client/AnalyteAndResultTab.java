@@ -203,14 +203,14 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
                 int r, c;
                 Integer key;
-                TableDataRow set,vset;
+                TableDataRow row,val,prevVal;
                 
                 r = event.getRow();
                 c = event.getCol();                                              
                 anaSelCol = c;
                 enableAnalyteWidgets(true);
                 try {                    
-                    set = analyteTable.getRow(r); 
+                    row = analyteTable.getRow(r); 
                     if(displayManager.isHeaderRow(r)) {
                         // 
                         // the first two columns of a header row are immutable
@@ -229,12 +229,12 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
                             canAddRemoveColumn = false;                            
                             anaSelCol = -1;                            
                         } else if(c != 2) {  
-                            vset = (TableDataRow)set.cells.get(c-1).getValue(); 
+                            val = (TableDataRow)row.cells.get(c-1).getValue(); 
                             //
                             // we don't want to allow editing of a header cell if the
                             // cell to its left doesn't have any data in it                            
                             //
-                            if(vset == null || vset.key == null) { 
+                            if(val == null || val.key == null) { 
                                 event.cancel();
                                 enableAnalyteWidgets(false);
                                 anaSelCol = -1;                                
@@ -271,13 +271,23 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
                         enableAnalyteWidgets(false);
                         canAddRemoveColumn = false;                        
                     } else if(c > 0) {
-                        vset = (TableDataRow)set.cells.get(c).getValue();           
-                        if(vset != null && vset.key != null){
+                        if(c == 1) {
+                            prevVal = (TableDataRow)row.cells.get(c-1).getValue();
+                            //
+                            // we disallow the editing of the first result group
+                            // cell if there's no analyte selected in the first
+                            // cell of the analyte row
+                            //
+                            if(prevVal == null || prevVal.key == null)
+                                event.cancel();                            
+                        }
+                        val = (TableDataRow)row.cells.get(c).getValue();           
+                        if(val != null && val.key != null){
                            //
                            // here we check to see if there was a result group 
                            // selected and if there was we open the tab corresponding
                            // to it   
-                           key = (Integer)vset.key;
+                           key = (Integer)val.key;
                            if(key-1 < resultTabPanel.getTabBar().getTabCount()){
                                resultTabPanel.selectTab(key-1);
                            }
@@ -306,7 +316,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
         analyteTable.addCellEditedHandler(new CellEditedHandler() {
             public void onCellUpdated(CellEditedEvent event) {
                 int r,c,numCol,dindex;
-                TableDataRow row,value;
+                TableDataRow row,val;
                 TestAnalyteViewDO data;                
                 Integer key;
                 AutoComplete<Integer> auto;
@@ -314,8 +324,8 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
                 r = event.getRow();
                 c = event.getCol();
                 row = analyteTable.getRow(r);
-                value = (TableDataRow)analyteTable.getObject(r, c);
-                key = (Integer)value.key;    
+                val = (TableDataRow)analyteTable.getObject(r, c);
+                key = (Integer)val.key;    
                 auto = (AutoComplete<Integer>)analyteTable.getColumns().get(c).getColumnWidget();
                 
                 try {                                                                                              
@@ -669,8 +679,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
                         if(data != null)
                             scriptlet.setSelection(data.getScriptletId(),data.getScriptletName());
                         else
-                            scriptlet.setSelection(null,"");
-                        
+                            scriptlet.setSelection(null,"");                        
                 }                                 
             }
 
@@ -864,8 +873,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
             public void onCellUpdated(CellEditedEvent event) {
                 int r,c,group;                
                 TestResultViewDO data ;
-                Object val;
-                GridFieldErrorException exc;                 
+                Object val;              
 
                 r = event.getRow();
                 c = event.getCol();
@@ -884,7 +892,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
                             validateValue(data, (String)resultTable.getObject(r, 2));
                         } catch (LocalizedException e) {
                             resultTable.setCellException(r, 2, e);
-                            exc = addToResultErrorList(group, r, meta.TEST_RESULT.getValue(), e.getMessage());
+                            addToResultErrorList(group, r, meta.TEST_RESULT.getValue(), e.getMessage());
                         }
                         break;
                     case 2:                                                                                     
@@ -893,7 +901,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
                             validateValue(data, (String)val);
                         } catch (LocalizedException e) {
                             resultTable.setCellException(r, c, e);
-                            exc = addToResultErrorList(group, r, meta.TEST_RESULT.getValue(), e.getMessage());
+                            addToResultErrorList(group, r, meta.TEST_RESULT.getValue(), e.getMessage());
                         }
                         ActionEvent.fire(screen, Action.RESULT_CHANGED, data);
                         break;
@@ -1780,6 +1788,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
                     ArrayList<IdNameVO> list;
                     TestResultViewDO data;
                     IdNameVO entry;
+                    TableDataRow row;
 
                     selTab = resultTabPanel.getTabBar().getSelectedTab();
                     numTabs = resultTabPanel.getTabBar().getTabCount();
@@ -1789,9 +1798,9 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
                             if (list.size() > 0 && numTabs == 0) {
                                 Window.alert(consts.get("atleastOneResGrp"));
                                 return;
-                            }
-                           
-                            r = resultTable.numRows()-1;
+                            }                
+                            
+                            r = resultTable.numRows();
                             
                             for (int i = 0; i < list.size(); i++ ) {
                                 entry = list.get(i);
@@ -1801,7 +1810,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,Bef
                                                                       resultTable.numRows());
                                 data.setValue(entry.getId().toString());
                                 data.setDictionary(entry.getName());
-                                data.setTypeId(typeDict);                                
+                                data.setTypeId(typeDict);                                  
                             }
                             DataChangeEvent.fire(screen, resultTable);
                         }

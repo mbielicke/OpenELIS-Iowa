@@ -36,23 +36,13 @@ UIRF Software License are applicable instead of those above.
   xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd">
 
   <xsl:import href="IMPORT/aToZTwoColumns.xsl" />
-  <xalan:component prefix="resource">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.util.UTFResource" />
-  </xalan:component>
-  <xalan:component prefix="locale">
-    <xalan:script lang="javaclass" src="xalan://java.util.Locale" />
-  </xalan:component>
   <xsl:template match="doc">
-    <xsl:variable name="language">
-      <xsl:value-of select="locale" />
-    </xsl:variable>
-    <xsl:variable name="props">
-      <xsl:value-of select="props" />
-    </xsl:variable>
+    <xsl:variable name="language" select="locale" />
+    <xsl:variable name="props" select="props" />
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
-    <screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="DictionaryEntryPicker" name="{resource:getString($constants,'dictionaryEntrySelection')}">
+    <screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="DictionaryEntryLookup" name="{resource:getString($constants,'dictionaryEntrySelection')}">
       <VerticalPanel>
-        <HorizontalPanel spacing="0">
+        <HorizontalPanel height="100%" spacing="0">
 <!--left table goes here -->
           <buttonGroup key="atozButtons" height="100%">
             <xsl:call-template name="aToZLeftPanelButtons" />
@@ -106,7 +96,7 @@ UIRF Software License are applicable instead of those above.
             </VerticalPanel>
           </VerticalPanel>
         </HorizontalPanel>
-        <VerticalPanel width="503px" spacing="0">
+        <VerticalPanel width="504px" spacing="0">
           <AbsolutePanel align="center" spacing="0" style="BottomButtonPanelContainer">
             <HorizontalPanel>
               <xsl:call-template name="okButton">

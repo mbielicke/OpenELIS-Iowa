@@ -25,5 +25,5 @@ license ("UIRF Software License"), in which case the provisions of a
 UIRF Software License are applicable instead of those above. 
 -->
 <module>
-    <entry-point class="org.openelis.modules.instrument.client.InstrumentEntry"/>
+    
 </module>

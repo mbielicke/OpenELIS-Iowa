@@ -387,8 +387,13 @@ public class StorageLocationService implements AppScreenFormServiceInt<StorageLo
 		StorageUnitRemote remote = (StorageUnitRemote)EJBFactory.lookup("openelis/StorageUnitBean/remote");
 		TableDataModel<TableDataRow<Integer>> dataModel = new TableDataModel<TableDataRow<Integer>>();
 
-		//lookup by desc		
-		List autoCompleteList = remote.autoCompleteLookupByDescription(match+"%", 10);
+		//lookup by desc
+		List autoCompleteList = null;
+		try {
+		    autoCompleteList = remote.fetchByDescription(match+"%", 10);
+		} catch(Exception e) {
+		    e.printStackTrace();
+		}
 		Iterator itr = autoCompleteList.iterator();
 		
 		while(itr.hasNext()){

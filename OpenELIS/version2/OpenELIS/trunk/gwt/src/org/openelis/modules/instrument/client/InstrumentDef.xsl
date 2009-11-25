@@ -34,28 +34,32 @@ UIRF Software License are applicable instead of those above.
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   xsi:noNamespaceSchemaLocation="http://openelis.uhl.uiowa.edu/schema/ScreenSchema.xsd"
   xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd"
-  xmlns:dictionary="xalan://org.openelis.metamap.DictionaryMetaMap"
-  xmlns:meta="xalan://org.openelis.metamap.CategoryMetaMap"
-  xmlns:relentry="xalan://org.openelis.meta.DictionaryMeta">
+  xmlns:instLog="xalan://org.openelis.metamap.InstrumentLogMetaMap"
+  xmlns:meta="xalan://org.openelis.metamap.InstrumentMetaMap"
+  xmlns:script="xalan://org.openelis.meta.ScriptletMeta">
 
   <xsl:import href="IMPORT/aToZOneColumn.xsl" />
   <xsl:template match="doc">
-    <xsl:variable name="cat" select="meta:new()" />
-    <xsl:variable name="dictNew" select="meta:getDictionary($cat)" />
-    <xsl:variable name="rel" select="dictionary:getRelatedEntry($dictNew)" />
+    <xsl:variable name="inst" select="meta:new()" />
+    <xsl:variable name="scpt" select="meta:getScriptlet($inst)" />
+    <xsl:variable name="il" select="meta:getInstrumentLog($inst)" />
     <xsl:variable name="language" select="locale" />
-    <xsl:variable name="props" select="props" />    
+    <xsl:variable name="props" select="props" />
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
-    <screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Dictionary" name="{resource:getString($constants,'dictionary')}">
+    <screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Instrument" name="{resource:getString($constants,'instrument')}">
       <HorizontalPanel padding="0" spacing="0">
+<!--left table goes here -->
         <CollapsePanel key="collapsePanel" style="LeftSidePanel">
-          <HorizontalPanel width="225px">
+          <HorizontalPanel width="225">
             <buttonGroup key="atozButtons">
               <xsl:call-template name="aToZLeftPanelButtons" />
             </buttonGroup>
             <VerticalPanel>
               <table key="atozTable" width="auto" maxRows="20" style="atozTable">
-                <col width="175" header="{resource:getString($constants,'catName')}">
+                <col width="75" header="{resource:getString($constants,'name')}">
+                  <label />
+                </col>
+                <col width="100" header="{resource:getString($constants,'serialNumber')}">
                   <label />
                 </col>
               </table>
@@ -73,6 +77,7 @@ UIRF Software License are applicable instead of those above.
           </HorizontalPanel>
         </CollapsePanel>
         <VerticalPanel padding="0" spacing="0">
+<!--button panel code-->
           <AbsolutePanel spacing="0" style="ButtonPanelContainer">
             <HorizontalPanel>
               <xsl:call-template name="queryButton">
@@ -133,88 +138,115 @@ UIRF Software License are applicable instead of those above.
             </HorizontalPanel>
           </AbsolutePanel>
 <!--end button panel-->
-          <VerticalPanel padding="0" spacing="0" style="WhiteContentPanel">
+          <VerticalPanel width="620" height="235" padding="0" spacing="0" style="WhiteContentPanel">
             <TablePanel style="Form">
               <row>
                 <text style="Prompt">
-                  <xsl:value-of select='resource:getString($constants,"catName")' />:
+                  <xsl:value-of select="resource:getString($constants,'name')" />:
                 </text>
-                <widget colspan="5">
-                  <textbox key="{meta:getName($cat)}" width="355px" case="MIXED" max="50" tab="{meta:getDescription($cat)},{meta:getSystemName($cat)}" required="true" />
+                <widget>
+                  <textbox key="{meta:getName($inst)}" width="145" case="LOWER" max="20" tab="{meta:getDescription($inst)},{meta:getActiveEnd($inst)}" required="true" />
                 </widget>
               </row>
               <row>
                 <text style="Prompt">
-                  <xsl:value-of select='resource:getString($constants,"description")' />:
+                  <xsl:value-of select="resource:getString($constants,'description')" />:
                 </text>
-                <widget colspan="3">
-                  <textbox key="{meta:getDescription($cat)}" width="425px" case="MIXED" max="60" tab="{meta:getSectionId($cat)},{meta:getName($cat)}" />
+                <widget colspan="6">
+                  <textbox key="{meta:getDescription($inst)}" width="425" max="60" tab="{meta:getModelNumber($inst)},{meta:getName($inst)}" />
                 </widget>
               </row>
               <row>
                 <text style="Prompt">
-                  <xsl:value-of select='resource:getString($constants,"section")' />:
+                  <xsl:value-of select="resource:getString($constants,'modelNumber')" />:
                 </text>
-                <dropdown key="{meta:getSectionId($cat)}" width="100px" case="LOWER" tab="{meta:getSystemName($cat)},{meta:getDescription($cat)}" />
+                <widget>
+                  <textbox key="{meta:getModelNumber($inst)}" width="285" max="40" tab="{meta:getSerialNumber($inst)},{meta:getDescription($inst)}" />
+                </widget>
               </row>
               <row>
                 <text style="Prompt">
-                  <xsl:value-of select='resource:getString($constants,"systemName")' />:
+                  <xsl:value-of select="resource:getString($constants,'serialNumber')" />:
                 </text>
-                <textbox key="{meta:getSystemName($cat)}" width="215px" case="MIXED" max="30" tab="{meta:getIsSystem($cat)},{meta:getSectionId($cat)}" required="true" />
+                <widget>
+                  <textbox key="{meta:getSerialNumber($inst)}" width="285" max="40" tab="{meta:getTypeId($inst)},{meta:getModelNumber($inst)}" required="true" />
+                </widget>
               </row>
               <row>
                 <text style="Prompt">
-                  <xsl:value-of select='resource:getString($constants,"system")' />:
+                  <xsl:value-of select='resource:getString($constants,"type")' />:
                 </text>
-                <check key="{meta:getIsSystem($cat)}" tab="dictEntTable,{meta:getSystemName($cat)}" />
+                <dropdown key="{meta:getTypeId($inst)}" width="150" tab="{meta:getLocation($inst)},{meta:getSerialNumber($inst)}" required="true" />
+                <text style="Prompt">
+                  <xsl:value-of select='resource:getString($constants,"active")' />:
+                </text>
+                <check key="{meta:getIsActive($inst)}" tab="{meta:getActiveBegin($inst)},{script:getName($scpt)}" />
+              </row>
+              <row>
+                <text style="Prompt">
+                  <xsl:value-of select="resource:getString($constants,'location')" />:
+                </text>
+                <widget>
+                  <textbox key="{meta:getLocation($inst)}" width="425" max="60" tab="{script:getName($scpt)},{meta:getTypeId($inst)}" required="true" />
+                </widget>
+                <text style="Prompt">
+                  <xsl:value-of select='resource:getString($constants,"beginDate")' />:
+                </text>
+                <calendar key="{meta:getActiveBegin($inst)}" begin="0" end="2" width="90" pattern="{resource:getString($constants,'datePattern')}" tab="{meta:getActiveEnd($inst)},{meta:getIsActive($inst)}" />
+              </row>
+              <row>
+                <text style="Prompt">
+                  <xsl:value-of select="resource:getString($constants,'scriptlet')" />:
+                </text>
+                <autoComplete key="{script:getName($scpt)}" width="180" case="LOWER" tab="{meta:getIsActive($inst)},{meta:getLocation($inst)}">
+                  <col width="180" />
+                </autoComplete>
+                <text style="Prompt">
+                  <xsl:value-of select='resource:getString($constants,"endDate")' />:
+                </text>
+                <calendar key="{meta:getActiveEnd($inst)}" begin="0" end="2" width="90" pattern="{resource:getString($constants,'datePattern')}" tab="{meta:getName($inst)},{meta:getActiveBegin($inst)}" />
               </row>
             </TablePanel>
-            <VerticalPanel>
-              <widget valign="top">
-                <table key="dictEntTable" width="auto" maxRows="12" showScroll="ALWAYS" style="ScreenTableWithSides" tab="{meta:getName($cat)},{meta:getSystemName($cat)}" title="">
-                  <col key="{dictionary:getIsActive($dictNew)}" width="60" header="{resource:getString($constants,'active')}">
-                    <check>Y</check>
-                  </col>
-                  <col key="{dictionary:getSystemName($dictNew)}" width="120" header="{resource:getString($constants,'systemName')}">
-                    <textbox case="LOWER" max="30" field="String" />
-                  </col>
-                  <col key="{dictionary:getLocalAbbrev($dictNew)}" width="120" header="{resource:getString($constants,'abbr')}">
-                    <textbox max="10" field="String" />
-                  </col>
-                  <col key="{dictionary:getEntry($dictNew)}" width="180" sort="true" header="{resource:getString($constants,'entry')}">
-                    <textbox max="255" field="String" required="true" />
-                  </col>
-                  <col key="{relentry:getEntry($rel)}" width="150" header="{resource:getString($constants,'relEntry')}">
-                    <autoComplete width="130" field="Integer">
-                      <col width="200" />
-                    </autoComplete>
-                  </col>
-                </table>
-              </widget>
-              <HorizontalPanel style="TableFooterPanel">
-                <widget halign="center">
-                  <appButton key="addEntryButton" style="Button">
-                    <HorizontalPanel>
-                      <AbsolutePanel style="AddRowButtonImage" />
-                      <text>
-                        <xsl:value-of select='resource:getString($constants,"addRow")' />
-                      </text>
-                    </HorizontalPanel>
-                  </appButton>
-                </widget>
-                <widget halign="center">
-                  <appButton key="removeEntryButton" style="Button">
-                    <HorizontalPanel>
-                      <AbsolutePanel style="RemoveRowButtonImage" />
-                      <text>
-                        <xsl:value-of select='resource:getString($constants,"removeRow")' />
-                      </text>
-                    </HorizontalPanel>
-                  </appButton>
-                </widget>
+            <widget valign="top">
+              <table key="logTable" width="668" maxRows="9" showScroll="ALWAYS" style="ScreenTableWithSides" title="">
+                <col key="{instLog:getTypeId($il)}" width="120" align="left" header="{resource:getString($constants,'type')}">
+                  <dropdown width="155" field="Integer" required="true" />
+                </col>
+                <col key="{instLog:getWorksheetId($il)}" width="100" align="left" header="{resource:getString($constants,'worksheet')}">
+                  <textbox field="Integer" />
+                </col>
+                <col key="{instLog:getEventBegin($il)}" width="140" align="left" header="{resource:getString($constants,'beginDate')}">
+                  <calendar begin="0" end="4" pattern="{resource:getString($constants,'dateTimePattern')}" />
+                </col>
+                <col key="{instLog:getEventEnd($il)}" width="140" align="left" header="{resource:getString($constants,'endDate')}">
+                  <calendar begin="0" end="4" pattern="{resource:getString($constants,'dateTimePattern')}" />
+                </col>
+                <col key="{instLog:getText($il)}" width="400" align="left" header="{resource:getString($constants,'note')}">
+                  <textbox field="String" />
+                </col>
+              </table>
+            </widget>
+            <widget style="TableButtonFooter">
+              <HorizontalPanel>
+                <appButton key="addLogButton" style="Button">
+                  <HorizontalPanel>
+                    <AbsolutePanel style="AddRowButtonImage" />
+                    <text>
+                      <xsl:value-of select="resource:getString($constants,'addRow')" />
+                    </text>
+                  </HorizontalPanel>
+                </appButton>
+                <appButton key="removeLogButton" style="Button">
+                  <HorizontalPanel>
+                    <AbsolutePanel style="RemoveRowButtonImage" />
+                    <text>
+                      <xsl:value-of select="resource:getString($constants,'removeRow')" />
+                    </text>
+                  </HorizontalPanel>
+                </appButton>
               </HorizontalPanel>
-            </VerticalPanel>
+            </widget>
+            <VerticalPanel height="8px" />
           </VerticalPanel>
         </VerticalPanel>
       </HorizontalPanel>
