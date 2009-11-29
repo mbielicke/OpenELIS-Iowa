@@ -55,7 +55,6 @@ import org.openelis.gwt.common.data.deprecated.AbstractField;
 import org.openelis.gwt.common.data.deprecated.TableDataModel;
 import org.openelis.gwt.common.data.deprecated.TableDataRow;
 import org.openelis.local.LockLocal;
-import org.openelis.metamap.OrderMetaMap;
 import org.openelis.persistence.CachingManager;
 import org.openelis.remote.FillOrderRemote;
 import org.openelis.security.domain.SystemUserDO;
@@ -78,7 +77,7 @@ public class FillOrderBean implements FillOrderRemote {
     
     private LockLocal lockBean;
     private static int orderRefTableId, orderShippingNoteRefTableId, orderItemRefTableId;
-    private static final OrderMetaMap OrderMap = new OrderMetaMap();
+//    private static final OrderMetaMap OrderMap = new OrderMetaMap();
     
     public FillOrderBean(){
         orderRefTableId = ReferenceTable.ORDER;
@@ -105,7 +104,7 @@ public class FillOrderBean implements FillOrderRemote {
     public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception {
         StringBuffer sb = new StringBuffer();
         QueryBuilder qb = new QueryBuilder();
-
+/*
         qb.setMeta(OrderMap);
 
         qb.setSelect("distinct new org.openelis.domain.FillOrderDO(" +
@@ -126,7 +125,7 @@ public class FillOrderBean implements FillOrderRemote {
         qb.addWhere(OrderMap.getIsExternal()+"='N'");
         
         qb.setOrderBy(OrderMap.ORDER_ORGANIZATION_META.getName()+" DESC, "+OrderMap.getId());
-
+*/
         sb.append(qb.getEJBQL());
 
         Query query = manager.createQuery(sb.toString());

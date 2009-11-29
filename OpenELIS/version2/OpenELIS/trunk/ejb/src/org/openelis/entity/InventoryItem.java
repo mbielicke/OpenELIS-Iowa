@@ -239,10 +239,6 @@ public class InventoryItem implements Auditable, Cloneable {
     @JoinColumn(name = "inventory_item_id")
     private Collection<InventoryLocation>  inventoryLocation;
 
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "reference_id", insertable = false, updatable = false)
-    private Collection<Note>               note;
-
     @Transient
     private InventoryItem                  original;
 
@@ -484,14 +480,6 @@ public class InventoryItem implements Auditable, Cloneable {
 
     public void setInventoryLocation(Collection<InventoryLocation> inventoryLocation) {
         this.inventoryLocation = inventoryLocation;
-    }
-
-    public Collection<Note> getNote() {
-        return note;
-    }
-
-    public void setNote(Collection<Note> note) {
-        this.note = note;
     }
 
     public void setClone() {

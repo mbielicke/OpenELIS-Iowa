@@ -61,7 +61,6 @@ import org.openelis.gwt.common.data.deprecated.AbstractField;
 import org.openelis.gwt.common.data.deprecated.TableDataModel;
 import org.openelis.gwt.common.data.deprecated.TableDataRow;
 import org.openelis.local.LockLocal;
-import org.openelis.metamap.InventoryReceiptMetaMap;
 import org.openelis.persistence.CachingManager;
 import org.openelis.remote.InventoryReceiptRemote;
 import org.openelis.security.domain.SystemUserDO;
@@ -84,7 +83,7 @@ public class InventoryReceiptBean implements InventoryReceiptRemote{
     
     private LockLocal lockBean;
     private static int orderRefTableId, invLocRefTableId;
-    private static final InventoryReceiptMetaMap InventoryReceiptMap = new InventoryReceiptMetaMap();
+//    private static final InventoryReceiptMetaMap InventoryReceiptMap = new InventoryReceiptMetaMap();
     
     public InventoryReceiptBean(){
         invLocRefTableId = ReferenceTable.INVENTORY_LOCATION;
@@ -181,7 +180,7 @@ public class InventoryReceiptBean implements InventoryReceiptRemote{
     public List query(ArrayList<AbstractField> fields, int first, int max, boolean receipt) throws Exception {
         StringBuffer sb = new StringBuffer();
         QueryBuilder qb = new QueryBuilder();
-
+/*
         qb.setMeta(InventoryReceiptMap);
         
         String selectString = "distinct new org.openelis.domain.InventoryReceiptDO("+
@@ -274,7 +273,7 @@ public class InventoryReceiptBean implements InventoryReceiptRemote{
         sb.append(qb.getSelectClause()).append(fromClause).append(qb.getWhereClause()).append(qb.getOrderBy());
         
 //        sb.append(qb.getEJBQL());
-
+*/
         Query query = manager.createQuery(sb.toString());
     
         if(first > -1 && max > -1)
@@ -689,6 +688,7 @@ public class InventoryReceiptBean implements InventoryReceiptRemote{
     }
     
     private void validateTransferAndLocation(InventoryReceiptDO transferDO, int rowIndex, ValidationErrorsList exceptionList){
+/*
         //from item required
         if(transferDO.getFromInventoryItemId() == null){
             exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex, InventoryReceiptMap.TRANS_LOC_ORDER_META.ORDER_ITEM_META.INVENTORY_ITEM_META.getName()));
@@ -731,10 +731,11 @@ public class InventoryReceiptBean implements InventoryReceiptRemote{
         
         if(transferDO.getChildRatio() != null && transferDO.getParentRatio() == null && transferDO.getQuantityReceived()%transferDO.getChildRatio() > 0)
             exceptionList.add(new TableFieldErrorException("qtyToParentRatioInvalid", rowIndex, InventoryReceiptMap.getQuantityReceived()));
-            
+*/            
     }
     
     private void validateReceiptAndLocation(InventoryReceiptDO receiptDO, int rowIndex, ValidationErrorsList exceptionList){
+/*
         //date received required
         if(receiptDO.getReceivedDate() == null){
             exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex, InventoryReceiptMap.getReceivedDate()));
@@ -784,7 +785,7 @@ public class InventoryReceiptBean implements InventoryReceiptRemote{
         if(receiptDO.getOrderNumber() != null && receiptDO.getOrderNumber().equals(-1)){
             exceptionList.add(new TableFieldErrorException("inventoryReceiptInvalidOrderIdException", rowIndex, InventoryReceiptMap.ORDER_ITEM_META.ORDER_META.getId()));
         }
-        
+*/        
     }
     
     private void lockRecords(List receipts, boolean validate) throws Exception{

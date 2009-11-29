@@ -59,7 +59,6 @@ import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.deprecated.AbstractField;
 import org.openelis.local.LockLocal;
-import org.openelis.metamap.OrderMetaMap;
 import org.openelis.remote.OrderRemote;
 import org.openelis.util.QueryBuilder;
 import org.openelis.utils.GetPage;
@@ -80,7 +79,7 @@ public class OrderBean implements OrderRemote{
     
     private LockLocal lockBean;
     private static int orderRefTable, orderShippingNoteRefTableId, orderCustNoteRefTableId;
-    private static final OrderMetaMap OrderMetaMap = new OrderMetaMap();
+//    private static final OrderMetaMap OrderMetaMap = new OrderMetaMap();
     
     public OrderBean(){
         orderRefTable = ReferenceTable.ORDER;
@@ -198,6 +197,7 @@ public class OrderBean implements OrderRemote{
     public List query(ArrayList<AbstractField> fields, int first, int max, String orderType) throws Exception {       
         StringBuffer sb = new StringBuffer();
         QueryBuilder qb = new QueryBuilder();
+/*
         qb.setMeta(OrderMetaMap);
         qb.setSelect("distinct new org.openelis.domain.IdNameDO("+OrderMetaMap.getId()+") ");
 
@@ -218,7 +218,7 @@ public class OrderBean implements OrderRemote{
             qb.addWhere(OrderMetaMap.getIsExternal() + " = 'N'");
             qb.addWhere(OrderMetaMap.getOrganizationId() + " is not null");
         }
-        
+
         //need to see if Store is in the from clause
         String whereClause = qb.getWhereClause();
         if(whereClause.indexOf("store.") > -1){
@@ -232,7 +232,7 @@ public class OrderBean implements OrderRemote{
         }else{
             sb.append(qb.getEJBQL());
         }
-       
+*/               
         Query query = manager.createQuery(sb.toString());
         
         if(first > -1 && max > -1)
@@ -390,7 +390,7 @@ public class OrderBean implements OrderRemote{
     
     private void validateOrder(OrderDO orderDO, String orderType, List items) throws Exception{
         ValidationErrorsList list = new ValidationErrorsList();
-        
+/*        
         //status required for all order types
         if(orderDO.getStatusId() == null || "".equals(orderDO.getStatusId())){
             list.add(new FieldErrorException("fieldRequiredException",OrderMetaMap.getStatusId()));
@@ -427,12 +427,13 @@ public class OrderBean implements OrderRemote{
         
         if(list.size() > 0)
             throw list;
+*/
     }
     
     private void validateOrderItems(OrderItemDO orderItemDO, int rowIndex, ValidationErrorsList exceptionList){
         if(orderItemDO.getDelete())
             return;
-        
+/*        
         //quantity is required for all order types
         if(orderItemDO.getQuantity() == null || "".equals(orderItemDO.getQuantity())){
             exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex, OrderMetaMap.ORDER_ITEM_META.getQuantity()));
@@ -442,5 +443,6 @@ public class OrderBean implements OrderRemote{
         if(orderItemDO.getInventoryItemId() == null || "".equals(orderItemDO.getInventoryItemId())){
             exceptionList.add(new TableFieldErrorException("fieldRequiredException", rowIndex, OrderMetaMap.ORDER_ITEM_META.INVENTORY_ITEM_META.getName()));
         }
+*/        
     }
 }

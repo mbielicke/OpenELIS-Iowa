@@ -84,15 +84,19 @@ public class OrganizationManagerProxy {
         ol.add(man.getOrganization());
         id = man.getOrganization().getId();
 
-        man.getContacts().setOrganizationId(id);
-        man.getContacts().add();
-
-        man.getParameters().setOrganizationId(id);
-        man.getParameters().add();
-
-        man.getNotes().setReferenceId(id);
-        man.getNotes().setReferenceTableId(ReferenceTable.ORGANIZATION);
-        man.getNotes().add();
+        if (man.contacts != null) {
+            man.getContacts().setOrganizationId(id);
+            man.getContacts().add();
+        }
+        if (man.parameters != null) {
+            man.getParameters().setOrganizationId(id);
+            man.getParameters().add();
+        }
+        if (man.notes != null) {
+            man.getNotes().setReferenceId(id);
+            man.getNotes().setReferenceTableId(ReferenceTable.ORGANIZATION);
+            man.getNotes().add();
+        }
 
         return man;
     }
@@ -105,15 +109,19 @@ public class OrganizationManagerProxy {
         ol.update(man.getOrganization());
         id = man.getOrganization().getId();
 
-        man.getContacts().setOrganizationId(id);
-        man.getContacts().update();
-
-        man.getParameters().setOrganizationId(id);
-        man.getParameters().update();
-
-        man.getNotes().setReferenceId(id);
-        man.getNotes().setReferenceTableId(ReferenceTable.ORGANIZATION);
-        man.getNotes().update();
+        if (man.contacts != null) {
+            man.getContacts().setOrganizationId(id);
+            man.getContacts().update();
+        }
+        if (man.parameters != null) {
+            man.getParameters().setOrganizationId(id);
+            man.getParameters().update();
+        }
+        if (man.notes != null) {
+            man.getNotes().setReferenceId(id);
+            man.getNotes().setReferenceTableId(ReferenceTable.ORGANIZATION);
+            man.getNotes().update();
+        }
 
         return man;
     }
@@ -138,12 +146,14 @@ public class OrganizationManagerProxy {
             DataBaseUtil.mergeException(list, e);
         }
         try {
-            man.getContacts().validate();
+            if (man.contacts != null)
+                man.getContacts().validate();
         } catch (Exception e) {
             DataBaseUtil.mergeException(list, e);
         }
         try {
-            man.getParameters().validate();
+            if (man.parameters != null)
+                man.getParameters().validate();
         } catch (Exception e) {
             DataBaseUtil.mergeException(list, e);
         }
