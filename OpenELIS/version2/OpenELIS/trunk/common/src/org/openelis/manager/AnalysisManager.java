@@ -147,7 +147,7 @@ public class AnalysisManager implements RPC, HasNotesInt {
         if (item.analysisInternalNotes == null) {
             if (item.analysis != null && item.analysis.getId() != null) {
                 try {
-                    item.analysisInternalNotes = NoteManager.findByRefTableRefId(ReferenceTable.ANALYSIS_INTERNAL_NOTE,
+                    item.analysisInternalNotes = NoteManager.fetchByRefTableRefId(ReferenceTable.ANALYSIS_INTERNAL_NOTE,
                                                                                  item.analysis.getId());
 
                 } catch (NotFoundException e) {
@@ -174,7 +174,7 @@ public class AnalysisManager implements RPC, HasNotesInt {
         if (item.analysisExternalNote == null) {
             if (item.analysis != null && item.analysis.getId() != null) {
                 try {
-                    item.analysisExternalNote = NoteManager.findByRefTableRefId(ReferenceTable.ANALYSIS,
+                    item.analysisExternalNote = NoteManager.fetchByRefTableRefId(ReferenceTable.ANALYSIS,
                                                                                 item.analysis.getId());
 
                 } catch (NotFoundException e) {

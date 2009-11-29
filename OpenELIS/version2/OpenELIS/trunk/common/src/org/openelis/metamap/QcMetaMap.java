@@ -37,13 +37,13 @@ public class QcMetaMap extends QcMeta implements MetaMap {
     public QcMetaMap() {
         super("qc.");
         QC_ANALYTE = new QcAnalyteMetaMap("qcAnalyte.");
-        INVENTORY_ITEM = new InventoryItemMeta(path + "inventoryItem.");
+//        INVENTORY_ITEM = new InventoryItemMeta(path + "inventoryItem.");
     }
 
     public QcMetaMap(String path) {
         super(path);
         QC_ANALYTE = new QcAnalyteMetaMap(path + "qcAnalyte.");
-        INVENTORY_ITEM = new InventoryItemMeta(path + "inventoryItem.");
+//        INVENTORY_ITEM = new InventoryItemMeta(path + "inventoryItem.");
     }
 
     public QcAnalyteMetaMap getQcAnalyte() {

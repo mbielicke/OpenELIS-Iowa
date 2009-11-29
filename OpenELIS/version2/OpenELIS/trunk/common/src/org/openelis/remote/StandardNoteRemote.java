@@ -37,6 +37,10 @@ import org.openelis.gwt.common.data.QueryData;
 public interface StandardNoteRemote {
     public StandardNoteDO fetchById(Integer id) throws Exception;
 
+    public ArrayList<StandardNoteDO> fetchByType(Integer typeId, int max) throws Exception;
+    
+    public ArrayList<StandardNoteDO> fetchByNameOrDescription(String name, String description, int max) throws Exception;
+    
     public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception;
 
     public StandardNoteDO add(StandardNoteDO data) throws Exception;
@@ -48,7 +52,5 @@ public interface StandardNoteRemote {
     public StandardNoteDO abortUpdate(Integer id) throws Exception;
 
     public void delete(StandardNoteDO data) throws Exception;
-    
-    public ArrayList<StandardNoteDO> queryNote(ArrayList<QueryData> field, int first, int max) throws Exception;
     
 }

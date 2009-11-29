@@ -37,7 +37,6 @@ public class OrganizationMetaMap extends OrganizationMeta implements MetaMap {
     public OrganizationMeta           PARENT_ORGANIZATION;
     public OrganizationContactMetaMap ORGANIZATION_CONTACT;
     public OrganizationParameterMeta  ORGANIZATION_PARAMETER;
-    public NoteMeta                   NOTE;
 
     public OrganizationMetaMap() {
         super("o.");
@@ -45,7 +44,6 @@ public class OrganizationMetaMap extends OrganizationMeta implements MetaMap {
         PARENT_ORGANIZATION = new OrganizationMeta(path + "parentOrganization.");
         ORGANIZATION_CONTACT = new OrganizationContactMetaMap(path + "contact.");
         ORGANIZATION_PARAMETER = new OrganizationParameterMeta(path + "parameter.");
-        NOTE = new NoteMeta("note.");
     }
 
     public OrganizationMetaMap(String path) {
@@ -54,7 +52,6 @@ public class OrganizationMetaMap extends OrganizationMeta implements MetaMap {
         PARENT_ORGANIZATION = new OrganizationMeta(path + "parentOrganization.");
         ORGANIZATION_CONTACT = new OrganizationContactMetaMap(path + "contact.");
         ORGANIZATION_PARAMETER = new OrganizationParameterMeta(path + "parameter.");
-        NOTE = new NoteMeta("note.");
     }
 
     public static OrganizationMetaMap getInstance() {
@@ -75,10 +72,6 @@ public class OrganizationMetaMap extends OrganizationMeta implements MetaMap {
 
     public OrganizationParameterMeta getOrganizationParameter() {
         return ORGANIZATION_PARAMETER;
-    }
-
-    public NoteMeta getNote() {
-        return NOTE;
     }
 
     public boolean hasColumn(String name) {

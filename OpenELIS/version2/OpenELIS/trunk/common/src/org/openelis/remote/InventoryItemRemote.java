@@ -29,7 +29,7 @@ import java.util.ArrayList;
 
 import javax.ejb.Remote;
 
-import org.openelis.domain.IdNameVO;
+import org.openelis.domain.IdNameStoreVO;
 import org.openelis.domain.InventoryItemDO;
 import org.openelis.gwt.common.data.QueryData;
 
@@ -41,7 +41,7 @@ public interface InventoryItemRemote {
 
     public ArrayList<InventoryItemDO> fetchActiveByNameAndStore(String name, Integer storeId, int max) throws Exception;
 
-    public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception;
+    public ArrayList<IdNameStoreVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception;
 }
 /*
     //method to return parent inventory item

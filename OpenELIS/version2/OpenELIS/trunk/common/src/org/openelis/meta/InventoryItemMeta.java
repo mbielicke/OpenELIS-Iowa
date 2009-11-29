@@ -29,13 +29,12 @@ package org.openelis.meta;
  * InventoryItem META Data
  */
 
+import java.util.Arrays;
 import java.util.HashSet;
 import org.openelis.gwt.common.Meta;
+import org.openelis.gwt.common.MetaMap;
 
-public class InventoryItemMeta implements Meta {
-    protected String              path        = "";
-    private static final String   entityName  = "InventoryItem";
-
+public class InventoryItemMeta implements Meta, MetaMap {
     private static final String   ID   = "id", 
                                   NAME = "name",
                                   DESCRIPTION = "description",
@@ -59,140 +58,205 @@ public class InventoryItemMeta implements Meta {
                                   AVERAGE_COST = "averageCost",
                                   AVERAGE_DAILY_USE = "averageDailyUse",
                                   PARENT_INVENTORY_ITEM_ID = "parentInventoryItemId",
-                                  PARENT_RATIO = "parentRatio";
+                                  PARENT_RATIO = "parentRatio",
+                                  
+                                  CMP_ID = "inventoryComponent.id",
+                                  CMP_INVENTORY_ITEM_ID = "inventoryComponent.inventoryItemId",
+                                  CMP_COMPONENT_ID = "inventoryComponent.componentId",
+                                  CMP_COMPONENT_NAME = "inventoryComponent.componentInventoryItem.name",
+                                  CMP_COMPONENT_DESCRIPTION = "inventoryComponent.componentInventoryItem.description",
+                                  CMP_QUANTITY = "inventoryComponent.quantity",
+                                  
+                                  LOC_ID = "inventoryLocation.id",
+                                  LOC_INVENTORY_ITEM_ID = "inventoryLocation.inventoryItemId",
+                                  LOC_LOT_NUMBER = "inventoryLocation.lotNumber",
+                                  LOC_STORAGE_LOCATION_ID = "inventoryLocation.storageLocationId",
+                                  LOC_QUANTITY_ONHAND = "inventoryLocation.quantityOnhand",
+                                  LOC_EXPIRATION_DATE = "inventoryLocation.expirationDate",
+                                  
+                                  PAR_NAME = "parentInventoryItem.name";
 
-    private static final String[] columnNames = {ID, NAME, DESCRIPTION,
-                    CATEGORY_ID, STORE_ID, QUANTITY_MIN_LEVEL, QUANTITY_MAX_LEVEL,
-                    QUANTITY_TO_REORDER, DISPENSED_UNITS_ID, IS_REORDER_AUTO,
-                    IS_LOT_MAINTAINED, IS_SERIAL_MAINTAINED, IS_ACTIVE,
-                    IS_BULK, IS_NOT_FOR_SALE, IS_SUB_ASSEMBLY, IS_LABOR,
-                    IS_NOT_INVENTORIED, PRODUCT_URI, AVERAGE_LEAD_TIME,
-                    AVERAGE_COST, AVERAGE_DAILY_USE, PARENT_INVENTORY_ITEM_ID,
-                    PARENT_RATIO};
-
-    private HashSet<String>       columnHashList;
-
-    private void init() {
-        columnHashList = new HashSet<String>(columnNames.length);
-        for (int i = 0; i < columnNames.length; i++ ) {
-            columnHashList.add(path + columnNames[i]);
-        }
+    private static HashSet<String> names;
+    
+    static {
+        names = new HashSet<String>(Arrays.asList(ID, NAME, DESCRIPTION, CATEGORY_ID, STORE_ID,
+                                                  QUANTITY_MIN_LEVEL, QUANTITY_MAX_LEVEL,
+                                                  QUANTITY_TO_REORDER, DISPENSED_UNITS_ID,
+                                                  IS_REORDER_AUTO, IS_LOT_MAINTAINED,
+                                                  IS_SERIAL_MAINTAINED, IS_ACTIVE, IS_BULK,
+                                                  IS_NOT_FOR_SALE, IS_SUB_ASSEMBLY, IS_LABOR,
+                                                  IS_NOT_INVENTORIED, PRODUCT_URI,
+                                                  AVERAGE_LEAD_TIME, AVERAGE_COST,
+                                                  AVERAGE_DAILY_USE, PARENT_INVENTORY_ITEM_ID,
+                                                  PARENT_RATIO, CMP_ID, CMP_INVENTORY_ITEM_ID,
+                                                  CMP_COMPONENT_ID, CMP_COMPONENT_NAME,
+                                                  CMP_COMPONENT_DESCRIPTION, CMP_QUANTITY, LOC_ID,
+                                                  LOC_INVENTORY_ITEM_ID, LOC_LOT_NUMBER,
+                                                  LOC_STORAGE_LOCATION_ID, LOC_QUANTITY_ONHAND,
+                                                  LOC_EXPIRATION_DATE, PAR_NAME));
     }
 
-    public InventoryItemMeta() {
-        init();
+    public static String getId() {
+        return ID;
     }
 
-    public InventoryItemMeta(String path) {
-        this.path = path;
-        init();
+    public static String getName() {
+        return NAME;
     }
 
-    public String[] getColumnList() {
-        return columnNames;
+    public static String getDescription() {
+        return DESCRIPTION;
     }
 
-    public String getEntity() {
-        return entityName;
+    public static String getCategoryId() {
+        return CATEGORY_ID;
     }
 
-    public boolean hasColumn(String columnName) {
-        return columnHashList.contains(columnName);
+    public static String getStoreId() {
+        return STORE_ID;
     }
 
-    public String getId() {
-        return path + ID;
+    public static String getQuantityMinLevel() {
+        return QUANTITY_MIN_LEVEL;
     }
 
-    public String getName() {
-        return path + NAME;
+    public static String getQuantityMaxLevel() {
+        return QUANTITY_MAX_LEVEL;
     }
 
-    public String getDescription() {
-        return path + DESCRIPTION;
+    public static String getQuantityToReorder() {
+        return QUANTITY_TO_REORDER;
     }
 
-    public String getCategoryId() {
-        return path + CATEGORY_ID;
+    public static String getDispensedUnitsId() {
+        return DISPENSED_UNITS_ID;
     }
 
-    public String getStoreId() {
-        return path + STORE_ID;
+    public static String getIsReorderAuto() {
+        return IS_REORDER_AUTO;
     }
 
-    public String getQuantityMinLevel() {
-        return path + QUANTITY_MIN_LEVEL;
+    public static String getIsLotMaintained() {
+        return IS_LOT_MAINTAINED;
     }
 
-    public String getQuantityMaxLevel() {
-        return path + QUANTITY_MAX_LEVEL;
+    public static String getIsSerialMaintained() {
+        return IS_SERIAL_MAINTAINED;
     }
 
-    public String getQuantityToReorder() {
-        return path + QUANTITY_TO_REORDER;
+    public static String getIsActive() {
+        return IS_ACTIVE;
     }
 
-    public String getDispensedUnitsId() {
-        return path + DISPENSED_UNITS_ID;
+    public static String getIsBulk() {
+        return IS_BULK;
     }
 
-    public String getIsReorderAuto() {
-        return path + IS_REORDER_AUTO;
+    public static String getIsNotForSale() {
+        return IS_NOT_FOR_SALE;
     }
 
-    public String getIsLotMaintained() {
-        return path + IS_LOT_MAINTAINED;
+    public static String getIsSubAssembly() {
+        return IS_SUB_ASSEMBLY;
     }
 
-    public String getIsSerialMaintained() {
-        return path + IS_SERIAL_MAINTAINED;
+    public static String getIsLabor() {
+        return IS_LABOR;
     }
 
-    public String getIsActive() {
-        return path + IS_ACTIVE;
+    public static String getIsNotInventoried() {
+        return IS_NOT_INVENTORIED;
     }
 
-    public String getIsBulk() {
-        return path + IS_BULK;
+    public static String getProductUri() {
+        return PRODUCT_URI;
     }
 
-    public String getIsNotForSale() {
-        return path + IS_NOT_FOR_SALE;
+    public static String getAverageLeadTime() {
+        return AVERAGE_LEAD_TIME;
     }
 
-    public String getIsSubAssembly() {
-        return path + IS_SUB_ASSEMBLY;
+    public static String getAverageCost() {
+        return AVERAGE_COST;
     }
 
-    public String getIsLabor() {
-        return path + IS_LABOR;
+    public static String getAverageDailyUse() {
+        return AVERAGE_DAILY_USE;
     }
 
-    public String getIsNotInventoried() {
-        return path + IS_NOT_INVENTORIED;
+    public static String getParentInventoryItemId() {
+        return PARENT_INVENTORY_ITEM_ID;
     }
 
-    public String getProductUri() {
-        return path + PRODUCT_URI;
+    public static String getParentRatio() {
+        return PARENT_RATIO;
+    }
+    
+    public static String getComponentId() {
+        return CMP_ID;
+    } 
+
+    public static String getComponentInventoryItemId() {
+        return CMP_INVENTORY_ITEM_ID;
+    } 
+
+    public static String getComponentComponentId() {
+        return CMP_COMPONENT_ID;
+    } 
+
+    public static String getComponentName() {
+        return CMP_COMPONENT_NAME;
+    } 
+
+    public static String getComponentDescription() {
+        return CMP_COMPONENT_DESCRIPTION;
+    } 
+
+    public static String getComponentQuantity() {
+        return CMP_QUANTITY;
     }
 
-    public String getAverageLeadTime() {
-        return path + AVERAGE_LEAD_TIME;
+    public static String getLocationId() {
+        return LOC_ID;
+    }
+    
+    public static String getLocationInventoryItemId() {
+        return LOC_INVENTORY_ITEM_ID;
+    }
+    
+    public static String getLocationLotNumber() {
+        return LOC_LOT_NUMBER;
     }
 
-    public String getAverageCost() {
-        return path + AVERAGE_COST;
+    public static String getLocationStorageLocationId() {
+        return LOC_STORAGE_LOCATION_ID;
     }
 
-    public String getAverageDailyUse() {
-        return path + AVERAGE_DAILY_USE;
+    public static String getLocationQuantityOnhand() {
+        return LOC_QUANTITY_ONHAND;
     }
 
-    public String getParentInventoryItemId() {
-        return path + PARENT_INVENTORY_ITEM_ID;
+    public static String getLocationExpirationDate() {
+        return LOC_EXPIRATION_DATE;
     }
 
-    public String getParentRatio() {
-        return path + PARENT_RATIO;
+    public static String getParentName() {
+        return PAR_NAME;
+    }
+
+    public boolean hasColumn(String name) {
+        return names.contains(name);
+    }
+
+    public String buildFrom(String where) {
+        String from;
+        
+        from = "InventoryItem ";
+        if (where.indexOf("inventoryComponent.") > -1)
+            from += ",IN (InventoryItem.inventoryComponent) inventoryComponent ";
+        if (where.indexOf("inventoryLocation.") > -1)
+            from += ",IN (InventoryItem.inventoryLocation) inventoryLocation ";
+
+        return from;
     }
 }

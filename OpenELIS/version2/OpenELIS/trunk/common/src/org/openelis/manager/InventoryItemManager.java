@@ -156,7 +156,7 @@ public class InventoryItemManager implements RPC, HasNotesInt {
         if (manufacturing == null) {
             if (inventoryItem.getId() != null) {
                 try {
-                    manufacturing = NoteManager.findByRefTableRefId(ReferenceTable.INVENTORY_ITEM_MANUFACTURING,
+                    manufacturing = NoteManager.fetchByRefTableRefId(ReferenceTable.INVENTORY_ITEM_MANUFACTURING,
                                                                     inventoryItem.getId());
                 } catch (NotFoundException e) {
                     // ignore
@@ -174,7 +174,7 @@ public class InventoryItemManager implements RPC, HasNotesInt {
         if (notes == null) {
             if (inventoryItem.getId() != null) {
                 try {
-                    notes = NoteManager.findByRefTableRefId(ReferenceTable.INVENTORY_ITEM,
+                    notes = NoteManager.fetchByRefTableRefId(ReferenceTable.INVENTORY_ITEM,
                                                             inventoryItem.getId());
                 } catch (NotFoundException e) {
                     // ignore

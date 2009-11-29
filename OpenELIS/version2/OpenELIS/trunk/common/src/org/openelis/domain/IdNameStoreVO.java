@@ -23,37 +23,53 @@
  * which case the provisions of a UIRF Software License are applicable instead
  * of those above.
  */
-package org.openelis.metamap;
+package org.openelis.domain;
 
-import org.openelis.gwt.common.MetaMap;
-import org.openelis.meta.InventoryComponentMeta;
-import org.openelis.meta.InventoryItemMeta;
+import org.openelis.gwt.common.RPC;
+import org.openelis.utilcommon.DataBaseUtil;
 
-public class InventoryComponentMetaMap extends InventoryComponentMeta implements MetaMap {
+/**
+ * The class is used to carry id, name, and store id fields for query returns, for left 
+ * display, and some auto complete fields. The fields are considered read/display
+ * and do not get committed to the database.
+ */
 
-    public InventoryItemMeta INVENTORY_COMPONENT_ITEM;
+public class IdNameStoreVO implements RPC {
 
-    public InventoryComponentMetaMap() {
-        super();
+    private static final long serialVersionUID = 1L;
+    protected Integer         id, store;
+    protected String          name;
+
+    public IdNameStoreVO() {
     }
 
-    public InventoryComponentMetaMap(String path) {
-        super(path);
-
-        INVENTORY_COMPONENT_ITEM = new InventoryItemMeta(path + "componentInventoryItem.");
+    public IdNameStoreVO(Integer id, String name, Integer store) {
+        setId(id);
+        setName(name);
+        setStore(store);
     }
 
-    public InventoryItemMeta getInventoryItem() {
-        return INVENTORY_COMPONENT_ITEM;
+    public Integer getId() {
+        return id;
     }
 
-    public String buildFrom(String where) {
-        return "InventoryComponent ";
+    public void setId(Integer id) {
+        this.id = id;
     }
 
-    public boolean hasColumn(String name) {
-        if (name.startsWith(path + "componentInventoryItem."))
-            return INVENTORY_COMPONENT_ITEM.hasColumn(name);
-        return super.hasColumn(name);
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = DataBaseUtil.trim(name);
+    }
+
+    public Integer getStore() {
+        return store;
+    }
+
+    public void setStore(Integer store) {
+        this.store = store;
     }
 }

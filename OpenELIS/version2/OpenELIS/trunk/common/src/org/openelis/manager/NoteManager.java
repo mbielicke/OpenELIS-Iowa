@@ -30,11 +30,11 @@ import java.util.ArrayList;
 import org.openelis.domain.NoteViewDO;
 import org.openelis.exception.MultipleNoteException;
 import org.openelis.gwt.common.RPC;
-import org.openelis.gwt.common.ValidationErrorsList;
 
 public class NoteManager implements RPC {
 
     private static final long                   serialVersionUID = 1L;
+
     protected Integer                           referenceId, referenceTableId;
     protected ArrayList<NoteViewDO>             notes, deletedList;
 
@@ -123,13 +123,12 @@ public class NoteManager implements RPC {
 
     public void addNote(NoteViewDO note) throws Exception {
         // we are only going to allow 1 external note. External notes can be
-        // modified
-        // so there is no reason to have more than 1.
+        // modified so there is no reason to have more than 1.
         if ("Y".equals(note.getIsExternal()) && count() > 0)
             throw new MultipleNoteException();
 
         // you can only add 1 internal note at a time. This checks to see if we
-        // already have an uncommited internal note.
+        // already have an uncommitted internal note.
         for (int i = 0; i < count(); i++ ) {
             NoteViewDO noteDO = getNoteAt(i);
 
@@ -141,10 +140,6 @@ public class NoteManager implements RPC {
             notes = new ArrayList<NoteViewDO>();
 
         notes.add(0, note);
-    }
-
-    public static NoteManager findByRefTableRefId(Integer tableId, Integer id) throws Exception {
-        return proxy().fetch(tableId, id);
     }
 
     public void setReferenceTableId(Integer referenceTableId) {
@@ -164,6 +159,10 @@ public class NoteManager implements RPC {
     }
 
     // service methods
+    public static NoteManager fetchByRefTableRefId(Integer tableId, Integer id) throws Exception {
+        return proxy().fetchByRefTableRefId(tableId, id);
+    }
+
     public NoteManager add() throws Exception {
         return proxy().add(this);
     }
@@ -173,24 +172,7 @@ public class NoteManager implements RPC {
     }
 
     public void validate() throws Exception {
-        ValidationErrorsList errorsList = new ValidationErrorsList();
-
-        proxy().validate(this, errorsList);
-
-        if (errorsList.size() > 0)
-            throw errorsList;
-
-    }
-
-    public void validate(ValidationErrorsList errorsList) throws Exception {
-        proxy().validate(this, errorsList);
-    }
-
-    private static NoteManagerProxy proxy() {
-        if (proxy == null)
-            proxy = new NoteManagerProxy();
-
-        return proxy;
+        proxy().validate(this);
     }
 
     // these are friendly methods so only managers and proxies can call this
@@ -211,5 +193,12 @@ public class NoteManager implements RPC {
 
     NoteViewDO getDeletedAt(int i) {
         return deletedList.get(i);
+    }
+
+    private static NoteManagerProxy proxy() {
+        if (proxy == null)
+            proxy = new NoteManagerProxy();
+
+        return proxy;
     }
 }

@@ -130,7 +130,7 @@ public class WorksheetManager implements RPC, HasNotesInt {
         if (notes == null) {
             if (worksheet.getId() != null) {
                 try {
-                    notes = NoteManager.findByRefTableRefId(ReferenceTable.WORKSHEET,
+                    notes = NoteManager.fetchByRefTableRefId(ReferenceTable.WORKSHEET,
                                                             worksheet.getId());
                 } catch (NotFoundException e) {
                     // ignore
