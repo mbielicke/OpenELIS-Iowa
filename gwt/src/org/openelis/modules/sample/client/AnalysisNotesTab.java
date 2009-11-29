@@ -25,7 +25,6 @@
 */
 package org.openelis.modules.sample.client;
 
-import org.openelis.common.NotesTab;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.NoteViewDO;
 import org.openelis.gwt.common.Datetime;
@@ -41,7 +40,8 @@ import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.HasNotesInt;
 import org.openelis.manager.NoteManager;
-import org.openelis.modules.editNote.client.EditNoteScreen;
+import org.openelis.modules.note.client.EditNoteScreen;
+import org.openelis.modules.note.client.NotesTab;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.Window;

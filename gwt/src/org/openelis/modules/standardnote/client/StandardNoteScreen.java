@@ -54,7 +54,7 @@ import org.openelis.gwt.widget.TextArea;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataRow;
-import org.openelis.metamap.StandardNoteMetaMap;
+import org.openelis.meta.StandardNoteMeta;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 
 import com.google.gwt.core.client.GWT;
@@ -67,7 +67,6 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class StandardNoteScreen extends Screen {
     private StandardNoteDO      data;
-    private StandardNoteMetaMap meta = new StandardNoteMetaMap();
     private SecurityModule      security;
 
     private TextBox             name, description;
@@ -215,7 +214,7 @@ public class StandardNoteScreen extends Screen {
             }
         });
 
-        name = (TextBox)def.getWidget(meta.getName());
+        name = (TextBox)def.getWidget(StandardNoteMeta.getName());
         addScreenHandler(name, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 name.setValue(data.getName());
@@ -232,7 +231,7 @@ public class StandardNoteScreen extends Screen {
             }
         });
 
-        description = (TextBox)def.getWidget(meta.getDescription());
+        description = (TextBox)def.getWidget(StandardNoteMeta.getDescription());
         addScreenHandler(description, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 description.setValue(data.getDescription());
@@ -249,7 +248,7 @@ public class StandardNoteScreen extends Screen {
             }
         });
 
-        typeId = (Dropdown<Integer>)def.getWidget(meta.getTypeId());
+        typeId = (Dropdown<Integer>)def.getWidget(StandardNoteMeta.getTypeId());
         addScreenHandler(typeId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 typeId.setSelection(data.getTypeId());
@@ -266,7 +265,7 @@ public class StandardNoteScreen extends Screen {
             }
         });
 
-        text = (TextArea)def.getWidget(meta.getText());
+        text = (TextArea)def.getWidget(StandardNoteMeta.getText());
         addScreenHandler(text, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 text.setValue(data.getText());
@@ -342,7 +341,7 @@ public class StandardNoteScreen extends Screen {
                 QueryData field;
 
                 field = new QueryData();
-                field.key = meta.getName();
+                field.key = StandardNoteMeta.getName();
                 field.query = ((AppButton)event.getSource()).action;
                 field.type = QueryData.Type.STRING;
 

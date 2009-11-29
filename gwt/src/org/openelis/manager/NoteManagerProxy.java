@@ -25,35 +25,51 @@
 */
 package org.openelis.manager;
 
-import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.gwt.common.data.Query;
+import org.openelis.gwt.common.data.QueryData;
 import org.openelis.gwt.services.ScreenService;
-import org.openelis.modules.note.client.NoteServiceParams;
+import org.openelis.meta.NoteMeta;
 
 public class NoteManagerProxy {
-    protected static final String NOTE_SERVICE_URL = "org.openelis.modules.note.server.NoteService";
+    protected static final String SERVICE_URL = "org.openelis.modules.note.server.NoteService";
     protected ScreenService service;
     
     public NoteManagerProxy(){
-        service = new ScreenService("OpenELISServlet?service="+NOTE_SERVICE_URL);
+        service = new ScreenService("controller?service="+SERVICE_URL);
     }
     
+    public NoteManager fetchByRefTableRefId(Integer tableId, Integer id) throws Exception {
+        Query query;
+        QueryData field;
+        
+        query = new Query();
+
+        field = new QueryData();
+        field.key = NoteMeta.getReferenceId();
+        field.type = QueryData.Type.INTEGER;
+        field.query = id.toString();
+        query.setFields(field);
+        
+        field = new QueryData();
+        field.key = NoteMeta.getReferenceTableId();
+        field.type = QueryData.Type.INTEGER;
+        field.query = tableId.toString();
+        query.setFields(field);
+
+        return service.call("fetchByRefTableRefId", query);
+    }
+
     public NoteManager add(NoteManager man) throws Exception {
-        throw new UnsupportedOperationException();
+        assert false : "not supported";
+        return null;
     }
 
     public NoteManager update(NoteManager man) throws Exception {
-        throw new UnsupportedOperationException();
+        assert false : "not supported";
+        return null;
     }
 
-    public NoteManager fetch(Integer tableId, Integer id) throws Exception {
-        NoteServiceParams p = new NoteServiceParams();
-        p.referenceId = id;
-        p.referenceTableId = tableId;
-        
-        return service.call("fetch", p);
-    }
     
-    public void validate(NoteManager man, ValidationErrorsList errorsList) throws Exception {
-        
+    public void validate(NoteManager man) throws Exception {
     }
 }

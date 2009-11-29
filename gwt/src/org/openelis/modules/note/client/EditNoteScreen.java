@@ -23,7 +23,7 @@
  * which case the provisions of a UIRF Software License are applicable instead
  * of those above.
  */
-package org.openelis.modules.editNote.client;
+package org.openelis.modules.note.client;
 
 import java.util.ArrayList;
 
@@ -32,7 +32,6 @@ import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.StandardNoteDO;
 import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
@@ -46,13 +45,14 @@ import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.gwt.widget.TextArea;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.tree.TreeDataItem;
 import org.openelis.gwt.widget.tree.TreeWidget;
 import org.openelis.gwt.widget.tree.event.LeafOpenedEvent;
 import org.openelis.gwt.widget.tree.event.LeafOpenedHandler;
-import org.openelis.metamap.StandardNoteMetaMap;
+import org.openelis.meta.StandardNoteMeta;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -65,29 +65,24 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class EditNoteScreen extends Screen implements HasActionHandlers<EditNoteScreen.Action> {
 
-    private NoteViewDO managerNoteDO, screenNoteDO;
+    private NoteViewDO              managerNoteDO, screenNoteDO;
+
+    private TextArea                text, preview;
+    private TextBox                 subject, search;
+    private AppButton               pasteButton, findButton, okButton, cancelButton;
+    private TreeWidget              tree;
+    private ArrayList<DictionaryDO> categoryList;
 
     public enum Action {
         OK, CANCEL
     };
 
-    protected TextArea                text, preview;
-    protected TextBox                 subject, search;
-    protected AppButton               pasteButton, findButton;
-    protected TreeWidget              tree;
-
-    protected ArrayList<DictionaryDO> categoryList;
-
-    private StandardNoteMetaMap       meta = new StandardNoteMetaMap();
-
     public EditNoteScreen() throws Exception {
         super((ScreenDefInt)GWT.create(EditNoteDef.class));
-        service = new ScreenService("OpenELISServlet?service=org.openelis.modules.editNote.server.EditNoteService");
+        service = new ScreenService("controller?service=org.openelis.modules.standardnote.server.StandardNoteService");
 
-        setState(State.DEFAULT);
-        
-        // Setup link between Screen and widget Handlers
         initialize();
+        setState(State.DEFAULT);
     }
 
     private void initialize() {
@@ -104,7 +99,6 @@ public class EditNoteScreen extends Screen implements HasActionHandlers<EditNote
                 if ( !row.isLoaded()) {
                     find(row, (Integer)row.key);
                     row.checkForChildren(false);
-
                 }
             }
         });
@@ -159,7 +153,6 @@ public class EditNoteScreen extends Screen implements HasActionHandlers<EditNote
 
             public void onStateChange(StateChangeEvent<State> event) {
                 text.enable(true);
-
             }
         });
 
@@ -171,7 +164,6 @@ public class EditNoteScreen extends Screen implements HasActionHandlers<EditNote
 
             public void onStateChange(StateChangeEvent<State> event) {
                 search.enable(true);
-
             }
         });
 
@@ -183,15 +175,11 @@ public class EditNoteScreen extends Screen implements HasActionHandlers<EditNote
 
             public void onValueChange(ValueChangeEvent<String> event) {
                 // disable the paste button if the preview text is empty
-                if ("".equals(preview.getValue()))
-                    pasteButton.enable(false);
-                else
-                    pasteButton.enable(true);
+                pasteButton.enable("".equals(preview.getValue()));
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
                 preview.enable(false);
-
             }
         });
 
@@ -223,7 +211,7 @@ public class EditNoteScreen extends Screen implements HasActionHandlers<EditNote
             }
         });
 
-        final AppButton okButton = (AppButton)def.getWidget("ok");
+        okButton = (AppButton)def.getWidget("ok");
         addScreenHandler(okButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 ok();
@@ -234,7 +222,7 @@ public class EditNoteScreen extends Screen implements HasActionHandlers<EditNote
             }
         });
 
-        final AppButton cancelButton = (AppButton)def.getWidget("cancel");
+        cancelButton = (AppButton)def.getWidget("cancel");
         addScreenHandler(cancelButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 cancel();
@@ -247,68 +235,64 @@ public class EditNoteScreen extends Screen implements HasActionHandlers<EditNote
     }
 
     private void find() {
-        QueryData field;
         Query query;
-        ArrayList<QueryData> fields;
+        QueryData field;
+        QueryFieldUtil parser;
+        
+        query = new Query();
+        parser = new QueryFieldUtil();
+        parser.parse("*" + search.getValue() + "*");
 
-        fields = new ArrayList<QueryData>();
 
         field = new QueryData();
         field.type = QueryData.Type.STRING;
-        field.query = search.getValue();
-        field.key = meta.getName();
-        fields.add(field);
-
-        field = new QueryData();
-        field.type = QueryData.Type.STRING;
-        field.query = search.getValue();
-        field.key = meta.getDescription();
-        fields.add(field);
-
-        query = new Query();
-        query.setFields(fields);
-
-        executeQuery(query, null);
-    }
-
-    private void find(TreeDataItem row, Integer typeId) {
-        Query query;
-        QueryData field;
-
-        field = new QueryData();
-        field.type = QueryData.Type.INTEGER;
-        field.query = String.valueOf(typeId);
-        field.key = meta.getTypeId();
-
-        query = new Query();
+        field.query = parser.getParameter().get(0);
+        field.key = StandardNoteMeta.getName();
         query.setFields(field);
 
-        executeQuery(query, row);
-    }
+        field = new QueryData();
+        field.type = QueryData.Type.STRING;
+        field.query = parser.getParameter().get(0);
+        field.key = StandardNoteMeta.getDescription();
+        query.setFields(field);
 
-    private void executeQuery(Query query, final TreeDataItem row) {
         window.setBusy("querying");
 
-        service.callList("query", query, new AsyncCallback<ArrayList<StandardNoteDO>>() {
+        service.callList("fetchByNameOrDescription", query, new AsyncCallback<ArrayList<StandardNoteDO>>() {
             public void onSuccess(ArrayList<StandardNoteDO> result) {
-                if (row == null)
-                    buildTree(result);
-                else
-                    buildTree(row, result);
+                buildTree(result);
                 window.clearStatus();
             }
 
             public void onFailure(Throwable error) {
-                if (row == null)
-                    buildTree(null);
-                else
-                    buildTree(row, null);
+                buildTree(null);
 
                 if (error instanceof NotFoundException) {
                     window.setDone(consts.get("noRecordsFound"));
                     setState(State.DEFAULT);
-                } else if (error instanceof LastPageException) {
-                    window.setError("No more records in this direction");
+                } else {
+                    Window.alert("Error: EditNote call query failed; " + error.getMessage());
+                    window.setError(consts.get("queryFailed"));
+                }
+            }
+        });
+    }
+
+    private void find(final TreeDataItem row, Integer typeId) {
+        window.setBusy("querying");
+
+        service.callList("fetchByType", typeId, new AsyncCallback<ArrayList<StandardNoteDO>>() {
+            public void onSuccess(ArrayList<StandardNoteDO> result) {
+                buildTree(row, result);
+                window.clearStatus();
+            }
+
+            public void onFailure(Throwable error) {
+                buildTree(row, null);
+
+                if (error instanceof NotFoundException) {
+                    window.setDone(consts.get("noRecordsFound"));
+                    setState(State.DEFAULT);
                 } else {
                     Window.alert("Error: EditNote call query failed; " + error.getMessage());
                     window.setError(consts.get("queryFailed"));
@@ -346,17 +330,17 @@ public class EditNoteScreen extends Screen implements HasActionHandlers<EditNote
     }
 
     protected boolean validate() {
-        boolean valid = true; 
-        if (screenNoteDO != null) { 
-            if ("N".equals(screenNoteDO.getIsExternal())) { 
+        boolean valid = true;
+        if (screenNoteDO != null) {
+            if ("N".equals(screenNoteDO.getIsExternal())) {
                 if (subject.getValue().trim().length() == 0 && text.getValue().trim().length() > 0) {
-                    subject.addException(new FieldErrorException("fieldRequiredException",""));
+                    subject.addException(new FieldErrorException("fieldRequiredException", ""));
                     window.setError(consts.get("correctErrors"));
-                    valid = false; 
-                } 
-            } 
-        } 
- 
+                    valid = false;
+                }
+            }
+        }
+
         return valid;
     }
 
@@ -379,10 +363,10 @@ public class EditNoteScreen extends Screen implements HasActionHandlers<EditNote
 
             if ( !currentTypeId.equals(oldTypeId)) {
                 oldTypeId = currentTypeId;
-                
-                try{
+
+                try {
                     dictDO = DictionaryCache.getEntryFromId(currentTypeId);
-                }catch(Exception e){
+                } catch (Exception e) {
                     Window.alert(e.getMessage());
                     dictDO = null;
                 }

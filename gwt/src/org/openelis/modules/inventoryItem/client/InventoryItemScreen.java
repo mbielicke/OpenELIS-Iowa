@@ -29,9 +29,8 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 
 import org.openelis.cache.DictionaryCache;
-import org.openelis.common.NotesTab;
 import org.openelis.domain.DictionaryDO;
-import org.openelis.domain.IdNameVO;
+import org.openelis.domain.IdNameStoreVO;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.RPC;
@@ -55,9 +54,12 @@ import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataRow;
+import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.manager.InventoryItemManager;
-import org.openelis.metamap.InventoryItemMetaMap;
+import org.openelis.meta.InventoryItemMeta;
 import org.openelis.modules.main.client.openelis.OpenELIS;
+import org.openelis.modules.note.client.NotesTab;
+import org.openelis.modules.note.client.RichTextTab;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -72,7 +74,6 @@ import com.google.gwt.user.client.ui.TabPanel;
 
 public class InventoryItemScreen extends Screen {
 
-    private InventoryItemMetaMap  meta = new InventoryItemMetaMap();
     private InventoryItemManager  manager;
     private SecurityModule        security;
 
@@ -80,10 +81,8 @@ public class InventoryItemScreen extends Screen {
     private ScreenNavigator       nav;
 
     private ComponentTab          componentTab;
-    /*
-     * private LocationTab locationTab; private AdditionalTab additionalTab;
-     * private ManufacturingTab manufacturingTab;
-     */
+    private LocationTab           locationTab;
+    private RichTextTab           manufacturingTab;
     private NotesTab              noteTab;
     private Tabs                  tab;
 
@@ -135,6 +134,7 @@ public class InventoryItemScreen extends Screen {
     /**
      * Setup state and data change handles for every widget on the screen
      */
+    @SuppressWarnings("unchecked")
     private void initialize() {
         queryButton = (AppButton)def.getWidget("query");
         addScreenHandler(queryButton, new ScreenEventHandler<Object>() {
@@ -226,7 +226,7 @@ public class InventoryItemScreen extends Screen {
             }
         });
 
-        id = (TextBox)def.getWidget(meta.getId());
+        id = (TextBox)def.getWidget(InventoryItemMeta.getId());
         addScreenHandler(id, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 id.setValue(manager.getInventoryItem().getId());
@@ -242,7 +242,7 @@ public class InventoryItemScreen extends Screen {
             }
         });
 
-        name = (TextBox)def.getWidget(meta.getName());
+        name = (TextBox)def.getWidget(InventoryItemMeta.getName());
         addScreenHandler(name, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 name.setValue(manager.getInventoryItem().getName());
@@ -259,7 +259,7 @@ public class InventoryItemScreen extends Screen {
             }
         });
 
-        description = (TextBox)def.getWidget(meta.getDescription());
+        description = (TextBox)def.getWidget(InventoryItemMeta.getDescription());
         addScreenHandler(description, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 description.setValue(manager.getInventoryItem().getDescription());
@@ -276,7 +276,7 @@ public class InventoryItemScreen extends Screen {
             }
         });
 
-        categoryId = (Dropdown)def.getWidget(meta.getCategoryId());
+        categoryId = (Dropdown)def.getWidget(InventoryItemMeta.getCategoryId());
         addScreenHandler(categoryId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 categoryId.setSelection(manager.getInventoryItem().getCategoryId());
@@ -293,7 +293,7 @@ public class InventoryItemScreen extends Screen {
             }
         });
 
-        storeId = (Dropdown)def.getWidget(meta.getStoreId());
+        storeId = (Dropdown)def.getWidget(InventoryItemMeta.getStoreId());
         addScreenHandler(storeId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 storeId.setSelection(manager.getInventoryItem().getStoreId());
@@ -310,7 +310,7 @@ public class InventoryItemScreen extends Screen {
             }
         });
 
-        quantityMinLevel = (TextBox)def.getWidget(meta.getQuantityMinLevel());
+        quantityMinLevel = (TextBox)def.getWidget(InventoryItemMeta.getQuantityMinLevel());
         addScreenHandler(quantityMinLevel, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 quantityMinLevel.setValue(manager.getInventoryItem().getQuantityMinLevel());
@@ -327,7 +327,7 @@ public class InventoryItemScreen extends Screen {
             }
         });
 
-        quantityToReorder = (TextBox)def.getWidget(meta.getQuantityToReorder());
+        quantityToReorder = (TextBox)def.getWidget(InventoryItemMeta.getQuantityToReorder());
         addScreenHandler(quantityToReorder, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 quantityToReorder.setValue(manager.getInventoryItem().getQuantityToReorder());
@@ -344,7 +344,7 @@ public class InventoryItemScreen extends Screen {
             }
         });
 
-        quantityMaxLevel = (TextBox)def.getWidget(meta.getQuantityMaxLevel());
+        quantityMaxLevel = (TextBox)def.getWidget(InventoryItemMeta.getQuantityMaxLevel());
         addScreenHandler(quantityMaxLevel, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 quantityMaxLevel.setValue(manager.getInventoryItem().getQuantityMaxLevel());
@@ -361,7 +361,7 @@ public class InventoryItemScreen extends Screen {
             }
         });
 
-        dispensedUnitsId = (Dropdown)def.getWidget(meta.getDispensedUnitsId());
+        dispensedUnitsId = (Dropdown)def.getWidget(InventoryItemMeta.getDispensedUnitsId());
         addScreenHandler(dispensedUnitsId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 dispensedUnitsId.setSelection(manager.getInventoryItem().getDispensedUnitsId());
@@ -378,7 +378,7 @@ public class InventoryItemScreen extends Screen {
             }
         });
 
-        isActive = (CheckBox)def.getWidget(meta.getIsActive());
+        isActive = (CheckBox)def.getWidget(InventoryItemMeta.getIsActive());
         addScreenHandler(isActive, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 isActive.setValue(manager.getInventoryItem().getIsActive());
@@ -395,7 +395,7 @@ public class InventoryItemScreen extends Screen {
             }
         });
 
-        isReorderAuto = (CheckBox)def.getWidget(meta.getIsReorderAuto());
+        isReorderAuto = (CheckBox)def.getWidget(InventoryItemMeta.getIsReorderAuto());
         addScreenHandler(isReorderAuto, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 isReorderAuto.setValue(manager.getInventoryItem().getIsReorderAuto());
@@ -412,7 +412,7 @@ public class InventoryItemScreen extends Screen {
             }
         });
 
-        isLotMaintained = (CheckBox)def.getWidget(meta.getIsLotMaintained());
+        isLotMaintained = (CheckBox)def.getWidget(InventoryItemMeta.getIsLotMaintained());
         addScreenHandler(isLotMaintained, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 isLotMaintained.setValue(manager.getInventoryItem().getIsLotMaintained());
@@ -429,7 +429,7 @@ public class InventoryItemScreen extends Screen {
             }
         });
 
-        isSerialMaintained = (CheckBox)def.getWidget(meta.getIsSerialMaintained());
+        isSerialMaintained = (CheckBox)def.getWidget(InventoryItemMeta.getIsSerialMaintained());
         addScreenHandler(isSerialMaintained, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 isSerialMaintained.setValue(manager.getInventoryItem().getIsSerialMaintained());
@@ -446,7 +446,7 @@ public class InventoryItemScreen extends Screen {
             }
         });
 
-        isBulk = (CheckBox)def.getWidget(meta.getIsBulk());
+        isBulk = (CheckBox)def.getWidget(InventoryItemMeta.getIsBulk());
         addScreenHandler(isBulk, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 isBulk.setValue(manager.getInventoryItem().getIsBulk());
@@ -463,7 +463,7 @@ public class InventoryItemScreen extends Screen {
             }
         });
 
-        isNotForSale = (CheckBox)def.getWidget(meta.getIsNotForSale());
+        isNotForSale = (CheckBox)def.getWidget(InventoryItemMeta.getIsNotForSale());
         addScreenHandler(isNotForSale, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 isNotForSale.setValue(manager.getInventoryItem().getIsNotForSale());
@@ -480,7 +480,7 @@ public class InventoryItemScreen extends Screen {
             }
         });
 
-        isSubAssembly = (CheckBox)def.getWidget(meta.getIsSubAssembly());
+        isSubAssembly = (CheckBox)def.getWidget(InventoryItemMeta.getIsSubAssembly());
         addScreenHandler(isSubAssembly, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 isSubAssembly.setValue(manager.getInventoryItem().getIsSubAssembly());
@@ -497,7 +497,7 @@ public class InventoryItemScreen extends Screen {
             }
         });
 
-        isLabor = (CheckBox)def.getWidget(meta.getIsLabor());
+        isLabor = (CheckBox)def.getWidget(InventoryItemMeta.getIsLabor());
         addScreenHandler(isLabor, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 isLabor.setValue(manager.getInventoryItem().getIsLabor());
@@ -514,7 +514,7 @@ public class InventoryItemScreen extends Screen {
             }
         });
 
-        isNotInventoried = (CheckBox)def.getWidget(meta.getIsNotInventoried());
+        isNotInventoried = (CheckBox)def.getWidget(InventoryItemMeta.getIsNotInventoried());
         addScreenHandler(isNotInventoried, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 isNotInventoried.setValue(manager.getInventoryItem().getIsNotInventoried());
@@ -531,7 +531,7 @@ public class InventoryItemScreen extends Screen {
             }
         });
         
-        productUri = (TextBox)def.getWidget(meta.getProductUri());
+        productUri = (TextBox)def.getWidget(InventoryItemMeta.getProductUri());
         addScreenHandler(productUri, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 productUri.setValue(manager.getInventoryItem().getProductUri());
@@ -547,7 +547,7 @@ public class InventoryItemScreen extends Screen {
             }
         });
 
-        parentInventoryItemId = (AutoComplete)def.getWidget(meta.getParentInventoryItem().getName());
+        parentInventoryItemId = (AutoComplete)def.getWidget(InventoryItemMeta.getParentName());
         addScreenHandler(name, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 parentInventoryItemId.setSelection(manager.getInventoryItem().getParentInventoryItemId(),
@@ -565,7 +565,7 @@ public class InventoryItemScreen extends Screen {
             }
         });
 
-        parentRatio = (TextBox)def.getWidget(meta.getParentRatio());
+        parentRatio = (TextBox)def.getWidget(InventoryItemMeta.getParentRatio());
         addScreenHandler(parentRatio, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 parentRatio.setValue(manager.getInventoryItem().getParentRatio());
@@ -581,7 +581,7 @@ public class InventoryItemScreen extends Screen {
             }
         });
 
-        averageLeadTime = (TextBox)def.getWidget(meta.getAverageLeadTime());
+        averageLeadTime = (TextBox)def.getWidget(InventoryItemMeta.getAverageLeadTime());
         addScreenHandler(averageLeadTime, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 averageLeadTime.setValue(manager.getInventoryItem().getAverageLeadTime());
@@ -595,7 +595,7 @@ public class InventoryItemScreen extends Screen {
             }
         });
 
-        averageCost = (TextBox)def.getWidget(meta.getAverageCost());
+        averageCost = (TextBox)def.getWidget(InventoryItemMeta.getAverageCost());
         addScreenHandler(averageCost, new ScreenEventHandler<Double>() {
             public void onDataChange(DataChangeEvent event) {
                 averageCost.setValue(manager.getInventoryItem().getAverageCost());
@@ -609,7 +609,7 @@ public class InventoryItemScreen extends Screen {
             }
         });
 
-        averageDailyUse = (TextBox)def.getWidget(meta.getAverageDailyUse());
+        averageDailyUse = (TextBox)def.getWidget(InventoryItemMeta.getAverageDailyUse());
         addScreenHandler(averageDailyUse, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 averageDailyUse.setValue(manager.getInventoryItem().getAverageDailyUse());
@@ -654,7 +654,7 @@ public class InventoryItemScreen extends Screen {
                 componentTab.setState(event.getState());
             }
         });
-/*
+
         locationTab = new LocationTab(def, window);
         addScreenHandler(locationTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
@@ -668,20 +668,7 @@ public class InventoryItemScreen extends Screen {
             }
         });
 
-        additionalTab = new AdditionalTab(def, window);
-        addScreenHandler(additionalTab, new ScreenEventHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
-                additionalTab.setManager(manager);
-                if (tab == Tabs.ADDITIONAL)
-                    drawTabs();
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                additionalTab.setState(event.getState());
-            }
-        });
-
-        manufacturingTab = new ManufacturingTab(def, window);
+        manufacturingTab = new RichTextTab(def, window, "manufacturingPanel", "editManufacturingButton");
         addScreenHandler(manufacturingTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                 manufacturingTab.setManager(manager);
@@ -694,7 +681,7 @@ public class InventoryItemScreen extends Screen {
             }
         });
 
-        noteTab = new NoteTab(def, window);
+        noteTab = new NotesTab(def, window, "notesPanel", "standardNoteButton", false);
         addScreenHandler(noteTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                 noteTab.setManager(manager);
@@ -706,7 +693,7 @@ public class InventoryItemScreen extends Screen {
                 noteTab.setState(event.getState());
             }
         });
-*/
+
         //
         // left hand navigation panel
         //
@@ -714,8 +701,8 @@ public class InventoryItemScreen extends Screen {
             public void executeQuery(final Query query) {
                 window.setBusy(consts.get("querying"));
 
-                service.callList("query", query, new AsyncCallback<ArrayList<IdNameVO>>() {
-                    public void onSuccess(ArrayList<IdNameVO> result) {
+                service.callList("query", query, new AsyncCallback<ArrayList<IdNameStoreVO>>() {
+                    public void onSuccess(ArrayList<IdNameStoreVO> result) {
                         setQueryResult(result);
                     }
 
@@ -736,19 +723,19 @@ public class InventoryItemScreen extends Screen {
             }
 
             public boolean fetch(RPC entry) {
-                return fetchById( (entry == null) ? null : ((IdNameVO)entry).getId());
+                return fetchById( (entry == null) ? null : ((IdNameStoreVO)entry).getId());
             }
 
             public ArrayList<TableDataRow> getModel() {
-                ArrayList<IdNameVO> result;
+                ArrayList<IdNameStoreVO> result;
                 ArrayList<TableDataRow> model;
 
                 model = null;
                 result = nav.getQueryResult();
                 if (result != null) {
                     model = new ArrayList<TableDataRow>();
-                    for (IdNameVO entry : result)
-                        model.add(new TableDataRow(entry.getId(), entry.getName(), entry.getDescription()));
+                    for (IdNameStoreVO entry : result)
+                        model.add(new TableDataRow(entry.getId(), entry.getName(), entry.getStore()));
                 }
                 return model;
             }
@@ -769,7 +756,7 @@ public class InventoryItemScreen extends Screen {
                 QueryData field;
 
                 field = new QueryData();
-                field.key = meta.getName();
+                field.key = InventoryItemMeta.getName();
                 field.query = ((AppButton)event.getSource()).getAction();
                 field.type = QueryData.Type.STRING;
 
@@ -781,6 +768,8 @@ public class InventoryItemScreen extends Screen {
     }
 
     private void initializeDropdowns() {
+        TableWidget atozTable;
+        Dropdown<Integer> atozStoreId;
         ArrayList<TableDataRow> model;
 
         // category dropdown
@@ -788,7 +777,6 @@ public class InventoryItemScreen extends Screen {
         model.add(new TableDataRow(null, ""));
         for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("inventory_category"))
             model.add(new TableDataRow(d.getId(), d.getEntry()));
-
         categoryId.setModel(model);
 
         // stores dropdown
@@ -796,15 +784,18 @@ public class InventoryItemScreen extends Screen {
         model.add(new TableDataRow(null, ""));
         for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("inventory_store"))
             model.add(new TableDataRow(d.getId(), d.getEntry()));
-
         storeId.setModel(model);
-
+        
+        // add the same store model to left hand side atoz table
+        atozTable = (TableWidget)def.getWidget("atozTable");
+        atozStoreId = (Dropdown)atozTable.getColumns().get(1).getColumnWidget();
+        atozStoreId.setModel(model);
+        
         // units dropdown
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
         for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("inventory_unit"))
             model.add(new TableDataRow(d.getId(), d.getEntry()));
-
         dispensedUnitsId.setModel(model);
     }
 
@@ -820,10 +811,9 @@ public class InventoryItemScreen extends Screen {
 
         // clear all the tabs
         componentTab.draw();
-/*        locationTab.draw();
-        additionalTab.draw();
+        locationTab.draw();
         manufacturingTab.draw();
-        noteTab.draw(); */
+        noteTab.draw();
         setFocus(id);
         window.setDone(consts.get("enterFieldsToQuery"));
     }
@@ -838,7 +828,15 @@ public class InventoryItemScreen extends Screen {
 
     protected void add() {
         manager = InventoryItemManager.getInstance();
+        manager.getInventoryItem().setIsReorderAuto("N");
+        manager.getInventoryItem().setIsLotMaintained("N");
+        manager.getInventoryItem().setIsSerialMaintained("N");
         manager.getInventoryItem().setIsActive("Y");
+        manager.getInventoryItem().setIsBulk("N");
+        manager.getInventoryItem().setIsNotForSale("N");
+        manager.getInventoryItem().setIsSubAssembly("N");
+        manager.getInventoryItem().setIsLabor("N");
+        manager.getInventoryItem().setIsNotInventoried("N");
 
         setState(State.ADD);
         DataChangeEvent.fire(this);
@@ -981,12 +979,8 @@ public class InventoryItemScreen extends Screen {
             case COMPONENT:
                 componentTab.draw();
                 break;
-/*
             case LOCATION:
                 locationTab.draw();
-                break;
-            case ADDITIONAL:
-                additionalTab.draw();
                 break;
             case MANUFACTURING:
                 manufacturingTab.draw();
@@ -994,7 +988,6 @@ public class InventoryItemScreen extends Screen {
             case NOTE:
                 noteTab.draw();
                 break;
-    */
         }
     }
 }

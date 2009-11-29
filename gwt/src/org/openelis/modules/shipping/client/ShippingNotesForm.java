@@ -40,7 +40,7 @@ public class ShippingNotesForm extends Form<Integer>{
     
     public ShippingNotesForm() {
        ShippingMetaMap meta = new ShippingMetaMap();
-       text = new StringField(meta.ORDER_SHIPPING_NOTE_META.getText());
+//       text = new StringField(meta.ORDER_SHIPPING_NOTE_META.getText());
    }
    
    public ShippingNotesForm(Node node) {

@@ -28,8 +28,6 @@ package org.openelis.modules.sample.client;
 import java.util.ArrayList;
 import java.util.EnumSet;
 
-import org.openelis.common.AutocompleteRPC;
-import org.openelis.domain.StorageLocationAutoDO;
 import org.openelis.domain.StorageViewDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.LocalizedException;
@@ -171,6 +169,7 @@ public class StorageTab extends Screen {
         
         location.addGetMatchesHandler(new GetMatchesHandler(){
             public void onGetMatches(GetMatchesEvent event) {
+/*
                 AutocompleteRPC rpc = new AutocompleteRPC();
                 rpc.match = event.getMatch();
                 try {
@@ -192,7 +191,7 @@ public class StorageTab extends Screen {
                 }catch(Exception e) {
                     Window.alert(e.getMessage());                     
                 }
-                
+*/                
             }
         });
 

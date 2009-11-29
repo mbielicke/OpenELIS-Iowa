@@ -25,44 +25,10 @@
 */
 package org.openelis.modules.order.client;
 
-import java.util.ArrayList;
 
-import org.openelis.cache.DictionaryCache;
-import org.openelis.domain.DictionaryDO;
-import org.openelis.gwt.common.data.deprecated.DropDownField;
-import org.openelis.gwt.common.data.deprecated.KeyListManager;
-import org.openelis.gwt.common.data.deprecated.StringField;
-import org.openelis.gwt.common.data.deprecated.StringObject;
-import org.openelis.gwt.common.data.deprecated.TableDataModel;
-import org.openelis.gwt.common.data.deprecated.TableDataRow;
-import org.openelis.gwt.screen.deprecated.CommandChain;
-import org.openelis.gwt.screen.deprecated.ScreenDropDownWidget;
-import org.openelis.gwt.screen.deprecated.ScreenTabPanel;
-import org.openelis.gwt.screen.deprecated.ScreenTextArea;
-import org.openelis.gwt.screen.deprecated.ScreenTextBox;
-import org.openelis.gwt.widget.deprecated.AppButton;
-import org.openelis.gwt.widget.deprecated.AutoComplete;
-import org.openelis.gwt.widget.deprecated.ButtonPanel;
-import org.openelis.gwt.widget.deprecated.Dropdown;
-import org.openelis.gwt.widget.deprecated.MenuItem;
-import org.openelis.gwt.widget.table.deprecated.TableManager;
-import org.openelis.gwt.widget.table.deprecated.TableWidget;
-import org.openelis.gwt.widget.table.deprecated.event.SourcesTableWidgetEvents;
-import org.openelis.gwt.widget.table.deprecated.event.TableWidgetListener;
-import org.openelis.metamap.OrderMetaMap;
-import org.openelis.modules.main.client.OpenELISScreenForm;
-
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.rpc.SyncCallback;
-import com.google.gwt.user.client.ui.ChangeListener;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.SourcesTabEvents;
-import com.google.gwt.user.client.ui.TabListener;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.Widget;
-
-public class OrderScreen extends OpenELISScreenForm<OrderForm,OrderQuery> implements TableManager, TableWidgetListener, ClickListener, TabListener, ChangeListener {
+public class OrderScreen {
+}
+/*
     
     private AutoComplete orgDropdown, billToDropdown, reportToDropdown;
     
@@ -367,7 +333,7 @@ public class OrderScreen extends OpenELISScreenForm<OrderForm,OrderQuery> implem
             itemsController.setAutoAdd(false);
             itemsController.reset();
         }
-    };*/
+    };
     
     public void commit() {
         itemsTable.model.enableAutoAdd(false);
@@ -465,7 +431,7 @@ public class OrderScreen extends OpenELISScreenForm<OrderForm,OrderQuery> implem
                         map.put("locationId", locationId);
                         map.put("qtyOnHand", qtyOnHand);
                         tableRow.setData(map);
-                    }*/
+                    }
                     itemsTable.model.refresh();
                 }
             }
@@ -504,7 +470,7 @@ public class OrderScreen extends OpenELISScreenForm<OrderForm,OrderQuery> implem
         int top = this.getAbsoluteTop();
         standardNotePopupPanel.setPopupPosition(left, top);
         standardNotePopupPanel.show();
-        */
+        
     }
     
     private void onStandardNoteShippingButtonClick() {
@@ -518,7 +484,7 @@ public class OrderScreen extends OpenELISScreenForm<OrderForm,OrderQuery> implem
         int top = this.getAbsoluteTop();
         standardNotePopupPanel.setPopupPosition(left, top);
         standardNotePopupPanel.show();
-        */
+        
     }
     
     private void onDuplicateRecordClick(){
@@ -706,4 +672,4 @@ public class OrderScreen extends OpenELISScreenForm<OrderForm,OrderQuery> implem
         
         return m;
     }
-}
+*/

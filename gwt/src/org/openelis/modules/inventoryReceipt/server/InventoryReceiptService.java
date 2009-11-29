@@ -26,67 +26,10 @@
 package org.openelis.modules.inventoryReceipt.server;
 
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
 
-import org.openelis.domain.InventoryItemAutoDO;
-import org.openelis.domain.InventoryLocationDO;
-import org.openelis.domain.InventoryReceiptDO;
-import org.openelis.domain.OrganizationDO;
-import org.openelis.domain.StorageLocationAutoDO;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.QueryException;
-import org.openelis.gwt.common.TableFieldErrorException;
-import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.data.deprecated.AbstractField;
-import org.openelis.gwt.common.data.deprecated.CheckField;
-import org.openelis.gwt.common.data.deprecated.DateField;
-import org.openelis.gwt.common.data.deprecated.DoubleField;
-import org.openelis.gwt.common.data.deprecated.DropDownField;
-import org.openelis.gwt.common.data.deprecated.Field;
-import org.openelis.gwt.common.data.deprecated.FieldType;
-import org.openelis.gwt.common.data.deprecated.IntegerField;
-import org.openelis.gwt.common.data.deprecated.IntegerObject;
-import org.openelis.gwt.common.data.deprecated.StringField;
-import org.openelis.gwt.common.data.deprecated.StringObject;
-import org.openelis.gwt.common.data.deprecated.TableDataModel;
-import org.openelis.gwt.common.data.deprecated.TableDataRow;
-import org.openelis.gwt.common.data.deprecated.TableField;
-import org.openelis.gwt.common.deprecated.Form;
-import org.openelis.gwt.server.ServiceUtils;
-import org.openelis.gwt.services.deprecated.AppScreenFormServiceInt;
-import org.openelis.gwt.services.deprecated.AutoCompleteServiceInt;
-import org.openelis.metamap.InventoryReceiptMetaMap;
-import org.openelis.modules.inventoryReceipt.client.InvReceiptItemInfoForm;
-import org.openelis.modules.inventoryReceipt.client.InvReceiptOrgKey;
-import org.openelis.modules.inventoryReceipt.client.InventoryReceiptForm;
-import org.openelis.modules.inventoryReceipt.client.InventoryReceiptQuery;
-import org.openelis.modules.inventoryReceipt.client.ReceiptInvItemKey;
-import org.openelis.modules.inventoryReceipt.client.ReceiptInvLocationAutoRPC;
-import org.openelis.modules.inventoryReceipt.client.TransferLocationRPC;
-import org.openelis.persistence.EJBFactory;
-import org.openelis.remote.InventoryItemRemote;
-import org.openelis.remote.InventoryReceiptRemote;
-import org.openelis.remote.OrganizationRemote;
-import org.openelis.remote.StorageLocationRemote;
-import org.openelis.server.constants.Constants;
-import org.openelis.util.FormUtil;
-import org.openelis.util.SessionManager;
-import org.openelis.util.UTFResource;
-import org.openelis.util.XMLUtil;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-
-import com.google.gwt.user.client.Window;
-
-public class InventoryReceiptService implements AppScreenFormServiceInt<InventoryReceiptForm, InventoryReceiptQuery>, AutoCompleteServiceInt {
-
+public class InventoryReceiptService {
+}
+/*
     private static final InventoryReceiptMetaMap InventoryReceiptMeta = new InventoryReceiptMetaMap();
     
     private static final int leftTableRowsPerPage = 250;
@@ -119,7 +62,7 @@ public class InventoryReceiptService implements AppScreenFormServiceInt<Inventor
                     throw new Exception(e.getMessage()); 
                 }           
             }    
-        }else{*/
+        }else{
             //get screen type
             
             InventoryReceiptRemote remote = (InventoryReceiptRemote)EJBFactory.lookup("openelis/InventoryReceiptBean/remote");
@@ -410,7 +353,7 @@ public class InventoryReceiptService implements AppScreenFormServiceInt<Inventor
             autoCompleteList = remote.inventoryItemStoreChildAutoCompleteLookupByName(parsedMatch+"%", parentInventoryItemId, inventoryItemId, 10);
         else
             autoCompleteList = remote.inventoryItemStoreAutoCompleteLookupByName(parsedMatch+"%", 10, true, true); 
-  */      
+
         for(InventoryItemAutoDO resultDO : autoCompleteList){
             
             Integer itemId = resultDO.getId();
@@ -554,7 +497,7 @@ public class InventoryReceiptService implements AppScreenFormServiceInt<Inventor
             NumberField id = (NumberField)map.get("id");
             NumberField transReceiptOrderId = (NumberField)map.get("transReceiptOrderId");
             NumberField parentRatio = (NumberField)map.get("parentRatio");
-            */
+
             
             if(transfer){
                 DropDownField<Integer> fromItemField = (DropDownField)row.cells[0];
@@ -872,4 +815,4 @@ public class InventoryReceiptService implements AppScreenFormServiceInt<Inventor
         remote.unlockOrders(rpc.lockedIds);
         
     }
-}
+*/

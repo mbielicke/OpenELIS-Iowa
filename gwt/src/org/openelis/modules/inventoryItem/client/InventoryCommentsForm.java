@@ -25,14 +25,10 @@
 */
 package org.openelis.modules.inventoryItem.client;
 
-import org.openelis.gwt.common.data.deprecated.AbstractField;
-import org.openelis.gwt.common.data.deprecated.StringField;
-import org.openelis.gwt.common.deprecated.Form;
-import org.openelis.metamap.InventoryItemMetaMap;
 
-import com.google.gwt.xml.client.Node;
-
-public class InventoryCommentsForm  extends Form<Integer> {
+public class InventoryCommentsForm {
+}
+/*
     private static final long serialVersionUID = 1L;
     
     public StringField subject;
@@ -63,4 +59,4 @@ public class InventoryCommentsForm  extends Form<Integer> {
                                     notesPanel
         };
     }
-}
+*/

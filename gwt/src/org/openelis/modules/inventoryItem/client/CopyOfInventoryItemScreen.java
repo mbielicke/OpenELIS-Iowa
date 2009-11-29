@@ -25,53 +25,10 @@
 */
 package org.openelis.modules.inventoryItem.client;
 
-import java.util.ArrayList;
 
-import org.openelis.cache.DictionaryCache;
-import org.openelis.domain.DictionaryDO;
-import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.data.deprecated.DropDownField;
-import org.openelis.gwt.common.data.deprecated.KeyListManager;
-import org.openelis.gwt.common.data.deprecated.QueryStringField;
-import org.openelis.gwt.common.data.deprecated.StringObject;
-import org.openelis.gwt.common.data.deprecated.TableDataModel;
-import org.openelis.gwt.common.data.deprecated.TableDataRow;
-import org.openelis.gwt.common.deprecated.Query;
-import org.openelis.gwt.screen.deprecated.CommandChain;
-import org.openelis.gwt.screen.deprecated.ScreenCheck;
-import org.openelis.gwt.screen.deprecated.ScreenTabPanel;
-import org.openelis.gwt.screen.deprecated.ScreenTextArea;
-import org.openelis.gwt.screen.deprecated.ScreenTextBox;
-import org.openelis.gwt.screen.deprecated.ScreenVertical;
-import org.openelis.gwt.screen.deprecated.ScreenWindow;
-import org.openelis.gwt.widget.deprecated.AppButton;
-import org.openelis.gwt.widget.deprecated.AutoComplete;
-import org.openelis.gwt.widget.deprecated.AutoCompleteCallInt;
-import org.openelis.gwt.widget.deprecated.ButtonPanel;
-import org.openelis.gwt.widget.deprecated.CheckBox;
-import org.openelis.gwt.widget.deprecated.Dropdown;
-import org.openelis.gwt.widget.deprecated.MenuItem;
-import org.openelis.gwt.widget.deprecated.ResultsTable;
-import org.openelis.gwt.widget.deprecated.AppButton.ButtonState;
-import org.openelis.gwt.widget.table.deprecated.TableWidget;
-import org.openelis.gwt.widget.table.deprecated.event.SourcesTableWidgetEvents;
-import org.openelis.gwt.widget.table.deprecated.event.TableWidgetListener;
-import org.openelis.metamap.InventoryItemMetaMap;
-import org.openelis.modules.main.client.OpenELISScreenForm;
-import org.openelis.modules.richTextPopup.client.RichTextPopupScreen;
-
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.rpc.SyncCallback;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.SourcesTabEvents;
-import com.google.gwt.user.client.ui.TabListener;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.Widget;
-
-public class CopyOfInventoryItemScreen extends OpenELISScreenForm<InventoryItemForm, Query<TableDataRow<Integer>>> implements TableWidgetListener, ClickListener, TabListener, AutoCompleteCallInt{
-
+public class CopyOfInventoryItemScreen {
+}
+/*
     private AppButton        removeComponentButton, standardNoteButton, editManufacturing;
     private HTML manufacturingText;
 	private ScreenTextBox nameTextbox;
@@ -281,7 +238,7 @@ public class CopyOfInventoryItemScreen extends OpenELISScreenForm<InventoryItemF
                 /*
                  * This call has been modified to use the specific sub rpc in the form.  To ensure everything 
                  * stays in sync it needs to be assigned back into the hash and to its member field in the form
-                 */
+                 
                 form.components = result;
 
                 if(forDuplicate)
@@ -315,7 +272,7 @@ public class CopyOfInventoryItemScreen extends OpenELISScreenForm<InventoryItemF
                 /*
                  * This call has been modified to use the specific sub rpc in the form.  To ensure everything 
                  * stays in sync it needs to be assigned back into the hash and to its member field in the form
-                 */
+                 
                 form.locations = result;
                 
                 window.clearStatus();
@@ -343,7 +300,7 @@ public class CopyOfInventoryItemScreen extends OpenELISScreenForm<InventoryItemF
                /*
                 * This call has been modified to use the specific sub rpc in the form.  To ensure everything 
                 * stays in sync it needs to be assigned back into the hash and to its member field in the form
-                */
+                
                form.manufacturing = result;
 
                window.clearStatus();
@@ -373,7 +330,7 @@ public class CopyOfInventoryItemScreen extends OpenELISScreenForm<InventoryItemF
                /*
                 * This call has been modified to use the specific sub rpc in the form.  To ensure everything 
                 * stays in sync it needs to be assigned back into the hash and to its member field in the form
-                */
+                
                form.comments = result;
 
                window.clearStatus();
@@ -405,7 +362,7 @@ public class CopyOfInventoryItemScreen extends OpenELISScreenForm<InventoryItemF
 		int top = this.getAbsoluteTop();
 		standardNotePopupPanel.setPopupPosition(left,top);
 		standardNotePopupPanel.show();
-		*/
+		
      }
 
     private void onRemoveComponentRowButtonClick() {
@@ -537,4 +494,4 @@ public class CopyOfInventoryItemScreen extends OpenELISScreenForm<InventoryItemF
         
         return m;
     }
-}
+*/

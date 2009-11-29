@@ -957,27 +957,23 @@ public class QcScreen extends Screen {
         ArrayList<IdNameVO> list;
         Query query;  
         QueryData field;
-        ArrayList<QueryData> fields;
         
         entry = DataBaseUtil.trim(entry); 
         if (entry == null)
             return null;
         
         query = new Query();
-        fields = new ArrayList<QueryData>();
         field = new QueryData();
         field.key = catMeta.getDictionary().getEntry();
         field.type = QueryData.Type.STRING;
         field.query = entry;
-        fields.add(field);       
+        query.setFields(field);       
         
         field = new QueryData();
         field.key = catMeta.getIsSystem();
         field.type = QueryData.Type.STRING;
         field.query = "N";
-        fields.add(field); 
-        
-        query.setFields(fields);
+        query.setFields(field); 
         
         try {
             list = dictionaryService.callList("fetchByEntry", query);

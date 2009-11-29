@@ -25,14 +25,10 @@
 */
 package org.openelis.modules.order.client;
 
-import org.openelis.gwt.common.data.deprecated.AbstractField;
-import org.openelis.gwt.common.data.deprecated.StringField;
-import org.openelis.gwt.common.deprecated.Form;
-import org.openelis.metamap.OrderMetaMap;
 
-import com.google.gwt.xml.client.Node;
-
-public class OrderShippingNoteForm extends Form<Integer>{
+public class OrderShippingNoteForm {
+}
+/*
     private static final long serialVersionUID = 1L;
 
     public StringField text;
@@ -58,4 +54,4 @@ public class OrderShippingNoteForm extends Form<Integer>{
                                     text
         };
     }
-}
+*/
