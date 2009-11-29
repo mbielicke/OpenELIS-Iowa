@@ -25,48 +25,10 @@
 */
 package org.openelis.modules.inventoryReceipt.client;
 
-import java.util.ArrayList;
 
-import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.data.deprecated.DropDownField;
-import org.openelis.gwt.common.data.deprecated.KeyListManager;
-import org.openelis.gwt.common.data.deprecated.StringField;
-import org.openelis.gwt.common.data.deprecated.StringObject;
-import org.openelis.gwt.common.data.deprecated.TableDataModel;
-import org.openelis.gwt.common.data.deprecated.TableDataRow;
-import org.openelis.gwt.screen.deprecated.CommandChain;
-import org.openelis.gwt.screen.deprecated.ScreenAutoCompleteWidget;
-import org.openelis.gwt.screen.deprecated.ScreenCalendar;
-import org.openelis.gwt.screen.deprecated.ScreenCheck;
-import org.openelis.gwt.screen.deprecated.ScreenResultsTable;
-import org.openelis.gwt.widget.deprecated.AppButton;
-import org.openelis.gwt.widget.deprecated.AutoComplete;
-import org.openelis.gwt.widget.deprecated.AutoCompleteCallInt;
-import org.openelis.gwt.widget.deprecated.ButtonPanel;
-import org.openelis.gwt.widget.deprecated.CalendarLookUp;
-import org.openelis.gwt.widget.deprecated.CheckBox;
-import org.openelis.gwt.widget.deprecated.ResultsTable;
-import org.openelis.gwt.widget.deprecated.AppButton.ButtonState;
-import org.openelis.gwt.widget.table.deprecated.QueryTable;
-import org.openelis.gwt.widget.table.deprecated.TableManager;
-import org.openelis.gwt.widget.table.deprecated.TableWidget;
-import org.openelis.gwt.widget.table.deprecated.event.SourcesTableModelEvents;
-import org.openelis.gwt.widget.table.deprecated.event.SourcesTableWidgetEvents;
-import org.openelis.gwt.widget.table.deprecated.event.TableModelListener;
-import org.openelis.gwt.widget.table.deprecated.event.TableWidgetListener;
-import org.openelis.metamap.InventoryReceiptMetaMap;
-import org.openelis.modules.main.client.OpenELISScreenForm;
-
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.rpc.SyncCallback;
-import com.google.gwt.user.client.ui.ChangeListener;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.Widget;
-
-public class InventoryReceiptScreen extends OpenELISScreenForm<InventoryReceiptForm, InventoryReceiptQuery> implements ClickListener, ChangeListener, TableManager, TableWidgetListener, TableModelListener, AutoCompleteCallInt {
+public class InventoryReceiptScreen {
+}
+/*
     
     private ResultsTable receiptsTable;
     private QueryTable receiptsQueryTable;
@@ -741,7 +703,7 @@ public class InventoryReceiptScreen extends OpenELISScreenForm<InventoryReceiptF
                     receiptsTable.model.setCellError(row, 6, consts.get("notEnoughQuantityOnHand"));
                 }
                 
-            }*/
+            }
         }
     }
 
@@ -924,7 +886,7 @@ public class InventoryReceiptScreen extends OpenELISScreenForm<InventoryReceiptF
         
 
     }
-    */
+
     
     private void createReceiptRows(int row, TableDataModel<TableDataRow<InvReceiptItemInfoForm>> model){
         for(int i=0; i<model.size(); i++)
@@ -1048,4 +1010,4 @@ public class InventoryReceiptScreen extends OpenELISScreenForm<InventoryReceiptF
             
         return returnModel;
     }   
-}
+*/

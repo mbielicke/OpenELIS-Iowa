@@ -25,18 +25,10 @@
 */
 package org.openelis.modules.inventoryItem.client;
 
-import org.openelis.gwt.common.data.deprecated.AbstractField;
-import org.openelis.gwt.common.data.deprecated.CheckField;
-import org.openelis.gwt.common.data.deprecated.DoubleField;
-import org.openelis.gwt.common.data.deprecated.DropDownField;
-import org.openelis.gwt.common.data.deprecated.IntegerField;
-import org.openelis.gwt.common.data.deprecated.StringField;
-import org.openelis.gwt.common.deprecated.Form;
-import org.openelis.metamap.InventoryItemMetaMap;
 
-import com.google.gwt.xml.client.Node;
-
-public class InventoryItemForm extends Form<Integer> {
+public class InventoryItemForm {
+}
+/*
     private static final long serialVersionUID = 1L;
 
     public IntegerField id;
@@ -143,4 +135,4 @@ public class InventoryItemForm extends Form<Integer> {
                                      manufacturing
        };
    }
-}
+*/

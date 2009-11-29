@@ -15,79 +15,10 @@
  */
 package org.openelis.modules.fillOrder.client;
 
-import java.util.ArrayList;
-import java.util.List;
 
-import org.openelis.cache.DictionaryCache;
-import org.openelis.domain.DictionaryDO;
-import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.data.deprecated.CheckField;
-import org.openelis.gwt.common.data.deprecated.DataObject;
-import org.openelis.gwt.common.data.deprecated.DropDownField;
-import org.openelis.gwt.common.data.deprecated.Field;
-import org.openelis.gwt.common.data.deprecated.IntegerField;
-import org.openelis.gwt.common.data.deprecated.IntegerObject;
-import org.openelis.gwt.common.data.deprecated.KeyListManager;
-import org.openelis.gwt.common.data.deprecated.StringObject;
-import org.openelis.gwt.common.data.deprecated.TableDataModel;
-import org.openelis.gwt.common.data.deprecated.TableDataRow;
-import org.openelis.gwt.common.data.deprecated.TreeDataItem;
-import org.openelis.gwt.common.data.deprecated.TreeDataModel;
-import org.openelis.gwt.common.deprecated.DataSorter;
-import org.openelis.gwt.common.deprecated.DataSorterInt;
-import org.openelis.gwt.common.deprecated.Form;
-import org.openelis.gwt.common.deprecated.Query;
-import org.openelis.gwt.event.CommandListener;
-import org.openelis.gwt.screen.deprecated.CommandChain;
-import org.openelis.gwt.screen.deprecated.ScreenResultsTable;
-import org.openelis.gwt.screen.deprecated.ScreenWindow;
-import org.openelis.gwt.widget.deprecated.AppButton;
-import org.openelis.gwt.widget.deprecated.AutoComplete;
-import org.openelis.gwt.widget.deprecated.AutoCompleteCallInt;
-import org.openelis.gwt.widget.deprecated.ButtonPanel;
-import org.openelis.gwt.widget.deprecated.CheckBox;
-import org.openelis.gwt.widget.deprecated.Dropdown;
-import org.openelis.gwt.widget.deprecated.ModelUtil;
-import org.openelis.gwt.widget.deprecated.ResultsTable;
-import org.openelis.gwt.widget.deprecated.AppButton.ButtonState;
-import org.openelis.gwt.widget.table.deprecated.TableDropdown;
-import org.openelis.gwt.widget.table.deprecated.TableManager;
-import org.openelis.gwt.widget.table.deprecated.TableModel;
-import org.openelis.gwt.widget.table.deprecated.TableWidget;
-import org.openelis.gwt.widget.table.deprecated.event.SourcesTableModelEvents;
-import org.openelis.gwt.widget.table.deprecated.event.SourcesTableWidgetEvents;
-import org.openelis.gwt.widget.table.deprecated.event.TableModelListener;
-import org.openelis.gwt.widget.table.deprecated.event.TableWidgetListener;
-import org.openelis.gwt.widget.tree.deprecated.TreeManager;
-import org.openelis.gwt.widget.tree.deprecated.TreeRenderer;
-import org.openelis.gwt.widget.tree.deprecated.TreeWidget;
-import org.openelis.gwt.widget.tree.deprecated.event.SourcesTreeModelEvents;
-import org.openelis.gwt.widget.tree.deprecated.event.SourcesTreeWidgetEvents;
-import org.openelis.gwt.widget.tree.deprecated.event.TreeModelListener;
-import org.openelis.gwt.widget.tree.deprecated.event.TreeWidgetListener;
-import org.openelis.metamap.FillOrderMetaMap;
-import org.openelis.modules.main.client.OpenELISScreenForm;
-import org.openelis.modules.shipping.client.ShippingDataService;
-import org.openelis.modules.shipping.client.ShippingItemsData;
-import org.openelis.modules.shipping.client.ShippingScreen;
-
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.rpc.SyncCallback;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.Widget;
-
-public class FillOrderScreen extends OpenELISScreenForm<FillOrderForm, Query<TableDataRow<Integer>>> implements
-                                                                                             ClickListener,
-                                                                                             AutoCompleteCallInt,
-                                                                                             TableManager,
-                                                                                             TableWidgetListener,
-                                                                                             TableModelListener,
-                                                                                             TreeManager,
-                                                                                             TreeWidgetListener,
-                                                                                             CommandListener,
-                                                                                             TreeModelListener,
-                                                                                             DataSorterInt{
+public class FillOrderScreen {
+}
+/*
     
     private Dropdown            costCenter;
     private TreeWidget          orderItemsTree;
@@ -1088,4 +1019,4 @@ public class FillOrderScreen extends OpenELISScreenForm<FillOrderForm, Query<Tab
         
         return m;
     }
-}
+*/

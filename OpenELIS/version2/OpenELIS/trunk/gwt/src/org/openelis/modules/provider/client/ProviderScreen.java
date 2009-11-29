@@ -29,7 +29,6 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 
 import org.openelis.cache.DictionaryCache;
-import org.openelis.common.NotesTab;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdFirstLastNameVO;
 import org.openelis.gwt.common.LastPageException;
@@ -56,6 +55,7 @@ import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.manager.ProviderManager;
 import org.openelis.metamap.ProviderMetaMap;
 import org.openelis.modules.main.client.openelis.OpenELIS;
+import org.openelis.modules.note.client.NotesTab;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;

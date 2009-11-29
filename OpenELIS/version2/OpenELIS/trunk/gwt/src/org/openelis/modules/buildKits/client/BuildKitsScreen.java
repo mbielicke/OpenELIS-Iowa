@@ -25,47 +25,10 @@
 */
 package org.openelis.modules.buildKits.client;
 
-import java.util.ArrayList;
 
-import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.data.deprecated.AbstractField;
-import org.openelis.gwt.common.data.deprecated.DoubleField;
-import org.openelis.gwt.common.data.deprecated.DropDownField;
-import org.openelis.gwt.common.data.deprecated.IntegerField;
-import org.openelis.gwt.common.data.deprecated.KeyListManager;
-import org.openelis.gwt.common.data.deprecated.StringObject;
-import org.openelis.gwt.common.data.deprecated.TableDataModel;
-import org.openelis.gwt.common.data.deprecated.TableDataRow;
-import org.openelis.gwt.common.deprecated.Query;
-import org.openelis.gwt.screen.deprecated.CommandChain;
-import org.openelis.gwt.screen.deprecated.ScreenCheck;
-import org.openelis.gwt.screen.deprecated.ScreenInputWidget;
-import org.openelis.gwt.screen.deprecated.ScreenWindow;
-import org.openelis.gwt.widget.deprecated.AppButton;
-import org.openelis.gwt.widget.deprecated.AutoComplete;
-import org.openelis.gwt.widget.deprecated.AutoCompleteCallInt;
-import org.openelis.gwt.widget.deprecated.ButtonPanel;
-import org.openelis.gwt.widget.deprecated.CheckBox;
-import org.openelis.gwt.widget.table.deprecated.TableManager;
-import org.openelis.gwt.widget.table.deprecated.TableModel;
-import org.openelis.gwt.widget.table.deprecated.TableWidget;
-import org.openelis.gwt.widget.table.deprecated.event.SourcesTableWidgetEvents;
-import org.openelis.gwt.widget.table.deprecated.event.TableWidgetListener;
-import org.openelis.metamap.InventoryItemMetaMap;
-import org.openelis.modules.fillOrder.client.FillOrderItemInfoForm;
-import org.openelis.modules.inventoryReceipt.client.InvReceiptItemInfoForm;
-import org.openelis.modules.inventoryReceipt.client.InventoryReceiptScreen;
-import org.openelis.modules.main.client.OpenELISScreenForm;
-
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.rpc.SyncCallback;
-import com.google.gwt.user.client.ui.ChangeListener;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.Widget;
-
-public class BuildKitsScreen extends OpenELISScreenForm<BuildKitsForm,Query<TableDataRow<Integer>>> implements ClickListener, AutoCompleteCallInt, ChangeListener, TableManager, TableWidgetListener{
+public class BuildKitsScreen {
+}
+/*
 
     private KeyListManager keyList = new KeyListManager();
     
@@ -406,7 +369,7 @@ public class BuildKitsScreen extends OpenELISScreenForm<BuildKitsForm,Query<Tabl
         int top = this.getAbsoluteTop();
         inventoryTransferPopupPanel.setPopupPosition(left, top);
         inventoryTransferPopupPanel.show();
-        */
+
         ScreenWindow modal = new ScreenWindow(null,"Inventory Transfer","inventoryTransferScreen","Loading...",true);
         modal.setName(consts.get("inventoryTransfer"));
         modal.setContent(new InventoryReceiptScreen(args));
@@ -425,4 +388,4 @@ public class BuildKitsScreen extends OpenELISScreenForm<BuildKitsForm,Query<Tabl
             
         return returnModel;
     }
-}
+*/

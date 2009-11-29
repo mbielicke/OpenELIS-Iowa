@@ -26,61 +26,10 @@
 */
 package org.openelis.modules.order.server;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
 
-import org.openelis.domain.BillToReportToDO;
-import org.openelis.domain.IdNameDO;
-import org.openelis.domain.InventoryItemAutoDO;
-import org.openelis.domain.InventoryLocationDO;
-import org.openelis.domain.InventoryReceiptDO;
-import org.openelis.domain.NoteViewDO;
-import org.openelis.domain.OrderAddAutoFillDO;
-import org.openelis.domain.OrderDO;
-import org.openelis.domain.OrderItemDO;
-import org.openelis.domain.OrganizationDO;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.TableFieldErrorException;
-import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.data.deprecated.AbstractField;
-import org.openelis.gwt.common.data.deprecated.DropDownField;
-import org.openelis.gwt.common.data.deprecated.FieldType;
-import org.openelis.gwt.common.data.deprecated.IntegerObject;
-import org.openelis.gwt.common.data.deprecated.StringObject;
-import org.openelis.gwt.common.data.deprecated.TableDataModel;
-import org.openelis.gwt.common.data.deprecated.TableDataRow;
-import org.openelis.gwt.common.data.deprecated.TableField;
-import org.openelis.gwt.common.deprecated.Form;
-import org.openelis.gwt.server.ServiceUtils;
-import org.openelis.gwt.services.deprecated.AppScreenFormServiceInt;
-import org.openelis.gwt.services.deprecated.AutoCompleteServiceInt;
-import org.openelis.metamap.OrderMetaMap;
-import org.openelis.modules.order.client.ItemsForm;
-import org.openelis.modules.order.client.OrderForm;
-import org.openelis.modules.order.client.OrderNoteForm;
-import org.openelis.modules.order.client.OrderOrgKey;
-import org.openelis.modules.order.client.OrderQuery;
-import org.openelis.modules.order.client.OrderShippingNoteForm;
-import org.openelis.modules.order.client.ReceiptForm;
-import org.openelis.modules.order.client.ReportToBillToForm;
-import org.openelis.persistence.EJBFactory;
-import org.openelis.remote.InventoryItemRemote;
-import org.openelis.remote.OrderRemote;
-import org.openelis.remote.OrganizationRemote;
-import org.openelis.server.constants.Constants;
-import org.openelis.util.FormUtil;
-import org.openelis.util.SessionManager;
-import org.openelis.util.UTFResource;
-
-import com.google.gwt.user.client.Window;
-
-public class OrderService implements AppScreenFormServiceInt<OrderForm, OrderQuery>, AutoCompleteServiceInt {
-
+public class OrderService {
+}
+/*
     private UTFResource openElisConstants= UTFResource.getBundle((String)SessionManager.getSession().getAttribute("locale"));
     
     private static final OrderMetaMap OrderMeta = new OrderMetaMap();
@@ -114,7 +63,7 @@ public class OrderService implements AppScreenFormServiceInt<OrderForm, OrderQue
                 }
             }    
             
-        }else{*/
+        }else{
             OrderRemote remote = (OrderRemote)EJBFactory.lookup("openelis/OrderBean/remote");
                         
             try{    
@@ -952,7 +901,7 @@ public class OrderService implements AppScreenFormServiceInt<OrderForm, OrderQue
         
         return null;
     }
-    */
+    
     
     public void fillReportToBillToValues(Integer key, ReportToBillToForm form){
         OrderRemote remote = (OrderRemote)EJBFactory.lookup("openelis/OrderBean/remote");
@@ -1092,4 +1041,4 @@ public class OrderService implements AppScreenFormServiceInt<OrderForm, OrderQue
         
         return receiptsModel;
     }
-}
+*/

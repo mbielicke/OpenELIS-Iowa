@@ -25,55 +25,10 @@
 */
 package org.openelis.modules.inventoryAdjustment.server;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 
-import org.openelis.domain.IdNameDO;
-import org.openelis.domain.IdNameDateDO;
-import org.openelis.domain.IdNameVO;
-import org.openelis.domain.InventoryAdjLocationAutoDO;
-import org.openelis.domain.InventoryAdjustmentAddAutoFillDO;
-import org.openelis.domain.InventoryAdjustmentChildDO;
-import org.openelis.domain.InventoryAdjustmentDO;
-import org.openelis.domain.InventoryItemAutoDO;
-import org.openelis.domain.InventoryLocationDO;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.TableFieldErrorException;
-import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.data.deprecated.AbstractField;
-import org.openelis.gwt.common.data.deprecated.DropDownField;
-import org.openelis.gwt.common.data.deprecated.Field;
-import org.openelis.gwt.common.data.deprecated.FieldType;
-import org.openelis.gwt.common.data.deprecated.IntegerObject;
-import org.openelis.gwt.common.data.deprecated.StringObject;
-import org.openelis.gwt.common.data.deprecated.TableDataModel;
-import org.openelis.gwt.common.data.deprecated.TableDataRow;
-import org.openelis.gwt.common.data.deprecated.TableField;
-import org.openelis.gwt.common.deprecated.Form;
-import org.openelis.gwt.common.deprecated.Query;
-import org.openelis.gwt.server.ServiceUtils;
-import org.openelis.gwt.services.deprecated.AppScreenFormServiceInt;
-import org.openelis.gwt.services.deprecated.AutoCompleteServiceInt;
-import org.openelis.metamap.InventoryAdjustmentMetaMap;
-import org.openelis.modules.inventoryAdjustment.client.InventoryAdjustmentForm;
-import org.openelis.modules.inventoryAdjustment.client.InventoryAdjustmentItemAutoRPC;
-import org.openelis.persistence.EJBFactory;
-import org.openelis.remote.CategoryRemote;
-import org.openelis.remote.DictionaryRemote;
-import org.openelis.remote.InventoryAdjustmentRemote;
-import org.openelis.remote.InventoryItemRemote;
-import org.openelis.remote.InventoryReceiptRemote;
-import org.openelis.server.constants.Constants;
-import org.openelis.util.FormUtil;
-import org.openelis.util.SessionManager;
-import org.openelis.util.UTFResource;
-
-public class InventoryAdjustmentService implements AppScreenFormServiceInt<InventoryAdjustmentForm,Query<TableDataRow<Integer>>>, AutoCompleteServiceInt{
-    
+public class InventoryAdjustmentService {
+}
+ /*   
     private static final InventoryAdjustmentMetaMap InventoryAdjustmentMeta = new InventoryAdjustmentMetaMap();
     private static final int leftTableRowsPerPage = 20;
     
@@ -155,14 +110,14 @@ public class InventoryAdjustmentService implements AppScreenFormServiceInt<Inven
                     throw new Exception(e.getMessage()); 
                 }           
             }    
-        }else{*/
+        }else{
             InventoryAdjustmentRemote remote = (InventoryAdjustmentRemote)EJBFactory.lookup("openelis/InventoryAdjustmentBean/remote");
             /*
             HashMap<String,AbstractField> fields = qList.getFieldMap();
             fields.remove("adjustmentsTable");
             fields.remove("label1");
             fields.remove(InventoryAdjustmentMeta.getSystemUserId());
-            */
+
             try{    
                 inventoryAdjustmentNames = remote.query(query.fields,query.page*leftTableRowsPerPage,leftTableRowsPerPage);
             }catch(LastPageException e) {
@@ -550,4 +505,4 @@ public class InventoryAdjustmentService implements AppScreenFormServiceInt<Inven
         remote.unlockLocations(rpc.lockedIds);
         
     }
-}
+*/

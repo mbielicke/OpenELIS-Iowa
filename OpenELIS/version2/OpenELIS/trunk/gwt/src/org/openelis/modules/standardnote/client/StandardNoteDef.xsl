@@ -37,26 +37,12 @@ UIRF Software License are applicable instead of those above.
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   xsi:noNamespaceSchemaLocation="http://openelis.uhl.uiowa.edu/schema/ScreenSchema.xsd"
   xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd"
-  xmlns:standardNoteMeta="xalan://org.openelis.metamap.StandardNoteMetaMap">
+  xmlns:meta="xalan://org.openelis.meta.StandardNoteMeta">
 
   <xsl:import href="IMPORT/aToZTwoColumns.xsl" />
-  <xalan:component prefix="resource">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.util.UTFResource" />
-  </xalan:component>
-  <xalan:component prefix="locale">
-    <xalan:script lang="javaclass" src="xalan://java.util.Locale" />
-  </xalan:component>
-  <xalan:component prefix="standardNoteMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.StandardNoteMetaMap" />
-  </xalan:component>
   <xsl:template match="doc">
-    <xsl:variable name="meta" select="standardNoteMeta:new()" />
-    <xsl:variable name="language">
-      <xsl:value-of select="locale" />
-    </xsl:variable>
-    <xsl:variable name="props">
-      <xsl:value-of select="props" />
-    </xsl:variable>
+    <xsl:variable name="language" select="locale" />
+    <xsl:variable name="props" select="props" />
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
 
 <!-- main screen -->
@@ -152,19 +138,19 @@ UIRF Software License are applicable instead of those above.
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"name")' />:
                 </text>
-                <textbox key="{standardNoteMeta:getName($meta)}" width="155" case="LOWER" max="20" tab="{standardNoteMeta:getDescription($meta)},{standardNoteMeta:getText($meta)}" required="true" />
+                <textbox key="{meta:getName()}" width="155" case="LOWER" max="20" tab="{meta:getDescription()},{meta:getText()}" required="true" />
               </row>
               <row>
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"description")' />:
                 </text>
-                <textbox key="{standardNoteMeta:getDescription($meta)}" width="300" max="60" tab="{standardNoteMeta:getTypeId($meta)},{standardNoteMeta:getName($meta)}" required="true" />
+                <textbox key="{meta:getDescription()}" width="300" max="60" tab="{meta:getTypeId()},{meta:getName()}" required="true" />
               </row>
               <row>
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"type")' />:
                 </text>
-                <dropdown key="{standardNoteMeta:getTypeId($meta)}" width="121" tab="{standardNoteMeta:getText($meta)},{standardNoteMeta:getDescription($meta)}" required="true" />
+                <dropdown key="{meta:getTypeId()}" width="121" tab="{meta:getText()},{meta:getDescription()}" required="true" />
               </row>
               <row>
                 <widget valign="top">
@@ -172,7 +158,7 @@ UIRF Software License are applicable instead of those above.
                     <xsl:value-of select='resource:getString($constants,"text")' />:
                   </text>
                 </widget>
-                <textarea key="{standardNoteMeta:getText($meta)}" width="500" height="195" tab="{standardNoteMeta:getName($meta)},{standardNoteMeta:getTypeId($meta)}" required="true" />
+                <textarea key="{meta:getText()}" width="500" height="195" tab="{meta:getName()},{meta:getTypeId()}" required="true" />
               </row>
             </TablePanel>
           </VerticalPanel>

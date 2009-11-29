@@ -33,7 +33,7 @@ public class InventoryItemManagerProxy {
     protected ScreenService       service;
 
     public InventoryItemManagerProxy() {
-        service = new ScreenService("OpenELISServlet?service=" + MANAGER_SERVICE_URL);
+        service = new ScreenService("controller?service=" + MANAGER_SERVICE_URL);
     }
 
     public InventoryItemManager fetchById(Integer id) throws Exception {

@@ -25,16 +25,32 @@
 */
 package org.openelis.modules.note.server;
 
+import org.openelis.gwt.common.data.Query;
+import org.openelis.gwt.common.data.QueryData;
 import org.openelis.manager.NoteManager;
-import org.openelis.modules.note.client.NoteServiceParams;
+import org.openelis.meta.NoteMeta;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.NoteManagerRemote;
 
 public class NoteService {
 
-    public NoteManager fetch(NoteServiceParams params) throws Exception {
-        NoteManagerRemote remote = (NoteManagerRemote)EJBFactory.lookup("openelis/NoteManagerBean/remote");
-        
-        return remote.fetch(params.referenceTableId, params.referenceId);
+    public NoteManager fetchByRefTableRefId(Query query) throws Exception {
+        Integer refTableId = null, refId = null;
+
+        // parse the query to find refTableId and refId
+        for (QueryData field : query.getFields()) {
+            if (field.key != null) {
+                if (NoteMeta.getReferenceId().equals(field.key))
+                    refId = Integer.valueOf(field.query);
+                else if (NoteMeta.getReferenceTableId().equals(field.key))
+                    refTableId = Integer.valueOf(field.query);
+            }
+        }
+
+        return remote().fetchByRefTableRefId(refTableId, refId);
+    }
+    
+    private NoteManagerRemote remote() {
+        return (NoteManagerRemote)EJBFactory.lookup("openelis/NoteManagerBean/remote");
     }
 }

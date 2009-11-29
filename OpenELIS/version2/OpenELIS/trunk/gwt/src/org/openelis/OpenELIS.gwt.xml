@@ -44,7 +44,6 @@ UIRF Software License are applicable instead of those above.
     <inherits name="org.openelis.modules.buildKits.BuildKits"/>
     <inherits name="org.openelis.modules.clinicalSampleLogin.ClinicalSampleLogin"/>
     <inherits name="org.openelis.modules.dictionary.Dictionary"/>
-    <inherits name="org.openelis.modules.editNote.EditNote"/>
     <inherits name="org.openelis.modules.environmentalSampleLogin.EnvironmentalSampleLogin"/>
     <inherits name="org.openelis.modules.favorites.Favorites"/>
     <inherits name="org.openelis.modules.fillOrder.FillOrder"/>
@@ -65,7 +64,6 @@ UIRF Software License are applicable instead of those above.
     <inherits name="org.openelis.modules.PTSampleLogin.PTSampleLogin"/>
     <inherits name="org.openelis.modules.qaevent.QAEvent"/>
     <inherits name="org.openelis.modules.qc.QC"/>
-    <inherits name="org.openelis.modules.richTextPopup.RichTextPopup"/>
     <inherits name="org.openelis.modules.sample.Sample"/>
     <inherits name="org.openelis.modules.sampleManagement.SampleManagement"/>
     <inherits name="org.openelis.modules.SDWISSampleLogin.SDWISSampleLogin"/>

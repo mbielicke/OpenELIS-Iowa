@@ -25,11 +25,9 @@
 */
 package org.openelis.modules.storage.server;
 
-import org.openelis.common.AutocompleteRPC;
 import org.openelis.manager.StorageManager;
 import org.openelis.modules.storage.client.StorageServiceParams;
 import org.openelis.persistence.EJBFactory;
-import org.openelis.remote.StorageLocationRemote;
 import org.openelis.remote.StorageManagerRemote;
 
 public class StorageService {
@@ -38,7 +36,7 @@ public class StorageService {
         
         return remote.fetch(params.referenceTableId, params.referenceId);
     }
-    
+/*    
     public AutocompleteRPC getStorageMatches(AutocompleteRPC rpc) throws Exception {
         StorageLocationRemote remote = (StorageLocationRemote)EJBFactory.lookup("openelis/StorageLocationBean/remote");
         
@@ -46,6 +44,5 @@ public class StorageService {
         
         return rpc;
     }
-    
-    
+*/    
 }

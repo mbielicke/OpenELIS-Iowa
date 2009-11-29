@@ -25,20 +25,10 @@
 */
 package org.openelis.modules.inventoryAdjustment.client;
 
-import org.openelis.gwt.common.data.deprecated.AbstractField;
-import org.openelis.gwt.common.data.deprecated.DateField;
-import org.openelis.gwt.common.data.deprecated.DropDownField;
-import org.openelis.gwt.common.data.deprecated.IntegerField;
-import org.openelis.gwt.common.data.deprecated.StringField;
-import org.openelis.gwt.common.data.deprecated.TableDataModel;
-import org.openelis.gwt.common.data.deprecated.TableDataRow;
-import org.openelis.gwt.common.data.deprecated.TableField;
-import org.openelis.gwt.common.deprecated.Form;
-import org.openelis.metamap.InventoryAdjustmentMetaMap;
 
-import com.google.gwt.xml.client.Node;
-
-public class InventoryAdjustmentForm extends Form<Integer>{
+public class InventoryAdjustmentForm {
+}
+/*
     private static final long serialVersionUID = 1L;
 
     public IntegerField id;
@@ -82,4 +72,4 @@ public class InventoryAdjustmentForm extends Form<Integer>{
                                    adjustmentsTable
        };
    }
-}
+*/

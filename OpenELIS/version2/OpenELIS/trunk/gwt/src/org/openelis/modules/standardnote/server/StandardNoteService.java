@@ -31,6 +31,8 @@ import org.openelis.domain.IdNameVO;
 import org.openelis.domain.StandardNoteDO;
 import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.data.Query;
+import org.openelis.gwt.common.data.QueryData;
+import org.openelis.meta.StandardNoteMeta;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.StandardNoteRemote;
 
@@ -40,6 +42,32 @@ public class StandardNoteService {
     public StandardNoteDO fetchById(Integer id) throws Exception {
         try {
             return remote().fetchById(id);
+        } catch (RuntimeException e) {
+            throw new DatabaseException(e);
+        }
+    }
+
+    public ArrayList<StandardNoteDO> fetchByNameOrDescription(Query query) throws Exception {
+        String name = null, description = null;
+
+        for (QueryData field : query.getFields()) {
+            if (field.key != null) {
+                if (StandardNoteMeta.getName().equals(field.key))
+                    name = field.query;
+                else if (StandardNoteMeta.getDescription().equals(field.key))
+                    description = field.query;
+            }
+        }
+        try {
+            return remote().fetchByNameOrDescription(name, description, 1000);
+        } catch (RuntimeException e) {
+            throw new DatabaseException(e);
+        }
+    }
+
+    public ArrayList<StandardNoteDO> fetchByType(Integer typeId) throws Exception {
+        try {
+            return remote().fetchByType(typeId, 1000);
         } catch (RuntimeException e) {
             throw new DatabaseException(e);
         }

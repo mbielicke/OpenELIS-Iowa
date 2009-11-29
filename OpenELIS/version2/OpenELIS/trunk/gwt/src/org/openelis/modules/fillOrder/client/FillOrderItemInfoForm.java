@@ -1,18 +1,10 @@
 package org.openelis.modules.fillOrder.client;
 
-import org.openelis.gwt.common.data.deprecated.AbstractField;
-import org.openelis.gwt.common.data.deprecated.DropDownField;
-import org.openelis.gwt.common.data.deprecated.StringField;
-import org.openelis.gwt.common.data.deprecated.TableDataModel;
-import org.openelis.gwt.common.data.deprecated.TableDataRow;
-import org.openelis.gwt.common.data.deprecated.TreeField;
-import org.openelis.gwt.common.deprecated.Form;
-import org.openelis.metamap.FillOrderMetaMap;
 
-import com.google.gwt.xml.client.Node;
-
-public class FillOrderItemInfoForm extends Form<Integer> {
-    private static final long serialVersionUID = 1L;
+public class FillOrderItemInfoForm {
+}
+/*
+private static final long serialVersionUID = 1L;
 
     public StringField requestedBy;
     public DropDownField<Integer> costCenterId;
@@ -67,4 +59,4 @@ public class FillOrderItemInfoForm extends Form<Integer> {
                                    zipCode
        };
    }
-}
+*/

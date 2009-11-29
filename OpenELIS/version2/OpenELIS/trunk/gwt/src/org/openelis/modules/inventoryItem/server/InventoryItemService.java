@@ -27,7 +27,7 @@ package org.openelis.modules.inventoryItem.server;
 
 import java.util.ArrayList;
 
-import org.openelis.domain.IdNameVO;
+import org.openelis.domain.IdNameStoreVO;
 import org.openelis.domain.InventoryItemDO;
 import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.data.Query;
@@ -65,7 +65,7 @@ public class InventoryItemService {
                 if (field.key.endsWith("name"))
                     name = field.query;
                 else if (field.key.endsWith("storeId"))
-                    storeId = new Integer(field.query);
+                    storeId = Integer.valueOf(field.query);
             }
         }
         if (storeId == null)
@@ -106,7 +106,7 @@ public class InventoryItemService {
         }
     }
 
-    public ArrayList<IdNameVO> query(Query query) throws Exception {
+    public ArrayList<IdNameStoreVO> query(Query query) throws Exception {
         try {
             return remote().query(query.getFields(), query.getPage() * rowPP, rowPP);
         } catch (RuntimeException e) {

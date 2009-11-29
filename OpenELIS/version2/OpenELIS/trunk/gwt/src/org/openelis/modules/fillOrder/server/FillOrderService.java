@@ -25,59 +25,10 @@
 */
 package org.openelis.modules.fillOrder.server;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
 
-import org.openelis.domain.FillOrderDO;
-import org.openelis.domain.OrderItemDO;
-import org.openelis.domain.StorageLocationAutoDO;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.QueryException;
-import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.data.deprecated.AbstractField;
-import org.openelis.gwt.common.data.deprecated.CheckField;
-import org.openelis.gwt.common.data.deprecated.DateField;
-import org.openelis.gwt.common.data.deprecated.DropDownField;
-import org.openelis.gwt.common.data.deprecated.FieldType;
-import org.openelis.gwt.common.data.deprecated.IntegerField;
-import org.openelis.gwt.common.data.deprecated.IntegerObject;
-import org.openelis.gwt.common.data.deprecated.StringField;
-import org.openelis.gwt.common.data.deprecated.StringObject;
-import org.openelis.gwt.common.data.deprecated.TableDataModel;
-import org.openelis.gwt.common.data.deprecated.TableDataRow;
-import org.openelis.gwt.common.data.deprecated.TreeDataItem;
-import org.openelis.gwt.common.data.deprecated.TreeDataModel;
-import org.openelis.gwt.common.deprecated.Form;
-import org.openelis.gwt.common.deprecated.Query;
-import org.openelis.gwt.server.ServiceUtils;
-import org.openelis.gwt.services.deprecated.AppScreenFormServiceInt;
-import org.openelis.gwt.services.deprecated.AutoCompleteServiceInt;
-import org.openelis.metamap.FillOrderMetaMap;
-import org.openelis.modules.fillOrder.client.FillOrderForm;
-import org.openelis.modules.fillOrder.client.FillOrderItemInfoForm;
-import org.openelis.modules.fillOrder.client.FillOrderLocationAutoRPC;
-import org.openelis.modules.fillOrder.client.FillOrderOrderItemsKey;
-import org.openelis.persistence.CachingManager;
-import org.openelis.persistence.EJBFactory;
-import org.openelis.remote.FillOrderRemote;
-import org.openelis.remote.InventoryReceiptRemote;
-import org.openelis.server.constants.Constants;
-import org.openelis.util.FormUtil;
-import org.openelis.util.SessionManager;
-import org.openelis.util.UTFResource;
-import org.openelis.util.XMLUtil;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-
-public class FillOrderService implements AppScreenFormServiceInt<FillOrderForm, Query<TableDataRow<Integer>>>, AutoCompleteServiceInt{
-
+public class FillOrderService {
+}
+/*
     private static Node subRpcNode;
     
     private static final FillOrderMetaMap FillOrderMeta = new FillOrderMetaMap();
@@ -105,7 +56,7 @@ public class FillOrderService implements AppScreenFormServiceInt<FillOrderForm, 
                     throw new Exception(e.getMessage()); 
                 }           
             }    
-        }else{*/
+        }else{
             FillOrderRemote remote = (FillOrderRemote)EJBFactory.lookup("openelis/FillOrderBean/remote");
             
             if(query.fields.isEmpty())
@@ -473,4 +424,4 @@ public class FillOrderService implements AppScreenFormServiceInt<FillOrderForm, 
 
         form.status = Form.Status.invalid;
     }
-}
+*/

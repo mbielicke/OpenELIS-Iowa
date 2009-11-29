@@ -44,7 +44,7 @@ public class LocationTab extends Screen {
 
     private ArrayList<TableDataRow> getTableModel() {
         int i;
-        TableDataRow row;
+        boolean isSerial;
         InventoryLocationViewDO data;
         ArrayList<TableDataRow> model;
 
@@ -52,13 +52,20 @@ public class LocationTab extends Screen {
         if (manager == null)
             return model;
 
+        //
+        // if this inventory item is serialized, then we need to show the location
+        // id which is its instance id/serial #
+        //
+        isSerial = "Y".equals(manager.getInventoryItem().getIsSerialMaintained());
         try {
             for (i = 0; i < manager.getLocations().count(); i++ ) {
                 data = (InventoryLocationViewDO)manager.getLocations().getLocationAt(i);
-
-                row = new TableDataRow(13);
-                row.cells.get(0).value = data.getId();
-                model.add(row);
+                model.add(new TableDataRow(null,
+                                           data.getStorageLocationName(),
+                                           data.getLotNumber(),
+                                           (isSerial ? data.getId() : null),
+                                           data.getExpirationDate(),
+                                           data.getQuantityOnhand()));
             }
         } catch (Exception e) {
             Window.alert(e.getMessage());

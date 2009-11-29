@@ -28,30 +28,17 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   xsi:noNamespaceSchemaLocation="http://openelis.uhl.uiowa.edu/schema/ScreenSchema.xsd"
-  xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd"
-  xmlns:standardNoteMeta="xalan://org.openelis.metamap.StandardNoteMetaMap">
+  xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd">
 
   <xsl:import href="IMPORT/button.xsl" />
-  <xalan:component prefix="resource">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.util.UTFResource" />
-  </xalan:component>
-  <xalan:component prefix="locale">
-    <xalan:script lang="javaclass" src="xalan://java.util.Locale" />
-  </xalan:component>
-  <xalan:component prefix="standardNoteMeta">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.metamap.StandardNoteMetaMap" />
-  </xalan:component>
   <xsl:template match="doc">
-    <xsl:variable name="meta" select="standardNoteMeta:new()" />
-    <xsl:variable name="language">
-      <xsl:value-of select="locale" />
-    </xsl:variable>
-    <xsl:variable name="props">
-      <xsl:value-of select="props" />
-    </xsl:variable>
+    <xsl:variable name="language" select="locale" />
+    <xsl:variable name="props" select="props" />
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
-    <screen id="StandardNotePicker" name="{resource:getString($constants,'standardNoteSelection')}">
+
+    <screen id="EditNote" name="{resource:getString($constants,'standardNoteSelection')}">
       <VerticalPanel padding="0" spacing="0">
+
         <VerticalPanel padding="0" spacing="0" style="WhiteContentPanel">
           <TablePanel style="Form">
             <row>

@@ -4,7 +4,7 @@
  * To change this generated comment go to 
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
-package org.openelis.modules.editNote.client;
+package org.openelis.modules.note.client;
 
 import org.openelis.gwt.screen.ScreenDefInt;
 

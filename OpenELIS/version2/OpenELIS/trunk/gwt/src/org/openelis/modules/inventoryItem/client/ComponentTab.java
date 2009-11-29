@@ -28,14 +28,13 @@ import org.openelis.gwt.widget.table.event.RowAddedHandler;
 import org.openelis.gwt.widget.table.event.RowDeletedEvent;
 import org.openelis.gwt.widget.table.event.RowDeletedHandler;
 import org.openelis.manager.InventoryItemManager;
-import org.openelis.metamap.InventoryItemMetaMap;
+import org.openelis.meta.InventoryItemMeta;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.Window;
 
 public class ComponentTab extends Screen {
 
-    private InventoryItemMetaMap meta = new InventoryItemMetaMap();
     private InventoryItemManager manager;
     private TableWidget          table;
     private AutoComplete         componentId;
@@ -51,8 +50,8 @@ public class ComponentTab extends Screen {
     }
 
     private void initialize() {
-        table = (TableWidget)def.getWidget("componentsTable");
-        componentId = (AutoComplete)table.getColumnWidget(meta.INVENTORY_COMPONENT.getComponentId());
+        table = (TableWidget)def.getWidget("componentTable");
+        componentId = (AutoComplete)table.getColumnWidget(InventoryItemMeta.getComponentName());
         addScreenHandler(table, new ScreenEventHandler<ArrayList<TableDataRow>>() {
             public void onDataChange(DataChangeEvent event) {
                 if (state != State.QUERY)
@@ -88,6 +87,7 @@ public class ComponentTab extends Screen {
                     case 0:
                         row = (TableDataRow)val;
                         data.setComponentId((Integer)row.key);
+                        if (row.key == null) return;
                         data.setComponentDescription((String)row.getCells().get(1));
                         table.setCell(r, 1, data.getComponentDescription());
                         break;
@@ -138,13 +138,13 @@ public class ComponentTab extends Screen {
                 parser.parse(event.getMatch());
 
                 field = new QueryData();
-                field.key = meta.getName();
+                field.key = InventoryItemMeta.getName();
                 field.type = QueryData.Type.STRING;
                 field.query = parser.getParameter().get(0);
                 query.setFields(field);
 
                 field = new QueryData();
-                field.key = meta.getStoreId();
+                field.key = InventoryItemMeta.getStoreId();
                 field.type = QueryData.Type.INTEGER;
                 field.query = manager.getInventoryItem().getStoreId().toString();
                 query.setFields(field);
@@ -215,8 +215,7 @@ public class ComponentTab extends Screen {
                 data = (InventoryComponentViewDO)manager.getComponents().getComponentAt(i);
                 model.add(new TableDataRow(null,
                                            new TableDataRow(data.getComponentId(),
-                                                            data.getComponentName(),
-                                                            data.getComponentDescription()),
+                                                            data.getComponentName()),
                                            data.getComponentDescription(),
                                            data.getQuantity()));
             }
